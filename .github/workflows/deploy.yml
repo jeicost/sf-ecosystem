@@ -17,6 +17,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/startup-factory-web
+          rm -rf .vercel
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy ai-agency-sf-next to Vercel
@@ -26,6 +27,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/ai-agency-sf-next
+          rm -rf .vercel
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy mira portal to Vercel
@@ -35,6 +37,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/mira/portal
+          rm -rf .vercel
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy sf-cms to Vercel
@@ -44,6 +47,7 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/sf-cms
+          rm -rf .vercel
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy mira-landing to Vercel
@@ -53,4 +57,5 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/mira-landing
+          rm -rf .vercel
           npx vercel deploy --prod --token=$VERCEL_TOKEN
