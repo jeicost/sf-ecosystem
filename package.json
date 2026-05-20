@@ -14,6 +14,9 @@
     "apps/*",
     "packages/*"
   ],
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
   "devDependencies": {
     "turbo": "^2.0.0"
   }
