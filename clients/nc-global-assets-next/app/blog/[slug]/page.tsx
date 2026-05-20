@@ -3,6 +3,8 @@ import { getPostBySlug, getPostSlugs } from '@/lib/posts'
 
 const DOMAIN = 'https://www.ncglobalassets.com'
 
+export const revalidate = 3600
+
 export async function generateStaticParams() {
   const slugs = await getPostSlugs()
   return slugs.map((slug) => ({ slug }))
@@ -49,39 +51,8 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     return <div>Post not found</div>
   }
 
-  const blogSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline: post.title,
-    description: post.excerpt,
-    image: post.ogImage || post.coverUrl,
-    datePublished: post.date,
-    author: {
-      '@type': 'Person',
-      name: post.author,
-    },
-    publisher: {
-      '@type': 'Organization',
-      name: 'NC Global Assets',
-      url: DOMAIN,
-      logo: {
-        '@type': 'ImageObject',
-        url: `${DOMAIN}/logo.png`,
-      },
-    },
-    mainEntityOfPage: {
-      '@type': 'WebPage',
-      '@id': `${DOMAIN}/blog/${slug}`,
-    },
-  }
-
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(blogSchema) }}
-      />
-      <article className="blog-post-page">
+    <article className="blog-post-page">
         <header className="blog-post-header">
           {post.category && <div className="blog-category">{post.category}</div>}
           <h1>{post.title}</h1>
@@ -116,6 +87,5 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
           <a href="/blog" className="btn btn-secondary">← Back to Blog</a>
         </nav>
       </article>
-    </>
   )
 }

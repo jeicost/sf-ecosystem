@@ -20,6 +20,7 @@ const HEADERS = { 'x-api-key': process.env.CMS_API_KEY }
 
 const CMS_API_URL = process.env.CMS_API_URL
 const CMS_API_KEY = process.env.CMS_API_KEY
+const PROJECT_ID = process.env.PROJECT_ID || 'ncglobal'
 
 if (!CMS_API_URL || !CMS_API_KEY) {
   console.log('⚠️   CMS_API_URL or CMS_API_KEY not set — skipping content fetch')
@@ -35,11 +36,11 @@ async function fetchJson(url) {
 
 async function main() {
   try {
-    console.log('📡  Fetching content from SF-CMS…')
+    console.log(`📡  Fetching content from SF-CMS (project: ${PROJECT_ID})…`)
 
     const [{ posts }, { pages }, settings] = await Promise.all([
-      fetchJson(`${CMS_API_URL}/posts?status=published`),
-      fetchJson(`${CMS_API_URL}/pages`),
+      fetchJson(`${CMS_API_URL}/posts?status=published&project=${PROJECT_ID}`),
+      fetchJson(`${CMS_API_URL}/pages?project=${PROJECT_ID}`),
       fetchJson(`${CMS_API_URL}/settings`).catch(() => ({})),
     ])
 

@@ -4,6 +4,8 @@ import { PageShell } from '@/components/Layout'
 
 const DOMAIN = 'https://www.ncglobalassets.com'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   metadataBase: new URL(DOMAIN),
   title: 'NC Global Assets — Launch your brand in Thailand',
