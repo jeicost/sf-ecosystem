@@ -13,7 +13,7 @@ jobs:
       - name: Deploy startup-factory-web to Vercel
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID_STARTUP_FACTORY: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/startup-factory-web
@@ -22,7 +22,7 @@ jobs:
       - name: Deploy ai-agency-sf-next to Vercel
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID_AI_AGENCY: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/ai-agency-sf-next
@@ -31,7 +31,7 @@ jobs:
       - name: Deploy mira portal to Vercel
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID_MIRA: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/mira/portal
@@ -40,7 +40,7 @@ jobs:
       - name: Deploy sf-cms to Vercel
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID_SF_CMS: ${{ secrets.VERCEL_PROJECT_ID_SF_CMS }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CMS }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/sf-cms
@@ -49,7 +49,7 @@ jobs:
       - name: Deploy mira-landing to Vercel
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID_MIRA_LANDING: ${{ secrets.VERCEL_PROJECT_ID_MIRA_LANDING }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA_LANDING }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/mira-landing
