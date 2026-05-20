@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRA — 4 Logo Options</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0a0a0f;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 60px;
+  }
+
+  header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #666;
+    margin-bottom: 8px;
+  }
+
+  header p {
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 32px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: #111118;
+    border: 1px solid #1e1e2e;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .card-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #1e1e2e;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .card-number {
+    font-size: 11px;
+    color: #444;
+    font-family: 'Space Grotesk', monospace;
+    letter-spacing: 2px;
+  }
+
+  .card-name {
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .preview-dark {
+    padding: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+    background: #0a0a0f;
+  }
+
+  .preview-light {
+    padding: 30px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    background: #f5f5f7;
+    border-top: 1px solid #1e1e2e;
+  }
+
+  .preview-light svg text,
+  .preview-light .light-fill { fill: #111 !important; }
+
+  .divider {
+    font-size: 10px;
+    color: #2a2a3a;
+    text-align: center;
+    padding: 6px;
+    background: #0d0d15;
+    border-top: 1px solid #1a1a28;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .code-section {
+    padding: 16px 20px;
+    background: #0d0d15;
+    border-top: 1px solid #1e1e2e;
+  }
+
+  .code-label {
+    font-size: 10px;
+    color: #444;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  pre {
+    font-size: 10px;
+    color: #5a6a8a;
+    line-height: 1.6;
+    overflow-x: auto;
+    max-height: 120px;
+    scrollbar-width: thin;
+    scrollbar-color: #2a2a3a transparent;
+  }
+
+  .copy-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: #1a1a2e;
+    border: 1px solid #2a2a4a;
+    border-radius: 8px;
+    color: #7a8aaa;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .copy-btn:hover {
+    background: #1e1e3e;
+    color: #a0b0cc;
+    border-color: #3a3a6a;
+  }
+
+  .copy-btn.copied {
+    background: #0d2a1e;
+    color: #4ade80;
+    border-color: #166534;
+  }
+
+  @media (max-width: 700px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>MIRA — Brand Identity</h1>
+  <p>4 logo options · SVG vectors · copy-paste ready</p>
+</header>
+
+<div class="grid">
+
+  <!-- LOGO 1: Eye + Tech -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-number">01</span>
+      <span class="card-name">Eye + Tech</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo1" width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Eye icon -->
+        <ellipse cx="28" cy="40" rx="22" ry="14" stroke="#00d4ff" stroke-width="1.5"/>
+        <circle cx="28" cy="40" r="7" fill="#00d4ff" opacity="0.15"/>
+        <circle cx="28" cy="40" r="5" fill="#00d4ff" opacity="0.4"/>
+        <circle cx="28" cy="40" r="2.5" fill="#00d4ff"/>
+        <!-- Scan lines -->
+        <line x1="6" y1="40" x2="10" y2="40" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
+        <line x1="46" y1="40" x2="50" y2="40" stroke="#00d4ff" stroke-width="1" opacity="0.5"/>
+        <!-- Corner marks -->
+        <path d="M6 32 L6 28 L10 28" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/>
+        <path d="M50 32 L50 28 L46 28" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/>
+        <path d="M6 48 L6 52 L10 52" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/>
+        <path d="M50 48 L50 52 L46 52" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/>
+        <!-- MIRA text -->
+        <text x="68" y="50" font-family="Space Grotesk, sans-serif" font-size="34" font-weight="600" letter-spacing="6" fill="#ffffff">MIRA</text>
+        <!-- Tagline -->
+        <text x="69" y="64" font-family="Inter, sans-serif" font-size="8" font-weight="300" letter-spacing="4" fill="#00d4ff" opacity="0.7">ARTIFICIAL INTELLIGENCE</text>
+      </svg>
+    </div>
+    <div class="divider">light version</div>
+    <div class="preview-light">
+      <svg width="240" height="68" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="28" cy="40" rx="22" ry="14" stroke="#0066cc" stroke-width="1.5"/>
+        <circle cx="28" cy="40" r="7" fill="#0066cc" opacity="0.1"/>
+        <circle cx="28" cy="40" r="5" fill="#0066cc" opacity="0.3"/>
+        <circle cx="28" cy="40" r="2.5" fill="#0066cc"/>
+        <line x1="6" y1="40" x2="10" y2="40" stroke="#0066cc" stroke-width="1" opacity="0.5"/>
+        <line x1="46" y1="40" x2="50" y2="40" stroke="#0066cc" stroke-width="1" opacity="0.5"/>
+        <path d="M6 32 L6 28 L10 28" stroke="#0066cc" stroke-width="1" opacity="0.4" fill="none"/>
+        <path d="M50 32 L50 28 L46 28" stroke="#0066cc" stroke-width="1" opacity="0.4" fill="none"/>
+        <path d="M6 48 L6 52 L10 52" stroke="#0066cc" stroke-width="1" opacity="0.4" fill="none"/>
+        <path d="M50 48 L50 52 L46 52" stroke="#0066cc" stroke-width="1" opacity="0.4" fill="none"/>
+        <text x="68" y="50" font-family="Space Grotesk, sans-serif" font-size="34" font-weight="600" letter-spacing="6" fill="#111111">MIRA</text>
+        <text x="69" y="64" font-family="Inter, sans-serif" font-size="8" font-weight="300" letter-spacing="4" fill="#0066cc" opacity="0.8">ARTIFICIAL INTELLIGENCE</text>
+      </svg>
+    </div>
+    <div class="code-section">
+      <div class="code-label">SVG Code</div>
+      <pre id="code1">&lt;svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;ellipse cx="28" cy="40" rx="22" ry="14" stroke="#00d4ff" stroke-width="1.5"/&gt;
+  &lt;circle cx="28" cy="40" r="7" fill="#00d4ff" opacity="0.15"/&gt;
+  &lt;circle cx="28" cy="40" r="5" fill="#00d4ff" opacity="0.4"/&gt;
+  &lt;circle cx="28" cy="40" r="2.5" fill="#00d4ff"/&gt;
+  &lt;line x1="6" y1="40" x2="10" y2="40" stroke="#00d4ff" stroke-width="1" opacity="0.5"/&gt;
+  &lt;line x1="46" y1="40" x2="50" y2="40" stroke="#00d4ff" stroke-width="1" opacity="0.5"/&gt;
+  &lt;path d="M6 32 L6 28 L10 28" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/&gt;
+  &lt;path d="M50 32 L50 28 L46 28" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/&gt;
+  &lt;path d="M6 48 L6 52 L10 52" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/&gt;
+  &lt;path d="M50 48 L50 52 L46 52" stroke="#00d4ff" stroke-width="1" opacity="0.4" fill="none"/&gt;
+  &lt;text x="68" y="50" font-family="Space Grotesk" font-size="34" font-weight="600" letter-spacing="6" fill="#ffffff"&gt;MIRA&lt;/text&gt;
+  &lt;text x="69" y="64" font-family="Inter" font-size="8" font-weight="300" letter-spacing="4" fill="#00d4ff" opacity="0.7"&gt;ARTIFICIAL INTELLIGENCE&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('code1', this)">Copy SVG</button>
+    </div>
+  </div>
+
+  <!-- LOGO 2: Neural Network -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-number">02</span>
+      <span class="card-name">Neural Network</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo2" width="300" height="90" viewBox="0 0 300 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#6366f1"/>
+          </linearGradient>
+          <linearGradient id="textGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <!-- Neural nodes -->
+        <circle cx="12" cy="30" r="3" fill="url(#grad2)" opacity="0.6"/>
+        <circle cx="12" cy="45" r="3" fill="url(#grad2)" opacity="0.8"/>
+        <circle cx="12" cy="60" r="3" fill="url(#grad2)" opacity="0.6"/>
+        <circle cx="30" cy="22" r="3.5" fill="url(#grad2)" opacity="0.7"/>
+        <circle cx="30" cy="45" r="4" fill="url(#grad2)"/>
+        <circle cx="30" cy="68" r="3.5" fill="url(#grad2)" opacity="0.7"/>
+        <circle cx="48" cy="30" r="3" fill="url(#grad2)" opacity="0.9"/>
+        <circle cx="48" cy="55" r="3" fill="url(#grad2)" opacity="0.9"/>
+        <!-- Connections -->
+        <line x1="12" y1="30" x2="30" y2="22" stroke="url(#grad2)" stroke-width="0.8" opacity="0.4"/>
+        <line x1="12" y1="30" x2="30" y2="45" stroke="url(#grad2)" stroke-width="0.8" opacity="0.3"/>
+        <line x1="12" y1="45" x2="30" y2="22" stroke="url(#grad2)" stroke-width="0.8" opacity="0.2"/>
+        <line x1="12" y1="45" x2="30" y2="45" stroke="url(#grad2)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="12" y1="45" x2="30" y2="68" stroke="url(#grad2)" stroke-width="0.8" opacity="0.3"/>
+        <line x1="12" y1="60" x2="30" y2="45" stroke="url(#grad2)" stroke-width="0.8" opacity="0.3"/>
+        <line x1="12" y1="60" x2="30" y2="68" stroke="url(#grad2)" stroke-width="0.8" opacity="0.4"/>
+        <line x1="30" y1="22" x2="48" y2="30" stroke="url(#grad2)" stroke-width="0.8" opacity="0.4"/>
+        <line x1="30" y1="45" x2="48" y2="30" stroke="url(#grad2)" stroke-width="0.8" opacity="0.3"/>
+        <line x1="30" y1="45" x2="48" y2="55" stroke="url(#grad2)" stroke-width="0.8" opacity="0.4"/>
+        <line x1="30" y1="68" x2="48" y2="55" stroke="url(#grad2)" stroke-width="0.8" opacity="0.3"/>
+        <!-- Separator -->
+        <line x1="62" y1="20" x2="62" y2="70" stroke="#3a3a5a" stroke-width="1" opacity="0.6"/>
+        <!-- MIRA text with gradient -->
+        <text x="75" y="55" font-family="Space Grotesk, sans-serif" font-size="36" font-weight="700" letter-spacing="5" fill="url(#textGrad2)">MIRA</text>
+        <text x="76" y="70" font-family="Inter, sans-serif" font-size="8" font-weight="300" letter-spacing="5" fill="#6366f1" opacity="0.8">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="divider">light version</div>
+    <div class="preview-light">
+      <svg width="260" height="78" viewBox="0 0 300 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad2l" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+          <linearGradient id="tg2l" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <circle cx="12" cy="30" r="3" fill="url(#grad2l)" opacity="0.6"/>
+        <circle cx="12" cy="45" r="3" fill="url(#grad2l)" opacity="0.8"/>
+        <circle cx="12" cy="60" r="3" fill="url(#grad2l)" opacity="0.6"/>
+        <circle cx="30" cy="22" r="3.5" fill="url(#grad2l)" opacity="0.7"/>
+        <circle cx="30" cy="45" r="4" fill="url(#grad2l)"/>
+        <circle cx="30" cy="68" r="3.5" fill="url(#grad2l)" opacity="0.7"/>
+        <circle cx="48" cy="30" r="3" fill="url(#grad2l)" opacity="0.9"/>
+        <circle cx="48" cy="55" r="3" fill="url(#grad2l)" opacity="0.9"/>
+        <line x1="12" y1="30" x2="30" y2="22" stroke="url(#grad2l)" stroke-width="0.8" opacity="0.4"/>
+        <line x1="12" y1="45" x2="30" y2="45" stroke="url(#grad2l)" stroke-width="0.8" opacity="0.5"/>
+        <line x1="30" y1="45" x2="48" y2="30" stroke="url(#grad2l)" stroke-width="0.8" opacity="0.3"/>
+        <line x1="30" y1="45" x2="48" y2="55" stroke="url(#grad2l)" stroke-width="0.8" opacity="0.4"/>
+        <line x1="30" y1="68" x2="48" y2="55" stroke="url(#grad2l)" stroke-width="0.8" opacity="0.3"/>
+        <line x1="62" y1="20" x2="62" y2="70" stroke="#ccc" stroke-width="1" opacity="0.6"/>
+        <text x="75" y="55" font-family="Space Grotesk, sans-serif" font-size="36" font-weight="700" letter-spacing="5" fill="url(#tg2l)">MIRA</text>
+        <text x="76" y="70" font-family="Inter, sans-serif" font-size="8" font-weight="300" letter-spacing="5" fill="#6366f1" opacity="0.9">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="code-section">
+      <div class="code-label">SVG Code</div>
+      <pre id="code2">&lt;svg width="300" height="90" viewBox="0 0 300 90" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"&gt;
+      &lt;stop offset="0%" stop-color="#a855f7"/&gt;
+      &lt;stop offset="100%" stop-color="#6366f1"/&gt;
+    &lt;/linearGradient&gt;
+    &lt;linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"&gt;
+      &lt;stop offset="0%" stop-color="#c084fc"/&gt;
+      &lt;stop offset="100%" stop-color="#818cf8"/&gt;
+    &lt;/linearGradient&gt;
+  &lt;/defs&gt;
+  &lt;circle cx="12" cy="30" r="3" fill="url(#g1)" opacity="0.6"/&gt;
+  &lt;circle cx="12" cy="45" r="3" fill="url(#g1)" opacity="0.8"/&gt;
+  &lt;circle cx="12" cy="60" r="3" fill="url(#g1)" opacity="0.6"/&gt;
+  &lt;circle cx="30" cy="22" r="3.5" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;circle cx="30" cy="45" r="4" fill="url(#g1)"/&gt;
+  &lt;circle cx="30" cy="68" r="3.5" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;circle cx="48" cy="30" r="3" fill="url(#g1)" opacity="0.9"/&gt;
+  &lt;circle cx="48" cy="55" r="3" fill="url(#g1)" opacity="0.9"/&gt;
+  &lt;line x1="12" y1="30" x2="30" y2="22" stroke="url(#g1)" stroke-width="0.8" opacity="0.4"/&gt;
+  &lt;line x1="12" y1="45" x2="30" y2="45" stroke="url(#g1)" stroke-width="0.8" opacity="0.5"/&gt;
+  &lt;line x1="30" y1="45" x2="48" y2="30" stroke="url(#g1)" stroke-width="0.8" opacity="0.3"/&gt;
+  &lt;line x1="30" y1="45" x2="48" y2="55" stroke="url(#g1)" stroke-width="0.8" opacity="0.4"/&gt;
+  &lt;line x1="62" y1="20" x2="62" y2="70" stroke="#3a3a5a" stroke-width="1" opacity="0.6"/&gt;
+  &lt;text x="75" y="55" font-family="Space Grotesk" font-size="36" font-weight="700" letter-spacing="5" fill="url(#g2)"&gt;MIRA&lt;/text&gt;
+  &lt;text x="76" y="70" font-family="Inter" font-size="8" font-weight="300" letter-spacing="5" fill="#6366f1" opacity="0.8"&gt;AI PLATFORM&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('code2', this)">Copy SVG</button>
+    </div>
+  </div>
+
+  <!-- LOGO 3: Bold Gradient Wordmark -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-number">03</span>
+      <span class="card-name">Bold Gradient</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo3" width="260" height="90" viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="50%" stop-color="#6366f1"/>
+            <stop offset="100%" stop-color="#06b6d4"/>
+          </linearGradient>
+        </defs>
+        <!-- Diamond spark icon -->
+        <path d="M130 8 L136 20 L130 32 L124 20 Z" fill="url(#grad3)" opacity="0.9"/>
+        <path d="M130 12 L134 20 L130 28 L126 20 Z" fill="url(#grad3)" opacity="0.4"/>
+        <circle cx="130" cy="20" r="2" fill="white" opacity="0.8"/>
+        <!-- Spark lines -->
+        <line x1="118" y1="20" x2="122" y2="20" stroke="#a855f7" stroke-width="1" opacity="0.5"/>
+        <line x1="138" y1="20" x2="142" y2="20" stroke="#06b6d4" stroke-width="1" opacity="0.5"/>
+        <line x1="130" y1="8" x2="130" y2="5" stroke="url(#grad3)" stroke-width="1" opacity="0.4"/>
+        <!-- MIRA main text -->
+        <text x="130" y="68" font-family="Space Grotesk, sans-serif" font-size="40" font-weight="700" letter-spacing="8" fill="url(#grad3)" text-anchor="middle">MIRA</text>
+        <!-- Tagline -->
+        <text x="130" y="82" font-family="Inter, sans-serif" font-size="7.5" font-weight="300" letter-spacing="5" fill="#a855f7" opacity="0.6" text-anchor="middle">MULTI-AGENT AI</text>
+      </svg>
+    </div>
+    <div class="divider">light version</div>
+    <div class="preview-light">
+      <svg width="220" height="76" viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="grad3l" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="50%" stop-color="#4f46e5"/>
+            <stop offset="100%" stop-color="#0891b2"/>
+          </linearGradient>
+        </defs>
+        <path d="M130 8 L136 20 L130 32 L124 20 Z" fill="url(#grad3l)" opacity="0.9"/>
+        <circle cx="130" cy="20" r="2" fill="#4f46e5" opacity="0.8"/>
+        <line x1="118" y1="20" x2="122" y2="20" stroke="#7c3aed" stroke-width="1" opacity="0.5"/>
+        <line x1="138" y1="20" x2="142" y2="20" stroke="#0891b2" stroke-width="1" opacity="0.5"/>
+        <text x="130" y="68" font-family="Space Grotesk, sans-serif" font-size="40" font-weight="700" letter-spacing="8" fill="url(#grad3l)" text-anchor="middle">MIRA</text>
+        <text x="130" y="82" font-family="Inter, sans-serif" font-size="7.5" font-weight="300" letter-spacing="5" fill="#7c3aed" opacity="0.7" text-anchor="middle">MULTI-AGENT AI</text>
+      </svg>
+    </div>
+    <div class="code-section">
+      <div class="code-label">SVG Code</div>
+      <pre id="code3">&lt;svg width="260" height="90" viewBox="0 0 260 90" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"&gt;
+      &lt;stop offset="0%" stop-color="#a855f7"/&gt;
+      &lt;stop offset="50%" stop-color="#6366f1"/&gt;
+      &lt;stop offset="100%" stop-color="#06b6d4"/&gt;
+    &lt;/linearGradient&gt;
+  &lt;/defs&gt;
+  &lt;path d="M130 8 L136 20 L130 32 L124 20 Z" fill="url(#g)" opacity="0.9"/&gt;
+  &lt;path d="M130 12 L134 20 L130 28 L126 20 Z" fill="url(#g)" opacity="0.4"/&gt;
+  &lt;circle cx="130" cy="20" r="2" fill="white" opacity="0.8"/&gt;
+  &lt;line x1="118" y1="20" x2="122" y2="20" stroke="#a855f7" stroke-width="1" opacity="0.5"/&gt;
+  &lt;line x1="138" y1="20" x2="142" y2="20" stroke="#06b6d4" stroke-width="1" opacity="0.5"/&gt;
+  &lt;text x="130" y="68" font-family="Space Grotesk" font-size="40" font-weight="700" letter-spacing="8" fill="url(#g)" text-anchor="middle"&gt;MIRA&lt;/text&gt;
+  &lt;text x="130" y="82" font-family="Inter" font-size="7.5" font-weight="300" letter-spacing="5" fill="#a855f7" opacity="0.6" text-anchor="middle"&gt;MULTI-AGENT AI&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('code3', this)">Copy SVG</button>
+    </div>
+  </div>
+
+  <!-- LOGO 4: Minimal Geometric -->
+  <div class="card">
+    <div class="card-header">
+      <span class="card-number">04</span>
+      <span class="card-name">Minimal Geometric</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo4" width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- Hexagon icon -->
+        <polygon points="30,10 48,20 48,40 30,50 12,40 12,20" fill="none" stroke="#ffffff" stroke-width="1.5"/>
+        <polygon points="30,16 43,23.5 43,36.5 30,44 17,36.5 17,23.5" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.4"/>
+        <!-- M letter inside hex -->
+        <path d="M22 36 L22 24 L30 32 L38 24 L38 36" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <!-- Separator line -->
+        <line x1="64" y1="15" x2="64" y2="65" stroke="#333" stroke-width="1"/>
+        <!-- MIRA text -->
+        <text x="78" y="48" font-family="Space Grotesk, sans-serif" font-size="30" font-weight="300" letter-spacing="10" fill="#ffffff">MIRA</text>
+        <!-- Bottom accent line -->
+        <line x1="78" y1="56" x2="145" y2="56" stroke="#ef4444" stroke-width="1.5"/>
+        <!-- Tagline -->
+        <text x="78" y="68" font-family="Inter, sans-serif" font-size="7" font-weight="300" letter-spacing="4" fill="#666">INTELLIGENCE PLATFORM</text>
+      </svg>
+    </div>
+    <div class="divider">light version</div>
+    <div class="preview-light">
+      <svg width="240" height="68" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="30,10 48,20 48,40 30,50 12,40 12,20" fill="none" stroke="#111" stroke-width="1.5"/>
+        <polygon points="30,16 43,23.5 43,36.5 30,44 17,36.5 17,23.5" fill="none" stroke="#111" stroke-width="0.6" opacity="0.3"/>
+        <path d="M22 36 L22 24 L30 32 L38 24 L38 36" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <line x1="64" y1="15" x2="64" y2="65" stroke="#ccc" stroke-width="1"/>
+        <text x="78" y="48" font-family="Space Grotesk, sans-serif" font-size="30" font-weight="300" letter-spacing="10" fill="#111111">MIRA</text>
+        <line x1="78" y1="56" x2="145" y2="56" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="78" y="68" font-family="Inter, sans-serif" font-size="7" font-weight="300" letter-spacing="4" fill="#888">INTELLIGENCE PLATFORM</text>
+      </svg>
+    </div>
+    <div class="code-section">
+      <div class="code-label">SVG Code</div>
+      <pre id="code4">&lt;svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;polygon points="30,10 48,20 48,40 30,50 12,40 12,20" fill="none" stroke="#ffffff" stroke-width="1.5"/&gt;
+  &lt;polygon points="30,16 43,23.5 43,36.5 30,44 17,36.5 17,23.5" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.4"/&gt;
+  &lt;path d="M22 36 L22 24 L30 32 L38 24 L38 36" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/&gt;
+  &lt;line x1="64" y1="15" x2="64" y2="65" stroke="#333" stroke-width="1"/&gt;
+  &lt;text x="78" y="48" font-family="Space Grotesk" font-size="30" font-weight="300" letter-spacing="10" fill="#ffffff"&gt;MIRA&lt;/text&gt;
+  &lt;line x1="78" y1="56" x2="145" y2="56" stroke="#ef4444" stroke-width="1.5"/&gt;
+  &lt;text x="78" y="68" font-family="Inter" font-size="7" font-weight="300" letter-spacing="4" fill="#666"&gt;INTELLIGENCE PLATFORM&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('code4', this)">Copy SVG</button>
+    </div>
+  </div>
+
+</div>
+
+<footer style="text-align:center; margin-top:60px; padding-bottom:40px;">
+  <p style="font-size:10px; color:#333; letter-spacing:3px; text-transform:uppercase;">MIRA Brand Identity · SVG Logos · 2026</p>
+</footer>
+
+<script>
+function copyCode(id, btn) {
+  const code = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy SVG';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>

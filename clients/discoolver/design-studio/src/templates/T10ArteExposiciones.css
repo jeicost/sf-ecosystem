@@ -1,0 +1,46 @@
+.dv-arte { background: #fff; }
+
+.dv-arte__slogan      { margin-bottom: 14px; line-height: 1; }
+.dv-arte__slogan-pre  { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #111827; display: block; margin-bottom: 1px; }
+.dv-arte__slogan-city { font-family: 'Bebas Neue', sans-serif; font-size: 72px; color: #111827; letter-spacing: -2px; line-height: 0.87; display: block; margin-bottom: 3px; }
+.dv-arte__slogan-year { display: inline-flex; align-items: center; gap: 1px; font-family: 'Bebas Neue', sans-serif; font-size: 21px; color: #111827; }
+
+/* ── Boxed split ── */
+.dv-arte__split   { display: flex; gap: 14px; margin-bottom: 12px; height: 130px; }
+.dv-arte__split-l { width: 46%; display: flex; flex-direction: column; gap: 8px; }
+.dv-arte__split-r { flex: 1; overflow: hidden; background: #d2d2d2; display: flex; align-items: center; justify-content: center; }
+.dv-arte__split-r img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.dv-arte__box     { padding: 7px 10px 8px; }
+.dv-arte__box-hd  { display: flex; align-items: baseline; }
+.dv-arte__box-big { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #fff; line-height: 1; }
+.dv-arte__box-sm  { font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.04em; }
+.dv-arte__box-sub { font-size: 9.5px; font-style: italic; color: rgba(255,255,255,.85); display: block; margin-top: 2px; }
+
+.dv-arte__intro      { font-size: 9.5px; color: #444; line-height: 1.58; text-align: justify; }
+.dv-arte__drop-cap   { font-family: 'Bebas Neue', sans-serif; font-size: 26px; float: left; line-height: 0.8; color: #111827; margin-right: 2px; padding-top: 2px; }
+
+/* ── Typo header ── */
+.dv-arte__cat-typo  { display: flex; align-items: baseline; margin: 12px 0 4px; }
+.dv-arte__cat-first { font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: #111827; line-height: 1; padding-right: 1px; }
+.dv-arte__cat-rest  { font-size: 13px; font-weight: 700; color: #111827; text-transform: uppercase; letter-spacing: 0.05em; }
+.dv-arte__cat-sub   { font-size: 9.5px; font-style: italic; color: #6b7280; margin-bottom: 10px; line-height: 1.4; }
+
+/* ── Cards ── */
+.dv-arte__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 12px; }
+.dv-arte__card { display: flex; flex-direction: column; }
+
+.dv-arte__card-img { width: 100%; height: 108px; background: #d2d2d2; position: relative; overflow: hidden; margin-bottom: 7px; display: flex; align-items: center; justify-content: center; }
+.dv-arte__card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dv-arte__overlay  { position: absolute; inset: 0; }
+.dv-arte__card-ph  { font-size: 8px; color: #999; letter-spacing: 0.1em; text-transform: uppercase; position: relative; }
+
+.dv-arte__name  { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #111827; letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 1px; }
+.dv-arte__tag   { font-size: 9.5px; font-style: italic; color: #444; margin-bottom: 4px; line-height: 1.35; }
+.dv-arte__desc  { font-size: 8.5px; color: #333; line-height: 1.58; text-align: justify; flex: 1; margin-bottom: 5px; }
+.dv-arte__where { font-size: 8.5px; font-weight: 600; color: #111827; margin-bottom: 1px; }
+.dv-arte__when  { font-size: 8.5px; font-style: italic; color: #6b7280; }
+
+.dv-arte__footer     { position: absolute; bottom: 22px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: center; }
+.dv-arte__footer-txt { font-size: 8px; color: #aaa; font-style: italic; }
+.dv-arte__footer-num { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #bbb; }

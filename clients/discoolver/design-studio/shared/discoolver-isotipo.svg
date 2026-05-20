@@ -1,0 +1,15 @@
+<!--
+  Discoolver Isotipo — CANONICAL SVG
+  ⚠️  Ratio FIJO 1.10:1 (width:height). NO modificar proporciones.
+  viewBox="0 0 110 100" → siempre este viewBox.
+  Para cambiar color: usar fill="currentColor" o pasar color via CSS.
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 110 100"
+     fill="currentColor"
+     aria-label="Discoolver isotipo">
+  <!-- Left semicircle -->
+  <path d="M59 0 A59 50 0 0 0 59 100 Z"/>
+  <!-- Right play triangle -->
+  <polygon points="72,13 110,50 72,87"/>
+</svg>

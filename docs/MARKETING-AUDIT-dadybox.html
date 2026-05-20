@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marketing Audit — dadybox.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #06070d;
+  --surface: #0c0e1a;
+  --surface2: #121526;
+  --surface3: #181c30;
+  --border: #1a1e35;
+  --border2: #252a45;
+  --accent: #6c5ce7;
+  --accent2: #a29bfe;
+  --teal: #00cec9;
+  --orange: #fd7b4d;
+  --green: #00b894;
+  --yellow: #fdcb6e;
+  --red: #e17055;
+  --blue: #4a90d9;
+  --text: #e8eaf6;
+  --text2: #8890b8;
+  --text3: #4a5070;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Syne', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.65;overflow-x:hidden;}
+
+/* noise */
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.5;}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+
+/* ── HEADER ── */
+nav{border-bottom:1px solid var(--border);background:rgba(6,7,13,.93);backdrop-filter:blur(14px);position:sticky;top:0;z-index:100;padding:16px 0;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:1px;}
+.logo-box{width:30px;height:30px;background:linear-gradient(135deg,var(--accent),var(--teal));border-radius:7px;display:grid;place-items:center;}
+.logo-box svg{width:16px;height:16px;fill:white;}
+.logo span{color:var(--accent2);}
+.nav-meta{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.tag{padding:3px 9px;border-radius:4px;border:1px solid var(--border2);color:var(--teal);background:#00cec908;}
+
+/* ── HERO ── */
+.hero{padding:56px 0 48px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;top:-80px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,#6c5ce720 0%,transparent 70%);pointer-events:none;}
+.hero-grid{display:grid;grid-template-columns:200px 1fr;gap:52px;align-items:center;}
+
+/* score ring */
+.ring-wrap{width:200px;height:200px;position:relative;flex-shrink:0;}
+.ring-wrap svg{width:200px;height:200px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--surface2);stroke-width:12;}
+.ring-fill{fill:none;stroke:url(#ringGrad);stroke-width:12;stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:553;animation:ringAnim 2s cubic-bezier(.4,0,.2,1) .4s forwards;}
+@keyframes ringAnim{to{stroke-dashoffset:305;}} /* 553*(1-45/100)=304.15 */
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-family:var(--display);font-size:60px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ring-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;}
+.ring-grade{font-family:var(--display);font-size:12px;color:var(--red);font-weight:700;letter-spacing:2px;margin-top:4px;}
+
+.hero-right{}
+.eyebrow{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.hero-title{font-family:var(--display);font-size:36px;font-weight:800;line-height:1.15;margin-bottom:14px;}
+.hero-title .hi{background:linear-gradient(90deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-desc{color:var(--text2);font-size:14px;max-width:540px;line-height:1.7;}
+.hero-desc strong{color:var(--orange);}
+
+/* score bars */
+.score-bars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px;}
+.sbar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden;}
+.sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--accent));}
+.sbar-label{font-size:9px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.sbar-row{display:flex;align-items:baseline;gap:4px;}
+.sbar-num{font-family:var(--display);font-size:26px;font-weight:700;color:var(--c,var(--text));}
+.sbar-denom{font-family:var(--mono);font-size:9px;color:var(--text3);}
+.sbar-track{margin-top:6px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:2px;background:var(--c);width:0;animation:sfill 1.5s cubic-bezier(.4,0,.2,1) .7s forwards;}
+@keyframes sfill{to{width:var(--p);}}
+
+/* ── SECTIONS ── */
+.section{padding:48px 0;border-top:1px solid var(--border);}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.sec-num{font-family:var(--mono);font-size:10px;color:var(--accent);background:#6c5ce715;border:1px solid #6c5ce730;padding:3px 8px;border-radius:3px;}
+.sec-title{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:1px;}
+.sec-sub{font-size:13px;color:var(--text2);margin-bottom:26px;padding-left:54px;}
+
+/* ── QUICK WINS ── */
+.wins-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.win-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;transition:border-color .2s,transform .2s;}
+.win-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.win-idx{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-family:var(--display);font-size:14px;font-weight:700;flex-shrink:0;}
+.win-body strong{display:block;font-size:13px;color:var(--text);margin-bottom:4px;}
+.win-body p{font-size:12px;color:var(--text2);line-height:1.5;}
+.win-meta{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.chip{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;}
+.chip-green{background:#00b89415;color:var(--green);border:1px solid #00b89430;}
+.chip-orange{background:#fd7b4d15;color:var(--orange);border:1px solid #fd7b4d30;}
+.chip-purple{background:#6c5ce715;color:var(--accent2);border:1px solid #6c5ce730;}
+.chip-red{background:#e1705515;color:var(--red);border:1px solid #e1705530;}
+.chip-teal{background:#00cec915;color:var(--teal);border:1px solid #00cec930;}
+.chip-yellow{background:#fdcb6e15;color:var(--yellow);border:1px solid #fdcb6e30;}
+
+/* ── DIMENSION CARDS ── */
+.dim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.dim-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.dim-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.dim-title-row{display:flex;align-items:center;gap:10px;}
+.dim-icon{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:16px;flex-shrink:0;}
+.dim-name{font-family:var(--display);font-size:14px;font-weight:700;}
+.dim-score-badge{font-family:var(--display);font-size:22px;font-weight:700;}
+.dim-body{padding:16px 18px;}
+.dim-finding{font-size:12px;color:var(--text2);margin-bottom:12px;padding:10px 12px;background:var(--bg);border-left:3px solid var(--border2);border-radius:0 6px 6px 0;line-height:1.6;}
+.dim-finding.strong{border-left-color:var(--accent2);}
+.fact-list{display:flex;flex-direction:column;gap:6px;}
+.fact{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);}
+.fact-dot{width:14px;height:14px;border-radius:50%;display:grid;place-items:center;font-size:8px;flex-shrink:0;margin-top:1px;}
+.f-p{background:#00b89420;color:var(--green);}
+.f-w{background:#fdcb6e20;color:var(--yellow);}
+.f-f{background:#e1705520;color:var(--red);}
+
+/* ── COMPETITOR TABLE ── */
+.comp-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.comp-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);padding:12px 14px;border-bottom:1px solid var(--border2);background:var(--surface2);text-align:left;white-space:nowrap;}
+th:first-child{position:sticky;left:0;background:var(--surface2);}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+td:first-child{font-weight:600;color:var(--text);position:sticky;left:0;background:var(--surface);}
+tr:hover td{background:#ffffff04;}
+tr.dadybox-row td{background:#6c5ce708;}
+tr.dadybox-row td:first-child{background:#6c5ce712;color:var(--accent2);}
+.score-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:10px;font-weight:700;margin:0 auto;}
+.dot-great{background:#00b89420;color:var(--green);}
+.dot-ok{background:#fdcb6e20;color:var(--yellow);}
+.dot-bad{background:#e1705520;color:var(--red);}
+.gap-badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;font-family:var(--mono);}
+
+/* ── STRATEGIC RECS ── */
+.recs-list{display:flex;flex-direction:column;gap:12px;}
+.rec-row{display:grid;grid-template-columns:42px 1fr 90px 70px;align-items:center;gap:16px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;transition:all .2s;}
+.rec-row:hover{border-color:var(--border2);transform:translateX(4px);}
+.rec-n{font-family:var(--display);font-size:28px;font-weight:800;color:var(--border2);text-align:center;}
+.rec-body strong{display:block;color:var(--text);font-size:13px;margin-bottom:3px;}
+.rec-body p{color:var(--text2);font-size:12px;}
+.rec-impact{font-family:var(--mono);font-size:10px;text-align:right;color:var(--text3);}
+.rec-impact span{display:block;font-size:13px;font-weight:700;}
+
+/* ── REVENUE TABLE ── */
+.rev-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rev-total{padding:20px 20px 16px;background:linear-gradient(135deg,#6c5ce712,transparent);border-top:1px solid var(--border);}
+.rev-total-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.rev-total-num{font-family:var(--display);font-size:36px;font-weight:800;color:var(--green);margin-top:4px;}
+
+/* ── GAPS ── */
+.gap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.gap-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden;transition:all .2s;}
+.gap-card:hover{border-color:var(--border2);}
+.gap-card-n{position:absolute;top:10px;right:14px;font-family:var(--display);font-size:52px;font-weight:800;color:#ffffff04;line-height:1;}
+.gap-urg{font-family:var(--mono);font-size:9px;margin-bottom:8px;}
+.gap-title{font-weight:600;font-size:13px;margin-bottom:6px;}
+.gap-desc{font-size:12px;color:var(--text2);line-height:1.55;}
+
+/* ── SUMMARY BOX ── */
+.summary{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;overflow:hidden;margin-top:0;}
+.summary::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--teal),var(--orange));}
+.summary-grid{display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start;}
+.summary-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:12px;}
+.summary-body{color:var(--text2);font-size:13px;line-height:1.75;}
+.summary-body strong{color:var(--text);}
+.top3{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.top3-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.top3-num{font-family:var(--display);font-size:11px;color:var(--accent2);margin-bottom:4px;letter-spacing:1px;}
+.top3-text{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.top3-sub{font-size:11px;color:var(--text2);}
+
+/* ── FOOTER ── */
+footer{padding:28px 0;border-top:1px solid var(--border);}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* ── ANIM ── */
+.fade{opacity:0;transform:translateY(14px);animation:fup .5s ease forwards;}
+@keyframes fup{to{opacity:1;transform:none;}}
+.d1{animation-delay:.1s;}.d2{animation-delay:.2s;}.d3{animation-delay:.3s;}.d4{animation-delay:.4s;}.d5{animation-delay:.5s;}.d6{animation-delay:.6s;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .hero-grid{grid-template-columns:1fr;}
+  .score-bars{grid-template-columns:repeat(2,1fr);}
+  .wins-grid{grid-template-columns:1fr;}
+  .dim-grid{grid-template-columns:1fr;}
+  .gap-grid{grid-template-columns:1fr;}
+  .summary-grid{grid-template-columns:1fr;}
+  .rec-row{grid-template-columns:36px 1fr;}.rec-impact,.rec-meta{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap">
+    <div class="nav-inner">
+      <div class="logo" style="gap:0;">
+        <img src="logo-sf.svg" alt="Startup Factory" style="height:32px; width:auto; opacity:.95;"/>
+      </div>
+      <div class="nav-meta">
+        <span class="tag">dadybox.com</span>
+        <span>2026-05-07</span>
+        <span>5 agentes · 6 dimensiones</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <!-- SCORE RING -->
+      <div class="ring-wrap fade">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#6c5ce7"/>
+              <stop offset="100%" stop-color="#00cec9"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="100" cy="100" r="88"/>
+          <circle class="ring-fill" cx="100" cy="100" r="88"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-num">45</div>
+          <div class="ring-sub">/ 100 puntos</div>
+          <div class="ring-grade">GRADE  D</div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="fade d2">
+        <div class="eyebrow">Auditoría de Marketing Completa</div>
+        <h1 class="hero-title">MARKETING AUDIT<br/><span class="hi">DADYBOX.COM</span></h1>
+        <p class="hero-desc">
+          Producto sólido, mercado en crecimiento, clientes enterprise reales.
+          El negocio cae por <strong>infraestructura de marketing inexistente</strong>:
+          sin funnel, sin analytics, sin social proof verificable, sin SEO técnico.
+          Implementar las recomendaciones críticas puede mover el score a
+          <strong>~72/100 en 90 días</strong>.
+        </p>
+
+        <!-- SCORE BARS -->
+        <div class="score-bars">
+          <div class="sbar fade d3" style="--c:var(--orange);">
+            <div class="sbar-label">Contenido</div>
+            <div class="sbar-row"><div class="sbar-num">58</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:58%;"></div></div>
+          </div>
+          <div class="sbar fade d4" style="--c:var(--red);">
+            <div class="sbar-label">Conversión</div>
+            <div class="sbar-row"><div class="sbar-num">34</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:34%;"></div></div>
+          </div>
+          <div class="sbar fade d5" style="--c:var(--red);">
+            <div class="sbar-label">SEO Técnico</div>
+            <div class="sbar-row"><div class="sbar-num">28</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:28%;"></div></div>
+          </div>
+          <div class="sbar fade d3" style="--c:var(--teal);">
+            <div class="sbar-label">Competitivo</div>
+            <div class="sbar-row"><div class="sbar-num">62</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:62%;"></div></div>
+          </div>
+          <div class="sbar fade d4" style="--c:var(--red);">
+            <div class="sbar-label">Marca & Trust</div>
+            <div class="sbar-row"><div class="sbar-num">38</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:38%;"></div></div>
+          </div>
+          <div class="sbar fade d5" style="--c:var(--yellow);">
+            <div class="sbar-label">Crecimiento</div>
+            <div class="sbar-row"><div class="sbar-num">52</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:52%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- QUICK WINS -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">QUICK WINS — ESTA SEMANA</span></div>
+    <p class="sec-sub">Cambios de alta palanca implementables en 1-5 días. Coste mínimo, impacto inmediato.</p>
+    <div class="wins-grid">
+
+      <div class="win-card fade d1">
+        <div class="win-idx" style="background:#e1705520;color:var(--red);">01</div>
+        <div class="win-body">
+          <strong>Instalar GA4 + Google Search Console</strong>
+          <p>Sin analytics el negocio opera completamente ciego. No hay conversión optimizable sin datos. Priority #1 absoluta.</p>
+          <div class="win-meta"><span class="chip chip-red">Crítico</span><span class="chip chip-green">30 min</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d2">
+        <div class="win-idx" style="background:#e1705520;color:var(--red);">02</div>
+        <div class="win-body">
+          <strong>Activar Google My Business + solicitar 5 reseñas</strong>
+          <p>Huboo tiene 1.044 reseñas. Dadybox no aparece en ninguna plataforma. Solicitar por nombre a cada cliente activo.</p>
+          <div class="win-meta"><span class="chip chip-red">Crítico</span><span class="chip chip-green">1 día</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d3">
+        <div class="win-idx" style="background:#fd7b4d20;color:var(--orange);">03</div>
+        <div class="win-body">
+          <strong>Mover logos Warner + Coca-Cola al primer viewport</strong>
+          <p>Es el activo de credibilidad más potente y está enterrado. Ningún competidor local puede igualarlo. Texto: "El 3PL que confían Warner y Coca-Cola."</p>
+          <div class="win-meta"><span class="chip chip-orange">Alto impacto</span><span class="chip chip-green">2h</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d4">
+        <div class="win-idx" style="background:#fd7b4d20;color:var(--orange);">04</div>
+        <div class="win-body">
+          <strong>Añadir rango de precio orientativo al plan Despegue</strong>
+          <p>"Desde X€/mes" elimina la disonancia del claim "100% Transparente". Filtra leads no cualificados y reduce tiempo de ventas.</p>
+          <div class="win-meta"><span class="chip chip-orange">Alto impacto</span><span class="chip chip-green">30 min</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d5">
+        <div class="win-idx" style="background:#6c5ce720;color:var(--accent2);">05</div>
+        <div class="win-body">
+          <strong>Trust block antes del formulario de reserva</strong>
+          <p>Añadir: 1 cita real de cliente + "Respuesta en menos de 4h" + "Sin presión comercial". El punto de mayor abandono es siempre el último paso.</p>
+          <div class="win-meta"><span class="chip chip-purple">Medio</span><span class="chip chip-green">2h</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d6">
+        <div class="win-idx" style="background:#6c5ce720;color:var(--accent2);">06</div>
+        <div class="win-body">
+          <strong>Reactivar E-com Academy: 1 post + calendario visible</strong>
+          <p>Blog muerto desde nov 2024 destruye credibilidad silenciosamente. No hace falta publicar 8 playbooks — hace falta publicar 1 bien hecho y comprometer fechas para el resto.</p>
+          <div class="win-meta"><span class="chip chip-purple">Medio</span><span class="chip chip-orange">1 semana</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ANÁLISIS POR DIMENSIÓN -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">ANÁLISIS POR DIMENSIÓN</span></div>
+    <p class="sec-sub">Diagnóstico detallado de los 6 pilares de marketing evaluados por los agentes especializados.</p>
+    <div class="dim-grid">
+
+      <!-- CONTENIDO -->
+      <div class="dim-card fade d1">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#fd7b4d20;">✍️</div>
+            <div>
+              <div class="dim-name">Contenido & Messaging</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agente: market-content</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--orange);">58</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding strong">H1 es un tagline creativo ("Envíos sin dramas. Tu logística nuestra magia.") que no responde "¿mejor que qué?" ni "¿para quién exactamente?". Las 4 value props son genéricas — cualquier competidor dice lo mismo.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Tono de marca casual-confiado genuinamente diferenciador en sector logístico</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>"Tú vendes. Nosotros movemos todo por ti." — contraste sintáctico efectivo</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>Cero testimonials con cita humana</strong> — es el gap de conversión más grande del sitio</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Value props en modo feature, no outcome: "Panel único" vs "Todos tus pedidos en una pantalla"</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Blog muerto 6 meses + 8 playbooks prometidos sin entregar = credibilidad erosionada</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>Badge "Verificado" sin fuente: genera más escepticismo que confianza</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONVERSIÓN -->
+      <div class="dim-card fade d2">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#e1705520;">🎯</div>
+            <div>
+              <div class="dim-name">Conversion Optimization</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agente: market-conversion</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--red);">34</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">El sitio opera como folleto de ventas, no como sistema de captura de demanda. Funnel binario: o reservan llamada, o se van sin dejar rastro. Tasa de captura estimada: 1-2% del tráfico.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>Embudo de UN solo paso</strong> — CTA de "llamada" requiere compromiso incompatible con fase discovery (70% del tráfico)</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>Sin analytics</strong> — nadie sabe en qué paso abandona el visitante</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>8 CTAs idénticos "Reserva tu llamada" → scroll fatigue, pierden impacto</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Sin lead capture intermedio (calculadora, checklist, guía descargable)</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>"Sin permanencia" — poderoso reductor de fricción para B2B que teme lock-in</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>Con funnel de 4 etapas la tasa de captura puede pasar de 1-2% a 4-6%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO -->
+      <div class="dim-card fade d3">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#e1705520;">🔍</div>
+            <div>
+              <div class="dim-name">SEO & Discoverability</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agente: market-technical</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--red);">28</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">Infraestructura técnica SEO = 0/30 puntos. robots.txt y sitemap devuelven 404. Sin canonical, OG, schema ni analytics. El contenido es sólido pero Google no puede indexarlo correctamente.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>robots.txt → 404 | sitemap.xml → 404 | Canonical → ausente en todas las páginas</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Sin Open Graph ni Twitter Card — sharing en social muestra URL cruda</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Sin schema JSON-LD — se pierden FAQPage, LocalBusiness, BreadcrumbList</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>meta generator expone "v0.app" — revela stack tecnológico a competidores</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>47 imágenes con 100% alt text — excepcional</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>~4.000 palabras de contenido en homepage, lang="es", HTTPS activo</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPETITIVO -->
+      <div class="dim-card fade d4">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#00cec920;">⚔️</div>
+            <div>
+              <div class="dim-name">Competitive Positioning</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agente: market-competitive</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--teal);">62</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding strong">Dadybox tiene ventajas competitivas reales que no explota: clientes enterprise que ningún 3PL local puede igualar, GLS Partner Oficial, y E-com Academy como único contenido educativo del sector en España.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Warner, Coca-Cola, Ilunion — imposibles de igualar por competidores locales</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>GLS Partner Oficial + "Sin permanencia" = diferenciadores únicos en mercado español</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>E-com Academy: ningún competidor directo en España tiene contenido educativo</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Huboo: 1.044 reseñas Trustpilot. Byrd: 148. Dadybox: 0 en ninguna plataforma</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Sin páginas "vs Huboo" ni "vs Byrd" — tráfico de intención de cambio perdido</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>Bigblue tiene Ecocert — certificación sostenible disponible y sin competidor local</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRAND & TRUST -->
+      <div class="dim-card fade d5">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#e1705520;">🛡️</div>
+            <div>
+              <div class="dim-name">Marca & Confianza</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agente: market-brand</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--red);">38</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">Benchmark en España: 3PL maduro = 65-75/100. Dadybox está en zona de alerta. La marca tiene personalidad pero cero evidencia: sin equipo visible, sin datos de volumen, sin reseñas externas, sin caso de estudio.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>No existe página "Sobre Dadybox"</strong> — "¿quiénes sois?" sin respuesta es señal de riesgo para decisores B2B</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Cero reseñas en Trustpilot, Google, G2 o Capterra — ausencia activamente negativa</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Logos sin contexto: Warner sin caso de uso = decoración, no credibilidad</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Dirección física Madrid, teléfono, email, HTTPS — higiene de confianza cubierta</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Personalidad de marca consistente y diferenciada del sector</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>1 caso de estudio bien ejecutado vale más que 10 logos — ROI más alto disponible</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROWTH -->
+      <div class="dim-card fade d6">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#fdcb6e20;">📈</div>
+            <div>
+              <div class="dim-name">Crecimiento & Estrategia</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agente: market-strategy</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--yellow);">52</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">Modelo de crecimiento lineal y sin loops. Cada cliente adquirido no genera mecanismos de adquisición del siguiente. Tres canales de alto ROI completamente sin explotar: referidos, Shopify App Store, agencias partner.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>3 tiers bien mapeados a etapas de crecimiento del cliente (Despegue→Turbo→Galaxia)</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Modelo MRR recurrente + "sin permanencia" = baja fricción de entrada, fidelización real</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>Sin programa de referidos</strong> — en 3PL el boca a boca entre fundadores es el canal de mayor conversión</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Sin presencia en Shopify App Store — 50.000+ tiendas activas en España sin alcanzar</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Academy paralizada: el activo de mayor valor está generando cero leads</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>Latam → España: nicho de primer movedor con alta intención y sin competidor local</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMPETITIVE TABLE -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">BENCHMARK COMPETITIVO</span></div>
+    <p class="sec-sub">Dadybox vs los 5 principales competidores 3PL en el mercado español.</p>
+    <div class="comp-wrap">
+      <div class="comp-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Empresa</th>
+              <th>Origen</th>
+              <th>Precio mín.</th>
+              <th>Reseñas</th>
+              <th>Sin permanencia</th>
+              <th>Clientes enterprise</th>
+              <th>Contenido educativo</th>
+              <th>Shopify App</th>
+              <th>Score global</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="dadybox-row">
+              <td>⭐ Dadybox</td>
+              <td>Madrid ES</td>
+              <td><span class="gap-badge chip-red">No visible</span></td>
+              <td><span class="gap-badge chip-red">0 reseñas</span></td>
+              <td><div class="score-dot dot-great">✓</div></td>
+              <td><div class="score-dot dot-great">✓</div></td>
+              <td><div class="score-dot dot-great">✓</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-ok">45</div></td>
+            </tr>
+            <tr>
+              <td>Byrd</td>
+              <td>Austria/EU</td>
+              <td><span class="gap-badge chip-red">No visible</span></td>
+              <td><span class="gap-badge chip-green">4.3★ 148</span></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-ok">~</div></td>
+              <td><div class="score-dot dot-ok">63</div></td>
+            </tr>
+            <tr>
+              <td>Huboo</td>
+              <td>UK/Madrid</td>
+              <td><span class="gap-badge chip-yellow">1.000€/mes</span></td>
+              <td><span class="gap-badge chip-green">4.4★ 1.044</span></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-ok">~</div></td>
+              <td><div class="score-dot dot-great">71</div></td>
+            </tr>
+            <tr>
+              <td>Bigblue</td>
+              <td>Francia/ES</td>
+              <td><span class="gap-badge chip-red">No visible</span></td>
+              <td><span class="gap-badge chip-yellow">4.0★ 37</span></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-great">5★</div></td>
+              <td><div class="score-dot dot-ok">65</div></td>
+            </tr>
+            <tr>
+              <td>Beeping</td>
+              <td>Valencia ES</td>
+              <td><span class="gap-badge chip-green">250€/mes</span></td>
+              <td><span class="gap-badge chip-red">No visible</span></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-ok">48</div></td>
+            </tr>
+            <tr>
+              <td>Kubox</td>
+              <td>Madrid ES</td>
+              <td><span class="gap-badge chip-red">No visible</span></td>
+              <td><span class="gap-badge chip-red">No visible</span></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">✗</div></td>
+              <td><div class="score-dot dot-bad">32</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:10px;font-family:var(--mono);">* Dadybox lidera en diferenciadores únicos (clientes enterprise + sin permanencia + Academy). Rezaga en social proof digital. La brecha es solucionable en 60 días.</p>
+  </div>
+</section>
+
+<!-- STRATEGIC RECS -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">RECOMENDACIONES ESTRATÉGICAS</span></div>
+    <p class="sec-sub">Acciones de 1-4 semanas con alto impacto en pipeline y brand equity.</p>
+    <div class="recs-list">
+
+      <div class="rec-row fade d1">
+        <div class="rec-n">01</div>
+        <div class="rec-body">
+          <strong>Diseñar funnel de 4 etapas con calculadora de costes como CTA intermedio</strong>
+          <p>Pasar de funnel binario (visita → llamada) a: Calculadora → Email nurturing → Llamada cualificada → Cierre. La calculadora captura leads en fase discovery que ahora se van sin rastro. Impacto: tasa de captura ×2-3.</p>
+        </div>
+        <div class="rec-impact">Impacto<span style="color:var(--green);">MUY ALTO</span></div>
+        <span class="chip chip-orange">2-3 semanas</span>
+      </div>
+
+      <div class="rec-row fade d2">
+        <div class="rec-n">02</div>
+        <div class="rec-body">
+          <strong>Lanzar programa de referidos a la base de clientes activos</strong>
+          <p>En 3PL el boca a boca entre fundadores es el canal de mayor conversión y menor coste. Mecánica: 1 mes de crédito por referido que firma. En un mercado D2C pequeño como España, el 15% de clientes activos puede generar 4-5 nuevos clientes en 60 días.</p>
+        </div>
+        <div class="rec-impact">Impacto<span style="color:var(--green);">ALTO</span></div>
+        <span class="chip chip-orange">2 semanas</span>
+      </div>
+
+      <div class="rec-row fade d3">
+        <div class="rec-n">03</div>
+        <div class="rec-body">
+          <strong>Crear 3 testimonials SAR (Situación → Acción → Resultado) con clientes reales</strong>
+          <p>Un testimonial "Antes: 600 pedidos/mes, 2 personas a tiempo completo. Después: 1.400 pedidos, mismo equipo dedicado al marketing" convierte más que 10 logos. Contactar a Warner, Salesland e Ilunion para obtener cita firmada.</p>
+        </div>
+        <div class="rec-impact">Impacto<span style="color:var(--green);">ALTO</span></div>
+        <span class="chip chip-orange">2-3 semanas</span>
+      </div>
+
+      <div class="rec-row fade d4">
+        <div class="rec-n">04</div>
+        <div class="rec-body">
+          <strong>Crear páginas "Dadybox vs Huboo" y "Dadybox vs Byrd"</strong>
+          <p>Nadie en el sector español tiene páginas comparativas. Primera empresa que lo haga captura tráfico de alta intención ("Huboo alternativa España", "cambiar de 3PL"). Con los diferenciadores actuales (sin permanencia, clientes enterprise), Dadybox gana esta comparativa en papel.</p>
+        </div>
+        <div class="rec-impact">Impacto<span style="color:var(--yellow);">MEDIO</span></div>
+        <span class="chip chip-purple">3-4 semanas</span>
+      </div>
+
+      <div class="rec-row fade d5">
+        <div class="rec-n">05</div>
+        <div class="rec-body">
+          <strong>Crear página "Sobre Dadybox" con equipo, datos y misión</strong>
+          <p>Un CMO evaluando externalizar su logística no puede justificar internamente "trabajar con una empresa de la que no sé quiénes son". Año de fundación, m² de almacén, pedidos procesados, 2-3 fotos reales del equipo. Coste: 1 día de trabajo + fotografía básica.</p>
+        </div>
+        <div class="rec-impact">Impacto<span style="color:var(--yellow);">MEDIO</span></div>
+        <span class="chip chip-purple">1 semana</span>
+      </div>
+
+      <div class="rec-row fade d6">
+        <div class="rec-n">06</div>
+        <div class="rec-body">
+          <strong>Publicar primer caso de estudio real con métricas</strong>
+          <p>Estructura mínima: cliente + problema antes + solución + resultado cuantificado. Un solo caso de estudio bien ejecutado vale más que todos los logos juntos para los decisores B2B en fase de evaluación final.</p>
+        </div>
+        <div class="rec-impact">Impacto<span style="color:var(--green);">ALTO</span></div>
+        <span class="chip chip-yellow">3-4 semanas</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- LONG-TERM + GAPS -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-title">INICIATIVAS A LARGO PLAZO</span></div>
+    <p class="sec-sub">Palancas de crecimiento transformacional para el trimestre. Alto esfuerzo, alto retorno compuesto.</p>
+    <div class="gap-grid">
+
+      <div class="gap-card fade d1">
+        <div class="gap-card-n">01</div>
+        <div class="gap-urg chip chip-teal">Canal pasivo 24/7</div>
+        <div class="gap-title">Listing en Shopify App Store</div>
+        <div class="gap-desc">50.000+ tiendas activas en España. Las integraciones ya existen — el coste marginal de estar en el App Store es mínimo. Bigblue tiene 500+ marcas y 5★ en el App Store. Dadybox está ausente.</div>
+      </div>
+
+      <div class="gap-card fade d2">
+        <div class="gap-card-n">02</div>
+        <div class="gap-urg chip chip-orange">Moat de contenido</div>
+        <div class="gap-title">Reactivar Academy: 8 playbooks + 2 posts/mes</div>
+        <div class="gap-desc">La Academy es el único diferenciador de categoría en el mercado español. Con contenido activo se convierte en una máquina de leads 24/7. Sin contenido, es un costo de infraestructura sin retorno.</div>
+      </div>
+
+      <div class="gap-card fade d3">
+        <div class="gap-card-n">03</div>
+        <div class="gap-urg chip chip-purple">Primer movedor</div>
+        <div class="gap-title">Landing "3PL para marcas Latam en España"</div>
+        <div class="gap-desc">Marcas D2C mexicanas, colombianas y argentinas que venden a España/Amazon.es necesitan fulfillment europeo. Dadybox puede ser su solución sin que necesiten entidad legal en España. Nicho sin competidor.</div>
+      </div>
+
+      <div class="gap-card fade d4">
+        <div class="gap-card-n">04</div>
+        <div class="gap-urg chip chip-green">Canal de distribución</div>
+        <div class="gap-title">Programa de partners con agencias Shopify/WooCommerce</div>
+        <div class="gap-desc">Las agencias que montan tiendas contactan con marcas D2C en el momento exacto que necesitan logística (lanzamiento). Comisión por cliente referido = canal de alta calidad con bajo coste estructural.</div>
+      </div>
+
+      <div class="gap-card fade d5">
+        <div class="gap-card-n">05</div>
+        <div class="gap-urg chip chip-yellow">Tendencia creciente</div>
+        <div class="gap-title">Certificación sostenible (Ecocert o ISO 14001)</div>
+        <div class="gap-desc">Bigblue tiene Ecocert. Ningún 3PL español tiene certificación verde. Las marcas D2C de moda, cosmética y alimentación la valorarán como factor diferenciador. Primer movedor en el segmento.</div>
+      </div>
+
+      <div class="gap-card fade d6">
+        <div class="gap-card-n">06</div>
+        <div class="gap-urg chip chip-teal">Retención + expansión</div>
+        <div class="gap-title">Business Review trimestral + notificaciones de upsell</div>
+        <div class="gap-desc">Un informe automático trimestral con métricas del cliente vs benchmark hace visible el valor entregado y crea conversación natural de upgrade de plan. Convierte retención en expansión de revenue.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- REVENUE IMPACT -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><span class="sec-title">IMPACTO EN REVENUE</span></div>
+    <p class="sec-sub">Estimaciones conservadoras basadas en benchmarks de B2B SaaS/services (ticket promedio €800-1.200/mes).</p>
+    <div class="rev-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Iniciativa</th>
+            <th>Mecanismo</th>
+            <th>Impacto est. mensual</th>
+            <th>Confianza</th>
+            <th>Timeline</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>GA4 + Funnel de 4 etapas</td>
+            <td style="font-size:12px;color:var(--text2);">Tasa captura 1-2% → 4-6%, mismo tráfico</td>
+            <td style="font-family:var(--mono);color:var(--green);font-weight:700;">+€4.800-9.600</td>
+            <td><span class="chip chip-orange">Media</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">60-90 días</td>
+          </tr>
+          <tr>
+            <td>Programa de referidos</td>
+            <td style="font-size:12px;color:var(--text2);">15% base activa refiere 1 cliente c/u</td>
+            <td style="font-family:var(--mono);color:var(--green);font-weight:700;">+€3.200-6.400</td>
+            <td><span class="chip chip-green">Alta</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">30-60 días</td>
+          </tr>
+          <tr>
+            <td>Testimonials + Caso de estudio</td>
+            <td style="font-size:12px;color:var(--text2);">+20-30% conversión en llamadas → cierre</td>
+            <td style="font-family:var(--mono);color:var(--green);font-weight:700;">+€2.400-4.800</td>
+            <td><span class="chip chip-green">Alta</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">30-45 días</td>
+          </tr>
+          <tr>
+            <td>Reactivación E-com Academy</td>
+            <td style="font-size:12px;color:var(--text2);">+60% tráfico orgánico a 6 meses</td>
+            <td style="font-family:var(--mono);color:var(--yellow);font-weight:700;">+€1.600-3.200</td>
+            <td><span class="chip chip-yellow">Media</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">90-180 días</td>
+          </tr>
+          <tr>
+            <td>SEO técnico (robots+sitemap+canonical)</td>
+            <td style="font-size:12px;color:var(--text2);">Indexación correcta, +40% tráfico orgánico</td>
+            <td style="font-family:var(--mono);color:var(--yellow);font-weight:700;">+€1.200-2.400</td>
+            <td><span class="chip chip-yellow">Media</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">60-90 días</td>
+          </tr>
+          <tr>
+            <td>Shopify App Store listing</td>
+            <td style="font-size:12px;color:var(--text2);">Canal pasivo de captación orgánica</td>
+            <td style="font-family:var(--mono);color:var(--teal);font-weight:700;">+€800-2.400</td>
+            <td><span class="chip chip-teal">Media</span></td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">90-120 días</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="rev-total">
+        <div class="rev-total-label">Impacto potencial total (mensual recurrente)</div>
+        <div class="rev-total-num">+€14.000 – €28.800 / mes</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:6px;">Estimaciones conservadoras sobre base de 1.000-2.000 visitas/mes y ticket promedio €800-1.200/mes. Implementando las 6 iniciativas en 90 días.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="section" style="border-bottom:none;">
+  <div class="wrap">
+    <div class="summary fade">
+      <div class="summary-grid">
+        <div>
+          <div class="summary-title">Resumen Ejecutivo</div>
+          <div class="summary-body">
+            dadybox.com tiene una <strong>propuesta de valor real, diferenciadores únicos y clientes enterprise</strong> que ningún competidor local puede igualar (Warner, Coca-Cola, GLS Partner Oficial). El mercado tiene viento de cola: e-commerce español crece 15-20% anual y la tendencia de externalización logística está acelerando.
+            <br/><br/>
+            El problema no es el producto — es que <strong>el marketing opera como si el producto se vendiera solo</strong>. Sin analytics, sin funnel, sin social proof verificable y sin SEO técnico, dadybox está convirtiendo el 1-2% del tráfico que podría convertir el 5-6%.
+            <br/><br/>
+            <strong>Las 3 mejoras de mayor ROI en los próximos 30 días:</strong> instalar GA4 (para ver el problema), lanzar el programa de referidos (el canal más barato disponible), y conseguir 3 testimonials reales con resultados (el activo de mayor conversión disponible). El resto construye sobre esa base.
+          </div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">Top 3 acciones — máximo ROI</div>
+          <div class="top3">
+            <div class="top3-item">
+              <div class="top3-num">PRIORIDAD 1 · HOY</div>
+              <div class="top3-text">GA4 + Google Business Profile</div>
+              <div class="top3-sub">Sin datos no hay marketing. 30 minutos de implementación.</div>
+            </div>
+            <div class="top3-item">
+              <div class="top3-num">PRIORIDAD 2 · SEMANA 1</div>
+              <div class="top3-text">Lanzar programa de referidos</div>
+              <div class="top3-sub">Base de clientes activos → canal de captación. ROI negativo en CAC.</div>
+            </div>
+            <div class="top3-item">
+              <div class="top3-num">PRIORIDAD 3 · SEMANA 2-3</div>
+              <div class="top3-text">3 testimonials SAR + caso de estudio</div>
+              <div class="top3-sub">+20-30% en tasa de cierre. Es el activo de mayor conversión disponible.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div style="display:flex; align-items:center; gap:14px;">
+        <img src="logo-sf.svg" alt="Startup Factory" style="height:20px; width:auto; opacity:.45;"/>
+        <span>Preparado por Startup Factory</span>
+      </div>
+      <span>Marketing Audit · dadybox.com · Score: <span style="color:var(--accent2);">45/100</span> · +€14K-28K/mes potencial</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

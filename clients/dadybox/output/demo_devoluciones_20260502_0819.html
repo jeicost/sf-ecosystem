@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cómo Reducir tus Devoluciones y Aumentar la Rentabilidad | Dadybox</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #fff;
+}
+
+/* ── PAGE BASE ───────────────────────────────────────────── */
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+}
+
+/* ── DARK PAGES (navy) ─────────────────────────────────── */
+.dark-page {
+    background: #0B1829;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    height: 297mm;
+    padding: 15mm 16mm;
+}
+
+/* ── LIGHT PAGES (cream) ───────────────────────────────── */
+.light-page {
+    background: #F5F2EB;
+    color: #0B1829;
+    min-height: 297mm;
+    padding: 0 0 16mm 0;
+}
+
+/* ── PAGE HEADER (light pages) ─────────────────────────── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 16mm 8px;
+    margin-bottom: 8mm;
+    border-top: 3px solid #3EE89A;
+    background: #F5F2EB;
+}
+.page-header-section {
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #0B1829;
+    opacity: 0.55;
+}
+.page-header-logo {
+    color: #0B1829;
+    opacity: 0.4;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-transform: lowercase;
+}
+
+.page-body {
+    padding: 0 16mm;
+}
+
+/* ── PAGE FOOTER (light pages) ─────────────────────────── */
+.page-footer {
+    position: absolute;
+    bottom: 8mm;
+    left: 16mm;
+    right: 16mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7pt;
+    color: #0B1829;
+    opacity: 0.3;
+    border-top: 1px solid rgba(11,24,41,0.12);
+    padding-top: 5px;
+}
+
+/* ── COVER ─────────────────────────────────────────────── */
+.cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 9mm;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 0;
+    color: #fff;
+}
+.cover-badge {
+    background: rgba(62,232,154,0.12);
+    border: 1px solid rgba(62,232,154,0.28);
+    color: #3EE89A;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 5px 13px;
+    border-radius: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.cover-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 13mm;
+}
+.cover-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cover-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 2px;
+    background: #3EE89A;
+    border-radius: 1px;
+}
+.cover-title {
+    font-size: 31pt;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+    max-width: 165mm;
+}
+.cover-title em {
+    font-style: normal;
+    color: #3EE89A;
+}
+.cover-subtitle {
+    font-size: 11pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.58);
+    line-height: 1.6;
+    max-width: 148mm;
+    margin-bottom: 22px;
+}
+.cover-divider {
+    width: 38px;
+    height: 3px;
+    background: #3EE89A;
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+.cover-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+.cover-avatar {
+    width: 36px;
+    height: 36px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 11pt;
+    color: #0B1829;
+    flex-shrink: 0;
+}
+.cover-author-name { font-size: 10pt; font-weight: 700; color: #fff; }
+.cover-author-role { font-size: 8pt; color: rgba(255,255,255,0.48); margin-top: 1px; }
+
+.cover-footer-strip {
+    background: #3EE89A;
+    margin: 0 -16mm;
+    padding: 10px 16mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+.cover-footer-strip span {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #0B1829;
+}
+
+/* ── TOC ───────────────────────────────────────────────── */
+.toc-dark {
+    background: #0B1829;
+    padding: 14mm 16mm 12mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.toc-dark-left { }
+.toc-dark-eyebrow {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toc-dark-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 2px;
+    background: #3EE89A;
+}
+.toc-dark-title {
+    font-size: 26pt;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.8px;
+    line-height: 1;
+}
+.toc-dark-logo { color: #fff; opacity: 0.35; }
+
+.toc-cream {
+    background: #F5F2EB;
+    padding: 10mm 16mm 16mm;
+}
+.toc-entries { display: flex; flex-direction: column; gap: 3px; }
+.toc-entry {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    color: #0B1829;
+    border: 1px solid transparent;
+}
+.toc-entry:hover { background: rgba(11,24,41,0.04); border-color: rgba(11,24,41,0.08); }
+.toc-num {
+    width: 26px;
+    height: 26px;
+    background: #0B1829;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-right: 11px;
+}
+.toc-entry.green-num .toc-num {
+    background: #3EE89A;
+    color: #0B1829;
+}
+.toc-info { flex: 1; }
+.toc-section-title { font-size: 10pt; font-weight: 600; color: #0B1829; line-height: 1.2; }
+.toc-section-desc { font-size: 8pt; color: rgba(11,24,41,0.45); margin-top: 1px; }
+.toc-arrow { color: rgba(11,24,41,0.2); font-size: 12pt; flex-shrink: 0; margin-left: 4px; }
+
+/* ── SECTION OPENERS (dark pages) ─────────────────────── */
+.opener-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.opener-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: #3EE89A;
+}
+.opener-chapter-num {
+    font-size: 100pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 0.85;
+    letter-spacing: -5px;
+    margin-bottom: 8px;
+    opacity: 0.18;
+    position: absolute;
+    top: 18mm;
+    right: 16mm;
+}
+.opener-title {
+    font-size: 26pt;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin-bottom: 10mm;
+    max-width: 150mm;
+}
+.opener-intro {
+    font-size: 11.5pt;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    max-width: 145mm;
+    margin-top: auto;
+    padding-top: 10mm;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── CONTENT TYPOGRAPHY ────────────────────────────────── */
+.chapter-title-inline {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #0B1829;
+    line-height: 1.15;
+    margin-bottom: 5mm;
+    letter-spacing: -0.3px;
+}
+.section-title {
+    font-size: 12.5pt;
+    font-weight: 700;
+    color: #0B1829;
+    margin-top: 6mm;
+    margin-bottom: 3mm;
+    letter-spacing: -0.2px;
+}
+.body-text {
+    font-size: 10pt;
+    line-height: 1.75;
+    color: rgba(11,24,41,0.82);
+    margin-bottom: 4mm;
+}
+.intro-quote {
+    font-size: 11pt;
+    font-style: italic;
+    color: #0B1829;
+    border-left: 4px solid #3EE89A;
+    padding-left: 14px;
+    margin-bottom: 6mm;
+    line-height: 1.65;
+}
+
+/* ── BULLET LIST (checkmark style) ─────────────────────── */
+.check-list { list-style: none; margin: 3mm 0; }
+.check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 10pt;
+    line-height: 1.6;
+    color: rgba(11,24,41,0.82);
+}
+.check-list li::before {
+    content: "✓";
+    color: #3EE89A;
+    font-weight: 900;
+    font-size: 10pt;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: #0B1829;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+}
+
+.arrow-list { list-style: none; margin: 3mm 0; }
+.arrow-list li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    font-size: 10pt;
+    line-height: 1.65;
+    color: rgba(11,24,41,0.82);
+}
+.arrow-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #3EE89A;
+    font-weight: 700;
+}
+
+/* ── STAT BOX ───────────────────────────────────────────── */
+.stat-box {
+    background: #0B1829;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    text-align: center;
+}
+.stat-value {
+    font-size: 40pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 6px;
+}
+.stat-label {
+    font-size: 10pt;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.stat-source {
+    font-size: 7.5pt;
+    color: rgba(255,255,255,0.35);
+    font-style: italic;
+}
+
+/* Stat boxes inline (2 cols) */
+.stat-row { display: flex; gap: 10px; margin: 5mm 0; }
+.stat-row .stat-box { flex: 1; }
+
+/* ── TIP BOX ────────────────────────────────────────────── */
+.tip-box {
+    background: #0B1829;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+.tip-box-label {
+    font-size: 7.5pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #3EE89A;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.tip-box-label::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    background: #3EE89A;
+}
+.tip-box-content {
+    font-size: 10pt;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.65;
+}
+
+/* ── QUOTE BOX ──────────────────────────────────────────── */
+.quote-box {
+    background: rgba(11,24,41,0.06);
+    border: 1px solid rgba(11,24,41,0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    font-size: 10.5pt;
+    color: #0B1829;
+    font-style: italic;
+    line-height: 1.65;
+    font-weight: 500;
+}
+
+/* ── NUMBERED STEPS ─────────────────────────────────────── */
+.step-list { margin: 4mm 0; }
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(11,24,41,0.08);
+}
+.step-item:last-child { border-bottom: none; margin-bottom: 0; }
+.step-num {
+    font-size: 20pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 28px;
+}
+.step-text {
+    font-size: 10pt;
+    color: rgba(11,24,41,0.82);
+    line-height: 1.65;
+    padding-top: 2px;
+}
+
+/* ── INSIGHT GRID (2 cols) ──────────────────────────────── */
+.insight-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 4mm 0;
+}
+.insight-item {
+    flex: 1;
+    min-width: 42%;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(11,24,41,0.04);
+    border-radius: 8px;
+    padding: 12px;
+}
+.insight-icon {
+    width: 24px;
+    height: 24px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B1829;
+    font-size: 10pt;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+.insight-text {
+    font-size: 9.5pt;
+    color: rgba(11,24,41,0.82);
+    line-height: 1.55;
+}
+
+/* ── CASE STUDY ─────────────────────────────────────────── */
+.case-study {
+    background: rgba(11,24,41,0.04);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+.case-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.case-badge {
+    background: #0B1829;
+    color: #fff;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.case-industry {
+    font-size: 8.5pt;
+    color: rgba(11,24,41,0.45);
+    font-weight: 500;
+}
+.case-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #0B1829;
+    margin-bottom: 10px;
+    letter-spacing: -0.2px;
+}
+.case-row { display: flex; gap: 8px; }
+.case-block {
+    flex: 1;
+    background: #fff;
+    border-radius: 7px;
+    padding: 10px 12px;
+    border-top: 3px solid #3EE89A;
+}
+.case-block-label {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    color: #0B1829;
+    opacity: 0.5;
+}
+.case-block-text { font-size: 9pt; color: rgba(11,24,41,0.82); line-height: 1.55; }
+
+/* ── CHECKLIST ──────────────────────────────────────────── */
+.checklist-category {
+    font-size: 11pt;
+    font-weight: 800;
+    color: #0B1829;
+    margin-top: 5mm;
+    margin-bottom: 3mm;
+    padding: 8px 10px;
+    background: #0B1829;
+    color: #fff;
+    border-radius: 6px;
+    letter-spacing: -0.2px;
+}
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+.checklist-item:nth-child(even) { background: rgba(11,24,41,0.04); }
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(11,24,41,0.2);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #fff;
+}
+.checklist-text { font-size: 10pt; color: rgba(11,24,41,0.82); line-height: 1.5; }
+
+/* ── RESOURCES ──────────────────────────────────────────── */
+.resource-grid { display: flex; flex-wrap: wrap; gap: 9px; margin: 4mm 0; }
+.resource-card {
+    flex: 1;
+    min-width: 45%;
+    background: #fff;
+    border-top: 4px solid #3EE89A;
+    border-radius: 0 0 8px 8px;
+    padding: 12px 14px;
+}
+.resource-type {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #3EE89A;
+    margin-bottom: 5px;
+}
+.resource-name { font-size: 10.5pt; font-weight: 700; color: #0B1829; margin-bottom: 4px; }
+.resource-desc { font-size: 9pt; color: rgba(11,24,41,0.65); line-height: 1.5; }
+
+/* ── TAKEAWAYS ──────────────────────────────────────────── */
+.takeaway-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(11,24,41,0.08);
+}
+.takeaway-item:last-child { border-bottom: none; }
+.takeaway-check {
+    width: 22px;
+    height: 22px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B1829;
+    font-size: 9pt;
+    font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.takeaway-text { font-size: 10.5pt; color: #0B1829; line-height: 1.6; font-weight: 500; }
+
+/* ── CTA PAGE ───────────────────────────────────────────── */
+.cta-eyebrow {
+    font-size: 8pt;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cta-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: #3EE89A;
+}
+.cta-title {
+    font-size: 28pt;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    margin-bottom: 16px;
+}
+.cta-desc {
+    font-size: 11.5pt;
+    color: rgba(255,255,255,0.62);
+    max-width: 140mm;
+    margin-bottom: 28px;
+    line-height: 1.65;
+}
+.cta-button {
+    display: inline-block;
+    background: #3EE89A;
+    color: #0B1829;
+    font-size: 11pt;
+    font-weight: 800;
+    padding: 13px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-bottom: 18px;
+    letter-spacing: -0.2px;
+}
+.cta-url { font-size: 9.5pt; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
+.cta-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.cta-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 8pt;
+    color: rgba(255,255,255,0.7);
+}
+</style>
+</head>
+<body>
+    
+<div class="page dark-page" id="portada" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 130 71 A 71 71 0 0 0 58 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 130 97 A 97 97 0 0 0 32 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 130 123 A 123 123 0 0 0 6 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="cover-top">
+        <div style="color:#fff"><span style="display:inline-flex;align-items:center;gap:8px;line-height:1">
+        <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:18px">dadybox</span>
+    </span></div>
+        <div class="cover-badge">Playbook Gratuito</div>
+    </div>
+    <div class="cover-hero">
+        <div class="cover-eyebrow">Logística &amp; Ecommerce</div>
+        <div class="cover-title">Cómo Reducir tus Devoluciones y Aumentar la Rentabilidad</div>
+        <div class="cover-subtitle">La guía práctica para convertir uno de los mayores costes del ecommerce en una ventaja competitiva.</div>
+        <div class="cover-divider"></div>
+        <div class="cover-author">
+            <div class="cover-avatar">NA</div>
+            <div>
+                <div class="cover-author-name">Natalia Aldea</div>
+                <div class="cover-author-role">Directora de Marketing, Dadybox</div>
+            </div>
+        </div>
+    </div>
+    <div class="cover-footer-strip">
+        <span>dadybox.com</span>
+        <span>Mayo 2026</span>
+    </div>
+</div>
+    
+<div class="page" id="indice" style="background:#0B1829">
+    <div class="toc-dark" style="position:relative">
+        <svg style="position:absolute;top:0;right:0;pointer-events:none" width="70" height="130" viewBox="0 0 70 130" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 70 0 A 35 35 0 0 1 0 0 L 0 38 A 35 35 0 0 0 70 38 Z" fill="#3EE89A" opacity="0.25"/>
+        <circle cx="35" cy="73" r="27" fill="#2DC080" opacity="0.25"/>
+        <path d="M 8 100 A 27 27 0 0 0 62 100 A 27 27 0 0 0 8 100 Z" fill="#1A9B60" opacity="0.25"/>
+    </svg>
+        <div class="toc-dark-left">
+            <div class="toc-dark-eyebrow">Contenidos</div>
+            <div class="toc-dark-title">Índice</div>
+        </div>
+        <div class="toc-dark-logo"><span style="display:inline-flex;align-items:center;gap:7px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:15px">dadybox</span>
+    </span></div>
+    </div>
+    <div class="toc-cream">
+        <div class="toc-entries">
+        <a class="toc-entry" href="#intro">
+            <div class="toc-num">01</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Introducción</div>
+                <div class="toc-section-desc">Carta de Natalia Aldea</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#contexto">
+            <div class="toc-num">02</div>
+            <div class="toc-info">
+                <div class="toc-section-title">El contexto del sector</div>
+                <div class="toc-section-desc">Por qué importa este tema ahora</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#capitulo-1">
+            <div class="toc-num">03</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Por qué tus devoluciones cuestan más de lo que crees</div>
+                <div class="toc-section-desc">El coste visible de una devolución es solo la punta del iceberg. …</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-2">
+            <div class="toc-num">04</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Las 4 causas principales y cómo atacarlas</div>
+                <div class="toc-section-desc">No todas las devoluciones son iguales ni tienen la misma causa. I…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-3">
+            <div class="toc-num">05</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Diseña una política de devoluciones que fidelice</div>
+                <div class="toc-section-desc">Tu política de devoluciones no es solo una obligación legal: es u…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#casos">
+            <div class="toc-num">06</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Casos prácticos</div>
+                <div class="toc-section-desc">Escenarios reales del sector</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#checklist">
+            <div class="toc-num">07</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Checklist accionable</div>
+                <div class="toc-section-desc">Tu plan de implementación</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#recursos">
+            <div class="toc-num">08</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Recursos</div>
+                <div class="toc-section-desc">Herramientas y referencias útiles</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#conclusion">
+            <div class="toc-num">09</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Conclusión</div>
+                <div class="toc-section-desc">Próximos pasos con Dadybox</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a></div>
+    </div>
+</div>
+    
+<div class="page light-page" id="intro">
+    <div class="page-header">
+        <span class="page-header-section">Introducción — Carta de la autora</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Una carta de<br>Natalia Aldea</div>
+        <div class="intro-quote" style="margin-top:5mm">Hola,<br><br>Si tienes un ecommerce, las devoluciones son probablemente uno de los temas que más te quita el sueño. Y con razón: en España, casi 1 de cada 4 pedidos online acaba siendo devuelto. Eso es dinero que sale de tu bolsillo en logística inversa, tiempo de tu equipo y, en muchos casos, stock que ya no puedes volver a vender al mismo precio.<br><br>En Dadybox llevamos años gestionando la logística de cientos de marcas y hemos visto de primera mano qué hace que unas ges…</div>
+        <div class='section-title' style='margin-top:5mm'>En este playbook encontrarás:</div><ul class='check-list'><li>Por qué tus devoluciones cuestan más de lo que crees</li><li>Las 4 causas principales y cómo atacarlas</li><li>Cómo diseñar una política de devoluciones que fidelice</li><li>Herramientas y métricas para medir y reducir tu tasa</li><li>Un checklist completo para implementar esta semana</li></ul>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="contexto" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">El contexto</div>
+    <div class="opener-title">El coste real de las devoluciones en el ecommerce europeo</div>
+    <div class="opener-intro">Las devoluciones son el talón de Aquiles del comercio electrónico. En España, el problema es mayor de lo que parece.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">El contexto del sector</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="body-text">El mercado del ecommerce en España facturó más de 82.000 millones de euros en 2024, pero una parte significativa de ese volumen nunca llega a ser rentable: las devoluciones se han convertido en uno de los mayores drenos de margen para las tiendas online.
+
+Processar una devolución cuesta de media entre 15€ y 30€ entre logística inversa, revisión del producto, reempaquetado y pérdida de valor del stock. Y el problema no es solo financiero: cada devolución mal gestionada genera un cliente que probablemente no volverá a comprar.</div>
+        <div class="stat-row"><div class="stat-box" style="flex:1">
+                <div class="stat-value">23%</div>
+                <div class="stat-label">de los pedidos online en España acaba siendo devuelto</div>
+                <div class="stat-source">Fuente: Statista 2025</div>
+            </div><div class="stat-box" style="flex:1">
+                <div class="stat-value">€22</div>
+                <div class="stat-label">coste medio de procesar una devolución en logística inversa</div>
+                <div class="stat-source">Fuente: Returnly Report 2024</div>
+            </div></div><div class="stat-box">
+                <div class="stat-value">67%</div>
+                <div class="stat-label">de compradores revisa la política de devoluciones antes de comprar</div>
+                <div class="stat-source">Fuente: NRF 2024</div>
+            </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="capitulo-1" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 01</div>
+    <div class="opener-title">Por qué tus devoluciones cuestan más de lo que crees</div>
+    <div class="opener-intro">El coste visible de una devolución es solo la punta del iceberg. La mayoría de los ecommerce subestiman el impacto real en su cuenta de resultados.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 01 — Por qué tus devoluciones cuestan más de lo qu</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">El coste visible: logística inversa</div>
+        <div class="body-text">El gasto más fácil de medir es el transporte de vuelta al almacén más la gestión del stock devuelto. Pero este coste, que oscila entre 8€ y 15€ por devolución, representa solo una parte del impacto total.</div>
+        <ul class='arrow-list'><li>Coste de recogida y transporte de vuelta al almacén</li><li>Tiempo de revisión y clasificación del producto</li><li>Coste de reempaquetado si el producto puede volver a venderse</li><li>Pérdida de valor por depreciación del stock</li></ul>
+        <div class="section-title">El coste oculto: el cliente que no vuelve</div>
+        <div class="body-text">Una mala experiencia de devolución tiene un impacto directo en el LTV del cliente. Los estudios muestran que un cliente insatisfecho con el proceso de devolución tiene 5 veces menos probabilidades de volver a comprar.</div>
+        <ul class='arrow-list'><li>Pérdida del cliente para futuras compras</li><li>Coste de adquisición que no se amortiza</li><li>Impacto en valoraciones y reseñas online</li><li>Efecto boca-oreja negativo en redes sociales</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">5×</div>
+            <div class="stat-label">más caro cuesta adquirir un nuevo cliente que retener uno existente</div>
+            <div class="stat-source">Fuente: Harvard Business Review 2024</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Con el sistema de gestión de devoluciones de Dadybox, cada artículo devuelto es clasificado, fotografiado y catalogado en menos de 24 horas, reduciendo el tiempo de reposición al stock vendible hasta en un 60%.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-2" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 02</div>
+    <div class="opener-title">Las 4 causas principales y cómo atacarlas</div>
+    <div class="opener-intro">No todas las devoluciones son iguales ni tienen la misma causa. Identificar el origen de cada una es el primer paso para reducirlas de forma sistemática.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 02 — Las 4 causas principales y cómo atacarlas</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">1. Producto diferente a lo esperado</div>
+        <div class="body-text">La causa número uno de devoluciones en moda y electrónica es la discrepancia entre lo que el cliente esperaba recibir y lo que llegó. Imágenes de mala calidad, descripciones incompletas o tallas inconsistentes son los culpables habituales.</div>
+        <ul class='arrow-list'><li>Invierte en fotografía profesional con múltiples ángulos</li><li>Incluye vídeos del producto en uso siempre que sea posible</li><li>Añade guías de tallas con medidas reales de modelos</li><li>Usa IA para comparar reseñas de devoluciones con las fichas de producto</li></ul>
+        <div class="section-title">2. Errores en el picking y pedidos duplicados</div>
+        <div class="body-text">Los errores en el almacén y los pedidos duplicados representan entre el 8% y el 12% de las devoluciones. Son los más fáciles de eliminar con la tecnología adecuada.</div>
+        <ul class='arrow-list'><li>Implementa verificación por código de barras en el picking</li><li>Activa alertas de detección de pedidos duplicados</li><li>Revisa los procesos de confirmación de pago</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">78%</div>
+            <div class="stat-label">de las devoluciones se deben a causas que el ecommerce puede controlar directamente</div>
+            <div class="stat-source">Fuente: Baymard Institute 2024</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">El SGA de Dadybox integra verificación de picking por escáner, lo que ha permitido a nuestros clientes reducir los errores de envío hasta un 94%.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-3" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 03</div>
+    <div class="opener-title">Diseña una política de devoluciones que fidelice</div>
+    <div class="opener-intro">Tu política de devoluciones no es solo una obligación legal: es una herramienta de marketing y fidelización que puede marcar la diferencia en tu tasa de conversión.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 03 — Diseña una política de devoluciones que fidel</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">La paradoja de las devoluciones gratuitas</div>
+        <div class="body-text">Ofrecer devoluciones gratuitas incrementa las conversiones entre un 15% y un 25%, pero también puede disparar la tasa de devoluciones si no está bien diseñada. El truco está en hacer la devolución fácil sin hacerla tentadora.</div>
+        <ul class='arrow-list'><li>Define qué productos tienen devolución gratuita y cuáles no</li><li>Establece un plazo razonable (30 días es el estándar europeo)</li><li>Ofrece crédito en tienda como alternativa con un pequeño incentivo</li><li>Comunica la política en cada punto del funnel de compra</li></ul>
+        <div class="section-title">El poder del cambio en lugar de la devolución</div>
+        <div class="body-text">Incentivar el cambio por otro producto en lugar de la devolución directa puede reducir tu tasa de pérdida de ingresos en hasta un 40%. La clave es hacer el cambio tan simple como la devolución.</div>
+        <ul class='arrow-list'><li>Ofrece envío gratuito en el cambio aunque el original no lo fuera</li><li>Permite elegir el artículo de cambio antes de devolver el original</li><li>Proporciona un código de descuento para acompañar el cambio</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">92%</div>
+            <div class="stat-label">de compradores repetiría con un ecommerce si la experiencia de devolución fue buena</div>
+            <div class="stat-source">Fuente: UPS Pulse of the Online Shopper 2024</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Dadybox ofrece gestión de cambios express: el cliente recibe el nuevo producto en 24h sin necesidad de que el original haya llegado al almacén. Esto reduce la fricción del proceso y aumenta la satisfacción hasta en un 40%.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="casos" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Casos prácticos</div>
+    <div class="opener-title">Del mundo real al<br>tuyo</div>
+    <div class="opener-intro">Escenarios reales del sector ecommerce para que veas cómo aplicar lo aprendido en situaciones concretas.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Casos prácticos</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Moda & Accesorios</span>
+            </div>
+            <div class="case-title">Marca de moda reduce devoluciones un 31% en 6 meses</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">Una marca española con 15.000 pedidos mensuales tenía una tasa del 38%. El motivo principal: talla incorrecta.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">Implementaron guía de tallas interactiva con medidas reales, vídeos con modelos de diferentes complexiones y recomendaciones de talla basadas en compras anteriores.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">La tasa bajó al 26,2% en 6 meses. El ahorro en logística inversa superó los 45.000€ anuales.</div>
+                </div>
+            </div>
+        </div>
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Electrónica & Tecnología</span>
+            </div>
+            <div class="case-title">Ecommerce de electrónica recupera el 80% del valor de sus devoluciones</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">Gestionaban devoluciones internamente con 3 personas. El 60% del stock devuelto terminaba como merma.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">Externalizaron la logística inversa con Dadybox incluyendo revisión técnica, clasificación A/B/C y canal de venta de segunda mano integrado.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">Stock recuperado: del 40% al 80%. Merma reducida un 65%. El equipo interno se enfocó en atención al cliente y ventas.</div>
+                </div>
+            </div>
+        </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="checklist" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Checklist accionable</div>
+    <div class="opener-title">Tu plan de<br>implementación</div>
+    <div class="opener-intro">Usa esta lista de verificación para asegurarte de que estás aplicando todos los aprendizajes de este playbook.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Tu checklist para reducir devoluciones</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="checklist-category">Ficha de producto</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Fotografías profesionales desde múltiples ángulos</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Vídeo del producto en uso (30-60 segundos)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Guía de tallas con medidas reales en centímetros</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Sección de preguntas frecuentes en la ficha</div>
+            </div>
+        <div class="checklist-category">Proceso de picking y envío</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Verificación por código de barras en cada pedido</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Control de calidad visual antes del empaquetado</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Detección automática de pedidos duplicados</div>
+            </div>
+        <div class="checklist-category">Política de devoluciones</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Política visible en home, ficha de producto y checkout</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Proceso de devolución en menos de 3 pasos</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Opción de cambio como alternativa al reembolso</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Confirmación de recepción en menos de 48 horas</div>
+            </div>
+        <div class="checklist-category">Métricas y seguimiento</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Tracking de tasa de devoluciones por producto y categoría</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Análisis mensual de motivos de devolución</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Dashboard de coste real de devoluciones vs. ingresos</div>
+            </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page light-page" id="recursos">
+    <div class="page-header">
+        <span class="page-header-section">Recursos recomendados</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Herramientas y referencias</div>
+        <div class="resource-grid" style="margin-top:5mm">
+        <div class="resource-card">
+            <div class="resource-type">Referencia</div>
+            <div class="resource-name">Baymard Institute</div>
+            <div class="resource-desc">Estudios y benchmarks de UX y checkout para ecommerce. Útil para entender los motivos de devolución.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Loop Returns</div>
+            <div class="resource-desc">Plataforma de gestión de devoluciones y cambios con integración directa en Shopify.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Return Magic</div>
+            <div class="resource-desc">Automatización del proceso de devoluciones con portal self-service para el cliente final.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Datos</div>
+            <div class="resource-name">Statista — Ecommerce Returns</div>
+            <div class="resource-desc">Datos actualizados sobre tasas de devolución por sector y país en Europa.</div>
+        </div></div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page light-page" id="conclusion">
+    <div class="page-header">
+        <span class="page-header-section">Conclusión — Próximos pasos</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Lo que hemos aprendido</div>
+        <div class="body-text" style="margin-top:4mm">Las devoluciones no son el enemigo. Son información. Cada producto que vuelve a tu almacén te está diciendo algo sobre tu ficha de producto, tu proceso de picking o las expectativas de tus clientes. El objetivo no es eliminarlas —eso es imposible—, sino gestionarlas de forma eficiente y usarlas como fuente de mejora continua.
+
+Con los pasos que hemos visto en este playbook, tienes todo lo necesario para empezar a reducir tu tasa, recuperar más valor del stock devuelto y convertir una experiencia frustrante en una oportunidad de fidelización.</div>
+        <div class="section-title" style="margin-top:6mm">Para llevar contigo</div>
+        
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">El coste real de una devolución es 2-3 veces el coste visible de logística inversa</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">El 78% de las devoluciones tienen causas controlables: empieza por las fichas de producto</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Una buena política de devoluciones aumenta la conversión, no la reduce</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Externalizar la logística inversa puede recuperar hasta el 80% del valor del stock</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Mide, analiza y mejora: la tasa de devoluciones es un KPI clave de salud de tu ecommerce</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" style="position:relative;justify-content:center">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 110 60 A 60 60 0 0 0 49 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 110 82 A 82 82 0 0 0 27 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 110 104 A 104 104 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 40 A 49 49 0 0 1 49 90" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 22 A 67 67 0 0 1 67 90" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 85 85 0 0 1 85 90" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="cta-eyebrow">Siguiente paso</div>
+    <div class="cta-title">¿Listo para escalar sin que las devoluciones te frenen?</div>
+    <div class="cta-desc">En Dadybox gestionamos tu logística de ida y vuelta para que tú te centres en vender. Fulfillment, envíos y devoluciones en un solo lugar.</div>
+    <a class="cta-button" href="https://dadybox.com/contacto">Reserva tu llamada gratuita</a>
+    <div class="cta-url">dadybox.com</div>
+    <div class="cta-pills"><div class="cta-pill">Fulfillment 3PL</div><div class="cta-pill">Envíos 24h y Premium</div><div class="cta-pill">Gestión de devoluciones</div><div class="cta-pill">Sistema de gestión de almacén</div><div class="cta-pill">Integraciones omnicanal</div></div>
+</div>
+    
+<div class="page dark-page" style="justify-content:center;align-items:center;text-align:center;position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:#3EE89A"></div>
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 90 49 A 49 49 0 0 0 40 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 90 67 A 67 67 0 0 0 22 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 90 85 A 85 85 0 0 0 4 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div style="color:#fff;margin-bottom:12px;font-size:28pt"><span style="display:inline-flex;align-items:center;gap:11px;line-height:1">
+        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:24px">dadybox</span>
+    </span></div>
+    <div style="font-size:12pt;color:rgba(255,255,255,0.55);margin-bottom:22px">Tu logística, nuestra magia.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:22px"><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Fulfillment 3PL</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Envíos 24h y Premium</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Gestión de devoluciones</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Sistema de gestión de almacén</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Integraciones omnicanal</div></div>
+    <div style="width:40px;height:3px;background:#3EE89A;border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:14pt;font-weight:700;color:#fff;margin-bottom:5px">dadybox.com</div>
+    <div style="font-size:9pt;color:rgba(255,255,255,0.38)">comercial@dadybox.com · +34 913 775 242</div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:5px;background:#3EE89A"></div>
+</div>
+</body>
+</html>

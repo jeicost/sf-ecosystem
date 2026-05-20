@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NC Global Assets — Build & Scale in Thailand</title>
+  <meta name="description" content="NC Global Assets helps brands, investors and startups enter and grow in Thailand — from strategy to full execution. On the ground in Bangkok." />
+  <meta name="keywords" content="Thailand market entry, Bangkok investment, F&B Thailand, startup Thailand, business development Bangkok, NC Global Assets" />
+  <meta property="og:title" content="NC Global Assets — Build & Scale in Thailand" />
+  <meta property="og:description" content="We help brands, investors and startups enter and grow in Thailand — from strategy to full execution." />
+  <meta property="og:image" content="https://ncglobalassets.com/og-image.jpg" />
+  <meta property="og:type" content="website" />
+  <link rel="canonical" href="https://ncglobalassets.com/" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── CSS Variables ─────────────────────────────────────── */
+    :root {
+      --black:      #000000;
+      --white:      #FFFFFF;
+      --gold:       #D4AF37;
+      --gold-light: #E8CB5A;
+      --gold-dark:  #A8891D;
+      --gray-1:     #0a0a0a;
+      --gray-2:     #111111;
+      --gray-3:     #1a1a1a;
+      --gray-4:     #222222;
+      --gray-5:     #333333;
+      --gray-text:  #999999;
+      --font-head:  'Cormorant Garamond', serif;
+      --font-body:  'Montserrat', sans-serif;
+      --ease:       cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─── Reset & Base ──────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    button { cursor: pointer; border: none; background: none; font-family: var(--font-body); }
+
+    /* ─── Utilities ─────────────────────────────────────────── */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .gold { color: var(--gold); }
+    .section-label {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-family: var(--font-head);
+      font-size: clamp(32px, 5vw, 56px);
+      font-weight: 600;
+      line-height: 1.1;
+      margin-bottom: 24px;
+    }
+    .section-sub {
+      font-size: 15px;
+      color: var(--gray-text);
+      max-width: 560px;
+      line-height: 1.7;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 32px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      transition: all 0.3s var(--ease);
+      cursor: pointer;
+    }
+    .btn-gold {
+      background: var(--gold);
+      color: var(--black);
+    }
+    .btn-gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(212,175,55,0.35);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+    }
+    .btn-outline:hover {
+      background: rgba(212,175,55,0.08);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(212,175,55,0.15);
+    }
+
+    /* ─── Fade-in animation ─────────────────────────────────── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in-delay-1 { transition-delay: 0.1s; }
+    .fade-in-delay-2 { transition-delay: 0.2s; }
+    .fade-in-delay-3 { transition-delay: 0.3s; }
+    .fade-in-delay-4 { transition-delay: 0.4s; }
+
+    /* ─── 1. HEADER ─────────────────────────────────────────── */
+    #header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 20px 0;
+      transition: background 0.4s var(--ease), padding 0.4s var(--ease), backdrop-filter 0.4s;
+    }
+    #header.scrolled {
+      background: rgba(0,0,0,0.82);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(212,175,55,0.12);
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+    .logo span {
+      display: block;
+      font-size: 8px;
+      letter-spacing: 0.35em;
+      font-weight: 400;
+      color: rgba(212,175,55,0.65);
+      margin-top: 2px;
+    }
+    nav { display: flex; align-items: center; gap: 36px; }
+    nav a {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      position: relative;
+      transition: color 0.3s;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0; right: 0;
+      height: 1px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s var(--ease);
+    }
+    nav a:hover, nav a.active { color: var(--gold); }
+    nav a:hover::after, nav a.active::after { transform: scaleX(1); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 4px;
+      cursor: pointer;
+      z-index: 1010;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--gold);
+      transition: all 0.3s var(--ease);
+      transform-origin: center;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+    .mobile-nav {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.97);
+      backdrop-filter: blur(20px);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s var(--ease);
+    }
+    .mobile-nav.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .mobile-nav a {
+      font-family: var(--font-head);
+      font-size: 32px;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.05em;
+      transition: color 0.3s;
+    }
+    .mobile-nav a:hover { color: var(--gold); }
+
+    /* ─── 2. HERO ───────────────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 0 80px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 50% 0%, rgba(212,175,55,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 80% at 80% 50%, rgba(212,175,55,0.04) 0%, transparent 60%),
+        var(--black);
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(212,175,55,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(212,175,55,0.04) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 820px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: clamp(42px, 7vw, 88px);
+      font-weight: 600;
+      line-height: 1.05;
+      margin-bottom: 28px;
+      letter-spacing: -0.01em;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.75;
+      margin-bottom: 16px;
+      max-width: 580px;
+      font-weight: 300;
+    }
+    .hero-cred {
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      margin-bottom: 48px;
+      opacity: 0.85;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      opacity: 0.4;
+      animation: bounce 2s ease-in-out infinite;
+    }
+    .hero-scroll span {
+      font-size: 9px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(6px); }
+    }
+
+    /* ─── 3. TRUST ──────────────────────────────────────────── */
+    #trust {
+      padding: 100px 0;
+      background: var(--gray-1);
+      border-top: 1px solid rgba(212,175,55,0.1);
+    }
+    .trust-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .trust-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .trust-card {
+      padding: 48px 40px;
+      background: var(--gray-2);
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s;
+    }
+    .trust-card:hover { background: var(--gray-3); }
+    .trust-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+    }
+    .trust-card-num {
+      font-family: var(--font-head);
+      font-size: 52px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .trust-card-title {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: var(--white);
+    }
+    .trust-card-sub {
+      font-size: 13px;
+      color: var(--gray-text);
+      line-height: 1.6;
+    }
+
+    /* ─── 4. WHAT WE DO ─────────────────────────────────────── */
+    #what-we-do {
+      padding: 120px 0;
+      background: var(--black);
+    }
+    .what-header {
+      margin-bottom: 64px;
+    }
+    .what-micro {
+      font-size: 13px;
+      color: var(--gray-text);
+      margin-top: -12px;
+      margin-bottom: 0;
+      font-style: italic;
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2px;
+    }
+    .service-card {
+      background: var(--gray-2);
+      padding: 48px 40px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s var(--ease), transform 0.3s var(--ease);
+      border-top: 2px solid transparent;
+    }
+    .service-card:hover {
+      background: var(--gray-3);
+      transform: translateY(-4px);
+      border-top-color: var(--gold);
+    }
+    .service-num {
+      font-family: var(--font-head);
+      font-size: 72px;
+      font-weight: 700;
+      color: rgba(212,175,55,0.08);
+      line-height: 1;
+      margin-bottom: 20px;
+      transition: color 0.3s;
+    }
+    .service-card:hover .service-num { color: rgba(212,175,55,0.15); }
+    .service-icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 20px;
+      color: var(--gold);
+    }
+    .service-title {
+      font-family: var(--font-head);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+    .service-desc {
+      font-size: 14px;
+      color: var(--gray-text);
+      line-height: 1.7;
+    }
+    .service-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 24px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0;
+      transform: translateX(-8px);
+      transition: all 0.3s var(--ease);
+    }
+    .service-card:hover .service-arrow {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* ─── 5. FOCUS AREAS ────────────────────────────────────── */
+    #focus {
+      padding: 120px 0;
+      background: var(--gray-1);
+    }
+    .focus-header { margin-bottom: 64px; }
+    .focus-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .focus-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 40px 36px;
+      cursor: default;
+    }
+    .focus-bg {
+      position: absolute;
+      inset: 0;
+      transition: transform 0.6s var(--ease);
+    }
+    .focus-card:hover .focus-bg { transform: scale(1.04); }
+    .focus-bg-1 {
+      background: linear-gradient(160deg, #1a0e00 0%, #0d0700 40%, #000 100%),
+                  radial-gradient(ellipse 60% 80% at 20% 80%, rgba(212,175,55,0.18) 0%, transparent 70%);
+    }
+    .focus-bg-2 {
+      background: linear-gradient(160deg, #0a0a0a 0%, #050505 40%, #000 100%),
+                  radial-gradient(ellipse 60% 80% at 80% 20%, rgba(212,175,55,0.12) 0%, transparent 70%);
+    }
+    .focus-bg-3 {
+      background: linear-gradient(160deg, #0d0d00 0%, #080800 40%, #000 100%),
+                  radial-gradient(ellipse 60% 80% at 50% 100%, rgba(212,175,55,0.15) 0%, transparent 70%);
+    }
+    .focus-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
+    }
+    .focus-content { position: relative; z-index: 2; }
+    .focus-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid rgba(212,175,55,0.4);
+      padding: 5px 12px;
+      margin-bottom: 16px;
+    }
+    .focus-title {
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 600;
+      line-height: 1.2;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+    .focus-desc {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.7;
+    }
+    .focus-line {
+      width: 32px;
+      height: 2px;
+      background: var(--gold);
+      margin-bottom: 20px;
+      transition: width 0.4s var(--ease);
+    }
+    .focus-card:hover .focus-line { width: 56px; }
+
+    /* ─── 6. WHY THAILAND ───────────────────────────────────── */
+    #why-thailand {
+      padding: 120px 0;
+      background: var(--black);
+      position: relative;
+      overflow: hidden;
+    }
+    #why-thailand::before {
+      content: 'THAILAND';
+      position: absolute;
+      right: -60px;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
+      font-family: var(--font-head);
+      font-size: 160px;
+      font-weight: 700;
+      color: rgba(212,175,55,0.03);
+      letter-spacing: 0.1em;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .why-header { margin-bottom: 64px; }
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 40px;
+    }
+    .why-item {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .why-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(212,175,55,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .why-item:hover .why-icon {
+      border-color: var(--gold);
+      background: rgba(212,175,55,0.08);
+    }
+    .why-icon svg { width: 20px; height: 20px; color: var(--gold); }
+    .why-text h3 {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .why-text p { font-size: 13px; color: var(--gray-text); line-height: 1.7; }
+
+    /* ─── 7. OUR APPROACH ───────────────────────────────────── */
+    #approach {
+      padding: 120px 0;
+      background: var(--gray-1);
+    }
+    .approach-inner { max-width: 960px; }
+    .approach-copy {
+      font-size: 18px;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.75;
+      font-weight: 300;
+      max-width: 660px;
+      margin-bottom: 80px;
+    }
+    .approach-copy strong { color: var(--white); font-weight: 500; }
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      position: relative;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 28px;
+      left: calc(12.5% + 20px);
+      right: calc(12.5% + 20px);
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold) 0%, rgba(212,175,55,0.3) 100%);
+    }
+    .timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      padding: 0 16px;
+    }
+    .step-dot {
+      width: 56px;
+      height: 56px;
+      border: 1px solid var(--gold);
+      background: var(--gray-1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold);
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 2;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .timeline-step:hover .step-dot {
+      background: rgba(212,175,55,0.1);
+      box-shadow: 0 0 24px rgba(212,175,55,0.2);
+    }
+    .step-title {
+      font-family: var(--font-head);
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .step-desc { font-size: 12px; color: var(--gray-text); line-height: 1.6; }
+
+    /* ─── 8. FOUNDERS ───────────────────────────────────────── */
+    #founders {
+      padding: 120px 0;
+      background: var(--black);
+    }
+    .founders-header { margin-bottom: 64px; }
+    .founders-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      max-width: 800px;
+    }
+    .founder-card {
+      background: var(--gray-2);
+      padding: 48px 40px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .founder-card:hover { background: var(--gray-3); }
+    .founder-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease);
+    }
+    .founder-card:hover::after { transform: scaleX(1); }
+    .founder-avatar {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 28px;
+      font-weight: 600;
+      color: var(--gold);
+      background: rgba(212,175,55,0.06);
+      margin-bottom: 28px;
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+    .founder-card:hover .founder-avatar {
+      background: rgba(212,175,55,0.12);
+      box-shadow: 0 0 32px rgba(212,175,55,0.18);
+    }
+    .founder-name {
+      font-family: var(--font-head);
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .founder-role {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .founder-bio { font-size: 13px; color: var(--gray-text); line-height: 1.7; }
+
+    /* ─── 9. CONTACT FORM ───────────────────────────────────── */
+    #contact {
+      padding: 120px 0;
+      background: var(--gray-1);
+      position: relative;
+      overflow: hidden;
+    }
+    #contact::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      gap: 80px;
+      align-items: start;
+    }
+    .contact-info { position: sticky; top: 120px; }
+    .contact-microcopy {
+      margin-top: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .microcopy-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      color: var(--gray-text);
+    }
+    .microcopy-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .form-group { margin-bottom: 24px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--white);
+      padding: 14px 18px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--gold);
+      background: rgba(212,175,55,0.04);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.25); }
+    .form-select { cursor: pointer; }
+    .form-select option { background: var(--gray-3); color: var(--white); }
+    .form-textarea { resize: vertical; min-height: 120px; }
+    .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+    .checkbox-item { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .checkbox-item input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: transparent;
+      -webkit-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .checkbox-item input[type="checkbox"]:checked {
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+    .checkbox-item input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px; top: 2px;
+      width: 6px; height: 10px;
+      border: 2px solid var(--black);
+      border-top: none; border-left: none;
+      transform: rotate(45deg);
+    }
+    .checkbox-label { font-size: 13px; color: rgba(255,255,255,0.7); }
+    .btn-submit {
+      width: 100%;
+      padding: 18px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      background: var(--gold);
+      color: var(--black);
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
+      margin-top: 8px;
+    }
+    .btn-submit:hover {
+      background: var(--gold-light);
+      box-shadow: 0 8px 32px rgba(212,175,55,0.35);
+      transform: translateY(-2px);
+    }
+    .form-error {
+      font-size: 11px;
+      color: #e05555;
+      margin-top: 4px;
+      display: none;
+    }
+    .form-group.has-error .form-error { display: block; }
+    .form-group.has-error .form-input,
+    .form-group.has-error .form-select,
+    .form-group.has-error .form-textarea { border-color: #e05555; }
+    .form-success {
+      display: none;
+      background: rgba(212,175,55,0.08);
+      border: 1px solid rgba(212,175,55,0.3);
+      padding: 24px;
+      text-align: center;
+      margin-top: 24px;
+    }
+    .form-success h4 {
+      font-family: var(--font-head);
+      font-size: 22px;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+    .form-success p { font-size: 13px; color: var(--gray-text); }
+
+    /* ─── 10. FINAL CTA ─────────────────────────────────────── */
+    #final-cta {
+      padding: 160px 0;
+      background: var(--black);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-glow {
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(212,175,55,0.08) 0%, transparent 70%);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    #final-cta .section-title { font-size: clamp(44px, 7vw, 80px); }
+    #final-cta .section-sub {
+      max-width: 480px;
+      margin: 0 auto 48px;
+      text-align: center;
+    }
+
+    /* ─── 11. FOOTER ────────────────────────────────────────── */
+    footer {
+      background: var(--gray-1);
+      border-top: 1px solid rgba(212,175,55,0.1);
+      padding: 56px 0 32px;
+    }
+    .footer-inner {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 40px;
+      margin-bottom: 48px;
+      flex-wrap: wrap;
+    }
+    .footer-brand .logo { font-size: 18px; }
+    .footer-tagline {
+      font-size: 12px;
+      color: var(--gray-text);
+      margin-top: 8px;
+      max-width: 220px;
+      line-height: 1.6;
+    }
+    .footer-links {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .footer-col h4 {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a {
+      font-size: 13px;
+      color: var(--gray-text);
+      transition: color 0.3s;
+    }
+    .footer-col ul li a:hover { color: var(--white); }
+    .footer-socials { display: flex; gap: 12px; }
+    .social-btn {
+      width: 40px;
+      height: 40px;
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.3s, background 0.3s;
+      color: var(--gray-text);
+    }
+    .social-btn:hover {
+      border-color: var(--gold);
+      background: rgba(212,175,55,0.08);
+      color: var(--gold);
+    }
+    .social-btn svg { width: 16px; height: 16px; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-copy { font-size: 12px; color: rgba(255,255,255,0.3); }
+    .footer-loc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .footer-loc::before {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    /* ─── WhatsApp Button ───────────────────────────────────── */
+    .whatsapp-btn {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      cursor: pointer;
+      transition: all 0.3s var(--ease);
+    }
+    .whatsapp-tooltip {
+      background: var(--gold);
+      color: var(--black);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 8px 14px;
+      white-space: nowrap;
+      opacity: 0;
+      transform: translateX(8px);
+      transition: all 0.3s var(--ease);
+      pointer-events: none;
+    }
+    .whatsapp-btn:hover .whatsapp-tooltip {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .whatsapp-circle {
+      width: 56px;
+      height: 56px;
+      background: var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 20px rgba(212,175,55,0.4);
+      transition: box-shadow 0.3s, transform 0.3s;
+    }
+    .whatsapp-btn:hover .whatsapp-circle {
+      box-shadow: 0 8px 32px rgba(212,175,55,0.6);
+      transform: scale(1.08);
+    }
+    .whatsapp-circle svg { width: 26px; height: 26px; fill: var(--black); }
+
+    /* ─── Responsive ────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .trust-grid { grid-template-columns: 1fr; gap: 2px; }
+      .focus-grid { grid-template-columns: 1fr; }
+      .focus-card { min-height: 320px; }
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .contact-info { position: static; }
+    }
+    @media (max-width: 768px) {
+      nav { display: none; }
+      .hamburger { display: flex; }
+      .mobile-nav { display: flex; }
+      .services-grid { grid-template-columns: 1fr; }
+      .why-grid { grid-template-columns: 1fr; }
+      .timeline {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+      .timeline::before {
+        display: none;
+      }
+      .timeline-step { flex-direction: row; text-align: left; align-items: flex-start; gap: 20px; }
+      .step-dot { margin-bottom: 0; flex-shrink: 0; }
+      .founders-grid { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; }
+      .footer-bottom { flex-direction: column; }
+      .hero-btns { flex-direction: column; align-items: flex-start; }
+      .trust-grid { grid-template-columns: 1fr; }
+      .trust-card { padding: 36px 28px; }
+      .service-card { padding: 36px 28px; }
+    }
+    @media (max-width: 480px) {
+      .container { padding: 0 20px; }
+      #hero { padding: 100px 0 60px; }
+      .hero-scroll { display: none; }
+      .whatsapp-btn { bottom: 20px; right: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 1. HEADER                                                  -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <header id="header">
+    <div class="container">
+      <div class="header-inner">
+        <a href="#hero" class="logo">
+          NC Global Assets
+          <span>Bangkok · Thailand</span>
+        </a>
+        <nav id="main-nav">
+          <a href="#hero">Home</a>
+          <a href="#what-we-do">What We Do</a>
+          <a href="#focus">Focus Areas</a>
+          <a href="#why-thailand">Why Thailand</a>
+          <a href="#founders">Founders</a>
+          <a href="#contact">Contact</a>
+        </nav>
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav Overlay -->
+  <div class="mobile-nav" id="mobile-nav">
+    <a href="#hero" class="mobile-link">Home</a>
+    <a href="#what-we-do" class="mobile-link">What We Do</a>
+    <a href="#focus" class="mobile-link">Focus Areas</a>
+    <a href="#why-thailand" class="mobile-link">Why Thailand</a>
+    <a href="#founders" class="mobile-link">Founders</a>
+    <a href="#contact" class="mobile-link">Contact</a>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 2. HERO                                                    -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-eyebrow fade-in">NC Global Assets</div>
+        <h1 class="hero-title fade-in fade-in-delay-1">
+          Build &amp; Scale<br>in Thailand —<br>with the <em>Right Partner</em>
+        </h1>
+        <p class="hero-sub fade-in fade-in-delay-2">
+          We help brands, investors and startups enter and grow in Thailand — from strategy to full execution.
+        </p>
+        <p class="hero-cred fade-in fade-in-delay-3">
+          Trusted by founders, investors and operators on the ground in Bangkok
+        </p>
+        <div class="hero-btns fade-in fade-in-delay-4">
+          <a href="#focus" class="btn btn-gold">Explore Opportunities</a>
+          <a href="#contact" class="btn btn-outline">Get in Touch</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <div class="scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 3. TRUST / SOCIAL PROOF                                    -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="trust">
+    <div class="container">
+      <div class="trust-header fade-in">
+        <p class="section-label">Track Record</p>
+        <h2 class="section-title">Built on Execution,<br>Not Just Advice</h2>
+      </div>
+      <div class="trust-grid">
+        <div class="trust-card fade-in fade-in-delay-1">
+          <div class="trust-card-num">Multiple</div>
+          <div class="trust-card-title">Active Projects</div>
+          <div class="trust-card-sub">Across F&amp;B, investment and business development — real ventures, not just consulting decks.</div>
+        </div>
+        <div class="trust-card fade-in fade-in-delay-2">
+          <div class="trust-card-num">On the Ground</div>
+          <div class="trust-card-title">Local Presence</div>
+          <div class="trust-card-sub">Local partnerships and operations in Bangkok — we know the market because we operate in it.</div>
+        </div>
+        <div class="trust-card fade-in fade-in-delay-3">
+          <div class="trust-card-num">In-house</div>
+          <div class="trust-card-title">Own F&amp;B Brand</div>
+          <div class="trust-card-sub">Salsa Burgers — our own F&amp;B concept. We build for clients the same way we build for ourselves.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 4. WHAT WE DO                                             -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="what-we-do">
+    <div class="container">
+      <div class="what-header fade-in">
+        <p class="section-label">Services</p>
+        <h2 class="section-title">What We Actually Do</h2>
+        <p class="what-micro section-sub">We don't stop at strategy — we build with you</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card fade-in fade-in-delay-1">
+          <div class="service-num">01</div>
+          <svg class="service-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 32L16 24L22 30L32 18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="32" cy="12" r="4" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          <h3 class="service-title">Market Entry &amp; Strategy</h3>
+          <p class="service-desc">Define how to enter and win in Thailand. We map the competitive landscape, identify the right positioning, and build a go-to-market plan grounded in local reality.</p>
+          <span class="service-arrow">Learn more →</span>
+        </div>
+        <div class="service-card fade-in fade-in-delay-2">
+          <div class="service-num">02</div>
+          <svg class="service-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="20" width="8" height="12" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="20" y="14" width="8" height="18" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M32 8V32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="service-title">Startup &amp; Venture Building</h3>
+          <p class="service-desc">Launch and grow new businesses from scratch. From concept validation to operational setup — we co-build ventures with a hands-on, execution-first mindset.</p>
+          <span class="service-arrow">Learn more →</span>
+        </div>
+        <div class="service-card fade-in fade-in-delay-3">
+          <div class="service-num">03</div>
+          <svg class="service-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M8 8H32V28H8z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M14 32H26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M20 28V32" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M14 18L18 14L22 17L26 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <h3 class="service-title">Project Execution</h3>
+          <p class="service-desc">From idea to real operations on the ground. We manage setup, licensing, vendor relationships and delivery so your project launches on time and on budget.</p>
+          <span class="service-arrow">Learn more →</span>
+        </div>
+        <div class="service-card fade-in fade-in-delay-4">
+          <div class="service-num">04</div>
+          <svg class="service-icon" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="20" r="12" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M20 12V20L26 26" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 6L8 2M28 6L32 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          <h3 class="service-title">Operations &amp; Growth</h3>
+          <p class="service-desc">Scale what works. We optimize operations, manage partnerships and identify growth levers — turning a working concept into a scalable business.</p>
+          <span class="service-arrow">Learn more →</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 5. FOCUS AREAS                                            -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="focus">
+    <div class="container">
+      <div class="focus-header fade-in">
+        <p class="section-label">Verticals</p>
+        <h2 class="section-title">Where We Focus</h2>
+      </div>
+      <div class="focus-grid">
+        <div class="focus-card fade-in fade-in-delay-1">
+          <div class="focus-bg focus-bg-1"></div>
+          <div class="focus-overlay"></div>
+          <div class="focus-content">
+            <div class="focus-line"></div>
+            <div class="focus-tag">F&amp;B / Cloud Kitchens</div>
+            <h3 class="focus-title">Food &amp; Beverage</h3>
+            <p class="focus-desc">Development and operation of food brands, including in-house and third-party concepts. From cloud kitchens to full-format restaurants — we build and run.</p>
+          </div>
+        </div>
+        <div class="focus-card fade-in fade-in-delay-2">
+          <div class="focus-bg focus-bg-2"></div>
+          <div class="focus-overlay"></div>
+          <div class="focus-content">
+            <div class="focus-line"></div>
+            <div class="focus-tag">Investment &amp; Real Assets</div>
+            <h3 class="focus-title">Investment &amp; Real Assets</h3>
+            <p class="focus-desc">Access to curated opportunities in hospitality, sports and real estate. We source, structure and manage investments with our local network and expertise.</p>
+          </div>
+        </div>
+        <div class="focus-card fade-in fade-in-delay-3">
+          <div class="focus-bg focus-bg-3"></div>
+          <div class="focus-overlay"></div>
+          <div class="focus-content">
+            <div class="focus-line"></div>
+            <div class="focus-tag">Business Development</div>
+            <h3 class="focus-title">Business Development</h3>
+            <p class="focus-desc">Execution of high-potential projects with local impact. We identify opportunities, build partnerships and deliver results — on the ground, not on paper.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 6. WHY THAILAND                                           -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="why-thailand">
+    <div class="container">
+      <div class="why-header fade-in">
+        <p class="section-label">The Opportunity</p>
+        <h2 class="section-title">Why Thailand</h2>
+        <p class="section-sub">Southeast Asia's most accessible high-growth market — and we're already operating inside it.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-item fade-in fade-in-delay-1">
+          <div class="why-icon">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 2L12.5 7.5H18L13.5 11L15.5 17L10 13.5L4.5 17L6.5 11L2 7.5H7.5L10 2Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="why-text">
+            <h3>Fast-Growing Consumer Market</h3>
+            <p>A rapidly expanding middle class, rising disposable income and strong domestic consumption create exceptional opportunity for premium brands and consumer businesses.</p>
+          </div>
+        </div>
+        <div class="why-item fade-in fade-in-delay-2">
+          <div class="why-icon">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M2 10H18M10 2C10 2 7 6 7 10C7 14 10 18 10 18M10 2C10 2 13 6 13 10C13 14 10 18 10 18" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="why-text">
+            <h3>Strategic Gateway to Southeast Asia</h3>
+            <p>Thailand's central position in ASEAN, business-friendly regulations and established infrastructure make it the natural hub for regional expansion across 680M+ consumers.</p>
+          </div>
+        </div>
+        <div class="why-item fade-in fade-in-delay-3">
+          <div class="why-icon">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 17L3 10M8 17L8 7M13 17L13 4M18 17L18 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div class="why-text">
+            <h3>Strong Tourism &amp; Lifestyle Economy</h3>
+            <p>Over 35 million international visitors annually fuel demand for hospitality, dining and lifestyle experiences — a structural tailwind for operators and investors alike.</p>
+          </div>
+        </div>
+        <div class="why-item fade-in fade-in-delay-4">
+          <div class="why-icon">
+            <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="7" height="7" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="11" y="2" width="7" height="7" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="2" y="11" width="7" height="7" stroke="currentColor" stroke-width="1.2"/>
+              <rect x="11" y="11" width="7" height="7" stroke="currentColor" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <div class="why-text">
+            <h3>High Opportunity in F&amp;B and Real Assets</h3>
+            <p>Underserved segments in F&amp;B, hospitality and real estate offer significant upside for those with the right local knowledge and execution capability.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 7. OUR APPROACH                                           -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="approach">
+    <div class="container">
+      <div class="approach-inner">
+        <div class="fade-in">
+          <p class="section-label">How We Work</p>
+          <h2 class="section-title">We Don't Just Advise —<br>We Execute</h2>
+        </div>
+        <p class="approach-copy fade-in fade-in-delay-1">
+          <strong>Global vision. Local execution.</strong> We partner closely with our clients to turn ideas into real businesses — with speed, precision and local expertise.
+        </p>
+        <div class="timeline">
+          <div class="timeline-step fade-in fade-in-delay-1">
+            <div class="step-dot">1</div>
+            <div>
+              <div class="step-title">Strategy</div>
+              <div class="step-desc">Define the opportunity, validate the market and align on goals</div>
+            </div>
+          </div>
+          <div class="timeline-step fade-in fade-in-delay-2">
+            <div class="step-dot">2</div>
+            <div>
+              <div class="step-title">Setup</div>
+              <div class="step-desc">Handle legal, licensing, partnerships and operational structure</div>
+            </div>
+          </div>
+          <div class="timeline-step fade-in fade-in-delay-3">
+            <div class="step-dot">3</div>
+            <div>
+              <div class="step-title">Launch</div>
+              <div class="step-desc">Go to market with precision — operations live, team in place</div>
+            </div>
+          </div>
+          <div class="timeline-step fade-in fade-in-delay-4">
+            <div class="step-dot">4</div>
+            <div>
+              <div class="step-title">Scale</div>
+              <div class="step-desc">Optimize, expand and grow what's working</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 8. FOUNDERS                                               -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="founders">
+    <div class="container">
+      <div class="founders-header fade-in">
+        <p class="section-label">Leadership</p>
+        <h2 class="section-title">The Team</h2>
+        <p class="section-sub">People who have built, launched and operated in Thailand — not just advised on it.</p>
+      </div>
+      <div class="founders-grid">
+        <div class="founder-card fade-in fade-in-delay-1">
+          <div class="founder-avatar">CJ</div>
+          <div class="founder-name">Carlos Jacosten</div>
+          <div class="founder-role">Co-Founder</div>
+          <p class="founder-bio">Strategy, business development and expansion. Brings international perspective and operator experience to identifying and executing high-value opportunities in Thailand.</p>
+        </div>
+        <div class="founder-card fade-in fade-in-delay-2">
+          <div class="founder-avatar">NK</div>
+          <div class="founder-name">Nirada Kritzara Serani</div>
+          <div class="founder-role">Co-Founder</div>
+          <p class="founder-bio">Operations, partnerships and execution in Thailand. Deep local network and hands-on experience managing vendors, regulators and operations on the ground in Bangkok.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 9. CONTACT FORM                                           -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info fade-in">
+          <p class="section-label">Get in Touch</p>
+          <h2 class="section-title">Let's Build Something in Thailand</h2>
+          <p class="section-sub">Tell us about your project — we'll get back to you shortly.</p>
+          <div class="contact-microcopy">
+            <div class="microcopy-item">
+              <div class="microcopy-dot"></div>
+              <span>We reply within 24 hours</span>
+            </div>
+            <div class="microcopy-item">
+              <div class="microcopy-dot"></div>
+              <span>All inquiries are confidential</span>
+            </div>
+            <div class="microcopy-item">
+              <div class="microcopy-dot"></div>
+              <span>No commitment required</span>
+            </div>
+          </div>
+        </div>
+        <div class="fade-in fade-in-delay-2">
+          <form id="contact-form" novalidate>
+            <div class="form-group" id="fg-name">
+              <label class="form-label" for="name">Full Name *</label>
+              <input class="form-input" type="text" id="name" name="name" placeholder="Your name" />
+              <div class="form-error">Please enter your name</div>
+            </div>
+            <div class="form-group" id="fg-email">
+              <label class="form-label" for="email">Email Address *</label>
+              <input class="form-input" type="email" id="email" name="email" placeholder="your@email.com" />
+              <div class="form-error">Please enter a valid email</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="company">Company / Project Name</label>
+              <input class="form-input" type="text" id="company" name="company" placeholder="Your company or project" />
+            </div>
+            <div class="form-group" id="fg-type">
+              <label class="form-label" for="type">What best describes you? *</label>
+              <select class="form-select" id="type" name="type">
+                <option value="" disabled selected>Select an option</option>
+                <option value="brand">Brand / Company</option>
+                <option value="investor">Investor</option>
+                <option value="startup">Startup Founder</option>
+                <option value="other">Other</option>
+              </select>
+              <div class="form-error">Please select an option</div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">What are you looking for?</label>
+              <div class="checkbox-group">
+                <label class="checkbox-item"><input type="checkbox" name="interest" value="market-entry" /><span class="checkbox-label">Market Entry</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="interest" value="investment" /><span class="checkbox-label">Investment Opportunities</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="interest" value="setup" /><span class="checkbox-label">Business Setup</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="interest" value="partnerships" /><span class="checkbox-label">Partnerships</span></label>
+                <label class="checkbox-item"><input type="checkbox" name="interest" value="other" /><span class="checkbox-label">Other</span></label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="stage">Stage of your project</label>
+              <select class="form-select" id="stage" name="stage">
+                <option value="" disabled selected>Select stage</option>
+                <option value="idea">Idea</option>
+                <option value="early">Early Stage</option>
+                <option value="growing">Growing</option>
+                <option value="established">Established</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="budget">Estimated Budget</label>
+              <select class="form-select" id="budget" name="budget">
+                <option value="" disabled selected>Select range</option>
+                <option value="under50">&lt; $50K</option>
+                <option value="50-150">$50K – $150K</option>
+                <option value="150-500">$150K – $500K</option>
+                <option value="500plus">$500K+</option>
+                <option value="prefer-not">Prefer not to say</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="message">Your Message</label>
+              <textarea class="form-textarea" id="message" name="message" placeholder="Tell us about your project, goals and timeline..."></textarea>
+            </div>
+            <button type="submit" class="btn-submit">Submit Inquiry</button>
+            <div class="form-success" id="form-success">
+              <h4>Inquiry Received</h4>
+              <p>Thank you. We'll be in touch within 24 hours.</p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 10. FINAL CTA                                             -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <section id="final-cta">
+    <div class="cta-glow"></div>
+    <div class="container" style="position:relative; z-index:2;">
+      <div class="fade-in" style="display:flex; flex-direction:column; align-items:center;">
+        <p class="section-label" style="text-align:center;">Ready to Start</p>
+        <h2 class="section-title" style="text-align:center;">Let's Build<br>in Thailand</h2>
+        <p class="section-sub" style="text-align:center; margin: 0 auto 48px;">From idea to execution — we make it happen.</p>
+        <a href="#contact" class="btn btn-gold" style="font-size:14px; padding:18px 48px;">Start Your Project</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- 11. FOOTER                                                -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="logo">
+            NC Global Assets
+            <span>Bangkok, Thailand</span>
+          </div>
+          <p class="footer-tagline">Building and scaling ventures in Thailand — with strategy, local expertise and full execution.</p>
+          <div class="footer-socials" style="margin-top:20px;">
+            <a href="#" class="social-btn" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+            <a href="#" class="social-btn" aria-label="Instagram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+          </div>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Services</h4>
+            <ul>
+              <li><a href="#what-we-do">Market Entry</a></li>
+              <li><a href="#what-we-do">Venture Building</a></li>
+              <li><a href="#what-we-do">Project Execution</a></li>
+              <li><a href="#what-we-do">Operations</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Verticals</h4>
+            <ul>
+              <li><a href="#focus">F&amp;B / Cloud Kitchens</a></li>
+              <li><a href="#focus">Investment &amp; Real Assets</a></li>
+              <li><a href="#focus">Business Development</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>Company</h4>
+            <ul>
+              <li><a href="#founders">Founders</a></li>
+              <li><a href="#why-thailand">Why Thailand</a></li>
+              <li><a href="#approach">Our Approach</a></li>
+              <li><a href="#contact">Contact</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2026 NC Global Assets. All rights reserved.</p>
+        <p class="footer-loc">Bangkok, Thailand</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- WhatsApp Floating Button                                   -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <a href="https://wa.me/66000000000" target="_blank" rel="noopener" class="whatsapp-btn" aria-label="Chat on WhatsApp">
+    <div class="whatsapp-tooltip">Chat with us</div>
+    <div class="whatsapp-circle">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+      </svg>
+    </div>
+  </a>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- JavaScript                                                 -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <script>
+    // ── Header scroll effect ──────────────────────────────────
+    const header = document.getElementById('header');
+    window.addEventListener('scroll', () => {
+      header.classList.toggle('scrolled', window.scrollY > 40);
+    }, { passive: true });
+
+    // ── Hamburger menu ────────────────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const mobileNav = document.getElementById('mobile-nav');
+    const mobileLinks = document.querySelectorAll('.mobile-link');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = hamburger.classList.toggle('open');
+      mobileNav.classList.toggle('open', isOpen);
+      document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    mobileLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+
+    // ── Fade-in on scroll ─────────────────────────────────────
+    const fadeEls = document.querySelectorAll('.fade-in');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    fadeEls.forEach(el => observer.observe(el));
+
+    // Immediately show hero elements
+    document.querySelectorAll('#hero .fade-in').forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), 100 + i * 120);
+    });
+
+    // ── Active nav on scroll ──────────────────────────────────
+    const sections = ['hero','trust','what-we-do','focus','why-thailand','approach','founders','contact'];
+    const navLinks = document.querySelectorAll('#main-nav a');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const id = e.target.id;
+          navLinks.forEach(a => {
+            a.classList.toggle('active', a.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, { threshold: 0.3 });
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) sectionObserver.observe(el);
+    });
+
+    // ── Form validation ───────────────────────────────────────
+    const form = document.getElementById('contact-form');
+    const success = document.getElementById('form-success');
+
+    function setError(groupId, show) {
+      const g = document.getElementById(groupId);
+      if (g) g.classList.toggle('has-error', show);
+    }
+
+    function validateEmail(v) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      let valid = true;
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const type = document.getElementById('type').value;
+
+      setError('fg-name', !name);
+      setError('fg-email', !email || !validateEmail(email));
+      setError('fg-type', !type);
+
+      if (!name || !email || !validateEmail(email) || !type) valid = false;
+
+      if (valid) {
+        form.style.opacity = '0.5';
+        form.style.pointerEvents = 'none';
+        setTimeout(() => {
+          form.reset();
+          form.style.opacity = '1';
+          form.style.pointerEvents = '';
+          success.style.display = 'block';
+          success.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 600);
+      }
+    });
+
+    // Clear errors on input
+    ['name','email','type'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener('input', () => setError('fg-' + id, false));
+    });
+  </script>
+
+</body>
+</html>

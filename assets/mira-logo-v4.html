@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MIRA — Isotipo Sizing · 6 Variants</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #040410;
+  color:#fff;
+  font-family:'Inter',sans-serif;
+  padding: 60px 24px 80px;
+}
+
+.page-header {
+  text-align:center;
+  margin-bottom:72px;
+}
+.page-eyebrow {
+  font-size:9px; letter-spacing:6px; color:#c084fc;
+  text-transform:uppercase; opacity:.55; margin-bottom:12px;
+}
+.page-title {
+  font-family:'Space Grotesk'; font-size:10px; font-weight:400;
+  letter-spacing:5px; color:#222238; text-transform:uppercase;
+}
+
+/* ── GRID ─────────────────────────── */
+.grid {
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:16px;
+  max-width:1080px;
+  margin:0 auto 16px;
+}
+
+/* ── CARD ─────────────────────────── */
+.card {
+  background:#09091e;
+  border:1px solid #121228;
+  border-radius:14px;
+  overflow:hidden;
+  transition:border-color .3s;
+  cursor:pointer;
+}
+.card:hover { border-color:#3a1a6a; }
+.card.selected { border-color:#c084fc; }
+
+.card-bar {
+  padding:12px 18px;
+  border-bottom:1px solid #121228;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.c-code { font-size:9px; color:#2a2a44; letter-spacing:4px; font-family:'Space Grotesk'; }
+.c-name { font-size:9px; color:#4a2a6e; letter-spacing:1.5px; }
+
+/* preview areas */
+.preview-dark  { background:#040410; display:flex; align-items:center; justify-content:center; }
+.preview-light { background:#f0eeff; display:flex; align-items:center; justify-content:center; }
+.icon-area   { padding:32px 20px 24px; min-height:180px; }
+.lockup-area { padding:20px; min-height:88px; border-top:1px solid #0e0e26; }
+
+/* foot */
+.card-foot {
+  padding:12px 18px;
+  border-top:1px solid #121228;
+  background:#060618;
+}
+.copy-btn {
+  width:100%; padding:8px 0;
+  background:transparent;
+  border:1px solid #18183a;
+  border-radius:7px;
+  color:#303050; font-size:9px;
+  letter-spacing:3px; text-transform:uppercase;
+  cursor:pointer; font-family:'Space Grotesk';
+  transition:all .2s;
+}
+.copy-btn:hover  { border-color:#5a2a9a; color:#9060d0; background:#0e0e2a; }
+.copy-btn.copied { border-color:#166534; color:#4ade80; background:#0a1e10; }
+
+/* bottom notes */
+.note-row {
+  max-width:1080px; margin:0 auto;
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:16px;
+}
+.note {
+  padding:18px;
+  background:#09091e; border:1px solid #121228;
+  border-radius:10px;
+}
+.note-label { font-size:8px; color:#2a2a44; letter-spacing:4px; text-transform:uppercase; margin-bottom:8px; }
+.note-val   { font-size:11px; color:#7050a0; font-family:'Space Grotesk'; line-height:1.6; }
+
+@media(max-width:780px){
+  .grid,.note-row { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <p class="page-eyebrow">Startup Factory Brand Studio · MIRA</p>
+  <p class="page-title">Isotipo Sizing — 6 Variantes · Mismo Concepto</p>
+</div>
+
+<div class="grid">
+
+<!-- ══════════════════════════════════════════════════
+     A — LA BALANZA  (referencia aprobada)
+══════════════════════════════════════════════════ -->
+<div class="card selected" onclick="toggleSelect(this)">
+  <div class="card-bar">
+    <span class="c-code">A — REF</span>
+    <span class="c-name">La Balanza</span>
+  </div>
+
+  <!-- icon -->
+  <div class="preview-dark icon-area">
+    <svg viewBox="0 0 100 100" fill="none" width="140" height="140">
+      <defs>
+        <linearGradient id="gA" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/>
+          <stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pA" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/>
+          <stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46.5" stroke="url(#gA)" stroke-width=".5" opacity=".18"/>
+      <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+            stroke="url(#gA)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+            stroke="url(#gA)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gA)" stroke-width=".45" fill="none" opacity=".2"/>
+      <circle cx="50" cy="57" r="2.3" fill="url(#pA)"/>
+      <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".9"/>
+      <text x="50" y="97" font-family="serif" font-size="3.2" fill="#c084fc" opacity=".15" text-anchor="middle" letter-spacing="1.8">VIDET · MIRA · VIDET</text>
+    </svg>
+  </div>
+
+  <!-- lockup dark -->
+  <div class="preview-dark lockup-area">
+    <svg id="svgA" viewBox="0 0 340 74" fill="none" width="320" height="74">
+      <defs>
+        <linearGradient id="gAl" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pAl" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <!-- icon scale .72 -->
+      <g transform="translate(2,2) scale(.72)">
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gAl)" stroke-width=".5" opacity=".18"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gAl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gAl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gAl)" stroke-width=".45" fill="none" opacity=".2"/>
+        <circle cx="50" cy="57" r="2.3" fill="url(#pAl)"/>
+        <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".88"/>
+      </g>
+      <line x1="80" y1="12" x2="80" y2="62" stroke="#16163a" stroke-width="1"/>
+      <text x="94" y="46" font-family="'Space Grotesk',sans-serif" font-size="31" font-weight="300" letter-spacing="9" fill="white">MIRA</text>
+      <text x="95" y="59" font-family="'Inter',sans-serif" font-size="7" font-weight="300" letter-spacing="5" fill="#c084fc" opacity=".42">ARTIFICIAL INTELLIGENCE</text>
+    </svg>
+  </div>
+
+  <div class="card-foot">
+    <button class="copy-btn" onclick="copySVG('svgA',this)">Copy SVG</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     B — LA DISCRETA  (icon pequeño, wordmark líder)
+══════════════════════════════════════════════════ -->
+<div class="card" onclick="toggleSelect(this)">
+  <div class="card-bar">
+    <span class="c-code">B</span>
+    <span class="c-name">La Discreta</span>
+  </div>
+
+  <div class="preview-dark icon-area">
+    <svg viewBox="0 0 100 100" fill="none" width="140" height="140">
+      <defs>
+        <linearGradient id="gB" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pB" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46.5" stroke="url(#gB)" stroke-width=".5" opacity=".18"/>
+      <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+            stroke="url(#gB)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+            stroke="url(#gB)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gB)" stroke-width=".45" fill="none" opacity=".2"/>
+      <circle cx="50" cy="57" r="2.3" fill="url(#pB)"/>
+      <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".9"/>
+      <text x="50" y="97" font-family="serif" font-size="3.2" fill="#c084fc" opacity=".15" text-anchor="middle" letter-spacing="1.8">VIDET · MIRA · VIDET</text>
+    </svg>
+  </div>
+
+  <!-- lockup: icon .52 (small), wordmark 38px -->
+  <div class="preview-dark lockup-area">
+    <svg id="svgB" viewBox="0 0 340 74" fill="none" width="320" height="74">
+      <defs>
+        <linearGradient id="gBl" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pBl" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <!-- icon scale .52 (small) -->
+      <g transform="translate(5,10) scale(.52)">
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gBl)" stroke-width=".5" opacity=".18"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gBl)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gBl)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="50" cy="57" r="2.8" fill="url(#pBl)"/>
+        <circle cx="49" cy="55.8" r=".85" fill="white" opacity=".88"/>
+      </g>
+      <line x1="64" y1="10" x2="64" y2="64" stroke="#16163a" stroke-width="1"/>
+      <!-- wordmark larger when icon is small -->
+      <text x="78" y="48" font-family="'Space Grotesk',sans-serif" font-size="38" font-weight="300" letter-spacing="8" fill="white">MIRA</text>
+      <text x="79" y="62" font-family="'Inter',sans-serif" font-size="7" font-weight="300" letter-spacing="5" fill="#c084fc" opacity=".38">ARTIFICIAL INTELLIGENCE</text>
+    </svg>
+  </div>
+
+  <div class="card-foot">
+    <button class="copy-btn" onclick="copySVG('svgB',this)">Copy SVG</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     C — LA ICÓNICA  (icon grande, icon líder)
+══════════════════════════════════════════════════ -->
+<div class="card" onclick="toggleSelect(this)">
+  <div class="card-bar">
+    <span class="c-code">C</span>
+    <span class="c-name">La Icónica</span>
+  </div>
+
+  <div class="preview-dark icon-area">
+    <svg viewBox="0 0 100 100" fill="none" width="140" height="140">
+      <defs>
+        <linearGradient id="gC" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pC" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46.5" stroke="url(#gC)" stroke-width=".5" opacity=".18"/>
+      <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+            stroke="url(#gC)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+            stroke="url(#gC)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gC)" stroke-width=".45" fill="none" opacity=".2"/>
+      <circle cx="50" cy="57" r="2.3" fill="url(#pC)"/>
+      <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".9"/>
+      <text x="50" y="97" font-family="serif" font-size="3.2" fill="#c084fc" opacity=".15" text-anchor="middle" letter-spacing="1.8">VIDET · MIRA · VIDET</text>
+    </svg>
+  </div>
+
+  <!-- lockup: icon .86 (large), wordmark 26px -->
+  <div class="preview-dark lockup-area">
+    <svg id="svgC" viewBox="0 0 340 74" fill="none" width="320" height="74">
+      <defs>
+        <linearGradient id="gCl" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pCl" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <!-- icon scale .84 (large) -->
+      <g transform="translate(-2,-3) scale(.84)">
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gCl)" stroke-width=".5" opacity=".18"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gCl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gCl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gCl)" stroke-width=".45" fill="none" opacity=".18"/>
+        <circle cx="50" cy="57" r="2.3" fill="url(#pCl)"/>
+        <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".88"/>
+      </g>
+      <line x1="92" y1="10" x2="92" y2="64" stroke="#16163a" stroke-width="1"/>
+      <!-- wordmark compact when icon is large -->
+      <text x="106" y="44" font-family="'Space Grotesk',sans-serif" font-size="26" font-weight="300" letter-spacing="9" fill="white">MIRA</text>
+      <text x="107" y="57" font-family="'Inter',sans-serif" font-size="6.5" font-weight="300" letter-spacing="4.5" fill="#c084fc" opacity=".38">ARTIFICIAL INTELLIGENCE</text>
+    </svg>
+  </div>
+
+  <div class="card-foot">
+    <button class="copy-btn" onclick="copySVG('svgC',this)">Copy SVG</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     D — LA ÓMEGA  (arcos más anchos, ojo más gordo)
+══════════════════════════════════════════════════ -->
+<div class="card" onclick="toggleSelect(this)">
+  <div class="card-bar">
+    <span class="c-code">D</span>
+    <span class="c-name">La Ómega</span>
+  </div>
+
+  <!-- Different M geometry: wider arches, fatter eye -->
+  <div class="preview-dark icon-area">
+    <svg viewBox="0 0 100 100" fill="none" width="140" height="140">
+      <defs>
+        <linearGradient id="gD" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pD" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46.5" stroke="url(#gD)" stroke-width=".5" opacity=".18"/>
+      <!-- Wider arches: legs at 19/81, wider inner descent at x=35/65 -->
+      <path d="M19,82 L19,27 C19,13 27,11 37,11 C48,11 57,26 50,44 C35,58 35,68 50,76"
+            stroke="url(#gD)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M81,82 L81,27 C81,13 73,11 63,11 C52,11 43,26 50,44 C65,58 65,68 50,76"
+            stroke="url(#gD)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Wider iris -->
+      <ellipse cx="50" cy="60" rx="8.5" ry="14" stroke="url(#gD)" stroke-width=".45" fill="none" opacity=".2"/>
+      <circle cx="50" cy="60" r="2.5" fill="url(#pD)"/>
+      <circle cx="49" cy="58.8" r=".75" fill="white" opacity=".9"/>
+      <text x="50" y="97" font-family="serif" font-size="3.2" fill="#c084fc" opacity=".15" text-anchor="middle" letter-spacing="1.8">VIDET · MIRA · VIDET</text>
+    </svg>
+  </div>
+
+  <div class="preview-dark lockup-area">
+    <svg id="svgD" viewBox="0 0 340 74" fill="none" width="320" height="74">
+      <defs>
+        <linearGradient id="gDl" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pDl" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <g transform="translate(2,2) scale(.72)">
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gDl)" stroke-width=".5" opacity=".18"/>
+        <path d="M19,82 L19,27 C19,13 27,11 37,11 C48,11 57,26 50,44 C35,58 35,68 50,76"
+              stroke="url(#gDl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M81,82 L81,27 C81,13 73,11 63,11 C52,11 43,26 50,44 C65,58 65,68 50,76"
+              stroke="url(#gDl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="60" rx="8.5" ry="14" stroke="url(#gDl)" stroke-width=".45" fill="none" opacity=".18"/>
+        <circle cx="50" cy="60" r="2.5" fill="url(#pDl)"/>
+        <circle cx="49" cy="58.8" r=".75" fill="white" opacity=".88"/>
+      </g>
+      <line x1="80" y1="12" x2="80" y2="62" stroke="#16163a" stroke-width="1"/>
+      <text x="94" y="46" font-family="'Space Grotesk',sans-serif" font-size="31" font-weight="300" letter-spacing="9" fill="white">MIRA</text>
+      <text x="95" y="59" font-family="'Inter',sans-serif" font-size="7" font-weight="300" letter-spacing="5" fill="#c084fc" opacity=".42">ARTIFICIAL INTELLIGENCE</text>
+    </svg>
+  </div>
+
+  <div class="card-foot">
+    <button class="copy-btn" onclick="copySVG('svgD',this)">Copy SVG</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     E — LA LIGERA  (stroke fino, línea de lujo)
+══════════════════════════════════════════════════ -->
+<div class="card" onclick="toggleSelect(this)">
+  <div class="card-bar">
+    <span class="c-code">E</span>
+    <span class="c-name">La Ligera</span>
+  </div>
+
+  <!-- Same paths, stroke 3.5 (luxury thin line) -->
+  <div class="preview-dark icon-area">
+    <svg viewBox="0 0 100 100" fill="none" width="140" height="140">
+      <defs>
+        <linearGradient id="gE" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pE" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46.5" stroke="url(#gE)" stroke-width=".5" opacity=".22"/>
+      <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+            stroke="url(#gE)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+            stroke="url(#gE)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- Iris much more visible with thin strokes -->
+      <ellipse cx="50" cy="57" rx="6.5" ry="14" stroke="url(#gE)" stroke-width=".6" fill="none" opacity=".28"/>
+      <ellipse cx="50" cy="57" rx="3.8" ry="8.5" stroke="url(#gE)" stroke-width=".4" fill="none" opacity=".16"/>
+      <circle cx="50" cy="57" r="1.8" fill="url(#pE)"/>
+      <circle cx="49.2" cy="56" r=".55" fill="white" opacity=".9"/>
+      <text x="50" y="97" font-family="serif" font-size="3.2" fill="#c084fc" opacity=".15" text-anchor="middle" letter-spacing="1.8">VIDET · MIRA · VIDET</text>
+    </svg>
+  </div>
+
+  <div class="preview-dark lockup-area">
+    <svg id="svgE" viewBox="0 0 340 74" fill="none" width="320" height="74">
+      <defs>
+        <linearGradient id="gEl" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pEl" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <g transform="translate(2,2) scale(.72)">
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gEl)" stroke-width=".5" opacity=".22"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gEl)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gEl)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="57" rx="6.5" ry="14" stroke="url(#gEl)" stroke-width=".6" fill="none" opacity=".25"/>
+        <circle cx="50" cy="57" r="1.8" fill="url(#pEl)"/>
+        <circle cx="49.2" cy="56" r=".55" fill="white" opacity=".88"/>
+      </g>
+      <line x1="80" y1="12" x2="80" y2="62" stroke="#16163a" stroke-width="1"/>
+      <text x="94" y="46" font-family="'Space Grotesk',sans-serif" font-size="31" font-weight="300" letter-spacing="9" fill="white">MIRA</text>
+      <text x="95" y="59" font-family="'Inter',sans-serif" font-size="7" font-weight="300" letter-spacing="5" fill="#c084fc" opacity=".42">ARTIFICIAL INTELLIGENCE</text>
+    </svg>
+  </div>
+
+  <div class="card-foot">
+    <button class="copy-btn" onclick="copySVG('svgE',this)">Copy SVG</button>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════
+     F — LA APILADA  (stacked · social / app)
+══════════════════════════════════════════════════ -->
+<div class="card" onclick="toggleSelect(this)">
+  <div class="card-bar">
+    <span class="c-code">F</span>
+    <span class="c-name">La Apilada</span>
+  </div>
+
+  <div class="preview-dark icon-area" style="min-height:200px;">
+    <svg viewBox="0 0 100 100" fill="none" width="140" height="140">
+      <defs>
+        <linearGradient id="gF" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pF" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <circle cx="50" cy="50" r="46.5" stroke="url(#gF)" stroke-width=".5" opacity=".18"/>
+      <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+            stroke="url(#gF)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+            stroke="url(#gF)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gF)" stroke-width=".45" fill="none" opacity=".2"/>
+      <circle cx="50" cy="57" r="2.3" fill="url(#pF)"/>
+      <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".9"/>
+      <text x="50" y="97" font-family="serif" font-size="3.2" fill="#c084fc" opacity=".15" text-anchor="middle" letter-spacing="1.8">VIDET · MIRA · VIDET</text>
+    </svg>
+  </div>
+
+  <!-- Stacked lockup -->
+  <div class="preview-dark lockup-area" style="min-height:130px;">
+    <svg id="svgF" viewBox="0 0 160 140" fill="none" width="200" height="140">
+      <defs>
+        <linearGradient id="gFl" x1="5%" y1="0%" x2="95%" y2="100%">
+          <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <radialGradient id="pFl" cx="35%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+        </radialGradient>
+      </defs>
+      <!-- Icon centered, scale .92 → 92px in 160 wide → x-offset = (160-92)/2 = 34 -->
+      <g transform="translate(30,4) scale(.92)">
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gFl)" stroke-width=".5" opacity=".18"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gFl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gFl)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gFl)" stroke-width=".45" fill="none" opacity=".18"/>
+        <circle cx="50" cy="57" r="2.3" fill="url(#pFl)"/>
+        <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".88"/>
+      </g>
+      <!-- Wordmark centered below -->
+      <text x="80" y="114" font-family="'Space Grotesk',sans-serif" font-size="22" font-weight="300" letter-spacing="10" fill="white" text-anchor="middle">MIRA</text>
+      <text x="80" y="128" font-family="'Inter',sans-serif" font-size="6" font-weight="300" letter-spacing="4.5" fill="#c084fc" opacity=".38" text-anchor="middle">ARTIFICIAL INTELLIGENCE</text>
+    </svg>
+  </div>
+
+  <div class="card-foot">
+    <button class="copy-btn" onclick="copySVG('svgF',this)">Copy SVG</button>
+  </div>
+</div>
+
+</div><!-- /grid -->
+
+<!-- ── SIZE COMPARISON STRIP ────────────────────────── -->
+<div style="max-width:1080px; margin:0 auto 20px; background:#09091e; border:1px solid #121228; border-radius:14px; overflow:hidden;">
+  <div style="padding:12px 20px; border-bottom:1px solid #121228; display:flex; justify-content:space-between; align-items:center;">
+    <span style="font-size:9px; color:#2a2a44; letter-spacing:4px; font-family:'Space Grotesk'; text-transform:uppercase;">Isotipo · 5 Escalas · Mismo símbolo</span>
+    <span style="font-size:9px; color:#3a2a5a; letter-spacing:2px;">Verifica que funcione a todos los tamaños</span>
+  </div>
+  <div style="padding:28px 32px; background:#040410; display:flex; align-items:center; gap:40px; flex-wrap:wrap;">
+    <!-- 128px -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <svg viewBox="0 0 100 100" fill="none" width="128" height="128">
+        <defs>
+          <linearGradient id="gS1" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="pS1" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#fff8ff"/><stop offset="100%" stop-color="#c084fc"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gS1)" stroke-width=".5" opacity=".18"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gS1)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gS1)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="57" rx="6" ry="13" stroke="url(#gS1)" stroke-width=".45" fill="none" opacity=".2"/>
+        <circle cx="50" cy="57" r="2.3" fill="url(#pS1)"/>
+        <circle cx="49" cy="55.8" r=".7" fill="white" opacity=".9"/>
+      </svg>
+      <span style="font-size:8px; color:#2a2a44; letter-spacing:2px;">128</span>
+    </div>
+    <!-- 64px -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <svg viewBox="0 0 100 100" fill="none" width="64" height="64">
+        <defs>
+          <linearGradient id="gS2" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46.5" stroke="url(#gS2)" stroke-width=".5" opacity=".18"/>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gS2)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gS2)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="50" cy="57" r="2.3" fill="#c084fc"/>
+      </svg>
+      <span style="font-size:8px; color:#2a2a44; letter-spacing:2px;">64</span>
+    </div>
+    <!-- 40px -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <svg viewBox="0 0 100 100" fill="none" width="40" height="40">
+        <defs>
+          <linearGradient id="gS3" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gS3)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gS3)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="50" cy="57" r="3" fill="#c084fc"/>
+      </svg>
+      <span style="font-size:8px; color:#2a2a44; letter-spacing:2px;">40</span>
+    </div>
+    <!-- 24px -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <svg viewBox="0 0 100 100" fill="none" width="24" height="24">
+        <defs>
+          <linearGradient id="gS4" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gS4)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gS4)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="50" cy="57" r="4" fill="#c084fc"/>
+      </svg>
+      <span style="font-size:8px; color:#2a2a44; letter-spacing:2px;">24</span>
+    </div>
+    <!-- 16px -->
+    <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+      <svg viewBox="0 0 100 100" fill="none" width="16" height="16">
+        <defs>
+          <linearGradient id="gS5" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/><stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+        </defs>
+        <path d="M16,82 L16,26 C16,12 24,10 35,10 C46,10 55,24 50,42 C40,56 40,66 50,72"
+              stroke="url(#gS5)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M84,82 L84,26 C84,12 76,10 65,10 C54,10 45,24 50,42 C60,56 60,66 50,72"
+              stroke="url(#gS5)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="50" cy="57" r="5" fill="#c084fc"/>
+      </svg>
+      <span style="font-size:8px; color:#2a2a44; letter-spacing:2px;">16</span>
+    </div>
+    <div style="margin-left:auto; text-align:right;">
+      <p style="font-size:10px; color:#3a3a5a; line-height:1.8; max-width:200px;">El símbolo sobrevive a 16px: los dos arcos + la pupila son suficientes para reconocer MIRA.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ── NOTES ──────────────────────────────────────────── -->
+<div class="note-row">
+  <div class="note">
+    <div class="note-label">Diferencia A → B → C</div>
+    <div class="note-val">La relación isotipo/wordmark. A = equilibrio. B = wordmark manda. C = símbolo manda.</div>
+  </div>
+  <div class="note">
+    <div class="note-label">Diferencia A → D</div>
+    <div class="note-val">Los arcos de la M. D tiene arcos más abiertos (Ω). El ojo en el centro es más redondo y visible.</div>
+  </div>
+  <div class="note">
+    <div class="note-label">Diferencia A → E</div>
+    <div class="note-val">El trazo. A = 6.5px (sólido). E = 3.5px (línea fina). E revela más el ojo pero es más frágil a tamaños pequeños.</div>
+  </div>
+</div>
+
+<script>
+function copySVG(id, btn) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const label = btn.textContent;
+  navigator.clipboard.writeText(el.outerHTML).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = label; btn.classList.remove('copied'); }, 2200);
+  });
+}
+function toggleSelect(card) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  card.classList.add('selected');
+}
+</script>
+</body>
+</html>

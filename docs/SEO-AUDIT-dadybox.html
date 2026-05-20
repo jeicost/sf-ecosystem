@@ -1,0 +1,1540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SEO Audit — dadybox.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #07080f;
+    --surface: #0e0f1a;
+    --surface2: #141526;
+    --border: #1e2035;
+    --border2: #252840;
+    --accent: #ff5a1f;
+    --accent2: #ff8c5a;
+    --blue: #4d7cff;
+    --cyan: #00d4e0;
+    --green: #00e676;
+    --yellow: #ffd740;
+    --red: #ff3d57;
+    --text: #eeeef5;
+    --text2: #9090b0;
+    --text3: #5a5a80;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Outfit', sans-serif;
+    --display: 'Bebas Neue', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: .4;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(7,8,15,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  header .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+  }
+  .brand-icon svg { width: 18px; height: 18px; fill: white; }
+  .brand-name {
+    font-family: var(--display);
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .brand-name span { color: var(--accent); }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .header-meta .url {
+    color: var(--cyan);
+    border: 1px solid #00d4e030;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #00d4e008;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 60px 0 50px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: 'SEO';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-family: var(--display);
+    font-size: 260px;
+    color: #ffffff03;
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .score-ring-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+  }
+  .score-ring-wrap svg {
+    width: 180px;
+    height: 180px;
+    transform: rotate(-90deg);
+  }
+  .score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 10; }
+  .score-ring-fill {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 502.65;
+    stroke-dashoffset: 502.65;
+    animation: fillRing 1.8s cubic-bezier(.4,0,.2,1) 0.3s forwards;
+  }
+  @keyframes fillRing {
+    to { stroke-dashoffset: 291.54; } /* 502.65 * (1 - 42/100) = 291.54 */
+  }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-num {
+    font-family: var(--display);
+    font-size: 64px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+  .score-denom { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .score-label { font-size: 11px; color: var(--red); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  .hero-info { display: flex; flex-direction: column; gap: 24px; }
+  .hero-title { font-family: var(--display); font-size: 42px; letter-spacing: 2px; line-height: 1.1; }
+  .hero-title .hl { color: var(--accent); }
+  .hero-desc { color: var(--text2); max-width: 520px; font-size: 15px; }
+  .hero-desc strong { color: var(--accent2); }
+
+  .score-quadrants {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .quad {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quad::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--q-color, var(--accent));
+  }
+  .quad-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .quad-score {
+    font-family: var(--display);
+    font-size: 28px;
+    line-height: 1;
+    color: var(--q-color, var(--text));
+  }
+  .quad-denom { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .quad-bar { margin-top: 8px; height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .quad-bar-fill {
+    height: 100%;
+    background: var(--q-color, var(--accent));
+    border-radius: 2px;
+    width: 0;
+    animation: barFill 1.5s cubic-bezier(.4,0,.2,1) 0.6s forwards;
+  }
+  @keyframes barFill { to { width: var(--pct); } }
+
+  /* ── SECTION ── */
+  section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: #ff5a1f15;
+    border: 1px solid #ff5a1f30;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 24px;
+    letter-spacing: 1.5px;
+  }
+  .section-desc { color: var(--text2); font-size: 13px; margin-top: -20px; margin-bottom: 24px; padding-left: 60px; }
+
+  /* ── CRITICAL ISSUES ── */
+  .critical-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .critical-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .critical-card:hover { border-color: var(--red); transform: translateY(-2px); }
+  .critical-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--red), transparent);
+  }
+  .critical-num {
+    font-family: var(--display);
+    font-size: 42px;
+    line-height: 1;
+    color: #ff3d5715;
+    position: absolute;
+    top: 10px; right: 14px;
+    letter-spacing: -2px;
+  }
+  .critical-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--red);
+    background: #ff3d5715;
+    border: 1px solid #ff3d5730;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .critical-badge::before { content: '●'; font-size: 6px; }
+  .critical-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text); }
+  .critical-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .critical-impact {
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .critical-impact span { color: var(--yellow); }
+
+  /* ── CHECKLIST GRID ── */
+  .checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .check-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .check-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+  }
+  .check-card-title { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .check-card-title .icon { font-size: 15px; }
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .pass { background: #00e67615; color: var(--green); border: 1px solid #00e67630; }
+  .warn { background: #ffd74015; color: var(--yellow); border: 1px solid #ffd74030; }
+  .fail { background: #ff3d5715; color: var(--red); border: 1px solid #ff3d5730; }
+
+  .check-items { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .check-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 9px;
+    margin-top: 1px;
+  }
+  .check-dot.p { background: #00e67620; color: var(--green); }
+  .check-dot.w { background: #ffd74020; color: var(--yellow); }
+  .check-dot.f { background: #ff3d5720; color: var(--red); }
+  .check-item strong { color: var(--text); }
+
+  .current-box {
+    margin: 8px 16px 0;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .current-box .label { color: var(--text3); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .current-box .val { color: var(--text2); }
+  .current-box .rec { color: var(--cyan); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+  .char-count { color: var(--yellow); font-size: 9px; }
+  .char-good { color: var(--green); font-size: 9px; }
+
+  /* ── TECHNICAL TABLE ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .tech-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .tech-card.critical-tech {
+    border-color: #ff3d5740;
+    background: #ff3d570a;
+  }
+  .tech-status-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+  }
+  .tech-status-icon.ok { background: #00e67615; }
+  .tech-status-icon.no { background: #ff3d5715; }
+  .tech-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .tech-detail { font-size: 11px; color: var(--text2); }
+  .tech-pill {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* ── SCHEMA TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border2);
+    background: var(--surface2);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+  tr:hover td { background: var(--surface); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  .tbl-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* ── GAPS ── */
+  .gap-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .gap-row {
+    display: grid;
+    grid-template-columns: 2fr 80px 80px 80px 60px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    transition: border-color .2s;
+  }
+  .gap-row:hover { border-color: var(--border2); }
+  .gap-row.header {
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .gap-topic { color: var(--text); font-weight: 500; }
+  .gap-topic small { display: block; color: var(--text3); font-size: 11px; margin-top: 2px; }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-align: center;
+  }
+  .pill-high { background: #00e67620; color: var(--green); }
+  .pill-med { background: #ffd74020; color: var(--yellow); }
+  .pill-low { background: #4d7cff20; color: var(--blue); }
+  .pill-red { background: #ff3d5720; color: var(--red); }
+  .priority-score {
+    font-family: var(--display);
+    font-size: 20px;
+    text-align: center;
+  }
+
+  /* ── ACTION PLAN ── */
+  .action-section { margin-bottom: 24px; }
+  .action-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .action-section-title .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .action-items { display: flex; flex-direction: column; gap: 8px; }
+  .action-item {
+    display: grid;
+    grid-template-columns: 24px 1fr 80px 60px;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    transition: all .2s;
+  }
+  .action-item:hover { border-color: var(--border2); transform: translateX(3px); }
+  .action-idx {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-align: center;
+  }
+  .action-text strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .action-text span { color: var(--text2); }
+  .action-effort {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-align: right;
+  }
+
+  /* ── POSITIVES ── */
+  .positive-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .positive-card {
+    background: var(--surface);
+    border: 1px solid #00e67625;
+    border-radius: 10px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .positive-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), transparent);
+  }
+  .positive-icon { font-size: 24px; margin-bottom: 10px; }
+  .positive-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .positive-desc { font-size: 12px; color: var(--text2); }
+
+  /* ── EEAT ── */
+  .eeat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .eeat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .eeat-letter {
+    font-family: var(--display);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--e-color);
+    margin-bottom: 8px;
+  }
+  .eeat-name { font-weight: 600; font-size: 12px; margin-bottom: 6px; }
+  .eeat-score {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .eeat-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+  /* ── KEYWORDS ── */
+  .kw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .kw-placement-list { display: flex; flex-direction: column; gap: 6px; }
+  .kw-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .kw-item-name { color: var(--text2); }
+  .kw-secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .kw-tag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: var(--mono);
+  }
+  .kw-tag::before { content: '#'; color: var(--accent); margin-right: 4px; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 30px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  footer a { color: var(--cyan); text-decoration: none; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    margin: 20px 0;
+  }
+
+  /* ── TOOLTIP BADGE ── */
+  .fix-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #4d7cff15;
+    color: var(--blue);
+    border: 1px solid #4d7cff30;
+    margin-left: 6px;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp .5s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stagger delays */
+  .d1 { animation-delay: .1s; }
+  .d2 { animation-delay: .2s; }
+  .d3 { animation-delay: .3s; }
+  .d4 { animation-delay: .4s; }
+  .d5 { animation-delay: .5s; }
+  .d6 { animation-delay: .6s; }
+
+  /* ── PROGRESS BAR ── */
+  .prog-bar-wrap { margin-top: 6px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .prog-track { height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .prog-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    animation: barFill 1.5s cubic-bezier(.4,0,.2,1) 0.8s forwards;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .score-quadrants { grid-template-columns: repeat(2,1fr); }
+    .critical-grid { grid-template-columns: 1fr; }
+    .checklist-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(2,1fr); }
+    .eeat-grid { grid-template-columns: repeat(2,1fr); }
+    .positive-grid { grid-template-columns: 1fr; }
+    .gap-row { grid-template-columns: 1fr 60px 60px 60px; }
+    .gap-row .priority-score { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="inner">
+      <div class="brand">
+        <img src="logo-sf.svg" alt="Startup Factory" style="height:32px; width:auto; opacity:.95;"/>
+      </div>
+      <div class="header-meta">
+        <span class="url">dadybox.com</span>
+        <span>2026-05-07</span>
+        <span>v1.0</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="score-ring-wrap fade-up">
+        <svg viewBox="0 0 180 180">
+          <circle class="score-ring-bg" cx="90" cy="90" r="80"/>
+          <circle class="score-ring-fill" cx="90" cy="90" r="80"/>
+        </svg>
+        <div class="score-center">
+          <div class="score-num">42</div>
+          <div class="score-denom">/ 100</div>
+          <div class="score-label">Crítico</div>
+        </div>
+      </div>
+      <div class="hero-info fade-up d2">
+        <div>
+          <div class="hero-title">AUDITORÍA SEO<br/><span class="hl">DADYBOX.COM</span></div>
+          <div class="hero-desc" style="margin-top:12px;">
+            El contenido y la propuesta de valor son <strong>competitivos</strong>.
+            La página cae por <strong>ausencia total de infraestructura técnica SEO</strong>:
+            sin canonical, sin OG tags, sin schema, sin robots.txt, sin sitemap, y sin analítica detectada.
+            Corregir los 6 puntos críticos puede subir el score a <strong>~72/100</strong> sin tocar el contenido.
+          </div>
+        </div>
+        <div class="score-quadrants">
+          <div class="quad fade-up d3" style="--q-color: var(--red);">
+            <div class="quad-label">Técnico</div>
+            <div class="quad-score">0</div>
+            <div class="quad-denom">/ 30 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:0%;"></div></div>
+          </div>
+          <div class="quad fade-up d4" style="--q-color: var(--yellow);">
+            <div class="quad-label">On-Page</div>
+            <div class="quad-score">25</div>
+            <div class="quad-denom">/ 40 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:62%;"></div></div>
+          </div>
+          <div class="quad fade-up d5" style="--q-color: var(--blue);">
+            <div class="quad-label">Contenido E-E-A-T</div>
+            <div class="quad-score">12</div>
+            <div class="quad-denom">/ 20 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:60%;"></div></div>
+          </div>
+          <div class="quad fade-up d6" style="--q-color: var(--cyan);">
+            <div class="quad-label">Keywords</div>
+            <div class="quad-score">5</div>
+            <div class="quad-denom">/ 10 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:50%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CRITICAL ISSUES -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">PROBLEMAS CRÍTICOS</span>
+    </div>
+    <p class="section-desc">6 bloqueadores técnicos que impiden indexación correcta y eliminan señales SEO.</p>
+    <div class="critical-grid">
+
+      <div class="critical-card fade-up d1">
+        <div class="critical-num">01</div>
+        <div class="critical-badge">Sin analítica</div>
+        <div class="critical-title">No hay GA4 ni GTM detectados</div>
+        <div class="critical-desc">Cero tracking activo. No se puede medir tráfico orgánico, conversiones ni comportamiento de usuarios.</div>
+        <div class="critical-impact">Impacto: <span>SEO completamente ciego</span></div>
+      </div>
+
+      <div class="critical-card fade-up d2">
+        <div class="critical-num">02</div>
+        <div class="critical-badge">404</div>
+        <div class="critical-title">robots.txt devuelve 404</div>
+        <div class="critical-desc">Google rastrea sin guía. Páginas /legal/ se indexan innecesariamente. Sin protección de URLs sensibles.</div>
+        <div class="critical-impact">Fix: <span>Archivo en /robots.txt · 15 min</span></div>
+      </div>
+
+      <div class="critical-card fade-up d3">
+        <div class="critical-num">03</div>
+        <div class="critical-badge">404</div>
+        <div class="critical-title">sitemap.xml devuelve 404</div>
+        <div class="critical-desc">Google no tiene inventario de páginas. El E-com Academy puede tener artículos que nunca se indexen.</div>
+        <div class="critical-impact">Fix: <span>app/sitemap.ts en Next.js · 30 min</span></div>
+      </div>
+
+      <div class="critical-card fade-up d4">
+        <div class="critical-num">04</div>
+        <div class="critical-badge">Ausente</div>
+        <div class="critical-title">Sin canonical tags en ninguna página</div>
+        <div class="critical-desc">Los parámetros UTM (?utm_source=ig) crean duplicados. Google divide el link equity entre URLs.</div>
+        <div class="critical-impact">Fix: <span>metadata.alternates en Next.js · 1h</span></div>
+      </div>
+
+      <div class="critical-card fade-up d5">
+        <div class="critical-num">05</div>
+        <div class="critical-badge">Ausente</div>
+        <div class="critical-title">Sin Open Graph ni Twitter Card</div>
+        <div class="critical-desc">Compartir dadybox.com en LinkedIn, WhatsApp o Instagram muestra solo una URL cruda, sin imagen ni descripción.</div>
+        <div class="critical-impact">Impacto: <span>CTR social -60% vs posts con imagen</span></div>
+      </div>
+
+      <div class="critical-card fade-up d6">
+        <div class="critical-num">06</div>
+        <div class="critical-badge">Ausente</div>
+        <div class="critical-title">Cero schema / structured data</div>
+        <div class="critical-desc">Sin JSON-LD en ninguna página. Se pierden rich results: FAQ expandible, LocalBusiness en Maps, breadcrumbs.</div>
+        <div class="critical-impact">Impacto: <span>FAQPage podría ocupar 5 líneas en SERP</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ON-PAGE CHECKLIST -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">ON-PAGE SEO</span>
+    </div>
+    <p class="section-desc">Análisis elemento a elemento de los factores de optimización en página.</p>
+
+    <div class="checklist-grid">
+
+      <!-- TITLE TAG -->
+      <div class="check-card fade-up d1">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">📌</span> Title Tag</div>
+          <span class="status-badge warn">Needs Work</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Actual <span class="char-count">41 chars</span></div>
+          <div class="val">"Dadybox - Fulfillment 3PL para E-commerce"</div>
+          <div class="rec">→ "Fulfillment 3PL para E-commerce en España | Dadybox" <span class="char-good">52 chars ✓</span></div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Existe y es único</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span><strong>41 chars</strong> — demasiado corto (ideal 50-60)</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span><strong>Marca al inicio</strong> — keyword debería liderar</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Keywords "Fulfillment 3PL" y "E-commerce" presentes</span></div>
+        </div>
+      </div>
+
+      <!-- META DESCRIPTION -->
+      <div class="check-card fade-up d2">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">📝</span> Meta Description</div>
+          <span class="status-badge warn">Needs Work</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Actual <span class="char-count">110 chars (ideal: 150-160)</span></div>
+          <div class="val">"La logística que hace brillar tu e-commerce: rápida, clara y con un toque de magia. Fulfillment 3PL en Madrid."</div>
+          <div class="rec">→ Añadir CTA + keywords secundarias para llegar a ~155 chars</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Presente y única por página</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>110 chars</strong> — 40-50 chars sin explotar</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span>Sin call-to-action que invite al clic</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Keyword "Fulfillment 3PL en Madrid" presente</span></div>
+        </div>
+      </div>
+
+      <!-- H1 STRUCTURE -->
+      <div class="check-card fade-up d3">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🏷️</span> Jerarquía H1–H3</div>
+          <span class="status-badge warn">Needs Work</span>
+        </div>
+        <div class="current-box">
+          <div class="label">H1 Actual</div>
+          <div class="val">"Envíos sin dramas. Tu logística nuestra magia."</div>
+          <div class="rec">→ Tagline creativo sin keyword primaria — Google no puede indexarlo semánticamente</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Solo 1 H1 en la página</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>H1 sin keywords</strong>: "fulfillment", "3PL" y "e-commerce" ausentes</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Jerarquía lógica H2→H3 correcta</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>2 H2s genéricos: "Marcas que confían" / "Nuestros Servicios"</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>7 H2s bien distribuidos en el contenido</span></div>
+        </div>
+      </div>
+
+      <!-- IMAGES -->
+      <div class="check-card fade-up d4">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🖼️</span> Imágenes y Alt Text</div>
+          <span class="status-badge pass">Excelente</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>47 imágenes analizadas — 0 sin alt text</strong> (100%)</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Alt texts descriptivos con keywords donde aplica</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>4 imágenes críticas con rel="preload"</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>SVGs para logos (formato óptimo, escalable)</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>Sin imágenes WebP para contenido raster</span></div>
+        </div>
+      </div>
+
+      <!-- INTERNAL LINKS -->
+      <div class="check-card fade-up d5">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🔗</span> Enlazado Interno</div>
+          <span class="status-badge warn">Needs Work</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span>27 links internos detectados</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>8/27 links</strong> apuntan al mismo /reserva-demo (29%)</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span>Anchors genéricos: "Reserva tu llamada" × 6, "Pide tu presupuesto" × 2</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>Pocos links con keyword en anchor text</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Sin links rotos detectados</span></div>
+        </div>
+      </div>
+
+      <!-- URL STRUCTURE -->
+      <div class="check-card fade-up d6">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🌐</span> Estructura de URLs</div>
+          <span class="status-badge warn">Needs Work</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span>/servicios-envio — legible con keyword</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>/ecom-academy — limpia y descriptiva</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>/qa</strong> — sin keywords, debería ser /preguntas-frecuentes</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>/reserva-demo — "demo" es poco descriptivo para SEO</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>URLs en minúsculas, sin parámetros innecesarios</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TECHNICAL SEO -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">TECHNICAL SEO</span>
+    </div>
+    <p class="section-desc">Infraestructura técnica que determina cómo Google rastrea e indexa el sitio.</p>
+
+    <div class="tech-grid">
+      <div class="tech-card critical-tech fade-up d1">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">robots.txt</div>
+        <div class="tech-detail">Devuelve HTTP 404. Google rastrea sin guía.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d2">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">sitemap.xml</div>
+        <div class="tech-detail">Devuelve HTTP 404. Páginas no descubribles.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d3">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Canonical Tags</div>
+        <div class="tech-detail">Sin canonical en ninguna página del sitio.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d4">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Open Graph</div>
+        <div class="tech-detail">Cero tags og:* — sharing en social roto.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d5">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Schema / JSON-LD</div>
+        <div class="tech-detail">0 scripts de datos estructurados encontrados.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d6">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Analytics</div>
+        <div class="tech-detail">GA4, GTM, Meta Pixel: ninguno detectado.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card fade-up d1">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">HTTPS / SSL</div>
+        <div class="tech-detail">Certificado activo y válido.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d2">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">lang="es"</div>
+        <div class="tech-detail">Atributo de idioma en &lt;html&gt; correcto.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d3">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Viewport Meta</div>
+        <div class="tech-detail">width=device-width, initial-scale=1</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+    </div>
+
+    <!-- Schema Opportunities Table -->
+    <div style="margin-top:28px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+        <span style="color:var(--red);">●</span> Oportunidades de Schema Markup
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Schema Type</th>
+              <th>Página</th>
+              <th>Estado</th>
+              <th>Impacto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>FAQPage</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/qa</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">9 preguntas listas → rich result con fragmentos expandibles en SERP</td>
+            </tr>
+            <tr>
+              <td>LocalBusiness</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Calle Albasanz 14, Madrid → activa búsquedas locales "3PL Madrid"</td>
+            </tr>
+            <tr>
+              <td>Organization</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Alimenta Knowledge Panel de Google con logo, contacto y redes</td>
+            </tr>
+            <tr>
+              <td>Service</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/servicios-envio</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Rich results para servicios de negocio</td>
+            </tr>
+            <tr>
+              <td>BreadcrumbList</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">Todas</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Breadcrumbs visibles en SERP — mejoran CTR</td>
+            </tr>
+            <tr>
+              <td>WebSite + SearchAction</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Sitelinks search box en búsquedas de marca</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- E-E-A-T -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">CALIDAD E-E-A-T</span>
+    </div>
+    <p class="section-desc">Marco de evaluación de Google: Experience, Expertise, Authoritativeness, Trustworthiness.</p>
+    <div class="eeat-grid">
+      <div class="eeat-card fade-up d1" style="--e-color: var(--yellow);">
+        <div class="eeat-letter">E</div>
+        <div class="eeat-name">Experience</div>
+        <span class="eeat-score warn">Presente</span>
+        <div class="eeat-desc">Clientes reales (Warner, Coca-Cola, Salesland). Sin casos de uso con métricas ni datos cuantitativos.</div>
+      </div>
+      <div class="eeat-card fade-up d2" style="--e-color: var(--yellow);">
+        <div class="eeat-letter">E</div>
+        <div class="eeat-name">Expertise</div>
+        <span class="eeat-score warn">Presente</span>
+        <div class="eeat-desc">Contenido técnicamente correcto sobre logística. Sin autor identificado ni credenciales del equipo.</div>
+      </div>
+      <div class="eeat-card fade-up d3" style="--e-color: var(--red);">
+        <div class="eeat-letter">A</div>
+        <div class="eeat-name">Authoritativeness</div>
+        <span class="eeat-score fail">Débil</span>
+        <div class="eeat-desc">Sin página "Sobre Dadybox", sin menciones de prensa, sin certificaciones ni premios visibles.</div>
+      </div>
+      <div class="eeat-card fade-up d4" style="--e-color: var(--green);">
+        <div class="eeat-letter">T</div>
+        <div class="eeat-name">Trustworthiness</div>
+        <span class="eeat-score pass">OK</span>
+        <div class="eeat-desc">HTTPS ✓, Dirección Madrid ✓, Teléfono ✓, Email ✓. Sin reseñas estructuradas ni ratings visibles.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEYWORDS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">ANÁLISIS DE KEYWORDS</span>
+    </div>
+    <p class="section-desc">Distribución y cobertura de keywords primarias y secundarias en la página.</p>
+    <div class="kw-grid">
+      <div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:12px; color:var(--text2);">KEYWORD PRIMARIA — "fulfillment 3PL e-commerce España"</div>
+        <div class="kw-placement-list">
+          <div class="kw-item">
+            <span class="kw-item-name">En Title Tag</span>
+            <span class="status-badge pass">✓ PASS</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">En H1</span>
+            <span class="status-badge fail">✗ FAIL</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">En primeras 100 palabras</span>
+            <span class="status-badge pass">✓ PASS</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">En Meta Description</span>
+            <span class="status-badge pass">✓ PASS</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">En H2 (al menos uno)</span>
+            <span class="status-badge warn">~ PARCIAL</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">Densidad en página</span>
+            <span class="status-badge pass">~1.2% ✓</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">Intención de búsqueda</span>
+            <span class="status-badge pass">Comercial ✓</span>
+          </div>
+          <div style="margin-top:14px;">
+            <div style="font-size:11px; color:var(--text3); margin-bottom:6px;">Palabras en página (aprox.)</div>
+            <div class="prog-bar-wrap">
+              <div class="prog-label"><span>~3,928 palabras</span><span style="color:var(--green);">Bueno (&gt;2,000)</span></div>
+              <div class="prog-track"><div class="prog-fill" style="--pct:80%; background:var(--green);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:12px; color:var(--text2);">KEYWORDS SECUNDARIAS A INCORPORAR</div>
+        <div class="kw-secondary-grid">
+          <div class="kw-tag">externalizar fulfillment</div>
+          <div class="kw-tag">almacén e-commerce Madrid</div>
+          <div class="kw-tag">picking y packing</div>
+          <div class="kw-tag">gestión devoluciones online</div>
+          <div class="kw-tag">envíos 24H España</div>
+          <div class="kw-tag">integración Shopify fulfillment</div>
+          <div class="kw-tag">3PL marcas D2C</div>
+          <div class="kw-tag">SGA software almacén</div>
+          <div class="kw-tag">logística última milla</div>
+          <div class="kw-tag">fulfillment Black Friday</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT GAPS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">CONTENT GAP ANALYSIS</span>
+    </div>
+    <p class="section-desc">Temas que la competencia cubre y dadybox.com aún no tiene como páginas indexables.</p>
+
+    <div class="gap-grid">
+      <div class="gap-row header">
+        <span>Tema / Keyword Objetivo</span>
+        <span style="text-align:center;">Volumen</span>
+        <span style="text-align:center;">Competencia</span>
+        <span style="text-align:center;">Tipo</span>
+        <span style="text-align:center;">Score</span>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Cuánto cuesta externalizar logística e-commerce <small>Página de precios + guía de costes</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alto</span>
+        <span class="pill pill-low" style="text-align:center;">Baja</span>
+        <span class="pill pill-med" style="text-align:center;">Guía blog</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing /integraciones/shopify y /woocommerce <small>Long-tail de alta intención de compra</small></div>
+        <span class="pill pill-med" style="text-align:center;">Medio</span>
+        <span class="pill pill-low" style="text-align:center;">Baja</span>
+        <span class="pill pill-med" style="text-align:center;">Landing</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing /fulfillment-madrid o /3pl-madrid <small>Búsquedas locales de alta conversión</small></div>
+        <span class="pill pill-med" style="text-align:center;">Medio</span>
+        <span class="pill pill-low" style="text-align:center;">Muy Baja</span>
+        <span class="pill pill-med" style="text-align:center;">Landing</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Caso de estudio con métricas reales <small>"Marca X redujo incidencias un 40%"</small></div>
+        <span class="pill pill-low" style="text-align:center;">Bajo</span>
+        <span class="pill pill-low" style="text-align:center;">—</span>
+        <span class="pill pill-med" style="text-align:center;">Case Study</span>
+        <div class="priority-score" style="color:var(--yellow);">8</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Qué es un 3PL / Qué es fulfillment <small>Guía definitiva — tráfico informacional que convierte</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alto</span>
+        <span class="pill pill-med" style="text-align:center;">Media</span>
+        <span class="pill pill-med" style="text-align:center;">Blog post</span>
+        <div class="priority-score" style="color:var(--yellow);">7</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Fulfillment para marcas de moda / cosmética <small>Páginas sectoriales menos competidas</small></div>
+        <span class="pill pill-med" style="text-align:center;">Medio</span>
+        <span class="pill pill-low" style="text-align:center;">Baja</span>
+        <span class="pill pill-med" style="text-align:center;">Landing</span>
+        <div class="priority-score" style="color:var(--yellow);">7</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Preparación logística Black Friday <small>Estacional pero de muy alto tráfico</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alto</span>
+        <span class="pill pill-med" style="text-align:center;">Media</span>
+        <span class="pill pill-med" style="text-align:center;">Guía + checklist</span>
+        <div class="priority-score" style="color:var(--blue);">6</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACTION PLAN -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">PLAN DE ACCIÓN PRIORIZADO</span>
+    </div>
+
+    <!-- CRÍTICO -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--red);"></div>
+        Crítico — Esta semana
+        <span style="font-size:11px; color:var(--text3); font-weight:400; margin-left:8px;">Score actual: 0/30 pts técnicos</span>
+      </div>
+      <div class="action-items">
+        <div class="action-item fade-up d1">
+          <div class="action-idx">01</div>
+          <div class="action-text">
+            <strong>Instalar GA4 + Google Search Console</strong>
+            <span>Sin datos no hay SEO. Usar @next/third-parties/google para GA4.</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">30 min</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d2">
+          <div class="action-idx">02</div>
+          <div class="action-text">
+            <strong>Crear robots.txt con bloqueo de /legal/ y pointer al sitemap</strong>
+            <span>Archivo estático en /public/robots.txt</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">15 min</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d3">
+          <div class="action-idx">03</div>
+          <div class="action-text">
+            <strong>Generar sitemap.xml automático en Next.js</strong>
+            <span>Añadir app/sitemap.ts — Next.js lo sirve en /sitemap.xml</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">30 min</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d4">
+          <div class="action-idx">04</div>
+          <div class="action-text">
+            <strong>Añadir canonical tags en todas las páginas</strong>
+            <span>metadata.alternates.canonical en cada app/*/page.tsx</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">1h</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d5">
+          <div class="action-idx">05</div>
+          <div class="action-text">
+            <strong>Implementar Open Graph + Twitter Card en metadata global</strong>
+            <span>Imagen OG 1200×630 + og:title, og:description, og:url por página</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">1h</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d6">
+          <div class="action-idx">06</div>
+          <div class="action-text">
+            <strong>Eliminar meta generator "v0.app"</strong>
+            <span>Revela el stack tecnológico — seguridad básica</span>
+          </div>
+          <span class="status-badge warn" style="text-align:right;">5 min</span>
+          <span class="pill pill-high">Fácil</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALTA PRIORIDAD -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--yellow);"></div>
+        Alta Prioridad — Este mes
+      </div>
+      <div class="action-items">
+        <div class="action-item">
+          <div class="action-idx">07</div>
+          <div class="action-text">
+            <strong>Implementar FAQPage schema en /qa</strong>
+            <span>9 preguntas listas → rich result con fragmentos expandibles en SERP</span>
+          </div>
+          <span class="action-effort">2h</span>
+          <span class="pill pill-med">Alto ROI</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">08</div>
+          <div class="action-text">
+            <strong>LocalBusiness schema en homepage</strong>
+            <span>Activa búsquedas locales "3PL Madrid" en Google Maps</span>
+          </div>
+          <span class="action-effort">1h</span>
+          <span class="pill pill-med">Alto ROI</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">09</div>
+          <div class="action-text">
+            <strong>Optimizar H1 con keyword primaria</strong>
+            <span>Combinar tagline creativo con keyword SEO o restructurar</span>
+          </div>
+          <span class="action-effort">30 min</span>
+          <span class="pill pill-med">Medio</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">10</div>
+          <div class="action-text">
+            <strong>Ampliar meta description a 155 chars con CTA</strong>
+            <span>+20-35% CTR estimado por búsqueda orgánica</span>
+          </div>
+          <span class="action-effort">30 min</span>
+          <span class="pill pill-med">Medio</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">11</div>
+          <div class="action-text">
+            <strong>Renombrar /qa → /preguntas-frecuentes-logistica</strong>
+            <span>Redirect 301 desde /qa. Keyword en URL mejora CTR y relevancia.</span>
+          </div>
+          <span class="action-effort">1h</span>
+          <span class="pill pill-med">Medio</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">12</div>
+          <div class="action-text">
+            <strong>Mover keywords al inicio del title tag</strong>
+            <span>"Fulfillment 3PL para E-commerce en España | Dadybox"</span>
+          </div>
+          <span class="action-effort">15 min</span>
+          <span class="pill pill-med">Fácil</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIA PRIORIDAD -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--blue);"></div>
+        Prioridad Media — Este trimestre
+      </div>
+      <div class="action-items">
+        <div class="action-item">
+          <div class="action-idx">13</div>
+          <div class="action-text">
+            <strong>Crear /integraciones/shopify y /integraciones/woocommerce</strong>
+            <span>Long-tail de alta conversión: "fulfillment shopify españa"</span>
+          </div>
+          <span class="action-effort">1 semana</span>
+          <span class="pill pill-low">Contenido</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">14</div>
+          <div class="action-text">
+            <strong>Crear página "Sobre Dadybox" con equipo e historia</strong>
+            <span>E-E-A-T: aumenta autoridad y confianza para Google</span>
+          </div>
+          <span class="action-effort">3 días</span>
+          <span class="pill pill-low">E-E-A-T</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">15</div>
+          <div class="action-text">
+            <strong>Publicar 2 posts/mes en E-com Academy con keywords reales</strong>
+            <span>Tráfico informacional + construcción de autoridad de dominio</span>
+          </div>
+          <span class="action-effort">Recurrente</span>
+          <span class="pill pill-low">Contenido</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">16</div>
+          <div class="action-text">
+            <strong>Landing /fulfillment-madrid o /3pl-madrid</strong>
+            <span>Búsquedas locales de alta conversión con muy poca competencia</span>
+          </div>
+          <span class="action-effort">3 días</span>
+          <span class="pill pill-low">Local SEO</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIVES -->
+<section style="border-bottom:none;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">PUNTOS FUERTES</span>
+    </div>
+    <p class="section-desc">Lo que dadybox.com hace bien y debe mantener.</p>
+    <div class="positive-grid">
+      <div class="positive-card fade-up d1">
+        <div class="positive-icon">🖼️</div>
+        <div class="positive-title">100% Alt Text en imágenes</div>
+        <div class="positive-desc">47 imágenes analizadas, 0 sin alt text. Excepcional — la mayoría de sitios tiene 20-40% sin describir.</div>
+      </div>
+      <div class="positive-card fade-up d2">
+        <div class="positive-icon">📊</div>
+        <div class="positive-title">~4.000 palabras de contenido</div>
+        <div class="positive-desc">Volumen sólido en homepage. Supera el umbral mínimo para posicionar en términos competitivos.</div>
+      </div>
+      <div class="positive-card fade-up d3">
+        <div class="positive-icon">🏗️</div>
+        <div class="positive-title">1 solo H1, jerarquía correcta</div>
+        <div class="positive-desc">H2→H3 bien estructurados. Muchos sitios cometen errores básicos de jerarquía de headings.</div>
+      </div>
+      <div class="positive-card fade-up d4">
+        <div class="positive-icon">📍</div>
+        <div class="positive-title">Datos de contacto completos</div>
+        <div class="positive-desc">Dirección física (Madrid), teléfono y email en footer. Señal de confianza para Google y usuarios.</div>
+      </div>
+      <div class="positive-card fade-up d5">
+        <div class="positive-icon">⚡</div>
+        <div class="positive-title">Stack Next.js en Vercel</div>
+        <div class="positive-desc">Buena base técnica para Core Web Vitals. SSR, código splitting y CDN global incluidos.</div>
+      </div>
+      <div class="positive-card fade-up d6">
+        <div class="positive-icon">🎓</div>
+        <div class="positive-title">E-com Academy bien pensada</div>
+        <div class="positive-desc">Blog + newsletter + playbooks = estructura de contenido ideal para SEO a largo plazo.</div>
+      </div>
+    </div>
+
+    <!-- RESUMEN FINAL -->
+    <div style="margin-top:40px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--accent), var(--cyan));"></div>
+      <div style="font-family:var(--display); font-size:20px; letter-spacing:1.5px; margin-bottom:12px;">RESUMEN EJECUTIVO</div>
+      <div style="color:var(--text2); font-size:14px; line-height:1.8; max-width:700px;">
+        dadybox.com tiene una propuesta de valor clara, buen volumen de contenido y stack técnico sólido.
+        El problema SEO <strong style="color:var(--text);">no es de contenido</strong> — es de infraestructura.
+        <br/><br/>
+        <strong style="color:var(--text);">Si solo puedes hacer 3 cosas hoy:</strong>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px;">
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--accent); line-height:1;">1</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">Instalar GA4</div>
+          <div style="font-size:11px; color:var(--text3);">Search Console · 30 min</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--yellow); line-height:1;">2</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">robots.txt + sitemap</div>
+          <div style="font-size:11px; color:var(--text3);">Next.js · 45 min</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--cyan); line-height:1;">3</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">Canonical + OG Tags</div>
+          <div style="font-size:11px; color:var(--text3);">metadata Next.js · 1h</div>
+        </div>
+      </div>
+      <div style="margin-top:20px; font-family:var(--mono); font-size:12px; color:var(--text3); display:flex; align-items:center; gap:8px;">
+        Con esos 3 pasos el score sube de
+        <span style="color:var(--red); font-size:14px; font-weight:700;">42/100</span>
+        →
+        <span style="color:var(--green); font-size:14px; font-weight:700;">~72/100</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <img src="logo-sf.svg" alt="Startup Factory" style="height:22px; width:auto; opacity:.5;"/>
+      <span style="color:var(--text3);">Preparado por Startup Factory</span>
+    </div>
+    <span style="color:var(--text3);">SEO Audit · dadybox.com · 2026-05-07 · Score: <span style="color:var(--accent);">42/100</span> · 22 recomendaciones</span>
+  </div>
+</footer>
+
+</body>
+</html>

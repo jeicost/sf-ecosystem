@@ -1,0 +1,263 @@
+.dv-nota-director {
+  background: #ffffff;
+}
+
+.dv-nota-director__layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 18px;
+}
+
+/* ── Left column ── */
+.dv-nota-director__name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  color: #111827;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.dv-nota-director__role {
+  font-size: 10px;
+  color: #C8006B;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.dv-nota-director__photo {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.dv-nota-director__photo-ph {
+  width: 100%;
+  height: 220px;
+  background: #d8d8d8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.dv-nota-director__photo-ph-icon { font-size: 28px; opacity: 0.3; }
+
+.dv-nota-director__photo-ph-lbl {
+  font-size: 9px;
+  color: #888;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.dv-nota-director__body {
+  font-size: 10px;
+  color: #333;
+  line-height: 1.7;
+  text-align: justify;
+  margin-bottom: 10px;
+}
+
+.dv-nota-director__drop-cap {
+  float: left;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  line-height: 0.78;
+  padding-right: 5px;
+  padding-top: 4px;
+  color: #111827;
+}
+
+.dv-nota-director__pull-quote {
+  background: #111827;
+  color: #fff;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+  position: relative;
+}
+.dv-nota-director__pull-quote::before {
+  content: '"';
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: #C8006B;
+  line-height: 1;
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  opacity: 0.6;
+}
+.dv-nota-director__pull-quote p  { padding-left: 22px; }
+.dv-nota-director__pull-quote cite {
+  display: block;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+  padding-left: 22px;
+}
+
+.dv-nota-director__signature {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.dv-nota-director__sig-line { flex: 1; height: 1px; background: #e5e7eb; }
+.dv-nota-director__sig-text {
+  font-size: 9px;
+  color: #6b7280;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* ── Right column ── */
+.dv-nota-director__criteria {
+  margin-top: 14px;
+  border-top: 2px solid #111827;
+  padding-top: 10px;
+}
+
+.dv-nota-director__criteria-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 14px;
+  color: #111827;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.dv-nota-director__criteria-item {
+  margin-bottom: 7px;
+  padding-left: 10px;
+  border-left: 2px solid #C8006B;
+}
+
+.dv-nota-director__criteria-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: #111827;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 1px;
+}
+
+.dv-nota-director__criteria-desc {
+  font-size: 9px;
+  color: #444;
+  line-height: 1.5;
+}
+
+.dv-nota-director__mission {
+  margin-top: 14px;
+  background: #f8f8f8;
+  padding: 12px 14px;
+  border-top: 3px solid #C8006B;
+}
+
+.dv-nota-director__mission-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 16px;
+  color: #111827;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.dv-nota-director__mission-text {
+  font-size: 9px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.dv-nota-director__becquer {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  background: #fafafa;
+}
+
+.dv-nota-director__becquer-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #C8006B;
+  margin-bottom: 6px;
+}
+
+.dv-nota-director__becquer-quote {
+  font-size: 10px;
+  font-style: italic;
+  color: #111827;
+  line-height: 1.7;
+}
+
+.dv-nota-director__becquer-author {
+  font-size: 9px;
+  color: #6b7280;
+  margin-top: 6px;
+}
+
+.dv-nota-director__chips {
+  margin-top: 16px;
+  border-top: 1px solid #e5e7eb;
+  padding-top: 10px;
+}
+
+.dv-nota-director__chips-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 12px;
+  color: #111827;
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+
+.dv-nota-director__chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dv-nota-director__chip {
+  font-size: 9px;
+  background: #111827;
+  color: #fff;
+  padding: 3px 8px;
+  letter-spacing: 0.04em;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
+.dv-nota-director__chip--magenta { background: #C8006B; }
+
+.dv-nota-director__mini-footer {
+  position: absolute;
+  bottom: 28px;
+  left: 60px;
+  right: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dv-nota-director__footer-left {
+  font-size: 9px;
+  color: #6b7280;
+  font-style: italic;
+}
+
+.dv-nota-director__footer-right {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 11px;
+  color: #6b7280;
+}

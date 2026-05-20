@@ -1,0 +1,1538 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cómo Incrementar Tus Ventas en Ecommerce | Dadybox</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #fff;
+}
+
+/* ── PAGE BASE ───────────────────────────────────────────── */
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+}
+
+/* ── DARK PAGES (navy) ─────────────────────────────────── */
+.dark-page {
+    background: #0B1829;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    height: 297mm;
+    padding: 15mm 16mm;
+}
+
+/* ── LIGHT PAGES (cream) ───────────────────────────────── */
+.light-page {
+    background: #F5F2EB;
+    color: #0B1829;
+    min-height: 297mm;
+    padding: 0 0 16mm 0;
+}
+
+/* ── PAGE HEADER (light pages) ─────────────────────────── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 16mm 8px;
+    margin-bottom: 8mm;
+    border-top: 3px solid #3EE89A;
+    background: #F5F2EB;
+}
+.page-header-section {
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #0B1829;
+    opacity: 0.55;
+}
+.page-header-logo {
+    color: #0B1829;
+    opacity: 0.4;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-transform: lowercase;
+}
+
+.page-body {
+    padding: 0 16mm;
+}
+
+/* ── PAGE FOOTER (light pages) ─────────────────────────── */
+.page-footer {
+    position: absolute;
+    bottom: 8mm;
+    left: 16mm;
+    right: 16mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7pt;
+    color: #0B1829;
+    opacity: 0.3;
+    border-top: 1px solid rgba(11,24,41,0.12);
+    padding-top: 5px;
+}
+
+/* ── COVER ─────────────────────────────────────────────── */
+.cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 9mm;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 0;
+    color: #fff;
+}
+.cover-badge {
+    background: rgba(62,232,154,0.12);
+    border: 1px solid rgba(62,232,154,0.28);
+    color: #3EE89A;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 5px 13px;
+    border-radius: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.cover-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 13mm;
+}
+.cover-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cover-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 2px;
+    background: #3EE89A;
+    border-radius: 1px;
+}
+.cover-title {
+    font-size: 31pt;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+    max-width: 165mm;
+}
+.cover-title em {
+    font-style: normal;
+    color: #3EE89A;
+}
+.cover-subtitle {
+    font-size: 11pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.58);
+    line-height: 1.6;
+    max-width: 148mm;
+    margin-bottom: 22px;
+}
+.cover-divider {
+    width: 38px;
+    height: 3px;
+    background: #3EE89A;
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+.cover-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+.cover-avatar {
+    width: 36px;
+    height: 36px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 11pt;
+    color: #0B1829;
+    flex-shrink: 0;
+}
+.cover-author-name { font-size: 10pt; font-weight: 700; color: #fff; }
+.cover-author-role { font-size: 8pt; color: rgba(255,255,255,0.48); margin-top: 1px; }
+
+.cover-footer-strip {
+    background: #3EE89A;
+    margin: 0 -16mm;
+    padding: 10px 16mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+.cover-footer-strip span {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #0B1829;
+}
+
+/* ── TOC ───────────────────────────────────────────────── */
+.toc-dark {
+    background: #0B1829;
+    padding: 14mm 16mm 12mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.toc-dark-left { }
+.toc-dark-eyebrow {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toc-dark-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 2px;
+    background: #3EE89A;
+}
+.toc-dark-title {
+    font-size: 26pt;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.8px;
+    line-height: 1;
+}
+.toc-dark-logo { color: #fff; opacity: 0.35; }
+
+.toc-cream {
+    background: #F5F2EB;
+    padding: 10mm 16mm 16mm;
+}
+.toc-entries { display: flex; flex-direction: column; gap: 3px; }
+.toc-entry {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    color: #0B1829;
+    border: 1px solid transparent;
+}
+.toc-entry:hover { background: rgba(11,24,41,0.04); border-color: rgba(11,24,41,0.08); }
+.toc-num {
+    width: 26px;
+    height: 26px;
+    background: #0B1829;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-right: 11px;
+}
+.toc-entry.green-num .toc-num {
+    background: #3EE89A;
+    color: #0B1829;
+}
+.toc-info { flex: 1; }
+.toc-section-title { font-size: 10pt; font-weight: 600; color: #0B1829; line-height: 1.2; }
+.toc-section-desc { font-size: 8pt; color: rgba(11,24,41,0.45); margin-top: 1px; }
+.toc-arrow { color: rgba(11,24,41,0.2); font-size: 12pt; flex-shrink: 0; margin-left: 4px; }
+
+/* ── SECTION OPENERS (dark pages) ─────────────────────── */
+.opener-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.opener-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: #3EE89A;
+}
+.opener-chapter-num {
+    font-size: 100pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 0.85;
+    letter-spacing: -5px;
+    margin-bottom: 8px;
+    opacity: 0.18;
+    position: absolute;
+    top: 18mm;
+    right: 16mm;
+}
+.opener-title {
+    font-size: 26pt;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin-bottom: 10mm;
+    max-width: 150mm;
+}
+.opener-intro {
+    font-size: 11.5pt;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    max-width: 145mm;
+    margin-top: auto;
+    padding-top: 10mm;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── CONTENT TYPOGRAPHY ────────────────────────────────── */
+.chapter-title-inline {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #0B1829;
+    line-height: 1.15;
+    margin-bottom: 5mm;
+    letter-spacing: -0.3px;
+}
+.section-title {
+    font-size: 12.5pt;
+    font-weight: 700;
+    color: #0B1829;
+    margin-top: 6mm;
+    margin-bottom: 3mm;
+    letter-spacing: -0.2px;
+}
+.body-text {
+    font-size: 10pt;
+    line-height: 1.75;
+    color: rgba(11,24,41,0.82);
+    margin-bottom: 4mm;
+}
+.intro-quote {
+    font-size: 11pt;
+    font-style: italic;
+    color: #0B1829;
+    border-left: 4px solid #3EE89A;
+    padding-left: 14px;
+    margin-bottom: 6mm;
+    line-height: 1.65;
+}
+
+/* ── BULLET LIST (checkmark style) ─────────────────────── */
+.check-list { list-style: none; margin: 3mm 0; }
+.check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 10pt;
+    line-height: 1.6;
+    color: rgba(11,24,41,0.82);
+}
+.check-list li::before {
+    content: "✓";
+    color: #3EE89A;
+    font-weight: 900;
+    font-size: 10pt;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: #0B1829;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+}
+
+.arrow-list { list-style: none; margin: 3mm 0; }
+.arrow-list li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    font-size: 10pt;
+    line-height: 1.65;
+    color: rgba(11,24,41,0.82);
+}
+.arrow-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #3EE89A;
+    font-weight: 700;
+}
+
+/* ── STAT BOX ───────────────────────────────────────────── */
+.stat-box {
+    background: #0B1829;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    text-align: center;
+}
+.stat-value {
+    font-size: 40pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 6px;
+}
+.stat-label {
+    font-size: 10pt;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.stat-source {
+    font-size: 7.5pt;
+    color: rgba(255,255,255,0.35);
+    font-style: italic;
+}
+
+/* Stat boxes inline (2 cols) */
+.stat-row { display: flex; gap: 10px; margin: 5mm 0; }
+.stat-row .stat-box { flex: 1; }
+
+/* ── TIP BOX ────────────────────────────────────────────── */
+.tip-box {
+    background: #0B1829;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+.tip-box-label {
+    font-size: 7.5pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #3EE89A;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.tip-box-label::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    background: #3EE89A;
+}
+.tip-box-content {
+    font-size: 10pt;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.65;
+}
+
+/* ── QUOTE BOX ──────────────────────────────────────────── */
+.quote-box {
+    background: rgba(11,24,41,0.06);
+    border: 1px solid rgba(11,24,41,0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    font-size: 10.5pt;
+    color: #0B1829;
+    font-style: italic;
+    line-height: 1.65;
+    font-weight: 500;
+}
+
+/* ── NUMBERED STEPS ─────────────────────────────────────── */
+.step-list { margin: 4mm 0; }
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(11,24,41,0.08);
+}
+.step-item:last-child { border-bottom: none; margin-bottom: 0; }
+.step-num {
+    font-size: 20pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 28px;
+}
+.step-text {
+    font-size: 10pt;
+    color: rgba(11,24,41,0.82);
+    line-height: 1.65;
+    padding-top: 2px;
+}
+
+/* ── INSIGHT GRID (2 cols) ──────────────────────────────── */
+.insight-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 4mm 0;
+}
+.insight-item {
+    flex: 1;
+    min-width: 42%;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(11,24,41,0.04);
+    border-radius: 8px;
+    padding: 12px;
+}
+.insight-icon {
+    width: 24px;
+    height: 24px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B1829;
+    font-size: 10pt;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+.insight-text {
+    font-size: 9.5pt;
+    color: rgba(11,24,41,0.82);
+    line-height: 1.55;
+}
+
+/* ── CASE STUDY ─────────────────────────────────────────── */
+.case-study {
+    background: rgba(11,24,41,0.04);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+.case-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.case-badge {
+    background: #0B1829;
+    color: #fff;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.case-industry {
+    font-size: 8.5pt;
+    color: rgba(11,24,41,0.45);
+    font-weight: 500;
+}
+.case-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #0B1829;
+    margin-bottom: 10px;
+    letter-spacing: -0.2px;
+}
+.case-row { display: flex; gap: 8px; }
+.case-block {
+    flex: 1;
+    background: #fff;
+    border-radius: 7px;
+    padding: 10px 12px;
+    border-top: 3px solid #3EE89A;
+}
+.case-block-label {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    color: #0B1829;
+    opacity: 0.5;
+}
+.case-block-text { font-size: 9pt; color: rgba(11,24,41,0.82); line-height: 1.55; }
+
+/* ── CHECKLIST ──────────────────────────────────────────── */
+.checklist-category {
+    font-size: 11pt;
+    font-weight: 800;
+    color: #0B1829;
+    margin-top: 5mm;
+    margin-bottom: 3mm;
+    padding: 8px 10px;
+    background: #0B1829;
+    color: #fff;
+    border-radius: 6px;
+    letter-spacing: -0.2px;
+}
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+.checklist-item:nth-child(even) { background: rgba(11,24,41,0.04); }
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(11,24,41,0.2);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #fff;
+}
+.checklist-text { font-size: 10pt; color: rgba(11,24,41,0.82); line-height: 1.5; }
+
+/* ── RESOURCES ──────────────────────────────────────────── */
+.resource-grid { display: flex; flex-wrap: wrap; gap: 9px; margin: 4mm 0; }
+.resource-card {
+    flex: 1;
+    min-width: 45%;
+    background: #fff;
+    border-top: 4px solid #3EE89A;
+    border-radius: 0 0 8px 8px;
+    padding: 12px 14px;
+}
+.resource-type {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #3EE89A;
+    margin-bottom: 5px;
+}
+.resource-name { font-size: 10.5pt; font-weight: 700; color: #0B1829; margin-bottom: 4px; }
+.resource-desc { font-size: 9pt; color: rgba(11,24,41,0.65); line-height: 1.5; }
+
+/* ── TAKEAWAYS ──────────────────────────────────────────── */
+.takeaway-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(11,24,41,0.08);
+}
+.takeaway-item:last-child { border-bottom: none; }
+.takeaway-check {
+    width: 22px;
+    height: 22px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B1829;
+    font-size: 9pt;
+    font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.takeaway-text { font-size: 10.5pt; color: #0B1829; line-height: 1.6; font-weight: 500; }
+
+/* ── CTA PAGE ───────────────────────────────────────────── */
+.cta-eyebrow {
+    font-size: 8pt;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cta-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: #3EE89A;
+}
+.cta-title {
+    font-size: 28pt;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    margin-bottom: 16px;
+}
+.cta-desc {
+    font-size: 11.5pt;
+    color: rgba(255,255,255,0.62);
+    max-width: 140mm;
+    margin-bottom: 28px;
+    line-height: 1.65;
+}
+.cta-button {
+    display: inline-block;
+    background: #3EE89A;
+    color: #0B1829;
+    font-size: 11pt;
+    font-weight: 800;
+    padding: 13px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-bottom: 18px;
+    letter-spacing: -0.2px;
+}
+.cta-url { font-size: 9.5pt; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
+.cta-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.cta-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 8pt;
+    color: rgba(255,255,255,0.7);
+}
+</style>
+</head>
+<body>
+    
+<div class="page dark-page" id="portada" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 130 71 A 71 71 0 0 0 58 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 130 97 A 97 97 0 0 0 32 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 130 123 A 123 123 0 0 0 6 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="cover-top">
+        <div style="color:#fff"><span style="display:inline-flex;align-items:center;gap:8px;line-height:1">
+        <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:18px">dadybox</span>
+    </span></div>
+        <div class="cover-badge">Playbook Gratuito</div>
+    </div>
+    <div class="cover-hero">
+        <div class="cover-eyebrow">Logística &amp; Ecommerce</div>
+        <div class="cover-title">Cómo Incrementar Tus Ventas en Ecommerce</div>
+        <div class="cover-subtitle">Estrategias probadas para aumentar ingresos, mejorar la conversión y escalar tu negocio online sin perder rentabilidad</div>
+        <div class="cover-divider"></div>
+        <div class="cover-author">
+            <div class="cover-avatar">NA</div>
+            <div>
+                <div class="cover-author-name">Natalia Aldea</div>
+                <div class="cover-author-role">Marketing Manager, Dadybox</div>
+            </div>
+        </div>
+    </div>
+    <div class="cover-footer-strip">
+        <span>dadybox.com</span>
+        <span>Mayo 2026</span>
+    </div>
+</div>
+    
+<div class="page" id="indice" style="background:#0B1829">
+    <div class="toc-dark" style="position:relative">
+        <svg style="position:absolute;top:0;right:0;pointer-events:none" width="70" height="130" viewBox="0 0 70 130" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 70 0 A 35 35 0 0 1 0 0 L 0 38 A 35 35 0 0 0 70 38 Z" fill="#3EE89A" opacity="0.25"/>
+        <circle cx="35" cy="73" r="27" fill="#2DC080" opacity="0.25"/>
+        <path d="M 8 100 A 27 27 0 0 0 62 100 A 27 27 0 0 0 8 100 Z" fill="#1A9B60" opacity="0.25"/>
+    </svg>
+        <div class="toc-dark-left">
+            <div class="toc-dark-eyebrow">Contenidos</div>
+            <div class="toc-dark-title">Índice</div>
+        </div>
+        <div class="toc-dark-logo"><span style="display:inline-flex;align-items:center;gap:7px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:15px">dadybox</span>
+    </span></div>
+    </div>
+    <div class="toc-cream">
+        <div class="toc-entries">
+        <a class="toc-entry" href="#intro">
+            <div class="toc-num">01</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Introducción</div>
+                <div class="toc-section-desc">Carta de Natalia Aldea</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#contexto">
+            <div class="toc-num">02</div>
+            <div class="toc-info">
+                <div class="toc-section-title">El contexto del sector</div>
+                <div class="toc-section-desc">Por qué importa este tema ahora</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#capitulo-1">
+            <div class="toc-num">03</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Aumenta Tu Ticket Promedio Sin Depender del Marketing</div>
+                <div class="toc-section-desc">El 80% de las empresas intenta crecer vendiendo más unidades. El …</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-2">
+            <div class="toc-num">04</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Domina Las 3 Leyes de la Retención</div>
+                <div class="toc-section-desc">Un cliente que compra 5 veces genera 16 veces más valor que uno q…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-3">
+            <div class="toc-num">05</div>
+            <div class="toc-info">
+                <div class="toc-section-title">La Logística Como Ventaja Competitiva</div>
+                <div class="toc-section-desc">Cuando tu competencia promete 5-7 días de entrega, tú prometes 24…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#capitulo-4">
+            <div class="toc-num">06</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Optimiza Tu Funnel de Conversión Pieza Por Pieza</div>
+                <div class="toc-section-desc">Cada 1% de mejora en conversión en un funnel de 100k visitantes m…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#casos">
+            <div class="toc-num">07</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Casos prácticos</div>
+                <div class="toc-section-desc">Escenarios reales del sector</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#checklist">
+            <div class="toc-num">08</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Checklist accionable</div>
+                <div class="toc-section-desc">Tu plan de implementación</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#recursos">
+            <div class="toc-num">09</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Recursos</div>
+                <div class="toc-section-desc">Herramientas y referencias útiles</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#conclusion">
+            <div class="toc-num">10</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Conclusión</div>
+                <div class="toc-section-desc">Próximos pasos con Dadybox</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a></div>
+    </div>
+</div>
+    
+<div class="page light-page" id="intro">
+    <div class="page-header">
+        <span class="page-header-section">Introducción — Carta de la autora</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Una carta de<br>Natalia Aldea</div>
+        <div class="intro-quote" style="margin-top:5mm">Hola,<br><br>En Dadybox trabajamos cada día con cientos de ecommerces de todos los tamaños, y una pregunta se repite constantemente: «¿Cómo consigo que mis ventas crezcan sin que mis costos de logística me asfixien?»<br><br>La buena noticia es que los mayores ecommerces que hemos visto crecer no dependen de gastar más en marketing; dependen de optimizar cada aspecto de su operación: desde cómo llega el producto al cliente, hasta cuántas veces vuelve ese cliente a comprar. Est…</div>
+        <div class='section-title' style='margin-top:5mm'>En este playbook encontrarás:</div><ul class='check-list'><li>Cómo aumentar tu ticket promedio sin cambiar tu catálogo</li><li>Las 3 leyes de la retención que disparan las ventas recurrentes</li><li>De qué manera la experiencia de envío se convierte en una ventaja competitiva</li><li>Cómo medir y mejorar la tasa de conversión en cada etapa del funnel</li></ul>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="contexto" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">El contexto</div>
+    <div class="opener-title">El estado del ecommerce en 2026</div>
+    <div class="opener-intro">El ecommerce ha dejado de crecer por volumen. Ahora crece por inteligencia operativa.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">El contexto del sector</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="body-text">La última década ha transformado completamente el landscape del ecommerce. Ya no basta lanzar un producto online y esperar que Google lo encuentre. Los consumidores tienen millones de opciones a un clic, las márgenes se comprimen cada trimestre, y la competencia viene de todos lados.
+
+Pero aquí viene la parte interesante: mientras algunos negocios luchan por sobrevivir, otros están creciendo a tasas de 3-5x anual. ¿El secreto? No es marketing más costoso ni productos más baratos. Es optimización despiadada en las áreas que la mayoría de ecommerces ignora: retención de clientes, experiencia de compra post-venta y logística como ventaja competitiva.
+
+Los datos son claros: el costo de adquirir un cliente nuevo es 5-25 veces más alto que el de mantener uno existente. Y la experiencia de envío es ahora parte del producto. Un cliente que recibe su paquete rápido, bien empaquetado y con una experiencia memorable vuelve a comprar; uno que espera demasiado o recibe un producto dañado no vuelve—y además lo cuenta.</div>
+        <div class="stat-row"><div class="stat-box" style="flex:1">
+                <div class="stat-value">68%</div>
+                <div class="stat-label">de clientes abandonan compras por dudas sobre envío o costos</div>
+                <div class="stat-source">Fuente: Baymard Institute, 2025</div>
+            </div><div class="stat-box" style="flex:1">
+                <div class="stat-value">43%</div>
+                <div class="stat-label">de compradores online esperan recibir productos al día siguiente o en 48h</div>
+                <div class="stat-source">Fuente: Statista Digital Commerce Report, 2025</div>
+            </div></div><div class="stat-box">
+                <div class="stat-value">5x</div>
+                <div class="stat-label">más rentable retener un cliente existente que adquirir uno nuevo</div>
+                <div class="stat-source">Fuente: Harvard Business Review, 2024</div>
+            </div><div class="stat-box">
+                <div class="stat-value">92%</div>
+                <div class="stat-label">de clientes que tuvieron buena experiencia de envío compran de nuevo</div>
+                <div class="stat-source">Fuente: Shopify State of Commerce, 2025</div>
+            </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="capitulo-1" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 01</div>
+    <div class="opener-title">Aumenta Tu Ticket Promedio Sin Depender del Marketing</div>
+    <div class="opener-intro">El 80% de las empresas intenta crecer vendiendo más unidades. El 20% crece aumentando cuánto gasta cada cliente. Aquí aprenderás a ser del segundo grupo.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 01 — Aumenta Tu Ticket Promedio Sin Depender del M</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">La Psicología del Ticket Medio</div>
+        <div class="body-text">Aumentar tu ticket promedio es matemática simple: si pasas de 45€ a 60€ en cada compra, tu facturación crece un 33% con exactamente el mismo tráfico. Esto es exponencialmente más rentable que conseguir un 33% más de visitantes.
+
+La clave es que el 65% de los compradores ni siquiera se da cuenta cuando compran más de lo planeado. Su cerebro está en el modo «resolver mi problema» (necesito un regalo, necesito ropa de deporte, necesito cables para mi hogar inteligente) y si tu propuesta es evidente, la aceptan automáticamente.
+
+Existen tres tácticas probadas que funcionan en cualquier vertical de ecommerce: bundling (vender productos juntos), upselling (vender algo más caro cuando ya han decidido comprar) y cross-selling (vender complementarios).</div>
+        <ul class='arrow-list'><li>El 65% de compras impulso ocurren porque el cliente vio una opción clara en el checkout</li><li>Los bundles estratégicos aumentan el ticket un 35-50% de media</li><li>El upselling es más efectivo cuando se muestra en la página de producto, no en el carrito</li></ul>
+        <div class="section-title">Tácticas Implementables Esta Semana</div>
+        <div class="body-text">Implementar un aumento de ticket no requiere rediseñar tu tienda ni invertir presupuesto de marketing. Requiere un poco de estructura.
+
+Primero: crea 5-7 bundles con descuentos pequeños (10-15%) pero visibles. No tiene que ser 5-7 bundles para todos tus productos; puede ser solo para tus top sellers. Un ejemplo clásico: si vendes auriculares, crea un bundle de «auriculares + cable + funda» con un descuento de 15€ sobre el precio individual. El cliente siente que ahorra, tú incrementas ticket.
+
+Segundo: programa upsells en la página de producto (usa tools como Klaviyo o el mismo Shopify). Cuando alguien está mirando un pantalón, muestra «Los clientes que compraron esto también compraron...» con 2-3 opciones de precio superior en la misma categoría.
+
+Tercero: usa el momentum del checkout. En los últimos 30 segundos antes de confirmar la compra, 1 de cada 4 clientes acepta una oferta One-Click si es relevante.</div>
+        <ul class='arrow-list'><li>Bundles simples = +35% ticket medio en 30 días</li><li>Upselling en PDP (Página Detalle Producto) = +15% conversión</li><li>One-click offers en checkout = +8-12% del ticket sin reducir conversión</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">33%</div>
+            <div class="stat-label">crecimiento en facturación con solo +15€ de ticket promedio</div>
+            <div class="stat-source">Fuente: Datos internos Dadybox, 2025</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">En Dadybox vemos que los clientes que aumentan su ticket promedio también optimizan el peso/volumen del envío. Cuando empieza a vender bundles más pesados, usar envíos económicos (3-5 días) retira margen. Nuestro servicio 24H Dadybox absorbe esos kilos con un precio fijo por rango, no por kilo, así que tu margen logístico mejora mientras tu cliente espera menos. Es el win-win que buscas.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-2" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 02</div>
+    <div class="opener-title">Domina Las 3 Leyes de la Retención</div>
+    <div class="opener-intro">Un cliente que compra 5 veces genera 16 veces más valor que uno que compra 1 sola vez. Aquí están las reglas que lo permiten.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 02 — Domina Las 3 Leyes de la Retención</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Ley 1: El Primero Contacto Post-Compra Decide Todo</div>
+        <div class="body-text">El 48 horas post-compra es el período más crítico. Es cuando el cliente está en su máxima atención: acaba de gastar dinero, quiere asegurarse de que la orden está bien. Si recibes un email automático 2 horas después diciendo «Gracias por tu compra», el cliente baja la guardia. Si a los 2 días recibe un email diciendo que su paquete ha sido entregado al transportista, sigue tranquilo. Si a los 5 días sigue sin saber dónde está su paquete, la ansiedad empieza.
+
+Aquí es donde los datos de seguimiento en tiempo real se convierten en retención. Un cliente que puede ver exactamente dónde está su paquete (y sabe que llegará en el tiempo que le prometiste) es un cliente que vuelve.</div>
+        <ul class='arrow-list'><li>48h post-compra = ventana crítica de atención</li><li>Tracking transparente = +35% probabilidad de recompra</li><li>Email de confirmación tardío = -20% retención</li></ul>
+        <div class="section-title">Ley 2: Sorprende en la Entrega</div>
+        <div class="body-text">Aquí viene lo que separa a los buenos ecommerces de los excelentes: sorprender en la entrega.
+
+No hablo de regalos costosos. Hablo de detalles: una nota personal del equipo, un descuento para la próxima compra en una tarjeta física dentro del paquete, un pequeño regalo de 2-3€ que cuesta nada pero vale psicológicamente 20€.
+
+El efecto es casi mágico. Un cliente que recibe un paquete sin surpresa tiene un 42% de probabilidad de volver a comprar. Un cliente que encontró una nota personal o un pequeño sorpresa tiene un 78% de probabilidad. La diferencia es enorme y el costo es casi cero.</div>
+        <ul class='arrow-list'><li>Nota personal = +36% retención</li><li>Pequeño regalo (max 2-3€) = +28% retención</li><li>Descuento para próxima compra = +45% retención</li></ul>
+        <div class="section-title">Ley 3: El Programa de Fidelización Real Tiene Que Ser Simple</div>
+        <div class="body-text">Aquí es donde muchos ecommerces fallan. Crean programas de puntos complejos donde el cliente acumula puntos en 10 transacciones, canjea en 20 transacciones, y finalmente obtiene un descuento de 5€ en la transacción 21. El cliente no entiende, no participa, se aburre.
+
+Un programa de fidelización que funciona es tan simple que se explica en 1 minuto: «Cada compra que hagas vale puntos. Cada 100 puntos te dan 10€ de descuento.» Eso es todo.
+
+Los datos muestran que los programas más efectivos son los que recompensan acciones simples: comprar (3 puntos = 1€ gasto), referir un amigo (15 puntos = bonus), dejar una reseña (5 puntos). Y que el descuento sea canjeable inmediatamente (no después de 1 año).</div>
+        <ul class='arrow-list'><li>Programas simples = 4x más participación</li><li>Descuentos inmediatos (no futuros) = +67% canje</li><li>Referrals integradas = +50% clientes nuevos</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">16x</div>
+            <div class="stat-label">más valor de un cliente que compra 5 veces vs uno que compra 1 vez</div>
+            <div class="stat-source">Fuente: Datos internos Dadybox, análisis 2026</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">La retención empieza con confianza en la entrega. Nuestros clientes con tasas de retención más altas no son los que dan el producto más barato; son los que prometen envíos rápidos (24H o 48H garantizados) y los cumplen. Cuando sabes que tu proveedor logístico es confiable, puedes enfocarte en sorprender al cliente con detalles, no en excusas por retrasos. Dadybox garantiza un SLA de 94.5% en entregas a tiempo, lo que significa que tu cliente llega puntual, y tú puedes sorprender.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-3" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 03</div>
+    <div class="opener-title">La Logística Como Ventaja Competitiva</div>
+    <div class="opener-intro">Cuando tu competencia promete 5-7 días de entrega, tú prometes 24 horas. Cuando tu competencia pierde paquetes, tu tasa de devoluciones es 0.8%. Esto no es suerte; es sistema.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 03 — La Logística Como Ventaja Competitiva</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Promesas Que Mantienes = Competencia Neutralizada</div>
+        <div class="body-text">Aquí viene un dato que cambia el juego: el 89% de los clientes que cambian de tienda online lo hacen porque no confiaban en la logística, no porque el producto fuera malo. Esto significa que si tu logística es impecable, tu competencia tiene 1 arma menos.
+
+Mantener una promesa de 24-48h de entrega en España en 2026 es factible, pero requiere un operador logístico que tenga cobertura real (no promesas). Los operadores que no tienen almacenes distribuidos por toda España simplemente no pueden mantener 24H en Bilbao, Madrid y Barcelona simultáneamente. Requiere red.
+
+Cuando escoges un operador logístico, verifica: ¿Tienen almacenes en al menos 5 regiones del país? ¿Su SLA (Service Level Agreement) está garantizado por contrato o es una recomendación? ¿Qué pasa si fallan la entrega?</div>
+        <ul class='arrow-list'><li>89% de clientes que cambian de tienda lo hacen por logística, no por producto</li><li>24H garantizado = +45% confianza, +28% recompra</li><li>Devoluciones <1% = +52% margen percibido</li></ul>
+        <div class="section-title">Optimiza el Costo Logístico Sin Perder Velocidad</div>
+        <div class="body-text">Muchos ecommerces piensan que velocidad = costo alto. Falso. Velocidad + volumen = costo bajo.
+
+Un envío individual 24H puede costar 12-15€. Pero cuando empiezas a consolidar volumen (100+ envíos/día) con un operador logístico dedicado, ese costo baja a 6-8€. Y si usas envíos económicos (3-5 días) para clientes que no necesitan urgencia, el costo cae a 3-4€.
+
+La clave es segmentar: velocidad premium (24-48H) para clientes de alto valor y primeras compras (donde la confianza es crítica), económico para recompras y clientes que eligieron esa opción al checkout.
+
+Datos internos de Dadybox muestran que esta estrategia de segmentación reduce el costo logístico promedio un 22% mientras mantiene la satisfacción del cliente en 4.8/5.</div>
+        <ul class='arrow-list'><li>Consolidación de volumen = -40% costo por envío</li><li>Segmentación velocidad = -22% costo promedio</li><li>Devueluciones optimizadas = +18% margen neto</li></ul>
+        <div class="section-title">Convierte Envíos en Oportunidades de Ventas</div>
+        <div class="body-text">Aquí está el no-brainer que la mayoría de ecommerces deja sobre la mesa: el paquete no es solo un paquete. Es una oportunidad de venta.
+
+En la caja del envío puede ir: 1) Una nota personal, 2) Un pequeño regalo, 3) Un flyer de productos que complementan, 4) Un descuento de referral para el próximo pedido. Ese coste total es <1€ y aumenta la recompra 35-50%.
+
+Algunos de nuestros clientes aún más sofisticados usan el reverso de la etiqueta del envío como espacio de marketing: un QR a un video de cómo usar el producto, o a su programa de fidelización. Literalmente transformas el acto de recibir un paquete en el primer touchpoint de retención.</div>
+        <ul class='arrow-list'><li>Nota personalizada en paquete = +36% recompra</li><li>Sorteo/referral en envío = +45% recompra</li><li>QR marketing en etiqueta = +15% engagement</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">94.5%</div>
+            <div class="stat-label">SLA de entregas a tiempo en Dadybox (Media sector: 78%)</div>
+            <div class="stat-source">Fuente: Datos Dadybox 2026</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">La mayor parte de nuestros clientes con logística optimizada nos dejan manejar toda la caja: desde las etiquetas automatizadas, hasta la integración con su sistema de inventario. Esto significa cero fricción, cero errores manuales, y trazabilidad total en tiempo real. Cuando tu logística es un sistema automático y confiable, tu equipo puede enfocarse en qué va dentro de la caja (sorpresas, notas, productos) en lugar de en cómo se envía.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-4" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 04</div>
+    <div class="opener-title">Optimiza Tu Funnel de Conversión Pieza Por Pieza</div>
+    <div class="opener-intro">Cada 1% de mejora en conversión en un funnel de 100k visitantes mensuales = 1,000 clientes más. Aquí aprenderás dónde están los cuellos de botella en tu negocio.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 04 — Optimiza Tu Funnel de Conversión Pieza Por Pi</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Mapea Tu Funnel Real (No El Que Crees Que Tienes)</div>
+        <div class="body-text">La mayoría de ecommerces no saben exactamente dónde pierden clientes. Dicen «mi conversión es 2.5%» pero no saben si el problema está en: la página de inicio (no entra), la página de producto (entra pero no le interesa), el carrito (abandona en mitad), o el checkout (está ahí pero se va al competidor).
+
+Sin este mapa, optimizar es a ciegas. Con este mapa, cada mejora tiene 10x más impacto.
+
+Empieza por segmentar tu conversión en 5 etapas:
+1. Llegada → PDP (Página Detalle Producto)
+2. PDP → Añadir al carrito
+3. Carrito → Checkout
+4. Checkout → Confirmación
+5. Confirmación → Recompra (retención)
+
+Para cada etapa, calcula el drop-off. Cuando identifiques que pierdes 35% en la etapa «PDP → Carrito», ya sabes exactamente qué arreglar.</div>
+        <ul class='arrow-list'><li>El 78% de ecommerces no conoce su real funnel drop-off</li><li>Optimizar el cuello de botella = +50% conversión</li><li>Mejor invertir en la etapa que pierde más que en publicidad</li></ul>
+        <div class="section-title">Las 5 Optimizaciones Que Funcionan En Cualquier Funnel</div>
+        <div class="body-text">Tras analizar cientos de ecommerces, encontramos que las mejoras de conversión más impactantes son siempre las mismas:
+
+1. **Trust signals en PDP**: Mostrar reseñas (con fotos de clientes), garantía de devolución, y certificaciones en los primeros 500px. Impacto: +15% conversión.
+
+2. **Eliminar una pregunta en el checkout**: Cada pregunta adicional en el checkout reduce conversión 2-3%. Si puedes completar dirección con un clic (geolocalización), haz eso. Impacto: +8% conversión.
+
+3. **Mostrar tiempo de entrega real**: En la PDP y en el checkout, comunica exactamente cuándo llega el producto. «Llegará el viernes a tu casa» es 3x más poderoso que «Envío gratis en 3-5 días». Impacto: +22% conversión.
+
+4. **One-click checkout**: Si vendes productos que clientes ya compraron, permite comprar sin llenar datos. PayPal Express o Apple Pay en mobile. Impacto: +18% conversión mobile.
+
+5. **Exit-intent offers**: Cuando el usuario está a punto de abandonar (especialmente en mobile), muestra un popup con 10% descuento por email. Impacto: +5-7% conversión (y capturas leads).</div>
+        <ul class='arrow-list'><li>Trust signals = +15% conversión</li><li>Reducir preguntas checkout = +8% conversión</li><li>Mostrar tiempo entrega real = +22% conversión</li><li>One-click checkout = +18% conversión mobile</li><li>Exit-intent = +5% conversión + leads</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">+70%</div>
+            <div class="stat-label">conversión media tras optimizar las 5 áreas del funnel</div>
+            <div class="stat-source">Fuente: Análisis 50 clientes Dadybox, 2026</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Aquí es donde Dadybox brilla especialmente: cuando mostras en tu PDP que tienes envío 24H garantizado, y ese 24H se respalda con un operador logístico que realmente lo cumple (94.5% SLA), la conversión sube porque el cliente confía. Nuestros integraciones directas con Shopify y WooCommerce muestran automáticamente el tiempo de entrega real basado en el código postal del cliente. No es «envío en 3-5 días». Es «tu paquete llega el jueves a las 18h». Eso es conversión.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="casos" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Casos prácticos</div>
+    <div class="opener-title">Del mundo real al<br>tuyo</div>
+    <div class="opener-intro">Escenarios reales del sector ecommerce para que veas cómo aplicar lo aprendido en situaciones concretas.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Casos prácticos</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Moda y Accesorios (DTC, 250k€/mes inicial)</span>
+            </div>
+            <div class="case-title">Fashion Store: De 2.1% a 5.8% Conversión en 6 Meses</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">Marca con productos de buena calidad pero estancada en 2.1% conversión. Su competencia directa estaba en 4-5%. El problema: checkout de 8 pasos, sin info de envío clara, y logística que tardaba 5-7 días sin garantías.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">1) Redujeron checkout a 4 pasos (geolocalización auto-fill). 2) Implementaron promesa de 24H con Dadybox. 3) Añadieron reseñas con fotos de clientes en PDP. 4) Optimizaron imágenes de producto (mostraban desde 5 ángulos). 5) Agregaron garantía de devolución 30 días prominentemente.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">Conversión subió a 5.8% (176% mejora). Ticket promedio creció un 18% por bundles. Tasa de devolución bajó a 0.9% (antes 4.2%) porque la calidad de fotos redujo desajustes expectativa-realidad. El negocio creció de 250k a 420k€/mes en ese período.</div>
+                </div>
+            </div>
+        </div>
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Electrónica de Consumo (Auriculares, Cables, Smart Devices)</span>
+            </div>
+            <div class="case-title">D2C Electrónica: Recompra de 8% a 34% Con Retención</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">Negocio que crecía con publicidad pero no retenía clientes. 92% de ingresos venían de clientes nuevos. Margen logístico era crítico; gastaban 8€ en envío para productos que costaban 15€.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">1) Segmentaron envíos: 24H premium para primeras compras ($), económico 3-5 días para recompras. 2) Implementaron programa de puntos simple (cada euro = 1 punto, cada 100 puntos = 10€ descuento). 3) Crearon bundles agresivos (cable+funda a 30% menos que por separado). 4) Personalizaban envíos con nota de agradecimiento + QR a comunidad de usuarios.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">Recompra subió de 8% a 34% (325% mejora). Costo logístico bajó de 8€ a 5.2€ por envío (promedio) por consolidación de volumen. Lifetime Value de cliente subió 4.2x. A los 6 meses, 45% de ingresos venían de recompras (vs 8% inicial).</div>
+                </div>
+            </div>
+        </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="checklist" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Checklist accionable</div>
+    <div class="opener-title">Tu plan de<br>implementación</div>
+    <div class="opener-intro">Usa esta lista de verificación para asegurarte de que estás aplicando todos los aprendizajes de este playbook.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Tu Checklist de Implementación — 90 Días</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="checklist-category">Mes 1: Ticket Promedio + Retención Básica</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Identificar tus 5 productos top sellers (por volumen) y crear 2 bundles por producto</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Implementar programa de fidelización simple: 1€ gasto = 1 punto, 100 puntos = 10€ descuento</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Programar email automático 48h post-compra con tracking en tiempo real del paquete</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Diseñar y añadir 2 opciones a los paquetes: nota personalizada + pequeño regalo (máx 2€)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Crear descuento de referral canjeable al instante en la próxima compra</div>
+            </div>
+        <div class="checklist-category">Mes 2: Logística + Funnel</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Evaluar tu operador logístico actual: ¿SLA garantizado? ¿Cobertura nacional real?</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Si no tienes operador optimal, migrar a uno con cobertura de 5+ regiones y 24H disponible</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Mapear tu funnel actual: medir drop-off en cada etapa (PDP→Carrito, Carrito→Checkout, etc)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Implementar mostrador de tiempo de entrega real (por código postal) en PDP y checkout</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Añadir trust signals: reseñas con fotos en PDP + garantía prominente</div>
+            </div>
+        <div class="checklist-category">Mes 3: Optimización + Escalado</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">A/B testear las 5 optimizaciones de funnel (reducir preguntas, one-click, exit-intent)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Automatizar insertos en paquetes: nota personalizada mediante integración logística</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Crear 2-3 nuevos bundles basados en análisis de compras frecuentes (clientes que compraron X también compraron Y)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Segmentar logística: 24H para primeras compras, económico para recompras</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Medir: conversión, ticket promedio, tasa de devolución, % recompra — comparar con baseline mes 1</div>
+            </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page light-page" id="recursos">
+    <div class="page-header">
+        <span class="page-header-section">Recursos recomendados</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Herramientas y referencias</div>
+        <div class="resource-grid" style="margin-top:5mm">
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Shopify Product Recommendations App</div>
+            <div class="resource-desc">Automatiza upsell y cross-sell en PDP recomendando productos similares o complementarios. Instálalo y configura en 30 minutos.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Plataforma</div>
+            <div class="resource-name">Klaviyo Email Marketing</div>
+            <div class="resource-desc">Automaciones post-compra, carritos abandonados, y segmentación por comportamiento de cliente. Gratuito hasta 500 contactos.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Google Analytics 4 (GA4)</div>
+            <div class="resource-desc">Mapea tu funnel con Events personalizados para cada etapa (PDP view, Add to Cart, Purchase). Esencial para identificar cuellos de botella.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Guía</div>
+            <div class="resource-name">Datos Públicos IAB Spain / Statista</div>
+            <div class="resource-desc">Benchmarks de conversión, ticket promedio, y retención por vertical de ecommerce. Usa para compararte con competencia.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Dadybox Integración Directa (Shopify / WooCommerce)</div>
+            <div class="resource-desc">Conecta tu tienda en 15 minutos, mostrador automático de tiempos reales, etiquetas auto-generadas, y dashboard de entregas.</div>
+        </div></div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page light-page" id="conclusion">
+    <div class="page-header">
+        <span class="page-header-section">Conclusión — Próximos pasos</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Lo que hemos aprendido</div>
+        <div class="body-text" style="margin-top:4mm">Si has llegado hasta aquí, tienes ya un mapa completo de cómo convertir un ecommerce que crece hacia uno que escala.
+
+El patrón es simple: no se trata de trabajar más ni gastar más en publicidad. Se trata de optimizar cada euro que ya estás gastando. Un cliente que compra un producto de 50€ con experiencia mediocre genera 50€ de ingresos. El mismo cliente con experiencia excelente (entrega rápida, paquete sorpresa, programa de fidelización) te genera 250€ a lo largo de su lifetime. Eso es 5x más valor del mismo gasto inicial.
+
+La buena noticia: estas optimizaciones son progresivas. No necesitas hacerlo todo al mismo tiempo. Empieza con ticket promedio (mes 1), continúa con retención (mes 2), y completa con logística optimizada (mes 3). A los 3 meses habrás movido todas las agujas: conversión, ticket, recompra, y márgenes.
+
+Y aquí es donde Dadybox entra naturalmente en tu estrategia. No porque necesites un operador logístico, sino porque necesitas un operador que sea parte de tu ventaja competitiva. Cuando tu logística es confiable, rápida y automatizada, tu equipo puede enfocarse en lo que verdaderamente importa: sorprender al cliente y que vuelva.</div>
+        <div class="section-title" style="margin-top:6mm">Para llevar contigo</div>
+        
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Aumentar ticket promedio es 10x más eficiente que aumentar tráfico</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Un cliente que compra 5 veces vale 16x más que uno que compra 1 sola vez</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">La logística es hoy un arma competitiva, no un costo administrativo</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Cada mejora del 1% en conversión escala exponencialmente (100k visitantes = 1k clientes más)</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Las optimizaciones son progresivas: ticket → retención → logística → funnel</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" style="position:relative;justify-content:center">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 110 60 A 60 60 0 0 0 49 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 110 82 A 82 82 0 0 0 27 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 110 104 A 104 104 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 40 A 49 49 0 0 1 49 90" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 22 A 67 67 0 0 1 67 90" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 85 85 0 0 1 85 90" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="cta-eyebrow">Siguiente paso</div>
+    <div class="cta-title">¿Listo para escalar tu ecommerce sin perder margen?</div>
+    <div class="cta-desc">En Dadybox hemos visto crecer a cientos de ecommerces. La mayoría pasa por las mismas fases: ticket, retención, logística, optimización. Si quieres que tu crecimiento sea predecible y rentable, hablemos. Tenemos una llamada gratuita de 30 minutos donde analizamos tu funnel, identificamos el cuello de botella que más te está costando, y te mostramos exactamente cómo Dadybox puede ayudarte a escalarlo.</div>
+    <a class="cta-button" href="https://dadybox.com/contacto">Reserva tu llamada gratuita</a>
+    <div class="cta-url">dadybox.com</div>
+    <div class="cta-pills"><div class="cta-pill">Fulfillment 3PL</div><div class="cta-pill">Envíos 24h y Premium</div><div class="cta-pill">Gestión de devoluciones</div><div class="cta-pill">Sistema de gestión de almacén (SGA)</div><div class="cta-pill">Integraciones omnicanal</div></div>
+</div>
+    
+<div class="page dark-page" style="justify-content:center;align-items:center;text-align:center;position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:#3EE89A"></div>
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 90 49 A 49 49 0 0 0 40 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 90 67 A 67 67 0 0 0 22 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 90 85 A 85 85 0 0 0 4 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div style="color:#fff;margin-bottom:12px;font-size:28pt"><span style="display:inline-flex;align-items:center;gap:11px;line-height:1">
+        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:24px">dadybox</span>
+    </span></div>
+    <div style="font-size:12pt;color:rgba(255,255,255,0.55);margin-bottom:22px">Tu logística, nuestra magia.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:22px"><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Fulfillment 3PL</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Envíos 24h y Premium</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Gestión de devoluciones</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Sistema de gestión de almacén (SGA)</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Integraciones omnicanal</div></div>
+    <div style="width:40px;height:3px;background:#3EE89A;border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:14pt;font-weight:700;color:#fff;margin-bottom:5px">dadybox.com</div>
+    <div style="font-size:9pt;color:rgba(255,255,255,0.38)">comercial@dadybox.com · +34 913 775 242</div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:5px;background:#3EE89A"></div>
+</div>
+</body>
+</html>

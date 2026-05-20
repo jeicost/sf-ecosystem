@@ -1,0 +1,20 @@
+.dv-a4 {
+  width:    var(--page-w);
+  height:   var(--page-h);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: var(--page-shadow);
+
+  /* Print */
+  break-before: page;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+@media print {
+  .dv-a4 {
+    box-shadow: none;
+    break-before: page;
+  }
+}

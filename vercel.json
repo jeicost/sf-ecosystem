@@ -1,0 +1,13 @@
+{
+  "experimentalServices": {
+    "sf-sales-engine": {
+      "entrypoint": "agency/sf-sales-engine",
+      "routePrefix": "/_/sf-sales-engine"
+    },
+    "salsa-burgers": {
+      "entrypoint": "clients/salsa-burgers",
+      "routePrefix": "/_/salsa-burgers",
+      "buildCommand": "pip install -r requirements.txt && playwright install chromium --with-deps"
+    }
+  }
+}

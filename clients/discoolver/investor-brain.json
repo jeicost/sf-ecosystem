@@ -1,0 +1,148 @@
+{
+  "company": {
+    "name": "discoolver",
+    "legal": "Discoolverworld S.L.",
+    "slug": "discoolver",
+    "tagline": "El futuro del turismo hoy en tu destino",
+    "sector": "Travel Tech / Destination Management SaaS",
+    "stage": "Seed",
+    "founded": "2019",
+    "country": "España",
+    "website": "www.discoolver.com"
+  },
+  "round": {
+    "type": "Por definir",
+    "amount": "TBD",
+    "vehicle": "Equity",
+    "pre_money": "[PENDIENTE]",
+    "deadline": "",
+    "lead_investor": ""
+  },
+  "problem": {
+    "statement": "Los destinos turísticos no tienen herramientas propias para digitalizar, personalizar ni monetizar la experiencia del viajero más allá del alojamiento.",
+    "pain_level": 9,
+    "who_suffers": "Gestores de destinos turísticos (patronatos, DMOs, ayuntamientos) y los 200M+ negocios locales invisibles para el turista",
+    "market_size_pain": "€85bn gasto en servicios en destino en Europa sin captura digital",
+    "current_solutions_fail": "TripAdvisor y Google Maps son B2C y no dan ingresos al destino. Civitatis solo booking, sin datos. Ninguna solución unifica marketplace + POS + planificación + BI."
+  },
+  "solution": {
+    "description": "Plataforma SaaS todo-en-uno que permite a destinos turísticos digitalizar y monetizar la experiencia del viajero: marketplace, POS, planificador de rutas IA, calendario de eventos y business intelligence — sin desarrollar tecnología propia.",
+    "how_it_works_steps": [
+      "El destino integra los módulos en su web existente o despliega la plataforma en 15 días",
+      "Los turistas descubren, planifican y compran experiencias locales a través de Plan My Trip y el marketplace",
+      "El destino recibe datos en tiempo real, ingresos recurrentes y reportes estratégicos de su audiencia"
+    ],
+    "tech_moat": "API backend Spring Boot con 5 años de datos de comportamiento turístico. IA de personalización entrenada con patrones de 200+ negocios locales. Multi-idioma nativo (ES/EN/FR/DE/IT).",
+    "demo_url": "app.discoolver.com"
+  },
+  "market": {
+    "TAM": "€120bn — Mercado global de tecnología para turismo y gestión de destinos (WTO 2024)",
+    "SAM": "€4.2bn — Destinos turísticos en España, Portugal, Francia e Italia con presupuesto de digitalización",
+    "SOM_Y1": "€2.5m — 50 destinos españoles × ticket medio €4.200/mes (3-4 módulos)",
+    "cagr": "18% CAGR del mercado tourism tech 2023-2028 (Phocuswright)",
+    "source": "WTO, Phocuswright, SEGITTUR España",
+    "methodology": "España tiene 850+ patronatos turísticos. Top 20% con presupuesto digitalización > €50k/año = 170 destinos. TAM nacional = €170M/año. SAM = destinos maduros ya digitalizando parcialmente (40% = 68 destinos). SOM Y1 = captación 5% del SAM."
+  },
+  "model": {
+    "streams": [
+      {"name": "Marketplace SaaS", "description": "Venta de servicios turísticos en destino", "price": "€750/mes + 10-15% comisión ventas"},
+      {"name": "Software de Caja", "description": "POS para oficinas turísticas y monumentos", "price": "€495/mes + €50/POS extra"},
+      {"name": "Plan My Trip", "description": "Planificador de rutas personalizado (Premio Hospitality 2021)", "price": "€150/mes"},
+      {"name": "Calendario Inteligente", "description": "Agenda cultural con venta de entradas", "price": "€100/mes"},
+      {"name": "Asistente de Voz IA", "description": "Chatbot entrenado 24/7 para el destino", "price": "€250/mes"},
+      {"name": "Señalética & Totems", "description": "Hardware + software físico en destino", "price": "Hardware + €100/mes mantenimiento"},
+      {"name": "Business Intelligence", "description": "Dashboard y reportes estratégicos", "price": "Incluido con módulos"}
+    ],
+    "pricing_type": "SaaS recurrente + Transaccional (comisiones)",
+    "avg_contract_month": "€1.845/mes (cliente con 3 módulos activos)",
+    "cac": "€2.400 [ESTIMATE]",
+    "ltv": "€66.420 [ESTIMATE] (3 años × €1.845/mes)",
+    "ltv_cac_ratio": 27,
+    "gross_margin": "82% [ESTIMATE]",
+    "payback_months": 13
+  },
+  "traction": {
+    "mrr": "€5.500 [ESTIMATE]",
+    "arr": "€66.000 [ESTIMATE]",
+    "growth_mom": "[PENDIENTE]",
+    "clients": 3,
+    "nps": "[PENDIENTE]",
+    "retention": "100% (sin churn conocido)",
+    "milestones": [
+      {"date": "2019", "event": "Fundación Discoolverworld S.L."},
+      {"date": "2021", "event": "Premio Hospitality — Plan My Trip · Digital Enterprise Show"},
+      {"date": "2022", "event": "Proyecto Ronda: 200+ negocios locales integrados + totems interactivos"},
+      {"date": "2023", "event": "Proyecto Costa del Sol Tourism Hub: señalética QR + marketplace"},
+      {"date": "2024", "event": "Expansión producto: Asistente de Voz IA + Business Intelligence"},
+      {"date": "2025", "event": "Ronda Series A preparation: 3 destinos activos, pipeline 15+ destinos"}
+    ]
+  },
+  "product": {
+    "core_features": [
+      "Marketplace turístico (marketplace de servicios + pasarela de pago integrada)",
+      "Plan My Trip (planificador IA por tipología de viajero — Premio Hospitality 2021)",
+      "Software de Caja POS (para oficinas turísticas y monumentos)",
+      "Calendario Inteligente (agenda cultural + venta de entradas)",
+      "Asistente de Voz IA Local (chatbot entrenado con datos del destino, 24/7)",
+      "Señalética Smart (totems interactivos + QR en puntos clave del destino)",
+      "Business Intelligence (dashboard + reportes personalizados para el destino)"
+    ],
+    "roadmap_quarters": [
+      {"q": "Q3 2025", "milestone": "Cierre de 5 nuevos contratos destino · onboarding en 15 días"},
+      {"q": "Q4 2025", "milestone": "Lanzamiento IA features: personalización avanzada + predicción de afluencia"},
+      {"q": "Q1 2026", "milestone": "Expansión Portugal + primer destino LATAM"},
+      {"q": "Q2 2026", "milestone": "10 destinos activos · MRR €20k · break-even operativo"}
+    ]
+  },
+  "competition": [
+    {"name": "TripAdvisor", "weakness": "Solo B2C. No genera ingresos para el destino ni datos propios.", "our_advantage": "discoolver da ownership de datos e ingresos al destino"},
+    {"name": "Google Maps", "weakness": "Plataforma genérica sin monetización ni personalización por destino.", "our_advantage": "Ecosistema cerrado del destino con BI propio"},
+    {"name": "Civitatis", "weakness": "Solo booking de actividades. Sin POS ni planificación ni datos.", "our_advantage": "Suite completa: marketplace + POS + planificador + BI"},
+    {"name": "Musement (TUI)", "weakness": "Foco en grandes operadores turísticos, no en destinos independientes.", "our_advantage": "Diseñado específicamente para patronatos y DMOs"}
+  ],
+  "team": [
+    {"name": "Carlos Jacoste", "role": "Co-Founder & CEO", "background": "Founder Startup Factory. Estrategia de negocio, partnerships institucionales (SEGITTUR, ICEX, ITH). Basado en Bangkok, visión global.", "notable": "Lideró deals con SEGITTUR, ICEX y Costa del Sol Tourism Hub"},
+    {"name": "Diego Domínguez", "role": "Co-Founder & CTO", "background": "Arquitecto del backend Spring Boot + Java. 5 años construyendo la plataforma. Stack: Spring Boot, React/Vite, Next.js 15.", "notable": "Premio Hospitality 2021 — Plan My Trip"}
+  ],
+  "advisors": [
+    {"name": "Tetuan Valley", "background": "Aceleradora de startups tech Madrid. Early backer y red de conexiones."},
+    {"name": "ITH (Instituto Tecnológico Hotelero)", "background": "Referente en innovación del sector hotelero en España."},
+    {"name": "SEGITTUR", "background": "Sociedad Estatal para la Gestión de la Innovación y las Tecnologías Turísticas (Ministerio de Turismo España)."}
+  ],
+  "financials": {
+    "burn_monthly": "€8.000 [ESTIMATE]",
+    "runway_months": 12,
+    "y1_revenue": "€80.000 [ESTIMATE]",
+    "y2_revenue": "€280.000 [ESTIMATE]",
+    "y3_revenue": "€750.000 [ESTIMATE]",
+    "break_even": "Q2 2026 [ESTIMATE]",
+    "y3_ebitda": "28% [ESTIMATE]"
+  },
+  "ask": {
+    "amount": "€500.000 [ESTIMATE — confirmar con Carlos]",
+    "use_of_funds": [
+      {"item": "Producto & Tecnología", "pct": 40},
+      {"item": "Sales & Business Dev", "pct": 30},
+      {"item": "Marketing & Contenidos", "pct": 15},
+      {"item": "Operaciones & Legal", "pct": 15}
+    ],
+    "milestones_with_funding": [
+      "10 destinos activos en plataforma (mes 12)",
+      "MRR €18k+ sostenido (mes 10)",
+      "Equipo sales propio: 2 SDRs España + 1 Portugal (mes 4)",
+      "Lanzamiento IA features v2 (mes 6)",
+      "Primer destino internacional (mes 9)"
+    ],
+    "timeline_months": 18
+  },
+  "colors": {
+    "primary": "#FF00C8",
+    "accent": "#00D4FF",
+    "bg": "#0A0A16",
+    "text": "#FFFFFF"
+  },
+  "fonts": {
+    "display": "Poppins",
+    "body": "Inter"
+  }
+}

@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRA — Eye Icon Variations</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #080810;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 48px 24px;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 64px;
+  }
+
+  header .eyebrow {
+    font-size: 10px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: #a855f7;
+    margin-bottom: 12px;
+  }
+
+  header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 3px;
+    color: #888;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+    max-width: 1060px;
+    margin: 0 auto;
+  }
+
+  .card {
+    background: #0e0e1a;
+    border: 1px solid #1c1c2e;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .card:hover { border-color: #3a2a5a; }
+
+  .card-meta {
+    padding: 16px 22px;
+    border-bottom: 1px solid #1c1c2e;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .tag {
+    font-size: 10px;
+    color: #555;
+    font-family: 'Space Grotesk', monospace;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .dot { width: 3px; height: 3px; background: #333; border-radius: 50%; }
+
+  .concept {
+    font-size: 11px;
+    color: #4a3a6a;
+    letter-spacing: 1px;
+  }
+
+  .preview-dark {
+    padding: 48px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 160px;
+    background: #080810;
+  }
+
+  .preview-light {
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 110px;
+    background: #f0f0f5;
+    border-top: 1px solid #1c1c2e;
+  }
+
+  .divider-label {
+    background: #0b0b16;
+    border-top: 1px solid #181826;
+    padding: 6px;
+    text-align: center;
+    font-size: 9px;
+    color: #2a2a3e;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+
+  .code-box {
+    padding: 18px 22px;
+    background: #0a0a14;
+    border-top: 1px solid #1c1c2e;
+  }
+
+  .code-label {
+    font-size: 9px;
+    color: #3a3a5a;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  pre {
+    font-size: 9.5px;
+    color: #4a5a7a;
+    line-height: 1.7;
+    overflow-x: auto;
+    max-height: 130px;
+    scrollbar-width: thin;
+    scrollbar-color: #2a2a4a transparent;
+    white-space: pre-wrap;
+  }
+
+  .copy-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px;
+    background: transparent;
+    border: 1px solid #1e1e38;
+    border-radius: 8px;
+    color: #4a4a6a;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .copy-btn:hover {
+    background: #12122a;
+    color: #8a6ac8;
+    border-color: #3a2a5a;
+  }
+
+  .copy-btn.copied {
+    background: #0a1e14;
+    color: #4ade80;
+    border-color: #166534;
+  }
+
+  @media (max-width: 680px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">MIRA · Eye Icon Series</p>
+  <h1>The symbol: nodes that see</h1>
+</header>
+
+<div class="grid">
+
+  <!-- V1: THE ALMOND — perimeter nodes forming eye silhouette -->
+  <div class="card">
+    <div class="card-meta">
+      <span class="tag">V1</span>
+      <span class="dot"></span>
+      <span class="concept">The Almond — perimeter eye</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo-v1" width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1a" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <linearGradient id="g1b" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="pupil1" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e0aaff"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0.8"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Eye perimeter nodes (almond shape) -->
+        <!-- Left tip -->
+        <circle cx="6"  cy="38" r="2"   fill="url(#g1a)" opacity="0.5"/>
+        <!-- Top arc -->
+        <circle cx="18" cy="22" r="2.5" fill="url(#g1a)" opacity="0.7"/>
+        <circle cx="31" cy="16" r="2.5" fill="url(#g1a)" opacity="0.8"/>
+        <circle cx="44" cy="22" r="2.5" fill="url(#g1a)" opacity="0.7"/>
+        <!-- Right tip -->
+        <circle cx="56" cy="38" r="2"   fill="url(#g1a)" opacity="0.5"/>
+        <!-- Bottom arc -->
+        <circle cx="44" cy="54" r="2.5" fill="url(#g1a)" opacity="0.7"/>
+        <circle cx="31" cy="60" r="2.5" fill="url(#g1a)" opacity="0.8"/>
+        <circle cx="18" cy="54" r="2.5" fill="url(#g1a)" opacity="0.7"/>
+
+        <!-- Perimeter connections (eye outline) -->
+        <path d="M6 38 L18 22 L31 16 L44 22 L56 38 L44 54 L31 60 L18 54 Z"
+              stroke="url(#g1a)" stroke-width="0.7" opacity="0.25" fill="none"/>
+
+        <!-- Iris ring -->
+        <ellipse cx="31" cy="38" rx="10" ry="10"
+                 stroke="url(#g1a)" stroke-width="0.8" opacity="0.18" fill="none"/>
+
+        <!-- Spoke connections to center (sparse, only some) -->
+        <line x1="6"  y1="38" x2="31" y2="38" stroke="url(#g1a)" stroke-width="0.6" opacity="0.15"/>
+        <line x1="56" y1="38" x2="31" y2="38" stroke="url(#g1a)" stroke-width="0.6" opacity="0.15"/>
+        <line x1="18" y1="22" x2="31" y2="38" stroke="url(#g1a)" stroke-width="0.6" opacity="0.12"/>
+        <line x1="44" y1="54" x2="31" y2="38" stroke="url(#g1a)" stroke-width="0.6" opacity="0.12"/>
+
+        <!-- Iris + pupil -->
+        <circle cx="31" cy="38" r="7" fill="url(#g1a)" opacity="0.08"/>
+        <circle cx="31" cy="38" r="4" fill="url(#g1a)" opacity="0.2"/>
+        <circle cx="31" cy="38" r="2.5" fill="url(#pupil1)"/>
+
+        <!-- Separator -->
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#222238" stroke-width="1"/>
+
+        <!-- Wordmark -->
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="600"
+              letter-spacing="6" fill="url(#g1b)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#6366f1" opacity="0.7">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="divider-label">light</div>
+    <div class="preview-light">
+      <svg width="260" height="66" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1al" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+          <linearGradient id="g1bl" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <circle cx="6"  cy="38" r="2"   fill="url(#g1al)" opacity="0.5"/>
+        <circle cx="18" cy="22" r="2.5" fill="url(#g1al)" opacity="0.7"/>
+        <circle cx="31" cy="16" r="2.5" fill="url(#g1al)" opacity="0.9"/>
+        <circle cx="44" cy="22" r="2.5" fill="url(#g1al)" opacity="0.7"/>
+        <circle cx="56" cy="38" r="2"   fill="url(#g1al)" opacity="0.5"/>
+        <circle cx="44" cy="54" r="2.5" fill="url(#g1al)" opacity="0.7"/>
+        <circle cx="31" cy="60" r="2.5" fill="url(#g1al)" opacity="0.9"/>
+        <circle cx="18" cy="54" r="2.5" fill="url(#g1al)" opacity="0.7"/>
+        <path d="M6 38 L18 22 L31 16 L44 22 L56 38 L44 54 L31 60 L18 54 Z"
+              stroke="url(#g1al)" stroke-width="0.7" opacity="0.2" fill="none"/>
+        <ellipse cx="31" cy="38" rx="10" ry="10" stroke="url(#g1al)" stroke-width="0.8" opacity="0.15" fill="none"/>
+        <circle cx="31" cy="38" r="4" fill="url(#g1al)" opacity="0.15"/>
+        <circle cx="31" cy="38" r="2.5" fill="url(#g1al)"/>
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#ddd" stroke-width="1"/>
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="600"
+              letter-spacing="6" fill="url(#g1bl)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#4f46e5" opacity="0.7">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="code-box">
+      <div class="code-label">SVG · Dark version</div>
+      <pre id="c1">&lt;svg width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"&gt;&lt;stop offset="0%" stop-color="#c084fc"/&gt;&lt;stop offset="100%" stop-color="#818cf8"/&gt;&lt;/linearGradient&gt;
+    &lt;linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"&gt;&lt;stop offset="0%" stop-color="#c084fc"/&gt;&lt;stop offset="100%" stop-color="#818cf8"/&gt;&lt;/linearGradient&gt;
+  &lt;/defs&gt;
+  &lt;circle cx="6" cy="38" r="2" fill="url(#g1)" opacity="0.5"/&gt;
+  &lt;circle cx="18" cy="22" r="2.5" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;circle cx="31" cy="16" r="2.5" fill="url(#g1)" opacity="0.8"/&gt;
+  &lt;circle cx="44" cy="22" r="2.5" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;circle cx="56" cy="38" r="2" fill="url(#g1)" opacity="0.5"/&gt;
+  &lt;circle cx="44" cy="54" r="2.5" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;circle cx="31" cy="60" r="2.5" fill="url(#g1)" opacity="0.8"/&gt;
+  &lt;circle cx="18" cy="54" r="2.5" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;path d="M6 38 L18 22 L31 16 L44 22 L56 38 L44 54 L31 60 L18 54 Z" stroke="url(#g1)" stroke-width="0.7" opacity="0.25" fill="none"/&gt;
+  &lt;ellipse cx="31" cy="38" rx="10" ry="10" stroke="url(#g1)" stroke-width="0.8" opacity="0.18" fill="none"/&gt;
+  &lt;circle cx="31" cy="38" r="4" fill="url(#g1)" opacity="0.2"/&gt;
+  &lt;circle cx="31" cy="38" r="2.5" fill="#c084fc"/&gt;
+  &lt;line x1="74" y1="14" x2="74" y2="62" stroke="#222238" stroke-width="1"/&gt;
+  &lt;text x="88" y="48" font-family="Space Grotesk" font-size="32" font-weight="600" letter-spacing="6" fill="url(#g2)"&gt;MIRA&lt;/text&gt;
+  &lt;text x="89" y="62" font-family="Inter" font-size="7.5" font-weight="300" letter-spacing="5" fill="#6366f1" opacity="0.7"&gt;AI PLATFORM&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('c1',this)">Copy SVG</button>
+    </div>
+  </div>
+
+  <!-- V2: THE IRIS WEB — radial nodes emanating from pupil -->
+  <div class="card">
+    <div class="card-meta">
+      <span class="tag">V2</span>
+      <span class="dot"></span>
+      <span class="concept">The Iris — radial web</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo-v2" width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g2a" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#c084fc"/>
+          </linearGradient>
+          <linearGradient id="g2b" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="iris2" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#e0aaff" stop-opacity="0.9"/>
+            <stop offset="60%" stop-color="#818cf8" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Outer almond boundary (very faint) -->
+        <path d="M5 38 Q18 14 31 10 Q44 14 57 38 Q44 62 31 66 Q18 62 5 38 Z"
+              stroke="url(#g2a)" stroke-width="0.5" opacity="0.12" fill="none"/>
+
+        <!-- Iris fill -->
+        <ellipse cx="31" cy="38" rx="14" ry="14" fill="url(#iris2)"/>
+
+        <!-- Inner ring nodes (6 — iris positions) -->
+        <circle cx="31" cy="24" r="2"   fill="url(#g2a)" opacity="0.85"/>  <!-- top -->
+        <circle cx="43" cy="31" r="2"   fill="url(#g2a)" opacity="0.85"/>  <!-- top-right -->
+        <circle cx="43" cy="45" r="2"   fill="url(#g2a)" opacity="0.85"/>  <!-- bot-right -->
+        <circle cx="31" cy="52" r="2"   fill="url(#g2a)" opacity="0.85"/>  <!-- bottom -->
+        <circle cx="19" cy="45" r="2"   fill="url(#g2a)" opacity="0.85"/>  <!-- bot-left -->
+        <circle cx="19" cy="31" r="2"   fill="url(#g2a)" opacity="0.85"/>  <!-- top-left -->
+
+        <!-- Radial connections (iris rays) -->
+        <line x1="31" y1="38" x2="31" y2="24" stroke="url(#g2a)" stroke-width="0.7" opacity="0.4"/>
+        <line x1="31" y1="38" x2="43" y2="31" stroke="url(#g2a)" stroke-width="0.7" opacity="0.4"/>
+        <line x1="31" y1="38" x2="43" y2="45" stroke="url(#g2a)" stroke-width="0.7" opacity="0.4"/>
+        <line x1="31" y1="38" x2="31" y2="52" stroke="url(#g2a)" stroke-width="0.7" opacity="0.4"/>
+        <line x1="31" y1="38" x2="19" y2="45" stroke="url(#g2a)" stroke-width="0.7" opacity="0.4"/>
+        <line x1="31" y1="38" x2="19" y2="31" stroke="url(#g2a)" stroke-width="0.7" opacity="0.4"/>
+
+        <!-- Outer sparse nodes (only top 3 + bottom to hint almond) -->
+        <circle cx="9"  cy="38" r="1.5" fill="url(#g2a)" opacity="0.4"/>
+        <circle cx="22" cy="16" r="1.5" fill="url(#g2a)" opacity="0.35"/>
+        <circle cx="40" cy="16" r="1.5" fill="url(#g2a)" opacity="0.35"/>
+        <circle cx="53" cy="38" r="1.5" fill="url(#g2a)" opacity="0.4"/>
+
+        <!-- Connections to outer nodes -->
+        <line x1="19" y1="31" x2="22" y2="16" stroke="url(#g2a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="19" y1="31" x2="9"  y2="38" stroke="url(#g2a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="43" y1="31" x2="40" y2="16" stroke="url(#g2a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="43" y1="31" x2="53" y2="38" stroke="url(#g2a)" stroke-width="0.5" opacity="0.2"/>
+
+        <!-- Pupil -->
+        <circle cx="31" cy="38" r="3.5" fill="#1a0a2e"/>
+        <circle cx="31" cy="38" r="2"   fill="url(#g2b)"/>
+        <circle cx="29" cy="36" r="0.7" fill="white" opacity="0.6"/>
+
+        <!-- Separator -->
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#1e1e34" stroke-width="1"/>
+
+        <!-- Wordmark -->
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="600"
+              letter-spacing="6" fill="url(#g2b)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#7c3aed" opacity="0.7">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="divider-label">light</div>
+    <div class="preview-light">
+      <svg width="260" height="66" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g2al" x1="0%" y1="100%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#6d28d9"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+          <linearGradient id="g2bl" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+          <radialGradient id="iris2l" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#7c3aed" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="31" cy="38" rx="14" ry="14" fill="url(#iris2l)"/>
+        <circle cx="31" cy="24" r="2"   fill="url(#g2al)" opacity="0.8"/>
+        <circle cx="43" cy="31" r="2"   fill="url(#g2al)" opacity="0.8"/>
+        <circle cx="43" cy="45" r="2"   fill="url(#g2al)" opacity="0.8"/>
+        <circle cx="31" cy="52" r="2"   fill="url(#g2al)" opacity="0.8"/>
+        <circle cx="19" cy="45" r="2"   fill="url(#g2al)" opacity="0.8"/>
+        <circle cx="19" cy="31" r="2"   fill="url(#g2al)" opacity="0.8"/>
+        <line x1="31" y1="38" x2="31" y2="24" stroke="url(#g2al)" stroke-width="0.7" opacity="0.35"/>
+        <line x1="31" y1="38" x2="43" y2="31" stroke="url(#g2al)" stroke-width="0.7" opacity="0.35"/>
+        <line x1="31" y1="38" x2="43" y2="45" stroke="url(#g2al)" stroke-width="0.7" opacity="0.35"/>
+        <line x1="31" y1="38" x2="31" y2="52" stroke="url(#g2al)" stroke-width="0.7" opacity="0.35"/>
+        <line x1="31" y1="38" x2="19" y2="45" stroke="url(#g2al)" stroke-width="0.7" opacity="0.35"/>
+        <line x1="31" y1="38" x2="19" y2="31" stroke="url(#g2al)" stroke-width="0.7" opacity="0.35"/>
+        <circle cx="9"  cy="38" r="1.5" fill="url(#g2al)" opacity="0.3"/>
+        <circle cx="22" cy="16" r="1.5" fill="url(#g2al)" opacity="0.3"/>
+        <circle cx="40" cy="16" r="1.5" fill="url(#g2al)" opacity="0.3"/>
+        <circle cx="53" cy="38" r="1.5" fill="url(#g2al)" opacity="0.3"/>
+        <circle cx="31" cy="38" r="3.5" fill="white" opacity="0.8"/>
+        <circle cx="31" cy="38" r="2"   fill="url(#g2bl)"/>
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#ccc" stroke-width="1"/>
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="600"
+              letter-spacing="6" fill="url(#g2bl)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#6d28d9" opacity="0.7">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="code-box">
+      <div class="code-label">SVG · Dark version</div>
+      <pre id="c2">&lt;svg width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="g1" x1="0%" y1="100%" x2="100%" y2="0%"&gt;&lt;stop offset="0%" stop-color="#7c3aed"/&gt;&lt;stop offset="100%" stop-color="#c084fc"/&gt;&lt;/linearGradient&gt;
+    &lt;linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"&gt;&lt;stop offset="0%" stop-color="#c084fc"/&gt;&lt;stop offset="100%" stop-color="#818cf8"/&gt;&lt;/linearGradient&gt;
+    &lt;radialGradient id="iris" cx="50%" cy="50%" r="50%"&gt;&lt;stop offset="0%" stop-color="#e0aaff" stop-opacity="0.9"/&gt;&lt;stop offset="100%" stop-color="#818cf8" stop-opacity="0"/&gt;&lt;/radialGradient&gt;
+  &lt;/defs&gt;
+  &lt;ellipse cx="31" cy="38" rx="14" ry="14" fill="url(#iris)"/&gt;
+  &lt;circle cx="31" cy="24" r="2" fill="url(#g1)" opacity="0.85"/&gt;
+  &lt;circle cx="43" cy="31" r="2" fill="url(#g1)" opacity="0.85"/&gt;
+  &lt;circle cx="43" cy="45" r="2" fill="url(#g1)" opacity="0.85"/&gt;
+  &lt;circle cx="31" cy="52" r="2" fill="url(#g1)" opacity="0.85"/&gt;
+  &lt;circle cx="19" cy="45" r="2" fill="url(#g1)" opacity="0.85"/&gt;
+  &lt;circle cx="19" cy="31" r="2" fill="url(#g1)" opacity="0.85"/&gt;
+  &lt;line x1="31" y1="38" x2="31" y2="24" stroke="url(#g1)" stroke-width="0.7" opacity="0.4"/&gt;
+  &lt;line x1="31" y1="38" x2="43" y2="31" stroke="url(#g1)" stroke-width="0.7" opacity="0.4"/&gt;
+  &lt;line x1="31" y1="38" x2="43" y2="45" stroke="url(#g1)" stroke-width="0.7" opacity="0.4"/&gt;
+  &lt;line x1="31" y1="38" x2="31" y2="52" stroke="url(#g1)" stroke-width="0.7" opacity="0.4"/&gt;
+  &lt;line x1="31" y1="38" x2="19" y2="45" stroke="url(#g1)" stroke-width="0.7" opacity="0.4"/&gt;
+  &lt;line x1="31" y1="38" x2="19" y2="31" stroke="url(#g1)" stroke-width="0.7" opacity="0.4"/&gt;
+  &lt;circle cx="9" cy="38" r="1.5" fill="url(#g1)" opacity="0.4"/&gt;
+  &lt;circle cx="53" cy="38" r="1.5" fill="url(#g1)" opacity="0.4"/&gt;
+  &lt;circle cx="31" cy="38" r="3.5" fill="#1a0a2e"/&gt;
+  &lt;circle cx="31" cy="38" r="2" fill="url(#g2)"/&gt;
+  &lt;line x1="74" y1="14" x2="74" y2="62" stroke="#1e1e34" stroke-width="1"/&gt;
+  &lt;text x="88" y="48" font-family="Space Grotesk" font-size="32" font-weight="600" letter-spacing="6" fill="url(#g2)"&gt;MIRA&lt;/text&gt;
+  &lt;text x="89" y="62" font-family="Inter" font-size="7.5" font-weight="300" letter-spacing="5" fill="#7c3aed" opacity="0.7"&gt;AI PLATFORM&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('c2',this)">Copy SVG</button>
+    </div>
+  </div>
+
+  <!-- V3: THE SIGNAL — geometric minimal eye, 5 nodes only -->
+  <div class="card">
+    <div class="card-meta">
+      <span class="tag">V3</span>
+      <span class="dot"></span>
+      <span class="concept">The Signal — ultra minimal</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo-v3" width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g3a" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a855f7"/>
+            <stop offset="100%" stop-color="#6366f1"/>
+          </linearGradient>
+          <linearGradient id="g3b" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="glow3" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#a855f7" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Glow -->
+        <circle cx="31" cy="38" r="18" fill="url(#glow3)"/>
+
+        <!-- 5-node minimal eye: left, top-left, top-right, right, pupil -->
+        <!-- Eye outline paths (curved, using quadratic) -->
+        <path d="M7 38 Q19 18 31 16 Q43 18 55 38" stroke="url(#g3a)" stroke-width="1" opacity="0.5" fill="none"/>
+        <path d="M7 38 Q19 58 31 60 Q43 58 55 38" stroke="url(#g3a)" stroke-width="1" opacity="0.5" fill="none"/>
+
+        <!-- Corner tips -->
+        <circle cx="7"  cy="38" r="2.5" fill="url(#g3a)" opacity="0.6"/>
+        <circle cx="55" cy="38" r="2.5" fill="url(#g3a)" opacity="0.6"/>
+
+        <!-- Top + bottom accent nodes -->
+        <circle cx="31" cy="16" r="2"   fill="url(#g3a)" opacity="0.7"/>
+        <circle cx="31" cy="60" r="2"   fill="url(#g3a)" opacity="0.7"/>
+
+        <!-- Connection lines: corner to top/bottom node -->
+        <line x1="7"  y1="38" x2="31" y2="16" stroke="url(#g3a)" stroke-width="0.6" opacity="0.2"/>
+        <line x1="55" y1="38" x2="31" y2="16" stroke="url(#g3a)" stroke-width="0.6" opacity="0.2"/>
+        <line x1="7"  y1="38" x2="31" y2="60" stroke="url(#g3a)" stroke-width="0.6" opacity="0.2"/>
+        <line x1="55" y1="38" x2="31" y2="60" stroke="url(#g3a)" stroke-width="0.6" opacity="0.2"/>
+
+        <!-- Pupil (center, prominent) -->
+        <circle cx="31" cy="38" r="7" fill="url(#g3a)" opacity="0.1"/>
+        <circle cx="31" cy="38" r="5" fill="url(#g3a)" opacity="0.15"/>
+        <circle cx="31" cy="38" r="3" fill="url(#g3a)" opacity="0.5"/>
+        <circle cx="31" cy="38" r="1.8" fill="white" opacity="0.9"/>
+
+        <!-- Separator -->
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#1c1c30" stroke-width="1"/>
+
+        <!-- Wordmark — lighter weight for contrast with icon -->
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="500"
+              letter-spacing="7" fill="url(#g3b)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#a855f7" opacity="0.6">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="divider-label">light</div>
+    <div class="preview-light">
+      <svg width="260" height="66" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g3al" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <path d="M7 38 Q19 18 31 16 Q43 18 55 38" stroke="url(#g3al)" stroke-width="1" opacity="0.5" fill="none"/>
+        <path d="M7 38 Q19 58 31 60 Q43 58 55 38" stroke="url(#g3al)" stroke-width="1" opacity="0.5" fill="none"/>
+        <circle cx="7"  cy="38" r="2.5" fill="url(#g3al)" opacity="0.6"/>
+        <circle cx="55" cy="38" r="2.5" fill="url(#g3al)" opacity="0.6"/>
+        <circle cx="31" cy="16" r="2"   fill="url(#g3al)" opacity="0.7"/>
+        <circle cx="31" cy="60" r="2"   fill="url(#g3al)" opacity="0.7"/>
+        <circle cx="31" cy="38" r="5" fill="url(#g3al)" opacity="0.08"/>
+        <circle cx="31" cy="38" r="3" fill="url(#g3al)" opacity="0.3"/>
+        <circle cx="31" cy="38" r="1.8" fill="white" opacity="0.9"/>
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#ddd" stroke-width="1"/>
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="500"
+              letter-spacing="7" fill="url(#g3al)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#7c3aed" opacity="0.6">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="code-box">
+      <div class="code-label">SVG · Dark version</div>
+      <pre id="c3">&lt;svg width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="0%"&gt;&lt;stop offset="0%" stop-color="#a855f7"/&gt;&lt;stop offset="100%" stop-color="#6366f1"/&gt;&lt;/linearGradient&gt;
+    &lt;linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"&gt;&lt;stop offset="0%" stop-color="#c084fc"/&gt;&lt;stop offset="100%" stop-color="#818cf8"/&gt;&lt;/linearGradient&gt;
+  &lt;/defs&gt;
+  &lt;path d="M7 38 Q19 18 31 16 Q43 18 55 38" stroke="url(#g1)" stroke-width="1" opacity="0.5" fill="none"/&gt;
+  &lt;path d="M7 38 Q19 58 31 60 Q43 58 55 38" stroke="url(#g1)" stroke-width="1" opacity="0.5" fill="none"/&gt;
+  &lt;circle cx="7" cy="38" r="2.5" fill="url(#g1)" opacity="0.6"/&gt;
+  &lt;circle cx="55" cy="38" r="2.5" fill="url(#g1)" opacity="0.6"/&gt;
+  &lt;circle cx="31" cy="16" r="2" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;circle cx="31" cy="60" r="2" fill="url(#g1)" opacity="0.7"/&gt;
+  &lt;line x1="7" y1="38" x2="31" y2="16" stroke="url(#g1)" stroke-width="0.6" opacity="0.2"/&gt;
+  &lt;line x1="55" y1="38" x2="31" y2="16" stroke="url(#g1)" stroke-width="0.6" opacity="0.2"/&gt;
+  &lt;circle cx="31" cy="38" r="5" fill="url(#g1)" opacity="0.15"/&gt;
+  &lt;circle cx="31" cy="38" r="3" fill="url(#g1)" opacity="0.5"/&gt;
+  &lt;circle cx="31" cy="38" r="1.8" fill="white" opacity="0.9"/&gt;
+  &lt;line x1="74" y1="14" x2="74" y2="62" stroke="#1c1c30" stroke-width="1"/&gt;
+  &lt;text x="88" y="48" font-family="Space Grotesk" font-size="32" font-weight="500" letter-spacing="7" fill="url(#g2)"&gt;MIRA&lt;/text&gt;
+  &lt;text x="89" y="62" font-family="Inter" font-size="7.5" font-weight="300" letter-spacing="5" fill="#a855f7" opacity="0.6"&gt;AI PLATFORM&lt;/text&gt;
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('c3',this)">Copy SVG</button>
+    </div>
+  </div>
+
+  <!-- V4: THE CONSTELLATION — scattered nodes that read as eye at distance -->
+  <div class="card">
+    <div class="card-meta">
+      <span class="tag">V4</span>
+      <span class="dot"></span>
+      <span class="concept">The Constellation — depth field</span>
+    </div>
+    <div class="preview-dark">
+      <svg id="logo-v4" width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g4a" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#818cf8"/>
+            <stop offset="100%" stop-color="#a855f7"/>
+          </linearGradient>
+          <linearGradient id="g4b" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <radialGradient id="glow4" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#818cf8" stop-opacity="0.2"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+
+        <!-- Glow halo -->
+        <ellipse cx="31" cy="38" rx="22" ry="16" fill="url(#glow4)"/>
+
+        <!-- Outer constellation nodes (define the eye boundary) -->
+        <!-- Far left corner -->
+        <circle cx="5"  cy="38" r="1.5" fill="url(#g4a)" opacity="0.4"/>
+        <!-- Upper arc (asymmetric for natural feel) -->
+        <circle cx="14" cy="26" r="1.5" fill="url(#g4a)" opacity="0.5"/>
+        <circle cx="23" cy="19" r="2"   fill="url(#g4a)" opacity="0.65"/>
+        <circle cx="35" cy="17" r="1.5" fill="url(#g4a)" opacity="0.55"/>
+        <circle cx="45" cy="22" r="1.5" fill="url(#g4a)" opacity="0.5"/>
+        <circle cx="52" cy="31" r="1.5" fill="url(#g4a)" opacity="0.4"/>
+        <!-- Far right corner -->
+        <circle cx="57" cy="38" r="1.5" fill="url(#g4a)" opacity="0.4"/>
+        <!-- Lower arc (slightly tighter = eye shape) -->
+        <circle cx="51" cy="46" r="1.5" fill="url(#g4a)" opacity="0.4"/>
+        <circle cx="43" cy="53" r="1.5" fill="url(#g4a)" opacity="0.5"/>
+        <circle cx="31" cy="57" r="2"   fill="url(#g4a)" opacity="0.6"/>
+        <circle cx="19" cy="53" r="1.5" fill="url(#g4a)" opacity="0.5"/>
+        <circle cx="12" cy="46" r="1.5" fill="url(#g4a)" opacity="0.4"/>
+
+        <!-- Mid ring nodes (iris zone) -->
+        <circle cx="20" cy="30" r="1.8" fill="url(#g4a)" opacity="0.7"/>
+        <circle cx="31" cy="26" r="1.8" fill="url(#g4a)" opacity="0.7"/>
+        <circle cx="42" cy="30" r="1.8" fill="url(#g4a)" opacity="0.7"/>
+        <circle cx="43" cy="46" r="1.8" fill="url(#g4a)" opacity="0.7"/>
+        <circle cx="31" cy="50" r="1.8" fill="url(#g4a)" opacity="0.7"/>
+        <circle cx="19" cy="46" r="1.8" fill="url(#g4a)" opacity="0.7"/>
+
+        <!-- Constellation lines (sparse) -->
+        <line x1="5"  y1="38" x2="14" y2="26" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="14" y1="26" x2="23" y2="19" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="23" y1="19" x2="35" y2="17" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="35" y1="17" x2="45" y2="22" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="45" y1="22" x2="57" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="5"  y1="38" x2="12" y2="46" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="12" y1="46" x2="19" y2="53" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="19" y1="53" x2="31" y2="57" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="31" y1="57" x2="43" y2="53" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="43" y1="53" x2="57" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <!-- Some iris connections -->
+        <line x1="20" y1="30" x2="31" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.25"/>
+        <line x1="42" y1="30" x2="31" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.25"/>
+        <line x1="31" y1="26" x2="31" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.25"/>
+        <line x1="31" y1="50" x2="31" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.25"/>
+        <line x1="19" y1="46" x2="31" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+        <line x1="43" y1="46" x2="31" y2="38" stroke="url(#g4a)" stroke-width="0.5" opacity="0.2"/>
+
+        <!-- Pupil — the anchor, the one that draws the eye -->
+        <circle cx="31" cy="38" r="6" fill="url(#g4a)" opacity="0.12"/>
+        <circle cx="31" cy="38" r="4" fill="url(#g4a)" opacity="0.25"/>
+        <circle cx="31" cy="38" r="2.5" fill="url(#g4b)"/>
+        <circle cx="29.5" cy="36.5" r="0.8" fill="white" opacity="0.7"/>
+
+        <!-- Separator -->
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#1a1a2e" stroke-width="1"/>
+
+        <!-- Wordmark -->
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="600"
+              letter-spacing="6" fill="url(#g4b)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#818cf8" opacity="0.7">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="divider-label">light</div>
+    <div class="preview-light">
+      <svg width="260" height="66" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g4al" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4f46e5"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </linearGradient>
+          <linearGradient id="g4bl" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <circle cx="5"  cy="38" r="1.5" fill="url(#g4al)" opacity="0.35"/>
+        <circle cx="14" cy="26" r="1.5" fill="url(#g4al)" opacity="0.45"/>
+        <circle cx="23" cy="19" r="2"   fill="url(#g4al)" opacity="0.6"/>
+        <circle cx="35" cy="17" r="1.5" fill="url(#g4al)" opacity="0.5"/>
+        <circle cx="45" cy="22" r="1.5" fill="url(#g4al)" opacity="0.45"/>
+        <circle cx="57" cy="38" r="1.5" fill="url(#g4al)" opacity="0.35"/>
+        <circle cx="31" cy="57" r="2"   fill="url(#g4al)" opacity="0.55"/>
+        <circle cx="31" cy="38" r="4" fill="url(#g4al)" opacity="0.12"/>
+        <circle cx="31" cy="38" r="2.5" fill="url(#g4al)"/>
+        <circle cx="29.5" cy="36.5" r="0.8" fill="white" opacity="0.6"/>
+        <line x1="5" y1="38" x2="14" y2="26" stroke="url(#g4al)" stroke-width="0.5" opacity="0.15"/>
+        <line x1="14" y1="26" x2="23" y2="19" stroke="url(#g4al)" stroke-width="0.5" opacity="0.15"/>
+        <line x1="23" y1="19" x2="35" y2="17" stroke="url(#g4al)" stroke-width="0.5" opacity="0.15"/>
+        <line x1="35" y1="17" x2="45" y2="22" stroke="url(#g4al)" stroke-width="0.5" opacity="0.15"/>
+        <line x1="45" y1="22" x2="57" y2="38" stroke="url(#g4al)" stroke-width="0.5" opacity="0.15"/>
+        <line x1="74" y1="14" x2="74" y2="62" stroke="#ccc" stroke-width="1"/>
+        <text x="88" y="48" font-family="Space Grotesk, sans-serif" font-size="32" font-weight="600"
+              letter-spacing="6" fill="url(#g4bl)">MIRA</text>
+        <text x="89" y="62" font-family="Inter, sans-serif" font-size="7.5" font-weight="300"
+              letter-spacing="5" fill="#4f46e5" opacity="0.7">AI PLATFORM</text>
+      </svg>
+    </div>
+    <div class="code-box">
+      <div class="code-label">SVG · Dark version</div>
+      <pre id="c4">&lt;svg width="300" height="76" viewBox="0 0 300 76" fill="none" xmlns="http://www.w3.org/2000/svg"&gt;
+  &lt;defs&gt;
+    &lt;linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%"&gt;&lt;stop offset="0%" stop-color="#818cf8"/&gt;&lt;stop offset="100%" stop-color="#a855f7"/&gt;&lt;/linearGradient&gt;
+    &lt;linearGradient id="g2" x1="0%" y1="0%" x2="100%" y2="0%"&gt;&lt;stop offset="0%" stop-color="#c084fc"/&gt;&lt;stop offset="100%" stop-color="#818cf8"/&gt;&lt;/linearGradient&gt;
+  &lt;/defs&gt;
+  &lt;!-- Outer eye boundary nodes --&gt;
+  &lt;circle cx="5" cy="38" r="1.5" fill="url(#g1)" opacity="0.4"/&gt;
+  &lt;circle cx="14" cy="26" r="1.5" fill="url(#g1)" opacity="0.5"/&gt;
+  &lt;circle cx="23" cy="19" r="2" fill="url(#g1)" opacity="0.65"/&gt;
+  &lt;circle cx="35" cy="17" r="1.5" fill="url(#g1)" opacity="0.55"/&gt;
+  &lt;circle cx="45" cy="22" r="1.5" fill="url(#g1)" opacity="0.5"/&gt;
+  &lt;circle cx="57" cy="38" r="1.5" fill="url(#g1)" opacity="0.4"/&gt;
+  &lt;circle cx="31" cy="57" r="2" fill="url(#g1)" opacity="0.6"/&gt;
+  &lt;!-- Constellation lines --&gt;
+  &lt;line x1="5" y1="38" x2="14" y2="26" stroke="url(#g1)" stroke-width="0.5" opacity="0.2"/&gt;
+  &lt;line x1="14" y1="26" x2="23" y2="19" stroke="url(#g1)" stroke-width="0.5" opacity="0.2"/&gt;
+  &lt;line x1="23" y1="19" x2="35" y2="17" stroke="url(#g1)" stroke-width="0.5" opacity="0.2"/&gt;
+  &lt;line x1="35" y1="17" x2="45" y2="22" stroke="url(#g1)" stroke-width="0.5" opacity="0.2"/&gt;
+  &lt;line x1="45" y1="22" x2="57" y2="38" stroke="url(#g1)" stroke-width="0.5" opacity="0.2"/&gt;
+  &lt;!-- Pupil --&gt;
+  &lt;circle cx="31" cy="38" r="6" fill="url(#g1)" opacity="0.12"/&gt;
+  &lt;circle cx="31" cy="38" r="4" fill="url(#g1)" opacity="0.25"/&gt;
+  &lt;circle cx="31" cy="38" r="2.5" fill="url(#g2)"/&gt;
+  &lt;circle cx="29.5" cy="36.5" r="0.8" fill="white" opacity="0.7"/&gt;
+  &lt;line x1="74" y1="14" x2="74" y2="62" stroke="#1a1a2e" stroke-width="1"/&gt;
+  &lt;text x="88" y="48" font-family="Space Grotesk" font-size="32" font-weight="600" letter-spacing="6" fill="url(#g2)"&gt;MIRA&lt;/text&gt;
+  &lt;text x="89" y="62" font-family="Inter" font-size="7.5" font-weight="300" letter-spacing="5" fill="#818cf8" opacity="0.7"&gt;AI PLATFORM</text>
+&lt;/svg&gt;</pre>
+      <button class="copy-btn" onclick="copyCode('c4',this)">Copy SVG</button>
+    </div>
+  </div>
+
+</div>
+
+<footer style="text-align:center; margin-top:60px; padding-bottom:48px;">
+  <p style="font-size:9px; color:#1e1e38; letter-spacing:4px; text-transform:uppercase;">MIRA · Eye Series · Startup Factory · 2026</p>
+</footer>
+
+<script>
+function copyCode(id, btn) {
+  const code = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = '✓ Copiado';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy SVG';
+      btn.classList.remove('copied');
+    }, 2200);
+  });
+}
+</script>
+</body>
+</html>

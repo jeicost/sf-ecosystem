@@ -1,0 +1,253 @@
+{
+  "title": "Resultados Q1 2026",
+  "subtitle": "Dadybox — Trimestre Enero-Marzo",
+  "slides": [
+    {
+      "type": "cover",
+      "title": "RESULTADOS Q1 2026",
+      "subtitle": "Dadybox: Logística de Ecommerce",
+      "accent_line": "Enero — Marzo 2026"
+    },
+    {
+      "type": "tagline",
+      "title": "Resumen Ejecutivo",
+      "content": "Un trimestre de crecimiento constante, optimización operativa y consolidación de posición de mercado"
+    },
+    {
+      "type": "stats_grid",
+      "title": "Métricas Clave Q1",
+      "stats": [
+        {
+          "value": "127.400",
+          "label": "Envíos procesados",
+          "trend": "+18% vs Q1 2025"
+        },
+        {
+          "value": "€3.2M",
+          "label": "Ingresos totales",
+          "trend": "+22% vs Q1 2025"
+        },
+        {
+          "value": "94.8%",
+          "label": "SLA entrega a tiempo",
+          "trend": "+0.3% vs Q4 2025"
+        },
+        {
+          "value": "0.72%",
+          "label": "Tasa devoluciones",
+          "trend": "-0.18% vs Q1 2025"
+        }
+      ]
+    },
+    {
+      "type": "split_content",
+      "title": "Clientes & Segmentación",
+      "left_label": "Clientes Activos",
+      "left_content": "312 clientes operativos\n\n• SME (1-10K envíos/mes): 186\n• Medianas (10-50K): 89\n• Enterprise (>50K): 37\n\nNuevos clientes en Q1: 23",
+      "right_label": "Top Verticales",
+      "right_content": "• Moda & Accesorios: 28%\n• Electrónica: 22%\n• Alimentación: 18%\n• Home & Lifestyle: 15%\n• Otros: 17%"
+    },
+    {
+      "type": "flow",
+      "title": "Flujo de Ingresos Q1",
+      "stages": [
+        {
+          "label": "Envíos Estándar",
+          "value": "€1.85M",
+          "pct": "58%"
+        },
+        {
+          "label": "Envíos 24H",
+          "value": "€0.82M",
+          "pct": "26%"
+        },
+        {
+          "label": "Premium & Especiales",
+          "value": "€0.38M",
+          "pct": "12%"
+        },
+        {
+          "label": "Servicios Adicionales",
+          "value": "€0.15M",
+          "pct": "4%"
+        }
+      ]
+    },
+    {
+      "type": "comparison_table",
+      "title": "Performance Operativa vs Competencia",
+      "rows": [
+        {
+          "metric": "SLA Entrega a Tiempo",
+          "dadybox": "94.8%",
+          "sector_avg": "78.2%",
+          "advantage": "+16.6 pp"
+        },
+        {
+          "metric": "Cobertura Parcel Shops",
+          "dadybox": "12,847",
+          "sector_avg": "8,400",
+          "advantage": "+4,447"
+        },
+        {
+          "metric": "Tasa Devoluciones",
+          "dadybox": "0.72%",
+          "sector_avg": "2.1%",
+          "advantage": "-1.38 pp"
+        },
+        {
+          "metric": "Tiempo Respuesta Soporte",
+          "dadybox": "1.2h",
+          "sector_avg": "4.8h",
+          "advantage": "-3.6h"
+        }
+      ]
+    },
+    {
+      "type": "numbered_items",
+      "title": "Hitos Destacados Q1",
+      "items": [
+        {
+          "number": "1",
+          "title": "Integración Shopify Plus",
+          "description": "Launched native integration con 15 new enterprise clients onboarded. Automatización de etiquetas + tracking en tiempo real."
+        },
+        {
+          "number": "2",
+          "title": "Expansion Lockers",
+          "description": "Agregamos 67 nuevos lockers en España. Total: 717 lockers operativos. +12% cobertura de ciudades."
+        },
+        {
+          "number": "3",
+          "title": "Optimización Costos",
+          "description": "Reducción de 8.2% en costo por envío mediante consolidación de rutas y negociación con transportistas aliados."
+        },
+        {
+          "number": "4",
+          "title": "Net Promoter Score",
+          "description": "NPS subió a 72 (de 68 en Q4 2025). Cliente detractores bajaron de 8% a 4% tras mejoras de soporte."
+        },
+        {
+          "number": "5",
+          "title": "Playbooksde Contenido",
+          "description": "Lanzamos 3 playbooks para clientes (Retención, Logística, Ecommerce). +800 descargas de leads."
+        }
+      ]
+    },
+    {
+      "type": "numbered_items",
+      "title": "Desafíos Identificados",
+      "items": [
+        {
+          "number": "1",
+          "title": "Margen Presionado en Envíos Económicos",
+          "description": "Margen neto en envíos 3-5 días: 18% (vs 24% esperado). Requiere revisión de estrategia de pricing o optimización de costos."
+        },
+        {
+          "number": "2",
+          "title": "Concentración en SME",
+          "description": "59.6% de clientes son SME pero solo generan 22% de ingresos. Necesario desarrollar estrategia para aumentar ARPU en segmento."
+        },
+        {
+          "number": "3",
+          "title": "Churn en Q1: 2.1%",
+          "description": "5 clientes medianos cambiaron proveedor (razones: buscaban pricing más agresivo). Retención dentro de norma, pero requiere follow-up."
+        }
+      ]
+    },
+    {
+      "type": "split_content",
+      "title": "Proyecciones Q2 & Q3",
+      "left_label": "Q2 (Abril-Junio)",
+      "left_content": "Envíos esperados: 135K (+6% QoQ)\nIngresos proyectados: €3.4M\nNew customers target: 20\nNPS target: 74",
+      "right_label": "Q3 (Julio-Septiembre)",
+      "right_content": "Envíos esperados: 148K (+10% QoQ)\nIngresos proyectados: €3.8M\nNew customers target: 25\nMeta anual: €13.8M"
+    },
+    {
+      "type": "numbered_items",
+      "title": "Prioridades H2 2026",
+      "items": [
+        {
+          "number": "1",
+          "title": "Mejorar Margen en Económicos",
+          "description": "Revisión de pricing strategy. Tests A/B de precios. Reducción de costos mediante mayor consolidación. Meta: +6pp margen."
+        },
+        {
+          "number": "2",
+          "title": "Segmento Enterprise",
+          "description": "Crear equipo account management dedicado. Desarrollar enterprise features (API avanzada, reportes personalizados). Meta: 50 clientes enterprise."
+        },
+        {
+          "number": "3",
+          "title": "Contenido & Demand Gen",
+          "description": "Expansión de playbooks (5 nuevos en H2). Campañas de webinars. Partnerships con agencias. Meta: 2K leads calificados."
+        },
+        {
+          "number": "4",
+          "title": "Tecnología & Infraestructura",
+          "description": "Migración a cloud nativa. API v2 con rate limits optimizados. Métricas en tiempo real para clientes. Launch Q3."
+        }
+      ]
+    },
+    {
+      "type": "flow",
+      "title": "Estado de Iniciativas Clave",
+      "stages": [
+        {
+          "label": "✓ Completadas",
+          "value": "8",
+          "pct": "38%"
+        },
+        {
+          "label": "→ En Progreso",
+          "value": "9",
+          "pct": "43%"
+        },
+        {
+          "label": "⟳ Pausadas",
+          "value": "2",
+          "pct": "9%"
+        },
+        {
+          "label": "⚠ At Risk",
+          "value": "2",
+          "pct": "10%"
+        }
+      ]
+    },
+    {
+      "type": "numbered_items",
+      "title": "Acciones Inmediatas (Abril)",
+      "items": [
+        {
+          "number": "1",
+          "title": "Pricing Review Board",
+          "description": "Noel + Usoa + Finanzas. Sesión semanal Abril para diseñar nueva estructura de precios. Decisión final: 20 abril."
+        },
+        {
+          "number": "2",
+          "title": "Enterprise Playbook",
+          "description": "Natalia + Lidia definen reqs de enterprise. Roadmap de features. Lanzamiento: Q2."
+        },
+        {
+          "number": "3",
+          "title": "Churn Analysis",
+          "description": "Revisión detallada de 5 clientes que se fueron. Calls de retention con 8 clientes medianos en risk."
+        },
+        {
+          "number": "4",
+          "title": "Next Playbook",
+          "description": "Definir tema para Q2 playbook. Opción 1: Scaling Logistics. Opción 2: Returns Management. Decision: 25 abril."
+        }
+      ]
+    },
+    {
+      "type": "contact",
+      "title": "¿Preguntas?",
+      "name": "Noel Aldea",
+      "role": "CEO, Dadybox",
+      "email": "noel@dadybox.com",
+      "phone": "+34 913 758 204"
+    }
+  ]
+}

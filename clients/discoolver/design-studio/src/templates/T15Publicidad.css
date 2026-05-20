@@ -1,0 +1,97 @@
+/* ── Full-bleed navy override ── */
+.dv-ad {
+  background: #1A1A2E !important;
+  padding: 0 !important;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Decorative background ── */
+.dv-ad__geo-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+.dv-ad__circle-1 {
+  position: absolute; width: 560px; height: 560px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,0,107,0.12) 0%, transparent 70%);
+  right: -180px; top: -120px; pointer-events: none;
+}
+.dv-ad__circle-2 {
+  position: absolute; width: 340px; height: 340px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.07);
+  right: -80px; bottom: 100px; pointer-events: none;
+}
+.dv-ad__circle-3 {
+  position: absolute; width: 180px; height: 180px; border-radius: 50%;
+  background: rgba(200,0,107,0.08);
+  left: -40px; bottom: 200px; pointer-events: none;
+}
+
+/* ── Main content layout ── */
+.dv-ad__content {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  padding: 36px 48px 32px;
+}
+
+/* ── TOP ── */
+.dv-ad__top { display: flex; justify-content: space-between; align-items: flex-start; }
+.dv-ad__logo { display: flex; align-items: center; gap: 10px; }
+.dv-ad__wordmark { font-family: 'DM Sans', sans-serif; font-weight: 900; font-size: 22px; color: #fff; letter-spacing: -0.3px; }
+.dv-ad__meta { font-size: 9px; color: rgba(255,255,255,0.4); text-align: right; line-height: 1.9; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ── MIDDLE ── */
+.dv-ad__middle { flex: 1; display: flex; flex-direction: column; justify-content: center; padding: 32px 0 20px; }
+
+.dv-ad__eyebrow {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: #C8006B; margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.dv-ad__eyebrow::before { content: '—'; opacity: 0.7; }
+
+.dv-ad__headline {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 96px; color: #fff;
+  letter-spacing: -2px; line-height: 0.88;
+  margin-bottom: 28px;
+}
+.dv-ad__headline-accent { color: #C8006B; }
+
+.dv-ad__body {
+  font-size: 14px; color: rgba(255,255,255,0.72);
+  line-height: 1.65; max-width: 440px; margin-bottom: 28px;
+}
+
+.dv-ad__cta {
+  display: inline-flex; align-items: center; gap: 10px;
+  background: #C8006B; color: #fff;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px; letter-spacing: 0.12em;
+  padding: 12px 28px; text-decoration: none;
+  width: fit-content; transition: background 0.15s;
+  border: none; cursor: pointer;
+}
+.dv-ad__cta:hover { background: #a50057; }
+
+/* ── FEATURES ── */
+.dv-ad__features {
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 20px;
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 20px; margin-bottom: 8px;
+}
+.dv-ad__feat-icon  { font-size: 18px; margin-bottom: 6px; display: block; }
+.dv-ad__feat-title { font-family: 'Bebas Neue', sans-serif; font-size: 14px; color: #fff; letter-spacing: 0.06em; margin-bottom: 4px; }
+.dv-ad__feat-desc  { font-size: 9px; color: rgba(255,255,255,0.52); line-height: 1.55; }
+
+/* ── FOOTER ── */
+.dv-ad__footer     { border-top: 1px solid rgba(255,255,255,0.12); padding-top: 16px; display: flex; justify-content: space-between; align-items: flex-end; }
+.dv-ad__footer-url { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #C8006B; letter-spacing: 0.04em; line-height: 1; }
+.dv-ad__footer-right { text-align: right; font-size: 9px; color: rgba(255,255,255,0.45); line-height: 1.9; font-style: italic; }

@@ -1,0 +1,43 @@
+.dv-ocio { background: #fff; }
+
+/* ── Slogan ── */
+.dv-ocio__slogan      { margin-bottom: 14px; line-height: 1; }
+.dv-ocio__slogan-pre  { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #111827; display: block; margin-bottom: 1px; }
+.dv-ocio__slogan-city { font-family: 'Bebas Neue', sans-serif; font-size: 72px; color: #111827; letter-spacing: -2px; line-height: 0.87; display: block; margin-bottom: 3px; }
+.dv-ocio__slogan-year { display: inline-flex; align-items: center; gap: 1px; font-family: 'Bebas Neue', sans-serif; font-size: 21px; color: #111827; }
+
+/* ── Featured event ── */
+.dv-ocio__featured      { display: flex; gap: 14px; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #eee; }
+.dv-ocio__feat-img-wrap { width: 240px; height: 140px; flex-shrink: 0; position: relative; overflow: hidden; }
+.dv-ocio__feat-img      { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dv-ocio__feat-img-ph   { width: 100%; height: 100%; background: #d2d2d2; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; font-size: 8px; color: #999; letter-spacing: 0.1em; text-transform: uppercase; }
+.dv-ocio__feat-grad     { position: absolute; inset: 0; background: linear-gradient(to right, transparent 50%, rgba(0,0,0,0.28) 100%); }
+.dv-ocio__feat-body     { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.dv-ocio__feat-tag      { font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: #C8006B; margin-bottom: 5px; }
+.dv-ocio__feat-name     { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: #111827; letter-spacing: 0.02em; line-height: 1.1; margin-bottom: 4px; }
+.dv-ocio__feat-when     { font-size: 9px; font-style: italic; color: #6b7280; margin-bottom: 8px; }
+.dv-ocio__feat-desc     { font-size: 9px; color: #444; line-height: 1.55; text-align: justify; }
+
+/* ── Category header ── */
+.dv-ocio__cat-hd    { display: flex; align-items: baseline; margin: 10px 0 4px; }
+.dv-ocio__cat-first { font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: #111827; line-height: 1; padding-right: 1px; }
+.dv-ocio__cat-rest  { font-size: 13px; font-weight: 700; color: #111827; text-transform: uppercase; letter-spacing: 0.05em; }
+.dv-ocio__cat-sub   { font-size: 9px; font-style: italic; color: #6b7280; margin-bottom: 9px; line-height: 1.4; }
+
+/* ── Event cards grid ── */
+.dv-ocio__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 10px; }
+
+.dv-ocio__card     { display: flex; flex-direction: column; }
+.dv-ocio__card-img { width: 100%; height: 90px; background: #d2d2d2; position: relative; overflow: hidden; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; }
+.dv-ocio__card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.dv-ocio__card-ph  { font-size: 8px; color: #999; letter-spacing: 0.1em; text-transform: uppercase; position: relative; }
+
+.dv-ocio__name { font-family: 'Bebas Neue', sans-serif; font-size: 12.5px; color: #111827; letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 2px; }
+.dv-ocio__when { font-size: 8.5px; font-weight: 600; color: #C8006B; margin-bottom: 2px; }
+.dv-ocio__tag  { font-size: 9px; font-style: italic; color: #444; margin-bottom: 4px; line-height: 1.35; }
+.dv-ocio__desc { font-size: 8.5px; color: #333; line-height: 1.55; flex: 1; text-align: justify; }
+
+/* ── Footer ── */
+.dv-ocio__footer     { position: absolute; bottom: 22px; left: 56px; right: 56px; display: flex; justify-content: space-between; align-items: center; }
+.dv-ocio__footer-txt { font-size: 8px; color: #aaa; font-style: italic; }
+.dv-ocio__footer-num { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #bbb; }

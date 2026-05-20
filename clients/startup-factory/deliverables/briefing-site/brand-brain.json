@@ -1,0 +1,161 @@
+{
+  "client_name": "Startup Factory",
+  "slug": "startup-factory",
+  "tagline": "El Venture Builder en español que faltaba",
+  "tagline_secondary": "Cuéntanos tu proyecto. Escuchamos a todos. Aceptamos al <10%.",
+  "industry": "Venture Building / Consultoría Estratégica / Emprendimiento",
+  "mission": "Evaluar proyectos de forma individual, trabajar solo con el <10% que tiene potencial real y ofrecer a emprendedores y startups el equipo, estrategia y conexiones exactas que necesitan — siempre a medida, nunca en paquetes.",
+  "positioning": "El único venture builder hispanohablante operando desde Bangkok. No somos consultores. Somos tu equipo.",
+  "audience_primary": {
+    "name": "El Emprendedor con Idea",
+    "age": "25-35",
+    "location": "España / LATAM",
+    "pain": "Tiene la idea pero no sabe por dónde empezar. Nadie le da feedback honesto sobre su proyecto.",
+    "desire": "Alguien que le diga la verdad y ejecute con él — no más PDFs ni consultoras vacías.",
+    "channels": ["Instagram", "LinkedIn", "TikTok"]
+  },
+  "audience_secondary": {
+    "name": "El Founder Early-Stage",
+    "age": "30-42",
+    "location": "España / LATAM / SEA",
+    "pain": "Su startup necesita crecer pero no puede contratar en fijo. Busca inversores, socios o equipo senior.",
+    "desire": "Acceso a red real — inversores, CTOs, corporates — y equipo que ejecute.",
+    "channels": ["LinkedIn", "YouTube", "Email"]
+  },
+  "brand_voice": ["directo", "honesto", "sin-bullshit", "cercano", "con-criterio"],
+  "brand_values": ["selectividad", "ejecución", "honestidad-radical", "comunidad", "IA-aplicada"],
+  "differentiator": "Menos del 10% pasan el filtro — y el NO también tiene valor.",
+  "key_stats": {
+    "founded": "2020",
+    "community": "5K+ miembros",
+    "events": "300+ eventos",
+    "corporate_clients": "Mahou, Airbus, Siemens, Amadeus"
+  },
+  "competitors": [
+    { "name": "Lanzadera", "weakness": "Aceleradora corporativa — proceso estándar, menos 1:1" },
+    { "name": "Wayra", "weakness": "Ligada a Telefónica — menos flexibilidad estratégica" },
+    { "name": "Demium", "weakness": "Studio genérico — no el filtro selectivo ni el ángulo SEA" }
+  ],
+  "content_pillars": [
+    {
+      "name": "Startup Audit",
+      "pct": 30,
+      "description": "Auditamos startups con metodología propia — 7 áreas, sin filtros. Mostramos errores reales y diagnósticos honestos.",
+      "example_posts": [
+        "Por qué rechazamos al 90% — y qué tienen en común los que pasan",
+        "El error de equipo que destruye startups antes de lanzar",
+        "Auditamos 5 startups en directo. Estas son las notas reales."
+      ]
+    },
+    {
+      "name": "El Becario",
+      "pct": 25,
+      "description": "Un personaje aprende venture building desde dentro de SF — humor + educación + autenticidad. Máximo potencial viral.",
+      "example_posts": [
+        "Semana 1 en SF: lo que nadie te cuenta de los venture builders",
+        "El becario intenta cerrar una reunión con un inversor. Esto pasó.",
+        "Nadie me dijo que en SF las reuniones de lunes son así"
+      ]
+    },
+    {
+      "name": "AI for Founders",
+      "pct": 25,
+      "description": "Herramientas de IA concretas para emprendedores. Carlos muestra en pantalla lo que usa en proyectos reales. Una herramienta por semana.",
+      "example_posts": [
+        "Hice esto con IA en 10 minutos y me ahorré contratar a un analista",
+        "La herramienta de IA que más uso para validar ideas de startup",
+        "Cómo usé Claude para analizar 200 competidores en 20 minutos"
+      ]
+    },
+    {
+      "name": "Builder Stories",
+      "pct": 10,
+      "description": "Historias reales de founders del ecosistema SF. Social proof en formato narrativo — errores reales, aprendizajes accionables.",
+      "example_posts": [
+        "Cómo Dadybox pasó de idea a primeras ventas en 3 semanas",
+        "El proyecto que rechazamos dos veces y luego aceptamos",
+        "Natalia Aldea: lo que nadie te cuenta del camino de emprender"
+      ]
+    },
+    {
+      "name": "Startup Opportunities",
+      "pct": 10,
+      "description": "Oportunidades en España, LATAM y SEA. Carlos en Bangkok ve el ecosistema startup asiático desde dentro.",
+      "example_posts": [
+        "3 sectores que están despegando en SEA y nadie en España está mirando",
+        "Por qué operar desde Bangkok te da una ventaja que no puedes comprar",
+        "El ecosistema startup tailandés en 5 datos que te van a sorprender"
+      ]
+    }
+  ],
+  "channels": [
+    { "name": "Instagram", "priority": "primary", "kpi": "Followers + saves + DMs" },
+    { "name": "LinkedIn", "priority": "primary", "kpi": "Impresiones + solicitudes diagnóstico" },
+    { "name": "TikTok", "priority": "secondary", "kpi": "Vistas + shares (viral)" },
+    { "name": "YouTube", "priority": "secondary", "kpi": "Watch time + suscriptores" }
+  ],
+  "campaigns_active": [
+    {
+      "name": "Relanzamiento Instagram",
+      "dates": "Mayo 2026",
+      "goal": "Recuperar presencia (sin publicar desde 2023)",
+      "mechanic": "Bio actualizada + 5 posts de relanzamiento con hook 'Llevamos 2 años sin publicar...'"
+    },
+    {
+      "name": "AI for Founders — Lead Magnet",
+      "dates": "Mayo-Junio 2026",
+      "goal": "500 leads cualificados",
+      "mechanic": "TikTok hook → /es/ai-for-founders → kit IA → nurturing Mailerlite"
+    },
+    {
+      "name": "Startup Audit Launch",
+      "dates": "Junio 2026",
+      "goal": "300 descargas de metodología",
+      "mechanic": "Contenido educativo orgánico → /es/startup-audit → GPT audit"
+    }
+  ],
+  "month1_weeks": [
+    { "week": 1, "theme": "Relanzamiento — Quiénes somos hoy", "posts": 5, "goal": "200 nuevos seguidores" },
+    { "week": 2, "theme": "Startup Audit — El primer bloque educativo", "posts": 4, "goal": "50 DMs de interés" },
+    { "week": 3, "theme": "AI for Founders — Primera herramienta en pantalla", "posts": 4, "goal": "100 visitas a /es/ai-for-founders" },
+    { "week": 4, "theme": "El Becario — Primer episodio piloto", "posts": 4, "goal": "Primer viral 5K+ vistas" }
+  ],
+  "influencer_tiers": [
+    { "tier": "Creadores startup/emprendimiento hispanohablantes", "followers": "10K-100K", "count": 5, "budget": "€500/mes [ESTIMATE]" },
+    { "tier": "Alumni / Founders del ecosistema SF", "followers": "1K-10K", "count": 10, "budget": "Equity o intercambio" },
+    { "tier": "Carlos Jacoste — Propio", "followers": "Reconstruyendo", "count": 1, "budget": "Orgánico" }
+  ],
+  "paid_media": [
+    { "channel": "LinkedIn Ads", "budget_pct": 50, "format": "Lead gen + amplificación de contenido" },
+    { "channel": "Instagram/Facebook Ads", "budget_pct": 30, "format": "Retargeting + lookalike founders" },
+    { "channel": "TikTok Ads", "budget_pct": 20, "format": "Spark Ads sobre contenido orgánico viral" }
+  ],
+  "kpis": [
+    { "metric": "Instagram followers", "baseline": "5.151", "target_30d": "5.500", "target_90d": "8.000" },
+    { "metric": "Leads cualificados/mes", "baseline": "~10 [EST]", "target_30d": "50", "target_90d": "200" },
+    { "metric": "Sesiones diagnóstico/mes", "baseline": "~5 [EST]", "target_30d": "20", "target_90d": "60" },
+    { "metric": "Proyectos aceptados/mes", "baseline": "1", "target_30d": "3", "target_90d": "8" },
+    { "metric": "Visitas a /aplica", "baseline": "N/D", "target_30d": "500", "target_90d": "2.000" }
+  ],
+  "action_items": [
+    { "priority": "P1", "task": "Actualizar bio Instagram a español + link /es/bio", "owner": "Carlos", "deadline": "Esta semana" },
+    { "priority": "P1", "task": "Crear TikTok @_startupsfactory + primer vídeo", "owner": "Nacho/Alessandro", "deadline": "Mayo 2026" },
+    { "priority": "P1", "task": "Conectar Mailerlite para lead magnet AI for Founders", "owner": "Javier/Josue", "deadline": "Mayo 2026" },
+    { "priority": "P2", "task": "Crear GPT 'Startup Audit' para kit /es/ai-for-founders", "owner": "Carlos", "deadline": "Junio 2026" },
+    { "priority": "P2", "task": "Crear YouTube @startupsfactory + canal optimizado", "owner": "Nacho", "deadline": "Junio 2026" },
+    { "priority": "P3", "task": "Configurar ManyChat (keyword KIT → DM automático)", "owner": "Alessandro", "deadline": "Julio 2026" },
+    { "priority": "P3", "task": "Pedir testimoniales a ex-colaboradores LinkedIn", "owner": "Carlos/Diego", "deadline": "Julio 2026" }
+  ],
+  "colors": {
+    "primary": "#3D2FFF",
+    "accent": "#A855F7",
+    "bg": "#000000",
+    "text": "#F0EFF8"
+  },
+  "fonts": {
+    "display": "Space Grotesk",
+    "body": "DM Sans",
+    "mono": "Space Mono"
+  },
+  "budget_monthly": "€1.500-2.000 [ESTIMATE]"
+}

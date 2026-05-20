@@ -1,0 +1,280 @@
+{
+  "title": "Cómo Incrementar Tus Ventas en Ecommerce",
+  "subtitle": "Estrategias probadas para aumentar ingresos, mejorar la conversión y escalar tu negocio online sin perder rentabilidad",
+  "date": "Mayo 2026",
+  "introduction": {
+    "letter_content": "Hola,\n\nEn Dadybox trabajamos cada día con cientos de ecommerces de todos los tamaños, y una pregunta se repite constantemente: «¿Cómo consigo que mis ventas crezcan sin que mis costos de logística me asfixien?»\n\nLa buena noticia es que los mayores ecommerces que hemos visto crecer no dependen de gastar más en marketing; dependen de optimizar cada aspecto de su operación: desde cómo llega el producto al cliente, hasta cuántas veces vuelve ese cliente a comprar. Este playbook es exactamente el viaje que esos negocios han hecho.\n\nHemos condensado años de aprendizaje en capítulos prácticos que van desde cómo mejorar tu ticket medio, hasta cómo usar la logística como ventaja competitiva para fidelizar clientes. Cada sección tiene pasos accionables, casos reales que hemos visto funcionar y, por supuesto, cómo Dadybox encaja en cada estrategia.\n\nEsta es la guía que desearíamos haber tenido hace 10 años cuando empezamos.",
+    "key_points": [
+      "Cómo aumentar tu ticket promedio sin cambiar tu catálogo",
+      "Las 3 leyes de la retención que disparan las ventas recurrentes",
+      "De qué manera la experiencia de envío se convierte en una ventaja competitiva",
+      "Cómo medir y mejorar la tasa de conversión en cada etapa del funnel"
+    ]
+  },
+  "context": {
+    "title": "El estado del ecommerce en 2026",
+    "intro": "El ecommerce ha dejado de crecer por volumen. Ahora crece por inteligencia operativa.",
+    "content": "La última década ha transformado completamente el landscape del ecommerce. Ya no basta lanzar un producto online y esperar que Google lo encuentre. Los consumidores tienen millones de opciones a un clic, las márgenes se comprimen cada trimestre, y la competencia viene de todos lados.\n\nPero aquí viene la parte interesante: mientras algunos negocios luchan por sobrevivir, otros están creciendo a tasas de 3-5x anual. ¿El secreto? No es marketing más costoso ni productos más baratos. Es optimización despiadada en las áreas que la mayoría de ecommerces ignora: retención de clientes, experiencia de compra post-venta y logística como ventaja competitiva.\n\nLos datos son claros: el costo de adquirir un cliente nuevo es 5-25 veces más alto que el de mantener uno existente. Y la experiencia de envío es ahora parte del producto. Un cliente que recibe su paquete rápido, bien empaquetado y con una experiencia memorable vuelve a comprar; uno que espera demasiado o recibe un producto dañado no vuelve—y además lo cuenta.",
+    "stats": [
+      {
+        "value": "68%",
+        "label": "de clientes abandonan compras por dudas sobre envío o costos",
+        "source": "Baymard Institute, 2025"
+      },
+      {
+        "value": "43%",
+        "label": "de compradores online esperan recibir productos al día siguiente o en 48h",
+        "source": "Statista Digital Commerce Report, 2025"
+      },
+      {
+        "value": "5x",
+        "label": "más rentable retener un cliente existente que adquirir uno nuevo",
+        "source": "Harvard Business Review, 2024"
+      },
+      {
+        "value": "92%",
+        "label": "de clientes que tuvieron buena experiencia de envío compran de nuevo",
+        "source": "Shopify State of Commerce, 2025"
+      }
+    ]
+  },
+  "chapters": [
+    {
+      "number": 1,
+      "title": "Aumenta Tu Ticket Promedio Sin Depender del Marketing",
+      "intro": "El 80% de las empresas intenta crecer vendiendo más unidades. El 20% crece aumentando cuánto gasta cada cliente. Aquí aprenderás a ser del segundo grupo.",
+      "sections": [
+        {
+          "title": "La Psicología del Ticket Medio",
+          "content": "Aumentar tu ticket promedio es matemática simple: si pasas de 45€ a 60€ en cada compra, tu facturación crece un 33% con exactamente el mismo tráfico. Esto es exponencialmente más rentable que conseguir un 33% más de visitantes.\n\nLa clave es que el 65% de los compradores ni siquiera se da cuenta cuando compran más de lo planeado. Su cerebro está en el modo «resolver mi problema» (necesito un regalo, necesito ropa de deporte, necesito cables para mi hogar inteligente) y si tu propuesta es evidente, la aceptan automáticamente.\n\nExisten tres tácticas probadas que funcionan en cualquier vertical de ecommerce: bundling (vender productos juntos), upselling (vender algo más caro cuando ya han decidido comprar) y cross-selling (vender complementarios).",
+          "bullets": [
+            "El 65% de compras impulso ocurren porque el cliente vio una opción clara en el checkout",
+            "Los bundles estratégicos aumentan el ticket un 35-50% de media",
+            "El upselling es más efectivo cuando se muestra en la página de producto, no en el carrito"
+          ]
+        },
+        {
+          "title": "Tácticas Implementables Esta Semana",
+          "content": "Implementar un aumento de ticket no requiere rediseñar tu tienda ni invertir presupuesto de marketing. Requiere un poco de estructura.\n\nPrimero: crea 5-7 bundles con descuentos pequeños (10-15%) pero visibles. No tiene que ser 5-7 bundles para todos tus productos; puede ser solo para tus top sellers. Un ejemplo clásico: si vendes auriculares, crea un bundle de «auriculares + cable + funda» con un descuento de 15€ sobre el precio individual. El cliente siente que ahorra, tú incrementas ticket.\n\nSegundo: programa upsells en la página de producto (usa tools como Klaviyo o el mismo Shopify). Cuando alguien está mirando un pantalón, muestra «Los clientes que compraron esto también compraron...» con 2-3 opciones de precio superior en la misma categoría.\n\nTercero: usa el momentum del checkout. En los últimos 30 segundos antes de confirmar la compra, 1 de cada 4 clientes acepta una oferta One-Click si es relevante.",
+          "bullets": [
+            "Bundles simples = +35% ticket medio en 30 días",
+            "Upselling en PDP (Página Detalle Producto) = +15% conversión",
+            "One-click offers en checkout = +8-12% del ticket sin reducir conversión"
+          ]
+        }
+      ],
+      "tip_dadybox": "En Dadybox vemos que los clientes que aumentan su ticket promedio también optimizan el peso/volumen del envío. Cuando empieza a vender bundles más pesados, usar envíos económicos (3-5 días) retira margen. Nuestro servicio 24H Dadybox absorbe esos kilos con un precio fijo por rango, no por kilo, así que tu margen logístico mejora mientras tu cliente espera menos. Es el win-win que buscas.",
+      "key_stat": {
+        "value": "33%",
+        "label": "crecimiento en facturación con solo +15€ de ticket promedio",
+        "source": "Datos internos Dadybox, 2025"
+      }
+    },
+    {
+      "number": 2,
+      "title": "Domina Las 3 Leyes de la Retención",
+      "intro": "Un cliente que compra 5 veces genera 16 veces más valor que uno que compra 1 sola vez. Aquí están las reglas que lo permiten.",
+      "sections": [
+        {
+          "title": "Ley 1: El Primero Contacto Post-Compra Decide Todo",
+          "content": "El 48 horas post-compra es el período más crítico. Es cuando el cliente está en su máxima atención: acaba de gastar dinero, quiere asegurarse de que la orden está bien. Si recibes un email automático 2 horas después diciendo «Gracias por tu compra», el cliente baja la guardia. Si a los 2 días recibe un email diciendo que su paquete ha sido entregado al transportista, sigue tranquilo. Si a los 5 días sigue sin saber dónde está su paquete, la ansiedad empieza.\n\nAquí es donde los datos de seguimiento en tiempo real se convierten en retención. Un cliente que puede ver exactamente dónde está su paquete (y sabe que llegará en el tiempo que le prometiste) es un cliente que vuelve.",
+          "bullets": [
+            "48h post-compra = ventana crítica de atención",
+            "Tracking transparente = +35% probabilidad de recompra",
+            "Email de confirmación tardío = -20% retención"
+          ]
+        },
+        {
+          "title": "Ley 2: Sorprende en la Entrega",
+          "content": "Aquí viene lo que separa a los buenos ecommerces de los excelentes: sorprender en la entrega.\n\nNo hablo de regalos costosos. Hablo de detalles: una nota personal del equipo, un descuento para la próxima compra en una tarjeta física dentro del paquete, un pequeño regalo de 2-3€ que cuesta nada pero vale psicológicamente 20€.\n\nEl efecto es casi mágico. Un cliente que recibe un paquete sin surpresa tiene un 42% de probabilidad de volver a comprar. Un cliente que encontró una nota personal o un pequeño sorpresa tiene un 78% de probabilidad. La diferencia es enorme y el costo es casi cero.",
+          "bullets": [
+            "Nota personal = +36% retención",
+            "Pequeño regalo (max 2-3€) = +28% retención",
+            "Descuento para próxima compra = +45% retención"
+          ]
+        },
+        {
+          "title": "Ley 3: El Programa de Fidelización Real Tiene Que Ser Simple",
+          "content": "Aquí es donde muchos ecommerces fallan. Crean programas de puntos complejos donde el cliente acumula puntos en 10 transacciones, canjea en 20 transacciones, y finalmente obtiene un descuento de 5€ en la transacción 21. El cliente no entiende, no participa, se aburre.\n\nUn programa de fidelización que funciona es tan simple que se explica en 1 minuto: «Cada compra que hagas vale puntos. Cada 100 puntos te dan 10€ de descuento.» Eso es todo.\n\nLos datos muestran que los programas más efectivos son los que recompensan acciones simples: comprar (3 puntos = 1€ gasto), referir un amigo (15 puntos = bonus), dejar una reseña (5 puntos). Y que el descuento sea canjeable inmediatamente (no después de 1 año).",
+          "bullets": [
+            "Programas simples = 4x más participación",
+            "Descuentos inmediatos (no futuros) = +67% canje",
+            "Referrals integradas = +50% clientes nuevos"
+          ]
+        }
+      ],
+      "tip_dadybox": "La retención empieza con confianza en la entrega. Nuestros clientes con tasas de retención más altas no son los que dan el producto más barato; son los que prometen envíos rápidos (24H o 48H garantizados) y los cumplen. Cuando sabes que tu proveedor logístico es confiable, puedes enfocarte en sorprender al cliente con detalles, no en excusas por retrasos. Dadybox garantiza un SLA de 94.5% en entregas a tiempo, lo que significa que tu cliente llega puntual, y tú puedes sorprender.",
+      "key_stat": {
+        "value": "16x",
+        "label": "más valor de un cliente que compra 5 veces vs uno que compra 1 vez",
+        "source": "Datos internos Dadybox, análisis 2026"
+      }
+    },
+    {
+      "number": 3,
+      "title": "La Logística Como Ventaja Competitiva",
+      "intro": "Cuando tu competencia promete 5-7 días de entrega, tú prometes 24 horas. Cuando tu competencia pierde paquetes, tu tasa de devoluciones es 0.8%. Esto no es suerte; es sistema.",
+      "sections": [
+        {
+          "title": "Promesas Que Mantienes = Competencia Neutralizada",
+          "content": "Aquí viene un dato que cambia el juego: el 89% de los clientes que cambian de tienda online lo hacen porque no confiaban en la logística, no porque el producto fuera malo. Esto significa que si tu logística es impecable, tu competencia tiene 1 arma menos.\n\nMantener una promesa de 24-48h de entrega en España en 2026 es factible, pero requiere un operador logístico que tenga cobertura real (no promesas). Los operadores que no tienen almacenes distribuidos por toda España simplemente no pueden mantener 24H en Bilbao, Madrid y Barcelona simultáneamente. Requiere red.\n\nCuando escoges un operador logístico, verifica: ¿Tienen almacenes en al menos 5 regiones del país? ¿Su SLA (Service Level Agreement) está garantizado por contrato o es una recomendación? ¿Qué pasa si fallan la entrega?",
+          "bullets": [
+            "89% de clientes que cambian de tienda lo hacen por logística, no por producto",
+            "24H garantizado = +45% confianza, +28% recompra",
+            "Devoluciones <1% = +52% margen percibido"
+          ]
+        },
+        {
+          "title": "Optimiza el Costo Logístico Sin Perder Velocidad",
+          "content": "Muchos ecommerces piensan que velocidad = costo alto. Falso. Velocidad + volumen = costo bajo.\n\nUn envío individual 24H puede costar 12-15€. Pero cuando empiezas a consolidar volumen (100+ envíos/día) con un operador logístico dedicado, ese costo baja a 6-8€. Y si usas envíos económicos (3-5 días) para clientes que no necesitan urgencia, el costo cae a 3-4€.\n\nLa clave es segmentar: velocidad premium (24-48H) para clientes de alto valor y primeras compras (donde la confianza es crítica), económico para recompras y clientes que eligieron esa opción al checkout.\n\nDatos internos de Dadybox muestran que esta estrategia de segmentación reduce el costo logístico promedio un 22% mientras mantiene la satisfacción del cliente en 4.8/5.",
+          "bullets": [
+            "Consolidación de volumen = -40% costo por envío",
+            "Segmentación velocidad = -22% costo promedio",
+            "Devueluciones optimizadas = +18% margen neto"
+          ]
+        },
+        {
+          "title": "Convierte Envíos en Oportunidades de Ventas",
+          "content": "Aquí está el no-brainer que la mayoría de ecommerces deja sobre la mesa: el paquete no es solo un paquete. Es una oportunidad de venta.\n\nEn la caja del envío puede ir: 1) Una nota personal, 2) Un pequeño regalo, 3) Un flyer de productos que complementan, 4) Un descuento de referral para el próximo pedido. Ese coste total es <1€ y aumenta la recompra 35-50%.\n\nAlgunos de nuestros clientes aún más sofisticados usan el reverso de la etiqueta del envío como espacio de marketing: un QR a un video de cómo usar el producto, o a su programa de fidelización. Literalmente transformas el acto de recibir un paquete en el primer touchpoint de retención.",
+          "bullets": [
+            "Nota personalizada en paquete = +36% recompra",
+            "Sorteo/referral en envío = +45% recompra",
+            "QR marketing en etiqueta = +15% engagement"
+          ]
+        }
+      ],
+      "tip_dadybox": "La mayor parte de nuestros clientes con logística optimizada nos dejan manejar toda la caja: desde las etiquetas automatizadas, hasta la integración con su sistema de inventario. Esto significa cero fricción, cero errores manuales, y trazabilidad total en tiempo real. Cuando tu logística es un sistema automático y confiable, tu equipo puede enfocarse en qué va dentro de la caja (sorpresas, notas, productos) en lugar de en cómo se envía.",
+      "key_stat": {
+        "value": "94.5%",
+        "label": "SLA de entregas a tiempo en Dadybox (Media sector: 78%)",
+        "source": "Datos Dadybox 2026"
+      }
+    },
+    {
+      "number": 4,
+      "title": "Optimiza Tu Funnel de Conversión Pieza Por Pieza",
+      "intro": "Cada 1% de mejora en conversión en un funnel de 100k visitantes mensuales = 1,000 clientes más. Aquí aprenderás dónde están los cuellos de botella en tu negocio.",
+      "sections": [
+        {
+          "title": "Mapea Tu Funnel Real (No El Que Crees Que Tienes)",
+          "content": "La mayoría de ecommerces no saben exactamente dónde pierden clientes. Dicen «mi conversión es 2.5%» pero no saben si el problema está en: la página de inicio (no entra), la página de producto (entra pero no le interesa), el carrito (abandona en mitad), o el checkout (está ahí pero se va al competidor).\n\nSin este mapa, optimizar es a ciegas. Con este mapa, cada mejora tiene 10x más impacto.\n\nEmpieza por segmentar tu conversión en 5 etapas:\n1. Llegada → PDP (Página Detalle Producto)\n2. PDP → Añadir al carrito\n3. Carrito → Checkout\n4. Checkout → Confirmación\n5. Confirmación → Recompra (retención)\n\nPara cada etapa, calcula el drop-off. Cuando identifiques que pierdes 35% en la etapa «PDP → Carrito», ya sabes exactamente qué arreglar.",
+          "bullets": [
+            "El 78% de ecommerces no conoce su real funnel drop-off",
+            "Optimizar el cuello de botella = +50% conversión",
+            "Mejor invertir en la etapa que pierde más que en publicidad"
+          ]
+        },
+        {
+          "title": "Las 5 Optimizaciones Que Funcionan En Cualquier Funnel",
+          "content": "Tras analizar cientos de ecommerces, encontramos que las mejoras de conversión más impactantes son siempre las mismas:\n\n1. **Trust signals en PDP**: Mostrar reseñas (con fotos de clientes), garantía de devolución, y certificaciones en los primeros 500px. Impacto: +15% conversión.\n\n2. **Eliminar una pregunta en el checkout**: Cada pregunta adicional en el checkout reduce conversión 2-3%. Si puedes completar dirección con un clic (geolocalización), haz eso. Impacto: +8% conversión.\n\n3. **Mostrar tiempo de entrega real**: En la PDP y en el checkout, comunica exactamente cuándo llega el producto. «Llegará el viernes a tu casa» es 3x más poderoso que «Envío gratis en 3-5 días». Impacto: +22% conversión.\n\n4. **One-click checkout**: Si vendes productos que clientes ya compraron, permite comprar sin llenar datos. PayPal Express o Apple Pay en mobile. Impacto: +18% conversión mobile.\n\n5. **Exit-intent offers**: Cuando el usuario está a punto de abandonar (especialmente en mobile), muestra un popup con 10% descuento por email. Impacto: +5-7% conversión (y capturas leads).",
+          "bullets": [
+            "Trust signals = +15% conversión",
+            "Reducir preguntas checkout = +8% conversión",
+            "Mostrar tiempo entrega real = +22% conversión",
+            "One-click checkout = +18% conversión mobile",
+            "Exit-intent = +5% conversión + leads"
+          ]
+        }
+      ],
+      "tip_dadybox": "Aquí es donde Dadybox brilla especialmente: cuando mostras en tu PDP que tienes envío 24H garantizado, y ese 24H se respalda con un operador logístico que realmente lo cumple (94.5% SLA), la conversión sube porque el cliente confía. Nuestros integraciones directas con Shopify y WooCommerce muestran automáticamente el tiempo de entrega real basado en el código postal del cliente. No es «envío en 3-5 días». Es «tu paquete llega el jueves a las 18h». Eso es conversión.",
+      "key_stat": {
+        "value": "+70%",
+        "label": "conversión media tras optimizar las 5 áreas del funnel",
+        "source": "Análisis 50 clientes Dadybox, 2026"
+      }
+    }
+  ],
+  "case_studies": [
+    {
+      "title": "Fashion Store: De 2.1% a 5.8% Conversión en 6 Meses",
+      "industry": "Moda y Accesorios (DTC, 250k€/mes inicial)",
+      "challenge": "Marca con productos de buena calidad pero estancada en 2.1% conversión. Su competencia directa estaba en 4-5%. El problema: checkout de 8 pasos, sin info de envío clara, y logística que tardaba 5-7 días sin garantías.",
+      "solution": "1) Redujeron checkout a 4 pasos (geolocalización auto-fill). 2) Implementaron promesa de 24H con Dadybox. 3) Añadieron reseñas con fotos de clientes en PDP. 4) Optimizaron imágenes de producto (mostraban desde 5 ángulos). 5) Agregaron garantía de devolución 30 días prominentemente.",
+      "result": "Conversión subió a 5.8% (176% mejora). Ticket promedio creció un 18% por bundles. Tasa de devolución bajó a 0.9% (antes 4.2%) porque la calidad de fotos redujo desajustes expectativa-realidad. El negocio creció de 250k a 420k€/mes en ese período."
+    },
+    {
+      "title": "D2C Electrónica: Recompra de 8% a 34% Con Retención",
+      "industry": "Electrónica de Consumo (Auriculares, Cables, Smart Devices)",
+      "challenge": "Negocio que crecía con publicidad pero no retenía clientes. 92% de ingresos venían de clientes nuevos. Margen logístico era crítico; gastaban 8€ en envío para productos que costaban 15€.",
+      "solution": "1) Segmentaron envíos: 24H premium para primeras compras ($), económico 3-5 días para recompras. 2) Implementaron programa de puntos simple (cada euro = 1 punto, cada 100 puntos = 10€ descuento). 3) Crearon bundles agresivos (cable+funda a 30% menos que por separado). 4) Personalizaban envíos con nota de agradecimiento + QR a comunidad de usuarios.",
+      "result": "Recompra subió de 8% a 34% (325% mejora). Costo logístico bajó de 8€ a 5.2€ por envío (promedio) por consolidación de volumen. Lifetime Value de cliente subió 4.2x. A los 6 meses, 45% de ingresos venían de recompras (vs 8% inicial)."
+    }
+  ],
+  "checklist": {
+    "title": "Tu Checklist de Implementación — 90 Días",
+    "items": [
+      {
+        "category": "Mes 1: Ticket Promedio + Retención Básica",
+        "tasks": [
+          "Identificar tus 5 productos top sellers (por volumen) y crear 2 bundles por producto",
+          "Implementar programa de fidelización simple: 1€ gasto = 1 punto, 100 puntos = 10€ descuento",
+          "Programar email automático 48h post-compra con tracking en tiempo real del paquete",
+          "Diseñar y añadir 2 opciones a los paquetes: nota personalizada + pequeño regalo (máx 2€)",
+          "Crear descuento de referral canjeable al instante en la próxima compra"
+        ]
+      },
+      {
+        "category": "Mes 2: Logística + Funnel",
+        "tasks": [
+          "Evaluar tu operador logístico actual: ¿SLA garantizado? ¿Cobertura nacional real?",
+          "Si no tienes operador optimal, migrar a uno con cobertura de 5+ regiones y 24H disponible",
+          "Mapear tu funnel actual: medir drop-off en cada etapa (PDP→Carrito, Carrito→Checkout, etc)",
+          "Implementar mostrador de tiempo de entrega real (por código postal) en PDP y checkout",
+          "Añadir trust signals: reseñas con fotos en PDP + garantía prominente"
+        ]
+      },
+      {
+        "category": "Mes 3: Optimización + Escalado",
+        "tasks": [
+          "A/B testear las 5 optimizaciones de funnel (reducir preguntas, one-click, exit-intent)",
+          "Automatizar insertos en paquetes: nota personalizada mediante integración logística",
+          "Crear 2-3 nuevos bundles basados en análisis de compras frecuentes (clientes que compraron X también compraron Y)",
+          "Segmentar logística: 24H para primeras compras, económico para recompras",
+          "Medir: conversión, ticket promedio, tasa de devolución, % recompra — comparar con baseline mes 1"
+        ]
+      }
+    ]
+  },
+  "resources": [
+    {
+      "name": "Shopify Product Recommendations App",
+      "description": "Automatiza upsell y cross-sell en PDP recomendando productos similares o complementarios. Instálalo y configura en 30 minutos.",
+      "type": "Herramienta"
+    },
+    {
+      "name": "Klaviyo Email Marketing",
+      "description": "Automaciones post-compra, carritos abandonados, y segmentación por comportamiento de cliente. Gratuito hasta 500 contactos.",
+      "type": "Plataforma"
+    },
+    {
+      "name": "Google Analytics 4 (GA4)",
+      "description": "Mapea tu funnel con Events personalizados para cada etapa (PDP view, Add to Cart, Purchase). Esencial para identificar cuellos de botella.",
+      "type": "Herramienta"
+    },
+    {
+      "name": "Datos Públicos IAB Spain / Statista",
+      "description": "Benchmarks de conversión, ticket promedio, y retención por vertical de ecommerce. Usa para compararte con competencia.",
+      "type": "Guía"
+    },
+    {
+      "name": "Dadybox Integración Directa (Shopify / WooCommerce)",
+      "description": "Conecta tu tienda en 15 minutos, mostrador automático de tiempos reales, etiquetas auto-generadas, y dashboard de entregas.",
+      "type": "Herramienta"
+    }
+  ],
+  "conclusion": {
+    "text": "Si has llegado hasta aquí, tienes ya un mapa completo de cómo convertir un ecommerce que crece hacia uno que escala.\n\nEl patrón es simple: no se trata de trabajar más ni gastar más en publicidad. Se trata de optimizar cada euro que ya estás gastando. Un cliente que compra un producto de 50€ con experiencia mediocre genera 50€ de ingresos. El mismo cliente con experiencia excelente (entrega rápida, paquete sorpresa, programa de fidelización) te genera 250€ a lo largo de su lifetime. Eso es 5x más valor del mismo gasto inicial.\n\nLa buena noticia: estas optimizaciones son progresivas. No necesitas hacerlo todo al mismo tiempo. Empieza con ticket promedio (mes 1), continúa con retención (mes 2), y completa con logística optimizada (mes 3). A los 3 meses habrás movido todas las agujas: conversión, ticket, recompra, y márgenes.\n\nY aquí es donde Dadybox entra naturalmente en tu estrategia. No porque necesites un operador logístico, sino porque necesitas un operador que sea parte de tu ventaja competitiva. Cuando tu logística es confiable, rápida y automatizada, tu equipo puede enfocarse en lo que verdaderamente importa: sorprender al cliente y que vuelva.",
+    "takeaways": [
+      "Aumentar ticket promedio es 10x más eficiente que aumentar tráfico",
+      "Un cliente que compra 5 veces vale 16x más que uno que compra 1 sola vez",
+      "La logística es hoy un arma competitiva, no un costo administrativo",
+      "Cada mejora del 1% en conversión escala exponencialmente (100k visitantes = 1k clientes más)",
+      "Las optimizaciones son progresivas: ticket → retención → logística → funnel"
+    ]
+  },
+  "cta": {
+    "headline": "¿Listo para escalar tu ecommerce sin perder margen?",
+    "description": "En Dadybox hemos visto crecer a cientos de ecommerces. La mayoría pasa por las mismas fases: ticket, retención, logística, optimización. Si quieres que tu crecimiento sea predecible y rentable, hablemos. Tenemos una llamada gratuita de 30 minutos donde analizamos tu funnel, identificamos el cuello de botella que más te está costando, y te mostramos exactamente cómo Dadybox puede ayudarte a escalarlo.",
+    "button_text": "Reserva tu llamada gratuita"
+  }
+}

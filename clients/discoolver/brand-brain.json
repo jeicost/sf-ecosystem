@@ -1,0 +1,118 @@
+{
+  "client_name": "discoolver",
+  "slug": "discoolver",
+  "tagline": "El futuro del turismo hoy en tu destino",
+  "tagline_alt": "La nueva forma de conectar con tus visitantes",
+  "industry": "Travel Tech / Destination Management SaaS",
+  "founded": "2019",
+  "website": "www.discoolver.com",
+  "contact": "info@discoolver.com | +34 656 91 43 74",
+  "mission": "Digitalizar y personalizar la experiencia del viajero, conectando turistas con el tejido local y económico de cada destino a través de tecnología SaaS.",
+  "positioning": "La plataforma SaaS todo-en-uno para destinos turísticos que quieren digitalizar, personalizar y monetizar la experiencia del viajero sin desarrollar tecnología propia.",
+  "business_model": "B2B SaaS para destinos turísticos y organismos públicos. Módulos contratables por separado, siempre en modo subscripción. Comisión del 10-15% sobre ventas en marketplace.",
+  "awards": ["Premio Hospitality 2021 — Plan My Trip (Digital Enterprise Show)"],
+  "case_studies": [
+    {"name": "Proyecto Ronda", "highlight": "200+ negocios y propuestas locales integradas. Totems interactivos. Venta cruzada con hoteles."},
+    {"name": "Proyecto Costa del Sol Tourism Hub", "highlight": "Señalética QR en puntos clave del destino. Integración marketplace."}
+  ],
+  "partners": ["Tetuan Valley", "Costa del Sol Tourism Hub", "Digital Enterprise Show", "ITH (Instituto Tecnológico Hotelero)", "SEGITTUR", "ICEX", "Destino Turístico Inteligente", "VOCCES", "Clorian", "FareHarbor", "ĀTICCO", "ZOHO", "ByHours", "Cover Manager", "artiSplendore"],
+  "audience_primary": {
+    "name": "El Director de Destino",
+    "role": "Gestor de patronato turístico, concejal de turismo, director de DMO",
+    "age": "38-55",
+    "location": "España, destinos turísticos medianos y grandes",
+    "pain": "Turismo masificado en zonas saturadas, falta de datos del viajero, comercio local invisible, nula monetización digital",
+    "desire": "Digitalizar el destino, redistribuir el flujo de visitantes, atraer turismo de calidad, tener datos para tomar decisiones",
+    "channels": ["LinkedIn", "Ferias turísticas (Fitur, WTM)", "Email directo", "Asociaciones sectoriales"]
+  },
+  "audience_secondary": {
+    "name": "El Empresario Local",
+    "role": "Propietario de restaurante, hotel boutique, comercio cultural, guía turístico",
+    "age": "30-50",
+    "location": "Fuera de las zonas turísticas principales del destino",
+    "pain": "Invisible para turistas, sin presencia digital, dependencia de plataformas genéricas (TripAdvisor, Google)",
+    "desire": "Ser descubierto, digitalizar ventas, entender a su cliente potencial",
+    "channels": ["Instagram", "WhatsApp", "Ferias locales", "Asociaciones de comerciantes"]
+  },
+  "brand_voice": ["innovador", "local", "directo", "tecnológico", "con impacto social"],
+  "brand_values": ["innovación turística", "experiencia local auténtica", "digitalización accesible", "impacto económico local", "datos al servicio del destino"],
+  "differentiator": "La única plataforma que unifica marketplace, POS, planificador de viajes, calendario de eventos y BI en un ecosistema SaaS pensado desde el primer día para destinos turísticos — no una app genérica adaptada.",
+  "products": [
+    {"name": "Market Place", "price": "€750/mes", "description": "Sistema de venta de servicios turísticos propios y de colaboradores. Hoteles, productos, eventos."},
+    {"name": "Software de Caja", "price": "€495/mes + €50/POS", "description": "Sistema de cobros para oficinas turísticas y monumentos. Diseñado a medida."},
+    {"name": "Plan My Trip", "price": "€150/mes", "description": "Planificador de rutas personalizadas por tipología de viajero, duración y presupuesto. Premio Hospitality 2021."},
+    {"name": "Calendario Inteligente", "price": "€100/mes", "description": "Agenda cultural y de eventos del destino con venta de entradas integrada."},
+    {"name": "Asistente de Voz Local", "price": "€250/mes", "description": "Chatbot IA entrenado con datos del destino. Atención al visitante 24/7."},
+    {"name": "Señalética & Totems", "price": "€100/mes mantenimiento", "description": "Displays, totems interactivos y QR en puntos clave del destino."},
+    {"name": "Business Intelligence", "price": "Incluido con módulos", "description": "Cuadro de mando e informes personalizados con toda la data del ecosistema."}
+  ],
+  "competitors": [
+    {"name": "TripAdvisor", "weakness": "Solo B2C, sin herramientas de monetización para el destino ni integración con el tejido local"},
+    {"name": "Google Maps", "weakness": "Plataforma genérica sin personalización ni módulos de venta específicos para destinos"},
+    {"name": "Civitatis", "weakness": "Solo booking de actividades, sin datos del visitante para el destino ni POS"},
+    {"name": "Musement (TUI)", "weakness": "Foco en grandes operadores, no en el comercio local ni en gestores de destino independientes"}
+  ],
+  "content_pillars": [
+    {"name": "Innovación Turística", "pct": 30, "description": "Tendencias del sector, futuro del turismo digital, nuevos perfiles de viajero", "angle": "Posicionar a discoolver como thought leader del turismo digital en España", "example_posts": ["El turista del futuro gasta el 70% en servicios locales — ¿está tu destino preparado?", "5 tecnologías que están transformando la gestión de destinos en 2025", "Por qué los destinos que no se digitalizan perderán al nuevo viajero"]},
+    {"name": "Casos de Éxito", "pct": 25, "description": "Resultados reales con Ronda, Costa del Sol y otros destinos. Datos, testimonios, antes/después", "angle": "Prueba social B2B: que los gestores de destino vean resultados tangibles", "example_posts": ["Cómo Ronda integró 200+ negocios locales en su ecosistema digital", "Proyecto Costa del Sol: señalética inteligente que redistribuye el flujo turístico", "De 0 a datos: cómo un destino tomó decisiones estratégicas con discoolver BI"]},
+    {"name": "Tips para Destinos", "pct": 20, "description": "Guías prácticas para gestores: cómo digitalizar, cómo atraer turismo de calidad, cómo monetizar", "angle": "Contenido de valor que el gestor de destino quiere guardar y compartir", "example_posts": ["3 pasos para descongestionar tu zona turística saturada sin perder visitas", "Cómo convertir tu oficina de turismo en un punto de venta digital", "La guía definitiva para atraer turismo de calidad (y no de 'selfie y me voy')"]},
+    {"name": "Experiencia Local", "pct": 15, "description": "Behind the scenes, comercio local invisible, historias de empresarios locales que brillan gracias al destino", "angle": "Humanizar la tecnología. Mostrar el impacto real en personas y negocios locales", "example_posts": ["La taberna que nadie conocía y que ahora tiene lista de espera gracias a Plan My Trip", "El artesano de Ronda que digitalizó su tienda y triplicó ventas en temporada", "Así es una mañana en la oficina de turismo de [destino] con discoolver"]},
+    {"name": "Producto & Demo", "pct": 10, "description": "Features nuevas, actualizaciones, demos, walkthroughs del producto", "angle": "Mostrar el producto en acción, no solo hablar de él", "example_posts": ["Demo en vivo: así planifica un turista su ruta perfecta con Plan My Trip", "Nueva integración con FareHarbor — ya disponible en tu marketplace", "Así funciona el Asistente de Voz Local en la oficina de turismo de Ronda"]}
+  ],
+  "channels": [
+    {"name": "LinkedIn", "priority": "primary", "kpi": "Alcance a gestores de destino y decisores B2B"},
+    {"name": "Instagram", "priority": "secondary", "kpi": "Branding y experiencias locales para viajeros"},
+    {"name": "Email Marketing", "priority": "primary", "kpi": "Nurturing de leads B2B, newsletters sectoriales"},
+    {"name": "YouTube/Video", "priority": "secondary", "kpi": "Demos de producto, testimoniales, casos de éxito"},
+    {"name": "Ferias (Fitur, WTM, DES)", "priority": "primary", "kpi": "Generación de leads directa, partnerships"}
+  ],
+  "campaigns_active": [
+    {"name": "Temporada Alta 2025", "dates": "Abril–Septiembre 2025", "goal": "Cierre de 5 nuevos contratos destino antes de verano", "mechanic": "Demo gratuita + onboarding en 15 días"},
+    {"name": "Lanzamiento IA Features", "dates": "Q2 2025", "goal": "Reposicionamiento como plataforma IA-first para destinos", "mechanic": "Webinar + contenido educativo + PR sectorial"}
+  ],
+  "month1_weeks": [
+    {"week": 1, "theme": "Lanzamiento presencia digital profesional", "posts": ["LinkedIn: Por qué digitalizamos destinos", "IG: Behind the scenes oficina Ronda", "LI: Dato turismo 70% gasto local"], "goal": "Establecer voz de marca en LinkedIn"},
+    {"week": 2, "theme": "Casos de éxito — Proyecto Ronda", "posts": ["LI: Case study Ronda (carrusel)", "IG: Video tour destino Ronda con app", "LI: Testimonio gestor destino"], "goal": "Primera prueba social publicada"},
+    {"week": 3, "theme": "Innovación: el nuevo perfil de turista", "posts": ["LI: Artículo 'El turista 2025'", "IG: Infografía 70/30 consumo viajero", "LI: Poll ¿Tu destino está digitalizado?"], "goal": "Engagement con decisores del sector"},
+    {"week": 4, "theme": "Demo & producto en acción", "posts": ["LI: Video demo Plan My Trip", "IG: Carrusel 5 módulos discoolver", "Email: Invitación webinar demo live"], "goal": "Primera generación de leads qualificados"}
+  ],
+  "influencer_tiers": [
+    {"tier": "Sector Turístico", "followers": "Gestores de destino y directores de patronato", "count": 10, "budget": "Relación directa, co-marketing"},
+    {"tier": "Travel Content Creators", "followers": "50k-500k", "count": 5, "budget": "€500-€1500/colaboración"},
+    {"tier": "Microinfluencers locales", "followers": "5k-50k", "count": 15, "budget": "Trueque/experiencias en destino"}
+  ],
+  "paid_media": [
+    {"channel": "LinkedIn Ads", "budget_pct": 60, "format": "Lead Gen Forms dirigidas a directores de turismo"},
+    {"channel": "Google Search", "budget_pct": 25, "format": "Keywords: 'plataforma turismo digital', 'software destino turístico'"},
+    {"channel": "Meta Retargeting", "budget_pct": 15, "format": "Retargeting web visitors + lookalike de clientes actuales"}
+  ],
+  "kpis": [
+    {"metric": "Demos solicitadas/mes", "baseline": "[ESTIMATE] 3-5", "target_30d": "10", "target_90d": "25"},
+    {"metric": "Leads B2B cualificados", "baseline": "[ESTIMATE] 5", "target_30d": "20", "target_90d": "60"},
+    {"metric": "Seguidores LinkedIn", "baseline": "[ESTIMATE] <500", "target_30d": "+200", "target_90d": "+1.000"},
+    {"metric": "Tasa cierre demos→contrato", "baseline": "[ESTIMATE] 20%", "target_30d": "25%", "target_90d": "35%"},
+    {"metric": "MRR (€/mes)", "baseline": "[ESTIMATE] €5k", "target_30d": "€8k", "target_90d": "€20k"}
+  ],
+  "action_items": [
+    {"priority": "P1", "task": "Crear perfil LinkedIn empresa profesional con brand assets", "owner": "Marketing", "deadline": "Semana 1"},
+    {"priority": "P1", "task": "Publicar case study Ronda como primer post ancla", "owner": "Marketing", "deadline": "Semana 2"},
+    {"priority": "P1", "task": "Configurar lead capture en web + CRM pipeline", "owner": "Ventas", "deadline": "Semana 2"},
+    {"priority": "P2", "task": "Webinar demo gratuita mensual con gestores de destino", "owner": "CEO/Ventas", "deadline": "Mes 1"},
+    {"priority": "P2", "task": "Newsletter sectorial mensual 'Turismo Digital'", "owner": "Marketing", "deadline": "Mes 1"},
+    {"priority": "P3", "task": "Presentación en DES / Fitur 2026", "owner": "CEO", "deadline": "Q1 2026"}
+  ],
+  "colors": {
+    "primary": "#FF00C8",
+    "secondary": "#4D4D6E",
+    "accent": "#00D4FF",
+    "bg": "#0A0A16",
+    "text": "#FFFFFF",
+    "text_muted": "#9999BB"
+  },
+  "fonts": {
+    "display": "Poppins",
+    "body": "Inter",
+    "mono": "Space Mono"
+  },
+  "budget_monthly": "[ESTIMATE] €2.000-€5.000"
+}

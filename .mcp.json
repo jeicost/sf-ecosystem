@@ -1,0 +1,52 @@
+{
+  "mcpServers": {
+    "figma": {
+      "command": "npx",
+      "args": ["-y", "figma-developer-mcp", "--figma-api-key=figd_ed5ItPpihWEwm_lOqcQWa5yBqlLmDQMkZeIFpWCY", "--stdio"]
+    },
+    "freepik": {
+      "command": "/Users/carlosjacoste/.local/bin/uv",
+      "args": [
+        "run",
+        "--directory",
+        "/Users/carlosjacoste/Desktop/Claude/freepik-mcp",
+        "main.py"
+      ],
+      "env": {
+        "FREEPIK_API_KEY": "FPSX6e7edee7ab079168bc3682a274db1d4c"
+      }
+    },
+    "gdrive-ncglobal": {
+      "command": "npx",
+      "args": ["-y", "@piotr-agier/google-drive-mcp"],
+      "env": {
+        "GOOGLE_DRIVE_OAUTH_CREDENTIALS": "/Users/carlosjacoste/.config/google-drive-mcp/gcp-oauth.keys.json",
+        "GOOGLE_DRIVE_MCP_TOKEN_PATH": "/Users/carlosjacoste/.config/google-drive-mcp/tokens-ncglobal.json"
+      }
+    },
+    "gdrive-personal": {
+      "command": "npx",
+      "args": ["-y", "@piotr-agier/google-drive-mcp"],
+      "env": {
+        "GOOGLE_DRIVE_OAUTH_CREDENTIALS": "/Users/carlosjacoste/.config/google-drive-mcp/gcp-oauth.keys.json",
+        "GOOGLE_DRIVE_MCP_TOKEN_PATH": "/Users/carlosjacoste/.config/google-drive-mcp/tokens-personal.json"
+      }
+    },
+    "apple-mail": {
+      "command": "/Users/carlosjacoste/Desktop/Claude/tools/apple-mail-mcp/.venv/bin/apple-mail-mcp"
+    },
+    "Canva": {
+      "command": "npx",
+      "args": ["-y", "mcp-remote@latest", "https://mcp.canva.com/mcp"]
+    },
+    "google-slides": {
+      "command": "node",
+      "args": ["/Users/carlosjacoste/Desktop/Claude/google-slides-mcp/build/index.js"],
+      "env": {
+        "GOOGLE_CLIENT_ID": "199438765983-nj7grfs4f0g7ie2u068chcooliciltq3.apps.googleusercontent.com",
+        "GOOGLE_CLIENT_SECRET": "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",
+        "GOOGLE_REFRESH_TOKEN": "1//0gCmiwokwmOoZCgYIARAAGBASNwF-L9IrM6FC_lBLzYp4ffXIPIicSBm3p91fqkvgaOWjpl-UGxKJO4wXz-U4PqvlpJc3Ikze5Sk"
+      }
+    }
+  }
+}

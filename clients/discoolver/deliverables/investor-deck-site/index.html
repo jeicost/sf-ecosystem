@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>discoolver — Investor Deck · Seed 2025</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+  --primary:#FF00C8;--accent:#00D4FF;--green:#00E676;--yellow:#FFD740;--red:#FF3D57;
+  --bg:#0A0A16;--bg2:#10101E;--bg3:#181828;--bg4:#1E1E32;
+  --text:#FFFFFF;--muted:#8890B8;--dim:#4A5070;
+  --border:rgba(255,0,200,.12);--border2:rgba(255,255,255,.06);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;line-height:1.65;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.02'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.6}
+h1,h2,h3,.display{font-family:'Poppins',sans-serif}
+code,.mono{font-family:'Space Mono',monospace}
+
+/* ─── NAV ─── */
+nav{position:fixed;left:0;top:0;width:52px;height:100vh;background:rgba(10,10,22,.96);backdrop-filter:blur(16px);z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;border-right:1px solid var(--border)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--dim);cursor:pointer;transition:all .3s;position:relative}
+.dot:hover,.dot.active{background:var(--primary);transform:scale(1.5);box-shadow:0 0 8px var(--primary)}
+.dot::after{content:attr(data-label);position:absolute;left:18px;background:var(--bg3);color:var(--text);font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap;padding:4px 10px;border-radius:4px;border:1px solid var(--border);opacity:0;pointer-events:none;transition:opacity .2s}
+.dot:hover::after{opacity:1}
+
+/* ─── SECTIONS ─── */
+section{min-height:100vh;padding:100px 80px 100px 104px;position:relative;overflow:hidden}
+section:nth-child(even){background:var(--bg2)}
+.sec-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--primary);margin-bottom:14px}
+.sec-title{font-family:'Poppins',sans-serif;font-size:clamp(36px,5vw,68px);font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:36px}
+.reveal{opacity:0;transform:translateY(28px);transition:all .6s ease}
+.reveal.visible{opacity:1;transform:none}
+.hi{background:linear-gradient(90deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ─── LAYOUT ─── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+
+/* ─── CARDS ─── */
+.card{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:24px}
+.card-accent{border-color:rgba(255,0,200,.25)}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:9px;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.08em}
+.tag-p{background:rgba(255,0,200,.1);color:var(--primary);border:1px solid rgba(255,0,200,.3)}
+.tag-a{background:rgba(0,212,255,.1);color:var(--accent);border:1px solid rgba(0,212,255,.3)}
+.tag-g{background:rgba(0,230,118,.1);color:var(--green);border:1px solid rgba(0,230,118,.3)}
+.tag-y{background:rgba(255,215,64,.1);color:var(--yellow);border:1px solid rgba(255,215,64,.3)}
+.badge-est{font-family:'Space Mono',monospace;font-size:8px;color:var(--yellow);border:1px solid rgba(255,215,64,.3);padding:2px 6px;border-radius:3px;margin-left:6px}
+
+/* ─── HERO ─── */
+#hero{display:flex;flex-direction:column;justify-content:center;background:radial-gradient(ellipse at 70% 50%,rgba(255,0,200,.08) 0%,transparent 60%)}
+.hero-eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.25em;color:var(--primary);margin-bottom:20px;text-transform:uppercase}
+.hero-name{font-family:'Poppins',sans-serif;font-size:clamp(72px,12vw,140px);font-weight:900;line-height:.9;letter-spacing:-.02em}
+.hero-tagline{font-size:clamp(16px,2vw,22px);color:var(--muted);margin-top:20px;max-width:560px;line-height:1.6}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:56px;max-width:760px}
+.hstat{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:20px}
+.hstat-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;color:var(--primary);line-height:1}
+.hstat-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:6px;text-transform:uppercase}
+.hero-round{margin-top:40px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+
+/* ─── ELEVATOR PITCH ─── */
+.pitch-big{font-family:'Poppins',sans-serif;font-size:clamp(22px,3.5vw,42px);font-weight:700;line-height:1.25;max-width:800px;margin-bottom:48px}
+.insight-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.insight{background:var(--bg3);border-radius:14px;padding:28px;border-top:3px solid var(--primary);position:relative}
+.insight-num{font-family:'Space Mono',monospace;font-size:9px;color:var(--primary);margin-bottom:12px;letter-spacing:.15em}
+.insight-stat{font-family:'Poppins',sans-serif;font-size:36px;font-weight:900;color:var(--text);line-height:1;margin-bottom:8px}
+.insight-desc{font-size:13px;color:var(--muted);line-height:1.6}
+
+/* ─── PROBLEM ─── */
+.pain-statement{font-family:'Poppins',sans-serif;font-size:clamp(24px,4vw,52px);font-weight:900;line-height:1.15;max-width:700px;margin-bottom:48px}
+.pain-point{display:grid;grid-template-columns:48px 1fr;gap:16px;align-items:start;margin-bottom:20px;padding:20px;background:var(--bg3);border-radius:12px;border-left:3px solid var(--red)}
+.pain-icon{font-size:24px;text-align:center}
+.pain-title{font-weight:600;font-size:15px;margin-bottom:6px}
+.pain-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.fail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:32px}
+.fail-card{background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid var(--red)}
+.fail-name{font-weight:700;font-size:13px;margin-bottom:6px}
+.fail-why{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* ─── SOLUTION ─── */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative;margin-bottom:40px}
+.steps::before{content:'';position:absolute;top:32px;left:16%;right:16%;height:1px;background:linear-gradient(90deg,var(--primary),var(--accent));z-index:0}
+.step{background:var(--bg3);border-radius:14px;padding:28px;text-align:center;position:relative;z-index:1;margin:0 8px}
+.step-num{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:900;font-size:20px;margin:0 auto 16px;box-shadow:0 0 20px rgba(255,0,200,.4)}
+.step-title{font-weight:700;font-size:15px;margin-bottom:8px}
+.step-desc{font-size:12px;color:var(--muted);line-height:1.6}
+.moat-box{background:linear-gradient(135deg,rgba(255,0,200,.08),rgba(0,212,255,.04));border:1px solid rgba(255,0,200,.2);border-radius:14px;padding:28px}
+
+/* ─── MARKET ─── */
+.tam-visual{display:flex;align-items:center;justify-content:center;margin:40px 0;position:relative;height:320px}
+.tam-circle{border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;position:absolute;text-align:center}
+.tam-outer{width:320px;height:320px;background:rgba(255,0,200,.06);border:1px solid rgba(255,0,200,.2)}
+.tam-mid{width:220px;height:220px;background:rgba(255,0,200,.1);border:1px solid rgba(255,0,200,.3)}
+.tam-inner{width:130px;height:130px;background:rgba(255,0,200,.2);border:2px solid var(--primary)}
+.tam-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--primary);text-transform:uppercase}
+.tam-val{font-family:'Poppins',sans-serif;font-size:18px;font-weight:900;line-height:1.1;margin:4px 0}
+.tam-sub{font-size:10px;color:var(--muted)}
+
+/* ─── MODEL ─── */
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:32px}
+.module{background:var(--bg3);border-radius:12px;padding:18px;position:relative;overflow:hidden}
+.module::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--primary)}
+.module-name{font-weight:700;font-size:13px;margin-bottom:4px}
+.module-price{font-family:'Space Mono',monospace;font-size:12px;color:var(--primary);margin-bottom:6px}
+.module-desc{font-size:11px;color:var(--muted);line-height:1.5}
+.unit-econ{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+.ue{background:var(--bg3);border-radius:12px;padding:20px;text-align:center}
+.ue-val{font-family:'Poppins',sans-serif;font-size:32px;font-weight:900;color:var(--primary);line-height:1}
+.ue-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:6px;text-transform:uppercase}
+
+/* ─── TRACTION ─── */
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px}
+.kpi{background:var(--bg3);border-radius:14px;padding:24px;border-top:3px solid var(--primary)}
+.kpi-val{font-family:'Poppins',sans-serif;font-size:40px;font-weight:900;line-height:1;color:var(--primary)}
+.kpi-name{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:8px;text-transform:uppercase}
+.milestone-list{position:relative;padding-left:24px}
+.milestone-list::before{content:'';position:absolute;left:8px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--primary),var(--accent))}
+.ms{margin-bottom:20px;position:relative}
+.ms::before{content:'';position:absolute;left:-20px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--primary);box-shadow:0 0 8px var(--primary)}
+.ms-date{font-family:'Space Mono',monospace;font-size:10px;color:var(--primary);margin-bottom:4px}
+.ms-event{font-size:13px;font-weight:500}
+.partner-logos{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.partner-chip{background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:500;color:var(--muted)}
+
+/* ─── PRODUCT ─── */
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:32px}
+.feat{background:var(--bg3);border-radius:12px;padding:20px}
+.feat-icon{font-size:28px;margin-bottom:12px}
+.feat-name{font-weight:700;font-size:14px;margin-bottom:6px}
+.feat-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.feat-award{font-family:'Space Mono',monospace;font-size:8px;color:var(--yellow);margin-top:8px}
+.roadmap-q{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.rq{background:var(--bg3);border-radius:10px;padding:16px;border-top:2px solid}
+.rq-label{font-family:'Space Mono',monospace;font-size:9px;margin-bottom:8px;text-transform:uppercase}
+.rq-text{font-size:12px;line-height:1.5}
+
+/* ─── MOAT ─── */
+.comp-matrix{width:100%;border-collapse:collapse;font-size:13px}
+.comp-matrix th{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;padding:12px 16px;color:var(--muted);text-align:center;border-bottom:1px solid var(--border2)}
+.comp-matrix th:first-child{text-align:left}
+.comp-matrix td{padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.03);text-align:center}
+.comp-matrix td:first-child{text-align:left;font-weight:600}
+.comp-matrix tr.us td{background:rgba(255,0,200,.05)}
+.comp-matrix tr.us td:first-child{color:var(--primary)}
+.check{color:var(--green);font-size:16px}
+.cross{color:var(--red);font-size:16px}
+.part{color:var(--yellow);font-size:14px}
+
+/* ─── GTM ─── */
+.gtm-phase{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:32px}
+.gp{background:var(--bg3);border-radius:14px;padding:24px;position:relative;overflow:hidden}
+.gp::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.gp1::before{background:var(--primary)}
+.gp2::before{background:var(--accent)}
+.gp3::before{background:var(--green)}
+.gp-phase{font-family:'Space Mono',monospace;font-size:9px;text-transform:uppercase;margin-bottom:10px}
+.gp-title{font-weight:700;font-size:16px;margin-bottom:12px}
+.gp-items{font-size:12px;color:var(--muted);line-height:2}
+.channel-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.ch{background:var(--bg3);border-radius:10px;padding:16px}
+.ch-name{font-weight:700;font-size:13px;margin-bottom:6px}
+.ch-cac{font-family:'Space Mono',monospace;font-size:11px;color:var(--primary)}
+.ch-note{font-size:11px;color:var(--muted);margin-top:4px}
+
+/* ─── TEAM ─── */
+.team-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:32px}
+.team-card{background:var(--bg3);border-radius:16px;padding:28px;display:grid;grid-template-columns:64px 1fr;gap:20px;align-items:start}
+.avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-weight:900;font-size:22px;flex-shrink:0}
+.team-name{font-weight:700;font-size:18px;margin-bottom:2px}
+.team-role{font-family:'Space Mono',monospace;font-size:10px;color:var(--primary);margin-bottom:10px}
+.team-bio{font-size:13px;color:var(--muted);line-height:1.6}
+.team-notable{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-top:8px}
+.advisor-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.adv{background:var(--bg3);border-radius:10px;padding:16px;border-left:3px solid var(--accent)}
+.adv-name{font-weight:700;font-size:13px;margin-bottom:4px}
+.adv-bio{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* ─── FINANCIALS ─── */
+.fin-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.fk{background:var(--bg3);border-radius:12px;padding:20px;text-align:center}
+.fk-val{font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;color:var(--accent);line-height:1}
+.fk-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-top:6px;text-transform:uppercase}
+
+/* ─── ASK ─── */
+.ask-hero{background:linear-gradient(135deg,rgba(255,0,200,.1),rgba(0,212,255,.05));border:1px solid rgba(255,0,200,.25);border-radius:20px;padding:48px;text-align:center;margin-bottom:36px}
+.ask-amount{font-family:'Poppins',sans-serif;font-size:clamp(56px,10vw,96px);font-weight:900;line-height:1;color:var(--primary)}
+.ask-type{font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);margin-top:8px}
+.use-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.use-item{display:flex;gap:14px;align-items:center;background:var(--bg3);border-radius:10px;padding:16px}
+.use-pct{font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;color:var(--primary);min-width:64px}
+.use-label{font-size:14px;font-weight:600}
+.use-desc{font-size:12px;color:var(--muted);margin-top:3px}
+.milestone-ask{background:var(--bg3);border-radius:10px;padding:14px 18px;margin-bottom:10px;display:grid;grid-template-columns:24px 1fr;gap:12px;align-items:center}
+.ms-num{font-family:'Space Mono',monospace;font-size:11px;color:var(--primary);font-weight:700}
+
+/* ─── ROADMAP ─── */
+.timeline-months{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.tm{background:var(--bg3);border-radius:10px;padding:14px 10px;text-align:center}
+.tm-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:8px}
+.tm-content{font-size:11px;line-height:1.4;color:var(--text)}
+.tm.key{border:1px solid var(--primary)}
+.tm.key2{border:1px solid var(--accent)}
+
+/* ─── APPENDIX ─── */
+.faq-list{display:flex;flex-direction:column;gap:14px}
+.faq{background:var(--bg3);border-radius:12px;padding:20px}
+.faq-q{font-weight:700;font-size:14px;margin-bottom:8px;color:var(--primary)}
+.faq-a{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* ─── FOOTER ─── */
+footer{padding:48px 80px 48px 104px;background:var(--bg);border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.footer-brand{font-family:'Poppins',sans-serif;font-weight:900;font-size:22px}
+.footer-brand span{color:var(--primary)}
+.footer-contact{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-align:center;line-height:1.8}
+.footer-sf{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);text-align:right}
+
+/* ─── PRINT ─── */
+@media print{
+  nav{display:none}
+  section{min-height:auto;padding:48px 48px;page-break-after:always}
+  .reveal{opacity:1!important;transform:none!important}
+  footer{page-break-after:avoid}
+}
+.print-mode section{page-break-after:always}
+.print-mode .reveal{opacity:1!important;transform:none!important}
+
+@media(max-width:768px){
+  section{padding:60px 20px}
+  nav{display:none}
+  .grid-2,.grid-3,.hero-stats,.insight-grid,.kpi-row,.team-grid,.fin-kpis,.unit-econ,.module-grid,.roadmap-q,.timeline-months{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR NAV -->
+<nav>
+  <div class="dot active" data-label="Cover" data-target="hero"></div>
+  <div class="dot" data-label="Elevator" data-target="pitch"></div>
+  <div class="dot" data-label="Problema" data-target="problem"></div>
+  <div class="dot" data-label="Solución" data-target="solution"></div>
+  <div class="dot" data-label="Mercado" data-target="market"></div>
+  <div class="dot" data-label="Modelo" data-target="model"></div>
+  <div class="dot" data-label="Tracción" data-target="traction"></div>
+  <div class="dot" data-label="Producto" data-target="product"></div>
+  <div class="dot" data-label="Ventaja" data-target="moat"></div>
+  <div class="dot" data-label="GTM" data-target="gtm"></div>
+  <div class="dot" data-label="Equipo" data-target="team"></div>
+  <div class="dot" data-label="Financials" data-target="financials"></div>
+  <div class="dot" data-label="La Ronda" data-target="ask"></div>
+  <div class="dot" data-label="Roadmap" data-target="roadmap"></div>
+  <div class="dot" data-label="Apéndice" data-target="appendix"></div>
+</nav>
+
+<!-- 01 HERO / COVER -->
+<section id="hero">
+  <div class="reveal">
+    <div class="hero-eyebrow">Investor Deck · Ronda por definir · 2025</div>
+    <div class="hero-name"><span class="hi">dis</span>cool<span style="color:var(--primary)">ver</span></div>
+    <p class="hero-tagline">El futuro del turismo hoy en tu destino — La plataforma SaaS que digitaliza, personaliza y monetiza la experiencia del viajero para destinos turísticos.</p>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val">TBD</div><div class="hstat-label">Ronda por definir</div></div>
+      <div class="hstat"><div class="hstat-val">2019</div><div class="hstat-label">Fundación</div></div>
+      <div class="hstat"><div class="hstat-val">3+</div><div class="hstat-label">Destinos activos</div></div>
+      <div class="hstat"><div class="hstat-val">#1</div><div class="hstat-label">Premio Hospitality 2021</div></div>
+    </div>
+    <div class="hero-round">
+      <span class="tag tag-p">Ronda por definir</span>
+      <span class="tag tag-a">Travel Tech SaaS B2B</span>
+      <span class="tag tag-g">España · Europa</span>
+      <span class="tag tag-y">discoolver.com</span>
+    </div>
+  </div>
+</section>
+
+<!-- 02 ELEVATOR PITCH -->
+<section id="pitch">
+  <div class="sec-label">02 · Elevator Pitch</div>
+  <div class="reveal">
+    <div class="pitch-big">El nuevo turista gasta el <span class="hi">70% de su presupuesto</span> en servicios locales en destino. Los destinos turísticos no tienen herramientas para capturar ese gasto. <strong>discoolver</strong> es el SaaS que lo cambia.</div>
+    <div class="insight-grid">
+      <div class="insight">
+        <div class="insight-num">INSIGHT 01 · MERCADO</div>
+        <div class="insight-stat">€120bn</div>
+        <div class="insight-desc">Mercado global de tecnología para turismo. Creciendo al 18% CAGR. Ningún player domina el segmento B2B de gestión de destinos en España y sur de Europa.</div>
+      </div>
+      <div class="insight" style="border-top-color:var(--accent)">
+        <div class="insight-num">INSIGHT 02 · VALIDACIÓN</div>
+        <div class="insight-stat">200+</div>
+        <div class="insight-desc">Negocios locales integrados en el Proyecto Ronda. Totems interactivos, marketplace activo, datos en tiempo real. Premio Hospitality 2021 del Digital Enterprise Show.</div>
+      </div>
+      <div class="insight" style="border-top-color:var(--green)">
+        <div class="insight-num">INSIGHT 03 · VENTAJA</div>
+        <div class="insight-stat">27x</div>
+        <div class="insight-desc">LTV/CAC ratio estimado. Los destinos firman contratos anuales con múltiples módulos. Retención del 100% en los destinos activos. Sin churn conocido desde el primer cliente.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 03 EL PROBLEMA -->
+<section id="problem">
+  <div class="sec-label">03 · El Problema</div>
+  <h2 class="sec-title reveal">Los destinos turísticos<br><span class="hi">dejan dinero en la mesa</span></h2>
+  <div class="reveal">
+    <div class="pain-point">
+      <div class="pain-icon">📊</div>
+      <div><div class="pain-title">Sin datos del viajero</div><div class="pain-desc">Los destinos no saben quién visita, cuánto gasta, qué hace ni cuándo vuelve. Las decisiones estratégicas se toman a ciegas. Ninguna plataforma genérica devuelve esos datos al destino.</div></div>
+    </div>
+    <div class="pain-point">
+      <div class="pain-icon">🏘️</div>
+      <div><div class="pain-title">Comercio local invisible</div><div class="pain-desc">El 80% del gasto turístico se concentra en el 20% del destino (zona del monumento principal). Los 200+ negocios locales fuera del circuito turístico son invisibles para el visitante y no generan ingresos adicionales.</div></div>
+    </div>
+    <div class="pain-point">
+      <div class="pain-icon">💸</div>
+      <div><div class="pain-title">Nula monetización digital</div><div class="pain-desc">Los patronatos y DMOs invierten en marketing turístico pero no tienen infraestructura para monetizar la estancia del viajero. Todo el ecommerce va a TripAdvisor, Booking o Google — sin nada para el destino.</div></div>
+    </div>
+    <div class="fail-grid" style="margin-top:32px">
+      <div class="fail-card"><div class="fail-name">TripAdvisor</div><div class="fail-why">Solo B2C. No genera ingresos ni datos para el destino.</div></div>
+      <div class="fail-card"><div class="fail-name">Google Maps</div><div class="fail-why">Genérico. Sin monetización ni personalización por destino.</div></div>
+      <div class="fail-card"><div class="fail-name">Civitatis</div><div class="fail-why">Solo booking de actividades. Sin POS ni BI ni planificación.</div></div>
+      <div class="fail-card"><div class="fail-name">Soluciones custom</div><div class="fail-why">€200k+ de desarrollo. 12+ meses. Sin mantenimiento garantizado.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 LA SOLUCIÓN -->
+<section id="solution">
+  <div class="sec-label">04 · La Solución</div>
+  <h2 class="sec-title reveal">discoolver — <span class="hi">todo en uno</span></h2>
+  <div class="reveal">
+    <p style="font-size:16px;color:var(--muted);max-width:640px;margin-bottom:40px;line-height:1.75">Plataforma SaaS que el destino integra en 15 días en su web existente — sin desarrollar tecnología propia, sin app obligatoria. Los módulos se contratan por separado y crecen con el destino.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">El destino integra</div>
+        <div class="step-desc">Despliega los módulos en su web en 15 días o crea nueva plataforma. Sin app propia. Sin desarrollo costoso. Onboarding guiado.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">El turista descubre y compra</div>
+        <div class="step-desc">Plan My Trip genera rutas personalizadas. El marketplace vende experiencias locales. El asistente IA responde 24/7. El calendario conecta con eventos.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">El destino recibe datos e ingresos</div>
+        <div class="step-desc">BI en tiempo real. Ingresos por comisiones del marketplace. Datos estratégicos para tomar decisiones. Los negocios locales brillan.</div>
+      </div>
+    </div>
+    <div class="moat-box">
+      <div class="sec-label">Moat tecnológico</div>
+      <p style="font-size:14px;line-height:1.75;max-width:700px">Backend Spring Boot con <strong>5 años de datos</strong> de comportamiento turístico real. IA de personalización entrenada con patrones de 200+ negocios locales. Multi-idioma nativo (ES/EN/FR/DE/IT). API abierta para integraciones con FareHarbor, ZOHO, Clorian, Cover Manager y +10 partners.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 05 MERCADO -->
+<section id="market">
+  <div class="sec-label">05 · Mercado</div>
+  <h2 class="sec-title reveal">TAM / SAM / <span class="hi">SOM</span></h2>
+  <div class="grid-2 reveal" style="gap:48px;align-items:center">
+    <div>
+      <div class="tam-visual">
+        <div class="tam-circle tam-outer">
+          <div class="tam-label">TAM</div>
+          <div class="tam-val">€120bn</div>
+          <div class="tam-sub">Global Tourism Tech</div>
+        </div>
+        <div class="tam-circle tam-mid">
+          <div class="tam-label">SAM</div>
+          <div class="tam-val" style="font-size:15px">€4.2bn</div>
+          <div class="tam-sub" style="font-size:9px">España + Sur Europa</div>
+        </div>
+        <div class="tam-circle tam-inner">
+          <div class="tam-label" style="font-size:8px">SOM Y1</div>
+          <div class="tam-val" style="font-size:13px">€2.5m</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-accent" style="margin-bottom:16px">
+        <div class="sec-label">¿Por qué ahora?</div>
+        <p style="font-size:14px;line-height:1.75;margin-top:8px">El turismo post-COVID ha creado un nuevo perfil de viajero 100% digital que gasta el <strong style="color:var(--primary)">70% en servicios en destino</strong> (vs 30% en transporte y alojamiento). SEGITTUR y el Ministerio de Turismo están impulsando activamente la digitalización de destinos con fondos europeos. El momento es ahora.</p>
+      </div>
+      <div class="card" style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><div class="sec-label">CAGR mercado</div><div style="font-family:'Poppins',sans-serif;font-size:32px;font-weight:900;color:var(--accent)">18%</div></div>
+          <div style="text-align:right"><div class="sec-label">Destinos en España</div><div style="font-family:'Poppins',sans-serif;font-size:32px;font-weight:900;color:var(--primary)">850+</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="sec-label">Metodología SOM</div>
+        <p style="font-size:12px;color:var(--muted);line-height:1.65;margin-top:6px">850 patronatos en España → 170 con presupuesto digitalización >€50k/año → 68 ya digitalizando parcialmente (SAM) → captación 5% en Y1 = 3-4 nuevos destinos × €55k/año ticket medio = €2.5M SOM Y1.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 MODELO DE NEGOCIO -->
+<section id="model">
+  <div class="sec-label">06 · Modelo de Negocio</div>
+  <h2 class="sec-title reveal">SaaS recurrente<br><span class="hi">+ comisiones</span></h2>
+  <div class="reveal">
+    <div class="module-grid">
+      <div class="module"><div class="module-name">Marketplace</div><div class="module-price">€750/mes + 10-15% comisión</div><div class="module-desc">Sistema de venta de servicios turísticos. Hoteles, actividades, productos locales, eventos.</div></div>
+      <div class="module"><div class="module-name">Software de Caja POS</div><div class="module-price">€495/mes + €50/POS</div><div class="module-desc">Sistema de cobros para oficinas turísticas y monumentos. Diseñado a medida.</div></div>
+      <div class="module"><div class="module-name">Plan My Trip ⭐</div><div class="module-price">€150/mes</div><div class="module-desc">Planificador de rutas personalizado. Premio Hospitality 2021. El módulo estrella.</div></div>
+      <div class="module"><div class="module-name">Calendario Inteligente</div><div class="module-price">€100/mes</div><div class="module-desc">Agenda cultural y de eventos con venta de entradas integrada.</div></div>
+      <div class="module"><div class="module-name">Asistente de Voz IA</div><div class="module-price">€250/mes</div><div class="module-desc">Chatbot IA entrenado con datos del destino. Atención al visitante 24/7.</div></div>
+      <div class="module"><div class="module-name">Business Intelligence</div><div class="module-price">Incluido con módulos</div><div class="module-desc">Dashboard + reportes estratégicos con toda la data del ecosistema.</div></div>
+    </div>
+    <div class="unit-econ">
+      <div class="ue"><div class="ue-val">€1.845<div class="badge-est">EST</div></div><div class="ue-label">ARR Ticket medio / destino</div></div>
+      <div class="ue"><div class="ue-val">€2.400<div class="badge-est">EST</div></div><div class="ue-label">CAC medio</div></div>
+      <div class="ue"><div class="ue-val">€66k<div class="badge-est">EST</div></div><div class="ue-label">LTV (3 años)</div></div>
+      <div class="ue"><div class="ue-val" style="color:var(--green)">27x<div class="badge-est">EST</div></div><div class="ue-label">LTV / CAC ratio</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 07 TRACCIÓN -->
+<section id="traction">
+  <div class="sec-label">07 · Tracción</div>
+  <h2 class="sec-title reveal">Validado en<br><span class="hi">el mundo real</span></h2>
+  <div class="reveal">
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-val">€5.5k<div class="badge-est">EST</div></div><div class="kpi-name">MRR actual</div></div>
+      <div class="kpi" style="border-top-color:var(--accent)"><div class="kpi-val" style="color:var(--accent)">200+</div><div class="kpi-name">Negocios integrados</div></div>
+      <div class="kpi" style="border-top-color:var(--green)"><div class="kpi-val" style="color:var(--green)">100%</div><div class="kpi-name">Retención clientes</div></div>
+      <div class="kpi" style="border-top-color:var(--yellow)"><div class="kpi-val" style="color:var(--yellow)">6</div><div class="kpi-name">Años en mercado</div></div>
+    </div>
+    <div class="grid-2">
+      <div>
+        <div class="sec-label" style="margin-bottom:20px">Hitos clave</div>
+        <div class="milestone-list">
+          <div class="ms"><div class="ms-date">2019</div><div class="ms-event">Fundación Discoolverworld S.L. — Madrid</div></div>
+          <div class="ms"><div class="ms-date">2021</div><div class="ms-event">🏆 Premio Hospitality — Plan My Trip · Digital Enterprise Show</div></div>
+          <div class="ms"><div class="ms-date">2022</div><div class="ms-event">Proyecto Ronda: 200+ negocios integrados + totems interactivos</div></div>
+          <div class="ms"><div class="ms-date">2023</div><div class="ms-event">Costa del Sol Tourism Hub: señalética QR + marketplace activo</div></div>
+          <div class="ms"><div class="ms-date">2024</div><div class="ms-event">Lanzamiento Asistente de Voz IA + Business Intelligence dashboard</div></div>
+          <div class="ms"><div class="ms-date">2025</div><div class="ms-event">Pipeline 15+ destinos · Ronda de inversión en preparación</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label" style="margin-bottom:16px">Partners institucionales que confían en discoolver</div>
+        <div class="partner-logos">
+          <div class="partner-chip">SEGITTUR</div>
+          <div class="partner-chip">ICEX España</div>
+          <div class="partner-chip">ITH</div>
+          <div class="partner-chip">Tetuan Valley</div>
+          <div class="partner-chip">Costa del Sol Tourism Hub</div>
+          <div class="partner-chip">Digital Enterprise Show</div>
+          <div class="partner-chip">Destino Turístico Inteligente</div>
+          <div class="partner-chip">FareHarbor</div>
+          <div class="partner-chip">ĀTICCO</div>
+          <div class="partner-chip">Clorian</div>
+          <div class="partner-chip">ZOHO</div>
+          <div class="partner-chip">ByHours</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 PRODUCTO -->
+<section id="product">
+  <div class="sec-label">08 · Producto</div>
+  <h2 class="sec-title reveal">7 módulos,<br><span class="hi">1 ecosistema</span></h2>
+  <div class="reveal">
+    <div class="feature-grid">
+      <div class="feat"><div class="feat-icon">🛒</div><div class="feat-name">Marketplace Turístico</div><div class="feat-desc">Venta de servicios propios y de colaboradores. Hoteles, actividades, productos, eventos. Pasarela de pago integrada.</div></div>
+      <div class="feat"><div class="feat-icon">🗺️</div><div class="feat-name">Plan My Trip</div><div class="feat-desc">Ruta personalizada por tipo de viajero, duración y presupuesto. Descargable, reservable y compartible.</div><div class="feat-award">🏆 PREMIO HOSPITALITY 2021 — DES</div></div>
+      <div class="feat"><div class="feat-icon">🖥️</div><div class="feat-name">Software de Caja POS</div><div class="feat-desc">Sistema de cobros a medida para oficinas turísticas, monumentos y puntos de venta del destino.</div></div>
+      <div class="feat"><div class="feat-icon">📅</div><div class="feat-name">Calendario Inteligente</div><div class="feat-desc">Agenda cultural y de eventos filtrable por compañía (familia, amigos, pareja, negocios). Venta de entradas integrada.</div></div>
+      <div class="feat"><div class="feat-icon">🤖</div><div class="feat-name">Asistente de Voz IA</div><div class="feat-desc">Chatbot entrenado con datos del destino. Responde 24/7: qué visitar, comercios, eventos, rutas personalizadas.</div></div>
+      <div class="feat"><div class="feat-icon">📊</div><div class="feat-name">Business Intelligence</div><div class="feat-desc">Dashboard en tiempo real + informes personalizados. El destino tiene ownership de sus propios datos de visitantes.</div></div>
+    </div>
+    <div class="sec-label" style="margin-bottom:16px">Roadmap post-inversión</div>
+    <div class="roadmap-q">
+      <div class="rq" style="border-top-color:var(--primary)"><div class="rq-label" style="color:var(--primary)">Q3 2025</div><div class="rq-text">5 nuevos contratos destino · Onboarding en 15 días garantizado</div></div>
+      <div class="rq" style="border-top-color:var(--accent)"><div class="rq-label" style="color:var(--accent)">Q4 2025</div><div class="rq-text">IA features v2: personalización predictiva + afluencia en tiempo real</div></div>
+      <div class="rq" style="border-top-color:var(--green)"><div class="rq-label" style="color:var(--green)">Q1 2026</div><div class="rq-text">Expansión Portugal · Primer destino LATAM · App móvil nativa</div></div>
+      <div class="rq" style="border-top-color:var(--yellow)"><div class="rq-label" style="color:var(--yellow)">Q2 2026</div><div class="rq-text">10 destinos activos · MRR €20k · Break-even operativo</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 VENTAJA COMPETITIVA -->
+<section id="moat">
+  <div class="sec-label">09 · Ventaja Competitiva</div>
+  <h2 class="sec-title reveal">El único <span class="hi">todo-en-uno</span><br>para destinos</h2>
+  <div class="reveal">
+    <table class="comp-matrix">
+      <thead>
+        <tr>
+          <th style="text-align:left">Plataforma</th>
+          <th>Marketplace</th>
+          <th>POS propio</th>
+          <th>Planificador IA</th>
+          <th>Datos del destino</th>
+          <th>Multi-módulo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="us">
+          <td>◑▶ discoolver</td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+          <td><span class="check">✅</span></td>
+        </tr>
+        <tr>
+          <td>TripAdvisor</td>
+          <td><span class="part">⚠️</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+        </tr>
+        <tr>
+          <td>Google Maps</td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="part">⚠️</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+        </tr>
+        <tr>
+          <td>Civitatis</td>
+          <td><span class="part">⚠️</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="cross">❌</span></td>
+        </tr>
+        <tr>
+          <td>Solución custom</td>
+          <td><span class="part">⚠️</span></td>
+          <td><span class="part">⚠️</span></td>
+          <td><span class="cross">❌</span></td>
+          <td><span class="part">⚠️</span></td>
+          <td><span class="cross">❌</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="grid-3" style="margin-top:28px">
+      <div class="card card-accent"><div class="sec-label">Moat de datos</div><p style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.65">5 años de patrones de comportamiento turístico real en España. El modelo de personalización mejora con cada destino incorporado. El dataset es inimitable.</p></div>
+      <div class="card card-accent"><div class="sec-label">Moat de integración</div><p style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.65">+10 partners integrados (FareHarbor, ZOHO, Clorian, Cover Manager...). Cada integración profundiza el lock-in y aumenta el coste de switching para el destino.</p></div>
+      <div class="card card-accent"><div class="sec-label">Moat institucional</div><p style="font-size:13px;color:var(--muted);margin-top:8px;line-height:1.65">SEGITTUR, ICEX e ITH son endorsers que abren puertas a cientos de destinos públicos. Este acceso institucional tarda años en construirse y no se puede comprar.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 GO-TO-MARKET -->
+<section id="gtm">
+  <div class="sec-label">10 · Go-To-Market</div>
+  <h2 class="sec-title reveal">Escalar con<br><span class="hi">el dinero correcto</span></h2>
+  <div class="reveal">
+    <div class="gtm-phase">
+      <div class="gp gp1">
+        <div class="gp-phase" style="color:var(--primary)">Fase 1 · Meses 1-6</div>
+        <div class="gp-title">Consolidar España</div>
+        <div class="gp-items">
+          ▶ Equipo sales: 2 SDRs<br>
+          ▶ Target: 20 destinos pipeline<br>
+          ▶ Demo gratuita en 15 días<br>
+          ▶ Case study Ronda como anchor<br>
+          ▶ Partnerships con patronatos
+        </div>
+      </div>
+      <div class="gp gp2">
+        <div class="gp-phase" style="color:var(--accent)">Fase 2 · Meses 7-12</div>
+        <div class="gp-title">Escalar digitalmente</div>
+        <div class="gp-items">
+          ▶ LinkedIn Ads B2B activo<br>
+          ▶ Webinar mensual sectorial<br>
+          ▶ Newsletter "Turismo Digital"<br>
+          ▶ Fitur + WTM + DES 2026<br>
+          ▶ PR en Hosteltur y TechTur
+        </div>
+      </div>
+      <div class="gp gp3">
+        <div class="gp-phase" style="color:var(--green)">Fase 3 · Meses 13-18</div>
+        <div class="gp-title">Expansión internacional</div>
+        <div class="gp-items">
+          ▶ Primer destino Portugal<br>
+          ▶ Destino LATAM (México/Colombia)<br>
+          ▶ Distribución via ITH + SEGITTUR<br>
+          ▶ 10 destinos activos<br>
+          ▶ MRR €20k+
+        </div>
+      </div>
+    </div>
+    <div class="sec-label" style="margin-bottom:16px">Canales de adquisición</div>
+    <div class="channel-list">
+      <div class="ch"><div class="ch-name">Ferias sectoriales</div><div class="ch-cac">CAC: €800 est.</div><div class="ch-note">Fitur, WTM, DES. Acceso directo a decisores. Canal validado.</div></div>
+      <div class="ch"><div class="ch-name">LinkedIn Ads + Orgánico</div><div class="ch-cac">CAC: €1.200 est.</div><div class="ch-note">Job titles Director Turismo, Concejal. Lead Gen Forms.</div></div>
+      <div class="ch"><div class="ch-name">Distribución SEGITTUR / ITH</div><div class="ch-cac">CAC: €400 est.</div><div class="ch-note">Canal de mayor eficiencia. Acesso a red de 850+ patronatos.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 EQUIPO -->
+<section id="team">
+  <div class="sec-label">11 · Equipo</div>
+  <h2 class="sec-title reveal">Las personas<br><span class="hi">detrás del producto</span></h2>
+  <div class="reveal">
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="avatar">CJ</div>
+        <div>
+          <div class="team-name">Carlos Jacoste</div>
+          <div class="team-role">Co-Founder &amp; CEO</div>
+          <div class="team-bio">Founder de Startup Factory (agencia IA, Bangkok). Lidera estrategia de negocio, partnerships institucionales y visión de producto. Cerró deals con SEGITTUR, ICEX, ITH y Costa del Sol Tourism Hub.</div>
+          <div class="team-notable">→ Deals institucionales SEGITTUR + ICEX + ITH</div>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="avatar" style="background:linear-gradient(135deg,var(--accent),#0088AA)">DT</div>
+        <div>
+          <div class="team-name">Diego Domínguez</div>
+          <div class="team-role">Co-Founder &amp; CTO</div>
+          <div class="team-bio">Arquitecto del backend Spring Boot + Java. 5+ años construyendo la plataforma. Stack: Spring Boot, React/Vite, Next.js 15, PostgreSQL. Responsable de la API y la infraestructura de datos.</div>
+          <div class="team-notable">→ Premio Hospitality 2021 — Plan My Trip (DES)</div>
+        </div>
+      </div>
+    </div>
+    <div class="sec-label" style="margin-bottom:16px">Advisors &amp; Institucional Support</div>
+    <div class="advisor-row">
+      <div class="adv"><div class="adv-name">Tetuan Valley</div><div class="adv-bio">Aceleradora tech Madrid. Early backer, red de inversores y conexiones sectoriales.</div></div>
+      <div class="adv"><div class="adv-name">ITH — Instituto Tecnológico Hotelero</div><div class="adv-bio">Referente innovación hotelera España. Distribuidor natural hacia cadenas y hoteles independientes.</div></div>
+      <div class="adv"><div class="adv-name">SEGITTUR</div><div class="adv-bio">Sociedad Estatal de Innovación Turística (Ministerio Turismo). Acceso directo a 850+ patronatos.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 FINANCIALS -->
+<section id="financials">
+  <div class="sec-label">12 · Financials</div>
+  <h2 class="sec-title reveal">Proyecciones<br><span class="hi">3 años</span></h2>
+  <div class="reveal">
+    <div class="fin-kpis">
+      <div class="fk"><div class="fk-val">€8k<div class="badge-est">EST</div></div><div class="fk-label">Burn mensual</div></div>
+      <div class="fk"><div class="fk-val">12m<div class="badge-est">EST</div></div><div class="fk-label">Runway actual</div></div>
+      <div class="fk" style="border-top:1px solid var(--border2)"><div class="fk-val" style="color:var(--green)">Q2 '26<div class="badge-est">EST</div></div><div class="fk-label">Break-even</div></div>
+      <div class="fk" style="border-top:1px solid var(--border2)"><div class="fk-val" style="color:var(--green)">82%<div class="badge-est">EST</div></div><div class="fk-label">Margen bruto</div></div>
+    </div>
+    <div style="background:var(--bg3);border-radius:14px;padding:28px;margin-bottom:24px">
+      <canvas id="finChart" style="max-height:260px"></canvas>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="sec-label">Año 1 — 2025</div><div style="font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;color:var(--text);margin-top:8px">€80k<div class="badge-est">EST</div></div><div style="font-size:12px;color:var(--muted);margin-top:6px">5-6 destinos activos · MRR €6.5k al cierre</div></div>
+      <div class="card"><div class="sec-label">Año 2 — 2026</div><div style="font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;color:var(--accent);margin-top:8px">€280k<div class="badge-est">EST</div></div><div style="font-size:12px;color:var(--muted);margin-top:6px">10+ destinos · Break-even Q2 · Expansión Portugal</div></div>
+      <div class="card"><div class="sec-label">Año 3 — 2027</div><div style="font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;color:var(--green);margin-top:8px">€750k<div class="badge-est">EST</div></div><div style="font-size:12px;color:var(--muted);margin-top:6px">25+ destinos · EBITDA 28% · Latam + Norte Europa</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 LA RONDA -->
+<section id="ask">
+  <div class="sec-label">13 · La Ronda</div>
+  <h2 class="sec-title reveal">Lo que<br><span class="hi">pedimos</span></h2>
+  <div class="reveal">
+    <div class="ask-hero">
+      <div class="ask-amount" style="font-size:clamp(36px,6vw,72px)">Por definir</div>
+      <div class="ask-type" style="margin-top:12px">Ronda de inversión · Equity · Discoolverworld S.L.</div>
+    </div>
+    <div class="grid-2" style="gap:32px">
+      <div>
+        <div class="sec-label" style="margin-bottom:16px">Uso de fondos</div>
+        <div class="use-grid">
+          <div class="use-item"><div class="use-pct">40%</div><div><div class="use-label">Producto &amp; Tech</div><div class="use-desc">IA features v2, app móvil nativa, APIs integraciones</div></div></div>
+          <div class="use-item"><div class="use-pct">30%</div><div><div class="use-label">Sales &amp; Biz Dev</div><div class="use-desc">2 SDRs España + 1 Portugal, pipeline comercial</div></div></div>
+          <div class="use-item"><div class="use-pct">15%</div><div><div class="use-label">Marketing</div><div class="use-desc">LinkedIn Ads, ferias, PR sectorial, brand</div></div></div>
+          <div class="use-item"><div class="use-pct">15%</div><div><div class="use-label">Ops &amp; Legal</div><div class="use-desc">Infraestructura, LOPD, contratos, admin</div></div></div>
+        </div>
+        <div style="margin-top:20px;background:var(--bg3);border-radius:12px;padding:20px">
+          <canvas id="askChart" style="max-height:180px"></canvas>
+        </div>
+      </div>
+      <div>
+        <div class="sec-label" style="margin-bottom:16px">Hitos que desbloquea el funding (18 meses)</div>
+        <div class="milestone-ask"><div class="ms-num">01</div><div>Equipo comercial propio activo (mes 2) — 2 SDRs + 1 country manager Portugal</div></div>
+        <div class="milestone-ask"><div class="ms-num">02</div><div>5 nuevos contratos destino cerrados (mes 6)</div></div>
+        <div class="milestone-ask"><div class="ms-num">03</div><div>IA features v2 lanzadas en producción (mes 6)</div></div>
+        <div class="milestone-ask"><div class="ms-num">04</div><div>Primer destino Portugal operativo (mes 9)</div></div>
+        <div class="milestone-ask"><div class="ms-num">05</div><div>10 destinos activos + MRR €18k (mes 12)</div></div>
+        <div class="milestone-ask"><div class="ms-num">06</div><div>Break-even operativo + primer destino LATAM (mes 18)</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 14 ROADMAP -->
+<section id="roadmap">
+  <div class="sec-label">14 · Roadmap Post-Inversión</div>
+  <h2 class="sec-title reveal">18 meses<br><span class="hi">para dominarlo</span></h2>
+  <div class="reveal">
+    <div style="margin-bottom:32px">
+      <div class="timeline-months">
+        <div class="tm key"><div class="tm-label">MES 1-2</div><div class="tm-content">Equipo sales contratado · LinkedIn + PR activo</div></div>
+        <div class="tm key"><div class="tm-label">MES 3-4</div><div class="tm-content">5 demos/semana · 2 contratos cerrados</div></div>
+        <div class="tm key"><div class="tm-label">MES 5-6</div><div class="tm-content">5 nuevos destinos · IA v2 en prod · MRR €10k</div></div>
+        <div class="tm key2"><div class="tm-label">MES 7-9</div><div class="tm-content">Portugal · 8 destinos · MRR €14k</div></div>
+        <div class="tm key2"><div class="tm-label">MES 10-12</div><div class="tm-content">10 destinos · MRR €18k · Fitur 2026</div></div>
+        <div class="tm key2"><div class="tm-label">MES 13-18</div><div class="tm-content">Break-even · LATAM · 15+ destinos · Pre-Serie A</div></div>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="card"><div class="sec-label">Objetivo mes 6</div><ul style="font-size:13px;color:var(--muted);padding-left:16px;line-height:2;margin-top:8px"><li>5 nuevos destinos activos</li><li>MRR €10.000+</li><li>IA features v2 lanzadas</li><li>2 SDRs contratados y operativos</li></ul></div>
+      <div class="card"><div class="sec-label">Objetivo mes 12</div><ul style="font-size:13px;color:var(--muted);padding-left:16px;line-height:2;margin-top:8px"><li>10 destinos activos</li><li>MRR €18.000+</li><li>Operaciones en Portugal</li><li>Presencia DES + Fitur 2026</li></ul></div>
+      <div class="card"><div class="sec-label">Objetivo mes 18</div><ul style="font-size:13px;color:var(--muted);padding-left:16px;line-height:2;margin-top:8px"><li>15+ destinos (ES + PT + LATAM)</li><li>Break-even operativo</li><li>Pre-Serie A estructurada</li><li>MRR €30.000+</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 APÉNDICE -->
+<section id="appendix">
+  <div class="sec-label">15 · Apéndice &amp; FAQ</div>
+  <h2 class="sec-title reveal">Preguntas<br><span class="hi">frecuentes</span></h2>
+  <div class="faq-list reveal">
+    <div class="faq"><div class="faq-q">¿Por qué los destinos no lo hacen ellos mismos con una agencia?</div><div class="faq-a">Una solución custom equivalente cuesta €200k+ en desarrollo y 12+ meses. Sin mantenimiento ni evolución garantizada. discoolver se despliega en 15 días, incluye soporte 8h/día y evoluciona continuamente con todos los destinos. El ROI es incomparable.</div></div>
+    <div class="faq"><div class="faq-q">¿Cuál es el riesgo de churn en B2B público?</div><div class="faq-a">Los contratos con patronatos y DMOs son anuales con alta inercia. Los presupuestos de digitalización suelen ser partidas protegidas. discoolver tiene 0% de churn desde su primer cliente. La integración profunda en los flujos del destino genera un lock-in natural.</div></div>
+    <div class="faq"><div class="faq-q">¿Cómo se defienden de que Google o TripAdvisor lancen algo similar?</div><div class="faq-a">Google y TripAdvisor son plataformas B2C que no tienen ni interés ni estructura para gestionar relaciones B2B con 850+ patronatos españoles. El sector público requiere licitaciones, contratos específicos y soporte local — algo incompatible con el modelo de plataformas globales. El moat institucional (SEGITTUR, ICEX) es una barrera adicional.</div></div>
+    <div class="faq"><div class="faq-q">¿Por qué los datos financieros tienen [ESTIMATE]?</div><div class="faq-a">Las proyecciones están marcadas como estimadas porque se basan en benchmarks del sector y los primeros contratos activos. Carlos Jacoste (CEO) puede facilitar los estados financieros auditados en el proceso de due diligence bajo NDA.</div></div>
+    <div class="faq"><div class="faq-q">¿Cuál es el plan tras cerrar esta ronda?</div><div class="faq-a">Con los hitos definidos (10 destinos, MRR €18k, break-even Q2 2026), discoolver estará en posición de levantar una siguiente ronda de €2-3M en 2027 para expansión acelerada en Europa y LATAM, con track record verificable.</div></div>
+  </div>
+  <div style="margin-top:60px;text-align:center;padding:48px;background:linear-gradient(135deg,rgba(255,0,200,.08),rgba(0,212,255,.04));border:1px solid rgba(255,0,200,.2);border-radius:20px">
+    <div style="font-family:'Poppins',sans-serif;font-size:28px;font-weight:900;margin-bottom:12px">¿Listos para hablar?</div>
+    <p style="color:var(--muted);margin-bottom:24px;font-size:15px">Agenda una demo de 30 minutos y te mostramos la plataforma en acción con datos reales.</p>
+    <a href="mailto:info@discoolver.com" style="display:inline-block;background:var(--primary);color:white;font-family:'Poppins',sans-serif;font-weight:700;font-size:16px;padding:16px 40px;border-radius:50px;text-decoration:none;letter-spacing:.05em;box-shadow:0 0 30px rgba(255,0,200,.4)">info@discoolver.com →</a>
+    <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--dim);margin-top:16px">+34 656 91 43 74 · www.discoolver.com</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-brand">dis<span>cool</span>ver</div>
+  <div class="footer-contact">info@discoolver.com · +34 656 91 43 74<br>www.discoolver.com · Discoolverworld S.L.</div>
+  <div class="footer-sf">Investor Deck generado por<br><strong style="color:var(--text)">Startup Factory</strong> · 2025</div>
+</footer>
+
+<script>
+// ── NAV
+const secs = document.querySelectorAll('section[id]');
+const dots = document.querySelectorAll('.dot');
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      dots.forEach(d=>d.classList.remove('active'));
+      const a = document.querySelector(`.dot[data-target="${e.target.id}"]`);
+      if(a) a.classList.add('active');
+    }
+  });
+},{threshold:0.3});
+secs.forEach(s=>obs.observe(s));
+dots.forEach(d=>d.addEventListener('click',()=>{
+  document.getElementById(d.dataset.target)?.scrollIntoView({behavior:'smooth'});
+}));
+
+// ── REVEAL
+const rev = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting) e.target.classList.add('visible')});
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>rev.observe(el));
+
+// ── PRINT MODE
+if(new URLSearchParams(window.location.search).get('print')==='1'){
+  document.documentElement.classList.add('print-mode');
+}
+
+// ── FINANCIALS CHART
+new Chart(document.getElementById('finChart'),{
+  type:'bar',
+  data:{
+    labels:['Año 1 (2025)','Año 2 (2026)','Año 3 (2027)'],
+    datasets:[
+      {label:'Revenue',data:[80,280,750],backgroundColor:'rgba(255,0,200,.7)',borderRadius:6},
+      {label:'OpEx',data:[96,240,540],backgroundColor:'rgba(0,212,255,.25)',borderRadius:6},
+      {label:'EBITDA',data:[-16,40,210],backgroundColor:'rgba(0,230,118,.5)',borderRadius:6}
+    ]
+  },
+  options:{
+    responsive:true,
+    plugins:{legend:{labels:{color:'#8890B8',font:{family:'Space Mono',size:10}}},
+    tooltip:{callbacks:{label:ctx=>`€${ctx.raw}k`}}},
+    scales:{
+      x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8890B8',font:{family:'Space Mono',size:10}}},
+      y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#8890B8',font:{family:'Space Mono',size:10},callback:v=>`€${v}k`}}
+    }
+  }
+});
+
+// ── ASK DONUT
+new Chart(document.getElementById('askChart'),{
+  type:'doughnut',
+  data:{
+    labels:['Producto & Tech (40%)','Sales & Biz Dev (30%)','Marketing (15%)','Ops & Legal (15%)'],
+    datasets:[{data:[40,30,15,15],backgroundColor:['#FF00C8','#00D4FF','#A855F7','#4A5070'],borderWidth:0,hoverOffset:6}]
+  },
+  options:{responsive:true,plugins:{legend:{position:'right',labels:{color:'#8890B8',font:{family:'Space Mono',size:10},padding:12}}}}
+});
+</script>
+</body>
+</html>

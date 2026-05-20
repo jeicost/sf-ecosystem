@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrega Out-of-Home:
+La Ventaja Competitiva que
+tu Ecommerce No Está Usando | Dadybox</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: #fff;
+}
+
+/* ── PAGE BASE ───────────────────────────────────────────── */
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+}
+
+/* ── DARK PAGES (navy) ─────────────────────────────────── */
+.dark-page {
+    background: #0B1829;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    height: 297mm;
+    padding: 15mm 16mm;
+}
+
+/* ── LIGHT PAGES (cream) ───────────────────────────────── */
+.light-page {
+    background: #F5F2EB;
+    color: #0B1829;
+    min-height: 297mm;
+    padding: 0 0 16mm 0;
+}
+
+/* ── PAGE HEADER (light pages) ─────────────────────────── */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 9px 16mm 8px;
+    margin-bottom: 8mm;
+    border-top: 3px solid #3EE89A;
+    background: #F5F2EB;
+}
+.page-header-section {
+    font-size: 7pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #0B1829;
+    opacity: 0.55;
+}
+.page-header-logo {
+    color: #0B1829;
+    opacity: 0.4;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    text-transform: lowercase;
+}
+
+.page-body {
+    padding: 0 16mm;
+}
+
+/* ── PAGE FOOTER (light pages) ─────────────────────────── */
+.page-footer {
+    position: absolute;
+    bottom: 8mm;
+    left: 16mm;
+    right: 16mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7pt;
+    color: #0B1829;
+    opacity: 0.3;
+    border-top: 1px solid rgba(11,24,41,0.12);
+    padding-top: 5px;
+}
+
+/* ── COVER ─────────────────────────────────────────────── */
+.cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 9mm;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 0;
+    color: #fff;
+}
+.cover-badge {
+    background: rgba(62,232,154,0.12);
+    border: 1px solid rgba(62,232,154,0.28);
+    color: #3EE89A;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 5px 13px;
+    border-radius: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.cover-hero {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-bottom: 13mm;
+}
+.cover-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cover-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 28px;
+    height: 2px;
+    background: #3EE89A;
+    border-radius: 1px;
+}
+.cover-title {
+    font-size: 31pt;
+    font-weight: 900;
+    line-height: 1.08;
+    letter-spacing: -1px;
+    margin-bottom: 14px;
+    max-width: 165mm;
+}
+.cover-title em {
+    font-style: normal;
+    color: #3EE89A;
+}
+.cover-subtitle {
+    font-size: 11pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.58);
+    line-height: 1.6;
+    max-width: 148mm;
+    margin-bottom: 22px;
+}
+.cover-divider {
+    width: 38px;
+    height: 3px;
+    background: #3EE89A;
+    border-radius: 2px;
+    margin-bottom: 20px;
+}
+.cover-author {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+.cover-avatar {
+    width: 36px;
+    height: 36px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 11pt;
+    color: #0B1829;
+    flex-shrink: 0;
+}
+.cover-author-name { font-size: 10pt; font-weight: 700; color: #fff; }
+.cover-author-role { font-size: 8pt; color: rgba(255,255,255,0.48); margin-top: 1px; }
+
+.cover-footer-strip {
+    background: #3EE89A;
+    margin: 0 -16mm;
+    padding: 10px 16mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+.cover-footer-strip span {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #0B1829;
+}
+
+/* ── TOC ───────────────────────────────────────────────── */
+.toc-dark {
+    background: #0B1829;
+    padding: 14mm 16mm 12mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+.toc-dark-left { }
+.toc-dark-eyebrow {
+    font-size: 7.5pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toc-dark-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 2px;
+    background: #3EE89A;
+}
+.toc-dark-title {
+    font-size: 26pt;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -0.8px;
+    line-height: 1;
+}
+.toc-dark-logo { color: #fff; opacity: 0.35; }
+
+.toc-cream {
+    background: #F5F2EB;
+    padding: 10mm 16mm 16mm;
+}
+.toc-entries { display: flex; flex-direction: column; gap: 3px; }
+.toc-entry {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 7px;
+    text-decoration: none;
+    color: #0B1829;
+    border: 1px solid transparent;
+}
+.toc-entry:hover { background: rgba(11,24,41,0.04); border-color: rgba(11,24,41,0.08); }
+.toc-num {
+    width: 26px;
+    height: 26px;
+    background: #0B1829;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: 800;
+    flex-shrink: 0;
+    margin-right: 11px;
+}
+.toc-entry.green-num .toc-num {
+    background: #3EE89A;
+    color: #0B1829;
+}
+.toc-info { flex: 1; }
+.toc-section-title { font-size: 10pt; font-weight: 600; color: #0B1829; line-height: 1.2; }
+.toc-section-desc { font-size: 8pt; color: rgba(11,24,41,0.45); margin-top: 1px; }
+.toc-arrow { color: rgba(11,24,41,0.2); font-size: 12pt; flex-shrink: 0; margin-left: 4px; }
+
+/* ── SECTION OPENERS (dark pages) ─────────────────────── */
+.opener-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.opener-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: #3EE89A;
+}
+.opener-chapter-num {
+    font-size: 100pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 0.85;
+    letter-spacing: -5px;
+    margin-bottom: 8px;
+    opacity: 0.18;
+    position: absolute;
+    top: 18mm;
+    right: 16mm;
+}
+.opener-title {
+    font-size: 26pt;
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.1;
+    letter-spacing: -0.5px;
+    margin-bottom: 10mm;
+    max-width: 150mm;
+}
+.opener-intro {
+    font-size: 11.5pt;
+    color: rgba(255,255,255,0.6);
+    line-height: 1.65;
+    max-width: 145mm;
+    margin-top: auto;
+    padding-top: 10mm;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+/* ── CONTENT TYPOGRAPHY ────────────────────────────────── */
+.chapter-title-inline {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #0B1829;
+    line-height: 1.15;
+    margin-bottom: 5mm;
+    letter-spacing: -0.3px;
+}
+.section-title {
+    font-size: 12.5pt;
+    font-weight: 700;
+    color: #0B1829;
+    margin-top: 6mm;
+    margin-bottom: 3mm;
+    letter-spacing: -0.2px;
+}
+.body-text {
+    font-size: 10pt;
+    line-height: 1.75;
+    color: rgba(11,24,41,0.82);
+    margin-bottom: 4mm;
+}
+.intro-quote {
+    font-size: 11pt;
+    font-style: italic;
+    color: #0B1829;
+    border-left: 4px solid #3EE89A;
+    padding-left: 14px;
+    margin-bottom: 6mm;
+    line-height: 1.65;
+}
+
+/* ── BULLET LIST (checkmark style) ─────────────────────── */
+.check-list { list-style: none; margin: 3mm 0; }
+.check-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 5px 0;
+    font-size: 10pt;
+    line-height: 1.6;
+    color: rgba(11,24,41,0.82);
+}
+.check-list li::before {
+    content: "✓";
+    color: #3EE89A;
+    font-weight: 900;
+    font-size: 10pt;
+    flex-shrink: 0;
+    margin-top: 1px;
+    background: #0B1829;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8pt;
+}
+
+.arrow-list { list-style: none; margin: 3mm 0; }
+.arrow-list li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    font-size: 10pt;
+    line-height: 1.65;
+    color: rgba(11,24,41,0.82);
+}
+.arrow-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #3EE89A;
+    font-weight: 700;
+}
+
+/* ── STAT BOX ───────────────────────────────────────────── */
+.stat-box {
+    background: #0B1829;
+    border-radius: 10px;
+    padding: 16px 18px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    text-align: center;
+}
+.stat-value {
+    font-size: 40pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 6px;
+}
+.stat-label {
+    font-size: 10pt;
+    color: rgba(255,255,255,0.8);
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+.stat-source {
+    font-size: 7.5pt;
+    color: rgba(255,255,255,0.35);
+    font-style: italic;
+}
+
+/* Stat boxes inline (2 cols) */
+.stat-row { display: flex; gap: 10px; margin: 5mm 0; }
+.stat-row .stat-box { flex: 1; }
+
+/* ── TIP BOX ────────────────────────────────────────────── */
+.tip-box {
+    background: #0B1829;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+.tip-box-label {
+    font-size: 7.5pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #3EE89A;
+    margin-bottom: 7px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.tip-box-label::before {
+    content: '';
+    display: inline-block;
+    width: 14px;
+    height: 2px;
+    background: #3EE89A;
+}
+.tip-box-content {
+    font-size: 10pt;
+    color: rgba(255,255,255,0.85);
+    line-height: 1.65;
+}
+
+/* ── QUOTE BOX ──────────────────────────────────────────── */
+.quote-box {
+    background: rgba(11,24,41,0.06);
+    border: 1px solid rgba(11,24,41,0.1);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+    font-size: 10.5pt;
+    color: #0B1829;
+    font-style: italic;
+    line-height: 1.65;
+    font-weight: 500;
+}
+
+/* ── NUMBERED STEPS ─────────────────────────────────────── */
+.step-list { margin: 4mm 0; }
+.step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid rgba(11,24,41,0.08);
+}
+.step-item:last-child { border-bottom: none; margin-bottom: 0; }
+.step-num {
+    font-size: 20pt;
+    font-weight: 900;
+    color: #3EE89A;
+    line-height: 1;
+    flex-shrink: 0;
+    min-width: 28px;
+}
+.step-text {
+    font-size: 10pt;
+    color: rgba(11,24,41,0.82);
+    line-height: 1.65;
+    padding-top: 2px;
+}
+
+/* ── INSIGHT GRID (2 cols) ──────────────────────────────── */
+.insight-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 4mm 0;
+}
+.insight-item {
+    flex: 1;
+    min-width: 42%;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: rgba(11,24,41,0.04);
+    border-radius: 8px;
+    padding: 12px;
+}
+.insight-icon {
+    width: 24px;
+    height: 24px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B1829;
+    font-size: 10pt;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+.insight-text {
+    font-size: 9.5pt;
+    color: rgba(11,24,41,0.82);
+    line-height: 1.55;
+}
+
+/* ── CASE STUDY ─────────────────────────────────────────── */
+.case-study {
+    background: rgba(11,24,41,0.04);
+    border-radius: 10px;
+    padding: 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+.case-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.case-badge {
+    background: #0B1829;
+    color: #fff;
+    font-size: 7pt;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.case-industry {
+    font-size: 8.5pt;
+    color: rgba(11,24,41,0.45);
+    font-weight: 500;
+}
+.case-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #0B1829;
+    margin-bottom: 10px;
+    letter-spacing: -0.2px;
+}
+.case-row { display: flex; gap: 8px; }
+.case-block {
+    flex: 1;
+    background: #fff;
+    border-radius: 7px;
+    padding: 10px 12px;
+    border-top: 3px solid #3EE89A;
+}
+.case-block-label {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    color: #0B1829;
+    opacity: 0.5;
+}
+.case-block-text { font-size: 9pt; color: rgba(11,24,41,0.82); line-height: 1.55; }
+
+/* ── CHECKLIST ──────────────────────────────────────────── */
+.checklist-category {
+    font-size: 11pt;
+    font-weight: 800;
+    color: #0B1829;
+    margin-top: 5mm;
+    margin-bottom: 3mm;
+    padding: 8px 10px;
+    background: #0B1829;
+    color: #fff;
+    border-radius: 6px;
+    letter-spacing: -0.2px;
+}
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: 6px;
+    margin-bottom: 2px;
+}
+.checklist-item:nth-child(even) { background: rgba(11,24,41,0.04); }
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(11,24,41,0.2);
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #fff;
+}
+.checklist-text { font-size: 10pt; color: rgba(11,24,41,0.82); line-height: 1.5; }
+
+/* ── RESOURCES ──────────────────────────────────────────── */
+.resource-grid { display: flex; flex-wrap: wrap; gap: 9px; margin: 4mm 0; }
+.resource-card {
+    flex: 1;
+    min-width: 45%;
+    background: #fff;
+    border-top: 4px solid #3EE89A;
+    border-radius: 0 0 8px 8px;
+    padding: 12px 14px;
+}
+.resource-type {
+    font-size: 7pt;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #3EE89A;
+    margin-bottom: 5px;
+}
+.resource-name { font-size: 10.5pt; font-weight: 700; color: #0B1829; margin-bottom: 4px; }
+.resource-desc { font-size: 9pt; color: rgba(11,24,41,0.65); line-height: 1.5; }
+
+/* ── TAKEAWAYS ──────────────────────────────────────────── */
+.takeaway-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(11,24,41,0.08);
+}
+.takeaway-item:last-child { border-bottom: none; }
+.takeaway-check {
+    width: 22px;
+    height: 22px;
+    background: #3EE89A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0B1829;
+    font-size: 9pt;
+    font-weight: 900;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+.takeaway-text { font-size: 10.5pt; color: #0B1829; line-height: 1.6; font-weight: 500; }
+
+/* ── CTA PAGE ───────────────────────────────────────────── */
+.cta-eyebrow {
+    font-size: 8pt;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #3EE89A;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.cta-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 2px;
+    background: #3EE89A;
+}
+.cta-title {
+    font-size: 28pt;
+    font-weight: 900;
+    line-height: 1.1;
+    letter-spacing: -0.8px;
+    margin-bottom: 16px;
+}
+.cta-desc {
+    font-size: 11.5pt;
+    color: rgba(255,255,255,0.62);
+    max-width: 140mm;
+    margin-bottom: 28px;
+    line-height: 1.65;
+}
+.cta-button {
+    display: inline-block;
+    background: #3EE89A;
+    color: #0B1829;
+    font-size: 11pt;
+    font-weight: 800;
+    padding: 13px 30px;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-bottom: 18px;
+    letter-spacing: -0.2px;
+}
+.cta-url { font-size: 9.5pt; color: rgba(255,255,255,0.35); margin-bottom: 28px; }
+.cta-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.cta-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 8pt;
+    color: rgba(255,255,255,0.7);
+}
+</style>
+</head>
+<body>
+    
+<div class="page dark-page" id="portada" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="130" height="130" viewBox="0 0 130 130" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 130 71 A 71 71 0 0 0 58 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 130 97 A 97 97 0 0 0 32 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 130 123 A 123 123 0 0 0 6 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="cover-top">
+        <div style="color:#fff"><span style="display:inline-flex;align-items:center;gap:8px;line-height:1">
+        <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:18px">dadybox</span>
+    </span></div>
+        <div class="cover-badge">Playbook Gratuito</div>
+    </div>
+    <div class="cover-hero">
+        <div class="cover-eyebrow">Logística &amp; Ecommerce</div>
+        <div class="cover-title">Entrega Out-of-Home:
+La Ventaja Competitiva que
+tu Ecommerce No Está Usando</div>
+        <div class="cover-subtitle">Cómo las redes de Parcel Shops y taquillas inteligentes reducen costes, disparan la satisfacción del cliente y eliminan las incidencias de última milla.</div>
+        <div class="cover-divider"></div>
+        <div class="cover-author">
+            <div class="cover-avatar">NO</div>
+            <div>
+                <div class="cover-author-name">Noel Aldea</div>
+                <div class="cover-author-role">Director General, Dadybox</div>
+            </div>
+        </div>
+    </div>
+    <div class="cover-footer-strip">
+        <span>dadybox.com</span>
+        <span>Mayo 2026</span>
+    </div>
+</div>
+    
+<div class="page" id="indice" style="background:#0B1829">
+    <div class="toc-dark" style="position:relative">
+        <svg style="position:absolute;top:0;right:0;pointer-events:none" width="70" height="130" viewBox="0 0 70 130" xmlns="http://www.w3.org/2000/svg">
+        <path d="M 70 0 A 35 35 0 0 1 0 0 L 0 38 A 35 35 0 0 0 70 38 Z" fill="#3EE89A" opacity="0.25"/>
+        <circle cx="35" cy="73" r="27" fill="#2DC080" opacity="0.25"/>
+        <path d="M 8 100 A 27 27 0 0 0 62 100 A 27 27 0 0 0 8 100 Z" fill="#1A9B60" opacity="0.25"/>
+    </svg>
+        <div class="toc-dark-left">
+            <div class="toc-dark-eyebrow">Contenidos</div>
+            <div class="toc-dark-title">Índice</div>
+        </div>
+        <div class="toc-dark-logo"><span style="display:inline-flex;align-items:center;gap:7px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:15px">dadybox</span>
+    </span></div>
+    </div>
+    <div class="toc-cream">
+        <div class="toc-entries">
+        <a class="toc-entry" href="#intro">
+            <div class="toc-num">01</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Introducción</div>
+                <div class="toc-section-desc">Carta de Natalia Aldea</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#contexto">
+            <div class="toc-num">02</div>
+            <div class="toc-info">
+                <div class="toc-section-title">El contexto del sector</div>
+                <div class="toc-section-desc">Por qué importa este tema ahora</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#capitulo-1">
+            <div class="toc-num">03</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Qué es OOH y por qué transformará tu ecommerce</div>
+                <div class="toc-section-desc">Out-of-Home no es solo 'dejar el paquete en algún sitio'. Es una …</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-2">
+            <div class="toc-num">04</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Los beneficios reales: números que cambian la P&L</div>
+                <div class="toc-section-desc">Más allá de la experiencia de cliente, OOH tiene un impacto direc…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-3">
+            <div class="toc-num">05</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Elige los puntos correctos para tu cliente</div>
+                <div class="toc-section-desc">No todos los productos ni todos los clientes encajan igual en cad…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#capitulo-4">
+            <div class="toc-num">06</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Integración técnica sin dramas</div>
+                <div class="toc-section-desc">La barrera técnica es el principal freno para adoptar OOH. Pero c…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-5">
+            <div class="toc-num">07</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Mide el impacto: los KPIs que importan</div>
+                <div class="toc-section-desc">Lo que no se mide no se mejora. Estos son los indicadores clave p…</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#casos">
+            <div class="toc-num">08</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Casos prácticos</div>
+                <div class="toc-section-desc">Escenarios reales del sector</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry green-num" href="#checklist">
+            <div class="toc-num">09</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Checklist accionable</div>
+                <div class="toc-section-desc">Tu plan de implementación</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#recursos">
+            <div class="toc-num">10</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Recursos</div>
+                <div class="toc-section-desc">Herramientas y referencias útiles</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#conclusion">
+            <div class="toc-num">11</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Conclusión</div>
+                <div class="toc-section-desc">Próximos pasos con Dadybox</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a></div>
+    </div>
+</div>
+    
+<div class="page light-page" id="intro">
+    <div class="page-header">
+        <span class="page-header-section">Introducción — Carta de la autora</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Una carta de<br>Noel Aldea</div>
+        <div class="intro-quote" style="margin-top:5mm">Cuando fundamos Dadybox, teníamos claro que el mayor cuello de botella del ecommerce no era el almacén ni la preparación del pedido: era ese último kilómetro en el que el cliente no estaba en casa.<br><br>El Out-of-Home (OOH) cambió las reglas del juego. Con más de 12.000 Parcel Shops y 650 lockers en España, hoy podemos garantizar que el pedido llega siempre, a tiempo y en el lugar que el cliente elige. No en el que nosotros decidimos.<br><br>Este playbook nace de años de da…</div>
+        <div class='section-title' style='margin-top:5mm'>En este playbook encontrarás:</div><ul class='check-list'><li>Qué es la entrega OOH y por qué el mercado está acelerando hacia ella</li><li>Los beneficios reales en coste, tasa de entrega y satisfacción del cliente</li><li>Cómo elegir los puntos de recogida correctos para tu tipo de producto</li><li>Integrar OOH en tu estrategia de envíos sin fricción técnica</li><li>Métricas y KPIs para medir el impacto en tu operativa</li></ul>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Noel Aldea</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="contexto" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">El contexto</div>
+    <div class="opener-title">El mercado OOH está creciendo más rápido que el ecommerce</div>
+    <div class="opener-intro">La entrega en casa es cada vez menos fiable: el 30% de los envíos en España requieren un segundo intento. Las entregas Out-of-Home resuelven este problema estructural y están ganando cuota de mercado en toda Europa a doble dígito.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">El contexto del sector</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="body-text">El mercado europeo de entregas OOH superará los 12.000 millones de euros en 2026. En España, el porcentaje de pedidos recogidos en punto de conveniencia o taquilla ha pasado del 11% en 2022 al 22% en 2024, y se estima que alcanzará el 35% en 2027. Los consumidores valoran la flexibilidad horaria, la seguridad del paquete y la reducción de colas en casa. Para el ecommerce, el beneficio es igual de claro: menos reenvíos, menos reclamaciones y un coste por entrega efectiva entre un 15% y un 30% inferior al servicio a domicilio estándar.</div>
+        <div class="stat-row"><div class="stat-box" style="flex:1">
+                <div class="stat-value">22%</div>
+                <div class="stat-label">Pedidos online recogidos en punto OOH en España (2024)</div>
+                <div class="stat-source">Fuente: Statista / GLS Delivery Report 2024</div>
+            </div><div class="stat-box" style="flex:1">
+                <div class="stat-value">−25%</div>
+                <div class="stat-label">Reducción media del coste de entrega efectiva con OOH vs. domicilio</div>
+                <div class="stat-source">Fuente: DHL Trend Research 2025</div>
+            </div></div><div class="stat-box">
+                <div class="stat-value">94%</div>
+                <div class="stat-label">Tasa de entrega en primer intento con red OOH</div>
+                <div class="stat-source">Fuente: GLS Spain Internal Data 2025</div>
+            </div><div class="stat-box">
+                <div class="stat-value">×3,2</div>
+                <div class="stat-label">Crecimiento de lockers inteligentes en España 2021→2025</div>
+                <div class="stat-source">Fuente: Locker Alliance Europe 2025</div>
+            </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="capitulo-1" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 01</div>
+    <div class="opener-title">Qué es OOH y por qué transformará tu ecommerce</div>
+    <div class="opener-intro">Out-of-Home no es solo 'dejar el paquete en algún sitio'. Es una red de puntos de conveniencia diseñada para garantizar la entrega siempre que el cliente no pueda —o no quiera— recibirla en casa.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 01 — Qué es OOH y por qué transformará tu ecommerc</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Los tres pilares del ecosistema OOH</div>
+        <div class="body-text">El ecosistema OOH se apoya en tres tipos de punto: Parcel Shops (estancos, farmacias, supermercados), lockers automáticos (en centros comerciales, estaciones y aparcamientos) y hubs de recogida en oficinas y coworkings. Cada uno cubre un perfil de cliente y un caso de uso diferente.</div>
+        <ul class='arrow-list'><li>Parcel Shops: alta densidad, atención personalizada, horario ampliado</li><li>Lockers: disponibilidad 24/7, contactless, ideal para productos de valor</li><li>Hubs corporate: para B2B, devoluciones masivas y kitting de empresa</li></ul>
+        <div class="section-title">Por qué el cliente lo prefiere</div>
+        <div class="body-text">El 68% de los compradores online en España ha usado alguna vez un punto de recogida. El motivo principal no es el precio, sino la flexibilidad: poder recoger el paquete cuando quieren, sin depender de una franja horaria impuesta por el transportista.</div>
+        <ul class='arrow-list'><li>Horario flexible: el 74% recoge fuera del horario laboral estándar</li><li>Seguridad: el paquete no queda en el portal ni con vecinos</li><li>Comodidad: 9 de cada 10 puntos están a menos de 10 minutos andando</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">68%</div>
+            <div class="stat-label">De compradores online españoles han usado un punto OOH al menos una vez</div>
+            <div class="stat-source">Fuente: Kantar / SEUR Ecommerce Study 2024</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Con la red de +12.000 Parcel Shops y +650 lockers GLS de Dadybox, puedes activar OOH desde el primer envío, sin integraciones adicionales. El punto más cercano está siempre a menos de 5 km del 95% de la población española.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-2" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 02</div>
+    <div class="opener-title">Los beneficios reales: números que cambian la P&L</div>
+    <div class="opener-intro">Más allá de la experiencia de cliente, OOH tiene un impacto directo en tu cuenta de resultados. Reducción de reenvíos, menos incidencias y una tasa de entrega efectiva que supera el 94% desde el primer intento.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 02 — Los beneficios reales: números que cambian la</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Ahorro en coste de última milla</div>
+        <div class="body-text">Cada reenvío a domicilio cuesta entre 3 y 6€ dependiendo del transportista y la zona. Para un ecommerce con 500 envíos al mes y una tasa de incidencia del 15%, hablamos de entre 225€ y 450€ mensuales absorbidos por la ineficiencia. OOH elimina prácticamente esta partida.</div>
+        <ul class='arrow-list'><li>Tasa de fallo en entrega domicilio: 15–30% (media sector España)</li><li>Tasa de fallo en OOH: <6% (punto no encontrado, paquete mal etiquetado)</li><li>ROI típico al activar OOH: recuperación en 2–3 meses</li></ul>
+        <div class="section-title">Impacto en satisfacción y retención</div>
+        <div class="body-text">El NPS de los clientes que recogen en punto OOH es 12 puntos mayor que el de los que reciben en casa con retraso. La conveniencia percibida se convierte en recompra: los compradores que usan puntos de recogida tienen un LTV un 18% superior en el primer año.</div>
+        <ul class='arrow-list'><li>+12 puntos NPS vs. entrega domicilio con incidencia</li><li>+18% LTV en clientes recurrentes que usan OOH habitualmente</li><li>−40% en tickets de atención al cliente relacionados con entregas</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">−40%</div>
+            <div class="stat-label">Reducción de tickets de soporte relacionados con entrega al activar OOH</div>
+            <div class="stat-source">Fuente: Dadybox Internal Data 2025</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Activa la opción OOH en tu checkout con texto claro: 'Recoge cuando quieras'. Las marcas que muestran el mapa de puntos GLS en el proceso de compra aumentan la tasa de adopción OOH en un 34%.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-3" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 03</div>
+    <div class="opener-title">Elige los puntos correctos para tu cliente</div>
+    <div class="opener-intro">No todos los productos ni todos los clientes encajan igual en cada tipo de punto OOH. Diseñar bien tu red de recogida es la diferencia entre un servicio que se usa y uno que se ignora.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 03 — Elige los puntos correctos para tu cliente</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Segmentación por tipo de producto</div>
+        <div class="body-text">Los productos pequeños y de alto valor (electrónica, joyas, cosméticos) funcionan mejor en lockers por la privacidad y seguridad. Los pedidos medianos de moda, hogar y alimentación gourmet se adaptan perfectamente a los Parcel Shops de proximidad. Los pedidos voluminosos o frágiles requieren puntos con capacidad de almacenaje supervisado.</div>
+        <ul class='arrow-list'><li>Electrónica y joyería → lockers 24/7 con código QR y PIN</li><li>Moda y hogar → Parcel Shops en zonas residenciales y comerciales</li><li>Alimentación gourmet → puntos con control de temperatura (disponibles en red GLS)</li><li>Pedidos +5kg → hubs con personal para gestión supervisada</li></ul>
+        <div class="section-title">Geolocalización estratégica</div>
+        <div class="body-text">Analiza dónde están tus clientes, no solo dónde viven. El punto de recogida ideal está cerca del trabajo o del supermercado habitual, no necesariamente cerca del domicilio. Las herramientas de heat-mapping de pedidos te permitirán priorizar qué puntos activar primero.</div>
+        <ul class='arrow-list'><li>Cruza tu base de pedidos con el mapa de puntos GLS disponibles</li><li>Prioriza zonas con alta densidad de pedidos y baja tasa de entrega</li><li>Ofrece siempre al menos 3 opciones de punto en el checkout</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">+34%</div>
+            <div class="stat-label">Aumento en adopción OOH al mostrar mapa interactivo en el checkout</div>
+            <div class="stat-source">Fuente: Dadybox A/B Test Data 2025</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Usa el API de Dadybox para mostrar automáticamente los 5 puntos GLS más cercanos al código postal del cliente en tiempo real. Esta sola mejora reduce el abandono de carrito en el paso de envío un 8%.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-4" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 04</div>
+    <div class="opener-title">Integración técnica sin dramas</div>
+    <div class="opener-intro">La barrera técnica es el principal freno para adoptar OOH. Pero con las integraciones nativas de Dadybox, activarlo en Shopify, WooCommerce o PrestaShop es cuestión de minutos, no semanas.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 04 — Integración técnica sin dramas</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">Integraciones nativas disponibles</div>
+        <div class="body-text">Dadybox ofrece plugins nativos para las seis plataformas principales. La configuración básica — activar OOH como opción de envío y mostrar el selector de puntos — requiere menos de 30 minutos si ya usas una plataforma compatible. No necesitas desarrollar nada a medida.</div>
+        <ul class='arrow-list'><li>Shopify / Shopify Plus: app nativa en Shopify App Store</li><li>WooCommerce: plugin certificado, configuración guiada paso a paso</li><li>PrestaShop: módulo oficial con soporte técnico incluido</li><li>BigCommerce / Wix: integración vía API con documentación completa</li></ul>
+        <div class="section-title">Flujo de datos y notificaciones</div>
+        <div class="body-text">Una integración OOH bien configurada dispara automáticamente: confirmación de depósito en el punto, recordatorio a las 24h si no se ha recogido, y segundo recordatorio a las 48h. Este flujo reduce el porcentaje de paquetes no recogidos del 8% al 2,3% en los clientes de Dadybox.</div>
+        <ul class='arrow-list'><li>Email + SMS de confirmación en el momento del depósito</li><li>Recordatorio automático a 24h y 48h si no se recoge</li><li>Webhook en tu plataforma para actualizar el estado del pedido en tiempo real</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">30 min</div>
+            <div class="stat-label">Tiempo medio de configuración OOH en Shopify con plugin nativo Dadybox</div>
+            <div class="stat-source">Fuente: Dadybox Onboarding Data 2025</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">El onboarding de Dadybox incluye la configuración OOH en las primeras 48–72 horas. Nuestro equipo técnico revisa junto a ti que el selector de puntos esté bien posicionado en el checkout y que las notificaciones lleguen correctamente.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+<div class="page dark-page" id="capitulo-5" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Capítulo 05</div>
+    <div class="opener-title">Mide el impacto: los KPIs que importan</div>
+    <div class="opener-intro">Lo que no se mide no se mejora. Estos son los indicadores clave para evaluar el rendimiento de tu red OOH y tomar decisiones basadas en datos, no en intuición.</div>
+</div>
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Capítulo 05 — Mide el impacto: los KPIs que importan</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        
+        <div class="section-title">KPIs de adopción</div>
+        <div class="body-text">El primer bloque de métricas te dice cuántos clientes eligen OOH y en qué contexto. Un porcentaje de adopción saludable para un ecommerce generalista está entre el 15% y el 35% según el perfil de cliente y la categoría de producto.</div>
+        <ul class='arrow-list'><li>Tasa de adopción OOH = pedidos con recogida / total pedidos × 100</li><li>Distribución por tipo de punto (Parcel Shop vs. locker vs. hub)</li><li>Top 10 puntos por volumen — para priorizar expansión de red</li></ul>
+        <div class="section-title">KPIs de operativa y coste</div>
+        <div class="body-text">El segundo bloque cuantifica el ahorro real. Compara el coste por envío efectivo entre OOH y domicilio, y monitoriza el porcentaje de paquetes no recogidos para ajustar el flujo de recordatorios automáticos.</div>
+        <ul class='arrow-list'><li>Coste por entrega efectiva OOH vs. domicilio (incluye reenvíos)</li><li>Tasa de no-recogida en punto (objetivo: <3%)</li><li>Tiempo medio de recogida desde depósito (benchmark: 18h)</li><li>Devoluciones iniciadas desde punto OOH vs. domicilio</li></ul>
+        <div class="stat-box">
+            <div class="stat-value">18h</div>
+            <div class="stat-label">Tiempo medio de recogida en puntos OOH de la red Dadybox/GLS</div>
+            <div class="stat-source">Fuente: GLS Spain Operations 2025</div>
+        </div>
+        <div class="tip-box">
+            <div class="tip-box-label">Tip Dadybox</div>
+            <div class="tip-box-content">Configura un dashboard mensual con estas 6 métricas. Dadybox incluye en su panel de control los datos de entrega en tiempo real y un informe exportable con todo el histórico de envíos OOH segmentado por tipo de punto, zona y estado del pedido.</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="casos" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Casos prácticos</div>
+    <div class="opener-title">Del mundo real al<br>tuyo</div>
+    <div class="opener-intro">Escenarios reales del sector ecommerce para que veas cómo aplicar lo aprendido en situaciones concretas.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Casos prácticos</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Moda — Ecommerce mediano (2.800 envíos/mes)</span>
+            </div>
+            <div class="case-title">De 18% de incidencias a menos del 4% en 60 días</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">Una marca de moda sostenible con entregas concentradas en Madrid, Barcelona y Valencia sufría una tasa de incidencia del 18% en entregas domicilio, con picos del 28% en Black Friday.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">Activaron OOH en el checkout con el plugin de Dadybox para Shopify. En 48h tenían el mapa de puntos GLS visible en el paso de envío y los flujos de notificación configurados.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">Tasa de incidencia: del 18% al 3,8% en 60 días. Ahorro mensual: ~1.200€ en reenvíos y atención al cliente. NPS de entrega: +15 puntos.</div>
+                </div>
+            </div>
+        </div>
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Electrónica — Ecommerce nicho (850 envíos/mes)</span>
+            </div>
+            <div class="case-title">Lockers como ventaja diferencial en productos de alto valor</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">Una tienda de gadgets y accesorios premium sufría robos y daños en portales y buzones. El 12% de los pedidos llegaban con reclamación de seguridad.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">Activaron exclusivamente los lockers GLS (650 puntos en España) para pedidos por encima de 80€. El cliente elegía locker en el checkout o se asignaba automáticamente el más cercano.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">Reclamaciones de seguridad: del 12% al 0,3%. Reseñas positivas sobre entrega: +220% en Google y Trustpilot. Tasa de recompra en 90 días: +23%.</div>
+                </div>
+            </div>
+        </div>
+        <div class="case-study">
+            <div class="case-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Hogar y deco — Marketplace B2C (5.200 envíos/mes)</span>
+            </div>
+            <div class="case-title">Escalar Black Friday sin romper la última milla</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label">El reto</div>
+                    <div class="case-block-text">En noviembre, los pedidos se multiplicaban ×4. El equipo de atención al cliente saturaba y el 35% de los envíos llegaban fuera de plazo, generando devoluciones masivas.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">La solución</div>
+                    <div class="case-block-text">Redirigieron automáticamente a OOH todos los pedidos de zonas con capacidad de entrega domicilio al límite. La regla se activaba 5 días antes de Black Friday y se desactivaba el 2 de diciembre.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label">El resultado</div>
+                    <div class="case-block-text">Black Friday 2025: tasa de entrega a tiempo del 96% vs. 65% del año anterior. Tickets de soporte en noviembre: −52%. Devoluciones por retraso: −67%.</div>
+                </div>
+            </div>
+        </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" id="checklist" style="position:relative">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 100 55 A 55 55 0 0 0 45 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 75 A 75 75 0 0 0 25 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 100 95 A 95 95 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 36 A 44 44 0 0 1 44 80" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 20 A 60 60 0 0 1 60 80" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 76 76 0 0 1 76 80" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="opener-eyebrow">Checklist accionable</div>
+    <div class="opener-title">Tu plan de<br>implementación</div>
+    <div class="opener-intro">Usa esta lista de verificación para asegurarte de que estás aplicando todos los aprendizajes de este playbook.</div>
+</div>
+    
+<div class="page light-page">
+    <div class="page-header">
+        <span class="page-header-section">Checklist OOH — Tu plan de implementación</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="checklist-category">Diagnóstico previo</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Calcula tu tasa de incidencia actual en entrega domicilio</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Identifica las 3 zonas geográficas con más fallos de entrega</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Estima el coste mensual de reenvíos y gestión de incidencias</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Consulta el heat-map de puntos GLS sobre tu base de clientes</div>
+            </div>
+        <div class="checklist-category">Configuración técnica</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Instala el plugin/módulo de Dadybox en tu plataforma de ecommerce</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Activa el selector de puntos OOH en el paso de envío del checkout</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Configura los flujos de notificación: depósito, recordatorio 24h y 48h</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Verifica que los webhooks actualizan el estado del pedido en tu plataforma</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Haz un pedido de prueba y recógelo en un punto GLS cercano</div>
+            </div>
+        <div class="checklist-category">Comunicación al cliente</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Añade texto explicativo junto al selector de puntos ('Recoge cuando quieras, 24/7')</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Incluye la opción OOH en las FAQs de envío de tu tienda</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Actualiza las plantillas de email de confirmación de pedido con la info OOH</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Considera un pequeño incentivo de primera recogida (descuento en siguiente pedido)</div>
+            </div>
+        <div class="checklist-category">Medición y optimización</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Crea el dashboard mensual con los 6 KPIs OOH fundamentales</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Revisa mensualmente la tasa de adopción por categoría de producto</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Compara el coste por entrega efectiva OOH vs. domicilio cada trimestre</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Ajusta los mensajes de recordatorio si la tasa de no-recogida supera el 3%</div>
+            </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page light-page" id="recursos">
+    <div class="page-header">
+        <span class="page-header-section">Recursos recomendados</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Herramientas y referencias</div>
+        <div class="resource-grid" style="margin-top:5mm">
+        <div class="resource-card">
+            <div class="resource-type">Plataforma</div>
+            <div class="resource-name">Panel Dadybox</div>
+            <div class="resource-desc">Dashboard en tiempo real con todos tus envíos OOH, KPIs, exportación de datos e historial de incidencias.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">API</div>
+            <div class="resource-name">Localizador de Puntos GLS</div>
+            <div class="resource-desc">API pública para mostrar los puntos GLS más cercanos según código postal. Documentación y playground disponibles en dadybox.com/dev.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Informe</div>
+            <div class="resource-name">GLS Delivery Report 2025</div>
+            <div class="resource-desc">El informe anual de GLS con datos de entrega OOH en Europa. Referencia esencial para benchmarking.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Estudio</div>
+            <div class="resource-name">Kantar Ecommerce Logistics Spain 2024</div>
+            <div class="resource-desc">Estadísticas de comportamiento del consumidor español respecto a OOH, preferencias y adopción por segmento.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Guía</div>
+            <div class="resource-name">Checklist de Integración Dadybox</div>
+            <div class="resource-desc">Documento técnico paso a paso para activar OOH en las 6 plataformas soportadas. Disponible en el portal de clientes.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Comunidad</div>
+            <div class="resource-name">Foro GLS / Locker Alliance Europe</div>
+            <div class="resource-desc">Red europea de operadores y marcas que comparten mejores prácticas en entrega OOH y sostenibilidad logística.</div>
+        </div></div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page light-page" id="conclusion">
+    <div class="page-header">
+        <span class="page-header-section">Conclusión — Próximos pasos</span>
+        <span class="page-header-logo"><span style="display:inline-flex;align-items:center;gap:4px;line-height:1">
+        <svg width="14" height="14" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:10px">dadybox</span>
+    </span></span>
+    </div>
+    <div class="page-body">
+        <div class="chapter-title-inline">Lo que hemos aprendido</div>
+        <div class="body-text" style="margin-top:4mm">La entrega Out-of-Home no es el futuro: es el presente. Las marcas que la activan hoy tienen menos incidencias, clientes más satisfechos y una cuenta de resultados más sana. La tecnología está disponible, la red existe y el cliente ya la usa. Solo falta que tu ecommerce se sume.
+
+El siguiente paso es simple: analiza tus datos actuales, activa OOH en el checkout y mide el impacto en 30 días. Los números hablarán solos.</div>
+        <div class="section-title" style="margin-top:6mm">Para llevar contigo</div>
+        
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">OOH reduce la tasa de incidencia de primera entrega del 15–30% al 4–6%</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">El ahorro típico en reenvíos supera la inversión de activación en menos de 90 días</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">El NPS de entrega sube entre 10 y 15 puntos cuando el cliente elige su punto</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">La integración técnica con Dadybox tarda menos de 30 minutos en plataformas nativas</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-check">✓</div>
+            <div class="takeaway-text">Los clientes que usan OOH tienen un LTV un 18% superior en el primer año</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>dadybox</span>
+    </div>
+</div>
+    
+<div class="page dark-page" style="position:relative;justify-content:center">
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="110" height="110" viewBox="0 0 110 110" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 110 60 A 60 60 0 0 0 49 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 110 82 A 82 82 0 0 0 27 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 110 104 A 104 104 0 0 0 5 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 0 40 A 49 49 0 0 1 49 90" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 22 A 67 67 0 0 1 67 90" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 0 4 A 85 85 0 0 1 85 90" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div class="cta-eyebrow">Siguiente paso</div>
+    <div class="cta-title">¿Listo para eliminar
+las incidencias de última milla?</div>
+    <div class="cta-desc">Activa OOH con Dadybox en menos de 48 horas. Nuestro equipo configura todo contigo: integraciones, puntos de recogida y flujos de notificación desde el primer día.</div>
+    <a class="cta-button" href="https://dadybox.com/contacto">Reserva tu llamada con Noel</a>
+    <div class="cta-url">dadybox.com</div>
+    <div class="cta-pills"><div class="cta-pill">Fulfillment 3PL</div><div class="cta-pill">Envíos 24h y Premium</div><div class="cta-pill">Gestión de devoluciones</div><div class="cta-pill">Sistema de gestión de almacén (SGA)</div><div class="cta-pill">Integraciones omnicanal</div></div>
+</div>
+    
+<div class="page dark-page" style="justify-content:center;align-items:center;text-align:center;position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:5px;background:#3EE89A"></div>
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="90" height="90" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+        <path d="M 90 49 A 49 49 0 0 0 40 0" fill="none" stroke="#3EE89A" stroke-width="8" opacity="0.9"/>
+        <path d="M 90 67 A 67 67 0 0 0 22 0" fill="none" stroke="#2DC080" stroke-width="8" opacity="0.9"/>
+        <path d="M 90 85 A 85 85 0 0 0 4 0" fill="none" stroke="#1A9B60" stroke-width="8" opacity="0.9"/>
+    </svg>
+    <div style="color:#fff;margin-bottom:12px;font-size:28pt"><span style="display:inline-flex;align-items:center;gap:11px;line-height:1">
+        <svg width="32" height="32" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:24px">dadybox</span>
+    </span></div>
+    <div style="font-size:12pt;color:rgba(255,255,255,0.55);margin-bottom:22px">Tu logística, nuestra magia.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:22px"><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Fulfillment 3PL</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Envíos 24h y Premium</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Gestión de devoluciones</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Sistema de gestión de almacén (SGA)</div><div style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:6px;padding:6px 14px;font-size:8.5pt;color:rgba(255,255,255,0.75)">Integraciones omnicanal</div></div>
+    <div style="width:40px;height:3px;background:#3EE89A;border-radius:2px;margin:0 auto 18px"></div>
+    <div style="font-size:14pt;font-weight:700;color:#fff;margin-bottom:5px">dadybox.com</div>
+    <div style="font-size:9pt;color:rgba(255,255,255,0.38)">comercial@dadybox.com · +34 913 775 242</div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:5px;background:#3EE89A"></div>
+</div>
+</body>
+</html>

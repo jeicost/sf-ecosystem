@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dossier Corporativo Dadybox | Dadybox</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    font-family:'Inter','Helvetica Neue',Arial,sans-serif;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+    background:#fff;
+    margin:0;
+    padding:0;
+}
+
+.slide {
+    width:338.7mm;
+    height:190.5mm;
+    position:relative;
+    overflow:hidden;
+    page-break-after:always;
+    display:flex;
+    flex-direction:column;
+}
+
+/* ── DARK SLIDE ─────────────────────────────────────────── */
+.slide-dark {
+    background:#0B1829;
+    color:#FFFFFF;
+}
+
+/* ── LIGHT SLIDE ────────────────────────────────────────── */
+.slide-light {
+    background:#FFFFFF;
+    color:#0B1829;
+}
+
+/* ── GRADIENT SLIDE ─────────────────────────────────────── */
+.slide-gradient {
+    background:linear-gradient(135deg,#0B1829 0%,#112D1A 50%,#0B2A18 100%);
+    color:#FFFFFF;
+}
+
+/* ── LOGO BAR ────────────────────────────────────────────── */
+.logo-bar {
+    position:absolute;
+    top:20px;
+    left:28px;
+    z-index:10;
+}
+.logo-bar-right {
+    position:absolute;
+    top:20px;
+    right:28px;
+    z-index:10;
+}
+
+/* ── SLIDE CONTENT WRAPPERS ─────────────────────────────── */
+.slide-center {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:30px 60px;
+    position:relative;
+    z-index:2;
+}
+
+.slide-left {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:30px 24px 30px 28px;
+    position:relative;
+    z-index:2;
+    max-width:55%;
+}
+
+.slide-right {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:30px 28px 30px 24px;
+    position:relative;
+    z-index:2;
+    max-width:55%;
+}
+
+.split-layout {
+    display:flex;
+    flex:1;
+    height:100%;
+}
+
+/* ── TYPOGRAPHY ─────────────────────────────────────────── */
+.eyebrow {
+    font-size:7.5pt;
+    font-weight:700;
+    letter-spacing:2.5px;
+    text-transform:uppercase;
+    color:#3EE89A;
+    margin-bottom:12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+.eyebrow::before {
+    content:'';
+    display:inline-block;
+    width:20px;
+    height:2px;
+    background:#3EE89A;
+    border-radius:1px;
+}
+
+.slide-title {
+    font-size:26pt;
+    font-weight:900;
+    line-height:1.08;
+    letter-spacing:-1px;
+    margin-bottom:14px;
+}
+.slide-title-lg {
+    font-size:34pt;
+    font-weight:900;
+    line-height:1.05;
+    letter-spacing:-1.5px;
+    margin-bottom:16px;
+}
+.slide-subtitle {
+    font-size:12pt;
+    font-weight:600;
+    line-height:1.45;
+    margin-bottom:14px;
+}
+.slide-body {
+    font-size:10pt;
+    line-height:1.7;
+    opacity:0.82;
+    margin-bottom:10px;
+}
+.accent-text {
+    color:#3EE89A;
+}
+
+/* ── BADGE ──────────────────────────────────────────────── */
+.badge {
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    background:rgba(62,232,154,0.12);
+    border:1px solid rgba(62,232,154,0.3);
+    color:#3EE89A;
+    font-size:7pt;
+    font-weight:700;
+    letter-spacing:1.5px;
+    text-transform:uppercase;
+    padding:4px 12px;
+    border-radius:20px;
+    margin-right:6px;
+    margin-bottom:6px;
+}
+.badge-dark {
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.15);
+    color:rgba(255,255,255,0.75);
+}
+
+/* ── IMAGE PANEL ────────────────────────────────────────── */
+.image-panel {
+    position:relative;
+    overflow:hidden;
+    flex-shrink:0;
+}
+.image-panel-green {
+    background:linear-gradient(145deg,#3EE89A 0%,#2DC080 50%,#1A9B60 100%);
+}
+.image-panel-navy {
+    background:linear-gradient(145deg,#0D2A1A 0%,#0B1829 100%);
+}
+.image-panel-mid {
+    background:linear-gradient(145deg,#1A3A5C 0%,#0B1829 100%);
+}
+
+/* ── NUMBERED ITEM ──────────────────────────────────────── */
+.num-item {
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+    margin-bottom:16px;
+    padding-bottom:16px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.num-item:last-child { border-bottom:none; margin-bottom:0; padding-bottom:0; }
+.num-circle {
+    width:32px;
+    height:32px;
+    background:#3EE89A;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10pt;
+    font-weight:900;
+    color:#0B1829;
+    flex-shrink:0;
+}
+.num-circle-dark {
+    background:#0B1829;
+    color:#FFFFFF;
+}
+.num-title { font-size:10.5pt; font-weight:700; margin-bottom:3px; }
+.num-desc { font-size:9pt; line-height:1.55; opacity:0.75; }
+
+/* ── STAT BOX ───────────────────────────────────────────── */
+.stat-item {
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:2px;
+}
+.stat-value {
+    font-size:36pt;
+    font-weight:900;
+    color:#3EE89A;
+    line-height:1;
+    letter-spacing:-1.5px;
+}
+.stat-label {
+    font-size:9pt;
+    opacity:0.7;
+    line-height:1.4;
+}
+
+/* ── PLAN CARD ──────────────────────────────────────────── */
+.plan-card {
+    flex:1;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:12px;
+    padding:18px 16px;
+    position:relative;
+}
+.plan-card-featured {
+    background:rgba(62,232,154,0.1);
+    border-color:rgba(62,232,154,0.35);
+}
+.plan-name {
+    font-size:15pt;
+    font-weight:800;
+    color:#FFFFFF;
+    margin-bottom:4px;
+    letter-spacing:-0.3px;
+}
+.plan-volume {
+    font-size:7.5pt;
+    background:rgba(62,232,154,0.15);
+    color:#3EE89A;
+    border-radius:20px;
+    padding:2px 10px;
+    display:inline-block;
+    margin-bottom:12px;
+    font-weight:600;
+}
+.plan-button {
+    display:block;
+    background:#3EE89A;
+    color:#0B1829;
+    text-align:center;
+    font-size:8.5pt;
+    font-weight:800;
+    padding:7px 10px;
+    border-radius:30px;
+    margin-bottom:12px;
+    letter-spacing:0.2px;
+}
+.plan-bullet {
+    display:flex;
+    align-items:flex-start;
+    gap:6px;
+    font-size:8.5pt;
+    line-height:1.5;
+    color:rgba(255,255,255,0.8);
+    margin-bottom:5px;
+}
+.plan-bullet::before {
+    content:"✓";
+    color:#3EE89A;
+    font-weight:900;
+    flex-shrink:0;
+    margin-top:1px;
+}
+.plan-tagline {
+    font-size:8pt;
+    color:rgba(255,255,255,0.45);
+    font-style:italic;
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px solid rgba(255,255,255,0.08);
+}
+.plan-featured-badge {
+    position:absolute;
+    top:-10px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#3EE89A;
+    color:#0B1829;
+    font-size:7pt;
+    font-weight:800;
+    padding:3px 14px;
+    border-radius:20px;
+    white-space:nowrap;
+}
+
+/* ── TEAM CARD ──────────────────────────────────────────── */
+.team-card {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    flex:1;
+}
+.team-avatar {
+    width:72px;
+    height:72px;
+    border-radius:50%;
+    border:3px solid #3EE89A;
+    background:linear-gradient(145deg,#0B1829,#1A9B60);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20pt;
+    font-weight:900;
+    color:#FFFFFF;
+    margin-bottom:10px;
+    flex-shrink:0;
+}
+.team-name {
+    font-size:9pt;
+    font-weight:700;
+    color:#0B1829;
+    margin-bottom:3px;
+}
+.team-role {
+    font-size:8pt;
+    color:rgba(11,24,41,0.55);
+    line-height:1.4;
+}
+
+/* ── COMPARISON TABLE ───────────────────────────────────── */
+.comp-table {
+    width:100%;
+    border-collapse:collapse;
+    margin-top:14px;
+}
+.comp-table th {
+    background:#0B1829;
+    color:#FFFFFF;
+    padding:10px 14px;
+    text-align:left;
+    font-size:9pt;
+    font-weight:700;
+}
+.comp-table td {
+    padding:10px 14px;
+    font-size:9pt;
+    border-bottom:1px solid rgba(11,24,41,0.08);
+    color:#0B1829;
+}
+.comp-table tr:last-child td { border-bottom:none; }
+.comp-table tr:nth-child(even) td { background:rgba(11,24,41,0.03); }
+
+/* ── FLOW ITEM ──────────────────────────────────────────── */
+.flow-item {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    flex:1;
+}
+.flow-icon {
+    width:56px;
+    height:56px;
+    background:#3EE89A;
+    border-radius:12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:18pt;
+    margin-bottom:10px;
+    flex-shrink:0;
+}
+.flow-arrow {
+    font-size:18pt;
+    color:#3EE89A;
+    align-self:center;
+    margin-top:-28px;
+    flex-shrink:0;
+    margin-left:-4px;
+    margin-right:-4px;
+}
+.flow-title { font-size:9.5pt; font-weight:700; color:#0B1829; margin-bottom:4px; }
+.flow-desc { font-size:8.5pt; color:rgba(11,24,41,0.6); line-height:1.5; }
+
+/* ── CONTACT ────────────────────────────────────────────── */
+.contact-item {
+    display:flex;
+    align-items:center;
+    gap:16px;
+    margin-bottom:18px;
+    font-size:12pt;
+    color:#0B1829;
+}
+.contact-icon {
+    width:44px;
+    height:44px;
+    background:#3EE89A;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:14pt;
+    flex-shrink:0;
+}
+
+/* ── CTA BUTTON ─────────────────────────────────────────── */
+.cta-button {
+    display:inline-block;
+    background:#3EE89A;
+    color:#0B1829;
+    font-size:12pt;
+    font-weight:800;
+    padding:14px 36px;
+    border-radius:50px;
+    text-decoration:none;
+    margin-top:20px;
+    margin-bottom:12px;
+    letter-spacing:-0.2px;
+}
+</style>
+</head>
+<body>
+
+<div class="slide slide-gradient" style="position:relative">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.05">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:8px;line-height:1">
+        <svg width="28" height="28" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:20px;color:#FFFFFF">dadybox</span>
+    </span></div>
+    <div class="slide-center" style="padding-top:50px">
+        <div style="margin-bottom:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px"><span class="badge">36 años de experiencia</span><span class="badge">estructura propia</span><span class="badge">partner oficial de la red GLS</span></div>
+        <div class="slide-title-lg" style="color:#FFFFFF;max-width:280mm">La externalización logística que hace crecer tu e-commerce</div>
+        <div class="slide-subtitle" style="color:rgba(255,255,255,0.62);max-width:240mm;font-weight:400">Orden, control y capacidad real para escalar con la tranquilidad de una estructura experta</div>
+        <div style="width:40px;height:3px;background:#3EE89A;border-radius:2px;margin:14px auto"></div>
+        <div style="font-size:10pt;color:rgba(255,255,255,0.4);letter-spacing:1px">dadybox.com</div>
+    </div>
+</div>
+
+<div class="slide slide-gradient" style="position:relative">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.06">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#FFFFFF">dadybox</span>
+    </span></div>
+    <div style="padding:50px 32px 24px;position:relative;z-index:2">
+        <div class='eyebrow'>El reto del ecommerce</div>
+        <div class="slide-title" style="color:#FFFFFF;margin-bottom:6px">Muchas veces el problema no es vender más. Es poder operar mejor.</div>
+        <div style='font-size:10pt;color:rgba(255,255,255,0.55);margin-bottom:24px;font-weight:500'>Cuando faltan estructura, espacio y método, la logística empieza a frenar lo que tu negocio produce.</div>
+        <div style="display:flex;gap:8px">
+            
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">1</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">Falta de control operativo</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Stock desactualizado, procesos manuales y poca visibilidad sobre lo que entra, se prepara y se expide.</div>
+        </div>
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">2</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">Estructura que se queda pequeña</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">El negocio crece, pero el almacén, los flujos y la organización interna ya no acompañan ese ritmo.</div>
+        </div>
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">3</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">Campañas que tensionan toda la operación</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Rebajas, lanzamientos o picos de demanda saturan picking, packing y salidas diarias.</div>
+        </div>
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">4</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">La entrega empieza a afectar a la marca</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Retrasos, incidencias o devoluciones impactan en la percepción, la confianza y la experiencia final del cliente.</div>
+        </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div class="split-layout" style="height:100%;padding-top:0">
+        <div class="image-panel image-panel-navy" style="width:35%;flex-shrink:0;position:relative"></div>
+        
+    <div class="slide-right" style="max-width:100%;padding:40px 36px 40px 32px;justify-content:center">
+        <div class='eyebrow' style='color:#3EE89A'>Grupo logístico</div>
+        <div class="slide-title" style="color:#0B1829;font-size:22pt">Tres divisiones. Un mismo estándar.</div>
+        <div class='slide-subtitle' style='color:#0B1829;font-size:10pt;font-weight:500;margin-bottom:14px'>Dadybox nace dentro de una estructura logística ya operativa, con 36 años de experiencia, red real y capacidad contrastada.</div>
+        
+        <div class="num-item">
+                <div class="num-circle">1</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">GLS Ciudad Lineal</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Línea principal de envíos para medianas y grandes empresas.</div>
+                </div>
+            </div><div class="num-item">
+                <div class="num-circle">2</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Dadybox</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">La división especializada en e-commerce y pequeñas y medianas marcas.</div>
+                </div>
+            </div><div class="num-item">
+                <div class="num-circle">3</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">GTD Albasanz</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Licitaciones y sector público.</div>
+                </div>
+            </div>
+    </div>
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div class="split-layout" style="height:100%;padding-top:0">
+        
+    <div class="slide-right" style="max-width:100%;padding:40px 36px 40px 32px;justify-content:center">
+        <div class='eyebrow' style='color:#3EE89A'>Nuestra propuesta</div>
+        <div class="slide-title" style="color:#0B1829;font-size:22pt">Dadybox convierte tu logística en una operación controlada</div>
+        <div class='slide-subtitle' style='color:#0B1829;font-size:10pt;font-weight:500;margin-bottom:14px'>Más visibilidad, más trazabilidad y más capacidad para escalar sin perder consistencia operativa.</div>
+        
+        <div class="num-item">
+                <div class="num-circle">1</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Visibilidad operativa real</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Cada pedido entra en un flujo más claro: stock, movimientos y salidas con mejor lectura para decidir mejor.</div>
+                </div>
+            </div><div class="num-item">
+                <div class="num-circle">2</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Control y trazabilidad de extremo a extremo</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Tu operativa gana método, criterio y continuidad. Recepción, almacenaje, picking, packing, expedición y seguimiento bajo una misma lógica operativa.</div>
+                </div>
+            </div><div class="num-item">
+                <div class="num-circle">3</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Escalabilidad con base operativa</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Más volumen, más campañas y más complejidad sin romper la calidad del servicio ni la experiencia del cliente.</div>
+                </div>
+            </div>
+    </div>
+        <div class="image-panel image-panel-green" style="width:36%;flex-shrink:0;position:relative"></div>
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div style="padding:50px 36px 30px;height:100%;display:flex;flex-direction:column">
+        <div style="margin-bottom:24px">
+            <div class='eyebrow' style='color:#3EE89A'>Cómo trabajamos</div>
+            <div class="slide-title" style="color:#0B1829">Un sistema que conecta toda tu operación</div>
+            <div style='font-size:10pt;color:rgba(11,24,41,0.55);font-weight:500'>Integración, almacén, envíos, devoluciones y control bajo una misma lógica operativa.</div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;gap:0">
+            
+        <div class="flow-item" style="flex:1">
+            <div class="flow-icon">🛍️</div>
+            <div class="flow-title">Integración</div>
+            <div class="flow-desc">Conectamos nuestro SGA con tus canales de venta y nos integramos en tu proceso personalizado desde el principio.</div>
+        </div><div class="flow-arrow">→</div>
+        <div class="flow-item" style="flex:1">
+            <div class="flow-icon">📦</div>
+            <div class="flow-title">Logística</div>
+            <div class="flow-desc">Recibimos y digitalizamos todo tu stock, lo almacenamos y preparamos a diario cada pedido de tu tienda online & marketplaces.</div>
+        </div><div class="flow-arrow">→</div>
+        <div class="flow-item" style="flex:1">
+            <div class="flow-icon">🚛</div>
+            <div class="flow-title">Envíos & Devoluciones</div>
+            <div class="flow-desc">Envíos eficientes, entregas flexibles y un proceso de devoluciones muy sencillo para tus clientes a través de nuestra red GLS.</div>
+        </div><div class="flow-arrow">→</div>
+        <div class="flow-item" style="flex:1">
+            <div class="flow-icon">📍</div>
+            <div class="flow-title">SGA & Tracking</div>
+            <div class="flow-desc">Gestión de almacén avanzada y acceso a nuestros sistemas para que puedas hacer seguimiento en tiempo real de todos tus pedidos.</div>
+        </div>
+        </div>
+        <div style='margin-top:16px;padding-top:12px;border-top:1px solid rgba(11,24,41,0.08);font-size:9pt;color:rgba(11,24,41,0.45);text-align:center;font-weight:600'>Integración, almacén, envíos, devoluciones y control bajo una misma lógica operativa</div>
+    </div>
+</div>
+
+<div class="slide slide-dark" style="position:relative">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.06">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#FFFFFF">dadybox</span>
+    </span></div>
+    <div style="padding:50px 32px 24px;position:relative;z-index:2">
+        <div class='eyebrow'>Tecnología y integraciones</div>
+        <div class="slide-title" style="color:#FFFFFF;margin-bottom:6px">Dadybox se integra con las principales plataformas de e-commerce</div>
+        <div style='font-size:10pt;color:rgba(255,255,255,0.55);margin-bottom:24px;font-weight:500'>Onboarding de 48 a 72 horas desde la firma del contrato.</div>
+        <div style="display:flex;gap:8px">
+            
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">1</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">Integración con plataformas</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Shopify, Shopify Plus, WooCommerce, PrestaShop y más donde tu marca ya vende.</div>
+        </div>
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">2</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">Sincronización de pedidos y stock</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Conectamos la operativa para reducir tareas manuales y mantener una lectura más limpia.</div>
+        </div>
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">3</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">SGA y visibilidad operativa</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Gestión de almacén, trazabilidad y seguimiento con una capa de control de alto criterio.</div>
+        </div>
+        <div style="flex:1;padding:0 12px">
+            <div class="num-circle" style="margin-bottom:12px">4</div>
+            <div class="num-title" style="color:#FFFFFF;font-size:10pt;margin-bottom:6px">Reglas y coordinación</div>
+            <div class="num-desc" style="color:rgba(255,255,255,0.65);font-size:8.5pt">Una base más sólida para escalar con menos fricción, menos errores y más consistencia.</div>
+        </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div style="padding:50px 36px 30px;height:100%;display:flex;flex-direction:column">
+        <div style="margin-bottom:20px">
+            <div class='eyebrow' style='color:#3EE89A'>Servicios de envío</div>
+            <div class="slide-title" style="color:#0B1829">Nuestros servicios de envío</div>
+            <div style='font-size:10pt;color:rgba(11,24,41,0.55)'>Eco, 24H y Premium en una misma cuenta. Red de ++12.000 Parcel Shops y +650 lockers en España.</div>
+        </div>
+        <div style="flex:1;display:flex;gap:14px;align-items:stretch">
+            
+        <div style="flex:1;background:#fff;border-left:4px solid #3EE89A;border-radius:0 10px 10px 0;padding:16px 14px;box-shadow:0 2px 12px rgba(11,24,41,0.06)">
+            <div style="font-size:14pt;font-weight:900;color:#3EE89A;margin-bottom:2px">Económico</div>
+            <div style="font-size:8pt;font-weight:700;color:#0B1829;opacity:0.55;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">1–3 días</div>
+            <div style="font-size:9pt;font-weight:600;color:#0B1829;margin-bottom:10px;font-style:italic">La opción más rentable para pedidos no urgentes.</div>
+            <div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Mejor coste por envío</div><div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Ideal para operativa estándar</div><div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Posibilidad de Parcel Shop en primera incidencia</div>
+        </div>
+        <div style="flex:1;background:#fff;border-left:4px solid #3EE89A;border-radius:0 10px 10px 0;padding:16px 14px;box-shadow:0 2px 12px rgba(11,24,41,0.06)">
+            <div style="font-size:14pt;font-weight:900;color:#3EE89A;margin-bottom:2px">24H</div>
+            <div style="font-size:8pt;font-weight:700;color:#0B1829;opacity:0.55;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">Entrega al día siguiente</div>
+            <div style="font-size:9pt;font-weight:600;color:#0B1829;margin-bottom:10px;font-style:italic">El equilibrio entre precio y velocidad.</div>
+            <div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Entrega garantizada en 24 horas</div><div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Ideal para operativa diaria y campañas</div><div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Parcel Shop a la segunda incidencia</div>
+        </div>
+        <div style="flex:1;background:#fff;border-left:4px solid #3EE89A;border-radius:0 10px 10px 0;padding:16px 14px;box-shadow:0 2px 12px rgba(11,24,41,0.06)">
+            <div style="font-size:14pt;font-weight:900;color:#3EE89A;margin-bottom:2px">Premium</div>
+            <div style="font-size:8pt;font-weight:700;color:#0B1829;opacity:0.55;margin-bottom:6px;text-transform:uppercase;letter-spacing:1px">8:30H · 10:30H · 14:30H</div>
+            <div style="font-size:9pt;font-weight:600;color:#0B1829;margin-bottom:10px;font-style:italic">La opción para promesas más exigentes.</div>
+            <div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Franjas horarias garantizadas</div><div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Mejora la experiencia de entrega</div><div style="display:flex;align-items:flex-start;gap:6px;font-size:8.5pt;color:rgba(11,24,41,0.75);margin-bottom:5px"><span style="color:#3EE89A;font-weight:900;flex-shrink:0">•</span>Pensado para pedidos de mayor valor</div>
+        </div>
+        </div>
+        <div style='margin-top:14px;font-size:8.5pt;color:rgba(11,24,41,0.4);font-style:italic'>Operativa apoyada en red GLS y partners logísticos según servicio y zona.</div>
+    </div>
+</div>
+
+<div class="slide slide-gradient" style="position:relative">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.05">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#FFFFFF">dadybox</span>
+    </span></div>
+    <div style="padding:50px 28px 24px;position:relative;z-index:2;height:100%;display:flex;flex-direction:column">
+        <div class="slide-title" style="color:#FFFFFF;text-align:center;margin-bottom:6px">Planes que crecen contigo</div>
+        <div style="font-size:10pt;color:rgba(255,255,255,0.55);text-align:center;margin-bottom:20px">Ajustamos la logística, las tarifas y el nivel de servicio a tu ritmo de crecimiento.</div>
+        <div style="flex:1;display:flex;align-items:stretch">
+            
+        <div class="plan-card" style="margin:0 6px;position:relative">
+            
+            <div class="plan-volume">Hasta 1200 envíos al año</div>
+            <div class="plan-name">Plan Despegue</div>
+            <a class="plan-button" href="https://dadybox.com/contacto">Reserva tu llamada</a>
+            <div class="plan-bullet">Para marcas que empiezan a externalizar su logística.</div><div class="plan-bullet">Hasta ~100 envíos al mes sin compromisos de volumen.</div><div class="plan-bullet">Almacenaje seguro y picking estándar por pedido.</div><div class="plan-bullet">Acceso a tarifas de envío negociadas sin mínimos.</div><div class="plan-bullet">Soporte por email y panel unificado para ver tus pedidos.</div>
+            <div class="plan-tagline">Perfecto para validar tu e-commerce sin complicarte con la logística.</div>
+        </div>
+        <div class="plan-card plan-card-featured" style="margin:0 6px;position:relative">
+            <div class="plan-featured-badge">Más elegido</div>
+            <div class="plan-volume">De 1200 a 5000 envíos al año</div>
+            <div class="plan-name">Plan Turbo</div>
+            <a class="plan-button" href="https://dadybox.com/contacto">Reserva tu llamada</a>
+            <div class="plan-bullet">Para e-commerce en plena fase de crecimiento.</div><div class="plan-bullet">Capacidad para picos de campaña (rebajas, lanzamientos, Black Friday).</div><div class="plan-bullet">Picking y packaging prioritario con opciones de personalización.</div><div class="plan-bullet">Mejores condiciones de envío en servicios Económico, 24H y Premium.</div><div class="plan-bullet">Integraciones avanzadas con tu e-commerce y SGA (vía API).</div>
+            <div class="plan-tagline">El equilibrio perfecto entre coste, velocidad y control operativo.</div>
+        </div>
+        <div class="plan-card" style="margin:0 6px;position:relative">
+            
+            <div class="plan-volume">Más de 5000 envíos al año</div>
+            <div class="plan-name">Plan Galaxia</div>
+            <a class="plan-button" href="https://dadybox.com/contacto">Reserva tu llamada</a>
+            <div class="plan-bullet">Para marcas con alta frecuencia de envíos.</div><div class="plan-bullet">Condiciones de envío premium en todos los servicios.</div><div class="plan-bullet">SLA garantizado y reporting avanzado.</div><div class="plan-bullet">Gestor de cuenta dedicado y atención prioritaria.</div><div class="plan-bullet">Personalización completa de packaging y flujos.</div>
+            <div class="plan-tagline">Para operadores con volumen y necesidades específicas de escala.</div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div class="split-layout" style="height:100%;padding-top:0">
+        <div class="image-panel image-panel-mid" style="width:36%;flex-shrink:0;position:relative"></div>
+        
+    <div class="slide-right" style="max-width:100%;padding:40px 36px 40px 32px;justify-content:center">
+        <div class='eyebrow' style='color:#3EE89A'>Por qué Dadybox</div>
+        <div class="slide-title" style="color:#0B1829;font-size:22pt">Más flexibilidad. Más criterio. Más tranquilidad.</div>
+        <div class='slide-subtitle' style='color:#0B1829;font-size:10pt;font-weight:500;margin-bottom:14px'>Adaptamos la operación al volumen, a las campañas y a la realidad de cada e-commerce.</div>
+        
+        <div class="num-item">
+                <div class="num-circle">1</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Operativa adaptable</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Rebajas, lanzamientos, Black Friday o picos puntuales: nuestra estructura se ajusta al ritmo real de tu negocio.</div>
+                </div>
+            </div><div class="num-item">
+                <div class="num-circle">2</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Tecnología + criterio humano</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Integración de las mejores tecnologías de control y lectura operativa con una capa humana para supervisar cada proceso.</div>
+                </div>
+            </div><div class="num-item">
+                <div class="num-circle">3</div>
+                <div>
+                    <div class="num-title" style="color:#0B1829">Atención al cliente personalizada</div>
+                    <div class="num-desc" style="color:rgba(11,24,41,0.7)">Onboarding en 48–72 horas y una lógica de trabajo pensada para dar respuestas rápidas y atención personalizada.</div>
+                </div>
+            </div>
+    </div>
+    </div>
+</div>
+
+<div class="slide slide-dark" style="position:relative">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.06">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#FFFFFF">dadybox</span>
+    </span></div>
+    <div style="padding:50px 32px 30px;position:relative;z-index:2;height:100%;display:flex;flex-direction:column">
+        <div class='eyebrow'>Una credibilidad construida durante 36 años</div>
+        <div class="slide-title" style="color:#FFFFFF;margin-bottom:6px">Números que hablan</div>
+        <div style='font-size:10pt;color:rgba(255,255,255,0.5);margin-bottom:0'>Partner logístico dentro de una estructura conectada a GLS, con apoyo operativo de DHL y FedEx. Referencias: Coca-Cola Fan Store, Salesland, Warner, Ilunion.</div>
+        <div style="flex:1;display:flex;align-items:center">
+            <div style="display:flex;gap:0;width:100%">
+                <div class="stat-item" style="padding:0 20px;border-right:1px solid rgba(255,255,255,0.1)">
+            <div class="stat-value">+300</div>
+            <div class="stat-label" style="color:rgba(255,255,255,0.6)">clientes activos</div>
+        </div><div class="stat-item" style="padding:0 20px;border-right:1px solid rgba(255,255,255,0.1)">
+            <div class="stat-value">+400.000</div>
+            <div class="stat-label" style="color:rgba(255,255,255,0.6)">envíos al año</div>
+        </div><div class="stat-item" style="padding:0 20px;border-right:1px solid rgba(255,255,255,0.1)">
+            <div class="stat-value">97%</div>
+            <div class="stat-label" style="color:rgba(255,255,255,0.6)">entregas a tiempo</div>
+        </div><div class="stat-item" style="padding:0 20px;border-right:1px solid rgba(255,255,255,0.1)">
+            <div class="stat-value">94,5%</div>
+            <div class="stat-label" style="color:rgba(255,255,255,0.6)">de SLA</div>
+        </div><div class="stat-item" style="padding:0 20px;border-right:1px solid rgba(255,255,255,0.1)">
+            <div class="stat-value">+100</div>
+            <div class="stat-label" style="color:rgba(255,255,255,0.6)">transportistas</div>
+        </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div style="padding:50px 40px 30px;height:100%;display:flex;flex-direction:column">
+        <div style="text-align:center;margin-bottom:30px">
+            <div class='eyebrow' style='justify-content:center;color:#3EE89A'>Equipo</div>
+            <div class="slide-title" style="color:#0B1829">Un equipo especializado</div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:30px">
+            
+    <div class="team-card">
+        <div class="team-avatar">NO</div>
+        <div class="team-name">Noel Aldea Ruiz de la Hermosa</div>
+        <div class="team-role">CEO</div>
+    </div>
+    <div class="team-card">
+        <div class="team-avatar">NA</div>
+        <div class="team-name">Natalia Aldea Ruiz de la Hermosa</div>
+        <div class="team-role">Marketing Manager & Innovation</div>
+    </div>
+    <div class="team-card">
+        <div class="team-avatar">UA</div>
+        <div class="team-name">Usoa Azcona Fernández</div>
+        <div class="team-role">IT Clientes & Back Office Comercial</div>
+    </div>
+    <div class="team-card">
+        <div class="team-avatar">LG</div>
+        <div class="team-name">Lidia Gutierrez</div>
+        <div class="team-role">Customer Service Manager</div>
+    </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide slide-gradient" style="position:relative">
+    <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.06">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div style="position:absolute;bottom:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:7px;line-height:1">
+        <svg width="24" height="24" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:17px;color:#FFFFFF">dadybox</span>
+    </span></div>
+    <div class="slide-center">
+        <div class="slide-title-lg" style="color:#FFFFFF;max-width:280mm">Tu logística puede dejar de ser un límite</div>
+        <div style="font-size:11pt;color:rgba(255,255,255,0.58);max-width:230mm;margin:0 auto 6px;line-height:1.65">Estamos listos para hablar de tu proyecto y diseñar juntos la solución logística que tu e-commerce necesita para crecer.</div>
+        <a class="cta-button" href="https://dadybox.com/contacto">Reserva tu llamada</a>
+        <div style="font-size:9pt;color:rgba(255,255,255,0.3);margin-top:6px">dadybox.com</div>
+        <div style='margin-top:18px;font-size:9pt;color:rgba(255,255,255,0.45)'>Noel Aldea — CEO · Natalia Aldea — Marketing Manager & Innovation</div>
+    </div>
+</div>
+
+<div class="slide slide-light" style="position:relative">
+    <div style="position:absolute;top:0;left:0;right:0;height:4px;background:#3EE89A"></div>
+    <div class="logo-bar"><span style="display:inline-flex;align-items:center;gap:6px;line-height:1">
+        <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:14px;color:#0B1829">dadybox</span>
+    </span></div>
+    <div class="split-layout">
+        <div class="image-panel image-panel-navy" style="width:38%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative">
+            <svg style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" xmlns="http://www.w3.org/2000/svg" opacity="0.12">
+        <defs>
+            <pattern id="cubeGrid" x="0" y="0" width="60" height="52" patternUnits="userSpaceOnUse">
+                <polygon points="30,2 58,17 30,32 2,17" fill="none" stroke="#3EE89A" stroke-width="1"/>
+                <polygon points="2,17 30,32 30,50 2,35" fill="none" stroke="#1A9B60" stroke-width="1"/>
+                <polygon points="58,17 30,32 30,50 58,35" fill="none" stroke="#2DC080" stroke-width="1"/>
+            </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#cubeGrid)"/>
+    </svg>
+            <div style="text-align:center;position:relative;z-index:2">
+                <span style="display:inline-flex;align-items:center;gap:15px;line-height:1">
+        <svg width="48" height="48" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+            <polygon points="50,5 95,30 50,55 5,30" fill="#3EE89A"/>
+            <polygon points="5,30 50,55 50,97 5,72" fill="#1A9B60"/>
+            <polygon points="95,30 50,55 50,97 95,72" fill="#2DC080"/>
+        </svg>
+        <span style="font-weight:800;letter-spacing:-0.5px;font-size:34px;color:#FFFFFF">dadybox</span>
+    </span>
+                <div style="margin-top:16px;font-size:10pt;color:rgba(255,255,255,0.5)">Tu logística, nuestra magia.</div>
+            </div>
+        </div>
+        <div style="flex:1;padding:50px 40px;display:flex;flex-direction:column;justify-content:center">
+            <div class="slide-title" style="color:#0B1829;margin-bottom:30px">Contactos</div>
+            <div class="contact-item">
+                <div class="contact-icon">📞</div>
+                <div style="font-weight:600">+34 913 758 204</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">🌐</div>
+                <div style="font-weight:600">dadybox.com</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">✉️</div>
+                <div style="font-weight:600">hello@dadybox.com</div>
+            </div>
+            <div class="contact-item">
+                <div class="contact-icon">📍</div>
+                <div style="font-weight:600">Albasanz, 14 Bis · 28037 Madrid</div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

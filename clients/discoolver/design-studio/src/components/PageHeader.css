@@ -1,0 +1,34 @@
+.dv-page-header {
+  display:     flex;
+  align-items: center;
+  gap:         8px;
+  padding:     var(--page-pad-y) var(--page-pad-x) 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  background:  var(--paper);
+}
+
+.dv-ph-num {
+  font-family: var(--font-body);
+  font-size:   22px;
+  font-weight: 700;
+  color:       var(--muted);
+  line-height: 1;
+  letter-spacing: -0.5px;
+}
+
+.dv-ph-sep {
+  font-size:   20px;
+  font-weight: 300;
+  color:       var(--magenta);
+  line-height: 1;
+  margin: 0 2px;
+}
+
+.dv-ph-section {
+  font-family: var(--font-body);
+  font-size:   18px;
+  font-weight: 700;
+  color:       var(--text);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}

@@ -1,0 +1,24 @@
+.dv-page-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 0 var(--page-pad-x) 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dv-pf-rule {
+  flex: 1;
+  height: 1px;
+  background: rgba(0,0,0,0.18);
+  display: block;
+}
+
+.dv-pf-url {
+  font-family: var(--font-body);
+  font-size:   9px;
+  color:       var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  white-space: nowrap;
+}

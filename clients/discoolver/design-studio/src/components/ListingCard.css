@@ -1,0 +1,71 @@
+.dv-listing-card {
+  display:        flex;
+  flex-direction: column;
+  gap:            3px;
+}
+
+.dv-lc-subcategory {
+  display:        inline-block;
+  font-family:    var(--font-body);
+  font-size:      8px;
+  font-weight:    600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color:          var(--magenta);
+  margin-bottom:  2px;
+}
+
+.dv-lc-name {
+  font-family:    var(--font-body);
+  font-size:      9.5px;
+  font-weight:    700;
+  color:          var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height:    1.2;
+}
+
+.dv-lc-tagline {
+  font-family:    var(--font-body);
+  font-size:      8px;
+  font-style:     italic;
+  color:          var(--muted);
+  line-height:    1.3;
+}
+
+.dv-lc-desc {
+  font-family:    var(--font-body);
+  font-size:      8px;
+  color:          var(--text);
+  line-height:    1.55;
+  margin-top:     3px;
+  text-align:     justify;
+}
+
+.dv-lc-meta {
+  font-family:    var(--font-body);
+  font-size:      7.5px;
+  color:          var(--muted);
+  line-height:    1.4;
+  margin-top:     2px;
+}
+
+.dv-lc-label {
+  font-style: italic;
+  color:      var(--text);
+}
+
+.dv-lc-photo {
+  margin-top: 8px;
+  width:      100%;
+  aspect-ratio: 4/3;
+  overflow:   hidden;
+  border-radius: 2px;
+}
+
+.dv-lc-photo img {
+  width:      100%;
+  height:     100%;
+  object-fit: cover;
+  display:    block;
+}

@@ -1,0 +1,156 @@
+.dv-portada-typo {
+  background: #C8006B;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Grain overlay ── */
+.dv-portada-typo__grain {
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.5;
+}
+
+/* ── Decorative "+" watermark ── */
+.dv-portada-typo__deco-plus {
+  position: absolute;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 320px;
+  color: rgba(255, 255, 255, 0.045);
+  right: -20px;
+  top: 280px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -10px;
+}
+
+/* ── Top content area ── */
+.dv-portada-typo__top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 36px 42px 0;
+}
+
+.dv-portada-typo__wordmark {
+  font-family: 'DM Sans', 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 82px;
+  color: #ffffff;
+  letter-spacing: -2px;
+  line-height: 1;
+  margin-bottom: 6px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dv-portada-typo__tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.92);
+  letter-spacing: 0.01em;
+  margin-bottom: 14px;
+}
+
+.dv-portada-typo__rule {
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.55);
+  margin-bottom: 18px;
+}
+
+.dv-portada-typo__ciudad-line {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 26px;
+  color: #ffffff;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  margin-bottom: 2px;
+  opacity: 0.9;
+}
+
+.dv-portada-typo__city {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 118px;
+  color: #ffffff;
+  letter-spacing: -3px;
+  line-height: 0.88;
+  margin-bottom: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.dv-portada-typo__sub-tagline {
+  font-family: 'Inter', sans-serif;
+  font-size: 16px;
+  font-style: italic;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.01em;
+}
+
+/* ── Bottom strip ── */
+.dv-portada-typo__strip {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 247px;
+  background: #a50057;
+  padding: 24px 42px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.dv-portada-typo__strip-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: 0.12em;
+  font-variant: small-caps;
+  margin-bottom: 4px;
+}
+
+.dv-portada-typo__year-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  line-height: 1;
+}
+
+.dv-portada-typo__year {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  color: #ffffff;
+  letter-spacing: -2px;
+  line-height: 1;
+}
+
+.dv-portada-typo__strip-city {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 46px;
+  color: #ffffff;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  margin-top: -4px;
+}
+
+.dv-portada-typo__strip-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: auto;
+}
+
+.dv-portada-typo__url {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  color: #ffb3d9;
+  letter-spacing: 0.04em;
+}

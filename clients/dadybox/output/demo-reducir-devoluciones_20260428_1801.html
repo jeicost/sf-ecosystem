@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cómo Reducir Devoluciones en tu Ecommerce | Dadybox</title>
+    <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    color: #1A202C;
+    background: #FFFFFF;
+    font-size: 11pt;
+    line-height: 1.7;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
+
+/* PAGE BASE */
+.page {
+    width: 210mm;
+    min-height: 297mm;
+    position: relative;
+    overflow: hidden;
+    page-break-after: always;
+}
+
+/* ─── COVER ─────────────────────────────────────────────── */
+.cover {
+    background: #1C1F3A;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    padding: 18mm 16mm 14mm;
+    height: 297mm;
+}
+
+.cover-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 30mm;
+}
+
+.cover-logo {
+    font-size: 22pt;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #FFFFFF;
+}
+
+.cover-logo span { color: #FF5C2C; }
+
+.cover-badge {
+    background: #FF5C2C;
+    color: #FFFFFF;
+    font-size: 7.5pt;
+    font-weight: 700;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.cover-body { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; }
+
+.cover-label {
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #FF5C2C;
+    margin-bottom: 14px;
+}
+
+.cover-title {
+    font-size: 30pt;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+    margin-bottom: 14px;
+}
+
+.cover-subtitle {
+    font-size: 12.5pt;
+    font-weight: 400;
+    color: rgba(255,255,255,0.72);
+    line-height: 1.55;
+    max-width: 155mm;
+    margin-bottom: 22px;
+}
+
+.cover-divider {
+    width: 48px;
+    height: 3px;
+    background: #FF5C2C;
+    margin-bottom: 22px;
+}
+
+.cover-author {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+    margin-bottom: 14px;
+}
+
+.cover-avatar {
+    width: 42px;
+    height: 42px;
+    background: #FF5C2C;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 13pt;
+    flex-shrink: 0;
+}
+
+.cover-author-name { font-size: 11pt; font-weight: 600; }
+.cover-author-role { font-size: 9pt; color: rgba(255,255,255,0.6); margin-top: 2px; }
+
+.cover-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    color: rgba(255,255,255,0.45);
+}
+
+.cover-accent-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 6px;
+    background: #FF5C2C;
+}
+
+/* ─── TOC ─────────────────────────────────────────────────── */
+.toc-page {
+    background: #FFFFFF;
+    padding: 16mm;
+    display: flex;
+    flex-direction: column;
+}
+
+.toc-header {
+    margin-bottom: 10mm;
+    padding-bottom: 6mm;
+    border-bottom: 3px solid #1C1F3A;
+}
+
+.toc-eyebrow {
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #FF5C2C;
+    margin-bottom: 6px;
+}
+
+.toc-title {
+    font-size: 26pt;
+    font-weight: 800;
+    color: #1C1F3A;
+    line-height: 1.1;
+}
+
+.toc-entries { display: flex; flex-direction: column; gap: 4px; }
+
+.toc-entry {
+    display: flex;
+    align-items: center;
+    padding: 9px 10px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #1A202C;
+    transition: background 0.15s;
+    border: 1px solid transparent;
+}
+
+.toc-entry:hover { background: #F7F9FC; border-color: #E2E8F0; }
+
+.toc-num {
+    width: 30px;
+    height: 30px;
+    background: #1C1F3A;
+    color: #FFFFFF;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9.5pt;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-right: 12px;
+}
+
+.toc-entry.accent .toc-num { background: #FF5C2C; }
+
+.toc-info { flex: 1; }
+.toc-section-title { font-size: 11pt; font-weight: 600; color: #1A202C; }
+.toc-section-desc { font-size: 8.5pt; color: #718096; margin-top: 1px; }
+.toc-arrow { color: #E2E8F0; font-size: 12pt; flex-shrink: 0; }
+
+/* ─── CONTENT PAGES ─────────────────────────────────────── */
+.content-page {
+    background: #FFFFFF;
+    padding: 14mm 16mm 18mm;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 8px;
+    margin-bottom: 9mm;
+    border-bottom: 3px solid #FF5C2C;
+}
+
+.page-header-chapter {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #1C1F3A;
+}
+
+.page-header-logo {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #718096;
+}
+
+.page-footer {
+    position: absolute;
+    bottom: 11mm;
+    left: 16mm;
+    right: 16mm;
+    display: flex;
+    justify-content: space-between;
+    font-size: 7.5pt;
+    color: #E2E8F0;
+    border-top: 1px solid #E2E8F0;
+    padding-top: 5px;
+}
+
+/* Chapter title block */
+.chapter-label {
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #FF5C2C;
+    margin-bottom: 8px;
+}
+
+.chapter-title {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #1C1F3A;
+    line-height: 1.2;
+    margin-bottom: 5mm;
+}
+
+.chapter-intro {
+    font-size: 11.5pt;
+    color: #4A5568;
+    line-height: 1.7;
+    border-left: 4px solid #FF5C2C;
+    padding-left: 14px;
+    margin-bottom: 7mm;
+    font-style: italic;
+}
+
+.section-title {
+    font-size: 13.5pt;
+    font-weight: 700;
+    color: #1C1F3A;
+    margin-top: 7mm;
+    margin-bottom: 3mm;
+}
+
+.section-content {
+    font-size: 10.5pt;
+    line-height: 1.75;
+    color: #2D3748;
+    margin-bottom: 4mm;
+}
+
+.bullet-list { list-style: none; margin: 3mm 0; }
+.bullet-list li {
+    padding: 5px 0 5px 20px;
+    position: relative;
+    font-size: 10.5pt;
+    line-height: 1.6;
+}
+.bullet-list li::before {
+    content: "▸";
+    position: absolute;
+    left: 0;
+    color: #FF5C2C;
+}
+
+/* ─── CALLOUT BOXES ──────────────────────────────────────── */
+.tip-box {
+    background: #FFF4F0;
+    border-left: 4px solid #FF5C2C;
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+
+.tip-box-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #FF5C2C;
+    margin-bottom: 5px;
+}
+
+.tip-box-content { font-size: 10pt; color: #2D3748; line-height: 1.6; }
+
+.stat-box {
+    background: #EBF8FF;
+    border: 1px solid #BEE3F8;
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin: 5mm 0;
+    text-align: center;
+    page-break-inside: avoid;
+}
+
+.stat-value {
+    font-size: 38pt;
+    font-weight: 900;
+    color: #1C1F3A;
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-label { font-size: 10.5pt; color: #2D3748; margin-bottom: 5px; font-weight: 500; }
+.stat-source { font-size: 8pt; color: #718096; font-style: italic; }
+
+/* ─── CASE STUDIES ───────────────────────────────────────── */
+.case-study {
+    background: #F7F9FC;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 5mm 0;
+    page-break-inside: avoid;
+}
+
+.case-study-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.case-badge {
+    background: #1C1F3A;
+    color: #FFFFFF;
+    font-size: 7.5pt;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.case-industry { font-size: 8.5pt; color: #718096; }
+.case-title { font-size: 12.5pt; font-weight: 700; color: #1C1F3A; margin-bottom: 8px; }
+
+.case-row { display: flex; gap: 10px; margin-top: 8px; }
+
+.case-block {
+    flex: 1;
+    background: #FFFFFF;
+    border-radius: 7px;
+    padding: 10px 12px;
+}
+
+.case-block-label {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+.case-block-label.challenge { color: #C53030; }
+.case-block-label.solution  { color: #2B6CB0; }
+.case-block-label.result    { color: #276749; }
+.case-block-text { font-size: 9.5pt; color: #2D3748; line-height: 1.5; }
+
+/* ─── CHECKLIST ──────────────────────────────────────────── */
+.checklist-category {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #1C1F3A;
+    margin-top: 5mm;
+    margin-bottom: 3mm;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #E2E8F0;
+}
+
+.checklist-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 8px;
+    border-radius: 6px;
+    margin-bottom: 3px;
+}
+
+.checklist-item:nth-child(even) { background: #F7F9FC; }
+
+.checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #E2E8F0;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    background: #FFFFFF;
+}
+
+.checklist-text { font-size: 10pt; color: #2D3748; line-height: 1.5; }
+
+/* ─── RESOURCES ──────────────────────────────────────────── */
+.resource-grid { display: flex; flex-wrap: wrap; gap: 8px; margin: 4mm 0; }
+
+.resource-card {
+    flex: 1;
+    min-width: 45%;
+    background: #F7F9FC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 12px;
+}
+
+.resource-type {
+    font-size: 7.5pt;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #718096;
+    margin-bottom: 4px;
+}
+
+.resource-name { font-size: 11pt; font-weight: 600; color: #1C1F3A; margin-bottom: 4px; }
+.resource-desc { font-size: 9pt; color: #4A5568; line-height: 1.5; }
+
+/* ─── TAKEAWAYS ──────────────────────────────────────────── */
+.takeaways {
+    background: #F7F9FC;
+    border-radius: 10px;
+    padding: 16px;
+    margin: 5mm 0;
+}
+
+.takeaways-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #1C1F3A;
+    margin-bottom: 10px;
+}
+
+.takeaway-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid #E2E8F0;
+}
+
+.takeaway-item:last-child { border-bottom: none; }
+.takeaway-icon { color: #FF5C2C; font-size: 12pt; flex-shrink: 0; line-height: 1.6; }
+.takeaway-text { font-size: 10pt; color: #2D3748; line-height: 1.6; }
+
+/* ─── CTA PAGE ───────────────────────────────────────────── */
+.cta-page {
+    background: #1C1F3A;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20mm;
+    height: 297mm;
+    position: relative;
+}
+
+.cta-eyebrow {
+    font-size: 8.5pt;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #FF5C2C;
+    margin-bottom: 16px;
+}
+
+.cta-title {
+    font-size: 26pt;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 16px;
+}
+
+.cta-desc {
+    font-size: 12pt;
+    color: rgba(255,255,255,0.72);
+    max-width: 135mm;
+    margin: 0 auto 28px;
+    line-height: 1.6;
+}
+
+.cta-button {
+    display: inline-block;
+    background: #FF5C2C;
+    color: #FFFFFF;
+    font-size: 12pt;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 50px;
+    text-decoration: none;
+    margin-bottom: 16px;
+}
+
+.cta-url { font-size: 10pt; color: rgba(255,255,255,0.45); margin-bottom: 30px; }
+
+.cta-pills {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cta-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 8.5pt;
+    color: rgba(255,255,255,0.75);
+}
+
+/* ─── BACK COVER ─────────────────────────────────────────── */
+.back-cover {
+    background: #1C1F3A;
+    color: #FFFFFF;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20mm;
+    height: 297mm;
+    position: relative;
+}
+
+.back-logo { font-size: 26pt; font-weight: 800; margin-bottom: 8px; }
+.back-logo span { color: #FF5C2C; }
+.back-tagline { font-size: 13pt; color: rgba(255,255,255,0.65); margin-bottom: 24px; }
+
+.back-services {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.back-service {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 9pt;
+    color: rgba(255,255,255,0.8);
+}
+
+.back-divider {
+    width: 50px;
+    height: 3px;
+    background: #FF5C2C;
+    margin: 16px auto 20px;
+}
+
+.back-website { font-size: 14pt; font-weight: 600; margin-bottom: 6px; }
+.back-contact { font-size: 9.5pt; color: rgba(255,255,255,0.5); }
+
+.accent-bar-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: #FF5C2C;
+}
+
+.accent-bar-bottom {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: #FF5C2C;
+}
+</style>
+</head>
+<body>
+    
+<div class="page cover" id="portada">
+    <div class="cover-top">
+        <div class="cover-logo">Dady<span>box</span></div>
+        <div class="cover-badge">Playbook Gratuito</div>
+    </div>
+    <div class="cover-body">
+        <div class="cover-label">Logística & Ecommerce</div>
+        <div class="cover-title">Cómo Reducir Devoluciones en tu Ecommerce</div>
+        <div class="cover-subtitle">Guía práctica para bajar tu tasa de retorno, proteger tu margen y convertir devoluciones en oportunidades de fidelización</div>
+        <div class="cover-divider"></div>
+        <div class="cover-author">
+            <div class="cover-avatar">NA</div>
+            <div>
+                <div class="cover-author-name">Natalia Aldea</div>
+                <div class="cover-author-role">Directora de Marketing, Dadybox</div>
+            </div>
+        </div>
+        <div class="cover-footer">
+            <span>dadybox.com</span>
+            <span>Abril 2026</span>
+        </div>
+    </div>
+    <div class="cover-accent-bar"></div>
+</div>
+
+    
+<div class="page toc-page" id="indice">
+    <div class="toc-header">
+        <div class="toc-eyebrow">Contenidos</div>
+        <div class="toc-title">Índice</div>
+    </div>
+    <div class="toc-entries">
+        <a class="toc-entry" href="#intro">
+            <div class="toc-num">01</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Introducción</div>
+                <div class="toc-section-desc">Carta de Natalia Aldea</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#contexto">
+            <div class="toc-num">02</div>
+            <div class="toc-info">
+                <div class="toc-section-title">El contexto del sector</div>
+                <div class="toc-section-desc">Por qué importa este tema ahora</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-1">
+            <div class="toc-num">03</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Diagnóstica: ¿por qué te devuelven?</div>
+                <div class="toc-section-desc">Antes de solucionar el problema hay que entenderlo. La mayoría de ecom...</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry accent" href="#capitulo-2">
+            <div class="toc-num">04</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Fichas de producto que venden (y no generan devoluciones)</div>
+                <div class="toc-section-desc">Una ficha de producto bien construida es la mejor herramienta para red...</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-3">
+            <div class="toc-num">05</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Política de devoluciones que fideliza</div>
+                <div class="toc-section-desc">Una política de devoluciones bien diseñada no es solo un texto legal —...</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#capitulo-4">
+            <div class="toc-num">06</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Logística inversa: reducir costes al procesar retornos</div>
+                <div class="toc-section-desc">Una vez que la devolución es inevitable, el objetivo es procesarla al ...</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#casos">
+            <div class="toc-num">07</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Casos prácticos</div>
+                <div class="toc-section-desc">Escenarios reales del sector</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry accent" href="#checklist">
+            <div class="toc-num">08</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Checklist accionable</div>
+                <div class="toc-section-desc">Tu plan de implementación paso a paso</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#recursos">
+            <div class="toc-num">09</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Recursos recomendados</div>
+                <div class="toc-section-desc">Herramientas y referencias útiles</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a>
+        <a class="toc-entry" href="#conclusion">
+            <div class="toc-num">10</div>
+            <div class="toc-info">
+                <div class="toc-section-title">Conclusión</div>
+                <div class="toc-section-desc">Próximos pasos con Dadybox</div>
+            </div>
+            <div class="toc-arrow">›</div>
+        </a></div>
+</div>
+
+    
+<div class="page content-page" id="intro">
+    <div class="page-header">
+        <span class="page-header-chapter">Introducción</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Carta de la autora</div>
+    <div class="chapter-title">Bienvenida</div>
+    <div class="section-content" style="white-space: pre-line;">Hola,
+
+Si estás leyendo esto, probablemente las devoluciones te están quitando el sueño. No eres el único. En Dadybox llevamos años trabajando con cientos de ecommerces españoles y el tema de los retornos aparece en casi todas las conversaciones.
+
+La realidad es que una tasa de devolución alta no es solo un problema de logística: es un síntoma. Puede indicar problemas en las fichas de producto, en las expectativas del cliente, en el embalaje o incluso en la selección de proveedores. Este playbook te ayuda a diagnosticar la raíz del problema y actuar con un plan concreto.
+
+He reunido aquí las estrategias que mejor funcionan en el mercado español, con datos reales y pasos accionables que puedes empezar a implementar esta semana. Sin teoría vacía, solo lo que funciona en la práctica.
+
+¡Manos a la obra!
+
+Natalia Aldea</div>
+    <ul class='bullet-list'><li>Cómo diagnosticar el origen real de tus devoluciones</li><li>Las fichas de producto que reducen las expectativas incorrectas</li><li>Cómo diseñar una política de devoluciones que fideliza en vez de asustar</li><li>Automatización y logística inversa para minimizar costes operativos</li></ul>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page content-page" id="contexto">
+    <div class="page-header">
+        <span class="page-header-chapter">El contexto del sector</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Por qué importa ahora</div>
+    <div class="chapter-title">Las devoluciones: el gran desafío del ecommerce moderno</div>
+    <div class="chapter-intro">El 30% de todo lo que se compra online en Europa acaba siendo devuelto. En moda, ese número sube al 50%.</div>
+    <div class="section-content">El ecommerce europeo cerró 2024 con un volumen de ventas superior a los 900.000 millones de euros, pero una parte significativa de ese dinero se evapora en gestión de retornos. Según datos de Statista, el coste medio de procesar una devolución en España oscila entre 8 y 15 euros por unidad, sin contar el impacto en el inventario ni la pérdida de valor del producto.
+
+El consumidor online español se ha acostumbrado a las devoluciones gratuitas. Amazon, Zara y Zalando han creado una expectativa de 'si no me gusta, lo devuelvo sin coste'. El problema: la mayoría de los ecommerces independientes no tienen el margen para absorber ese coste, y sin embargo sienten la presión de igualar esas condiciones para ser competitivos.
+
+La buena noticia: no todas las devoluciones son inevitables. El 65% de las devoluciones en ecommerce de producto físico se deben a causas prevenibles — fichas de producto incompletas, tallas confusas, fotos que no reflejan la realidad o embalajes que no protegen suficientemente el envío.</div>
+    
+        <div class="stat-box">
+            <div class="stat-value">30%</div>
+            <div class="stat-label">de las compras online en Europa son devueltas — en moda llega al 50%</div>
+            <div class="stat-source">Fuente: Statista, European E-Commerce Report 2024</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">65%</div>
+            <div class="stat-label">de las devoluciones son prevenibles con mejoras en ficha de producto y embalaje</div>
+            <div class="stat-source">Fuente: Narvar Consumer Report 2024</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-value">12€</div>
+            <div class="stat-label">coste medio de procesar una devolución en España (sin contar devaluación del stock)</div>
+            <div class="stat-source">Fuente: Ecommerce Europe, 2024</div>
+        </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page content-page" id="capitulo-1">
+    <div class="page-header">
+        <span class="page-header-chapter">Capítulo 01</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Capítulo 01</div>
+    <div class="chapter-title">Diagnóstica: ¿por qué te devuelven?</div>
+    <div class="chapter-intro">Antes de solucionar el problema hay que entenderlo. La mayoría de ecommerces reacciona a las devoluciones sin analizar sus causas — y acaban tomando decisiones a ciegas.</div>
+    
+        <div class="section-title">Clasificar el motivo de cada devolución</div>
+        <div class="section-content">El primer paso es obligar al cliente a seleccionar un motivo de devolución. Parece obvio, pero muchos ecommerces no lo hacen — o tienen categorías tan genéricas que no sirven para tomar decisiones. Define al menos estas categorías: 'no coincide con la descripción', 'talla/medida incorrecta', 'defecto o rotura', 'llegó tarde', 'cambié de opinión' y 'regalo no deseado'.
+
+Revisa estos datos cada semana. Si el 40% de tus devoluciones en una categoría de producto son por 'no coincide con la descripción', tienes un problema de ficha de producto — no de logística. Esa es la palanca donde actuar.</div>
+        <ul class='bullet-list'><li>Implementa un formulario de motivo obligatorio en el proceso de devolución</li><li>Exporta y analiza los datos por SKU, categoría y proveedor mensualmente</li><li>Identifica los 10 productos con mayor tasa de devolución — ahí está el 80% del problema</li></ul>
+        
+        <div class="section-title">El análisis por cohortes: qué perfil de cliente devuelve más</div>
+        <div class="section-content">No todos los clientes son iguales. Los datos de Dadybox con sus clientes muestran que entre el 10-15% de los compradores generan más del 60% de las devoluciones. Identificar ese segmento te permite tomar decisiones específicas: ¿ofrecerles condiciones distintas? ¿mejorar la comunicación previa a la compra?
+
+Cruza las devoluciones con el canal de adquisición. Los clientes que llegan por ciertos anuncios de redes sociales tienden a devolver más porque las expectativas generadas no siempre coinciden con el producto real.</div>
+        <ul class='bullet-list'><li>Segmenta devoluciones por canal de adquisición (orgánico, paid, marketplace)</li><li>Calcula el 'return rate' por cohorte de primera compra</li><li>Cruza devoluciones con el tiempo entre compra y llegada del pedido</li></ul>
+        
+    
+        <div class="stat-box">
+            <div class="stat-value">10%</div>
+            <div class="stat-label">de los clientes generan el 60% de las devoluciones en ecommerce</div>
+            <div class="stat-source">Fuente: Narvar, 2024</div>
+        </div>
+    
+        <div class="tip-box">
+            <div class="tip-box-label">💡 Tip Dadybox</div>
+            <div class="tip-box-content">Desde el panel de Dadybox puedes exportar el historial completo de devoluciones con SKU, motivo y fecha. Usa ese CSV como base para tu análisis mensual — te ahorra horas de trabajo manual.</div>
+        </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+<div class="page content-page" id="capitulo-2">
+    <div class="page-header">
+        <span class="page-header-chapter">Capítulo 02</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Capítulo 02</div>
+    <div class="chapter-title">Fichas de producto que venden (y no generan devoluciones)</div>
+    <div class="chapter-intro">Una ficha de producto bien construida es la mejor herramienta para reducir devoluciones antes de que ocurran. Cada punto de fricción o duda del cliente en la ficha es una devolución potencial.</div>
+    
+        <div class="section-title">Los elementos que no pueden faltar</div>
+        <div class="section-content">El estándar mínimo para una ficha de producto que reduce devoluciones incluye: mínimo 5 fotos (frontal, trasera, detalle, escala con persona u objeto, y contexto de uso), vídeo del producto en uso cuando sea posible, tabla de tallas o medidas exactas en cm/mm, descripción de materiales con tacto o textura cuando aplique, y reseñas con foto verificadas.
+
+Las reseñas con foto de clientes reales son especialmente valiosas: reducen la incertidumbre sobre cómo queda el producto en condiciones reales. Los ecommerces que las implementan ven reducciones de devolución de entre el 8 y el 15%.</div>
+        <ul class='bullet-list'><li>Fotografía siempre el producto sobre modelo o en contexto real, no sobre fondo blanco solo</li><li>Incluye un vídeo corto (15-30s) mostrando el producto desde todos los ángulos</li><li>Añade una sección de 'Preguntas frecuentes' por producto con las dudas más comunes</li></ul>
+        
+        <div class="section-title">Guías de tallas que funcionan</div>
+        <div class="section-content">En moda y calzado, el 35% de las devoluciones se deben a talla incorrecta. Una guía de tallas bien diseñada puede reducir ese porcentaje a la mitad. La clave está en dar medidas en centímetros además de las tallas estándar (S/M/L), explicar cómo medir correctamente con instrucciones visuales, y añadir notas sobre si la prenda 'talla grande' o 'talla pequeño'.
+
+Mejor aún: implementa un configurador de talla basado en altura, peso y medidas del cliente. Herramientas como Fit Analytics o True Fit integran con los principales CMS en menos de una semana.</div>
+        <ul class='bullet-list'><li>Siempre medidas en cm además de las tallas estándar</li><li>Añade una nota de 'talla arriba/abajo' en cada producto si aplica</li><li>Considera implementar un configurador de talla con IA — ROI en 2-3 meses</li></ul>
+        
+    
+        <div class="stat-box">
+            <div class="stat-value">35%</div>
+            <div class="stat-label">de las devoluciones en moda se deben a talla incorrecta — prevenibles con buenas fichas</div>
+            <div class="stat-source">Fuente: Zalando Sustainability Report 2024</div>
+        </div>
+    
+        <div class="tip-box">
+            <div class="tip-box-label">💡 Tip Dadybox</div>
+            <div class="tip-box-content">Si vendes en múltiples canales, Dadybox centraliza el stock y la información de producto. Cualquier mejora en ficha se refleja automáticamente en todos los canales conectados — Shopify, Amazon, WooCommerce y más.</div>
+        </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+<div class="page content-page" id="capitulo-3">
+    <div class="page-header">
+        <span class="page-header-chapter">Capítulo 03</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Capítulo 03</div>
+    <div class="chapter-title">Política de devoluciones que fideliza</div>
+    <div class="chapter-intro">Una política de devoluciones bien diseñada no es solo un texto legal — es una herramienta de marketing y fidelización. El 67% de los compradores revisa la política antes de comprar.</div>
+    
+        <div class="section-title">Los elementos de una política que convierte</div>
+        <div class="section-content">La política de devoluciones perfecta tiene tres características: es clara (sin letra pequeña ni excepciones confusas), es fácil de encontrar (en el footer, en la ficha de producto y en el email de confirmación de pedido), y genera confianza (refleja que confías en tus clientes y en tu producto).
+
+No tienes que ofrecer devolución gratuita para todos los casos, pero sí tienes que ser transparente sobre las condiciones. Un cliente que sabe exactamente qué puede esperar es menos probable que acabe frustrado y devuelva.</div>
+        <ul class='bullet-list'><li>Plazo claro: 30 días es el estándar mínimo competitivo en España</li><li>Proceso en máximo 3 pasos — sin formularios interminables ni llamadas telefónicas</li><li>Comunica en cuántos días se procesa el reembolso — la incertidumbre genera reclamaciones</li></ul>
+        
+        <div class="section-title">Cambiar el reembolso por crédito: cómo hacerlo bien</div>
+        <div class="section-content">Ofrecer crédito en tienda en vez de reembolso monetario puede ser una ventaja competitiva si se presenta correctamente. La clave: el crédito debe tener más valor que el reembolso — por ejemplo, un 110% del valor devuelto como crédito vs. el 100% en efectivo.
+
+Los ecommerces que lo implementan bien ven tasas de aceptación del crédito superiores al 40%, lo que convierte una pérdida en una venta futura. El truco está en comunicarlo como una ventaja para el cliente, no como una limitación.</div>
+        <ul class='bullet-list'><li>Ofrece siempre las dos opciones: crédito (con ventaja) o reembolso estándar</li><li>El crédito debe tener caducidad razonable — mínimo 12 meses</li><li>Envía un email recordatorio cuando queden 30 días para que expire el crédito</li></ul>
+        
+    
+        <div class="stat-box">
+            <div class="stat-value">67%</div>
+            <div class="stat-label">de los compradores online revisa la política de devoluciones antes de comprar</div>
+            <div class="stat-source">Fuente: UPS Pulse of the Online Shopper, 2024</div>
+        </div>
+    
+        <div class="tip-box">
+            <div class="tip-box-label">💡 Tip Dadybox</div>
+            <div class="tip-box-content">Con Dadybox puedes automatizar el proceso completo de devolución: el cliente solicita el retorno, recibe la etiqueta automáticamente y tú recibes una notificación cuando el paquete está en camino. Sin gestión manual.</div>
+        </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+<div class="page content-page" id="capitulo-4">
+    <div class="page-header">
+        <span class="page-header-chapter">Capítulo 04</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Capítulo 04</div>
+    <div class="chapter-title">Logística inversa: reducir costes al procesar retornos</div>
+    <div class="chapter-intro">Una vez que la devolución es inevitable, el objetivo es procesarla al menor coste posible y recuperar el máximo valor del producto. Aquí la operativa marca la diferencia.</div>
+    
+        <div class="section-title">El flujo ideal de logística inversa</div>
+        <div class="section-content">Un buen proceso de logística inversa tiene cinco etapas bien definidas: recepción, inspección, clasificación (reventa / liquidación / desecho), reposición en stock y confirmación del reembolso al cliente. Cada etapa debe tener un responsable y un SLA.
+
+El mayor error es mezclar el flujo de devoluciones con el flujo de entrada de nuevo stock. Son dos procesos diferentes con criterios de calidad distintos. Cuando se mezclan, el resultado es caos operativo y errores de inventario que generan nuevos problemas.</div>
+        <ul class='bullet-list'><li>Define un área física separada en tu almacén (o habla con tu 3PL) para procesar retornos</li><li>Establece un SLA de inspección: máximo 48h desde recepción hasta clasificación</li><li>Documenta fotográficamente el estado del producto recibido — protege ante reclamaciones</li></ul>
+        
+        <div class="section-title">Recuperar valor: qué hacer con cada tipo de retorno</div>
+        <div class="section-content">No todo lo que vuelve merece el mismo tratamiento. Un producto en perfecto estado puede volver al stock en 24h. Uno con embalaje dañado puede liquidarse como 'outlet'. Uno defectuoso puede reclamarse al proveedor o donarse.
+
+El objetivo es maximizar el valor recuperado. Según datos del sector, los ecommerces que tienen un proceso estructurado de clasificación recuperan hasta un 30% más de valor en sus retornos que los que lo gestionan de forma ad hoc.</div>
+        <ul class='bullet-list'><li>Crea al menos 3 categorías: apto para reventa / outlet / no recuperable</li><li>Para outlet: un canal de venta específico (web secundaria, marketplace) con precios claros</li><li>Para no recuperable: acuerdo con ONG local — deducción fiscal y buena imagen de marca</li></ul>
+        
+    
+        <div class="stat-box">
+            <div class="stat-value">30%</div>
+            <div class="stat-label">más valor recuperado en retornos con un proceso estructurado de clasificación</div>
+            <div class="stat-source">Fuente: Reverse Logistics Association, 2024</div>
+        </div>
+    
+        <div class="tip-box">
+            <div class="tip-box-label">💡 Tip Dadybox</div>
+            <div class="tip-box-content">El SGA de Dadybox gestiona el flujo completo de logística inversa: recepción automática del retorno, inspección guiada con checklist digital, reclasificación de stock y notificación automática al cliente. Todo en un solo panel.</div>
+        </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page content-page" id="casos">
+    <div class="page-header">
+        <span class="page-header-chapter">Casos prácticos</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Del mundo real</div>
+    <div class="chapter-title">Escenarios y ejemplos</div>
+    
+        <div class="case-study">
+            <div class="case-study-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Moda & Accesorios</span>
+            </div>
+            <div class="case-title">Ecommerce de moda reduce devoluciones un 28% en 90 días</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label challenge">El reto</div>
+                    <div class="case-block-text">Una tienda online de moda femenina con 15.000 pedidos al mes tenía una tasa de devolución del 38%, muy por encima del sector. El 70% de los motivos eran 'no coincide con la descripción' y 'talla incorrecta'. Su margen estaba siendo destruido por el coste de los retornos.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label solution">La solución</div>
+                    <div class="case-block-text">Implementaron una guía de tallas con medidas en cm en todos los productos, añadieron fotos en modelo con indicación de talla usada, y pusieron en marcha un chat de asesoramiento de talla antes del checkout. El proceso de devolución se automatizó completamente con Dadybox.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label result">El resultado</div>
+                    <div class="case-block-text">En 90 días la tasa de devolución bajó del 38% al 27,4%. El coste de gestión de retornos se redujo un 40% gracias a la automatización. La puntuación de satisfacción del cliente (NPS) subió 12 puntos porque el proceso de devolución se volvió más fluido.</div>
+                </div>
+            </div>
+        </div>
+        <div class="case-study">
+            <div class="case-study-header">
+                <span class="case-badge">Caso práctico</span>
+                <span class="case-industry">Electrónica & Tecnología</span>
+            </div>
+            <div class="case-title">Electrónica: de la devolución al cambio de producto</div>
+            <div class="case-row">
+                <div class="case-block">
+                    <div class="case-block-label challenge">El reto</div>
+                    <div class="case-block-text">Un ecommerce de electrónica veía cómo el 22% de los pedidos de accesorios para móvil eran devueltos — casi siempre porque el cliente había comprado la versión incorrecta para su modelo de teléfono. La confusión en el catálogo era el problema central.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label solution">La solución</div>
+                    <div class="case-block-text">Rediseñaron el flujo de compra con un selector de modelo de teléfono antes de añadir al carrito. Las fichas de producto se reorganizaron para mostrar primero la compatibilidad. Cuando un cliente intentaba devolver por incompatibilidad, se le ofrecía automáticamente el cambio por la versión correcta.</div>
+                </div>
+                <div class="case-block">
+                    <div class="case-block-label result">El resultado</div>
+                    <div class="case-block-text">Las devoluciones por incompatibilidad cayeron un 74%. El 35% de los casos que antes eran devoluciones se convirtieron en cambios de producto. El ticket medio subió un 8% porque el proceso guiado sugería accesorios compatibles adicionales.</div>
+                </div>
+            </div>
+        </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page content-page" id="checklist">
+    <div class="page-header">
+        <span class="page-header-chapter">Checklist accionable</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Tu plan de acción</div>
+    <div class="chapter-title">Tu plan de implementación: 30 días para reducir devoluciones</div>
+    <div class="checklist-container">
+        <div class="checklist-category">Semana 1 — Diagnóstico</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Activa el campo de motivo obligatorio en el proceso de devolución</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Exporta las devoluciones de los últimos 3 meses y clasifica por motivo</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Identifica los 10 SKUs con mayor tasa de devolución</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Analiza devoluciones por canal de adquisición (orgánico vs. paid)</div>
+            </div>
+        <div class="checklist-category">Semana 2 — Fichas de producto</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Actualiza las fichas de los 10 productos con mayor devolución (fotos, medidas, FAQ)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Añade guía de tallas con cm en todas las categorías de moda o calzado</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Graba vídeos cortos (15-30s) para los 5 productos más devueltos</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Implementa el sistema de reseñas con foto verificada</div>
+            </div>
+        <div class="checklist-category">Semana 3 — Política y proceso</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Revisa y simplifica la política de devoluciones (máximo 3 pasos)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Añade la política en la ficha de producto y en el email de confirmación</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Configura la opción de crédito en tienda como alternativa al reembolso</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Automatiza el envío de etiqueta de devolución (sin necesidad de llamar)</div>
+            </div>
+        <div class="checklist-category">Semana 4 — Operativa y medición</div>
+        
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Define el flujo físico de logística inversa en tu almacén o con tu 3PL</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Establece las 3 categorías de clasificación (reventa / outlet / no recuperable)</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Configura el dashboard de seguimiento de tasa de devolución por SKU</div>
+            </div>
+            <div class="checklist-item">
+                <div class="checkbox"></div>
+                <div class="checklist-text">Programa revisión mensual de datos de devoluciones para ajuste continuo</div>
+            </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page content-page" id="recursos">
+    <div class="page-header">
+        <span class="page-header-chapter">Recursos recomendados</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Para ir más lejos</div>
+    <div class="chapter-title">Herramientas y referencias</div>
+    <div class="resource-grid">
+        <div class="resource-card">
+            <div class="resource-type">Informe</div>
+            <div class="resource-name">Narvar Consumer Report</div>
+            <div class="resource-desc">Informe anual sobre comportamiento del consumidor online europeo, con datos específicos sobre devoluciones y expectativas de servicio.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Fit Analytics / True Fit</div>
+            <div class="resource-desc">Herramientas de recomendación de talla con IA. Integración directa con Shopify y WooCommerce. ROI típico en 2-3 meses.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Plataforma</div>
+            <div class="resource-name">Returnly / Loop Returns</div>
+            <div class="resource-desc">Plataformas especializadas en gestión de devoluciones con portal de cliente, automatización de etiquetas y gestión de créditos.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Google Analytics 4 — Análisis de embudo</div>
+            <div class="resource-desc">Usa los eventos de GA4 para rastrear en qué punto del funnel el cliente empieza a dudar — esas dudas sin resolver generan devoluciones.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Plataforma</div>
+            <div class="resource-name">Trustpilot / Stamped.io</div>
+            <div class="resource-desc">Plataformas de reseñas verificadas con foto. Las reseñas visuales de clientes reales reducen la tasa de devolución entre un 8-15%.</div>
+        </div>
+        <div class="resource-card">
+            <div class="resource-type">Herramienta</div>
+            <div class="resource-name">Panel SGA Dadybox</div>
+            <div class="resource-desc">Tu herramienta de control para ver el estado de cada devolución en tiempo real, exportar datos por SKU y automatizar el proceso completo.</div>
+        </div></div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page content-page" id="conclusion">
+    <div class="page-header">
+        <span class="page-header-chapter">Conclusión</span>
+        <span class="page-header-logo">dadybox.com</span>
+    </div>
+    <div class="chapter-label">Para terminar</div>
+    <div class="chapter-title">Próximos pasos</div>
+    <div class="section-content">Las devoluciones nunca van a desaparecer del todo — son parte del contrato implícito del ecommerce. Pero la diferencia entre un negocio que sangra margen y uno que lo protege está en cómo gestionas cada una de las palancas que hemos visto en este playbook.
+
+Lo más importante que puedes llevarte es esto: la mayoría de tus devoluciones tienen una causa raíz identificable y, en muchos casos, prevenible. El diagnóstico es el primer paso imprescindible. Sin datos, cualquier acción es un disparo a ciegas.
+
+Empieza por los 10 productos con mayor tasa de devolución. Mejora sus fichas. Automatiza el proceso. Mide. Ajusta. En 90 días verás resultados concretos.</div>
+    <div class="takeaways">
+        <div class="takeaways-title">Lo que debes recordar</div>
+        
+        <div class="takeaway-item">
+            <div class="takeaway-icon">✓</div>
+            <div class="takeaway-text">El 65% de las devoluciones son prevenibles con mejoras en ficha de producto</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-icon">✓</div>
+            <div class="takeaway-text">Diagnostica antes de actuar: los datos de motivo son tu brújula</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-icon">✓</div>
+            <div class="takeaway-text">Una buena política de devoluciones convierte la incertidumbre en confianza de compra</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-icon">✓</div>
+            <div class="takeaway-text">El crédito en tienda bien ofrecido convierte pérdidas en ventas futuras</div>
+        </div>
+        <div class="takeaway-item">
+            <div class="takeaway-icon">✓</div>
+            <div class="takeaway-text">La logística inversa estructurada puede recuperar hasta un 30% más de valor en retornos</div>
+        </div>
+    </div>
+    <div class="page-footer">
+        <span>dadybox.com</span>
+        <span>Natalia Aldea</span>
+    </div>
+</div>
+
+    
+<div class="page cta-page" id="cta">
+    <div class="cta-eyebrow">Siguiente paso</div>
+    <div class="cta-title">¿Listo para reducir tus devoluciones con la logística adecuada?</div>
+    <div class="cta-desc">En Dadybox te ayudamos a implementar todo lo que has aprendido: automatización de retornos, SGA con gestión de logística inversa y soporte de un equipo experto en ecommerce.</div>
+    <a class="cta-button" href="https://dadybox.com/contacto">Reserva tu llamada gratuita</a>
+    <div class="cta-url">dadybox.com</div>
+    <div class="cta-pills"><div class="cta-pill">Fulfillment 3PL</div><div class="cta-pill">Envíos 24h y Premium</div><div class="cta-pill">Gestión de devoluciones</div><div class="cta-pill">Sistema de gestión de almacén</div><div class="cta-pill">Integraciones omnicanal</div></div>
+    <div class="accent-bar-bottom"></div>
+</div>
+
+    
+<div class="page back-cover">
+    <div class="accent-bar-top"></div>
+    <div class="back-logo">Dady<span>box</span></div>
+    <div class="back-tagline">Tu logística, nuestra magia.</div>
+    <div class="back-services"><div class="back-service">Fulfillment 3PL</div><div class="back-service">Envíos 24h y Premium</div><div class="back-service">Gestión de devoluciones</div><div class="back-service">Sistema de gestión de almacén</div><div class="back-service">Integraciones omnicanal</div></div>
+    <div class="back-divider"></div>
+    <div class="back-website">dadybox.com</div>
+    <div class="back-contact">comercial@dadybox.com · +34 913 775 242</div>
+</div>
+
+</body>
+</html>

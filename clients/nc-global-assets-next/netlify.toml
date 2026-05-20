@@ -1,0 +1,12 @@
+[build]
+  command = "npm run build"
+  publish = "out"
+
+[build.environment]
+  NODE_VERSION = "20"
+  NEXT_PUBLIC_SITE_URL = "https://www.ncglobalassets.com"
+
+[[redirects]]
+  from = "/*"
+  to = "/404.html"
+  status = 404

@@ -1,0 +1,177 @@
+{
+  "client_name": "Dadybox",
+  "slug": "dadybox",
+  "tagline": "Tu logística, nuestra magia.",
+  "tagline_secondary": "Envíos sin dramas. Fulfillment 3PL para e-commerce.",
+  "industry": "E-commerce Logistics / Fulfillment 3PL / Spain",
+  "mission": "La externalización logística que hace crecer tu e-commerce. Orden, control y capacidad real para escalar con la tranquilidad de una estructura experta.",
+  "positioning": "La operadora logística 3PL especializada en ecommerce y pymes españolas que combina 36 años de experiencia grupal con onboarding en 48-72h y atención personalizada.",
+  "key_stats": {
+    "clients": "+300 clientes activos",
+    "shipments": "+400.000 envíos/año",
+    "on_time": "97% entregas a tiempo",
+    "sla": "94,5% SLA",
+    "experience": "36 años experiencia del grupo",
+    "network": "+12.000 Parcel Shops · +650 lockers"
+  },
+  "services": [
+    { "name": "Plan Despegue", "volume": "Hasta 1.200 envíos/año", "tagline": "Perfecto para validar tu e-commerce sin complicarte con la logística." },
+    { "name": "Plan Turbo", "volume": "1.200 – 5.000 envíos/año", "tagline": "El equilibrio perfecto entre coste, velocidad y control operativo.", "featured": true },
+    { "name": "Plan Galaxia", "volume": "Más de 5.000 envíos/año", "tagline": "Para operadores con volumen y necesidades específicas de escala." }
+  ],
+  "audience_primary": {
+    "name": "El Founder de E-commerce",
+    "age": "28-42",
+    "location": "España",
+    "pain": "El negocio crece pero la logística ya no acompaña. Stock desactualizado, procesos manuales, sin visibilidad real. Las campañas saturan picking y packing.",
+    "desire": "Externalizar la logística en 48-72h, escalar sin drama en Black Friday y tener un gestor de cuenta que realmente entienda el negocio.",
+    "channels": ["LinkedIn", "Instagram", "Google Search"]
+  },
+  "audience_secondary": {
+    "name": "El E-commerce Manager / Operaciones",
+    "age": "30-45",
+    "location": "España",
+    "pain": "La entrega ya afecta a la marca. Retrasos, incidencias y devoluciones impactan en reseñas, confianza y LTV del cliente.",
+    "desire": "SLA garantizado, visibilidad de extremo a extremo, integración limpia con Shopify/WooCommerce y sin sorpresas.",
+    "channels": ["LinkedIn", "Email", "Ferias del sector"]
+  },
+  "brand_voice": ["cercano", "directo", "profesional", "experto-colega", "sin-jerga"],
+  "brand_values": ["fiabilidad", "escalabilidad", "transparencia", "atención-personalizada", "experiencia-real"],
+  "differentiator": "48-72 horas de onboarding. 36 años de experiencia. Un gestor de cuenta que entiende tu negocio.",
+  "competitors": [
+    { "name": "Byrd / Huboo (internacional)", "weakness": "Sin presencia local real en España, menos personalización" },
+    { "name": "Operadores logísticos generalistas", "weakness": "No especializados en ecommerce, procesos rígidos, sin integraciones" },
+    { "name": "Logística interna (DIY)", "weakness": "No escala en picos, consume recursos del equipo, sin red de transportistas" }
+  ],
+  "references": ["Coca-Cola Fan Store", "Salesland", "Warner", "Ilunion", "GLS", "DHL", "FedEx"],
+  "integrations": ["Shopify", "Shopify Plus", "WooCommerce", "PrestaShop", "BigCommerce", "Wix"],
+  "content_pillars": [
+    {
+      "name": "E-commerce Tips",
+      "pct": 30,
+      "description": "Guías prácticas, checklists y consejos accionables para dueños y gestores de ecommerce. El pilar que posiciona a Dadybox como experto de referencia.",
+      "angle": "El experto logístico que habla el idioma del founder de ecommerce",
+      "example_posts": [
+        "El checklist de logística que todo ecommerce debería revisar antes del Black Friday.",
+        "5 señales de que tu logística está frenando el crecimiento de tu tienda.",
+        "Cómo preparar tu ecommerce para una campaña de rebajas sin saturar el almacén."
+      ]
+    },
+    {
+      "name": "Operativa & Logística",
+      "pct": 25,
+      "description": "Detrás de las cámaras de la operativa Dadybox: almacén, picking, packing, tecnología. Contenido que construye confianza mostrando la realidad.",
+      "angle": "Ver para creer — el almacén no miente",
+      "example_posts": [
+        "Cómo preparamos 2.000 pedidos en un día de campaña. Esto es lo que pasa detrás.",
+        "Del clic al cliente: el viaje de un pedido en Dadybox en 4 pasos.",
+        "Por qué tenemos +100 transportistas y cómo elegimos el mejor para cada envío."
+      ]
+    },
+    {
+      "name": "Casos de Éxito",
+      "pct": 20,
+      "description": "Historias reales de clientes con datos concretos, timelines y resultados medibles. Social proof que convierte.",
+      "angle": "Resultados reales, nombres reales, datos reales",
+      "example_posts": [
+        "Cómo un ecommerce de moda pasó de gestionar la logística en casa a escalar sin contratar.",
+        "El Black Friday más tranquilo de un cliente Dadybox: 3.200 pedidos en 72 horas.",
+        "De Plan Despegue a Plan Turbo en 6 meses: la historia de un founder que encontró la palanca."
+      ]
+    },
+    {
+      "name": "Sector E-commerce",
+      "pct": 15,
+      "description": "Datos, tendencias y análisis del sector ecommerce español y europeo. Contenido de autoridad que atrae decisores.",
+      "angle": "Los datos del sector que todo founder de ecommerce debería conocer",
+      "example_posts": [
+        "El ecommerce en España crece un 15% en 2025. Esto es lo que significa para tu logística.",
+        "3 tendencias de entrega que van a cambiar las expectativas de tus clientes en 2026.",
+        "La tasa de abandono por problemas de entrega ya supera el 40% en España. ¿Qué hacemos?"
+      ]
+    },
+    {
+      "name": "Empresa & Equipo",
+      "pct": 10,
+      "description": "La gente detrás de Dadybox — Natalia, Noel, el equipo, la cultura. Humaniza la marca y genera conexión emocional.",
+      "angle": "Los expertos tienen nombre y cara — así es el equipo que gestiona tu logística",
+      "example_posts": [
+        "Natalia cuenta por qué dejó una gran consultora para especializarse en logística ecommerce.",
+        "Un día de trabajo en el almacén de Dadybox: 6am, 2.000 pedidos y un equipo que no para.",
+        "36 años de grupo logístico. Así es como Dadybox nació para ser diferente."
+      ]
+    }
+  ],
+  "channels": [
+    { "name": "LinkedIn", "priority": "primary", "kpi": "Impresiones + leads cualificados + solicitudes demo" },
+    { "name": "Instagram", "priority": "primary", "kpi": "Saves + DMs + tráfico web" },
+    { "name": "Google (SEO)", "priority": "primary", "kpi": "Rankings logística ecommerce, fulfillment España" },
+    { "name": "Email / Newsletter", "priority": "secondary", "kpi": "Open rate + clics a dadybox.com/contacto" }
+  ],
+  "campaigns_active": [
+    {
+      "name": "Pre-Black Friday Education",
+      "dates": "Octubre-Noviembre 2026",
+      "goal": "Captar leads de ecommerce que buscan operador logístico antes de la campaña",
+      "mechanic": "Serie de contenido educativo → lead magnet checklist BF → demo call Dadybox"
+    },
+    {
+      "name": "Onboarding en 48h — Always On",
+      "dates": "Ongoing",
+      "goal": "Comunicar el diferenciador de onboarding rápido vs competidores lentos",
+      "mechanic": "Posts de contraste + casos reales de clientes que empezaron en 48h"
+    }
+  ],
+  "month1_weeks": [
+    { "week": 1, "theme": "Establish Authority — Problemas reales del sector", "posts": 4, "goal": "300 nuevos seguidores LinkedIn" },
+    { "week": 2, "theme": "Behind Operations — El almacén en acción", "posts": 4, "goal": "50 visitas a dadybox.com/contacto" },
+    { "week": 3, "theme": "Caso de Éxito — Historia real con datos", "posts": 4, "goal": "20 solicitudes de demo/contacto" },
+    { "week": 4, "theme": "Sector Data + CTA Black Friday prep", "posts": 4, "goal": "500 impresiones en LinkedIn de audiencia objetivo" }
+  ],
+  "influencer_tiers": [
+    { "tier": "Creators ecommerce / founders Spain", "followers": "10K-100K", "count": 3, "budget": "€200-400/mes [EST]" },
+    { "tier": "Collab con plataformas (Shopify ES, PrestaShop)", "followers": "Institucional", "count": 2, "budget": "Partnership / contenido conjunto" },
+    { "tier": "Natalia Aldea — Personal Brand", "followers": "LinkedIn creciendo", "count": 1, "budget": "Orgánico" }
+  ],
+  "paid_media": [
+    { "channel": "LinkedIn Ads", "budget_pct": 60, "format": "Lead gen forms targeting ecommerce managers Spain" },
+    { "channel": "Google Search", "budget_pct": 30, "format": "'fulfillment ecommerce España', 'logística 3PL pymes'" },
+    { "channel": "Instagram/Facebook", "budget_pct": 10, "format": "Retargeting web visitors + lookalike founders" }
+  ],
+  "kpis": [
+    { "metric": "Demos / solicitudes contacto mes", "baseline": "~10 [EST]", "target_30d": "25", "target_90d": "60" },
+    { "metric": "LinkedIn seguidores empresa", "baseline": "[EST] ~800", "target_30d": "1.100", "target_90d": "2.500" },
+    { "metric": "Clientes nuevos / mes", "baseline": "[EST] 5-8", "target_30d": "+2", "target_90d": "+6" },
+    { "metric": "Google 'fulfillment ecommerce España'", "baseline": "Page 2-3", "target_30d": "Page 1", "target_90d": "Top 3" },
+    { "metric": "Tráfico a dadybox.com/contacto", "baseline": "N/D", "target_30d": "+40%", "target_90d": "+120%" }
+  ],
+  "action_items": [
+    { "priority": "P1", "task": "Activar publicación semanal en LinkedIn con contenido de pilares", "owner": "Natalia", "deadline": "Esta semana" },
+    { "priority": "P1", "task": "Grabar Reel 'Del clic al cliente — 4 pasos en Dadybox'", "owner": "Natalia/Equipo", "deadline": "Mayo 2026" },
+    { "priority": "P1", "task": "Crear lead magnet: Checklist Black Friday Logística (PDF)", "owner": "Natalia", "deadline": "Mayo 2026" },
+    { "priority": "P2", "task": "Caso de éxito escrito con cliente real (con datos concretos y aprobación)", "owner": "Natalia/CS", "deadline": "Junio 2026" },
+    { "priority": "P2", "task": "Configurar Google Ads para 'fulfillment ecommerce España'", "owner": "Marketing/Agencia", "deadline": "Junio 2026" },
+    { "priority": "P2", "task": "Newsletter mensual para clientes actuales + leads nurturing", "owner": "Natalia", "deadline": "Junio 2026" },
+    { "priority": "P3", "task": "Activar LinkedIn Personal Brand de Natalia (2 posts/semana)", "owner": "Natalia", "deadline": "Julio 2026" },
+    { "priority": "P3", "task": "Partnership de contenido con Shopify España / PrestaShop", "owner": "Noel/Natalia", "deadline": "Julio 2026" }
+  ],
+  "colors": {
+    "primary": "#3EE89A",
+    "accent": "#2DC080",
+    "bg": "#0B1829",
+    "text": "#F4F7FA"
+  },
+  "fonts": {
+    "display": "Poppins",
+    "body": "DM Sans",
+    "mono": "Space Mono"
+  },
+  "budget_monthly": "[ESTIMATE] €800-1.500/mes",
+  "canva_candidates": {
+    "E-commerce Tips": { "url": "https://www.canva.com/d/lq1Td3ZqU0K2Fo4", "thumb": "https://design.canva.ai/kIjO7ZU9jVN3ybd" },
+    "Operativa & Logística": { "url": "https://www.canva.com/d/7QQqm4L7B8orpMB", "thumb": "https://design.canva.ai/lbvuIn2I_ZEXvjz" },
+    "Casos de Éxito": { "url": "https://www.canva.com/d/DmHIPPE1Oyo_J4r", "thumb": "https://design.canva.ai/TBWsZidkbhw4P3T" },
+    "Sector E-commerce": { "url": "https://www.canva.com/d/WRsneysT6fs-fy2", "thumb": "https://design.canva.ai/I7V5RL8NpQrS1aX" },
+    "Empresa & Equipo": { "url": "https://www.canva.com/d/psApRUgZAXu8RLr", "thumb": "https://design.canva.ai/R1cf0QjPJClwZ-K" }
+  }
+}

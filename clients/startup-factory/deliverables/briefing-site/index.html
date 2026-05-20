@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STARTUP FACTORY — Brand Pack Completo 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+function filterPosts(pillar) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  event.target.classList.add('active');
+  document.querySelectorAll('.post-card').forEach(c => {
+    c.style.display = (pillar === 'all' || c.dataset.pillar === pillar) ? '' : 'none';
+  });
+}
+</script>
+<style>
+  :root {
+    --bg:       #000000;
+    --bg-2:     #080810;
+    --bg-3:     #0c0c18;
+    --primary:  #3D2FFF;
+    --accent:   #A855F7;
+    --accent-2: #C084FC;
+    --text:     #F0EFF8;
+    --text-dim: rgba(240,239,248,0.65);
+    --text-faint: rgba(240,239,248,0.12);
+    --grad:     linear-gradient(135deg, #3D2FFF, #A855F7);
+    --nav-w:    56px;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .nav {
+    position: fixed;
+    left:0; top:0; bottom:0;
+    width: var(--nav-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    z-index: 100;
+    background: linear-gradient(to right, rgba(0,0,0,0.98) 80%, transparent);
+  }
+
+  .nav-dot {
+    position: relative;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(240,239,248,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--primary);
+    transform: scale(1.5);
+    box-shadow: 0 0 12px var(--primary);
+  }
+  .nav-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 18px; top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--text);
+    background: var(--bg);
+    padding: 3px 8px;
+    border-left: 2px solid var(--primary);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .nav-dot:hover::after { opacity: 1; }
+
+  /* ── MAIN ── */
+  main { padding-left: var(--nav-w); }
+
+  section {
+    padding: 100px 80px 100px 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ── ORBS ── */
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    opacity: 0.18;
+  }
+  .orb-purple { background: var(--primary); }
+  .orb-magenta { background: var(--accent); }
+
+  /* ── ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ── TYPOGRAPHY ── */
+  .grotesk { font-family: 'Space Grotesk', sans-serif; }
+  .mono    { font-family: 'Space Mono', monospace; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(42px, 6vw, 80px);
+    line-height: 0.95;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .gradient-text {
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    padding: 0 80px 0 80px;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .hero-inner {
+    display: grid;
+    grid-template-columns: 55% 45%;
+    align-items: center;
+    gap: 60px;
+    width: 100%;
+    padding-top: 80px;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid rgba(61,47,255,0.4);
+    border-radius: 100px;
+    color: var(--text-dim);
+    margin-bottom: 32px;
+  }
+  .hero-badge .dot-live {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: #22c55e;
+    animation: pulse-green 2s infinite;
+  }
+  @keyframes pulse-green {
+    0%,100% { opacity:1; transform:scale(1); }
+    50% { opacity:.6; transform:scale(1.3); }
+  }
+  .hero-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(52px, 7vw, 96px);
+    font-weight: 700;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+  .hero-sub {
+    font-size: 16px;
+    color: var(--text-dim);
+    max-width: 460px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+  }
+  .hero-cta {
+    display: inline-block;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 14px 32px;
+    background: var(--grad);
+    border-radius: 100px;
+    color: #fff;
+    text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .hero-cta:hover { opacity: 0.85; transform: scale(1.02); }
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    margin-top: 48px;
+  }
+  .hero-stat .num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-stat .lbl {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .hero-card {
+    background: rgba(61,47,255,0.08);
+    border: 1px solid rgba(61,47,255,0.2);
+    border-radius: 12px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .hero-card-num {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    min-width: 80px;
+  }
+  .hero-card-text .title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .hero-card-text .sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 3px;
+  }
+
+  /* ── CARDS / GRIDS ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+
+  .card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .card:hover {
+    border-color: rgba(61,47,255,0.4);
+    background: rgba(61,47,255,0.06);
+  }
+  .card-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 10px;
+  }
+  .card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .card-body {
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  /* ── TAGS / BADGES ── */
+  .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid rgba(61,47,255,0.35);
+    color: var(--accent-2);
+    margin: 3px 3px 3px 0;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 60px;
+    height: 2px;
+    background: var(--grad);
+    margin-bottom: 40px;
+  }
+
+  /* ── POSITIONING MAP ── */
+  .positioning-map {
+    position: relative;
+    width: 100%;
+    max-width: 540px;
+    aspect-ratio: 1;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+  }
+  .map-axis {
+    position: absolute;
+    background: rgba(255,255,255,0.1);
+  }
+  .map-axis-h { left:0; right:0; top:50%; height:1px; }
+  .map-axis-v { top:0; bottom:0; left:50%; width:1px; }
+  .map-label {
+    position: absolute;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .map-label.top    { top:12px; left:50%; transform:translateX(-50%); }
+  .map-label.bottom { bottom:12px; left:50%; transform:translateX(-50%); }
+  .map-label.left   { left:12px; top:50%; transform:translateY(-50%); }
+  .map-label.right  { right:12px; top:50%; transform:translateY(-50%); }
+  .map-dot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .map-dot .d {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+  }
+  .map-dot.sf .d {
+    width: 18px; height: 18px;
+    background: var(--grad);
+    box-shadow: 0 0 20px var(--primary);
+  }
+  .map-dot .n {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.05em;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .map-dot.sf .n { color: var(--text); font-weight: 700; }
+
+  /* ── PERSONA CARD ── */
+  .persona-card {
+    background: var(--bg-3);
+    border: 1px solid rgba(61,47,255,0.2);
+    border-radius: 20px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .persona-card::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    background: var(--grad);
+    border-radius: 50%;
+    opacity: 0.07;
+    filter: blur(30px);
+  }
+  .persona-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: var(--grad);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .persona-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 6px;
+  }
+  .persona-meta {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .persona-row { margin-bottom: 14px; }
+  .persona-row .lbl {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .persona-row .val {
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.5;
+  }
+
+  /* ── DNA COLORS ── */
+  .color-swatch {
+    height: 64px;
+    border-radius: 10px;
+    display: flex;
+    align-items: flex-end;
+    padding: 8px 12px;
+  }
+  .color-swatch .hex {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: rgba(255,255,255,0.7);
+  }
+
+  /* ── VOICE BOX ── */
+  .voice-box {
+    border-left: 3px solid var(--primary);
+    padding: 16px 20px;
+    background: rgba(61,47,255,0.06);
+    border-radius: 0 10px 10px 0;
+    font-size: 15px;
+    font-style: italic;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin: 8px 0;
+  }
+
+  /* ── PILLAR CARD ── */
+  .pillar-card {
+    background: var(--bg-3);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.3s;
+  }
+  .pillar-card:hover { border-color: rgba(168,85,247,0.4); }
+  .pillar-pct {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    background: var(--grad);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .pillar-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+  }
+  .pillar-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .pillar-posts li {
+    font-size: 11px;
+    color: var(--text-dim);
+    padding: 5px 0;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    list-style: none;
+  }
+  .pillar-posts li::before {
+    content: '→ ';
+    color: var(--accent);
+  }
+
+  /* ── CAMPAIGN CARD ── */
+  .campaign-card {
+    background: var(--bg-2);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 28px;
+  }
+  .campaign-dates {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .campaign-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .campaign-goal {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    line-height: 1.5;
+  }
+  .campaign-mechanic {
+    font-size: 12px;
+    color: var(--text);
+    background: rgba(61,47,255,0.1);
+    border-radius: 8px;
+    padding: 10px 14px;
+    line-height: 1.5;
+  }
+
+  /* ── WEEK CARD ── */
+  .week-card {
+    background: var(--bg-3);
+    border: 1px solid rgba(61,47,255,0.15);
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .week-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .week-theme {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 12px;
+    line-height: 1.2;
+  }
+  .week-goal {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-track {
+    display: flex;
+    gap: 0;
+    position: relative;
+  }
+  .timeline-track::before {
+    content:'';
+    position:absolute;
+    top:20px; left:0; right:0;
+    height:2px;
+    background:linear-gradient(to right, var(--primary), var(--accent));
+    z-index:0;
+  }
+  .timeline-phase {
+    flex:1;
+    position:relative;
+    z-index:1;
+    padding-top: 44px;
+    padding-right: 16px;
+  }
+  .timeline-dot {
+    position:absolute;
+    top:12px; left:0;
+    width:18px; height:18px;
+    border-radius:50%;
+    background: var(--grad);
+    border:3px solid var(--bg);
+    box-shadow:0 0 10px var(--primary);
+  }
+  .timeline-phase-num {
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.15em;
+    color:var(--primary);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .timeline-phase-name {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .timeline-phase-items {
+    font-size:11px;
+    color:var(--text-dim);
+    line-height:1.7;
+    list-style:none;
+  }
+  .timeline-phase-items li::before { content:'· '; color:var(--accent); }
+
+  /* ── INFLUENCER TIER ── */
+  .tier-card {
+    background:var(--bg-3);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:14px;
+    padding:24px;
+  }
+  .tier-name {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14px;
+    font-weight:700;
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .tier-followers {
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.1em;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  .tier-count {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:32px;
+    font-weight:700;
+    background:var(--grad);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    background-clip:text;
+  }
+  .tier-budget {
+    font-size:12px;
+    color:var(--text-dim);
+    margin-top:8px;
+  }
+
+  /* ── KPI TABLE ── */
+  .kpi-grid {
+    display:grid;
+    grid-template-columns: repeat(5,1fr);
+    gap:0;
+    border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px;
+    overflow:hidden;
+  }
+  .kpi-header {
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.12em;
+    color:var(--text-dim);
+    text-transform:uppercase;
+    padding:14px 16px;
+    background:rgba(61,47,255,0.1);
+    border-right:1px solid rgba(255,255,255,0.06);
+  }
+  .kpi-cell {
+    padding:14px 16px;
+    font-size:13px;
+    border-right:1px solid rgba(255,255,255,0.06);
+    border-top:1px solid rgba(255,255,255,0.06);
+    line-height:1.4;
+  }
+  .kpi-cell.highlight {
+    color:var(--accent-2);
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+  }
+  .kpi-cell:last-child, .kpi-header:last-child { border-right:none; }
+
+  /* ── ACTION ITEMS ── */
+  .action-row {
+    display:grid;
+    grid-template-columns:60px 1fr 120px 140px;
+    gap:16px;
+    align-items:center;
+    padding:16px 20px;
+    border-bottom:1px solid rgba(255,255,255,0.06);
+    transition:background 0.2s;
+  }
+  .action-row:hover { background:rgba(61,47,255,0.05); }
+  .action-priority {
+    font-family:'Space Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.1em;
+    font-weight:700;
+    padding:4px 10px;
+    border-radius:100px;
+    text-align:center;
+    width:fit-content;
+  }
+  .p1 { background:rgba(61,47,255,0.2); color:#818cf8; border:1px solid rgba(61,47,255,0.4); }
+  .p2 { background:rgba(168,85,247,0.15); color:var(--accent-2); border:1px solid rgba(168,85,247,0.3); }
+  .p3 { background:rgba(255,255,255,0.05); color:var(--text-dim); border:1px solid rgba(255,255,255,0.1); }
+  .action-task { font-size:14px; line-height:1.4; }
+  .action-owner {
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.05em;
+    color:var(--text-dim);
+  }
+  .action-deadline {
+    font-family:'Space Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.05em;
+    color:var(--accent);
+    text-align:right;
+  }
+
+  /* ── BRAINSTORM ── */
+  .idea-card {
+    background:var(--bg-2);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:14px;
+    padding:24px;
+    transition:border-color 0.3s, transform 0.3s;
+  }
+  .idea-card:hover {
+    border-color:rgba(168,85,247,0.4);
+    transform:translateY(-4px);
+  }
+  .idea-tag {
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin-bottom:10px;
+  }
+  .idea-title {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    text-transform:uppercase;
+    margin-bottom:8px;
+    line-height:1.2;
+  }
+  .idea-body {
+    font-size:12px;
+    color:var(--text-dim);
+    line-height:1.6;
+  }
+
+  /* ── CHART CONTAINER ── */
+  .chart-wrap {
+    position:relative;
+    width:320px; height:320px;
+    margin:0 auto;
+  }
+
+  /* ── ROADMAP 12M ── */
+  .roadmap-grid {
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:8px;
+  }
+  .roadmap-month {
+    background:var(--bg-3);
+    border:1px solid rgba(255,255,255,0.07);
+    border-radius:10px;
+    padding:14px 12px;
+    text-align:center;
+    transition:border-color 0.3s;
+  }
+  .roadmap-month:hover { border-color:rgba(61,47,255,0.4); }
+  .roadmap-month-num {
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.1em;
+    color:var(--primary);
+    text-transform:uppercase;
+    margin-bottom:6px;
+  }
+  .roadmap-month-label {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:11px;
+    font-weight:600;
+    text-transform:uppercase;
+    line-height:1.2;
+  }
+
+  /* ── MEDIA TABLE ── */
+  .media-table {
+    width:100%;
+    border-collapse:collapse;
+  }
+  .media-table th {
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    padding:12px 16px;
+    text-align:left;
+    background:rgba(61,47,255,0.08);
+    border-bottom:1px solid rgba(255,255,255,0.07);
+  }
+  .media-table td {
+    padding:14px 16px;
+    font-size:13px;
+    border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .media-table tr:last-child td { border-bottom:none; }
+
+  /* ── FINAL CTA ── */
+  #brainstorm .final-cta {
+    text-align:center;
+    padding:80px 40px 40px;
+  }
+  .final-cta-title {
+    font-family:'Space Grotesk',sans-serif;
+    font-size:clamp(32px,4vw,56px);
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:-0.02em;
+    margin-bottom:20px;
+    line-height:1;
+  }
+
+  /* SF WATERMARK */
+  .sf-watermark {
+    font-family:'Space Mono',monospace;
+    font-size:9px;
+    letter-spacing:0.15em;
+    color:rgba(255,255,255,0.15);
+    text-transform:uppercase;
+    position:fixed;
+    bottom:16px; right:16px;
+    z-index:99;
+  }
+
+  /* ── CONTENT PACK CSS ── */
+  .pillar-tabs{display:flex;gap:8px;margin-bottom:32px;flex-wrap:wrap}
+  .tab{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;padding:8px 16px;border-radius:100px;border:1px solid rgba(61,47,255,.3);color:var(--text-dim);cursor:pointer;transition:all .2s;text-transform:uppercase;background:none}
+  .tab:hover{border-color:var(--primary);color:var(--text)}
+  .tab.active{background:var(--primary);border-color:var(--primary);color:#fff}
+  .posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .post-card{background:var(--bg-3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px;transition:border-color .3s,transform .3s}
+  .post-card:hover{border-color:rgba(61,47,255,.4);transform:translateY(-3px)}
+  .post-format{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .post-platform{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.08em;padding:2px 8px;border-radius:100px;border:1px solid rgba(168,85,247,.3);color:var(--accent);margin-bottom:12px;text-transform:uppercase}
+  .post-hook{font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:700;line-height:1.25;margin-bottom:12px;text-transform:uppercase}
+  .post-preview{font-size:12px;color:var(--text-dim);line-height:1.6;margin-bottom:16px}
+  .post-caption{font-size:11px;color:rgba(240,239,248,.4);font-style:italic;padding-top:12px;border-top:1px solid var(--text-faint)}
+  .post-hashtags{margin-top:8px;font-family:'Space Mono',monospace;font-size:9px;color:var(--primary);letter-spacing:.05em}
+  .reel-card{background:var(--bg-2);border:1px solid rgba(61,47,255,.2);border-radius:16px;padding:28px;margin-bottom:20px}
+  .reel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:8px}
+  .reel-title{font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase}
+  .reel-badge{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;padding:4px 12px;border-radius:100px;border:1px solid rgba(168,85,247,.4);color:var(--accent)}
+  .timeline-cut{display:grid;grid-template-columns:80px 1fr;gap:16px;align-items:start;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+  .cut-time{font-family:'Space Mono',monospace;font-size:10px;color:var(--primary);padding-top:4px}
+  .cut-content{font-size:13px;line-height:1.6;color:var(--text)}
+  .cut-screen{font-size:11px;color:var(--accent);margin-top:4px;font-family:'Space Mono',monospace}
+  .week-block{margin-bottom:32px}
+  .week-header{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);margin-bottom:6px;padding-bottom:8px;border-bottom:1px solid rgba(61,47,255,.2)}
+  .week-meta{font-size:11px;color:var(--text-dim);margin-bottom:14px;font-style:italic}
+  .cal-table{width:100%;border-collapse:collapse}
+  .cal-table th{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);padding:10px 14px;text-align:left;background:rgba(61,47,255,.08);border-bottom:1px solid rgba(255,255,255,.07)}
+  .cal-table td{padding:11px 14px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.4;vertical-align:top}
+  .cal-table tr:hover td{background:rgba(61,47,255,.04)}
+  .p-ig{color:#E1306C}.p-li{color:#0A66C2}.p-tk{color:#69C9D0}
+  .badge-pilar{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:.08em;padding:2px 8px;border-radius:4px;background:rgba(61,47,255,.15);color:var(--accent-2);border:1px solid rgba(61,47,255,.3)}
+  .hook-prev{color:var(--text-dim);font-style:italic;font-size:11px;margin-top:3px}
+  .canva-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:20px}
+  .canva-pillar{background:var(--bg-3);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;transition:border-color .3s}
+  .canva-pillar:hover{border-color:rgba(168,85,247,.4)}
+  .canva-name{font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;margin-bottom:4px}
+  .canva-pct{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:16px}
+  .canva-thumbs{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+  .canva-thumb{width:100%;aspect-ratio:1;background:rgba(255,255,255,.05);border-radius:8px;border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;text-decoration:none;overflow:hidden;transition:border-color .2s;font-size:9px;color:var(--text-dim);text-align:center}
+  .canva-thumb:hover{border-color:var(--primary)}
+  .canva-thumb img{width:100%;height:100%;object-fit:cover;border-radius:7px}
+  .canva-link{display:block;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;color:var(--primary);text-decoration:none;padding:8px 12px;border:1px solid rgba(61,47,255,.3);border-radius:8px;text-align:center;transition:all .2s;margin-bottom:6px}
+  .canva-link:hover{background:var(--primary);color:#fff}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR NAV -->
+<nav class="nav" id="sideNav">
+  <a class="nav-dot" href="#hero" data-label="01 Startup Factory"></a>
+  <a class="nav-dot" href="#brief" data-label="02 Executive Summary"></a>
+  <a class="nav-dot" href="#positioning" data-label="03 Market"></a>
+  <a class="nav-dot" href="#audience" data-label="04 Audiencia"></a>
+  <a class="nav-dot" href="#dna" data-label="05 Brand DNA"></a>
+  <a class="nav-dot" href="#differentiator" data-label="06 Diferenciador"></a>
+  <a class="nav-dot" href="#content" data-label="07 Contenido"></a>
+  <a class="nav-dot" href="#pillars" data-label="08 Pilares"></a>
+  <a class="nav-dot" href="#posts" data-label="09 Posts"></a>
+  <a class="nav-dot" href="#reels" data-label="10 Scripts Reel"></a>
+  <a class="nav-dot" href="#campaigns" data-label="11 Campañas"></a>
+  <a class="nav-dot" href="#month1" data-label="12 Mes 1"></a>
+  <a class="nav-dot" href="#calendar" data-label="13 Calendario"></a>
+  <a class="nav-dot" href="#timeline" data-label="14 Roadmap"></a>
+  <a class="nav-dot" href="#influencers" data-label="15 Creators"></a>
+  <a class="nav-dot" href="#media" data-label="16 Performance"></a>
+  <a class="nav-dot" href="#kpis" data-label="17 Metrics"></a>
+  <a class="nav-dot" href="#action" data-label="18 Execute"></a>
+  <a class="nav-dot" href="#canva" data-label="19 Templates"></a>
+  <a class="nav-dot" href="#brainstorm" data-label="20 Ideas"></a>
+</nav>
+
+<main>
+
+<!-- ── 01 HERO ── -->
+<section id="hero">
+  <div class="orb orb-purple" style="width:600px;height:600px;top:-200px;right:-100px;"></div>
+  <div class="orb orb-magenta" style="width:400px;height:400px;bottom:-100px;left:100px;"></div>
+  <div class="hero-inner">
+    <div class="hero-left">
+      <div class="hero-badge reveal">
+        <span class="dot-live"></span>
+        Live · Evaluando proyectos · Mayo 2026
+      </div>
+      <div class="hero-title reveal reveal-delay-1">
+        <span class="gradient-text">STARTUP</span><br>
+        FACTORY
+      </div>
+      <div class="hero-sub reveal reveal-delay-2">
+        El venture builder en español que faltaba. Evaluamos proyectos de forma individual. Aceptamos al &lt;10%. El NO también tiene valor.
+      </div>
+      <a href="https://startupsfactory.es/es/aplica" class="hero-cta reveal reveal-delay-3">Sesión de diagnóstico gratuita →</a>
+      <div class="hero-stats reveal reveal-delay-4">
+        <div class="hero-stat"><div class="num">&lt;10%</div><div class="lbl">tasa de aceptación</div></div>
+        <div class="hero-stat"><div class="num">5K+</div><div class="lbl">comunidad</div></div>
+        <div class="hero-stat"><div class="num">300+</div><div class="lbl">eventos</div></div>
+        <div class="hero-stat"><div class="num">15</div><div class="lbl">años en trincheras</div></div>
+      </div>
+    </div>
+    <div class="hero-right reveal reveal-delay-2">
+      <div class="hero-card">
+        <div class="hero-card-num">6</div>
+        <div class="hero-card-text">
+          <div class="title">Equipo Senior</div>
+          <div class="sub">Growth · BD · Dev IA · Marketing IA</div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-num">4</div>
+        <div class="hero-card-text">
+          <div class="title">Modos de trabajo</div>
+          <div class="sub">Consultoría · Implementación · Equity · Matching</div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-num">5</div>
+        <div class="hero-card-text">
+          <div class="title">Ventures propios</div>
+          <div class="sub">Discoolver · Dadybox · Salsa Burgers · Mr Traack · The 10 Club</div>
+        </div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-card-num">BKK</div>
+        <div class="hero-card-text">
+          <div class="title">Bangkok, Thailand</div>
+          <div class="sub">Ángulo SEA único — ecosistema que nadie más ve</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 BRIEF ── -->
+<section id="brief" style="background:var(--bg-2);">
+  <div class="orb orb-purple" style="width:400px;height:400px;top:50%;right:-100px;opacity:0.12;"></div>
+  <div class="section-label reveal">02 — Executive Summary</div>
+  <div class="section-title reveal reveal-delay-1">¿QUÉ ES<br><span class="gradient-text">STARTUP FACTORY?</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="grid-3 reveal reveal-delay-2">
+    <div class="card">
+      <div class="card-label">Qué hacemos</div>
+      <div class="card-title">Hub de venture building</div>
+      <div class="card-body">No somos consultores. Somos el equipo que faltaba. Evaluamos tu proyecto, decimos la verdad y — si hay fit — nos metemos a ejecutar contigo. Sin PowerPoints. Con entregables reales.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">La selección</div>
+      <div class="card-title">El filtro &lt;10%</div>
+      <div class="card-body">Menos del 10% de los proyectos que nos llegan pasan el diagnóstico. La selectividad no es arrogancia — es el mecanismo que garantiza que cuando entramos, entramos de verdad. El resto recibe accionables y matching activo.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">La diferencia</div>
+      <div class="card-title">Desde Bangkok</div>
+      <div class="card-body">Carlos opera desde Bangkok, Thailand. Ve el ecosistema startup de SEA desde dentro — algo que ningún venture builder hispanohablante hace. Oportunidades en Tailandia, Vietnam, Indonesia que nadie en España está mirando.</div>
+    </div>
+  </div>
+  <div style="margin-top:40px;max-width:700px;" class="reveal reveal-delay-3">
+    <div class="section-label">Situación actual</div>
+    <p style="font-size:15px;color:var(--text-dim);line-height:1.7;">Instagram con 5.151 seguidores <strong style="color:var(--text)">sin publicar desde 2023</strong>. Brand brain completamente construido. Equipo de 6 especialistas operativo. Web live en startupsfactory.es. El momento de activar el sistema de contenido es ahora.</p>
+  </div>
+</section>
+
+<!-- ── 03 POSITIONING ── -->
+<section id="positioning">
+  <div class="section-label reveal">03 — Market</div>
+  <div class="section-title reveal reveal-delay-1">POSICIONA-<br><span class="gradient-text">MIENTO</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div class="reveal reveal-delay-2">
+      <div class="positioning-map">
+        <div class="map-axis map-axis-h"></div>
+        <div class="map-axis map-axis-v"></div>
+        <span class="map-label top">PERSONALIZADO</span>
+        <span class="map-label bottom">GENÉRICO</span>
+        <span class="map-label left" style="writing-mode:vertical-rl;text-orientation:mixed;left:8px;">EJECUTA</span>
+        <span class="map-label right" style="writing-mode:vertical-rl;text-orientation:mixed;right:8px;">ASESORA</span>
+        <div class="map-dot sf" style="top:18%;left:78%;">
+          <div class="d"></div><div class="n">SF</div>
+        </div>
+        <div class="map-dot" style="top:30%;left:35%;">
+          <div class="d"></div><div class="n">Lanzadera</div>
+        </div>
+        <div class="map-dot" style="top:55%;left:25%;">
+          <div class="d"></div><div class="n">Wayra</div>
+        </div>
+        <div class="map-dot" style="top:45%;left:60%;">
+          <div class="d"></div><div class="n">Demium</div>
+        </div>
+        <div class="map-dot" style="top:70%;left:50%;">
+          <div class="d"></div><div class="n">Consultoras</div>
+        </div>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div style="margin-bottom:32px;">
+        <div class="section-label">Positioning Statement</div>
+        <blockquote style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;text-transform:uppercase;letter-spacing:-0.01em;line-height:1.2;border-left:4px solid var(--primary);padding-left:20px;margin:0;">
+          Para emprendedores hispanohablantes que necesitan más que un consejo — somos el venture builder que evalúa, dice la verdad y ejecuta contigo.
+        </blockquote>
+      </div>
+      <div class="section-label" style="margin-top:32px;">Competidores directos</div>
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div class="card" style="padding:16px 20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="card-title" style="font-size:14px;margin:0;">Lanzadera</span>
+            <span style="font-size:12px;color:var(--text-dim);">Proceso estándar, menos 1:1</span>
+          </div>
+        </div>
+        <div class="card" style="padding:16px 20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="card-title" style="font-size:14px;margin:0;">Wayra</span>
+            <span style="font-size:12px;color:var(--text-dim);">Ligada a Telefónica, menos flexibilidad</span>
+          </div>
+        </div>
+        <div class="card" style="padding:16px 20px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span class="card-title" style="font-size:14px;margin:0;">Demium</span>
+            <span style="font-size:12px;color:var(--text-dim);">Studio genérico, sin ángulo SEA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 04 AUDIENCE ── -->
+<section id="audience" style="background:var(--bg-2);">
+  <div class="section-label reveal">04 — Who We Serve</div>
+  <div class="section-title reveal reveal-delay-1">A QUIÉN<br><span class="gradient-text">SERVIMOS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="grid-2 reveal reveal-delay-2">
+    <div class="persona-card">
+      <div class="persona-avatar">E</div>
+      <div class="persona-name">El Emprendedor con Idea</div>
+      <div class="persona-meta">25-35 · España / LATAM · Pre-empresa</div>
+      <div class="persona-row"><div class="lbl">Dolor principal</div><div class="val">Tiene la idea pero no sabe por dónde empezar. Nadie le da feedback honesto sobre su proyecto. Ha pagado consultoras que entregan PDFs vacíos.</div></div>
+      <div class="persona-row"><div class="lbl">Deseo</div><div class="val">Alguien que le diga la verdad y ejecute con él — no más informes. Un plan de acción concreto, no genérico.</div></div>
+      <div class="persona-row"><div class="lbl">Objeción</div><div class="val">"¿Mi proyecto es suficientemente bueno para aplicar?"</div></div>
+      <div style="margin-top:16px;">
+        <span class="tag">Instagram</span>
+        <span class="tag">LinkedIn</span>
+        <span class="tag">TikTok</span>
+      </div>
+    </div>
+    <div class="persona-card">
+      <div class="persona-avatar">F</div>
+      <div class="persona-name">El Founder Early-Stage</div>
+      <div class="persona-meta">30-42 · España / LATAM / SEA · Empresa constituida</div>
+      <div class="persona-row"><div class="lbl">Dolor principal</div><div class="val">Su startup necesita crecer pero no puede contratar en fijo. Busca inversores, CTO o socio y no tiene la red. Preparando ronda sin saber por dónde.</div></div>
+      <div class="persona-row"><div class="lbl">Deseo</div><div class="val">Acceso a red real — inversores, CTOs, corporates. Equipo senior en growth, BD, fundraising, IA que ejecute ya.</div></div>
+      <div class="persona-row"><div class="lbl">Objeción</div><div class="val">"¿Tienen experiencia en mi sector específico?"</div></div>
+      <div style="margin-top:16px;">
+        <span class="tag">LinkedIn</span>
+        <span class="tag">YouTube</span>
+        <span class="tag">Email</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 05 BRAND DNA ── -->
+<section id="dna">
+  <div class="orb orb-magenta" style="width:500px;height:500px;top:-100px;right:-150px;opacity:0.1;"></div>
+  <div class="section-label reveal">05 — Identity</div>
+  <div class="section-title reveal reveal-delay-1">BRAND<br><span class="gradient-text">DNA</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;">
+    <div class="reveal reveal-delay-2">
+      <div class="section-label">Paleta de color</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:32px;">
+        <div class="color-swatch" style="background:#3D2FFF;"><span class="hex">#3D2FFF</span></div>
+        <div class="color-swatch" style="background:#A855F7;"><span class="hex">#A855F7</span></div>
+        <div class="color-swatch" style="background:linear-gradient(135deg,#3D2FFF,#A855F7);"><span class="hex">GRADIENT</span></div>
+        <div class="color-swatch" style="background:#000000;border:1px solid rgba(255,255,255,0.1);"><span class="hex">#000000</span></div>
+        <div class="color-swatch" style="background:#F0EFF8;"><span class="hex" style="color:#000;">#F0EFF8</span></div>
+        <div class="color-swatch" style="background:#0c0c18;border:1px solid rgba(255,255,255,0.1);"><span class="hex">#0C0C18</span></div>
+      </div>
+      <div class="section-label">Tipografía</div>
+      <div style="margin-bottom:8px;">
+        <span style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;text-transform:uppercase;letter-spacing:-0.02em;">SPACE GROTESK</span>
+        <span class="mono" style="font-size:10px;color:var(--text-dim);margin-left:12px;letter-spacing:0.1em;">TITULARES</span>
+      </div>
+      <div style="margin-bottom:8px;">
+        <span style="font-family:'DM Sans',sans-serif;font-size:18px;">DM Sans — cuerpo de texto fluido</span>
+        <span class="mono" style="font-size:10px;color:var(--text-dim);margin-left:12px;letter-spacing:0.1em;">BODY</span>
+      </div>
+      <div>
+        <span style="font-family:'Space Mono',monospace;font-size:14px;letter-spacing:0.05em;">SPACE MONO — labels y datos</span>
+        <span class="mono" style="font-size:10px;color:var(--text-dim);margin-left:12px;letter-spacing:0.1em;">MONO</span>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div class="section-label">Personalidad de voz</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;">
+        <span class="tag">Directo</span>
+        <span class="tag">Honesto</span>
+        <span class="tag">Sin-bullshit</span>
+        <span class="tag">Cercano</span>
+        <span class="tag">Con criterio</span>
+      </div>
+      <div class="section-label">Valores de marca</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;">
+        <span class="tag">Selectividad</span>
+        <span class="tag">Ejecución real</span>
+        <span class="tag">Honestidad radical</span>
+        <span class="tag">Comunidad</span>
+        <span class="tag">IA aplicada</span>
+      </div>
+      <div class="section-label">Sí suena a SF</div>
+      <div class="voice-box">"Cuéntanos tu proyecto. Escuchamos a todos. Aceptamos al &lt;10%."</div>
+      <div class="voice-box">"No somos consultores. Somos tu equipo."</div>
+      <div class="voice-box">"Sin PowerPoints. Con entregables reales."</div>
+      <div class="section-label" style="margin-top:20px;">NO suena a SF</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.8;padding:14px;background:rgba(255,0,0,0.04);border:1px solid rgba(255,80,80,0.15);border-radius:10px;">
+        ✗ "Soluciones innovadoras" &nbsp;·&nbsp; ✗ "Transformación digital 4.0" &nbsp;·&nbsp; ✗ "Empoderamos a los emprendedores" &nbsp;·&nbsp; ✗ "Paquetes adaptados"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 06 DIFFERENTIATOR ── -->
+<section id="differentiator" style="background:var(--bg-2);text-align:center;">
+  <div class="orb orb-purple" style="width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);opacity:0.08;"></div>
+  <div class="section-label reveal" style="text-align:center;">06 — The Differentiator</div>
+  <div style="max-width:780px;margin:0 auto;">
+    <div class="section-title reveal reveal-delay-1" style="text-align:center;font-size:clamp(38px,5.5vw,72px);">
+      MENOS DEL<br>
+      <span class="gradient-text">10% PASAN.</span><br>
+      EL NO<br>
+      TAMBIÉN VALE.
+    </div>
+  </div>
+  <div class="grid-3 reveal reveal-delay-2" style="margin-top:60px;text-align:left;">
+    <div class="card">
+      <div class="card-label">Proof Point 1</div>
+      <div class="card-title">15 años de red real</div>
+      <div class="card-body">Mahou (BarLab Ventures), Airbus, Siemens Gamesa, Amadeus. Spanish Startups — 5K+ miembros, 300+ eventos, 12K+ asistentes. Una red que se tarda 15 años en construir.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Proof Point 2</div>
+      <div class="card-title">Ángulo Bangkok único</div>
+      <div class="card-body">Ningún venture builder hispanohablante opera desde Bangkok. Carlos ve el ecosistema startup de SEA desde dentro — Tailandia, Vietnam, Indonesia — y lo traduce para fundadores de España y LATAM.</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Proof Point 3</div>
+      <div class="card-title">Matching activo cuando dices no</div>
+      <div class="card-body">El rechazo siempre tiene valor. Accionables claros, plazo definido, y matching activo con otro proyecto del ecosistema. El NO no es un portazo — es una oportunidad de mejora o conexión.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 07 CONTENT STRATEGY ── -->
+<section id="content">
+  <div class="section-label reveal">07 — Content</div>
+  <div class="section-title reveal reveal-delay-1">ESTRATEGIA<br><span class="gradient-text">DE CONTENIDO</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;">
+    <div class="reveal reveal-delay-2">
+      <div class="chart-wrap">
+        <canvas id="pillarsChart"></canvas>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div class="section-label" style="margin-bottom:20px;">Mix de pilares</div>
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:12px;height:12px;border-radius:3px;background:#3D2FFF;flex-shrink:0;"></div>
+          <span style="font-size:13px;flex:1;">Startup Audit</span>
+          <span class="mono" style="font-size:11px;color:var(--primary);">30%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:12px;height:12px;border-radius:3px;background:#6366f1;flex-shrink:0;"></div>
+          <span style="font-size:13px;flex:1;">El Becario</span>
+          <span class="mono" style="font-size:11px;color:var(--primary);">25%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:12px;height:12px;border-radius:3px;background:#A855F7;flex-shrink:0;"></div>
+          <span style="font-size:13px;flex:1;">AI for Founders</span>
+          <span class="mono" style="font-size:11px;color:var(--primary);">25%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:12px;height:12px;border-radius:3px;background:#C084FC;flex-shrink:0;"></div>
+          <span style="font-size:13px;flex:1;">Builder Stories</span>
+          <span class="mono" style="font-size:11px;color:var(--primary);">10%</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div style="width:12px;height:12px;border-radius:3px;background:#e9d5ff;flex-shrink:0;"></div>
+          <span style="font-size:13px;flex:1;">Startup Opportunities</span>
+          <span class="mono" style="font-size:11px;color:var(--primary);">10%</span>
+        </div>
+      </div>
+      <div class="section-label">Plataformas prioritarias</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;padding:12px 16px;background:rgba(61,47,255,0.1);border-radius:8px;border:1px solid rgba(61,47,255,0.2);">
+          <span style="font-size:13px;font-weight:600;">Instagram @_startupsfactory</span>
+          <span class="mono" style="font-size:10px;color:var(--accent);">PRIMARY</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 16px;background:rgba(61,47,255,0.08);border-radius:8px;border:1px solid rgba(61,47,255,0.15);">
+          <span style="font-size:13px;font-weight:600;">LinkedIn — Carlos Jacoste</span>
+          <span class="mono" style="font-size:10px;color:var(--accent);">PRIMARY</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:8px;border:1px solid rgba(255,255,255,0.07);">
+          <span style="font-size:13px;">TikTok @_startupsfactory</span>
+          <span class="mono" style="font-size:10px;color:var(--text-dim);">POR CREAR</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:12px 16px;background:rgba(255,255,255,0.04);border-radius:8px;border:1px solid rgba(255,255,255,0.07);">
+          <span style="font-size:13px;">YouTube @startupsfactory</span>
+          <span class="mono" style="font-size:10px;color:var(--text-dim);">POR CREAR</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 08 PILLARS DEEP DIVE ── -->
+<section id="pillars" style="background:var(--bg-2);">
+  <div class="section-label reveal">08 — Content Pillars</div>
+  <div class="section-title reveal reveal-delay-1">LOS 5<br><span class="gradient-text">PILARES</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;" class="reveal reveal-delay-2">
+    <div class="pillar-card">
+      <div class="pillar-pct">30%</div>
+      <div class="pillar-name">Startup Audit</div>
+      <div class="pillar-desc">Auditamos startups con metodología propia — 7 áreas, sin filtros. Errores reales y diagnósticos honestos.</div>
+      <ul class="pillar-posts">
+        <li>Por qué rechazamos al 90% — y qué tienen en común los que pasan</li>
+        <li>El error de equipo que destruye startups antes de lanzar</li>
+        <li>Auditamos 5 startups en directo. Estas son las notas reales.</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-pct">25%</div>
+      <div class="pillar-name">El Becario</div>
+      <div class="pillar-desc">Un personaje aprende venture building desde dentro de SF. Humor + educación + autenticidad. Máximo potencial viral.</div>
+      <ul class="pillar-posts">
+        <li>Semana 1 en SF: lo que nadie te cuenta de los venture builders</li>
+        <li>El becario intenta cerrar una reunión con un inversor. Esto pasó.</li>
+        <li>Nadie me dijo que en SF las reuniones de lunes son así</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-pct">25%</div>
+      <div class="pillar-name">AI for Founders</div>
+      <div class="pillar-desc">Herramientas de IA concretas para emprendedores. Carlos en pantalla. Una herramienta por semana. Sin teoría.</div>
+      <ul class="pillar-posts">
+        <li>Hice esto con IA en 10 minutos y me ahorré contratar a un analista</li>
+        <li>La herramienta de IA que más uso para validar ideas de startup</li>
+        <li>Cómo usé Claude para analizar 200 competidores en 20 minutos</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-pct">10%</div>
+      <div class="pillar-name">Builder Stories</div>
+      <div class="pillar-desc">Historias reales de founders del ecosistema SF. Social proof en formato narrativo.</div>
+      <ul class="pillar-posts">
+        <li>Cómo Dadybox pasó de idea a primeras ventas en 3 semanas</li>
+        <li>El proyecto que rechazamos dos veces y luego aceptamos</li>
+        <li>Natalia Aldea: lo que nadie te cuenta del camino de emprender</li>
+      </ul>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-pct">10%</div>
+      <div class="pillar-name">Startup Opportunities</div>
+      <div class="pillar-desc">Oportunidades en España, LATAM y SEA. Carlos en Bangkok ve lo que nadie más ve.</div>
+      <ul class="pillar-posts">
+        <li>3 sectores que están despegando en SEA que nadie en España mira</li>
+        <li>Por qué operar desde Bangkok te da una ventaja que no puedes comprar</li>
+        <li>El ecosistema startup tailandés en 5 datos que te van a sorprender</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── 09 POSTS ── -->
+<section id="posts">
+  <div class="section-label reveal">25 posts listos</div>
+  <div class="section-title reveal reveal-delay-1">COPY &<br><span class="gradient-text">POSTS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="pillar-tabs reveal reveal-delay-2">
+    <button class="tab active" onclick="filterPosts('all')">Todos</button>
+    <button class="tab" onclick="filterPosts('audit')">Startup Audit</button>
+    <button class="tab" onclick="filterPosts('becario')">El Becario</button>
+    <button class="tab" onclick="filterPosts('ai')">AI for Founders</button>
+    <button class="tab" onclick="filterPosts('builder')">Builder Stories</button>
+    <button class="tab" onclick="filterPosts('opps')">Startup Opps</button>
+  </div>
+
+  <div class="posts-grid reveal reveal-delay-3" id="postsGrid">
+
+    <!-- STARTUP AUDIT -->
+    <div class="post-card" data-pillar="audit">
+      <div class="post-format">Carrusel · 7 slides</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">El 90% de startups falla por lo mismo. ¿Sabes qué es?</div>
+      <div class="post-preview">El 90% de las startups que cerraron en España tenían un producto que funcionaba. El problema era otro: no desarrollaron el mercado. No vendieron a tiempo...</div>
+      <div class="post-caption">"El 90% de startups no falla por la idea. Falla porque nadie les dijo la verdad a tiempo."</div>
+      <div class="post-hashtags">#startup #emprendimiento #startupfail #venturebuild</div>
+    </div>
+
+    <div class="post-card" data-pillar="audit">
+      <div class="post-format">Post largo</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">Hoy rechazamos 3 proyectos. Aquí lo que vimos en cada uno.</div>
+      <div class="post-preview">No porque las ideas fueran malas. Porque en las 7 áreas que miramos, había problemas que iban a costar caro. Proyecto 1: equipo roto. Proyecto 2: cero validación...</div>
+      <div class="post-caption">"Hoy rechazamos 3 proyectos. Esto es lo que fallaba en cada uno."</div>
+      <div class="post-hashtags">#startupaudit #emprendimiento #venturebuild</div>
+    </div>
+
+    <div class="post-card" data-pillar="audit">
+      <div class="post-format">Carrusel · 6 slides</div>
+      <div class="post-platform">Instagram + LinkedIn</div>
+      <div class="post-hook">El error que destruye el 60% de startups no está en el producto.</div>
+      <div class="post-preview">Está en el equipo. ¿Los fundadores tienen visiones alineadas? ¿Están claros los roles? ¿Hay un acuerdo de equity firmado? Si falla uno de estos — hay un problema...</div>
+      <div class="post-caption">"El error que destruye el 60% de startups no está en el producto. Está en el equipo."</div>
+      <div class="post-hashtags">#equipo #startup #cofounder #startupfail</div>
+    </div>
+
+    <div class="post-card" data-pillar="audit">
+      <div class="post-format">Imagen estática</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">Las 7 preguntas que hacemos antes de decir sí.</div>
+      <div class="post-preview">01 EQUIPO — ¿alineados, roles, experiencia? 02 MERCADO — ¿existe, es grande? 03 PRODUCTO — ¿dolor real? 04 MODELO — ¿unit economics? ...</div>
+      <div class="post-caption">"Auditamos en 7 áreas. No para decir no — para saber dónde hay trabajo."</div>
+      <div class="post-hashtags">#startup #audit #emprendimiento #founders</div>
+    </div>
+
+    <div class="post-card" data-pillar="audit">
+      <div class="post-format">Post datos</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">El 69% de startups fallidas lo hace con buen producto.</div>
+      <div class="post-preview">No porque gastaran mal. Porque tardaron demasiado en vender. El runway no lo define lo bueno que sea tu producto. Lo define cuándo empieza a entrar dinero...</div>
+      <div class="post-caption">"La pregunta no es '¿cuándo está listo?'. Es '¿cuándo entra el primer euro?'"</div>
+      <div class="post-hashtags">#startup #ventas #emprendimiento #runway</div>
+    </div>
+
+    <!-- EL BECARIO -->
+    <div class="post-card" data-pillar="becario">
+      <div class="post-format">Reel · Cover Serie</div>
+      <div class="post-platform">Instagram + TikTok</div>
+      <div class="post-hook">Semana 1 en Startup Factory. Esto no me lo esperaba.</div>
+      <div class="post-preview">Cover fijo de serie: badge "EL BECARIO · EP.01", intro 3 segundos reconocible. Me contrataron de becario en un venture builder. Día 1: esto no me lo esperaba...</div>
+      <div class="post-caption">"Semana 1 en SF. Esto no me lo esperaba. [El Becario EP.1]"</div>
+      <div class="post-hashtags">#elbecario #startupfactory #venturebuild</div>
+    </div>
+
+    <div class="post-card" data-pillar="becario">
+      <div class="post-format">Carrusel · 6 slides</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">Lo que aprendí en mi primera semana en SF.</div>
+      <div class="post-preview">El NO se trabaja más que el SÍ. Rechazar bien requiere tiempo, criterio y honestidad. Nadie habla de ideas brillantes — se habla de cuándo entra el primer euro...</div>
+      <div class="post-caption">"Mi primera semana en SF. Esto no me lo esperaba. [EP.1]"</div>
+      <div class="post-hashtags">#elbecario #startup #emprendimiento</div>
+    </div>
+
+    <div class="post-card" data-pillar="becario">
+      <div class="post-format">Reel EP.2</div>
+      <div class="post-platform">Instagram + TikTok</div>
+      <div class="post-hook">Mi primera reunión con un fundador. No salió como esperaba.</div>
+      <div class="post-preview">Entré a la reunión pensando que iba a impresionarle. Lo que pasó fue lo contrario. El que aprendió algo fui yo...</div>
+      <div class="post-caption">"Mi primera reunión con un fundador. Spoiler: el que aprendió fui yo. [EP.2]"</div>
+      <div class="post-hashtags">#elbecario #startupfactory #founder</div>
+    </div>
+
+    <div class="post-card" data-pillar="becario">
+      <div class="post-format">Texto bold</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">"¿Por qué esto? ¿Por qué tú? ¿Por qué ahora?"</div>
+      <div class="post-preview">La pregunta que Carlos hace al final de cada reunión. Si no tienes respuesta clara a las tres, hay trabajo que hacer antes de seguir. Simple. Brutal.</div>
+      <div class="post-caption">"3 preguntas. Simples. Brutales. Las que más cuesta responder cuando llevas meses enamorado de tu idea."</div>
+      <div class="post-hashtags">#elbecario #startup #founder</div>
+    </div>
+
+    <div class="post-card" data-pillar="becario">
+      <div class="post-format">Post largo</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">Llevo 3 semanas en SF. Esto es lo que aprendería si pudiera volver a empezar.</div>
+      <div class="post-preview">1. Habla con clientes antes de escribir una línea de código. 2. El co-founder es una decisión de matrimonio, no de amistad. 3. El NO de un buen mentor vale más que el SÍ de alguien que quiere quedar bien...</div>
+      <div class="post-caption">"3 semanas en SF. Esto es lo que aprendería si pudiera volver a empezar."</div>
+      <div class="post-hashtags">#elbecario #startup #emprendimiento #founders</div>
+    </div>
+
+    <!-- AI FOR FOUNDERS -->
+    <div class="post-card" data-pillar="ai">
+      <div class="post-format">Reel · Demo pantalla</div>
+      <div class="post-platform">TikTok + Instagram</div>
+      <div class="post-hook">Hice en 10 minutos lo que antes me costaba 3 días.</div>
+      <div class="post-preview">Screen recording + cara a cámara. Análisis de 10 competidores en 10 minutos con IA. Proceso exacto, paso a paso, resultado medible...</div>
+      <div class="post-caption">"Análisis de 10 competidores en 10 minutos. Proceso exacto arriba."</div>
+      <div class="post-hashtags">#aiforstartups #herramientasia #startup</div>
+    </div>
+
+    <div class="post-card" data-pillar="ai">
+      <div class="post-format">Carrusel · 6 slides</div>
+      <div class="post-platform">Instagram + LinkedIn</div>
+      <div class="post-hook">La IA no es el futuro. Es la nómina de 2026.</div>
+      <div class="post-preview">Las startups tech gastan 50% MÁS en IA que en nómina. Las 5 categorías donde ya reemplaza coste humano: análisis, copy, atención cliente, reporting, prototipado...</div>
+      <div class="post-caption">"50% más en IA que en nómina. La pregunta no es si usarla — es si genera ventaja."</div>
+      <div class="post-hashtags">#aiforstartups #IA #startup #founders2026</div>
+    </div>
+
+    <div class="post-card" data-pillar="ai">
+      <div class="post-format">Post caso real</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">20 minutos con IA para tomar una decisión que habría tardado 3 días.</div>
+      <div class="post-preview">Paso 1: contexto rápido. Paso 2: análisis de la propuesta. Paso 3: investigación del fundador. Paso 4: decisión. No tomé la decisión con IA. Tomé una mejor decisión...</div>
+      <div class="post-caption">"20 minutos. Proceso exacto arriba."</div>
+      <div class="post-hashtags">#aiforstartups #IA #startup #founders</div>
+    </div>
+
+    <div class="post-card" data-pillar="ai">
+      <div class="post-format">Carrusel · 7 slides</div>
+      <div class="post-platform">Instagram + LinkedIn</div>
+      <div class="post-hook">Las 5 herramientas de IA que uso cada semana con casos reales.</div>
+      <div class="post-preview">Claude, Perplexity, Notion AI, n8n + Claude, Canva AI. Con el caso de uso real de cada una. Sin teoría. Una herramienta por semana en la serie AI for Founders...</div>
+      <div class="post-caption">"5 herramientas. Casos reales. Sin teoría. Mi stack de 2026."</div>
+      <div class="post-hashtags">#aiforstartups #herramientasia #stack2026</div>
+    </div>
+
+    <div class="post-card" data-pillar="ai">
+      <div class="post-format">Imagen + cita</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">"Todas las startups tienen las mismas IAs. Las que ganan saben qué preguntarle."</div>
+      <div class="post-preview">No es la herramienta. Es el criterio para usarla. Texto bold sobre fondo oscuro con identidad visual de la serie...</div>
+      <div class="post-caption">"No es la herramienta. Es el criterio."</div>
+      <div class="post-hashtags">#aiforstartups #criterio #startup</div>
+    </div>
+
+    <!-- BUILDER STORIES -->
+    <div class="post-card" data-pillar="builder">
+      <div class="post-format">Carrusel · 6 slides</div>
+      <div class="post-platform">Instagram + LinkedIn</div>
+      <div class="post-hook">Rechazamos el proyecto de Dadybox dos veces. A la tercera era perfecto.</div>
+      <div class="post-preview">Primera vez: idea sólida, equipo roto. Segunda vez: modelo sin sentido. Tercera vez: diferente. Lo que diferencia a los que construyen de los que sueñan...</div>
+      <div class="post-caption">"Rechazamos Dadybox dos veces. A la tercera, lo que había cambiado era todo lo que importaba."</div>
+      <div class="post-hashtags">#builderstories #startupfactory #dadybox</div>
+    </div>
+
+    <div class="post-card" data-pillar="builder">
+      <div class="post-format">Post largo</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">Le pregunté a Natalia Aldea qué cambiaría si empezara Dadybox hoy.</div>
+      <div class="post-preview">"Habría buscado feedback honesto antes. No de amigos que te dicen que tu idea es genial." Cuando Dadybox llegó a SF la primera vez, les dijimos que no. Con un informe...</div>
+      <div class="post-caption">"Lo que cambiaría Natalia si empezara hoy dice todo sobre qué hace que un proyecto llegue a algún lado."</div>
+      <div class="post-hashtags">#builderstories #founders #emprendimiento</div>
+    </div>
+
+    <div class="post-card" data-pillar="builder">
+      <div class="post-format">Cita · Imagen</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">"Construí 8 meses el producto perfecto. El mercado ya no tenía ese problema."</div>
+      <div class="post-preview">Cita de founder anónimo del ecosistema SF. El mercado no espera. La validación no puede ser lo último que haces. Formato cita sobre fondo oscuro...</div>
+      <div class="post-caption">"El mercado no espera. La validación no puede ser lo último que haces."</div>
+      <div class="post-hashtags">#builderstories #startup #validacion</div>
+    </div>
+
+    <div class="post-card" data-pillar="builder">
+      <div class="post-format">Carrusel · 5 slides</div>
+      <div class="post-platform">Instagram + LinkedIn</div>
+      <div class="post-hook">Mahou, Airbus, Siemens. Así llegan las startups SF a trabajar con ellos.</div>
+      <div class="post-preview">No van con el producto. Van con el problema que resuelven. Identifican la división correcta, construyen el caso de negocio, encuentran al que tiene el problema...</div>
+      <div class="post-caption">"No llegamos por suerte — llegamos con el problema correcto, a la persona correcta."</div>
+      <div class="post-hashtags">#builderstories #corporate #openinnovation</div>
+    </div>
+
+    <div class="post-card" data-pillar="builder">
+      <div class="post-format">Post largo</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">Llevo 15 años hablando con fundadores. El patrón que separa a los que llegan.</div>
+      <div class="post-preview">5.000+ miembros. 300+ eventos. La diferencia no es la idea ni el dinero: es la capacidad de adaptarse más rápido que el mercado cambia. Los fundadores que sobreviven buscan feedback antes de necesitarlo...</div>
+      <div class="post-caption">"15 años. 5.000 emprendedores. El patrón que separa a los que llegan de los que no."</div>
+      <div class="post-hashtags">#builderstories #founders #emprendimiento</div>
+    </div>
+
+    <!-- STARTUP OPPORTUNITIES -->
+    <div class="post-card" data-pillar="opps">
+      <div class="post-format">Post largo</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">Llevo 4 años en Bangkok. Hay 3 sectores en SEA que nadie español mira.</div>
+      <div class="post-preview">FinTech para no-bancarizados: 40% de adultos en SEA sin cuenta. AgriTech: millones de agricultores sin herramientas digitales. SaaS para PYMEs locales: ventana de 2-3 años...</div>
+      <div class="post-caption">"Desde Bangkok veo mercados que desde Madrid no existen."</div>
+      <div class="post-hashtags">#SEA #Bangkok #startup #oportunidades</div>
+    </div>
+
+    <div class="post-card" data-pillar="opps">
+      <div class="post-format">Imagen + texto</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">Desde aquí veo mercados que desde Madrid no existen.</div>
+      <div class="post-preview">Foto Bangkok + texto overlay bold. "DESDE AQUÍ / VEO MERCADOS / QUE DESDE MADRID / NO EXISTEN." Simple, directo, diferenciador único...</div>
+      <div class="post-caption">"Hay ventajas que no se compran con dinero. Una de ellas es estar donde nadie más está mirando."</div>
+      <div class="post-hashtags">#Bangkok #SEA #startup #emprendimiento</div>
+    </div>
+
+    <div class="post-card" data-pillar="opps">
+      <div class="post-format">Carrusel · 6 slides</div>
+      <div class="post-platform">Instagram + LinkedIn</div>
+      <div class="post-hook">El ecosistema startup tailandés en 5 datos que te van a sorprender.</div>
+      <div class="post-preview">71M personas, clase media creciendo al 6%. Bangkok con más coworking por habitante que Berlín. Programa Thailand 4.0 con subsidios activos. 65% transacciones digitales...</div>
+      <div class="post-caption">"5 datos sobre Tailandia que no ves en ningún podcast de emprendimiento español."</div>
+      <div class="post-hashtags">#Tailandia #SEA #startup #Bangkok</div>
+    </div>
+
+    <div class="post-card" data-pillar="opps">
+      <div class="post-format">Post datos</div>
+      <div class="post-platform">LinkedIn</div>
+      <div class="post-hook">Desde Bangkok, LATAM se ve diferente. 3 oportunidades que me llaman la atención.</div>
+      <div class="post-preview">Infraestructura pagos B2B en México y Colombia. EdTech para formación laboral. Logística última milla en ciudades secundarias. Mercados reales, menos competencia...</div>
+      <div class="post-caption">"Desde Bangkok, LATAM se ve diferente. Estos son los 3 espacios que más me interesan en 2026."</div>
+      <div class="post-hashtags">#LATAM #oportunidades #startup #SEA</div>
+    </div>
+
+    <div class="post-card" data-pillar="opps">
+      <div class="post-format">Imagen bold</div>
+      <div class="post-platform">Instagram</div>
+      <div class="post-hook">"Hay una ventaja que no se compra. Estar donde nadie de tu sector está mirando."</div>
+      <div class="post-preview">Texto bold sobre fondo negro. "HAY UNA VENTAJA / QUE NO SE COMPRA. / Estar donde nadie / de tu sector está mirando. / Nosotros llevamos 4 años aquí."</div>
+      <div class="post-caption">"El ángulo SEA no lo da el dinero. Lo da el tiempo y la presencia."</div>
+      <div class="post-hashtags">#Bangkok #SEA #ventajacompetitiva</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 10 REELS ── -->
+<section id="reels" style="background:var(--bg2)">
+  <div class="section-label reveal">10 — Scripts Reel</div>
+  <div class="section-title reveal reveal-delay-1">SCRIPTS<br><span class="gradient-text">REELS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="reveal reveal-delay-2">
+
+    <div class="reel-card">
+      <div class="reel-header">
+        <div class="reel-title">Startup Audit</div>
+        <div class="reel-badge">35 seg · Cara a cámara</div>
+      </div>
+      <div class="timeline">
+        <div class="cut"><div class="cut-time">0–3s</div><div class="cut-content"><strong>HOOK:</strong> "El 90% de startups que cierran tenían buena idea." <div class="cut-screen">PANTALLA: "90%"</div></div></div>
+        <div class="cut"><div class="cut-time">4–10s</div><div class="cut-content">"El problema no fue la idea. Fue que nadie les dijo la verdad a tiempo." <div class="cut-screen">PANTALLA: "nadie les dijo la verdad"</div></div></div>
+        <div class="cut"><div class="cut-time">10–17s</div><div class="cut-content">"En SF auditamos en 7 áreas: Equipo, Mercado, Modelo, Tracción, Finanzas, Producto, Timing." <div class="cut-screen">PANTALLA: lista animada de 7 áreas</div></div></div>
+        <div class="cut"><div class="cut-time">17–28s</div><div class="cut-content">"Si falla más de 2: NO con informe. Si falla 1: entramos a trabajarlo. Porque el no con instrucciones vale más que el sí sin criterio." <div class="cut-screen">PANTALLA: "NO — con informe"</div></div></div>
+        <div class="cut"><div class="cut-time">29–35s</div><div class="cut-content"><strong>CTA:</strong> "¿Quieres que auditemos el tuyo? Link en bio." <div class="cut-screen">PANTALLA: "Sesión gratuita → bio"</div></div></div>
+      </div>
+    </div>
+
+    <div class="reel-card">
+      <div class="reel-header">
+        <div class="reel-title">El Becario — EP.1</div>
+        <div class="reel-badge">30 seg · Serie · Cover fijo</div>
+      </div>
+      <div class="timeline">
+        <div class="cut"><div class="cut-time">0–3s</div><div class="cut-content"><strong>INTRO SERIE FIJA:</strong> Texto "EL BECARIO" animado + sonido característico. <div class="cut-screen">COVER: badge "EL BECARIO · EP.01" siempre igual</div></div></div>
+        <div class="cut"><div class="cut-time">3–7s</div><div class="cut-content"><strong>HOOK:</strong> "Me contrataron de becario en un venture builder. Día 1: esto no me lo esperaba." <div class="cut-screen">PANTALLA: "4 rechazos · día 1"</div></div></div>
+        <div class="cut"><div class="cut-time">7–17s</div><div class="cut-content">"El NO se trabaja más que el SÍ. Nadie habla de ideas brillantes — se habla de cuándo entra el primer euro." <div class="cut-screen">PANTALLA: "el NO se trabaja" / "¿cuándo entra el primer euro?"</div></div></div>
+        <div class="cut"><div class="cut-time">25–30s</div><div class="cut-content"><strong>CTA:</strong> "EP.2 la semana que viene. Mi primera llamada con un fundador. No salió como esperaba." <div class="cut-screen">PANTALLA: "Guarda · EP.2 la semana que viene"</div></div></div>
+      </div>
+    </div>
+
+    <div class="reel-card">
+      <div class="reel-header">
+        <div class="reel-title">AI for Founders</div>
+        <div class="reel-badge">40 seg · Demo pantalla + cara</div>
+      </div>
+      <div class="timeline">
+        <div class="cut"><div class="cut-time">0–4s</div><div class="cut-content"><strong>HOOK:</strong> "Hice en 10 minutos lo que antes me costaba 3 días. Te muestro exactamente cómo." <div class="cut-screen">PANTALLA: "10 minutos vs 3 días"</div></div></div>
+        <div class="cut"><div class="cut-time">4–18s</div><div class="cut-content"><strong>DEMO PANTALLA:</strong> Abre Claude. Escribe el prompt: "Analiza estos 10 competidores y dime qué problema de cliente tiene cada uno sin resolver." <div class="cut-screen">PANTALLA: el prompt escrito en tiempo real</div></div></div>
+        <div class="cut"><div class="cut-time">18–25s</div><div class="cut-content">La respuesta aparece. Resalta los insights clave. "En 90 segundos: tabla comparativa, gaps de mercado, 3 ángulos de diferenciación." <div class="cut-screen">PANTALLA: "90 segundos · tabla completa"</div></div></div>
+        <div class="cut"><div class="cut-time">33–40s</div><div class="cut-content"><strong>CTA:</strong> "Serie AI for Founders: una herramienta por semana. La siguiente sale el miércoles." <div class="cut-screen">PANTALLA: "Guarda · próxima: miércoles"</div></div></div>
+      </div>
+    </div>
+
+    <div class="reel-card">
+      <div class="reel-header">
+        <div class="reel-title">Builder Stories</div>
+        <div class="reel-badge">35 seg · Storytelling</div>
+      </div>
+      <div class="timeline">
+        <div class="cut"><div class="cut-time">0–4s</div><div class="cut-content"><strong>HOOK:</strong> "Rechacé este proyecto dos veces. A la tercera, era irreconocible. Y era perfecto." </div></div>
+        <div class="cut"><div class="cut-time">4–17s</div><div class="cut-content">"Primera vez: idea sólida, equipo roto. NO con informe. Segunda vez: modelo sin sentido financiero. Otro NO." <div class="cut-screen">PANTALLA: "NO · informe · vuelve" / "NO · otro informe"</div></div></div>
+        <div class="cut"><div class="cut-time">17–24s</div><div class="cut-content">"Tercera vez: diferente. El equipo había escuchado. El modelo tenía sentido. SÍ." <div class="cut-screen">PANTALLA: "SÍ ✓"</div></div></div>
+        <div class="cut"><div class="cut-time">24–35s</div><div class="cut-content">"Lo que diferencia a los que construyen de los que sueñan: la capacidad de escuchar un no y convertirlo en trabajo." <strong>CTA → bio.</strong></div></div>
+      </div>
+    </div>
+
+    <div class="reel-card">
+      <div class="reel-header">
+        <div class="reel-title">Startup Opportunities</div>
+        <div class="reel-badge">30 seg · Bangkok exterior</div>
+      </div>
+      <div class="timeline">
+        <div class="cut"><div class="cut-time">0–4s</div><div class="cut-content"><strong>HOOK:</strong> [Bangkok visible de fondo] "Estoy en Bangkok. Llevo 4 años aquí. Y veo mercados que desde Madrid son invisibles." <div class="cut-screen">PANTALLA: "Bangkok, Thailand"</div></div></div>
+        <div class="cut"><div class="cut-time">4–17s</div><div class="cut-content">"El ecosistema startup de SEA está donde España estaba hace 10 años. Solo que con más capital y menos competencia. FinTech, AgriTech, SaaS para PYMEs locales." <div class="cut-screen">PANTALLA: las 3 categorías</div></div></div>
+        <div class="cut"><div class="cut-time">17–30s</div><div class="cut-content">"No te digo que te mudes. Te digo que hay mercados que no están en tu mapa porque no tienes ojos aquí. Nosotros sí los tenemos." <strong>CTA → bio.</strong></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 13 CALENDAR ── -->
+<section id="calendar">
+  <div class="section-label reveal">13 — Calendario</div>
+  <div class="section-title reveal reveal-delay-1">CALENDARIO<br><span class="gradient-text">30 DÍAS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="reveal reveal-delay-2">
+
+    <div class="week-block">
+      <div class="week-title">SEMANA 1 — 12-17 Mayo</div>
+      <div class="week-theme">Tema: RELANZAMIENTO · Meta: 200 nuevos seguidores</div>
+      <table class="cal-table">
+        <thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead>
+        <tbody>
+          <tr><td>Lun 12</td><td><span class="platform-ig">IG</span> + <span class="platform-li">LI</span></td><td><span class="badge-pilar">Startup Audit</span></td><td>Post texto</td><td><span class="hook-preview">"Hoy rechazamos 3 proyectos. Aquí lo que vimos."</span></td></tr>
+          <tr><td>Mié 14</td><td><span class="platform-ig">IG</span> + <span class="platform-tk">TK</span></td><td><span class="badge-pilar">El Becario</span></td><td>🎬 Reel EP.1</td><td><span class="hook-preview">"Me contrataron de becario. Día 1: esto no me esperaba."</span></td></tr>
+          <tr><td>Sáb 17</td><td><span class="platform-ig">IG</span></td><td><span class="badge-pilar">Startup Audit</span></td><td>Carrusel 7s</td><td><span class="hook-preview">"El 90% de startups falla por lo mismo. ¿Sabes qué es?"</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="week-block">
+      <div class="week-title">SEMANA 2 — 19-24 Mayo</div>
+      <div class="week-theme">Tema: STARTUP AUDIT · Meta: 50 DMs de interés</div>
+      <table class="cal-table">
+        <thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead>
+        <tbody>
+          <tr><td>Lun 19</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">Startup Audit</span></td><td>Post datos</td><td><span class="hook-preview">"El 69% de startups fallidas se quedó sin dinero con buen producto."</span></td></tr>
+          <tr><td>Mié 21</td><td><span class="platform-ig">IG</span></td><td><span class="badge-pilar">El Becario</span></td><td>Carrusel</td><td><span class="hook-preview">"Lo que aprendí en mi primera semana en SF."</span></td></tr>
+          <tr><td>Jue 22</td><td><span class="platform-ig">IG</span> + <span class="platform-li">LI</span></td><td><span class="badge-pilar">Startup Audit</span></td><td>Carrusel</td><td><span class="hook-preview">"El error que destruye el 60% de startups no está en el producto."</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="week-block">
+      <div class="week-title">SEMANA 3 — 26-31 Mayo</div>
+      <div class="week-theme">Tema: AI FOR FOUNDERS · Meta: 100 visitas /ai-for-founders</div>
+      <table class="cal-table">
+        <thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead>
+        <tbody>
+          <tr><td>Lun 26</td><td><span class="platform-tk">TK</span> + <span class="platform-ig">IG</span></td><td><span class="badge-pilar">AI for Founders</span></td><td>🎬 Reel demo</td><td><span class="hook-preview">"Hice en 10 minutos lo que antes costaba 3 días."</span></td></tr>
+          <tr><td>Mié 28</td><td><span class="platform-ig">IG</span> + <span class="platform-li">LI</span></td><td><span class="badge-pilar">AI for Founders</span></td><td>Carrusel dato</td><td><span class="hook-preview">"La IA no es el futuro. Es la nómina de 2026."</span></td></tr>
+          <tr><td>Sáb 31</td><td><span class="platform-ig">IG</span></td><td><span class="badge-pilar">Startup Audit</span></td><td>Imagen 7 áreas</td><td><span class="hook-preview">"Si no puedes responder estas 7 preguntas, tu startup no está lista."</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="week-block">
+      <div class="week-title">SEMANA 4 — 2-7 Junio</div>
+      <div class="week-theme">Tema: EL BECARIO EP.2 + BUILDER STORIES · Meta: primer viral</div>
+      <table class="cal-table">
+        <thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead>
+        <tbody>
+          <tr><td>Lun 2</td><td><span class="platform-ig">IG</span> + <span class="platform-tk">TK</span></td><td><span class="badge-pilar">El Becario</span></td><td>🎬 Reel EP.2</td><td><span class="hook-preview">"Mi primera reunión con un fundador. No salió como esperaba."</span></td></tr>
+          <tr><td>Mié 4</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">Builder Stories</span></td><td>Post largo</td><td><span class="hook-preview">"Le pregunté a Natalia Aldea qué cambiaría si empezara Dadybox hoy."</span></td></tr>
+          <tr><td>Jue 5</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">AI for Founders</span></td><td>Post caso real</td><td><span class="hook-preview">"20 minutos con IA para tomar una decisión que tardé 3 días."</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="week-block">
+      <div class="week-title">SEMANA 5 — 9-14 Junio</div>
+      <div class="week-theme">Tema: SEA + OPORTUNIDADES · Meta: posicionar ángulo Bangkok</div>
+      <table class="cal-table">
+        <thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead>
+        <tbody>
+          <tr><td>Lun 9</td><td><span class="platform-ig">IG</span></td><td><span class="badge-pilar">Startup Opps</span></td><td>🎬 Reel Bangkok</td><td><span class="hook-preview">"Estoy en Bangkok. Veo mercados que desde Madrid son invisibles."</span></td></tr>
+          <tr><td>Mié 11</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">Startup Opps</span></td><td>Post LinkedIn</td><td><span class="hook-preview">"3 sectores en SEA que ningún español está mirando todavía."</span></td></tr>
+          <tr><td>Sáb 14</td><td><span class="platform-ig">IG</span> + <span class="platform-li">LI</span></td><td><span class="badge-pilar">Builder Stories</span></td><td>Carrusel Dadybox</td><td><span class="hook-preview">"Rechazamos Dadybox dos veces. A la tercera era perfecto."</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="week-block">
+      <div class="week-title">SEMANAS 6-7 — 16-28 Junio</div>
+      <div class="week-theme">AI herramientas + Builder + cierre de mes</div>
+      <table class="cal-table">
+        <thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead>
+        <tbody>
+          <tr><td>Lun 16</td><td><span class="platform-ig">IG</span> + <span class="platform-li">LI</span></td><td><span class="badge-pilar">AI for Founders</span></td><td>Carrusel 5 tools</td><td><span class="hook-preview">"Las 5 herramientas de IA que uso cada semana."</span></td></tr>
+          <tr><td>Mié 18</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">Builder Stories</span></td><td>Post comunidad</td><td><span class="hook-preview">"Llevo 15 años hablando con fundadores. El patrón que separa."</span></td></tr>
+          <tr><td>Lun 23</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">Startup Opps</span></td><td>Post LATAM</td><td><span class="hook-preview">"Desde Bangkok, LATAM se ve diferente."</span></td></tr>
+          <tr><td>Mié 25</td><td><span class="platform-ig">IG</span></td><td><span class="badge-pilar">AI for Founders</span></td><td>Imagen cita</td><td><span class="hook-preview">"Todas las startups tienen las mismas IAs. Las que ganan saben qué preguntarle."</span></td></tr>
+          <tr><td>Sáb 28</td><td><span class="platform-li">LI</span></td><td><span class="badge-pilar">El Becario</span></td><td>Post largo</td><td><span class="hook-preview">"Llevo 3 semanas en SF. Esto es lo que aprendería si pudiera volver a empezar."</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 19 CANVA ── -->
+<section id="canva" style="background:var(--bg2)">
+  <div class="section-label reveal">19 — Templates Canva</div>
+  <div class="section-title reveal reveal-delay-1">TEMPLATES<br><span class="gradient-text">CANVA</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <p class="reveal reveal-delay-2" style="font-size:14px;color:var(--dim);margin-bottom:32px;max-width:560px">Un template por pilar, con 4 candidatos cada uno. Haz clic en cualquier opción para abrirlo en Canva y editarlo.</p>
+
+  <div class="canva-grid reveal reveal-delay-3">
+
+    <div class="canva-pillar">
+      <div class="canva-name">Startup Audit</div>
+      <div class="canva-pct">30% del mix</div>
+      <div class="canva-thumbs">
+        <a class="canva-thumb" href="https://www.canva.com/d/TMIXg0T2VvDjE9x" target="_blank"><img src="https://design.canva.ai/C9vr0Wlbgo1rcHe" alt="A" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/p-nO-ref-0xEKsl" target="_blank"><img src="https://design.canva.ai/ZE-Ui3O3y2ieRxO" alt="B" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/ryqNkcKerA7CwhB" target="_blank"><img src="https://design.canva.ai/cJn8OOBPvpUnxw5" alt="C" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/16-DoDxyoGayx8w" target="_blank"><img src="https://design.canva.ai/EbfDu1Z_SlGryqU" alt="D" onerror="this.style.display='none'"></a>
+      </div>
+      <a class="canva-link" href="https://www.canva.com/d/TMIXg0T2VvDjE9x" target="_blank">Abrir opción A →</a>
+    </div>
+
+    <div class="canva-pillar">
+      <div class="canva-name">El Becario</div>
+      <div class="canva-pct">25% — cover de serie</div>
+      <div class="canva-thumbs">
+        <a class="canva-thumb" href="https://www.canva.com/d/-HmKBmVOU2eMOPg" target="_blank"><img src="https://design.canva.ai/jOvkdCFGL1WMSrJ" alt="A" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/4mUXK0a9Op0tAiR" target="_blank"><img src="https://design.canva.ai/CNu53qemS_b4zp_" alt="B" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/eVWpNwAcx1csrDp" target="_blank"><img src="https://design.canva.ai/q0LrWEWBvyWFp_H" alt="C" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/ZZ-TOPHR4hZdXJG" target="_blank"><img src="https://design.canva.ai/A7yPPLezahtxSNU" alt="D" onerror="this.style.display='none'"></a>
+      </div>
+      <a class="canva-link" href="https://www.canva.com/d/-HmKBmVOU2eMOPg" target="_blank">Abrir opción A →</a>
+    </div>
+
+    <div class="canva-pillar">
+      <div class="canva-name">AI for Founders</div>
+      <div class="canva-pct">25% del mix</div>
+      <div class="canva-thumbs">
+        <a class="canva-thumb" href="https://www.canva.com/d/NM-ceGwKkD6HwMi" target="_blank"><img src="https://design.canva.ai/AoVMQnD4w5k1JSk" alt="A" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/ho5jptxolktMvGe" target="_blank"><img src="https://design.canva.ai/kd0e9odcaqxM_X5" alt="B" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/Rc1gf-opMYFsVc2" target="_blank"><img src="https://design.canva.ai/rU1mst5IjZvhVFj" alt="C" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/s34swXkxClmZD2m" target="_blank"><img src="https://design.canva.ai/ffyHkrH26sE_7lg" alt="D" onerror="this.style.display='none'"></a>
+      </div>
+      <a class="canva-link" href="https://www.canva.com/d/NM-ceGwKkD6HwMi" target="_blank">Abrir opción A →</a>
+    </div>
+
+    <div class="canva-pillar">
+      <div class="canva-name">Builder Stories</div>
+      <div class="canva-pct">10% del mix</div>
+      <div class="canva-thumbs">
+        <a class="canva-thumb" href="https://www.canva.com/d/rZfnOdHNBQV5UzI" target="_blank"><img src="https://design.canva.ai/KmaZxyg7hze41Co" alt="A" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/47kdlvrIoghfi0K" target="_blank"><img src="https://design.canva.ai/bf1Pzd9WKQcHOBZ" alt="B" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/mk_GrY2oX9jYGoL" target="_blank"><img src="https://design.canva.ai/wUFG0xhi1xBuGmg" alt="C" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/et4PXv2JCV7TDw-" target="_blank"><img src="https://design.canva.ai/dx_BdiM3bua4kzR" alt="D" onerror="this.style.display='none'"></a>
+      </div>
+      <a class="canva-link" href="https://www.canva.com/d/rZfnOdHNBQV5UzI" target="_blank">Abrir opción A →</a>
+    </div>
+
+    <div class="canva-pillar">
+      <div class="canva-name">Startup Opps</div>
+      <div class="canva-pct">10% del mix</div>
+      <div class="canva-thumbs">
+        <a class="canva-thumb" href="https://www.canva.com/d/9AqzR2ggy8CVye5" target="_blank"><img src="https://design.canva.ai/r-Lo8urfwyX9W8Q" alt="A" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/fH8OvgBDXzKOaoa" target="_blank"><img src="https://design.canva.ai/urVnkkw6xe2e83a" alt="B" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/eJlLMxRJHR2HPjn" target="_blank"><img src="https://design.canva.ai/Mf8Phxi7eSlDtcX" alt="C" onerror="this.style.display='none'"></a>
+        <a class="canva-thumb" href="https://www.canva.com/d/rijRWB1_pvldPig" target="_blank"><img src="https://design.canva.ai/uK5g2VAXBA1r_vl" alt="D" onerror="this.style.display='none'"></a>
+      </div>
+      <a class="canva-link" href="https://www.canva.com/d/9AqzR2ggy8CVye5" target="_blank">Abrir opción A →</a>
+    </div>
+
+  </div>
+
+  <div style="margin-top:60px;text-align:center;padding:40px;border:1px solid rgba(61,47,255,.2);border-radius:16px;background:rgba(61,47,255,.05)" class="reveal reveal-delay-4">
+    <div class="mono" style="font-size:9px;letter-spacing:.2em;color:var(--primary);text-transform:uppercase;margin-bottom:12px">Startup Factory · Content Pack · Mayo-Junio 2026</div>
+    <div style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;margin-bottom:8px">¿Empezamos a publicar?</div>
+    <div style="font-size:13px;color:var(--dim)">Primer paso: actualizar la bio de Instagram + link /es/bio (P1 del action plan)</div>
+  </div>
+</section>
+
+<!-- ── 11 CAMPAIGNS ── -->
+<section id="campaigns">
+  <div class="section-label reveal">11 — Campaigns</div>
+  <div class="section-title reveal reveal-delay-1">CAMPAÑAS<br><span class="gradient-text">ACTIVAS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="grid-3 reveal reveal-delay-2">
+    <div class="campaign-card">
+      <div class="campaign-dates">Mayo 2026</div>
+      <div class="campaign-name">Relanzamiento Instagram</div>
+      <div class="campaign-goal">Recuperar presencia activa después de 2+ años sin publicar. Reintroducir la marca con claridad y criterio.</div>
+      <div class="campaign-mechanic">Bio actualizada + 5 posts de relanzamiento con hook "Llevamos 2 años sin publicar. Esto es lo que hemos estado construyendo."</div>
+    </div>
+    <div class="campaign-card">
+      <div class="campaign-dates">Mayo — Junio 2026</div>
+      <div class="campaign-name">AI for Founders — Lead Magnet</div>
+      <div class="campaign-goal">500 leads cualificados para el kit de IA para fundadores. Primer embudo de captación masiva.</div>
+      <div class="campaign-mechanic">TikTok hook viral → /es/ai-for-founders → Kit IA descargable → Nurturing Mailerlite → Call diagnóstico</div>
+    </div>
+    <div class="campaign-card">
+      <div class="campaign-dates">Junio 2026</div>
+      <div class="campaign-name">Startup Audit Launch</div>
+      <div class="campaign-goal">300 descargas de la metodología de auditoría propia. Posicionar a SF como referente de rigor en el ecosistema.</div>
+      <div class="campaign-mechanic">Contenido educativo orgánico (7 días) → /es/startup-audit → GPT Audit → Call diagnóstico SF</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 12 MONTH 1 ── -->
+<section id="month1" style="background:var(--bg-2);">
+  <div class="section-label reveal">12 — Month 1 Master Plan</div>
+  <div class="section-title reveal reveal-delay-1">PLAN<br><span class="gradient-text">MES 1</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid rgba(61,47,255,0.2);border-radius:16px;overflow:hidden;margin-bottom:40px;" class="reveal reveal-delay-2">
+    <div style="padding:16px 20px;background:rgba(61,47,255,0.12);border-right:1px solid rgba(61,47,255,0.2);text-align:center;">
+      <div class="mono" style="font-size:9px;letter-spacing:0.15em;color:var(--primary);text-transform:uppercase;">Meta 30 días</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">+500</div>
+      <div style="font-size:11px;color:var(--text-dim);">Nuevos seguidores</div>
+    </div>
+    <div style="padding:16px 20px;background:rgba(61,47,255,0.08);border-right:1px solid rgba(61,47,255,0.2);text-align:center;">
+      <div class="mono" style="font-size:9px;letter-spacing:0.15em;color:var(--primary);text-transform:uppercase;">Meta 30 días</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">50</div>
+      <div style="font-size:11px;color:var(--text-dim);">DMs de interés</div>
+    </div>
+    <div style="padding:16px 20px;background:rgba(61,47,255,0.08);border-right:1px solid rgba(61,47,255,0.2);text-align:center;">
+      <div class="mono" style="font-size:9px;letter-spacing:0.15em;color:var(--primary);text-transform:uppercase;">Meta 30 días</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">100</div>
+      <div style="font-size:11px;color:var(--text-dim);">Visitas /ai-for-founders</div>
+    </div>
+    <div style="padding:16px 20px;background:rgba(61,47,255,0.06);text-align:center;">
+      <div class="mono" style="font-size:9px;letter-spacing:0.15em;color:var(--primary);text-transform:uppercase;">Meta 30 días</div>
+      <div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">5K+</div>
+      <div style="font-size:11px;color:var(--text-dim);">Vistas pieza viral</div>
+    </div>
+  </div>
+  <div class="grid-4 reveal reveal-delay-3">
+    <div class="week-card">
+      <div class="week-num">Semana 1</div>
+      <div class="week-theme">Relanzamiento — Quiénes somos hoy</div>
+      <div style="font-size:12px;color:var(--text-dim);">5 piezas · Post relanzamiento · Reel Bangkok · Carrusel &lt;10% · Stories Q&A</div>
+      <div class="week-goal">→ 200 nuevos seguidores</div>
+    </div>
+    <div class="week-card">
+      <div class="week-num">Semana 2</div>
+      <div class="week-theme">Startup Audit — Bloque educativo</div>
+      <div style="font-size:12px;color:var(--text-dim);">4 piezas · El error de equipo · Reel audit en directo · Carrusel 7 áreas · Hook rechazo</div>
+      <div class="week-goal">→ 50 DMs de interés</div>
+    </div>
+    <div class="week-card">
+      <div class="week-num">Semana 3</div>
+      <div class="week-theme">AI for Founders — Primera herramienta</div>
+      <div style="font-size:12px;color:var(--text-dim);">4 piezas · Demo IA en pantalla · Reel "10 minutos" · Carrusel herramientas · Link en bio</div>
+      <div class="week-goal">→ 100 visitas /ai-for-founders</div>
+    </div>
+    <div class="week-card">
+      <div class="week-num">Semana 4</div>
+      <div class="week-theme">El Becario — Episodio piloto</div>
+      <div style="font-size:12px;color:var(--text-dim);">4 piezas · Semana 1 en SF · Carrusel aprendizajes · Cierre de mes stats · Teaser mes 2</div>
+      <div class="week-goal">→ Viral 5K+ vistas</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 14 TIMELINE ── -->
+<section id="timeline">
+  <div class="section-label reveal">14 — Roadmap</div>
+  <div class="section-title reveal reveal-delay-1">FASES DE<br><span class="gradient-text">CRECIMIENTO</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="timeline-track reveal reveal-delay-2">
+    <div class="timeline-phase">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase-num">Fase 01 · Mayo</div>
+      <div class="timeline-phase-name">Fundación</div>
+      <ul class="timeline-phase-items">
+        <li>Relanzamiento Instagram</li>
+        <li>Bio actualizada</li>
+        <li>Mailerlite conectado</li>
+        <li>TikTok creado</li>
+      </ul>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase-num">Fase 02 · Jun</div>
+      <div class="timeline-phase-name">Captación</div>
+      <ul class="timeline-phase-items">
+        <li>Lead magnet AI live</li>
+        <li>Startup Audit GPT</li>
+        <li>YouTube lanzado</li>
+        <li>50 leads/mes</li>
+      </ul>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase-num">Fase 03 · Jul-Ago</div>
+      <div class="timeline-phase-name">Comunidad</div>
+      <ul class="timeline-phase-items">
+        <li>ManyChat activo</li>
+        <li>8K seguidores IG</li>
+        <li>Builder Stories serie</li>
+        <li>Testimoniales reales</li>
+      </ul>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase-num">Fase 04 · Sep-Oct</div>
+      <div class="timeline-phase-name">Escala</div>
+      <ul class="timeline-phase-items">
+        <li>Paid media LinkedIn</li>
+        <li>200 leads/mes</li>
+        <li>60 calls/mes</li>
+        <li>Podcast lanzado</li>
+      </ul>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-dot"></div>
+      <div class="timeline-phase-num">Fase 05 · Nov-Dic</div>
+      <div class="timeline-phase-name">Consolidación</div>
+      <ul class="timeline-phase-items">
+        <li>15K seguidores IG</li>
+        <li>8 proyectos/mes</li>
+        <li>Primer evento presencial BKK</li>
+        <li>Revisión annual plan</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── 15 INFLUENCERS ── -->
+<section id="influencers" style="background:var(--bg-2);">
+  <div class="section-label reveal">15 — Creators</div>
+  <div class="section-title reveal reveal-delay-1">ESTRATEGIA<br><span class="gradient-text">INFLUENCERS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="grid-3 reveal reveal-delay-2">
+    <div class="tier-card">
+      <div class="tier-name">Creadores Startup</div>
+      <div class="tier-followers">10K – 100K followers</div>
+      <div class="tier-count">5</div>
+      <div class="tier-budget">€500/mes [ESTIMATE]</div>
+      <div style="margin-top:14px;font-size:12px;color:var(--text-dim);line-height:1.6;">Emprendedores/educators hispanohablantes en Instagram y TikTok. Focus en audiencia de 25-42 con interés en startup y IA.</div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name">Alumni SF / Founders</div>
+      <div class="tier-followers">1K – 10K followers</div>
+      <div class="tier-count">10</div>
+      <div class="tier-budget">Equity o intercambio de valor</div>
+      <div style="margin-top:14px;font-size:12px;color:var(--text-dim);line-height:1.6;">Founders del ecosistema SF que ya conocen y confían en la metodología. Testimoniales orgánicos con alta credibilidad.</div>
+    </div>
+    <div class="tier-card">
+      <div class="tier-name">Carlos Jacoste</div>
+      <div class="tier-followers">Reconstruyendo personal brand</div>
+      <div class="tier-count">1</div>
+      <div class="tier-budget">Orgánico — máximo ROI</div>
+      <div style="margin-top:14px;font-size:12px;color:var(--text-dim);line-height:1.6;">El fundador ES la marca. LinkedIn activo + Instagram relanzado + TikTok nuevo. Carlos hablando en primera persona es el activo más valioso de SF.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 16 MEDIA ── -->
+<section id="media">
+  <div class="section-label reveal">16 — Performance</div>
+  <div class="section-title reveal reveal-delay-1">PAID<br><span class="gradient-text">MEDIA</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:60px;align-items:center;">
+    <div class="reveal reveal-delay-2">
+      <div class="chart-wrap" style="width:260px;height:260px;">
+        <canvas id="budgetChart"></canvas>
+      </div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <table class="media-table">
+        <thead>
+          <tr>
+            <th>Canal</th>
+            <th>% Budget</th>
+            <th>Formato</th>
+            <th>Objetivo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>LinkedIn Ads</strong></td>
+            <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">50%</td>
+            <td>Lead gen + content boost</td>
+            <td style="color:var(--text-dim);">Founders + decision-makers</td>
+          </tr>
+          <tr>
+            <td><strong>Instagram/Facebook Ads</strong></td>
+            <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">30%</td>
+            <td>Retargeting + lookalike</td>
+            <td style="color:var(--text-dim);">Emprendedores 25-42</td>
+          </tr>
+          <tr>
+            <td><strong>TikTok Ads</strong></td>
+            <td style="font-family:'Space Grotesk',sans-serif;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">20%</td>
+            <td>Spark Ads orgánico viral</td>
+            <td style="color:var(--text-dim);">Awareness + comunidad joven</td>
+          </tr>
+        </tbody>
+      </table>
+      <div style="margin-top:24px;padding:20px;background:rgba(61,47,255,0.08);border-radius:12px;border:1px solid rgba(61,47,255,0.2);">
+        <div class="section-label">Budget mensual estimado</div>
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">€1.500 – 2.000</div>
+        <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">[ESTIMATE] · Solo paid media · Producción de contenido es adicional</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 17 KPIs ── -->
+<section id="kpis" style="background:var(--bg-2);">
+  <div class="section-label reveal">17 — Metrics</div>
+  <div class="section-title reveal reveal-delay-1">KPIs &<br><span class="gradient-text">MÉTRICAS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="border:1px solid rgba(255,255,255,0.08);border-radius:14px;overflow:hidden;" class="reveal reveal-delay-2">
+    <div class="kpi-grid">
+      <div class="kpi-header">Métrica</div>
+      <div class="kpi-header">Baseline</div>
+      <div class="kpi-header">Target 30d</div>
+      <div class="kpi-header">Target 90d</div>
+      <div class="kpi-header">Target 12m</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">Instagram followers</div>
+      <div class="kpi-cell">5.151</div>
+      <div class="kpi-cell highlight">5.500</div>
+      <div class="kpi-cell highlight">8.000</div>
+      <div class="kpi-cell highlight">15.000</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">Leads cualificados / mes</div>
+      <div class="kpi-cell">~10 [EST]</div>
+      <div class="kpi-cell highlight">50</div>
+      <div class="kpi-cell highlight">200</div>
+      <div class="kpi-cell highlight">500</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">Sesiones diagnóstico / mes</div>
+      <div class="kpi-cell">~5 [EST]</div>
+      <div class="kpi-cell highlight">20</div>
+      <div class="kpi-cell highlight">60</div>
+      <div class="kpi-cell highlight">150</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">Proyectos aceptados / mes</div>
+      <div class="kpi-cell">1</div>
+      <div class="kpi-cell highlight">3</div>
+      <div class="kpi-cell highlight">8</div>
+      <div class="kpi-cell highlight">20</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-cell">Visitas a /aplica</div>
+      <div class="kpi-cell">N/D</div>
+      <div class="kpi-cell highlight">500</div>
+      <div class="kpi-cell highlight">2.000</div>
+      <div class="kpi-cell highlight">8.000</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 18 ACTION PLAN ── -->
+<section id="action">
+  <div class="section-label reveal">18 — Execute</div>
+  <div class="section-title reveal reveal-delay-1">PLAN DE<br><span class="gradient-text">ACCIÓN</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div style="border:1px solid rgba(255,255,255,0.07);border-radius:14px;overflow:hidden;" class="reveal reveal-delay-2">
+    <div style="display:grid;grid-template-columns:70px 1fr 130px 150px;gap:16px;padding:12px 20px;background:rgba(61,47,255,0.1);border-bottom:1px solid rgba(255,255,255,0.07);">
+      <span class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;">Prior.</span>
+      <span class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;">Tarea</span>
+      <span class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;">Owner</span>
+      <span class="mono" style="font-size:9px;letter-spacing:0.12em;color:var(--text-dim);text-transform:uppercase;">Deadline</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p1">P1</span>
+      <span class="action-task">Actualizar bio Instagram a español + link /es/bio</span>
+      <span class="action-owner">Carlos</span>
+      <span class="action-deadline">Esta semana</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p1">P1</span>
+      <span class="action-task">Crear TikTok @_startupsfactory + publicar primer vídeo</span>
+      <span class="action-owner">Nacho / Alessandro</span>
+      <span class="action-deadline">Mayo 2026</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p1">P1</span>
+      <span class="action-task">Conectar Mailerlite para lead magnet AI for Founders</span>
+      <span class="action-owner">Javier / Josue</span>
+      <span class="action-deadline">Mayo 2026</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p2">P2</span>
+      <span class="action-task">Crear GPT 'Startup Audit' para kit /es/ai-for-founders</span>
+      <span class="action-owner">Carlos</span>
+      <span class="action-deadline">Junio 2026</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p2">P2</span>
+      <span class="action-task">Crear YouTube @startupsfactory + canal optimizado SEO</span>
+      <span class="action-owner">Nacho</span>
+      <span class="action-deadline">Junio 2026</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p2">P2</span>
+      <span class="action-task">Activar LinkedIn Carlos Jacoste para SF (2 posts/semana)</span>
+      <span class="action-owner">Carlos / Alessandro</span>
+      <span class="action-deadline">Junio 2026</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p3">P3</span>
+      <span class="action-task">Configurar ManyChat (keyword KIT → DM automático IG)</span>
+      <span class="action-owner">Alessandro</span>
+      <span class="action-deadline">Julio 2026</span>
+    </div>
+    <div class="action-row">
+      <span class="action-priority p3">P3</span>
+      <span class="action-task">Pedir testimoniales a ex-colaboradores LinkedIn (10 targets)</span>
+      <span class="action-owner">Carlos / Diego</span>
+      <span class="action-deadline">Julio 2026</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 20 BRAINSTORM ── -->
+<section id="brainstorm" style="background:var(--bg-2);">
+  <div class="orb orb-magenta" style="width:500px;height:500px;bottom:-100px;right:-100px;opacity:0.1;"></div>
+  <div class="section-label reveal">20 — Ideas</div>
+  <div class="section-title reveal reveal-delay-1">GRANDES<br><span class="gradient-text">IDEAS</span></div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="grid-2 reveal reveal-delay-2" style="margin-bottom:60px;">
+    <div class="idea-card">
+      <div class="idea-tag">Campaña viral</div>
+      <div class="idea-title">"El Rechazo" — 30 días de honestidad radical</div>
+      <div class="idea-body">30 días publicando los rechazos reales de SF — por qué dijimos no, qué faltaba, qué pasó después. Formato: un post diario con caso anonimizado. Nadie en el ecosistema tiene el valor de hacer esto.</div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-tag">Formato serie</div>
+      <div class="idea-title">SF Bangkok Files — Ecosistema SEA para hispanohablantes</div>
+      <div class="idea-body">Serie semanal en LinkedIn + YouTube donde Carlos traduce el ecosistema startup de Bangkok/SEA para fundadores de España y LATAM. Ningún referente hispanohablante cubre este ángulo.</div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-tag">Activación</div>
+      <div class="idea-title">El Primer Evento SF Bangkok</div>
+      <div class="idea-body">Reunión presencial en Bangkok para founders hispanohablantes en SEA. 20-30 personas, curada, privada. Genera contenido, comunidad y credibilidad internacional. Noviembre 2026.</div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-tag">Lead magnet</div>
+      <div class="idea-title">Startup Failure Map — Las 50 startups que fallaron y por qué</div>
+      <div class="idea-body">Análisis de 50 startups españolas/latam que cerraron entre 2020-2025. Error principal, capital quemado, lección accionable. El mayor lead magnet de educación emprendedora en español.</div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-tag">Collab</div>
+      <div class="idea-title">SF × Spanish Startups — Live de 1.000 emprendedores</div>
+      <div class="idea-body">Live conjunto con la mayor comunidad de emprendedores de España. Carlos + speaker invitado. Tema: cómo validar un proyecto en 30 días. Acceso a 5K+ miembros de Spanish Startups de golpe.</div>
+    </div>
+    <div class="idea-card">
+      <div class="idea-tag">Producto</div>
+      <div class="idea-title">SF Score — Evalúa tu startup en 5 minutos</div>
+      <div class="idea-body">Herramienta web gratuita con 20 preguntas (las mismas que usa Carlos en el diagnóstico). Resultado: puntuación 0-100 + breakdown por área + CTA a sesión real. 10x la captación de /aplica.</div>
+    </div>
+  </div>
+
+  <div class="final-cta reveal reveal-delay-3">
+    <div class="final-cta-title">
+      ¿TU PROYECTO ES<br>
+      <span class="gradient-text">EL PRÓXIMO 10%?</span>
+    </div>
+    <a href="https://startupsfactory.es/es/aplica" class="hero-cta" style="font-size:14px;padding:16px 40px;">Solicitar sesión de diagnóstico →</a>
+    <div style="margin-top:32px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.15em;color:rgba(255,255,255,0.2);">
+      STARTUP FACTORY · BANGKOK, THAILAND · STARTUPSFACTORY.ES
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div class="sf-watermark">SF · Brand Intelligence Pack · 2026</div>
+
+<script>
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── NAV DOTS ACTIVE STATE ──
+const sections = document.querySelectorAll('section[id]');
+const dots = document.querySelectorAll('.nav-dot');
+const navObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      dots.forEach(d => d.classList.remove('active'));
+      const active = document.querySelector(`.nav-dot[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+sections.forEach(s => navObserver.observe(s));
+
+// ── PILLARS CHART ──
+const pillarsCtx = document.getElementById('pillarsChart').getContext('2d');
+new Chart(pillarsCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Startup Audit', 'El Becario', 'AI for Founders', 'Builder Stories', 'Startup Opps'],
+    datasets: [{
+      data: [30, 25, 25, 10, 10],
+      backgroundColor: ['#3D2FFF', '#6366f1', '#A855F7', '#C084FC', '#e9d5ff'],
+      borderWidth: 0,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    cutout: '72%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.label}: ${ctx.parsed}%`
+        },
+        backgroundColor: '#0c0c18',
+        titleColor: '#F0EFF8',
+        bodyColor: '#A855F7',
+        borderColor: 'rgba(61,47,255,0.3)',
+        borderWidth: 1,
+        padding: 12
+      }
+    }
+  }
+});
+
+// ── BUDGET CHART ──
+const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+new Chart(budgetCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['LinkedIn Ads', 'Instagram/FB Ads', 'TikTok Ads'],
+    datasets: [{
+      data: [50, 30, 20],
+      backgroundColor: ['#3D2FFF', '#A855F7', '#C084FC'],
+      borderWidth: 0,
+      hoverOffset: 6
+    }]
+  },
+  options: {
+    cutout: '70%',
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.label}: ${ctx.parsed}%`
+        },
+        backgroundColor: '#0c0c18',
+        titleColor: '#F0EFF8',
+        bodyColor: '#A855F7',
+        borderColor: 'rgba(61,47,255,0.3)',
+        borderWidth: 1,
+        padding: 12
+      }
+    }
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DADYBOX — Brand Pack 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0B1829;--bg2:#0f2035;--bg3:#142540;
+  --primary:#3EE89A;--accent:#2DC080;--accent2:#1A9B60;
+  --text:#F4F7FA;--dim:rgba(244,247,250,0.6);--faint:rgba(244,247,250,0.07);
+  --grad:linear-gradient(135deg,#3EE89A,#2DC080);
+  --nav:56px;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden}
+.nav{position:fixed;left:0;top:0;bottom:0;width:var(--nav);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;z-index:100;background:linear-gradient(to right,rgba(11,24,41,.98) 80%,transparent)}
+.nd{position:relative;width:8px;height:8px;border-radius:50%;background:rgba(244,247,250,.2);cursor:pointer;transition:all .3s;text-decoration:none}
+.nd:hover,.nd.active{background:var(--primary);transform:scale(1.5);box-shadow:0 0 10px var(--primary)}
+.nd::after{content:attr(data-label);position:absolute;left:18px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;color:var(--text);background:var(--bg);padding:3px 8px;border-left:2px solid var(--primary);opacity:0;pointer-events:none;transition:opacity .2s}
+.nd:hover::after{opacity:1}
+main{padding-left:var(--nav)}
+section{padding:100px 80px 100px 60px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+.d1{transition-delay:.1s}.d2{transition-delay:.2s}.d3{transition-delay:.3s}.d4{transition-delay:.4s}
+.lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--primary);text-transform:uppercase;margin-bottom:12px}
+.ttl{font-family:'Poppins',sans-serif;font-size:clamp(42px,6vw,80px);font-weight:800;line-height:.95;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:40px}
+.green{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.mono{font-family:'Space Mono',monospace}
+.div{width:48px;height:2px;background:var(--grad);margin-bottom:36px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.card{background:var(--faint);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:28px;transition:border-color .3s}
+.card:hover{border-color:rgba(62,232,154,.3)}
+.card-lbl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--primary);margin-bottom:8px}
+.card-ttl{font-family:'Poppins',sans-serif;font-size:17px;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+.card-body{font-size:13px;color:var(--dim);line-height:1.7}
+.tag{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;padding:4px 10px;border-radius:100px;border:1px solid rgba(62,232,154,.3);color:var(--accent);margin:3px 3px 3px 0}
+/* HERO */
+#hero{min-height:100vh;padding:0 80px;align-items:flex-start;justify-content:center}
+.hero-inner{display:grid;grid-template-columns:55% 45%;align-items:center;gap:60px;width:100%;padding-top:80px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:6px 14px;border:1px solid rgba(62,232,154,.35);border-radius:100px;color:var(--dim);margin-bottom:28px}
+.hero-badge .dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+.hero-h1{font-family:'Poppins',sans-serif;font-size:clamp(48px,6.5vw,88px);font-weight:800;line-height:.92;letter-spacing:-.03em;text-transform:uppercase;margin-bottom:24px}
+.hero-h1 em{font-style:italic;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-lede{font-size:15px;color:var(--dim);max-width:460px;line-height:1.7;margin-bottom:32px}
+.btn-green{display:inline-block;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:14px 32px;background:var(--grad);border-radius:100px;color:#0B1829;text-decoration:none;transition:opacity .2s,transform .2s}
+.btn-green:hover{opacity:.85;transform:scale(1.02)}
+.hero-stats{display:flex;gap:32px;margin-top:40px;flex-wrap:wrap}
+.hero-stat .n{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-stat .l{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-top:2px}
+.hero-right{display:flex;flex-direction:column;gap:12px}
+.hero-card{background:rgba(62,232,154,.07);border:1px solid rgba(62,232,154,.15);border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px}
+.hero-card-n{font-family:'Poppins',sans-serif;font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;min-width:68px}
+.hero-card-t{font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.hero-card-s{font-size:11px;color:var(--dim);margin-top:2px}
+/* MAP */
+.map{position:relative;width:100%;max-width:480px;aspect-ratio:1;border:1px solid rgba(255,255,255,.07);border-radius:12px}
+.map-ax{position:absolute;background:rgba(255,255,255,.08)}
+.map-ah{left:0;right:0;top:50%;height:1px}
+.map-av{top:0;bottom:0;left:50%;width:1px}
+.map-lbl{position:absolute;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+.map-dot{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:3px}
+.map-dot .d{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,.18)}
+.map-dot.dy .d{width:17px;height:17px;background:var(--grad);box-shadow:0 0 18px var(--primary)}
+.map-dot .n{font-family:'Space Mono',monospace;font-size:9px;color:var(--dim);white-space:nowrap}
+.map-dot.dy .n{color:var(--text);font-weight:700}
+/* PERSONA */
+.persona{background:var(--bg3);border:1px solid rgba(62,232,154,.15);border-radius:18px;padding:30px;position:relative;overflow:hidden}
+.persona::before{content:'';position:absolute;top:-40px;right:-40px;width:150px;height:150px;background:var(--primary);border-radius:50%;opacity:.05;filter:blur(28px)}
+.persona-av{width:46px;height:46px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;color:#0B1829;margin-bottom:16px}
+.persona-name{font-family:'Poppins',sans-serif;font-size:17px;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.persona-meta{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--primary);text-transform:uppercase;margin-bottom:16px}
+.prow{margin-bottom:11px}
+.prow .pl{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;margin-bottom:3px}
+.prow .pv{font-size:13px;line-height:1.5}
+/* SWATCH */
+.swatch{height:58px;border-radius:9px;display:flex;align-items:flex-end;padding:7px 11px}
+.swatch .hex{font-family:'Space Mono',monospace;font-size:10px;color:rgba(255,255,255,.65)}
+/* VOICE */
+.vbox{border-left:3px solid var(--primary);padding:13px 16px;background:rgba(62,232,154,.05);border-radius:0 9px 9px 0;font-size:14px;font-style:italic;color:var(--dim);line-height:1.6;margin:6px 0}
+/* PILLAR */
+.pillar{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:22px;transition:border-color .3s}
+.pillar:hover{border-color:rgba(62,232,154,.35)}
+.pillar-pct{font-family:'Poppins',sans-serif;font-size:38px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:6px}
+.pillar-name{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;margin-bottom:8px}
+.pillar-desc{font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:12px}
+.pillar-posts li{font-size:11px;color:var(--dim);padding:4px 0;border-top:1px solid rgba(255,255,255,.05);list-style:none}
+.pillar-posts li::before{content:'→ ';color:var(--primary)}
+/* CONTENT PACK */
+.tabs{display:flex;gap:8px;margin-bottom:26px;flex-wrap:wrap}
+.tab{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;padding:7px 14px;border-radius:100px;border:1px solid rgba(62,232,154,.25);color:var(--dim);cursor:pointer;transition:all .2s;text-transform:uppercase;background:none}
+.tab:hover{border-color:var(--primary);color:var(--text)}
+.tab.active{background:var(--primary);border-color:var(--primary);color:#0B1829;font-weight:700}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.pc{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:20px;transition:border-color .3s,transform .3s}
+.pc:hover{border-color:rgba(62,232,154,.35);transform:translateY(-3px)}
+.pc-fmt{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:7px}
+.pc-plt{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;padding:2px 7px;border-radius:100px;border:1px solid rgba(62,232,154,.25);color:var(--primary);margin-bottom:10px;text-transform:uppercase}
+.pc-hook{font-family:'Poppins',sans-serif;font-size:14px;font-weight:700;line-height:1.25;margin-bottom:9px;text-transform:uppercase}
+.pc-prev{font-size:12px;color:var(--dim);line-height:1.6;margin-bottom:12px}
+.pc-cap{font-size:11px;color:rgba(244,247,250,.35);font-style:italic;padding-top:9px;border-top:1px solid var(--faint)}
+.pc-ht{margin-top:7px;font-family:'Space Mono',monospace;font-size:9px;color:var(--primary);letter-spacing:.04em}
+/* REELS */
+.rc{background:var(--bg2);border:1px solid rgba(62,232,154,.15);border-radius:13px;padding:24px;margin-bottom:16px}
+.rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}
+.rt{font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase}
+.rb{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.08em;padding:3px 10px;border-radius:100px;border:1px solid rgba(62,232,154,.3);color:var(--accent)}
+.cut{display:grid;grid-template-columns:70px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.ct{font-family:'Space Mono',monospace;font-size:10px;color:var(--primary);padding-top:3px}
+.cb{font-size:12px;line-height:1.6;color:var(--text)}
+.cs{font-size:10px;color:var(--accent);margin-top:3px;font-family:'Space Mono',monospace}
+/* CALENDAR */
+.wb{margin-bottom:26px}
+.wh{font-family:'Poppins',sans-serif;font-size:13px;font-weight:800;text-transform:uppercase;color:var(--primary);margin-bottom:5px;padding-bottom:7px;border-bottom:1px solid rgba(62,232,154,.18)}
+.wm{font-size:11px;color:var(--dim);margin-bottom:12px;font-style:italic}
+.ct2{width:100%;border-collapse:collapse}
+.ct2 th{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:9px 13px;text-align:left;background:rgba(62,232,154,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+.ct2 td{padding:10px 13px;font-size:12px;border-bottom:1px solid rgba(255,255,255,.04);line-height:1.4;vertical-align:top}
+.ct2 tr:hover td{background:rgba(62,232,154,.04)}
+.pli{color:#0A66C2}.pig{color:#E1306C}.pem{color:#EA4335}
+.bp{display:inline-block;font-family:'Space Mono',monospace;font-size:8px;padding:2px 7px;border-radius:4px;background:rgba(62,232,154,.1);color:var(--accent);border:1px solid rgba(62,232,154,.22)}
+.hp{color:var(--dim);font-style:italic;font-size:11px;margin-top:2px}
+/* CANVA */
+.cg{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.cc{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:17px;transition:border-color .3s}
+.cc:hover{border-color:rgba(62,232,154,.35)}
+.cn{font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;text-transform:uppercase;margin-bottom:3px}
+.cp{font-family:'Space Mono',monospace;font-size:9px;color:var(--primary);margin-bottom:11px}
+.cth{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-bottom:11px}
+.ct3{width:100%;aspect-ratio:1;background:rgba(255,255,255,.04);border-radius:7px;border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;text-decoration:none;overflow:hidden;transition:border-color .2s}
+.ct3:hover{border-color:var(--primary)}
+.ct3 img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+.cl{display:block;font-family:'Space Mono',monospace;font-size:8px;color:var(--primary);text-decoration:none;padding:7px 10px;border:1px solid rgba(62,232,154,.25);border-radius:7px;text-align:center;transition:all .2s;margin-bottom:5px}
+.cl:hover{background:var(--primary);color:#0B1829}
+/* CAMPAIGNS */
+.cc2{background:var(--bg2);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:24px}
+.cd{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--accent);text-transform:uppercase;margin-bottom:7px}
+.cn2{font-family:'Poppins',sans-serif;font-size:16px;font-weight:800;text-transform:uppercase;margin-bottom:9px}
+.cg2{font-size:12px;color:var(--dim);margin-bottom:10px;line-height:1.5}
+.cm{font-size:12px;background:rgba(62,232,154,.07);border-radius:7px;padding:10px 13px;line-height:1.5}
+/* WEEK */
+.wcard{background:var(--bg3);border:1px solid rgba(62,232,154,.1);border-radius:12px;padding:20px}
+.wnum{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:var(--primary);text-transform:uppercase;margin-bottom:7px}
+.wtheme{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:10px;line-height:1.2}
+.wgoal{font-size:11px;color:var(--dim);margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);font-family:'Space Mono',monospace}
+/* TIMELINE */
+.ttrack{display:flex;position:relative}
+.ttrack::before{content:'';position:absolute;top:19px;left:0;right:0;height:2px;background:linear-gradient(to right,var(--primary),var(--accent));z-index:0}
+.tphase{flex:1;position:relative;z-index:1;padding-top:40px;padding-right:12px}
+.tdot{position:absolute;top:11px;left:0;width:16px;height:16px;border-radius:50%;background:var(--grad);border:3px solid var(--bg);box-shadow:0 0 10px var(--primary)}
+.tnum{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--primary);text-transform:uppercase;margin-bottom:5px}
+.tname{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;margin-bottom:5px}
+.titems{font-size:11px;color:var(--dim);line-height:1.7;list-style:none}
+.titems li::before{content:'· ';color:var(--accent)}
+/* TIER */
+.tier{background:var(--bg3);border:1px solid rgba(255,255,255,.06);border-radius:13px;padding:22px}
+.tiern{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;text-transform:uppercase;margin-bottom:5px}
+.tierf{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--primary);margin-bottom:7px}
+.tierc{font-family:'Poppins',sans-serif;font-size:30px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tierb{font-size:11px;color:var(--dim);margin-top:7px}
+/* KPI */
+.kgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid rgba(255,255,255,.07);border-radius:11px;overflow:hidden}
+.kh{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase;padding:12px 13px;background:rgba(62,232,154,.07);border-right:1px solid rgba(255,255,255,.05)}
+.kc{padding:12px 13px;font-size:12px;border-right:1px solid rgba(255,255,255,.05);border-top:1px solid rgba(255,255,255,.05);line-height:1.4}
+.kc.hi{color:var(--accent);font-family:'Poppins',sans-serif;font-weight:700}
+.kc:last-child,.kh:last-child{border-right:none}
+/* ACTION */
+.arow{display:grid;grid-template-columns:58px 1fr 110px 130px;gap:12px;align-items:center;padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.05);transition:background .2s}
+.arow:hover{background:rgba(62,232,154,.04)}
+.apri{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;font-weight:700;padding:3px 8px;border-radius:100px;text-align:center;width:fit-content}
+.p1{background:rgba(62,232,154,.18);color:var(--accent);border:1px solid rgba(62,232,154,.35)}
+.p2{background:rgba(62,232,154,.08);color:var(--primary);border:1px solid rgba(62,232,154,.18)}
+.p3{background:rgba(255,255,255,.04);color:var(--dim);border:1px solid rgba(255,255,255,.1)}
+.atask{font-size:13px;line-height:1.4}
+.aown{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim)}
+.adl{font-family:'Space Mono',monospace;font-size:10px;color:var(--primary);text-align:right}
+.chart-wrap{position:relative;width:290px;height:290px;margin:0 auto}
+.sf-wm{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.1);text-transform:uppercase;position:fixed;bottom:14px;right:14px;z-index:99}
+
+  /* ── PILLAR DETAIL (Deep Dive) ── */
+  .pdr{display:grid;grid-template-columns:180px 1fr;gap:0;border:1px solid rgba(62,232,154,.1);border-radius:12px;overflow:hidden;transition:border-color .3s;margin-bottom:12px}
+  .pdr:hover{border-color:rgba(62,232,154,.3)}
+  .pd-hdr{background:rgba(62,232,154,.05);padding:26px 22px;display:flex;flex-direction:column;justify-content:flex-start;gap:8px;border-right:1px solid rgba(62,232,154,.1)}
+  .pd-n{font-family:'Poppins',sans-serif;font-size:36px;font-weight:800;line-height:1}
+  .pd-dot{width:8px;height:8px;border-radius:50%}
+  .pd-nm{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text)}
+  .pd-pct{font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.08em}
+  .pd-bd{padding:22px 26px;display:flex;flex-direction:column;gap:12px}
+  .pd-desc{font-size:13px;line-height:1.8;color:var(--dim)}
+  .pd-angle{font-family:'Space Mono',monospace;font-size:10px;color:var(--primary);letter-spacing:.04em}
+  .pd-fmts{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.04em}
+  .pd-exs{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .pd-ex{background:rgba(62,232,154,.04);padding:13px 15px;font-size:12px;color:var(--dim);line-height:1.7;border-left:2px solid rgba(62,232,154,.3);border-radius:0 7px 7px 0}
+  .pd-ex strong{color:var(--text);display:block;margin-bottom:4px}
+  .pd-ex-tag{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;color:var(--primary);text-transform:uppercase;display:block;margin-bottom:6px}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="sideNav">
+  <a class="nd active" href="#hero"          data-label="01 Dadybox"></a>
+  <a class="nd"        href="#brief"         data-label="02 Executive Summary"></a>
+  <a class="nd"        href="#positioning"   data-label="03 Market"></a>
+  <a class="nd"        href="#audience"      data-label="04 Audience"></a>
+  <a class="nd"        href="#dna"           data-label="05 Brand DNA"></a>
+  <a class="nd"        href="#differentiator" data-label="06 Differentiator"></a>
+  <a class="nd"        href="#content"       data-label="07 Content Strategy"></a>
+  <a class="nd"        href="#pillars"       data-label="08 Pillars"></a>
+  <a class="nd"        href="#pillars-deep"  data-label="08b Pillar Playbook"></a>
+  <a class="nd"        href="#posts"         data-label="09 Posts Listos"></a>
+  <a class="nd"        href="#reels"         data-label="10 Scripts Reel"></a>
+  <a class="nd"        href="#calendar"      data-label="11 Calendario"></a>
+  <a class="nd"        href="#canva"         data-label="12 Canva Templates"></a>
+  <a class="nd"        href="#campaigns"     data-label="13 Campaigns"></a>
+  <a class="nd"        href="#month1"        data-label="14 Month 1 Plan"></a>
+  <a class="nd"        href="#timeline"      data-label="15 Roadmap"></a>
+  <a class="nd"        href="#influencers"   data-label="16 Creators"></a>
+  <a class="nd"        href="#media"         data-label="17 Performance"></a>
+  <a class="nd"        href="#kpis"          data-label="18 Metrics"></a>
+  <a class="nd"        href="#action"        data-label="19 Execute"></a>
+  <a class="nd"        href="#roadmap12"    data-label="20 12-Month Plan"></a>
+  <a class="nd"        href="#offline"      data-label="21 Offline & Trade"></a>
+  <a class="nd"        href="#brainstorm"   data-label="22 Brainstorm"></a>
+</nav>
+
+<main>
+
+<!-- 01 HERO -->
+<section id="hero">
+  <div style="position:absolute;width:600px;height:600px;top:-200px;right:-100px;background:var(--primary);border-radius:50%;filter:blur(150px);opacity:.05;pointer-events:none"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge reveal"><span class="dot"></span>Madrid · E-commerce Logistics · 2026</div>
+      <div class="hero-h1 reveal d1">TU<br>LOGÍSTICA,<br><em>nuestra<br>magia.</em></div>
+      <p class="hero-lede reveal d2">Fulfillment 3PL especializado en ecommerce y pymes. Onboarding en 48-72 horas. 36 años de experiencia del grupo. Sin dramas.</p>
+      <a href="https://dadybox.com/contacto" class="btn-green reveal d3" target="_blank">Reserva tu llamada →</a>
+      <div class="hero-stats reveal d4">
+        <div class="hero-stat"><div class="n">+300</div><div class="l">Clientes activos</div></div>
+        <div class="hero-stat"><div class="n">400K</div><div class="l">Envíos/año</div></div>
+        <div class="hero-stat"><div class="n">97%</div><div class="l">A tiempo</div></div>
+        <div class="hero-stat"><div class="n">48h</div><div class="l">Onboarding</div></div>
+      </div>
+    </div>
+    <div class="hero-right reveal d2">
+      <div class="hero-card"><div class="hero-card-n">D</div><div><div class="hero-card-t">Plan Despegue</div><div class="hero-card-s">Hasta 1.200 envíos/año · Para empezar sin complicaciones</div></div></div>
+      <div class="hero-card"><div class="hero-card-n">T</div><div><div class="hero-card-t">Plan Turbo ⭐ más elegido</div><div class="hero-card-s">1.200-5.000 envíos/año · Escala sin romper operativa</div></div></div>
+      <div class="hero-card"><div class="hero-card-n">G</div><div><div class="hero-card-t">Plan Galaxia</div><div class="hero-card-s">+5.000 envíos/año · SLA garantizado + gestor dedicado</div></div></div>
+      <div class="hero-card"><div class="hero-card-n">✓</div><div><div class="hero-card-t">Integraciones nativas</div><div class="hero-card-s">Shopify · WooCommerce · PrestaShop · Wix · BigCommerce</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 BRIEF -->
+<section id="brief" style="background:var(--bg2)">
+  <div class="lbl reveal">02 — Executive Summary</div>
+  <div class="ttl reveal d1">QUÉ ES<br><span class="green">DADYBOX</span></div>
+  <div class="div reveal d1"></div>
+  <div class="g3 reveal d2">
+    <div class="card"><div class="card-lbl">El Dolor</div><div class="card-ttl">La logística que frena el crecimiento</div><div class="card-body">Stock desactualizado, procesos manuales, campañas que saturan el almacén. La entrega empieza a afectar a la marca. Sin visibilidad de extremo a extremo.</div></div>
+    <div class="card"><div class="card-lbl">La Solución</div><div class="card-ttl">Tu operativa externalizada en 48-72 horas</div><div class="card-body">Conectamos nuestro SGA con tus canales en 48-72 horas. Picking, packing, envíos y devoluciones bajo una sola lógica operativa. Tú vendes — nosotros enviamos.</div></div>
+    <div class="card"><div class="card-lbl">El Respaldo</div><div class="card-ttl">36 años de grupo + red GLS</div><div class="card-body">Dadybox es la división ecommerce de un grupo logístico con 36 años. Acceso a +12.000 Parcel Shops, +650 lockers y +100 transportistas en toda España.</div></div>
+  </div>
+  <div style="margin-top:28px;padding:18px 22px;background:rgba(62,232,154,.06);border:1px solid rgba(62,232,154,.15);border-radius:11px;max-width:680px" class="reveal d3">
+    <div class="lbl" style="margin-bottom:7px">Referencias reales</div>
+    <div style="font-size:13px;color:var(--dim);line-height:2">Coca-Cola Fan Store &nbsp;·&nbsp; Salesland &nbsp;·&nbsp; Warner &nbsp;·&nbsp; Ilunion &nbsp;·&nbsp; GLS &nbsp;·&nbsp; DHL &nbsp;·&nbsp; FedEx</div>
+  </div>
+</section>
+
+<!-- 03 POSITIONING -->
+<section id="positioning">
+  <div class="lbl reveal">03 — Market</div>
+  <div class="ttl reveal d1">POSICIONA-<br><span class="green">MIENTO</span></div>
+  <div class="div reveal d1"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+    <div class="reveal d2">
+      <div class="map">
+        <div class="map-ax map-ah"></div><div class="map-ax map-av"></div>
+        <span class="map-lbl" style="top:10px;left:50%;transform:translateX(-50%)">ESPECIALIZADO</span>
+        <span class="map-lbl" style="bottom:10px;left:50%;transform:translateX(-50%)">GENÉRICO</span>
+        <span class="map-lbl" style="left:10px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl">ÁGIL</span>
+        <span class="map-lbl" style="right:10px;top:50%;transform:translateY(-50%);writing-mode:vertical-rl">LENTO</span>
+        <div class="map-dot dy" style="top:14%;left:78%"><div class="d"></div><div class="n">Dadybox</div></div>
+        <div class="map-dot" style="top:40%;left:30%"><div class="d"></div><div class="n">Byrd/Huboo</div></div>
+        <div class="map-dot" style="top:65%;left:40%"><div class="d"></div><div class="n">Generalistas</div></div>
+        <div class="map-dot" style="top:78%;left:62%"><div class="d"></div><div class="n">Logística interna</div></div>
+      </div>
+    </div>
+    <div class="reveal d3">
+      <div style="margin-bottom:28px">
+        <div class="lbl">Positioning Statement</div>
+        <blockquote style="font-family:'Poppins',sans-serif;font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:-.01em;line-height:1.25;border-left:4px solid var(--primary);padding-left:16px;margin:0">Para ecommerce y pymes españolas — la operadora 3PL que hace el onboarding en 48h con atención personalizada y la red de GLS detrás.</blockquote>
+      </div>
+      <div class="lbl">Gaps competitivos</div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div class="card" style="padding:13px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:13px">Byrd / Huboo</span><span style="font-size:11px;color:var(--dim)">Sin presencia local, menos personalización</span></div></div>
+        <div class="card" style="padding:13px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:13px">Logísticas generalistas</span><span style="font-size:11px;color:var(--dim)">No especializados en ecommerce</span></div></div>
+        <div class="card" style="padding:13px 16px"><div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:13px">Logística interna</span><span style="font-size:11px;color:var(--dim)">No escala, consume recursos del equipo</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 04 AUDIENCE -->
+<section id="audience" style="background:var(--bg2)">
+  <div class="lbl reveal">04 — Who We Serve</div>
+  <div class="ttl reveal d1">A QUIÉN<br><span class="green">SERVIMOS</span></div>
+  <div class="div reveal d1"></div>
+  <div class="g2 reveal d2">
+    <div class="persona">
+      <div class="persona-av">F</div>
+      <div class="persona-name">El Founder de E-commerce</div>
+      <div class="persona-meta">28-42 años · España · Marca propia online</div>
+      <div class="prow"><div class="pl">Dolor</div><div class="pv">El negocio crece pero la logística ya no acompaña. Stock desactualizado, procesos manuales, sin visibilidad real. Las campañas saturan picking y packing.</div></div>
+      <div class="prow"><div class="pl">Deseo</div><div class="pv">Externalizar la logística en 48-72h, escalar sin drama en Black Friday y tener un gestor de cuenta que entienda el negocio.</div></div>
+      <div class="prow"><div class="pl">Objeción</div><div class="pv">"¿Puedo fiarme de que entreguen tan bien como yo?"</div></div>
+      <div style="margin-top:14px"><span class="tag">LinkedIn</span><span class="tag">Instagram</span><span class="tag">Google</span></div>
+    </div>
+    <div class="persona">
+      <div class="persona-av">M</div>
+      <div class="persona-name">El E-commerce Manager</div>
+      <div class="persona-meta">30-45 años · España · Equipo de operaciones</div>
+      <div class="prow"><div class="pl">Dolor</div><div class="pv">La entrega ya afecta a la marca. Retrasos, incidencias y devoluciones impactan en reseñas, confianza y LTV del cliente.</div></div>
+      <div class="prow"><div class="pl">Deseo</div><div class="pv">SLA garantizado, visibilidad de extremo a extremo e integración limpia con Shopify/WooCommerce sin sorpresas.</div></div>
+      <div class="prow"><div class="pl">Objeción</div><div class="pv">"¿Su SGA va a conectar bien con nuestro sistema?"</div></div>
+      <div style="margin-top:14px"><span class="tag">LinkedIn</span><span class="tag">Email</span><span class="tag">Ferias</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 05 BRAND DNA -->
+<section id="dna">
+  <div class="lbl reveal">05 — Identity</div>
+  <div class="ttl reveal d1">BRAND<br><span class="green">DNA</span></div>
+  <div class="div reveal d1"></div>
+  <div class="g2">
+    <div class="reveal d2">
+      <div class="lbl">Paleta de color</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:26px">
+        <div class="swatch" style="background:#3EE89A"><span class="hex" style="color:#0B1829">#3EE89A</span></div>
+        <div class="swatch" style="background:#2DC080"><span class="hex" style="color:#0B1829">#2DC080</span></div>
+        <div class="swatch" style="background:linear-gradient(135deg,#3EE89A,#2DC080)"><span class="hex" style="color:#0B1829">GRAD</span></div>
+        <div class="swatch" style="background:#0B1829;border:1px solid rgba(255,255,255,.1)"><span class="hex">#0B1829</span></div>
+        <div class="swatch" style="background:#F4F7FA"><span class="hex" style="color:#0B1829">#F4F7FA</span></div>
+        <div class="swatch" style="background:#EE5F5A"><span class="hex">#EE5F5A coral</span></div>
+      </div>
+      <div class="lbl">Tipografía</div>
+      <div style="margin-bottom:7px"><span style="font-family:'Poppins',sans-serif;font-size:24px;font-weight:800;text-transform:uppercase;letter-spacing:-.02em">POPPINS</span> <span class="mono" style="font-size:10px;color:var(--dim);margin-left:10px;letter-spacing:.1em">DISPLAY</span></div>
+      <div style="margin-bottom:7px"><span style="font-family:'DM Sans',sans-serif;font-size:18px">DM Sans — cuerpo de texto</span> <span class="mono" style="font-size:10px;color:var(--dim);margin-left:10px">BODY</span></div>
+      <div><span class="mono" style="font-size:13px;letter-spacing:.05em">Space Mono — datos y labels</span> <span class="mono" style="font-size:10px;color:var(--dim);margin-left:10px">MONO</span></div>
+    </div>
+    <div class="reveal d3">
+      <div class="lbl">Voz de marca</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px"><span class="tag">Cercano</span><span class="tag">Directo</span><span class="tag">Profesional</span><span class="tag">Experto-colega</span><span class="tag">Sin jerga</span></div>
+      <div class="lbl">Valores</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:22px"><span class="tag">Fiabilidad</span><span class="tag">Escalabilidad</span><span class="tag">Transparencia</span><span class="tag">Atención personal</span><span class="tag">Experiencia real</span></div>
+      <div class="lbl">SÍ suena a Dadybox</div>
+      <div class="vbox">"Onboarding en 48-72 horas desde la firma."</div>
+      <div class="vbox">"Tu logística en manos expertas. Sin dramas."</div>
+      <div class="vbox">"Como un colega experto que te dice la verdad sobre tu operativa."</div>
+      <div class="lbl" style="margin-top:18px">NO suena a Dadybox</div>
+      <div style="font-size:12px;color:var(--dim);line-height:1.8;padding:11px;background:rgba(255,60,60,.04);border:1px solid rgba(255,80,80,.12);border-radius:9px">✗ "Soluciones logísticas innovadoras" &nbsp;·&nbsp; ✗ "Optimizamos tu cadena de suministro" &nbsp;·&nbsp; ✗ "Transformamos tu fulfillment 4.0"</div>
+    </div>
+  </div>
+</section>
+
+<!-- 06 DIFFERENTIATOR -->
+<section id="differentiator" style="background:var(--bg2);text-align:center">
+  <div style="position:absolute;width:700px;height:700px;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--primary);border-radius:50%;opacity:.04;filter:blur(120px);pointer-events:none"></div>
+  <div class="lbl reveal" style="text-align:center">06 — The Differentiator</div>
+  <div style="max-width:800px;margin:0 auto">
+    <div class="ttl reveal d1" style="text-align:center;font-size:clamp(36px,5vw,66px)">48-72 HORAS<br>DE ONBOARDING.<br><span class="green">36 AÑOS</span><br>DE EXPERIENCIA.</div>
+  </div>
+  <div class="g3 reveal d2" style="margin-top:48px;text-align:left">
+    <div class="card"><div class="card-lbl">Proof Point 1</div><div class="card-ttl">El grupo más experimentado</div><div class="card-body">GLS Ciudad Lineal + Dadybox + GTD Albasanz. 36 años de logística. +100 transportistas. +12.000 Parcel Shops y +650 lockers en España. La red de GLS detrás de cada envío.</div></div>
+    <div class="card"><div class="card-lbl">Proof Point 2</div><div class="card-ttl">Onboarding que de verdad es 48-72h</div><div class="card-body">Integramos nuestro SGA con Shopify, WooCommerce o PrestaShop en 48-72 horas desde la firma. Sin meses de configuración. Sin excusas técnicas. El primer pedido sale antes de que te lo esperes.</div></div>
+    <div class="card"><div class="card-lbl">Proof Point 3</div><div class="card-ttl">Gestor de cuenta que entiende tu negocio</div><div class="card-body">No hay un call center de primer nivel. Hay un equipo que conoce tu operativa, anticipa tus picos y te llama antes de que haya un problema. Natalia, Noel, Usoa y Lidia son personas reales con nombre.</div></div>
+  </div>
+</section>
+
+<!-- 07 CONTENT STRATEGY -->
+<section id="content">
+  <div class="lbl reveal">07 — Content</div>
+  <div class="ttl reveal d1">CONTENT<br><span class="green">STRATEGY</span></div>
+  <div class="div reveal d1"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center">
+    <div class="reveal d2"><div class="chart-wrap"><canvas id="pillarsChart"></canvas></div></div>
+    <div class="reveal d3">
+      <div class="lbl" style="margin-bottom:16px">Pillar Mix</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:11px;height:11px;border-radius:3px;background:#3EE89A;flex-shrink:0"></div><span style="font-size:13px;flex:1">E-commerce Tips</span><span class="mono" style="font-size:10px;color:var(--primary)">30%</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:11px;height:11px;border-radius:3px;background:#2DC080;flex-shrink:0"></div><span style="font-size:13px;flex:1">Operativa & Logística</span><span class="mono" style="font-size:10px;color:var(--primary)">25%</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:11px;height:11px;border-radius:3px;background:#1A9B60;flex-shrink:0"></div><span style="font-size:13px;flex:1">Casos de Éxito</span><span class="mono" style="font-size:10px;color:var(--primary)">20%</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:11px;height:11px;border-radius:3px;background:#0f6b42;flex-shrink:0"></div><span style="font-size:13px;flex:1">Sector E-commerce</span><span class="mono" style="font-size:10px;color:var(--primary)">15%</span></div>
+        <div style="display:flex;align-items:center;gap:10px"><div style="width:11px;height:11px;border-radius:3px;background:#a7f3d0;flex-shrink:0"></div><span style="font-size:13px;flex:1">Empresa & Equipo</span><span class="mono" style="font-size:10px;color:var(--primary)">10%</span></div>
+      </div>
+      <div class="lbl">Canales primarios</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(62,232,154,.1);border-radius:7px;border:1px solid rgba(62,232,154,.18)"><span style="font-size:13px;font-weight:700">LinkedIn Company + Natalia</span><span class="mono" style="font-size:9px;color:var(--primary)">PRIMARY</span></div>
+        <div style="display:flex;justify-content:space-between;padding:10px 13px;background:rgba(62,232,154,.07);border-radius:7px;border:1px solid rgba(62,232,154,.12)"><span style="font-size:13px;font-weight:700">Instagram @dadybox</span><span class="mono" style="font-size:9px;color:var(--primary)">PRIMARY</span></div>
+        <div style="display:flex;justify-content:space-between;padding:10px 13px;background:var(--faint);border-radius:7px;border:1px solid rgba(255,255,255,.06)"><span style="font-size:13px">Google SEO — organic</span><span class="mono" style="font-size:9px;color:var(--dim)">PRIMARY</span></div>
+        <div style="display:flex;justify-content:space-between;padding:10px 13px;background:var(--faint);border-radius:7px;border:1px solid rgba(255,255,255,.06)"><span style="font-size:13px">Email / Newsletter</span><span class="mono" style="font-size:9px;color:var(--dim)">SECONDARY</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 08 PILLARS -->
+<section id="pillars" style="background:var(--bg2)">
+  <div class="lbl reveal">08 — Content Pillars</div>
+  <div class="ttl reveal d1">LOS 5<br><span class="green">PILARES</span></div>
+  <div class="div reveal d1"></div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:13px" class="reveal d2">
+    <div class="pillar"><div class="pillar-pct">30%</div><div class="pillar-name">E-commerce Tips</div><div class="pillar-desc">Guías prácticas y checklists para founders. El pilar que posiciona a Dadybox como experto de referencia.</div><ul class="pillar-posts"><li>Checklist logística antes del Black Friday</li><li>5 señales de que tu logística frena el crecimiento</li><li>Cómo prepararte para una campaña de rebajas</li></ul></div>
+    <div class="pillar"><div class="pillar-pct">25%</div><div class="pillar-name">Operativa</div><div class="pillar-desc">Detrás de las cámaras: almacén, picking, packing, tecnología. Construye confianza mostrando la realidad.</div><ul class="pillar-posts"><li>Cómo preparamos 2.000 pedidos en un día de campaña</li><li>Del clic al cliente: el viaje de un pedido en Dadybox</li><li>Por qué tenemos +100 transportistas y cómo elegimos</li></ul></div>
+    <div class="pillar"><div class="pillar-pct">20%</div><div class="pillar-name">Casos de Éxito</div><div class="pillar-desc">Historias reales con datos concretos y timelines. Social proof que convierte clientes potenciales.</div><ul class="pillar-posts"><li>De gestionar la logística en casa a escalar sin contratar</li><li>El Black Friday más tranquilo: 3.200 pedidos en 72h</li><li>De Plan Despegue a Turbo en 6 meses</li></ul></div>
+    <div class="pillar"><div class="pillar-pct">15%</div><div class="pillar-name">Sector</div><div class="pillar-desc">Datos y tendencias del ecommerce español y europeo. Contenido de autoridad para decisores.</div><ul class="pillar-posts"><li>El ecommerce en España crece un 15% — qué significa para tu logística</li><li>3 tendencias de entrega que cambiarán las expectativas</li><li>Tasa de abandono por entrega ya supera el 40%</li></ul></div>
+    <div class="pillar"><div class="pillar-pct">10%</div><div class="pillar-name">Empresa & Equipo</div><div class="pillar-desc">La gente detrás de Dadybox. Humaniza la marca y genera conexión emocional real.</div><ul class="pillar-posts"><li>Por qué Natalia se especializó en logística ecommerce</li><li>Un día en el almacén: 6am, 2.000 pedidos, un equipo</li><li>36 años de grupo — así nació Dadybox para ser diferente</li></ul></div>
+  </div>
+</section>
+
+<!-- 09 POSTS -->
+
+<!-- ── 08b PILLAR DEEP DIVE ── -->
+<section id="pillars-deep" style="background:var(--bg3)">
+  <div class="lbl reveal">08b — Pillar Playbook</div>
+  <div class="ttl reveal d1">PILLAR<br><span class="green">PLAYBOOK</span></div>
+  <div class="div reveal d1"></div>
+  <p style="font-size:14px;color:var(--dim);margin-bottom:32px;max-width:620px" class="reveal d1">5 pilares · cómo ejecuta cada uno · ángulo recomendado · posts de ejemplo listos para publicar</p>
+
+  <div style="display:flex;flex-direction:column;gap:12px" class="reveal d2">
+
+    <!-- P1: ECOMMERCE TIPS -->
+    <div class="pdr">
+      <div class="pd-hdr">
+        <div class="pd-n" style="color:#3EE89A">01</div>
+        <div class="pd-dot" style="background:#3EE89A"></div>
+        <div class="pd-nm">E-commerce Tips</div>
+        <div class="pd-pct">30% del mix · Awareness + Autoridad</div>
+      </div>
+      <div class="pd-bd">
+        <div class="pd-desc">Guías prácticas, checklists y consejos accionables para dueños y gestores de ecommerce. El pilar que más leads genera porque resuelve problemas reales y posiciona a Dadybox como el experto que habla tu idioma — no como proveedor, como aliado.</div>
+        <div class="pd-angle">ÁNGULO: "El experto que habla como founder, no como proveedor"</div>
+        <div class="pd-fmts">Formatos: Carrusel LinkedIn (6-8 slides) · Post texto largo · Reel "5 señales" · Checklist descargable PDF</div>
+        <div class="pd-exs">
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Post LinkedIn · Alto alcance</span>
+            <strong>5 señales de que tu logística está frenando el crecimiento</strong>
+            "Más del 5% de incidencias. Equipo dedicando 30% a logística. Miedo a los picos. Reviews con problemas de entrega. Llevas meses diciendo que hay que mejorar." Si reconoces 3 de estas 5, tenemos que hablar.
+            CTA: Link en comentarios → dadybox.com/contacto
+          </div>
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Carrusel · Alto guardado</span>
+            <strong>El checklist de logística antes del Black Friday</strong>
+            Slide 1: ¿Tienes el stock auditado? · Slide 2: ¿Tus integraciones están testeadas? · Slide 3: ¿Tienes plan de devoluciones? · Slide 4: ¿Has comunicado el forecast a tu operador? · Slide 5: ¿Tienes packaging especial? → CTA: Descarga checklist completo en bio.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2: OPERATIVA -->
+    <div class="pdr">
+      <div class="pd-hdr">
+        <div class="pd-n" style="color:#2DC080">02</div>
+        <div class="pd-dot" style="background:#2DC080"></div>
+        <div class="pd-nm">Operativa & Logística</div>
+        <div class="pd-pct">25% del mix · Confianza + Diferenciación</div>
+      </div>
+      <div class="pd-bd">
+        <div class="pd-desc">Detrás de las cámaras del almacén, la tecnología y la operativa diaria de Dadybox. El contenido que más confianza genera porque muestra — no cuenta. Un founder que ve el almacén en acción con 2.000 pedidos entiende inmediatamente por qué Dadybox es diferente.</div>
+        <div class="pd-angle">ÁNGULO: "Ver para creer — el almacén no miente"</div>
+        <div class="pd-fmts">Formatos: Reel behind-scenes (30 seg) · Carrusel "Del clic al cliente" · Story serie "Un día en Dadybox" · Post dato + explicación</div>
+        <div class="pd-exs">
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Reel · Alto alcance orgánico</span>
+            <strong>Cómo preparamos 2.000 pedidos en un día de campaña</strong>
+            Sec 0-3: "Son las 6am. Hay 2.000 pedidos para hoy." → Sec 4-20: Picking, packing, expedición en secuencia rápida → Sec 20-28: "+95% procesados antes de las 18h. Esto es operativa real." → CTA: ¿Quieres esto para tu ecommerce? Link en bio.
+          </div>
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Post dato · Credibilidad</span>
+            <strong>¿Qué significa exactamente el 94,5% de SLA?</strong>
+            "945 de cada 1.000 pedidos llegan en el plazo prometido. ¿Qué pasa con el 5,5%? Incidencias de transportista, errores de dirección, festivos. Lo que hacemos: gestión proactiva antes de que el cliente llame." Honestidad radical que genera confianza.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P3: CASOS -->
+    <div class="pdr">
+      <div class="pd-hdr">
+        <div class="pd-n" style="color:#1A9B60">03</div>
+        <div class="pd-dot" style="background:#1A9B60"></div>
+        <div class="pd-nm">Casos de Éxito</div>
+        <div class="pd-pct">20% del mix · Conversión + Social Proof</div>
+      </div>
+      <div class="pd-bd">
+        <div class="pd-desc">Historias reales de clientes con timelines concretos, datos medibles y el momento exacto en que la decisión cambió el negocio. Nunca genérico — siempre específico. El prospect que lee un caso real donde se reconoce convierte 3x más que con cualquier otro contenido.</div>
+        <div class="pd-angle">ÁNGULO: "Resultados reales, nombres reales, datos reales (nunca polished)"</div>
+        <div class="pd-fmts">Formatos: Post largo LinkedIn (narrativo) · Carrusel "Antes/Después" · Reel testimonio del cliente · Caso de estudio PDF (lead magnet)</div>
+        <div class="pd-exs">
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Carrusel LinkedIn · Alta conversión</span>
+            <strong>De gestionar la logística en casa a escalar sin contratar</strong>
+            Slide 1: "Mayo 2025. Ecommerce de moda. 350 pedidos/mes. 2 personas en casa preparando pedidos." Slide 2-5: La progresión con Dadybox. Slide 6: "Diciembre 2025: 1.200 pedidos/mes. 0 personas en logística interna. Mismo equipo, mucho más negocio." Datos reales del cliente (con aprobación).
+          </div>
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Post testimonio · Confianza</span>
+            <strong>El Black Friday más tranquilo: 3.200 pedidos en 72h</strong>
+            Cita directa del cliente: "Era la primera vez en 4 años que en noviembre no había crisis logística. 3.200 pedidos en 72 horas. 97.3% entregados en plazo. Nuestras reviews de diciembre fueron las mejores del año." — Cliente Plan Turbo, alimentación gourmet.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P4: SECTOR -->
+    <div class="pdr">
+      <div class="pd-hdr">
+        <div class="pd-n" style="color:#0f6b42">04</div>
+        <div class="pd-dot" style="background:#0f6b42"></div>
+        <div class="pd-nm">Sector E-commerce</div>
+        <div class="pd-pct">15% del mix · Autoridad + SEO</div>
+      </div>
+      <div class="pd-bd">
+        <div class="pd-desc">Datos, tendencias y análisis del sector ecommerce español y europeo. Este pilar atrae a los decisores que no conocen Dadybox todavía pero buscan información del sector. Alto valor para SEO y para ser citado como referente.</div>
+        <div class="pd-angle">ÁNGULO: "Los datos que todo founder de ecommerce debería conocer pero nadie compila"</div>
+        <div class="pd-fmts">Formatos: Artículo LinkedIn (largo) · Carrusel datos + análisis · Infografía · Newsletter resumen mensual</div>
+        <div class="pd-exs">
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Artículo LinkedIn · Alto alcance</span>
+            <strong>El ecommerce en España crece un 15% en 2025 — qué significa para tu logística</strong>
+            Análisis de qué implica el crecimiento del sector: más competencia en logística → tiempos de entrega más exigentes → clientes con mayores expectativas → operadores logísticos saturados en picos. Dadybox como solución mencionado al final naturalmente.
+          </div>
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Dato impactante · Viral</span>
+            <strong>El 40% abandona una tienda tras una mala entrega. Para siempre.</strong>
+            "No es un retraso. No es una incidencia. Es una pérdida permanente de cliente. Y lo peor: raramente te dicen por qué no vuelven. Solo... no vuelven. La experiencia de entrega no es un detalle operativo. Es parte del producto." Reflexión corta + dato + conclusión.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- P5: EMPRESA -->
+    <div class="pdr">
+      <div class="pd-hdr">
+        <div class="pd-n" style="color:#a7f3d0">05</div>
+        <div class="pd-dot" style="background:#a7f3d0"></div>
+        <div class="pd-nm">Empresa & Equipo</div>
+        <div class="pd-pct">10% del mix · Humanización + Confianza</div>
+      </div>
+      <div class="pd-bd">
+        <div class="pd-desc">La gente detrás de Dadybox — Natalia, Noel, Usoa, Lidia. El equipo, la cultura, la historia. El contenido que parece el menos "comercial" es frecuentemente el que más convierte porque humaniza la marca y genera la conexión emocional que cierra la decisión.</div>
+        <div class="pd-angle">ÁNGULO: "Los expertos tienen nombre y cara — así es el equipo que va a gestionar tu logística"</div>
+        <div class="pd-fmts">Formatos: Post personal LinkedIn (Natalia/Noel) · Reel "Un día en el almacén" · Story "Meet the team" · Foto behind-scenes con copy</div>
+        <div class="pd-exs">
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Post personal · Alta conexión</span>
+            <strong>Por qué Natalia dejó la consultoría para especializarse en logística ecommerce</strong>
+            "Me cansé de dar recomendaciones que nadie implementaba. En logística ecommerce, las consecuencias de no actuar son inmediatas: un pedido tarde, una mala reseña, un cliente perdido. Aquí cada mejora tiene impacto real al día siguiente." — Natalia Aldea, Marketing Manager, Dadybox.
+          </div>
+          <div class="pd-ex">
+            <span class="pd-ex-tag">Intro equipo · Confianza</span>
+            <strong>Detrás de cada envío hay 4 personas con nombre</strong>
+            "Noel, que fundó Dadybox porque la logística para pymes merecía algo mejor. Natalia, que lo ve desde el marketing. Usoa, que hace que los sistemas funcionen. Lidia, la voz que nunca te deja colgado. Cuando contratas Dadybox, estas 4 personas están detrás de tu operativa."
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="posts">
+  <div class="lbl reveal">09 — Posts Listos</div>
+  <div class="ttl reveal d1">COPY &<br><span class="green">POSTS</span></div>
+  <div class="div reveal d1"></div>
+  <div class="tabs reveal d2">
+    <button class="tab active" onclick="fp('all',this)">Todos</button>
+    <button class="tab" onclick="fp('tips',this)">Ecommerce Tips</button>
+    <button class="tab" onclick="fp('ops',this)">Operativa</button>
+    <button class="tab" onclick="fp('casos',this)">Casos Éxito</button>
+    <button class="tab" onclick="fp('sector',this)">Sector</button>
+    <button class="tab" onclick="fp('equipo',this)">Empresa</button>
+  </div>
+  <div class="pgrid reveal d3" id="pg">
+
+    <div class="pc" data-pillar="tips"><div class="pc-fmt">Carrusel · 7 slides</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">El checklist de logística que todo ecommerce debería revisar antes del Black Friday.</div><div class="pc-prev">Slide 1: ¿Tienes stock auditado y ubicado en el almacén? Slide 2: ¿Tus integraciones con Shopify/WooCommerce están testeadas? Slide 3: ¿Tienes plan B si hay incidencias de entrega?...</div><div class="pc-cap">"El Black Friday no perdona. ¿Estás preparado?"</div><div class="pc-ht">#ecommerce #logistica #blackfriday #fulfillment</div></div>
+
+    <div class="pc" data-pillar="tips"><div class="pc-fmt">Post LinkedIn</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">5 señales de que tu logística está frenando el crecimiento de tu tienda.</div><div class="pc-prev">1. Más del 5% de tus pedidos tienen incidencias. 2. Tu equipo dedica más del 30% del tiempo a gestionar envíos. 3. Los picos de campaña te generan más miedo que ilusión. 4. Tus reviews mencionan problemas de entrega. 5. Llevas 3 meses diciendo "hay que mejorar la logística"...</div><div class="pc-cap">"Si reconoces 3 de estas 5 señales, es hora de hablar."</div><div class="pc-ht">#ecommerce #logistica3pl #fulfillment #crecimiento</div></div>
+
+    <div class="pc" data-pillar="tips"><div class="pc-fmt">Guía práctica</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">Cómo preparar tu ecommerce para una campaña de rebajas sin saturar el almacén.</div><div class="pc-prev">Paso 1: Audita el stock 3 semanas antes. Paso 2: Comunica al operador el forecast de ventas esperado. Paso 3: Prepara kits de packaging especiales si los hay. Paso 4: Define el plan de devoluciones antes de que empiecen. Paso 5: Testar integraciones el lunes previo...</div><div class="pc-cap">"Las rebajas se ganan antes, no durante."</div><div class="pc-ht">#ecommerce #rebajas #logistica #operativa</div></div>
+
+    <div class="pc" data-pillar="ops"><div class="pc-fmt">Reel · Behind Scenes</div><div class="pc-plt">Instagram + LinkedIn</div><div class="pc-hook">Cómo preparamos 2.000 pedidos en un día de campaña. Esto es lo que pasa detrás.</div><div class="pc-prev">5:30am: primera llegada al almacén. Forecast de hoy: 2.100 pedidos. Organización por prioridad de envío. 9am: picking en marcha — 6 personas, 3 zonas. 14h: primer pico de expedición. 18h: +95% pedidos procesados. 20h: ¿seguimos?</div><div class="pc-cap">"Detrás de cada pedido hay un equipo que no para. ¿El tuyo?"</div><div class="pc-ht">#logistica #almacen #ecommerce #operativa</div></div>
+
+    <div class="pc" data-pillar="ops"><div class="pc-fmt">Carrusel educativo</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">Del clic al cliente: el viaje de un pedido en Dadybox en 4 pasos.</div><div class="pc-prev">Paso 1 INTEGRACIÓN: tu tienda online manda el pedido a nuestro SGA en segundos. Paso 2 PICKING: localizamos los productos en el almacén y los preparamos. Paso 3 PACKING: embalado, etiquetado y listo para el transportista. Paso 4 ENVÍO: sale con GLS y puedes seguirlo en tiempo real...</div><div class="pc-cap">"4 pasos. Del clic al cliente. Sin intermediarios."</div><div class="pc-ht">#fulfillment #ecommerce #logistica #shopify</div></div>
+
+    <div class="pc" data-pillar="ops"><div class="pc-fmt">Post dato</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">Por qué tenemos +100 transportistas y cómo elegimos el mejor para cada envío.</div><div class="pc-prev">No todas las zonas son iguales. No todos los productos viajan igual. No todas las ventanas horarias son las mismas. Por eso trabajamos con más de 100 transportistas: GLS para la red principal, especializados para islas y zonas rurales, premium para franjas horarias garantizadas...</div><div class="pc-cap">"La logística perfecta no es un solo transportista. Es elegir el correcto para cada caso."</div><div class="pc-ht">#logistica #transportistas #ecommerce #entrega</div></div>
+
+    <div class="pc" data-pillar="casos"><div class="pc-fmt">Caso de éxito · Carrusel</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">Cómo un ecommerce de moda pasó de gestionar la logística en casa a escalar sin contratar.</div><div class="pc-prev">Antes: 2 personas dedicadas a tiempo completo al almacén. Picos de campaña = crisis. Retrasos frecuentes. Después con Dadybox: mismo equipo reducido al 0% de tiempo logístico. Black Friday 2025: +340% pedidos vs año anterior. 0 incidencias críticas...</div><div class="pc-cap">"No contrataron más gente. Nos contrataron a nosotros."</div><div class="pc-ht">#casoexito #ecommerce #fulfillment #logistica</div></div>
+
+    <div class="pc" data-pillar="casos"><div class="pc-fmt">Testimonio · Post</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">El Black Friday más tranquilo de un cliente Dadybox: 3.200 pedidos en 72 horas.</div><div class="pc-prev">"Era la primera vez que en noviembre no tenía una crisis logística. 3.200 pedidos en 72 horas. 97.3% entregados en el tiempo prometido. Nuestras reseñas de diciembre fueron las mejores del año." — Cliente Plan Turbo, ecommerce alimentación gourmet.</div><div class="pc-cap">"El mejor Black Friday no es el que más vendes. Es el que más bien gestionas."</div><div class="pc-ht">#blackfriday #ecommerce #logistica #casoexito</div></div>
+
+    <div class="pc" data-pillar="casos"><div class="pc-fmt">Historia · Carrusel</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">De Plan Despegue a Plan Turbo en 6 meses: la historia de un founder que encontró la palanca.</div><div class="pc-prev">Mes 1: 80 pedidos/mes. Plan Despegue. "No quería comprometer volumen todavía." Mes 3: 180 pedidos. El equipo ya no hacía logística — vendía. Mes 5: primer pico con una colaboración de influencer. 340 pedidos en una semana. Sin incidencias. Mes 6: Plan Turbo activado...</div><div class="pc-cap">"La logística no fue el cuello de botella. Fue la palanca."</div><div class="pc-ht">#ecommerce #logistica #crecimiento #casoexito</div></div>
+
+    <div class="pc" data-pillar="sector"><div class="pc-fmt">Dato sectorial · Post</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">El ecommerce en España crece un 15% en 2025. Esto es lo que significa para tu logística.</div><div class="pc-prev">Más volumen significa más pedidos por procesar. Más pedidos significan más exigencia de tiempo de entrega. Los consumidores españoles esperan entrega en 24-48h como estándar mínimo. El 68% abandona una tienda si el plazo de entrega supera los 5 días. ¿Tu operativa está lista?</div><div class="pc-cap">"El mercado crece. La pregunta es si tu logística puede crecer con él."</div><div class="pc-ht">#ecommerce #tendencias #logistica #españa</div></div>
+
+    <div class="pc" data-pillar="sector"><div class="pc-fmt">Análisis · Carrusel</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">3 tendencias de entrega que van a cambiar las expectativas de tus clientes en 2026.</div><div class="pc-prev">1. Same-day delivery: ya disponible en Madrid y Barcelona para algunas categorías. 2. Devoluciones gratuitas: el 78% de compradores lo considera antes de comprar. 3. Entregas sostenibles: el 52% pagaría más por una opción de carbono neutro. ¿Estás preparado?</div><div class="pc-cap">"Las expectativas de mañana se forman hoy."</div><div class="pc-ht">#logistica #ecommerce #tendencias2026</div></div>
+
+    <div class="pc" data-pillar="equipo"><div class="pc-fmt">Intro equipo · Post</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">Detrás de cada envío de Dadybox hay cuatro personas con nombre. Te las presentamos.</div><div class="pc-prev">NOEL ALDEA — CEO. El fundador que decidió que la logística para pymes merecía un servicio de nivel enterprise. NATALIA ALDEA — Marketing & Innovation. La que entiende el ecommerce desde dentro porque ella misma lo ha vivido. USOA AZCONA — IT & Back Office. La que hace que los sistemas hablen entre sí. LIDIA GUTIERREZ — Customer Service. La voz que nunca te deja colgado.</div><div class="pc-cap">"Gestión personalizada. Con personas reales. Con nombre."</div><div class="pc-ht">#equipo #dadybox #logistica #ecommerce</div></div>
+
+    <div class="pc" data-pillar="equipo"><div class="pc-fmt">Founder story · Post</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">Por qué Natalia dejó el mundo de la consultoría para especializarse en logística ecommerce.</div><div class="pc-prev">"Me cansé de dar recomendaciones que nadie implementaba. En logística ecommerce, las consecuencias de no actuar son inmediatas: un pedido tarde, una mala reseña, un cliente perdido. Aquí cada mejora tiene impacto real al día siguiente." Natalia Aldea, Marketing Manager & Innovation, Dadybox.</div><div class="pc-cap">"La urgencia del ecommerce nos mantiene siempre en movimiento."</div><div class="pc-ht">#dadybox #equipo #logistica #ecommerce</div></div>
+
+    <div class="pc" data-pillar="tips"><div class="pc-fmt">Reflexión · Post</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">La diferencia entre los ecommerce que escalan y los que se estancan no es el producto. Es la operativa.</div><div class="pc-prev">He visto tiendas con productos mediocres crecer al 200% porque su operativa era perfecta. Y he visto productos increíbles ahogarse porque la logística era un caos. El producto te da la primera compra. La operativa te da la segunda, la tercera y la reseña de 5 estrellas...</div><div class="pc-cap">"Tu producto atrae. Tu operativa retiene."</div><div class="pc-ht">#ecommerce #logistica #crecimiento #operativa</div></div>
+
+    <div class="pc" data-pillar="sector"><div class="pc-fmt">Dato impactante</div><div class="pc-plt">LinkedIn + IG</div><div class="pc-hook">El 40% de los compradores online abandona una tienda después de una mala experiencia de entrega. Para siempre.</div><div class="pc-prev">No es un retraso. No es una incidencia. Es una pérdida permanente de cliente. Y lo peor: raramente te dicen por qué no vuelven. Solo... no vuelven. La experiencia de entrega no es un detalle operativo. Es parte del producto.</div><div class="pc-cap">"La entrega es el último touchpoint. Y el que más recuerdan."</div><div class="pc-ht">#ecommerce #logistica #cx #retencion</div></div>
+
+    <div class="pc" data-pillar="ops"><div class="pc-fmt">Edu · Post</div><div class="pc-plt">LinkedIn</div><div class="pc-hook">¿Qué significa exactamente el 94,5% de SLA que prometemos? Te lo explicamos con datos reales.</div><div class="pc-prev">SLA = Service Level Agreement. El 94,5% significa que 945 de cada 1.000 pedidos llegan en el plazo prometido. ¿Qué pasa con el 5,5%? Incidencias de transportista, errores de dirección, zonas sin cobertura, festivos. Lo que hacemos: gestión proactiva antes de que el cliente llame...</div><div class="pc-cap">"No prometemos el 100% porque los datos no mienten."</div><div class="pc-ht">#SLA #logistica #ecommerce #transparencia</div></div>
+
+  </div>
+</section>
+
+<!-- 10 REELS -->
+<section id="reels" style="background:var(--bg2)">
+  <div class="lbl reveal">10 — Scripts Reel</div>
+  <div class="ttl reveal d1">SCRIPTS<br><span class="green">REELS</span></div>
+  <div class="div reveal d1"></div>
+  <div class="reveal d2">
+
+    <div class="rc">
+      <div class="rh"><div class="rt">V1 — "Del clic al cliente en Dadybox"</div><div class="rb">30 seg · Behind scenes · IG + LI</div></div>
+      <div>
+        <div class="cut"><div class="ct">0–4s</div><div class="cb"><strong>HOOK:</strong> [Almacén, acción matutina] "Son las 6 de la mañana. Hay 800 pedidos para hoy. Esto es lo que pasa a continuación."<div class="cs">PANTALLA: "6:00am · 800 pedidos"</div></div></div>
+        <div class="cut"><div class="ct">4–14s</div><div class="cb">Secuencia rápida: pantalla SGA con pedidos entrando → zona picking → embalado → etiquetado → salida con GLS.<div class="cs">PANTALLA: cada paso aparece · "1 Integración → 2 Picking → 3 Packing → 4 Envío"</div></div></div>
+        <div class="cut"><div class="ct">14–24s</div><div class="cb">"En 48-72 horas desde que firmas el contrato, esto ya es tu operativa. Sin montar nada. Sin contratar a nadie. Sin dramas."</div></div>
+        <div class="cut"><div class="ct">24–30s</div><div class="cb"><strong>CTA:</strong> "¿Cuántos pedidos tienes al mes? Escríbenos y te decimos qué plan encaja." Link en bio.<div class="cs">PANTALLA: "dadybox.com/contacto"</div></div></div>
+      </div>
+    </div>
+
+    <div class="rc">
+      <div class="rh"><div class="rt">V2 — "Las 5 señales de alerta logística"</div><div class="rb">35 seg · Tips educativo · LI + IG</div></div>
+      <div>
+        <div class="cut"><div class="ct">0–4s</div><div class="cb"><strong>HOOK:</strong> [Natalia a cámara] "5 señales de que tu logística está frenando tu ecommerce. Si reconoces 3, tenemos que hablar."<div class="cs">PANTALLA: "¿Tu logística te frena?"</div></div></div>
+        <div class="cut"><div class="ct">4–25s</div><div class="cb">Cada señal aparece en pantalla 3-4 segundos con breve explicación oral: "Más del 5% de incidencias. Equipo dedicando 30% a logística. Miedo a picos. Reviews con problemas de entrega. Llevas meses diciendo que hay que mejorar."<div class="cs">PANTALLA: señal número + título rápido</div></div></div>
+        <div class="cut"><div class="ct">25–35s</div><div class="cb"><strong>CTA:</strong> "En Dadybox hacemos el onboarding en 48-72 horas. Sin dramas." Link en bio.<div class="cs">PANTALLA: "Onboarding 48-72h · dadybox.com"</div></div></div>
+      </div>
+    </div>
+
+    <div class="rc">
+      <div class="rh"><div class="rt">V3 — "Caso real: El Black Friday tranquilo"</div><div class="rb">25 seg · Social proof · LI</div></div>
+      <div>
+        <div class="cut"><div class="ct">0–4s</div><div class="cb"><strong>HOOK:</strong> "¿Sabes cuándo un cliente Dadybox sabe que tomó la decisión correcta? El primer Black Friday."<div class="cs">PANTALLA: "Black Friday"</div></div></div>
+        <div class="cut"><div class="ct">4–18s</div><div class="cb">"3.200 pedidos en 72 horas. 97.3% entregados en plazo. El equipo... durmiendo. Por primera vez en 4 años de Black Friday, no hubo crisis."<div class="cs">PANTALLA: "3.200 pedidos · 72h · 97.3% on time"</div></div></div>
+        <div class="cut"><div class="ct">18–25s</div><div class="cb"><strong>CTA:</strong> "El próximo Black Friday puede ser así. Link en bio."<div class="cs">PANTALLA: "Tu próximo BF · dadybox.com"</div></div></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 11 CALENDAR -->
+<section id="calendar">
+  <div class="lbl reveal">11 — Calendario</div>
+  <div class="ttl reveal d1">CALENDARIO<br><span class="green">30 DÍAS</span></div>
+  <div class="div reveal d1"></div>
+  <div class="reveal d2">
+    <div class="wb"><div class="wh">SEMANA 1 — Establish Authority</div><div class="wm">Tema: Problemas reales del sector · Meta: 300 nuevos seguidores LinkedIn</div><table class="ct2"><thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead><tbody><tr><td>Lun</td><td><span class="pli">LI</span></td><td><span class="bp">Ecommerce Tips</span></td><td>Post</td><td><span class="hp">"5 señales de que tu logística está frenando el crecimiento."</span></td></tr><tr><td>Mié</td><td><span class="pig">IG</span> + <span class="pli">LI</span></td><td><span class="bp">Operativa</span></td><td>🎬 Reel V1</td><td><span class="hp">"Son las 6am. Hay 800 pedidos para hoy."</span></td></tr><tr><td>Vie</td><td><span class="pli">LI</span></td><td><span class="bp">Sector</span></td><td>Post dato</td><td><span class="hp">"El 40% abandona una tienda tras una mala entrega. Para siempre."</span></td></tr></tbody></table></div>
+    <div class="wb"><div class="wh">SEMANA 2 — Show the Operations</div><div class="wm">Tema: Operativa real Dadybox · Meta: 50 visitas a dadybox.com/contacto</div><table class="ct2"><thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead><tbody><tr><td>Lun</td><td><span class="pig">IG</span></td><td><span class="bp">Operativa</span></td><td>Behind scenes</td><td><span class="hp">"Cómo preparamos 2.000 pedidos en un día de campaña."</span></td></tr><tr><td>Mié</td><td><span class="pli">LI</span> + <span class="pig">IG</span></td><td><span class="bp">Operativa</span></td><td>Carrusel</td><td><span class="hp">"Del clic al cliente: el viaje de un pedido en 4 pasos."</span></td></tr><tr><td>Vie</td><td><span class="pli">LI</span></td><td><span class="bp">Ecommerce Tips</span></td><td>🎬 Reel V2</td><td><span class="hp">"5 señales de alerta logística."</span></td></tr></tbody></table></div>
+    <div class="wb"><div class="wh">SEMANA 3 — Casos de Éxito</div><div class="wm">Tema: Historia real con datos · Meta: 20 solicitudes contacto/demo</div><table class="ct2"><thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead><tbody><tr><td>Lun</td><td><span class="pli">LI</span></td><td><span class="bp">Casos Éxito</span></td><td>Post testimonio</td><td><span class="hp">"El Black Friday más tranquilo: 3.200 pedidos en 72h."</span></td></tr><tr><td>Mié</td><td><span class="pli">LI</span> + <span class="pig">IG</span></td><td><span class="bp">Casos Éxito</span></td><td>🎬 Reel V3</td><td><span class="hp">"¿Sabes cuándo un cliente sabe que tomó la decisión correcta?"</span></td></tr><tr><td>Vie</td><td><span class="pli">LI</span></td><td><span class="bp">Empresa</span></td><td>Equipo intro</td><td><span class="hp">"Detrás de cada envío hay 4 personas con nombre."</span></td></tr></tbody></table></div>
+    <div class="wb"><div class="wh">SEMANA 4 — Tips + CTA Black Friday</div><div class="wm">Tema: Valor práctico + captura leads BF · Meta: 500 impresiones audiencia objetivo</div><table class="ct2"><thead><tr><th>Día</th><th>Plataforma</th><th>Pilar</th><th>Formato</th><th>Hook</th></tr></thead><tbody><tr><td>Lun</td><td><span class="pli">LI</span> + <span class="pig">IG</span></td><td><span class="bp">Ecommerce Tips</span></td><td>Checklist</td><td><span class="hp">"Checklist logística que todo ecommerce debería revisar antes del BF."</span></td></tr><tr><td>Mié</td><td><span class="pli">LI</span></td><td><span class="bp">Sector</span></td><td>Análisis</td><td><span class="hp">"3 tendencias de entrega que cambiarán las expectativas en 2026."</span></td></tr><tr><td>Vie</td><td><span class="pli">LI</span></td><td><span class="bp">Empresa</span></td><td>Founder story</td><td><span class="hp">"Por qué Natalia dejó la consultoría para especializarse en logística."</span></td></tr></tbody></table></div>
+  </div>
+</section>
+
+<!-- 12 CANVA -->
+<section id="canva" style="background:var(--bg2)">
+  <div class="lbl reveal">12 — Templates Canva</div>
+  <div class="ttl reveal d1">TEMPLATES<br><span class="green">CANVA</span></div>
+  <div class="div reveal d1"></div>
+  <p style="font-size:14px;color:var(--dim);margin-bottom:26px;max-width:540px" class="reveal d2">5 pilares · 4 candidatos cada uno. Navy + verde Dadybox. Haz clic para abrir en Canva y duplicar.</p>
+  <div class="cg reveal d2">
+    <div class="cc"><div class="cn">Ecommerce Tips</div><div class="cp">30% del mix</div><div class="cth"><a class="ct3" href="https://www.canva.com/d/lq1Td3ZqU0K2Fo4" target="_blank"><img src="https://design.canva.ai/kIjO7ZU9jVN3ybd" alt="A" onerror="this.parentElement.style.fontSize='10px';this.parentElement.style.color='var(--dim)';this.remove()"></a><a class="ct3" href="https://www.canva.com/d/O3oIXqCcmF3XACg" target="_blank"><img src="https://design.canva.ai/hRemTpM8FH7iwhZ" alt="B" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/Ma-gnhsIe-ucprb" target="_blank"><img src="https://design.canva.ai/oV1OmlpgJqzgq2i" alt="C" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/OIhLZDQBD0xov4L" target="_blank"><img src="https://design.canva.ai/JZQEBrHHjKLFIRj" alt="D" onerror="this.remove()"></a></div><a class="cl" href="https://www.canva.com/d/lq1Td3ZqU0K2Fo4" target="_blank">Abrir A →</a></div>
+    <div class="cc"><div class="cn">Operativa</div><div class="cp">25% del mix</div><div class="cth"><a class="ct3" href="https://www.canva.com/d/7QQqm4L7B8orpMB" target="_blank"><img src="https://design.canva.ai/lbvuIn2I_ZEXvjz" alt="A" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/VL_xDvBSDzHvIc9" target="_blank"><img src="https://design.canva.ai/iKJq-QKsHwd2yb4" alt="B" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/781tHT9nbh6Q9zC" target="_blank"><img src="https://design.canva.ai/2BnAaA_k-23xdTr" alt="C" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/MokcP60z07uJZxw" target="_blank"><img src="https://design.canva.ai/gxqX3TrQtxeC0lI" alt="D" onerror="this.remove()"></a></div><a class="cl" href="https://www.canva.com/d/7QQqm4L7B8orpMB" target="_blank">Abrir A →</a></div>
+    <div class="cc"><div class="cn">Casos Éxito</div><div class="cp">20% del mix</div><div class="cth"><a class="ct3" href="https://www.canva.com/d/DmHIPPE1Oyo_J4r" target="_blank"><img src="https://design.canva.ai/TBWsZidkbhw4P3T" alt="A" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/hgkgSpV4lXB9A-Z" target="_blank"><img src="https://design.canva.ai/D_oP7mWUOWxqf8b" alt="B" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/UhAnzyLQW2MF0Fp" target="_blank"><img src="https://design.canva.ai/rNVDS0jCgq4jRed" alt="C" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/CKeCVagawKB5xLp" target="_blank"><img src="https://design.canva.ai/RDGKCAyB-AVZMCx" alt="D" onerror="this.remove()"></a></div><a class="cl" href="https://www.canva.com/d/DmHIPPE1Oyo_J4r" target="_blank">Abrir A →</a></div>
+    <div class="cc"><div class="cn">Sector</div><div class="cp">15% del mix</div><div class="cth"><a class="ct3" href="https://www.canva.com/d/WRsneysT6fs-fy2" target="_blank"><img src="https://design.canva.ai/I7V5RL8NpQrS1aX" alt="A" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/CygdcKzmt2VYTag" target="_blank"><img src="https://design.canva.ai/c8wJwyq3gpDQTdF" alt="B" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/3vMH1PbRdAWYgNe" target="_blank"><img src="https://design.canva.ai/GOON-Yz1j3SE8VP" alt="C" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/LgjPP1myu7FdX69" target="_blank"><img src="https://design.canva.ai/JWMFphGtXY8TdpF" alt="D" onerror="this.remove()"></a></div><a class="cl" href="https://www.canva.com/d/WRsneysT6fs-fy2" target="_blank">Abrir A →</a></div>
+    <div class="cc"><div class="cn">Empresa</div><div class="cp">10% del mix</div><div class="cth"><a class="ct3" href="https://www.canva.com/d/psApRUgZAXu8RLr" target="_blank"><img src="https://design.canva.ai/R1cf0QjPJClwZ-K" alt="A" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/7fIp8V6Hy1cuLn2" target="_blank"><img src="https://design.canva.ai/wsPEoezBQqJ1rkv" alt="B" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/Z23g1UOFKrjL8_4" target="_blank"><img src="https://design.canva.ai/f0L6rtTxy4WqrQv" alt="C" onerror="this.remove()"></a><a class="ct3" href="https://www.canva.com/d/7tXYWKXJ-e0Euvm" target="_blank"><img src="https://design.canva.ai/oWH_6w9_9wi6hNd" alt="D" onerror="this.remove()"></a></div><a class="cl" href="https://www.canva.com/d/psApRUgZAXu8RLr" target="_blank">Abrir A →</a></div>
+  </div>
+</section>
+
+<!-- 13 CAMPAIGNS -->
+<section id="campaigns">
+  <div class="lbl reveal">13 — Campaigns</div>
+  <div class="ttl reveal d1">CAMPAÑAS<br><span class="green">ACTIVAS</span></div>
+  <div class="div reveal d1"></div>
+  <div class="g2 reveal d2">
+    <div class="cc2"><div class="cd">Oct – Nov 2026</div><div class="cn2">Pre-Black Friday Education</div><div class="cg2">Captar leads de ecommerce que buscan operador logístico antes de la campaña. Posicionarse como "el experto que te prepara para BF".</div><div class="cm">Serie de contenido educativo (3 semanas) → lead magnet checklist BF gratuito → demo call Dadybox. Objetivo: 50 demos cualificadas de ecommerce entre 1.000-10.000 envíos/mes.</div></div>
+    <div class="cc2"><div class="cd">Ongoing</div><div class="cn2">Onboarding 48h — Differentiator Always On</div><div class="cg2">Comunicar el onboarding en 48-72h vs competidores que tardan semanas. El diferenciador más potente y menos comunicado del sector.</div><div class="cm">Posts de contraste + casos reales de clientes que empezaron en 48h. CTA directo a dadybox.com/contacto. Amplificado con LinkedIn Ads a audience de ecommerce managers España.</div></div>
+  </div>
+</section>
+
+<!-- 14 MONTH 1 -->
+<section id="month1" style="background:var(--bg2)">
+  <div class="lbl reveal">14 — Month 1</div>
+  <div class="ttl reveal d1">PLAN<br><span class="green">MES 1</span></div>
+  <div class="div reveal d1"></div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:0;border:1px solid rgba(62,232,154,.15);border-radius:13px;overflow:hidden;margin-bottom:32px" class="reveal d2">
+    <div style="padding:14px 16px;background:rgba(62,232,154,.12);border-right:1px solid rgba(62,232,154,.15);text-align:center"><div class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--primary);text-transform:uppercase">Meta 30d</div><div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">+300</div><div style="font-size:11px;color:var(--dim)">LI seguidores</div></div>
+    <div style="padding:14px 16px;background:rgba(62,232,154,.08);border-right:1px solid rgba(62,232,154,.15);text-align:center"><div class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--primary);text-transform:uppercase">Meta 30d</div><div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">25</div><div style="font-size:11px;color:var(--dim)">Demos / contactos</div></div>
+    <div style="padding:14px 16px;background:rgba(62,232,154,.06);border-right:1px solid rgba(62,232,154,.15);text-align:center"><div class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--primary);text-transform:uppercase">Meta 30d</div><div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">50</div><div style="font-size:11px;color:var(--dim)">Visitas contacto web</div></div>
+    <div style="padding:14px 16px;background:rgba(62,232,154,.04);text-align:center"><div class="mono" style="font-size:9px;letter-spacing:.12em;color:var(--primary);text-transform:uppercase">Meta 30d</div><div style="font-family:'Poppins',sans-serif;font-size:22px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">P1</div><div style="font-size:11px;color:var(--dim)">Google fulfillment ES</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px" class="reveal d3">
+    <div class="wcard"><div class="wnum">Semana 1</div><div class="wtheme">Establish Authority</div><div style="font-size:12px;color:var(--dim)">4 posts: 5 señales logística + Reel V1 almacén + dato 40% abandono + reflexión operativa vs producto</div><div class="wgoal">→ 300 LI seguidores nuevos</div></div>
+    <div class="wcard"><div class="wnum">Semana 2</div><div class="wtheme">Show the Operations</div><div style="font-size:12px;color:var(--dim)">4 posts: behind scenes 2K pedidos + carrusel del clic al cliente + Reel V2 señales + SLA explicado</div><div class="wgoal">→ 50 visitas contacto</div></div>
+    <div class="wcard"><div class="wnum">Semana 3</div><div class="wtheme">Caso de Éxito</div><div style="font-size:12px;color:var(--dim)">4 posts: testimonio BF 3200 + Reel V3 BF + intro equipo + caso Despegue→Turbo 6 meses</div><div class="wgoal">→ 20 demos solicitadas</div></div>
+    <div class="wcard"><div class="wnum">Semana 4</div><div class="wtheme">Tips + CTA BF</div><div style="font-size:12px;color:var(--dim)">4 posts: checklist BF + tendencias 2026 + founder story Natalia + reflexión operativa escala</div><div class="wgoal">→ 500 impresiones target</div></div>
+  </div>
+</section>
+
+<!-- 15 TIMELINE -->
+<section id="timeline">
+  <div class="lbl reveal">15 — Roadmap</div>
+  <div class="ttl reveal d1">GROWTH<br><span class="green">ROADMAP</span></div>
+  <div class="div reveal d1"></div>
+  <div class="ttrack reveal d2">
+    <div class="tphase"><div class="tdot"></div><div class="tnum">Fase 01 · May</div><div class="tname">Fundación</div><ul class="titems"><li>LinkedIn activado (3x/semana)</li><li>Reel V1 almacén live</li><li>Lead magnet BF checklist</li><li>Google Ads configurado</li></ul></div>
+    <div class="tphase"><div class="tdot"></div><div class="tnum">Fase 02 · Jun</div><div class="tname">Autoridad</div><ul class="titems"><li>1er caso éxito publicado</li><li>Google rankea BF logística</li><li>25+ demos/mes</li><li>Newsletter lanzada</li></ul></div>
+    <div class="tphase"><div class="tdot"></div><div class="tnum">Fase 03 · Jul-Ago</div><div class="tname">Aceleración</div><ul class="titems"><li>2º caso éxito</li><li>LinkedIn 2K seguidores</li><li>60 demos/mes</li><li>LinkedIn Ads activado</li></ul></div>
+    <div class="tphase"><div class="tdot"></div><div class="tnum">Fase 04 · Sep-Oct</div><div class="tname">Pre-BF</div><ul class="titems"><li>Campaña BF educativa</li><li>'fulfillment España' Page 1</li><li>50 leads pre-BF/mes</li><li>Natalia LI personal activa</li></ul></div>
+    <div class="tphase"><div class="tdot"></div><div class="tnum">Fase 05 · Nov-Dic</div><div class="tname">Consolidación</div><ul class="titems"><li>BF record leads captados</li><li>LinkedIn 5K seguidores</li><li>+6 clientes nuevos/mes</li><li>Plan 2027 definido</li></ul></div>
+  </div>
+</section>
+
+<!-- 16 INFLUENCERS -->
+<section id="influencers" style="background:var(--bg2)">
+  <div class="lbl reveal">16 — Creators</div>
+  <div class="ttl reveal d1">CREATOR<br><span class="green">STRATEGY</span></div>
+  <div class="div reveal d1"></div>
+  <div class="g3 reveal d2">
+    <div class="tier"><div class="tiern">Ecommerce Founders Spain</div><div class="tierf">10K – 100K · LinkedIn + IG</div><div class="tierc">3</div><div class="tierb">Budget: €200-400/mes [EST] · Founders de ecommerce españoles con audiencia de gestores y decisores. Contenido auténtico sobre logística y operaciones.</div></div>
+    <div class="tier"><div class="tiern">Partnerships plataformas</div><div class="tierf">Shopify ES · PrestaShop · Wix</div><div class="tierc">2</div><div class="tierb">Budget: Partnership / contenido conjunto · Colaboraciones de contenido educativo dirigido a sus bases de usuarios ecommerce. Alta credibilidad y alcance sin coste directo.</div></div>
+    <div class="tier"><div class="tiern">Natalia Aldea — Personal Brand</div><div class="tierf">LinkedIn personal creciendo</div><div class="tierc">1</div><div class="tierb">Budget: Orgánico · La voz más creíble de Dadybox. 2 posts semanales desde perspectiva experta en logística ecommerce.</div></div>
+  </div>
+</section>
+
+<!-- 17 MEDIA -->
+<section id="media">
+  <div class="lbl reveal">17 — Performance</div>
+  <div class="ttl reveal d1">PAID<br><span class="green">MEDIA</span></div>
+  <div class="div reveal d1"></div>
+  <div style="display:grid;grid-template-columns:auto 1fr;gap:60px;align-items:center">
+    <div class="reveal d2"><div class="chart-wrap" style="width:250px;height:250px"><canvas id="budgetChart"></canvas></div></div>
+    <div class="reveal d3">
+      <table style="width:100%;border-collapse:collapse">
+        <thead><tr><th style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:10px 13px;text-align:left;background:rgba(62,232,154,.06);border-bottom:1px solid rgba(255,255,255,.06)">Canal</th><th style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:10px 13px;text-align:left;background:rgba(62,232,154,.06);border-bottom:1px solid rgba(255,255,255,.06)">%</th><th style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);padding:10px 13px;text-align:left;background:rgba(62,232,154,.06);border-bottom:1px solid rgba(255,255,255,.06)">Formato</th></tr></thead>
+        <tbody>
+          <tr><td style="padding:12px 13px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)"><strong>LinkedIn Ads</strong></td><td style="padding:12px 13px;font-family:'Poppins',sans-serif;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;border-bottom:1px solid rgba(255,255,255,.04)">60%</td><td style="padding:12px 13px;font-size:13px;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.04)">Lead gen · ecommerce managers Spain</td></tr>
+          <tr><td style="padding:12px 13px;font-size:13px;border-bottom:1px solid rgba(255,255,255,.04)"><strong>Google Search</strong></td><td style="padding:12px 13px;font-family:'Poppins',sans-serif;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;border-bottom:1px solid rgba(255,255,255,.04)">30%</td><td style="padding:12px 13px;font-size:13px;color:var(--dim);border-bottom:1px solid rgba(255,255,255,.04)">'fulfillment ecommerce España' · 'logística 3PL pymes'</td></tr>
+          <tr><td style="padding:12px 13px;font-size:13px"><strong>Instagram/FB Retargeting</strong></td><td style="padding:12px 13px;font-family:'Poppins',sans-serif;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">10%</td><td style="padding:12px 13px;font-size:13px;color:var(--dim)">Web visitors + lookalike founders</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:18px;padding:16px 20px;background:rgba(62,232,154,.06);border-radius:11px;border:1px solid rgba(62,232,154,.15)">
+        <div class="lbl">Budget mensual estimado</div>
+        <div style="font-family:'Poppins',sans-serif;font-size:26px;font-weight:800;background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">€800 – 1.500</div>
+        <div style="font-size:12px;color:var(--dim);margin-top:3px">[ESTIMATE] · Solo paid media · Producción de contenido adicional</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 18 KPIs -->
+<section id="kpis" style="background:var(--bg2)">
+  <div class="lbl reveal">18 — Metrics</div>
+  <div class="ttl reveal d1">KPIs &<br><span class="green">METRICS</span></div>
+  <div class="div reveal d1"></div>
+  <div style="border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden" class="reveal d2">
+    <div class="kgrid"><div class="kh">Métrica</div><div class="kh">Baseline</div><div class="kh">30 días</div><div class="kh">90 días</div><div class="kh">12 meses</div></div>
+    <div class="kgrid"><div class="kc">Demos / contactos mes</div><div class="kc">~10 [EST]</div><div class="kc hi">25</div><div class="kc hi">60</div><div class="kc hi">120</div></div>
+    <div class="kgrid"><div class="kc">LinkedIn seguidores empresa</div><div class="kc">~800 [EST]</div><div class="kc hi">1.100</div><div class="kc hi">2.500</div><div class="kc hi">5.000</div></div>
+    <div class="kgrid"><div class="kc">Clientes nuevos / mes</div><div class="kc">~5-8 [EST]</div><div class="kc hi">+2</div><div class="kc hi">+6</div><div class="kc hi">+15</div></div>
+    <div class="kgrid"><div class="kc">Google 'fulfillment ecommerce ES'</div><div class="kc">Page 2-3</div><div class="kc hi">Page 1</div><div class="kc hi">Top 3</div><div class="kc hi">Featured</div></div>
+    <div class="kgrid"><div class="kc">Tráfico dadybox.com/contacto</div><div class="kc">N/D</div><div class="kc hi">+40%</div><div class="kc hi">+120%</div><div class="kc hi">+300%</div></div>
+  </div>
+</section>
+
+<!-- 19 ACTION PLAN -->
+<section id="action">
+  <div class="lbl reveal">19 — Execute</div>
+  <div class="ttl reveal d1">PLAN DE<br><span class="green">ACCIÓN</span></div>
+  <div class="div reveal d1"></div>
+  <div style="border:1px solid rgba(255,255,255,.06);border-radius:12px;overflow:hidden" class="reveal d2">
+    <div style="display:grid;grid-template-columns:58px 1fr 110px 130px;gap:12px;padding:11px 16px;background:rgba(62,232,154,.07);border-bottom:1px solid rgba(255,255,255,.06)">
+      <span class="mono" style="font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase">Prior.</span>
+      <span class="mono" style="font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase">Tarea</span>
+      <span class="mono" style="font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase">Owner</span>
+      <span class="mono" style="font-size:9px;letter-spacing:.1em;color:var(--dim);text-transform:uppercase">Deadline</span>
+    </div>
+    <div class="arow"><span class="apri p1">P1</span><span class="atask">Activar publicación semanal en LinkedIn Company + Natalia personal</span><span class="aown">Natalia</span><span class="adl">Esta semana</span></div>
+    <div class="arow"><span class="apri p1">P1</span><span class="atask">Grabar Reel V1: "Del clic al cliente — 4 pasos en Dadybox"</span><span class="aown">Natalia/Equipo</span><span class="adl">Mayo 2026</span></div>
+    <div class="arow"><span class="apri p1">P1</span><span class="atask">Crear lead magnet: Checklist Black Friday Logística (PDF)</span><span class="aown">Natalia</span><span class="adl">Mayo 2026</span></div>
+    <div class="arow"><span class="apri p2">P2</span><span class="atask">Caso de éxito escrito con cliente real (datos concretos + aprobación)</span><span class="aown">Natalia / CS Lidia</span><span class="adl">Junio 2026</span></div>
+    <div class="arow"><span class="apri p2">P2</span><span class="atask">Configurar Google Ads 'fulfillment ecommerce España'</span><span class="aown">Marketing / Agencia</span><span class="adl">Junio 2026</span></div>
+    <div class="arow"><span class="apri p2">P2</span><span class="atask">Newsletter mensual leads + clientes activos</span><span class="aown">Natalia</span><span class="adl">Junio 2026</span></div>
+    <div class="arow"><span class="apri p3">P3</span><span class="atask">Activar LinkedIn Personal Brand Natalia (2 posts/semana)</span><span class="aown">Natalia</span><span class="adl">Julio 2026</span></div>
+    <div class="arow"><span class="apri p3">P3</span><span class="atask">Partnership contenido con Shopify España / PrestaShop</span><span class="aown">Noel / Natalia</span><span class="adl">Julio 2026</span></div>
+  </div>
+  <div style="text-align:center;padding:64px 40px 32px" class="reveal d3">
+    <div style="font-family:'Poppins',sans-serif;font-size:clamp(28px,3.5vw,48px);font-weight:800;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:16px;line-height:1">TU LOGÍSTICA,<br><span class="green">NUESTRA MAGIA.</span></div>
+    <a href="https://dadybox.com/contacto" class="btn-green" target="_blank" style="font-size:13px;padding:15px 36px">Reserva tu llamada →</a>
+    <div style="margin-top:24px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.15)">DADYBOX · ALBASANZ 14 BIS · MADRID · DADYBOX.COM</div>
+  </div>
+</section>
+
+
+<!-- ── 20 12-MONTH ROADMAP ── -->
+<section id="roadmap12" style="background:var(--bg2)">
+  <div class="lbl reveal">20 — 12-Month Strategy</div>
+  <div class="ttl reveal d1">ROADMAP<br><span class="green">12 MESES</span></div>
+  <div class="div reveal d1"></div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:32px" class="reveal d2">
+
+    <div style="border:1px solid rgba(62,232,154,.35);border-radius:14px;overflow:hidden">
+      <div style="background:var(--primary);padding:16px 20px">
+        <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;color:#0B1829;text-transform:uppercase">Fase 1</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:#0B1829;letter-spacing:.1em">FUNDACIÓN · MAY–JUL</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+        <div class="lbl" style="margin-bottom:4px">Targets</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.8">25 demos/mes<br>300 LI nuevos seguidores<br>2 nuevos clientes/mes<br>Google BF log.: Page 1</div>
+        <div class="lbl" style="margin-top:8px">Acciones clave</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.9"><strong style="color:var(--text)">May</strong> — LinkedIn activado · Reel V1 almacén · Checklist BF<br><strong style="color:var(--text)">Jun</strong> — 1er caso éxito publicado · Google Ads live<br><strong style="color:var(--text)">Jul</strong> — Newsletter lanzada · Partnerships Shopify ES inicia</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid rgba(62,232,154,.2);border-radius:14px;overflow:hidden">
+      <div style="background:var(--accent);padding:16px 20px">
+        <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;color:#0B1829;text-transform:uppercase">Fase 2</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:#0B1829;letter-spacing:.1em">TRACCIÓN · AGO–OCT</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+        <div class="lbl" style="margin-bottom:4px">Targets</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.8">60 demos/mes<br>LinkedIn 2.500 seguidores<br>+6 clientes nuevos/mes<br>LI Ads positivo ROI</div>
+        <div class="lbl" style="margin-top:8px">Acciones clave</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.9"><strong style="color:var(--text)">Ago</strong> — LinkedIn Ads activado · 2º caso éxito<br><strong style="color:var(--text)">Sep</strong> — Serie Natalia Personal Brand (2x/semana)<br><strong style="color:var(--text)">Oct</strong> — Podcast episode · Partnership content live</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid rgba(255,255,255,.1);border-radius:14px;overflow:hidden">
+      <div style="background:rgba(62,232,154,.25);padding:16px 20px">
+        <div style="font-family:'Poppins',sans-serif;font-size:20px;font-weight:800;color:var(--text);text-transform:uppercase">Fase 3</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--dim);letter-spacing:.1em">ESCALA · NOV–MAY 27</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px">
+        <div class="lbl" style="margin-bottom:4px">Targets</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.8">100+ demos/mes<br>LinkedIn 5.000 seguidores<br>+15 clientes nuevos/mes<br>'fulfillment España' #1 Google</div>
+        <div class="lbl" style="margin-top:8px">Acciones clave</div>
+        <div style="font-size:12px;color:var(--dim);line-height:1.9"><strong style="color:var(--text)">Nov</strong> — BF record: campa. pre-BF completa<br><strong style="color:var(--text)">Ene 27</strong> — Plan 2027 + nuevas líneas de negocio<br><strong style="color:var(--text)">May 27</strong> — 🎂 1 Año Dadybox Content Program</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Monthly timeline -->
+  <div style="border:1px solid rgba(62,232,154,.12);border-radius:12px;padding:22px" class="reveal d3">
+    <div class="lbl" style="margin-bottom:14px">Milestones mes a mes</div>
+    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:5px">
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.18);border-top:2px solid var(--primary);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">MAY</div><div style="font-size:10px;color:var(--dim);margin-top:4px">LinkedIn<br>Live</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.14);border-top:2px solid var(--primary);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">JUN</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Caso<br>Éxito #1</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.12);border-top:2px solid var(--primary);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">JUL</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Newsletter<br>launch</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.1);border-top:2px solid rgba(62,232,154,.5);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">AGO</div><div style="font-size:10px;color:var(--dim);margin-top:4px">LI Ads<br>live</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.08);border-top:2px solid rgba(62,232,154,.5);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">SEP</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Natalia<br>Personal</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.08);border-top:2px solid rgba(62,232,154,.5);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">OCT</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Podcast<br>ep. 1</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.12);border-top:2px solid rgba(62,232,154,.7);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">NOV</div><div style="font-size:10px;color:var(--dim);margin-top:4px">🔥 BF<br>Campa.</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.08);border-top:2px solid rgba(62,232,154,.35);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">DIC</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Navidad<br>edición</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.06);border-top:2px solid rgba(62,232,154,.3);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">ENE</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Plan<br>2027</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.06);border-top:2px solid rgba(62,232,154,.3);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">FEB</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Caso<br>Éxito #4</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.06);border-top:2px solid rgba(62,232,154,.3);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">MAR</div><div style="font-size:10px;color:var(--dim);margin-top:4px">Shopify<br>Partner</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(62,232,154,.2);border-top:3px solid var(--primary);border-radius:6px 6px 0 0"><div class="mono" style="font-size:8px;color:var(--primary)">MAY 27</div><div style="font-size:10px;color:var(--text);margin-top:4px;font-weight:700">🎂 1 AÑO</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 21 OFFLINE & TRADE MARKETING ── -->
+<section id="offline">
+  <div class="lbl reveal">21 — Offline & Trade</div>
+  <div class="ttl reveal d1">OFFLINE &<br><span class="green">TRADE MKT</span></div>
+  <div class="div reveal d1"></div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px" class="reveal d2">
+
+    <div style="border:1px solid rgba(62,232,154,.35);border-radius:14px;padding:24px;background:rgba(62,232,154,.04)">
+      <div class="lbl">PRIORIDAD #1 · CONFIRMADO</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:12px">FERIAS ECOMMERCE</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.8">Presencia en E-Show Madrid y Barcelona. Stand con demo live del SGA + onboarding en 48h. El mejor entorno para captar decisores en un día.<br><br><strong style="color:var(--text)">Evento:</strong> E-Show Madrid (Nov) · E-Show Barcelona (Mar)<br><strong style="color:var(--text)">Mensaje:</strong> "Empieza a enviar con nosotros esta semana" + demo tablet<br><strong style="color:var(--text)">Budget:</strong> €3.000-6.000/feria [ESTIMATE]<br><strong style="color:var(--text)">KPI:</strong> leads cualificados en el stand con contacto directo</div>
+    </div>
+
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
+      <div class="lbl">PARTNERSHIP · PROPUESTA</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:12px">SHOPIFY MEETUPS</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.8">Co-patrocinar los Shopify Meetups de Madrid y Barcelona. Hablar en el evento como experto en "logística para ecommerce que escala". Captar founders antes de que tengan problema logístico.<br><br><strong style="color:var(--text)">Target:</strong> founders ecommerce 0-200K€/año<br><strong style="color:var(--text)">Budget:</strong> €500-1.000/evento<br><strong style="color:var(--text)">ROI:</strong> Leads early-stage con alta LTV potencial</div>
+    </div>
+
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
+      <div class="lbl">GUERRILLA · PROPUESTA</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:12px">ONBOARDING EN 48H ROADSHOW</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.8">Aparecer en coworkings de Madrid (WeWork, Spaces, Utopicus) con un iPad y la demo del SGA. "¿Cuántos pedidos tienes al mes? En 5 minutos te digo qué plan te va mejor." Sin cita previa.<br><br><strong style="color:var(--text)">Target:</strong> fundadores de ecommerce trabajando en coworkings<br><strong style="color:var(--text)">Budget:</strong> Tiempo equipo + folletos<br><strong style="color:var(--text)">ROI:</strong> 5-10 conversaciones cualificadas/visita</div>
+    </div>
+
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
+      <div class="lbl">CONTENIDO · PROPUESTA</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:12px">CLIENTE EMBAJADOR PROGRAMA</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.8">Seleccionar 3-5 clientes Turbo/Galaxia para el programa. Visita al almacén + foto y vídeo professional + case study + LinkedIn joint post. Contrato de embajador = descuento en tarifa + contenido mensual.<br><br><strong style="color:var(--text)">Target:</strong> clientes satisfechos con historia real buena<br><strong style="color:var(--text)">Budget:</strong> Descuento en tarifa (coste ya absorbido)<br><strong style="color:var(--text)">ROI:</strong> Testimoniales verificables + leads por referral</div>
+    </div>
+
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
+      <div class="lbl">PARTNERSHIP · PROPUESTA</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:12px">AGENCIAS SHOPIFY / PRESTASHOP</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.8">Acuerdo de referral con las top 10 agencias de desarrollo Shopify y PrestaShop en España. Cada cliente que montan necesita logística — nosotros somos su recomendación natural a cambio de comisión.<br><br><strong style="color:var(--text)">Target:</strong> Agencias de desarrollo ecommerce España<br><strong style="color:var(--text)">Budget:</strong> Comisión por lead cualificado convertido<br><strong style="color:var(--text)">ROI:</strong> Canal de captación pasivo con leads ya cualificados</div>
+    </div>
+
+    <div style="border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:24px">
+      <div class="lbl">VISIBILIDAD · PROPUESTA</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:12px">OPEN WAREHOUSE DAY</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.8">Una vez al trimestre, invitar a 10-15 prospects cualificados a visitar el almacén de Albasanz. Ver la operativa en directo. Reunión con Noel y Natalia. Nada vende más que ver cómo funciona.<br><br><strong style="color:var(--text)">Target:</strong> Leads en pipeline + clientes potenciales warm<br><strong style="color:var(--text)">Budget:</strong> Catering + materiales<br><strong style="color:var(--text)">ROI:</strong> La visita suele cerrar el trato — conversión alta</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 22 BRAINSTORM ── -->
+<section id="brainstorm" style="background:var(--bg2)">
+  <div class="lbl reveal">22 — Ideas</div>
+  <div class="ttl reveal d1">BRAIN-<br><span class="green">STORM</span></div>
+  <div class="div reveal d1"></div>
+  <p style="font-size:14px;color:var(--dim);margin-bottom:32px;max-width:600px" class="reveal d1">Ideas bold para debatir con el equipo. Sin filtro. Todo es posible.</p>
+
+  <div class="g2 reveal d2" style="margin-bottom:20px">
+    <div style="background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px;transition:border-color .3s;cursor:default" onmouseover="this.style.borderColor='rgba(62,232,154,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div class="lbl">Campaña viral</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:10px">"El Black Friday sin Dadybox" — campaña de fear</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.7">Serie de posts contando las historias más dramáticas de Black Fridays logísticos que han visto en su carrera. Anónimas pero reales. Hook: "Año 2022. Una marca con 5.000 pedidos en 72h y un almacén montado en casa. Esto pasó." Nadie en el sector es tan honesto.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(62,232,154,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div class="lbl">Serie LinkedIn</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:10px">"Natalia explica" — vídeo semanal 60 segundos</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.7">Natalia a cámara respondiendo una pregunta de logística por semana. "¿Cuándo tiene sentido externalizar?" "¿Qué es el SLA y por qué importa?" "¿Cómo elegimos el transportista correcto?" Formato similar a Peter Levels o Kat Norton. La cara humana de Dadybox.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(62,232,154,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div class="lbl">Lead magnet premium</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:10px">"El Informe de Logística Ecommerce España 2026"</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.7">Recopilación de datos propios anonimizados: tasas de entrega a tiempo por sector, coste medio por envío, picos de campaña más intensos, errores más comunes. Publicarlo en noviembre para el sector. Prensa especializada lo recogería. Posicionamiento de autoridad total.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(62,232,154,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div class="lbl">Activación comunidad</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:10px">"Reto: Auditoría logística gratis para 10 ecommerce"</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.7">Una vez al trimestre, oferta de auditoría logística gratuita para 10 ecommerce seleccionados. Aplicación por LinkedIn con datos reales. Natalia analiza y da feedback público (anonimizado). Genera leads calientes + contenido educativo + prueba social.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(62,232,154,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div class="lbl">Colaboración</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:10px">Podcast propio "Envíos sin Dramas"</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.7">1 episodio quincenal. Natalia entrevista a founders de ecommerce sobre cómo han gestionado su logística en momentos críticos. Formato honesto, sin publicidad, 20-30 min. Distribuido en Spotify, Apple Podcasts y LinkedIn. Captura audiencia que no consume contenido visual.</div>
+    </div>
+    <div style="background:var(--bg3);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:24px;transition:border-color .3s" onmouseover="this.style.borderColor='rgba(62,232,154,.4)'" onmouseout="this.style.borderColor='rgba(255,255,255,.07)'">
+      <div class="lbl">Producto digital</div>
+      <div class="card-ttl" style="margin-top:8px;margin-bottom:10px">Calculadora de coste logístico online</div>
+      <div style="font-size:13px;color:var(--dim);line-height:1.7">Herramienta web gratuita en dadybox.com: introduce tu volumen de pedidos, peso medio, destinos principales. Resultado: coste estimado con Dadybox vs gestión propia. Lead magnet natural — el que calcula está cualificado. Alta conversión porque el usuario ya está evaluando.</div>
+    </div>
+  </div>
+
+  <div style="text-align:center;padding:48px 40px 20px" class="reveal d3">
+    <div style="font-family:'Poppins',sans-serif;font-size:clamp(24px,3vw,44px);font-weight:800;text-transform:uppercase;letter-spacing:-.02em;margin-bottom:16px;line-height:1">TU LOGÍSTICA,<br><span class="green">NUESTRA MAGIA.</span></div>
+    <a href="https://dadybox.com/contacto" class="btn-green" target="_blank" style="font-size:13px;padding:15px 36px">Reserva tu llamada →</a>
+    <div style="margin-top:22px;font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.15em;color:rgba(255,255,255,.12)">DADYBOX · ALBASANZ 14 BIS · MADRID · DADYBOX.COM</div>
+  </div>
+</section>
+
+</main>
+<div class="sf-wm">Dadybox · Brand Pack · 2026</div>
+
+<script>
+const obs = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting) x.target.classList.add('visible') }), {threshold:.1});
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+const secs = document.querySelectorAll('section[id]');
+const dots = document.querySelectorAll('.nd');
+const no = new IntersectionObserver(e => e.forEach(x => { if(x.isIntersecting){ dots.forEach(d => d.classList.remove('active')); const a = document.querySelector(`.nd[href="#${x.target.id}"]`); if(a) a.classList.add('active') } }), {threshold:.4});
+secs.forEach(s => no.observe(s));
+function fp(p,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));if(btn)btn.classList.add('active');document.querySelectorAll('.pc').forEach(c=>{c.style.display=(p==='all'||c.dataset.pillar===p)?'':'none'})}
+const pc = document.getElementById('pillarsChart').getContext('2d');
+new Chart(pc,{type:'doughnut',data:{labels:['E-commerce Tips','Operativa','Casos Éxito','Sector','Empresa'],datasets:[{data:[30,25,20,15,10],backgroundColor:['#3EE89A','#2DC080','#1A9B60','#0f6b42','#a7f3d0'],borderWidth:0,hoverOffset:7}]},options:{cutout:'72%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#0f2035',titleColor:'#F4F7FA',bodyColor:'#3EE89A',borderColor:'rgba(62,232,154,.25)',borderWidth:1,padding:10,callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed}%`}}}}});
+const bc = document.getElementById('budgetChart').getContext('2d');
+new Chart(bc,{type:'doughnut',data:{labels:['LinkedIn Ads','Google Search','IG/FB'],datasets:[{data:[60,30,10],backgroundColor:['#3EE89A','#2DC080','#1A9B60'],borderWidth:0,hoverOffset:5}]},options:{cutout:'70%',plugins:{legend:{display:false},tooltip:{backgroundColor:'#0f2035',titleColor:'#F4F7FA',bodyColor:'#3EE89A',borderColor:'rgba(62,232,154,.25)',borderWidth:1,padding:10,callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed}%`}}}}});
+</script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>MIRA — The Eye · Brand Studio SF</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400&family=Space+Grotesk:wght@300;400;500;600&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: #050510;
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  padding: 64px 24px 80px;
+  min-height: 100vh;
+}
+
+.studio-header {
+  text-align: center;
+  margin-bottom: 80px;
+}
+.studio-eyebrow {
+  font-size: 9px;
+  letter-spacing: 6px;
+  color: #c084fc;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  opacity: 0.7;
+}
+.studio-title {
+  font-family: 'Space Grotesk';
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 5px;
+  color: #2a2a4a;
+  text-transform: uppercase;
+}
+
+/* MAIN LAYOUT */
+.main-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 20px;
+  max-width: 1040px;
+  margin: 0 auto 20px;
+}
+.lockup-stack {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 20px;
+}
+
+/* CARDS */
+.card {
+  background: #0a0a1c;
+  border: 1px solid #131328;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.3s;
+}
+.card:hover { border-color: #2a1a4a; }
+
+.card-bar {
+  padding: 13px 20px;
+  border-bottom: 1px solid #131328;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.c-tag  { font-size: 9px; color: #2a2a4a; letter-spacing: 4px; text-transform: uppercase; font-family: 'Space Grotesk'; }
+.c-name { font-size: 9px; color: #4a2a6a; letter-spacing: 2px; text-transform: uppercase; }
+
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preview-dark  { background: #050510; }
+.preview-light { background: #f0eeff; }
+.preview-icon  { padding: 48px 32px; min-height: 280px; }
+.preview-lock  { padding: 28px 32px; min-height: 116px; }
+
+.card-foot {
+  padding: 14px 20px;
+  border-top: 1px solid #131328;
+  background: #07071a;
+}
+.copy-btn {
+  width: 100%;
+  padding: 9px 0;
+  background: transparent;
+  border: 1px solid #1a1a38;
+  border-radius: 7px;
+  color: #3a3a5a;
+  font-size: 9px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'Space Grotesk';
+  transition: all 0.2s;
+}
+.copy-btn:hover  { border-color: #5a2a9a; color: #9060d0; background: #10102a; }
+.copy-btn.copied { border-color: #166534; color: #4ade80; background: #0a1e10; }
+
+/* RATIONALE */
+.rationale {
+  max-width: 1040px;
+  margin: 0 auto 20px;
+  border: 1px solid #131328;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.rat-head {
+  padding: 22px 30px;
+  border-bottom: 1px solid #131328;
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+}
+.rat-title { font-family: 'Space Grotesk'; font-size: 9px; letter-spacing: 5px; color: #c084fc; text-transform: uppercase; opacity: 0.6; }
+.rat-sub   { font-size: 10px; color: #1e1e3a; letter-spacing: 2px; }
+
+.rat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.rat-col {
+  padding: 28px 30px;
+  border-right: 1px solid #131328;
+}
+.rat-col:last-child { border-right: none; }
+.rat-num  { font-size: 8px; color: #2a2a4a; letter-spacing: 4px; margin-bottom: 14px; font-family: 'Space Grotesk'; }
+.rat-name { font-family: 'Space Grotesk'; font-size: 14px; font-weight: 500; color: #c8a0f0; margin-bottom: 12px; letter-spacing: 0.3px; }
+.rat-body { font-size: 11px; line-height: 1.85; color: #50507a; }
+.rat-pull {
+  margin-top: 14px;
+  padding: 10px 14px;
+  border-left: 2px solid #3a1a5a;
+  font-size: 10px;
+  color: #6a3a8a;
+  font-style: italic;
+  line-height: 1.7;
+}
+
+/* SPECS */
+.specs-row {
+  max-width: 1040px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.spec {
+  background: #0a0a1c;
+  border: 1px solid #131328;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.spec-l { font-size: 8px; color: #2a2a4a; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 8px; }
+.spec-v { font-family: 'Space Grotesk'; font-size: 11px; color: #8050b0; }
+
+@media (max-width: 720px) {
+  .main-grid  { grid-template-columns: 1fr; }
+  .rat-grid   { grid-template-columns: 1fr; }
+  .specs-row  { grid-template-columns: 1fr 1fr; }
+  .rat-col    { border-right: none; border-bottom: 1px solid #131328; }
+}
+</style>
+</head>
+<body>
+
+<div class="studio-header">
+  <p class="studio-eyebrow">Startup Factory Brand Studio · 2026</p>
+  <p class="studio-title">MIRA — Territory II — La M que Ve</p>
+</div>
+
+<!-- ─── MAIN GRID ─────────────────────────────────── -->
+<div class="main-grid">
+
+  <!-- ICON SOLO -->
+  <div class="card">
+    <div class="card-bar">
+      <span class="c-tag">Icon · Solo</span>
+      <span class="c-name">The Seal</span>
+    </div>
+    <div class="preview preview-dark preview-icon">
+      <svg id="svg-icon" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="200" height="200">
+        <defs>
+          <!-- Main gradient: cool purple → indigo -->
+          <linearGradient id="mg" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#c084fc"/>
+            <stop offset="100%" stop-color="#818cf8"/>
+          </linearGradient>
+          <!-- Pupil: warm cream (like the light in a master painting) -->
+          <radialGradient id="pg" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#fff8ff"/>
+            <stop offset="70%"  stop-color="#e8d0fc"/>
+            <stop offset="100%" stop-color="#c084fc"/>
+          </radialGradient>
+          <!-- Glow halo behind the eye -->
+          <radialGradient id="glowR" cx="50%" cy="57%" r="45%">
+            <stop offset="0%"   stop-color="#a855f7" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#818cf8" stop-opacity="0"/>
+          </radialGradient>
+          <!-- El Bosco hatching inside the mandorla -->
+          <pattern id="hatch" patternUnits="userSpaceOnUse" width="4" height="4" patternTransform="rotate(-35)">
+            <line x1="0" y1="0" x2="0" y2="4" stroke="#c084fc" stroke-width="0.4"/>
+          </pattern>
+          <!-- Clip to mandorla shape for hatching -->
+          <clipPath id="mandorlaClip">
+            <ellipse cx="50" cy="57" rx="7" ry="15"/>
+          </clipPath>
+        </defs>
+
+        <!-- Outer seal ring (coin / emblem border) -->
+        <circle cx="50" cy="50" r="46.5" stroke="url(#mg)" stroke-width="0.5" opacity="0.18"/>
+        <circle cx="50" cy="50" r="44"   stroke="url(#mg)" stroke-width="0.25" opacity="0.08"/>
+
+        <!-- Ambient glow -->
+        <ellipse cx="50" cy="57" rx="20" ry="24" fill="url(#glowR)"/>
+
+        <!-- ─── LEFT ARM OF THE M ─── -->
+        <!-- Outer leg (vertical) + rounded top-left corner + left arch descending to valley top -->
+        <path d="M 16,82
+                 L 16,26
+                 C 16,12 24,10 35,10
+                 C 46,10 55,24 50,42
+                 C 40,56 40,66 50,72"
+              stroke="url(#mg)" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- ─── RIGHT ARM OF THE M ─── -->
+        <path d="M 84,82
+                 L 84,26
+                 C 84,12 76,10 65,10
+                 C 54,10 45,24 50,42
+                 C 60,56 60,66 50,72"
+              stroke="url(#mg)" stroke-width="6.5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- ─── MANDORLA EYE ─── -->
+        <!-- Hatching (old master engraving, El Bosco) clipped to mandorla -->
+        <rect x="0" y="0" width="100" height="100"
+              fill="url(#hatch)" opacity="0.12"
+              clip-path="url(#mandorlaClip)"/>
+
+        <!-- Iris outer ring (barely there — like the iris boundary in a watercolour) -->
+        <ellipse cx="50" cy="57" rx="6.5" ry="14"
+                 stroke="url(#mg)" stroke-width="0.5" fill="none" opacity="0.22"/>
+
+        <!-- Iris inner ring -->
+        <ellipse cx="50" cy="57" rx="4" ry="9"
+                 stroke="url(#mg)" stroke-width="0.35" fill="none" opacity="0.14"/>
+
+        <!-- Pupil (the intelligence. Like Christ in Bosch's pupil — the irreducible point of consciousness) -->
+        <circle cx="50" cy="57" r="2.4" fill="url(#pg)"/>
+
+        <!-- Specular highlight (classical portraiture — Vermeer, Van Eyck) -->
+        <circle cx="48.8" cy="55.8" r="0.75" fill="white" opacity="0.92"/>
+
+        <!-- Hidden inscription: VIDET · MIRA · VIDET (Bosch homage, invisible unless you look) -->
+        <text x="50" y="96.5"
+              font-family="Georgia, serif" font-size="3.2"
+              fill="#c084fc" opacity="0.16"
+              text-anchor="middle" letter-spacing="1.8">
+          VIDET · MIRA · VIDET
+        </text>
+      </svg>
+    </div>
+    <div class="card-foot">
+      <button class="copy-btn" onclick="copyIcon(this)">Copy Icon SVG</button>
+    </div>
+  </div>
+
+  <!-- LOCKUPS -->
+  <div class="lockup-stack">
+
+    <!-- DARK LOCKUP -->
+    <div class="card">
+      <div class="card-bar">
+        <span class="c-tag">Lockup · Dark</span>
+        <span class="c-name">Primary</span>
+      </div>
+      <div class="preview preview-dark preview-lock">
+        <svg id="svg-dark" viewBox="0 0 360 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="360" height="80">
+          <defs>
+            <linearGradient id="mgD" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%" stop-color="#c084fc"/>
+              <stop offset="100%" stop-color="#818cf8"/>
+            </linearGradient>
+            <radialGradient id="pgD" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#fff8ff"/>
+              <stop offset="100%" stop-color="#c084fc"/>
+            </radialGradient>
+          </defs>
+
+          <!-- Icon (scaled 0.74 to fit 80px height) -->
+          <g transform="translate(4,0) scale(0.76)">
+            <circle cx="50" cy="50" r="46.5" stroke="url(#mgD)" stroke-width="0.5" opacity="0.18"/>
+            <path d="M 16,82 L 16,26 C 16,12 24,10 35,10 C 46,10 55,24 50,42 C 40,56 40,66 50,72"
+                  stroke="url(#mgD)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 84,82 L 84,26 C 84,12 76,10 65,10 C 54,10 45,24 50,42 C 60,56 60,66 50,72"
+                  stroke="url(#mgD)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="50" cy="57" rx="6.5" ry="14" stroke="url(#mgD)" stroke-width="0.5" fill="none" opacity="0.2"/>
+            <circle cx="50" cy="57" r="2.4" fill="url(#pgD)"/>
+            <circle cx="48.8" cy="55.8" r="0.75" fill="white" opacity="0.9"/>
+          </g>
+
+          <!-- Separator -->
+          <line x1="86" y1="14" x2="86" y2="66" stroke="#181830" stroke-width="1"/>
+
+          <!-- Wordmark -->
+          <text x="102" y="50"
+                font-family="'Space Grotesk', sans-serif"
+                font-size="33" font-weight="300"
+                letter-spacing="9" fill="#ffffff">MIRA</text>
+          <text x="103" y="64"
+                font-family="'Inter', sans-serif"
+                font-size="7" font-weight="300"
+                letter-spacing="5.5" fill="#c084fc" opacity="0.45">ARTIFICIAL INTELLIGENCE</text>
+        </svg>
+      </div>
+      <div class="card-foot">
+        <button class="copy-btn" onclick="copySVG('svg-dark',this)">Copy Dark SVG</button>
+      </div>
+    </div>
+
+    <!-- LIGHT LOCKUP -->
+    <div class="card">
+      <div class="card-bar">
+        <span class="c-tag">Lockup · Light</span>
+        <span class="c-name">Secondary</span>
+      </div>
+      <div class="preview preview-light preview-lock">
+        <svg id="svg-light" viewBox="0 0 360 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="360" height="80">
+          <defs>
+            <linearGradient id="mgL" x1="5%" y1="0%" x2="95%" y2="100%">
+              <stop offset="0%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#4f46e5"/>
+            </linearGradient>
+            <radialGradient id="pgL" cx="35%" cy="35%" r="65%">
+              <stop offset="0%" stop-color="#4f46e5"/>
+              <stop offset="70%"  stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#6d28d9"/>
+            </radialGradient>
+          </defs>
+
+          <g transform="translate(4,0) scale(0.76)">
+            <circle cx="50" cy="50" r="46.5" stroke="url(#mgL)" stroke-width="0.5" opacity="0.15"/>
+            <path d="M 16,82 L 16,26 C 16,12 24,10 35,10 C 46,10 55,24 50,42 C 40,56 40,66 50,72"
+                  stroke="url(#mgL)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 84,82 L 84,26 C 84,12 76,10 65,10 C 54,10 45,24 50,42 C 60,56 60,66 50,72"
+                  stroke="url(#mgL)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <ellipse cx="50" cy="57" rx="6.5" ry="14" stroke="url(#mgL)" stroke-width="0.5" fill="none" opacity="0.18"/>
+            <circle cx="50" cy="57" r="2.4" fill="url(#pgL)"/>
+            <circle cx="48.8" cy="55.8" r="0.75" fill="white" opacity="0.5"/>
+          </g>
+
+          <line x1="86" y1="14" x2="86" y2="66" stroke="#d8d0f0" stroke-width="1"/>
+          <text x="102" y="50"
+                font-family="'Space Grotesk', sans-serif"
+                font-size="33" font-weight="300"
+                letter-spacing="9" fill="#0d0d1a">MIRA</text>
+          <text x="103" y="64"
+                font-family="'Inter', sans-serif"
+                font-size="7" font-weight="300"
+                letter-spacing="5.5" fill="#7c3aed" opacity="0.55">ARTIFICIAL INTELLIGENCE</text>
+        </svg>
+      </div>
+      <div class="card-foot">
+        <button class="copy-btn" onclick="copySVG('svg-light',this)">Copy Light SVG</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── MONOCHROME ROW ──────────────────────────── -->
+<div style="max-width:1040px; margin:0 auto 20px; display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+
+  <!-- Pure white on black -->
+  <div class="card">
+    <div class="card-bar">
+      <span class="c-tag">Monochrome · Dark</span>
+      <span class="c-name">Print · Emboss</span>
+    </div>
+    <div class="preview preview-dark preview-lock">
+      <svg viewBox="0 0 360 80" fill="none" xmlns="http://www.w3.org/2000/svg" width="340" height="80">
+        <g transform="translate(4,0) scale(0.76)">
+          <circle cx="50" cy="50" r="46.5" stroke="white" stroke-width="0.5" opacity="0.12"/>
+          <path d="M 16,82 L 16,26 C 16,12 24,10 35,10 C 46,10 55,24 50,42 C 40,56 40,66 50,72"
+                stroke="white" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M 84,82 L 84,26 C 84,12 76,10 65,10 C 54,10 45,24 50,42 C 60,56 60,66 50,72"
+                stroke="white" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <ellipse cx="50" cy="57" rx="6.5" ry="14" stroke="white" stroke-width="0.5" fill="none" opacity="0.15"/>
+          <circle cx="50" cy="57" r="2.4" fill="white" opacity="0.9"/>
+          <circle cx="48.8" cy="55.8" r="0.75" fill="white"/>
+        </g>
+        <line x1="86" y1="14" x2="86" y2="66" stroke="#1a1a1a" stroke-width="1"/>
+        <text x="102" y="50" font-family="'Space Grotesk', sans-serif" font-size="33" font-weight="300" letter-spacing="9" fill="white">MIRA</text>
+        <text x="103" y="64" font-family="'Inter', sans-serif" font-size="7" font-weight="300" letter-spacing="5.5" fill="white" opacity="0.3">ARTIFICIAL INTELLIGENCE</text>
+      </svg>
+    </div>
+    <div class="card-foot">
+      <button class="copy-btn" style="opacity:0.5; cursor:default;">Monochrome variant</button>
+    </div>
+  </div>
+
+  <!-- Icon solo light bg -->
+  <div class="card">
+    <div class="card-bar">
+      <span class="c-tag">Icon · Light bg</span>
+      <span class="c-name">App · Favicon</span>
+    </div>
+    <div class="preview preview-light preview-lock">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="80" height="80">
+        <defs>
+          <linearGradient id="mgLight" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+          <radialGradient id="pgLight" cx="35%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#4f46e5"/>
+            <stop offset="100%" stop-color="#7c3aed"/>
+          </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="46.5" stroke="url(#mgLight)" stroke-width="0.5" opacity="0.12"/>
+        <path d="M 16,82 L 16,26 C 16,12 24,10 35,10 C 46,10 55,24 50,42 C 40,56 40,66 50,72"
+              stroke="url(#mgLight)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 84,82 L 84,26 C 84,12 76,10 65,10 C 54,10 45,24 50,42 C 60,56 60,66 50,72"
+              stroke="url(#mgLight)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <ellipse cx="50" cy="57" rx="6.5" ry="14" stroke="url(#mgLight)" stroke-width="0.5" fill="none" opacity="0.15"/>
+        <circle cx="50" cy="57" r="2.4" fill="url(#pgLight)"/>
+        <circle cx="48.8" cy="55.8" r="0.75" fill="white" opacity="0.5"/>
+      </svg>
+      <!-- Favicon size simulation -->
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="margin-left:24px; opacity:0.7;">
+        <defs>
+          <linearGradient id="mgF" x1="5%" y1="0%" x2="95%" y2="100%">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#4f46e5"/>
+          </linearGradient>
+        </defs>
+        <path d="M 16,82 L 16,26 C 16,12 24,10 35,10 C 46,10 55,24 50,42 C 40,56 40,66 50,72"
+              stroke="url(#mgF)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M 84,82 L 84,26 C 84,12 76,10 65,10 C 54,10 45,24 50,42 C 60,56 60,66 50,72"
+              stroke="url(#mgF)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="50" cy="57" r="3" fill="#4f46e5"/>
+      </svg>
+      <div style="font-size:8px; color:#a090c0; margin-left:6px; align-self:flex-end; padding-bottom:4px;">32px</div>
+    </div>
+    <div class="card-foot">
+      <button class="copy-btn" style="opacity:0.5; cursor:default;">Icon variant · light</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ─── RATIONALE ──────────────────────────────── -->
+<div class="rationale">
+  <div class="rat-head">
+    <span class="rat-title">The Symbol</span>
+    <span class="rat-sub">Three layers of meaning converge in one mark.</span>
+  </div>
+  <div class="rat-grid">
+
+    <div class="rat-col">
+      <div class="rat-num">01 — SACRED GEOMETRY</div>
+      <div class="rat-name">La Mandorla</div>
+      <div class="rat-body">
+        The negative space between the two descending arches of the M forms a <em>vesica piscis</em> — the almond shape born from two overlapping circles. Called <em>mandorla</em> in Italian. Pythagoras considered it the mother of all geometric forms. For 1,500 years, Christian art placed divine figures inside it: Christ in Majesty, the Virgin, illuminated angels. The shape means: here is where intelligence becomes visible.
+      </div>
+      <div class="rat-pull">"Vesica Piscis — the birthplace of sacred geometry. The intersection where two perfections meet."</div>
+    </div>
+
+    <div class="rat-col">
+      <div class="rat-num">02 — EL BOSCO · 1500</div>
+      <div class="rat-name">Cave Cave Videt</div>
+      <div class="rat-body">
+        Hieronymus Bosch painted a giant eye at the center of his <em>Table of the Seven Deadly Sins</em>. In its pupil: the risen Christ. Below it in Latin: <em>Cave Cave Dominus Videt</em> — Beware, Beware, the Lord Sees. Five centuries later, MIRA inherits this tradition — not its theology, but its philosophical weight. An intelligence that observes everything, from a center that cannot be hidden. The inscription <em>VIDET · MIRA · VIDET</em> lives encoded in the seal, invisible unless you look.
+      </div>
+      <div class="rat-pull">"The eye that sees all things. The intelligence inside the pupil."</div>
+    </div>
+
+    <div class="rat-col">
+      <div class="rat-num">03 — THE INSIGHT</div>
+      <div class="rat-name">La M que Ve</div>
+      <div class="rat-body">
+        FedEx hid the arrow between E and x. The Tour de France hid the cyclist inside the R. MIRA's eye lives inside its own first letter. The two arches of the M, instead of meeting at a sharp angle, breathe apart — and in that breathing, a mandorla appears. A pupil of warm light sits at its exact geometric center. You read a wordmark. Then you discover an eye looking back. A brand named "to see" that sees from within its own name. That is the FedEx moment. Once seen: permanent.
+      </div>
+      <div class="rat-pull">"The best logos don't show you the idea. They make you discover it."</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ─── SPECS ──────────────────────────────────── -->
+<div class="specs-row">
+  <div class="spec">
+    <div class="spec-l">Primary gradient</div>
+    <div class="spec-v">#c084fc → #818cf8</div>
+  </div>
+  <div class="spec">
+    <div class="spec-l">Pupil · warm white</div>
+    <div class="spec-v">#fff8ff → #e8d0fc</div>
+  </div>
+  <div class="spec">
+    <div class="spec-l">Wordmark</div>
+    <div class="spec-v">Space Grotesk 300</div>
+  </div>
+  <div class="spec">
+    <div class="spec-l">Letter spacing</div>
+    <div class="spec-v">9px / 0.27em</div>
+  </div>
+</div>
+
+<script>
+function copySVG(id, btn) {
+  const el = document.getElementById(id);
+  const originalLabel = btn.textContent;
+  navigator.clipboard.writeText(el.outerHTML).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = originalLabel; btn.classList.remove('copied'); }, 2200);
+  });
+}
+
+function copyIcon(btn) {
+  const el = document.getElementById('svg-icon');
+  const originalLabel = btn.textContent;
+  navigator.clipboard.writeText(el.outerHTML).then(() => {
+    btn.textContent = '✓ Copied';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = originalLabel; btn.classList.remove('copied'); }, 2200);
+  });
+}
+</script>
+
+</body>
+</html>
