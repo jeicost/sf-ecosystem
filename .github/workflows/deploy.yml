@@ -12,50 +12,40 @@ jobs:
 
       - name: Deploy startup-factory-web to Vercel
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/startup-factory-web
           rm -rf .vercel
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --token=$VERCEL_TOKEN --team=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deploy ai-agency-sf-next to Vercel
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/ai-agency-sf-next
           rm -rf .vercel
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --token=$VERCEL_TOKEN --team=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deploy mira portal to Vercel
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/mira/portal
           rm -rf .vercel
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --token=$VERCEL_TOKEN --team=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deploy sf-cms to Vercel
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CMS }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/sf-cms
           rm -rf .vercel
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --token=$VERCEL_TOKEN --team=${{ secrets.VERCEL_ORG_ID }}
 
       - name: Deploy mira-landing to Vercel
         env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA_LANDING }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           cd apps/mira-landing
           rm -rf .vercel
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --token=$VERCEL_TOKEN --team=${{ secrets.VERCEL_ORG_ID }}
