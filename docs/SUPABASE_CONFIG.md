@@ -40,10 +40,10 @@ The SF ecosystem uses **two Supabase projects**:
 **File:** `apps/mira/portal/.env.local`
 
 ```bash
-# Supabase
+# Supabase — Get from .vercel/project.json or Vercel dashboard
 NEXT_PUBLIC_SUPABASE_URL=https://nnevhtfxuawexliwlbmh.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDUzNTUsImV4cCI6MjA5MzUyMTM1NX0.BTQkTUL4rOzhQXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Nzk0NTM1NSwiZXhwIjoyMDkzNTIxMzU1fQ.JxsSSJ8ptY73XvuGvQxM6tS8IB0LY__xIokcPcisasE
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...TUL4rOzhQXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww
+SUPABASE_SERVICE_ROLE_KEY=eyJ...JxsSSJ8ptY73XvuGvQxM6tS8IB0LY__xIokcPcisasE
 
 # Brand Brain
 MIRA_BRAND_BRAIN_ENABLED=true
@@ -62,8 +62,8 @@ MIRA_BRAND_BRAIN_ENABLED=true
 ```bash
 # Supabase (same project as MIRA for cross-app RAG)
 NEXT_PUBLIC_SUPABASE_URL=https://nnevhtfxuawexliwlbmh.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDUzNTUsImV4cCI6MjA5MzUyMTM1NX0.BTQkTUL4rOzhQXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Nzk0NTM1NSwiZXhwIjoyMDkzNTIxMzU1fQ.JxsSSJ8ptY73XvuGvQxM6tS8IB0LY__xIokcPcisasE
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...QXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww
+SUPABASE_SERVICE_ROLE_KEY=eyJ...IB0LY__xIokcPcisasE
 
 # Claude API (for agent operations)
 ANTHROPIC_API_KEY=sk-ant-...
@@ -82,8 +82,8 @@ ANTHROPIC_API_KEY=sk-ant-...
 ```bash
 # Supabase (shared project)
 NEXT_PUBLIC_SUPABASE_URL=https://nnevhtfxuawexliwlbmh.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_secret_Q6cPJkQL1SCWlSrrQ4o84Q_naXGD0_-
-SUPABASE_SERVICE_KEY=sb_secret_Q6cPJkQL1SCWlSrrQ4o84Q_naXGD0_-
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_secret_Q6c...naXGD0_-
+SUPABASE_SERVICE_KEY=sb_secret_Q6c...naXGD0_-
 ```
 
 **Usage:**
@@ -99,9 +99,9 @@ SUPABASE_SERVICE_KEY=sb_secret_Q6cPJkQL1SCWlSrrQ4o84Q_naXGD0_-
 ```bash
 # Supabase (separate project)
 NEXT_PUBLIC_SUPABASE_URL=https://dmzecrlkclocqaywkjtc.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_Cdn6T_AL6AwZHuYy7Itj-A_iU6jypPA
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtemVjcmxrY2xvY3FheXdranRjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODE5NzA1NiwiZXhwIjoyMDkzNzczMDU2fQ.2R1sgxfh80MX4_ysVBKxm5X9nuswRwYps3E2rfGM3cw
-SUPABASE_PAT=sbp_5f1ba6216fef56cada691662476871f26a78370d
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_Cdn6T...iU6jypPA
+SUPABASE_SERVICE_ROLE_KEY=eyJ...rfGM3cw
+SUPABASE_PAT=sbp_...371f26a78370d
 ```
 
 **Usage:**
