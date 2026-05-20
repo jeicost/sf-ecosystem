@@ -17,6 +17,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           cd apps/startup-factory-web
+          mkdir -p .vercel
+          echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy ai-agency-sf-next to Vercel
@@ -26,6 +28,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           cd apps/ai-agency-sf-next
+          mkdir -p .vercel
+          echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy mira portal to Vercel
@@ -35,6 +39,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           cd apps/mira/portal
+          mkdir -p .vercel
+          echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy sf-cms to Vercel
@@ -44,6 +50,8 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           cd apps/sf-cms
+          mkdir -p .vercel
+          echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy mira-landing to Vercel
@@ -53,4 +61,6 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           cd apps/mira-landing
+          mkdir -p .vercel
+          echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
           npx vercel deploy --prod --token=$VERCEL_TOKEN
