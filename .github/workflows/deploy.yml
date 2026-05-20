@@ -1,0 +1,38 @@
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy startup-factory-web to Vercel
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID_STARTUP_FACTORY: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd apps/startup-factory-web
+          npx vercel deploy --prod --token=$VERCEL_TOKEN
+
+      - name: Deploy ai-agency-sf-next to Vercel
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID_AI_AGENCY: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd apps/ai-agency-sf-next
+          npx vercel deploy --prod --token=$VERCEL_TOKEN
+
+      - name: Deploy mira portal to Vercel
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID_MIRA: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          cd apps/mira/portal
+          npx vercel deploy --prod --token=$VERCEL_TOKEN
