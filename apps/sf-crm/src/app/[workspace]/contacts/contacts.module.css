@@ -1,0 +1,199 @@
+.container {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 5px;
+}
+
+.header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 250px;
+  padding: 10px 15px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 14px;
+  transition: border-color var(--transition-fast);
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filterButton {
+  padding: 8px 16px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.filterButton:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.filterButton.active {
+  background: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.table {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--bg-tertiary);
+}
+
+th {
+  padding: 15px;
+  text-align: left;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+td {
+  padding: 15px;
+  font-size: 14px;
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+tbody tr:hover {
+  background: var(--bg-tertiary);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+td a {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+td a:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.score {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.score.hot {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--color-danger);
+}
+
+.score.warm {
+  background: rgba(245, 158, 11, 0.1);
+  color: var(--color-warning);
+}
+
+.score.cold {
+  background: rgba(100, 116, 139, 0.1);
+  color: var(--text-secondary);
+}
+
+.stage {
+  display: inline-block;
+  padding: 4px 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.viewLink {
+  color: var(--color-primary);
+  font-weight: 600;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+}
+
+.viewLink:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
+.empty {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+}
+
+@media (max-width: 768px) {
+  .controls {
+    flex-direction: column;
+  }
+
+  .searchInput {
+    min-width: 100%;
+  }
+
+  .table {
+    overflow-x: auto;
+  }
+
+  table {
+    min-width: 800px;
+  }
+}

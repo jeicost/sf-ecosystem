@@ -1,0 +1,155 @@
+.sidebar {
+  width: 280px;
+  height: 100vh;
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
+}
+
+.header {
+  padding: 24px 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header h2 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav {
+  flex: 1;
+  padding: 16px 0;
+  overflow-y: auto;
+}
+
+.section {
+  padding: 0;
+  margin-bottom: 16px;
+}
+
+.sectionTitle {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 20px;
+  margin-bottom: 8px;
+}
+
+.sectionItems {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  display: block;
+  padding: 10px 20px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.link:hover {
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+}
+
+.link.active {
+  color: var(--color-primary);
+  background: var(--bg-tertiary);
+  font-weight: 600;
+}
+
+.link.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--color-primary);
+}
+
+.footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+}
+
+.logoutButton {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.logoutButton:hover {
+  background: var(--border-color);
+  color: var(--color-danger);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    position: static;
+  }
+
+  .nav {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: visible;
+    padding: 0;
+  }
+
+  .section {
+    flex-shrink: 0;
+    padding: 16px 20px;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .sectionTitle {
+    margin-bottom: 4px;
+  }
+
+  .sectionItems {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .link {
+    padding: 6px 12px;
+    white-space: nowrap;
+  }
+
+  .footer {
+    padding: 16px 20px;
+    border-top: none;
+    border-left: 1px solid var(--border-color);
+    margin-top: 0;
+  }
+}
