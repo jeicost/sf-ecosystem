@@ -1,7 +1,6 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
-import { anthropic } from '@ai-sdk/anthropic'
-import { streamText } from 'ai'
+import Anthropic from '@anthropic-ai/sdk'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireClientAccess } from '@/lib/auth-server'
 
@@ -131,29 +130,23 @@ ${context.learnings.map((l) => `- ${l.agent_id}: ${l.learning_text}`).join('\n')
       )
     }
 
-    const { textStream } = await streamText({
-      model: anthropic('claude-opus-4-7', { apiKey: anthropicKey }),
+    // Use native Anthropic SDK for custom API key support
+    const client = new Anthropic({ apiKey: anthropicKey })
+    const stream = await client.messages.stream({
+      model: 'claude-opus-4-7',
+      max_tokens: 2048,
       system: BRAIN_SYSTEM_PROMPT + '\n\n' + contextPrompt,
       messages: [{ role: 'user', content: userPrompt }],
       temperature: 0.7,
     })
 
-    return new Response(
-      textStream.pipeThrough(
-        new TransformStream({
-          async transform(chunk, controller) {
-            controller.enqueue(new TextEncoder().encode(chunk))
-          },
-        })
-      ),
-      {
-        headers: {
-          'Content-Type': 'text/event-stream',
-          'Cache-Control': 'no-cache',
-          Connection: 'keep-alive',
-        },
-      }
-    )
+    return new Response(stream.toReadableStream(), {
+      headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+    })
   } catch (error) {
     console.error('Brain chat error:', error)
     return new Response(JSON.stringify({ error: 'Failed to process brain chat' }), {
