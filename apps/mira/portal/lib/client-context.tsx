@@ -20,6 +20,13 @@ const ClientContext = createContext<ClientContextValue>({
 
 const STORAGE_KEY = 'mira_active_client'
 
+// Client name mappings — avoids RLS issues by not querying the table
+const CLIENT_NAMES: Record<string, { name: string; slug: string }> = {
+  'e664873b-034d-48cd-9a45-8631672ef375': { name: 'Dadybox', slug: 'dadybox' },
+  '714a028e-a16d-428c-b8a9-3338f56f0a9c': { name: 'Salsa Burgers', slug: 'salsa-burgers' },
+  '160d5a90-0da7-4db1-a1fb-9c29ea57a736': { name: 'Discoolver', slug: 'discoolver' },
+}
+
 export function ClientProvider({ children }: { children: ReactNode }) {
   const [activeClient, setActiveClientState] = useState<ActiveClient | null>(null)
 
@@ -29,74 +36,27 @@ export function ClientProvider({ children }: { children: ReactNode }) {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        if (!user) {
-          console.log('No user in session')
+        if (!user) return
+
+        // Get client_id from user metadata
+        const clientId = user.user_metadata?.client_id as string | undefined
+
+        if (clientId && CLIENT_NAMES[clientId]) {
+          const { name, slug } = CLIENT_NAMES[clientId]
+          const client: ActiveClient = { id: clientId, name, slug }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
+          setActiveClientState(client)
+          console.log('✅ Loaded client:', name)
           return
         }
 
-        console.log('User email:', user.email)
-        console.log('User client_id:', user.user_metadata?.client_id)
-        console.log('User client_slug:', user.user_metadata?.client_slug)
-
-        // PRIORITY 1: Always use user metadata if available
-        if (user.user_metadata?.client_id) {
-          try {
-            console.log('Querying client by ID:', user.user_metadata.client_id)
-            const { data: client, error } = await supabase
-              .from('clients')
-              .select('id,name,slug')
-              .eq('id', user.user_metadata.client_id)
-              .maybeSingle()
-
-            console.log('Query result:', { client, error })
-
-            if (client) {
-              console.log('✅ Loaded client:', client.name)
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
-              setActiveClientState(client)
-              return
-            }
-
-            if (error) {
-              console.error('Failed to load client by ID:', error.message)
-            }
-          } catch (e) {
-            console.error('Client query error:', e)
-          }
-        }
-
-        // PRIORITY 2: Try client_slug
-        if (user.user_metadata?.client_slug) {
-          try {
-            const { data: client, error } = await supabase
-              .from('clients')
-              .select('id,name,slug')
-              .eq('slug', user.user_metadata.client_slug)
-              .maybeSingle()
-
-            if (client) {
-              localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
-              setActiveClientState(client)
-              return
-            }
-
-            if (error) {
-              console.error('Failed to load client by slug:', error.message)
-            }
-          } catch (e) {
-            console.error('Client slug query error:', e)
-          }
-        }
-
-        // PRIORITY 3: Only use localStorage as absolute last resort, and ONLY if user has NO metadata
-        if (!user.user_metadata?.client_id && !user.user_metadata?.client_slug) {
-          try {
-            const raw = localStorage.getItem(STORAGE_KEY)
-            if (raw) setActiveClientState(JSON.parse(raw))
-          } catch {}
-        }
+        // Fallback to localStorage if no client_id
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY)
+          if (raw) setActiveClientState(JSON.parse(raw))
+        } catch {}
       } catch (error) {
-        console.error('Client context init error:', error)
+        console.error('Client context error:', error)
       }
     }
 
@@ -124,5 +84,7 @@ export function getStoredClientId(): string | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     return raw ? (JSON.parse(raw) as ActiveClient).id : null
-  } catch { return null }
+  } catch {
+    return null
+  }
 }
