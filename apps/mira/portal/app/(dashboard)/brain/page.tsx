@@ -367,7 +367,17 @@ const ALLOWED_SECTIONS = [
 
 export default function BrainPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const [clientId, setClientId] = useState<string>(CLIENT_ID)
+
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data: { user } }) => {
+      if (user?.user_metadata?.client_id) {
+        setClientId(user.user_metadata.client_id)
+      } else if (activeClient?.id) {
+        setClientId(activeClient.id)
+      }
+    })
+  }, [activeClient])
 
   const [profile, setProfile] = useState<BrandProfile | null>(null)
   const [pillars, setPillars] = useState<Pillar[]>([])
