@@ -29,45 +29,61 @@ export function ClientProvider({ children }: { children: ReactNode }) {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        // Try to find client by client_id or client_slug from user metadata
-        if (user?.user_metadata?.client_id) {
-          const { data: client, error } = await supabase
-            .from('clients')
-            .select('id,name,slug')
-            .eq('id', user.user_metadata.client_id)
-            .single()
+        if (!user) return
 
-          if (client) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
-            setActiveClientState(client)
-            return
-          }
+        // PRIORITY 1: Always use user metadata if available
+        if (user.user_metadata?.client_id) {
+          try {
+            const { data: client, error } = await supabase
+              .from('clients')
+              .select('id,name,slug')
+              .eq('id', user.user_metadata.client_id)
+              .single()
 
-          if (error) {
-            console.error('Client lookup error:', error)
-          }
-        }
+            if (client) {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
+              setActiveClientState(client)
+              return
+            }
 
-        // Fallback: try client_slug
-        if (user?.user_metadata?.client_slug) {
-          const { data: client } = await supabase
-            .from('clients')
-            .select('id,name,slug')
-            .eq('slug', user.user_metadata.client_slug)
-            .single()
-
-          if (client) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
-            setActiveClientState(client)
-            return
+            if (error) {
+              console.error('Failed to load client by ID:', error.message)
+            }
+          } catch (e) {
+            console.error('Client query error:', e)
           }
         }
 
-        // Last resort: localStorage
-        try {
-          const raw = localStorage.getItem(STORAGE_KEY)
-          if (raw) setActiveClientState(JSON.parse(raw))
-        } catch {}
+        // PRIORITY 2: Try client_slug
+        if (user.user_metadata?.client_slug) {
+          try {
+            const { data: client, error } = await supabase
+              .from('clients')
+              .select('id,name,slug')
+              .eq('slug', user.user_metadata.client_slug)
+              .single()
+
+            if (client) {
+              localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
+              setActiveClientState(client)
+              return
+            }
+
+            if (error) {
+              console.error('Failed to load client by slug:', error.message)
+            }
+          } catch (e) {
+            console.error('Client slug query error:', e)
+          }
+        }
+
+        // PRIORITY 3: Only use localStorage as absolute last resort, and ONLY if user has NO metadata
+        if (!user.user_metadata?.client_id && !user.user_metadata?.client_slug) {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY)
+            if (raw) setActiveClientState(JSON.parse(raw))
+          } catch {}
+        }
       } catch (error) {
         console.error('Client context init error:', error)
       }
