@@ -28,13 +28,19 @@ export function ClientProvider({ children }: { children: ReactNode }) {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
 
-      // Always prioritize user metadata (logged-in user's client)
-      if (user?.user_metadata?.client_id) {
-        const { data: client } = await supabase
+      // Try to find client by client_id or client_slug from user metadata
+      if (user?.user_metadata?.client_id || user?.user_metadata?.client_slug) {
+        let query = supabase
           .from('clients')
           .select('id,name,slug')
-          .eq('id', user.user_metadata.client_id)
-          .single()
+
+        if (user.user_metadata.client_id) {
+          query = query.eq('id', user.user_metadata.client_id)
+        } else {
+          query = query.eq('slug', user.user_metadata.client_slug)
+        }
+
+        const { data: client } = await query.single()
 
         if (client) {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
