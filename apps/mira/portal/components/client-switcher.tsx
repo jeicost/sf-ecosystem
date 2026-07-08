@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from 'react'
 import { ChevronDown, Check, Building2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient, type ActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
 interface ClientRow {
@@ -26,14 +25,7 @@ export default function ClientSwitcher() {
       .then(({ data }) => {
         if (!data?.length) return
         setClients(data)
-        // Auto-select first client if none stored
-        if (!activeClient) {
-          // Try to match the hardcoded CLIENT_ID first, else pick first
-          const match = data.find(c => c.id === CLIENT_ID) ?? data[0]
-          setActiveClient(match)
-        }
       })
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {

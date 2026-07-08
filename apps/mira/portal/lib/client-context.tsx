@@ -1,5 +1,6 @@
 'use client'
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createClient } from '@/lib/supabase'
 
 export interface ActiveClient {
   id: string
@@ -23,10 +24,33 @@ export function ClientProvider({ children }: { children: ReactNode }) {
   const [activeClient, setActiveClientState] = useState<ActiveClient | null>(null)
 
   useEffect(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEY)
-      if (raw) setActiveClientState(JSON.parse(raw))
-    } catch {}
+    async function initializeClient() {
+      const supabase = createClient()
+      const { data: { user }, error } = await supabase.auth.getUser()
+
+      if (!error && user?.user_metadata?.client_id) {
+        // User has a client_id in metadata — fetch their client details
+        const { data: client } = await supabase
+          .from('clients')
+          .select('id,name,slug')
+          .eq('id', user.user_metadata.client_id)
+          .single()
+
+        if (client) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
+          setActiveClientState(client)
+          return
+        }
+      }
+
+      // Fallback to localStorage if no user metadata
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (raw) setActiveClientState(JSON.parse(raw))
+      } catch {}
+    }
+
+    initializeClient()
   }, [])
 
   function setActiveClient(c: ActiveClient) {
