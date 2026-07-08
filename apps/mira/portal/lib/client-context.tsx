@@ -29,18 +29,29 @@ export function ClientProvider({ children }: { children: ReactNode }) {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
-        if (!user) return
+        if (!user) {
+          console.log('No user in session')
+          return
+        }
+
+        console.log('User email:', user.email)
+        console.log('User client_id:', user.user_metadata?.client_id)
+        console.log('User client_slug:', user.user_metadata?.client_slug)
 
         // PRIORITY 1: Always use user metadata if available
         if (user.user_metadata?.client_id) {
           try {
+            console.log('Querying client by ID:', user.user_metadata.client_id)
             const { data: client, error } = await supabase
               .from('clients')
               .select('id,name,slug')
               .eq('id', user.user_metadata.client_id)
               .single()
 
+            console.log('Query result:', { client, error })
+
             if (client) {
+              console.log('✅ Loaded client:', client.name)
               localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
               setActiveClientState(client)
               return
