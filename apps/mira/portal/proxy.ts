@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Public routes — skip all checks
-  if (pathname.startsWith('/login') || pathname.startsWith('/reset-password') || pathname.startsWith('/api/webhook')) {
+  if (pathname.startsWith('/login') || pathname.startsWith('/reset-password') || pathname.startsWith('/api/webhook') || pathname.startsWith('/api/debug')) {
     return NextResponse.next()
   }
 
