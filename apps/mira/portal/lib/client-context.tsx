@@ -26,10 +26,10 @@ export function ClientProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function initializeClient() {
       const supabase = createClient()
-      const { data: { user }, error } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getUser()
 
-      if (!error && user?.user_metadata?.client_id) {
-        // User has a client_id in metadata — fetch their client details
+      // Always prioritize user metadata (logged-in user's client)
+      if (user?.user_metadata?.client_id) {
         const { data: client } = await supabase
           .from('clients')
           .select('id,name,slug')
@@ -43,7 +43,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
         }
       }
 
-      // Fallback to localStorage if no user metadata
+      // Fallback to localStorage only if not logged in
       try {
         const raw = localStorage.getItem(STORAGE_KEY)
         if (raw) setActiveClientState(JSON.parse(raw))
