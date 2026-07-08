@@ -1,0 +1,56 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { adminClient } from '@/lib/supabase'
+
+function unauthorized() {
+  return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+}
+
+export async function POST(req: NextRequest) {
+  const secret = req.headers.get('x-webhook-secret')
+  if (secret !== process.env.WEBHOOK_SECRET) return unauthorized()
+
+  const body = await req.json()
+  const {
+    client_id,
+    tipo = 'content',
+    platform,
+    asset_url,
+    copy,
+    caption,
+    hashtags,
+    scheduled_time,
+    tone_warning = false,
+    post_id,
+  } = body
+
+  if (!client_id || !platform) {
+    return NextResponse.json({ error: 'client_id and platform are required' }, { status: 400 })
+  }
+
+  const db = adminClient()
+  const { data, error } = await db
+    .from('approval_queue')
+    .insert({
+      client_id,
+      tipo,
+      platform,
+      asset_url: asset_url ?? null,
+      copy: copy ?? null,
+      caption: caption ?? null,
+      hashtags: hashtags ?? null,
+      scheduled_time: scheduled_time ?? null,
+      tone_warning,
+      post_id: post_id ?? null,
+      status: 'pending_review',
+      submitted_at: new Date().toISOString(),
+    })
+    .select('id')
+    .single()
+
+  if (error) {
+    console.error('[webhook/queue-post]', error)
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
+
+  return NextResponse.json({ ok: true, id: data.id }, { status: 201 })
+}

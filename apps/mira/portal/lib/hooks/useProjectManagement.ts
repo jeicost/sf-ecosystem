@@ -1,0 +1,142 @@
+import { useState } from 'react'
+import { createBrowserClient } from '@supabase/ssr'
+import type { Database } from '@/types/database'
+
+const supabase = createBrowserClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+type Project = Database['public']['Tables']['mira_projects']['Row']
+
+interface ProjectInput {
+  name: string
+  description?: string
+  slug?: string
+}
+
+export function useProjectManagement() {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const createProject = async (input: ProjectInput): Promise<Project | null> => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) throw new Error('Not authenticated')
+
+      const { data: userData, error: userError } = await supabase
+        .from('mira_users')
+        .select('id')
+        .eq('auth_id', authUser.id)
+        .single()
+
+      if (userError || !userData) throw new Error('User not found')
+
+      const slug = input.slug || input.name
+        .toLowerCase()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+
+      const { data: projectData, error: projectError } = await supabase
+        .from('mira_projects')
+        .insert([
+          {
+            user_id: userData.id,
+            name: input.name,
+            slug,
+            description: input.description,
+            status: 'active',
+            agents_count: 0,
+          },
+        ])
+        .select('*')
+        .single()
+
+      if (projectError) throw projectError
+
+      const { error: accessError } = await supabase
+        .from('mira_project_access')
+        .insert([
+          {
+            user_id: userData.id,
+            project_id: projectData.id,
+            role: 'owner',
+          },
+        ])
+
+      if (accessError) throw accessError
+
+      return projectData
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to create project'
+      setError(message)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateProject = async (
+    projectId: string,
+    updates: Partial<ProjectInput>
+  ): Promise<Project | null> => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { data: projectData, error: projectError } = await supabase
+        .from('mira_projects')
+        .update(updates)
+        .eq('id', projectId)
+        .select('*')
+        .single()
+
+      if (projectError) throw projectError
+      return projectData
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to update project'
+      setError(message)
+      return null
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteProject = async (projectId: string): Promise<boolean> => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { error } = await supabase
+        .from('mira_projects')
+        .delete()
+        .eq('id', projectId)
+
+      if (error) throw error
+      return true
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to delete project'
+      setError(message)
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const archiveProject = async (projectId: string): Promise<Project | null> => {
+    return updateProject(projectId, { status: 'archived' } as any)
+  }
+
+  return {
+    createProject,
+    updateProject,
+    deleteProject,
+    archiveProject,
+    loading,
+    error,
+  }
+}

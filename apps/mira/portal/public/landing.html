@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRA — AI Marketing Workforce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #000;
+      --bg-1: #080808;
+      --bg-2: #0d0d0d;
+      --card: #0a0a0a;
+      --border: #1a1a1a;
+      --border-2: #222;
+      --text: #fff;
+      --muted: #888;
+      --dim: #444;
+      --accent: #8B5CF6;
+      --accent-dim: rgba(139,92,246,.12);
+      --accent-glow: rgba(139,92,246,.06);
+      --r: 14px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* ── UTILS ── */
+    .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+    .label { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-family: 'DM Sans', sans-serif; font-weight: 500; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      border-bottom: 1px solid transparent;
+      transition: border-color .3s, background .3s;
+      backdrop-filter: blur(12px);
+    }
+    nav.scrolled { border-color: var(--border); background: rgba(0,0,0,.8); }
+    .nav-inner {
+      max-width: 1120px; margin: 0 auto; padding: 0 24px;
+      height: 60px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .nav-logo-mark {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: linear-gradient(135deg, #8B5CF6, #6D28D9);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 14px; color: #fff;
+    }
+    .nav-logo span { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; letter-spacing: .02em; }
+    .nav-cta {
+      background: var(--accent); color: #fff; border: none; cursor: pointer;
+      padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif; text-decoration: none;
+      transition: opacity .2s;
+    }
+    .nav-cta:hover { opacity: .85; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh; display: flex; align-items: center;
+      position: relative; overflow: hidden; padding-top: 80px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 40%, rgba(139,92,246,.07) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 80% at 80% 20%, rgba(6,182,212,.04) 0%, transparent 60%);
+    }
+    .hero-grid {
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+      background-size: 80px 80px;
+      mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, black 30%, transparent 100%);
+      opacity: .25;
+    }
+    .hero-content { position: relative; z-index: 1; padding: 80px 0; }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent-dim); border: 1px solid rgba(139,92,246,.25);
+      padding: 6px 14px; border-radius: 100px; margin-bottom: 36px;
+    }
+    .hero-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
+    .hero-badge span { font-size: 12px; color: #a78bfa; font-weight: 500; }
+    h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.8rem, 6.5vw, 5.5rem);
+      font-weight: 800; line-height: 1.04; letter-spacing: -.03em;
+      color: #fff; max-width: 14ch;
+    }
+    h1 .dim { color: var(--muted); }
+    .hero-sub {
+      margin-top: 28px; font-size: clamp(1rem, 1.8vw, 1.2rem);
+      color: #777; max-width: 580px; line-height: 1.65; font-weight: 300;
+    }
+    .hero-sub strong { color: #bbb; font-weight: 400; }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 44px; }
+    .btn-primary {
+      background: var(--accent); color: #fff; border: none; cursor: pointer;
+      padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+      transition: opacity .2s, transform .2s;
+    }
+    .btn-primary:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-ghost {
+      background: transparent; color: #888; border: 1px solid var(--border-2); cursor: pointer;
+      padding: 14px 28px; border-radius: 10px; font-size: 15px; font-weight: 400;
+      font-family: 'DM Sans', sans-serif; text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+      transition: border-color .2s, color .2s;
+    }
+    .btn-ghost:hover { border-color: #555; color: #ccc; }
+    .hero-proof { margin-top: 56px; display: flex; align-items: center; gap: 16px; }
+    .hero-proof-line { flex: 1; height: 1px; background: var(--border); }
+    .hero-proof span { font-size: 12px; color: var(--dim); white-space: nowrap; }
+
+    /* ── SECTIONS ── */
+    section { padding: 120px 0; }
+    section + section { padding-top: 0; }
+    .section-label { margin-bottom: 16px; }
+    h2 {
+      font-family: 'Syne', sans-serif; font-weight: 800;
+      font-size: clamp(2rem, 4vw, 3.2rem); line-height: 1.1; letter-spacing: -.025em;
+    }
+    h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.25rem; letter-spacing: -.01em; }
+
+    /* ── PROBLEM ── */
+    #problem { background: var(--bg); }
+    .problem-header { max-width: 640px; margin-bottom: 64px; }
+    .problem-header h2 { color: #fff; }
+    .problem-header p { color: var(--muted); font-size: 1.05rem; font-weight: 300; margin-top: 16px; }
+    .quotes-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .quote-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 28px 28px 24px;
+      position: relative; overflow: hidden;
+      transition: border-color .2s;
+    }
+    .quote-card::before {
+      content: '"'; position: absolute; top: -10px; left: 20px;
+      font-family: 'Syne', sans-serif; font-size: 96px; font-weight: 800;
+      color: var(--border-2); line-height: 1; pointer-events: none;
+    }
+    .quote-card:hover { border-color: var(--border-2); }
+    .quote-card p { font-size: .95rem; color: #aaa; line-height: 1.7; font-weight: 300; position: relative; z-index: 1; }
+    .quote-card .tool { font-size: 11px; color: var(--dim); margin-top: 14px; display: block; }
+
+    /* ── SOLUTION ── */
+    #solution { text-align: center; background: var(--bg-1); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    #solution h2 { max-width: 700px; margin: 0 auto; }
+    #solution p { color: var(--muted); font-size: 1.1rem; max-width: 560px; margin: 24px auto 0; font-weight: 300; line-height: 1.7; }
+
+    /* ── BRAND BRAIN ── */
+    #brain { background: var(--bg); overflow: hidden; }
+    .brain-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+    .brain-text h2 { margin-bottom: 24px; }
+    .brain-text p { color: var(--muted); font-size: 1rem; line-height: 1.75; font-weight: 300; margin-bottom: 36px; }
+    .brain-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .brain-stat {
+      background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px;
+    }
+    .brain-stat .val { font-family: 'Syne', sans-serif; font-size: 1.75rem; font-weight: 800; color: #fff; }
+    .brain-stat .desc { font-size: 11px; color: var(--dim); margin-top: 3px; }
+    .brain-visual { position: relative; height: 400px; display: flex; align-items: center; justify-content: center; }
+    .brain-core {
+      width: 120px; height: 120px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(139,92,246,.4) 0%, rgba(139,92,246,.1) 60%, transparent 100%);
+      border: 1px solid rgba(139,92,246,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px; z-index: 2; position: relative;
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe { 0%,100%{box-shadow: 0 0 40px rgba(139,92,246,.2)} 50%{box-shadow: 0 0 80px rgba(139,92,246,.4)} }
+    .brain-ring {
+      position: absolute; border-radius: 50%; border: 1px solid;
+      animation: rotate linear infinite;
+    }
+    .brain-ring-1 { width: 200px; height: 200px; border-color: rgba(139,92,246,.15); animation-duration: 20s; }
+    .brain-ring-2 { width: 290px; height: 290px; border-color: rgba(6,182,212,.1); animation-duration: 30s; animation-direction: reverse; }
+    .brain-ring-3 { width: 380px; height: 380px; border-color: rgba(139,92,246,.07); animation-duration: 45s; }
+    @keyframes rotate { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+    .brain-node {
+      position: absolute; display: flex; flex-direction: column; align-items: center; gap: 6px;
+      z-index: 3;
+    }
+    .brain-node-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .brain-node-label { font-size: 11px; color: var(--muted); white-space: nowrap; text-align: center; }
+    .brain-node:nth-child(1) { top: 30px; left: 50%; transform: translateX(-50%); }
+    .brain-node:nth-child(2) { right: 30px; top: 50%; transform: translateY(-50%); }
+    .brain-node:nth-child(3) { bottom: 30px; left: 50%; transform: translateX(-50%); }
+    .brain-node:nth-child(4) { left: 30px; top: 50%; transform: translateY(-50%); }
+
+    /* ── TEAM ── */
+    #team { background: var(--bg-1); border-top: 1px solid var(--border); }
+    .team-header { text-align: center; margin-bottom: 64px; }
+    .team-header p { color: var(--muted); font-size: 1rem; font-weight: 300; margin-top: 16px; }
+    .agents-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .agent-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 24px 20px;
+      transition: border-color .25s, transform .25s;
+      position: relative; overflow: hidden;
+    }
+    .agent-card:hover { transform: translateY(-3px); }
+    .agent-card::after {
+      content: ''; position: absolute; inset: 0; border-radius: var(--r);
+      background: var(--card-glow, transparent);
+      pointer-events: none; transition: background .3s;
+    }
+    .agent-avatar {
+      width: 52px; height: 52px; border-radius: 16px; display: flex;
+      align-items: center; justify-content: center; font-size: 24px; margin-bottom: 16px;
+    }
+    .agent-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; color: #fff; }
+    .agent-role { font-size: 12px; color: var(--dim); margin-top: 2px; }
+    .agent-tagline { font-size: 12px; color: #666; margin-top: 10px; font-style: italic; line-height: 1.4; }
+    .agent-color-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: var(--r) var(--r) 0 0; }
+
+    /* ── HOW IT WORKS ── */
+    #how { background: var(--bg); }
+    .how-header { text-align: center; margin-bottom: 64px; }
+    .how-header p { color: var(--muted); font-size: 1rem; font-weight: 300; margin-top: 16px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; position: relative; }
+    .steps::before {
+      content: ''; position: absolute; top: 28px; left: calc(16.66% + 16px); right: calc(16.66% + 16px);
+      height: 1px; background: linear-gradient(90deg, var(--border), var(--accent), var(--border));
+      pointer-events: none;
+    }
+    .step { text-align: center; }
+    .step-num {
+      width: 56px; height: 56px; border-radius: 50%; margin: 0 auto 20px;
+      background: var(--card); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: var(--accent);
+      position: relative; z-index: 1; background: #000;
+    }
+    .step h3 { font-size: 1rem; margin-bottom: 10px; }
+    .step p { font-size: .9rem; color: var(--muted); font-weight: 300; line-height: 1.6; }
+
+    /* ── COMPARISON ── */
+    #comparison { background: var(--bg-1); border-top: 1px solid var(--border); }
+    .comp-header { text-align: center; margin-bottom: 56px; }
+    .comp-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .comp-table th, .comp-table td { padding: 14px 20px; text-align: left; border-bottom: 1px solid var(--border); }
+    .comp-table thead th { font-family: 'Syne', sans-serif; font-weight: 700; font-size: .95rem; border-bottom: 1px solid var(--border-2); padding-bottom: 16px; }
+    .comp-table thead th:first-child { color: var(--dim); font-weight: 400; font-family: 'DM Sans', sans-serif; font-size: .85rem; }
+    .col-mira { background: var(--accent-dim); }
+    .col-mira-header {
+      background: var(--accent-dim); border-radius: var(--r) var(--r) 0 0;
+      border: 1px solid rgba(139,92,246,.25); border-bottom: none;
+    }
+    .col-mira-header span { color: var(--accent); }
+    .comp-table tbody tr:last-child td { border-bottom: none; }
+    .comp-table tbody tr:last-child .col-mira { border-radius: 0 0 var(--r) var(--r); border: 1px solid rgba(139,92,246,.2); border-top: none; }
+    td.check { color: #4ade80; font-size: 13px; }
+    td.cross { color: var(--border-2); font-size: 13px; }
+    td.partial { color: #f59e0b; font-size: 12px; }
+    .comp-table td:first-child { color: var(--muted); font-size: .9rem; }
+    .comp-badge { display: inline-block; background: rgba(139,92,246,.15); color: #a78bfa; font-size: 10px; padding: 2px 8px; border-radius: 100px; margin-left: 8px; vertical-align: middle; }
+
+    /* ── PRICING ── */
+    #pricing { background: var(--bg); }
+    .pricing-header { text-align: center; margin-bottom: 56px; }
+    .pricing-header p { color: var(--muted); font-size: 1rem; font-weight: 300; margin-top: 12px; }
+    .pricing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 800px; margin: 0 auto; }
+    .pricing-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 36px;
+    }
+    .pricing-card.featured {
+      border-color: rgba(139,92,246,.3);
+      background: linear-gradient(160deg, rgba(139,92,246,.07) 0%, var(--card) 50%);
+    }
+    .pricing-tier { font-size: 12px; color: var(--dim); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 20px; font-weight: 500; }
+    .pricing-price { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+    .pricing-price .currency { font-size: 1.5rem; font-weight: 600; vertical-align: top; padding-top: 10px; display: inline-block; }
+    .pricing-price .period { font-size: .95rem; font-weight: 400; color: var(--muted); margin-left: 2px; }
+    .pricing-desc { font-size: .9rem; color: var(--muted); font-weight: 300; margin: 16px 0 28px; line-height: 1.6; }
+    .pricing-features { list-style: none; margin-bottom: 32px; }
+    .pricing-features li { font-size: .9rem; color: #999; padding: 7px 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; }
+    .pricing-features li:last-child { border-bottom: none; }
+    .pricing-features li::before { content: '✓'; color: #4ade80; font-size: 12px; flex-shrink: 0; }
+    .pricing-btn {
+      display: block; width: 100%; padding: 14px; border-radius: 10px; text-align: center;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500;
+      text-decoration: none; cursor: pointer; transition: opacity .2s;
+    }
+    .pricing-btn-primary { background: var(--accent); color: #fff; border: none; }
+    .pricing-btn-ghost { background: transparent; color: #888; border: 1px solid var(--border-2); }
+    .pricing-btn:hover { opacity: .8; }
+    .pricing-early { text-align: center; margin-top: 28px; font-size: 13px; color: var(--dim); }
+    .pricing-early strong { color: #a78bfa; }
+
+    /* ── FINAL CTA ── */
+    #cta {
+      background: var(--bg-1); border-top: 1px solid var(--border);
+      text-align: center; padding: 140px 0;
+      position: relative; overflow: hidden;
+    }
+    #cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 50% 50%, rgba(139,92,246,.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    #cta h2 { max-width: 640px; margin: 0 auto 24px; position: relative; }
+    #cta p { color: var(--muted); font-size: 1rem; font-weight: 300; max-width: 480px; margin: 0 auto 44px; line-height: 1.7; position: relative; }
+    #cta .ctas { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; position: relative; }
+    #cta .micro { font-size: 12px; color: var(--dim); margin-top: 20px; position: relative; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 32px 0; }
+    .footer-inner { display: flex; align-items: center; justify-content: space-between; }
+    .footer-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .footer-brand span { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: #fff; }
+    footer p { font-size: 12px; color: var(--dim); }
+
+    /* ── SCROLL ANIMATIONS ── */
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: .1s; }
+    .reveal-delay-2 { transition-delay: .2s; }
+    .reveal-delay-3 { transition-delay: .3s; }
+    .reveal-delay-4 { transition-delay: .4s; }
+    .reveal-delay-5 { transition-delay: .5s; }
+    .reveal-delay-6 { transition-delay: .6s; }
+    .reveal-delay-7 { transition-delay: .7s; }
+    .reveal-delay-8 { transition-delay: .8s; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:900px) {
+      .brain-layout { grid-template-columns: 1fr; }
+      .brain-visual { display: none; }
+      .agents-grid { grid-template-columns: repeat(2, 1fr); }
+      .quotes-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .steps::before { display: none; }
+      .pricing-grid { grid-template-columns: 1fr; max-width: 420px; }
+      .footer-inner { flex-direction: column; gap: 12px; text-align: center; }
+    }
+    @media(max-width:600px) {
+      section { padding: 80px 0; }
+      .agents-grid { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: 2.4rem; }
+      .hero-ctas { flex-direction: column; }
+      .hero-ctas a, .hero-ctas button { width: 100%; justify-content: center; }
+      .comp-table { font-size: 13px; }
+      .comp-table th, .comp-table td { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-mark">M</div>
+      <span>MIRA</span>
+    </a>
+    <a href="#pricing" class="nav-cta">Reservar lugar</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <div class="hero-badge-dot"></div>
+        <span>AI Marketing Workforce · Acceso anticipado</span>
+      </div>
+      <h1>
+        Contrataste herramientas.<br>
+        <span class="dim">Sigues siendo tú</span><br>
+        el director creativo.
+      </h1>
+      <p class="hero-sub">
+        MIRA es el primer <strong>AI Marketing Workforce</strong> que aprende quién eres y trabaja sin que tengas que pensar en cada pieza.
+        <strong>Estrategia. Copy. Diseño. Ads. Comunidad.</strong> 8 especialistas. Un solo sistema.
+      </p>
+      <div class="hero-ctas">
+        <a href="#pricing" class="btn-primary">Quiero mi equipo →</a>
+        <a href="#pricing" class="btn-ghost">Quiero que lo corran por mí →</a>
+      </div>
+      <div class="hero-proof">
+        <div class="hero-proof-line"></div>
+        <span>Early access · Primeros 50 founders · Precio bloqueado</span>
+        <div class="hero-proof-line"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="container">
+    <div class="problem-header reveal">
+      <div class="label section-label">El problema</div>
+      <h2>Las herramientas de IA hacen lo que les pides. Tú sigues decidiendo todo.</h2>
+      <p>Cuántas veces dijiste esto:</p>
+    </div>
+    <div class="quotes-grid">
+      <div class="quote-card reveal reveal-delay-1">
+        <p>Probé HeyGen, Creatify, Synthesia... y sigo siendo yo el que piensa qué publicar.</p>
+        <span class="tool">Founder de SaaS B2B, Buenos Aires</span>
+      </div>
+      <div class="quote-card reveal reveal-delay-2">
+        <p>Tardé más en armar el brief que en revisar lo que generó la IA.</p>
+        <span class="tool">Founder de e-commerce, CDMX</span>
+      </div>
+      <div class="quote-card reveal reveal-delay-3">
+        <p>Tengo 4 suscripciones activas y el marketing sigue siendo mi problema.</p>
+        <span class="tool">Co-founder de startup de salud, Bogotá</span>
+      </div>
+      <div class="quote-card reveal reveal-delay-4">
+        <p>El contenido que genera no suena a mi marca. Suena a todos los demás.</p>
+        <span class="tool">Founder de restaurante, Bangkok</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section id="solution">
+  <div class="container reveal">
+    <div class="label section-label">La diferencia</div>
+    <h2>No es una herramienta.<br>Es un equipo.</h2>
+    <p>Una herramienta espera que le digas qué hacer. Un equipo ya sabe qué hay que hacer. MIRA aprende tu marca el primer día — y trabaja con ese contexto desde ahí en adelante, para siempre.</p>
+  </div>
+</section>
+
+<!-- BRAND BRAIN -->
+<section id="brain">
+  <div class="container">
+    <div class="brain-layout">
+      <div class="brain-text reveal">
+        <div class="label section-label">Brand Brain</div>
+        <h2>El único sistema de marketing que no empieza desde cero cada vez.</h2>
+        <p>HeyGen no sabe tu historia. Creatify no conoce tu audiencia. Synthesia no recuerda lo que funcionó la semana pasada. MIRA sí. El Brand Brain guarda todo: tono, pilares de contenido, referencias aprobadas, resultados anteriores, lo que tu competencia dice y tú nunca dirías. Cada pieza que genera el equipo parte de ese contexto.</p>
+        <div class="brain-stats">
+          <div class="brain-stat">
+            <div class="val" style="color:#8B5CF6">∞</div>
+            <div class="desc">Memoria de marca acumulativa</div>
+          </div>
+          <div class="brain-stat">
+            <div class="val" style="color:#06B6D4">8</div>
+            <div class="desc">Agentes que comparten el mismo contexto</div>
+          </div>
+          <div class="brain-stat">
+            <div class="val" style="color:#F59E0B">0</div>
+            <div class="desc">Veces que tienes que explicarte de nuevo</div>
+          </div>
+          <div class="brain-stat">
+            <div class="val" style="color:#10B981">+</div>
+            <div class="desc">Mejora con cada pieza generada</div>
+          </div>
+        </div>
+      </div>
+      <div class="brain-visual reveal reveal-delay-2">
+        <div class="brain-ring brain-ring-3"></div>
+        <div class="brain-ring brain-ring-2"></div>
+        <div class="brain-ring brain-ring-1"></div>
+        <div class="brain-node">
+          <div class="brain-node-dot" style="background:#8B5CF6"></div>
+          <div class="brain-node-label">Voz de marca</div>
+        </div>
+        <div class="brain-node">
+          <div class="brain-node-dot" style="background:#06B6D4"></div>
+          <div class="brain-node-label">Pilares</div>
+        </div>
+        <div class="brain-node">
+          <div class="brain-node-dot" style="background:#F59E0B"></div>
+          <div class="brain-node-label">Historial</div>
+        </div>
+        <div class="brain-node">
+          <div class="brain-node-dot" style="background:#10B981"></div>
+          <div class="brain-node-label">Referencias</div>
+        </div>
+        <div class="brain-core">🧠</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section id="team">
+  <div class="container">
+    <div class="team-header reveal">
+      <div class="label section-label">Tu equipo</div>
+      <h2>8 especialistas. Un objetivo.</h2>
+      <p>Cada uno tiene su rol, su voz y sus herramientas. Todos comparten el mismo Brand Brain.</p>
+    </div>
+    <div class="agents-grid">
+      <!-- Marco -->
+      <div class="agent-card reveal reveal-delay-1" style="--card-glow:rgba(139,92,246,.04)">
+        <div class="agent-color-bar" style="background:#8B5CF6"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#8B5CF640,#6D28D920)">🎬</div>
+        <div class="agent-name">Marco</div>
+        <div class="agent-role" style="color:#8B5CF6aa">Creative Director</div>
+        <div class="agent-tagline">Te digo qué hacer y quién lo hace.</div>
+      </div>
+      <!-- Luna -->
+      <div class="agent-card reveal reveal-delay-2" style="--card-glow:rgba(6,182,212,.04)">
+        <div class="agent-color-bar" style="background:#06B6D4"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#06B6D440,#0891B220)">🔍</div>
+        <div class="agent-name">Luna</div>
+        <div class="agent-role" style="color:#06B6D4aa">Content Strategist</div>
+        <div class="agent-tagline">Yo encuentro el ángulo que nadie vio.</div>
+      </div>
+      <!-- Alex -->
+      <div class="agent-card reveal reveal-delay-3" style="--card-glow:rgba(245,158,11,.04)">
+        <div class="agent-color-bar" style="background:#F59E0B"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#F59E0B40,#D9770620)">✍️</div>
+        <div class="agent-name">Alex</div>
+        <div class="agent-role" style="color:#F59E0Baa">Copywriter</div>
+        <div class="agent-tagline">Escribo como tú, pero mejor.</div>
+      </div>
+      <!-- Zoe -->
+      <div class="agent-card reveal reveal-delay-4" style="--card-glow:rgba(236,72,153,.04)">
+        <div class="agent-color-bar" style="background:#EC4899"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#EC489940,#BE185D20)">🎨</div>
+        <div class="agent-name">Zoe</div>
+        <div class="agent-role" style="color:#EC4899aa">Graphic Designer</div>
+        <div class="agent-tagline">Tu marca, en cada píxel.</div>
+      </div>
+      <!-- Kai -->
+      <div class="agent-card reveal reveal-delay-5" style="--card-glow:rgba(16,185,129,.04)">
+        <div class="agent-color-bar" style="background:#10B981"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#10B98140,#05966920)">🎞️</div>
+        <div class="agent-name">Kai</div>
+        <div class="agent-role" style="color:#10B981aa">Video Editor</div>
+        <div class="agent-tagline">El primer frame lo para todo.</div>
+      </div>
+      <!-- Noa -->
+      <div class="agent-card reveal reveal-delay-6" style="--card-glow:rgba(59,130,246,.04)">
+        <div class="agent-color-bar" style="background:#3B82F6"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#3B82F640,#1D4ED820)">📅</div>
+        <div class="agent-name">Noa</div>
+        <div class="agent-role" style="color:#3B82F6aa">Social Media Manager</div>
+        <div class="agent-tagline">Nada sale sin mi sello.</div>
+      </div>
+      <!-- Riva -->
+      <div class="agent-card reveal reveal-delay-7" style="--card-glow:rgba(239,68,68,.04)">
+        <div class="agent-color-bar" style="background:#EF4444"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#EF444440,#DC262620)">📣</div>
+        <div class="agent-name">Riva</div>
+        <div class="agent-role" style="color:#EF4444aa">Ads Manager</div>
+        <div class="agent-tagline">Sé lo que hace tu competencia antes que ellos.</div>
+      </div>
+      <!-- Sam -->
+      <div class="agent-card reveal reveal-delay-8" style="--card-glow:rgba(249,115,22,.04)">
+        <div class="agent-color-bar" style="background:#F97316"></div>
+        <div class="agent-avatar" style="background:linear-gradient(135deg,#F9731640,#EA580C20)">💬</div>
+        <div class="agent-name">Sam</div>
+        <div class="agent-role" style="color:#F97316aa">Community Manager</div>
+        <div class="agent-tagline">Cada comentario importa.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how">
+  <div class="container">
+    <div class="how-header reveal">
+      <div class="label section-label">Cómo funciona</div>
+      <h2>De cero a equipo en 48 horas.</h2>
+      <p>Sin reuniones de kickoff. Sin explicar tu marca desde cero.</p>
+    </div>
+    <div class="steps">
+      <div class="step reveal reveal-delay-1">
+        <div class="step-num">1</div>
+        <h3>Setup del Brand Brain</h3>
+        <p>Subes tus referencias, tus posts anteriores, tu guía de marca. MIRA analiza y construye tu Brand Brain en menos de 24h.</p>
+      </div>
+      <div class="step reveal reveal-delay-2">
+        <div class="step-num">2</div>
+        <h3>El equipo trabaja</h3>
+        <p>Marco coordina, Luna investiga, Alex escribe, Zoe briefea el diseño, Noa agenda. Sin que tengas que decirles qué hacer.</p>
+      </div>
+      <div class="step reveal reveal-delay-3">
+        <div class="step-num">3</div>
+        <h3>Tú solo apruebas</h3>
+        <p>Todo pasa por tu portal antes de publicarse. Aprobás, editás o rechazás en segundos. Sin emails ni reuniones.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARISON -->
+<section id="comparison">
+  <div class="container">
+    <div class="comp-header reveal">
+      <div class="label section-label">Por qué MIRA</div>
+      <h2>No es lo mismo que lo que ya probaste.</h2>
+    </div>
+    <div class="reveal">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th class="col-mira-header"><span>MIRA</span> <span class="comp-badge">Recomendado</span></th>
+            <th>Herramientas de video</th>
+            <th>Agencias tradicionales</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Conoce tu marca</td>
+            <td class="col-mira check">✓ Brand Brain permanente</td>
+            <td class="cross">✗ Empieza de cero siempre</td>
+            <td class="partial">Solo al inicio (se olvida)</td>
+          </tr>
+          <tr>
+            <td>Estrategia propia</td>
+            <td class="col-mira check">✓ Luna investiga y propone</td>
+            <td class="cross">✗ Vos la ponés</td>
+            <td class="check">✓ Incluida (en el precio)</td>
+          </tr>
+          <tr>
+            <td>Voz de marca consistente</td>
+            <td class="col-mira check">✓ Versionada y mejorable</td>
+            <td class="cross">✗ Genérica por defecto</td>
+            <td class="partial">Depende del copywriter</td>
+          </tr>
+          <tr>
+            <td>Comunidad y reseñas</td>
+            <td class="col-mira check">✓ Sam responde 24/7</td>
+            <td class="cross">✗ No incluido</td>
+            <td class="cross">✗ Extra a cotizar</td>
+          </tr>
+          <tr>
+            <td>Aprobación humana</td>
+            <td class="col-mira check">✓ Portal propio</td>
+            <td class="cross">✗ Publica sin preguntar</td>
+            <td class="partial">Email de ida y vuelta</td>
+          </tr>
+          <tr>
+            <td>Disponible 24/7</td>
+            <td class="col-mira check">✓ Sin vacaciones</td>
+            <td class="check">✓</td>
+            <td class="cross">✗</td>
+          </tr>
+          <tr>
+            <td>Precio mensual</td>
+            <td class="col-mira" style="color:#a78bfa;font-weight:600">$99 único + $9.99/mes</td>
+            <td style="color:#888">$30–100/mes c/u (x4)</td>
+            <td style="color:#888">$3.000–10.000/mes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section id="pricing">
+  <div class="container">
+    <div class="pricing-header reveal">
+      <div class="label section-label">Precios</div>
+      <h2>Elige cómo trabajar con tu equipo.</h2>
+      <p>Sin contratos anuales. Sin cláusulas ocultas.</p>
+    </div>
+    <div class="pricing-grid">
+      <!-- Self-serve -->
+      <div class="pricing-card reveal reveal-delay-1">
+        <div class="pricing-tier">MIRA Self-Serve</div>
+        <div class="pricing-price">
+          <span class="currency">$</span>99
+          <span class="period"> una vez</span>
+        </div>
+        <div style="color:#666;font-size:.85rem;margin-top:6px">+ $9.99/mes a partir del año 2</div>
+        <p class="pricing-desc">Para founders que quieren el control. Tú configuras, tú apruebas, tú publicas.</p>
+        <ul class="pricing-features">
+          <li>8 agentes especializados</li>
+          <li>Brand Brain setup guiado</li>
+          <li>Portal de aprobación propio</li>
+          <li>Actualizaciones del primer año</li>
+          <li>Templates de brief incluidos</li>
+        </ul>
+        <a href="#" class="pricing-btn pricing-btn-ghost">Quiero empezar solo →</a>
+      </div>
+      <!-- Done for you -->
+      <div class="pricing-card featured reveal reveal-delay-2">
+        <div class="pricing-tier" style="color:#a78bfa">MIRA Done-for-You</div>
+        <div class="pricing-price" style="color:#a78bfa">
+          <span class="currency" style="color:#a78bfa">$</span>499
+          <span class="period" style="color:#7c6ba0">/mes</span>
+        </div>
+        <div style="color:#555;font-size:.85rem;margin-top:6px">Precio desde · varía según volumen</div>
+        <p class="pricing-desc">Para founders que quieren resultados sin tocar nada. El equipo trabaja. Tú solo apruebas.</p>
+        <ul class="pricing-features">
+          <li>Todo lo de Self-Serve, más:</li>
+          <li>Equipo operando MIRA por ti</li>
+          <li>Onboarding del Brand Brain en 48h</li>
+          <li>5 minutos de revisión por día</li>
+          <li>Reunión mensual de estrategia</li>
+        </ul>
+        <a href="#" class="pricing-btn pricing-btn-primary">Quiero que lo corran por mí →</a>
+      </div>
+    </div>
+    <p class="pricing-early reveal">
+      Early access: <strong>precio bloqueado para los primeros 50 founders</strong> que se sumen.
+    </p>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section id="cta">
+  <div class="container">
+    <div class="label section-label reveal" style="color:#8B5CF6">Suma tu startup</div>
+    <h2 class="reveal">Tu marca no puede esperar a que tengas presupuesto para una agencia.</h2>
+    <p class="reveal">La mayoría de los founders pre-seed pierden entre 8 y 12 horas semanales en marketing. No porque no sepan qué hacer. Sino porque son los únicos que saben cómo hacerlo. MIRA es el primer miembro de tu equipo de marketing que aprende solo.</p>
+    <div class="ctas reveal">
+      <a href="#" class="btn-primary">Reservar mi lugar en el piloto →</a>
+      <a href="#" class="btn-ghost">Ver demo del portal</a>
+    </div>
+    <p class="micro reveal">Sin tarjeta para reservar · Cupos limitados · Acceso en 48h</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <a href="#" class="footer-brand">
+        <div class="nav-logo-mark" style="width:24px;height:24px;font-size:12px">M</div>
+        <span>MIRA</span>
+      </a>
+      <p>El primer AI Marketing Workforce que conoce tu marca.</p>
+      <p style="color:#333">© 2026 MIRA</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Scroll nav
+  const navbar = document.getElementById('navbar')
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20)
+  })
+
+  // Reveal on scroll
+  const reveals = document.querySelectorAll('.reveal')
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible')
+        observer.unobserve(e.target)
+      }
+    })
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' })
+  reveals.forEach(el => observer.observe(el))
+
+  // Agent card hover glow
+  document.querySelectorAll('.agent-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.borderColor = card.querySelector('.agent-color-bar').style.background + '55'
+    })
+    card.addEventListener('mouseleave', () => {
+      card.style.borderColor = ''
+    })
+  })
+</script>
+</body>
+</html>
