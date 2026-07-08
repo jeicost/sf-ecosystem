@@ -46,7 +46,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
               .from('clients')
               .select('id,name,slug')
               .eq('id', user.user_metadata.client_id)
-              .single()
+              .maybeSingle()
 
             console.log('Query result:', { client, error })
 
@@ -72,7 +72,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
               .from('clients')
               .select('id,name,slug')
               .eq('slug', user.user_metadata.client_slug)
-              .single()
+              .maybeSingle()
 
             if (client) {
               localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
