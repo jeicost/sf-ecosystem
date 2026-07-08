@@ -7,6 +7,7 @@ import { useActiveClient } from '@/lib/client-context'
 import { CLIENT_ID } from '@/lib/constants'
 import BrainResources from '@/components/brain/BrainResources'
 import BrainVersionHistory from '@/components/brain/BrainVersionHistory'
+import BrainChat from '@/components/brain/BrainChat'
 
 interface BrandProfile {
   client_id: string
@@ -152,12 +153,14 @@ function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile |
   )
 }
 
-function TabContent({ tab, profile, pillars, learnings, sources }: {
+function TabContent({ tab, profile, pillars, learnings, sources, clientId, onProposalSave }: {
   tab: string
   profile: BrandProfile | null
   pillars: Pillar[]
   learnings: BrainLearning[]
   sources: BrainSource[]
+  clientId: string
+  onProposalSave?: (section: string, value: string) => Promise<void>
 }) {
   if (tab === 'profile') {
     const toneVoice = profile?.tone_of_voice as Record<string, string> | null
@@ -336,8 +339,31 @@ function TabContent({ tab, profile, pillars, learnings, sources }: {
     return <BrainVersionHistory clientId={profile?.client_id || ''} currentVersion={1} />
   }
 
+  if (tab === 'ai-assistant') {
+    return (
+      <div className="h-[600px]">
+        <BrainChat clientId={clientId} onProposalSave={onProposalSave} />
+      </div>
+    )
+  }
+
   return null
 }
+
+// Allowed sections for safe proposal saving (anti-injection whitelist)
+const ALLOWED_SECTIONS = [
+  'tone_of_voice',
+  'brand_personality',
+  'mission',
+  'values',
+  'description',
+  'proposition',
+  'target_audience',
+  'unique_value_props',
+  'competitors',
+  'banned_phrases',
+  'banned_topics',
+] as const
 
 export default function BrainPage() {
   const { activeClient } = useActiveClient()
@@ -349,6 +375,8 @@ export default function BrainPage() {
   const [sources, setSources] = useState<BrainSource[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('profile')
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+  const [toastType, setToastType] = useState<'success' | 'error'>('success')
 
   useEffect(() => {
     setLoading(true)
@@ -366,6 +394,45 @@ export default function BrainPage() {
       setLoading(false)
     })
   }, [clientId])
+
+  // Handle safe proposal saving
+  const handleProposalSave = async (section: string, value: string) => {
+    // Validate section is in whitelist
+    if (!ALLOWED_SECTIONS.includes(section as any)) {
+      setToastMessage(`Invalid section: ${section}`)
+      setToastType('error')
+      setTimeout(() => setToastMessage(null), 3000)
+      throw new Error(`Invalid section: ${section}`)
+    }
+
+    const db = createClient()
+
+    try {
+      // Update brand_profiles with the new section value
+      const { error } = await db
+        .from('brand_profiles')
+        .update({ [section]: value })
+        .eq('client_id', clientId)
+
+      if (error) throw error
+
+      // Update local state
+      setProfile(p => ({
+        ...p!,
+        [section]: value,
+      }))
+
+      setToastMessage(`✅ Saved to ${section}`)
+      setToastType('success')
+      setTimeout(() => setToastMessage(null), 3000)
+    } catch (err) {
+      console.error('Failed to save proposal:', err)
+      setToastMessage('Failed to save proposal')
+      setToastType('error')
+      setTimeout(() => setToastMessage(null), 3000)
+      throw err
+    }
+  }
 
   if (loading)
     return (
@@ -385,6 +452,7 @@ export default function BrainPage() {
     { id: 'audience', label: 'Audiencia', icon: '🎯' },
     { id: 'content', label: 'Contenido', icon: '📝' },
     { id: 'memory', label: 'Memoria', icon: '🧠' },
+    { id: 'ai-assistant', label: 'AI Assistant', icon: '🤖' },
     { id: 'sources', label: 'Fuentes', icon: '📚' },
     { id: 'resources', label: 'Recursos', icon: '📌' },
     { id: 'versions', label: 'Historial', icon: '⏱️' },
@@ -431,7 +499,15 @@ export default function BrainPage() {
 
       <div className="grid grid-cols-3 gap-6">
         <div className="col-span-2">
-          <TabContent tab={activeTab} profile={profile} pillars={pillars} learnings={learnings} sources={sources} />
+          <TabContent
+            tab={activeTab}
+            profile={profile}
+            pillars={pillars}
+            learnings={learnings}
+            sources={sources}
+            clientId={clientId}
+            onProposalSave={handleProposalSave}
+          />
         </div>
 
         {/* Right sidebar — Stats */}
@@ -465,6 +541,18 @@ export default function BrainPage() {
           </div>
         </div>
       </div>
+
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div
+          className={clsx(
+            'fixed bottom-4 right-4 px-4 py-3 rounded-lg text-sm font-medium text-white transition-all duration-300',
+            toastType === 'success' ? 'bg-emerald-500' : 'bg-red-500'
+          )}
+        >
+          {toastMessage}
+        </div>
+      )}
     </div>
   )
 }
