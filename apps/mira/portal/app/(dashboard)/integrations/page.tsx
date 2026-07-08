@@ -3,75 +3,9 @@ import { useActiveClient } from '@/lib/client-context'
 import { useToolConnections } from '@/lib/hooks/useToolConnections'
 import ToolsMarketplace from '@/components/integrations/ToolsMarketplace'
 import ToolConnectionModal from '@/components/integrations/ToolConnectionModal'
+import { MARKETPLACE_TOOLS } from '@/lib/integrations/marketplace-tools'
 import { CLIENT_ID } from '@/lib/constants'
 import { useEffect, useState } from 'react'
-
-const MARKETPLACE_TOOLS = [
-  {
-    id: 'canva',
-    name: 'Canva',
-    emoji: '🎨',
-    category: 'Design',
-    description: 'Design & visual content creation for all marketing assets, posts, and graphics',
-    setupUrl: 'https://www.canva.com',
-  },
-  {
-    id: 'figma',
-    name: 'Figma',
-    emoji: '🖌️',
-    category: 'Design',
-    description: 'UI/UX design & prototyping for digital products and interfaces',
-    setupUrl: 'https://www.figma.com',
-  },
-  {
-    id: 'buffer',
-    name: 'Buffer',
-    emoji: '📅',
-    category: 'Social Media',
-    description: 'Social media scheduling and content calendar management',
-    setupUrl: 'https://buffer.com',
-  },
-  {
-    id: 'hootsuite',
-    name: 'Hootsuite',
-    emoji: '🚀',
-    category: 'Social Media',
-    description: 'Multi-platform social management and analytics',
-    setupUrl: 'https://hootsuite.com',
-  },
-  {
-    id: 'linkedin-navigator',
-    name: 'LinkedIn Sales Navigator',
-    emoji: '🔍',
-    category: 'Sales',
-    description: 'Advanced lead discovery and B2B prospect research',
-    setupUrl: 'https://business.linkedin.com/sales-solutions',
-  },
-  {
-    id: 'salesforce',
-    name: 'Salesforce',
-    emoji: '💼',
-    category: 'CRM',
-    description: 'CRM and sales pipeline management for deal tracking',
-    setupUrl: 'https://salesforce.com',
-  },
-  {
-    id: 'slack',
-    name: 'Slack',
-    emoji: '💬',
-    category: 'Communication',
-    description: 'Team communication and real-time notifications',
-    setupUrl: 'https://slack.com',
-  },
-  {
-    id: 'google-workspace',
-    name: 'Google Workspace',
-    emoji: '📊',
-    category: 'Productivity',
-    description: 'Docs, Sheets, and Gmail integration for document collaboration',
-    setupUrl: 'https://workspace.google.com',
-  },
-]
 
 export default function IntegrationsPage() {
   const { activeClient } = useActiveClient()

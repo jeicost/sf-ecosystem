@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 import { anthropic } from '@ai-sdk/anthropic'
 import { streamText } from 'ai'
 import { NextRequest, NextResponse } from 'next/server'
@@ -113,8 +114,25 @@ ${context.learnings.map((l) => `- ${l.agent_id}: ${l.learning_text}`).join('\n')
         ? `Agent "${agentId}" proposes: ${message}\n\nShould we save this to the brain? Explain your reasoning.`
         : message
 
+    // Resolve client-specific API key, falling back to platform default
+    const anthropicKey = await getClientApiKey(
+      clientId,
+      'anthropic',
+      process.env.ANTHROPIC_API_KEY
+    )
+
+    if (!anthropicKey) {
+      return new Response(
+        JSON.stringify({ error: 'No Anthropic API key available for this client' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
+    }
+
     const { textStream } = await streamText({
-      model: anthropic('claude-opus-4-7'),
+      model: anthropic('claude-opus-4-7', { apiKey: anthropicKey }),
       system: BRAIN_SYSTEM_PROMPT + '\n\n' + contextPrompt,
       messages: [{ role: 'user', content: userPrompt }],
       temperature: 0.7,
