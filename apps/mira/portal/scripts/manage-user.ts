@@ -41,9 +41,10 @@ async function createUser(email: string, plan: string, clientSlug?: string) {
     })
 
     if (createError) throw createError
+    if (!newUser) throw new Error('No user returned from createUser')
 
-    console.log('✅ Usuario creado:', newUser.id, email)
-    console.log('Plan:', newUser.user_metadata?.plan)
+    console.log('✅ Usuario creado:', (newUser as any).id, email)
+    console.log('Plan:', (newUser as any).user_metadata?.plan)
     if (clientSlug) {
       console.log('Cliente:', clientSlug)
     }
