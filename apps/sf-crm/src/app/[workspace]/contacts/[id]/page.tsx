@@ -18,5 +18,5 @@ export default async function ContactDetailPage({
     redirect('/')
   }
 
-  return <ContactDetail workspaceId={workspaceParam} contactId={id} workspace={session.workspace} />
+  return <ContactDetail workspaceId={workspaceParam} contactId={id} />
 }

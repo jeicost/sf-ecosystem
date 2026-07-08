@@ -2,17 +2,16 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import type { Workspace, Contact } from '@/types'
+import type { Contact } from '@/types'
 import { getHotScore } from '@/lib/utils'
 import styles from './detail.module.css'
 
 interface ContactDetailProps {
   workspaceId: string
   contactId: string
-  workspace: Workspace
 }
 
-export default function ContactDetail({ workspaceId, contactId, workspace }: ContactDetailProps) {
+export default function ContactDetail({ workspaceId, contactId }: ContactDetailProps) {
   const [contact, setContact] = useState<Contact | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
