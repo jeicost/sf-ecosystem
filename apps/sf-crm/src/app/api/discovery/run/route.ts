@@ -21,7 +21,6 @@ export async function POST(request: NextRequest) {
       company: company.trim(),
       status: 'pending',
       results: {},
-      startedAt: new Date().toISOString(),
     })
 
     // In production, this would:

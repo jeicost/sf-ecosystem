@@ -22,42 +22,10 @@ export default function ContactsClient({ workspaceId, workspace }: ContactsClien
     async function loadContacts() {
       try {
         setLoading(true)
-        // TODO: Fetch actual contacts from API
-        const mockContacts: Contact[] = [
-          {
-            id: '1',
-            firstName: 'John',
-            lastName: 'Doe',
-            company: 'TechCorp',
-            title: 'CTO',
-            email: 'john@techcorp.com',
-            phone: '+34 912 345 678',
-            linkedinUrl: 'https://linkedin.com/in/johndoe',
-            geography: 'Madrid',
-            industry: 'Technology',
-            score: 85,
-            stage: 'proposal',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: '2',
-            firstName: 'Jane',
-            lastName: 'Smith',
-            company: 'FinanceHub',
-            title: 'Director',
-            email: 'jane@financehub.com',
-            phone: '+34 934 567 890',
-            linkedinUrl: 'https://linkedin.com/in/janesmith',
-            geography: 'Barcelona',
-            industry: 'Finance',
-            score: 62,
-            stage: 'engaged',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-        ]
-        setContacts(mockContacts)
+        const res = await fetch('/api/contacts')
+        if (!res.ok) throw new Error('Failed to load contacts')
+        const json = await res.json()
+        setContacts(json.data as Contact[])
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load contacts')
       } finally {

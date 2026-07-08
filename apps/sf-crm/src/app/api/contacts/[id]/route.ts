@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getSession, requireAuth } from '@/lib/auth'
+import { requireAuth } from '@/lib/auth'
 import { updateLead, updateCrmContact, getLead, getCrmContact } from '@/lib/db'
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await requireAuth()
     const body = await request.json()
 
-    const contactId = params.id
+    const { id: contactId } = await params
 
     // Try to update as lead first (SF workspace)
     if (session.workspace.type === 'sf') {

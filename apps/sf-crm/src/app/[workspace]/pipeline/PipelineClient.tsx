@@ -14,11 +14,11 @@ const STAGES: ContactStage[] = ['prospect', 'qualified', 'engaged', 'proposal', 
 interface StageData {
   stage: ContactStage
   count: number
-  value: number
 }
 
 export default function PipelineClient({ workspaceId, workspace }: PipelineClientProps) {
   const [stages, setStages] = useState<StageData[]>([])
+  const [totalScore, setTotalScore] = useState(0)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
@@ -26,13 +26,18 @@ export default function PipelineClient({ workspaceId, workspace }: PipelineClien
     async function loadPipeline() {
       try {
         setLoading(true)
-        // TODO: Fetch actual pipeline data
-        const mockData = STAGES.map((stage, idx) => ({
-          stage,
-          count: Math.floor(Math.random() * 20) + 1,
-          value: Math.floor(Math.random() * 100000) + 10000,
-        }))
-        setStages(mockData)
+        const res = await fetch('/api/contacts')
+        if (!res.ok) throw new Error('Failed to load pipeline')
+        const json = await res.json()
+        const contacts = json.data as Contact[]
+
+        setStages(
+          STAGES.map((stage) => ({
+            stage,
+            count: contacts.filter((c) => c.stage === stage).length,
+          }))
+        )
+        setTotalScore(contacts.reduce((sum, c) => sum + (c.score || 0), 0))
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load pipeline')
       } finally {
@@ -67,37 +72,33 @@ export default function PipelineClient({ workspaceId, workspace }: PipelineClien
       </div>
 
       <div className={styles.pipeline}>
-        {stages.map(({ stage, count, value }) => (
-          <div key={stage} className={styles.stage}>
-            <div className={styles.stageHeader}>
-              <h3>{stage}</h3>
-              <span className={styles.count}>{count}</span>
+        {stages.map(({ stage, count }) => {
+          const total = stages.reduce((sum, s) => sum + s.count, 0) || 1
+          return (
+            <div key={stage} className={styles.stage}>
+              <div className={styles.stageHeader}>
+                <h3>{stage}</h3>
+                <span className={styles.count}>{count}</span>
+              </div>
+              <div className={styles.stageBar}>
+                <div
+                  className={styles.stageBarFill}
+                  style={{ width: `${(count / total) * 100}%` }}
+                />
+              </div>
             </div>
-            <div className={styles.stageValue}>
-              <p>${value.toLocaleString()}</p>
-            </div>
-            <div className={styles.stageBar}>
-              <div
-                className={styles.stageBarFill}
-                style={{ width: `${(count / 20) * 100}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       <div className={styles.summary}>
         <div className={styles.summaryItem}>
-          <p>Total Opportunities</p>
+          <p>Total Contacts</p>
           <span>{stages.reduce((sum, s) => sum + s.count, 0)}</span>
         </div>
         <div className={styles.summaryItem}>
-          <p>Pipeline Value</p>
-          <span>${stages.reduce((sum, s) => sum + s.value, 0).toLocaleString()}</span>
-        </div>
-        <div className={styles.summaryItem}>
-          <p>Average Deal Size</p>
-          <span>${Math.round(stages.reduce((sum, s) => sum + s.value, 0) / stages.reduce((sum, s) => sum + s.count, 0)).toLocaleString()}</span>
+          <p>Combined Score</p>
+          <span>{totalScore}</span>
         </div>
       </div>
     </div>

@@ -81,16 +81,16 @@
   overflow: hidden;
 }
 
-table {
+.table table {
   width: 100%;
   border-collapse: collapse;
 }
 
-thead {
+.table thead {
   background: var(--bg-tertiary);
 }
 
-th {
+.table th {
   padding: 15px;
   text-align: left;
   font-weight: 600;
@@ -101,28 +101,28 @@ th {
   border-bottom: 1px solid var(--border-color);
 }
 
-td {
+.table td {
   padding: 15px;
   font-size: 14px;
   color: var(--text-primary);
   border-bottom: 1px solid var(--border-color);
 }
 
-tbody tr:hover {
+.table tbody tr:hover {
   background: var(--bg-tertiary);
 }
 
-tbody tr:last-child td {
+.table tbody tr:last-child td {
   border-bottom: none;
 }
 
-td a {
+.table td a {
   color: var(--color-primary);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
-td a:hover {
+.table td a:hover {
   color: var(--color-primary-dark);
   text-decoration: underline;
 }
@@ -193,7 +193,7 @@ td a:hover {
     overflow-x: auto;
   }
 
-  table {
+  .table table {
     min-width: 800px;
   }
 }

@@ -3,8 +3,8 @@ import { requireAuth } from '@/lib/auth'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireAuth()
-    const { query, workspaceId } = await request.json()
+    await requireAuth()
+    const { query } = await request.json()
 
     if (!query || query.trim().length === 0) {
       return NextResponse.json(

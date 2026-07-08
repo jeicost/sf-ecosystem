@@ -8,7 +8,7 @@ interface MetricsClientProps {
   workspace: Workspace
 }
 
-export default function MetricsClient({ workspaceId, workspace }: MetricsClientProps) {
+export default function MetricsClient({ workspace }: MetricsClientProps) {
   const mockMetrics = {
     totalLeads: 248,
     hotLeads: 45,

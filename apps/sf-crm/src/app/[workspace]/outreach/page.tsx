@@ -9,12 +9,13 @@ export const metadata = {
 export default async function OutreachPage({
   params,
 }: {
-  params: { workspace: string }
+  params: Promise<{ workspace: string }>
 }) {
+  const { workspace } = await params
   const session = await getSession()
-  if (!session || session.workspace.id !== params.workspace) {
+  if (!session || session.workspace.id !== workspace) {
     redirect('/')
   }
 
-  return <OutreachClient workspaceId={params.workspace} workspace={session.workspace} />
+  return <OutreachClient workspaceId={workspace} workspace={session.workspace} />
 }

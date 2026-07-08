@@ -55,8 +55,6 @@ export async function POST(request: NextRequest) {
             industry: lead.industry,
             score,
             stage: 'prospect',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
           })
         } else {
           await createCrmContact(session.workspace.id, {
@@ -71,8 +69,6 @@ export async function POST(request: NextRequest) {
             industry: lead.industry,
             score,
             stage: 'prospect',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
           })
         }
 

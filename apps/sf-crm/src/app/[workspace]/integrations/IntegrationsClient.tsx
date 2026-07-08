@@ -95,7 +95,7 @@ const INTEGRATIONS = [
   },
 ]
 
-export default function IntegrationsClient({ workspaceId, workspace }: IntegrationsClientProps) {
+export default function IntegrationsClient({ workspace }: IntegrationsClientProps) {
   const categories = ['prospection', 'enrichment', 'outreach', 'analytics', 'other']
 
   return (

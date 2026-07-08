@@ -9,12 +9,13 @@ export const metadata = {
 export default async function DiscoveryPage({
   params,
 }: {
-  params: { workspace: string }
+  params: Promise<{ workspace: string }>
 }) {
+  const { workspace } = await params
   const session = await getSession()
-  if (!session || session.workspace.id !== params.workspace) {
+  if (!session || session.workspace.id !== workspace) {
     redirect('/')
   }
 
-  return <DiscoveryClient workspaceId={params.workspace} workspace={session.workspace} />
+  return <DiscoveryClient workspaceId={workspace} workspace={session.workspace} />
 }

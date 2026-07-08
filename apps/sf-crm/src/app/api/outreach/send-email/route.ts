@@ -7,7 +7,7 @@ import { createOutreachEmail, createActivity } from '@/lib/db'
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await requireAuth()
+    await requireAuth()
     const { subject, body, recipients, workspaceId } = await request.json()
 
     if (!Array.isArray(recipients) || recipients.length === 0) {
@@ -44,7 +44,6 @@ export async function POST(request: NextRequest) {
           status: 'sent',
           sentAt: new Date().toISOString(),
           workspaceId,
-          createdAt: new Date().toISOString(),
         })
 
         // Log activity
@@ -53,7 +52,6 @@ export async function POST(request: NextRequest) {
           type: 'email_sent',
           description: `Email sent: ${subject}`,
           metadata: { emailId: outreachEmail.id },
-          createdAt: new Date().toISOString(),
           createdBy: 'system',
         })
 

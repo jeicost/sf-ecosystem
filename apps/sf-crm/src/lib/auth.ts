@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-import type { Workspace, AuthSession } from '@/types'
+import type { AuthSession } from '@/types'
 import { validateWorkspacePassword, getWorkspace } from './workspaces'
 
 const SESSION_COOKIE_NAME = 'sf-crm-session'

@@ -1,5 +1,27 @@
-import { supabase, supabaseAdmin } from './supabase'
-import type { Contact, Lead, CrmContact, Activity, OutreachEmail, DiscoveryRun } from '@/types'
+import { supabase } from './supabase'
+import type { Lead, CrmContact, Activity, OutreachEmail, DiscoveryRun } from '@/types'
+
+// crm_contacts stores snake_case columns (company_name, hot_score, ...);
+// the app's types use camelCase — map DB rows to the app shape here.
+function mapCrmContactRow(row: any): CrmContact {
+  return {
+    id: row.id,
+    firstName: row.first_name || '',
+    lastName: row.last_name || '',
+    company: row.company_name || '',
+    title: row.title || '',
+    email: row.email || '',
+    linkedinUrl: row.linkedin_url,
+    geography: row.geography,
+    industry: row.industry,
+    score: row.hot_score ?? 0,
+    stage: row.stage,
+    workspaceId: row.workspace_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    notes: row.notes,
+  }
+}
 
 // Leads (SF Workspace)
 export async function getLeads(clientId: string, options?: { page?: number; limit?: number; stage?: string; search?: string }) {
@@ -72,22 +94,22 @@ export async function getCrmContacts(workspaceId: string, options?: { page?: num
   }
 
   if (options?.search) {
-    query = query.or(`first_name.ilike.%${options.search}%,last_name.ilike.%${options.search}%,company.ilike.%${options.search}%,email.ilike.%${options.search}%`)
+    query = query.or(`first_name.ilike.%${options.search}%,last_name.ilike.%${options.search}%,company_name.ilike.%${options.search}%,email.ilike.%${options.search}%`)
   }
 
   const { data, error, count } = await query
-    .order('created_at', { ascending: false })
+    .order('hot_score', { ascending: false })
     .range(offset, offset + limit - 1)
 
   if (error) throw error
 
-  return { data: data as CrmContact[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapCrmContactRow), total: count || 0, page, limit }
 }
 
 export async function getCrmContact(id: string): Promise<CrmContact | null> {
   const { data, error } = await supabase.from('crm_contacts').select('*').eq('id', id).single()
   if (error && error.code !== 'PGRST116') throw error
-  return (data as CrmContact) || null
+  return data ? mapCrmContactRow(data) : null
 }
 
 export async function createCrmContact(workspaceId: string, contact: Omit<CrmContact, 'id' | 'createdAt' | 'updatedAt'>): Promise<CrmContact> {

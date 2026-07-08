@@ -9,12 +9,13 @@ export const metadata = {
 export default async function ProspectionPage({
   params,
 }: {
-  params: { workspace: string }
+  params: Promise<{ workspace: string }>
 }) {
+  const { workspace } = await params
   const session = await getSession()
-  if (!session || session.workspace.id !== params.workspace) {
+  if (!session || session.workspace.id !== workspace) {
     redirect('/')
   }
 
-  return <ProspectionClient workspaceId={params.workspace} workspace={session.workspace} />
+  return <ProspectionClient workspaceId={workspace} workspace={session.workspace} />
 }

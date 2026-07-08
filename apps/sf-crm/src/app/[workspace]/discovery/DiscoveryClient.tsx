@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import type { Workspace } from '@/types'
 import styles from './discovery.module.css'
 

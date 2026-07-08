@@ -10,22 +10,23 @@ export const metadata = {
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
-  params: {
+  params: Promise<{
     workspace: string
-  }
+  }>
 }
 
 export default async function WorkspaceLayout({
   children,
   params,
 }: WorkspaceLayoutProps) {
+  const { workspace: workspaceParam } = await params
   const session = await getSession()
 
-  if (!session || session.workspace.id !== params.workspace) {
+  if (!session || session.workspace.id !== workspaceParam) {
     redirect('/')
   }
 
-  const workspace = getWorkspace(params.workspace)
+  const workspace = getWorkspace(workspaceParam)
   if (!workspace) {
     redirect('/')
   }
