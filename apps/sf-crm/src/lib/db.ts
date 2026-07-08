@@ -23,6 +23,66 @@ function mapCrmContactRow(row: any): CrmContact {
   }
 }
 
+function mapLeadRow(row: any): Lead {
+  return {
+    id: row.id,
+    firstName: row.first_name || '',
+    lastName: row.last_name || '',
+    company: row.company_name || '',
+    title: row.title || '',
+    email: row.email || '',
+    phone: row.phone,
+    linkedinUrl: row.linkedin_url,
+    geography: row.geography,
+    industry: row.industry,
+    score: row.score ?? 0,
+    stage: row.stage,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }
+}
+
+function mapActivityRow(row: any): Activity {
+  return {
+    id: row.id,
+    contactId: row.contact_id,
+    type: row.type,
+    description: row.description,
+    metadata: row.metadata,
+    createdAt: row.created_at,
+    createdBy: row.created_by,
+  }
+}
+
+function mapOutreachEmailRow(row: any): OutreachEmail {
+  return {
+    id: row.id,
+    contactId: row.contact_id,
+    to: row.to,
+    subject: row.subject,
+    body: row.body,
+    status: row.status,
+    sentAt: row.sent_at,
+    openedAt: row.opened_at,
+    clickedAt: row.clicked_at,
+    workspaceId: row.workspace_id,
+    createdAt: row.created_at,
+  }
+}
+
+function mapDiscoveryRunRow(row: any): DiscoveryRun {
+  return {
+    id: row.id,
+    workspaceId: row.workspace_id,
+    clientId: row.client_id,
+    company: row.company,
+    status: row.status,
+    results: row.results,
+    startedAt: row.started_at,
+    completedAt: row.completed_at,
+  }
+}
+
 // Leads (SF Workspace)
 export async function getLeads(clientId: string, options?: { page?: number; limit?: number; stage?: string; search?: string }) {
   const page = options?.page || 1
@@ -45,13 +105,13 @@ export async function getLeads(clientId: string, options?: { page?: number; limi
 
   if (error) throw error
 
-  return { data: data as Lead[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapLeadRow), total: count || 0, page, limit }
 }
 
 export async function getLead(id: string): Promise<Lead | null> {
   const { data, error } = await supabase.from('leads').select('*').eq('id', id).single()
   if (error && error.code !== 'PGRST116') throw error
-  return (data as Lead) || null
+  return data ? mapLeadRow(data) : null
 }
 
 export async function createLead(clientId: string, lead: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'>): Promise<Lead> {
@@ -62,13 +122,13 @@ export async function createLead(clientId: string, lead: Omit<Lead, 'id' | 'crea
     .single()
 
   if (error) throw error
-  return data as Lead
+  return mapLeadRow(data)
 }
 
 export async function updateLead(id: string, updates: Partial<Lead>): Promise<Lead> {
   const { data, error } = await supabase.from('leads').update(updates).eq('id', id).select().single()
   if (error) throw error
-  return data as Lead
+  return mapLeadRow(data)
 }
 
 export async function deleteLead(id: string): Promise<void> {
@@ -120,13 +180,13 @@ export async function createCrmContact(workspaceId: string, contact: Omit<CrmCon
     .single()
 
   if (error) throw error
-  return data as CrmContact
+  return mapCrmContactRow(data)
 }
 
 export async function updateCrmContact(id: string, updates: Partial<CrmContact>): Promise<CrmContact> {
   const { data, error } = await supabase.from('crm_contacts').update(updates).eq('id', id).select().single()
   if (error) throw error
-  return data as CrmContact
+  return mapCrmContactRow(data)
 }
 
 export async function deleteCrmContact(id: string): Promise<void> {
@@ -157,13 +217,13 @@ export async function getActivities(contactId: string, options?: { page?: number
 
   if (error) throw error
 
-  return { data: data as Activity[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapActivityRow), total: count || 0, page, limit }
 }
 
 export async function createActivity(activity: Omit<Activity, 'id' | 'createdAt'>): Promise<Activity> {
   const { data, error } = await supabase.from('lead_activities').insert([activity]).select().single()
   if (error) throw error
-  return data as Activity
+  return mapActivityRow(data)
 }
 
 // Outreach Emails
@@ -184,19 +244,19 @@ export async function getOutreachEmails(workspaceId: string, options?: { page?: 
 
   if (error) throw error
 
-  return { data: data as OutreachEmail[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapOutreachEmailRow), total: count || 0, page, limit }
 }
 
 export async function createOutreachEmail(email: Omit<OutreachEmail, 'id' | 'createdAt'>): Promise<OutreachEmail> {
   const { data, error } = await supabase.from('outreach_emails').insert([email]).select().single()
   if (error) throw error
-  return data as OutreachEmail
+  return mapOutreachEmailRow(data)
 }
 
 export async function updateOutreachEmailStatus(id: string, status: string): Promise<OutreachEmail> {
   const { data, error } = await supabase.from('outreach_emails').update({ status }).eq('id', id).select().single()
   if (error) throw error
-  return data as OutreachEmail
+  return mapOutreachEmailRow(data)
 }
 
 // Discovery Runs
@@ -214,17 +274,17 @@ export async function getDiscoveryRuns(workspaceId: string, options?: { page?: n
 
   if (error) throw error
 
-  return { data: data as DiscoveryRun[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapDiscoveryRunRow), total: count || 0, page, limit }
 }
 
 export async function createDiscoveryRun(run: Omit<DiscoveryRun, 'id' | 'startedAt'>): Promise<DiscoveryRun> {
   const { data, error } = await supabase.from('discovery_runs').insert([run]).select().single()
   if (error) throw error
-  return data as DiscoveryRun
+  return mapDiscoveryRunRow(data)
 }
 
 export async function updateDiscoveryRun(id: string, updates: Partial<DiscoveryRun>): Promise<DiscoveryRun> {
   const { data, error } = await supabase.from('discovery_runs').update(updates).eq('id', id).select().single()
   if (error) throw error
-  return data as DiscoveryRun
+  return mapDiscoveryRunRow(data)
 }
