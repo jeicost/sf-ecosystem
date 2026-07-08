@@ -69,9 +69,10 @@ async function updateUser(email: string, plan: string) {
     )
 
     if (updateError) throw updateError
+    if (!updatedUser) throw new Error('No user returned from updateUserById')
 
     console.log('✅ Usuario actualizado:', email)
-    console.log('Nuevo plan:', updatedUser.user_metadata?.plan)
+    console.log('Nuevo plan:', (updatedUser as any).user_metadata?.plan)
   } catch (err) {
     console.error('❌ Error en update:', err instanceof Error ? err.message : String(err))
     process.exit(1)
