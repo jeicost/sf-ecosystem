@@ -1,0 +1,73 @@
+/* ── Full-bleed navy override ── */
+.dv-back {
+  background: #1A1A2E !important;
+  padding: 0 !important;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Magenta top strip ── */
+.dv-back__top-strip {
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 4px; background: #C8006B;
+}
+
+/* ── Decorative ── */
+.dv-back__grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+}
+.dv-back__circle-tr {
+  position: absolute; width: 480px; height: 480px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(200,0,107,0.09) 0%, transparent 65%);
+  right: -160px; top: -100px; pointer-events: none;
+}
+.dv-back__circle-bl {
+  position: absolute; width: 320px; height: 320px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 65%);
+  left: -80px; bottom: -80px; pointer-events: none;
+}
+
+/* ── Main content ── */
+.dv-back__content {
+  position: absolute; inset: 4px 0 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 0 48px; gap: 0;
+}
+
+/* ── Logo ── */
+.dv-back__logo { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+.dv-back__wordmark { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 52px; color: #fff; letter-spacing: -1px; line-height: 1; }
+
+/* ── Tagline ── */
+.dv-back__tagline { font-family: 'Bebas Neue', sans-serif; font-size: 25px; color: rgba(255,255,255,0.25); letter-spacing: 0.22em; text-align: center; margin-bottom: 44px; }
+
+/* ── QR area ── */
+.dv-back__qr-area  { display: flex; align-items: center; gap: 32px; margin-bottom: 36px; }
+.dv-back__qr-box   { width: 140px; height: 140px; background: #fff; flex-shrink: 0; padding: 8px; }
+.dv-back__qr-label { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: #C8006B; margin-bottom: 5px; }
+.dv-back__qr-url   { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: #fff; letter-spacing: 0.04em; line-height: 1; margin-bottom: 10px; }
+.dv-back__qr-desc  { font-size: 11px; font-style: italic; color: rgba(255,255,255,0.45); line-height: 1.6; max-width: 280px; }
+
+/* ── Divider ── */
+.dv-back__divider { width: 60px; height: 1px; background: rgba(255,255,255,0.12); margin-bottom: 32px; }
+
+/* ── Features ── */
+.dv-back__features { display: flex; gap: 48px; align-items: flex-start; justify-content: center; margin-bottom: 28px; }
+.dv-back__feat     { text-align: center; }
+.dv-back__feat-icon  { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: #C8006B; line-height: 1; margin-bottom: 5px; }
+.dv-back__feat-label { font-size: 8px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.4); line-height: 1.4; }
+
+/* ── Year stamp ── */
+.dv-back__year { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: rgba(255,255,255,0.2); letter-spacing: 0.12em; display: flex; align-items: center; gap: 4px; }
+
+/* ── Bottom bar ── */
+.dv-back__bar { position: absolute; bottom: 0; left: 0; right: 0; height: 56px; background: rgba(0,0,0,0.3); display: flex; justify-content: space-between; align-items: center; padding: 0 48px; }
+.dv-back__bar-copy    { font-size: 9px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; font-style: italic; }
+.dv-back__bar-contact { font-size: 9px; color: rgba(255,255,255,0.25); letter-spacing: 0.04em; text-align: right; }

@@ -1,0 +1,117 @@
+.dv-gastro { background: #fff; }
+
+/* ── Slogan ── */
+.dv-gastro__slogan { margin-bottom: 14px; line-height: 1; }
+.dv-gastro__slogan-pre {
+  font-size: 10.5px; font-weight: 700; color: #1C1C1C;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  display: block; margin-bottom: 1px;
+}
+.dv-gastro__slogan-city {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 76px; color: #1A1A2E;
+  letter-spacing: -2px; line-height: 0.87;
+  display: block; margin-bottom: 3px;
+}
+.dv-gastro__slogan-year {
+  display: inline-flex; align-items: center; gap: 1px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 21px; color: #1A1A2E; line-height: 1;
+}
+
+/* ── Split row ── */
+.dv-gastro__split { display: flex; gap: 14px; margin-bottom: 18px; height: 160px; }
+.dv-gastro__split-l { width: 44%; display: flex; flex-direction: column; gap: 9px; }
+.dv-gastro__split-r { flex: 1; }
+
+.dv-gastro__excl-box {
+  padding: 8px 11px 9px;
+  line-height: 1.2;
+  /* background set via style prop (primaryColor) */
+}
+.dv-gastro__excl-head { display: flex; align-items: baseline; gap: 0; }
+.dv-gastro__excl-big  {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 19px; color: #fff; line-height: 1;
+}
+.dv-gastro__excl-small {
+  font-size: 12px; font-weight: 700;
+  color: #fff; letter-spacing: 0.04em;
+}
+.dv-gastro__excl-sub {
+  font-size: 9.5px; font-style: italic;
+  color: rgba(255,255,255,0.88);
+  display: block; margin-top: 3px;
+}
+
+.dv-gastro__intro { font-size: 9.5px; color: #444; line-height: 1.58; text-align: justify; }
+.dv-gastro__drop-cap {
+  font-family: 'Bebas Neue', sans-serif; font-size: 26px;
+  float: left; line-height: 0.8; margin-right: 2px;
+  color: #1A1A2E; padding-top: 2px;
+}
+
+.dv-gastro__main-photo { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dv-gastro__main-ph {
+  width: 100%; height: 100%; background: #d2d2d2;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 6px; font-size: 22px;
+}
+
+/* ── Cards grid ── */
+.dv-gastro__grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+
+.dv-gastro__card { display: flex; flex-direction: column; }
+
+.dv-gastro__card-img {
+  width: 100%; height: 126px;
+  background: #d2d2d2; position: relative;
+  margin-bottom: 7px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.dv-gastro__card-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.dv-gastro__card-ph-lbl {
+  font-size: 8px; color: #999; letter-spacing: 0.1em;
+  text-transform: uppercase; position: relative;
+}
+
+/* QR Scan box */
+.dv-gastro__scan-box {
+  position: absolute; bottom: 5px; right: 5px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.12);
+  padding: 4px 4px 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  width: 32px;
+}
+.dv-gastro__qr { display: grid; grid-template-columns: repeat(5, 2.5px); gap: 0.5px; }
+.dv-gastro__qr-cell  { width: 2.5px; height: 2.5px; background: #222; }
+.dv-gastro__qr-cell--empty { background: transparent; }
+.dv-gastro__scan-lbl {
+  font-size: 5px; font-weight: 700; color: #555;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+
+/* Card typography */
+.dv-gastro__name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 13.5px;
+  color: #1A1A2E; letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 1px;
+}
+.dv-gastro__tag  { font-size: 9.5px; font-style: italic; color: #555; margin-bottom: 4px; }
+.dv-gastro__desc { font-size: 8.5px; color: #333; line-height: 1.58; text-align: justify; margin-bottom: 5px; flex: 1; }
+.dv-gastro__web  { font-size: 8.5px; font-style: italic; word-break: break-all; margin-bottom: 1px; }
+.dv-gastro__addr { font-size: 8.5px; font-style: italic; color: #888; margin-bottom: 6px; }
+
+.dv-gastro__cta {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #1A1A2E; text-decoration: none;
+}
+
+/* ── Page footer ── */
+.dv-gastro__footer {
+  position: absolute; bottom: 22px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.dv-gastro__footer-l { font-size: 8px; color: #aaa; font-style: italic; }
+.dv-gastro__footer-r { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #bbb; }

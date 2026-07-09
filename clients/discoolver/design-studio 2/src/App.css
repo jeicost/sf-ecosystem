@@ -1,0 +1,60 @@
+.dv-studio-header {
+  width: 100%;
+  max-width: var(--page-w);
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 0 4px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 8px;
+}
+
+.dv-studio-logo {
+  font-family: var(--font-ui);
+  font-size: 28px;
+  font-weight: 500;
+  color: #fff;
+  letter-spacing: -1px;
+}
+
+.dv-studio-subtitle {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Print: hide studio chrome, render pages at full A4 ── */
+@media print {
+  body { background: none !important; }
+  .no-print,
+  .dv-studio-header,
+  .page-nav { display: none !important; }
+  .dv-studio { padding: 0 !important; gap: 0 !important; background: none !important; }
+
+  /* Each A4 page on its own printed page */
+  [class*="dv-portada"],
+  [class*="dv-indice"],
+  [class*="dv-nota"],
+  [class*="dv-reportaje"],
+  [class*="dv-restaurantes"],
+  [class*="dv-gastro"],
+  [class*="dv-fiesta"],
+  [class*="dv-ocio"],
+  [class*="dv-arte"],
+  [class*="dv-exp"],
+  [class*="dv-aloj"],
+  [class*="dv-shop"],
+  [class*="dv-infl"],
+  [class*="dv-ad"],
+  [class*="dv-back"],
+  .page-a4 {
+    page-break-after: always;
+    break-after: page;
+    margin: 0 !important;
+    box-shadow: none !important;
+  }
+
+  @page { size: A4; margin: 0; }
+}

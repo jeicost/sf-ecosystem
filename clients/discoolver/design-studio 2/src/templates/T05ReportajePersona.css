@@ -1,0 +1,225 @@
+/* ── Page 1: Cover ── */
+.dv-reportaje__cover {
+  background: #1A1A2E;
+  position: relative;
+  overflow: hidden;
+}
+.dv-reportaje__cover-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; opacity: 0.52; mix-blend-mode: luminosity;
+}
+.dv-reportaje__cover-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(26,26,46,0.28) 0%, rgba(26,26,46,0.08) 30%,
+    rgba(26,26,46,0.15) 55%, rgba(26,26,46,0.88) 82%,
+    rgba(26,26,46,0.97) 100%
+  );
+}
+.dv-reportaje__cover-top {
+  position: absolute; top: 0; left: 0; right: 0;
+  padding: 36px 48px 0;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+.dv-reportaje__cover-logo { display: flex; align-items: center; gap: 9px; }
+.dv-reportaje__cover-wordmark {
+  font-family: 'DM Sans', sans-serif; font-weight: 500;
+  font-size: 18px; color: #fff; letter-spacing: -0.3px;
+}
+.dv-reportaje__cover-edition {
+  font-size: 9px; color: rgba(255,255,255,0.42);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  text-align: right; line-height: 1.9;
+}
+.dv-reportaje__cover-content {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 0 48px 52px;
+}
+.dv-reportaje__eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: #C8006B;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
+.dv-reportaje__eyebrow::before {
+  content: ''; display: inline-block;
+  width: 28px; height: 2px; background: #C8006B;
+}
+.dv-reportaje__name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 116px; color: #fff;
+  letter-spacing: -3px; line-height: 0.85; margin-bottom: 12px;
+}
+.dv-reportaje__tagline {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-style: italic;
+  color: rgba(255,255,255,0.82); margin-bottom: 22px; line-height: 1.4;
+}
+.dv-reportaje__divider { width: 60px; height: 2px; background: #C8006B; margin-bottom: 18px; }
+.dv-reportaje__meta { display: flex; gap: 32px; align-items: flex-end; }
+.dv-reportaje__meta-item { display: flex; flex-direction: column; gap: 3px; }
+.dv-reportaje__meta-lbl {
+  font-size: 8px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.38);
+}
+.dv-reportaje__meta-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; color: #fff; letter-spacing: 0.04em;
+}
+.dv-reportaje__page-num {
+  position: absolute; bottom: 24px; right: 48px;
+  font-size: 9px; color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em; font-weight: 600;
+}
+
+/* ── Pages 2-3: Body ── */
+.dv-reportaje__body { background: #fff; }
+
+.dv-reportaje__two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+
+.dv-reportaje__article-photo { width: 100%; height: 172px; overflow: hidden; margin-bottom: 10px; position: relative; }
+.dv-reportaje__article-photo img { width: 100%; height: 100%; object-fit: cover; }
+.dv-reportaje__photo-cap {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 6px 10px; font-size: 7.5px; color: rgba(255,255,255,0.7);
+  background: linear-gradient(transparent, rgba(0,0,0,0.52));
+  font-style: italic;
+}
+
+.dv-reportaje__sec-tag {
+  font-family: 'Bebas Neue', sans-serif; font-size: 11px;
+  color: #C8006B; letter-spacing: 0.16em;
+  padding-bottom: 3px; border-bottom: 1.5px solid #C8006B;
+  display: inline-block; margin-bottom: 4px;
+}
+.dv-reportaje__sec-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 19px;
+  color: #1A1A2E; letter-spacing: 0.02em; line-height: 1.1; margin-bottom: 6px;
+}
+.dv-reportaje__body-p {
+  font-size: 9px; color: #333; line-height: 1.65;
+  text-align: justify; margin-bottom: 8px;
+}
+.dv-reportaje__drop-cap {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+  float: left; line-height: 0.78; margin-right: 3px;
+  color: #1A1A2E; padding-top: 2px;
+}
+
+.dv-reportaje__pull-q {
+  border-left: 3px solid #C8006B;
+  padding: 8px 12px; margin: 9px 0; background: #f9f9f9;
+}
+.dv-reportaje__pull-q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 12.5px; font-style: italic; color: #1A1A2E; line-height: 1.55;
+}
+.dv-reportaje__pull-q-attr {
+  font-size: 8px; color: #aaa; margin-top: 5px;
+  font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+}
+
+.dv-reportaje__awards {
+  margin-top: 10px; padding: 10px 12px; background: #1A1A2E;
+}
+.dv-reportaje__awards-lbl {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #C8006B; margin-bottom: 6px;
+}
+.dv-reportaje__awards-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.dv-reportaje__chip {
+  font-family: 'Bebas Neue', sans-serif; font-size: 10px;
+  background: rgba(255,255,255,0.08); color: #fff; padding: 2px 8px;
+  letter-spacing: 0.04em;
+}
+
+/* ── Timeline ── */
+.dv-reportaje__tl-hd {
+  font-family: 'Bebas Neue', sans-serif; font-size: 16px;
+  color: #1A1A2E; letter-spacing: 0.08em;
+  margin-bottom: 10px; padding-bottom: 5px;
+  border-bottom: 2px solid #1A1A2E;
+}
+.dv-reportaje__tl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+.dv-reportaje__tl-track { position: relative; padding-left: 20px; }
+.dv-reportaje__tl-track::before {
+  content: ''; position: absolute;
+  left: 6px; top: 6px; bottom: 6px;
+  width: 2px; background: #e8e8e8;
+}
+.dv-reportaje__tl-block { margin-bottom: 10px; position: relative; }
+.dv-reportaje__tl-block::before {
+  content: ''; position: absolute;
+  left: -16px; top: 5px;
+  width: 9px; height: 9px;
+  background: #C8006B; border-radius: 50%;
+  border: 2px solid #fff; box-shadow: 0 0 0 1px #C8006B;
+}
+.dv-reportaje__tl-year {
+  font-family: 'Bebas Neue', sans-serif; font-size: 15px;
+  color: #C8006B; letter-spacing: 0.06em; line-height: 1; margin-bottom: 3px;
+}
+.dv-reportaje__tl-items { display: flex; flex-wrap: wrap; gap: 3px; }
+.dv-reportaje__tl-chip {
+  font-size: 8px; color: #444; background: #f4f4f4;
+  padding: 2px 7px; border-left: 2px solid #C8006B; line-height: 1.5;
+}
+
+/* ── Recomendados ── */
+.dv-reportaje__recom-hd {
+  background: #1A1A2E; padding: 10px 16px 11px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 11px;
+}
+.dv-reportaje__recom-hd-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 20px;
+  color: #fff; letter-spacing: 0.04em;
+}
+.dv-reportaje__recom-hd-sub {
+  font-size: 8.5px; color: rgba(255,255,255,0.45); font-style: italic; margin-top: 1px;
+}
+.dv-reportaje__recom-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+.dv-reportaje__recom-card {
+  border: 1px solid #efefef;
+  display: flex; flex-direction: column;
+  text-decoration: none; color: inherit;
+  transition: border-color 0.15s;
+}
+.dv-reportaje__recom-card:hover { border-color: #C8006B; }
+
+.dv-reportaje__recom-thumb { height: 76px; overflow: hidden; position: relative; flex-shrink: 0; }
+.dv-reportaje__recom-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.dv-reportaje__recom-thumb-ph {
+  width: 100%; height: 100%; background: #ddd;
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+}
+.dv-reportaje__recom-badge {
+  position: absolute; top: 5px; left: 5px;
+  background: #C8006B; color: #fff;
+  font-size: 7px; font-weight: 700; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 2px 6px;
+}
+.dv-reportaje__recom-body { padding: 7px 9px 8px; flex: 1; display: flex; flex-direction: column; }
+.dv-reportaje__recom-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 13px;
+  color: #1A1A2E; letter-spacing: 0.03em; line-height: 1.1; margin-bottom: 1px;
+}
+.dv-reportaje__recom-cat { font-size: 8px; font-style: italic; color: #888; margin-bottom: 3px; }
+.dv-reportaje__recom-desc { font-size: 7.5px; color: #555; line-height: 1.5; flex: 1; margin-bottom: 5px; }
+.dv-reportaje__recom-foot {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: 4px; border-top: 1px solid #f0f0f0;
+}
+.dv-reportaje__recom-addr {
+  font-size: 7px; color: #bbb; font-style: italic;
+  flex: 1; margin-right: 5px; overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.dv-reportaje__recom-cta {
+  display: inline-flex; align-items: center;
+  background: #C8006B; color: #fff; text-decoration: none;
+  font-size: 6.5px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; padding: 3px 7px; white-space: nowrap; flex-shrink: 0;
+}

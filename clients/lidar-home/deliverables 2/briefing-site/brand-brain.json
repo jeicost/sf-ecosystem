@@ -1,0 +1,201 @@
+{
+  "client_name": "LiDAR Home",
+  "slug": "lidar-home",
+  "tagline": "Professional 3D. Just Your iPhone.",
+  "tagline_es": "Tu casa en 3D. En tu bolsillo.",
+  "industry": "PropTech / AR Spatial Technology / Real Estate Tech",
+  "mission": "Democratizar el escáner 3D profesional para cualquier propietario del mundo, convirtiendo el iPhone con LiDAR en la herramienta más potente del mercado inmobiliario.",
+  "positioning": "El único escáner 3D profesional que ya llevas en el bolsillo.",
+  "status": "Beta cerrada / testers",
+  "model": "B2C freemium — scan básico gratis, funciones premium de pago",
+  "founder_background": "15+ años en tecnología LiDAR. Canal YouTube @LiDAR3D con 3.000+ seguidores.",
+  "youtube_channel": "@LiDAR3D",
+  "geography_anchor": "Suecia + Tailandia (founder network). Aspiración: global.",
+  "goal_6months": "Maximizar descargas de la app tras salida de beta.",
+  "accelerator_target": "True Digital Park (Bangkok, Tailandia)",
+  "venture": "Startup Factory",
+  "audience_primary": {
+    "name": "The Renovation Dreamer",
+    "age": "28-42",
+    "location": "Global — USA, Sweden, Spain, Thailand",
+    "pain": "No puede visualizar cómo quedará su casa antes de gastar en reformas o muebles.",
+    "desire": "Ver su hogar soñado antes de comprar un solo mueble.",
+    "channels": ["YouTube", "Instagram", "Pinterest", "TikTok"],
+    "device": "iPhone 12 Pro o superior con sensor LiDAR"
+  },
+  "audience_secondary": {
+    "name": "The Smart Seller",
+    "age": "32-55",
+    "location": "UK, Spain, Sweden, Thailand",
+    "pain": "Tours virtuales profesionales cuestan €500-2.000 por propiedad. Imposible para propietarios privados.",
+    "desire": "Destacar su anuncio con un tour 3D profesional sin contratar a nadie.",
+    "channels": ["LinkedIn", "YouTube", "Portales inmobiliarios"],
+    "device": "iPhone con LiDAR"
+  },
+  "brand_voice": ["preciso", "empoderador", "futurista", "accesible", "honesto"],
+  "brand_values": ["simplicidad", "precisión", "democratización", "innovación", "privacidad"],
+  "si_suena": ["Scan your home in 3 minutes", "Professional 3D, just your iPhone", "Your pocket architect", "See it before you buy it"],
+  "no_suena": ["Complex setup required", "Purchase additional hardware", "Professional use only", "Requires technical knowledge"],
+  "differentiator": "El único escáner 3D profesional que ya llevas en el bolsillo.",
+  "uvp_proof_points": [
+    "Funciona con iPhone 12+ — 300M+ dispositivos LiDAR ya en el mercado",
+    "Escaneo completo en 3 minutos, modelo 3D de calidad profesional",
+    "Freemium — empieza gratis, sin hardware extra, sin suscripción obligatoria"
+  ],
+  "competitors": [
+    {"name": "Matterport", "weakness": "Requiere cámara hardware de $2.500-6.000. Suscripción B2B cara. No para usuarios normales."},
+    {"name": "RoomScan Pro", "weakness": "Solo planos de planta. Sin visualización 3D real ni AR."},
+    {"name": "magicplan", "weakness": "UX compleja, foco en planos técnicos, sin experiencia visual inmersiva."},
+    {"name": "IKEA Place", "weakness": "Solo coloca muebles en AR. No escanea el espacio real. Solo sirve para IKEA."},
+    {"name": "Apple Measure", "weakness": "Mediciones básicas solamente. Sin modelo 3D ni casos de uso avanzados."}
+  ],
+  "content_pillars": [
+    {
+      "name": "Scan Stories",
+      "color": "#1A6BFF",
+      "pct": 30,
+      "description": "Scans reales de casas espectaculares — antes/después, tours 3D, showcases de la comunidad. Máximo poder viral.",
+      "angle": "Demostración visual. Deja que el escáner hable solo.",
+      "formats": ["Reel", "YouTube Short", "Carrusel IG", "Post IG"],
+      "example_posts": [
+        "Scaneé esta casa de 200m² en menos de 8 minutos. El resultado es esto 🏠",
+        "Before vs After: cómo queda tu salón cuando lo ves en 3D real por primera vez",
+        "POV: escaneando un ático en Estocolmo con el iPhone 14 Pro. Thread 🧵"
+      ]
+    },
+    {
+      "name": "Tech Inside",
+      "color": "#00E5C3",
+      "pct": 25,
+      "description": "Cómo funciona el LiDAR, qué pueden hacer los iPhones que nadie sabe, la tecnología explicada de forma accessible.",
+      "angle": "Educación que sorprende. 'No sabía que mi iPhone podía hacer esto.'",
+      "formats": ["YouTube Long", "Reel educativo", "Carrusel explicativo", "Thread Twitter/X"],
+      "example_posts": [
+        "El sensor LiDAR de tu iPhone funciona igual que el que usan los coches autónomos. Te explico cómo.",
+        "¿Por qué Matterport cuesta 6.000€ y LiDAR Home es gratis? La respuesta técnica honesta.",
+        "El iPhone 12 Pro tiene un superpoder que el 99% no usa. Esto es LiDAR."
+      ]
+    },
+    {
+      "name": "Design Vision",
+      "color": "#7B4FFF",
+      "pct": 20,
+      "description": "Diseño de interiores + AR. Ver cómo quedan muebles reales, paletas de color, inspiración de espacios.",
+      "angle": "Aspiracional. Tu casa como lienzo. El 3D como herramienta de diseño.",
+      "formats": ["Reel AR", "Carrusel IG", "Collab con interioristas", "YouTube"],
+      "example_posts": [
+        "Probamos 4 sofás diferentes en este salón sin mover uno solo. Todo con el iPhone.",
+        "Cómo usar LiDAR Home para planificar tu reforma con tu arquitecto (sin visitas de obra)",
+        "Este dormitorio quedó perfecto. Primero lo diseñamos en 3D. Luego lo compramos."
+      ]
+    },
+    {
+      "name": "Real Estate",
+      "color": "#FF6B35",
+      "pct": 15,
+      "description": "Casos de uso inmobiliarios — vendedores, agentes, propietarios en alquiler. Tour 3D como diferenciador en anuncios.",
+      "angle": "ROI inmediato. Tu anuncio con tour 3D frente a fotos planas del resto.",
+      "formats": ["Case study", "Tutorial", "Comparativa anuncio normal vs LiDAR Home"],
+      "example_posts": [
+        "Este piso tardó 3 semanas más en venderse porque su anuncio no tenía tour 3D. Nosotros lo evitamos.",
+        "Cómo crear un tour virtual profesional de tu piso en 10 minutos sin gastar nada",
+        "Comparativa: anuncio Idealista normal vs anuncio con tour 3D LiDAR Home. Los números hablan."
+      ]
+    },
+    {
+      "name": "Community",
+      "color": "#FFD166",
+      "pct": 10,
+      "description": "Testimonios, power users, la comunidad global de LiDAR Home. Founder story, behind the scenes.",
+      "angle": "Autenticidad. Real people, real scans. El fundador como cara de la marca.",
+      "formats": ["UGC repost", "Founder video", "User spotlight", "Behind the scenes"],
+      "example_posts": [
+        "15 años trabajando en LiDAR para la industria. Esto es lo que aprendí — y por qué construí LiDAR Home.",
+        "Nuestra comunidad ya ha escaneado más de 500 propiedades en 12 países. Esto es solo el principio.",
+        "El primer usuario que escaneó su casa en Suecia. Su historia es increíble. 🇸🇪"
+      ]
+    }
+  ],
+  "channels": [
+    {"name": "YouTube", "priority": "primary", "kpi": "Subs 3K→50K en 12m", "handle": "@LiDAR3D"},
+    {"name": "Instagram", "priority": "primary", "kpi": "Followers 0→50K en 12m", "handle": "@lidarhome"},
+    {"name": "TikTok", "priority": "primary", "kpi": "Views — viral scan demos", "handle": "@lidarhome"},
+    {"name": "App Store / ASO", "priority": "primary", "kpi": "Downloads — conversion rate", "handle": "LiDAR Home App"},
+    {"name": "LinkedIn", "priority": "secondary", "kpi": "B2B real estate leads", "handle": "LiDAR Home"},
+    {"name": "SEO / Blog", "priority": "secondary", "kpi": "Organic search — LiDAR home scanner", "handle": "lidarhome.io (future)"}
+  ],
+  "campaigns_active": [
+    {"name": "Beta Closed → Open", "dates": "Q2 2026", "goal": "Convertir waitlist en usuarios activos", "mechanic": "Invite system — early adopters invitan a 3 amigos"},
+    {"name": "True Digital Accelerator", "dates": "Aplicar antes de Julio 2026", "goal": "Entrar en aceleradora de Bangkok", "mechanic": "Content + LinkedIn para visibilidad del fundador ante True Digital"},
+    {"name": "YouTube Relaunch", "dates": "Mes 1", "goal": "Reactivar @LiDAR3D con nuevo branding LiDAR Home", "mechanic": "Video fundador — la historia detrás de 15 años + nuevo capítulo"}
+  ],
+  "month1_weeks": [
+    {"week": 1, "theme": "Brand Launch", "posts": ["Founder story video YT", "Instagram debut post", "TikTok primer scan"], "goal": "Establecer presencia — primeras 500 impresiones"},
+    {"week": 2, "theme": "Demo Blitz", "posts": ["3 Reels de scan en tiempo real", "Carrusel cómo funciona el LiDAR", "YouTube: tutorial completo"], "goal": "Primeras 100 descargas beta"},
+    {"week": 3, "theme": "Community First", "posts": ["User spotlight #1", "AR furniture demo", "Thread: qué puedes hacer con LiDAR Home"], "goal": "50 scans de comunidad publicados"},
+    {"week": 4, "theme": "Media & PR", "posts": ["Press kit lanzado", "Outreach tech media", "Recap semana 4 + métricas"], "goal": "3 menciones en prensa tech / PropTech"}
+  ],
+  "influencer_tiers": [
+    {"tier": "Macro", "followers": "100K+", "count": 2, "budget": "Revenue share / partnership", "type": "Tech reviewers iPhone, canales real estate"},
+    {"tier": "Mid", "followers": "10K-50K", "count": 8, "budget": "Acceso premium + mention", "type": "Interioristas, agentes inmobiliarios, iPhone power users"},
+    {"tier": "Micro", "followers": "1K-10K", "count": 20, "budget": "Acceso premium gratuito", "type": "Renovación hogar, propietarios activos en RRSS"}
+  ],
+  "paid_media": [
+    {"channel": "ASO (App Store)", "budget_pct": 40, "format": "Keywords + screenshots A/B test"},
+    {"channel": "SEO Orgánico", "budget_pct": 35, "format": "Blog + landing pages LiDAR + proptech keywords"},
+    {"channel": "YouTube Orgánico", "budget_pct": 25, "format": "Tutorial SEO + watch time optimization"}
+  ],
+  "kpis": [
+    {"metric": "App Downloads", "baseline": "Beta cerrada", "target_30d": "1.000", "target_90d": "10.000", "target_12m": "100.000"},
+    {"metric": "YouTube Subscribers", "baseline": "3.000", "target_30d": "5.000", "target_90d": "15.000", "target_12m": "50.000"},
+    {"metric": "Instagram Followers", "baseline": "0", "target_30d": "2.000", "target_90d": "10.000", "target_12m": "50.000"},
+    {"metric": "Premium Conversion Rate", "baseline": "0%", "target_30d": "2%", "target_90d": "5%", "target_12m": "8%"},
+    {"metric": "Monthly Active Scans", "baseline": "Beta users", "target_30d": "500", "target_90d": "5.000", "target_12m": "50.000"}
+  ],
+  "action_items": [
+    {"priority": "P1", "task": "Crear website LiDAR Home (lidarhome.io)", "owner": "Startup Factory", "deadline": "Semana 1"},
+    {"priority": "P1", "task": "Reactivar canal YouTube @LiDAR3D con rebrand a LiDAR Home", "owner": "Fundador", "deadline": "Semana 1"},
+    {"priority": "P1", "task": "Crear perfil Instagram @lidarhome", "owner": "Startup Factory", "deadline": "Semana 1"},
+    {"priority": "P1", "task": "Preparar aplicación True Digital Park Accelerator (Bangkok)", "owner": "Fundador + SF", "deadline": "Julio 2026"},
+    {"priority": "P1", "task": "Lanzar App Store — public beta", "owner": "Fundador", "deadline": "Semana 2"},
+    {"priority": "P2", "task": "Construir waitlist con landing page", "owner": "Startup Factory", "deadline": "Semana 2"},
+    {"priority": "P2", "task": "SEO keyword research — LiDAR home scanner, 3D home scan app", "owner": "SF Marketing", "deadline": "Semana 3"},
+    {"priority": "P2", "task": "Outreach 20 micro-influencers iPhone / interioristas", "owner": "SF Marketing", "deadline": "Semana 3"},
+    {"priority": "P2", "task": "Investigar eventos PropTech 2026 — MIPIM, Proptech Connect, Web Summit", "owner": "SF", "deadline": "Semana 4"},
+    {"priority": "P3", "task": "LinkedIn company page LiDAR Home", "owner": "SF Marketing", "deadline": "Mes 2"},
+    {"priority": "P3", "task": "Press release para tech media — TechCrunch, TheNextWeb, Wired ES", "owner": "SF PR", "deadline": "Mes 2"},
+    {"priority": "P3", "task": "Partnership con portal inmobiliario (Idealista/Rightmove/Hemnet Suecia)", "owner": "Fundador", "deadline": "Mes 3"}
+  ],
+  "key_events": [
+    {"name": "True Digital Park Accelerator", "location": "Bangkok, Tailandia", "date": "Aplicar antes Jul 2026", "priority": "P1", "why": "Conexión directa con red Tailandia + funding + mentors"},
+    {"name": "MIPIM PropTech", "location": "Cannes, Francia", "date": "Marzo 2027", "priority": "P2", "why": "Líder global en PropTech — inversores, portales, agencias"},
+    {"name": "Proptech Connect", "location": "Londres / Nueva York", "date": "Q3 2026", "priority": "P2", "why": "Mercado anglosajón — conexiones clave para escala"},
+    {"name": "Web Summit", "location": "Lisboa, Portugal", "date": "Noviembre 2026", "priority": "P2", "why": "Mayor startup event europeo — visibilidad + press"},
+    {"name": "SIMA Real Estate", "location": "Madrid, España", "date": "Mayo 2026", "priority": "P2", "why": "Mercado español inmobiliario — demo directa al sector"},
+    {"name": "Slush", "location": "Helsinki, Finlandia", "date": "Noviembre 2026", "priority": "P3", "why": "Acceso a mercado nórdico — conexión con red sueca del fundador"},
+    {"name": "WWDC Apple", "location": "Cupertino, USA", "date": "Junio 2026", "priority": "P3", "why": "Visibilidad en ecosistema Apple — LiDAR showcase opportunity"}
+  ],
+  "colors": {
+    "primary": "#1A6BFF",
+    "accent": "#00E5C3",
+    "accent2": "#7B4FFF",
+    "accent3": "#FF6B35",
+    "accent4": "#FFD166",
+    "bg": "#080C14",
+    "bg2": "#0D1420",
+    "bg3": "#121C2E",
+    "text": "#E8EDF8",
+    "text_dim": "rgba(232,237,248,0.6)"
+  },
+  "fonts": {
+    "display": "Manrope",
+    "body": "Inter",
+    "mono": "Space Mono"
+  },
+  "budget_monthly": "0-500€ (foco 100% orgánico)",
+  "pricing": "Freemium — scan básico gratis / premium features de pago",
+  "app_platforms": ["iOS (iPhone 12+ con LiDAR)"],
+  "web_domain_suggested": "lidarhome.io",
+  "created_date": "2026-05-15",
+  "agency": "Discoolver / Startup Factory"
+}
