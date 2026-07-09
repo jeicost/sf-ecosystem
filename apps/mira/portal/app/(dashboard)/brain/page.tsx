@@ -67,22 +67,23 @@ export default function BrainPageV2() {
 
     setLoading(true)
     const db = createClient()
-    Promise.all([
-      db.from('brand_profiles').select('*').eq('client_id', clientId).single(),
-      db.from('content_pillars').select('*').eq('client_id', clientId).order('created_at')
-    ]).then(([p, c]) => {
-      if (p.data) setProfile(p.data as BrandProfile)
-      if (c.data) setPillars(c.data as ContentPillar[])
+    ;(async () => {
+      try {
+        const [p, c, r] = await Promise.all([
+          db.from('brand_profiles').select('*').eq('client_id', clientId).single(),
+          db.from('content_pillars').select('*').eq('client_id', clientId).order('created_at'),
+          db.from('brand_references').select('*').eq('client_id', clientId).order('created_at')
+        ])
 
-      // Try to fetch references, but gracefully handle if table doesn't exist
-      db.from('brand_references').select('*').eq('client_id', clientId).order('created_at')
-        .then(({ data: r }) => {
-          if (r) setReferences(r as BrandReference[])
-        })
-        .catch(() => setReferences([]))
-
-      setLoading(false)
-    })
+        if (p.data) setProfile(p.data as BrandProfile)
+        if (c.data) setPillars(c.data as ContentPillar[])
+        if (r.data) setReferences(r.data as BrandReference[])
+      } catch (e) {
+        console.error('Error loading Brand Brain:', e)
+      } finally {
+        setLoading(false)
+      }
+    })()
   }, [clientId])
 
   const handleSaveField = async (field: string, value: any) => {

@@ -69,9 +69,15 @@ export async function POST() {
         OR EXISTS(SELECT 1 FROM auth.users WHERE id = auth.uid() AND raw_user_meta_data->>'plan' IN ('admin', 'super_admin')));
     `
 
-    const { error: createError } = await supabase.rpc('exec', {
-      sql: createTableSQL
-    }).catch(() => ({ error: { message: 'RPC not available, table creation requires manual SQL migration' } }))
+    let createError: any = null
+    try {
+      const result = await supabase.rpc('exec', {
+        sql: createTableSQL
+      })
+      createError = result.error
+    } catch (e: any) {
+      createError = { message: 'RPC not available, table creation requires manual SQL migration' }
+    }
 
     if (createError) {
       console.warn('⚠️ Could not create table via RPC:', createError.message)
