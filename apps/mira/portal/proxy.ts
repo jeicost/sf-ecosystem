@@ -9,7 +9,7 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   // Public routes — skip all checks
-  if (pathname.startsWith('/login') || pathname.startsWith('/reset-password') || pathname.startsWith('/api/webhook') || pathname.startsWith('/api/debug') || pathname.startsWith('/api/fix') || pathname.startsWith('/api/diagnose') || pathname.startsWith('/api/schema') || pathname.startsWith('/api/load-data') || pathname.startsWith('/api/init-clients') || pathname.startsWith('/api/list-clients') || pathname.startsWith('/api/schema')) {
+  if (pathname.startsWith('/login') || pathname.startsWith('/reset-password') || pathname.startsWith('/api/webhook') || pathname.startsWith('/api/debug') || pathname.startsWith('/api/fix') || pathname.startsWith('/api/diagnose') || pathname.startsWith('/api/schema') || pathname.startsWith('/api/load-data') || pathname.startsWith('/api/init-clients') || pathname.startsWith('/api/list-clients') || pathname.startsWith('/api/populate-salsa') || pathname.startsWith('/api/schema')) {
     return NextResponse.next()
   }
 

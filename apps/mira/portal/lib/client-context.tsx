@@ -23,8 +23,9 @@ const STORAGE_KEY = 'mira_active_client'
 // Client name mappings — avoids RLS issues by not querying the table
 const CLIENT_NAMES: Record<string, { name: string; slug: string }> = {
   'e664873b-034d-48cd-9a45-8631672ef375': { name: 'Dadybox', slug: 'dadybox' },
-  '714a028e-a16d-428c-b8a9-3338f56f0a9c': { name: 'Salsa Burgers', slug: 'salsa-burgers' },
+  'c375bb80-b0d1-4923-a73a-ac96a3ce7799': { name: 'Salsa Burgers', slug: 'salsa-burgers' },
   '160d5a90-0da7-4db1-a1fb-9c29ea57a736': { name: 'Discoolver', slug: 'discoolver' },
+  'cef0a1b7-aabb-4239-a5a8-28ece0d1819b': { name: 'Startup Factory', slug: 'startup-factory' },
 }
 
 export function ClientProvider({ children }: { children: ReactNode }) {
