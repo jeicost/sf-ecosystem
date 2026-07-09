@@ -370,14 +370,19 @@ export default function BrainPage() {
   const [clientId, setClientId] = useState<string>(CLIENT_ID)
 
   useEffect(() => {
-    createClient().auth.getUser().then(({ data: { user } }) => {
+    ;(async () => {
+      const { data: { user } } = await createClient().auth.getUser()
       if (user?.user_metadata?.client_id) {
+        console.log('✅ Setting clientId from user metadata:', user.user_metadata.client_id)
         setClientId(user.user_metadata.client_id)
       } else if (activeClient?.id) {
+        console.log('✅ Setting clientId from activeClient:', activeClient.id)
         setClientId(activeClient.id)
+      } else {
+        console.log('⚠️ No client_id found, using default')
       }
-    })
-  }, [activeClient])
+    })()
+  }, [])
 
   const [profile, setProfile] = useState<BrandProfile | null>(null)
   const [pillars, setPillars] = useState<Pillar[]>([])
