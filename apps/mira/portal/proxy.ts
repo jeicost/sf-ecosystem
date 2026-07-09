@@ -25,7 +25,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/api/list-clients') ||
     pathname.startsWith('/api/populate-salsa') ||
     pathname.startsWith('/api/populate-all-clients') ||
-    pathname.startsWith('/api/load-missing-pillars')
+    pathname.startsWith('/api/load-missing-pillars') ||
+    pathname.startsWith('/api/fix-missing-clients')
   ) {
     return NextResponse.next()
   }
