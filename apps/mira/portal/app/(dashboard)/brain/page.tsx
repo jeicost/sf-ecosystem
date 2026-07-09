@@ -61,7 +61,7 @@ function completeness(profile: BrandProfile | null, pillars: Pillar[]) {
   return { checks, total }
 }
 
-function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile | null; clientId: string; onComplete: () => void }) {
+function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile | null; clientId: string | null; onComplete: () => void }) {
   const [formData, setFormData] = useState({
     brand_name: profile?.brand_name || '',
     mission: profile?.mission || '',
@@ -159,7 +159,7 @@ function TabContent({ tab, profile, pillars, learnings, sources, clientId, onPro
   pillars: Pillar[]
   learnings: BrainLearning[]
   sources: BrainSource[]
-  clientId: string
+  clientId: string | null
   onProposalSave?: (section: string, value: string) => Promise<void>
 }) {
   if (tab === 'profile') {
@@ -367,7 +367,7 @@ const ALLOWED_SECTIONS = [
 
 export default function BrainPage() {
   const { activeClient } = useActiveClient()
-  const [clientId, setClientId] = useState<string>(CLIENT_ID)
+  const [clientId, setClientId] = useState<string | null>(null)
 
   useEffect(() => {
     ;(async () => {
@@ -380,9 +380,10 @@ export default function BrainPage() {
         setClientId(activeClient.id)
       } else {
         console.log('⚠️ No client_id found, using default')
+        setClientId(CLIENT_ID)
       }
     })()
-  }, [])
+  }, [activeClient])
 
   const [profile, setProfile] = useState<BrandProfile | null>(null)
   const [pillars, setPillars] = useState<Pillar[]>([])
@@ -394,6 +395,11 @@ export default function BrainPage() {
   const [toastType, setToastType] = useState<'success' | 'error'>('success')
 
   useEffect(() => {
+    if (!clientId) {
+      setLoading(false)
+      return
+    }
+
     setLoading(true)
     const db = createClient()
     Promise.all([
@@ -407,6 +413,7 @@ export default function BrainPage() {
       if (bl.data) setLearnings(bl.data as BrainLearning[])
       if (bs.data) setSources(bs.data as BrainSource[])
       setLoading(false)
+      console.log('✅ Loaded brain data for client:', clientId)
     })
   }, [clientId])
 
