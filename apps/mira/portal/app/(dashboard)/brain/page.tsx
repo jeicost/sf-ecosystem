@@ -12,12 +12,12 @@ import BrainChat from '@/components/brain/BrainChat'
 interface BrandProfile {
   id: string
   client_id: string
-  brand_name: string | null
-  industry: string | null
+  name: string | null
+  mission: string | null
+  values: string[] | null
   tone_of_voice: string | null
-  value_propositions: string[] | null
-  target_audience: string | null
-  visual_guidelines: Record<string, unknown> | null
+  description: string | null
+  proposition: string | null
   created_at: string
   updated_at: string
 }
@@ -51,12 +51,12 @@ interface BrainSource {
 
 function completeness(profile: BrandProfile | null, pillars: Pillar[]) {
   const checks = [
-    { label: 'Brand name', ok: !!profile?.brand_name, pct: profile?.brand_name ? 100 : 0 },
-    { label: 'Industry', ok: !!profile?.industry, pct: profile?.industry ? 100 : 0 },
-    { label: 'Voice & tone', ok: !!profile?.tone_of_voice, pct: profile?.tone_of_voice ? 80 : 0 },
-    { label: 'Value propositions', ok: (profile?.value_propositions?.length ?? 0) > 0, pct: (profile?.value_propositions?.length ?? 0) > 0 ? 75 : 0 },
-    { label: 'Content pillars', ok: pillars.length > 0, pct: Math.min(pillars.length * 20, 100) },
-    { label: 'Target audience', ok: !!profile?.target_audience, pct: profile?.target_audience ? 100 : 0 },
+    { label: 'Nombre', ok: !!profile?.name, pct: profile?.name ? 100 : 0 },
+    { label: 'Misión', ok: !!profile?.mission, pct: profile?.mission ? 100 : 0 },
+    { label: 'Voz & tono', ok: !!profile?.tone_of_voice, pct: profile?.tone_of_voice ? 80 : 0 },
+    { label: 'Valores', ok: (profile?.values?.length ?? 0) > 0, pct: (profile?.values?.length ?? 0) > 0 ? 75 : 0 },
+    { label: 'Pilares de contenido', ok: pillars.length > 0, pct: Math.min(pillars.length * 20, 100) },
+    { label: 'Descripción', ok: !!profile?.description, pct: profile?.description ? 100 : 0 },
   ]
   const total = Math.round(checks.reduce((a, c) => a + c.pct, 0) / checks.length)
   return { checks, total }
@@ -64,10 +64,10 @@ function completeness(profile: BrandProfile | null, pillars: Pillar[]) {
 
 function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile | null; clientId: string; onComplete: () => void }) {
   const [formData, setFormData] = useState({
-    brand_name: profile?.brand_name || '',
-    industry: profile?.industry || '',
-    target_audience: profile?.target_audience || '',
+    name: profile?.name || '',
+    mission: profile?.mission || '',
     tone_of_voice: profile?.tone_of_voice || '',
+    description: profile?.description || '',
   })
   const [saving, setSaving] = useState(false)
 
@@ -107,47 +107,47 @@ function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile |
           <label className="block text-xs font-medium text-[#AAA] mb-2">Nombre de la marca</label>
           <input
             type="text"
-            value={formData.brand_name}
-            onChange={(e) => setFormData({ ...formData, brand_name: e.target.value })}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="Ej: Dadybox"
             className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500"
           />
         </div>
 
         <div className="card p-6">
-          <label className="block text-xs font-medium text-[#AAA] mb-2">Industria</label>
-          <input
-            type="text"
-            value={formData.industry}
-            onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-            placeholder="Ej: Logística, E-commerce"
-            className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500"
+          <label className="block text-xs font-medium text-[#AAA] mb-2">Misión</label>
+          <textarea
+            value={formData.mission}
+            onChange={(e) => setFormData({ ...formData, mission: e.target.value })}
+            placeholder="¿Qué cambio quieres generar en el mundo?"
+            className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 resize-none h-20"
           />
         </div>
 
         <div className="card p-6">
-          <label className="block text-xs font-medium text-[#AAA] mb-2">Audiencia objetivo</label>
+          <label className="block text-xs font-medium text-[#AAA] mb-2">Descripción</label>
           <textarea
-            value={formData.target_audience}
-            onChange={(e) => setFormData({ ...formData, target_audience: e.target.value })}
-            placeholder="Describe a quién le vendes y sus características principales..."
-            className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 resize-none h-24"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            placeholder="¿Cómo describırías tu empresa en una frase?"
+            className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 resize-none h-20"
           />
         </div>
 
         <div className="card p-6">
           <label className="block text-xs font-medium text-[#AAA] mb-2">Tono de voz</label>
-          <textarea
+          <input
+            type="text"
             value={formData.tone_of_voice}
             onChange={(e) => setFormData({ ...formData, tone_of_voice: e.target.value })}
             placeholder="Ej: Profesional, directo, innovador"
-            className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 resize-none h-24"
+            className="w-full bg-[#0F0F0F] border border-[#222] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500"
           />
         </div>
 
         <button
           onClick={handleSave}
-          disabled={saving || !formData.brand_name.trim()}
+          disabled={saving || !formData.name.trim()}
           className="w-full px-4 py-3 bg-violet-500 text-white rounded-lg font-medium text-sm hover:bg-violet-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
         >
           {saving && <Loader2 size={14} className="animate-spin" />}
@@ -174,16 +174,16 @@ function TabContent({ tab, profile, pillars, learnings, sources, clientId, onPro
           <h3 className="text-sm font-medium text-white mb-3">Identidad</h3>
           <div className="space-y-3">
             <div>
-              <p className="text-[11px] text-[#555]">Brand name</p>
-              <p className="text-sm text-white">{profile?.brand_name || '—'}</p>
+              <p className="text-[11px] text-[#555]">Nombre</p>
+              <p className="text-sm text-white">{profile?.name || '—'}</p>
             </div>
             <div>
-              <p className="text-[11px] text-[#555]">Industria</p>
-              <p className="text-sm text-white">{profile?.industry || '—'}</p>
+              <p className="text-[11px] text-[#555]">Misión</p>
+              <p className="text-sm text-white">{profile?.mission || '—'}</p>
             </div>
             <div>
-              <p className="text-[11px] text-[#555]">Audiencia objetivo</p>
-              <p className="text-sm text-white">{profile?.target_audience || '—'}</p>
+              <p className="text-[11px] text-[#555]">Descripción</p>
+              <p className="text-sm text-white">{profile?.description || '—'}</p>
             </div>
           </div>
         </div>
@@ -198,17 +198,17 @@ function TabContent({ tab, profile, pillars, learnings, sources, clientId, onPro
         </div>
 
         <div className="card p-5">
-          <h3 className="text-sm font-medium text-white mb-3">Propuestas de valor</h3>
-          {profile?.value_propositions && profile.value_propositions.length > 0 ? (
+          <h3 className="text-sm font-medium text-white mb-3">Valores</h3>
+          {profile?.values && profile.values.length > 0 ? (
             <div className="flex flex-wrap gap-2">
-              {profile.value_propositions.map((prop, idx) => (
+              {profile.values.map((val, idx) => (
                 <span key={idx} className="px-2.5 py-1.5 rounded-full bg-violet-500/20 text-violet-300 text-[11px] font-medium">
-                  {prop}
+                  {val}
                 </span>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-[#444]">No definidas</p>
+            <p className="text-xs text-[#444]">No definidos</p>
           )}
         </div>
       </div>
@@ -219,8 +219,8 @@ function TabContent({ tab, profile, pillars, learnings, sources, clientId, onPro
     return (
       <div className="space-y-4">
         <div className="card p-5">
-          <h3 className="text-sm font-medium text-white mb-3">Audiencia objetivo</h3>
-          <p className="text-[11px] text-[#888]">{profile?.target_audience || 'No definida'}</p>
+          <h3 className="text-sm font-medium text-white mb-3">Propuesta de valor</h3>
+          <p className="text-[11px] text-[#888]">{profile?.proposition || 'No definida'}</p>
         </div>
       </div>
     )
@@ -487,7 +487,7 @@ export default function BrainPage() {
       <div className="flex items-center gap-4 mb-8">
         <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm border border-white/15 bg-white/8 font-medium text-white">
           <span>🧠</span>
-          {profile.brand_name}
+          {profile.name}
           <span className={clsx('text-[10px] px-1.5 py-0.5 rounded-full ml-1', total >= 80 ? 'bg-emerald-500/15 text-emerald-400' : 'bg-amber-500/15 text-amber-400')}>
             {total}%
           </span>
