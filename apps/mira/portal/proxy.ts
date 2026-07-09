@@ -23,7 +23,9 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/api/load-data') ||
     pathname.startsWith('/api/init-clients') ||
     pathname.startsWith('/api/list-clients') ||
-    pathname.startsWith('/api/populate-salsa')
+    pathname.startsWith('/api/populate-salsa') ||
+    pathname.startsWith('/api/populate-all-clients') ||
+    pathname.startsWith('/api/load-missing-pillars')
   ) {
     return NextResponse.next()
   }
