@@ -61,7 +61,7 @@ function completeness(profile: BrandProfile | null, pillars: Pillar[]) {
   return { checks, total }
 }
 
-function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile | null; clientId: string | null; onComplete: () => void }) {
+function WizardMode({ profile, clientId, onComplete }: { profile: BrandProfile | null; clientId: string; onComplete: () => void }) {
   const [formData, setFormData] = useState({
     brand_name: profile?.brand_name || '',
     mission: profile?.mission || '',
@@ -342,7 +342,7 @@ function TabContent({ tab, profile, pillars, learnings, sources, clientId, onPro
   if (tab === 'ai-assistant') {
     return (
       <div className="h-[600px]">
-        <BrainChat clientId={clientId} onProposalSave={onProposalSave} />
+        <BrainChat clientId={clientId || ''} onProposalSave={onProposalSave} />
       </div>
     )
   }
@@ -462,6 +462,14 @@ export default function BrainPage() {
         <Loader2 size={20} className="text-[#444] animate-spin" />
       </div>
     )
+
+  if (!clientId) {
+    return (
+      <div className="flex items-center justify-center h-full">
+        <p className="text-[#555]">Loading client information...</p>
+      </div>
+    )
+  }
 
   if (!profile?.setup_complete) {
     return <WizardMode profile={profile} clientId={clientId} onComplete={() => setProfile({ ...profile!, setup_complete: true })} />
