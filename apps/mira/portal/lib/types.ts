@@ -144,6 +144,8 @@ export interface Client {
   name: string
   icp: string
   onboarding_status: string
+  logo_url: string | null
+  primary_color: string | null
   created_at: string
 }
 
@@ -152,6 +154,7 @@ export interface MiraUser {
   auth_id: string
   email: string
   company_name: string
+  role: 'sf_team' | 'client'
   subscription_tier: 'starter' | 'growth' | 'scale' | 'enterprise'
   subscription_status: 'active' | 'paused' | 'cancelled'
   billing_contact_email: string | null
