@@ -69,15 +69,27 @@ export default function BrainPageV2() {
     const db = createClient()
     ;(async () => {
       try {
-        const [p, c, r] = await Promise.all([
+        // Load critical data (profile + pillars)
+        const [p, c] = await Promise.all([
           db.from('brand_profiles').select('*').eq('client_id', clientId).single(),
-          db.from('content_pillars').select('*').eq('client_id', clientId).order('created_at'),
-          db.from('brand_references').select('*').eq('client_id', clientId).order('created_at')
+          db.from('content_pillars').select('*').eq('client_id', clientId).order('created_at')
         ])
 
         if (p.data) setProfile(p.data as BrandProfile)
         if (c.data) setPillars(c.data as ContentPillar[])
-        if (r.data) setReferences(r.data as BrandReference[])
+
+        // Try to load references (optional, won't block if fails)
+        db.from('brand_references')
+          .select('*')
+          .eq('client_id', clientId)
+          .order('created_at')
+          .then(({ data }) => {
+            if (data) setReferences(data as BrandReference[])
+          })
+          .catch(() => {
+            console.warn('References table not available, skipping')
+            setReferences([])
+          })
       } catch (e) {
         console.error('Error loading Brand Brain:', e)
       } finally {
