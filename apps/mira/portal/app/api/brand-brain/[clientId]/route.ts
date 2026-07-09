@@ -1,12 +1,16 @@
 import { createClient } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 
+interface RouteParams {
+  params: Promise<{ clientId: string }>
+}
+
 export async function GET(
   req: NextRequest,
-  { params }: { params: { clientId: string } }
+  { params }: RouteParams
 ) {
   try {
-    const { clientId } = params
+    const { clientId } = await params
     const db = createClient()
 
     // Get brand profile
