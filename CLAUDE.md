@@ -9,12 +9,12 @@ Turborepo + pnpm workspace. **Package manager: pnpm** (never npm/yarn at root le
 ```
 Desktop/Claude/
 ├── apps/                      # Products and internal tools (each deploys independently)
-│   ├── mira/                  # MIRA SaaS portal — 30 AI agents for clients
+│   ├── mira/portal            # MIRA SaaS portal — 30 AI agents + Brand Brain (portal-six-kappa-22.vercel.app)
 │   ├── mira-landing/          # MIRA marketing site
 │   ├── sf-cms/                # Headless CMS for client landings (cms.startupsfactory.es)
 │   ├── sf-crm/                # CRM + Sales Engine unified (sf-crm-phi.vercel.app)
 │   ├── sf-sales-engine/       # B2B discovery engine (Python + Next.js portal)
-│   ├── ai-agency-sf-next/     # Internal ops portal — briefings, audits, content
+│   ├── ai-agency-sf-next/     # Internal ops portal — briefings, audits, deliverables (ai-agency-sf-next.vercel.app)
 │   ├── sf-reports/            # Client deliverables hub (sf-reports.vercel.app)
 │   ├── sf-links/              # SF link/QR tool
 │   └── startup-factory-web/   # Main SF website (startupsfactory.es)
