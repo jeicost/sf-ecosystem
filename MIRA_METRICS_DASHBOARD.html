@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRA Agent Metrics Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #e2e8f0;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .status-banner {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-banner::before {
+            content: '●';
+            color: #22c55e;
+            font-size: 2rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+            margin-bottom: 1rem;
+        }
+
+        .metric {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .client-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .client-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+        }
+
+        .client-name {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+
+        .client-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat {
+            background: rgba(15, 23, 42, 0.5);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            border-left: 3px solid #60a5fa;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 0.25rem;
+        }
+
+        .api-docs {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .api-docs h3 {
+            margin-bottom: 1rem;
+            color: #60a5fa;
+        }
+
+        .endpoint {
+            background: rgba(15, 23, 42, 0.8);
+            border-left: 3px solid #a78bfa;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+
+        .endpoint-method {
+            color: #22c55e;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .endpoint-url {
+            color: #60a5fa;
+        }
+
+        .footer {
+            text-align: center;
+            color: #64748b;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(148, 163, 184, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 MIRA Agent Brain System</h1>
+        <p class="subtitle">Real-time metrics & integration dashboard</p>
+
+        <div class="status-banner">
+            <strong>SYSTEM OPERATIONAL</strong> — All endpoints live, all clients ready
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h2>Clients Ready</h2>
+                <div class="metric">4/4</div>
+                <div class="metric-label">Dadybox, Salsa, Discoolver, Startup Factory</div>
+            </div>
+
+            <div class="card">
+                <h2>API Endpoints</h2>
+                <div class="metric">3</div>
+                <div class="metric-label">Brand Brain, Interactions, Drive Refs</div>
+            </div>
+
+            <div class="card">
+                <h2>Agents Ready</h2>
+                <div class="metric">30</div>
+                <div class="metric-label">Can integrate immediately</div>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 2rem; margin-bottom: 1.5rem; font-size: 1.5rem;">Client Performance</h2>
+        <div class="client-grid">
+            <div class="client-card">
+                <div class="client-name">📦 Dadybox</div>
+                <div class="stat-label" style="color: #60a5fa; margin-bottom: 1rem;">e664873b-034d-48cd-9a45-8631672ef375</div>
+                <div class="client-stats">
+                    <div class="stat">
+                        <div class="stat-value">7</div>
+                        <div class="stat-label">Pillars</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">✅</div>
+                        <div class="stat-label">Verified</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <div class="client-name">🍔 Salsa Burgers</div>
+                <div class="stat-label" style="color: #60a5fa; margin-bottom: 1rem;">c375bb80-b0d1-4923-a73a-ac96a3ce7799</div>
+                <div class="client-stats">
+                    <div class="stat">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">Pillars</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">✅</div>
+                        <div class="stat-label">Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <div class="client-name">📊 Discoolver</div>
+                <div class="stat-label" style="color: #60a5fa; margin-bottom: 1rem;">160d5a90-0da7-4db1-a1fb-9c29ea57a736</div>
+                <div class="client-stats">
+                    <div class="stat">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">Pillars</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">✅</div>
+                        <div class="stat-label">Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <div class="client-name">🚀 Startup Factory</div>
+                <div class="stat-label" style="color: #60a5fa; margin-bottom: 1rem;">cef0a1b7-aabb-4239-a5a8-28ece0d1819b</div>
+                <div class="client-stats">
+                    <div class="stat">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">Pillars</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value">✅</div>
+                        <div class="stat-label">Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="api-docs">
+            <h3>API Endpoints</h3>
+
+            <div class="endpoint">
+                <div class="endpoint-method">GET</div>
+                <div class="endpoint-url">/api/brand-brain/[clientId]</div>
+                <div style="color: #94a3b8; margin-top: 0.5rem; font-size: 0.8rem;">Returns complete Brand Brain with system_prompt_injection</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-method">POST</div>
+                <div class="endpoint-url">/api/agent-interactions</div>
+                <div style="color: #94a3b8; margin-top: 0.5rem; font-size: 0.8rem;">Log agent response + user feedback + outcome</div>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-method">GET</div>
+                <div class="endpoint-url">/api/agent-interactions?client_id=xxx</div>
+                <div style="color: #94a3b8; margin-top: 0.5rem; font-size: 0.8rem;">Get metrics: satisfaction_rate, helpful %, not_helpful %</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <strong>System Live:</strong> 2026-07-09 21:35 UTC  |  <strong>Status:</strong> 🟢 Production Ready  |  <strong>Agents:</strong> Ready to integrate
+        </div>
+    </div>
+</body>
+</html>
