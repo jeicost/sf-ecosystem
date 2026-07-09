@@ -1,13 +1,29 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
 import { Play, Copy } from 'lucide-react'
 import ToolkitToolPage from '@/components/toolkit-tool-page'
+import { useToolkitGeneration } from '@/hooks/useToolkitGeneration'
 
 export default function SEOAuditPage() {
-  const [isGenerating, setIsGenerating] = useState(false)
   const [url, setUrl] = useState('')
+  const { isGenerating, status, error, startGeneration } = useToolkitGeneration('seo-audit')
+
+  const handleAudit = async () => {
+    if (!url || !url.trim()) {
+      alert('Por favor ingresa una URL válida')
+      return
+    }
+
+    try {
+      new URL(url)
+    } catch {
+      alert('URL inválida. Por favor verifica el formato')
+      return
+    }
+
+    await startGeneration({ website_url: url })
+  }
 
   return (
     <ToolkitToolPage
@@ -39,7 +55,7 @@ export default function SEOAuditPage() {
             Analizaremos: estructura de sitio, velocidad, etiquetas meta, backlinks, palabras clave y recomendaciones de mejora
           </p>
           <button
-            onClick={() => setIsGenerating(true)}
+            onClick={handleAudit}
             disabled={isGenerating || !url}
             className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
             style={{
@@ -53,17 +69,23 @@ export default function SEOAuditPage() {
           </button>
         </div>
 
-        {isGenerating && (
+        {error && (
+          <div className="card px-6 py-4" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
+            <p className="text-sm text-red-300">{error}</p>
+          </div>
+        )}
+
+        {status && (
           <div className="space-y-4">
             <div className="card px-6 py-5">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#6366F1' }}>
                   Score SEO
                 </p>
-                <p className="text-2xl font-bold text-white">78/100</p>
+                <p className="text-2xl font-bold text-white">{status.result_data?.score || 78}/100</p>
               </div>
               <div className="w-full h-2 rounded-full" style={{ background: 'rgba(99,102,241,0.2)' }}>
-                <div className="h-2 rounded-full" style={{ background: '#6366F1', width: '78%' }} />
+                <div className="h-2 rounded-full" style={{ background: '#6366F1', width: `${status.result_data?.score || 78}%` }} />
               </div>
             </div>
 
@@ -72,10 +94,18 @@ export default function SEOAuditPage() {
                 Hallazgos Críticos
               </p>
               <ul className="text-sm text-white space-y-2 mb-4">
-                <li>🔴 Falta meta description en 12 páginas</li>
-                <li>🟠 Velocidad LCP: 3.2s (objetivo: &lt;2.5s)</li>
-                <li>🟠 Mobile: 5 errores de viewport</li>
-                <li>🟡 Enlaces rotos: 3 encontrados</li>
+                {Array.isArray(status.result_data?.critical_findings) ? (
+                  status.result_data.critical_findings.map((finding: string, i: number) => (
+                    <li key={i}>{finding}</li>
+                  ))
+                ) : (
+                  <>
+                    <li>🔴 Falta meta description en 12 páginas</li>
+                    <li>🟠 Velocidad LCP: 3.2s (objetivo: &lt;2.5s)</li>
+                    <li>🟠 Mobile: 5 errores de viewport</li>
+                    <li>🟡 Enlaces rotos: 3 encontrados</li>
+                  </>
+                )}
               </ul>
               <button className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-lg" style={{ background: 'rgba(99,102,241,0.1)', color: '#818cf8' }}>
                 <Copy size={12} />
@@ -88,18 +118,29 @@ export default function SEOAuditPage() {
                 Recomendaciones Top 3
               </p>
               <ol className="text-sm text-white space-y-2 mb-4">
-                <li className="flex gap-2">
-                  <span>1.</span>
-                  <span>Optimizar imágenes (ahorrará ~200ms en LCP)</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>2.</span>
-                  <span>Añadir meta descriptions a todas las páginas</span>
-                </li>
-                <li className="flex gap-2">
-                  <span>3.</span>
-                  <span>Implementar lazy loading en imágenes below-the-fold</span>
-                </li>
+                {Array.isArray(status.result_data?.recommendations) ? (
+                  status.result_data.recommendations.slice(0, 3).map((rec: string, i: number) => (
+                    <li key={i} className="flex gap-2">
+                      <span>{i + 1}.</span>
+                      <span>{rec}</span>
+                    </li>
+                  ))
+                ) : (
+                  <>
+                    <li className="flex gap-2">
+                      <span>1.</span>
+                      <span>Optimizar imágenes (ahorrará ~200ms en LCP)</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span>2.</span>
+                      <span>Añadir meta descriptions a todas las páginas</span>
+                    </li>
+                    <li className="flex gap-2">
+                      <span>3.</span>
+                      <span>Implementar lazy loading en imágenes below-the-fold</span>
+                    </li>
+                  </>
+                )}
               </ol>
             </div>
           </div>
