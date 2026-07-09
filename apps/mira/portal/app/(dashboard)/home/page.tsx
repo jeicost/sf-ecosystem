@@ -6,6 +6,7 @@ import { Loader2, ArrowRight, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { getUser } from '@/lib/auth'
 import AdminClientsOverview from '@/components/admin-clients-overview'
+import { redirect } from 'next/navigation'
 
 const TEAMS = [
   { slug: 'marketing',  label: 'Marketing',  icon: '🎯', color: '#8B5CF6', href: '/roster',              agents: 8, desc: 'Content · Copy · Ads · Community' },
@@ -42,6 +43,13 @@ export default function HomePage() {
   }, [])
 
   const firstName = userName.split(' ')[0] || userName
+
+  // Redirect regular clients to client portal
+  useEffect(() => {
+    if (plan && plan !== 'super_admin' && plan !== 'admin') {
+      redirect('/client-portal')
+    }
+  }, [plan])
 
   return (
     <div className="px-8 py-8 max-w-5xl">
