@@ -14,6 +14,7 @@ export async function GET() {
   const salsa_id = '714a028e-a16d-428c-b8a9-3338f56f0a9c'
 
   const schema: Record<string, any> = {}
+  const correct_salsa_id = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
 
   // Get brand_profiles structure and data
   const { data: bp_dadybox, error: bp_error } = await supabase
@@ -45,22 +46,23 @@ export async function GET() {
     }
   }
 
-  // Check Salsa too
+  // Check Salsa with CORRECT ID
   const { data: bp_salsa } = await supabase
     .from('brand_profiles')
     .select('*')
-    .eq('client_id', salsa_id)
+    .eq('client_id', correct_salsa_id)
     .single()
 
   const { data: cp_salsa } = await supabase
     .from('content_pillars')
     .select('*')
-    .eq('client_id', salsa_id)
-    .limit(1)
+    .eq('client_id', correct_salsa_id)
 
   schema.salsa = {
     brand_profiles_exists: bp_salsa ? true : false,
-    content_pillars_count: cp_salsa?.length || 0
+    brand_profile_data: bp_salsa,
+    content_pillars_count: cp_salsa?.length || 0,
+    content_pillars_sample: cp_salsa?.[0] || null
   }
 
   return NextResponse.json(schema)
