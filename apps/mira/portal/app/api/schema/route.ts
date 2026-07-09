@@ -27,6 +27,7 @@ export async function GET() {
     dadybox: {
       exists: bp_dadybox ? true : false,
       columns: bp_dadybox ? Object.keys(bp_dadybox) : null,
+      data: bp_dadybox,
       error: bp_error?.message
     }
   }
