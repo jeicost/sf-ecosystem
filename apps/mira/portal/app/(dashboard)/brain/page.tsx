@@ -79,17 +79,17 @@ export default function BrainPageV2() {
         if (c.data) setPillars(c.data as ContentPillar[])
 
         // Try to load references (optional, won't block if fails)
-        db.from('brand_references')
-          .select('*')
-          .eq('client_id', clientId)
-          .order('created_at')
-          .then(({ data }) => {
-            if (data) setReferences(data as BrandReference[])
-          })
-          .catch(() => {
-            console.warn('References table not available, skipping')
-            setReferences([])
-          })
+        try {
+          const { data: refData } = await db
+            .from('brand_references')
+            .select('*')
+            .eq('client_id', clientId)
+            .order('created_at')
+          if (refData) setReferences(refData as BrandReference[])
+        } catch (e) {
+          console.warn('References table not available, skipping')
+          setReferences([])
+        }
       } catch (e) {
         console.error('Error loading Brand Brain:', e)
       } finally {
