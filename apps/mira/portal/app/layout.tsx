@@ -3,7 +3,7 @@ import './globals.css'
 
 export const metadata: Metadata = {
   title: 'MIRA — AI Agency Platform',
-  description: '30 agentes de IA trabajando 24/7 para hacer crecer tu negocio.',
+  description: '30 agentes de IA + Quick Actions framework para escalar tu negocio.',
   icons: { icon: '/favicon.svg' },
 }
 
