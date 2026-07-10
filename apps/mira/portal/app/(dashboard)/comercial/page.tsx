@@ -2,6 +2,7 @@ import { COMERCIAL_AGENTS } from '@/lib/agents'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
+import DepartmentAgents from '@/components/DepartmentAgents' from '@/components/quick-actions/ComercialQuickActions'
 
 const COMERCIAL_META = [
   { produces: 'Qualified lead list',      href: '/comercial/discovery'  },
@@ -52,6 +53,7 @@ export default function ComercialPage() {
 
       <div className="mb-8">
         <ComercialQuickActions />
+      <DepartmentAgents department="comercial" />
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">

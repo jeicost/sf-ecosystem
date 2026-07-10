@@ -1,6 +1,7 @@
 'use client'
 
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
+import DepartmentAgents from '@/components/DepartmentAgents'
 
 export default function MarketingPage() {
   return (
@@ -30,6 +31,7 @@ export default function MarketingPage() {
       </div>
 
       <MarketingQuickActions />
+      <DepartmentAgents department="marketing" />
     </div>
   )
 }
