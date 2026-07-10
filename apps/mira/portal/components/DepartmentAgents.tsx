@@ -7,15 +7,15 @@ interface DepartmentAgentsProps {
 }
 
 export default function DepartmentAgents({ department }: DepartmentAgentsProps) {
-  const deptMap = {
-    comercial: 'sales',
+  const deptMap: Record<string, string> = {
+    comercial: 'comercial',
     marketing: 'marketing',
     strategy: 'strategy',
     community: 'community'
   }
 
   const deptKey = deptMap[department]
-  const agents = ALL_AGENTS.filter(a => a.department === deptKey).slice(0, 4)
+  const agents = ALL_AGENTS.filter(a => a.package === deptKey).slice(0, 4)
 
   if (agents.length === 0) return null
 
@@ -28,7 +28,7 @@ export default function DepartmentAgents({ department }: DepartmentAgentsProps) 
         {agents.map(agent => (
           <div key={agent.name} className="card px-4 py-3 hover:bg-white/8 transition-all">
             <p className="text-xs font-medium text-white">{agent.name}</p>
-            <p className="text-[10px] text-[#666] mt-1">{agent.description}</p>
+            <p className="text-[10px] text-[#666] mt-1">{agent.tagline}</p>
           </div>
         ))}
       </div>

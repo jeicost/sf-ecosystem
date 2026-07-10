@@ -215,10 +215,67 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- ─── Quick Actions Results Table (from Quick Actions Framework) ────────────
+-- Stores results from 16 quick actions across 4 departments
+
+CREATE TABLE IF NOT EXISTS quick_actions_results (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  department VARCHAR(50) NOT NULL CHECK (department IN ('comercial', 'marketing', 'strategy', 'community')),
+  action_type VARCHAR(100) NOT NULL,
+  input_data JSONB NOT NULL,
+  output_data JSONB,
+  output_type VARCHAR(50) CHECK (output_type IN ('image', 'document', 'video', 'json')),
+  resource_name VARCHAR(255),
+  google_drive_file_id VARCHAR(255),
+  memory_saved BOOLEAN DEFAULT false,
+  memory_note TEXT,
+  liked_by_user BOOLEAN DEFAULT false,
+  status VARCHAR(50) DEFAULT 'pending' CHECK (status IN ('pending', 'processing', 'success', 'failed')),
+  error_message TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  completed_at TIMESTAMP WITH TIME ZONE,
+  processing_time_ms INTEGER
+);
+
+CREATE INDEX IF NOT EXISTS idx_quick_actions_client_id ON quick_actions_results(client_id);
+CREATE INDEX IF NOT EXISTS idx_quick_actions_department ON quick_actions_results(department);
+CREATE INDEX IF NOT EXISTS idx_quick_actions_action_type ON quick_actions_results(action_type);
+CREATE INDEX IF NOT EXISTS idx_quick_actions_created_at ON quick_actions_results(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_quick_actions_status ON quick_actions_results(status);
+
+ALTER TABLE quick_actions_results ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "quick_actions: users can view their client's results" ON quick_actions_results
+  FOR SELECT USING (
+    client_id IN (
+      SELECT client_id FROM mira_project_access
+      WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "quick_actions: users can insert for their client" ON quick_actions_results
+  FOR INSERT WITH CHECK (
+    client_id IN (
+      SELECT client_id FROM mira_project_access
+      WHERE user_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "quick_actions: users can update their results" ON quick_actions_results
+  FOR UPDATE USING (
+    client_id IN (
+      SELECT client_id FROM mira_project_access
+      WHERE user_id = auth.uid()
+    )
+  );
+
 -- ─── Notes ──────────────────────────────────────
 -- - generation_queue tracks all generation requests (queued, processing, completed, failed)
 -- - deliverables stores final output (PDF, PPTX, etc) with storage URLs
 -- - n8n webhooks call handle_generation_complete() to create deliverables
+-- - quick_actions_results stores outputs from 16 quick actions (Comercial, Marketing, Strategy, Community)
 -- - RLS ensures users only see their client's data
 -- - Revisions system allows users to request changes without regenerating from scratch
 -- - All timestamps are UTC for consistency
