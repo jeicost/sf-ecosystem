@@ -1,6 +1,7 @@
 import { ESTRATEGIA_AGENTS } from '@/lib/agents'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
+import { StrategyQuickActions } from '@/components/quick-actions/StrategyQuickActions'
 
 const ESTRATEGIA_META = [
   { produces: '90-day plan' },
@@ -47,6 +48,10 @@ export default function EstrategiaPage() {
         finalOutput="Strategic clarity"
         accentColor="#6366F1"
       />
+
+      <div className="mb-8">
+        <StrategyQuickActions />
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         {ESTRATEGIA_AGENTS.map((agent, i) => (
