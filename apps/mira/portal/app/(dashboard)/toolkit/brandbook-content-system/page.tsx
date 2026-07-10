@@ -3,9 +3,14 @@
 import { useState } from 'react'
 import { Play } from 'lucide-react'
 import ToolkitToolPage from '@/components/toolkit-tool-page'
+import { useToolkitGeneration } from '@/hooks/useToolkitGeneration'
 
 export default function BrandbookContentSystemPage() {
-  const [isGenerating, setIsGenerating] = useState(false)
+  const { isGenerating, status, error, startGeneration } = useToolkitGeneration('brandbook-content-system')
+  const [brandInfo, setBrandInfo] = useState('')
+  const [visualRefs, setVisualRefs] = useState('')
+  const [platforms, setPlatforms] = useState<string[]>(['Instagram', 'TikTok', 'LinkedIn', 'Facebook', 'Twitter/X', 'YouTube'])
+  const [pillars, setPillars] = useState('9')
 
   return (
     <ToolkitToolPage
@@ -23,25 +28,67 @@ export default function BrandbookContentSystemPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-xs font-medium text-white mb-2">
-                Pilares de Contenido (separados por comas)
+                Información de marca
+              </label>
+              <p className="text-xs text-gray-400 mb-2">
+                Se extraerá automáticamente del Brand Brain
+              </p>
+              <textarea
+                value={brandInfo}
+                onChange={e => setBrandInfo(e.target.value)}
+                placeholder="Resumen adicional de tu marca, diferenciadores clave, target audience"
+                className="w-full px-3 py-2 rounded-lg text-sm"
+                rows={3}
+                style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-white mb-2">
+                Acceso a referencias visuales (Google Drive/Figma)
               </label>
               <input
                 type="text"
-                placeholder="Ej: Thought Leadership, Case Studies, Educational, Behind-the-Scenes"
+                value={visualRefs}
+                onChange={e => setVisualRefs(e.target.value)}
+                placeholder="URLs de Google Drive o Figma con assets de marca"
                 className="w-full px-3 py-2 rounded-lg text-sm"
                 style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
               />
             </div>
             <div>
               <label className="block text-xs font-medium text-white mb-2">
-                Canales de Distribución (separados por comas)
+                Canales de Distribución
               </label>
-              <input
-                type="text"
-                placeholder="Ej: LinkedIn, Twitter, Blog, Newsletter, Podcast"
+              <div className="space-y-2">
+                {['Instagram', 'TikTok', 'LinkedIn', 'Facebook', 'Twitter/X', 'YouTube'].map(platform => (
+                  <label key={platform} className="flex items-center gap-2 text-sm text-white cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={platforms.includes(platform)}
+                      onChange={() => setPlatforms(prev =>
+                        prev.includes(platform)
+                          ? prev.filter(p => p !== platform)
+                          : [...prev, platform]
+                      )}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                    {platform}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-white mb-2">
+                Pillares de contenido (número)
+              </label>
+              <select
+                value={pillars}
+                onChange={e => setPillars(e.target.value)}
                 className="w-full px-3 py-2 rounded-lg text-sm"
                 style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-              />
+              >
             </div>
             <div>
               <label className="block text-xs font-medium text-white mb-2">
@@ -58,12 +105,24 @@ export default function BrandbookContentSystemPage() {
             </div>
           </div>
           <button
-            onClick={() => setIsGenerating(true)}
-            disabled={isGenerating}
+            onClick={async () => {
+              if (!brandInfo.trim()) {
+                alert('Por favor ingresa información de marca')
+                return
+              }
+              await startGeneration({
+                brand_info: brandInfo,
+                visual_references: visualRefs,
+                platforms,
+                pillar_count: parseInt(pillars),
+              })
+            }}
+            disabled={isGenerating || !brandInfo.trim()}
             className="w-full mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
             style={{
-              background: isGenerating ? 'rgba(139,92,246,0.4)' : 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
+              background: isGenerating || !brandInfo.trim() ? 'rgba(139,92,246,0.4)' : 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)',
               color: 'white',
+              opacity: !brandInfo.trim() ? 0.6 : 1,
             }}
           >
             <Play size={16} />
@@ -71,7 +130,13 @@ export default function BrandbookContentSystemPage() {
           </button>
         </div>
 
-        {isGenerating && (
+        {error && (
+          <div className="card px-6 py-4" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
+            <p className="text-sm text-red-300">{error}</p>
+          </div>
+        )}
+
+        {status && (
           <div className="space-y-4">
             <div className="card px-6 py-5">
               <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
