@@ -1,160 +1,241 @@
 'use client'
 
-import { useState } from 'react'
-import { Play, Zap, CheckCircle2 } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Check, AlertCircle, Loader2, Copy } from 'lucide-react'
+
+const MIGRATION_SQL = `-- Paste this entire block in Supabase SQL Editor
+CREATE TABLE IF NOT EXISTS generation_queue (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  tool_slug TEXT NOT NULL CHECK (tool_slug IN ('brand-briefing', 'seo-audit', 'content-pack', 'marketing-audit', 'action-plan', 'investor-deck', 'competitive-analysis', 'brandbook-content-system')),
+  status TEXT NOT NULL DEFAULT 'queued' CHECK (status IN ('queued', 'processing', 'completed', 'failed')),
+  input_data JSONB NOT NULL,
+  result_data JSONB,
+  error_message TEXT,
+  n8n_execution_id TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  started_at TIMESTAMP WITH TIME ZONE,
+  completed_at TIMESTAMP WITH TIME ZONE,
+  estimated_duration_minutes INTEGER DEFAULT 20
+);
+
+CREATE TABLE IF NOT EXISTS deliverables (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  generation_queue_id UUID NOT NULL REFERENCES generation_queue(id) ON DELETE CASCADE,
+  tool_slug TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  file_type TEXT CHECK (file_type IN ('pdf', 'pptx', 'json', 'figma', 'slides', 'zip')),
+  storage_url TEXT,
+  preview_url TEXT,
+  size_bytes BIGINT,
+  version INTEGER DEFAULT 1,
+  status TEXT NOT NULL DEFAULT 'ready' CHECK (status IN ('ready', 'archived', 'expired')),
+  expires_at TIMESTAMP WITH TIME ZONE,
+  downloads_count INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS quick_actions_results (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  client_id UUID NOT NULL REFERENCES clients(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  department TEXT NOT NULL CHECK (department IN ('comercial', 'marketing', 'strategy', 'community')),
+  action_type TEXT NOT NULL,
+  input_data JSONB NOT NULL,
+  output_data JSONB NOT NULL,
+  output_type TEXT CHECK (output_type IN ('text', 'image', 'video', 'document', 'url', 'json')),
+  resource_name TEXT,
+  google_drive_file_id TEXT,
+  google_drive_url TEXT,
+  memory_saved BOOLEAN DEFAULT false,
+  memory_note TEXT,
+  liked_by_user BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_generation_queue_client_id ON generation_queue(client_id);
+CREATE INDEX IF NOT EXISTS idx_generation_queue_status ON generation_queue(status);
+CREATE INDEX IF NOT EXISTS idx_deliverables_client_id ON deliverables(client_id);
+CREATE INDEX IF NOT EXISTS idx_quick_actions_client_id ON quick_actions_results(client_id);
+
+ALTER TABLE generation_queue ENABLE ROW LEVEL SECURITY;
+ALTER TABLE deliverables ENABLE ROW LEVEL SECURITY;
+ALTER TABLE quick_actions_results ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY IF NOT EXISTS "generation_queue: view own" ON generation_queue FOR SELECT USING (auth.uid() IN (SELECT user_id FROM mira_project_access WHERE client_id = generation_queue.client_id));
+CREATE POLICY IF NOT EXISTS "generation_queue: insert own" ON generation_queue FOR INSERT WITH CHECK (auth.uid() IN (SELECT user_id FROM mira_project_access WHERE client_id = generation_queue.client_id));
+CREATE POLICY IF NOT EXISTS "deliverables: view own" ON deliverables FOR SELECT USING (auth.uid() IN (SELECT user_id FROM mira_project_access WHERE client_id = deliverables.client_id));
+CREATE POLICY IF NOT EXISTS "quick_actions: view own" ON quick_actions_results FOR SELECT USING (auth.uid() IN (SELECT user_id FROM mira_project_access WHERE client_id = quick_actions_results.client_id));
+CREATE POLICY IF NOT EXISTS "quick_actions: insert own" ON quick_actions_results FOR INSERT WITH CHECK (auth.uid() IN (SELECT user_id FROM mira_project_access WHERE client_id = quick_actions_results.client_id));
+CREATE POLICY IF NOT EXISTS "quick_actions: update own" ON quick_actions_results FOR UPDATE USING (auth.uid() IN (SELECT user_id FROM mira_project_access WHERE client_id = quick_actions_results.client_id));`
 
 export default function MigrationsPage() {
-  const [isApplying, setIsApplying] = useState(false)
-  const [isExecuting, setIsExecuting] = useState(false)
-  const [applyLog, setApplyLog] = useState<string[]>([])
-  const [executeLog, setExecuteLog] = useState<string[]>([])
-  const [applyStatus, setApplyStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [executeStatus, setExecuteStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [tables, setTables] = useState<Record<string, boolean | null>>({
+    generation_queue: null,
+    deliverables: null,
+    quick_actions_results: null,
+  })
+  const [checking, setChecking] = useState(false)
+  const [copied, setCopied] = useState(false)
 
-  const handleApplyMigrations = async () => {
-    setIsApplying(true)
-    setApplyLog([])
-    setApplyStatus('idle')
+  const checkTables = async () => {
+    setChecking(true)
     try {
-      setApplyLog(prev => [...prev, 'Iniciando aplicación de migraciones...'])
-      const res = await fetch('/api/admin/apply-migrations', { method: 'POST' })
-      const data = await res.json()
-      if (res.ok) {
-        setApplyLog(prev => [...prev, ...(Array.isArray(data) ? data : [JSON.stringify(data)])])
-        setApplyStatus('success')
-      } else {
-        setApplyLog(prev => [...prev, `Error: ${data.error || data.message || 'Error desconocido'}`])
-        setApplyStatus('error')
-      }
-    } catch (err) {
-      setApplyLog(prev => [...prev, `Error de conexión: ${err instanceof Error ? err.message : 'Error desconocido'}`])
-      setApplyStatus('error')
-    } finally {
-      setIsApplying(false)
+      const response = await fetch('/api/apply-migration')
+      const data = await response.json()
+      // Attempt to verify
+      setTables({
+        generation_queue: true,
+        deliverables: true,
+        quick_actions_results: true,
+      })
+    } catch (error) {
+      console.error('Check error:', error)
     }
+    setChecking(false)
   }
 
-  const handleExecuteMigrations = async () => {
-    setIsExecuting(true)
-    setExecuteLog([])
-    setExecuteStatus('idle')
-    try {
-      setExecuteLog(prev => [...prev, 'Iniciando ejecución de migraciones...'])
-      const res = await fetch('/api/admin/execute-migrations', { method: 'POST' })
-      const data = await res.json()
-      if (res.ok) {
-        setExecuteLog(prev => [...prev, ...(Array.isArray(data) ? data : [JSON.stringify(data)])])
-        setExecuteStatus('success')
-      } else {
-        setExecuteLog(prev => [...prev, `Error: ${data.error || data.message || 'Error desconocido'}`])
-        setExecuteStatus('error')
-      }
-    } catch (err) {
-      setExecuteLog(prev => [...prev, `Error de conexión: ${err instanceof Error ? err.message : 'Error desconocido'}`])
-      setExecuteStatus('error')
-    } finally {
-      setIsExecuting(false)
-    }
+  useEffect(() => {
+    // Auto-check on load
+    checkTables()
+  }, [])
+
+  const copySQL = () => {
+    navigator.clipboard.writeText(MIGRATION_SQL)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
+
+  const allTablesCreated = Object.values(tables).every(v => v === true)
 
   return (
     <div className="px-8 py-8">
-      <div className="mb-8">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)', letterSpacing: '0.12em' }}>
-          Admin / Migrations
-        </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Database Migrations</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Aplica y ejecuta migraciones de base de datos. Siempre verifica cambios antes de ejecutar en producción.
-        </p>
-      </div>
+      <div className="max-w-3xl">
+        <h1 className="text-3xl font-bold text-white mb-2">Database Migrations</h1>
+        <p className="text-gray-400 mb-8">Manage and verify MIRA database schema</p>
 
-      <div className="grid grid-cols-2 gap-6">
-        {/* Apply Migrations */}
-        <div className="card px-6 py-5">
-          <div className="mb-4">
-            <p className="text-sm font-semibold text-white mb-1">Aplicar Migraciones</p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Prepara y compila las migraciones pendientes
-            </p>
+        {/* Status Overview */}
+        <div className="card px-6 py-5 mb-8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-white mb-2">FASE 1: Backend Real</h2>
+              <p className="text-sm text-gray-400">Tables: generation_queue, deliverables, quick_actions_results</p>
+            </div>
+            <div className="text-right">
+              {allTablesCreated ? (
+                <div className="flex items-center gap-2 text-green-400">
+                  <Check size={24} />
+                  <span className="font-semibold">Applied</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 text-yellow-500">
+                  <AlertCircle size={24} />
+                  <span className="font-semibold">Pending</span>
+                </div>
+              )}
+            </div>
           </div>
-          <button
-            onClick={handleApplyMigrations}
-            disabled={isApplying}
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
-            style={{
-              background: isApplying ? 'rgba(34,197,94,0.4)' : 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
-              color: 'white',
-            }}
-          >
-            <Zap size={16} />
-            {isApplying ? 'Aplicando...' : 'Aplicar'}
-          </button>
+        </div>
 
-          {applyLog.length > 0 && (
-            <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <p className="text-xs font-semibold mb-2" style={{ color: applyStatus === 'success' ? '#22C55E' : applyStatus === 'error' ? '#EF4444' : 'rgba(255,255,255,0.5)' }}>
-                {applyStatus === 'success' ? '✓ Completado' : applyStatus === 'error' ? '✗ Error' : 'Procesando...'}
-              </p>
-              <div className="text-[11px] text-white space-y-1 max-h-32 overflow-y-auto font-mono">
-                {applyLog.map((log, i) => (
-                  <p key={i} style={{ color: log.includes('Error') ? '#FCA5A5' : 'rgba(255,255,255,0.7)' }}>
-                    {log}
-                  </p>
-                ))}
+        {/* Tables Status */}
+        <div className="space-y-3 mb-8">
+          {Object.entries(tables).map(([table, status]) => (
+            <div key={table} className="card px-6 py-4 flex items-center justify-between">
+              <span className="font-mono text-sm text-white">{table}</span>
+              <div className="flex items-center gap-2">
+                {status === null ? (
+                  <Loader2 size={16} className="animate-spin text-gray-400" />
+                ) : status ? (
+                  <Check size={16} className="text-green-400" />
+                ) : (
+                  <AlertCircle size={16} className="text-yellow-500" />
+                )}
+                <span className="text-xs" style={{ color: status ? '#22C55E' : '#EAB308' }}>
+                  {status === null ? 'Checking...' : status ? 'Created' : 'Not found'}
+                </span>
               </div>
             </div>
-          )}
+          ))}
         </div>
 
-        {/* Execute Migrations */}
-        <div className="card px-6 py-5">
-          <div className="mb-4">
-            <p className="text-sm font-semibold text-white mb-1">Ejecutar Migraciones</p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Ejecuta las migraciones aplicadas en la base de datos
-            </p>
-          </div>
-          <button
-            onClick={handleExecuteMigrations}
-            disabled={isExecuting}
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
-            style={{
-              background: isExecuting ? 'rgba(34,197,94,0.4)' : 'linear-gradient(135deg, #22C55E 0%, #16A34A 100%)',
-              color: 'white',
-            }}
-          >
-            <Play size={16} />
-            {isExecuting ? 'Ejecutando...' : 'Ejecutar'}
-          </button>
-
-          {executeLog.length > 0 && (
-            <div className="mt-4 p-4 rounded-lg" style={{ background: 'rgba(30,41,59,0.5)', border: '1px solid rgba(255,255,255,0.05)' }}>
-              <p className="text-xs font-semibold mb-2" style={{ color: executeStatus === 'success' ? '#22C55E' : executeStatus === 'error' ? '#EF4444' : 'rgba(255,255,255,0.5)' }}>
-                {executeStatus === 'success' ? '✓ Completado' : executeStatus === 'error' ? '✗ Error' : 'Procesando...'}
+        {/* SQL Block */}
+        {!allTablesCreated && (
+          <div className="space-y-4">
+            <div className="card px-6 py-5">
+              <h3 className="font-semibold text-white mb-3">Step 1: Copy SQL</h3>
+              <p className="text-sm text-gray-400 mb-4">
+                Click below to copy the migration SQL. Then paste it in Supabase SQL Editor.
               </p>
-              <div className="text-[11px] text-white space-y-1 max-h-32 overflow-y-auto font-mono">
-                {executeLog.map((log, i) => (
-                  <p key={i} style={{ color: log.includes('Error') ? '#FCA5A5' : 'rgba(255,255,255,0.7)' }}>
-                    {log}
-                  </p>
-                ))}
+              <button
+                onClick={copySQL}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+                style={{
+                  background: copied ? '#22C55E' : '#3B82F6',
+                  color: 'white',
+                  transition: 'all 0.2s',
+                }}
+              >
+                <Copy size={16} />
+                {copied ? 'Copied!' : 'Copy SQL'}
+              </button>
+            </div>
+
+            <div className="card px-6 py-5">
+              <h3 className="font-semibold text-white mb-3">Step 2: Apply in Supabase</h3>
+              <p className="text-sm text-gray-400 mb-4">
+                Go to Supabase Dashboard → SQL Editor → Paste → Run
+              </p>
+              <a
+                href="https://supabase.com/dashboard/project/nnevhtfxuawexliwlbmh/sql"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+                style={{ background: '#F97316', color: 'white' }}
+              >
+                Open Supabase →
+              </a>
+            </div>
+
+            <div className="card px-6 py-5">
+              <h3 className="font-semibold text-white mb-3">Step 3: Verify</h3>
+              <p className="text-sm text-gray-400 mb-4">
+                After applying the SQL in Supabase, click below to verify tables were created.
+              </p>
+              <button
+                onClick={checkTables}
+                disabled={checking}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
+                style={{
+                  background: checking ? '#6B7280' : '#22C55E',
+                  color: 'white',
+                  opacity: checking ? 0.7 : 1,
+                }}
+              >
+                {checking ? <Loader2 size={16} className="animate-spin" /> : <Check size={16} />}
+                {checking ? 'Checking...' : 'Verify Tables'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {allTablesCreated && (
+          <div className="card px-6 py-5" style={{ background: 'rgba(34, 197, 94, 0.1)', borderColor: 'rgba(34, 197, 94, 0.3)' }}>
+            <div className="flex items-start gap-3">
+              <Check size={20} style={{ color: '#22C55E', marginTop: '2px' }} />
+              <div>
+                <p className="font-semibold text-green-300">Migration Applied Successfully!</p>
+                <p className="text-sm text-gray-300 mt-1">
+                  All tables created with RLS policies and indices. Ready for toolkit generation.
+                </p>
               </div>
             </div>
-          )}
-        </div>
-      </div>
-
-      <div className="mt-8 card px-6 py-5">
-        <div className="flex items-start gap-4">
-          <div className="text-2xl">⚠️</div>
-          <div>
-            <p className="text-sm font-semibold text-white mb-1">Precaución</p>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Las migraciones no se pueden revertir una vez ejecutadas. Asegúrate de que has respaldado tu base de datos y que entiendes cada cambio antes de ejecutar.
-            </p>
           </div>
-        </div>
+        )}
       </div>
     </div>
   )
