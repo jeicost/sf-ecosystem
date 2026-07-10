@@ -10,32 +10,39 @@ import { createClient } from '@/lib/supabase'
 
 const QUICK_ACTIONS = [
   {
+    icon: '📁',
+    label: 'Documentación',
+    desc: 'Sube brand book, docs, handbooks para agentes',
+    href: '/client-portal/documentation',
+    color: '#8B5CF6',
+  },
+  {
     icon: '📦',
     label: 'Mis Entregas',
     desc: 'Historial de todos los deliverables generados',
     href: '/client-portal/entregas',
-    color: '#8B5CF6',
+    color: '#6366F1',
   },
   {
     icon: '📈',
     label: 'Mis Reportes',
     desc: 'Analytics, métricas y performance tracking',
     href: '/client-portal/reportes',
-    color: '#6366F1',
+    color: '#F97316',
   },
   {
     icon: '🎨',
     label: 'Mi Brand Brain',
     desc: 'Perfil de marca, pillars de contenido, voz',
     href: '/client-portal/brand',
-    color: '#F97316',
+    color: '#10B981',
   },
   {
     icon: '⚙️',
     label: 'Mi Configuración',
     desc: 'Perfil, preferencias, equipo, facturación',
     href: '/client-portal/config',
-    color: '#10B981',
+    color: '#EF4444',
   },
 ]
 
