@@ -1,33 +1,196 @@
-/* Global styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS tokens — Dark (default) ── */
+:root, [data-theme="dark"] {
+  --bg-page:          #0a0a0f;
+  --bg-surface:       rgba(255,255,255,0.04);
+  --bg-surface-hover: rgba(255,255,255,0.07);
+  --bg-card:          rgba(255,255,255,0.04);
+  --bg-sidebar:       #0c0c12;
+  --bg-header:        rgba(10,10,15,0.9);
+  --border:           rgba(255,255,255,0.10);
+  --border-subtle:    rgba(255,255,255,0.07);
+  --text-primary:     #ffffff;
+  --text-secondary:   rgba(255,255,255,0.55);
+  --text-tertiary:    rgba(255,255,255,0.30);
+  --text-muted:       rgba(255,255,255,0.18);
+  --text-sidebar:     rgba(255,255,255,0.50);
+  --scrollbar:        #333;
+  --glow-accent:      rgba(99,102,241,0.12);
 }
 
-html, body {
-  width: 100%;
-  height: 100%;
-  background: #0a0a0a;
-  color: #e0e0e0;
+/* ── CSS tokens — Light ── */
+[data-theme="light"] {
+  --bg-page:          #f0f0f7;
+  --bg-surface:       rgba(0,0,0,0.025);
+  --bg-surface-hover: rgba(0,0,0,0.05);
+  --bg-card:          #ffffff;
+  --bg-sidebar:       #ffffff;
+  --bg-header:        rgba(240,240,247,0.95);
+  --border:           rgba(0,0,0,0.09);
+  --border-subtle:    rgba(0,0,0,0.06);
+  --text-primary:     #0f0f18;
+  --text-secondary:   rgba(15,15,24,0.60);
+  --text-tertiary:    rgba(15,15,24,0.40);
+  --text-muted:       rgba(15,15,24,0.25);
+  --text-sidebar:     rgba(15,15,24,0.55);
+  --scrollbar:        #ccc;
+  --glow-accent:      rgba(99,102,241,0.06);
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  * { box-sizing: border-box; }
+  html { -webkit-font-smoothing: antialiased; }
+  body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Inter', system-ui, sans-serif;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 2px; }
 }
 
-/* Card styles */
-.card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  backdrop-filter: blur(10px);
+/* ─── LIGHT MODE — STRUCTURAL ─────────────────────────── */
+
+[data-theme="light"] .min-h-screen,
+[data-theme="light"] main,
+[data-theme="light"] main > div { background: var(--bg-page) !important; }
+
+/* Sidebar */
+[data-theme="light"] aside {
+  background: var(--bg-sidebar) !important;
+  border-right-color: var(--border) !important;
+}
+[data-theme="light"] aside a,
+[data-theme="light"] aside button,
+[data-theme="light"] aside span,
+[data-theme="light"] aside p { color: var(--text-sidebar) !important; }
+[data-theme="light"] aside a:hover,
+[data-theme="light"] aside button:hover { color: var(--text-primary) !important; }
+
+/* Header */
+[data-theme="light"] header {
+  background: var(--bg-header) !important;
+  border-bottom-color: var(--border) !important;
 }
 
-/* Scrollbar */
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+/* Cards (CSS class) */
+[data-theme="light"] .card {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+}
+[data-theme="light"] .card-hover:hover {
+  background: #f5f5fc !important;
+  border-color: rgba(0,0,0,0.12) !important;
+}
+
+/* ─── LIGHT MODE — INLINE-STYLE OVERRIDES (via Tailwind JIT) ─ */
+
+/* Dark backgrounds used as Tailwind JIT */
+[data-theme="light"] .bg-\[\#080808\],
+[data-theme="light"] .bg-\[\#0a0a0a\],
+[data-theme="light"] .bg-\[\#0a0a0f\],
+[data-theme="light"] .bg-\[\#0c0c0c\],
+[data-theme="light"] .bg-\[\#0c0c12\],
+[data-theme="light"] .bg-\[\#111\],
+[data-theme="light"] .bg-\[\#0f0f0f\] { background: var(--bg-page) !important; }
+
+/* Dark borders */
+[data-theme="light"] .border-\[\#131313\],
+[data-theme="light"] .border-\[\#1a1a1a\],
+[data-theme="light"] .border-\[\#141414\],
+[data-theme="light"] .border-\[\#1E1E1E\] { border-color: var(--border) !important; }
+
+/* Text overrides for hardcoded dark colors */
+[data-theme="light"] .text-\[\#555\],
+[data-theme="light"] .text-\[\#444\],
+[data-theme="light"] .text-\[\#333\] { color: var(--text-tertiary) !important; }
+[data-theme="light"] .text-\[\#888\],
+[data-theme="light"] .text-\[\#777\],
+[data-theme="light"] .text-\[\#666\] { color: var(--text-secondary) !important; }
+
+/* ─── LIGHT MODE — COMPONENT OVERRIDES ───────────────────── */
+
+/* Agent cards (uses inline rounded-2xl with bg/border inline styles) */
+[data-theme="light"] .group.rounded-2xl,
+[data-theme="light"] .rounded-2xl {
+  --card-bg: var(--bg-card);
+}
+
+/* Nav active links in sidebar */
+[data-theme="light"] aside .bg-white\/8 { background: rgba(99,102,241,0.1) !important; }
+[data-theme="light"] aside .hover\:bg-white\/5:hover { background: rgba(0,0,0,0.04) !important; }
+
+/* Kanban cards & any dark card */
+[data-theme="light"] .bg-\[\#0c0c0c\],
+[data-theme="light"] .bg-\[\#111111\],
+[data-theme="light"] .bg-\[\#161616\] { background: #ffffff !important; }
+
+/* ─── UTILITIES ──────────────────────────────────────────── */
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  [data-theme="light"] .text-gradient {
+    background: linear-gradient(135deg, #0f0f18 0%, #4f46e5 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  .card-hover {
+    @apply card transition-all duration-200;
+  }
+  .card-hover:hover {
+    background: var(--bg-surface-hover);
+    border-color: var(--border);
+  }
+  .status-dot-working { @apply w-2 h-2 rounded-full bg-emerald-400 animate-pulse; }
+  .status-dot-idle    { @apply w-2 h-2 rounded-full bg-[#444]; }
+  .status-dot-waiting { @apply w-2 h-2 rounded-full bg-amber-400; }
+}
+
+/* ─── LIGHT MODE — PAGE-LEVEL DEEP OVERRIDES ─────────────── */
+
+/* All inline-style dark backgrounds inside main — caught by attribute selector trick */
+[data-theme="light"] main [style*="background: '#0a0a0f'"],
+[data-theme="light"] main [style*="background: #0a0a0f"],
+[data-theme="light"] main [style*="background: #0a0a10"],
+[data-theme="light"] main [style*="background: rgba(255,255,255,0.04)"],
+[data-theme="light"] main [style*="background: rgba(255,255,255,0.03)"],
+[data-theme="light"] main [style*="background: rgba(255,255,255,0.02)"] {
+  background: var(--bg-card) !important;
+}
+[data-theme="light"] main [style*="color: rgba(255,255,255"] {
+  color: var(--text-secondary) !important;
+}
+[data-theme="light"] main [style*="border: '1px solid rgba(255,255,255"],
+[data-theme="light"] main [style*="border-color: rgba(255,255,255"] {
+  border-color: var(--border) !important;
+}
+
+/* Stats numbers stay white in dark, turn dark in light */
+[data-theme="light"] main p[style*="color: #ffffff"],
+[data-theme="light"] main h1[style*="color: #ffffff"],
+[data-theme="light"] main h2[style*="color: #ffffff"],
+[data-theme="light"] main h3[style*="color: #ffffff"],
+[data-theme="light"] main span[style*="color: #ffffff"] {
+  color: var(--text-primary) !important;
+}
+
+/* Ambient glow toned down */
+[data-theme="light"] .fixed.inset-0.pointer-events-none { opacity: 0.2; }
