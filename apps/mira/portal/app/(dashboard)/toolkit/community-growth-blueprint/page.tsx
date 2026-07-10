@@ -1,11 +1,82 @@
 'use client'
 
-import { useState } from 'react'
-import { Play } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Play, Loader2 } from 'lucide-react'
 import ToolkitToolPage from '@/components/toolkit-tool-page'
+import { CLIENT_ID } from '@/lib/constants'
+
+interface CommunityFormData {
+  current_size: string
+  goal: string
+  channels: string
+  pillars: string
+}
+
+interface GeneratedBlueprint {
+  strategy_summary: string
+  month_1_foundation?: any
+  engagement_playbook?: any
+  metrics?: any
+}
 
 export default function CommunityGrowthBlueprintPage() {
   const [isGenerating, setIsGenerating] = useState(false)
+  const [generatedBlueprint, setGeneratedBlueprint] = useState<GeneratedBlueprint | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [generationTime, setGenerationTime] = useState(0)
+
+  const sizeRef = useRef<HTMLInputElement>(null)
+  const goalRef = useRef<HTMLInputElement>(null)
+  const channelsRef = useRef<HTMLInputElement>(null)
+  const pillarsRef = useRef<HTMLInputElement>(null)
+
+  const handleGenerate = async () => {
+    setError(null)
+    setIsGenerating(true)
+
+    try {
+      const formData: CommunityFormData = {
+        current_size: sizeRef.current?.value || '0',
+        goal: goalRef.current?.value || '',
+        channels: channelsRef.current?.value || '',
+        pillars: pillarsRef.current?.value || '',
+      }
+
+      if (!formData.current_size || !formData.goal) {
+        setError('Por favor completa todos los campos requeridos')
+        setIsGenerating(false)
+        return
+      }
+
+      const startTime = Date.now()
+
+      const res = await fetch('/api/toolkit/community-blueprint/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: CLIENT_ID,
+          current_size: parseInt(formData.current_size),
+          goal: formData.goal,
+          channels: formData.channels,
+          pillars: formData.pillars,
+        }),
+      })
+
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Error generando blueprint')
+      }
+
+      setGeneratedBlueprint(data.blueprint)
+      setGenerationTime(data.generation_time_ms)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error desconocido')
+      setGeneratedBlueprint(null)
+    } finally {
+      setIsGenerating(false)
+    }
+  }
 
   return (
     <ToolkitToolPage
@@ -26,11 +97,13 @@ export default function CommunityGrowthBlueprintPage() {
                 Tamaño Actual de Comunidad
               </label>
               <input
+                ref={sizeRef}
                 type="number"
                 placeholder="Ej: 500"
                 min="10"
                 className="w-full px-3 py-2 rounded-lg text-sm"
                 style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                disabled={isGenerating}
               />
             </div>
             <div>
@@ -38,10 +111,12 @@ export default function CommunityGrowthBlueprintPage() {
                 Objetivo de Crecimiento (3 meses)
               </label>
               <input
+                ref={goalRef}
                 type="text"
                 placeholder="Ej: 2,000 miembros activos, 10% engagement"
                 className="w-full px-3 py-2 rounded-lg text-sm"
                 style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                disabled={isGenerating}
               />
             </div>
             <div>
@@ -49,10 +124,12 @@ export default function CommunityGrowthBlueprintPage() {
                 Canales de Comunidad Principales
               </label>
               <input
+                ref={channelsRef}
                 type="text"
                 placeholder="Ej: Slack, Discord, LinkedIn, Telegram, Private community"
                 className="w-full px-3 py-2 rounded-lg text-sm"
                 style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                disabled={isGenerating}
               />
             </div>
             <div>
@@ -60,15 +137,23 @@ export default function CommunityGrowthBlueprintPage() {
                 Pilares de Contenido de Comunidad
               </label>
               <input
+                ref={pillarsRef}
                 type="text"
                 placeholder="Ej: Education, Networking, Product updates, Behind-the-scenes"
                 className="w-full px-3 py-2 rounded-lg text-sm"
                 style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                disabled={isGenerating}
               />
             </div>
+
+            {error && (
+              <div className="p-3 rounded-lg flex items-start gap-2" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
+                <span className="text-xs text-red-400">⚠️ {error}</span>
+              </div>
+            )}
           </div>
           <button
-            onClick={() => setIsGenerating(true)}
+            onClick={handleGenerate}
             disabled={isGenerating}
             className="w-full mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
             style={{
@@ -76,74 +161,114 @@ export default function CommunityGrowthBlueprintPage() {
               color: 'white',
             }}
           >
-            <Play size={16} />
-            {isGenerating ? 'Generando estrategia...' : 'Generar Blueprint'}
+            {isGenerating ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Generando (Claude)...
+              </>
+            ) : (
+              <>
+                <Play size={16} />
+                Generar Blueprint
+              </>
+            )}
           </button>
         </div>
 
-        {isGenerating && (
+        {generatedBlueprint && (
           <div className="space-y-4">
             <div className="card px-6 py-5">
               <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
-                Roadmap de 90 Días
+                Strategy Summary (Generado por Claude en {generationTime}ms)
               </p>
-              <div className="space-y-2 text-sm text-white">
-                <p>🚀 <strong>Mes 1:</strong> Foundation & Activation — Optimizar infraestructura</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Reglas, canales, primer programa de incentivos, welcome sequence</p>
-                <p className="mt-3">📢 <strong>Mes 2:</strong> Growth & Engagement — Experiencias activas</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>AMA sessions, workshops, ambassador program, referral mechanics</p>
-                <p className="mt-3">🎯 <strong>Mes 3:</strong> Retention & Monetization — Crear valor duradero</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Tier-based access, exclusive content, partner integrations, events</p>
-              </div>
+              <p className="text-sm text-white leading-relaxed">
+                {generatedBlueprint.strategy_summary}
+              </p>
             </div>
 
-            <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
-                Engagement Playbook
-              </p>
-              <div className="space-y-2 text-sm text-white">
-                <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span>Daily check-ins</span>
-                  <span style={{ color: '#C4B5FD' }}>5-10 min, moderators</span>
-                </div>
-                <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span>Weekly AMA / Q&A</span>
-                  <span style={{ color: '#C4B5FD' }}>60 min, founder/expert</span>
-                </div>
-                <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span>Monthly workshop</span>
-                  <span style={{ color: '#C4B5FD' }}>Skill-share or guest speaker</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Quarterly event</span>
-                  <span style={{ color: '#C4B5FD' }}>Networking or celebration</span>
+            {generatedBlueprint.month_1_foundation && (
+              <div className="card px-6 py-5">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
+                  📅 Month 1 — {generatedBlueprint.month_1_foundation.theme}
+                </p>
+                <div className="space-y-3 text-sm text-white">
+                  <div>
+                    <p className="font-medium mb-1">Focus</p>
+                    <p style={{ color: 'rgba(255,255,255,0.7)' }}>{generatedBlueprint.month_1_foundation.focus}</p>
+                  </div>
+                  {generatedBlueprint.month_1_foundation.key_initiatives && (
+                    <div>
+                      <p className="font-medium mb-1">Key Initiatives</p>
+                      <ul className="list-disc list-inside text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                        {generatedBlueprint.month_1_foundation.key_initiatives.map((init: string, i: number) => (
+                          <li key={i}>{init}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
+            )}
+
+            {generatedBlueprint.engagement_playbook && (
+              <div className="card px-6 py-5">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
+                  Engagement Playbook
+                </p>
+                <div className="space-y-2 text-sm text-white">
+                  <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span>Daily check-ins</span>
+                    <span style={{ color: '#C4B5FD' }}>{generatedBlueprint.engagement_playbook.daily_check_ins}</span>
+                  </div>
+                  <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span>Weekly AMA</span>
+                    <span style={{ color: '#C4B5FD' }}>{generatedBlueprint.engagement_playbook.weekly_ama}</span>
+                  </div>
+                  <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                    <span>Monthly workshop</span>
+                    <span style={{ color: '#C4B5FD' }}>{generatedBlueprint.engagement_playbook.monthly_workshop}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span>Quarterly event</span>
+                    <span style={{ color: '#C4B5FD' }}>{generatedBlueprint.engagement_playbook.quarterly_event}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {generatedBlueprint.metrics && (
+              <div className="card px-6 py-5">
+                <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
+                  Success Metrics (90 Days)
+                </p>
+                <div className="grid grid-cols-2 gap-4 text-sm text-white">
+                  <div>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Target Members</p>
+                    <p className="font-semibold">{generatedBlueprint.metrics.target_members}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Engagement Rate</p>
+                    <p className="font-semibold">{(generatedBlueprint.metrics.engagement_rate * 100).toFixed(0)}%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Retention Rate</p>
+                    <p className="font-semibold">{(generatedBlueprint.metrics.retention_rate * 100).toFixed(0)}%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Referral Rate</p>
+                    <p className="font-semibold">{(generatedBlueprint.metrics.referral_rate * 100).toFixed(0)}%</p>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
-                Influencer & Ambassador Sourcing
+              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#22C55E' }}>
+                ✓ Blueprint generado con documentación de tu comunidad
               </p>
-              <div className="space-y-2 text-sm text-white">
-                <p>⭐ <strong>Tier 1:</strong> Micro-influencers (5k-50k followers) — authenticity over reach</p>
-                <p>🌟 <strong>Tier 2:</strong> Power users (most active in your community) — early advocates</p>
-                <p>🎯 <strong>Tier 3:</strong> Industry experts — credibility and cross-pollination</p>
-                <p className="mt-2 text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>Incentive structure: Early access → featured posts → financial partnership</p>
-              </div>
-            </div>
-
-            <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
-                Success Metrics
+              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                Guardado en tu historial de resultados. Próximo paso: exportar a PDF o compartir con el equipo.
               </p>
-              <div className="space-y-2 text-sm text-white">
-                <p>👥 Members: 500 → 2,000 (4x growth)</p>
-                <p>💬 Monthly active: 50%+ engagement rate</p>
-                <p>📈 Content interactions: 100+ comments/reactions weekly</p>
-                <p>🔗 Referral rate: 30%+ of new members from existing</p>
-                <p>⏱️ Retention: 80%+ month-over-month stay</p>
-              </div>
             </div>
           </div>
         )}
