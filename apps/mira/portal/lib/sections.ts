@@ -34,6 +34,7 @@ export const SECTIONS: MiraSection[] = [
       { href: '/approvals',   label: 'Approvals',    icon: CheckSquare },
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
       { href: '/brain',       label: 'Brand Brain',  icon: Brain },
+      { href: '/toolkit',     label: 'Toolkit',      icon: Zap },
       { href: '/brief',       label: 'New Brief',    icon: MessageSquarePlus },
     ],
     locked: false,

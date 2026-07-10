@@ -60,6 +60,22 @@ const TOOLS = [
     color: '#8B5CF6',
     href: '/toolkit/competitive-analysis',
   },
+  {
+    id: 'marketing-campaign-generator',
+    name: 'Marketing Campaign Generator',
+    icon: '📊',
+    desc: 'Plan de campaña 30 días completo',
+    color: '#8B5CF6',
+    href: '/toolkit/marketing-campaign-generator',
+  },
+  {
+    id: 'community-growth-blueprint',
+    name: 'Community Growth Blueprint',
+    icon: '👥',
+    desc: 'Estrategia de crecimiento de comunidad',
+    color: '#8B5CF6',
+    href: '/toolkit/community-growth-blueprint',
+  },
 ]
 
 export default function ToolkitPage() {
@@ -70,7 +86,7 @@ export default function ToolkitPage() {
           Toolkit
         </p>
         <h1 className="text-3xl font-semibold text-white tracking-tight">
-          7 Herramientas de IA
+          9 Herramientas de IA
         </h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
           Explora cada herramienta, ejecuta proyectos y descarga resultados
