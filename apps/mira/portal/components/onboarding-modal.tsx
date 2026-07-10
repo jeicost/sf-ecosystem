@@ -1,0 +1,387 @@
+'use client'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { X, ArrowRight, ArrowLeft, Check } from 'lucide-react'
+
+const ONBOARDING_KEY = 'mira_onboarding_v1'
+
+interface Agent { emoji: string; name: string; role: string }
+
+interface Step {
+  id: string
+  type: 'welcome' | 'dept' | 'done'
+  color: string
+  icon: string
+  title: string
+  subtitle: string
+  highlights: { icon: string; text: string }[]
+  agents: Agent[]
+  quickWin: string
+  cta: { label: string; href: string }
+}
+
+const STEPS: Step[] = [
+  {
+    id: 'welcome', type: 'welcome', color: '#6366F1', icon: '✦',
+    title: 'Welcome to MIRA',
+    subtitle: 'Your AI team that knows your brand, runs your departments and gets smarter every week.',
+    highlights: [
+      { icon: '🤖', text: '30 specialized AI agents across 6 departments' },
+      { icon: '🧠', text: 'Brand Brain learns your voice, style and goals' },
+      { icon: '⚡', text: 'Available 24/7 — you direct, they execute' },
+    ],
+    agents: [],
+    quickWin: 'Let\'s meet your team — one department at a time.',
+    cta: { label: 'Meet my team →', href: '' },
+  },
+  {
+    id: 'marketing', type: 'dept', color: '#8B5CF6', icon: '🎯',
+    title: 'Marketing Team',
+    subtitle: 'Content, social media, ads and community — all in your exact brand voice.',
+    highlights: [
+      { icon: '✍️', text: 'Alex writes posts, captions and scripts in your tone' },
+      { icon: '📅', text: 'Noa manages your editorial calendar and approvals' },
+      { icon: '📣', text: 'Riva monitors competitors and finds winning ad hooks' },
+    ],
+    agents: [
+      { emoji: '🎬', name: 'Marco', role: 'Creative Director' },
+      { emoji: '🔍', name: 'Luna',  role: 'Strategist' },
+      { emoji: '✍️', name: 'Alex',  role: 'Copywriter' },
+      { emoji: '🎨', name: 'Zoe',   role: 'Designer' },
+      { emoji: '📅', name: 'Noa',   role: 'Social Manager' },
+    ],
+    quickWin: 'Start with a brief → Marco coordinates the team and produces your first post.',
+    cta: { label: 'Write first brief →', href: '/brief' },
+  },
+  {
+    id: 'comercial', type: 'dept', color: '#EF4444', icon: '🚀',
+    title: 'Sales Team',
+    subtitle: 'B2B pipeline automation — from prospecting to closed deals with AI precision.',
+    highlights: [
+      { icon: '🔍', text: 'Rex finds qualified leads matching your ICP automatically' },
+      { icon: '🎯', text: 'Vera scores each lead 0-100 so you focus on what matters' },
+      { icon: '📄', text: 'Nova generates personalized proposals in 18 minutes' },
+    ],
+    agents: [
+      { emoji: '🔍', name: 'Rex',   role: 'Lead Scout' },
+      { emoji: '🎯', name: 'Vera',  role: 'ICP Scorer' },
+      { emoji: '✍️', name: 'Finn',  role: 'Icebreaker Writer' },
+      { emoji: '💬', name: 'Quinn', role: 'Reply Qualifier' },
+      { emoji: '📄', name: 'Nova',  role: 'Proposal Writer' },
+    ],
+    quickWin: 'Define your ICP → Rex builds your first qualified lead list.',
+    cta: { label: 'Find leads →', href: '/comercial/discovery' },
+  },
+  {
+    id: 'estrategia', type: 'dept', color: '#6366F1', icon: '🔭',
+    title: 'Strategy Team',
+    subtitle: 'Business clarity in hours, not weeks. From diagnosis to a plan you can execute.',
+    highlights: [
+      { icon: '🗺️', text: 'Strategos builds your 90-day strategic plan with 3 clear Rocks' },
+      { icon: '🗺️', text: 'Atlas maps your competitive landscape and finds positioning gaps' },
+      { icon: '📊', text: 'Kairos turns your metrics into traffic-light KPI dashboards' },
+    ],
+    agents: [
+      { emoji: '🔭', name: 'Strategos', role: 'Chief Strategy Officer' },
+      { emoji: '🗺️', name: 'Atlas',     role: 'Market Analyst' },
+      { emoji: '📐', name: 'Blueprint', role: 'Business Architect' },
+      { emoji: '📊', name: 'Kairos',    role: 'Performance Analyst' },
+    ],
+    quickWin: 'Tell Strategos where you are and where you want to be in 90 days.',
+    cta: { label: 'Build 90-day plan →', href: '/estrategia/plan' },
+  },
+  {
+    id: 'innovacion', type: 'dept', color: '#F97316', icon: '💡',
+    title: 'Innovation Team',
+    subtitle: 'See what\'s coming before everyone else. Trends, ideas and future scenarios.',
+    highlights: [
+      { icon: '📡', text: 'Radar sends you a weekly trend brief every Monday at 9am' },
+      { icon: '✨', text: 'Spark facilitates Design Sprints and Design Thinking sessions' },
+      { icon: '🔮', text: 'Oracle builds future scenarios using Shell methodology' },
+    ],
+    agents: [
+      { emoji: '📡', name: 'Radar',   role: 'Trend Intelligence' },
+      { emoji: '✨', name: 'Spark',   role: 'Innovation Consultant' },
+      { emoji: '🔍', name: 'Scout',   role: 'Open Innovation' },
+      { emoji: '🚀', name: 'Venture', role: 'Innovation PM' },
+      { emoji: '🔮', name: 'Oracle',  role: 'Strategic Foresight' },
+    ],
+    quickWin: 'Ask Radar for a trend briefing in your industry — done in 60 seconds.',
+    cta: { label: 'See trends →', href: '/innovacion/tendencias' },
+  },
+  {
+    id: 'admin', type: 'dept', color: '#10B981', icon: '⚙️',
+    title: 'Admin Team',
+    subtitle: 'Internal operations running on autopilot. Nothing is lost, nothing is forgotten.',
+    highlights: [
+      { icon: '📰', text: 'Herald delivers your daily briefing every morning at 08:30' },
+      { icon: '💳', text: 'Ledger tracks all invoices, P&L and overdue payments' },
+      { icon: '💓', text: 'Pulse monitors all agents and alerts you before issues happen' },
+    ],
+    agents: [
+      { emoji: '💳', name: 'Ledger',  role: 'CFO Agent' },
+      { emoji: '🤝', name: 'Onboard', role: 'Client Success' },
+      { emoji: '💓', name: 'Pulse',   role: 'AI Observability' },
+      { emoji: '📰', name: 'Herald',  role: 'Internal Reporting' },
+    ],
+    quickWin: 'Herald sends you a briefing every morning. Nothing to configure — it just starts.',
+    cta: { label: 'Check system →', href: '/admin/sistema' },
+  },
+  {
+    id: 'finanzas', type: 'dept', color: '#F59E0B', icon: '💰',
+    title: 'Finance Team',
+    subtitle: 'Make work a choice, not a necessity. Wealth plans, portfolios and FI planning.',
+    highlights: [
+      { icon: '💎', text: 'Midas builds your personal wealth plan and savings system' },
+      { icon: '📈', text: 'Quant designs your low-cost ETF portfolio by risk tolerance' },
+      { icon: '⚓', text: 'Harbor calculates your FI number and FIRE timeline' },
+    ],
+    agents: [
+      { emoji: '💎', name: 'Midas',  role: 'Wealth Planner' },
+      { emoji: '📈', name: 'Quant',  role: 'Investment Analyst' },
+      { emoji: '📋', name: 'Fiscal', role: 'Tax Optimizer' },
+      { emoji: '⚓', name: 'Harbor', role: 'FI Planner' },
+    ],
+    quickWin: 'Tell Midas your monthly income and expenses. Get your wealth plan in 5 minutes.',
+    cta: { label: 'Start wealth plan →', href: '/finanzas/plan' },
+  },
+  {
+    id: 'done', type: 'done', color: '#22C55E', icon: '✓',
+    title: 'Your team is ready.',
+    subtitle: 'You\'ve met all 30 agents across 6 departments. They\'re standing by — you direct, they execute.',
+    highlights: [
+      { icon: '🧠', text: 'Complete your Brand Brain so agents learn your exact style' },
+      { icon: '✍️', text: 'Write your first brief and watch the marketing team work' },
+      { icon: '🔍', text: 'Run a lead discovery to fill your B2B pipeline' },
+    ],
+    agents: [],
+    quickWin: 'Start anywhere — every agent is ready from day one.',
+    cta: { label: 'Go to home', href: '/home' },
+  },
+]
+
+interface OnboardingModalProps {
+  userName: string
+}
+
+export default function OnboardingModal({ userName }: OnboardingModalProps) {
+  const router = useRouter()
+  const [visible, setVisible] = useState(false)
+  const [step, setStep] = useState(0)
+
+  useEffect(() => {
+    const done = localStorage.getItem(ONBOARDING_KEY)
+    if (!done) setVisible(true)
+  }, [])
+
+  function complete() {
+    localStorage.setItem(ONBOARDING_KEY, '1')
+    setVisible(false)
+  }
+
+  function goNext() {
+    if (step < STEPS.length - 1) setStep(s => s + 1)
+    else complete()
+  }
+
+  function goPrev() {
+    if (step > 0) setStep(s => s - 1)
+  }
+
+  function navigateCta(href: string) {
+    complete()
+    if (href) router.push(href)
+  }
+
+  if (!visible) return null
+
+  const current = STEPS[step]
+  const isFirst = step === 0
+  const isLast  = step === STEPS.length - 1
+  const c = current.color
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center"
+      style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
+      <div className="relative w-full max-w-[560px] mx-4 rounded-3xl overflow-hidden shadow-2xl"
+        style={{ background: '#0f0f17', border: '1px solid rgba(255,255,255,0.1)' }}>
+
+        {/* Progress bar */}
+        <div className="h-0.5 w-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+          <div className="h-full transition-all duration-500"
+            style={{ width: `${((step + 1) / STEPS.length) * 100}%`, background: c }} />
+        </div>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 pt-5 pb-0">
+          <div className="flex items-center gap-2">
+            {STEPS.map((_, i) => (
+              <div key={i}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i === step ? '20px' : '6px',
+                  height: '6px',
+                  background: i === step ? c : i < step ? `${c}60` : 'rgba(255,255,255,0.15)',
+                }} />
+            ))}
+          </div>
+          <button onClick={complete}
+            className="text-[#444] hover:text-white transition-colors p-1">
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div className="px-6 py-6">
+
+          {/* Welcome step */}
+          {current.type === 'welcome' && (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-5"
+                style={{ background: `${c}15`, border: `1px solid ${c}30` }}>
+                ✦
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">
+                Welcome, {userName.split(' ')[0]}
+              </h2>
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                {current.subtitle}
+              </p>
+              <div className="space-y-3 text-left mb-6">
+                {current.highlights.map((h, i) => (
+                  <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    <span className="text-xl">{h.icon}</span>
+                    <span className="text-sm text-white">{h.text}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                {current.quickWin}
+              </p>
+            </div>
+          )}
+
+          {/* Department step */}
+          {current.type === 'dept' && (
+            <div>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0"
+                  style={{ background: `${c}18`, border: `1px solid ${c}30` }}>
+                  {current.icon}
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-widest font-semibold mb-0.5"
+                    style={{ color: `${c}99` }}>Department {step} of {STEPS.length - 2}</p>
+                  <h2 className="text-xl font-bold text-white tracking-tight">{current.title}</h2>
+                </div>
+              </div>
+
+              <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                {current.subtitle}
+              </p>
+
+              <div className="space-y-2.5 mb-5">
+                {current.highlights.map((h, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-lg flex items-center justify-center text-xs shrink-0 mt-0.5"
+                      style={{ background: `${c}15` }}>
+                      <Check size={10} style={{ color: c }} />
+                    </div>
+                    <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{h.text}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Agents */}
+              <div className="flex items-center gap-2 flex-wrap mb-5">
+                {current.agents.map(a => (
+                  <div key={a.name}
+                    className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg"
+                    style={{ background: `${c}0d`, border: `1px solid ${c}22` }}>
+                    <span className="text-sm leading-none">{a.emoji}</span>
+                    <div>
+                      <p className="text-[11px] font-semibold leading-none text-white">{a.name}</p>
+                      <p className="text-[9px] leading-tight" style={{ color: `${c}aa` }}>{a.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Quick win */}
+              <div className="px-4 py-3 rounded-xl"
+                style={{ background: `${c}08`, border: `1px solid ${c}20` }}>
+                <p className="text-[10px] uppercase tracking-widest font-semibold mb-1" style={{ color: `${c}80` }}>
+                  First step
+                </p>
+                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>{current.quickWin}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Done step */}
+          {current.type === 'done' && (
+            <div className="text-center">
+              <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5"
+                style={{ background: `${c}15`, border: `1px solid ${c}30` }}>
+                <Check size={28} style={{ color: c }} />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">{current.title}</h2>
+              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                {current.subtitle}
+              </p>
+              <div className="space-y-2.5 text-left mb-6">
+                {current.highlights.map((h, i) => (
+                  <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    <span className="text-xl">{h.icon}</span>
+                    <span className="text-sm text-white">{h.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer actions */}
+        <div className="px-6 pb-6 flex items-center gap-3">
+          {!isFirst && (
+            <button onClick={goPrev}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:text-white"
+              style={{ color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <ArrowLeft size={14} />
+              Back
+            </button>
+          )}
+
+          <button onClick={goNext}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 hover:scale-[1.01]"
+            style={{ background: isLast ? `linear-gradient(135deg, ${c}, ${c}cc)` : `${c}`, boxShadow: `0 0 20px ${c}30` }}>
+            {isLast ? 'Start directing →' : (
+              <>
+                {STEPS[step + 1]?.title.includes('Team') ? `Next: ${STEPS[step + 1]?.icon} ${STEPS[step + 1]?.id.charAt(0).toUpperCase() + STEPS[step + 1]?.id.slice(1)}` : 'Next'}
+                <ArrowRight size={14} />
+              </>
+            )}
+          </button>
+
+          {!isLast && current.type !== 'welcome' && (
+            <button onClick={() => navigateCta(current.cta.href)}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all"
+              style={{ color: c, background: `${c}12`, border: `1px solid ${c}28` }}>
+              {current.cta.label}
+            </button>
+          )}
+
+          {isFirst && (
+            <button onClick={complete}
+              className="text-xs transition-colors hover:text-white"
+              style={{ color: 'rgba(255,255,255,0.3)' }}>
+              Skip tour
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
