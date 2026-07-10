@@ -87,7 +87,7 @@ export default function MigrationsPage() {
     setChecking(true)
     try {
       const response = await fetch('/api/apply-migration')
-      await response.json()  // verify response
+      const data = await response.json()
       // Attempt to verify
       setTables({
         generation_queue: true,
