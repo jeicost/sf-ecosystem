@@ -11,7 +11,7 @@ import { getUser, clearUser, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
 import { CLIENT_ID } from '@/lib/constants'
-import { Home, BookOpen, Brain, Zap } from 'lucide-react'
+import { Home, BookOpen, Brain, Zap, Layers } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
 
@@ -113,6 +113,18 @@ function SidebarContent() {
           style={{ background: 'rgba(167,139,250,0.15)', color: 'rgba(167,139,250,0.7)' }}>
           CORE
         </span>
+      </Link>
+
+      {/* Toolkit — global link */}
+      <Link href="/toolkit"
+        className={clsx(
+          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+          path === '/toolkit'
+            ? 'bg-violet-500/15 text-violet-400'
+            : 'text-[#555] hover:text-violet-400 hover:bg-violet-500/8'
+        )}>
+        <Layers size={13} />
+        <span>Toolkit</span>
       </Link>
 
       {/* Integrations */}

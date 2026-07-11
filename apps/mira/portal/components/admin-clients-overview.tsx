@@ -1,8 +1,11 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { ALL_AGENTS } from '@/lib/agents'
+import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import StatCard from './stat-card'
 import ClientCard from './client-card'
 
@@ -46,20 +49,31 @@ export default function AdminClientsOverview() {
 
   return (
     <>
-      <div className="mb-8">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(139,92,246,0.8)', letterSpacing: '0.12em' }}>
-          Super Admin
+      <div className="mb-6">
+        <p className="text-[10px] uppercase tracking-widest font-semibold mb-3" style={{ color: 'rgba(139,92,246,0.6)', letterSpacing: '0.12em' }}>
+          Buenos días, equipo 👋
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Clientes y Operaciones</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Gestión unificada de todos los clientes y su progreso en MIRA
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold text-white tracking-tight mb-1">Clientes y Operaciones</h1>
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              Gestión unificada de todos los clientes y su progreso en MIRA
+            </p>
+          </div>
+          <Link href="/toolkit"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all"
+            style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
+            <Plus size={14} />
+            Generar entregable
+          </Link>
+        </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-4 gap-3 mb-8">
         <StatCard label="Clientes Activos" value={clients.length} />
         <StatCard label="Onboarding Completado" value={onboardingCompletedCount} />
         <StatCard label="Agentes Disponibles" value={ALL_AGENTS.length} />
+        <StatCard label="Herramientas AI" value={TOOLKIT_TOOLS.length} />
       </div>
 
       {loading ? (

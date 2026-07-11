@@ -1,6 +1,7 @@
 import { ADMIN_AGENTS } from '@/lib/agents'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
+import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
 
 const ADMIN_META = [
   { produces: 'P&L & invoices' },
@@ -47,6 +48,8 @@ export default function AdminPage() {
         finalOutput="Zero operational blind spots"
         accentColor="#10B981"
       />
+
+      <AdminQuickActions />
 
       <div className="grid grid-cols-2 gap-4">
         {ADMIN_AGENTS.map((agent, i) => (
