@@ -9,9 +9,43 @@ export default function ToolkitPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Fetch delivered results from both generation_queue/deliverables and toolkit_results
-    // For now, show as empty — would be connected to Supabase in real implementation
-    setLoading(false)
+    const fetchDeliverables = async () => {
+      try {
+        const res = await fetch('/api/toolkit/deliverables')
+        const { data, error } = await res.json()
+
+        if (error) {
+          console.error('Error fetching deliverables:', error)
+          setLoading(false)
+          return
+        }
+
+        // Map generation_queue data to deliverable format
+        const deliverables = (data || []).map((item: any) => {
+          const tool = TOOLKIT_TOOLS.find(t => t.slug === item.tool_slug)
+          return {
+            id: item.id,
+            tool_slug: item.tool_slug,
+            icon: tool?.icon || '📄',
+            title: tool?.name || item.tool_slug,
+            description: tool?.description || 'Generado recientemente',
+            category: 'Reportable',
+            color: tool?.color || '#8B5CF6',
+            tags: [],
+            created_at: item.created_at,
+            result_data: item.result_data,
+          }
+        })
+
+        setGeneratedDeliverables(deliverables)
+        setLoading(false)
+      } catch (err) {
+        console.error('Error in fetchDeliverables:', err)
+        setLoading(false)
+      }
+    }
+
+    fetchDeliverables()
   }, [])
 
   return (
