@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { adminClient } from '@/lib/supabase'
+import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
+import Anthropic from '@anthropic-ai/sdk'
+
+const claude = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+})
 
 // Quick Action Handler - Unified endpoint for all departments
 export async function POST(req: NextRequest) {
+  const startTime = Date.now()
   try {
     const { department, action_type, input_data } = await req.json()
 
@@ -15,7 +22,6 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Get authenticated user
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -33,7 +39,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Get client_id from user access
     const admin = adminClient()
     const { data: accessData, error: accessError } = await admin
       .from('mira_project_access')
@@ -45,16 +50,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No client access found' }, { status: 403 })
     }
 
-    // Insert into quick_actions_results (store in memory)
+    const clientId = accessData.client_id
+
+    // Insert into quick_actions_results with 'processing' status
     const { data: result, error: insertError } = await admin
       .from('quick_actions_results')
       .insert({
-        client_id: accessData.client_id,
+        client_id: clientId,
         user_id: user.id,
         department,
         action_type,
         input_data,
-        output_data: {}, // Will be filled by n8n webhook
+        output_data: {},
         output_type: determineOutputType(action_type),
         resource_name: generateResourceName(department, action_type),
         liked_by_user: false,
@@ -67,33 +74,66 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
 
-    // Trigger n8n webhook for async processing
-    const n8nUrl = process.env.N8N_WEBHOOK_URL
-    if (n8nUrl) {
-      try {
-        await fetch(n8nUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            action_id: result.id,
-            department,
-            action_type,
-            input_data,
-            client_id: accessData.client_id,
-            user_id: user.id,
-          }),
-        })
-      } catch (err) {
-        console.error('N8n webhook error:', err)
-        // Don't fail the request if n8n fails - just log it
+    const actionId = result.id
+
+    // Generate prompt and call Claude
+    const prompt = await getQuickActionPrompt(action_type, {
+      clientId,
+      inputData: input_data,
+    })
+
+    if (!prompt) {
+      await admin
+        .from('quick_actions_results')
+        .update({ output_data: { error: 'Unknown action type' } })
+        .eq('id', actionId)
+
+      return NextResponse.json({
+        success: true,
+        action_id: actionId,
+        output_data: { error: 'Unknown action type' },
+        status: 'failed',
+      })
+    }
+
+    // Call Claude
+    const message = await claude.messages.create({
+      model: 'claude-opus-4-1-20250805',
+      max_tokens: 2000,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+    })
+
+    // Extract JSON from Claude's response
+    let outputData = {}
+    const textContent = message.content[0]
+    if (textContent && 'text' in textContent) {
+      const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
+      if (jsonMatch) {
+        outputData = JSON.parse(jsonMatch[0])
       }
     }
 
+    const generationTime = Date.now() - startTime
+
+    // Update with result
+    await admin
+      .from('quick_actions_results')
+      .update({
+        output_data: outputData,
+      })
+      .eq('id', actionId)
+
     return NextResponse.json({
       success: true,
-      action_id: result.id,
-      message: 'Quick action queued for processing',
-      status: 'processing',
+      action_id: actionId,
+      output_data: outputData,
+      status: 'completed',
+      generation_time_ms: generationTime,
     })
   } catch (error) {
     console.error('Quick action error:', error)
@@ -104,7 +144,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Webhook endpoint for n8n to return results
+// Legacy: Webhook endpoint for n8m to return results (deprecated, n8n no longer used)
 export async function PUT(req: NextRequest) {
   try {
     const { action_id, output_data, output_type } = await req.json()

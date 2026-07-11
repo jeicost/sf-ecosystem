@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase'
+import { retrieveAgentContext } from '@/lib/agent-context'
 import Anthropic from '@anthropic-ai/sdk'
 
 interface MarketingCampaignRequest {
@@ -13,24 +14,6 @@ interface MarketingCampaignRequest {
 const claude = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
-
-async function fetchClientContext(clientId: string, query: string) {
-  try {
-    const res = await fetch('http://localhost:3000/api/agent/context/retrieve', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: clientId,
-        context_type: 'brand',
-        query,
-        limit: 3,
-      }),
-    })
-    return res.ok ? await res.json() : null
-  } catch {
-    return null
-  }
-}
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now()
@@ -54,10 +37,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Fetch client documentation context
-    const docContext = await fetchClientContext(
+    const docContext = await retrieveAgentContext({
       client_id,
-      'brand voice, target audience, key messages, visual identity'
-    )
+      context_type: 'brand',
+      query: 'brand voice, target audience, key messages, visual identity',
+      limit: 3,
+    })
 
     const brandContext = docContext?.documents
       ?.map((d: any) => d.excerpt)

@@ -21,30 +21,29 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
 
   const [profileRes, pillarsRes] = await Promise.all([
     db.from('brand_profiles')
-      .select('brand_name, mission, tone_of_voice, brand_personality, banned_phrases')
+      .select('name, mission, tone_of_voice, values, description')
       .eq('client_id', clientId)
       .maybeSingle(),
     db.from('content_pillars')
-      .select('name, description, weight, example_hooks')
+      .select('pillar_name, description, themes, examples')
       .eq('client_id', clientId)
-      .eq('is_active', true)
-      .order('weight', { ascending: false }),
+      .order('created_at', { ascending: false }),
   ])
 
   if (!profileRes.data) return null
 
   const p = profileRes.data
   return {
-    brandName: p.brand_name ?? '',
+    brandName: p.name ?? '',
     mission: p.mission ?? '',
     toneOfVoice: (p.tone_of_voice as Record<string, string>) ?? {},
-    brandPersonality: (p.brand_personality as string[]) ?? [],
-    bannedPhrases: (p.banned_phrases as string[]) ?? [],
-    pillars: (pillarsRes.data ?? []).map((pi: { name: string; description: string; weight: number; example_hooks: string[] }) => ({
-      name: pi.name,
-      description: pi.description,
-      weight: pi.weight,
-      exampleHooks: (pi.example_hooks as string[]) ?? [],
+    brandPersonality: (p.values as string[]) ?? [],
+    bannedPhrases: [],
+    pillars: (pillarsRes.data ?? []).map((pi: any) => ({
+      name: pi.pillar_name ?? pi.name,
+      description: pi.description ?? '',
+      weight: 1,
+      exampleHooks: (pi.examples as string[]) ?? [],
     })),
   }
 }
