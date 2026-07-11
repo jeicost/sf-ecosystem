@@ -54,20 +54,22 @@ export default function ToolkitHub() {
       const client = createClient()
       const { data, error: dbError } = await client
         .from('generation_queue')
-        .select('*')
+        .select('id, tool_slug, status, result_data, created_at, completed_at, error_message')
         .order('created_at', { ascending: false })
-        .limit(20)
+        .limit(50)
 
       if (dbError) {
-        setError(dbError.message)
-        setLoading(false)
-        return
+        console.error('Supabase error:', dbError)
+        setError(`Database error: ${dbError.message}`)
+        setGenerations([])
+      } else {
+        setGenerations(data || [])
+        setError(null)
       }
-
-      setGenerations(data || [])
-      setError(null)
     } catch (err) {
+      console.error('Fetch error:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch generations')
+      setGenerations([])
     } finally {
       setLoading(false)
     }
