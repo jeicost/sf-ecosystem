@@ -47,11 +47,33 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   const handleSaveToMemory = async () => {
     setIsSaving(true)
     try {
-      // TODO: Call API to save to memory/quick_actions_results
+      // Extract key insight for summary
+      const summary = extractSummary(result.output_data, displayOutputType)
+
+      const res = await fetch('/api/project-memory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actionId,
+          title: resourceName,
+          category: determineCategoryFromDepartment(department),
+          summary: summary || 'Resultado guardado del toolkit',
+          tags: [department, displayOutputType],
+          sourceDepartment: department,
+          fullContent: result.output_data,
+        }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to save to project memory')
+      }
+
       setIsMemorySaved(true)
       setTimeout(() => setIsSaving(false), 1500)
     } catch (err) {
       console.error('Error saving to memory:', err)
+      setError(err instanceof Error ? err.message : 'Failed to save to memory')
       setIsSaving(false)
     }
   }
@@ -59,11 +81,35 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   const handleSaveToGoogleDrive = async () => {
     setIsSaving(true)
     try {
-      // TODO: Call Google Drive MCP integration
-      console.log('Saving to Google Drive:', { actionId, resourceName })
-      setIsSaving(false)
+      const res = await fetch('/api/export/google-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          actionId,
+          resourceName,
+          outputData: result.output_data,
+          outputType: displayOutputType,
+          department,
+        }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to export to Google Drive')
+      }
+
+      const { driveUrl } = await res.json()
+
+      // Open Google Drive file in new tab
+      if (driveUrl) {
+        window.open(driveUrl, '_blank')
+      }
+
+      setIsMemorySaved(true)
+      setTimeout(() => setIsSaving(false), 1500)
     } catch (err) {
       console.error('Error saving to Google Drive:', err)
+      setError(err instanceof Error ? err.message : 'Failed to export to Google Drive')
       setIsSaving(false)
     }
   }
@@ -168,6 +214,25 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       </details>
     </div>
   )
+}
+
+function extractSummary(outputData: any, outputType: string): string {
+  if (outputData.summary) return outputData.summary.substring(0, 200)
+  if (outputData.title) return outputData.title
+  if (outputData.copy) return outputData.copy.substring(0, 200)
+  if (outputData.script) return outputData.script.substring(0, 200)
+  return 'Resultado generado'
+}
+
+function determineCategoryFromDepartment(department: string): string {
+  const categoryMap: Record<string, string> = {
+    comercial: 'action',
+    marketing: 'content',
+    strategy: 'insight',
+    community: 'action',
+    admin: 'metric',
+  }
+  return categoryMap[department] || 'insight'
 }
 
 function ContentPreview({ outputType, outputData }: { outputType: string; outputData: any }) {
