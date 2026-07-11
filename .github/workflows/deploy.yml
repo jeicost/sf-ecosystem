@@ -11,7 +11,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Deploy startup-factory-web to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
@@ -23,7 +22,6 @@ jobs:
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy ai-agency-sf-next to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
@@ -35,7 +33,6 @@ jobs:
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy mira portal to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
@@ -47,7 +44,6 @@ jobs:
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy sf-cms to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CMS }}
@@ -59,7 +55,6 @@ jobs:
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy mira-landing to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA_LANDING }}
@@ -71,15 +66,17 @@ jobs:
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy sf-crm to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CRM }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
         run: |
           cd apps/sf-crm
+          mkdir -p .vercel
+          echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
           npx vercel deploy --prod --token=$VERCEL_TOKEN
 
       - name: Deploy sf-links to Vercel
-        continue-on-error: true
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
