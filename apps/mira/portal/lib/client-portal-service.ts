@@ -1,124 +1,147 @@
 import { createClient } from '@/lib/supabase'
 
-export async function getClientInfo(clientId: string) {
-  const db = createClient()
-  const { data, error } = await db
-    .from('clients')
-    .select('id, name, slug, icp, onboarding_status, logo_url, primary_color, created_at')
-    .eq('id', clientId)
-    .single()
-
-  if (error) throw new Error(`Failed to fetch client info: ${error.message}`)
-  return data
-}
-
-export async function getClientDeliveries(clientId: string) {
-  const db = createClient()
-  const { data, error } = await db
-    .from('post_history')
-    .select('id, created_at, platform, content, status, approved_by')
-    .eq('client_id', clientId)
-    .order('created_at', { ascending: false })
-    .limit(100)
-
-  if (error) throw new Error(`Failed to fetch deliveries: ${error.message}`)
-
-  // Map to delivery format with tool inference
-  return data?.map(post => ({
-    id: post.id,
-    date: post.created_at,
-    tool: inferToolFromPlatform(post.platform),
-    status: post.status === 'posted' ? 'delivered' : post.approved_by ? 'delivered' : 'generated',
-    size: '2.4 MB', // Mock for now
-    platform: post.platform,
-  })) || []
-}
-
 export async function getClientStats(clientId: string) {
   const db = createClient()
+  try {
+    const { count: toolkitCount } = await db
+      .from('generation_queue')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('status', 'completed')
 
-  // Fetch agent activity
-  const { data: activities, error: activitiesError } = await db
-    .from('agent_activity')
-    .select('task_type')
-    .eq('client_id', clientId)
-    .gte('started_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    const { count: actionsCount } = await db
+      .from('quick_actions_results')
+      .select('*', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('status', 'success')
 
-  // Fetch posts
-  const { data: posts, error: postsError } = await db
-    .from('post_history')
-    .select('platform')
-    .eq('client_id', clientId)
-    .gte('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+    const { data: tools } = await db
+      .from('generation_queue')
+      .select('tool_slug')
+      .eq('client_id', clientId)
+      .eq('status', 'completed')
 
-  if (activitiesError || postsError) {
-    throw new Error('Failed to fetch stats')
+    const uniqueTools = new Set((tools || []).map((t: any) => t.tool_slug)).size
+    const totalGenerations = (toolkitCount || 0) + (actionsCount || 0)
+    const timeSavedHours = totalGenerations * 0.5
+
+    return {
+      contentGenerated: (toolkitCount || 0) + (actionsCount || 0),
+      toolsUsed: Math.min(uniqueTools, 7),
+      timeSavedHours,
+      toolkitGenerations: toolkitCount || 0,
+      quickActionsExecuted: actionsCount || 0,
+    }
+  } catch (error) {
+    console.error('Error fetching client stats:', error)
+    return {
+      contentGenerated: 0,
+      toolsUsed: 0,
+      timeSavedHours: 0,
+      toolkitGenerations: 0,
+      quickActionsExecuted: 0,
+    }
   }
+}
 
-  const toolsUsed = new Set(activities?.map(a => a.task_type) || [])
-  const contentGenerated = posts?.length || 0
+export async function getClientDeliveries(clientId: string, limit: number = 10) {
+  const db = createClient()
+  try {
+    const { data: toolkitGen } = await db
+      .from('generation_queue')
+      .select('id, tool_slug, created_at, status')
+      .eq('client_id', clientId)
+      .eq('status', 'completed')
+      .order('created_at', { ascending: false })
+      .limit(limit)
 
-  return {
-    contentGenerated,
-    reachEstimated: contentGenerated * 6125, // Mock: ~6k per piece
-    timeSavedHours: contentGenerated * 1.5, // Mock: 1.5h per piece
-    roiProjected: Math.round(contentGenerated * 70), // Mock: 70% per piece
-    toolsUsed: toolsUsed.size,
+    const { data: quickActions } = await db
+      .from('quick_actions_results')
+      .select('id, action_type, created_at, status')
+      .eq('client_id', clientId)
+      .eq('status', 'success')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    const deliveries = [
+      ...(toolkitGen || []).map((g: any) => ({
+        id: g.id,
+        tool: g.tool_slug || 'Unknown',
+        type: 'toolkit',
+        date: g.created_at,
+      })),
+      ...(quickActions || []).map((a: any) => ({
+        id: a.id,
+        tool: a.action_type || 'Unknown',
+        type: 'action',
+        date: a.created_at,
+      })),
+    ]
+      .sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .slice(0, limit)
+
+    return deliveries
+  } catch (error) {
+    console.error('Error fetching client deliveries:', error)
+    return []
   }
 }
 
 export async function getClientBrandProfile(clientId: string) {
   const db = createClient()
-  const { data, error } = await db
-    .from('brand_profiles')
-    .select('brand_name, mission, tone_of_voice, brand_personality, created_at, updated_at')
-    .eq('client_id', clientId)
-    .single()
-
-  if (error && error.code !== 'PGRST116') {
-    throw new Error(`Failed to fetch brand profile: ${error.message}`)
+  try {
+    const { data } = await db
+      .from('brand_profiles')
+      .select('*')
+      .eq('client_id', clientId)
+      .single()
+    return data || null
+  } catch (error) {
+    console.error('Error fetching brand profile:', error)
+    return null
   }
-
-  return data || null
 }
 
 export async function getContentPillars(clientId: string) {
   const db = createClient()
-  const { data, error } = await db
-    .from('content_pillars')
-    .select('id, name, description, weight, is_active')
-    .eq('client_id', clientId)
-    .eq('is_active', true)
-    .order('weight', { ascending: false })
+  try {
+    const { data } = await db
+      .from('content_pillars')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('created_at', { ascending: true })
+    return data || []
+  } catch (error) {
+    console.error('Error fetching content pillars:', error)
+    return []
+  }
+}
 
-  if (error) throw new Error(`Failed to fetch content pillars: ${error.message}`)
-  return data || []
+export async function getClientInfo(clientId: string) {
+  const db = createClient()
+  try {
+    const { data: client } = await db
+      .from('clients')
+      .select('*')
+      .eq('id', clientId)
+      .single()
+    return client || null
+  } catch (error) {
+    console.error('Error fetching client info:', error)
+    return null
+  }
 }
 
 export async function getClientTeamMembers(clientId: string) {
   const db = createClient()
-  const { data, error } = await db
-    .from('mira_project_access')
-    .select('user_id, role, mira_users!inner(email)')
-    .eq('project_id', clientId)
-
-  if (error) throw new Error(`Failed to fetch team members: ${error.message}`)
-
-  return (data as any)?.map((member: any) => ({
-    id: member.user_id,
-    email: member.mira_users?.[0]?.email || member.mira_users?.email || 'unknown@example.com',
-    role: member.role,
-    status: 'Activo',
-  })) || []
-}
-
-function inferToolFromPlatform(platform: string): string {
-  const toolMap: Record<string, string> = {
-    'instagram': 'Content Pack',
-    'twitter': 'Content Pack',
-    'linkedin': 'Brand Briefing',
-    'email': 'Email Campaign',
-    'blog': 'SEO Audit',
+  try {
+    const { data } = await db
+      .from('mira_project_access')
+      .select('user_id, role')
+      .eq('client_id', clientId)
+    return data || []
+  } catch (error) {
+    console.error('Error fetching team members:', error)
+    return []
   }
-  return toolMap[platform.toLowerCase()] || 'Toolkit'
 }

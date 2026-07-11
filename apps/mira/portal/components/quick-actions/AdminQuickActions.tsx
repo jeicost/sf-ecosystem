@@ -96,7 +96,7 @@ export function AdminQuickActions() {
               title={action.title}
               description={action.description}
               actionType={action.actionType}
-              department="admin"
+              department="community"
               inputForm={action.form}
               onActionComplete={(actionId) => setActiveActionId(actionId)}
             />
@@ -108,7 +108,7 @@ export function AdminQuickActions() {
         <QuickActionResult
           actionId={activeActionId}
           resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
-          department="admin"
+          department="community"
         />
       )}
     </div>

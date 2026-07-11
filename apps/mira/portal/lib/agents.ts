@@ -11,6 +11,8 @@ const baseAgents = [
     icon: '🎯',
     emoji: '🎯',
     color: '#8B5CF6',
+    gradient: 'from-purple-500 to-pink-500',
+    capabilities: ['Strategic Planning', 'Business Analysis', 'Market Research'],
   },
   {
     id: 'content-creator',
@@ -21,6 +23,8 @@ const baseAgents = [
     icon: '✍️',
     emoji: '✍️',
     color: '#EC4899',
+    gradient: 'from-pink-500 to-rose-500',
+    capabilities: ['Copywriting', 'Content Strategy', 'Editorial Planning'],
   },
   {
     id: 'brand-expert',
@@ -31,6 +35,8 @@ const baseAgents = [
     icon: '🏷️',
     emoji: '🏷️',
     color: '#06B6D4',
+    gradient: 'from-cyan-500 to-blue-500',
+    capabilities: ['Brand Strategy', 'Positioning', 'Visual Identity'],
   },
   {
     id: 'seo-specialist',
@@ -41,6 +47,8 @@ const baseAgents = [
     icon: '🔍',
     emoji: '🔍',
     color: '#F59E0B',
+    gradient: 'from-amber-500 to-orange-500',
+    capabilities: ['Keyword Research', 'On-page SEO', 'Technical SEO'],
   },
   {
     id: 'marketing-manager',
@@ -51,6 +59,8 @@ const baseAgents = [
     icon: '📢',
     emoji: '📢',
     color: '#10B981',
+    gradient: 'from-emerald-500 to-teal-500',
+    capabilities: ['Campaign Strategy', 'Budget Allocation', 'Performance Tracking'],
   },
 ]
 
@@ -62,6 +72,7 @@ export const INNOVACION_AGENTS = baseAgents
 export const COMERCIAL_AGENTS = baseAgents
 export const ESTRATEGIA_AGENTS = baseAgents
 export const FINANZAS_AGENTS = baseAgents
+export const ADMIN_AGENTS = baseAgents.slice(0, 4)
 
 export const AGENT_PROMPTS: Record<string, string> = {
   'ai-strategist': 'You are a strategic business advisor...',
