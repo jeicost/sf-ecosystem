@@ -7,7 +7,7 @@ const SECTION_SLUGS = ['marketing', 'comercial', 'estrategia', 'innovacion', 'ad
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const devBypass = process.env.DEV_MODE_BYPASS === 'true'
+  const devBypass = process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true'
 
   // Public routes — skip all checks
   if (

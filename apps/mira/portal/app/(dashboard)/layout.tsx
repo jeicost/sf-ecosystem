@@ -24,12 +24,22 @@ function SidebarContent() {
   const activeSection = getActiveSectionFromPath(path)
   const navItems = activeSection.navItems
 
-  useEffect(() => {
+useEffect(() => {
     const stored = getUser()
     if (stored) { setUser(stored); setThemeState(initTheme()); return }
 
+    const devBypass = process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true'
+    
     createClient().auth.getUser().then(({ data }) => {
-      if (!data.user) { router.replace('/login'); return }
+      if (!data.user) {
+        // Allow dev mode bypass for toolkit testing
+        if (devBypass && (path.startsWith('/toolkit') || path.startsWith('/brand-brain') || path.startsWith('/documents') || path.startsWith('/project-memory'))) {
+          setThemeState(initTheme())
+          return
+        }
+        router.replace('/login')
+        return
+      }
       const meta = data.user.user_metadata ?? {}
       const u: MiraUser = {
         id:     data.user.id,
@@ -43,7 +53,7 @@ function SidebarContent() {
       setUser(u)
       setThemeState(initTheme())
     })
-  }, [router])
+  }, [router, path])
 
   useEffect(() => {
     const db = createClient()
