@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Save, Loader2, Check, AlertCircle, Upload, X } from 'lucide-react'
+import BrandBrainSuggestions from './BrandBrainSuggestions'
 
 interface BrandData {
   identity?: Record<string, string>
@@ -41,6 +42,8 @@ export default function BrandBrainEditor() {
   const [success, setSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('identity')
   const [documents, setDocuments] = useState<any[]>([])
+  const [suggestions, setSuggestions] = useState<Record<string, any> | null>(null)
+  const [analyzing, setAnalyzing] = useState<string | null>(null)
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -142,10 +145,99 @@ export default function BrandBrainEditor() {
       setDocuments([...documents, newDoc])
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
+
+      // Automatically trigger analysis
+      if (newDoc?.id) {
+        analyzeDocument(newDoc.id)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
     } finally {
       setUploading(false)
+    }
+  }
+
+  const analyzeDocument = async (documentId: string) => {
+    setAnalyzing(documentId)
+    try {
+      const res = await fetch('/api/brand-brain/analyze-document', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ document_id: documentId }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Analysis failed')
+      }
+
+      const { suggestedUpdates } = await res.json()
+      setSuggestions(suggestedUpdates)
+
+      // Update document status in list
+      setDocuments(
+        documents.map((doc) =>
+          doc.id === documentId ? { ...doc, analysis_status: 'completed' } : doc
+        )
+      )
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Analysis failed')
+      setDocuments(
+        documents.map((doc) =>
+          doc.id === documentId ? { ...doc, analysis_status: 'failed' } : doc
+        )
+      )
+    } finally {
+      setAnalyzing(null)
+    }
+  }
+
+  const handleApplySuggestions = async (updates: Record<string, any>) => {
+    if (!profile) return
+
+    setSaving(true)
+    setError(null)
+
+    try {
+      const newBrandData = { ...profile.brand_data } as BrandData
+
+      // Deep merge for nested objects (identity, hero_features, tone_and_voice)
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) {
+          const existingValue = newBrandData[key as keyof BrandData]
+          if (typeof value === 'object' && !Array.isArray(value) && typeof existingValue === 'object' && !Array.isArray(existingValue)) {
+            // Deep merge for nested objects
+            newBrandData[key as keyof BrandData] = { ...existingValue, ...value }
+          } else {
+            // Direct assignment for primitives and arrays
+            newBrandData[key as keyof BrandData] = value
+          }
+        }
+      })
+
+      setProfile({ ...profile, brand_data: newBrandData })
+      setSuggestions(null)
+
+      // Auto-save
+      const res = await fetch('/api/brand-brain', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...profile, brand_data: newBrandData }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to save')
+      }
+
+      setSuccess(true)
+      setTimeout(() => setSuccess(false), 3000)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error')
+      // Revert UI to previous state on error
+      setSuggestions(null)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -204,6 +296,15 @@ export default function BrandBrainEditor() {
             </div>
           </div>
         </div>
+      )}
+
+      {suggestions && (
+        <BrandBrainSuggestions
+          documentId=""
+          suggestions={suggestions}
+          onApply={handleApplySuggestions}
+          onDismiss={() => setSuggestions(null)}
+        />
       )}
 
       {/* Tabs - 11 Fields + Documents */}
@@ -352,8 +453,42 @@ export default function BrandBrainEditor() {
                 <p className="text-sm font-medium text-white">Uploaded Documents</p>
                 {documents.map((doc) => (
                   <div key={doc.id} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded text-sm">
-                    <span className="text-gray-300">{doc.original_filename}</span>
-                    <span className="text-xs px-2 py-1 rounded bg-purple-500/20 text-purple-300">{doc.analysis_status}</span>
+                    <div className="flex-1">
+                      <p className="text-gray-300">{doc.original_filename}</p>
+                      <p className="text-xs text-gray-500 mt-1">{doc.document_type.replace(/_/g, ' ')}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {analyzing === doc.id ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin text-blue-400" />
+                          <span className="text-xs text-blue-300">Analyzing...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span
+                            className={`text-xs px-2 py-1 rounded ${
+                              doc.analysis_status === 'completed'
+                                ? 'bg-green-500/20 text-green-300'
+                                : doc.analysis_status === 'processing'
+                                  ? 'bg-blue-500/20 text-blue-300'
+                                  : doc.analysis_status === 'failed'
+                                    ? 'bg-red-500/20 text-red-300'
+                                    : 'bg-purple-500/20 text-purple-300'
+                            }`}
+                          >
+                            {doc.analysis_status}
+                          </span>
+                          {doc.analysis_status !== 'completed' && (
+                            <button
+                              onClick={() => analyzeDocument(doc.id)}
+                              className="text-xs px-2 py-1 rounded text-purple-300 hover:bg-purple-500/20 transition-colors"
+                            >
+                              Retry
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>

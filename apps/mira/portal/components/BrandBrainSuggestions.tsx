@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, X, Loader2 } from 'lucide-react'
+import { Check, X, Loader2, AlertCircle } from 'lucide-react'
 
 interface BrandBrainSuggestionsProps {
   documentId: string
@@ -17,6 +17,7 @@ export default function BrandBrainSuggestions({
   onDismiss,
 }: BrandBrainSuggestionsProps) {
   const [applying, setApplying] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const [selectedFields, setSelectedFields] = useState<Set<string>>(
     new Set(Object.keys(suggestions || {}))
   )
@@ -33,6 +34,8 @@ export default function BrandBrainSuggestions({
 
   const handleApply = async () => {
     setApplying(true)
+    setError(null)
+
     try {
       const updates: Record<string, any> = {}
       selectedFields.forEach((field) => {
@@ -41,6 +44,8 @@ export default function BrandBrainSuggestions({
         }
       })
       await onApply(updates)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to apply suggestions')
     } finally {
       setApplying(false)
     }
@@ -56,6 +61,13 @@ export default function BrandBrainSuggestions({
         <p className="text-sm font-medium text-blue-400">💡 Suggested Updates from Document</p>
         <p className="text-xs text-gray-400 mt-1">Claude analyzed your document and found these insights</p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded flex items-start gap-2">
+          <AlertCircle size={16} className="text-red-400 mt-0.5 flex-shrink-0" />
+          <p className="text-sm text-red-300">{error}</p>
+        </div>
+      )}
 
       <div className="space-y-3 mb-6">
         {Object.entries(suggestions).map(([field, value]) => (

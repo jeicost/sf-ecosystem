@@ -18,10 +18,7 @@ SET brand_data = jsonb_build_object(
     'enemy', ''
   ),
   'what_it_is', '',
-  'audiences', COALESCE((SELECT jsonb_agg(jsonb_build_object('name', doc_type))
-    FROM client_documentation
-    WHERE client_id = brand_profiles.client_id
-    LIMIT 4), '[]'::jsonb),
+  'audiences', '[]'::jsonb,
   'value_proposition', '',
   'hero_features', jsonb_build_object(
     'feature_1', '',
@@ -29,8 +26,7 @@ SET brand_data = jsonb_build_object(
     'feature_3', ''
   ),
   'business_model', '',
-  'tone_and_voice', COALESCE(jsonb_object_agg(key, value), '{}'::jsonb)
-    FROM (SELECT key, value FROM jsonb_each_text(tone_of_voice)) AS t,
+  'tone_and_voice', COALESCE(tone_of_voice, '{}'::jsonb),
   'visual_identity', '',
   'competitive_positioning', '',
   'go_to_market', '',

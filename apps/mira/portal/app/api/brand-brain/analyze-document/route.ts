@@ -1,3 +1,5 @@
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import Anthropic from '@anthropic-ai/sdk'
@@ -15,17 +17,51 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing document_id' }, { status: 400 })
     }
 
-    const admin = adminClient()
+    // Authorization: verify user has access to this client
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      {
+        cookies: {
+          getAll: () => cookieStore.getAll(),
+          setAll: () => {},
+        },
+      }
+    )
 
-    // Get the document
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    const admin = adminClient()
+    let clientId: string
+
+    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
+      clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
+    } else if (authError || !user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    } else {
+      const { data: accessData } = await admin
+        .from('mira_project_access')
+        .select('client_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (!accessData) {
+        return NextResponse.json({ error: 'No client access' }, { status: 403 })
+      }
+      clientId = accessData.client_id
+    }
+
+    // Get the document (verify ownership)
     const { data: doc, error: docError } = await admin
       .from('brand_documents')
       .select('*')
       .eq('id', document_id)
+      .eq('client_id', clientId)
       .single()
 
     if (docError || !doc) {
-      return NextResponse.json({ error: 'Document not found' }, { status: 404 })
+      return NextResponse.json({ error: 'Document not found or access denied' }, { status: 404 })
     }
 
     // Mark as processing
@@ -79,9 +115,11 @@ Only include fields where you found relevant information. Leave empty/null for f
       ],
     })
 
-    // Extract JSON from response
+    // Extract and validate JSON from response
     let suggestedUpdates = {}
+    let jsonParseSuccess = false
     const textContent = message.content[0]
+
     if (textContent && 'text' in textContent) {
       const text = textContent.text
 
@@ -90,34 +128,70 @@ Only include fields where you found relevant information. Leave empty/null for f
       if (jsonMatch) {
         try {
           suggestedUpdates = JSON.parse(jsonMatch[1])
+          jsonParseSuccess = true
         } catch (e) {
           console.error('Failed to parse JSON from markdown:', e)
         }
-      } else {
-        // Try direct JSON
-        jsonMatch = text.match(/\{[\s\S]*\}/)
-        if (jsonMatch) {
+      }
+
+      // If markdown failed, try direct JSON with brace counting
+      if (!jsonParseSuccess) {
+        let braceCount = 0
+        let jsonStart = -1
+        let jsonEnd = -1
+
+        for (let i = 0; i < text.length; i++) {
+          if (text[i] === '{') {
+            if (braceCount === 0) jsonStart = i
+            braceCount++
+          } else if (text[i] === '}') {
+            braceCount--
+            if (braceCount === 0 && jsonStart !== -1) {
+              jsonEnd = i + 1
+              break
+            }
+          }
+        }
+
+        if (jsonStart !== -1 && jsonEnd !== -1) {
           try {
-            suggestedUpdates = JSON.parse(jsonMatch[0])
+            const potentialJson = text.substring(jsonStart, jsonEnd)
+            suggestedUpdates = JSON.parse(potentialJson)
+            jsonParseSuccess = true
           } catch (e) {
-            console.error('Failed to parse JSON:', e)
+            console.error('Failed to parse JSON from text:', e)
           }
         }
       }
     }
 
     // Store analysis results
+    const analysisStatus = jsonParseSuccess ? 'completed' : 'failed'
+    const analysisResult = jsonParseSuccess
+      ? suggestedUpdates
+      : { error: 'Failed to extract valid JSON from Claude response' }
+
     const { error: updateError } = await admin
       .from('brand_documents')
       .update({
-        analysis_status: 'completed',
-        analysis_result: suggestedUpdates,
+        analysis_status: analysisStatus,
+        analysis_result: analysisResult,
         analyzed_at: new Date().toISOString(),
       })
       .eq('id', document_id)
 
     if (updateError) {
       console.error('Error storing analysis:', updateError)
+    }
+
+    // Return error if JSON parsing failed
+    if (!jsonParseSuccess) {
+      return NextResponse.json({
+        success: false,
+        document_id,
+        error: 'Analysis failed: could not extract valid JSON from Claude response',
+        message: 'Document analysis failed. Please try again or upload a different document.',
+      }, { status: 400 })
     }
 
     return NextResponse.json({

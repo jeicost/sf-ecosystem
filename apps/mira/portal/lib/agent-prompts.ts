@@ -5,3 +5,7 @@ export const AGENT_PROMPTS: Record<string, string> = {
   'seo-specialist': 'You are an SEO optimization specialist...',
   'marketing-manager': 'You are a marketing strategy manager...',
 }
+
+export function getAgentPrompt(agentId: string): string {
+  return AGENT_PROMPTS[agentId] || 'You are a helpful assistant...'
+}

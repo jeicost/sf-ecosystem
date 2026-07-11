@@ -13,6 +13,24 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing file or brand_profile_id' }, { status: 400 })
     }
 
+    // Validate file size (max 10MB)
+    const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB` },
+        { status: 413 }
+      )
+    }
+
+    // Validate file type (only text and PDF)
+    const ALLOWED_TYPES = ['text/plain', 'text/markdown', 'application/pdf', 'text/csv']
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { error: 'Invalid file type. Allowed: TXT, MD, PDF, CSV' },
+        { status: 400 }
+      )
+    }
+
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -49,8 +67,22 @@ export async function POST(req: NextRequest) {
     const admin = adminClient()
 
     // Read file content for text extraction
-    const buffer = await file.arrayBuffer()
-    const text = Buffer.from(buffer).toString('utf-8')
+    let text = ''
+    try {
+      const buffer = await file.arrayBuffer()
+      text = Buffer.from(buffer).toString('utf-8')
+
+      // Validate UTF-8 decoding (check for null bytes which indicate corruption)
+      if (text.includes('\x00')) {
+        console.warn('Possible non-UTF8 file detected, text may be corrupted')
+      }
+    } catch (decodeError) {
+      console.error('Failed to decode file as UTF-8:', decodeError)
+      return NextResponse.json(
+        { error: 'Failed to read file. Ensure it is a valid text file.' },
+        { status: 400 }
+      )
+    }
 
     // Detect document type from filename
     const filename = file.name.toLowerCase()
