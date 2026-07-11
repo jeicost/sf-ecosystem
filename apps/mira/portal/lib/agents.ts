@@ -58,10 +58,10 @@ export type Agent = typeof baseAgents[0]
 
 export const AGENTS = baseAgents
 export const ALL_AGENTS = baseAgents
-export const INNOVACION_AGENTS = baseAgents
-export const COMERCIAL_AGENTS = baseAgents
-export const ESTRATEGIA_AGENTS = baseAgents
-export const FINANZAS_AGENTS = baseAgents
+export const INNOVACION_AGENTS = baseAgents.slice(0, 4)
+export const COMERCIAL_AGENTS = baseAgents.slice(0, 4)
+export const ESTRATEGIA_AGENTS = baseAgents.slice(0, 4)
+export const FINANZAS_AGENTS = baseAgents.slice(0, 4)
 export const ADMIN_AGENTS = baseAgents.slice(0, 4)
 
 export const AGENT_PROMPTS: Record<string, string> = {

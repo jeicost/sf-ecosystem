@@ -7,6 +7,7 @@ const FINANZAS_META = [
   { produces: 'Portfolio design' },
   { produces: 'Tax strategy' },
   { produces: 'FI roadmap' },
+  { produces: 'Investment strategy' },
 ]
 
 const PIPELINE_STEPS = FINANZAS_AGENTS.map(a => ({

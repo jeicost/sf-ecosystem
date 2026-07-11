@@ -82,7 +82,7 @@ export default function ClientPortalHome() {
           const deliveries = await getClientDeliveries(cId)
           const recentActivities = deliveries
             .slice(0, 3)
-            .map(d => ({
+            .map((d: any) => ({
               date: d.date,
               action: `Entregable generado: ${d.tool}`,
               tool: d.tool,
