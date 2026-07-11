@@ -1,0 +1,170 @@
+{
+  "home": {
+    "title": "Home",
+    "seoTitle": "MIRA — Enterprise AI Sales Acceleration",
+    "seoDescription": "MIRA helps enterprise sales teams win more deals faster with AI-powered insights and intelligent automation.",
+    "ogImage": "https://mira.com/og-home.jpg",
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "headline": "Win More Deals. Faster.",
+          "subtitle": "Enterprise AI for modern sales teams.",
+          "cta_text": "Start Free Trial",
+          "cta_link": "https://app.mira.com/signup",
+          "eyebrow": "Sales Acceleration Platform"
+        }
+      },
+      "features": {
+        "type": "services",
+        "data": {
+          "headline": "What MIRA Does",
+          "description": "Transform your sales process with AI-powered insights.",
+          "items": [
+            {
+              "icon": "01",
+              "title": "Prospect Intelligence",
+              "description": "AI-powered insights on your prospects' intent and readiness."
+            },
+            {
+              "icon": "02",
+              "title": "Deal Acceleration",
+              "description": "Smart recommendations to accelerate deals through your pipeline."
+            },
+            {
+              "icon": "03",
+              "title": "Team Enablement",
+              "description": "Equip your team with knowledge they need to win."
+            }
+          ]
+        }
+      },
+      "roles": {
+        "type": "cards",
+        "data": {
+          "headline": "Built for Every Sales Role",
+          "description": "MIRA adapts to your team structure.",
+          "items": [
+            {
+              "title": "Sales Development",
+              "description": "Qualify faster with AI insights"
+            },
+            {
+              "title": "Enterprise Sales",
+              "description": "Win complex deals with confidence"
+            },
+            {
+              "title": "Sales Leadership",
+              "description": "Manage pipeline with precision"
+            }
+          ]
+        }
+      },
+      "how-it-works": {
+        "type": "steps",
+        "data": {
+          "headline": "How MIRA Works",
+          "description": "Get started in minutes, see results in days.",
+          "items": [
+            {
+              "title": "Connect Your Data",
+              "description": "Sync with Salesforce, HubSpot or your CRM"
+            },
+            {
+              "title": "AI Analysis Begins",
+              "description": "MIRA analyzes your deals and prospects"
+            },
+            {
+              "title": "Get Smart Recommendations",
+              "description": "Receive AI-powered actions to accelerate deals"
+            }
+          ]
+        }
+      },
+      "team": {
+        "type": "team",
+        "data": {
+          "headline": "Meet Our Team",
+          "description": "Built by sales and AI experts.",
+          "items": [
+            {
+              "name": "Founder & CEO",
+              "role": "Sales Operations Expert",
+              "bio": "15+ years building sales teams and tools"
+            }
+          ]
+        }
+      },
+      "pricing": {
+        "type": "cards",
+        "data": {
+          "headline": "Simple Pricing",
+          "description": "Start free, scale as you grow.",
+          "items": [
+            {
+              "title": "Starter",
+              "description": "For teams just getting started"
+            },
+            {
+              "title": "Professional",
+              "description": "For growing sales organizations"
+            },
+            {
+              "title": "Enterprise",
+              "description": "Custom solutions for large teams"
+            }
+          ]
+        }
+      },
+      "testimonials": {
+        "type": "testimonials",
+        "data": {
+          "headline": "Why Sales Teams Love MIRA",
+          "description": "See what enterprise teams are saying.",
+          "items": [
+            {
+              "text": "MIRA helped us improve our close rate by 23% in the first quarter.",
+              "author": "VP Sales",
+              "company": "Enterprise SaaS Company"
+            },
+            {
+              "text": "Our team's productivity doubled with MIRA's insights.",
+              "author": "Sales Director",
+              "company": "Tech Company"
+            }
+          ]
+        }
+      },
+      "faq": {
+        "type": "faq",
+        "data": {
+          "headline": "Frequently Asked Questions",
+          "items": [
+            {
+              "question": "How long does it take to get set up?",
+              "answer": "Most companies are up and running in less than 30 minutes."
+            },
+            {
+              "question": "Which CRMs does MIRA integrate with?",
+              "answer": "MIRA integrates with Salesforce, HubSpot, Pipedrive, and more."
+            },
+            {
+              "question": "Can I try MIRA free?",
+              "answer": "Yes! Start your free trial today, no credit card required."
+            }
+          ]
+        }
+      },
+      "cta": {
+        "type": "cta-block",
+        "data": {
+          "headline": "Ready to Accelerate Your Sales?",
+          "description": "Join enterprise teams using MIRA to win more deals.",
+          "cta_text": "Start Your Free Trial",
+          "cta_url": "https://app.mira.com/signup",
+          "eyebrow": "Get Started"
+        }
+      }
+    }
+  }
+}
