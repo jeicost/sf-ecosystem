@@ -89,71 +89,71 @@ Generate tutorial JSON:
 
   // COMERCIAL/SALES
   if (actionType === 'crear_campaña') {
-    return `You are a sales strategist. Generate a sales campaign strategy.
+    return `You are a strategic business consultant. Create a professional marketing campaign strategy.
 
-INPUT:
+Input data provided:
 ${JSON.stringify(inputData, null, 2)}
 ${contextBlock}
 
-Generate campaign JSON:
+Please respond ONLY with a valid JSON object (no markdown, no additional text) matching this structure exactly:
 {
-  "campaign_name": "",
-  "target_segment": "",
-  "messaging": [],
-  "channels": [],
-  "timeline": [],
-  "success_metrics": []
+  "campaign_name": "Strategic Campaign Name",
+  "target_segment": "Description of target audience",
+  "messaging": ["Core message 1", "Core message 2"],
+  "channels": ["Channel 1", "Channel 2"],
+  "timeline": ["Week 1-2: Task", "Week 3-4: Task"],
+  "success_metrics": ["Metric 1", "Metric 2"]
 }`
   }
 
   if (actionType === 'generar_icp') {
-    return `You are a market analyst. Generate an ICP (Ideal Customer Profile).
+    return `You are a market analyst. Generate an Ideal Customer Profile analysis.
 
-INPUT:
+Input data:
 ${JSON.stringify(inputData, null, 2)}
 ${contextBlock}
 
-Generate ICP JSON:
+Respond ONLY with valid JSON (no markdown, no extra text):
 {
-  "company_profile": {"size": "", "revenue": "", "industry": ""},
-  "decision_makers": [{"role": "", "priorities": [], "pain_points": []}],
-  "buying_process": {"timeline": "", "budget": "", "stakeholders": []},
-  "fit_indicators": []
+  "company_profile": {"size": "Company size range", "revenue": "Revenue range", "industry": "Industry type"},
+  "decision_makers": [{"role": "Job title", "priorities": ["Priority 1"], "pain_points": ["Problem 1"]}],
+  "buying_process": {"timeline": "Typical sales cycle", "budget": "Budget range", "stakeholders": ["Stakeholder 1"]},
+  "fit_indicators": ["Indicator 1", "Indicator 2"]
 }`
   }
 
   if (actionType === 'crear_propuesta') {
-    return `You are a proposal writer. Generate a sales proposal outline.
+    return `You are a professional proposal writer. Create a business proposal outline for a potential client.
 
-INPUT:
+Input:
 ${JSON.stringify(inputData, null, 2)}
 ${contextBlock}
 
-Generate proposal JSON:
+Return ONLY valid JSON (no markdown):
 {
-  "executive_summary": "",
-  "problem_statement": "",
-  "proposed_solution": "",
-  "pricing": {"tiers": []},
-  "timeline": "",
-  "next_steps": []
+  "executive_summary": "Brief overview of proposal",
+  "problem_statement": "Client's main challenges",
+  "proposed_solution": "How you solve their problems",
+  "pricing": {"tiers": [{"name": "Tier name", "price": "$X", "features": ["Feature 1"]}]},
+  "timeline": "Implementation timeline",
+  "next_steps": ["Step 1", "Step 2"]
 }`
   }
 
   if (actionType === 'calificar_reply') {
-    return `You are a sales qualification expert. Analyze and score a reply.
+    return `You are a sales qualification analyst. Analyze a prospect's reply and provide insights.
 
-INPUT:
+Reply to analyze:
 ${JSON.stringify(inputData, null, 2)}
 ${contextBlock}
 
-Generate analysis JSON:
+Return ONLY valid JSON (no markdown):
 {
-  "qualification_score": 0,
-  "sentiment": "",
-  "interest_level": "",
-  "next_action": "",
-  "suggested_response": ""
+  "qualification_score": 7,
+  "sentiment": "positive/neutral/negative",
+  "interest_level": "high/medium/low",
+  "next_action": "Suggested next step",
+  "suggested_response": "Professional response suggestion"
 }`
   }
 

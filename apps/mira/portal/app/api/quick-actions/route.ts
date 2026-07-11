@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
 
     // Call Claude
     const message = await claude.messages.create({
-      model: 'claude-opus-4-1-20250805',
+      model: 'claude-opus-4-1',
       max_tokens: 4000,
       messages: [
         {
@@ -111,36 +111,56 @@ export async function POST(req: NextRequest) {
       ],
     })
 
-    // Extract JSON from response
+    // Extract text from Claude response
+    const rawText = (message.content[0] as any)?.text || ''
+
+    // Extract JSON from response - improved with better detection
     let output_data = {}
     const textContent = message.content[0]
     if (textContent && 'text' in textContent) {
       const text = textContent.text
-      // First try markdown code blocks (```json ... ```)
-      const codeBlockMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/)
+
+      // Strategy 1: Look for markdown code blocks (```json ... ```)
+      const codeBlockMatch = text.match(/```(?:json)?\s*\n([\s\S]*?)\n```/)
       if (codeBlockMatch) {
         try {
           output_data = JSON.parse(codeBlockMatch[1].trim())
         } catch (e) {
-          console.error('Failed to parse JSON from code block:', e)
+          // Code block found but invalid JSON, try raw text below
         }
       }
 
-      // If no code block or parsing failed, try direct JSON extraction
+      // Strategy 2: If no valid JSON from code block, find standalone JSON object
       if (!Object.keys(output_data).length) {
-        // Try to find JSON object (non-greedy)
-        const jsonMatch = text.match(/\{(?:[^{}]|(?:\{[^{}]*\}))*\}/)
-        if (jsonMatch) {
+        // Find the first complete JSON object by matching braces
+        let braceCount = 0
+        let jsonStart = -1
+        let jsonEnd = -1
+
+        for (let i = 0; i < text.length; i++) {
+          if (text[i] === '{') {
+            if (braceCount === 0) jsonStart = i
+            braceCount++
+          } else if (text[i] === '}') {
+            braceCount--
+            if (braceCount === 0 && jsonStart !== -1) {
+              jsonEnd = i + 1
+              break
+            }
+          }
+        }
+
+        if (jsonStart !== -1 && jsonEnd !== -1) {
+          const potentialJson = text.substring(jsonStart, jsonEnd)
           try {
-            output_data = JSON.parse(jsonMatch[0])
+            output_data = JSON.parse(potentialJson)
           } catch (e) {
-            console.error('Failed to parse JSON from direct extraction:', e)
-            // Last resort: try cleaning up and parsing again
+            // Try one more time with whitespace cleanup
             try {
-              const cleaned = jsonMatch[0].replace(/[\n\r\t]/g, ' ').replace(/\s+/g, ' ')
+              const cleaned = potentialJson.replace(/\n\s+/g, ' ').replace(/:\s+/g, ': ')
               output_data = JSON.parse(cleaned)
             } catch (e2) {
-              console.error('Final parsing attempt failed:', e2)
+              // JSON extraction failed silently
             }
           }
         }
