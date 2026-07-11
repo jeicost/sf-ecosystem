@@ -1,189 +1,227 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Zap, Play, Clock } from 'lucide-react'
-import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase'
+import Link from 'next/link'
+import { Loader2, CheckCircle, AlertCircle, Zap } from 'lucide-react'
 
-export default function ToolkitPage() {
-  const [generatedDeliverables, setGeneratedDeliverables] = useState<any[]>([])
+interface Generation {
+  id: string
+  tool_slug: string
+  status: 'queued' | 'processing' | 'completed' | 'failed'
+  created_at: string
+  completed_at?: string
+  result_data?: Record<string, any>
+  error_message?: string
+}
+
+const TOOLS = [
+  { slug: 'action-plan', icon: '🎯', title: 'Action Plan 30/60/90', color: '#FF6B35' },
+  { slug: 'brand-briefing', icon: '💭', title: 'Brand Briefing', color: '#A78BFA' },
+  { slug: 'seo-audit', icon: '🔍', title: 'SEO Audit', color: '#F87171' },
+  { slug: 'marketing-audit', icon: '📊', title: 'Marketing Audit', color: '#60A5FA' },
+  { slug: 'content-pack', icon: '📝', title: 'Content Pack', color: '#FBBF24' },
+  { slug: 'investor-deck', icon: '📈', title: 'Investor Deck', color: '#34D399' },
+  { slug: 'competitive-analysis', icon: '⚔️', title: 'Competitive Analysis', color: '#EC4899' },
+  { slug: 'brandbook-content-system', icon: '📚', title: 'Brandbook + Content', color: '#8B5CF6' },
+]
+
+export default function ToolkitHub() {
+  const [generations, setGenerations] = useState<Generation[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
+  // Fetch generations on mount
   useEffect(() => {
-    const fetchDeliverables = async () => {
-      try {
-        const res = await fetch('/api/toolkit/deliverables')
-        const { data, error } = await res.json()
-
-        if (error) {
-          console.error('Error fetching deliverables:', error)
-          setLoading(false)
-          return
+    fetchGenerations()
+    
+    // Poll for updates every 5 seconds if there are pending/processing items
+    const interval = setInterval(() => {
+      setGenerations((prev) => {
+        const hasPending = prev.some((g) => g.status !== 'completed' && g.status !== 'failed')
+        if (hasPending) {
+          fetchGenerations()
         }
+        return prev
+      })
+    }, 5000)
 
-        // Map generation_queue data to deliverable format
-        const deliverables = (data || []).map((item: any) => {
-          const tool = TOOLKIT_TOOLS.find(t => t.slug === item.tool_slug)
-          return {
-            id: item.id,
-            tool_slug: item.tool_slug,
-            icon: tool?.icon || '📄',
-            title: tool?.name || item.tool_slug,
-            description: tool?.description || 'Generado recientemente',
-            category: 'Reportable',
-            color: tool?.color || '#8B5CF6',
-            tags: [],
-            created_at: item.created_at,
-            result_data: item.result_data,
-          }
-        })
-
-        setGeneratedDeliverables(deliverables)
-        setLoading(false)
-      } catch (err) {
-        console.error('Error in fetchDeliverables:', err)
-        setLoading(false)
-      }
-    }
-
-    fetchDeliverables()
+    return () => clearInterval(interval)
   }, [])
 
+  const fetchGenerations = async () => {
+    try {
+      const client = createClient()
+      const { data, error: dbError } = await client
+        .from('generation_queue')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (dbError) {
+        setError(dbError.message)
+        setLoading(false)
+        return
+      }
+
+      setGenerations(data || [])
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch generations')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const getToolColor = (slug: string) => {
+    const tool = TOOLS.find((t) => t.slug === slug)
+    return tool?.color || '#9CA3AF'
+  }
+
+  const getToolIcon = (slug: string) => {
+    const tool = TOOLS.find((t) => t.slug === slug)
+    return tool?.icon || '⚡'
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return <CheckCircle size={16} className="text-green-400" />
+      case 'processing':
+        return <Loader2 size={16} className="text-blue-400 animate-spin" />
+      case 'failed':
+        return <AlertCircle size={16} className="text-red-400" />
+      default:
+        return <Zap size={16} className="text-gray-400" />
+    }
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-500/20 text-green-400'
+      case 'processing':
+        return 'bg-blue-500/20 text-blue-400'
+      case 'failed':
+        return 'bg-red-500/20 text-red-400'
+      default:
+        return 'bg-gray-500/20 text-gray-400'
+    }
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
+  }
+
   return (
-    <div className="px-8 py-8">
+    <div className="px-8 py-8 max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-12">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(139,92,246,0.8)', letterSpacing: '0.12em' }}>
-          AI AGENCY
-        </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Toolkit</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Genera reportes, estrategias y documentos en minutos. Personalizado con tu Brand Brain.
-        </p>
+        <p className="text-xs uppercase tracking-widest font-semibold mb-2 text-gray-500">Portal</p>
+        <h1 className="text-3xl font-semibold text-white mb-2">Toolkit</h1>
+        <p className="text-sm text-gray-400">Genera content, reportes, y estrategias con IA. Todos tus entregables en un solo lugar.</p>
       </div>
 
-      {/* Centro de reportes — Generated Deliverables */}
-      {generatedDeliverables.length > 0 && (
-        <>
-          <div className="mb-8">
-            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.4)', letterSpacing: '0.08em' }}>
-              Centro de Reportes
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-16">
-            {generatedDeliverables.map((deliverable, i) => (
-              <div
-                key={deliverable.id || i}
-                className="card overflow-hidden hover:shadow-lg transition-all group cursor-pointer"
-              >
-                {/* Banner con gradiente + icono grande + Live badge */}
-                <div
-                  className="relative h-40 flex items-center justify-center text-7xl overflow-hidden"
-                  style={{
-                    background: `linear-gradient(135deg, ${deliverable.color || '#8B5CF6'}40 0%, ${deliverable.color || '#8B5CF6'}15 100%)`,
-                  }}
-                >
-                  <div className="opacity-80 group-hover:opacity-100 transition-opacity">{deliverable.icon}</div>
-                  <div className="absolute top-4 right-4 px-2.5 py-1 rounded-full text-xs font-semibold" style={{ background: 'rgba(34,197,94,0.25)', color: '#4ade80', border: '1px solid rgba(34,197,94,0.4)' }}>
-                    Live
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-5">
-                  <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-wider font-semibold mb-1" style={{ color: `${deliverable.color || '#8B5CF6'}` }}>
-                        {deliverable.category || 'Reportable'}
-                      </p>
-                      <h3 className="text-sm font-semibold text-white">{deliverable.title}</h3>
-                    </div>
-                  </div>
-
-                  <p className="text-xs mb-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                    {deliverable.description}
-                  </p>
-
-                  {/* Tags */}
-                  {deliverable.tags && deliverable.tags.length > 0 && (
-                    <div className="flex gap-1.5 mb-4 flex-wrap">
-                      {deliverable.tags.slice(0, 3).map((tag: string) => (
-                        <span key={tag} className="text-[10px] px-2.5 py-1 rounded-md" style={{ background: `${deliverable.color || '#8B5CF6'}15`, color: `${deliverable.color || '#8B5CF6'}cc` }}>
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {/* Version dropdown + View button */}
-                  <div className="flex items-center gap-2">
-                    <select
-                      className="flex-1 px-2.5 py-1.5 rounded-lg text-xs bg-white/5 border border-white/10 text-white cursor-pointer hover:border-white/20 transition-colors"
-                      defaultValue="latest"
-                    >
-                      <option value="latest">Última versión</option>
-                      <option value="v1">v1 (original)</option>
-                    </select>
-                    <button
-                      className="px-4 py-1.5 rounded-lg text-xs font-medium transition-all hover:opacity-90"
-                      style={{
-                        background: `${deliverable.color || '#8B5CF6'}`,
-                        color: 'white'
-                      }}
-                    >
-                      ↗ Ver WEB
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
-      )}
-
-      {/* Generar nuevo entregable */}
-      <div>
-        <p className="text-xs uppercase tracking-widest font-semibold mb-6" style={{ color: 'rgba(255,255,255,0.5)', letterSpacing: '0.08em' }}>
-          Generar Nuevo Entregable
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {TOOLKIT_TOOLS.map((tool) => (
-            <a
+      {/* Crear Nuevo Entregable */}
+      <div className="mb-12">
+        <h2 className="text-lg font-semibold mb-4 text-white">Generar Nuevo</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {TOOLS.map((tool) => (
+            <Link
               key={tool.slug}
-              href={tool.href}
-              className="card p-4 hover:shadow-lg hover:border-white/20 transition-all group cursor-pointer"
+              href={`/toolkit/${tool.slug}`}
+              className="card p-4 hover:bg-white/8 transition-all cursor-pointer border-l-4"
+              style={{ borderLeftColor: tool.color }}
             >
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-3xl">{tool.icon}</span>
-                <span className="text-[10px] px-2 py-1 rounded" style={{ background: 'rgba(255,255,255,0.08)', color: 'rgba(255,255,255,0.6)' }}>
-                  <Clock size={10} className="inline mr-1" />
-                  {tool.time}
-                </span>
-              </div>
-
-              <h3 className="text-sm font-semibold text-white mb-1 group-hover:text-white transition-all">{tool.name}</h3>
-              <p className="text-xs mb-3" style={{ color: 'rgba(255,255,255,0.5)' }}>
-                {tool.description}
-              </p>
-
-              <div className="flex items-center gap-1 text-xs font-medium" style={{ color: tool.color }}>
-                <span>Generar</span>
-                <span>→</span>
-              </div>
-            </a>
+              <p className="text-2xl mb-2">{tool.icon}</p>
+              <p className="text-sm font-semibold text-white">{tool.title}</p>
+            </Link>
           ))}
         </div>
       </div>
 
-      {/* Empty state when no deliverables yet */}
-      {generatedDeliverables.length === 0 && (
-        <div className="text-center py-8">
-          <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            Aún no has generado ningún reportable. Elige una herramienta arriba para empezar.
-          </p>
-        </div>
-      )}
+      {/* Centro de Reportes */}
+      <div>
+        <h2 className="text-lg font-semibold mb-4 text-white">Centro de Reportes</h2>
+        
+        {error && (
+          <div className="card p-4 border-red-500/20 mb-6">
+            <div className="flex items-start gap-3">
+              <AlertCircle size={18} className="text-red-400 mt-0.5" />
+              <div>
+                <p className="text-sm font-semibold text-red-400">Error</p>
+                <p className="text-xs text-gray-400 mt-1">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="card p-8 flex items-center justify-center gap-3">
+            <Loader2 size={20} className="animate-spin text-gray-400" />
+            <p className="text-gray-400">Cargando generaciones...</p>
+          </div>
+        ) : generations.length === 0 ? (
+          <div className="card p-8 text-center">
+            <p className="text-gray-400">No hay generaciones aún</p>
+            <p className="text-xs text-gray-500 mt-2">Selecciona un tool arriba para crear tu primer entregable</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {generations.map((gen) => {
+              const completionTime = gen.completed_at
+                ? `${Math.round((new Date(gen.completed_at).getTime() - new Date(gen.created_at).getTime()) / 1000)}s`
+                : '—'
+
+              return (
+                <div
+                  key={gen.id}
+                  className="card p-4 border-l-4 hover:bg-white/5 transition-colors"
+                  style={{ borderLeftColor: getToolColor(gen.tool_slug) }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1 flex items-center gap-4">
+                      <span className="text-xl">{getToolIcon(gen.tool_slug)}</span>
+                      <div className="flex-1">
+                        <p className="font-semibold text-white capitalize">
+                          {gen.tool_slug.replace(/-/g, ' ')}
+                        </p>
+                        <p className="text-xs text-gray-500">{formatDate(gen.created_at)}</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(gen.status)}`}>
+                          {getStatusIcon(gen.status)}
+                          <span className="capitalize">{gen.status}</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">{completionTime}</p>
+                      </div>
+
+                      {gen.status === 'completed' && (
+                        <Link
+                          href={`/toolkit/${gen.tool_slug}?result=${gen.id}`}
+                          className="px-3 py-1 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-white transition-colors"
+                        >
+                          Ver →
+                        </Link>
+                      )}
+
+                      {gen.status === 'failed' && (
+                        <div className="text-xs text-red-400">
+                          {gen.error_message || 'Unknown error'}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
