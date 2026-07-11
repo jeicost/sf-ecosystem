@@ -1,0 +1,41 @@
+{
+  "framework": "nextjs",
+  "regions": ["cdg1"],
+  "redirects": [
+    { "source": "/", "destination": "/es", "statusCode": 308 },
+    { "source": "/casos", "destination": "/es/casos", "statusCode": 308 },
+    { "source": "/contacto", "destination": "/es/contacto", "statusCode": 308 },
+    { "source": "/corporates", "destination": "/es/corporates", "statusCode": 308 },
+    { "source": "/emprendedores", "destination": "/es/emprendedores", "statusCode": 308 },
+    { "source": "/equipo", "destination": "/es/equipo", "statusCode": 308 },
+    { "source": "/equipo-por-horas", "destination": "/es/equipo-por-horas", "statusCode": 308 },
+    { "source": "/growth-partner", "destination": "/es/growth-partner", "statusCode": 308 },
+    { "source": "/innovacion-abierta-colaborativa", "destination": "/es/innovacion-abierta-colaborativa", "statusCode": 308 },
+    { "source": "/startups", "destination": "/es/startups", "statusCode": 308 },
+    { "source": "/team-as-a-service", "destination": "/es/team-as-a-service", "statusCode": 308 },
+    { "source": "/venture", "destination": "/es/venture", "statusCode": 308 }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}
