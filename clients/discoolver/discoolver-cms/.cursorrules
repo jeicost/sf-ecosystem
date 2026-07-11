@@ -1,0 +1,340 @@
+# Discoolver CMS - Coding Rules
+
+## Project Overview
+This is a Next.js 14+ CMS application for managing Discoolver content, using TypeScript, Server Actions, and the App Router.
+
+## Tech Stack
+- **Framework**: Next.js 14+ (App Router)
+- **Language**: TypeScript (strict mode)
+- **UI Library**: React 18+, shadcn/ui
+- **Styling**: Tailwind CSS
+- **State Management**: React Query (TanStack Query)
+- **API**: RESTful API with centralized client
+
+## Project Structure
+
+### Directory Organization
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (auth)/            # Auth routes (login, signup, etc.)
+│   ├── (protected)/       # Protected routes (dashboard, etc.)
+│   ├── actions/           # Server Actions (API layer)
+│   └── api/               # API routes (minimal use)
+├── components/
+│   ├── auth/              # Authentication components
+│   ├── common/            # Shared components
+│   ├── layout/            # Layout components (sidebar, nav, etc.)
+│   ├── providers/         # Context providers
+│   └── ui/                # shadcn/ui components
+├── config/                # Configuration files
+├── hooks/                 # Custom React hooks
+├── lib/                   # Utility libraries
+└── types/                 # TypeScript type definitions
+```
+
+## Coding Conventions
+
+### TypeScript
+- **Always use TypeScript**: No JavaScript files except configs
+- **Type-first approach**: Define types in separate files under `src/types/`
+- **Export types through index**: Use barrel exports in `types/index.ts`
+- **Explicit return types**: Always specify return types for functions
+- **Interface over type**: Prefer `interface` for object shapes
+- **Avoid `any`**: Use `unknown` if type is truly unknown
+
+### Server Actions
+
+#### Location and Structure
+- Place all server actions in `src/app/actions/`
+- Group by domain (e.g., `auth.ts`, `business.ts`, `category.ts`)
+- Always start with `"use server";` directive
+- Export through `actions/index.ts` for cleaner imports
+
+#### Pattern
+```typescript
+"use server";
+
+import { apiClient, apiClientV2 } from "@/lib/api-client";
+import { getAuthToken } from "@/lib/auth";
+import { ApiError } from "@/types/api";
+import type { ReturnType } from "@/types";
+
+/**
+ * Description of what this action does
+ * @param param1 - Description
+ * @param param2 - Description
+ * @returns Description
+ */
+export async function actionName(
+  param1: Type1,
+  param2: Type2
+): Promise<ReturnType> {
+  try {
+    const token = await getAuthToken();
+    
+    if (!token) {
+      throw new Error("Authentication required");
+    }
+
+    const endpoint = `/path/${param1}/${param2}`;
+    const response = await apiClient.get<ReturnType>(endpoint, { token });
+
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error("An unexpected error occurred");
+  }
+}
+```
+
+### API Client Usage
+
+#### Use Centralized API Clients
+- **v1 API**: Use `apiClient` from `@/lib/api-client`
+- **v2 API**: Use `apiClientV2` from `@/lib/api-client`
+- **Never use raw `fetch`** in actions unless absolutely necessary
+- API clients handle: authentication headers, error handling, auto-logout
+
+#### Available Methods
+```typescript
+apiClient.get<T>(endpoint, { token })
+apiClient.post<T>(endpoint, body, { token })
+apiClient.put<T>(endpoint, body, { token })
+apiClient.patch<T>(endpoint, body, { token })
+apiClient.delete<T>(endpoint, { token })
+```
+
+### Error Handling
+
+#### API Errors
+- Use `ApiError` class for structured errors
+- Always catch and re-throw `ApiError` instances
+- Provide meaningful error messages
+- Never swallow errors silently
+
+#### Pattern
+```typescript
+try {
+  // API call
+} catch (error) {
+  if (error instanceof ApiError) {
+    throw error; // Re-throw API errors
+  }
+  if (error instanceof Error) {
+    throw error;
+  }
+  throw new Error("Descriptive error message");
+}
+```
+
+### Types and Interfaces
+
+#### File Organization
+- One domain per file (e.g., `business.ts`, `category.ts`, `user.ts`)
+- Export all types through `types/index.ts`
+- Co-locate related types (request, response, params)
+
+#### Naming Conventions
+```typescript
+// Entity types
+export interface Business { }
+export interface Category { }
+
+// Response types
+export interface BusinessListResponse { }
+export type CategoryListResponse = Category[];
+
+// Request/Query params
+export interface BusinessQueryParams { }
+
+// Domain-specific subtypes
+export interface BusinessLocation { }
+export interface BusinessSEO { }
+```
+
+### Components
+
+#### File Naming
+- Use kebab-case for files: `login-form.tsx`, `app-sidebar.tsx`
+- Component name should match file name (PascalCase)
+
+#### Component Structure
+```typescript
+import { /* imports */ } from "library";
+import type { /* types */ } from "@/types";
+
+interface ComponentProps {
+  prop1: Type1;
+  prop2?: Type2; // Optional props with ?
+}
+
+export function ComponentName({ prop1, prop2 }: ComponentProps) {
+  // Component logic
+  return (
+    // JSX
+  );
+}
+```
+
+#### UI Components
+- Use shadcn/ui components from `@/components/ui`
+- Don't modify shadcn components directly
+- Create wrapper components if customization needed
+
+### Imports
+
+#### Order
+1. External libraries (React, Next.js, etc.)
+2. Internal components
+3. Internal utilities/libs
+4. Types (use `import type` for type-only imports)
+5. Styles/assets
+
+#### Aliases
+- Use `@/` for all absolute imports
+- Never use relative imports across domains
+```typescript
+// ✅ Good
+import { getAuthToken } from "@/lib/auth";
+import type { Business } from "@/types/business";
+
+// ❌ Bad
+import { getAuthToken } from "../../lib/auth";
+```
+
+### Naming Conventions
+
+#### Variables and Functions
+- `camelCase` for variables and functions
+- Descriptive names, avoid abbreviations
+- Boolean variables: prefix with `is`, `has`, `should`
+
+#### Constants
+- `UPPER_SNAKE_CASE` for true constants
+```typescript
+const API_BASE_URL = "https://api.discoolver.com";
+const MAX_RETRY_ATTEMPTS = 3;
+```
+
+#### Server Actions
+- Verb-first naming: `getBusinesses`, `createCategory`, `updateUser`
+- Use common CRUD verbs: `get`, `create`, `update`, `delete`, `list`
+
+### Documentation
+
+#### JSDoc Comments
+- Required for all exported functions
+- Include `@param` for parameters
+- Include `@returns` for return values
+- One-line description of what the function does
+
+```typescript
+/**
+ * Fetches SEO information for a specific business
+ * @param id - Business ID
+ * @param language - Language code (e.g., 'es', 'en')
+ * @returns Business SEO data including title, description, and tags
+ */
+export async function getBusinessSEO(
+  id: number,
+  language: string
+): Promise<BusinessSEO> {
+  // Implementation
+}
+```
+
+## API Integration
+
+### Authentication
+- Token stored in cookies via `getAuthToken()`
+- Use `CMSAuthorization: Bearer ${token}` header
+- Auto-logout on authorization exceptions (handled by api-client)
+
+### API Versions
+- Base URL: `NEXT_PUBLIC_API_URL` env var (e.g. `https://api.discoolver.com`)
+- v1: `${NEXT_PUBLIC_API_URL}/cms/v1` (use `apiClient`)
+- v2: `${NEXT_PUBLIC_API_URL}/cms/v2` (use `apiClientV2`)
+
+### Response Handling
+- Always type API responses
+- Use interfaces for response shapes
+- Handle loading and error states in components
+
+## Code Style
+
+### Formatting
+- 2 spaces indentation
+- Single quotes for strings (unless JSX)
+- Semicolons required
+- Trailing commas in multi-line objects/arrays
+- Max line length: 80-100 characters (flexible)
+
+### React Patterns
+- Prefer function components over class components
+- Use hooks for state and side effects
+- Keep components small and focused
+- Extract logic to custom hooks when reusable
+
+### Async/Await
+- Use async/await over promises
+- Always handle errors with try/catch
+- Never use `.then()` chains in new code
+
+## Best Practices
+
+### Performance
+- Use React Query for data fetching and caching
+- Implement proper loading states
+- Lazy load heavy components when possible
+
+### Security
+- Never expose sensitive data in client components
+- Use server actions for all API calls
+- Validate all user inputs
+- Sanitize data before rendering
+
+### Accessibility
+- Use semantic HTML elements
+- Include proper ARIA labels
+- Ensure keyboard navigation works
+- Maintain proper color contrast
+
+### Testing
+- Write tests for critical business logic
+- Test error scenarios
+- Mock API calls in tests
+
+## Git Workflow
+
+### Commits
+- Use conventional commits format
+- Keep commits atomic and focused
+- Write descriptive commit messages
+
+### Branches
+- Create feature branches from `main`
+- Use descriptive branch names: `feature/seo-integration`, `fix/auth-redirect`
+
+## Environment Variables
+
+### Required
+- `NEXT_PUBLIC_API_URL`: API base URL (defaults to https://api.discoolver.com)
+
+### Naming
+- Public (client-side): `NEXT_PUBLIC_*`
+- Server-only: No prefix
+
+## Additional Notes
+
+- Always run linter before committing
+- Keep dependencies up to date
+- Document breaking changes
+- Follow Next.js best practices and conventions
+- Prioritize code readability over cleverness
+
