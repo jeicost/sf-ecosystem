@@ -89,37 +89,21 @@ Generate tutorial JSON:
 
   // COMERCIAL/SALES
   if (actionType === 'crear_campaña') {
-    return `You are a strategic business consultant. Create a professional marketing campaign strategy.
+    return `Task: Create a marketing campaign strategy based on provided input.
 
-Input data provided:
-${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+Input: ${JSON.stringify(inputData, null, 2)}
 
-Please respond ONLY with a valid JSON object (no markdown, no additional text) matching this structure exactly:
-{
-  "campaign_name": "Strategic Campaign Name",
-  "target_segment": "Description of target audience",
-  "messaging": ["Core message 1", "Core message 2"],
-  "channels": ["Channel 1", "Channel 2"],
-  "timeline": ["Week 1-2: Task", "Week 3-4: Task"],
-  "success_metrics": ["Metric 1", "Metric 2"]
-}`
+Output ONLY valid JSON (no markdown, no text before/after):
+{"campaign_name":"Campaign Name","target_segment":"Audience description","messaging":["Message 1","Message 2"],"channels":["Channel 1","Channel 2"],"timeline":["Period 1: Action","Period 2: Action"],"success_metrics":["Metric 1","Metric 2"]}`
   }
 
   if (actionType === 'generar_icp') {
-    return `You are a market analyst. Generate an Ideal Customer Profile analysis.
+    return `Task: Generate an Ideal Customer Profile (ICP) analysis.
 
-Input data:
-${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+Input: ${JSON.stringify(inputData, null, 2)}
 
-Respond ONLY with valid JSON (no markdown, no extra text):
-{
-  "company_profile": {"size": "Company size range", "revenue": "Revenue range", "industry": "Industry type"},
-  "decision_makers": [{"role": "Job title", "priorities": ["Priority 1"], "pain_points": ["Problem 1"]}],
-  "buying_process": {"timeline": "Typical sales cycle", "budget": "Budget range", "stakeholders": ["Stakeholder 1"]},
-  "fit_indicators": ["Indicator 1", "Indicator 2"]
-}`
+Output ONLY valid JSON (no markdown, no text):
+{"company_profile":{"size":"Size range","revenue":"Revenue range","industry":"Industry"},"decision_makers":[{"role":"Title","priorities":["Priority"],"pain_points":["Pain"]}],"buying_process":{"timeline":"Timeline","budget":"Budget","stakeholders":["Stakeholder"]},"fit_indicators":["Fit1","Fit2"]}`
   }
 
   if (actionType === 'crear_propuesta') {
