@@ -44,7 +44,6 @@ export function DepartmentQuickActions({ department, actions }: DepartmentQuickA
           actionId={activeActionId}
           resourceName={actions.find((a) => a.actionType === activeActionId)?.title || 'Resource'}
           department={department}
-          outputType="json"
         />
       )}
     </div>

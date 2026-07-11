@@ -8,10 +8,10 @@ interface QuickActionResultProps {
   actionId: string
   resourceName: string
   department: string
-  outputType: string
+  outputType?: string
 }
 
-export function QuickActionResult({ actionId, resourceName, department, outputType }: QuickActionResultProps) {
+export function QuickActionResult({ actionId, resourceName, department, outputType: propOutputType }: QuickActionResultProps) {
   const [result, setResult] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -60,7 +60,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
     setIsSaving(true)
     try {
       // TODO: Call Google Drive MCP integration
-      console.log('Saving to Google Drive:', { actionId, resourceName, outputType })
+      console.log('Saving to Google Drive:', { actionId, resourceName })
       setIsSaving(false)
     } catch (err) {
       console.error('Error saving to Google Drive:', err)
@@ -93,7 +93,8 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
 
   if (!result) return null
 
-  const { output_data } = result
+  const { output_data, output_type } = result
+  const displayOutputType = propOutputType || output_type || 'json'
 
   return (
     <div className="space-y-4">
@@ -119,7 +120,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       {/* Content Preview */}
       <div className="card px-6 py-4">
         <h3 className="font-semibold text-white mb-3">Preview</h3>
-        <ContentPreview outputType={outputType} outputData={output_data} />
+        <ContentPreview outputType={displayOutputType} outputData={output_data} />
       </div>
 
       {/* Action Buttons */}
@@ -145,7 +146,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           )}
         </button>
 
-        {['image', 'document', 'video'].includes(outputType) && (
+        {['image', 'document', 'video'].includes(displayOutputType) && (
           <button
             onClick={handleSaveToGoogleDrive}
             disabled={isSaving}
