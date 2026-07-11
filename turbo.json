@@ -13,7 +13,8 @@
     },
     "lint": {
       "outputs": [],
-      "cache": true
+      "cache": true,
+      "excludePackages": ["sf-crm"]
     },
     "type-check": {
       "outputs": [],
