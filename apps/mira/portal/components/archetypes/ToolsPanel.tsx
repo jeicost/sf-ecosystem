@@ -1,5 +1,5 @@
 'use client'
-import { DEPARTMENT_TOOLS, getAgentsForTool, getNextUnlockSuggestion, calculateDepartmentToolScore, type DepartmentSlug, type ToolType } from '@/lib/department-tools'
+import { DEPARTMENT_TOOLS, getNextUnlockSuggestion, calculateDepartmentToolScore, type DepartmentSlug, type ToolType } from '@/lib/department-tools'
 import { Plus, Zap, Lock } from 'lucide-react'
 import { clsx } from 'clsx'
 
@@ -58,12 +58,7 @@ export default function ToolsPanel({
         <div className="space-y-2">
           <div className="text-xs font-semibold text-[#666] uppercase">Active Tools</div>
           <div className="space-y-2">
-            {connectedToolsData.map(tool => {
-              const agentsUsingTool = tool.agentsUnlocked.filter(a =>
-                departmentAgents.includes(a)
-              )
-
-              return (
+            {connectedToolsData.map(tool => (
                 <div
                   key={tool.id}
                   className="card p-3 border border-[#1E1E1E] space-y-2"
@@ -105,8 +100,7 @@ export default function ToolsPanel({
                     </div>
                   )}
                 </div>
-              )
-            })}
+            ))}
           </div>
         </div>
       )}

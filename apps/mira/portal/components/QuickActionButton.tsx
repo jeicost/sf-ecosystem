@@ -16,7 +16,7 @@ interface QuickActionButtonProps {
 export function QuickActionButton({
   title,
   description,
-  icon,
+  // icon is not used yet
   actionType,
   department,
   inputForm,

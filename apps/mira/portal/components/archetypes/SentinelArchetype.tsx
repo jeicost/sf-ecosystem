@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { AlertCircle, CheckCircle2, Clock, Zap, TrendingUp, Eye } from 'lucide-react'
+import { AlertCircle, CheckCircle2, Clock, Zap, Eye } from 'lucide-react'
 import { clsx } from 'clsx'
 
 type AlertLevel = 'critical' | 'warning' | 'info' | 'success'
@@ -126,8 +126,6 @@ const getTrendIcon = (trend?: 'up' | 'down' | 'stable') => {
 
 export default function SentinelArchetype({
   agentColor,
-  agentEmoji,
-  agentName,
   alerts = DEFAULT_ALERTS,
   metrics = DEFAULT_METRICS,
   onAcknowledgeAlert,

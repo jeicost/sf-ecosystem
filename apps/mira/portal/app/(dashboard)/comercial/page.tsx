@@ -53,7 +53,7 @@ export default function ComercialPage() {
 
       <div className="mb-8">
         <ComercialQuickActions />
-        <DepartmentAgents department="comercial" />
+        <DepartmentAgents />
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Trash2, Eye, FileText, File, Tag, Calendar } from 'lucide-react'
+import { Trash2, Eye, FileText, Calendar } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { ExternalLink, Folder, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { CLIENT_ID } from '@/lib/constants'
 

@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Plus, Edit, Eye, Download, Lock, Film, Palette, Zap } from 'lucide-react'
+import { Plus, Edit, Eye, Download, Lock, Palette, Zap } from 'lucide-react'
 import { clsx } from 'clsx'
 
 interface DesignProject {
@@ -97,8 +97,6 @@ const getToolEmoji = (tool: string) => {
 
 export default function StudioArchetype({
   agentColor,
-  agentEmoji,
-  agentName,
   projects = DEFAULT_PROJECTS,
   onCreateProject,
   onEditProject,

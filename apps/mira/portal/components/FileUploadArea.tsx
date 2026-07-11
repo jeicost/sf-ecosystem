@@ -9,7 +9,7 @@ interface FileUploadAreaProps {
   maxFiles?: number
 }
 
-export default function FileUploadArea({ onFilesSelected, agentName, maxFiles = 5 }: FileUploadAreaProps) {
+export default function FileUploadArea({ onFilesSelected, maxFiles = 5 }: FileUploadAreaProps) {
   const [files, setFiles] = useState<File[]>([])
   const [isDragging, setIsDragging] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)

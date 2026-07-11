@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Check, X, Loader2, Download, Heart, Save } from 'lucide-react'
-import Image from 'next/image'
+// import Image from 'next/image' // TODO: Image not yet used
 
 interface QuickActionResultProps {
   actionId: string
@@ -216,7 +216,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   )
 }
 
-function extractSummary(outputData: any, outputType: string): string {
+function extractSummary(outputData: any, _outputType: string): string {
   if (outputData.summary) return outputData.summary.substring(0, 200)
   if (outputData.title) return outputData.title
   if (outputData.copy) return outputData.copy.substring(0, 200)

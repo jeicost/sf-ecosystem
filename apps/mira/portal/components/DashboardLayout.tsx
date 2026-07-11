@@ -8,7 +8,7 @@ import { useState } from 'react'
 
 export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const { projects, user, loading } = useProjects()
+  const { projects, user } = useProjects()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   const isHome = pathname === '/home'

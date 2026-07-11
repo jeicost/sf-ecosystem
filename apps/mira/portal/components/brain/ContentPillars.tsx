@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Trash2, Plus, Edit2, X, Check } from 'lucide-react'
+import { Trash2, Plus, Edit2, Check } from 'lucide-react'
 import { ContentPillar } from '@/lib/types'
 import { createClient } from '@/lib/supabase'
 import { EditableTagList } from './EditableTagList'

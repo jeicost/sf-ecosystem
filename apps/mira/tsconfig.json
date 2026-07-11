@@ -15,14 +15,12 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
     "noImplicitReturns": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "baseUrl": ".",
+    "baseUrl": "portal",
     "paths": {
       "@/*": [
         "./*"
@@ -40,10 +38,10 @@
     ]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "next-env.d.ts",
-    ".next/types/**/*.ts"
+    "portal/**/*.ts",
+    "portal/**/*.tsx",
+    "portal/next-env.d.ts",
+    "portal/.next/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

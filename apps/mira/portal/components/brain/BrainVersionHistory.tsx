@@ -133,7 +133,7 @@ export default function BrainVersionHistory({
 
         {/* Versions */}
         <div className="space-y-3">
-          {versions.map((version, idx) => {
+          {versions.map((version) => {
             const isCurrent = version.version_number === currentVersion
             return (
               <button

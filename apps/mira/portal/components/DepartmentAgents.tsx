@@ -2,17 +2,7 @@
 
 import { ALL_AGENTS } from '@/lib/agents'
 
-interface DepartmentAgentsProps {
-  department: 'comercial' | 'marketing' | 'strategy' | 'community'
-}
-
-export default function DepartmentAgents({ department }: DepartmentAgentsProps) {
-  const deptMap: Record<string, string> = {
-    comercial: 'comercial',
-    marketing: 'marketing',
-    strategy: 'strategy',
-    community: 'community'
-  }
+export default function DepartmentAgents() {
 
   // Note: Agent schema doesn't have package field, showing first 4 agents for all departments
   const agents = ALL_AGENTS.slice(0, 4)
