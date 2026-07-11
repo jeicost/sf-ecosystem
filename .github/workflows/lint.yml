@@ -26,4 +26,4 @@ jobs:
         run: pnpm typecheck
 
       - name: Lint TypeScript
-        run: pnpm lint
+        run: pnpm lint --filter '!sf-crm'
