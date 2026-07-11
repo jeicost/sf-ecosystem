@@ -1,0 +1,34 @@
+{
+  "versions": [
+    {
+      "v": "001",
+      "type": "index.html",
+      "date": "2026-05-18T07:27:38.769Z",
+      "hash": "de2ea807c56c4603f22f6bb5fb951bbb",
+      "size": 5482
+    },
+    {
+      "v": "002",
+      "type": "seo.html",
+      "date": "2026-05-18T07:27:38.769Z",
+      "hash": "25d47c1e774466a847fc43e1e0246533",
+      "size": 3264
+    },
+    {
+      "v": "003",
+      "type": "marketing.html",
+      "date": "2026-05-18T07:27:38.770Z",
+      "hash": "062e133bde698683cad80e3a92853063",
+      "size": 3217
+    },
+    {
+      "v": "004",
+      "type": "content.html",
+      "date": "2026-05-18T07:27:38.770Z",
+      "hash": "8d7d68e1aeaccde5b11ca23c584f1972",
+      "size": 4236
+    }
+  ],
+  "latest": "004",
+  "lastUpdated": "2026-05-18T07:27:38.770Z"
+}

@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CERØ — Content Pack by Startup Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --bg: #05050A;
+    --card: #0A0A12;
+    --border: rgba(255,255,255,.06);
+    --border-hover: rgba(245,158,11,.3);
+    --amber: #F59E0B;
+    --orange: #FF4500;
+    --text: #E8E8F0;
+    --muted: #6B6B85;
+    --subtle: #1A1A28;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  .header {
+    padding: 48px 24px 32px;
+    text-align: center;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(245,158,11,.04) 0%, transparent 100%);
+  }
+
+  .header-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 8vw, 80px);
+    font-weight: 800;
+    letter-spacing: -3px;
+    line-height: 1;
+    background: linear-gradient(135deg, #fff 0%, var(--amber) 60%, var(--orange) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+
+  .header-sub {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(14px, 2vw, 18px);
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 1px;
+    margin-bottom: 32px;
+  }
+
+  .header-stats {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--amber);
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* TABS */
+  .tabs-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(5,5,10,.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .tabs-nav {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 18px 24px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    transition: color .3s;
+  }
+
+  .tab-btn::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transition: transform .3s;
+  }
+
+  .tab-btn.active {
+    color: var(--amber);
+  }
+
+  .tab-btn.active::after {
+    transform: scaleX(1);
+  }
+
+  .tab-btn:hover {
+    color: var(--text);
+  }
+
+  /* TAB PANELS */
+  .tab-panel {
+    display: none;
+    padding: 48px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .tab-panel.active {
+    display: block;
+  }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 8px;
+  }
+
+  .section-title span {
+    color: var(--amber);
+  }
+
+  .section-desc {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 48px;
+    max-width: 600px;
+  }
+
+  /* POST GRID */
+  .posts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 24px;
+  }
+
+  /* POST CARD */
+  .post-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color .3s, transform .2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .post-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--amber), var(--orange));
+    opacity: 0;
+    transition: opacity .3s;
+  }
+
+  .post-card:hover {
+    border-color: var(--border-hover);
+    transform: translateY(-2px);
+  }
+
+  .post-card:hover::before {
+    opacity: 1;
+  }
+
+  .post-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 12px;
+  }
+
+  .post-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: 2px;
+  }
+
+  .post-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 6px 0 14px;
+    color: #fff;
+  }
+
+  .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .badge {
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: .5px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .badge-format {
+    background: rgba(245,158,11,.12);
+    color: var(--amber);
+    border: 1px solid rgba(245,158,11,.25);
+  }
+
+  .badge-pillar {
+    background: rgba(255,69,0,.1);
+    color: var(--orange);
+    border: 1px solid rgba(255,69,0,.2);
+  }
+
+  .badge-platform {
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .post-visual {
+    background: var(--subtle);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .post-visual::before {
+    content: '🎬 VISUAL — ';
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--amber);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .post-caption {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    margin-bottom: 16px;
+    white-space: pre-line;
+  }
+
+  .post-hashtags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .hashtag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    opacity: .7;
+  }
+
+  /* DIVIDER */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 32px 0;
+  }
+
+  /* SCRIPTS */
+  .scripts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .accordion-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: border-color .3s;
+  }
+
+  .accordion-card:hover {
+    border-color: var(--border-hover);
+  }
+
+  .accordion-header {
+    padding: 24px 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    user-select: none;
+  }
+
+  .accordion-header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+
+  .script-number {
+    font-family: 'Space Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--amber);
+    min-width: 40px;
+  }
+
+  .script-meta {
+    flex: 1;
+  }
+
+  .script-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .script-badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .accordion-toggle {
+    width: 36px;
+    height: 36px;
+    background: var(--subtle);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .3s, transform .3s;
+    color: var(--amber);
+    font-size: 18px;
+    font-weight: 300;
+  }
+
+  .accordion-card.open .accordion-toggle {
+    transform: rotate(45deg);
+    background: rgba(245,158,11,.15);
+  }
+
+  .accordion-body {
+    display: none;
+    padding: 0 28px 28px;
+    border-top: 1px solid var(--border);
+  }
+
+  .accordion-card.open .accordion-body {
+    display: block;
+  }
+
+  .script-hook {
+    margin-top: 24px;
+    background: linear-gradient(135deg, rgba(245,158,11,.08), rgba(255,69,0,.05));
+    border: 1px solid rgba(245,158,11,.2);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+
+  .script-hook-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .script-hook-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+  }
+
+  .script-section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .shot-flow {
+    list-style: none;
+    margin-bottom: 24px;
+  }
+
+  .shot-flow li {
+    display: flex;
+    gap: 14px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .shot-flow li:last-child {
+    border-bottom: none;
+  }
+
+  .shot-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    min-width: 28px;
+    margin-top: 1px;
+  }
+
+  .onscreen-block {
+    background: #0D0D18;
+    border: 1px solid rgba(245,158,11,.2);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    line-height: 2;
+    color: #9BFFA0;
+    white-space: pre-line;
+    overflow-x: auto;
+  }
+
+  .onscreen-block .comment {
+    color: var(--muted);
+  }
+
+  .script-caption-box {
+    background: var(--subtle);
+    border-radius: 10px;
+    padding: 18px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    white-space: pre-line;
+  }
+
+  /* STRATEGY TAB */
+  .strategy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 900px) {
+    .strategy-grid { grid-template-columns: 1fr; }
+    .posts-grid { grid-template-columns: 1fr; }
+  }
+
+  .strategy-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .strategy-card.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .strategy-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .strategy-card-title .icon {
+    width: 36px;
+    height: 36px;
+    background: rgba(245,158,11,.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  /* LOOP DIAGRAM */
+  .loop-diagram {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    padding: 20px 0;
+  }
+
+  .loop-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+  }
+
+  .loop-step-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: rgba(245,158,11,.1);
+    border: 2px solid rgba(245,158,11,.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+
+  .loop-step-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--amber);
+    text-align: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .loop-arrow {
+    font-size: 20px;
+    color: var(--orange);
+    padding: 0 4px;
+    margin-top: -20px;
+  }
+
+  /* PLATFORM CARDS */
+  .platform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 700px) {
+    .platform-grid { grid-template-columns: 1fr; }
+    .loop-diagram { gap: 0; }
+    .loop-step { padding: 10px 6px; }
+    .loop-arrow { font-size: 14px; }
+  }
+
+  .platform-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .platform-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .platform-name .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+
+  .platform-row {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .platform-row:last-child {
+    border-bottom: none;
+  }
+
+  .platform-row-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+
+  .platform-row-content {
+    color: var(--text);
+  }
+
+  /* CALENDAR */
+  .calendar-wrapper {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  .calendar-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .calendar-header h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .calendar-grid {
+    overflow-x: auto;
+    padding: 24px;
+  }
+
+  .cal-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 700px;
+  }
+
+  .cal-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 10px 8px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cal-table td {
+    padding: 8px;
+    border-bottom: 1px solid rgba(255,255,255,.03);
+    vertical-align: top;
+  }
+
+  .cal-week {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    padding: 10px 8px;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .cal-cell {
+    background: var(--subtle);
+    border-radius: 8px;
+    padding: 8px 10px;
+    min-height: 60px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .cal-post-tag {
+    display: inline-block;
+    background: rgba(245,158,11,.12);
+    color: var(--amber);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    margin-bottom: 4px;
+    display: block;
+  }
+
+  .cal-cell-text {
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .cal-story {
+    background: rgba(255,69,0,.06);
+    border: 1px solid rgba(255,69,0,.15);
+  }
+
+  .cal-story .cal-post-tag {
+    background: rgba(255,69,0,.12);
+    color: var(--orange);
+  }
+
+  .cal-empty {
+    opacity: .3;
+  }
+
+  /* ENGAGEMENT */
+  .engagement-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 48px;
+  }
+
+  .engagement-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .engagement-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--amber);
+  }
+
+  .engagement-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--amber);
+    margin-bottom: 10px;
+  }
+
+  .engagement-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+
+  .engagement-desc {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* KPI TABLE */
+  .kpi-wrapper {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  .kpi-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .kpi-header h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+  }
+
+  .kpi-table th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: rgba(255,255,255,.02);
+  }
+
+  .kpi-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.03);
+    font-size: 13px;
+    color: var(--text);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  .kpi-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .kpi-table tr:hover td {
+    background: rgba(255,255,255,.02);
+  }
+
+  .kpi-metric {
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .kpi-target {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--amber);
+  }
+
+  /* COPY BUTTON */
+  .copy-btn {
+    background: rgba(245,158,11,.08);
+    border: 1px solid rgba(245,158,11,.2);
+    color: var(--amber);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: background .2s;
+    float: right;
+    margin-top: -4px;
+  }
+
+  .copy-btn:hover {
+    background: rgba(245,158,11,.15);
+  }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    padding: 48px 24px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .footer strong {
+    color: var(--amber);
+    font-family: 'Space Mono', monospace;
+  }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(245,158,11,.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(245,158,11,.5); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .header-stats { gap: 20px; }
+    .tab-btn { font-size: 11px; padding: 16px 12px; letter-spacing: 0; }
+    .tab-panel { padding: 32px 16px; }
+    .accordion-header { padding: 20px 18px; }
+    .accordion-body { padding: 0 18px 20px; }
+    .post-card { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <p class="header-eyebrow">Content Pack · Startup Factory × CERØ</p>
+  <h1>CERØ</h1>
+  <p class="header-sub">Tax Relocation · Bangkok · Digital Nomads · 2025</p>
+  <div class="header-stats">
+    <div class="stat">
+      <span class="stat-value">15</span>
+      <span class="stat-label">Posts Ready</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">10</span>
+      <span class="stat-label">Video Scripts</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">30</span>
+      <span class="stat-label">Day Calendar</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">200+</span>
+      <span class="stat-label">Members Relocated</span>
+    </div>
+    <div class="stat">
+      <span class="stat-value">€8.4M</span>
+      <span class="stat-label">Taxes Saved</span>
+    </div>
+  </div>
+</header>
+
+<!-- TABS NAV -->
+<div class="tabs-wrapper">
+  <nav class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('posts', this)">Posts</button>
+    <button class="tab-btn" onclick="switchTab('scripts', this)">Scripts</button>
+    <button class="tab-btn" onclick="switchTab('strategy', this)">Delivery Strategy</button>
+  </nav>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 1: POSTS -->
+<!-- ============================================================ -->
+<div id="tab-posts" class="tab-panel active">
+  <h2 class="section-title">15 <span>Posts</span></h2>
+  <p class="section-desc">Strategic sequence: Awareness → Education → Personality & Product → Social Proof & CTA. Ready to publish on Instagram & LinkedIn.</p>
+
+  <div class="posts-grid">
+
+    <!-- POST 1 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 01</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Choose Freedom</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">The Number That Changes Everything</h3>
+      <div class="post-visual">Bold typographic design: giant "0%" in amber on dark background, with the subline "your effective tax rate" beneath it. Clean, minimal, disruptive.</div>
+      <p class="post-caption">What if your tax rate was 0%?
+
+Not because you're hiding anything.
+Not because of a loophole.
+
+But because you chose to live differently.
+
+200+ European entrepreneurs have already made the move.
+€8.4M in taxes saved — legally, permanently, freely.
+
+This is CERØ.
+Choose freedom.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#TaxRelocation</span>
+        <span class="hashtag">#ChooseFreedom</span>
+        <span class="hashtag">#DigitalNomad</span>
+        <span class="hashtag">#FiscalFreedom</span>
+      </div>
+    </div>
+
+    <!-- POST 2 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 02</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Reel</span>
+        <span class="badge badge-pillar">Life in Bangkok</span>
+        <span class="badge badge-platform">IG</span>
+      </div>
+      <h3 class="post-title">Your Office View Could Look Like This</h3>
+      <div class="post-visual">Slow cinematic pan of Bangkok skyline at golden hour from a rooftop infinity pool, then cut to a sleek co-working space, then back to laptop on a terrace with the city below.</div>
+      <p class="post-caption">Europe: 9am meetings in the rain. 47% income tax. Traffic jams.
+
+Bangkok: Rooftop pools. World-class food under €5. A city that moves at your pace.
+
+The smartest entrepreneurs in Europe aren't moving because they're running away.
+
+They're moving because they finally did the math.
+
+👇 Where would you rather work from?
+
+📍 Bangkok is waiting.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#BangkokLife</span>
+        <span class="hashtag">#RemoteWork</span>
+        <span class="hashtag">#ChooseFreedom</span>
+        <span class="hashtag">#EntrepreneurLife</span>
+        <span class="hashtag">#DigitalNomad</span>
+      </div>
+    </div>
+
+    <!-- POST 3 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 03</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Choose Freedom</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">The Uncomfortable Math</h3>
+      <div class="post-visual">Split-screen infographic: left side dark red showing "staying" costs (Spain 47%, Germany 45%, France 45%), right side amber showing "after CERØ" (Thailand ~0% for foreign-source income).</div>
+      <p class="post-caption">If you're billing €200,000/year as a European entrepreneur, here's what staying costs you:
+
+🇩🇪 Germany: ~€82,000/year to the state
+🇫🇷 France: ~€90,000/year
+🇪🇸 Spain: ~€78,000/year
+
+That's €820,000 over a decade.
+
+Not in a vault. Gone.
+
+Some people read this and say "that's just how it is."
+Others do something about it.
+
+We work with the second kind.
+
+→ Link in bio to understand your options.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#TaxPlanning</span>
+        <span class="hashtag">#FiscalResidency</span>
+        <span class="hashtag">#WealthBuilding</span>
+        <span class="hashtag">#EuropeanEntrepreneur</span>
+      </div>
+    </div>
+
+    <!-- POST 4 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 04</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Carrusel</span>
+        <span class="badge badge-pillar">Choose Freedom</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">Freedom Isn't a Feeling. It's a Structure.</h3>
+      <div class="post-visual">8-slide carousel: Slide 1 has bold hook text, slides 2-7 each show one "freedom pillar" with minimal icon and single line of text, slide 8 is a CTA card with CERØ branding.</div>
+      <p class="post-caption">Most people think freedom is a feeling.
+
+We think freedom is a structure you build.
+
+Swipe through the 7 pillars of a free entrepreneur's life →
+
+Tax freedom. Location freedom. Time freedom. Legal clarity. Community. Quality of life. Peace of mind.
+
+200+ entrepreneurs already have all seven.
+
+When are you getting yours?</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#ChooseFreedom</span>
+        <span class="hashtag">#EntrepreneurMindset</span>
+        <span class="hashtag">#LocationIndependent</span>
+        <span class="hashtag">#CERØ</span>
+      </div>
+    </div>
+
+    <!-- POST 5 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 05</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Carrusel</span>
+        <span class="badge badge-pillar">Educación Fiscal</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">Tax Residency 101: What Nobody Told You</h3>
+      <div class="post-visual">Educational carousel with clean amber-on-dark slides, each containing one myth vs. reality pairing with bold typography and a small icon.</div>
+      <p class="post-caption">Everyone has opinions about tax relocation.
+Most of them are wrong.
+
+Let's clear it up. Swipe →
+
+❌ "It's only for the ultra-rich"
+✅ Works from €80K/year revenue
+
+❌ "It's illegal/shady"
+✅ Regulated by international tax law
+
+❌ "You lose your European lifestyle"
+✅ Bangkok has better food, weather, and Wi-Fi
+
+❌ "It's complicated"
+✅ ~6 months with the right team
+
+This is fiscal intelligence, not fiscal evasion.
+
+Save this post. Share it with someone who needs it.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#TaxResidency</span>
+        <span class="hashtag">#FiscalEducation</span>
+        <span class="hashtag">#DigitalNomad</span>
+        <span class="hashtag">#ThailandTax</span>
+      </div>
+    </div>
+
+    <!-- POST 6 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 06</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Educación Fiscal</span>
+        <span class="badge badge-platform">LI</span>
+      </div>
+      <h3 class="post-title">The 183-Day Rule Explained (Simply)</h3>
+      <div class="post-visual">Clean typographic infographic with a horizontal timeline showing 183 days in amber, with flags of key countries and a simple rule breakdown beneath each.</div>
+      <p class="post-caption">The most important number in international tax law isn't a percentage.
+
+It's 183.
+
+183 days in a country = you become a tax resident there.
+
+Here's what that means for you as a European entrepreneur:
+
+→ Spend <183 days in your home country
+→ Establish genuine residency in Thailand
+→ Follow CERØ's compliance framework
+→ Foreign-source income taxed at 0% in Thailand
+
+Simple? Yes.
+Easy to do alone? No.
+
+That's exactly why we exist.
+
+~6 months. End-to-end. Done properly.
+
+Drop your country in the comments — I'll tell you what your specific situation looks like.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#TaxResidency</span>
+        <span class="hashtag">#183Days</span>
+        <span class="hashtag">#InternationalTax</span>
+        <span class="hashtag">#EntrepreneurFinance</span>
+      </div>
+    </div>
+
+    <!-- POST 7 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 07</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Carrusel</span>
+        <span class="badge badge-pillar">Educación Fiscal</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">Thailand for Entrepreneurs: The Real Picture</h3>
+      <div class="post-visual">Map-style carousel with Thailand highlighted, each slide explaining one tax advantage with a simple visual: territorial tax system, LTR visa, no capital gains tax, no wealth tax.</div>
+      <p class="post-caption">Why Thailand and not Andorra, Dubai, or Portugal?
+
+We get this question constantly. Here's the honest answer:
+
+🏦 Territorial tax system (foreign income untaxed)
+📋 Long-Term Resident Visa — designed for high-earners
+📈 0% capital gains tax
+💼 No wealth tax
+🌍 Strong treaty network with Europe
+✈️ 35+ direct flights to Europe/week
+
+Thailand isn't a workaround. It's a well-designed system for globally mobile professionals.
+
+We've helped 200+ people navigate it.
+The path is clear if you know where to walk.
+
+Questions? Drop them below. ↓</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#ThailandTax</span>
+        <span class="hashtag">#LTRVisa</span>
+        <span class="hashtag">#TaxPlanning</span>
+        <span class="hashtag">#Bangkok</span>
+        <span class="hashtag">#CERØ</span>
+      </div>
+    </div>
+
+    <!-- POST 8 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 08</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Reel</span>
+        <span class="badge badge-pillar">Educación Fiscal</span>
+        <span class="badge badge-platform">IG</span>
+      </div>
+      <h3 class="post-title">"But Is It Really Legal?" — Yes. Here's Why.</h3>
+      <div class="post-visual">Founder or team member on camera, direct address, calm and confident in a minimal office space. Text overlays reinforce key legal points as they speak.</div>
+      <p class="post-caption">"But is it really legal?"
+
+Yes. And let me explain exactly why.
+
+Tax residency changes are protected under international law.
+Thailand has tax treaties with 61 countries.
+OECD compliance is built into every CERØ process.
+
+We're not selling loopholes.
+We're selling structure — one that thousands of globally mobile professionals use.
+
+The question isn't "is it legal?"
+The question is: "why am I still paying taxes where I don't live?"
+
+Watch the full breakdown in today's Reel. 👆</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#LegalTaxPlanning</span>
+        <span class="hashtag">#FiscalResidency</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#TaxFacts</span>
+      </div>
+    </div>
+
+    <!-- POST 9 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 09</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Life in Bangkok</span>
+        <span class="badge badge-platform">IG</span>
+      </div>
+      <h3 class="post-title">Bangkok Through the Eyes of a CERØ Member</h3>
+      <div class="post-visual">Atmospheric photo collage: morning coffee at a rooftop café, evening at Asok market, interior of a premium co-working space in Ari, sunset from a condo balcony in Sukhumvit.</div>
+      <p class="post-caption">A Tuesday in Bangkok, year one of CERØ.
+
+7am: Coffee with a city view. ฿80.
+9am: Deep work at the co-working space. Fast Wi-Fi, zero noise.
+12pm: Pad see ew that would cost €22 in Berlin. Here: ฿60.
+4pm: Swim. (Yes, your building has a pool.)
+7pm: Dinner with the CERØ crew — a mix of founders from Germany, Spain, France.
+
+10pm: You remember you haven't thought about tax once today.
+
+That's the point.
+
+→ DM us "BANGKOK" if you want the relocation guide.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#BangkokLife</span>
+        <span class="hashtag">#ChooseFreedom</span>
+        <span class="hashtag">#ExpatBangkok</span>
+        <span class="hashtag">#DigitalNomadLife</span>
+      </div>
+    </div>
+
+    <!-- POST 10 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 10</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Reel</span>
+        <span class="badge badge-pillar">Behind the Process</span>
+        <span class="badge badge-platform">IG</span>
+      </div>
+      <h3 class="post-title">The 6-Month Journey: What CERØ Actually Does</h3>
+      <div class="post-visual">Time-lapse style montage: calendar ticking through months, documents being signed, a flight boarding pass, a new apartment, a Thai tax ID card, and finally — a person smiling at a laptop in Bangkok.</div>
+      <p class="post-caption">People ask: "How does CERØ actually work?"
+
+Here's the journey in 6 months:
+
+Month 1 → Tax audit of your current situation
+Month 2 → Legal structure & company setup
+Month 3 → Visa application & residency docs
+Month 4 → Bangkok onboarding & address setup
+Month 5 → Tax filings & compliance checks
+Month 6 → You are officially a Thai fiscal resident
+
+End-to-end. We handle everything.
+You focus on your business.
+
+200+ people have done this.
+None of them regret it.
+
+Ready to start your 6 months? → Link in bio.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#TaxRelocation</span>
+        <span class="hashtag">#BehindTheScenes</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#FiscalResidency</span>
+      </div>
+    </div>
+
+    <!-- POST 11 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 11</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Behind the Process</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">Why We Only Work With Digital Entrepreneurs</h3>
+      <div class="post-visual">Split image: left shows a generic tax consulting office (gray, corporate), right shows a CERØ session — laptops, modern space, people who look like founders, amber light.</div>
+      <p class="post-caption">Every tax consultancy says they can help you.
+
+We say: we only work with digital entrepreneurs.
+
+Here's why that matters:
+
+Your income is location-independent.
+Your clients are international.
+Your business exists in the cloud.
+
+That makes you uniquely positioned to restructure your taxes legally — but only if your advisors actually understand how you operate.
+
+We don't learn your business model on the job.
+We've helped 200+ people just like you.
+
+We speak your language.
+We've solved your exact problem.
+Dozens of times.
+
+That's not a generalist consultancy.
+That's CERØ.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#DigitalEntrepreneur</span>
+        <span class="hashtag">#TaxAdvisory</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#LocationFree</span>
+      </div>
+    </div>
+
+    <!-- POST 12 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 12</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Carrusel</span>
+        <span class="badge badge-pillar">Trust & Compliance</span>
+        <span class="badge badge-platform">LI</span>
+      </div>
+      <h3 class="post-title">How We Keep 200+ Members Compliant — Always</h3>
+      <div class="post-visual">Professional carousel with document/checklist aesthetic — dark cards with amber checkmarks, each slide showing one compliance pillar: OECD compliance, local registration, annual tax filings, treaty documentation, exit compliance from home country.</div>
+      <p class="post-caption">The most common fear we hear: "What if I get in trouble with my home country's tax authority?"
+
+It's a fair question. Here's our answer.
+
+CERØ's compliance framework is built around 5 pillars. Swipe to see them →
+
+We don't cut corners.
+We don't find loopholes.
+We follow the law — precisely and completely.
+
+Our track record: 200+ members relocated.
+0 regulatory issues.
+
+That's not luck. That's process.
+
+Your peace of mind is part of the product.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#TaxCompliance</span>
+        <span class="hashtag">#LegalRelocation</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#TrustProcess</span>
+      </div>
+    </div>
+
+    <!-- POST 13 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 13</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Social Proof / Testimonios</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">€8.4 Million Reasons to Trust the Process</h3>
+      <div class="post-visual">Bold stats-focused design: three large numbers stacked vertically — "200+ members", "€8.4M saved", "6 months" — each in a different size, amber on dark, with a subtle Bangkok skyline silhouette background.</div>
+      <p class="post-caption">Numbers don't lie.
+
+200+ European entrepreneurs relocated.
+€8.4M in taxes saved collectively.
+~6 months from first call to Thai fiscal resident.
+0 compliance issues. Ever.
+
+These aren't marketing numbers.
+They're the result of a process we've refined with every single member.
+
+Every euro saved is real money back in a founder's hands.
+Money for reinvestment. For travel. For the life they chose to build.
+
+This is what choosing freedom looks like in numbers.
+
+Is your name in the next milestone?</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#SocialProof</span>
+        <span class="hashtag">#TaxRelocation</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#ChooseFreedom</span>
+        <span class="hashtag">#Results</span>
+      </div>
+    </div>
+
+    <!-- POST 14 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 14</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Reel</span>
+        <span class="badge badge-pillar">Social Proof / Testimonios</span>
+        <span class="badge badge-platform">IG</span>
+      </div>
+      <h3 class="post-title">Member Voices: "Best Decision of My Entrepreneurial Life"</h3>
+      <div class="post-visual">Compilation Reel of 3-4 real members (or simulated testimonial format) shot in Bangkok locations — rooftop, street, co-working space — each delivering a single powerful sentence directly to camera.</div>
+      <p class="post-caption">"The first tax return in Thailand — I just stared at the screen."
+— M., SaaS founder, Germany
+
+"I paid more in taxes my first year of business than I've paid in 3 years since CERØ."
+— A., agency owner, Spain
+
+"They told me exactly what to do and when. I just followed the process."
+— L., e-commerce founder, France
+
+Real people. Real savings. Real freedom.
+
+This could be your story.
+
+→ DM us "FREEDOM" to start your assessment.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#Testimonial</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#TaxFreedom</span>
+        <span class="hashtag">#ChooseFreedom</span>
+      </div>
+    </div>
+
+    <!-- POST 15 -->
+    <div class="post-card">
+      <div class="post-header">
+        <span class="post-number">POST 15</span>
+      </div>
+      <div class="badges">
+        <span class="badge badge-format">Feed 4:5</span>
+        <span class="badge badge-pillar">Choose Freedom</span>
+        <span class="badge badge-platform">IG + LI</span>
+      </div>
+      <h3 class="post-title">One Decision. Everything Changes.</h3>
+      <div class="post-visual">Cinematic before/after: left side is a cold, gray European city street with a person looking at their phone; right side is a warm Bangkok rooftop sunset with that same person, laptop open, smiling. Amber glow connects both halves.</div>
+      <p class="post-caption">You didn't start your business to give half of it away.
+
+You started it for freedom.
+For ownership. For a life on your own terms.
+
+The tax system in Europe wasn't designed with you in mind.
+
+But Bangkok was.
+
+CERØ is the bridge between where you are and where you should be.
+
+End-to-end process. 6 months. 200+ members who made it.
+
+The only question left is:
+When do you choose freedom?
+
+→ Free assessment. Link in bio.
+→ DM us "CERØ" to talk to the team.</p>
+      <div class="post-hashtags">
+        <span class="hashtag">#ChooseFreedom</span>
+        <span class="hashtag">#CERØ</span>
+        <span class="hashtag">#TaxRelocation</span>
+        <span class="hashtag">#Bangkok</span>
+        <span class="hashtag">#EntrepreneurFreedom</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- TAB 2: SCRIPTS -->
+<!-- ============================================================ -->
+<div id="tab-scripts" class="tab-panel">
+  <h2 class="section-title">10 Video <span>Scripts</span></h2>
+  <p class="section-desc">Reels & LinkedIn Video scripts built for maximum scroll-stop and conversion. Click any card to expand the full script.</p>
+
+  <div class="scripts-grid">
+
+    <!-- SCRIPT 1 -->
+    <div class="accordion-card" id="script-1">
+      <div class="accordion-header" onclick="toggleAccordion('script-1')">
+        <div class="accordion-header-left">
+          <span class="script-number">01</span>
+          <div class="script-meta">
+            <h3 class="script-title">The €800K Wake-Up Call</h3>
+            <div class="script-badges">
+              <span class="badge badge-format">Reel</span>
+              <span class="badge badge-pillar">Choose Freedom</span>
+              <span class="badge badge-platform">IG · 30–45s</span>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-body">
+        <div class="script-hook">
+          <div class="script-hook-label">🪝 Hook — First Frame Text</div>
+          <div class="script-hook-text">"You're paying €800K to a country you barely live in."</div>
+        </div>
+        <p class="script-section-label">📽️ Shot Flow</p>
+        <ol class="shot-flow">
+          <li><span class="shot-num">01</span>Close-up on a calculator. Someone types in their income. The tax number appears — large, red.</li>
+          <li><span class="shot-num">02</span>Cut to: calendar with 183 days crossed out. Hand marks the last day.</li>
+          <li><span class="shot-num">03</span>Screen text overlay: the €800K calculation. Simple math shown step by step.</li>
+          <li><span class="shot-num">04</span>Cut to: Bangkok aerial footage — warm, golden, alive.</li>
+          <li><span class="shot-num">05</span>Founder to camera, calm, direct. One sentence delivery. Black background.</li>
+          <li><span class="shot-num">06</span>Final frame: CERØ logo + "Choose Freedom" + "Free assessment → Link in bio"</li>
+        </ol>
+        <p class="script-section-label">📱 On-Screen Text Sequence</p>
+        <div class="onscreen-block"><span class="comment">// FRAME 1 — 0:00–0:03</span>
+"You're paying €800K to a country
+you barely live in."
+
+<span class="comment">// FRAME 2 — 0:04–0:09</span>
+€200K/year × 10 years
+= €820,000 gone.
+
+<span class="comment">// FRAME 3 — 0:10–0:17</span>
+What if the math looked like this instead?
+
+€200K/year × 10 years
+= €200K in Thailand
+= €820,000 still yours.
+
+<span class="comment">// FRAME 4 — 0:18–0:25</span>
+"This is legal. This is real.
+200+ entrepreneurs have done it."
+
+<span class="comment">// FRAME 5 — 0:26–0:35</span>
+CERØ — Choose Freedom
+🔗 Free assessment in bio</div>
+        <p class="script-section-label">📝 Caption</p>
+        <div class="script-caption-box">Over a decade, a European entrepreneur earning €200K/year gives away more than €800,000 in taxes.
+
+Not because they have to.
+Because no one showed them the math.
+
+We show you the math.
+Then we do something about it.
+
+200+ members. €8.4M saved. 6-month process.
+
+→ Free assessment. Link in bio.
+
+#TaxRelocation #ChooseFreedom #CERØ #FiscalFreedom</div>
+      </div>
+    </div>
+
+    <!-- SCRIPT 2 -->
+    <div class="accordion-card" id="script-2">
+      <div class="accordion-header" onclick="toggleAccordion('script-2')">
+        <div class="accordion-header-left">
+          <span class="script-number">02</span>
+          <div class="script-meta">
+            <h3 class="script-title">A Day in Bangkok (vs. a Day in Berlin)</h3>
+            <div class="script-badges">
+              <span class="badge badge-format">Reel</span>
+              <span class="badge badge-pillar">Life in Bangkok</span>
+              <span class="badge badge-platform">IG · 45–60s</span>
+            </div>
+          </div>
+        </div>
+        <div class="accordion-toggle">+</div>
+      </div>
+      <div class="accordion-body">
+        <div class="script-hook">
+          <div class="script-hook-label">🪝 Hook — First Frame Text</div>
+          <div class="script-hook-text">"Same salary. Completely different life."</div>
+        </div>
+        <ol class="shot-flow">
+          <li><span class="shot-num">01</span>Split-screen start: gray Berlin morning (stock or filmed) vs Bangkok sunrise. Side-by-side for 2 seconds.</li>
+          <li><span class="shot-num">02</span>Berlin side: alarm clock, cold coffee, laptop on a cluttered desk. Muted grays.</li>
+          <li><span class="shot-num">03</span>Bangkok side: coffee on a sunny terrace, rooftop pool in background, vibrant colors.</li>
+          <li><span class="shot-num">04</span>Price comparison overlays appear one by one — coffee, rent, gym, dinner.</li>
+          <li><span class="shot-num">05</span>Single line appears: "And you'd pay 0% on your foreign income."</li>
+          <li>

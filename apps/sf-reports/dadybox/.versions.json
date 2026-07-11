@@ -1,0 +1,20 @@
+{
+  "marketing": [
+    {
+      "version": "1.0",
+      "date": "2026-05-14T11:15:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/dadybox/marketing.html"
+      }
+    }
+  ],
+  "seo": [
+    {
+      "version": "1.0",
+      "date": "2026-05-14T11:15:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/dadybox/seo.html"
+      }
+    }
+  ]
+}

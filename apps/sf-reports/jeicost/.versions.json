@@ -1,0 +1,29 @@
+{
+  "content": [
+    {
+      "version": "1.0",
+      "date": "2026-05-13T10:00:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/jeicost/content.html"
+      }
+    }
+  ],
+  "marketing": [
+    {
+      "version": "1.0",
+      "date": "2026-05-13T10:00:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/jeicost/marketing.html"
+      }
+    }
+  ],
+  "seo": [
+    {
+      "version": "1.0",
+      "date": "2026-05-13T10:00:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/jeicost/seo.html"
+      }
+    }
+  ]
+}

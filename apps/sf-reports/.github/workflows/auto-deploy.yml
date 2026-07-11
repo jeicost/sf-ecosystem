@@ -1,0 +1,42 @@
+name: Auto Deploy Reports
+
+# Trigger on file changes pushed to main
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '**/*.html'
+      - '**/*.json'
+      - 'vercel.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Report Changes
+        run: |
+          echo "📝 Changed files:"
+          git diff-tree --no-commit-id --name-only -r HEAD || echo "Initial commit"
+
+      - name: Trigger Vercel Deployment
+        if: ${{ secrets.VERCEL_DEPLOY_HOOK_URL != '' }}
+        run: |
+          echo "🚀 Triggering Vercel redeploy..."
+          curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+          echo "✅ Deployment triggered"
+
+  # Alternative: Use Vercel action
+  # deploy-vercel:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: vercel/action@main
+  #       with:
+  #         vercel-token: ${{ secrets.VERCEL_TOKEN }}
+  #         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+  #         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}

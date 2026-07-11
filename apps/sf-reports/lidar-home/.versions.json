@@ -1,0 +1,20 @@
+{
+  "marketing": [
+    {
+      "version": "1.0",
+      "date": "2026-05-17T09:45:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/lidar-home/marketing.html"
+      }
+    }
+  ],
+  "seo": [
+    {
+      "version": "1.0",
+      "date": "2026-05-17T09:45:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/lidar-home/seo.html"
+      }
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "versions": [
+    {
+      "v": "001",
+      "type": "index.html",
+      "date": "2026-05-18T07:27:38.763Z",
+      "hash": "d0aa8001352d90074e22a43e4cbe0ebb",
+      "size": 11776
+    },
+    {
+      "v": "002",
+      "type": "seo.html",
+      "date": "2026-05-18T07:27:38.764Z",
+      "hash": "162c1c939330bf8ea007fd515537a691",
+      "size": 58144
+    },
+    {
+      "v": "003",
+      "type": "marketing.html",
+      "date": "2026-05-18T07:27:38.765Z",
+      "hash": "940b8369f285fd21475204261e1edf63",
+      "size": 26608
+    }
+  ],
+  "latest": "003",
+  "lastUpdated": "2026-05-18T07:27:38.765Z"
+}

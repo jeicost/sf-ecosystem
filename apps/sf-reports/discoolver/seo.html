@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SEO Audit — discoolver.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #07080f;
+    --surface: #0e0f1a;
+    --surface2: #141526;
+    --border: #1e2035;
+    --border2: #252840;
+    --accent: #ff5a1f;
+    --accent2: #ff8c5a;
+    --blue: #4d7cff;
+    --cyan: #00d4e0;
+    --green: #00e676;
+    --yellow: #ffd740;
+    --red: #ff3d57;
+    --text: #eeeef5;
+    --text2: #9090b0;
+    --text3: #5a5a80;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Outfit', sans-serif;
+    --display: 'Bebas Neue', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: .4;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(7,8,15,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  header .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+  }
+  .brand-icon svg { width: 18px; height: 18px; fill: white; }
+  .brand-name {
+    font-family: var(--display);
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .brand-name span { color: var(--accent); }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .header-meta .url {
+    color: var(--cyan);
+    border: 1px solid #00d4e030;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #00d4e008;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 60px 0 50px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: 'SEO';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-family: var(--display);
+    font-size: 260px;
+    color: #ffffff03;
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .score-ring-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+  }
+  .score-ring-wrap svg {
+    width: 180px;
+    height: 180px;
+    transform: rotate(-90deg);
+  }
+  .score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 10; }
+  .score-ring-fill {
+    fill: none;
+    stroke: var(--green);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 502.65;
+    stroke-dashoffset: 502.65;
+    animation: fillRing 1.8s cubic-bezier(.4,0,.2,1) 0.3s forwards;
+  }
+  @keyframes fillRing {
+    to { stroke-dashoffset: 115.61; }
+  }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-num {
+    font-family: var(--display);
+    font-size: 64px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+  .score-denom { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .score-label { font-size: 11px; color: var(--green); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  .hero-info { display: flex; flex-direction: column; gap: 24px; }
+  .hero-title { font-family: var(--display); font-size: 42px; letter-spacing: 2px; line-height: 1.1; }
+  .hero-title .hl { color: var(--accent); }
+  .hero-desc { color: var(--text2); max-width: 520px; font-size: 15px; }
+  .hero-desc strong { color: var(--accent2); }
+
+  .score-quadrants {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .quad {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quad::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--q-color, var(--accent));
+  }
+  .quad-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .quad-score {
+    font-family: var(--display);
+    font-size: 28px;
+    line-height: 1;
+    color: var(--q-color, var(--text));
+  }
+  .quad-denom { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .quad-bar { margin-top: 8px; height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .quad-bar-fill {
+    height: 100%;
+    background: var(--q-color, var(--accent));
+    border-radius: 2px;
+    width: 0;
+    animation: barFill 1.5s cubic-bezier(.4,0,.2,1) 0.6s forwards;
+  }
+  @keyframes barFill { to { width: var(--pct); } }
+
+  /* ── SECTION ── */
+  section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: #ff5a1f15;
+    border: 1px solid #ff5a1f30;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 24px;
+    letter-spacing: 1.5px;
+  }
+  .section-desc { color: var(--text2); font-size: 13px; margin-top: -20px; margin-bottom: 24px; padding-left: 60px; }
+
+  /* ── CRITICAL ISSUES ── */
+  .critical-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .critical-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .critical-card:hover { border-color: var(--red); transform: translateY(-2px); }
+  .critical-card.warn-card:hover { border-color: var(--yellow); }
+  .critical-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--red), transparent);
+  }
+  .critical-card.warn-card::after {
+    background: linear-gradient(90deg, var(--yellow), transparent);
+  }
+  .critical-num {
+    font-family: var(--display);
+    font-size: 42px;
+    line-height: 1;
+    color: #ff3d5715;
+    position: absolute;
+    top: 10px; right: 14px;
+    letter-spacing: -2px;
+  }
+  .critical-card.warn-card .critical-num { color: #ffd74015; }
+  .critical-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--red);
+    background: #ff3d5715;
+    border: 1px solid #ff3d5730;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .critical-badge.warn-badge {
+    color: var(--yellow);
+    background: #ffd74015;
+    border-color: #ffd74030;
+  }
+  .critical-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text); }
+  .critical-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .critical-impact {
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .critical-impact span { color: var(--yellow); }
+  .critical-impact span.green { color: var(--green); }
+
+  /* ── CHECKLIST GRID ── */
+  .checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .check-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .check-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+  }
+  .check-card-title { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .check-card-title .icon { font-size: 15px; }
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .pass { background: #00e67615; color: var(--green); border: 1px solid #00e67630; }
+  .warn { background: #ffd74015; color: var(--yellow); border: 1px solid #ffd74030; }
+  .fail { background: #ff3d5715; color: var(--red); border: 1px solid #ff3d5730; }
+
+  .check-items { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .check-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 9px;
+    margin-top: 1px;
+  }
+  .check-dot.p { background: #00e67620; color: var(--green); }
+  .check-dot.w { background: #ffd74020; color: var(--yellow); }
+  .check-dot.f { background: #ff3d5720; color: var(--red); }
+  .check-item strong { color: var(--text); }
+
+  .current-box {
+    margin: 8px 16px 0;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .current-box .label { color: var(--text3); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .current-box .val { color: var(--text2); }
+  .current-box .rec { color: var(--cyan); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+  .char-count { color: var(--yellow); font-size: 9px; }
+  .char-good { color: var(--green); font-size: 9px; }
+
+  /* ── TECHNICAL TABLE ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .tech-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .tech-card.critical-tech {
+    border-color: #ff3d5740;
+    background: #ff3d570a;
+  }
+  .tech-card.warn-tech {
+    border-color: #ffd74030;
+    background: #ffd7400a;
+  }
+  .tech-status-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+  }
+  .tech-status-icon.ok { background: #00e67615; }
+  .tech-status-icon.no { background: #ff3d5715; }
+  .tech-status-icon.wr { background: #ffd74015; }
+  .tech-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .tech-detail { font-size: 11px; color: var(--text2); }
+  .tech-pill {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* ── SCHEMA TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border2);
+    background: var(--surface2);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+  tr:hover td { background: var(--surface); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  .tbl-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* ── GAPS ── */
+  .gap-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .gap-row {
+    display: grid;
+    grid-template-columns: 2fr 80px 80px 80px 60px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    transition: border-color .2s;
+  }
+  .gap-row:hover { border-color: var(--border2); }
+  .gap-row.header {
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .gap-topic { color: var(--text); font-weight: 500; }
+  .gap-topic small { display: block; color: var(--text3); font-size: 11px; margin-top: 2px; }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-align: center;
+  }
+  .pill-high { background: #00e67620; color: var(--green); }
+  .pill-med { background: #ffd74020; color: var(--yellow); }
+  .pill-low { background: #4d7cff20; color: var(--blue); }
+  .pill-red { background: #ff3d5720; color: var(--red); }
+  .priority-score {
+    font-family: var(--display);
+    font-size: 20px;
+    text-align: center;
+  }
+
+  /* ── ACTION PLAN ── */
+  .action-section { margin-bottom: 24px; }
+  .action-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .action-section-title .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .action-items { display: flex; flex-direction: column; gap: 8px; }
+  .action-item {
+    display: grid;
+    grid-template-columns: 24px 1fr 80px 60px;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    transition: all .2s;
+  }
+  .action-item:hover { border-color: var(--border2); transform: translateX(3px); }
+  .action-idx {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-align: center;
+  }
+  .action-text strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .action-text span { color: var(--text2); }
+  .action-effort {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-align: right;
+  }
+
+  /* ── POSITIVES ── */
+  .positive-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .positive-card {
+    background: var(--surface);
+    border: 1px solid #00e67625;
+    border-radius: 10px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .positive-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), transparent);
+  }
+  .positive-icon { font-size: 24px; margin-bottom: 10px; }
+  .positive-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .positive-desc { font-size: 12px; color: var(--text2); }
+
+  /* ── EEAT ── */
+  .eeat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .eeat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .eeat-letter {
+    font-family: var(--display);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--e-color);
+    margin-bottom: 8px;
+  }
+  .eeat-name { font-weight: 600; font-size: 12px; margin-bottom: 6px; }
+  .eeat-score {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .eeat-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+  /* ── KEYWORDS ── */
+  .kw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .kw-placement-list { display: flex; flex-direction: column; gap: 6px; }
+  .kw-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .kw-item-name { color: var(--text2); }
+  .kw-secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .kw-tag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: var(--mono);
+  }
+  .kw-tag::before { content: '#'; color: var(--accent); margin-right: 4px; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 30px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  footer a { color: var(--cyan); text-decoration: none; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    margin: 20px 0;
+  }
+
+  /* ── TOOLTIP BADGE ── */
+  .fix-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #4d7cff15;
+    color: var(--blue);
+    border: 1px solid #4d7cff30;
+    margin-left: 6px;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp .5s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stagger delays */
+  .d1 { animation-delay: .1s; }
+  .d2 { animation-delay: .2s; }
+  .d3 { animation-delay: .3s; }
+  .d4 { animation-delay: .4s; }
+  .d5 { animation-delay: .5s; }
+  .d6 { animation-delay: .6s; }
+
+  /* ── PROGRESS BAR ── */
+  .prog-bar-wrap { margin-top: 6px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .prog-track { height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .prog-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    animation: barFill 1.5s cubic-bezier(.4,0,.2,1) 0.8s forwards;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .score-quadrants { grid-template-columns: repeat(2,1fr); }
+    .critical-grid { grid-template-columns: 1fr; }
+    .checklist-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(2,1fr); }
+    .eeat-grid { grid-template-columns: repeat(2,1fr); }
+    .positive-grid { grid-template-columns: 1fr; }
+    .gap-row { grid-template-columns: 1fr 60px 60px 60px; }
+    .gap-row .priority-score { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="inner">
+      <div class="brand">
+        <img src="/logo-sf.svg" alt="Startup Factory" style="height:32px; width:auto; opacity:.95;"/>
+      </div>
+      <div class="header-meta">
+        <span class="url">discoolver.com</span>
+        <span>2026-05-15</span>
+        <span>v1.0</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="score-ring-wrap fade-up">
+        <svg viewBox="0 0 180 180">
+          <circle class="score-ring-bg" cx="90" cy="90" r="80"/>
+          <circle class="score-ring-fill" cx="90" cy="90" r="80"/>
+        </svg>
+        <div class="score-center">
+          <div class="score-num">77</div>
+          <div class="score-denom">/ 100</div>
+          <div class="score-label">Bueno</div>
+        </div>
+      </div>
+      <div class="hero-info fade-up d2">
+        <div>
+          <div class="hero-title">AUDITORÍA SEO<br/><span class="hl">DISCOOLVER.COM</span></div>
+          <div class="hero-desc" style="margin-top:12px;">
+            La mejor arquitectura SEO técnica del portfolio para un proyecto en early stage.
+            Base construida con solidez: <strong>buildMetadata helper, schema en layout, OG/Twitter, canonical</strong>.
+            Un único error crítico inmediato: <strong>/influencers fuera del sitemap</strong> (fix de 5 minutos).
+            El mayor riesgo es el tiempo: sin páginas de ciudad indexadas al launch, el tráfico orgánico tardará meses en llegar.
+          </div>
+        </div>
+        <div class="score-quadrants">
+          <div class="quad fade-up d3" style="--q-color: var(--green);">
+            <div class="quad-label">Técnico</div>
+            <div class="quad-score">24</div>
+            <div class="quad-denom">/ 30 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:80%;"></div></div>
+          </div>
+          <div class="quad fade-up d4" style="--q-color: var(--green);">
+            <div class="quad-label">On-Page</div>
+            <div class="quad-score">33</div>
+            <div class="quad-denom">/ 40 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:82%;"></div></div>
+          </div>
+          <div class="quad fade-up d5" style="--q-color: var(--yellow);">
+            <div class="quad-label">Contenido E-E-A-T</div>
+            <div class="quad-score">13</div>
+            <div class="quad-denom">/ 20 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:65%;"></div></div>
+          </div>
+          <div class="quad fade-up d6" style="--q-color: var(--yellow);">
+            <div class="quad-label">Keywords</div>
+            <div class="quad-score">7</div>
+            <div class="quad-denom">/ 10 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:70%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEMAS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">PROBLEMAS DETECTADOS</span>
+    </div>
+    <p class="section-desc">1 error crítico inmediato + 4 advertencias a resolver antes del lanzamiento.</p>
+    <div class="critical-grid">
+
+      <!-- CRÍTICO -->
+      <div class="critical-card fade-up d1">
+        <div class="critical-num">01</div>
+        <div class="critical-badge">&#10060; Crítico</div>
+        <div class="critical-title">/influencers NO está en el sitemap</div>
+        <div class="critical-desc">
+          <code style="font-family:var(--mono); font-size:10px; color:var(--cyan);">sitemap.ts</code> solo incluye <code style="font-family:var(--mono); font-size:10px; color:var(--cyan);">site.url</code> (la homepage). La página /influencers existe con metadata y canonical propio pero Google no la recibe vía sitemap.
+        </div>
+        <div class="critical-impact">Fix: <span class="green">Añadir /influencers a sitemap.ts — 5 min</span></div>
+      </div>
+
+      <!-- WARN 1 -->
+      <div class="critical-card warn-card fade-up d2">
+        <div class="critical-num">02</div>
+        <div class="critical-badge warn-badge">&#9888; Advertencia</div>
+        <div class="critical-title">Sitemap con solo 1 URL</div>
+        <div class="critical-desc">
+          Con solo 2 páginas indexables el sitemap es mínimo. Cuando lleguen páginas de ciudades (/madrid, /barcelona, /bangkok) deberán añadirse automáticamente.
+        </div>
+        <div class="critical-impact">Impacto: <span>Escalar el sitemap al crecer las rutas</span></div>
+      </div>
+
+      <!-- WARN 2 -->
+      <div class="critical-card warn-card fade-up d3">
+        <div class="critical-num">03</div>
+        <div class="critical-badge warn-badge">&#9888; Advertencia</div>
+        <div class="critical-title">Sin páginas de ciudades aún</div>
+        <div class="critical-desc">
+          El modelo de negocio implica páginas por ciudad pero ninguna existe todavía. Sin estas páginas indexadas antes del launch, el SEO local no funcionará en el día 1.
+        </div>
+        <div class="critical-impact">Impacto: <span>Meses de retraso en tráfico orgánico local</span></div>
+      </div>
+
+      <!-- WARN 3 -->
+      <div class="critical-card warn-card fade-up d4">
+        <div class="critical-num">04</div>
+        <div class="critical-badge warn-badge">&#9888; Advertencia</div>
+        <div class="critical-title">Canonical de homepage no explícito en page.tsx</div>
+        <div class="critical-desc">
+          El <code style="font-family:var(--mono); font-size:10px; color:var(--cyan);">buildMetadata()</code> helper probablemente lo gestiona, pero hay que verificar que genera <code style="font-family:var(--mono); font-size:10px; color:var(--cyan);">&lt;link rel="canonical"&gt;</code> correctamente en producción.
+        </div>
+        <div class="critical-impact">Impacto: <span>Verificar en prod con herramienta de inspección</span></div>
+      </div>
+
+      <!-- WARN 4 -->
+      <div class="critical-card warn-card fade-up d5">
+        <div class="critical-num">05</div>
+        <div class="critical-badge warn-badge">&#9888; Advertencia</div>
+        <div class="critical-title">Sin analytics confirmado</div>
+        <div class="critical-desc">
+          No se detecta GA4 o GTM en el layout. En pre-lanzamiento aún es tolerable, pero debe activarse antes del launch para no perder los primeros datos de tráfico.
+        </div>
+        <div class="critical-impact">Impacto: <span>Sin datos orgánicos desde el día 1</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ON-PAGE CHECKLIST -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">ON-PAGE SEO</span>
+    </div>
+    <p class="section-desc">Análisis elemento a elemento de los factores de optimización en página.</p>
+
+    <div class="checklist-grid">
+
+      <!-- TITLE TAG -->
+      <div class="check-card fade-up d1">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">&#128204;</span> Title Tag</div>
+          <span class="status-badge pass">Excelente</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Homepage</div>
+          <div class="val">"Discoolver — Descubre tu ciudad antes que el resto"</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Keyword primaria "descubre tu ciudad" presente</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Longitud óptima — descriptivo y conciso</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Marca + propuesta de valor combinadas</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Diferenciador "antes que el resto" — FOMO activado</span></div>
+        </div>
+      </div>
+
+      <!-- META DESCRIPTION -->
+      <div class="check-card fade-up d2">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">&#128221;</span> Meta Description</div>
+          <span class="status-badge pass">Excelente</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Homepage</div>
+          <div class="val">"Planes curados por creadores locales y potenciados por IA. Acceso por invitación — 500 plazas por ciudad. La app llega muy pronto."</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Keywords: "creadores locales", "IA", "acceso por invitación"</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Urgencia implícita — 500 plazas + "muy pronto"</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Longitud bien aprovechada y descriptiva</span></div>
+        </div>
+      </div>
+
+      <!-- SCHEMA -->
+      <div class="check-card fade-up d3">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">&#127991;</span> Schema Markup</div>
+          <span class="status-badge pass">Excelente</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>organizationJsonLd()</strong> en layout — Knowledge Panel</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>websiteJsonLd()</strong> en layout — Sitelinks search box</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Social links (Instagram, Twitter) en Organization</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>MobileApplication schema aún ausente — pendiente de app</span></div>
+        </div>
+      </div>
+
+      <!-- OG / CANONICAL -->
+      <div class="check-card fade-up d4">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">&#128279;</span> OG Tags + Canonical</div>
+          <span class="status-badge pass">Bien</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>buildMetadata()</strong> genera OG tags automáticamente</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Canonical homepage vía buildMetadata</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Canonical /influencers — explícito en page.tsx</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>/influencers ausente del sitemap</strong> — error crítico</span></div>
+        </div>
+      </div>
+
+      <!-- TÉCNICO BÁSICO -->
+      <div class="check-card fade-up d5">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">&#9881;</span> Técnico Básico</div>
+          <span class="status-badge pass">Correcto</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>robots.txt</strong> — Allow: / + host declaration</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>lang="es"</strong> en &lt;html&gt;</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>HTTPS</strong> activo</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>metadataBase</strong> configurado en layout.tsx</span></div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div class="check-card fade-up d6">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">&#128202;</span> Analytics</div>
+          <span class="status-badge warn">Pendiente</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>GA4 no detectado</strong> en layout</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>GTM no detectado</strong> en layout</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>En pre-lanzamiento aún tolerable</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>Obligatorio activar antes del launch</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TECHNICAL SEO -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">TECHNICAL SEO</span>
+    </div>
+    <p class="section-desc">Infraestructura técnica que determina cómo Google rastrea e indexa el sitio.</p>
+
+    <div class="tech-grid">
+      <div class="tech-card fade-up d1">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">robots.txt</div>
+        <div class="tech-detail">Allow: / + host declaration. Buena práctica.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card warn-tech fade-up d2">
+        <div class="tech-status-icon wr">⚠️</div>
+        <div class="tech-name">sitemap.xml</div>
+        <div class="tech-detail">Solo 1 URL (homepage). Falta /influencers.</div>
+        <div class="tech-pill warn">Incompleto</div>
+      </div>
+      <div class="tech-card fade-up d3">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Canonical Tags</div>
+        <div class="tech-detail">Ambas páginas tienen canonical explícito.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d4">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Schema Organization</div>
+        <div class="tech-detail">organizationJsonLd() en layout — Knowledge Panel.</div>
+        <div class="tech-pill pass">Excelente</div>
+      </div>
+      <div class="tech-card fade-up d5">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Schema WebSite</div>
+        <div class="tech-detail">websiteJsonLd() en layout — Sitelinks search.</div>
+        <div class="tech-pill pass">Excelente</div>
+      </div>
+      <div class="tech-card fade-up d6">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">OG / Twitter Cards</div>
+        <div class="tech-detail">buildMetadata() helper — sharing optimizado.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d1">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">HTTPS / SSL</div>
+        <div class="tech-detail">Certificado activo y válido.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d2">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">lang="es"</div>
+        <div class="tech-detail">Atributo de idioma en &lt;html&gt; correcto.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card warn-tech fade-up d3">
+        <div class="tech-status-icon wr">⚠️</div>
+        <div class="tech-name">Analytics</div>
+        <div class="tech-detail">GA4, GTM: no detectados en layout.tsx.</div>
+        <div class="tech-pill warn">Pendiente</div>
+      </div>
+    </div>
+
+    <!-- Schema Opportunities Table -->
+    <div style="margin-top:28px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+        <span style="color:var(--cyan);">●</span> Oportunidades de Schema Markup
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Schema Type</th>
+              <th>Página</th>
+              <th>Estado</th>
+              <th>Impacto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Organization</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge pass">Implementado</span></td>
+              <td style="font-size:12px; color:var(--text2);">organizationJsonLd() en layout — Knowledge Panel activado</td>
+            </tr>
+            <tr>
+              <td>WebSite</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge pass">Implementado</span></td>
+              <td style="font-size:12px; color:var(--text2);">websiteJsonLd() en layout — Sitelinks search box activo</td>
+            </tr>
+            <tr>
+              <td>MobileApplication</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge warn">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Rich result "Descargar App" cuando lance — muy alto impacto</td>
+            </tr>
+            <tr>
+              <td>SoftwareApplication</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge warn">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Tipo de app visible en SERP — complementa MobileApplication</td>
+            </tr>
+            <tr>
+              <td>City / Place</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/[ciudad]</td>
+              <td><span class="status-badge warn">Futuro</span></td>
+              <td style="font-size:12px; color:var(--text2);">Cuando lleguen páginas de ciudad — SEO local geolocalizado</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- E-E-A-T -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">CALIDAD E-E-A-T</span>
+    </div>
+    <p class="section-desc">Marco de evaluación de Google: Experience, Expertise, Authoritativeness, Trustworthiness.</p>
+    <div class="eeat-grid">
+      <div class="eeat-card fade-up d1" style="--e-color: var(--yellow);">
+        <div class="eeat-letter">E</div>
+        <div class="eeat-name">Experience</div>
+        <span class="eeat-score warn">Mejorable</span>
+        <div class="eeat-desc">Concepto bien explicado, pero sin casos reales aún — es pre-launch. Sin usuarios ni testimonios verificables todavía.</div>
+      </div>
+      <div class="eeat-card fade-up d2" style="--e-color: var(--green);">
+        <div class="eeat-letter">E</div>
+        <div class="eeat-name">Expertise</div>
+        <span class="eeat-score pass">Bueno</span>
+        <div class="eeat-desc">IA + curación local es un diferenciador claro. Propuesta de valor técnicamente bien articulada y creíble.</div>
+      </div>
+      <div class="eeat-card fade-up d3" style="--e-color: var(--red);">
+        <div class="eeat-letter">A</div>
+        <div class="eeat-name">Authoritativeness</div>
+        <span class="eeat-score fail">Débil</span>
+        <div class="eeat-desc">Sin menciones de prensa, sin blog, sin social links en schema completados. Proyecto nuevo sin historial de autoridad.</div>
+      </div>
+      <div class="eeat-card fade-up d4" style="--e-color: var(--yellow);">
+        <div class="eeat-letter">T</div>
+        <div class="eeat-name">Trustworthiness</div>
+        <span class="eeat-score warn">OK</span>
+        <div class="eeat-desc">HTTPS ✓, email de contacto ✓, inversión en schema ✓. Sin reseñas ni ratings aún — normal en pre-launch.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEYWORDS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">ANÁLISIS DE KEYWORDS</span>
+    </div>
+    <p class="section-desc">Distribución y cobertura de keywords primarias y secundarias en la página.</p>
+    <div class="kw-grid">
+      <div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:12px; color:var(--text2);">KEYWORDS PRIMARIAS — PRESENCIA EN METADATA</div>
+        <div class="kw-placement-list">
+          <div class="kw-item">
+            <span class="kw-item-name">"descubre tu ciudad"</span>
+            <span class="status-badge pass">En Title ✓</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">"planes ciudad IA"</span>
+            <span class="status-badge pass">En Meta ✓</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">"creadores locales"</span>
+            <span class="status-badge pass">Title + Meta ✓</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">"acceso por invitación"</span>
+            <span class="status-badge pass">En Meta ✓</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">"city discovery app España"</span>
+            <span class="status-badge warn">~ En contenido</span>
+          </div>
+          <div style="margin-top:14px;">
+            <div style="font-size:11px; color:var(--text3); margin-bottom:6px;">Competencia en SERP</div>
+            <div class="prog-bar-wrap">
+              <div class="prog-label"><span>Poca competencia directa</span><span style="color:var(--green);">Ventana de oportunidad</span></div>
+              <div class="prog-track"><div class="prog-fill" style="--pct:85%; background:var(--green);"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:12px; color:var(--text2);">KEYWORDS SECUNDARIAS — OPORTUNIDADES</div>
+        <div class="kw-secondary-grid">
+          <div class="kw-tag">qué hacer en Madrid hoy</div>
+          <div class="kw-tag">planes únicos Barcelona</div>
+          <div class="kw-tag">app descubrimiento ciudad</div>
+          <div class="kw-tag">creadores locales planes</div>
+          <div class="kw-tag">city discovery app España</div>
+          <div class="kw-tag">planes Bangkok viajeros</div>
+          <div class="kw-tag">guías ciudad creadores</div>
+          <div class="kw-tag">descubrir ciudad IA</div>
+          <div class="kw-tag">planes fin de semana</div>
+          <div class="kw-tag">influencers viajes locales</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT GAP -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">CONTENT GAP ANALYSIS</span>
+    </div>
+    <p class="section-desc">Páginas que el modelo de negocio requiere y que aún no existen como URLs indexables.</p>
+
+    <div class="gap-grid">
+      <div class="gap-row header">
+        <span>Tema / Keyword Objetivo</span>
+        <span style="text-align:center;">Volumen</span>
+        <span style="text-align:center;">Competencia</span>
+        <span style="text-align:center;">Tipo</span>
+        <span style="text-align:center;">Score</span>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing /madrid <small>"Qué hacer en Madrid hoy" — city page SEO local</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alto</span>
+        <span class="pill pill-med" style="text-align:center;">Media</span>
+        <span class="pill pill-med" style="text-align:center;">City page</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing /barcelona <small>"Planes Barcelona fin de semana" — mercado clave</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alto</span>
+        <span class="pill pill-med" style="text-align:center;">Media</span>
+        <span class="pill pill-med" style="text-align:center;">City page</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing /creadores <small>Onboarding de nuevos creators — SEO + captación</small></div>
+        <span class="pill pill-med" style="text-align:center;">Medio</span>
+        <span class="pill pill-low" style="text-align:center;">Baja</span>
+        <span class="pill pill-med" style="text-align:center;">Landing</span>
+        <div class="priority-score" style="color:var(--green);">8</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Press kit / Sala de prensa <small>E-E-A-T authority — menciones de media</small></div>
+        <span class="pill pill-low" style="text-align:center;">Bajo</span>
+        <span class="pill pill-low" style="text-align:center;">—</span>
+        <span class="pill pill-med" style="text-align:center;">Autoridad</span>
+        <div class="priority-score" style="color:var(--green);">8</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Blog: Cómo los creadores locales están cambiando el turismo <small>Tráfico informacional + E-E-A-T</small></div>
+        <span class="pill pill-med" style="text-align:center;">Medio</span>
+        <span class="pill pill-low" style="text-align:center;">Baja</span>
+        <span class="pill pill-med" style="text-align:center;">Blog post</span>
+        <div class="priority-score" style="color:var(--yellow);">7</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing /bangkok <small>Mercado de lanzamiento inicial — early mover advantage</small></div>
+        <span class="pill pill-med" style="text-align:center;">Medio</span>
+        <span class="pill pill-low" style="text-align:center;">Muy Baja</span>
+        <span class="pill pill-med" style="text-align:center;">City page</span>
+        <div class="priority-score" style="color:var(--yellow);">7</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACTION PLAN -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">PLAN DE ACCIÓN PRIORIZADO</span>
+    </div>
+
+    <!-- CRÍTICO -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--red);"></div>
+        Crítico — Hoy mismo
+        <span style="font-size:11px; color:var(--text3); font-weight:400; margin-left:8px;">Un solo error crítico pendiente — fix inmediato</span>
+      </div>
+      <div class="action-items">
+        <div class="action-item fade-up d1">
+          <div class="action-idx">01</div>
+          <div class="action-text">
+            <strong>Añadir /influencers al sitemap.ts</strong>
+            <span>Copiar el objeto de la homepage, cambiar url a <code style="font-family:var(--mono); font-size:10px;">${site.url}/influencers</code> — changeFrequency "monthly"</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">5 min</span>
+          <span class="pill pill-red">Crítico</span>
+        </div>
+        <div class="action-item fade-up d2">
+          <div class="action-idx">02</div>
+          <div class="action-text">
+            <strong>Verificar que buildMetadata genera canonical correcto en prod</strong>
+            <span>Inspeccionar HTML de producción con View Source — confirmar presencia de &lt;link rel="canonical"&gt; en homepage</span>
+          </div>
+          <span class="status-badge warn" style="text-align:right;">15 min</span>
+          <span class="pill pill-red">Crítico</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALTA PRIORIDAD -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--yellow);"></div>
+        Alta Prioridad — Pre-lanzamiento
+      </div>
+      <div class="action-items">
+        <div class="action-item">
+          <div class="action-idx">03</div>
+          <div class="action-text">
+            <strong>Crear páginas /[ciudad] con contenido SEO antes del launch</strong>
+            <span>Al menos /madrid y /barcelona — con schema City/Place, metadata propio y contenido curado localizado</span>
+          </div>
+          <span class="action-effort">1 semana/ciudad</span>
+          <span class="pill pill-med">Alto ROI</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">04</div>
+          <div class="action-text">
+            <strong>Instalar GA4 antes del launch</strong>
+            <span>Usar @next/third-parties/google para GA4 — no perder los primeros datos de tráfico orgánico</span>
+          </div>
+          <span class="action-effort">30 min</span>
+          <span class="pill pill-med">Necesario</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">05</div>
+          <div class="action-text">
+            <strong>MobileApplication schema cuando la app esté lista</strong>
+            <span>Rich result "Descargar App" en SERP — añadir a lib/jsonld.ts con appStore + googlePlay URLs</span>
+          </div>
+          <span class="action-effort">1h</span>
+          <span class="pill pill-med">Alto ROI</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">06</div>
+          <div class="action-text">
+            <strong>Press kit y menciones en media</strong>
+            <span>E-E-A-T — Authoritativeness es el punto más débil. Notas de prensa + outreach a blogs de viaje y lifestyle</span>
+          </div>
+          <span class="action-effort">Recurrente</span>
+          <span class="pill pill-med">E-E-A-T</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIA PRIORIDAD -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--blue);"></div>
+        Prioridad Media — Post-lanzamiento
+      </div>
+      <div class="action-items">
+        <div class="action-item">
+          <div class="action-idx">07</div>
+          <div class="action-text">
+            <strong>Blog con contenido de discovery y lifestyle</strong>
+            <span>Tráfico informacional + E-E-A-T — 1-2 posts/semana sobre cultura local, planes y viajeros</span>
+          </div>
+          <span class="action-effort">Recurrente</span>
+          <span class="pill pill-low">Contenido</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">08</div>
+          <div class="action-text">
+            <strong>Testimonios de waitlist</strong>
+            <span>Social proof + E-E-A-T — encuesta a early adopters y mostrar casos reales con nombre y ciudad</span>
+          </div>
+          <span class="action-effort">1 semana</span>
+          <span class="pill pill-low">E-E-A-T</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">09</div>
+          <div class="action-text">
+            <strong>Creator profiles públicos indexables</strong>
+            <span>Contenido diferencial de alto valor — perfiles con guías de ciudad de cada creator, indexables por Google</span>
+          </div>
+          <span class="action-effort">Roadmap</span>
+          <span class="pill pill-low">Contenido</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIVES -->
+<section style="border-bottom:none;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">PUNTOS FUERTES</span>
+    </div>
+    <p class="section-desc">Lo que discoolver.com hace excepcionalmente bien y debe mantener.</p>
+    <div class="positive-grid">
+      <div class="positive-card fade-up d1">
+        <div class="positive-icon">&#127959;</div>
+        <div class="positive-title">buildMetadata() helper — arquitectura escalable</div>
+        <div class="positive-desc">Sistema centralizado de metadata SEO correcto desde el día 1. Pocas apps pre-launch tienen esto bien implementado.</div>
+      </div>
+      <div class="positive-card fade-up d2">
+        <div class="positive-icon">&#128203;</div>
+        <div class="positive-title">Schema Organization + WebSite en layout</div>
+        <div class="positive-desc">Base excelente que activa Knowledge Panel y Sitelinks search box. Implementado globalmente en layout.tsx desde el inicio.</div>
+      </div>
+      <div class="positive-card fade-up d3">
+        <div class="positive-icon">&#129302;</div>
+        <div class="positive-title">robots.txt con host declaration</div>
+        <div class="positive-desc">Buena práctica que muchos sitios omiten. robots.ts correctamente implementado con sitemap pointer incluido.</div>
+      </div>
+      <div class="positive-card fade-up d4">
+        <div class="positive-icon">&#128279;</div>
+        <div class="positive-title">Canonical explícito en /influencers</div>
+        <div class="positive-desc">La página secondary define su canonical explícitamente en page.tsx — práctica SEO robusta y correcta.</div>
+      </div>
+      <div class="positive-card fade-up d5">
+        <div class="positive-icon">&#128241;</div>
+        <div class="positive-title">OG + Twitter Cards via buildMetadata</div>
+        <div class="positive-desc">Sharing optimizado en ambas páginas. Las vistas previas en redes sociales se generan correctamente en todos los canales.</div>
+      </div>
+      <div class="positive-card fade-up d6">
+        <div class="positive-icon">&#10024;</div>
+        <div class="positive-title">Concepto único — discovery curado por IA</div>
+        <div class="positive-desc">Poca competencia directa en SERP para "city discovery + IA + creadores locales". Ventana de oportunidad SEO abierta.</div>
+      </div>
+    </div>
+
+    <!-- RESUMEN FINAL -->
+    <div style="margin-top:40px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--green), var(--cyan));"></div>
+      <div style="font-family:var(--display); font-size:20px; letter-spacing:1.5px; margin-bottom:12px;">RESUMEN EJECUTIVO</div>
+      <div style="color:var(--text2); font-size:14px; line-height:1.8; max-width:780px;">
+        Discoolver tiene la <strong style="color:var(--text);">mejor arquitectura SEO técnica del portfolio para un proyecto en early stage</strong>.
+        La base está muy bien construida: buildMetadata helper, schema en layout, OG/Twitter, canonical.
+        Solo un error crítico inmediato: <strong style="color:var(--red);">/influencers fuera del sitemap (fix de 5 minutos)</strong>.
+        El mayor riesgo SEO es el tiempo: cuando llegue el lanzamiento sin páginas de ciudad indexadas,
+        el tráfico orgánico tardará meses en llegar. Hay que construir esas páginas <strong style="color:var(--text);">ANTES del launch</strong>.
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px;">
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--red); line-height:1;">1</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">Añadir /influencers al sitemap</div>
+          <div style="font-size:11px; color:var(--text3);">sitemap.ts — 5 min</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--yellow); line-height:1;">2</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">Crear /madrid y /barcelona</div>
+          <div style="font-size:11px; color:var(--text3);">Antes del launch — 1 semana</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--cyan); line-height:1;">3</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">Instalar GA4</div>
+          <div style="font-size:11px; color:var(--text3);">Antes del launch — 30 min</div>
+        </div>
+      </div>
+      <div style="margin-top:20px; font-family:var(--mono); font-size:12px; color:var(--text3); display:flex; align-items:center; gap:8px;">
+        Score actual:
+        <span style="color:var(--green); font-size:14px; font-weight:700;">77/100</span>
+        &rarr; con fixes:
+        <span style="color:var(--green); font-size:14px; font-weight:700;">~86/100</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <img src="/logo-sf.svg" alt="Startup Factory" style="height:22px; width:auto; opacity:.5;"/>
+      <span style="color:var(--text3);">Preparado por Startup Factory</span>
+    </div>
+    <span style="color:var(--text3);">SEO Audit &middot; discoolver.com &middot; 2026-05-15 &middot; Score: <span style="color:var(--green);">77/100</span> &middot; 9 recomendaciones</span>
+  </div>
+</footer>
+
+</body>
+</html>

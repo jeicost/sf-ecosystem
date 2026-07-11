@@ -1,0 +1,29 @@
+{
+  "briefing": [
+    {
+      "version": "1.0",
+      "date": "2026-05-13T10:00:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/cero-agency/briefing.html"
+      }
+    }
+  ],
+  "content": [
+    {
+      "version": "1.0",
+      "date": "2026-05-13T10:00:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/cero-agency/content.html"
+      }
+    }
+  ],
+  "audit": [
+    {
+      "version": "1.0",
+      "date": "2026-05-13T10:00:00Z",
+      "formats": {
+        "web": "https://sf-reports.vercel.app/cero-agency/audit.html"
+      }
+    }
+  ]
+}

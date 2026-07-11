@@ -1,0 +1,2856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALSA BURGERS — Launch Strategy 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --black: #1A1A1A;
+    --orange: #FF4500;
+    --orange-2: #FF6A00;
+    --orange-3: #FF8C00;
+    --orange-4: #FFA500;
+    --orange-5: #CC3700;
+    --orange-6: #993300;
+    --orange-7: #662200;
+    --cream: #F5F0E8;
+    --cream-dim: rgba(245,240,232,0.7);
+    --cream-faint: rgba(245,240,232,0.12);
+    --nav-w: 56px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .nav {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: var(--nav-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 100;
+    padding: 0 12px;
+    background: linear-gradient(to right, rgba(26,26,26,0.98) 80%, transparent);
+  }
+
+  .nav-dot {
+    position: relative;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(245,240,232,0.25);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--orange);
+    transform: scale(1.4);
+  }
+
+  .nav-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 18px; top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+    background: var(--black);
+    padding: 3px 8px;
+    border-left: 2px solid var(--orange);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-dot:hover::after { opacity: 1; }
+
+  /* ── MAIN ── */
+  main { padding-left: var(--nav-w); }
+
+  section {
+    padding: 100px 80px 100px 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ── ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ── TYPOGRAPHY ── */
+  .anton { font-family: 'Anton', sans-serif; }
+  .mono  { font-family: 'Space Mono', monospace; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(42px, 6vw, 80px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    color: var(--cream);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--cream-dim);
+    letter-spacing: 0.06em;
+    margin-top: -36px;
+    margin-bottom: 48px;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    background: var(--black);
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 80px 0 80px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    left: 50%; top: 45%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(255,69,0,0.18) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.12); }
+  }
+
+  .hero-content { position: relative; z-index: 2; padding-top: 30vh; }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(72px, 12vw, 160px);
+    line-height: 0.88;
+    letter-spacing: 0.01em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-sub {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(20px, 3vw, 36px);
+    color: var(--cream);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .hero-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(12px, 1.4vw, 16px);
+    letter-spacing: 0.35em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  .hero-ticker {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--orange);
+    padding: 12px 0;
+    overflow: hidden;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 60px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--black);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── CARDS ── */
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .card {
+    background: rgba(245,240,232,0.04);
+    border-top: 3px solid var(--orange);
+    padding: 32px 28px;
+    transition: background 0.3s;
+  }
+
+  .card:hover { background: rgba(245,240,232,0.08); }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .card-body {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--cream-dim);
+  }
+
+  .card-body strong { color: var(--cream); }
+
+  /* ── POSITIONING ── */
+  .positioning-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .statement-box {
+    background: var(--cream);
+    color: var(--black);
+    padding: 40px 36px;
+    border-left: 6px solid var(--orange);
+  }
+
+  .statement-box p {
+    font-size: 15px;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .statement-tagline {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    color: var(--orange);
+    letter-spacing: 0.04em;
+  }
+
+  .comp-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .comp-card {
+    padding: 20px;
+    border: 1px solid rgba(245,240,232,0.1);
+    position: relative;
+    transition: border-color 0.3s;
+  }
+
+  .comp-card:hover { border-color: var(--orange); }
+  .comp-card.us { border-color: var(--orange); background: rgba(255,69,0,0.08); }
+
+  .comp-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    padding: 3px 8px;
+    margin-bottom: 10px;
+    display: inline-block;
+  }
+
+  .comp-tag.competitor { background: rgba(245,240,232,0.1); color: var(--cream-dim); }
+  .comp-tag.market     { background: rgba(245,240,232,0.06); color: var(--cream-dim); }
+  .comp-tag.us-tag     { background: var(--orange); color: var(--black); }
+
+  .comp-name { font-family: 'Anton', sans-serif; font-size: 16px; margin-bottom: 6px; }
+  .comp-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+
+  .benchmark-bar {
+    margin-top: 24px;
+    padding: 14px 20px;
+    background: rgba(255,69,0,0.08);
+    border-left: 3px solid var(--orange);
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--cream-dim);
+  }
+
+  /* ── AUDIENCE ── */
+  .audience-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid rgba(245,240,232,0.08);
+    overflow: hidden;
+  }
+
+  .audience-half {
+    padding: 56px 48px;
+    position: relative;
+  }
+
+  .audience-half.primary { background: var(--cream); color: var(--black); }
+  .audience-half.secondary { background: #222; color: var(--cream); }
+
+  .audience-pct {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(72px, 10vw, 120px);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .audience-half.primary .audience-pct { color: var(--orange); }
+  .audience-half.secondary .audience-pct {
+    color: transparent;
+    -webkit-text-stroke: 3px var(--orange);
+  }
+
+  .audience-label {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .audience-detail {
+    font-size: 13px;
+    line-height: 2;
+  }
+
+  .audience-half.primary .audience-detail { color: #444; }
+
+  .pain-tag {
+    margin-top: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    letter-spacing: 0.06em;
+  }
+
+  .audience-bottom {
+    margin-top: 0;
+    background: var(--orange);
+    padding: 20px 48px;
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    color: var(--black);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ── BRAND DNA ── */
+  .dna-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .dna-card {
+    padding: 32px 28px;
+    border: 1px solid rgba(245,240,232,0.08);
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .dna-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+
+  .dna-card:hover { border-color: rgba(255,69,0,0.3); }
+  .dna-card:hover::before { transform: scaleX(1); }
+
+  .dna-icon {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .dna-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 16px;
+  }
+
+  .dna-body {
+    font-size: 13px;
+    line-height: 1.9;
+    color: var(--cream-dim);
+  }
+
+  /* ── RITUAL ── */
+  #ritual { background: #111; }
+
+  .ritual-steps {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .ritual-step {
+    background: rgba(245,240,232,0.04);
+    padding: 28px 20px;
+    text-align: center;
+    position: relative;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+  }
+
+  .ritual-step:hover {
+    background: rgba(255,69,0,0.08);
+    border-bottom-color: var(--orange);
+  }
+
+  .step-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 48px;
+    color: var(--orange);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .step-icon { font-size: 28px; margin-bottom: 12px; }
+
+  .step-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .step-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.6; }
+
+  .ritual-arrow {
+    position: absolute;
+    right: -4px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--orange);
+    font-size: 18px;
+    z-index: 2;
+  }
+
+  .ritual-callout {
+    background: var(--orange);
+    color: var(--black);
+    padding: 28px 40px;
+    text-align: center;
+  }
+
+  .ritual-callout p {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ── CONTENT STRATEGY ── */
+  .content-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .chart-wrap {
+    position: relative;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .chart-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .chart-center-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 32px;
+    color: var(--orange);
+  }
+
+  .chart-center-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  .pillar-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .pillar-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid rgba(245,240,232,0.06);
+    cursor: default;
+    transition: all 0.25s;
+  }
+
+  .pillar-item:hover {
+    background: rgba(255,69,0,0.06);
+    border-color: rgba(255,69,0,0.25);
+  }
+
+  .pillar-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .pillar-pct {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    color: var(--orange);
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .pillar-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cream);
+    flex: 1;
+  }
+
+  .pillar-example {
+    font-size: 11px;
+    color: var(--cream-dim);
+    font-style: italic;
+    text-align: right;
+    max-width: 160px;
+  }
+
+  /* ── CAMPAIGNS ── */
+  .campaigns-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+
+  .campaign-card {
+    padding: 20px;
+    border: 1px solid rgba(245,240,232,0.07);
+    transition: all 0.25s;
+    cursor: default;
+  }
+
+  .campaign-card:hover {
+    border-color: rgba(255,69,0,0.3);
+    background: rgba(255,69,0,0.04);
+    transform: translateY(-2px);
+  }
+
+  .campaign-tags { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    padding: 3px 7px;
+    text-transform: uppercase;
+  }
+
+  .tag-awareness    { background: rgba(255,69,0,0.2);  color: var(--orange); }
+  .tag-consideration{ background: rgba(255,165,0,0.2); color: #FFA500; }
+  .tag-conversion   { background: rgba(34,197,94,0.2); color: #4ADE80; }
+  .tag-loyalty      { background: rgba(99,102,241,0.2);color: #818CF8; }
+  .tag-cult         { background: rgba(255,69,0,0.15); color: #FF6A00; }
+  .tag-format       { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+
+  .campaign-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .campaign-concept { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+
+  .hashtag-row {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .hashtag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    padding: 4px 10px;
+    border: 1px solid rgba(255,69,0,0.3);
+    letter-spacing: 0.04em;
+  }
+
+  /* ── TIMELINE ── */
+  #timeline { background: #111; }
+
+  .timeline-wrap { width: 100%; overflow: hidden; }
+
+  .timeline-header {
+    display: grid;
+    grid-template-columns: 140px repeat(8, 1fr);
+    gap: 4px;
+    margin-bottom: 4px;
+  }
+
+  .wk-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--cream-dim);
+    text-align: center;
+    padding: 6px;
+  }
+
+  .timeline-rows { display: flex; flex-direction: column; gap: 4px; }
+
+  .timeline-row {
+    display: grid;
+    grid-template-columns: 140px repeat(8, 1fr);
+    gap: 4px;
+    align-items: stretch;
+  }
+
+  .phase-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 12px;
+  }
+
+  .phase-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 4px;
+  }
+
+  .phase-wks {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--cream-dim);
+  }
+
+  .timeline-cell { height: 60px; }
+
+  .bar {
+    height: 100%;
+    background: var(--orange);
+    opacity: 0.8;
+    transition: opacity 0.3s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    overflow: hidden;
+  }
+
+  .bar:hover { opacity: 1; }
+
+  .bar-label {
+    font-size: 11px;
+    color: var(--black);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .bar.launch { background: var(--orange); opacity: 1; }
+  .bar.launch .bar-label { font-family: 'Anton', sans-serif; font-size: 13px; }
+  .bar.empty  { background: transparent; }
+
+  .milestone {
+    position: absolute;
+    right: -1px; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--cream);
+  }
+
+  .bullet-row {
+    grid-column: 1 / -1;
+    padding: 8px 14px;
+    background: rgba(245,240,232,0.03);
+  }
+
+  .bullet-row p {
+    font-size: 11px;
+    color: var(--cream-dim);
+    line-height: 1.7;
+  }
+
+  /* ── INFLUENCER ── */
+  .inf-tiers {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 28px;
+  }
+
+  .inf-card {
+    padding: 32px 24px;
+    border: 1px solid rgba(245,240,232,0.08);
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .inf-card:hover {
+    border-color: var(--orange);
+    background: rgba(255,69,0,0.04);
+  }
+
+  .inf-card.priority { border-color: rgba(255,69,0,0.4); }
+
+  .priority-badge {
+    position: absolute;
+    top: -1px; right: 16px;
+    background: var(--orange);
+    color: var(--black);
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    text-transform: uppercase;
+  }
+
+  .inf-tier-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .inf-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 20px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .inf-body { font-size: 13px; line-height: 1.9; color: var(--cream-dim); }
+
+  .inf-meta {
+    margin-top: 14px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+  }
+
+  .inf-boxes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .inf-box {
+    padding: 24px;
+    border: 1px solid rgba(255,69,0,0.3);
+  }
+
+  .inf-box-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .inf-box p { font-size: 13px; line-height: 1.8; color: var(--cream-dim); }
+
+  /* ── PAID MEDIA ── */
+  .media-layout {
+    display: grid;
+    grid-template-columns: 1fr 360px;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .media-channel {
+    margin-bottom: 28px;
+  }
+
+  .media-channel-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  .media-channel-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    text-transform: uppercase;
+  }
+
+  .media-channel-budget {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--orange);
+  }
+
+  .media-channel-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 3px 8px;
+    text-transform: uppercase;
+  }
+
+  .tag-primary   { background: rgba(255,69,0,0.2); color: var(--orange); }
+  .tag-secondary { background: rgba(245,240,232,0.06); color: var(--cream-dim); }
+
+  .creative-bucket {
+    display: flex;
+    gap: 14px;
+    padding: 14px 16px;
+    background: rgba(245,240,232,0.03);
+    margin-bottom: 8px;
+    border-left: 2px solid transparent;
+    transition: all 0.3s;
+  }
+
+  .creative-bucket:hover {
+    background: rgba(255,69,0,0.05);
+    border-left-color: var(--orange);
+  }
+
+  .bucket-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    color: var(--orange);
+    width: 28px;
+    flex-shrink: 0;
+  }
+
+  .bucket-content .bucket-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+
+  .bucket-content .bucket-desc {
+    font-size: 12px;
+    color: var(--cream-dim);
+  }
+
+  .golden-rule {
+    padding: 18px 20px;
+    border-left: 3px solid var(--orange);
+    background: rgba(255,69,0,0.06);
+    font-size: 13px;
+    color: var(--cream-dim);
+    font-style: italic;
+    margin-top: 8px;
+  }
+
+  .golden-rule strong { color: var(--cream); font-style: normal; }
+
+  .chart-label-total {
+    text-align: center;
+    margin-top: 20px;
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── KPIs ── */
+  .kpi-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    padding: 32px 24px;
+    background: rgba(245,240,232,0.04);
+    text-align: center;
+    border-bottom: 3px solid var(--orange);
+    transition: all 0.3s;
+  }
+
+  .stat-card:hover { background: rgba(255,69,0,0.08); }
+
+  .stat-num {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(36px, 5vw, 60px);
+    color: var(--orange);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  .kpi-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+  }
+
+  .kpi-table th {
+    background: rgba(255,69,0,0.12);
+    color: var(--orange);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  .kpi-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--cream-dim);
+    border-bottom: 1px solid rgba(245,240,232,0.05);
+  }
+
+  .kpi-table td:first-child { color: var(--cream); }
+  .kpi-table tr:hover td { background: rgba(245,240,232,0.02); }
+
+  .alert-box {
+    padding: 20px 24px;
+    border-left: 3px solid var(--orange);
+    background: rgba(255,69,0,0.05);
+  }
+
+  .alert-box p {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--cream-dim);
+    line-height: 1.9;
+  }
+
+  /* ── ACTION PLAN ── */
+  #action { background: #111; }
+
+  .action-items { margin-bottom: 48px; }
+
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(245,240,232,0.05);
+    transition: padding 0.2s;
+  }
+
+  .action-item:hover { padding-left: 8px; }
+
+  .action-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    color: rgba(245,240,232,0.1);
+    line-height: 1;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .status-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
+    white-space: nowrap;
+    margin-top: 4px;
+    display: inline-block;
+  }
+
+  .status-live       { background: rgba(34,197,94,0.2); color: #4ADE80; }
+  .status-progress   { background: rgba(251,191,36,0.2); color: #FBBF24; }
+  .status-pending    { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+
+  .action-text {
+    font-size: 15px;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+
+  .action-sub {
+    font-size: 12px;
+    color: var(--cream-dim);
+    margin-top: 4px;
+  }
+
+  .budget-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 48px;
+  }
+
+  .budget-table th {
+    background: rgba(255,69,0,0.1);
+    color: var(--orange);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    text-align: left;
+  }
+
+  .budget-table td {
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(245,240,232,0.05);
+    font-size: 14px;
+    color: var(--cream-dim);
+  }
+
+  .budget-table td:first-child { color: var(--cream); font-weight: 500; }
+
+  .budget-table tr.total td {
+    color: var(--cream);
+    font-weight: 700;
+    border-top: 2px solid var(--orange);
+    border-bottom: none;
+  }
+
+  .budget-table tr.total td:first-child { color: var(--orange); }
+
+  .final-cta {
+    background: var(--orange);
+    padding: 56px 60px;
+    text-align: center;
+    margin: 0 -80px 0 -60px;
+  }
+
+  .final-cta-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    color: var(--black);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .final-cta-sub {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    color: rgba(26,26,26,0.7);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .footer {
+    background: #0f0f0f;
+    padding: 24px 80px 24px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.2);
+  }
+
+  /* ── SF BADGE ── */
+  .sf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: rgba(245,240,232,0.35);
+    text-transform: uppercase;
+    border: 1px solid rgba(245,240,232,0.12);
+    padding: 5px 10px;
+  }
+
+  .sf-badge span { color: var(--orange); font-weight: 700; }
+
+  /* ── PILLAR DETAIL ── */
+  .pillar-detail-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 320px;
+    gap: 0;
+    border: 1px solid rgba(245,240,232,0.06);
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+
+  .pillar-detail-row:hover { border-color: rgba(255,69,0,0.2); }
+
+  .pd-visual {
+    border-left: 1px solid rgba(245,240,232,0.06);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    overflow: hidden;
+    background: #0d0d0d;
+  }
+
+  .pd-visual img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: right center;
+    display: block;
+    filter: brightness(0.92);
+    transition: filter 0.3s;
+  }
+
+  .pillar-detail-row:hover .pd-visual img { filter: brightness(1); }
+
+  .pd-header {
+    background: rgba(245,240,232,0.03);
+    padding: 28px 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 8px;
+    border-right: 1px solid rgba(245,240,232,0.06);
+  }
+
+  .pd-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 40px;
+    line-height: 1;
+  }
+
+  .pd-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+  }
+
+  .pd-name {
+    font-family: 'Anton', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+
+  .pd-body {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .pd-desc {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--cream-dim);
+  }
+
+  .pd-hooks {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--orange);
+    letter-spacing: 0.04em;
+  }
+
+  .pd-examples {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .pd-ex-card {
+    background: rgba(245,240,232,0.03);
+    padding: 14px 16px;
+    font-size: 12px;
+    color: var(--cream-dim);
+    line-height: 1.7;
+    border-left: 2px solid rgba(255,69,0,0.3);
+  }
+
+  .pd-ex-card strong { color: var(--cream); display: block; margin-bottom: 4px; }
+
+  .pd-ex-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 0.12em;
+    color: var(--orange);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  /* divider */
+  .divider {
+    width: 48px; height: 3px;
+    background: var(--orange);
+    margin-bottom: 32px;
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR NAV -->
+<nav class="nav" id="sideNav">
+  <a class="nav-dot active" href="#hero"       data-label="01 COVER"></a>
+  <a class="nav-dot"        href="#brief"      data-label="02 BRIEF"></a>
+  <a class="nav-dot"        href="#positioning"data-label="03 POSITIONING"></a>
+  <a class="nav-dot"        href="#audience"   data-label="04 AUDIENCE"></a>
+  <a class="nav-dot"        href="#dna"        data-label="05 BRAND DNA"></a>
+  <a class="nav-dot"        href="#ritual"     data-label="06 THE RITUAL"></a>
+  <a class="nav-dot"        href="#content"    data-label="07 CONTENT"></a>
+  <a class="nav-dot"        href="#pillars-detail" data-label="07b PILLARS"></a>
+  <a class="nav-dot"        href="#campaigns"  data-label="08 CAMPAIGNS"></a>
+  <a class="nav-dot"        href="#month1"     data-label="08b MONTH 1"></a>
+  <a class="nav-dot"        href="#timeline"   data-label="09 TIMELINE"></a>
+  <a class="nav-dot"        href="#influencer" data-label="10 INFLUENCERS"></a>
+  <a class="nav-dot"        href="#media"      data-label="11 PAID MEDIA"></a>
+  <a class="nav-dot"        href="#kpis"       data-label="12 KPIs"></a>
+  <a class="nav-dot"        href="#action"     data-label="13 ACTION PLAN"></a>
+  <a class="nav-dot"        href="#roadmap12"  data-label="14 12-MONTH PLAN"></a>
+  <a class="nav-dot"        href="#street"     data-label="15 STREET MKT"></a>
+  <a class="nav-dot"        href="#brainstorm" data-label="16 IDEAS"></a>
+</nav>
+
+<main>
+
+<!-- ── 01 HERO ── -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal">LAUNCH STRATEGY BRIEFING · 2026</div>
+    <div class="hero-title reveal reveal-delay-1">SALSA<br>BURGERS</div>
+    <div class="hero-sub reveal reveal-delay-2">LAUNCH STRATEGY 2026</div>
+    <div class="hero-tagline reveal reveal-delay-3">DIP NOW &bull; THINK LATER</div>
+    <div style="margin-top:32px;" class="reveal reveal-delay-4">
+      <div class="sf-badge">POWERED BY <span>STARTUP FACTORY</span></div>
+    </div>
+  </div>
+  <div class="hero-ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">BANGKOK'S BOLDEST</span>
+      <span class="ticker-item">THE HOUSE OF FLAVORS</span>
+      <span class="ticker-item">SATHORN, BANGKOK</span>
+      <span class="ticker-item">salsaburgers.com</span>
+      <span class="ticker-item">@salsa_burgers</span>
+      <span class="ticker-item">100% WAGYU BEEF</span>
+      <span class="ticker-item">18 ARTISAN SAUCES</span>
+      <span class="ticker-item">DIP NOW • THINK LATER</span>
+      <span class="ticker-item">BANGKOK'S BOLDEST</span>
+      <span class="ticker-item">THE HOUSE OF FLAVORS</span>
+      <span class="ticker-item">SATHORN, BANGKOK</span>
+      <span class="ticker-item">salsaburgers.com</span>
+      <span class="ticker-item">@salsa_burgers</span>
+      <span class="ticker-item">100% WAGYU BEEF</span>
+      <span class="ticker-item">18 ARTISAN SAUCES</span>
+      <span class="ticker-item">DIP NOW • THINK LATER</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 BRIEF ── -->
+<section id="brief">
+  <div class="section-label reveal">02 — Executive Summary</div>
+  <div class="section-title reveal reveal-delay-1">THE BRIEF</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="cards-3">
+    <div class="card reveal reveal-delay-2">
+      <div class="card-title">The Brand</div>
+      <div class="card-body">
+        Bangkok's <strong>first sauce-first</strong> premium burger brand.<br>
+        <strong>18 artisan sauces</strong>, made fresh daily.<br>
+        <strong>100% Wagyu beef</strong> — premium protein.<br>
+        <strong>The SALSA Ritual</strong> — no other brand in Bangkok has this.
+      </div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">The Opportunity</div>
+      <div class="card-body">
+        <strong>70% expats + 30% urban Thais</strong> in Sathorn.<br>
+        A ฿500 burger market with <strong>zero ritual, zero theater</strong>.<br>
+        No competitor owns 'the sauce experience' in Bangkok.<br>
+        The window is open — <strong>right now</strong>.
+      </div>
+    </div>
+    <div class="card reveal reveal-delay-4">
+      <div class="card-title">Month 1 Targets</div>
+      <div class="card-body">
+        <strong>120 orders/day</strong> (steady state goal)<br>
+        <strong>฿650</strong> average ticket per order<br>
+        <strong>฿2,500,000/month</strong> revenue target<br>
+        <strong>+500</strong> Instagram followers
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03 POSITIONING ── -->
+<section id="positioning">
+  <div class="section-label reveal">03 — Market</div>
+  <div class="section-title reveal reveal-delay-1">POSITIONING</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="positioning-grid reveal reveal-delay-2">
+    <div>
+      <div class="statement-box">
+        <p>For foodies and expats in Sathorn who are tired of generic ฿500 burgers, <strong>SALSA Burgers is the only premium burger brand in Bangkok built around the sauce.</strong> Unlike Shake Shack or Daniel Thaiger, SALSA has a unique consumption ritual where the customer finishes the burger themselves — and 18 artisan sauces made fresh daily.</p>
+        <div class="statement-tagline">DIP NOW • THINK LATER.</div>
+      </div>
+      <div class="benchmark-bar">REFERENCE BENCHMARKS &nbsp;·&nbsp; GOIKO (Spain) &nbsp;·&nbsp; VICIO (Spain)</div>
+    </div>
+    <div>
+      <div class="comp-grid">
+        <div class="comp-card">
+          <div class="comp-tag competitor">COMPETITOR</div>
+          <div class="comp-name">Shake Shack</div>
+          <div class="comp-desc">Premium but generic. No ritual. No local identity.</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-tag competitor">COMPETITOR</div>
+          <div class="comp-name">Daniel Thaiger</div>
+          <div class="comp-desc">Local legend. Strong brand. No sauce story.</div>
+        </div>
+        <div class="comp-card">
+          <div class="comp-tag market">MARKET</div>
+          <div class="comp-name">Generic Chains</div>
+          <div class="comp-desc">Volume play. No experience. No differentiation.</div>
+        </div>
+        <div class="comp-card us">
+          <div class="comp-tag us-tag">US</div>
+          <div class="comp-name">SALSA Burgers</div>
+          <div class="comp-desc">Sauce-first. Ritual-driven. The only one.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 04 AUDIENCE ── -->
+<section id="audience" style="padding-bottom:0;">
+  <div class="section-label reveal">04 — Who We Serve</div>
+  <div class="section-title reveal reveal-delay-1">TARGET AUDIENCE</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="audience-split reveal reveal-delay-2">
+    <div class="audience-half primary">
+      <div class="audience-pct">70%</div>
+      <div class="audience-label">Expats &amp; Internationals</div>
+      <div class="audience-detail">
+        Age 25–42 · Sathorn / Silom area<br>
+        Instagram-first content consumers<br>
+        Grab heavy users · ฿500+ spend<br>
+        Highly social · share-driven
+      </div>
+      <div class="pain-tag">⚡ PAIN: Generic burgers. Zero theater.</div>
+    </div>
+    <div class="audience-half secondary">
+      <div class="audience-pct">30%</div>
+      <div class="audience-label">Urban Thais</div>
+      <div class="audience-detail">
+        Age 22–35 · Bangkok city<br>
+        TikTok-first · culturally curious<br>
+        Trend-driven · experience-seeking<br>
+        Price-aware but quality-conscious
+      </div>
+      <div class="pain-tag">⚡ PAIN: No local premium burger with soul.</div>
+    </div>
+  </div>
+  <div class="audience-bottom reveal reveal-delay-3">
+    What both want: A burger that's an EVENT, not just food.
+  </div>
+</section>
+
+<!-- ── 05 BRAND DNA ── -->
+<section id="dna">
+  <div class="section-label reveal">05 — Identity</div>
+  <div class="section-title reveal reveal-delay-1">BRAND DNA</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="dna-grid">
+    <div class="dna-card reveal reveal-delay-2">
+      <div class="dna-icon">🎙️</div>
+      <div class="dna-title">Voice &amp; Tone</div>
+      <div class="dna-body">Bold · Irreverent · Direct · Command-driven<br>Key phrases: <em>'DIP NOW'</em> · <em>'ORDER NOW'</em> · <em>'GLOVE UP'</em><br>Never: 'delicious', 'best', long explanations<br>Energy: every sentence is a command</div>
+    </div>
+    <div class="dna-card reveal reveal-delay-3">
+      <div class="dna-icon">🎨</div>
+      <div class="dna-title">Visual Identity</div>
+      <div class="dna-body">Dark &amp; moody · High contrast photography<br>Minimal · Bold typography · Premium<br>#1A1A1A + #FF4500 + #F5F0E8<br>Never: white backgrounds · stock photos</div>
+    </div>
+    <div class="dna-card reveal reveal-delay-3">
+      <div class="dna-icon">🏆</div>
+      <div class="dna-title">Hero Assets</div>
+      <div class="dna-body">18 artisan sauces — fresh daily, no premixes<br>100% Wagyu beef — premium protein<br>The SALSA Ritual — gloves + finishing sauce<br>Combos: Hero · Full Craving · Duo · Full Indulgence</div>
+    </div>
+    <div class="dna-card reveal reveal-delay-4">
+      <div class="dna-icon">🚫</div>
+      <div class="dna-title">What We Don't Do</div>
+      <div class="dna-body">No permanent discounts<br>No generic foodie captions<br>No paid influencer contracts (we build relationships)<br>No boring content. Ever.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 06 RITUAL ── -->
+<section id="ritual">
+  <div class="section-label reveal">06 — The Differentiator</div>
+  <div class="section-title reveal reveal-delay-1">THE SALSA RITUAL</div>
+  <div class="section-subtitle reveal reveal-delay-2">Our #1 competitive advantage. No other brand in Bangkok has this.</div>
+  <div class="ritual-steps reveal reveal-delay-2">
+    <div class="ritual-step">
+      <div class="step-num">01</div>
+      <div class="step-icon">🧤</div>
+      <div class="step-title">Glove Up</div>
+      <div class="step-desc">Put on the black gloves</div>
+      <div class="ritual-arrow">→</div>
+    </div>
+    <div class="ritual-step">
+      <div class="step-num">02</div>
+      <div class="step-icon">📦</div>
+      <div class="step-title">Open the Box</div>
+      <div class="step-desc">Reveal your burger</div>
+      <div class="ritual-arrow">→</div>
+    </div>
+    <div class="ritual-step">
+      <div class="step-num">03</div>
+      <div class="step-icon">🥄</div>
+      <div class="step-title">Add the Sauce</div>
+      <div class="step-desc">Choose your finishing sauce. Pour your way.</div>
+      <div class="ritual-arrow">→</div>
+    </div>
+    <div class="ritual-step">
+      <div class="step-num">04</div>
+      <div class="step-icon">🍔</div>
+      <div class="step-title">First Bite</div>
+      <div class="step-desc">The ritual is complete.</div>
+      <div class="ritual-arrow">→</div>
+    </div>
+    <div class="ritual-step">
+      <div class="step-num">05</div>
+      <div class="step-icon">📸</div>
+      <div class="step-title">Share It</div>
+      <div class="step-desc">Tag @salsa_burgers · #SalsaRitual</div>
+    </div>
+  </div>
+  <div class="ritual-callout reveal reveal-delay-3">
+    <p>This is not just packaging. This is theater.<br>Every delivery is a performance. Every customer is the star.</p>
+  </div>
+</section>
+
+<!-- ── 07 CONTENT STRATEGY ── -->
+<section id="content">
+  <div class="section-label reveal">07 — Content</div>
+  <div class="section-title reveal reveal-delay-1">CONTENT STRATEGY</div>
+  <div class="section-subtitle reveal reveal-delay-2">8 pillars · NC Global Assets framework</div>
+  <div class="content-layout">
+    <div class="chart-wrap reveal reveal-delay-2">
+      <canvas id="pillarsChart" width="340" height="340"></canvas>
+      <div class="chart-center">
+        <div class="chart-center-num">8</div>
+        <div class="chart-center-label">PILLARS</div>
+      </div>
+    </div>
+    <div class="pillar-list reveal reveal-delay-3">
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#FF4500"></div>
+        <div class="pillar-pct">01</div>
+        <div class="pillar-name">Drive Craving</div>
+        <div class="pillar-example">Food porn · cinematic close-ups</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#FF6A00"></div>
+        <div class="pillar-pct">02</div>
+        <div class="pillar-name">Ritual &amp; Packaging</div>
+        <div class="pillar-example">Gloves, unboxing, sauce sequence</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#FF8C00"></div>
+        <div class="pillar-pct">03</div>
+        <div class="pillar-name">Brand Cult</div>
+        <div class="pillar-example">Blockbuster · Stranger Burgers</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#FFA500"></div>
+        <div class="pillar-pct">04</div>
+        <div class="pillar-name">Trust &amp; Authenticity</div>
+        <div class="pillar-example">Trust Your Driver · social proof</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#FFB732"></div>
+        <div class="pillar-pct">05</div>
+        <div class="pillar-name">Salsa Phrases</div>
+        <div class="pillar-example">"DIP IT LIKE YOU MEAN IT"</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#CC3700"></div>
+        <div class="pillar-pct">06</div>
+        <div class="pillar-name">Salsa Icons</div>
+        <div class="pillar-example">Monthly cultural icon series</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#993300"></div>
+        <div class="pillar-pct">07</div>
+        <div class="pillar-name">News &amp; Promotions</div>
+        <div class="pillar-example">Grand Opening · 20% OFF · Combos</div>
+      </div>
+      <div class="pillar-item">
+        <div class="pillar-dot" style="background:#662200"></div>
+        <div class="pillar-pct">08</div>
+        <div class="pillar-name">Salsa Iconic Moments</div>
+        <div class="pillar-example">SauceMoments · Hand of Sauce</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 07b PILLAR DEEP DIVE ── -->
+<section id="pillars-detail" style="background:#111;">
+  <div class="section-label reveal">07b — Content Pillars</div>
+  <div class="section-title reveal reveal-delay-1">PILLAR PLAYBOOK</div>
+  <div class="section-subtitle reveal reveal-delay-2">8 pillars · how each executes · real April 2026 examples</div>
+
+  <div style="display:flex;flex-direction:column;gap:16px;">
+
+    <!-- P1: DRIVE CRAVING -->
+    <div class="pillar-detail-row reveal reveal-delay-2">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#FF4500">01</div>
+        <div class="pd-dot" style="background:#FF4500"></div>
+        <div class="pd-name">DRIVE CRAVING</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Consideration</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Pure appetite content. Cinematic close-ups, glossy sauce pours, burger textures, drip moments. Dark background only. The visual goal is to make the viewer stop scrolling and order immediately.</div>
+        <div class="pd-hooks">Formats: Single pic · FB/IG · Size 1200×1500 (4:5)</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 6</span>
+            <strong>NOT A BORING SAUCE, NOT A BORING BURGER</strong>
+            Slide flow: 1) Hero burger beauty shot 2) Sauce close-up / pour shot 3) Burger + glove ritual detail 4) Packaging + plated burger 5) Bite-ready angle / drip moment 6) Final hero with sauce on side.<br><br>Caption: "This is not the kind of burger you scroll past. Big burger energy. Bold sauce attitude."
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 5</span>
+            <strong>THE MALA</strong>
+            Mala sauce + Wagyu close-up. "Have you ever tried a Mala burger? 🔥 Get ready for a flavor experience like no other. Our signature Mala sauce is rich, bold, and perfectly balanced with that signature tingle."
+            <br><br>CTA: 20% OFF first order on Grab.
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual" style="display:flex;flex-direction:column;gap:2px;">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/01_drive_craving/glove_first_bite.jpg" alt="ref 1" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/01_drive_craving/duo_combo_explicit.jpg" alt="ref 2" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+      </div>
+    </div>
+
+    <!-- P2: RITUAL & PACKAGING -->
+    <div class="pillar-detail-row reveal reveal-delay-2">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#FF6A00">02</div>
+        <div class="pd-dot" style="background:#FF6A00"></div>
+        <div class="pd-name">RITUAL &amp; PACKAGING</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Awareness · Consideration</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">The full SALSA experience — from metallic bag to gloves to finishing sauce to first bite. This pillar teaches new customers how to "be" Salsa. Every swipe is a ritual step. Albums perform best.</div>
+        <div class="pd-hooks">Formats: Photo album (6 slides) · FB/IG · Size 1200×1500</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 3 & 14</span>
+            <strong>SALSA CLUB RULES</strong>
+            HL: "WELCOME TO THE SALSA CLUB — Glove up. Pick your salsa. Pour your way."
+            <br>Slide flow: 1) Welcome / Glove up 2) Pick your salsa / Match the mood 3) Make it yours / Pour with confidence 4) Take the first bite 5) Pass it to your crew 6) Join the ritual
+            <br><br>Hashtags: #SalsaBurgers #SalsaRitual #SathornEats
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">FORMAT NOTE</span>
+            <strong>WHY ALBUMS WIN FOR RITUAL</strong>
+            Albums stop the scroll with the first image. Each slide = one ritual step. The swipe = the actual experience. Saves rate on ritual content is 3-4× higher than single posts. This is our most memorable format.
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual" style="display:flex;flex-direction:column;gap:2px;">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/02_ritual_packaging/hero_ritual_setup.jpg" alt="ref 1" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/02_ritual_packaging/glove_bite_dark.jpg" alt="ref 2" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+      </div>
+    </div>
+
+    <!-- P3: BRAND CULT -->
+    <div class="pillar-detail-row reveal reveal-delay-3">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#FF8C00">03</div>
+        <div class="pd-dot" style="background:#FF8C00"></div>
+        <div class="pd-name">BRAND CULT</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Awareness · Conversion</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Bold, irreverent, pop-culture brand content that makes Salsa feel like a movement, not a menu. References cinema, nostalgia, streetwear, arcade energy. Builds a following that identifies with the brand, not just the food.</div>
+        <div class="pd-hooks">Formats: Album (6 slides) · FB/IG · Highly shareable · Tag-your-crew CTA</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 1 & 12</span>
+            <strong>THE BLOCKBUSTER</strong>
+            "Some burgers are made to be eaten. This one was made to become part of the scene. Late nights. Neon lights. Arcade energy. Welcome to the blockbuster burger factory."
+            <br><br>CTA: "Tag the crew and grab your popcorn."
+            <br>Hashtags: #SalsaBurgers #SalsaCult #NotJustABurger #90snostalgia
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 4 & 9</span>
+            <strong>STRANGER BURGERS</strong>
+            "An Upside Down Sauce Experience." Streetwear attitude, nostalgia-coded. "We took a wrong turn… and ended up somewhere strange. Good news? They have Salsa Burgers here too."
+            <br><br>Available on IG + TikTok simultaneously.
+            <br>Hashtags: #StrangerBurgers #NotJustABurger
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual" style="display:flex;flex-direction:column;gap:2px;">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/03_brand_cult/blockbuster_store.jpg" alt="Blockbuster" loading="lazy" style="height:50%;object-fit:cover;width:100%;filter:brightness(0.92);">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/03_brand_cult/stranger_kids_gamezone.jpg" alt="Stranger Burgers" loading="lazy" style="height:50%;object-fit:cover;width:100%;filter:brightness(0.92);">
+      </div>
+    </div>
+
+    <!-- P4: TRUST & AUTHENTICITY -->
+    <div class="pillar-detail-row reveal reveal-delay-3">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#FFA500">04</div>
+        <div class="pd-dot" style="background:#FFA500"></div>
+        <div class="pd-name">TRUST &amp; AUTHENTICITY</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Loyalty · Social Proof</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Real people, real delivery, real experience. Riders as brand ambassadors, customer moments, behind the scenes. This pillar converts fence-sitters — it answers "but can I trust the delivery?" with a definitive yes.</div>
+        <div class="pd-hooks">Formats: Single pic · FB/IG · Story reposts · UGC</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 8</span>
+            <strong>TRUST YOUR DRIVER</strong>
+            HL: "TRUST YOUR DRIVER. He knows the route. He knows the ritual."
+            <br>"Some drivers deliver burgers. A Salsa driver delivers the moment. Fast hands. Hot bag. No boring drop-off. Because great delivery is not just speed. It's trust. It's timing. It's Salsa Burgers."
+            <br><br>Hashtags: #TrustYourDriver #SalsaRitual
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">ONGOING STRATEGY</span>
+            <strong>RIDERS AS BRAND ASSET</strong>
+            Riders are trained, given chill area, water, wifi. When they feel respected, they recommend. Their photo in front of the pickup zone = authentic content. Their positive attitude = brand extension at the doorstep.
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual" style="display:flex;flex-direction:column;gap:2px;">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/04_trust_authenticity/burger_bangkok_temple.jpg" alt="ref 1" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/04_trust_authenticity/burger_cafe_moment.jpg" alt="ref 2" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+      </div>
+    </div>
+
+    <!-- P5: SALSA PHRASES -->
+    <div class="pillar-detail-row reveal reveal-delay-4">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#FFB732">05</div>
+        <div class="pd-dot" style="background:#FFB732"></div>
+        <div class="pd-name">SALSA PHRASES</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Conversion · Brand Cult</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Shareable, funny, locally-relevant phrases that people tag their crew in. No product required — just the brand voice. Designed to spread via Story shares. Local humour, Thai context, universal appetite.</div>
+        <div class="pd-hooks">Formats: Single pic · FB/IG/TikTok · No CTA needed — share IS the action</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 10</span>
+            <strong>SALSA PHRASES SERIES</strong>
+            Active phrases in rotation:<br>
+            · "DIP IT LIKE YOU MEAN IT"<br>
+            · "DIP NOW THINK LATER"<br>
+            · "YOUR HANGOVER FAVOURITE IN THAILAND"<br><br>
+            Concept: replicate accounts that post funny shareable phrases — always food or music-related, with local Bangkok humour. Also run in Thai.
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">FORMAT RULE</span>
+            <strong>BOLD TYPE, DARK BG, ONE LINE</strong>
+            Maximum visual impact = minimum words. Anton or Impact font. Full bleed dark background. Orange accent. The phrase IS the post. No food photo needed. Highest share rate of any format.
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual"><img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/05_salsa_phrases/parental_advisory_explicit_dipping.jpg" alt="reference" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(0.95);"></div>
+    </div>
+
+    <!-- P6: SALSA ICONS -->
+    <div class="pillar-detail-row reveal reveal-delay-4">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#CC3700">06</div>
+        <div class="pd-dot" style="background:#CC3700"></div>
+        <div class="pd-name">SALSA ICONS</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Awareness · Cultural</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Monthly cultural icon series. A real person — musician, athlete, chef, icon — who embodies the Salsa spirit: bold, authentic, built differently. Creates a recurring format fans anticipate each month.</div>
+        <div class="pd-hooks">Formats: Photo album · FB/IG · Monthly cadence · Educate + entertain</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 5 & 11</span>
+            <strong>JUAN LUIS GUERRA</strong>
+            "🎧 This month's SALSA ICON: Juan Luis Guerra 📍 SANTO DOMINGO 🇩🇴 🗓️ 1957 — The man who turned bachata and merengue into global culture. Did you know he studied at Berklee College of Music? Won +20 Latin Grammy Awards. From the Caribbean to the world — no shortcuts, just rhythm and soul. A TRUE SALSA ICON."
+            <br><br>Hits featured: Burbujas de Amor · Ojalá que Llueva Café · La Bilirrubina
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">SERIES CONCEPT</span>
+            <strong>MONTHLY ROTATION</strong>
+            Each icon connects to the brand's DNA: Latino energy + bold personality + cultural crossover. Not always musicians — could be chefs, athletes, filmmakers. The link is always spirit, not genre. Fans start guessing who's next.
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual"><img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/06_salsa_icons/juan_luis_guerra.jpg" alt="reference" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(0.95);"></div>
+    </div>
+
+    <!-- P7: NEWS & PROMOTIONS -->
+    <div class="pillar-detail-row reveal reveal-delay-5">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#993300">07</div>
+        <div class="pd-dot" style="background:#993300"></div>
+        <div class="pd-name">NEWS &amp; PROMOTIONS</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Conversions · Awareness</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Grand openings, product launches, limited-time promos, combo reveals. Conversion-first content. Clear CTA, Grab link, urgency language. Not for brand building — for sales. Kept to a controlled frequency so it stays impactful.</div>
+        <div class="pd-hooks">Formats: Single pic · FB/IG · Hard CTA → Grab link · Urgency always present</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 2, 3, 4, 7, 8</span>
+            <strong>GRAND OPENING + 20% OFF</strong>
+            HL: "SATHORN… A new burger just landed."<br>
+            "Step into the House of Flavors! 👉 Get up to 20% OFF for your first order!"
+            <br>Order Now on Grab → r.grab.com/o/6ru2AJv2
+            <br><br>SALSA COMBOS REVEAL: Hero Combo · Full Craving · Duo Combo · Full Indulgence Combo
+            <br>Caption: "More flavor. More sauce. More reasons to dip, bite, and repeat."
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">PROMO RULE</span>
+            <strong>NO PERMANENT DISCOUNTS</strong>
+            SALSA1 and 20% OFF are launch mechanics. They expire. After Month 1, the brand sells at full price. Permanent discounts damage premium perception. Scarcity and limited drops (Sauce of the Month, Luxury Burgers) replace price promotions.
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual"><img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/07_news_promotions/burger_tower_20off_tiktok.jpg" alt="reference" loading="lazy" style="width:100%;height:100%;object-fit:cover;object-position:center;filter:brightness(0.95);"></div>
+    </div>
+
+    <!-- P8: SALSA ICONIC MOMENTS -->
+    <div class="pillar-detail-row reveal reveal-delay-5">
+      <div class="pd-header">
+        <div class="pd-num" style="color:#662200">08</div>
+        <div class="pd-dot" style="background:#662200"></div>
+        <div class="pd-name">SALSA ICONIC MOMENTS</div>
+        <div style="font-size:10px;color:var(--cream-dim);font-family:'Space Mono',monospace;">Awareness · Cultural</div>
+      </div>
+      <div class="pd-body">
+        <div class="pd-desc">Legendary sports, music, and pop-culture moments reimagined with Salsa. Burger replaces the ball. Sauce bottle replaces the trophy. Bold, witty, memeable. "Inspired by" — never exact celebrity likenesses. The brand joins culture, not copies it.</div>
+        <div class="pd-hooks">Formats: Photo album (6 slides) · FB/IG · "Which moment should we remix next?" CTA</div>
+        <div class="pd-examples">
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">APRIL — Content 7</span>
+            <strong>SAUCE MOMENTS</strong>
+            Slide flow: 1) The Hand of Sauce 2) The Last Dunk 3) Historic sauce pour moment 4) Trophy-lift but with burger box 5) Victory pose with salsa bottle 6) End card / hero burger / "Join the ritual"
+            <br><br>Caption: "Some moments changed the game. Ours just made it saucier. Welcome to Sauce Moments — where icons get the Salsa Burgers treatment."
+          </div>
+          <div class="pd-ex-card">
+            <span class="pd-ex-tag">CREATIVE RULE</span>
+            <strong>INSPIRED-BY, NOT EXACT</strong>
+            Use recognisable body pose / action / visual reference, but replace ball/trophy with burger or sauce. Focus on the energy of the moment, not the person. Brand-safe. Culturally alive. Legally clean. Fan engagement: "Which moment should we remix next?"
+          </div>
+        </div>
+      </div>
+      <div class="pd-visual" style="display:flex;flex-direction:column;gap:2px;">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/08_iconic_moments/jordan_just_do_it_with_salsa.jpg" alt="ref 1" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+        <img src="file:///Users/carlosjacoste/Desktop/Claude/assets/briefing-assets/pillars/08_iconic_moments/maradona_hand_of_god.jpg" alt="ref 2" loading="lazy" style="width:100%;height:50%;object-fit:cover;object-position:center;filter:brightness(0.95);">
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 08 CAMPAIGNS ── -->
+<section id="campaigns">
+  <div class="section-label reveal">08 — Active</div>
+  <div class="section-title reveal reveal-delay-1">APRIL 2026 CAMPAIGNS</div>
+  <div class="section-subtitle reveal reveal-delay-2">14 active campaigns · NC Global Assets execution · Brand LIVE on Grab</div>
+  <div class="campaigns-grid">
+    <div class="campaign-card reveal reveal-delay-2">
+      <div class="campaign-tags"><span class="tag tag-cult">Brand Cult</span><span class="tag tag-format">Album</span></div>
+      <div class="campaign-name">The Blockbuster</div>
+      <div class="campaign-concept">90s movie energy — "Welcome to the Burger Blockbuster"</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-2">
+      <div class="campaign-tags"><span class="tag tag-awareness">Awareness</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">Grand Opening</div>
+      <div class="campaign-concept">"SATHORN… A new burger just landed"</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-2">
+      <div class="campaign-tags"><span class="tag tag-awareness">Ritual</span><span class="tag tag-format">Album</span></div>
+      <div class="campaign-name">Salsa Club Rules</div>
+      <div class="campaign-concept">Glove up → pick salsa → pour → bite → pass → join</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-3">
+      <div class="campaign-tags"><span class="tag tag-cult">Brand Cult</span><span class="tag tag-format">Album</span></div>
+      <div class="campaign-name">Stranger Burgers</div>
+      <div class="campaign-concept">Upside-down universe, streetwear &amp; nostalgia</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-3">
+      <div class="campaign-tags"><span class="tag tag-awareness">Cultural</span><span class="tag tag-format">Album</span></div>
+      <div class="campaign-name">Salsa Icons</div>
+      <div class="campaign-concept">Monthly icon: Juan Luis Guerra (April)</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-3">
+      <div class="campaign-tags"><span class="tag tag-consideration">Food Porn</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">Not A Boring Burger</div>
+      <div class="campaign-concept">Cinematic sauce pour + glove ritual close-ups</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-4">
+      <div class="campaign-tags"><span class="tag tag-awareness">Cultural</span><span class="tag tag-format">Album</span></div>
+      <div class="campaign-name">SauceMoments</div>
+      <div class="campaign-concept">"Hand of Sauce" — iconic moments remixed</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-4">
+      <div class="campaign-tags"><span class="tag tag-loyalty">Loyalty</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">Trust Your Driver</div>
+      <div class="campaign-concept">Riders as brand ambassadors — "He knows the ritual"</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-4">
+      <div class="campaign-tags"><span class="tag tag-awareness">Lifestyle</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">Salsa Moments</div>
+      <div class="campaign-concept">Bangkok moods — "SALSA fits all of them"</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-5">
+      <div class="campaign-tags"><span class="tag tag-cult">Brand Cult</span><span class="tag tag-format">TikTok</span></div>
+      <div class="campaign-name">Salsa Phrases</div>
+      <div class="campaign-concept">"DIP IT LIKE YOU MEAN IT" · "DIP NOW THINK LATER"</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-5">
+      <div class="campaign-tags"><span class="tag tag-conversion">Conversion</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">20% Off Promo</div>
+      <div class="campaign-concept">First order promo — LIVE on Grab now</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-5">
+      <div class="campaign-tags"><span class="tag tag-consideration">Product</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">The MALA</div>
+      <div class="campaign-concept">Mala sauce + Wagyu close-up · hero product</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-5">
+      <div class="campaign-tags"><span class="tag tag-consideration">Product</span><span class="tag tag-format">Pic</span></div>
+      <div class="campaign-name">SALSA Combos</div>
+      <div class="campaign-concept">Hero · Full Craving · Duo · Full Indulgence</div>
+    </div>
+    <div class="campaign-card reveal reveal-delay-5">
+      <div class="campaign-tags"><span class="tag tag-cult">Brand Cult</span><span class="tag tag-format">Album</span></div>
+      <div class="campaign-name">Blockbuster Pt.2</div>
+      <div class="campaign-concept">Second wave — 90s cinema returns</div>
+    </div>
+  </div>
+  <div class="hashtag-row reveal">
+    <span class="hashtag">#SalsaBurgers</span>
+    <span class="hashtag">#SalsaRitual</span>
+    <span class="hashtag">#SauceMoments</span>
+    <span class="hashtag">#TrustYourDriver</span>
+    <span class="hashtag">#StrangerBurgers</span>
+    <span class="hashtag">#SathornEats</span>
+    <span class="hashtag">#ThehouseofFlavors</span>
+    <span class="hashtag">#NotJustABurger</span>
+  </div>
+</section>
+
+<!-- ── 08b MONTH 1 MASTER PLAN ── -->
+<section id="month1" style="background:#0d0d0d;padding-bottom:80px;">
+  <div class="section-label reveal">08b — Month 1 Master Plan</div>
+  <div class="section-title reveal reveal-delay-1">MAY 2026</div>
+  <div class="section-subtitle reveal reveal-delay-2">4 semanas · todos los formatos · ฿32,000 paid media · propuesta completa para presentar a la agencia</div>
+
+  <!-- KPI Overview -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:40px;" class="reveal reveal-delay-2">
+    <div style="background:rgba(255,69,0,0.08);border:1px solid rgba(255,69,0,0.25);padding:24px 20px;text-align:center;">
+      <div style="font-family:'Anton',sans-serif;font-size:42px;color:#FF4500;line-height:1;">150–250</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--cream-dim);margin-top:6px;">GRAB ORDERS · MES 1</div>
+    </div>
+    <div style="background:rgba(255,69,0,0.08);border:1px solid rgba(255,69,0,0.25);padding:24px 20px;text-align:center;">
+      <div style="font-family:'Anton',sans-serif;font-size:42px;color:#FF4500;line-height:1;">1,000+</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--cream-dim);margin-top:6px;">IG FOLLOWERS</div>
+    </div>
+    <div style="background:rgba(255,69,0,0.08);border:1px solid rgba(255,69,0,0.25);padding:24px 20px;text-align:center;">
+      <div style="font-family:'Anton',sans-serif;font-size:42px;color:#FF4500;line-height:1;">30+</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--cream-dim);margin-top:6px;">GRAB REVIEWS</div>
+    </div>
+    <div style="background:rgba(255,69,0,0.08);border:1px solid rgba(255,69,0,0.25);padding:24px 20px;text-align:center;">
+      <div style="font-family:'Anton',sans-serif;font-size:42px;color:#FF4500;line-height:1;">4.5⭐</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.15em;color:var(--cream-dim);margin-top:6px;">RATING MÍNIMO</div>
+    </div>
+  </div>
+
+  <!-- WEEK STYLES (inline) -->
+  <style>
+    .wk-block { margin-bottom:40px; border:1px solid rgba(245,240,232,0.06); }
+    .wk-header { display:flex;align-items:center;gap:20px;padding:20px 24px;border-bottom:1px solid rgba(245,240,232,0.06); }
+    .wk-num { font-family:'Anton',sans-serif;font-size:48px;line-height:1;opacity:0.15; }
+    .wk-info { flex:1; }
+    .wk-dates { font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;margin-bottom:4px; }
+    .wk-theme { font-family:'Anton',sans-serif;font-size:22px;letter-spacing:0.04em; }
+    .wk-goal  { font-size:12px;color:var(--cream-dim);margin-top:4px; }
+    .wk-kpis  { display:flex;gap:8px;flex-wrap:wrap; }
+    .wk-kpi   { font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;padding:4px 10px;background:rgba(245,240,232,0.06);color:var(--cream-dim); }
+    .content-row { display:grid;grid-template-columns:80px 60px 110px 1fr 1.6fr;gap:0;border-bottom:1px solid rgba(245,240,232,0.04); }
+    .content-row:last-child { border-bottom:none; }
+    .content-row > div { padding:14px 16px;font-size:12px;line-height:1.6; }
+    .content-row > div:not(:last-child) { border-right:1px solid rgba(245,240,232,0.04); }
+    .cr-format { display:flex;align-items:center;justify-content:center; }
+    .fmt-pill  { font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.1em;padding:4px 8px;font-weight:700;text-align:center; }
+    .cr-day    { color:var(--cream-dim);font-family:'Space Mono',monospace;font-size:10px; }
+    .cr-pillar { font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.08em; }
+    .cr-title  { font-family:'Anton',sans-serif;font-size:14px;letter-spacing:0.02em;margin-bottom:4px; }
+    .cr-platform { font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.12em;margin-bottom:6px; }
+    .cr-desc   { font-size:11.5px;color:var(--cream-dim);line-height:1.65; }
+    .cr-desc strong { color:var(--cream); }
+    .col-hdr { font-family:'Space Mono',monospace;font-size:8px;letter-spacing:0.15em;color:rgba(245,240,232,0.3);padding:8px 16px;border-bottom:1px solid rgba(245,240,232,0.06);display:grid;grid-template-columns:80px 60px 110px 1fr 1.6fr; }
+  </style>
+
+  <!-- ── WEEK 1 ── -->
+  <div class="wk-block reveal reveal-delay-2">
+    <div class="wk-header" style="border-left:4px solid #FF4500;">
+      <div class="wk-num" style="color:#FF4500;">01</div>
+      <div class="wk-info">
+        <div class="wk-dates" style="color:#FF4500;">MAY 5–11</div>
+        <div class="wk-theme">THE RITUAL LANDS</div>
+        <div class="wk-goal">Máxima awareness en Sathorn · Establecer el ritual en la cultura</div>
+      </div>
+      <div class="wk-kpis">
+        <span class="wk-kpi">300 IG FOLLOWERS</span>
+        <span class="wk-kpi">10K IMPRESSIONS</span>
+        <span class="wk-kpi">30–50 GRAB ORDERS</span>
+        <span class="wk-kpi">5 GRAB REVIEWS</span>
+      </div>
+    </div>
+    <div class="col-hdr"><span>FORMAT</span><span>DÍA</span><span>PILAR</span><span>CONTENIDO</span><span>DESCRIPCIÓN</span></div>
+
+    <div class="content-row" style="background:rgba(255,69,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF4500;color:#1A1A1A;">REEL</span></div>
+      <div class="cr-day">Lun 5</div>
+      <div class="cr-pillar" style="color:#FF4500;">P1 DRIVE CRAVING</div>
+      <div><div class="cr-title">NOT A BORING BURGER</div><div class="cr-platform" style="color:#FF4500;">IG · FB</div></div>
+      <div class="cr-desc">15–30s, fondo negro, close-up sauce pour. Texto bold en overlay: <strong>"Dark. Bold. 18 sauces. 100% Wagyu."</strong> Primer frame: glove snap. Caption: <em>"This is not the kind of burger you scroll past."</em> Goal: save + share rate.</div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF6A00;color:#1A1A1A;">CAROUSEL</span></div>
+      <div class="cr-day">Mié 7</div>
+      <div class="cr-pillar" style="color:#FF6A00;">P2 RITUAL</div>
+      <div><div class="cr-title">SALSA CLUB RULES v2</div><div class="cr-platform" style="color:#FF6A00;">IG · FB</div></div>
+      <div class="cr-desc">6 slides: <strong>1)</strong> Glove up <strong>2)</strong> Pick your salsa <strong>3)</strong> Pour with confidence <strong>4)</strong> First bite <strong>5)</strong> Pass to your crew <strong>6)</strong> Join the ritual. HL: <em>"WELCOME TO THE SALSA CLUB."</em> Tags: #SalsaRitual #SathornEats</div>
+    </div>
+    <div class="content-row" style="background:rgba(255,106,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF8C00;color:#1A1A1A;">STORY</span></div>
+      <div class="cr-day">Mar–Jue</div>
+      <div class="cr-pillar" style="color:#FF8C00;">P2 RITUAL</div>
+      <div><div class="cr-title">Kitchen Reveal + Tutorial</div><div class="cr-platform" style="color:#FF8C00;">IG Stories</div></div>
+      <div class="cr-desc">Serie 5 frames: cocina → lineup 18 salsas → unbox guantes → reveal caja → CTA Grab. <strong>Poll interactivo:</strong> "Which sauce are you? MALA 🔥 / HONEY MUSTARD 🍯 / CHIPOTLE 🌶️". Swipe-up directo a Grab.</div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF6A00;color:#1A1A1A;">TIKTOK</span></div>
+      <div class="cr-day">Sáb 10</div>
+      <div class="cr-pillar" style="color:#FF6A00;">P2 RITUAL</div>
+      <div><div class="cr-title">SALSA RITUAL ASMR</div><div class="cr-platform" style="color:#FF6A00;">TikTok</div></div>
+      <div class="cr-desc">Satisfying ritual video: glove snap → sauce pour ASMR → first bite close-up. Audio trending. Hook: <strong>primeros 2 segundos = guante estallando</strong>. Goal: save rate alto + shares. Sin narración — solo sonido + texto.</div>
+    </div>
+    <div class="content-row" style="background:rgba(255,69,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#333;color:var(--cream);border:1px solid rgba(255,69,0,0.4);">PAID</span></div>
+      <div class="cr-day">Toda la<br>semana</div>
+      <div class="cr-pillar" style="color:rgba(245,240,232,0.4);">META + GRAB</div>
+      <div><div class="cr-title" style="font-size:13px;">AWARENESS PUSH — THE RITUAL</div><div class="cr-platform" style="color:rgba(255,69,0,0.7);">Meta Ads · Grab Featured</div></div>
+      <div class="cr-desc"><strong>Meta:</strong> 15s Ritual video. Target: expats Sathorn 25–42, interests: food delivery, premium dining. Budget: ฿8,000. <strong>Grab:</strong> Featured placement + Search. Banner: <em>"20% OFF. First order. Try the ritual."</em> Budget: ฿4,000.</div>
+    </div>
+  </div>
+
+  <!-- ── WEEK 2 ── -->
+  <div class="wk-block reveal reveal-delay-2">
+    <div class="wk-header" style="border-left:4px solid #FF8C00;">
+      <div class="wk-num" style="color:#FF8C00;">02</div>
+      <div class="wk-info">
+        <div class="wk-dates" style="color:#FF8C00;">MAY 12–18</div>
+        <div class="wk-theme">BUILD THE CULT</div>
+        <div class="wk-goal">Personalidad de marca · Seed primeros creators · Construir social proof</div>
+      </div>
+      <div class="wk-kpis">
+        <span class="wk-kpi">500 IG FOLLOWERS</span>
+        <span class="wk-kpi">20K IMPRESSIONS</span>
+        <span class="wk-kpi">50–70 GRAB ORDERS</span>
+        <span class="wk-kpi">10 REVIEWS · 3 CREATOR POSTS</span>
+      </div>
+    </div>
+    <div class="col-hdr"><span>FORMAT</span><span>DÍA</span><span>PILAR</span><span>CONTENIDO</span><span>DESCRIPCIÓN</span></div>
+
+    <div class="content-row" style="background:rgba(255,140,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF8C00;color:#1A1A1A;">REEL</span></div>
+      <div class="cr-day">Lun 12</div>
+      <div class="cr-pillar" style="color:#FF8C00;">P3 BRAND CULT</div>
+      <div><div class="cr-title">STRANGER BURGERS Ep.1</div><div class="cr-platform" style="color:#FF8C00;">IG · FB · TikTok</div></div>
+      <div class="cr-desc">Teaser cinematográfico. Estética arcade + nostalgia 90s. <em>"An Upside Down Sauce Experience. We went somewhere strange... and found Salsa Burgers."</em> CTA: <strong>"Tag someone who belongs in the Upside Down."</strong> #StrangerBurgers #NotJustABurger</div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FFA500;color:#1A1A1A;">STATIC</span></div>
+      <div class="cr-day">Jue 15</div>
+      <div class="cr-pillar" style="color:#FFA500;">P4 TRUST</div>
+      <div><div class="cr-title">TRUST YOUR DRIVER</div><div class="cr-platform" style="color:#FFA500;">IG · FB</div></div>
+      <div class="cr-desc">Retrato del rider con bolsa branded. Copy: <em>"He knows the route. He knows the ritual. Fast hands. Hot bag. No boring drop-off."</em> Rider como embajador de marca. Real, auténtico, sin producción excesiva. #TrustYourDriver</div>
+    </div>
+    <div class="content-row" style="background:rgba(255,140,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FFB732;color:#1A1A1A;">STORY</span></div>
+      <div class="cr-day">Mar–Vie</div>
+      <div class="cr-pillar" style="color:#FFB732;">P5 PHRASES</div>
+      <div><div class="cr-title">Quiz: ¿Qué salsa eres?</div><div class="cr-platform" style="color:#FFB732;">IG Stories</div></div>
+      <div class="cr-desc">Quiz interactivo 5 personalidades: <strong>MALA=bold, Honey Mustard=classic, Chipotle=adventurous, Pesto=creative, BBQ=chill</strong>. Vie: Creator Kit reveal — primer creator Tier A recibe el kit. Story: <em>"The ritual kit is in the wild. 👀"</em></div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF8C00;color:#1A1A1A;">TIKTOK</span></div>
+      <div class="cr-day">Sáb 17</div>
+      <div class="cr-pillar" style="color:#FFB732;">P5 PHRASES</div>
+      <div><div class="cr-title">SALSA PERSONALITY CHALLENGE</div><div class="cr-platform" style="color:#FF8C00;">TikTok</div></div>
+      <div class="cr-desc">Challenge setup: "Which salsa personality are you?" Formato duet/stitch para que otros respondan. Hook: <strong>"Tag someone who is MALA energy 🔥"</strong>. Goal: UGC orgánico + alcance amplificado por duets. Trending audio overlay.</div>
+    </div>
+    <div class="content-row" style="background:rgba(255,140,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#333;color:var(--cream);border:1px solid rgba(255,140,0,0.4);">PAID</span></div>
+      <div class="cr-day">Toda la<br>semana</div>
+      <div class="cr-pillar" style="color:rgba(245,240,232,0.4);">META + TIKTOK</div>
+      <div><div class="cr-title" style="font-size:13px;">CONSIDERATION LAYER</div><div class="cr-platform" style="color:rgba(255,140,0,0.7);">Meta · TikTok Ads</div></div>
+      <div class="cr-desc"><strong>Meta:</strong> "Which Flavor Are You?" carousel ad. Audience: personas que interactuaron con semana 1. Budget: ฿4,000. <strong>TikTok Reach:</strong> Boost Stranger Burgers reel. Target: Thai foodies + expat community Bangkok. Budget: ฿4,000.</div>
+    </div>
+  </div>
+
+  <!-- ── WEEK 3 ── -->
+  <div class="wk-block reveal reveal-delay-3">
+    <div class="wk-header" style="border-left:4px solid #FFB732;">
+      <div class="wk-num" style="color:#FFB732;">03</div>
+      <div class="wk-info">
+        <div class="wk-dates" style="color:#FFB732;">MAY 19–25</div>
+        <div class="wk-theme">CULTURE + PHRASES</div>
+        <div class="wk-goal">Relevancia cultural · Viralidad de frases · Amplificación por creators</div>
+      </div>
+      <div class="wk-kpis">
+        <span class="wk-kpi">800 IG FOLLOWERS</span>
+        <span class="wk-kpi">35K IMPRESSIONS</span>
+        <span class="wk-kpi">70–90 GRAB ORDERS</span>
+        <span class="wk-kpi">20+ REVIEWS · 8 CREATOR POSTS</span>
+      </div>
+    </div>
+    <div class="col-hdr"><span>FORMAT</span><span>DÍA</span><span>PILAR</span><span>CONTENIDO</span><span>DESCRIPCIÓN</span></div>
+
+    <div class="content-row" style="background:rgba(204,55,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#CC3700;color:var(--cream);">ALBUM</span></div>
+      <div class="cr-day">Lun 19</div>
+      <div class="cr-pillar" style="color:#CC3700;">P6 ICONS</div>
+      <div><div class="cr-title">SALSA ICON: MAY EDITION</div><div class="cr-platform" style="color:#CC3700;">IG · FB</div></div>
+      <div class="cr-desc">Icono cultural del mes (elegir con equipo: figura con energía latina + relevancia Bangkok). Album 6 slides: foto → historia → carrera → conexión con espíritu Salsa. <em>"Bold. Built differently. A true SALSA ICON."</em> Fans empiezan a adivinar quién sigue.</div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FFB732;color:#1A1A1A;">STATIC</span></div>
+      <div class="cr-day">Mié 21</div>
+      <div class="cr-pillar" style="color:#FFB732;">P5 PHRASES</div>
+      <div><div class="cr-title">DIP IT LIKE YOU MEAN IT</div><div class="cr-platform" style="color:#FFB732;">IG · FB · TikTok</div></div>
+      <div class="cr-desc">Fondo negro total. Tipografía Anton naranja. Sin foto de comida — <strong>solo la frase</strong>. Jue 22: versión en tailandés para audiencia local. Formato de máximo impacto mínima complejidad. Objetivo: Story shares masivos.</div>
+    </div>
+    <div class="content-row" style="background:rgba(204,55,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FFA500;color:#1A1A1A;">STORY</span></div>
+      <div class="cr-day">Mar–Sáb</div>
+      <div class="cr-pillar" style="color:#FFA500;">P4 TRUST</div>
+      <div><div class="cr-title">Creator Drops + Review Push</div><div class="cr-platform" style="color:#FFA500;">IG Stories</div></div>
+      <div class="cr-desc">Repost reacciones auténticas de creators al Ritual Kit. Jue: <em>"Rate your ritual"</em> — guiar followers a Grab review con ejemplos screenshot. <strong>"Your review = helping us level up. Share yours. Tag @salsa_burgers."</strong></div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF8C00;color:#1A1A1A;">TIKTOK</span></div>
+      <div class="cr-day">Vie 23</div>
+      <div class="cr-pillar" style="color:#FF6A00;">P2 RITUAL</div>
+      <div><div class="cr-title">CREATOR COLLAB: RITUAL POV</div><div class="cr-platform" style="color:#FF8C00;">TikTok · IG Reels</div></div>
+      <div class="cr-desc">Creator Tier A filma unboxing auténtico del Ritual Kit en POV. Audio trending. Sin sobre-producción — raw y genuine. Hook: primeros 3 segundos = sorpresa al abrir la caja. Goal: saves + profile visits → conversión Grab.</div>
+    </div>
+    <div class="content-row" style="background:rgba(204,55,0,0.04);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#333;color:var(--cream);border:1px solid rgba(255,183,50,0.4);">PAID</span></div>
+      <div class="cr-day">Toda la<br>semana</div>
+      <div class="cr-pillar" style="color:rgba(245,240,232,0.4);">TIKTOK + META</div>
+      <div><div class="cr-title" style="font-size:13px;">FOLLOWS + RETARGETING</div><div class="cr-platform" style="color:rgba(255,183,50,0.7);">TikTok · Meta</div></div>
+      <div class="cr-desc"><strong>TikTok:</strong> Follows campaign. Creativo: ritual POV del creator. Target: Thai foodies + expats. Budget: ฿4,000. <strong>Meta Retargeting:</strong> <em>"Still thinking about it? 20% OFF ends soon."</em> Audience: saw Week 1 video, didn't convert. Budget: ฿4,000.</div>
+    </div>
+  </div>
+
+  <!-- ── WEEK 4 ── -->
+  <div class="wk-block reveal reveal-delay-3">
+    <div class="wk-header" style="border-left:4px solid #993300;">
+      <div class="wk-num" style="color:#993300;">04</div>
+      <div class="wk-info">
+        <div class="wk-dates" style="color:#993300;">MAY 26–31</div>
+        <div class="wk-theme">CONVERT + CELEBRATE</div>
+        <div class="wk-goal">Conversión final · Milestone de reviews · Cerrar el mes fuerte</div>
+      </div>
+      <div class="wk-kpis">
+        <span class="wk-kpi">1,000+ IG FOLLOWERS</span>
+        <span class="wk-kpi">100K+ IMPRESSIONS</span>
+        <span class="wk-kpi">120–150 GRAB ORDERS</span>
+        <span class="wk-kpi">30+ REVIEWS · 4.5⭐</span>
+      </div>
+    </div>
+    <div class="col-hdr"><span>FORMAT</span><span>DÍA</span><span>PILAR</span><span>CONTENIDO</span><span>DESCRIPCIÓN</span></div>
+
+    <div class="content-row" style="background:rgba(102,34,0,0.06);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#662200;color:var(--cream);">ALBUM</span></div>
+      <div class="cr-day">Lun 26</div>
+      <div class="cr-pillar" style="color:#993300;">P8 ICONIC</div>
+      <div><div class="cr-title">SAUCE MOMENTS Vol.1</div><div class="cr-platform" style="color:#993300;">IG · FB</div></div>
+      <div class="cr-desc">6 slides: momentos icónicos del deporte/cultura reimaginados con Salsa. <strong>Hand of Sauce → The Last Dunk → Trophy-lift con burger box → Victoria con salsa bottle → End card hero burger</strong>. Caption: <em>"Some moments changed the game. Ours just made it saucier."</em> CTA: "Which moment next?"</div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#993300;color:var(--cream);">STATIC</span></div>
+      <div class="cr-day">Mié 28</div>
+      <div class="cr-pillar" style="color:#993300;">P7 PROMOS</div>
+      <div><div class="cr-title">LAST DAYS — 20% OFF</div><div class="cr-platform" style="color:#993300;">IG · FB</div></div>
+      <div class="cr-desc">Urgencia máxima. Copy bold: <strong>"Order before the ritual goes full price."</strong> CTA directo a Grab. Deadline visible. <em>Este descuento no vuelve</em> — de junio en adelante precio completo. Escasez real crea urgencia real.</div>
+    </div>
+    <div class="content-row" style="background:rgba(102,34,0,0.06);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FF8C00;color:#1A1A1A;">TIKTOK</span></div>
+      <div class="cr-day">Vie 30</div>
+      <div class="cr-pillar" style="color:#FF8C00;">P3 BRAND CULT</div>
+      <div><div class="cr-title">MONTH 1 RECAP — BANGKOK DIPS</div><div class="cr-platform" style="color:#FF8C00;">TikTok · IG Reels</div></div>
+      <div class="cr-desc">Compilation reel: momentos de clientes + content de creators + clips ritual. Emocional y real. <em>"This is how Bangkok dips."</em> Audio trending. End frame: <strong>"Month 1 ✅. This is just the beginning."</strong> Genera FOMO y momentum para mes 2.</div>
+    </div>
+    <div class="content-row">
+      <div class="cr-format"><span class="fmt-pill" style="background:#FFA500;color:#1A1A1A;">STORY</span></div>
+      <div class="cr-day">Toda la<br>semana</div>
+      <div class="cr-pillar" style="color:#FFA500;">P4 TRUST</div>
+      <div><div class="cr-title">Review Push + Celebración Founder</div><div class="cr-platform" style="color:#FFA500;">IG Stories</div></div>
+      <div class="cr-desc">Countdown diario: <strong>"3 días... 2 días... promo ends."</strong> Screenshots de reviews reales. Sáb 31: momento auténtico founder + equipo. <em>"Month 1 ✅. We're just getting started."</em> Human, real, memorable. Goal: 30+ reviews antes de cerrar mes.</div>
+    </div>
+    <div class="content-row" style="background:rgba(102,34,0,0.06);">
+      <div class="cr-format"><span class="fmt-pill" style="background:#333;color:var(--cream);border:1px solid rgba(153,51,0,0.5);">PAID</span></div>
+      <div class="cr-day">Toda la<br>semana</div>
+      <div class="cr-pillar" style="color:rgba(245,240,232,0.4);">GRAB + META</div>
+      <div><div class="cr-title" style="font-size:13px;">FINAL CONVERSION SPRINT</div><div class="cr-platform" style="color:rgba(153,51,0,0.9);">Grab Heavy · Meta Retargeting</div></div>
+      <div class="cr-desc"><strong>Grab:</strong> Budget máximo últimos días. Featured + Search + Discount banner. Budget: ฿8,000. <strong>Meta Last-chance:</strong> <em>"20% OFF ends soon. Order now."</em> Retargeting toda la audiencia del mes. Budget: ฿4,000. Goal: 150+ órdenes acumuladas.</div>
+    </div>
+  </div>
+
+  <!-- Budget Summary -->
+  <div style="margin-top:32px;padding:28px 32px;background:rgba(255,69,0,0.06);border:1px solid rgba(255,69,0,0.2);" class="reveal reveal-delay-4">
+    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:0.2em;color:var(--orange);margin-bottom:16px;">RESUMEN PRESUPUESTO PAID — MAYO 2026</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;">
+      <div>
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--cream);">฿12,000</div>
+        <div style="font-size:11px;color:var(--cream-dim);margin-top:2px;">GRAB / LINE MAN<br><span style="color:rgba(245,240,232,0.4);font-size:10px;">Featured + Search + Promo</span></div>
+      </div>
+      <div>
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--cream);">฿8,000</div>
+        <div style="font-size:11px;color:var(--cream-dim);margin-top:2px;">META ADS<br><span style="color:rgba(245,240,232,0.4);font-size:10px;">Awareness + Retargeting</span></div>
+      </div>
+      <div>
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--cream);">฿8,000</div>
+        <div style="font-size:11px;color:var(--cream-dim);margin-top:2px;">TIKTOK ADS<br><span style="color:rgba(245,240,232,0.4);font-size:10px;">Reach + Follows + Boost</span></div>
+      </div>
+      <div>
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:#FF4500;">฿32,000</div>
+        <div style="font-size:11px;color:var(--cream-dim);margin-top:2px;">TOTAL MES 1<br><span style="color:rgba(245,240,232,0.4);font-size:10px;">Dentro del budget acordado</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 09 TIMELINE ── -->
+<section id="timeline">
+  <div class="section-label reveal">09 — Roadmap</div>
+  <div class="section-title reveal reveal-delay-1">8-WEEK LAUNCH TIMELINE</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="timeline-wrap reveal reveal-delay-2">
+    <div class="timeline-header">
+      <div></div>
+      <div class="wk-label">WK 1</div>
+      <div class="wk-label">WK 2</div>
+      <div class="wk-label">WK 3</div>
+      <div class="wk-label">WK 4</div>
+      <div class="wk-label">WK 5</div>
+      <div class="wk-label">WK 6</div>
+      <div class="wk-label">WK 7</div>
+      <div class="wk-label">WK 8</div>
+    </div>
+    <div class="timeline-rows">
+      <!-- FOUNDATION -->
+      <div class="timeline-row">
+        <div class="phase-label">
+          <div class="phase-name">Foundation</div>
+          <div class="phase-wks">WK 1–2</div>
+        </div>
+        <div class="timeline-cell"><div class="bar"><span class="bar-label">Accounts · Listing · Photos</span></div></div>
+        <div class="timeline-cell"><div class="bar"><span class="bar-label">Packaging · Ritual Insert</span></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+      </div>
+      <!-- AUDIENCE BUILD -->
+      <div class="timeline-row">
+        <div class="phase-label">
+          <div class="phase-name">Audience Build</div>
+          <div class="phase-wks">WK 3–4</div>
+        </div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar" style="opacity:0.7"><span class="bar-label">Teaser sequence begins</span></div></div>
+        <div class="timeline-cell"><div class="bar" style="opacity:0.7"><span class="bar-label">Creator outreach · Flyers</span></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+      </div>
+      <!-- PRE-LAUNCH -->
+      <div class="timeline-row">
+        <div class="phase-label">
+          <div class="phase-name">Pre-Launch</div>
+          <div class="phase-wks">WK 5–6</div>
+        </div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar" style="opacity:0.9"><span class="bar-label">Meta Ads ฿200/day live</span></div></div>
+        <div class="timeline-cell"><div class="bar" style="opacity:0.9"><span class="bar-label">Creators seeded · Daily content</span></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+      </div>
+      <!-- LAUNCH WEEK -->
+      <div class="timeline-row">
+        <div class="phase-label">
+          <div class="phase-name" style="color:var(--cream)">🔥 LAUNCH</div>
+          <div class="phase-wks" style="color:var(--orange)">WK 7</div>
+        </div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar launch" style="background:var(--orange)"><div class="milestone"></div><span class="bar-label">🔥 PUBLIC LAUNCH DAY</span></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+      </div>
+      <!-- STABILIZE -->
+      <div class="timeline-row">
+        <div class="phase-label">
+          <div class="phase-name">Stabilize</div>
+          <div class="phase-wks">WK 8</div>
+        </div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar empty"></div></div>
+        <div class="timeline-cell"><div class="bar" style="opacity:0.6"><span class="bar-label">Data · Scale · #randomsalsa</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 10 INFLUENCERS ── -->
+<section id="influencer">
+  <div class="section-label reveal">10 — Creators</div>
+  <div class="section-title reveal reveal-delay-1">INFLUENCER STRATEGY</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="inf-tiers">
+    <div class="inf-card priority reveal reveal-delay-2">
+      <div class="priority-badge">PRIORITY</div>
+      <div class="inf-tier-label">Tier A</div>
+      <div class="inf-title">Food Bangkok</div>
+      <div class="inf-body">3–5 creators · 10k–50k followers<br>Food content creators<br>Full tasting + complete ritual kit</div>
+      <div class="inf-meta">→ SALSAKIM · SALSAMALA</div>
+    </div>
+    <div class="inf-card reveal reveal-delay-3">
+      <div class="inf-tier-label">Tier B</div>
+      <div class="inf-title">Lifestyle Expat</div>
+      <div class="inf-body">3–5 creators · 5k–20k followers<br>Bangkok lifestyle / expat accounts<br>Delivery seeding + gloves kit</div>
+      <div class="inf-meta">→ Unique tracking code per creator</div>
+    </div>
+    <div class="inf-card reveal reveal-delay-4">
+      <div class="inf-tier-label">Tier C</div>
+      <div class="inf-title">Bangkok Pages</div>
+      <div class="inf-body">3–5 accounts · 20k–100k followers<br>@bangkokfoodie type pages<br>Exclusive discount code + tasting</div>
+      <div class="inf-meta">→ Community amplification</div>
+    </div>
+  </div>
+  <div class="inf-boxes reveal reveal-delay-3">
+    <div class="inf-box">
+      <div class="inf-box-title">The Ritual Kit — What every creator gets</div>
+      <p>🍔 Full burger of their choice &nbsp;·&nbsp; 🧤 Extra black gloves set<br>🥄 Mini sauce dispenser &nbsp;·&nbsp; 📋 Ritual steps card<br>🏷️ Unique tracking code (SALSAKIM, SALSAMALA...)</p>
+    </div>
+    <div class="inf-box">
+      <div class="inf-box-title">Our Model</div>
+      <p>No rigid contracts. Long-term relationships.<br>Product first → real collaboration → content.<br>Ask: 1 Reel or TikTok · 2-3 Stories<br>Geotag Sathorn + @salsa_burgers</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── 11 PAID MEDIA ── -->
+<section id="media">
+  <div class="section-label reveal">11 — Performance</div>
+  <div class="section-title reveal reveal-delay-1">PAID MEDIA PLAN</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="media-layout">
+    <div class="reveal reveal-delay-2">
+      <div class="media-channel">
+        <div class="media-channel-header">
+          <span class="media-channel-name">Grab / LINE MAN</span>
+          <span class="media-channel-budget">฿16,000/mo</span>
+          <span class="media-channel-tag tag-primary">PRIMARY</span>
+        </div>
+        <div style="font-size:13px;color:var(--cream-dim);margin-bottom:6px;">Search + Image + Discount campaigns · Biggest conversion channel</div>
+      </div>
+      <div class="media-channel">
+        <div class="media-channel-header">
+          <span class="media-channel-name">Facebook / IG</span>
+          <span class="media-channel-budget">฿8,000/mo</span>
+          <span class="media-channel-tag tag-secondary">BRAND</span>
+        </div>
+        <div class="creative-bucket">
+          <div class="bucket-num">1</div>
+          <div class="bucket-content">
+            <div class="bucket-name">THE RITUAL</div>
+            <div class="bucket-desc">"They make you finish the burger yourself 😳" → Retargeting</div>
+          </div>
+        </div>
+        <div class="creative-bucket">
+          <div class="bucket-num">2</div>
+          <div class="bucket-content">
+            <div class="bucket-name">WHICH FLAVOR ARE YOU?</div>
+            <div class="bucket-desc">Carousel personalities → Cold audience Sathorn</div>
+          </div>
+        </div>
+        <div class="creative-bucket">
+          <div class="bucket-num">3</div>
+          <div class="bucket-content">
+            <div class="bucket-name">NOW OPEN</div>
+            <div class="bucket-desc">Launch announcement → Broad awareness Sathorn</div>
+          </div>
+        </div>
+      </div>
+      <div class="media-channel">
+        <div class="media-channel-header">
+          <span class="media-channel-name">TikTok</span>
+          <span class="media-channel-budget">฿8,000/mo</span>
+          <span class="media-channel-tag tag-secondary">GROWTH</span>
+        </div>
+        <div style="font-size:13px;color:var(--cream-dim);">Reach + Follows + Video Traffic to Grab · Activate Month 2 scaling</div>
+      </div>
+      <div class="golden-rule">
+        <strong>Golden Rule:</strong> No ads until hero product photos are perfect. Ads amplify — they don't create.
+      </div>
+    </div>
+    <div class="reveal reveal-delay-3">
+      <div class="chart-wrap" style="max-width:280px">
+        <canvas id="budgetChart" width="280" height="280"></canvas>
+        <div class="chart-center">
+          <div class="chart-center-num">฿32K</div>
+          <div class="chart-center-label">PER MONTH</div>
+        </div>
+      </div>
+      <div class="chart-label-total">Monthly Media Budget</div>
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream-dim)">
+          <div style="width:12px;height:12px;border-radius:2px;background:#FF4500;flex-shrink:0"></div>Grab / LINE MAN — ฿16,000 (50%)
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream-dim)">
+          <div style="width:12px;height:12px;border-radius:2px;background:#FF8C00;flex-shrink:0"></div>Facebook / IG — ฿8,000 (25%)
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--cream-dim)">
+          <div style="width:12px;height:12px;border-radius:2px;background:#FFA500;flex-shrink:0"></div>TikTok — ฿8,000 (25%)
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 12 KPIs ── -->
+<section id="kpis" style="background:#111">
+  <div class="section-label reveal">12 — Metrics</div>
+  <div class="section-title reveal reveal-delay-1">KPIs &amp; SUCCESS METRICS</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="kpi-stats">
+    <div class="stat-card reveal reveal-delay-2">
+      <div class="stat-num">120</div>
+      <div class="stat-label">Orders/day target</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-3">
+      <div class="stat-num">฿650</div>
+      <div class="stat-label">Average ticket</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-3">
+      <div class="stat-num">฿2.5M</div>
+      <div class="stat-label">Monthly revenue goal</div>
+    </div>
+    <div class="stat-card reveal reveal-delay-4">
+      <div class="stat-num">4.5★</div>
+      <div class="stat-label">Minimum rating</div>
+    </div>
+  </div>
+  <table class="kpi-table reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>METRIC</th>
+        <th>WEEK 1 TARGET</th>
+        <th>MONTH 1 TARGET</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Orders (Grab + LINE MAN)</td><td>30–50 / day</td><td>150–250 total</td></tr>
+      <tr><td>Instagram Followers</td><td>+200</td><td>+500</td></tr>
+      <tr><td>TikTok Views / video</td><td>1,000+</td><td>5,000+</td></tr>
+      <tr><td>Google / Grab Reviews</td><td>10</td><td>30–50</td></tr>
+      <tr><td>Average Rating</td><td>&gt; 4.5 ⭐</td><td>&gt; 4.5 ⭐</td></tr>
+      <tr><td>Creator Posts Live</td><td>5–8</td><td>15+</td></tr>
+      <tr><td>Code SALSA1 Redeemed</td><td>30+</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <div class="alert-box reveal reveal-delay-4">
+    <p>⚠&nbsp; Rating &lt; 4.3 → immediate ops review<br>
+       ⚠&nbsp; TikTok &lt; 500 views/video → change format/hook<br>
+       ⚠&nbsp; Less than 5 reviews in Week 1 → activate direct outreach<br>
+       ⚡&nbsp; Reviews in the first 30 days define Grab ranking for the next 3 months.</p>
+  </div>
+</section>
+
+<!-- ── 13 ACTION PLAN ── -->
+<section id="action">
+  <div class="section-label reveal">13 — Execute</div>
+  <div class="section-title reveal reveal-delay-1">IMMEDIATE ACTION PLAN</div>
+  <div class="divider reveal reveal-delay-1"></div>
+  <div class="action-items reveal reveal-delay-2">
+    <div class="action-item">
+      <div class="action-num">01</div>
+      <div>
+        <span class="status-badge status-live">LIVE ✓</span>
+        <div class="action-text">Social handles + bios active on IG · TikTok · Facebook</div>
+        <div class="action-sub">@salsa_burgers confirmed on all platforms</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">02</div>
+      <div>
+        <span class="status-badge status-live">LIVE ✓</span>
+        <div class="action-text">Grab &amp; LINE MAN listing active — 20% off first order promo running</div>
+        <div class="action-sub">grab.com/o/6ru2AJv2 · Code SALSA1</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">03</div>
+      <div>
+        <span class="status-badge status-progress">IN PROGRESS</span>
+        <div class="action-text">Hero product photos: Wild One · Sharp One · Deep One</div>
+        <div class="action-sub">Dark background only — no white backgrounds ever</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">04</div>
+      <div>
+        <span class="status-badge status-pending">PENDING</span>
+        <div class="action-text">5+ creators DM'd with tasting invitation</div>
+        <div class="action-sub">Tier A priority · Ritual Kit ready to ship</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">05</div>
+      <div>
+        <span class="status-badge status-live">LIVE ✓</span>
+        <div class="action-text">Meta Ads + TikTok Reach campaign active</div>
+        <div class="action-sub">TikTok: 110,940 real impressions registered · Video Traffic paused pending hero photos</div>
+      </div>
+    </div>
+    <div class="action-item">
+      <div class="action-num">06</div>
+      <div>
+        <span class="status-badge status-pending">PENDING</span>
+        <div class="action-text">Flyers distributed in nearest condos to Sathorn location</div>
+        <div class="action-sub">500 A5 flyers · 4 versions · condo / office / gym / coworking</div>
+      </div>
+    </div>
+  </div>
+
+  <table class="budget-table reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>CHANNEL</th>
+        <th>MONTHLY BUDGET</th>
+        <th>ANNUAL (APR–DEC)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Grab / LINE MAN</td><td>฿16,000</td><td>฿144,000</td></tr>
+      <tr><td>Facebook / IG</td><td>฿8,000</td><td>฿72,000</td></tr>
+      <tr><td>TikTok</td><td>฿8,000</td><td>฿72,000</td></tr>
+      <tr class="total"><td>TOTAL MEDIA</td><td>฿32,000</td><td>฿288,000</td></tr>
+    </tbody>
+  </table>
+
+  <div class="final-cta reveal reveal-delay-4">
+    <div class="final-cta-title">DIP NOW • THINK LATER</div>
+    <div class="final-cta-sub">Let's build Bangkok's boldest burger brand.</div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="sf-badge" style="border-color:rgba(255,69,0,0.3);">
+    <span>SF</span> STARTUP FACTORY
+  </div>
+  <p>FOR NC GLOBAL ASSETS · MAY 2026</p>
+  <p>salsaburgers.com · @salsa_burgers</p>
+</footer>
+
+
+<!-- ── 14: 12-MONTH ROADMAP ── -->
+<section id="roadmap12" style="background:#111;">
+  <div class="section-label reveal">14 — 12-MONTH STRATEGY</div>
+  <div class="section-title reveal reveal-delay-1">2026 → 2027 ROADMAP</div>
+  <div class="section-subtitle reveal reveal-delay-2">May 2026 → May 2027 · ฿32,000/mes flat · 3 phases · balanced growth</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:20px;margin-bottom:32px;" class="reveal reveal-delay-2">
+
+    <div style="border:1px solid rgba(255,69,0,0.3);padding:0;overflow:hidden;">
+      <div style="background:var(--orange);padding:16px 20px;">
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--black);text-transform:uppercase;">Phase 1</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--black);letter-spacing:0.1em;">LAUNCH CONSOLIDATION · MAY–JUL</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.12em;margin-bottom:4px;">TARGETS</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.8;">50–80 orders/day<br>50+ Grab reviews<br>500 IG followers<br>฿1M/month revenue</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.12em;margin-top:8px;">ACTIONS</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.9;"><strong style="color:var(--cream)">May</strong> — Hero photos · TikTok Ads Video Traffic · Wave 1 creators (5 tastings) · Review push<br><strong style="color:var(--cream)">Jun</strong> — Sauce Drop #1 · #SalsaFlavorChallenge launch · Leaflets 2.0<br><strong style="color:var(--cream)">Jul</strong> — King's Birthday (28 Jul) content · Sauce Drop #2 · Banner scout · LinkedIn starts</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid rgba(255,69,0,0.3);padding:0;overflow:hidden;">
+      <div style="background:rgba(255,69,0,0.7);padding:16px 20px;">
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--black);text-transform:uppercase;">Phase 2</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--black);letter-spacing:0.1em;">TRACTION · AUG–OCT</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.12em;margin-bottom:4px;">TARGETS</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.8;">80–100 orders/day<br>150+ Grab reviews<br>1,000 IG followers<br>฿1.8M/month revenue</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.12em;margin-top:8px;">ACTIONS</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.9;"><strong style="color:var(--cream)">Aug</strong> — TikTok Ads scale · DIY pack teaser · Sauce Drop #3 · Billboard LIVE · Wave 2 creators<br><strong style="color:var(--cream)">Sep</strong> — #randomsalsa UGC contest · Sauce Drop #4 · Cobrand #1<br><strong style="color:var(--cream)">Oct</strong> — Vegetarian Festival content · Luxury Burger event (Lobster) · Bangkok Burger Battle</div>
+      </div>
+    </div>
+
+    <div style="border:1px solid rgba(255,69,0,0.3);padding:0;overflow:hidden;">
+      <div style="background:rgba(255,69,0,0.4);padding:16px 20px;">
+        <div style="font-family:'Anton',sans-serif;font-size:22px;color:var(--cream);text-transform:uppercase;">Phase 3</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--cream-dim);letter-spacing:0.1em;">SCALE & EVENTS · NOV–MAY 27</div>
+      </div>
+      <div style="padding:20px;display:flex;flex-direction:column;gap:12px;">
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.12em;margin-bottom:4px;">TARGETS</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.8;">120 orders/day<br>300+ Grab reviews<br>1,500+ IG followers<br>฿2.5M/month revenue</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.12em;margin-top:8px;">ACTIONS</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.9;"><strong style="color:var(--cream)">Nov</strong> — Loy Krathong campaign · Sauce Drop #5 · DIY packs LIVE<br><strong style="color:var(--cream)">Dec</strong> — Stranger Burgers S2 · Holiday drop · Year-end retrospective<br><strong style="color:var(--cream)">Jan</strong> — New Year drop · Cobranding #2<br><strong style="color:var(--cream)">Feb</strong> — Valentine's SALSA Edition · #SalsaLove<br><strong style="color:var(--cream)">Mar</strong> — Tomorrowland supplier talks<br><strong style="color:var(--cream)">Apr 27</strong> — 🎂 1-YEAR ANNIVERSARY + Tomorrowland event</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly drop calendar -->
+  <div style="border:1px solid rgba(245,240,232,0.08);padding:24px;" class="reveal reveal-delay-3">
+    <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--orange);letter-spacing:0.15em;margin-bottom:16px;">SAUCE OF THE MONTH DROPS — voted by community each month</div>
+    <div style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px;">
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.15);border-top:2px solid var(--orange);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">MAY</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Launch</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.12);border-top:2px solid var(--orange);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">JUN</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Drop #1</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.1);border-top:2px solid var(--orange);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">JUL</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Drop #2<br>👑 King</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.08);border-top:2px solid rgba(255,69,0,0.5);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">AUG</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Drop #3<br>Billboard</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.08);border-top:2px solid rgba(255,69,0,0.5);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">SEP</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Drop #4<br>#random</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.08);border-top:2px solid rgba(255,69,0,0.5);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">OCT</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Drop #5<br>🦞 Lobster</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.06);border-top:2px solid rgba(255,69,0,0.3);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">NOV</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Drop #6<br>🪔 Loy Kr.</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.06);border-top:2px solid rgba(255,69,0,0.3);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">DEC</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Holiday<br>Drop 🎄</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.06);border-top:2px solid rgba(255,69,0,0.3);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">JAN</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">NY Drop<br>DIY Live</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.06);border-top:2px solid rgba(255,69,0,0.3);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">FEB</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">❤️ Val.<br>Drop</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.06);border-top:2px solid rgba(255,69,0,0.3);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">MAR</div><div style="font-size:10px;color:var(--cream-dim);margin-top:4px;">Cobrand<br>Talks</div></div>
+      <div style="text-align:center;padding:10px 4px;background:rgba(255,69,0,0.2);border-top:3px solid var(--orange);"><div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange)">APR 27</div><div style="font-size:10px;color:var(--cream);margin-top:4px;font-weight:700;">🎂 1 YEAR</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 15: STREET MARKETING ── -->
+<section id="street">
+  <div class="section-label reveal">15 — OFF-LINE</div>
+  <div class="section-title reveal reveal-delay-1">STREET MARKETING</div>
+  <div class="section-subtitle reveal reveal-delay-2">Campañas físicas para impactar Sathorn · debate con la agencia</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+
+    <div style="border:1px solid rgba(255,69,0,0.4);padding:24px;background:rgba(255,69,0,0.04);" class="reveal reveal-delay-2">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:0.15em;margin-bottom:8px;">PRIORITY #1 · CONFIRMED</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:12px;">THE BANNER</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.8;">Billboard en edificio junto a autopista elevada de Sathorn/Silom. Miles de conductores/día. Mensaje ultra-simple + QR → Grab.<br><br><strong style="color:var(--cream)">Localización:</strong> BTS Chong Nonsi · BRT Sathorn · Ram IV Road<br><strong style="color:var(--cream)">Mensaje:</strong> "DIP NOW" 2 metros de alto + QR<br><strong style="color:var(--cream)">Budget:</strong> ฿8,000–20,000/mes<br><strong style="color:var(--cream)">KPI:</strong> spike en búsquedas Grab post-activación</div>
+    </div>
+
+    <div style="border:1px solid rgba(245,240,232,0.08);padding:24px;" class="reveal reveal-delay-2">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:0.15em;margin-bottom:8px;">DONE → UPGRADE</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:12px;">LEAFLETS 2.0</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.8;">3,000 hechos → escalar a 10,000+ con targeting quirúrgico.<br><br><strong style="color:var(--cream)">Condo buildings:</strong> bajo puertas · ascensores<br><strong style="color:var(--cream)">Gym bags:</strong> partnership con fitness centers Sathorn<br><strong style="color:var(--cream)">Airbnbs:</strong> serviced apartments expat<br><strong style="color:var(--cream)">Tracking:</strong> código único por edificio → medir conversión</div>
+    </div>
+
+    <div style="border:1px solid rgba(245,240,232,0.08);padding:24px;" class="reveal reveal-delay-3">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:0.15em;margin-bottom:8px;">GUERRILLA · PROPUESTA</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:12px;">FLASH MEAL</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.8;">Aparecer sin previo aviso en coworking popular de Sathorn con 20 burgers gratis. Filmar la reacción. Tagear el espacio. Publicar el mismo día.<br><br><strong style="color:var(--cream)">Target:</strong> The Hive Sathorn · HUBBA · WeWork Sathorn<br><strong style="color:var(--cream)">Budget:</strong> Costo de 20 burgers = ฿9,000–10,000<br><strong style="color:var(--cream)">ROI:</strong> Viral content + 20 nuevos clientes embajadores</div>
+    </div>
+
+    <div style="border:1px solid rgba(245,240,232,0.08);padding:24px;" class="reveal reveal-delay-3">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:0.15em;margin-bottom:8px;">VIRALITY · PROPUESTA</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:12px;">QR STICKER BOMBS</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.8;">Stickers waterproof "PEOPLE WITH SALSA" + QR → Grab en zonas de paso de Sathorn.<br><br><strong style="color:var(--cream)">Ubicaciones:</strong> BTS Surasak · Sala Daeng · bike racks · parkings condo<br><strong style="color:var(--cream)">Budget:</strong> ฿2,000 para 500 stickers premium<br><strong style="color:var(--cream)">Mensaje:</strong> Solo logo + QR. Sin texto. Curiosidad primero.</div>
+    </div>
+
+    <div style="border:1px solid rgba(245,240,232,0.08);padding:24px;" class="reveal reveal-delay-4">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:0.15em;margin-bottom:8px;">BRAND · PROPUESTA</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:12px;">RIDER WRAP</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.8;">Un rider Salsa con mochía + casco completamente branded. El rider más reconocible de Sathorn. Content natural diario.<br><br><strong style="color:var(--cream)">Budget:</strong> ฿3,000 diseño + vinilo<br><strong style="color:var(--cream)">Beneficio:</strong> Moving billboard + daily content material<br><strong style="color:var(--cream)">KPI:</strong> Fotos orgánicas del rider tagueando @salsa_burgers</div>
+    </div>
+
+    <div style="border:1px solid rgba(245,240,232,0.08);padding:24px;" class="reveal reveal-delay-4">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;color:var(--orange);letter-spacing:0.15em;margin-bottom:8px;">PARTNERSHIP · PROPUESTA</div>
+      <div style="font-family:'Anton',sans-serif;font-size:22px;text-transform:uppercase;margin-bottom:12px;">BAR INVASION</div>
+      <div style="font-size:13px;color:var(--cream-dim);line-height:1.8;">Mini botellas de salsa en mesas de expat bars Sathorn. Branded card: "Pairs well with your beer."<br><br><strong style="color:var(--cream)">Target bars:</strong> The Londoner · The Sportsman · Barfly · Hyde & Seek<br><strong style="color:var(--cream)">Budget:</strong> Costo de salsa + diseño card<br><strong style="color:var(--cream)">ROI:</strong> Captive expat audience 21:00–02:00 → craving + orden nocturna</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── 16: BRAINSTORM ── -->
+<section id="brainstorm" style="background:#111;">
+  <div class="section-label reveal">16 — IDEAS</div>
+  <div class="section-title reveal reveal-delay-1">BRAINSTORM</div>
+  <div class="section-subtitle reveal reveal-delay-2">Bold ideas para debatir con la agencia · sin filtro · todo es posible</div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid var(--orange);" class="reveal reveal-delay-2">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">VIRALITY</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">TOMORROWLAND SUPPLIER</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Convertirse en el burger oficial de Tomorrowland Bangkok o equivalente. Hablar con organizadores YA. Primer año: presencia. Segundo año: exclusiva.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid var(--orange);" class="reveal reveal-delay-2">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">COMMUNITY</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">PROOF OF SAUCE LOYALTY</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Tarjeta física de fidelidad que se sella con cada burger. 10ª burger gratis. La gente la enseña, la fotografía, la presume. Objeto físico de pertenencia.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid var(--orange);" class="reveal reveal-delay-2">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">VIRALITY</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">BANGKOK BURGER BATTLE</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Entrar en competiciones de burgers existentes en Bangkok. Si no existen — CREARLA. SALSA como organizadora del primer Bangkok Burger Battle. PR masivo.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid rgba(255,69,0,0.5);" class="reveal reveal-delay-3">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">EXPERIENCE</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">HOUSE OF FLAVORS TASTING</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Tasting privado mensual para 15-20 personas. Waitlist en WhatsApp. Exclusividad crea deseo. Los asistentes se convierten en embajadores orgánicos.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid rgba(255,69,0,0.5);" class="reveal reveal-delay-3">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">CULTURE</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">SALSA x THAI BRAND COLLAB</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Colaborar con una marca Thai (ropa, bebida, arte) para un limited edition co-branded. Cultural crossover. Latino energy meets Thai identity. Drop único.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid rgba(255,69,0,0.5);" class="reveal reveal-delay-3">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">VIRALITY</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">STRANGER BURGERS S2</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Teaser cinematográfico propio al estilo Stranger Things. Coordinar con lanzamiento de nueva salsa o flavor. La campaña más producida del año. Dic 2026.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid rgba(255,69,0,0.3);" class="reveal reveal-delay-4">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">RETENTION</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">SALSA SAUCE HOTLINE</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Canal WhatsApp para órdenes directas, recomendaciones y preguntas. Conversational commerce. Los heavy users se sienten VIP. Datos directos sin Grab.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid rgba(255,69,0,0.3);" class="reveal reveal-delay-4">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">DISTRIBUTION</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">SATELLITE DARK KITCHEN</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Partner con dark kitchen en otra zona de Bangkok (Sukhumvit, Silom center) para ampliar el radio de entrega manteniendo la marca exclusiva. Test Q3.</div>
+    </div>
+
+    <div style="padding:20px;border:1px solid rgba(245,240,232,0.06);border-left:3px solid rgba(255,69,0,0.3);" class="reveal reveal-delay-4">
+      <div style="font-family:'Space Mono',monospace;font-size:8px;color:var(--orange);margin-bottom:8px;letter-spacing:0.1em;">AWARDS</div>
+      <div style="font-family:'Anton',sans-serif;font-size:16px;margin-bottom:8px;">GRAB / LINEMAN AWARDS</div>
+      <div style="font-size:12px;color:var(--cream-dim);line-height:1.7;">Entrar a los rankings y premios de Grab/LINE MAN activamente. El badge "Grab Favourite" o "#1 in Sathorn" es el activo de marketing más barato y más creíble.</div>
+    </div>
+
+  </div>
+
+  <!-- Final CTA -->
+  <div style="background:var(--orange);padding:48px 60px;text-align:center;margin:40px -80px 0 -60px;" class="reveal reveal-delay-5">
+    <div style="font-family:'Anton',sans-serif;font-size:clamp(32px,4vw,56px);color:var(--black);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px;">DIP NOW • THINK LATER</div>
+    <div style="font-family:'Anton',sans-serif;font-size:18px;color:rgba(26,26,26,0.7);letter-spacing:0.04em;text-transform:uppercase;">Let's build Bangkok's boldest burger brand. One year. One ritual. One city at a time.</div>
+  </div>
+</section>
+
+</main>
+
+<script>
+// ── CHART: CONTENT PILLARS ──
+const pillarsCtx = document.getElementById('pillarsChart').getContext('2d');
+new Chart(pillarsCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Drive Craving','Ritual & Packaging','Brand Cult','Trust & Authenticity','Salsa Phrases','Salsa Icons','News & Promotions','Salsa Iconic Moments'],
+    datasets: [{
+      data: [20, 18, 18, 12, 10, 10, 7, 5],
+      backgroundColor: ['#FF4500','#FF6A00','#FF8C00','#FFA500','#FFB732','#CC3700','#993300','#662200'],
+      borderColor: '#1A1A1A',
+      borderWidth: 3,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    cutout: '68%',
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#1A1A1A',
+      titleColor: '#FF4500',
+      bodyColor: '#F5F0E8',
+      borderColor: '#FF4500',
+      borderWidth: 1,
+      padding: 12,
+      callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw}%` }
+    }},
+    animation: { animateRotate: true, duration: 1200 }
+  }
+});
+
+// ── CHART: BUDGET ──
+const budgetCtx = document.getElementById('budgetChart').getContext('2d');
+new Chart(budgetCtx, {
+  type: 'doughnut',
+  data: {
+    labels: ['Grab / LINE MAN','Facebook / IG','TikTok'],
+    datasets: [{
+      data: [16000, 8000, 8000],
+      backgroundColor: ['#FF4500','#FF8C00','#FFA500'],
+      borderColor: '#1A1A1A',
+      borderWidth: 3,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    cutout: '68%',
+    plugins: { legend: { display: false }, tooltip: {
+      backgroundColor: '#1A1A1A',
+      titleColor: '#FF4500',
+      bodyColor: '#F5F0E8',
+      borderColor: '#FF4500',
+      borderWidth: 1,
+      padding: 12,
+      callbacks: { label: ctx => ` ${ctx.label}: ฿${ctx.raw.toLocaleString()} (${Math.round(ctx.raw/32000*100)}%)` }
+    }},
+    animation: { animateRotate: true, duration: 1200 }
+  }
+});
+
+// ── SCROLL REVEAL ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// ── NAV ACTIVE ──
+const sections = document.querySelectorAll('section[id]');
+const dots = document.querySelectorAll('.nav-dot');
+
+const navObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      dots.forEach(d => d.classList.remove('active'));
+      const active = document.querySelector(`.nav-dot[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { threshold: 0.4 });
+
+sections.forEach(s => navObserver.observe(s));
+</script>
+</body>
+</html>

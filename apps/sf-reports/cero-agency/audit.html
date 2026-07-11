@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CERØ — Digital Audit Report | Startup Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #05050A;
+    --card: #0A0A12;
+    --card2: #0E0E1A;
+    --border: rgba(255,255,255,.06);
+    --border2: rgba(255,255,255,.10);
+    --green: #10B981;
+    --green-dim: rgba(16,185,129,.12);
+    --green-glow: rgba(16,185,129,.25);
+    --red: #EF4444;
+    --yellow: #F59E0B;
+    --blue: #3B82F6;
+    --purple: #8B5CF6;
+    --text: #F0F0F8;
+    --text-dim: rgba(240,240,248,.55);
+    --text-faint: rgba(240,240,248,.25);
+    --syne: 'Syne', sans-serif;
+    --inter: 'Inter', sans-serif;
+    --mono: 'Space Mono', monospace;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--inter);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(16,185,129,.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(16,185,129,.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+  }
+
+  /* ───────── HEADER ───────── */
+  .header {
+    padding: 48px 0 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .header-left { display: flex; align-items: center; gap: 20px; }
+  .logo-mark {
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, #10B981, #059669);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--syne);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -.5px;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 40px rgba(16,185,129,.30);
+  }
+  .header-client-info {}
+  .agency-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 4px;
+  }
+  .client-name {
+    font-family: var(--syne);
+    font-weight: 800;
+    font-size: 32px;
+    letter-spacing: -1px;
+    line-height: 1;
+    color: var(--text);
+  }
+  .client-domain {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+  .header-right { text-align: right; }
+  .report-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+  }
+  .report-title {
+    font-family: var(--syne);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .report-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+  }
+  .overall-score-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--green-dim);
+    border: 1px solid rgba(16,185,129,.30);
+    border-radius: 12px;
+    padding: 10px 18px;
+  }
+  .score-number {
+    font-family: var(--syne);
+    font-weight: 800;
+    font-size: 36px;
+    color: var(--green);
+    line-height: 1;
+  }
+  .score-label-wrap { text-align: left; }
+  .score-out { font-family: var(--mono); font-size: 10px; color: var(--text-dim); }
+  .score-grade { font-family: var(--syne); font-weight: 700; font-size: 22px; color: var(--green); }
+
+  /* ───────── SECTION WRAPPER ───────── */
+  .section {
+    margin-top: 60px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-number {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--green);
+    letter-spacing: 1px;
+  }
+  .section-title {
+    font-family: var(--syne);
+    font-weight: 700;
+    font-size: 22px;
+    color: var(--text);
+  }
+  .section-score-pill {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid;
+  }
+  .pill-green { color: var(--green); border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.08); }
+  .pill-yellow { color: var(--yellow); border-color: rgba(245,158,11,.35); background: rgba(245,158,11,.08); }
+  .pill-red { color: var(--red); border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.08); }
+
+  /* ───────── CARDS ───────── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .card-title {
+    font-family: var(--syne);
+    font-weight: 600;
+    font-size: 14px;
+    color: var(--text);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title-score {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-left: auto;
+  }
+
+  /* ───────── BAR CHART ───────── */
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .bar-label {
+    font-family: var(--inter);
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 200px;
+    flex-shrink: 0;
+  }
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,.06);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+  .bar-val {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-dim);
+    width: 32px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ───────── GRID ───────── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+  @media(max-width: 720px) { .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+
+  /* ───────── EXEC SUMMARY ───────── */
+  .exec-sentence {
+    font-family: var(--inter);
+    font-size: 15px;
+    line-height: 1.8;
+    color: var(--text-dim);
+    padding: 20px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    position: relative;
+    padding-left: 44px;
+  }
+  .exec-sentence::before {
+    content: attr(data-icon);
+    position: absolute;
+    left: 16px;
+    top: 20px;
+    font-size: 16px;
+  }
+  .exec-sentence strong { color: var(--text); }
+
+  /* ───────── SCORE OVERVIEW ───────── */
+  .health-score-card {
+    background: linear-gradient(135deg, var(--card) 0%, #0F0F1C 100%);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 32px;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .health-circle {
+    width: 120px; height: 120px;
+    border-radius: 50%;
+    background: conic-gradient(var(--green) 0% 58%, rgba(255,255,255,.06) 58% 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .health-circle::after {
+    content: '';
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    background: var(--card);
+    position: absolute;
+  }
+  .health-circle-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+  }
+  .health-circle-num {
+    font-family: var(--syne);
+    font-weight: 800;
+    font-size: 28px;
+    color: var(--green);
+    line-height: 1;
+    display: block;
+  }
+  .health-circle-label {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+  }
+  .health-metrics { flex: 1; min-width: 240px; }
+  .health-metric-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .health-metric-name { color: var(--text-dim); font-family: var(--inter); }
+  .health-metric-score { font-family: var(--mono); font-size: 12px; }
+
+  /* ───────── FINDINGS ───────── */
+  .findings-list { list-style: none; }
+  .findings-list li {
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .findings-list li:last-child { border-bottom: none; }
+  .findings-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    font-size: 11px;
+    top: 9px;
+  }
+  .findings-list li strong { color: var(--text); }
+
+  .rec-list { list-style: none; }
+  .rec-list li {
+    padding: 7px 0;
+    padding-left: 20px;
+    position: relative;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .rec-list li:last-child { border-bottom: none; }
+  .rec-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--yellow);
+    font-size: 9px;
+    top: 10px;
+  }
+  .rec-list li strong { color: var(--text); }
+
+  /* ───────── TAG PILLS ───────── */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag-high-impact { background: rgba(16,185,129,.15); color: var(--green); border: 1px solid rgba(16,185,129,.30); }
+  .tag-med-impact { background: rgba(245,158,11,.12); color: var(--yellow); border: 1px solid rgba(245,158,11,.25); }
+  .tag-low-impact { background: rgba(255,255,255,.05); color: var(--text-faint); border: 1px solid var(--border); }
+  .tag-easy { background: rgba(16,185,129,.10); color: var(--green); border: 1px solid rgba(16,185,129,.20); }
+  .tag-med-effort { background: rgba(59,130,246,.10); color: var(--blue); border: 1px solid rgba(59,130,246,.20); }
+  .tag-hard { background: rgba(239,68,68,.10); color: var(--red); border: 1px solid rgba(239,68,68,.20); }
+  .tag-owner { background: rgba(139,92,246,.10); color: var(--purple); border: 1px solid rgba(139,92,246,.20); }
+
+  /* ───────── QUICK WINS TABLE ───────── */
+  .qw-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .qw-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    min-width: 24px;
+    padding-top: 2px;
+  }
+  .qw-content { flex: 1; }
+  .qw-title {
+    font-family: var(--inter);
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .qw-desc {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    line-height: 1.5;
+  }
+  .qw-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+
+  /* ───────── COMPETITOR TABLE ───────── */
+  .comp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .comp-table th {
+    background: rgba(255,255,255,.04);
+    padding: 12px 14px;
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 400;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    vertical-align: top;
+  }
+  .comp-table tr:last-child td { border-bottom: none; }
+  .comp-table tr:hover td { background: rgba(255,255,255,.02); }
+  .comp-table .client-col { color: var(--green); font-weight: 600; }
+  .comp-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+  .dot-green { background: var(--green); }
+  .dot-yellow { background: var(--yellow); }
+  .dot-red { background: var(--red); }
+
+  /* ───────── 90-DAY PLAN ───────── */
+  .month-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .month-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .month-badge {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .badge-m1 { background: rgba(16,185,129,.12); color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+  .badge-m2 { background: rgba(59,130,246,.10); color: var(--blue); border: 1px solid rgba(59,130,246,.25); }
+  .badge-m3 { background: rgba(139,92,246,.10); color: var(--purple); border: 1px solid rgba(139,92,246,.25); }
+  .month-title {
+    font-family: var(--syne);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--text);
+  }
+  .month-actions { list-style: none; }
+  .month-actions li {
+    padding: 8px 0;
+    padding-left: 24px;
+    position: relative;
+    color: var(--text-dim);
+    font-size: 13px;
+    border-bottom: 1px solid var(--border);
+  }
+  .month-actions li:last-child { border-bottom: none; }
+  .month-actions li::before {
+    content: attr(data-n);
+    position: absolute;
+    left: 0;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    top: 10px;
+  }
+  .month-actions li strong { color: var(--text); }
+
+  /* ───────── FINAL SCORECARD ───────── */
+  .scorecard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .scorecard-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .scorecard-label {
+    font-family: var(--inter);
+    font-size: 11px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-bottom: 8px;
+  }
+  .scorecard-num {
+    font-family: var(--syne);
+    font-weight: 800;
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .scorecard-bar-track {
+    height: 4px;
+    background: rgba(255,255,255,.06);
+    border-radius: 2px;
+    margin-top: 8px;
+    overflow: hidden;
+  }
+  .scorecard-bar-fill { height: 100%; border-radius: 2px; }
+
+  .final-grade-block {
+    background: linear-gradient(135deg, #0A0A12 0%, #0E0E1A 100%);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+  }
+  .final-grade-letter {
+    font-family: var(--syne);
+    font-weight: 800;
+    font-size: 96px;
+    line-height: 1;
+    color: var(--green);
+    text-shadow: 0 0 60px rgba(16,185,129,.40);
+    margin-bottom: 8px;
+  }
+  .final-grade-label {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+  .final-grade-note {
+    font-size: 14px;
+    color: var(--text-dim);
+    max-width: 480px;
+    margin: 0 auto;
+    line-height: 1.7;
+  }
+
+  /* ───────── STATUS BADGES ───────── */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+  .status-good { background: rgba(16,185,129,.12); color: var(--green); border: 1px solid rgba(16,185,129,.25); }
+  .status-warn { background: rgba(245,158,11,.10); color: var(--yellow); border: 1px solid rgba(245,158,11,.20); }
+  .status-bad { background: rgba(239,68,68,.10); color: var(--red); border: 1px solid rgba(239,68,68,.20); }
+
+  /* ───────── DIVIDER ───────── */
+  .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+  /* ───────── PLATFORM CARD ───────── */
+  .platform-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
+  }
+  .platform-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .platform-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .platform-name {
+    font-family: var(--syne);
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .platform-handle {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+  }
+  .platform-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  @media(max-width: 600px) { .platform-stats { grid-template-columns: 1fr 1fr; } }
+  .platform-stat { text-align: center; }
+  .platform-stat-val {
+    font-family: var(--syne);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .platform-stat-label {
+    font-family: var(--inter);
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  /* ───────── INFO CHIP ───────── */
+  .info-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text-faint);
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 10px;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  /* ───────── GAP TABLE ───────── */
+  .gap-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .gap-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+  .gap-content {}
+  .gap-title { font-family: var(--inter); font-weight: 600; font-size: 13px; color: var(--text); margin-bottom: 4px; }
+  .gap-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* ───────── FOOTER ───────── */
+  .footer {
+    margin-top: 80px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-brand { font-family: var(--syne); font-weight: 700; font-size: 16px; color: var(--text-dim); }
+  .footer-brand span { color: var(--green); }
+  .footer-meta { font-family: var(--mono); font-size: 10px; color: var(--text-faint); }
+
+  /* ANIMATION */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .section { animation: fadeUp .6s ease both; }
+</style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark">CER<span style="opacity:.7">Ø</span></div>
+      <div class="header-client-info">
+        <div class="agency-tag">Startup Factory · Digital Audit</div>
+        <div class="client-name">CERØ</div>
+        <div class="client-domain">cero.agency · Tax Relocation · Digital Nomads · Bangkok</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="report-label">Confidential Report</div>
+      <div class="report-title">Digital Audit 2025</div>
+      <div class="report-date">Generated: July 2025 · Startup Factory BKK</div>
+      <div class="overall-score-badge">
+        <div class="score-number">58</div>
+        <div class="score-label-wrap">
+          <div class="score-out">/ 100 Overall</div>
+          <div class="score-grade">Grade C+</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 1 — EXECUTIVE SUMMARY
+  ═══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-number">01 ·</span>
+      <h2 class="section-title">Executive Summary</h2>
+    </div>
+
+    <div class="exec-sentence" data-icon="📍">
+      <strong>Current State:</strong> CERØ has an exceptionally strong brand narrative and a clearly differentiated niche — but the digital infrastructure is critically underdeveloped: weak SEO fundamentals, near-zero organic search footprint, and a social presence that lacks the consistency needed to build trust with high-intent European digital nomads at scale.
+    </div>
+    <div class="exec-sentence" data-icon="🚀">
+      <strong>Biggest Opportunity:</strong> There is a <strong>massive uncontested search gap</strong> for long-tail terms like "tax residency relocation Thailand for freelancers," "DTV visa Bangkok digital nomad," and "legal tax optimization Europe freelancer" — CERØ's story is exactly what these searchers need, but the content infrastructure to capture them does not yet exist.
+    </div>
+    <div class="exec-sentence" data-icon="⚡">
+      <strong>First Action:</strong> Immediately publish <strong>3 SEO-optimized pillar articles</strong> targeting high-intent German/Spanish/UK search terms (e.g. "0% Steuer Thailand als Freelancer," "vivir en Bangkok sin pagar IRPF") and add schema markup + a proper blog section to the site — this will begin generating compounding organic leads within 60–90 days at near-zero cost.
+    </div>
+
+    <div style="margin-top: 24px;">
+      <div class="health-score-card">
+        <div class="health-circle">
+          <div class="health-circle-inner">
+            <span class="health-circle-num">58</span>
+            <span class="health-circle-label">/100</span>
+          </div>
+        </div>
+        <div class="health-metrics">
+          <div class="health-metric-row">
+            <span class="health-metric-name">SEO Technical</span>
+            <span class="health-metric-score" style="color: var(--yellow);">52 / 100</span>
+          </div>
+          <div class="health-metric-row">
+            <span class="health-metric-name">On-Page Content</span>
+            <span class="health-metric-score" style="color: var(--yellow);">62 / 100</span>
+          </div>
+          <div class="health-metric-row">
+            <span class="health-metric-name">Social Media</span>
+            <span class="health-metric-score" style="color: var(--red);">45 / 100</span>
+          </div>
+          <div class="health-metric-row">
+            <span class="health-metric-name">Brand & Digital Presence</span>
+            <span class="health-metric-score" style="color: var(--yellow);">65 / 100</span>
+          </div>
+          <div class="health-metric-row" style="border-bottom: none;">
+            <span class="health-metric-name">Competitive Position</span>
+            <span class="health-metric-score" style="color: var(--yellow);">55 / 100</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 2 — SEO TECHNICAL AUDIT
+  ═══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-number">02 ·</span>
+      <h2 class="section-title">SEO Technical Audit</h2>
+      <span class="section-score-pill pill-yellow">52 / 100</span>
+    </div>
+
+    <!-- Subscore bars -->
+    <div class="card" style="margin-bottom: 24px;">
+      <div class="card-title">Subscore Overview</div>
+      <div class="bar-row"><span class="bar-label">Meta Tags & Structure</span><div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--yellow);"></div></div><span class="bar-val">60</span></div>
+      <div class="bar-row"><span class="bar-label">Page Speed & Core Web Vitals</span><div class="bar-track"><div class="bar-fill" style="width:48%;background:var(--red);"></div></div><span class="bar-val">48</span></div>
+      <div class="bar-row"><span class="bar-label">Mobile Responsiveness</span><div class="bar-track"><div class="bar-fill" style="width:72%;background:var(--green);"></div></div><span class="bar-val">72</span></div>
+      <div class="bar-row"><span class="bar-label">URL Structure & Indexability</span><div class="bar-track"><div class="bar-fill" style="width:58%;background:var(--yellow);"></div></div><span class="bar-val">58</span></div>
+      <div class="bar-row"><span class="bar-label">Internal Linking</span><div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--red);"></div></div><span class="bar-val">40</span></div>
+      <div class="bar-row"><span class="bar-label">Schema Markup</span><div class="bar-track"><div class="bar-fill" style="width:20%;background:var(--red);"></div></div><span class="bar-val">20</span></div>
+      <div class="bar-row"><span class="bar-label">Backlink Profile</span><div class="bar-track"><div class="bar-fill" style="width:35%;background:var(--red);"></div></div><span class="bar-val">35</span></div>
+    </div>
+
+    <div class="grid-2">
+      <!-- Meta Tags -->
+      <div class="card">
+        <div class="card-title">
+          Meta Tags &amp; Structure
+          <span class="card-title-score"><span class="status-badge status-warn">60/100</span></span>
+        </div>
+        <ul class="findings-list">
+          <li><strong>Title tag</strong> is present but generic: "Tax Residency Relocation for European Online Earners" — misses high-value keywords like "Thailand," "0% tax," "digital nomad"</li>
+          <li><strong>Meta description</strong> not found / not optimized — no compelling SERP snippet to drive clicks</li>
+          <li><strong>H1</strong> present and copy-strong, but not keyword-anchored for search intent</li>
+          <li><strong>H2/H3 hierarchy</strong> is inconsistent — section headers use design labels ("01 · The Pain") not crawlable semantic headings</li>
+          <li>Dual language (EN/ES) lacks hreflang tags — Google can't serve correct version</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <ul class="rec-list">
+            <li>Rewrite title: <em>"Thailand Tax Relocation for European Freelancers | CERØ"</em></li>
+            <li>Add 155-char meta description with primary KW + CTA</li>
+            <li>Implement <strong>hreflang</strong> for EN/ES versions immediately</li>
+            <li>Restructure H2/H3 to include target keywords naturally</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Page Speed -->
+      <div class="card">
+        <div class="card-title">
+          Page Speed &amp; Core Web Vitals
+          <span class="card-title-score"><span class="status-badge status-bad">48/100</span></span>
+        </div>
+        <ul class="findings-list">
+          <li><strong>LCP (Largest Contentful Paint)</strong> estimated &gt;3.5s — above Google's 2.5s threshold — likely due to hero video/animation</li>
+          <li><strong>CLS</strong> risk from animated text elements and deferred font loading</li>
+          <li>Heavy JavaScript likely from Webflow/animation library — render-blocking resources suspected</li>
+          <li>No evidence of image compression or next-gen format (WebP) usage</li>
+          <li>No CDN confirmed — hosting latency for European visitors significant</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <ul class="rec-list">
+            <li>Run <strong>PageSpeed Insights</strong> + GTmetrix — set LCP target &lt;2.5s</li>
+            <li>Compress/convert all images to WebP; lazy-load below fold</li>
+            <li>Enable Cloudflare CDN (free tier) for European visitors</li>
+            <li>Defer non-critical JS; preload hero font</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Mobile -->
+      <div class="card">
+        <div class="card-title">
+          Mobile Responsiveness
+          <span class="card-title-score"><span class="status-badge status-good">72/100</span></span>
+        </div>
+        <ul class="findings-list">
+          <li>Site appears to be built on Webflow — generally responsive out of the box</li>
+          <li>Heavy animation effects may cause jank on mid-range Android devices</li>
+          <li>CTA buttons accessible on mobile but Apply flow may not be mobile-optimised</li>
+          <li>Tax calculator section — UX on mobile unclear from audit</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <ul class="rec-list">
+            <li>Test on real Android mid-range (Moto G series) — target audience travels with these</li>
+            <li>Ensure Apply form is thumb-friendly with large input fields</li>
+            <li>Reduce animation complexity on mobile breakpoint</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- URL & Indexability -->
+      <div class="card">
+        <div class="card-title">
+          URL Structure &amp; Indexability
+          <span class="card-title-score"><span class="status-badge status-warn">58/100</span></span>
+        </div>
+        <ul class="findings-list">
+          <li>URL structure appears clean (cero.agency/thailand, /paraguay) but not keyword-rich</li>
+          <li><strong>No sitemap.xml</strong> confirmed in robots.txt or GSC submission</li>
+          <li>EN/ES language switcher creates potential duplicate content without canonical tags</li>
+          <li>No evidence of Google Search Console verification or monitoring</li>
+          <li>"Stories" section (testimonials) may not be individually indexed pages</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <ul class="rec-list">
+            <li>Generate and submit XML sitemap to Google Search Console immediately</li>
+            <li>Add canonical tags to all pages; set preferred locale</li>
+            <li>Create <strong>/blog</strong> subdirectory with keyword-targeted URLs</li>
+            <li>Make Stories SEO-indexable as individual pages</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Internal Linking -->
+      <div class="card">
+        <div class="card-title">
+          Internal Linking
+          <span class="card-title-score"><span class="status-badge status-bad">40/100</span></span>
+        </div>
+        <ul class="findings-list">
+          <li>Single-page or minimal-page architecture — very few internal links to distribute PageRank</li>
+          <li>No blog content to create topical clusters and link equity flow</li>
+          <li>Thailand and Paraguay destination pages exist but likely not cross-linked from body content</li>
+          <li>Calculator and Stories sections not woven into content journey</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <ul class="rec-list">
+            <li>Build content hub: /blog as central pillar linking to destination pages</li>
+            <li>Add contextual links in homepage copy to Thailand, Paraguay, Stories, Calculator</li>
+            <li>Create FAQ page internally linking to all key sections</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Schema -->
+      <div class="card">
+        <div class="card-title">
+          Schema Markup
+          <span class="card-title-score"><span class="status-badge status-bad">20/100</span></span>
+        </div>
+        <ul class="findings-list">
+          <li><strong>No schema markup detected</strong> — critical miss for a service-based business</li>
+          <li>Missing: Organization, LocalBusiness, FAQPage, Service, Review schemas</li>
+          <li>No breadcrumb schema for destination subpages</li>
+          <li>Stories/testimonials not marked up as Review schema — lost SERP stars opportunity</li>
+        </ul>
+        <div style="margin-top: 12px;">
+          <ul class="rec-list">
+            <li>Add <strong>Organization schema</strong> with name, URL, logo, sameAs (social profiles)</li>
+            <li>Add <strong>FAQPage schema</strong> to answer common "how to move to Thailand" queries</li>
+            <li>Add <strong>Review/AggregateRating schema</strong> using Stories data</li>
+            <li>Add Service schema for each relocation package</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Backlink Profile -->
+    <div class="card">
+      <div class="card-title">
+        Backlink Profile (Estimated)
+        <span class="card-title-score"><span class="status-badge status-bad">35/100</span></span>
+      </div>
+      <div class="grid-2">
+        <div>
+          <ul class="findings-list">
+            <li>Domain is relatively new — estimated DR (Domain Rating) <strong>below 15</strong> based on brand age and visibility</li>
+            <li>Likely fewer than 50 referring domains — insufficient for competitive SEO in the relocation/tax niche</li>
+            <li>No visible PR coverage or digital nomad media mentions found (Nomad List, Remote Year, etc.)</li>
+            <li>Competitor "Nomad Capitalist" has 10,000+ backlinks — massive authority gap to close</li>
+            <li>"Free in Thailand" and local consultants have directory/local links CERØ lacks</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="rec-list">
+            <li>Pitch guest articles to <strong>Nomad List blog, Remote.com, The Local EU editions</strong></li>
+            <li>Get listed on <strong>Nomad-specific directories</strong>: Nomad List services, Remote Work Hub</li>
+            <li>Create a <strong>linkable asset</strong>: free "European Tax Escape Calculator" or research report</li>
+            <li>Pursue podcast appearances (Nomad Finance, Zero Hour Work Week) for brand + links</li>
+            <li>HARO/Connectively: respond to journalist queries on expat tax, nomad lifestyle</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 3 — ON-PAGE CONTENT AUDIT
+  ═══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-number">03 ·</span>
+      <h2 class="section-title">On-Page Content Audit</h2>
+      <span class="section-score-pill pill-yellow">62 / 100</span>
+    </div>
+
+    <div class="card" style="margin-bottom:24px;">
+      <div class="card-title">Content Subscore Overview</div>
+      <div class="bar-row"><span class="bar-label">Content Quality &amp; Depth</span><div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--green);"></div></div><span class="bar-val">78</span></div>
+      <div class="bar-row"><span class="bar-label">Keyword Optimization</span><div class="bar-track"><div class="bar-fill" style="width:42%;background:var(--red);"></div></div><span class="bar-val">42</span></div>
+      <div class="bar-row"><span class="bar-label">Content Freshness &amp; Frequency</span><div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--red);"></div></div><span class="bar-val">25</span></div>
+      <div class="bar-row"><span class="bar-label">Blog / Resources Section</span><div class="bar-track"><div class="bar-fill" style="width:15%;background:var(--red);"></div></div><span class="bar-val">15</span></div>
+      <div class="bar-row"><span class="bar-label">Landing Page Quality</span><div class="bar-track"><div class="bar-fill" style="width:80%;background:var(--green);"></div></div><span class="bar-val">80</span></div>
+      <div class="bar-row"><span class="bar-label">CTA Clarity</span><div class="bar-track"><div class="bar-fill" style="width:70%;background:var(--green);"></div></div><span class="bar-val">70</span></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Content Quality &amp; Depth <span class="card-title-score"><span class="status-badge status-good">78/100</span></span></div>
+        <ul class="findings-list">
+          <li><strong>Exceptional brand copywriting</strong> — "Half your work, gone every year" is world-class positioning</li>
+          <li>Before/After comparison effectively communicates the transformation</li>
+          <li>4-step process section builds trust and reduces friction</li>
+          <li>Tax percentage breakdown by country (Germany 44%, France 49% etc.) is highly persuasive social proof</li>
+          <li><strong>Gap:</strong> No educational depth — no articles, guides, or explainer content for SEO or lead nurture</li>
+          <li>"Stories" section mentioned but thin — need full case studies with numbers</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Keyword Optimization <span class="card-title-score"><span class="status-badge status-bad">42/100</span></span></div>
+        <ul class="findings-list">
+          <li>Primary KW "tax residency relocation" not in title or H1 in exact form</li>
+          <li>High-intent keywords absent: "DTV visa freelancer," "Thailand territorial tax," "Paraguay cedula digital nomad," "how to stop paying tax Europe legally"</li>
+          <li>German/Spanish language search terms completely unaddressed (€5k+/mo earners search in their native language)</li>
+          <li>No keyword strategy evident in URL slugs or page naming</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <ul class="rec-list">
+            <li>Build keyword map: 20 primary KWs × EN + DE + ES = 60 target terms</li>
+            <li>Target: "steuerfrei leben Thailand," "vivir en Tailandia sin impuestos," "DTV visa freelancer 2025"</li>
+            <li>Use Ahrefs/Semrush to find exact search volumes; prioritize &gt;100 mo/searches</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Content Freshness &amp; Publishing Frequency <span class="card-title-score"><span class="status-badge status-bad">25/100</span></span></div>
+        <ul class="findings-list">
+          <li><strong>No blog detected</strong> — zero ongoing content production visible</li>
+          <li>Static homepage — last visible update unknown; no timestamps or changelogs</li>
+          <li>No newsletter signup or content subscription mechanism found</li>
+          <li>Competitors (Nomad Capitalist) publish 5–8 articles/week building massive SEO moat</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <ul class="rec-list">
+            <li>Launch blog immediately with minimum 1 post/week</li>
+            <li>Start an email list — "Weekly Tax Escape Briefing" for digital nomads</li>
+            <li>Create content calendar: 12 pillar posts + 52 weekly supporting posts for Year 1</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Blog / Resources Section <span class="card-title-score"><span class="status-badge status-bad">15/100</span></span></div>
+        <ul class="findings-list">
+          <li><strong>No blog section exists</strong> — the single most critical content gap</li>
+          <li>No guides: "How to get DTV visa," "Thailand bank account for foreigners," "EU exit tax explained"</li>
+          <li>No free resources or lead magnets visible (checklist, calculator beyond basic one)</li>
+          <li>"Stories" section is present but not a blog substitute for SEO</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <ul class="rec-list">
+            <li>Priority #1: Launch <strong>/blog</strong> with 3 cornerstone articles within 30 days</li>
+            <li>Create free "EU Tax Exit Checklist" as gated lead magnet</li>
+            <li>Build resource library: visa guides, banking guides, country comparison</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Landing Page Quality <span class="card-title-score"><span class="status-badge status-good">80/100</span></span></div>
+        <ul class="findings-list">
+          <li>Homepage storytelling is best-in-class for the niche — emotional + rational proof</li>
+          <li>200+ relocations social proof is compelling — needs to be more prominent</li>
+          <li>Destination pages (Thailand / Paraguay) exist — depth unclear</li>
+          <li>Calculator is a strong conversion tool — needs SEO landing page treatment</li>
+          <li><strong>Gap:</strong> No dedicated landing pages for DE / ES / UK / FR audiences</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <ul class="rec-list">
+            <li>Create country-specific landing pages: /for-german-freelancers, /para-autonomos-espanoles</li>
+            <li>Add video testimonials to homepage above the fold</li>
+            <li>A/B test hero CTA: "Apply for a seat" vs "Get your free tax diagnosis"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">CTA Clarity <span class="card-title-score"><span class="status-badge status-good">70/100</span></span></div>
+        <ul class="findings-list">
+          <li>"Apply for a seat →" is strong and creates scarcity positioning</li>
+          <li>"Apply →" in nav is clear and present throughout</li>
+          <li><strong>Gap:</strong> No lower-commitment CTA for cold traffic (e.g., "Download free guide," "Watch a 5-min explainer")</li>
+          <li>No exit-intent popup or scroll-triggered lead capture</li>
+          <li>Apply form flow — qualification process unclear; may lose lukewarm leads</li>
+        </ul>
+        <div style="margin-top:12px;">
+          <ul class="rec-list">
+            <li>Add mid-funnel CTA: "Not ready yet? Get the free 47-page EU Tax Exit Guide"</li>
+            <li>Implement exit-intent popup with lead magnet offer</li>
+            <li>Add a "Book a Free 15-min Discovery Call" CTA as alternative to Apply</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SECTION 4 — SOCIAL MEDIA AUDIT
+  ═══════════════════════════════════════════ -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-number">04 ·</span>
+      <h2 class="section-title">Social Media Audit</h2>
+      <span class="section-score-pill pill-red">45 / 100</span>
+    </div>
+
+    <div style="margin-bottom:16px; padding:16px 20px; background:rgba(245,158,11,.06); border:1px solid rgba(245,158,11,.20); border-radius:12px; font-size:13px; color:var(--text-dim);">
+      <strong style="color:var(--yellow);">⚠ Audit Note:</strong> Social profiles could not be directly verified during this audit. Scores are estimated based on website references, competitor benchmarking, and typical presence for agencies at this stage. Figures marked <span class="status-badge status-warn">ESTIMATED</span> should be verified against actual analytics.
+    </div>
+
+    <!-- Instagram -->
+    <div class="platform-card">
+      <div class="platform-header">
+        <div class="platform-icon" style="background: linear-gradient(135deg,#833ab4,#fd1d1d,#fcb045);">📸</div>
+        <div>
+          <div class="platform-name">Instagram</div>
+          <div class="platform-handle">@cero.agency (estimated)</div>
+        </div>
+        <div style="margin-left:auto;">
+          <span class="status-badge status-warn">ESTIMATED</span>
+          <span class="section-score-pill pill-yellow" style="margin-left:8px; display:inline-block;">48/100</span>
+        </div>
+      </div>
+      <div class="platform-stats">
+        <div class="platform-stat">
+          <div class="platform-stat-val">~500–2K</div>
+          <div class="platform-stat-label">Followers</div>
+        </div>
+        <div class="platform-stat">
+          <div class="platform-stat-val">~2–4%</div>
+          <div class="platform-stat-label">Eng. Rate</div>
+        </div>
+        <div class="platform-stat">
+          <div class="platform-stat-val">~1–2×/wk</div>
+          <div class="platform-stat-label">Post Freq.</div>
+        </div>
+        <div class="platform-stat">
+          <div class="platform-stat-val">Med</div>
+          <div class="platform-stat-label">Content Quality</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <ul class="findings-list">
+            <li>Brand aesthetic likely strong given website visual quality</li>
+            <li>Low follower count relative to opportunity — undermonetized channel</li>
+            <li>Insufficient Reels production — algorithmic reach suppressed</li>
+            <li>Story highlights likely missing key sections: Process, Results, FAQ, Bangkok Life</li>
+            <li>Link in bio likely just website — missed opportunity for lead magnet funnel</li>
+          </ul>
+        </div>
+        <div>
+          <ul class="rec-list">
+            <li>Post 5 Reels/week: "Day in the life Bangkok," "What 0% tax feels like," "DTV visa process" — short, punchy, educational</li>
+            <li>Restructure bio: pain point → solution → CTA with Linktree funnel</li>
+            <li>Create Highlights: 🌏 Bangkok Life | 📋 How It Works | 💰 Tax Savings | ✅ Members</li>
+            <li>Run German/Spanish language content 2× per week to reach primary ICP</li>
+            <li>Collaborate with nomad lifestyle creators for reach amplification</li>
+          </ul>
+        </div>
+      </div>
+      <div style="margin-top:12px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--text-faint);margin-right:8px;">BEST PERFORMING CONTENT TYPES:</span>
+        <span class="info-chip">🎬 Reels (lifestyle)</span>
+        <span class="info-chip">💸 Tax savings carousels</span>
+        <span class="info-chip">👤 Member stories</span>
+        <span class="info-chip">📊 Country comparisons</span>
+      </div>
+    </div>
+
+    <!-- LinkedIn -->
+    <div class="platform-card">
+      <div class="platform-header">
+        <div class="platform-icon" style="background: #0A66C2;">💼</div>
+        <div>
+          <div class="platform-name">LinkedIn</div>
+          <div class="platform-handle">CERØ Agency Page (estimated)</div>
+        </div>
+        <div style="margin-left:auto;">
+          <span class="status-badge status-warn">ESTIMATED</span>
+          <span class="section-score-pill pill-red" style="margin-left:8px; display:inline-block;">38/100</span>
+        </div>
+      </div>
+      <div class="platform-stats">
+        <div class="platform-stat">
+          <div class="platform-stat-val">~200–800</div>
+          <div class="platform-stat-label">Followers</div>
+        </div>
+        <div class="platform-stat">
+          <div class="platform-stat-val">~1–2%</div>
+          <div class="platform-stat-label">Eng. Rate</div>
+        </div>
+        <div class="platform-stat">
+          <div class="platform-stat-val">&lt;1×/wk</div>
+          <div class="platform-stat-label">Post Freq.</div>
+        </div>
+        <div class="platform-stat">
+          <div class="platform-stat-val">Low</div>
+          <div class="platform-stat-label">Content Quality</div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <ul class="findings-list">
+            <li>LinkedIn is the <strong>highest ROI channel</strong> for CERØ's ICP (€5k+/mo B2B founders, agency owners) — currently massively underutilized</li>
+            <li>Company page likely thin — no founder personal brand strategy visible</li>

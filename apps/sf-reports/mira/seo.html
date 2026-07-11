@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SEO Audit — mira-landing-chi.vercel.app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #07080f;
+    --surface: #0e0f1a;
+    --surface2: #141526;
+    --border: #1e2035;
+    --border2: #252840;
+    --accent: #ff5a1f;
+    --accent2: #ff8c5a;
+    --blue: #4d7cff;
+    --cyan: #00d4e0;
+    --green: #00e676;
+    --yellow: #ffd740;
+    --red: #ff3d57;
+    --text: #eeeef5;
+    --text2: #9090b0;
+    --text3: #5a5a80;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'Outfit', sans-serif;
+    --display: 'Bebas Neue', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 999;
+    opacity: .4;
+  }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(7,8,15,0.92);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+  header .inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .brand-icon {
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: grid;
+    place-items: center;
+  }
+  .brand-icon svg { width: 18px; height: 18px; fill: white; }
+  .brand-name {
+    font-family: var(--display);
+    font-size: 18px;
+    letter-spacing: 2px;
+    color: var(--text);
+  }
+  .brand-name span { color: var(--accent); }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  .header-meta .url {
+    color: var(--cyan);
+    border: 1px solid #00d4e030;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #00d4e008;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 60px 0 50px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: 'SEO';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    font-family: var(--display);
+    font-size: 260px;
+    color: #ffffff03;
+    line-height: 1;
+    pointer-events: none;
+    letter-spacing: -10px;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+  .score-ring-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+  }
+  .score-ring-wrap svg {
+    width: 180px;
+    height: 180px;
+    transform: rotate(-90deg);
+  }
+  .score-ring-bg { fill: none; stroke: var(--surface2); stroke-width: 10; }
+  .score-ring-fill {
+    fill: none;
+    stroke: var(--yellow);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 502.65;
+    stroke-dashoffset: 502.65;
+    animation: fillRing 1.8s cubic-bezier(.4,0,.2,1) 0.3s forwards;
+  }
+  @keyframes fillRing {
+    to { stroke-dashoffset: 221.17; } /* 502.65 * 0.44 */
+  }
+  .score-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-num {
+    font-family: var(--display);
+    font-size: 64px;
+    line-height: 1;
+    color: var(--text);
+    letter-spacing: 2px;
+  }
+  .score-denom { font-family: var(--mono); font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .score-label { font-size: 11px; color: var(--yellow); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-top: 4px; }
+
+  .hero-info { display: flex; flex-direction: column; gap: 24px; }
+  .hero-title { font-family: var(--display); font-size: 42px; letter-spacing: 2px; line-height: 1.1; }
+  .hero-title .hl { color: var(--yellow); }
+  .hero-desc { color: var(--text2); max-width: 520px; font-size: 15px; }
+  .hero-desc strong { color: var(--accent2); }
+
+  .score-quadrants {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-top: 8px;
+  }
+  .quad {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .quad::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--q-color, var(--accent));
+  }
+  .quad-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .quad-score {
+    font-family: var(--display);
+    font-size: 28px;
+    line-height: 1;
+    color: var(--q-color, var(--text));
+  }
+  .quad-denom { font-family: var(--mono); font-size: 10px; color: var(--text3); }
+  .quad-bar { margin-top: 8px; height: 3px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .quad-bar-fill {
+    height: 100%;
+    background: var(--q-color, var(--accent));
+    border-radius: 2px;
+    width: 0;
+    animation: barFill 1.5s cubic-bezier(.4,0,.2,1) 0.6s forwards;
+  }
+  @keyframes barFill { to { width: var(--pct); } }
+
+  /* ── SECTION ── */
+  section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    background: #ff5a1f15;
+    border: 1px solid #ff5a1f30;
+    padding: 3px 8px;
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: var(--display);
+    font-size: 24px;
+    letter-spacing: 1.5px;
+  }
+  .section-desc { color: var(--text2); font-size: 13px; margin-top: -20px; margin-bottom: 24px; padding-left: 60px; }
+
+  /* ── CRITICAL ISSUES ── */
+  .critical-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  .critical-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .2s, transform .2s;
+  }
+  .critical-card:hover { border-color: var(--red); transform: translateY(-2px); }
+  .critical-card.warn-card:hover { border-color: var(--yellow); }
+  .critical-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--card-top-color, var(--red)), transparent);
+  }
+  .critical-num {
+    font-family: var(--display);
+    font-size: 42px;
+    line-height: 1;
+    color: #ff3d5715;
+    position: absolute;
+    top: 10px; right: 14px;
+    letter-spacing: -2px;
+  }
+  .critical-num.warn-num { color: #ffd74015; }
+  .critical-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--red);
+    background: #ff3d5715;
+    border: 1px solid #ff3d5730;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+  .critical-badge::before { content: '●'; font-size: 6px; }
+  .critical-badge.warn-badge {
+    color: var(--yellow);
+    background: #ffd74015;
+    border-color: #ffd74030;
+  }
+  .critical-title { font-weight: 600; font-size: 14px; margin-bottom: 6px; color: var(--text); }
+  .critical-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .critical-impact {
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .critical-impact span { color: var(--yellow); }
+
+  /* ── CHECKLIST GRID ── */
+  .checklist-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .check-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .check-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+    cursor: pointer;
+  }
+  .check-card-title { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .check-card-title .icon { font-size: 15px; }
+  .status-badge {
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+  .pass { background: #00e67615; color: var(--green); border: 1px solid #00e67630; }
+  .warn { background: #ffd74015; color: var(--yellow); border: 1px solid #ffd74030; }
+  .fail { background: #ff3d5715; color: var(--red); border: 1px solid #ff3d5730; }
+
+  .check-items { padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.4;
+  }
+  .check-dot {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 9px;
+    margin-top: 1px;
+  }
+  .check-dot.p { background: #00e67620; color: var(--green); }
+  .check-dot.w { background: #ffd74020; color: var(--yellow); }
+  .check-dot.f { background: #ff3d5720; color: var(--red); }
+  .check-item strong { color: var(--text); }
+
+  .current-box {
+    margin: 8px 16px 0;
+    background: var(--bg);
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .current-box .label { color: var(--text3); font-size: 9px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .current-box .val { color: var(--text2); }
+  .current-box .rec { color: var(--cyan); margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--border); }
+  .char-count { color: var(--yellow); font-size: 9px; }
+  .char-good { color: var(--green); font-size: 9px; }
+
+  /* ── TECHNICAL TABLE ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .tech-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .tech-card.critical-tech {
+    border-color: #ff3d5740;
+    background: #ff3d570a;
+  }
+  .tech-status-icon {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    margin: 0 auto 12px;
+    display: grid;
+    place-items: center;
+    font-size: 22px;
+  }
+  .tech-status-icon.ok { background: #00e67615; }
+  .tech-status-icon.no { background: #ff3d5715; }
+  .tech-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .tech-detail { font-size: 11px; color: var(--text2); }
+  .tech-pill {
+    display: inline-block;
+    margin-top: 10px;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  /* ── SCHEMA TABLE ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border2);
+    background: var(--surface2);
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text2);
+    vertical-align: top;
+  }
+  tr:hover td { background: var(--surface); }
+  td:first-child { color: var(--text); font-weight: 500; }
+  .tbl-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  /* ── GAPS ── */
+  .gap-grid {
+    display: grid;
+    gap: 8px;
+  }
+  .gap-row {
+    display: grid;
+    grid-template-columns: 2fr 80px 80px 80px 60px;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    transition: border-color .2s;
+  }
+  .gap-row:hover { border-color: var(--border2); }
+  .gap-row.header {
+    background: var(--surface2);
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .gap-topic { color: var(--text); font-weight: 500; }
+  .gap-topic small { display: block; color: var(--text3); font-size: 11px; margin-top: 2px; }
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-align: center;
+  }
+  .pill-high { background: #00e67620; color: var(--green); }
+  .pill-med { background: #ffd74020; color: var(--yellow); }
+  .pill-low { background: #4d7cff20; color: var(--blue); }
+  .pill-red { background: #ff3d5720; color: var(--red); }
+  .priority-score {
+    font-family: var(--display);
+    font-size: 20px;
+    text-align: center;
+  }
+
+  /* ── ACTION PLAN ── */
+  .action-section { margin-bottom: 24px; }
+  .action-section-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  .action-section-title .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .action-items { display: flex; flex-direction: column; gap: 8px; }
+  .action-item {
+    display: grid;
+    grid-template-columns: 24px 1fr 80px 60px;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+    transition: all .2s;
+  }
+  .action-item:hover { border-color: var(--border2); transform: translateX(3px); }
+  .action-idx {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-align: center;
+  }
+  .action-text strong { display: block; color: var(--text); font-size: 13px; margin-bottom: 2px; }
+  .action-text span { color: var(--text2); }
+  .action-effort {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--text3);
+    text-align: right;
+  }
+
+  /* ── POSITIVES ── */
+  .positive-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .positive-card {
+    background: var(--surface);
+    border: 1px solid #00e67625;
+    border-radius: 10px;
+    padding: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .positive-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--green), transparent);
+  }
+  .positive-icon { font-size: 24px; margin-bottom: 10px; }
+  .positive-title { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
+  .positive-desc { font-size: 12px; color: var(--text2); }
+
+  /* ── EEAT ── */
+  .eeat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .eeat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+  }
+  .eeat-letter {
+    font-family: var(--display);
+    font-size: 48px;
+    line-height: 1;
+    color: var(--e-color);
+    margin-bottom: 8px;
+  }
+  .eeat-name { font-weight: 600; font-size: 12px; margin-bottom: 6px; }
+  .eeat-score {
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    display: inline-block;
+    margin-bottom: 10px;
+  }
+  .eeat-desc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+
+  /* ── KEYWORDS ── */
+  .kw-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+  .kw-placement-list { display: flex; flex-direction: column; gap: 6px; }
+  .kw-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px;
+  }
+  .kw-item-name { color: var(--text2); }
+  .kw-secondary-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+  }
+  .kw-tag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    color: var(--text2);
+    font-family: var(--mono);
+  }
+  .kw-tag::before { content: '#'; color: var(--accent); margin-right: 4px; }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 30px 0;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text3);
+  }
+  footer a { color: var(--cyan); text-decoration: none; }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border2), transparent);
+    margin: 20px 0;
+  }
+
+  /* ── TOOLTIP BADGE ── */
+  .fix-badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #4d7cff15;
+    color: var(--blue);
+    border: 1px solid #4d7cff30;
+    margin-left: 6px;
+  }
+
+  /* ── ANIMATIONS ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp .5s ease forwards;
+  }
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Stagger delays */
+  .d1 { animation-delay: .1s; }
+  .d2 { animation-delay: .2s; }
+  .d3 { animation-delay: .3s; }
+  .d4 { animation-delay: .4s; }
+  .d5 { animation-delay: .5s; }
+  .d6 { animation-delay: .6s; }
+
+  /* ── PROGRESS BAR ── */
+  .prog-bar-wrap { margin-top: 6px; }
+  .prog-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-bottom: 4px; }
+  .prog-track { height: 4px; background: var(--border2); border-radius: 2px; overflow: hidden; }
+  .prog-fill {
+    height: 100%;
+    border-radius: 2px;
+    width: 0;
+    animation: barFill 1.5s cubic-bezier(.4,0,.2,1) 0.8s forwards;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .score-quadrants { grid-template-columns: repeat(2,1fr); }
+    .critical-grid { grid-template-columns: 1fr; }
+    .checklist-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(2,1fr); }
+    .eeat-grid { grid-template-columns: repeat(2,1fr); }
+    .positive-grid { grid-template-columns: 1fr; }
+    .gap-row { grid-template-columns: 1fr 60px 60px 60px; }
+    .gap-row .priority-score { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="container">
+    <div class="inner">
+      <div class="brand">
+        <img src="/logo-sf.svg" alt="Startup Factory" style="height:32px; width:auto; opacity:.95;"/>
+      </div>
+      <div class="header-meta">
+        <span class="url">mira-landing-chi.vercel.app</span>
+        <span>2026-05-15</span>
+        <span>v1.0</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero" style="border-bottom:1px solid var(--border);">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="score-ring-wrap fade-up">
+        <svg viewBox="0 0 180 180">
+          <circle class="score-ring-bg" cx="90" cy="90" r="80"/>
+          <circle class="score-ring-fill" cx="90" cy="90" r="80"/>
+        </svg>
+        <div class="score-center">
+          <div class="score-num">56</div>
+          <div class="score-denom">/ 100</div>
+          <div class="score-label">Mejorable</div>
+        </div>
+      </div>
+      <div class="hero-info fade-up d2">
+        <div>
+          <div class="hero-title">AUDITORÍA SEO<br/><span class="hl">MIRA LANDING</span></div>
+          <div class="hero-desc" style="margin-top:12px;">
+            Buenas intenciones (<strong>GTM, OG, title memorable</strong>) pero sin la infraestructura básica de indexación.
+            El problema #1 no es código — es estrategia: <strong>sin custom domain, cualquier SEO es inversión en arenas movedizas</strong>.
+            Resolver dominio + robots + sitemap + canonical sube el score de 56 → <strong>~74/100</strong>.
+          </div>
+        </div>
+        <div class="score-quadrants">
+          <div class="quad fade-up d3" style="--q-color: var(--red);">
+            <div class="quad-label">Técnico</div>
+            <div class="quad-score">12</div>
+            <div class="quad-denom">/ 30 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:40%;"></div></div>
+          </div>
+          <div class="quad fade-up d4" style="--q-color: var(--yellow);">
+            <div class="quad-label">On-Page</div>
+            <div class="quad-score">28</div>
+            <div class="quad-denom">/ 40 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:70%;"></div></div>
+          </div>
+          <div class="quad fade-up d5" style="--q-color: var(--blue);">
+            <div class="quad-label">Contenido E-E-A-T</div>
+            <div class="quad-score">10</div>
+            <div class="quad-denom">/ 20 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:50%;"></div></div>
+          </div>
+          <div class="quad fade-up d6" style="--q-color: var(--cyan);">
+            <div class="quad-label">Keywords</div>
+            <div class="quad-score">6</div>
+            <div class="quad-denom">/ 10 pts</div>
+            <div class="quad-bar"><div class="quad-bar-fill" style="--pct:60%;"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CRITICAL ISSUES -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">PROBLEMAS CRÍTICOS</span>
+    </div>
+    <p class="section-desc">5 bloqueadores que impiden indexación efectiva antes del lanzamiento real.</p>
+    <div class="critical-grid">
+
+      <div class="critical-card fade-up d1" style="--card-top-color: var(--red);">
+        <div class="critical-num">01</div>
+        <div class="critical-badge">Crítico</div>
+        <div class="critical-title">Sin custom domain</div>
+        <div class="critical-desc">
+          mira-landing-chi.vercel.app no es indexable de forma efectiva. Domain authority = 0, URL no profesional.
+          Google puede rastrear, pero con prioridad mínima. Cualquier SEO sin dominio propio es esfuerzo perdido.
+        </div>
+        <div class="critical-impact">Fix: <span>Adquirir mira.ai / getmira.io y conectar — 1h setup</span></div>
+      </div>
+
+      <div class="critical-card fade-up d2" style="--card-top-color: var(--red);">
+        <div class="critical-num">02</div>
+        <div class="critical-badge">404</div>
+        <div class="critical-title">Sin robots.txt</div>
+        <div class="critical-desc">
+          HTTP 404 en /robots.txt. Google rastrea sin guía.
+          /thank-you puede indexarse innecesariamente como página de confirmación vacía.
+        </div>
+        <div class="critical-impact">Fix: <span>Crear app/robots.ts en Next.js — 10 min</span></div>
+      </div>
+
+      <div class="critical-card fade-up d3" style="--card-top-color: var(--red);">
+        <div class="critical-num">03</div>
+        <div class="critical-badge">404</div>
+        <div class="critical-title">Sin sitemap.xml</div>
+        <div class="critical-desc">
+          HTTP 404 en /sitemap.xml. Google no tiene inventario de páginas del sitio.
+          Sin sitemap, la homepage y futuras páginas de departamento nunca se descubren eficientemente.
+        </div>
+        <div class="critical-impact">Fix: <span>Crear app/sitemap.ts — 15 min</span></div>
+      </div>
+
+      <div class="critical-card fade-up d4" style="--card-top-color: var(--red);">
+        <div class="critical-num">04</div>
+        <div class="critical-badge">Ausente</div>
+        <div class="critical-title">Sin canonical tag</div>
+        <div class="critical-desc">
+          El layout no tiene metadataBase ni alternates.canonical.
+          Sin canonical, si la URL se comparte con parámetros UTM (?utm_source=ig), Google detecta duplicados y divide el link equity.
+        </div>
+        <div class="critical-impact">Fix: <span>Añadir metadataBase + canonical en layout.tsx — 15 min</span></div>
+      </div>
+
+      <div class="critical-card warn-card fade-up d5" style="--card-top-color: var(--yellow);">
+        <div class="critical-num warn-num">05</div>
+        <div class="critical-badge warn-badge">Aviso</div>
+        <div class="critical-title">URL de OG apunta a dominio Vercel</div>
+        <div class="critical-desc">
+          <code style="font-family:var(--mono); font-size:11px; color:var(--cyan);">url: 'https://mira-landing-chi.vercel.app'</code> en OpenGraph.
+          Cuando se cambie el dominio, habrá que actualizar manualmente o las OG cards seguirán apuntando al dominio provisional.
+        </div>
+        <div class="critical-impact">Fix: <span>Actualizar OG url al conectar el dominio — 5 min</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ON-PAGE CHECKLIST -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">ON-PAGE SEO</span>
+    </div>
+    <p class="section-desc">Análisis elemento a elemento de los factores de optimización en página.</p>
+
+    <div class="checklist-grid">
+
+      <!-- TITLE TAG -->
+      <div class="check-card fade-up d1">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">📌</span> Title Tag</div>
+          <span class="status-badge pass">Excelente</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Actual</div>
+          <div class="val">"MIRA — Stop Operating. Start Directing."</div>
+          <div class="rec">→ Memorable, diferenciador y único. Correcto.</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Title presente y único</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>Memorable y diferenciador</strong> — "Stop Operating. Start Directing."</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Marca MIRA al inicio</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Longitud correcta (~40 chars)</span></div>
+        </div>
+      </div>
+
+      <!-- META DESCRIPTION -->
+      <div class="check-card fade-up d2">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">📝</span> Meta Description</div>
+          <span class="status-badge warn">Verificar</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Actual <span class="char-count">~170+ chars — revisar</span></div>
+          <div class="val">"MIRA is the AI team that knows your brand and runs your departments. 30 agents across Marketing, Sales, Strategy, Innovation, Admin and Finance. You direct, they execute."</div>
+          <div class="rec">→ Verificar que no supera 160 chars. Considerar recortar la segunda frase.</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span>Presente y descriptiva</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span><strong>Longitud posiblemente excesiva</strong> — Google trunca a ~160 chars</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Keywords primarias presentes: "AI team", "agents"</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>CTA implícito: "You direct, they execute"</span></div>
+        </div>
+      </div>
+
+      <!-- OG / SOCIAL -->
+      <div class="check-card fade-up d3">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🔗</span> Open Graph &amp; Twitter Cards</div>
+          <span class="status-badge pass">PASS</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>OG Title</strong> — "MIRA — Stop Operating. Start Directing."</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>OG Description</strong> — Presente y completa</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>OG Image</strong> — /og-image.png (1200×630) — dimensiones perfectas</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>Twitter Card</strong> — summary_large_image</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span><strong>OG url</strong> apunta a vercel.app — actualizar al cambiar dominio</span></div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS / GTM -->
+      <div class="check-card fade-up d4">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">📊</span> Analytics &amp; Tracking</div>
+          <span class="status-badge pass">PASS</span>
+        </div>
+        <div class="current-box">
+          <div class="label">GTM ID</div>
+          <div class="val">GTM-5QZTPDX5 — instalado con strategy="beforeInteractive"</div>
+          <div class="rec">→ Analytics activo desde día 1. Correcto.</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot p">✓</div><span><strong>GTM-5QZTPDX5</strong> instalado y activo</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Vercel Analytics también presente</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>Noscript iframe fallback correcto</span></div>
+        </div>
+      </div>
+
+      <!-- CANONICAL / metadataBase -->
+      <div class="check-card fade-up d5">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🔁</span> Canonical &amp; metadataBase</div>
+          <span class="status-badge fail">AUSENTE</span>
+        </div>
+        <div class="current-box">
+          <div class="label">Estado</div>
+          <div class="val">Sin metadataBase ni alternates.canonical en layout.tsx</div>
+          <div class="rec">→ Añadir metadataBase: new URL('https://tu-dominio.com') + canonical</div>
+        </div>
+        <div class="check-items">
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>metadataBase</strong> — ausente. OG URLs relativas no se resuelven</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>canonical tag</strong> — ausente en todas las páginas</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span>Riesgo: URLs con UTM generan duplicados para Google</span></div>
+        </div>
+      </div>
+
+      <!-- robots / sitemap / /thank-you -->
+      <div class="check-card fade-up d6">
+        <div class="check-card-header">
+          <div class="check-card-title"><span class="icon">🤖</span> robots.txt · sitemap.xml · /thank-you</div>
+          <span class="status-badge fail">CRÍTICO</span>
+        </div>
+        <div class="check-items" style="padding-top:16px;">
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>robots.txt</strong> — HTTP 404. Crear app/robots.ts</span></div>
+          <div class="check-item"><div class="check-dot f">✗</div><span><strong>sitemap.xml</strong> — HTTP 404. Crear app/sitemap.ts</span></div>
+          <div class="check-item"><div class="check-dot w">!</div><span><strong>/thank-you</strong> — debe ser noindex (página de confirmación)</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>lang="en" en &lt;html&gt; correcto</span></div>
+          <div class="check-item"><div class="check-dot p">✓</div><span>HTTPS activo (Vercel)</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- TECHNICAL SEO -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">TECHNICAL SEO</span>
+    </div>
+    <p class="section-desc">Infraestructura técnica que determina cómo Google rastrea e indexa el sitio.</p>
+
+    <div class="tech-grid">
+      <div class="tech-card critical-tech fade-up d1">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">robots.txt</div>
+        <div class="tech-detail">HTTP 404. Google rastrea sin guía.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d2">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">sitemap.xml</div>
+        <div class="tech-detail">HTTP 404. Páginas no descubribles.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d3">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Canonical Tags</div>
+        <div class="tech-detail">Sin canonical ni metadataBase en layout.tsx.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d4">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">metadataBase</div>
+        <div class="tech-detail">OG URLs relativas no se resuelven en Google.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d5">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Schema / JSON-LD</div>
+        <div class="tech-detail">0 datos estructurados. Sin rich results.</div>
+        <div class="tech-pill fail">AUSENTE</div>
+      </div>
+      <div class="tech-card critical-tech fade-up d6">
+        <div class="tech-status-icon no">❌</div>
+        <div class="tech-name">Custom Domain</div>
+        <div class="tech-detail">Aún en mira-landing-chi.vercel.app</div>
+        <div class="tech-pill fail">BLOQUEANTE</div>
+      </div>
+      <div class="tech-card fade-up d1">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">HTTPS / SSL</div>
+        <div class="tech-detail">Certificado activo y válido (Vercel).</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d2">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">lang="en"</div>
+        <div class="tech-detail">Atributo de idioma en &lt;html&gt; correcto.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d3">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">GTM Instalado</div>
+        <div class="tech-detail">GTM-5QZTPDX5 activo desde día 1.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d4">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Open Graph</div>
+        <div class="tech-detail">OG tags completos — sharing profesional.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d5">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Twitter Cards</div>
+        <div class="tech-detail">summary_large_image configurado.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+      <div class="tech-card fade-up d6">
+        <div class="tech-status-icon ok">✅</div>
+        <div class="tech-name">Stack Next.js</div>
+        <div class="tech-detail">Base técnica correcta para SSG/SSR.</div>
+        <div class="tech-pill pass">OK</div>
+      </div>
+    </div>
+
+    <!-- Schema Opportunities Table -->
+    <div style="margin-top:28px;">
+      <div style="font-weight:600; font-size:13px; margin-bottom:14px; display:flex; align-items:center; gap:8px;">
+        <span style="color:var(--red);">●</span> Oportunidades de Schema Markup
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Schema Type</th>
+              <th>Página</th>
+              <th>Estado</th>
+              <th>Impacto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>SoftwareApplication</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Plataforma AI → rich result con rating, categoría y descripción en SERP</td>
+            </tr>
+            <tr>
+              <td>Organization</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Alimenta Knowledge Panel con logo, contacto y redes de MIRA</td>
+            </tr>
+            <tr>
+              <td>FAQPage</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Preguntas sobre AI agents expandibles en SERP — ocupa más espacio visual</td>
+            </tr>
+            <tr>
+              <td>WebSite + SearchAction</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">/</td>
+              <td><span class="status-badge fail">Ausente</span></td>
+              <td style="font-size:12px; color:var(--text2);">Sitelinks search box en búsquedas de marca "MIRA AI"</td>
+            </tr>
+            <tr>
+              <td>BreadcrumbList</td>
+              <td style="font-family:var(--mono); font-size:11px; color:var(--text3);">Futuras páginas</td>
+              <td><span class="status-badge warn">Futuro</span></td>
+              <td style="font-size:12px; color:var(--text2);">Breadcrumbs visibles en SERP para /ai-for-marketing, /ai-for-sales, etc.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- E-E-A-T -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">CALIDAD E-E-A-T</span>
+    </div>
+    <p class="section-desc">Marco de evaluación de Google: Experience, Expertise, Authoritativeness, Trustworthiness.</p>
+    <div class="eeat-grid">
+      <div class="eeat-card fade-up d1" style="--e-color: var(--red);">
+        <div class="eeat-letter">E</div>
+        <div class="eeat-name">Experience</div>
+        <span class="eeat-score fail">Débil</span>
+        <div class="eeat-desc">Producto en pre-lanzamiento. Sin casos de uso reales, sin testimonios, sin demos documentadas ni métricas de uso.</div>
+      </div>
+      <div class="eeat-card fade-up d2" style="--e-color: var(--yellow);">
+        <div class="eeat-letter">E</div>
+        <div class="eeat-name">Expertise</div>
+        <span class="eeat-score warn">Mejorable</span>
+        <div class="eeat-desc">Concepto AI-team innovador y bien comunicado ("Stop Operating. Start Directing."). Sin demos, sin documentación técnica ni contenido de blog aún.</div>
+      </div>
+      <div class="eeat-card fade-up d3" style="--e-color: var(--red);">
+        <div class="eeat-letter">A</div>
+        <div class="eeat-name">Authoritativeness</div>
+        <span class="eeat-score fail">Débil</span>
+        <div class="eeat-desc">Sin menciones externas, sin custom domain, sin blog, sin página "About" ni equipo visible. Domain authority = 0.</div>
+      </div>
+      <div class="eeat-card fade-up d4" style="--e-color: var(--yellow);">
+        <div class="eeat-letter">T</div>
+        <div class="eeat-name">Trustworthiness</div>
+        <span class="eeat-score warn">Mejorable</span>
+        <div class="eeat-desc">GTM activo ✓, OG bien configurado ✓, HTTPS ✓. Sin contacto visible, sin dominio propio ni información legal.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- KEYWORDS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">ANÁLISIS DE KEYWORDS</span>
+    </div>
+    <p class="section-desc">Cobertura y posicionamiento de keywords primarias y secundarias en la landing.</p>
+    <div class="kw-grid">
+      <div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:12px; color:var(--text2);">KEYWORDS PRIMARIAS — "AI team for business" / "AI agents company"</div>
+        <div class="kw-placement-list">
+          <div class="kw-item">
+            <span class="kw-item-name">En Title Tag</span>
+            <span class="status-badge warn">~ Implícito</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">En Meta Description</span>
+            <span class="status-badge pass">✓ PASS</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">En H1 visible</span>
+            <span class="status-badge warn">~ Tagline creativo</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">OG Title</span>
+            <span class="status-badge pass">✓ PASS</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">OG Description</span>
+            <span class="status-badge pass">✓ PASS</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">Intención de búsqueda</span>
+            <span class="status-badge pass">Comercial ✓</span>
+          </div>
+          <div class="kw-item">
+            <span class="kw-item-name">Canonical configurado</span>
+            <span class="status-badge fail">✗ AUSENTE</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px; font-weight:600; margin-bottom:12px; color:var(--text2);">KEYWORDS SECUNDARIAS A DESARROLLAR</div>
+        <div class="kw-secondary-grid">
+          <div class="kw-tag">AI marketing team</div>
+          <div class="kw-tag">AI sales automation</div>
+          <div class="kw-tag">AI business agents</div>
+          <div class="kw-tag">stop operating AI</div>
+          <div class="kw-tag">AI team as a service</div>
+          <div class="kw-tag">AI agents company</div>
+          <div class="kw-tag">AI for finance teams</div>
+          <div class="kw-tag">AI strategy assistant</div>
+          <div class="kw-tag">30 AI agents platform</div>
+          <div class="kw-tag">AI business automation</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTENT GAPS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <span class="section-title">CONTENT GAP ANALYSIS</span>
+    </div>
+    <p class="section-desc">Páginas y contenidos que el mercado busca y MIRA aún no tiene como URLs indexables.</p>
+
+    <div class="gap-grid">
+      <div class="gap-row header">
+        <span>Tema / Keyword Objetivo</span>
+        <span style="text-align:center;">Prioridad</span>
+        <span style="text-align:center;">Intención</span>
+        <span style="text-align:center;">Tipo</span>
+        <span style="text-align:center;">Score</span>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Custom domain + brand identity <small>Sin dominio, sin SEO real — base bloqueante</small></div>
+        <span class="pill pill-red" style="text-align:center;">Bloqueante</span>
+        <span class="pill pill-high" style="text-align:center;">Base</span>
+        <span class="pill pill-med" style="text-align:center;">Infraestructura</span>
+        <div class="priority-score" style="color:var(--red);">10</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Landing con demo video real o waitlist activo <small>Alta intención — conversión directa</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alta</span>
+        <span class="pill pill-high" style="text-align:center;">Conversión</span>
+        <span class="pill pill-med" style="text-align:center;">Landing</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Página /pricing o /plans <small>Conversión directa — buyers buscan precios</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alta</span>
+        <span class="pill pill-high" style="text-align:center;">Conversión</span>
+        <span class="pill pill-med" style="text-align:center;">Landing</span>
+        <div class="priority-score" style="color:var(--green);">9</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Blog: "How AI Agents Are Replacing Department Tasks" <small>SEO informacional + construcción de autoridad</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alta</span>
+        <span class="pill pill-med" style="text-align:center;">Informacional</span>
+        <span class="pill pill-low" style="text-align:center;">Blog post</span>
+        <div class="priority-score" style="color:var(--green);">8</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Casos de uso por departamento <small>/ai-for-marketing, /ai-for-sales, /ai-for-finance</small></div>
+        <span class="pill pill-high" style="text-align:center;">Alta</span>
+        <span class="pill pill-high" style="text-align:center;">Conversión</span>
+        <span class="pill pill-med" style="text-align:center;">Landings</span>
+        <div class="priority-score" style="color:var(--green);">8</div>
+      </div>
+
+      <div class="gap-row">
+        <div class="gap-topic">Comparativa: MIRA vs alternativas <small>"AI team vs AI tools" — diferenciación de posicionamiento</small></div>
+        <span class="pill pill-med" style="text-align:center;">Media</span>
+        <span class="pill pill-med" style="text-align:center;">Consideración</span>
+        <span class="pill pill-low" style="text-align:center;">Blog/Landing</span>
+        <div class="priority-score" style="color:var(--yellow);">7</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ACTION PLAN -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">07</span>
+      <span class="section-title">PLAN DE ACCIÓN PRIORIZADO</span>
+    </div>
+
+    <!-- CRÍTICO -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--red);"></div>
+        Crítico — Antes del launch
+        <span style="font-size:11px; color:var(--text3); font-weight:400; margin-left:8px;">Bloqueantes absolutos para cualquier SEO real</span>
+      </div>
+      <div class="action-items">
+        <div class="action-item fade-up d1">
+          <div class="action-idx">01</div>
+          <div class="action-text">
+            <strong>Adquirir y conectar custom domain</strong>
+            <span>mira.ai, getmira.io u otro — sin esto, todo el SEO es en arenas movedizas. BLOQUEANTE.</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">1h setup</span>
+          <span class="pill pill-red">Bloqueante</span>
+        </div>
+        <div class="action-item fade-up d2">
+          <div class="action-idx">02</div>
+          <div class="action-text">
+            <strong>Crear robots.ts con /thank-you en noindex</strong>
+            <span>app/robots.ts en Next.js — disallow /thank-you, allow todo lo demás. Pointer al sitemap.</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">10 min</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d3">
+          <div class="action-idx">03</div>
+          <div class="action-text">
+            <strong>Crear sitemap.ts con homepage y futuras páginas</strong>
+            <span>app/sitemap.ts — Next.js lo sirve en /sitemap.xml automáticamente.</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">15 min</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+        <div class="action-item fade-up d4">
+          <div class="action-idx">04</div>
+          <div class="action-text">
+            <strong>Añadir metadataBase + canonical en layout.tsx</strong>
+            <span>metadataBase: new URL('https://tu-dominio.com') y alternates.canonical por página.</span>
+          </div>
+          <span class="status-badge fail" style="text-align:right;">15 min</span>
+          <span class="pill pill-high">Crítico</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALTA PRIORIDAD -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--yellow);"></div>
+        Alta Prioridad — Semana 1 post-launch
+      </div>
+      <div class="action-items">
+        <div class="action-item">
+          <div class="action-idx">05</div>
+          <div class="action-text">
+            <strong>JSON-LD SoftwareApplication u Organization</strong>
+            <span>Posiciona MIRA como plataforma en rich results de Google. Base para Knowledge Panel.</span>
+          </div>
+          <span class="action-effort">1h</span>
+          <span class="pill pill-med">Alto ROI</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">06</div>
+          <div class="action-text">
+            <strong>Actualizar OG url al nuevo dominio</strong>
+            <span>layout.tsx — openGraph.url: 'https://nuevo-dominio.com'. 1 línea de código.</span>
+          </div>
+          <span class="action-effort">5 min</span>
+          <span class="pill pill-med">Fácil</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">07</div>
+          <div class="action-text">
+            <strong>Añadir noindex a /thank-you</strong>
+            <span>En app/thank-you/page.tsx: export const metadata = &#123; robots: &#123; index: false &#125; &#125;</span>
+          </div>
+          <span class="action-effort">5 min</span>
+          <span class="pill pill-med">Fácil</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">08</div>
+          <div class="action-text">
+            <strong>Optimizar meta description a menos de 160 chars</strong>
+            <span>Recortar: "MIRA is the AI team that runs your departments. 30 agents across Marketing, Sales, Strategy &amp; Finance. You direct, they execute." (~148 chars)</span>
+          </div>
+          <span class="action-effort">15 min</span>
+          <span class="pill pill-med">Medio</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEDIA PRIORIDAD -->
+    <div class="action-section">
+      <div class="action-section-title">
+        <div class="dot" style="background:var(--blue);"></div>
+        Prioridad Media — Este mes
+      </div>
+      <div class="action-items">
+        <div class="action-item">
+          <div class="action-idx">09</div>
+          <div class="action-text">
+            <strong>Páginas por departamento (/ai-for-marketing, /ai-for-sales)</strong>
+            <span>Long-tail de alta intención. "AI marketing team for companies" — tráfico cualificado bajo competencia.</span>
+          </div>
+          <span class="action-effort">1 semana</span>
+          <span class="pill pill-low">Contenido</span>
+        </div>
+        <div class="action-item">
+          <div class="action-idx">10</div>
+          <div class="action-text">
+            <strong>Blog con casos de uso de AI en empresas</strong>
+            <span>Tráfico informacional + E-E-A-T + construcción de autoridad de dominio. Recurrente post-launch.</span>
+          </div>
+          <span class="action-effort">Recurrente</span>
+          <span class="pill pill-low">Contenido</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- POSITIVES -->
+<section style="border-bottom:none;">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">08</span>
+      <span class="section-title">PUNTOS FUERTES</span>
+    </div>
+    <p class="section-desc">Lo que MIRA hace bien y debe mantener como base para el SEO.</p>
+    <div class="positive-grid">
+      <div class="positive-card fade-up d1">
+        <div class="positive-icon">📊</div>
+        <div class="positive-title">GTM instalado y activo desde día 1</div>
+        <div class="positive-desc">GTM-5QZTPDX5 configurado con strategy="beforeInteractive". Analytics operativo antes del lanzamiento.</div>
+      </div>
+      <div class="positive-card fade-up d2">
+        <div class="positive-icon">📤</div>
+        <div class="positive-title">OG + Twitter Cards correctos</div>
+        <div class="positive-desc">Sharing profesional en LinkedIn, Twitter y WhatsApp. og-image.png (1200×630) — dimensiones perfectas.</div>
+      </div>
+      <div class="positive-card fade-up d3">
+        <div class="positive-icon">✏️</div>
+        <div class="positive-title">Title memorable y diferenciador</div>
+        <div class="positive-desc">"Stop Operating. Start Directing." — posicionamiento único. Imposible confundir MIRA con otra herramienta AI genérica.</div>
+      </div>
+      <div class="positive-card fade-up d4">
+        <div class="positive-icon">⚡</div>
+        <div class="positive-title">Stack Next.js en Vercel</div>
+        <div class="positive-desc">Base técnica correcta para SSG. Core Web Vitals favorables, CDN global, código splitting automático.</div>
+      </div>
+      <div class="positive-card fade-up d5">
+        <div class="positive-icon">🖼️</div>
+        <div class="positive-title">og-image.png 1200×630</div>
+        <div class="positive-desc">Dimensiones perfectas para todas las plataformas. Muchos proyectos tienen imágenes OG mal dimensionadas.</div>
+      </div>
+      <div class="positive-card fade-up d6">
+        <div class="positive-icon">🧠</div>
+        <div class="positive-title">Concepto diferenciador: "AI team"</div>
+        <div class="positive-desc">"AI team" vs "AI tool" — posicionamiento semántico claro. 30 agentes por departamento es keyword de nicho con baja competencia actual.</div>
+      </div>
+    </div>
+
+    <!-- RESUMEN FINAL -->
+    <div style="margin-top:40px; background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:28px; position:relative; overflow:hidden;">
+      <div style="position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg, var(--yellow), var(--cyan));"></div>
+      <div style="font-family:var(--display); font-size:20px; letter-spacing:1.5px; margin-bottom:12px;">RESUMEN EJECUTIVO</div>
+      <div style="color:var(--text2); font-size:14px; line-height:1.8; max-width:700px;">
+        MIRA está en pre-lanzamiento y el estado SEO refleja esa realidad: buenas intenciones (GTM, OG, title memorable)
+        pero sin la infraestructura básica (robots, sitemap, canonical, dominio).
+        A diferencia de otros proyectos, <strong style="color:var(--text);">el problema #1 no es código — es estrategia</strong>:
+        sin custom domain, cualquier SEO es inversión en arenas movedizas.
+        <br/><br/>
+        Prioridad absoluta: <strong style="color:var(--yellow);">dominio → robots → sitemap → canonical</strong>.
+        1 hora de trabajo desbloquea el 80% del potencial.
+        <br/><br/>
+        <strong style="color:var(--text);">Si solo puedes hacer 3 cosas:</strong>
+      </div>
+      <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:20px;">
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--red); line-height:1;">1</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">Conseguir el dominio</div>
+          <div style="font-size:11px; color:var(--text3);">mira.ai / getmira.io · 1h</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--yellow); line-height:1;">2</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">robots.ts + sitemap.ts</div>
+          <div style="font-size:11px; color:var(--text3);">Next.js · 25 min</div>
+        </div>
+        <div style="background:var(--bg); border:1px solid var(--border2); border-radius:8px; padding:16px; text-align:center;">
+          <div style="font-family:var(--display); font-size:36px; color:var(--cyan); line-height:1;">3</div>
+          <div style="font-size:12px; color:var(--text); font-weight:600; margin-top:6px;">metadataBase + canonical</div>
+          <div style="font-size:11px; color:var(--text3);">layout.tsx · 15 min</div>
+        </div>
+      </div>
+      <div style="margin-top:20px; font-family:var(--mono); font-size:12px; color:var(--text3); display:flex; align-items:center; gap:8px;">
+        Con esos 3 pasos el score sube de
+        <span style="color:var(--yellow); font-size:14px; font-weight:700;">56/100</span>
+        →
+        <span style="color:var(--green); font-size:14px; font-weight:700;">~74/100</span>
+        (con dominio propio)
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container" style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+    <div style="display:flex; align-items:center; gap:14px;">
+      <img src="/logo-sf.svg" alt="Startup Factory" style="height:22px; width:auto; opacity:.5;"/>
+      <span style="color:var(--text3);">Preparado por Startup Factory</span>
+    </div>
+    <span style="color:var(--text3);">SEO Audit · mira-landing-chi.vercel.app · 2026-05-15 · Score: <span style="color:var(--yellow);">56/100</span> · 10 recomendaciones</span>
+  </div>
+</footer>
+
+</body>
+</html>

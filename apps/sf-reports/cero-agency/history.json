@@ -1,0 +1,27 @@
+{
+  "versions": [
+    {
+      "v": "001",
+      "type": "index.html",
+      "date": "2026-05-18T07:27:38.774Z",
+      "hash": "27842ce64d377b358fa64b22f026168e",
+      "size": 7629
+    },
+    {
+      "v": "002",
+      "type": "content.html",
+      "date": "2026-05-18T07:27:38.774Z",
+      "hash": "687c2ec07fe28eab2d054e35d7b86b09",
+      "size": 46996
+    },
+    {
+      "v": "003",
+      "type": "briefing.html",
+      "date": "2026-05-18T07:27:38.775Z",
+      "hash": "f879b5071c6903f18e570163331cd3f3",
+      "size": 41879
+    }
+  ],
+  "latest": "003",
+  "lastUpdated": "2026-05-18T07:27:38.775Z"
+}

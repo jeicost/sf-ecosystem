@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marketing Audit — salsaburgers.com · Startup Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#06070d;--surface:#0c0e1a;--surface2:#121526;--surface3:#181c30;--border:#1a1e35;--border2:#252a45;--accent:#ff0000;--accent2:#ff4444;--teal:#00cec9;--orange:#fd7b4d;--green:#00b894;--yellow:#fdcb6e;--red:#e17055;--blue:#4a90d9;--text:#e8eaf6;--text2:#8890b8;--text3:#4a5070;--mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.65;overflow-x:hidden;}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.5;}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+nav{border-bottom:1px solid var(--border);background:rgba(6,7,13,.93);backdrop-filter:blur(14px);position:sticky;top:0;z-index:100;padding:16px 0;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;}
+.logo img{height:28px;width:auto;}
+.logo-sep{color:var(--border2);margin:0 4px;}
+.logo-label{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.nav-meta{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.tag{padding:3px 9px;border-radius:4px;border:1px solid var(--border2);color:var(--teal);background:#00cec908;}
+/* HERO */
+.hero{padding:60px 0 48px;border-bottom:1px solid var(--border);position:relative;overflow:hidden;}
+.hero::after{content:'MKT';position:absolute;right:-10px;top:-10px;font-family:var(--display);font-size:220px;font-weight:800;color:#ffffff03;line-height:1;pointer-events:none;}
+.hero-grid{display:grid;grid-template-columns:1fr auto;gap:48px;align-items:center;}
+@media(max-width:640px){.hero-grid{grid-template-columns:1fr;}.score-block{display:none;}}
+.eyebrow{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;}
+.hero-title{font-family:var(--display);font-size:clamp(32px,5vw,58px);font-weight:800;line-height:1.05;margin-bottom:14px;}
+.hero-title span{color:var(--accent);}
+.hero-sub{color:var(--text2);font-size:14px;max-width:520px;line-height:1.7;}
+.score-block{text-align:center;flex-shrink:0;}
+.score-big{font-family:var(--display);font-size:80px;font-weight:800;line-height:1;color:var(--yellow);letter-spacing:-2px;}
+.score-denom{font-family:var(--mono);font-size:13px;color:var(--text3);margin-top:4px;}
+.score-label2{font-family:var(--mono);font-size:9px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;}
+/* DIMENSIONS GRID */
+.dims{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:32px 0;border-bottom:1px solid var(--border);}
+@media(max-width:700px){.dims{grid-template-columns:1fr 1fr;}}
+@media(max-width:440px){.dims{grid-template-columns:1fr;}}
+.dim-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;position:relative;overflow:hidden;}
+.dim-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--dim-color,var(--accent));}
+.dim-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.dim-score{font-family:var(--display);font-size:32px;font-weight:800;line-height:1;margin-bottom:6px;}
+.dim-bar{height:4px;background:var(--border2);border-radius:2px;overflow:hidden;margin-bottom:8px;}
+.dim-fill{height:100%;border-radius:2px;background:var(--dim-color,var(--accent));}
+.dim-note{font-size:11px;color:var(--text2);}
+/* SECTIONS */
+.section{padding:44px 0;border-bottom:1px solid var(--border);}
+.section:last-child{border-bottom:none;}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:30px;}
+.sec-icon{width:36px;height:36px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);display:grid;place-items:center;font-size:16px;flex-shrink:0;}
+.sec-title{font-family:var(--display);font-size:22px;font-weight:700;}
+.sec-sub{font-size:13px;color:var(--text2);}
+/* FINDING CARDS */
+.findings{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:640px){.findings{grid-template-columns:1fr;}}
+.finding{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px 20px;}
+.finding.good{border-left:3px solid var(--green);}
+.finding.warn{border-left:3px solid var(--yellow);}
+.finding.bad{border-left:3px solid var(--red);}
+.finding-head{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.finding-dot{width:6px;height:6px;border-radius:50%;}
+.finding-dot.good{background:var(--green);}
+.finding-dot.warn{background:var(--yellow);}
+.finding-dot.bad{background:var(--red);}
+.finding-title{font-family:var(--display);font-size:14px;font-weight:700;letter-spacing:.5px;}
+.finding-desc{font-size:12px;color:var(--text2);line-height:1.55;}
+/* QUICK WINS */
+.qw-list{display:flex;flex-direction:column;gap:10px;}
+.qw{display:grid;grid-template-columns:36px 1fr 90px;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+@media(max-width:560px){.qw{grid-template-columns:1fr;}}
+.qw-num{width:36px;height:36px;border-radius:8px;background:var(--surface2);border:1px solid var(--border2);display:grid;place-items:center;font-family:var(--mono);font-size:12px;color:var(--text2);flex-shrink:0;}
+.qw-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.qw-desc{font-size:12px;color:var(--text2);}
+.effort{font-family:var(--mono);font-size:10px;padding:4px 8px;border-radius:4px;text-align:center;white-space:nowrap;}
+.effort.easy{background:#00b89415;color:var(--green);border:1px solid #00b89430;}
+.effort.medium{background:#fdcb6e15;color:var(--yellow);border:1px solid #fdcb6e30;}
+.effort.hard{background:#e1705515;color:var(--red);border:1px solid #e1705530;}
+/* EEAT */
+.eeat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:700px){.eeat-grid{grid-template-columns:repeat(2,1fr);}}
+.eeat-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;text-align:center;}
+.eeat-label{font-family:var(--mono);font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.eeat-score{font-family:var(--display);font-size:28px;font-weight:700;margin-bottom:6px;}
+.eeat-note{font-size:11px;color:var(--text2);}
+footer{padding:32px 0;text-align:center;font-family:var(--mono);font-size:10px;color:var(--text3);border-top:1px solid var(--border);}
+</style>
+</head>
+<body>
+<nav><div class="wrap"><div class="nav-inner">
+  <div class="logo"><img src="/logo-sf.svg" alt="Startup Factory"/><span class="logo-sep">·</span><span class="logo-label">MARKETING AUDIT</span></div>
+  <div class="nav-meta"><span class="tag">salsaburgers.com</span><span>MAY 2026</span><a href="index.html" style="color:var(--text3);text-decoration:none;border:1px solid var(--border2);padding:3px 9px;border-radius:4px;">← Hub</a></div>
+</div></div></nav>
+
+<div class="wrap">
+<div class="hero">
+  <div class="hero-grid">
+    <div>
+      <div class="eyebrow">Startup Factory · SF Marketing Audit</div>
+      <div class="hero-title">MARKETING AUDIT<br/><span>SALSA BURGERS</span></div>
+      <div class="hero-sub">Diagnóstico de brand, conversion funnel, social presence y estrategia digital para Salsa Burgers Bangkok — Premium Wagyu Ghost Kitchen.</div>
+    </div>
+    <div class="score-block">
+      <div class="score-big">65</div>
+      <div class="score-denom">/ 100</div>
+      <div class="score-label2">Marketing Score</div>
+    </div>
+  </div>
+</div>
+
+<div class="dims">
+  <div class="dim-card" style="--dim-color:#ff0000;">
+    <div class="dim-label">Brand Identity</div>
+    <div class="dim-score" style="color:#ff0000;">87</div>
+    <div class="dim-bar"><div class="dim-fill" style="width:87%;"></div></div>
+    <div class="dim-note">Identidad visual fuerte. Wagyu + salsas artesanas = USP claro y diferenciado.</div>
+  </div>
+  <div class="dim-card" style="--dim-color:#00b894;">
+    <div class="dim-label">Conversion Funnel</div>
+    <div class="dim-score" style="color:#00b894;">80</div>
+    <div class="dim-bar"><div class="dim-fill" style="width:80%;"></div></div>
+    <div class="dim-note">ORDER NOW en nav, bottom sheet modal, Grab + LINE MAN integrados.</div>
+  </div>
+  <div class="dim-card" style="--dim-color:#fdcb6e;">
+    <div class="dim-label">Social Media</div>
+    <div class="dim-score" style="color:#fdcb6e;">35</div>
+    <div class="dim-bar"><div class="dim-fill" style="width:35%;"></div></div>
+    <div class="dim-note">Links en footer pero sin feed integrado ni prueba de actividad en web.</div>
+  </div>
+  <div class="dim-card" style="--dim-color:#4a90d9;">
+    <div class="dim-label">Content Marketing</div>
+    <div class="dim-score" style="color:#4a90d9;">40</div>
+    <div class="dim-bar"><div class="dim-fill" style="width:40%;"></div></div>
+    <div class="dim-note">4 posts de blog con buen contenido pero sin publicación desde Marzo 2025.</div>
+  </div>
+  <div class="dim-card" style="--dim-color:#00cec9;">
+    <div class="dim-label">Lead Capture</div>
+    <div class="dim-score" style="color:#00cec9;">55</div>
+    <div class="dim-bar"><div class="dim-fill" style="width:55%;"></div></div>
+    <div class="dim-note">Formulario de contacto + WhatsApp bot. Sin email newsletter ni loyalty program.</div>
+  </div>
+  <div class="dim-card" style="--dim-color:#fd7b4d;">
+    <div class="dim-label">Local Marketing</div>
+    <div class="dim-score" style="color:#fd7b4d;">70</div>
+    <div class="dim-bar"><div class="dim-fill" style="width:70%;"></div></div>
+    <div class="dim-note">Schema local activo, dirección correcta, horarios. Sin embed de Google Maps.</div>
+  </div>
+</div>
+
+<!-- BRAND -->
+<div class="section">
+  <div class="sec-head"><div class="sec-icon">🔥</div><div><div class="sec-title">BRAND &amp; POSICIONAMIENTO</div><div class="sec-sub">Identidad visual, propuesta de valor y consistencia de marca</div></div></div>
+  <div class="findings">
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">USP MUY CLARO</div></div>
+      <div class="finding-desc">Wagyu beef + 16 artisan sauces made daily. Propuesta diferenciada, premium y memorable. No es "another burger delivery" — hay razón de ser específica.</div>
+    </div>
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">IDENTIDAD VISUAL FUERTE</div></div>
+      <div class="finding-desc">Rojo/negro/amarillo consistente. Tipografía bold y agresiva que transmite energía. "DIP NOW THINK LATER" es un tagline memorable. Diseño premium que justifica el precio.</div>
+    </div>
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">PRODUCTO HERO BIEN DESTACADO</div></div>
+      <div class="finding-desc">Video hero del burger, sección de salsas con carrusel interactivo de 16 sabores, RitualSteps explicando el proceso. El producto se comunica correctamente.</div>
+    </div>
+    <div class="finding warn">
+      <div class="finding-head"><div class="finding-dot warn"></div><div class="finding-title">SIN GOOGLE MY BUSINESS LINK</div></div>
+      <div class="finding-desc">La dirección está en el site y en schema, pero no hay link visible a Google My Business / Maps. El 60%+ de búsquedas locales de restaurantes terminan en GMB. Es el canal más directo hacia pedidos.</div>
+    </div>
+  </div>
+</div>
+
+<!-- FUNNEL -->
+<div class="section">
+  <div class="sec-head"><div class="sec-icon">🎯</div><div><div class="sec-title">CONVERSION FUNNEL</div><div class="sec-sub">CTA clarity, order flow y friction points</div></div></div>
+  <div class="findings">
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">ORDER NOW SIEMPRE VISIBLE</div></div>
+      <div class="finding-desc">Botón ORDER NOW en la nav sticky. Visible en todo momento durante el scroll. Color rojo con alto contraste. Bottom sheet modal en mobile — UX nativa y sin fricción.</div>
+    </div>
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">GRAB + LINE MAN INTEGRADOS</div></div>
+      <div class="finding-desc">Dos plataformas de delivery con CTAs directos y links funcionales. Cubre el 95%+ del mercado de delivery en Bangkok. Flujo de conversión completo.</div>
+    </div>
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">WHATSAPP BUSINESS ACTIVO</div></div>
+      <div class="finding-desc">Bot de WhatsApp +66 838 291 723 integrado en el chatbot del site. Canal directo para atención al cliente y pedidos personalizados. Respuesta en idioma tailandés/inglés.</div>
+    </div>
+    <div class="finding warn">
+      <div class="finding-head"><div class="finding-dot warn"></div><div class="finding-title">SIN CAPTACIÓN DE EMAIL</div></div>
+      <div class="finding-desc">No hay newsletter ni email capture. Una base de emails propia es el activo de marketing más rentable a largo plazo (coste ~0, retorno directo). Ideal para promos, nuevos lanzamientos de salsas, descuentos en horario bajo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- SOCIAL & CONTENT -->
+<div class="section">
+  <div class="sec-head"><div class="sec-icon">📱</div><div><div class="sec-title">SOCIAL MEDIA &amp; CONTENIDO</div><div class="sec-sub">Presencia, engagement y estrategia de contenido</div></div></div>
+  <div class="findings">
+    <div class="finding warn">
+      <div class="finding-head"><div class="finding-dot warn"></div><div class="finding-title">REDES SOCIALES: LINKS SIN PROOF</div></div>
+      <div class="finding-desc">Footer linkea a Instagram, TikTok, Facebook, X, LinkedIn. Pero el site no muestra ningún post, follower count ni prueba de actividad. Un visitante no sabe si las cuentas están activas o abandonadas.</div>
+    </div>
+    <div class="finding warn">
+      <div class="finding-head"><div class="finding-dot warn"></div><div class="finding-title">BLOG SIN ACTUALIZAR (2 MESES)</div></div>
+      <div class="finding-desc">4 posts de calidad, último publicado en Marzo 2025. Para un restaurante de food delivery, el contenido fresco es crítico tanto para SEO como para señalar actividad a clientes potenciales.</div>
+    </div>
+    <div class="finding bad">
+      <div class="finding-head"><div class="finding-dot bad"></div><div class="finding-title">SIN FEED DE INSTAGRAM EN WEB</div></div>
+      <div class="finding-desc">Para un restaurante premium, las fotos de comida son el contenido de mayor conversión. Un feed de Instagram embebido mostraría el producto en contexto real, generaría prueba social continua y capturaría seguidores desde el site.</div>
+    </div>
+    <div class="finding good">
+      <div class="finding-head"><div class="finding-dot good"></div><div class="finding-title">SECCIÓN DE REVIEWS ACTIVA</div></div>
+      <div class="finding-desc">SalsaIcons muestra reviews reales de clientes en carrusel. AggregateRating en schema para rich snippets. La prueba social está presente y bien ejecutada.</div>
+    </div>
+  </div>
+</div>
+
+<!-- E-E-A-T -->
+<div class="section">
+  <div class="sec-head"><div class="sec-icon">⭐</div><div><div class="sec-title">TRUST &amp; AUTORIDAD (E-E-A-T)</div><div class="sec-sub">Experiencia, expertise, authoritativeness, trustworthiness</div></div></div>
+  <div class="eeat-grid">
+    <div class="eeat-card">
+      <div class="eeat-label">Experience</div>
+      <div class="eeat-score" style="color:#00b894;">Strong</div>
+      <div class="eeat-note">Videos propios, fotos del producto, sección Ritual Steps mostrando el proceso artesanal.</div>
+    </div>
+    <div class="eeat-card">
+      <div class="eeat-label">Expertise</div>
+      <div class="eeat-score" style="color:#fdcb6e;">Present</div>
+      <div class="eeat-note">16 salsas artesanas + Wagyu posicionan expertise culinario. Falta contenido educativo más profundo.</div>
+    </div>
+    <div class="eeat-card">
+      <div class="eeat-label">Authority</div>
+      <div class="eeat-score" style="color:#fdcb6e;">Present</div>
+      <div class="eeat-note">Reviews reales + schema AggregateRating. Sin menciones de prensa ni awards visibles en site.</div>
+    </div>
+    <div class="eeat-card">
+      <div class="eeat-label">Trust</div>
+      <div class="eeat-score" style="color:#00b894;">Strong</div>
+      <div class="eeat-note">HTTPS, dirección física, formulario de contacto, horarios, WhatsApp directo. Base sólida de confianza.</div>
+    </div>
+  </div>
+</div>
+
+<!-- QUICK WINS -->
+<div class="section">
+  <div class="sec-head"><div class="sec-icon">⚡</div><div><div class="sec-title">QUICK WINS</div><div class="sec-sub">Acciones de alto impacto ordenadas por esfuerzo vs retorno</div></div></div>
+  <div class="qw-list">
+    <div class="qw">
+      <div class="qw-num">01</div>
+      <div><div class="qw-title">Añadir enlace a Google My Business en el footer</div><div class="qw-desc">15 minutos de trabajo. El 60% de búsquedas "restaurant near me" terminan en GMB. Link directo desde el site aumenta las visitas al perfil y las conversiones locales.</div></div>
+      <span class="effort easy">Fácil · Alto ROI</span>
+    </div>
+    <div class="qw">
+      <div class="qw-num">02</div>
+      <div><div class="qw-title">Popup/banner de email capture con descuento de bienvenida</div><div class="qw-desc">"10% off your first order — join the Salsa community". Con 1.000 emails capturados, cada newsletter tiene valor directo en pedidos. La lista es el activo más valioso a largo plazo.</div></div>
+      <span class="effort easy">Fácil · Retorno largo plazo</span>
+    </div>
+    <div class="qw">
+      <div class="qw-num">03</div>
+      <div><div class="qw-title">Publicar 1 post de Instagram embebido o feed automático</div><div class="qw-desc">Para food delivery, las fotos de comida son el contenido de mayor conversión. Un feed embebido muestra actividad real, fotos del producto y capta seguidores sin salir del site.</div></div>
+      <span class="effort medium">Medio · Conversión alta</span>
+    </div>
+    <div class="qw">
+      <div class="qw-num">04</div>
+      <div><div class="qw-title">1 blog post/mes con keywords de alta intención</div><div class="qw-desc">"Best Wagyu Burgers Bangkok Delivery 2026" captura tráfico transaccional de alto valor con baja competencia. Cada post se indexa como página nueva y genera tráfico compuesto mes a mes.</div></div>
+      <span class="effort medium">Medio · Crecimiento orgánico</span>
+    </div>
+    <div class="qw">
+      <div class="qw-num">05</div>
+      <div><div class="qw-title">Añadir sección "As Seen In" o testimonials de prensa</div><div class="qw-desc">Si hay menciones en blogs food, influencers o prensa local de Bangkok — mostrarlos en el site aumenta autoridad percibida y confianza de visitantes nuevos. Social proof de terceros convierte mejor que el propio.</div></div>
+      <span class="effort easy">Fácil · Trust signal</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<footer><div class="wrap">Startup Factory · SF Marketing Audit · salsaburgers.com · May 2026</div></footer>
+</body>
+</html>

@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marketing Audit — discoolver.com</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06070d;--surface:#0c0e1a;--surface2:#121526;--surface3:#181c30;
+  --border:#1a1e35;--border2:#252a45;
+  --accent:#FF00C8;--accent2:#ff6ee0;
+  --teal:#00D4FF;--orange:#fd7b4d;--green:#00b894;--yellow:#fdcb6e;--red:#e17055;--blue:#4a90d9;
+  --text:#e8eaf6;--text2:#8890b8;--text3:#4a5070;
+  --mono:'DM Mono',monospace;--sans:'DM Sans',sans-serif;--display:'Syne',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.65;overflow-x:hidden}
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.5}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+nav{border-bottom:1px solid var(--border);background:rgba(6,7,13,.93);backdrop-filter:blur(14px);position:sticky;top:0;z-index:100;padding:16px 0}
+.nav-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:12px}
+.logo img{height:26px}
+.logo-div{width:1px;height:18px;background:var(--border2)}
+.logo-label{font-family:var(--mono);font-size:11px;color:var(--text3);letter-spacing:.08em}
+.nav-meta{display:flex;gap:12px;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3)}
+.tag{padding:3px 9px;border-radius:4px;border:1px solid var(--border2);color:var(--teal);background:rgba(0,212,255,.05)}
+nav a{color:var(--accent);text-decoration:none;font-family:var(--mono);font-size:10px}
+.hero{padding:56px 0 48px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;top:-80px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(255,0,200,.12) 0%,transparent 70%);pointer-events:none}
+.hero-grid{display:grid;grid-template-columns:200px 1fr;gap:52px;align-items:center}
+.ring-wrap{width:200px;height:200px;position:relative;flex-shrink:0}
+.ring-wrap svg{width:200px;height:200px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--surface2);stroke-width:12}
+.ring-fill{fill:none;stroke:url(#ringG);stroke-width:12;stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:365;animation:ringA 2s cubic-bezier(.4,0,.2,1) .4s both}
+@keyframes ringA{from{stroke-dashoffset:553}to{stroke-dashoffset:365}}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ring-num{font-family:var(--display);font-size:60px;font-weight:800;line-height:1;color:var(--accent)}
+.ring-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px}
+.ring-grade{font-family:var(--display);font-size:12px;color:var(--red);font-weight:700;letter-spacing:2px;margin-top:4px}
+.eyebrow{font-family:var(--mono);font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.hero-title{font-family:var(--display);font-size:36px;font-weight:800;line-height:1.15;margin-bottom:14px}
+.hero-title .hi{background:linear-gradient(90deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-desc{color:var(--text2);font-size:14px;max-width:540px;line-height:1.7}
+.hero-desc strong{color:var(--orange)}
+.score-bars{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:24px}
+.sbar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--accent))}
+.sbar-label{font-size:9px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.sbar-num{font-family:var(--display);font-size:26px;font-weight:700;color:var(--c,var(--text))}
+.sbar-denom{font-family:var(--mono);font-size:9px;color:var(--text3)}
+.sbar-bar{height:3px;background:var(--border);border-radius:2px;margin-top:8px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:2px;background:var(--c,var(--accent));transition:width 1.5s ease .8s}
+.section{padding:48px 0;border-top:1px solid var(--border)}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:28px}
+.sec-icon{width:38px;height:38px;border-radius:9px;background:rgba(255,0,200,.08);border:1px solid rgba(255,0,200,.2);display:grid;place-items:center;font-size:18px;flex-shrink:0}
+.sec-title{font-family:var(--display);font-size:22px;font-weight:800}
+.sec-score{margin-left:auto;font-family:var(--mono);font-size:14px;font-weight:500}
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.dim{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;position:relative;overflow:hidden}
+.dim::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:var(--dc,var(--text3))}
+.dim-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.dim-title{font-weight:600;font-size:14px;line-height:1.3}
+.dim-badge{margin-left:auto;font-family:var(--mono);font-size:9px;padding:3px 8px;border-radius:4px;border:1px solid;white-space:nowrap;flex-shrink:0}
+.badge-ok{color:var(--green);border-color:rgba(0,184,148,.3);background:rgba(0,184,148,.06)}
+.badge-warn{color:var(--yellow);border-color:rgba(253,203,110,.3);background:rgba(253,203,110,.06)}
+.badge-fail{color:var(--red);border-color:rgba(225,112,85,.3);background:rgba(225,112,85,.06)}
+.dim-body{font-size:13px;color:var(--text2);line-height:1.65}
+.qw-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.qw{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.qw::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--accent),var(--teal));margin-bottom:12px;border-radius:1px}
+.qw-num{font-family:var(--mono);font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.qw-text{font-size:13px;line-height:1.55;color:var(--text)}
+.qw-meta{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:8px}
+.priority{display:flex;flex-direction:column;gap:10px}
+.prow{display:grid;grid-template-columns:28px 1fr auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 18px}
+.prow-n{font-family:var(--display);font-size:22px;font-weight:800;color:var(--accent);text-align:center}
+.prow-text{font-size:14px;line-height:1.5}
+.prow-text small{display:block;color:var(--text3);font-size:12px;margin-top:3px}
+.prow-tag{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:4px;border:1px solid var(--border2);color:var(--text3);text-align:center;white-space:nowrap}
+.effort-low{color:var(--green);border-color:rgba(0,184,148,.3)}
+.effort-med{color:var(--yellow);border-color:rgba(253,203,110,.3)}
+.effort-high{color:var(--red);border-color:rgba(225,112,85,.3)}
+.channel-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.channel{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px}
+.channel-name{font-weight:700;font-size:14px;margin-bottom:6px}
+.channel-score{font-family:var(--mono);font-size:22px;font-weight:700}
+.channel-bar{height:4px;background:var(--border);border-radius:2px;margin:8px 0;overflow:hidden}
+.channel-fill{height:100%;border-radius:2px}
+.channel-note{font-size:12px;color:var(--text3)}
+footer{padding:40px 0;border-top:1px solid var(--border);margin-top:48px}
+.footer-inner{display:flex;justify-content:space-between;align-items:center}
+.footer-right{font-family:var(--mono);font-size:10px;color:var(--text3);text-align:right;line-height:1.8}
+@media(max-width:768px){.hero-grid,.dim-grid,.qw-list,.score-bars,.channel-grid{grid-template-columns:1fr}.hero-grid{gap:24px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <div class="nav-inner">
+      <div class="logo">
+        <img src="/logo-sf.svg" alt="Startup Factory"/>
+        <div class="logo-div"></div>
+        <div class="logo-label">Informe Marketing</div>
+      </div>
+      <div class="nav-meta">
+        <span class="tag">discoolver.com</span>
+        <span>Mayo 2025</span>
+        <a href="index.html">← Hub</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grid">
+      <div class="ring-wrap">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="ringG" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%" stop-color="#FF00C8"/>
+              <stop offset="100%" stop-color="#00D4FF"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="100" cy="100" r="88"/>
+          <circle class="ring-fill" cx="100" cy="100" r="88"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-num">34</div>
+          <div class="ring-sub">/ 100</div>
+          <div class="ring-grade">CRÍTICO</div>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow">SF · Auditoría Marketing · 2025</div>
+        <div class="hero-title">Marketing de <span class="hi">discoolver</span><br>no refleja el producto</div>
+        <div class="hero-desc">Producto validado con casos reales, Premio Hospitality 2021 y partnerships institucionales — pero sin estrategia de marketing digital activa. <strong>Sin presencia en LinkedIn, sin blog, sin contenido que genere demanda B2B.</strong> La oportunidad es enorme para quien tome la delantera en el sector.</div>
+        <div class="score-bars">
+          <div class="sbar" style="--c:var(--yellow)"><div class="sbar-label">Estrategia</div><div class="sbar-num">45<span class="sbar-denom">/100</span></div><div class="sbar-bar"><div class="sbar-fill" style="width:45%"></div></div></div>
+          <div class="sbar" style="--c:var(--red)"><div class="sbar-label">Contenidos</div><div class="sbar-num">20<span class="sbar-denom">/100</span></div><div class="sbar-bar"><div class="sbar-fill" style="width:20%"></div></div></div>
+          <div class="sbar" style="--c:var(--yellow)"><div class="sbar-label">Brand</div><div class="sbar-num">60<span class="sbar-denom">/100</span></div><div class="sbar-bar"><div class="sbar-fill" style="width:60%"></div></div></div>
+          <div class="sbar" style="--c:var(--red)"><div class="sbar-label">Digital</div><div class="sbar-num">22<span class="sbar-denom">/100</span></div><div class="sbar-bar"><div class="sbar-fill" style="width:22%"></div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESTRATEGIA -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-icon">🧭</div>
+      <div class="sec-title">Estrategia de Marketing</div>
+      <div class="sec-score" style="color:var(--yellow)">45/100</div>
+    </div>
+    <div class="dim-grid">
+      <div class="dim" style="--dc:var(--green)">
+        <div class="dim-head"><div class="dim-title">Propuesta de valor clara y diferenciada</div><div class="dim-badge badge-ok">FORTALEZA</div></div>
+        <div class="dim-body">discoolver tiene una propuesta de valor sólida: SaaS todo-en-uno para destinos turísticos con módulos complementarios (Marketplace, POS, Plan My Trip, Calendario, BI). El diferenciador de "no necesitas app propia" y la integración en la web existente del destino elimina la fricción de adopción. Esta propuesta está bien articulada en los documentos internos pero no en los canales digitales.</div>
+      </div>
+      <div class="dim" style="--dc:var(--green)">
+        <div class="dim-head"><div class="dim-title">Validación de mercado y casos de éxito reales</div><div class="dim-badge badge-ok">FORTALEZA</div></div>
+        <div class="dim-body">El Proyecto Ronda (200+ negocios locales integrados) y el Proyecto Costa del Sol son prueba social B2B de primer nivel. El Premio Hospitality 2021 del DES para Plan My Trip es un activo de credibilidad rarísimo. El problema no es la validación — es que ninguno de estos casos se está comunicando activamente en canales digitales donde los decisores los pueden encontrar.</div>
+      </div>
+      <div class="dim" style="--dc:var(--red)">
+        <div class="dim-head"><div class="dim-title">Ausencia total de estrategia de generación de demanda</div><div class="dim-badge badge-fail">CRÍTICO</div></div>
+        <div class="dim-body">No existe una estrategia documentada de inbound marketing, content marketing ni account-based marketing para llegar a gestores de destinos turísticos. El modelo de ventas parece ser puramente outbound (ferias, contactos directos) sin ningún canal digital de atracción. En el B2B turístico, el 70% de los decisores investigan opciones online antes de cualquier contacto comercial.</div>
+      </div>
+      <div class="dim" style="--dc:var(--yellow)">
+        <div class="dim-head"><div class="dim-title">Pricing transparente — ventaja competitiva</div><div class="dim-badge badge-warn">OPORTUNIDAD</div></div>
+        <div class="dim-body">Los precios están definidos y son razonables para el sector (€495-€750/módulo/mes). En B2B SaaS, la transparencia de precios en la web puede ser una ventaja competitiva si los competidores no la ofrecen. Actualmente los precios no son visibles en la web, lo que fuerza a los prospects a solicitar una demo antes de conocer la inversión.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTENIDOS -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-icon">📝</div>
+      <div class="sec-title">Marketing de Contenidos</div>
+      <div class="sec-score" style="color:var(--red)">20/100</div>
+    </div>
+    <div class="dim-grid">
+      <div class="dim" style="--dc:var(--red)">
+        <div class="dim-head"><div class="dim-title">Sin blog ni contenido educativo</div><div class="dim-badge badge-fail">CRÍTICO</div></div>
+        <div class="dim-body">No existe sección de blog, recursos, guías ni whitepapers en discoolver.com. El marketing de contenidos es el canal más efectivo para llegar a gestores de destinos turísticos — que buscan información, educación y casos de éxito antes de tomar decisiones de compra. Ningún competidor domina este espacio en España.</div>
+      </div>
+      <div class="dim" style="--dc:var(--red)">
+        <div class="dim-head"><div class="dim-title">Presencia en redes sociales casi inexistente</div><div class="dim-badge badge-fail">CRÍTICO</div></div>
+        <div class="dim-body">No se identifica presencia activa en LinkedIn, Instagram ni TikTok. LinkedIn es el canal primario para llegar a directores de turismo, concejales de turismo y gestores de DMOs. Sin presencia en LinkedIn, discoolver es invisible para sus compradores durante la fase de investigación y consideración.</div>
+      </div>
+      <div class="dim" style="--dc:var(--red)">
+        <div class="dim-head"><div class="dim-title">Casos de éxito no publicados digitalmente</div><div class="dim-badge badge-fail">CRÍTICO</div></div>
+        <div class="dim-body">El Proyecto Ronda y el Proyecto Costa del Sol son activos de marketing de primer nivel que no están siendo comunicados. Un case study bien producido (datos, antes/después, testimonio del director del destino) puede cerrar más ventas que 10 demos en frío. Actualmente estos casos no existen en formato digital publicado.</div>
+      </div>
+      <div class="dim" style="--dc:var(--yellow)">
+        <div class="dim-head"><div class="dim-title">Premio Hospitality 2021 — activo sin explotar</div><div class="dim-badge badge-warn">OPORTUNIDAD</div></div>
+        <div class="dim-body">El Premio Hospitality 2021 para Plan My Trip otorgado en el Digital Enterprise Show (DES) debería aparecer en la home de discoolver.com, en todos los materiales de ventas y en la firma de email. Es el equivalente a un "as visto en..." que genera confianza inmediata en compradores B2B.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRAND -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-icon">🎨</div>
+      <div class="sec-title">Identidad de Marca</div>
+      <div class="sec-score" style="color:var(--yellow)">60/100</div>
+    </div>
+    <div class="dim-grid">
+      <div class="dim" style="--dc:var(--green)">
+        <div class="dim-head"><div class="dim-title">Identidad visual sólida y distintiva</div><div class="dim-badge badge-ok">FORTALEZA</div></div>
+        <div class="dim-body">El isotipo ◑▶ en magenta (#FF00C8) es único y memorable en el sector turístico tech. El nombre "discoolver" (discover + cooler) funciona en varios idiomas. La paleta magenta/slate/cyan es visualmente impactante y diferente de los azules corporativos típicos del sector.</div>
+      </div>
+      <div class="dim" style="--dc:var(--green)">
+        <div class="dim-head"><div class="dim-title">Aplicaciones de marca consistentes</div><div class="dim-badge badge-ok">POSITIVO</div></div>
+        <div class="dim-body">La marca se aplica consistentemente en presentaciones, dossiers, propuestas y documentación comercial. Los materiales revisados (Propuesta Digitalización de Destino, Dossier de Servicios) tienen una presentación visual profesional y coherente con la identidad de marca.</div>
+      </div>
+      <div class="dim" style="--dc:var(--yellow)">
+        <div class="dim-head"><div class="dim-title">discoolver 360 — sub-marca sin estrategia clara</div><div class="dim-badge badge-warn">REVISAR</div></div>
+        <div class="dim-body">Existe un sub-branding "discoolver 360" que aparece en algunos materiales de pricing y servicios. No queda claro si es el nombre del producto principal, un tier premium o una línea de servicios separada. La confusión entre "discoolver" y "discoolver 360" puede diluir el mensaje de marca.</div>
+      </div>
+      <div class="dim" style="--dc:var(--yellow)">
+        <div class="dim-head"><div class="dim-title">Sin brand guidelines documentadas</div><div class="dim-badge badge-warn">OPORTUNIDAD</div></div>
+        <div class="dim-body">No existen brand guidelines formales que regulen el uso correcto del logo, tipografía, colores y tono de voz. A medida que el equipo crezca y se incorporen agencias o colaboradores, la consistencia de marca requiere documentación formal.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CANALES DIGITALES -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-icon">📡</div>
+      <div class="sec-title">Canales Digitales</div>
+      <div class="sec-score" style="color:var(--red)">22/100</div>
+    </div>
+    <div class="channel-grid">
+      <div class="channel">
+        <div class="channel-name">LinkedIn</div>
+        <div class="channel-score" style="color:var(--red)">5<span style="font-size:14px;color:var(--text3)">/100</span></div>
+        <div class="channel-bar"><div class="channel-fill" style="width:5%;background:var(--red)"></div></div>
+        <div class="channel-note">Sin perfil de empresa activo identificado. Es el canal B2B más crítico para llegar a gestores de destinos turísticos.</div>
+      </div>
+      <div class="channel">
+        <div class="channel-name">Instagram</div>
+        <div class="channel-score" style="color:var(--red)">15<span style="font-size:14px;color:var(--text3)">/100</span></div>
+        <div class="channel-bar"><div class="channel-fill" style="width:15%;background:var(--red)"></div></div>
+        <div class="channel-note">Presencia mínima. Sin estrategia de contenido identificable. Potencial para humanizar la marca con experiencias locales.</div>
+      </div>
+      <div class="channel">
+        <div class="channel-name">Email Marketing</div>
+        <div class="channel-score" style="color:var(--red)">10<span style="font-size:14px;color:var(--text3)">/100</span></div>
+        <div class="channel-bar"><div class="channel-fill" style="width:10%;background:var(--red)"></div></div>
+        <div class="channel-note">Sin newsletter ni secuencias de nurturing identificadas. Canal crítico para pipeline B2B de ciclo largo.</div>
+      </div>
+      <div class="channel">
+        <div class="channel-name">Web (discoolver.com)</div>
+        <div class="channel-score" style="color:var(--yellow)">42<span style="font-size:14px;color:var(--text3)">/100</span></div>
+        <div class="channel-bar"><div class="channel-fill" style="width:42%;background:var(--yellow)"></div></div>
+        <div class="channel-note">Web existe con buena identidad visual pero sin lead capture, sin blog, sin case studies publicados.</div>
+      </div>
+      <div class="channel">
+        <div class="channel-name">Ferias (Fitur, WTM, DES)</div>
+        <div class="channel-score" style="color:var(--green)">70<span style="font-size:14px;color:var(--text3)">/100</span></div>
+        <div class="channel-bar"><div class="channel-fill" style="width:70%;background:var(--green)"></div></div>
+        <div class="channel-note">Canal offline principal bien ejecutado. Premio DES 2021 valida presencia activa en eventos del sector.</div>
+      </div>
+      <div class="channel">
+        <div class="channel-name">PR / Medios Sectoriales</div>
+        <div class="channel-score" style="color:var(--yellow)">40<span style="font-size:14px;color:var(--text3)">/100</span></div>
+        <div class="channel-bar"><div class="channel-fill" style="width:40%;background:var(--yellow)"></div></div>
+        <div class="channel-note">Menciones históricas por el Premio DES. Sin estrategia activa de PR para casos Ronda y Costa del Sol.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUICK WINS -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-icon">⚡</div>
+      <div class="sec-title">Quick Wins — Primeros 30 días</div>
+    </div>
+    <div class="qw-list">
+      <div class="qw"><div class="qw-num">QW #1 · IMPACTO ALTO</div><div class="qw-text">Crear y optimizar perfil de empresa en LinkedIn. Publicar 3 posts/semana desde el día 1 con la estrategia de 5 pilares definida.</div><div class="qw-meta">Esfuerzo: 2 días · Impacto: +20 leads/mes potenciales</div></div>
+      <div class="qw"><div class="qw-num">QW #2 · IMPACTO ALTO</div><div class="qw-text">Publicar case study Ronda completo en web + LinkedIn: datos concretos, testimonio del director del destino, antes/después.</div><div class="qw-meta">Esfuerzo: 3 días · Impacto: activo de conversión permanente</div></div>
+      <div class="qw"><div class="qw-num">QW #3 · IMPACTO ALTO</div><div class="qw-text">Añadir badge "Premio Hospitality 2021" y logos de partners (SEGITTUR, ITH, ICEX) a la home de discoolver.com.</div><div class="qw-meta">Esfuerzo: 1 día · Impacto: +credibilidad inmediata</div></div>
+      <div class="qw"><div class="qw-num">QW #4 · IMPACTO MEDIO</div><div class="qw-text">Instalar lead capture (demo gratuita CTA) en la home y crear secuencia de email de bienvenida de 3 correos para nuevos leads.</div><div class="qw-meta">Esfuerzo: 3 días · Impacto: captura automática de leads</div></div>
+      <div class="qw"><div class="qw-num">QW #5 · IMPACTO MEDIO</div><div class="qw-text">Identificar y contactar a 50 gestores de destinos turísticos en España vía LinkedIn. Compartir case study Ronda como apertura.</div><div class="qw-meta">Esfuerzo: 1 semana · Impacto: 10 demos estimadas</div></div>
+      <div class="qw"><div class="qw-num">QW #6 · IMPACTO ALTO</div><div class="qw-text">Lanzar newsletter mensual "Turismo Digital by discoolver" para gestores de destino con datos del sector, tendencias y casos.</div><div class="qw-meta">Esfuerzo: Recurrente · Impacto: nurturing B2B de ciclo largo</div></div>
+    </div>
+  </section>
+
+  <!-- PRIORIDADES -->
+  <section class="section">
+    <div class="sec-head">
+      <div class="sec-icon">🚀</div>
+      <div class="sec-title">Plan de Acción</div>
+    </div>
+    <div class="priority">
+      <div class="prow"><div class="prow-n">1</div><div class="prow-text">LinkedIn empresa activo + 3 posts/semana con estrategia de contenidos<small>Semana 1 · Owner: Marketing · Canal B2B más prioritario</small></div><div class="prow-tag effort-low">BAJO ESFUERZO</div></div>
+      <div class="prow"><div class="prow-n">2</div><div class="prow-text">Case study Ronda publicado: web + LinkedIn + PDF descargable<small>Semana 1-2 · Owner: Marketing + CEO · Prueba social clave</small></div><div class="prow-tag effort-low">BAJO ESFUERZO</div></div>
+      <div class="prow"><div class="prow-n">3</div><div class="prow-text">CTA de demo gratuita en home + lead capture + email de bienvenida<small>Semana 2 · Owner: Tech + Marketing · Convierte tráfico existente</small></div><div class="prow-tag effort-med">ESFUERZO MEDIO</div></div>
+      <div class="prow"><div class="prow-n">4</div><div class="prow-text">Newsletter mensual "Turismo Digital" para gestores de destino<small>Mes 1 · Owner: Marketing · Nurturing B2B largo plazo</small></div><div class="prow-tag effort-med">ESFUERZO MEDIO</div></div>
+      <div class="prow"><div class="prow-n">5</div><div class="prow-text">Webinar gratuito mensual: demo de la plataforma + Q&A para gestores<small>Mes 1-2 · Owner: CEO/Ventas · Genera demos cualificadas</small></div><div class="prow-tag effort-med">ESFUERZO MEDIO</div></div>
+      <div class="prow"><div class="prow-n">6</div><div class="prow-text">LinkedIn Ads: Lead Gen Forms dirigidas a "Director de Turismo" en España<small>Mes 2 · Owner: Marketing · Escala la generación de leads</small></div><div class="prow-tag effort-alto">ESFUERZO ALTO</div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <div><img src="/logo-sf.svg" alt="Startup Factory" style="height:22px;opacity:.7"/></div>
+      <div class="footer-right">Startup Factory · Auditoría Marketing<br>discoolver.com · Mayo 2025<br>Puntuación: 34/100 — CRÍTICO</div>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
