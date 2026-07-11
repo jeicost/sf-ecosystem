@@ -116,26 +116,35 @@ export async function POST(req: NextRequest) {
     const textContent = message.content[0]
     if (textContent && 'text' in textContent) {
       const text = textContent.text
-      // First try markdown code blocks
+      // First try markdown code blocks (```json ... ```)
       const codeBlockMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/)
       if (codeBlockMatch) {
         try {
-          output_data = JSON.parse(codeBlockMatch[1])
+          output_data = JSON.parse(codeBlockMatch[1].trim())
         } catch (e) {
           console.error('Failed to parse JSON from code block:', e)
         }
-      } else {
-        // Fallback to direct JSON regex
-        const jsonMatch = text.match(/\{[\s\S]*\}/)
+      }
+
+      // If no code block or parsing failed, try direct JSON extraction
+      if (!Object.keys(output_data).length) {
+        // Try to find JSON object (non-greedy)
+        const jsonMatch = text.match(/\{(?:[^{}]|(?:\{[^{}]*\}))*\}/)
         if (jsonMatch) {
           try {
             output_data = JSON.parse(jsonMatch[0])
           } catch (e) {
-            console.error('Failed to parse JSON from regex:', e)
+            console.error('Failed to parse JSON from direct extraction:', e)
+            // Last resort: try cleaning up and parsing again
+            try {
+              const cleaned = jsonMatch[0].replace(/[\n\r\t]/g, ' ').replace(/\s+/g, ' ')
+              output_data = JSON.parse(cleaned)
+            } catch (e2) {
+              console.error('Final parsing attempt failed:', e2)
+            }
           }
         }
       }
-      console.log('Raw response length:', text.length, 'output_data keys:', Object.keys(output_data))
     }
 
     const processingTime = Date.now() - startTime
