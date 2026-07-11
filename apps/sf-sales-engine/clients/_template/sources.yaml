@@ -1,0 +1,39 @@
+# Fuentes de datos activas para este cliente
+# Desactiva las que no uses para reducir costos
+
+sources:
+  apollo:
+    enabled: true
+    monthly_lead_limit: 100      # Starter=100, Growth=500, Scale=2000
+    filters:
+      job_titles: []             # vacío = usa icp-profile.yaml
+      industries: []
+      geographies: []
+
+  apify_linkedin:
+    enabled: true
+    enrich_profile: true
+    enrich_company: true
+
+  apify_crunchbase:
+    enabled: false               # solo si prospectas startups
+
+  apify_dealroom:
+    enabled: false               # solo para ecosistema VC europeo
+
+  apify_gmaps:
+    enabled: false               # solo para negocios locales
+
+  hunter:
+    enabled: true
+    verify_emails: true
+    discover_missing: true
+
+  tavily:
+    enabled: true
+    news_lookback_days: 30
+
+  notion_sync:
+    enabled: false
+    database_id: ""
+    sync_direction: "bidirectional"   # push_only | pull_only | bidirectional

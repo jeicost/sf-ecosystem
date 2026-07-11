@@ -1,0 +1,12 @@
+# ICP del cliente — snapshot human-readable del Commercial Brain
+# El registro canónico vive en Supabase tabla icp_profiles
+icp_name: ""
+industries: []
+company_sizes: []        # ej: ["11-50", "51-200"]
+geographies: []          # ej: ["México", "Colombia"]
+job_titles: []           # ej: ["CMO", "VP Marketing", "Founder"]
+pain_points: []
+trigger_events: []       # señales de que el prospect está listo
+disqualifiers: []        # quién NO es cliente
+min_budget_usd: 0
+decision_maker_signals: []

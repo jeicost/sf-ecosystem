@@ -1,0 +1,34 @@
+[tool.uv.workspace]
+members = [
+    "apps/api",
+    "apps/worker",
+    "packages/scrapers",
+    "packages/enrichment",
+    "packages/scoring",
+    "packages/notion_sync",
+]
+
+[tool.uv.sources]
+scrapers    = { workspace = true }
+enrichment  = { workspace = true }
+scoring     = { workspace = true }
+notion_sync = { workspace = true }
+api         = { workspace = true }
+worker      = { workspace = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+strict = true
+python_version = "3.12"
+ignore_missing_imports = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["apps", "packages"]

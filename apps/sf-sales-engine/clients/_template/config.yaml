@@ -1,0 +1,26 @@
+# Configuración del cliente — copia esta carpeta a clients/<slug>/
+client_id: ""           # UUID en Supabase (generado al crear el cliente)
+client_slug: ""         # ej: techcorp-mx
+client_name: ""         # ej: TechCorp México
+tier: "starter"         # starter | growth | scale
+
+# Servicios activos
+services:
+  prospector: true
+  outreach_engine: true
+  lead_qualifier: false       # Growth+
+  proposal_builder: false     # Growth+
+  market_intelligence: false  # Growth+
+  vapi_receptionist: false    # Scale
+
+# Configuración de outreach
+outreach:
+  daily_email_limit: 50
+  instantly_campaign_prefix: ""   # ej: TECHCORP_MX_
+  reply_to_email: ""
+  sender_name: ""
+
+# CRM
+crm:
+  primary: "supabase"             # supabase | notion | hubspot
+  notion_database_id: ""          # si primary=notion

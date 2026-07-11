@@ -1,0 +1,22 @@
+client_id: "00000000-0000-0000-0000-000000000001"
+client_slug: "sf-internal"
+client_name: "Startup Factory (interno)"
+tier: "scale"
+
+services:
+  prospector: true
+  outreach_engine: true
+  lead_qualifier: true
+  proposal_builder: true
+  market_intelligence: true
+  vapi_receptionist: false
+
+outreach:
+  daily_email_limit: 100
+  instantly_campaign_prefix: "SF_INTERNAL_"
+  reply_to_email: "carlos@startupsfactory.com"
+  sender_name: "Carlos — Startup Factory"
+
+crm:
+  primary: "notion"
+  notion_database_id: ""    # añadir ID real de la DB de inversores en Notion

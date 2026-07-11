@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0A0A0F;
+  --surface: #111118;
+  --border: #1E1E2A;
+  --text-dim: #666680;
+  --text: #E2E2F0;
+  --accent: #6366F1;
+  --green: #10B981;
+  --yellow: #F59E0B;
+  --blue: #3B82F6;
+  --red: #EF4444;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.badge-hot       { background: rgba(239,68,68,0.12);  color: #F87171;  font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-warm      { background: rgba(245,158,11,0.12); color: #FBBF24;  font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-cold      { background: rgba(59,130,246,0.12); color: #60A5FA;  font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-disqualify{ background: rgba(100,100,120,0.15);color: #666;     font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-prospected{ background: rgba(100,100,120,0.10);color: #888;     font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-contacted { background: rgba(59,130,246,0.10); color: #60A5FA;  font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-replied   { background: rgba(139,92,246,0.10); color: #A78BFA;  font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }
+.badge-won       { background: rgba(16,185,129,0.10); color: #34D399;  font-size:11px; padding:2px 8px; border-radius:99px; font-weight:600; }

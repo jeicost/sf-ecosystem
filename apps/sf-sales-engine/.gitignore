@@ -1,0 +1,33 @@
+# Env
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.uv/
+*.egg-info/
+dist/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+.next/
+.vercel/
+
+# n8n
+n8n-data/
+
+# OS
+.DS_Store
+
+# Secrets
+*.pem
+*.key
+supabase/.temp/

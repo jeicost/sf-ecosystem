@@ -1,0 +1,27 @@
+# Etapas del pipeline (personalizables por cliente)
+# Las etapas base no se pueden eliminar, solo renombrar
+stages:
+  - id: prospected
+    label: "Prospectado"
+    color: "#6B7280"
+  - id: contacted
+    label: "Contactado"
+    color: "#3B82F6"
+  - id: replied
+    label: "Respondió"
+    color: "#8B5CF6"
+  - id: qualified
+    label: "Calificado"
+    color: "#F59E0B"
+  - id: proposal
+    label: "Propuesta enviada"
+    color: "#EF4444"
+  - id: negotiation
+    label: "Negociación"
+    color: "#EC4899"
+  - id: won
+    label: "Cerrado ✓"
+    color: "#10B981"
+  - id: lost
+    label: "Perdido"
+    color: "#374151"

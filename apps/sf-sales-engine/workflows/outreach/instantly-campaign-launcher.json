@@ -1,0 +1,20 @@
+{
+  "name": "[CLIENT]_OUTREACH_INSTANTLY_LAUNCHER",
+  "description": "Envía el icebreaker aprobado via Instantly y registra en outbound_log",
+  "nodes": [
+    { "id": "approval_trigger", "name": "Telegram Approval", "type": "n8n-nodes-base.telegramTrigger", "parameters": {} },
+    { "id": "send_instantly", "name": "Send via Instantly", "type": "n8n-nodes-base.httpRequest",
+      "parameters": { "method": "POST", "url": "https://api.instantly.ai/api/v1/lead/add", "headers": { "Authorization": "Bearer {{ $env.INSTANTLY_API_KEY }}" } }
+    },
+    { "id": "log_outbound", "name": "Log to outbound_log", "type": "n8n-nodes-base.supabase",
+      "parameters": { "operation": "insert", "tableId": "outbound_log" }
+    },
+    { "id": "update_lead", "name": "Update Lead Stage", "type": "n8n-nodes-base.supabase",
+      "parameters": { "operation": "update", "tableId": "leads", "filters": { "id": "={{ $json.lead_id }}" }, "fieldsToUpdate": { "stage": "contacted" } }
+    }
+  ],
+  "connections": {
+    "approval_trigger": { "main": [[ { "node": "send_instantly" } ]] },
+    "send_instantly": { "main": [[ { "node": "log_outbound" }, { "node": "update_lead" } ]] }
+  }
+}

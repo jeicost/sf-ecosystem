@@ -1,0 +1,45 @@
+# ICP de SF para prospección interna — Venture Builders e inversores
+icp_name: "Venture Builder / Inversor Startup LATAM-Europa"
+industries:
+  - "Venture Capital"
+  - "Venture Building"
+  - "Private Equity"
+  - "Startup Studio"
+  - "Accelerator"
+  - "Corporate Innovation"
+company_sizes:
+  - "1-10"
+  - "11-50"
+  - "51-200"
+geographies:
+  - "España"
+  - "México"
+  - "Colombia"
+  - "Argentina"
+  - "Chile"
+  - "Thailand"
+  - "Singapore"
+job_titles:
+  - "Managing Partner"
+  - "General Partner"
+  - "Investment Manager"
+  - "Head of Portfolio"
+  - "Venture Builder"
+  - "CEO"
+  - "Founder"
+pain_points:
+  - "Las startups del portafolio no escalan su adquisición de clientes"
+  - "Falta de equipo de ventas en las startups early-stage"
+  - "Alto costo de contratar SDRs para múltiples portafolio companies"
+  - "Sin sistema de prospección B2B repetible para sus startups"
+trigger_events:
+  - "Nuevo fondo anunciado (fundraise)"
+  - "Nueva startup añadida al portafolio"
+  - "Contratación de roles comerciales (LinkedIn Jobs)"
+  - "Evento o demo day próximo"
+  - "Expansión geográfica de una portfolio company"
+disqualifiers:
+  - "Fondo solo invierte en hardware o biotech"
+  - "Portafolio solo B2C"
+  - "Menos de 3 startups activas en portafolio"
+min_budget_usd: 1000

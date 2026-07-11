@@ -1,0 +1,25 @@
+stages:
+  - id: prospected
+    label: "Identificado"
+    color: "#6B7280"
+  - id: contacted
+    label: "Contactado"
+    color: "#3B82F6"
+  - id: replied
+    label: "Respondió"
+    color: "#8B5CF6"
+  - id: qualified
+    label: "Reunión agendada"
+    color: "#F59E0B"
+  - id: proposal
+    label: "Propuesta enviada"
+    color: "#EF4444"
+  - id: negotiation
+    label: "Partner potencial"
+    color: "#EC4899"
+  - id: won
+    label: "Partner activo ✓"
+    color: "#10B981"
+  - id: lost
+    label: "No encaja"
+    color: "#374151"

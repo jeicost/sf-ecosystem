@@ -1,0 +1,48 @@
+{
+  "name": "[CLIENT]_[SERVICE]_[ACTION]",
+  "nodes": [
+    {
+      "id": "trigger",
+      "name": "Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [240, 300],
+      "parameters": {}
+    },
+    {
+      "id": "supabase_read",
+      "name": "Read from Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "position": [460, 300],
+      "parameters": {
+        "operation": "getAll",
+        "tableId": "leads"
+      }
+    },
+    {
+      "id": "claude_call",
+      "name": "Claude (Sonnet/Haiku)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [680, 300],
+      "parameters": {
+        "model": "claude-sonnet-4-6",
+        "prompt": "={{ $json.prompt }}"
+      }
+    },
+    {
+      "id": "supabase_write",
+      "name": "Write to Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "position": [900, 300],
+      "parameters": {
+        "operation": "upsert",
+        "tableId": "leads"
+      }
+    }
+  ],
+  "connections": {
+    "trigger": { "main": [[ { "node": "supabase_read" } ]] },
+    "supabase_read": { "main": [[ { "node": "claude_call" } ]] },
+    "claude_call": { "main": [[ { "node": "supabase_write" } ]] }
+  },
+  "settings": { "executionOrder": "v1" }
+}

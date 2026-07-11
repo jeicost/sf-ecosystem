@@ -1,0 +1,36 @@
+sources:
+  apollo:
+    enabled: true
+    monthly_lead_limit: 500
+    filters:
+      job_titles: ["Managing Partner", "General Partner", "Investment Manager", "Founder"]
+      industries: ["Venture Capital", "Venture Building", "Startup Studio"]
+      geographies: ["Spain", "Mexico", "Colombia", "Argentina", "Thailand"]
+
+  apify_linkedin:
+    enabled: true
+    enrich_profile: true
+    enrich_company: true
+
+  apify_crunchbase:
+    enabled: true    # VBs e inversores están en Crunchbase
+
+  apify_dealroom:
+    enabled: true    # ecosistema VC europeo
+
+  apify_gmaps:
+    enabled: false
+
+  hunter:
+    enabled: true
+    verify_emails: true
+    discover_missing: true
+
+  tavily:
+    enabled: true
+    news_lookback_days: 60
+
+  notion_sync:
+    enabled: true
+    database_id: ""   # añadir ID real
+    sync_direction: "bidirectional"
