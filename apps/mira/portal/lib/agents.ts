@@ -1,10 +1,12 @@
 // Types
-export type AgentStatus = 'active' | 'inactive' | 'pending' | 'idle' | 'processing' | 'complete'
+export type AgentStatus = 'idle' | 'working' | 'waiting' | 'completed'
 
 const baseAgents = [
   {
     id: 'ai-strategist',
     name: 'AI Strategist',
+    role: 'Strategy',
+    tagline: 'Strategic planning and business analysis',
     description: 'Strategic planning and business analysis',
     icon: '🎯',
     emoji: '🎯',
@@ -13,6 +15,8 @@ const baseAgents = [
   {
     id: 'content-creator',
     name: 'Content Creator',
+    role: 'Content',
+    tagline: 'Content generation and copywriting',
     description: 'Content generation and copywriting',
     icon: '✍️',
     emoji: '✍️',
@@ -21,6 +25,8 @@ const baseAgents = [
   {
     id: 'brand-expert',
     name: 'Brand Expert',
+    role: 'Brand',
+    tagline: 'Brand strategy and positioning',
     description: 'Brand strategy and positioning',
     icon: '🏷️',
     emoji: '🏷️',
@@ -29,6 +35,8 @@ const baseAgents = [
   {
     id: 'seo-specialist',
     name: 'SEO Specialist',
+    role: 'SEO',
+    tagline: 'SEO optimization and keyword research',
     description: 'SEO optimization and keyword research',
     icon: '🔍',
     emoji: '🔍',
@@ -37,6 +45,8 @@ const baseAgents = [
   {
     id: 'marketing-manager',
     name: 'Marketing Manager',
+    role: 'Marketing',
+    tagline: 'Marketing campaigns and strategy',
     description: 'Marketing campaigns and strategy',
     icon: '📢',
     emoji: '📢',
