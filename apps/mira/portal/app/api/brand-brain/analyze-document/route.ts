@@ -203,18 +203,6 @@ Only include fields where you found relevant information. Leave empty/null for f
   } catch (error) {
     console.error('Document analysis error:', error)
 
-    // Mark as failed
-    if (body?.document_id) {
-      const admin = adminClient()
-      await admin
-        .from('brand_documents')
-        .update({
-          analysis_status: 'failed',
-          analysis_result: { error: error instanceof Error ? error.message : 'Unknown error' },
-        })
-        .eq('id', body.document_id)
-    }
-
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Analysis failed' },
       { status: 500 }
