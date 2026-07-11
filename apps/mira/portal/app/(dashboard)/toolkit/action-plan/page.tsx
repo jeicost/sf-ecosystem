@@ -1,147 +1,134 @@
 'use client'
 
 import { useState } from 'react'
-import { Play } from 'lucide-react'
-import ToolkitToolPage from '@/components/toolkit-tool-page'
-import { useToolkitGeneration } from '@/hooks/useToolkitGeneration'
+import ToolRunnerPage, { ToolConfig, ToolField } from '@/components/ToolRunnerPage'
+import { fetchBrandBrain } from '@/lib/brand-brain'
+import { useEffect } from 'react'
+
+const TOOL_CONFIG: ToolConfig = {
+  slug: 'action-plan',
+  icon: '🎯',
+  title: 'Action Plan 30/60/90',
+  subtitle: 'Salsa Burgers',
+  timing: '20-25 min',
+  brandBrainNote: 'Brand Brain cargado — campos pre-rellenados',
+  submitButtonColor: '#FF6B35',
+  submitButtonText: 'Generar Action Plan 30/60/90',
+  fields: [
+    {
+      name: 'horizonte',
+      label: 'HORIZONTE DEL PLAN',
+      type: 'select',
+      options: [
+        { value: '30', label: 'Plan 30 días' },
+        { value: '60', label: 'Plan 60 días' },
+        { value: '90', label: 'Plan 90 días' },
+      ],
+      defaultValue: '90',
+      required: true,
+    },
+    {
+      name: 'situacion_actual',
+      label: 'SITUACIÓN ACTUAL DE LA EMPRESA',
+      type: 'textarea',
+      placeholder: 'Ej: 6 meses operando, facturación €40k/mes estancada. Web activa, sin estrategia digital.',
+      hint: 'Describe el estado actual más relevante para el plan',
+      required: true,
+    },
+    {
+      name: 'reto_principal',
+      label: 'PRINCIPAL RETO / OBSTÁCULO AHORA MISMO',
+      type: 'textarea',
+      placeholder: 'Ej: No conseguimos leads digitales, toda la captación es boca a boca.',
+      required: true,
+    },
+    {
+      name: 'areas_prioritarias',
+      label: 'AREAS PRIORITARIAS',
+      type: 'select',
+      options: [
+        { value: 'sales', label: 'Ventas / Pipeline' },
+        { value: 'marketing', label: 'Marketing / Brand' },
+        { value: 'ops', label: 'Operaciones' },
+        { value: 'product', label: 'Producto / Servicio' },
+        { value: 'team', label: 'Equipo / Recursos' },
+      ],
+      required: true,
+    },
+    {
+      name: 'objetivos',
+      label: 'OBJETIVOS ESPECÍFICOS DEL PERIODO',
+      type: 'textarea',
+      placeholder: 'Ej: Llegar a 120k de facturación mensual. Abrir 2do local. 500 seguidores activos en IG.',
+      required: true,
+    },
+    {
+      name: 'recursos',
+      label: 'RECURSOS DISPONIBLES (EQUIPO + BUDGET)',
+      type: 'textarea',
+      placeholder: 'Ej: Equipo de 3 personas. Budget mensual marketing: €2.000. Sin developer propio.',
+      required: true,
+    },
+    {
+      name: 'briefing_url',
+      label: 'URL DEL BRAND BRIEFING (OPCIONAL)',
+      type: 'text',
+      placeholder: 'https://briefing-fawn.vercel.app',
+      hint: 'Claude buscará en él para enriquecer el plan',
+    },
+    {
+      name: 'contexto_adicional',
+      label: 'CONTEXTO ADICIONAL / DOCUMENTOS',
+      type: 'textarea',
+      placeholder: 'Pega resultados últimos 3 meses, decisiones ya tomadas, restricciones...',
+    },
+  ],
+}
 
 export default function ActionPlanPage() {
-  const [objective, setObjective] = useState('')
-  const [teamSize, setTeamSize] = useState('')
-  const [budget, setBudget] = useState('')
-  const { isGenerating, status, error, startGeneration } = useToolkitGeneration('action-plan')
+  const [config, setConfig] = useState(TOOL_CONFIG)
 
-  const handleGenerate = async () => {
-    if (!objective.trim()) {
-      alert('Por favor ingresa un objetivo')
-      return
+  useEffect(() => {
+    // Optionally: pre-fill from Brand Brain if available
+  }, [])
+
+  const handleGenerate = async (formData: Record<string, any>) => {
+    const res = await fetch('/api/toolkit/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tool_slug: 'action-plan',
+        input_data: formData,
+      }),
+    })
+
+    if (!res.ok) {
+      const error = await res.json()
+      throw new Error(error.error || 'Failed to generate')
     }
-    if (!teamSize || parseInt(teamSize) < 1) {
-      alert('Por favor ingresa un tamaño de equipo válido')
-      return
-    }
-    if (!budget || parseFloat(budget) < 0) {
-      alert('Por favor ingresa un presupuesto válido')
-      return
-    }
-    await startGeneration({ objective, team_size: parseInt(teamSize), budget: parseFloat(budget) })
+
+    const result = await res.json()
+    return result
   }
 
   return (
-    <ToolkitToolPage
-      icon="🎯"
-      name="Action Plan 90d"
-      description="Plan operacional de 90 días con objetivos, hitos, KPIs y recursos asignados. Alineado con tu estrategia y presupuesto."
-      color="#F59E0B"
-      estimatedTime="25-30 minutos"
-      outputFormat="Plan PDF de 20+ páginas + Gantt chart + Excel tracking"
-      isGenerating={isGenerating}
-    >
-      <div className="space-y-4">
-        <div className="card px-6 py-5">
-          <p className="text-sm font-semibold text-white mb-4">Generar Plan 90 Días</p>
-          <div className="space-y-4">
-            <div>
-              <label className="block text-xs font-medium text-white mb-2">
-                Objetivo Principal (Ej: 50% MRR growth)
-              </label>
-              <input
-                type="text"
-                value={objective}
-                onChange={e => setObjective(e.target.value)}
-                placeholder="Ej: Aumentar revenue mensual recurrente..."
-                className="w-full px-3 py-2 rounded-lg text-sm"
-                style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-white mb-2">
-                Recursos disponibles (equipo)
-              </label>
-              <input
-                type="number"
-                value={teamSize}
-                onChange={e => setTeamSize(e.target.value)}
-                placeholder="Ej: 5"
-                min="1"
-                max="50"
-                className="w-full px-3 py-2 rounded-lg text-sm"
-                style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-white mb-2">
-                Presupuesto estimado (USD)
-              </label>
-              <input
-                type="number"
-                value={budget}
-                onChange={e => setBudget(e.target.value)}
-                placeholder="Ej: 50000"
-                className="w-full px-3 py-2 rounded-lg text-sm"
-                style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-              />
-            </div>
-          </div>
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating || !objective.trim() || !teamSize || !budget}
-            className="w-full mt-6 inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
-            style={{
-              background: isGenerating || !objective.trim() || !teamSize || !budget ? 'rgba(245,158,11,0.4)' : 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
-              color: 'white',
-              opacity: !objective.trim() || !teamSize || !budget ? 0.6 : 1,
-            }}
-          >
-            <Play size={16} />
-            {isGenerating ? 'Generando plan...' : 'Generar Action Plan'}
-          </button>
-        </div>
+    <ToolRunnerPage
+      config={config}
+      onGenerate={handleGenerate}
+      resultComponent={<ActionPlanResult />}
+    />
+  )
+}
 
-        {error && (
-          <div className="card px-6 py-4" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
-            <p className="text-sm text-red-300">{error}</p>
-          </div>
-        )}
-
-        {status && (
-          <div className="space-y-4">
-            <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#F59E0B' }}>
-                Estructura del Plan
-              </p>
-              <div className="space-y-2 text-sm text-white">
-                <p>📍 <strong>Mes 1:</strong> {status.result_data?.phase_1_name || 'Foundational Phase'}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{status.result_data?.phase_1_details || 'Hitos: Setup, auditoría, quick wins (proyección: 15% improvement)'}</p>
-                <p className="mt-3">📍 <strong>Mes 2:</strong> {status.result_data?.phase_2_name || 'Acceleration Phase'}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{status.result_data?.phase_2_details || 'Hitos: Scaling, optimization, integrations (proyección: 35% improvement)'}</p>
-                <p className="mt-3">📍 <strong>Mes 3:</strong> {status.result_data?.phase_3_name || 'Optimization Phase'}</p>
-                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>{status.result_data?.phase_3_details || 'Hitos: Fine-tuning, ROI validation, handoff (proyección: 50% improvement)'}</p>
-              </div>
-            </div>
-
-            <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#F59E0B' }}>
-                KPIs Objetivo
-              </p>
-              <div className="space-y-2 text-sm text-white">
-                <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span>Revenue Growth</span>
-                  <span style={{ color: '#FBBF24' }}>+{status.result_data?.revenue_growth || '50'}%</span>
-                </div>
-                <div className="flex items-center justify-between pb-2" style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                  <span>CAC Reduction</span>
-                  <span style={{ color: '#FBBF24' }}>-{status.result_data?.cac_reduction || '30'}%</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span>Customer Satisfaction</span>
-                  <span style={{ color: '#FBBF24' }}>{status.result_data?.satisfaction_target || '9+'}/ 10</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+function ActionPlanResult() {
+  return (
+    <div className="card p-6 space-y-6">
+      <div>
+        <p className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: '#FF6B35' }}>
+          ⚡ Plan Generado
+        </p>
+        <p className="text-sm text-gray-400">Tu plan de 90 días está listo para revisar y descargar en PDF.</p>
       </div>
-    </ToolkitToolPage>
+    </div>
   )
 }
