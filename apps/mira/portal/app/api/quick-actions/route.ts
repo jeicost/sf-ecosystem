@@ -115,10 +115,27 @@ export async function POST(req: NextRequest) {
     let output_data = {}
     const textContent = message.content[0]
     if (textContent && 'text' in textContent) {
-      const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
-      if (jsonMatch) {
-        output_data = JSON.parse(jsonMatch[0])
+      const text = textContent.text
+      // First try markdown code blocks
+      const codeBlockMatch = text.match(/```(?:json)?\s*\n?([\s\S]*?)\n?```/)
+      if (codeBlockMatch) {
+        try {
+          output_data = JSON.parse(codeBlockMatch[1])
+        } catch (e) {
+          console.error('Failed to parse JSON from code block:', e)
+        }
+      } else {
+        // Fallback to direct JSON regex
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (jsonMatch) {
+          try {
+            output_data = JSON.parse(jsonMatch[0])
+          } catch (e) {
+            console.error('Failed to parse JSON from regex:', e)
+          }
+        }
       }
+      console.log('Raw response length:', text.length, 'output_data keys:', Object.keys(output_data))
     }
 
     const processingTime = Date.now() - startTime
@@ -129,10 +146,10 @@ export async function POST(req: NextRequest) {
       .update({
         status: 'success',
         output_data,
-        completed_at: new Date().toISOString(),
         processing_time_ms: processingTime,
       })
       .eq('id', actionId)
+      // Note: completed_at column may not exist in some schema versions
 
     if (updateError) {
       console.error('Update error:', updateError)
