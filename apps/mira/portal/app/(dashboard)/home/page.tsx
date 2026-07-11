@@ -15,6 +15,7 @@ const TEAMS = [
   { slug: 'innovacion', label: 'Innovation',  icon: '💡', color: '#F97316', href: '/innovacion',          agents: 5, desc: 'Trends · Design Thinking · Foresight' },
   { slug: 'admin',      label: 'Admin',       icon: '⚙️', color: '#10B981', href: '/admin',               agents: 4, desc: 'Billing · Onboarding · Observability' },
   { slug: 'finanzas',   label: 'Finance',     icon: '💰', color: '#F59E0B', href: '/finanzas',            agents: 4, desc: 'Wealth · Investments · Tax · FIRE' },
+  { slug: 'community',  label: 'Community',   icon: '💬', color: '#22C55E', href: '/community',           agents: 0, desc: 'Tickets · FAQs · Tutorials' },
 ]
 
 export default function HomePage() {
@@ -112,7 +113,7 @@ export default function HomePage() {
                     </div>
                     <span className="text-[9px] font-medium px-2 py-0.5 rounded-full"
                       style={{ background: `${team.color}10`, color: `${team.color}cc`, border: `1px solid ${team.color}20` }}>
-                      {team.agents} agents
+                      {team.agents > 0 ? `${team.agents} agents` : 'Support tools'}
                     </span>
                   </div>
 

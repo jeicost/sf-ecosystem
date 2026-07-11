@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { AGENTS } from '@/lib/agents'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
+import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
 
 const MARKETING_META = [
   { produces: 'Brief & task queue' },
@@ -96,6 +97,8 @@ export default function RosterPage() {
         finalOutput="Published content"
         accentColor="#8B5CF6"
       />
+
+      <MarketingQuickActions />
 
       <div className="grid grid-cols-4 gap-4">
         {AGENTS.map((agent, i) => (

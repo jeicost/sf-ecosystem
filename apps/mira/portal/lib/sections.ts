@@ -111,6 +111,17 @@ export const SECTIONS: MiraSection[] = [
     ],
     locked: false,
   },
+  {
+    slug: 'community',
+    name: 'MIRA Community',
+    shortName: 'Community',
+    color: '#22C55E',
+    icon: '💬',
+    navItems: [
+      { href: '/community', label: 'My Team', icon: Users },
+    ],
+    locked: false,
+  },
 ]
 
 export function getSectionBySlug(slug: string): MiraSection | undefined {
