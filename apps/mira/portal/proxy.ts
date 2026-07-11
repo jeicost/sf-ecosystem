@@ -7,6 +7,7 @@ const SECTION_SLUGS = ['marketing', 'comercial', 'estrategia', 'innovacion', 'ad
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
+  const isDev = process.env.NODE_ENV === 'development'
 
   // Public routes — skip all checks
   if (
@@ -26,7 +27,15 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/api/populate-salsa') ||
     pathname.startsWith('/api/populate-all-clients') ||
     pathname.startsWith('/api/load-missing-pillars') ||
-    pathname.startsWith('/api/fix-missing-clients')
+    pathname.startsWith('/api/fix-missing-clients') ||
+    // Development: allow toolkit pages without auth for local testing
+    (isDev && (
+      pathname.startsWith('/toolkit') ||
+      pathname.startsWith('/brand-brain') ||
+      pathname.startsWith('/documents') ||
+      pathname.startsWith('/project-memory') ||
+      pathname.startsWith('/home')
+    ))
   ) {
     return NextResponse.next()
   }
