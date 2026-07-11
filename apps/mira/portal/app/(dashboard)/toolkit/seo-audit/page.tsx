@@ -1,151 +1,34 @@
 'use client'
+import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 
-import { useState } from 'react'
-import { Play, Copy } from 'lucide-react'
-import ToolkitToolPage from '@/components/toolkit-tool-page'
-import { useToolkitGeneration } from '@/hooks/useToolkitGeneration'
+const TOOL_CONFIG: ToolConfig = {
+  slug: 'seo-audit',
+  icon: '🔍',
+  title: 'SEO Audit',
+  subtitle: 'Salsa Burgers',
+  timing: '30-40 min',
+  brandBrainNote: 'Brand Brain cargado — campos pre-rellenados',
+  submitButtonColor: '#F87171',
+  submitButtonText: 'Generar SEO Audit',
+  fields: [
+    { name: 'url_sitio', label: 'URL DEL SITIO', type: 'text', placeholder: 'https://salsaburgers.com', required: true },
+    { name: 'palabras_clave', label: 'PALABRAS CLAVE OBJETIVO', type: 'textarea', placeholder: 'burgers Bangkok\nwagyu delivery\nthailand premium beef', hint: 'Una por línea', required: true },
+    { name: 'competidores', label: 'TOP 3 COMPETIDORES', type: 'textarea', placeholder: 'competitor1.com\ncompetitor2.com\ncompetitor3.com', required: true },
+    { name: 'ubicacion', label: 'UBICACIÓN OBJETIVO', type: 'text', placeholder: 'Bangkok, Thailand', required: true },
+    { name: 'tipo_audit', label: 'TIPO DE AUDITORÍA', type: 'select', options: [{ value: 'full', label: 'Full Audit' }, { value: 'competitive', label: 'Competitive Analysis' }, { value: 'technical', label: 'Technical Only' }], required: true },
+    { name: 'trafico_historico', label: 'HISTORIAL DE TRÁFICO / OBJETIVOS', type: 'textarea', placeholder: 'Tráfico actual, objetivos...' },
+  ],
+}
 
 export default function SEOAuditPage() {
-  const [url, setUrl] = useState('')
-  const { isGenerating, status, error, startGeneration } = useToolkitGeneration('seo-audit')
-
-  const handleAudit = async () => {
-    if (!url || !url.trim()) {
-      alert('Por favor ingresa una URL válida')
-      return
-    }
-
-    try {
-      new URL(url)
-    } catch {
-      alert('URL inválida. Por favor verifica el formato')
-      return
-    }
-
-    await startGeneration({ website_url: url })
+  const handleGenerate = async (formData: Record<string, any>) => {
+    const res = await fetch('/api/toolkit/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tool_slug: 'seo-audit', input_data: formData }),
+    })
+    if (!res.ok) throw new Error((await res.json()).error || 'Failed')
+    return res.json()
   }
-
-  return (
-    <ToolkitToolPage
-      icon="🔍"
-      name="SEO Audit"
-      description="Análisis técnico y estratégico de tu sitio web: on-page SEO, velocidad, indexabilidad, backlinks y oportunidades de posicionamiento"
-      color="#6366F1"
-      estimatedTime="10-15 minutos"
-      outputFormat="Reporte SEO PDF + JSON + CSV"
-      isGenerating={isGenerating}
-    >
-      <div className="space-y-4">
-        <div className="card px-6 py-5">
-          <p className="text-sm font-semibold text-white mb-4">Auditar tu Website</p>
-          <div>
-            <label className="block text-xs font-medium text-white mb-2">
-              URL del sitio
-            </label>
-            <input
-              type="url"
-              value={url}
-              onChange={e => setUrl(e.target.value)}
-              placeholder="https://tudominio.com"
-              className="w-full px-3 py-2 rounded-lg text-sm"
-              style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
-            />
-          </div>
-          <p className="text-xs mt-3 mb-4" style={{ color: 'rgba(255,255,255,0.3)' }}>
-            Analizaremos: estructura de sitio, velocidad, etiquetas meta, backlinks, palabras clave y recomendaciones de mejora
-          </p>
-          <button
-            onClick={handleAudit}
-            disabled={isGenerating || !url}
-            className="w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all"
-            style={{
-              background: isGenerating || !url ? 'rgba(99,102,241,0.4)' : 'linear-gradient(135deg, #6366F1 0%, #4F46E5 100%)',
-              color: 'white',
-              opacity: !url ? 0.6 : 1,
-            }}
-          >
-            <Play size={16} />
-            {isGenerating ? 'Analizando...' : 'Ejecutar Auditoría SEO'}
-          </button>
-        </div>
-
-        {error && (
-          <div className="card px-6 py-4" style={{ background: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.3)' }}>
-            <p className="text-sm text-red-300">{error}</p>
-          </div>
-        )}
-
-        {status && (
-          <div className="space-y-4">
-            <div className="card px-6 py-5">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-semibold uppercase tracking-wider" style={{ color: '#6366F1' }}>
-                  Score SEO
-                </p>
-                <p className="text-2xl font-bold text-white">{status.result_data?.score || 78}/100</p>
-              </div>
-              <div className="w-full h-2 rounded-full" style={{ background: 'rgba(99,102,241,0.2)' }}>
-                <div className="h-2 rounded-full" style={{ background: '#6366F1', width: `${status.result_data?.score || 78}%` }} />
-              </div>
-            </div>
-
-            <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#6366F1' }}>
-                Hallazgos Críticos
-              </p>
-              <ul className="text-sm text-white space-y-2 mb-4">
-                {Array.isArray(status.result_data?.critical_findings) ? (
-                  status.result_data.critical_findings.map((finding: string, i: number) => (
-                    <li key={i}>{finding}</li>
-                  ))
-                ) : (
-                  <>
-                    <li>🔴 Falta meta description en 12 páginas</li>
-                    <li>🟠 Velocidad LCP: 3.2s (objetivo: &lt;2.5s)</li>
-                    <li>🟠 Mobile: 5 errores de viewport</li>
-                    <li>🟡 Enlaces rotos: 3 encontrados</li>
-                  </>
-                )}
-              </ul>
-              <button className="inline-flex items-center gap-1 text-xs px-3 py-1 rounded-lg" style={{ background: 'rgba(99,102,241,0.1)', color: '#818cf8' }}>
-                <Copy size={12} />
-                Copiar
-              </button>
-            </div>
-
-            <div className="card px-6 py-5">
-              <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#6366F1' }}>
-                Recomendaciones Top 3
-              </p>
-              <ol className="text-sm text-white space-y-2 mb-4">
-                {Array.isArray(status.result_data?.recommendations) ? (
-                  status.result_data.recommendations.slice(0, 3).map((rec: string, i: number) => (
-                    <li key={i} className="flex gap-2">
-                      <span>{i + 1}.</span>
-                      <span>{rec}</span>
-                    </li>
-                  ))
-                ) : (
-                  <>
-                    <li className="flex gap-2">
-                      <span>1.</span>
-                      <span>Optimizar imágenes (ahorrará ~200ms en LCP)</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span>2.</span>
-                      <span>Añadir meta descriptions a todas las páginas</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span>3.</span>
-                      <span>Implementar lazy loading en imágenes below-the-fold</span>
-                    </li>
-                  </>
-                )}
-              </ol>
-            </div>
-          </div>
-        )}
-      </div>
-    </ToolkitToolPage>
-  )
+  return <ToolRunnerPage config={TOOL_CONFIG} onGenerate={handleGenerate} resultComponent={<p className="text-sm text-gray-400">✓ SEO audit generado.</p>} />
 }
