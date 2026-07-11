@@ -197,7 +197,6 @@ export function MarketingQuickActions() {
           actionId={activeActionId}
           resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
           department="marketing"
-          outputType="json"
         />
       )}
     </div>

@@ -109,7 +109,6 @@ export function CommunityQuickActions() {
           actionId={activeActionId}
           resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
           department="community"
-          outputType="json"
         />
       )}
     </div>

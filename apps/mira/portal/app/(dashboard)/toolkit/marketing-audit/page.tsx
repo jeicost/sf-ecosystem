@@ -1,4 +1,5 @@
 'use client'
+
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -7,17 +8,61 @@ const TOOL_CONFIG: ToolConfig = {
   title: 'Marketing Audit',
   subtitle: 'Salsa Burgers',
   timing: '25-35 min',
-  brandBrainNote: 'Brand Brain cargado — campos pre-rellenados',
+  brandBrainNote: 'Brand Brain cargado — estrategia anual compilada',
   submitButtonColor: '#60A5FA',
   submitButtonText: 'Generar Marketing Audit',
   fields: [
-    { name: 'url_sitio', label: 'URL DEL SITIO', type: 'text', placeholder: 'https://salsaburgers.com', required: true },
-    { name: 'canales', label: 'CANALES ACTUALES', type: 'textarea', placeholder: 'Social Media (Instagram, Facebook)\nEmail\nGoogle Ads\nWeb', required: true },
-    { name: 'presupuesto', label: 'PRESUPUESTO ANUAL MARKETING', type: 'text', placeholder: 'EUR €24,000', required: true },
-    { name: 'metricas', label: 'MÉTRICAS CLAVE', type: 'textarea', placeholder: 'MRR, CAC, LTV, Conversion Rate...', required: true },
-    { name: 'objetivos_trim', label: 'OBJETIVOS TRIMESTRAL', type: 'textarea', placeholder: '50% revenue growth, 500 new followers...', required: true },
-    { name: 'competencia', label: 'COMPETENCIA DIRECTA', type: 'textarea', placeholder: 'Competitor 1, Competitor 2, Competitor 3...', required: true },
-    { name: 'recursos_team', label: 'RECURSOS / TEAM', type: 'textarea', placeholder: 'Team de 3 personas. Sin developer propio...' },
+    {
+      name: 'url_sitio',
+      label: 'URL DEL SITIO WEB',
+      type: 'text',
+      placeholder: 'https://www.tusitio.com',
+      required: true,
+    },
+    {
+      name: 'canales_actuales',
+      label: 'CANALES DE MARKETING ACTUALES',
+      type: 'textarea',
+      placeholder: 'Uno por línea. Ej:\n- Instagram\n- Email marketing\n- Google Ads\n- SEO orgánico',
+      hint: 'Canales que estás usando ahora',
+      required: true,
+    },
+    {
+      name: 'presupuesto_anual',
+      label: 'PRESUPUESTO ANUAL DE MARKETING',
+      type: 'text',
+      placeholder: 'Ej: €25.000 o $30.000',
+      hint: 'Presupuesto total anual',
+      required: true,
+    },
+    {
+      name: 'metricas_clave',
+      label: 'MÉTRICAS CLAVE QUE MIDES',
+      type: 'textarea',
+      placeholder: 'Ej:\n- Tráfico web\n- Tasa de conversión\n- Costo por adquisición\n- ROI',
+      required: true,
+    },
+    {
+      name: 'objetivos_trim',
+      label: 'OBJETIVOS DEL TRIMESTRE',
+      type: 'textarea',
+      placeholder: 'Metas específicas para los próximos 3 meses.',
+      required: true,
+    },
+    {
+      name: 'competencia_directa',
+      label: 'COMPETENCIA DIRECTA',
+      type: 'textarea',
+      placeholder: 'Nombres o URLs de competidores directos. Uno por línea.',
+      required: true,
+    },
+    {
+      name: 'recursos_team',
+      label: 'RECURSOS Y EQUIPO',
+      type: 'textarea',
+      placeholder: 'Ej: 1 social manager, 1 SEO specialist, herramientas disponibles...',
+      required: true,
+    },
   ],
 }
 
@@ -26,10 +71,38 @@ export default function MarketingAuditPage() {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tool_slug: 'marketing-audit', input_data: formData }),
+      body: JSON.stringify({
+        tool_slug: 'marketing-audit',
+        input_data: formData,
+      }),
     })
-    if (!res.ok) throw new Error((await res.json()).error || 'Failed')
-    return res.json()
+
+    if (!res.ok) {
+      const error = await res.json()
+      throw new Error(error.error || 'Failed to generate')
+    }
+
+    return await res.json()
   }
-  return <ToolRunnerPage config={TOOL_CONFIG} onGenerate={handleGenerate} resultComponent={<p className="text-sm text-gray-400">✓ Marketing audit generado.</p>} />
+
+  return (
+    <ToolRunnerPage
+      config={TOOL_CONFIG}
+      onGenerate={handleGenerate}
+      resultComponent={<MarketingAuditResult />}
+    />
+  )
+}
+
+function MarketingAuditResult() {
+  return (
+    <div className="card p-6 space-y-6">
+      <div>
+        <p className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: '#60A5FA' }}>
+          ✓ Marketing Audit Generado
+        </p>
+        <p className="text-sm text-gray-400">Tu auditoría de marketing está lista con análisis de canales y oportunidades.</p>
+      </div>
+    </div>
+  )
 }

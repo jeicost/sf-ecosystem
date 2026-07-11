@@ -109,7 +109,6 @@ export function AdminQuickActions() {
           actionId={activeActionId}
           resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
           department="admin"
-          outputType="json"
         />
       )}
     </div>
