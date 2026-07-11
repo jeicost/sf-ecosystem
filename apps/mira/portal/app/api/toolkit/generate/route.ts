@@ -31,29 +31,37 @@ export async function POST(req: NextRequest) {
     )
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+
+    // Dev mode bypass for local testing
+    let clientId: string
+    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
+      // Use hardcoded test client for dev mode
+      clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
+    } else if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    } else {
+      const admin = adminClient()
+      const { data: accessData, error: accessError } = await admin
+        .from('mira_project_access')
+        .select('client_id')
+        .eq('user_id', user.id)
+        .single()
+
+      if (accessError || !accessData) {
+        return NextResponse.json({ error: 'No client access found' }, { status: 403 })
+      }
+      clientId = accessData.client_id
     }
 
     const admin = adminClient()
-    const { data: accessData, error: accessError } = await admin
-      .from('mira_project_access')
-      .select('client_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (accessError || !accessData) {
-      return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-    }
-
-    const clientId = accessData.client_id
+    const userId = user?.id || 'aa857626-5b89-4df5-8b0d-ed02803e9722'
 
     // Insert generation request into queue with 'processing' status
     const { data: queueData, error: queueError } = await admin
       .from('generation_queue')
       .insert({
         client_id: clientId,
-        user_id: user.id,
+        user_id: userId,
         tool_slug,
         input_data,
         status: 'processing',
@@ -99,9 +107,26 @@ export async function POST(req: NextRequest) {
     let result = {}
     const textContent = message.content[0]
     if (textContent && 'text' in textContent) {
-      const jsonMatch = textContent.text.match(/\{[\s\S]*\}/)
+      const text = textContent.text
+
+      // Try to extract JSON from markdown code blocks first
+      let jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
       if (jsonMatch) {
-        result = JSON.parse(jsonMatch[0])
+        try {
+          result = JSON.parse(jsonMatch[1])
+        } catch (e) {
+          console.error('Failed to parse JSON from markdown block:', e)
+        }
+      } else {
+        // Fall back to finding JSON object directly
+        jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (jsonMatch) {
+          try {
+            result = JSON.parse(jsonMatch[0])
+          } catch (e) {
+            console.error('Failed to parse JSON from text:', e)
+          }
+        }
       }
     }
 
