@@ -125,6 +125,9 @@ export async function POST(req: NextRequest) {
       .from('quick_actions_results')
       .update({
         output_data: outputData,
+        status: 'success',
+        completed_at: new Date().toISOString(),
+        processing_time_ms: generationTime,
       })
       .eq('id', actionId)
 

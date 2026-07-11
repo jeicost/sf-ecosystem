@@ -121,21 +121,6 @@ export async function POST(req: NextRequest) {
       console.error('Update error:', updateError)
     }
 
-    // Also save to toolkit_results for history
-    await admin
-      .from('toolkit_results')
-      .insert({
-        client_id: clientId,
-        user_id: user.id,
-        tool_type: tool_slug,
-        tool_name: tool_slug.split('-').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
-        input_data,
-        output_data: result,
-        output_type: 'json',
-        generation_time_ms: generationTime,
-        status: 'success',
-      })
-
     return NextResponse.json({
       success: true,
       queue_id: queueId,
