@@ -2,12 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import Anthropic from '@anthropic-ai/sdk'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-
 const STAGE_MAP: Record<string, string> = {
   interested: 'qualified',
   not_now: 'replied',
@@ -16,6 +10,12 @@ const STAGE_MAP: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+
   const { leadId, replyText } = await req.json()
   if (!leadId || !replyText) {
     return NextResponse.json({ error: 'leadId and replyText required' }, { status: 400 })
