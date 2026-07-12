@@ -1,4 +1,4 @@
-import { FINANZAS_AGENTS } from '@/lib/agents'
+import { FINANZAS_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 
@@ -10,7 +10,7 @@ const FINANZAS_META = [
   { produces: 'Investment strategy' },
 ]
 
-const PIPELINE_STEPS = FINANZAS_AGENTS.map(a => ({
+const PIPELINE_STEPS = FINANZAS_DEPT_AGENTS.map(a => ({
   name: a.name,
   emoji: a.emoji,
   color: a.color,
@@ -50,7 +50,7 @@ export default function FinanzasPage() {
       />
 
       <div className="grid grid-cols-2 gap-4">
-        {FINANZAS_AGENTS.map((agent, i) => (
+        {FINANZAS_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
             agent={agent}

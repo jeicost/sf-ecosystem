@@ -1,4 +1,4 @@
-import { INNOVACION_AGENTS } from '@/lib/agents'
+import { INNOVACION_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 
@@ -10,7 +10,7 @@ const INNOVACION_META = [
   { produces: 'Future scenarios' },
 ]
 
-const PIPELINE_STEPS = INNOVACION_AGENTS.map(a => ({
+const PIPELINE_STEPS = INNOVACION_DEPT_AGENTS.map(a => ({
   name: a.name,
   emoji: a.emoji,
   color: a.color,
@@ -50,7 +50,7 @@ export default function InnovacionPage() {
       />
 
       <div className="grid grid-cols-3 gap-4">
-        {INNOVACION_AGENTS.map((agent, i) => (
+        {INNOVACION_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
             agent={agent}

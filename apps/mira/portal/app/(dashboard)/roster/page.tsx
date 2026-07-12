@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { AGENTS } from '@/lib/agents'
+import { MARKETING_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
@@ -16,7 +16,7 @@ const MARKETING_META = [
   { produces: 'Community replies' },
 ]
 
-const PIPELINE_STEPS = AGENTS.map(a => ({
+const PIPELINE_STEPS = MARKETING_DEPT_AGENTS.map(a => ({
   name: a.name,
   emoji: a.emoji,
   color: a.color,
@@ -101,7 +101,7 @@ export default function RosterPage() {
       <MarketingQuickActions />
 
       <div className="grid grid-cols-4 gap-4">
-        {AGENTS.map((agent, i) => (
+        {MARKETING_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
             agent={agent}

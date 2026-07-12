@@ -1,4 +1,4 @@
-import { ADMIN_AGENTS } from '@/lib/agents'
+import { OPERACIONES_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 
@@ -9,7 +9,7 @@ const ADMIN_META = [
   { produces: 'Daily briefing' },
 ]
 
-const PIPELINE_STEPS = ADMIN_AGENTS.map(a => ({
+const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
   name: a.name,
   emoji: a.emoji,
   color: a.color,
@@ -49,7 +49,7 @@ export default function AdminPage() {
       />
 
       <div className="grid grid-cols-2 gap-4">
-        {ADMIN_AGENTS.map((agent, i) => (
+        {OPERACIONES_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
             agent={agent}

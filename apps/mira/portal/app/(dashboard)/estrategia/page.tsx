@@ -1,4 +1,4 @@
-import { ESTRATEGIA_AGENTS } from '@/lib/agents'
+import { ESTRATEGIA_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { StrategyQuickActions } from '@/components/quick-actions/StrategyQuickActions'
@@ -10,7 +10,7 @@ const ESTRATEGIA_META = [
   { produces: 'KPI dashboard' },
 ]
 
-const PIPELINE_STEPS = ESTRATEGIA_AGENTS.map(a => ({
+const PIPELINE_STEPS = ESTRATEGIA_DEPT_AGENTS.map(a => ({
   name: a.name,
   emoji: a.emoji,
   color: a.color,
@@ -54,7 +54,7 @@ export default function EstrategiaPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {ESTRATEGIA_AGENTS.map((agent, i) => (
+        {ESTRATEGIA_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
             agent={agent}

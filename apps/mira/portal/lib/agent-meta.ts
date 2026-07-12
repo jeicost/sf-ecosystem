@@ -1,6 +1,8 @@
 // Centralized agent metadata for routing + UI
 // Used by /api/agent, /agent/[role], DepartmentAgents, etc.
 
+export type AgentStatus = 'active' | 'inactive' | 'pending' | 'idle' | 'processing' | 'complete'
+
 export const AGENT_DISPLAY_NAMES: Record<string, string> = {
   orchestrator: 'Marco',
   'content-strategist': 'Luna',

@@ -1,9 +1,9 @@
 'use client'
 import Link from 'next/link'
-import type { Agent, AgentStatus } from '@/lib/agents'
+import type { AgentMetadata, AgentStatus } from '@/lib/agent-meta'
 
 interface AgentCardProps {
-  agent: Agent
+  agent: AgentMetadata
   status?: AgentStatus
   lastTask?: string | null
   step?: number

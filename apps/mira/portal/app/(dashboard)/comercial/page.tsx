@@ -1,4 +1,4 @@
-import { COMERCIAL_AGENTS } from '@/lib/agents'
+import { COMERCIAL_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
@@ -12,7 +12,7 @@ const COMERCIAL_META = [
   { produces: 'Closed proposal',          href: '/comercial/proposals'  },
 ]
 
-const PIPELINE_STEPS = COMERCIAL_AGENTS.map(a => ({
+const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
   name: a.name,
   emoji: a.emoji,
   color: a.color,
@@ -57,7 +57,7 @@ export default function ComercialPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {COMERCIAL_AGENTS.map((agent, i) => (
+        {COMERCIAL_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
             agent={agent}

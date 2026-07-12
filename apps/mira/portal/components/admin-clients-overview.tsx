@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
-import { ALL_AGENTS } from '@/lib/agents'
+import { AGENT_METADATA } from '@/lib/agent-meta'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import StatCard from './stat-card'
 import ClientCard from './client-card'
@@ -72,7 +72,7 @@ export default function AdminClientsOverview() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         <StatCard label="Clientes Activos" value={clients.length} />
         <StatCard label="Onboarding Completado" value={onboardingCompletedCount} />
-        <StatCard label="Agentes Disponibles" value={ALL_AGENTS.length} />
+        <StatCard label="Agentes Disponibles" value={Object.keys(AGENT_METADATA).length} />
         <StatCard label="Herramientas AI" value={TOOLKIT_TOOLS.length} />
       </div>
 
