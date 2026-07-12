@@ -1,15 +1,12 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+export const dynamic = 'force-dynamic'
+
+import { useEffect, useState, useMemo } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/database'
 import Link from 'next/link'
 import { useProjectManagement } from '@/lib/hooks/useProjectManagement'
-
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 type Project = Database['public']['Tables']['mira_projects']['Row']
 
@@ -19,6 +16,13 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const { archiveProject } = useProjectManagement()
+
+  const supabase = useMemo(() =>
+    createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    ), []
+  )
 
   useEffect(() => {
     const fetchProject = async () => {
@@ -46,7 +50,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
     }
 
     fetchProject()
-  }, [params])
+  }, [params, supabase])
 
   const handleArchive = async () => {
     if (!project || !confirm('Archive this project? You can restore it later.')) return

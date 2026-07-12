@@ -1,5 +1,7 @@
 'use client'
 
+export const dynamic = 'force-dynamic'
+
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useProjectManagement } from '@/lib/hooks/useProjectManagement'
@@ -55,33 +57,25 @@ export default function NewProjectPage() {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Optional: Describe what this project is for"
+            placeholder="Describe the purpose of this project..."
+            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 resize-none"
             rows={4}
-            className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-purple-500"
           />
         </div>
 
         {error && (
-          <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+          <div className="p-4 bg-red-900/20 border border-red-800 rounded-lg text-red-300 text-sm">
             {error}
           </div>
         )}
 
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={loading || !name.trim()}
-            className="flex-1 px-6 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 text-white rounded-lg font-medium transition"
-          >
-            {loading ? 'Creating...' : 'Create Project'}
-          </button>
-          <Link
-            href="/home"
-            className="flex-1 px-6 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-lg font-medium transition text-center"
-          >
-            Cancel
-          </Link>
-        </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-700 text-white font-medium rounded-lg transition"
+        >
+          {loading ? 'Creating...' : 'Create Project'}
+        </button>
       </form>
     </div>
   )
