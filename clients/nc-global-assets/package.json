@@ -1,0 +1,51 @@
+{
+  "name": "nc-global-assets",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/fetch-cms-content.mjs && vite build",
+    "build:notion": "node scripts/fetch-notion-posts.mjs && vite build",
+    "build:local": "vite build",
+    "postbuild": "react-snap",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.3.0",
+    "marked": "^18.0.3",
+    "notion-to-md": "^3.1.9",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^7.15.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "react-snap": "^1.23.0",
+    "sharp": "^0.34.5",
+    "vite": "^5.4.2"
+  },
+  "reactSnap": {
+    "source": "dist",
+    "include": [
+      "/",
+      "/about",
+      "/services",
+      "/contact",
+      "/blog",
+      "/blog/how-to-launch-food-brand-bangkok",
+      "/blog/how-to-choose-local-partner-thailand",
+      "/case-studies/salsa-burgers"
+    ],
+    "puppeteerArgs": [
+      "--no-sandbox",
+      "--disable-setuid-sandbox"
+    ],
+    "headless": true,
+    "inlineCss": false,
+    "saveAs": "html"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}

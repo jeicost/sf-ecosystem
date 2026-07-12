@@ -1,0 +1,450 @@
+{
+  "project_id": "ncglobal",
+  "pages": [
+    {
+      "slug": "home",
+      "title": "Home",
+      "status": "published",
+      "seo_title": "NC Global Assets — Bangkok Operating Partner for Brand Launch",
+      "seo_description": "International brands use our Bangkok infrastructure to test, launch and operate in Thailand. Cloud kitchen, offices, team. Real revenue from day one.",
+      "og_image": "/og-home.jpg",
+      "content": {
+        "sections": [
+          {
+            "id": "hero",
+            "type": "hero",
+            "eyebrow": "Bangkok · Local Operating Partner",
+            "headline_line1": "Enter Thailand.",
+            "headline_line2": "Skip the hard part.",
+            "headline_line3_accent": "Your brand live in weeks.",
+            "body": "We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.",
+            "cta": "Book a Consultation",
+            "cta_url": "/contact",
+            "image": "/hero-bkk.webp",
+            "image_alt": "NC Global Assets Bangkok operations"
+          },
+          {
+            "id": "intro",
+            "type": "intro-grid",
+            "headline": "Why NC Global Assets",
+            "body": "We're not consultants. We're operators with real infrastructure in Bangkok—cloud kitchen, offices, showroom—ready to serve your brand's launch day one.",
+            "items": [
+              {
+                "title": "Real Infrastructure",
+                "description": "Cloud kitchen, offices, and showroom ready for your brand's operations on day one."
+              },
+              {
+                "title": "Local Expertise",
+                "description": "Deep understanding of Thai market dynamics, consumer behavior, and regulatory environment."
+              },
+              {
+                "title": "Hands-On Execution",
+                "description": "We manage every aspect of your launch—supply chain, operations, customer experience."
+              },
+              {
+                "title": "Growth Partner",
+                "description": "Our success is tied to yours. We're invested in your long-term growth across Southeast Asia."
+              }
+            ]
+          },
+          {
+            "id": "services-preview",
+            "type": "services-preview",
+            "headline": "What We Do",
+            "items": [
+              {
+                "title": "Market Entry",
+                "description": "Validate your product in Bangkok, understand local demand, optimize pricing and positioning."
+              },
+              {
+                "title": "Brand Launch",
+                "description": "Go from concept to live revenue in weeks using our operational base and market connections."
+              },
+              {
+                "title": "F&B Operations",
+                "description": "Cloud kitchen, delivery platform setup, menu optimization, and full operational management."
+              },
+              {
+                "title": "Scale & Growth",
+                "description": "Expand across delivery platforms, launch additional locations, enter new markets in SEA."
+              }
+            ],
+            "cta": "Explore All Services",
+            "cta_url": "/services"
+          },
+          {
+            "id": "case-study-featured",
+            "type": "case-study",
+            "headline": "Featured Case Study",
+            "title": "Salsa Burgers — Launched in 12 Days",
+            "description": "From brand brief to first delivery order in under two weeks using our Bangkok operations and platform partnerships.",
+            "cta": "Read Case Study",
+            "cta_url": "/case-studies/salsa-burgers"
+          },
+          {
+            "id": "faq",
+            "type": "faq",
+            "headline": "Frequently Asked Questions",
+            "items": [
+              {
+                "question": "What markets do you focus on?",
+                "answer": "We focus exclusively on Thailand, with Bangkok as our primary operating base. From Bangkok, brands can build a foundation for wider Southeast Asian expansion."
+              },
+              {
+                "question": "How long does a launch typically take?",
+                "answer": "A focused market test can be set up in 4-8 weeks. A full market launch typically takes 3-6 months depending on product complexity."
+              },
+              {
+                "question": "Do you only work with F&B brands?",
+                "answer": "F&B is our strongest vertical, but we work with selected brands across lifestyle, sustainability, and digital platforms."
+              },
+              {
+                "question": "How do I get started?",
+                "answer": "Book a call or contact us. We'll review your brand, understand your goals, and outline how we can support your Thailand entry."
+              }
+            ]
+          },
+          {
+            "id": "cta",
+            "type": "cta-banner",
+            "headline": "Ready to test your brand in Bangkok?",
+            "body": "Let's talk about how NC Global Assets can help you launch successfully.",
+            "cta": "Schedule a Call",
+            "cta_url": "https://calendly.com/ncglobalassets/intro"
+          }
+        ]
+      }
+    },
+    {
+      "slug": "about",
+      "title": "About",
+      "status": "published",
+      "seo_title": "About NC Global Assets — Bangkok Operating Partner",
+      "seo_description": "Learn about NC Global Assets team, values, and operational infrastructure in Bangkok. Built from the ground up for brand launches in Thailand.",
+      "og_image": "/og-about.jpg",
+      "content": {
+        "sections": [
+          {
+            "id": "hero",
+            "type": "hero",
+            "headline_line1": "Built from the ground up",
+            "headline_line2": "in Bangkok."
+          },
+          {
+            "id": "story",
+            "type": "story",
+            "headline": "Our Story",
+            "lede": "NC Global Assets was founded by entrepreneurs who understood firsthand how hard it is to bring an international brand into a new market — especially one as dynamic and nuanced as Thailand.",
+            "body_para1": "We saw brilliant brands fail not because their product was wrong, but because they tried to build everything from scratch, alone, without local knowledge or operational infrastructure. We decided to build that infrastructure ourselves.",
+            "body_para2": "Today, our Bangkok building — with its cloud kitchen, offices and showroom — is the operational base from which we help international brands test, launch and grow across Thailand and Southeast Asia. Not as consultants. As partners with skin in the game.",
+            "image": "/assets-placeholder.jpg",
+            "image_alt": "NC Global Assets Bangkok operations",
+            "stat_value": "2+",
+            "stat_label": "Years operating in Bangkok"
+          },
+          {
+            "id": "values",
+            "type": "values-grid",
+            "headline": "Our Values",
+            "items": [
+              {
+                "title": "Real Skin in the Game",
+                "description": "We're not advisors. We share the upside and downside of your launch. Your success is our success."
+              },
+              {
+                "title": "Local Expertise + Global Perspective",
+                "description": "Deep Thailand knowledge combined with international brand experience. The best of both worlds."
+              },
+              {
+                "title": "Execution First",
+                "description": "We move fast. Talk less, build more. Real revenue from day one, not roadmaps in 18 months."
+              },
+              {
+                "title": "Long-Term Partner",
+                "description": "We invest in your growth across Thailand and Southeast Asia. Think in years, not campaigns."
+              }
+            ]
+          },
+          {
+            "id": "team",
+            "type": "team",
+            "headline": "Our Team",
+            "body": "The NC Global Assets team brings 15+ years of combined experience in brand launches, F&B operations, and Southeast Asian market entry across tech, hospitality, and FMCG sectors.",
+            "members": [
+              {
+                "name": "Nirada Kritsanaseranee",
+                "role": "Founder & Operating Partner",
+                "bio": "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
+                "image": "/team-nirada.jpg"
+              },
+              {
+                "name": "Carlos Jacoste",
+                "role": "Co-Founder & Strategic Partner",
+                "bio": "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
+                "image": "/team-carlos.jpg"
+              }
+            ]
+          },
+          {
+            "id": "testimonials",
+            "type": "testimonials",
+            "headline": "What Our Partners Say",
+            "items": [
+              {
+                "quote": "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
+                "name": "Salsa Burgers Founder",
+                "title": "Food & Beverage",
+                "image": "/testimonial-1.jpg"
+              },
+              {
+                "quote": "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
+                "name": "The Padel Society",
+                "title": "Lifestyle & Sports",
+                "image": "/testimonial-2.jpg"
+              },
+              {
+                "quote": "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
+                "name": "Souji Founder",
+                "title": "Premium Brand",
+                "image": "/testimonial-3.jpg"
+              }
+            ]
+          },
+          {
+            "id": "cta",
+            "type": "cta-banner",
+            "headline": "Ready to launch your brand in Thailand?",
+            "cta": "Schedule a Consultation",
+            "cta_url": "https://calendly.com/ncglobalassets/intro"
+          }
+        ]
+      }
+    },
+    {
+      "slug": "services",
+      "title": "Services",
+      "status": "published",
+      "seo_title": "Services — NC Global Assets Bangkok",
+      "seo_description": "Market entry, brand launch, F&B operations and SEA expansion services for international brands. Real infrastructure, hands-on execution, proven results.",
+      "og_image": "/og-services.jpg",
+      "content": {
+        "sections": [
+          {
+            "id": "hero",
+            "type": "hero",
+            "headline_line1": "What we do",
+            "headline_line2": "to help you succeed."
+          },
+          {
+            "id": "services",
+            "type": "services-detail",
+            "headline": "Our Services",
+            "items": [
+              {
+                "number": "01",
+                "title": "Market Entry",
+                "headline": "Validate your product in Bangkok",
+                "body": "We run real sales pilots using our existing infrastructure. Gather authentic customer feedback, validate product-market fit and understand local demand before committing to a full launch.",
+                "bullets": [
+                  "4–8 week market validation pilot",
+                  "Real sales channels and customer feedback",
+                  "Product adaptation recommendations",
+                  "Pricing and positioning strategy"
+                ]
+              },
+              {
+                "number": "02",
+                "title": "Brand Launch",
+                "headline": "Go live in weeks, not months",
+                "body": "Use our operational base and market connections to launch your brand from concept to revenue in weeks. We handle infrastructure, activation and operations so you can focus on product.",
+                "bullets": [
+                  "Cloud kitchen and operational setup",
+                  "Delivery platform activation (GrabFood, Foodpanda, Lineman)",
+                  "Local team and day-to-day operations",
+                  "Real revenue from week one"
+                ]
+              },
+              {
+                "number": "03",
+                "title": "F&B Operations",
+                "headline": "End-to-end kitchen and delivery management",
+                "body": "Our cloud kitchen is equipped and ready for your concept. We manage production, quality, delivery logistics and platform relationships so you stay focused on brand growth.",
+                "bullets": [
+                  "Production-ready cloud kitchen",
+                  "Menu localization and adaptation",
+                  "Delivery logistics and fulfillment",
+                  "Quality control and customer experience"
+                ]
+              },
+              {
+                "number": "04",
+                "title": "Scale & Growth",
+                "headline": "Expand across Bangkok and Southeast Asia",
+                "body": "Once validated in Bangkok, we help you scale — additional locations, new platforms, and expansion into neighbouring SEA markets with the same operational rigor.",
+                "bullets": [
+                  "Multi-location operations",
+                  "Regional expansion strategy",
+                  "Platform and channel optimization",
+                  "Southeast Asia market entry"
+                ]
+              }
+            ]
+          },
+          {
+            "id": "how-it-works",
+            "type": "how-it-works",
+            "headline": "How It Works",
+            "steps": [
+              {
+                "number": "1",
+                "title": "Discovery Call",
+                "description": "We learn about your brand, goals and timeline. You understand our operating model and infrastructure."
+              },
+              {
+                "number": "2",
+                "title": "Partnership Agreement",
+                "description": "We structure the partnership around your needs — fixed fee, performance-based, revenue share or equity."
+              },
+              {
+                "number": "3",
+                "title": "Operational Setup",
+                "description": "Our team integrates your brand into our infrastructure — kitchen, team, platforms, customer experience."
+              },
+              {
+                "number": "4",
+                "title": "Launch & Grow",
+                "description": "Go live with real sales. We manage operations while you focus on product and brand growth."
+              }
+            ]
+          },
+          {
+            "id": "cta",
+            "type": "cta-banner",
+            "headline": "Ready to launch your brand in Thailand?",
+            "cta": "Schedule a Consultation",
+            "cta_url": "https://calendly.com/ncglobalassets/intro"
+          }
+        ]
+      }
+    },
+    {
+      "slug": "contact",
+      "title": "Contact",
+      "status": "published",
+      "seo_title": "Contact — NC Global Assets Bangkok",
+      "seo_description": "Get in touch with NC Global Assets. Book a call, send a message or visit our Bangkok office. We reply within 24 hours.",
+      "og_image": "/og-contact.jpg",
+      "content": {
+        "sections": [
+          {
+            "id": "hero",
+            "type": "hero",
+            "headline_line1": "Let's talk",
+            "headline_line2": "about your brand."
+          },
+          {
+            "id": "contact-methods",
+            "type": "contact-methods",
+            "methods": [
+              {
+                "label": "Quick Call",
+                "title": "Book a consultation",
+                "body": "We review your brand, understand your goals and outline how we can support your Thailand entry. 30 minutes.",
+                "cta": "Book via Calendly",
+                "cta_url": "https://calendly.com/ncglobalassets/intro"
+              },
+              {
+                "label": "Send Message",
+                "title": "Use the form below",
+                "body": "Tell us about your brand and what you're looking to achieve. We'll get back to you within 24 hours from Bangkok.",
+                "cta": "Jump to form",
+                "cta_url": "#form"
+              },
+              {
+                "label": "Direct Contact",
+                "title": "Get in touch",
+                "email": "contact@ncglobalassets.com",
+                "phone": "+66 82 536 6653",
+                "hours": "Mon–Sat, 10:00–18:00 (ICT)"
+              }
+            ]
+          },
+          {
+            "id": "contact-form",
+            "type": "contact-form",
+            "headline": "Tell us about your brand",
+            "fields": [
+              {
+                "name": "fullName",
+                "label": "Full Name",
+                "type": "text",
+                "placeholder": "Your name",
+                "required": true
+              },
+              {
+                "name": "email",
+                "label": "Email",
+                "type": "email",
+                "placeholder": "you@brand.com",
+                "required": true
+              },
+              {
+                "name": "brand",
+                "label": "Brand / Company",
+                "type": "text",
+                "placeholder": "Your brand name",
+                "required": true
+              },
+              {
+                "name": "country",
+                "label": "Country / Based in",
+                "type": "text",
+                "placeholder": "Where are you based?",
+                "required": false
+              },
+              {
+                "name": "looking",
+                "label": "What brings you to Thailand?",
+                "type": "radio",
+                "options": [
+                  "Test my brand in Thailand",
+                  "Launch operations",
+                  "Find local partners",
+                  "Explore F&B market",
+                  "Other"
+                ],
+                "required": false
+              },
+              {
+                "name": "message",
+                "label": "Tell us more about your brand (optional)",
+                "type": "textarea",
+                "placeholder": "What's your brand story? What are your goals? Timeline?",
+                "required": false
+              }
+            ],
+            "submitLabel": "Send Message",
+            "disclaimer": "We never share your details. You'll hear from us within 24 hours."
+          },
+          {
+            "id": "office-info",
+            "type": "office-info",
+            "headline": "Our Bangkok Office",
+            "address": {
+              "street": "507/10 Sathu Pradit Road",
+              "district": "Chong Nonsi, Yan Nawa",
+              "city": "Bangkok 10120",
+              "country": "Thailand"
+            },
+            "hours": {
+              "weekday": "Monday–Saturday",
+              "time": "10:00–18:00 (ICT)",
+              "note": "Closed Sundays & Thai holidays"
+            },
+            "note": "Our building includes a cloud kitchen, offices and showroom. Schedule a tour when you book your call."
+          }
+        ]
+      }
+    }
+  ]
+}

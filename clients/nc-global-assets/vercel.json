@@ -1,0 +1,7 @@
+{
+  "outputDirectory": "dist",
+  "buildCommand": "node scripts/fetch-cms-content.mjs && vite build",
+  "installCommand": "npm install",
+  "cleanUrls": true,
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}

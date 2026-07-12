@@ -1,0 +1,189 @@
+{
+  "client_name": "NC Global Assets",
+  "slug": "nc-global-assets",
+  "tagline": "Enter Thailand. Skip the hard part.",
+  "tagline_secondary": "Your brand live in weeks. Local Operating Partner · Bangkok.",
+  "industry": "Market Entry Consulting / Local Operating Partner / Thailand Brand Launch",
+  "mission": "We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.",
+  "positioning": "The only Bangkok-based operating partner that gets your brand live in Thailand in under 2 weeks — no Thai company registration, no legal setup, no wasted months.",
+  "key_stats": {
+    "experience": "15+ years founder & operator",
+    "network": "7 brands in active network",
+    "speed": "2 weeks from brief to live",
+    "reach": "SEA strategic gateway"
+  },
+  "services": [
+    {
+      "num": "01",
+      "title": "Brand Representation & Action Plan",
+      "tagline": "Enter the market with a clear roadmap — not guesswork.",
+      "description": "Market research, competitive mapping, brand adaptation and a full go-to-market roadmap built around your specific product, price point and audience."
+    },
+    {
+      "num": "02",
+      "title": "Cloud Kitchen Operations",
+      "tagline": "Your food brand live in Bangkok in under two weeks.",
+      "description": "Operate your food brand from our fully equipped Bangkok building — cloud kitchen, office and showroom included. No Thai company registration required."
+    },
+    {
+      "num": "03",
+      "title": "Commercial & Distribution Services",
+      "tagline": "Open doors that would otherwise take years to build.",
+      "description": "Local commercial team working your accounts every day — retail, HORECA and B2B partnerships across Bangkok and Thailand."
+    }
+  ],
+  "audience_primary": {
+    "name": "The International F&B Brand",
+    "type": "Company",
+    "location": "Spain / LATAM / Europe → Thailand",
+    "pain": "Wants to test the Bangkok F&B market but fears legal setup, finding the right kitchen, activating delivery platforms and managing daily ops from abroad.",
+    "desire": "Be live on GrabFood, Foodpanda and LINE Man in 2 weeks without registering a Thai company.",
+    "channels": ["LinkedIn", "Email", "Industry events"]
+  },
+  "audience_secondary": {
+    "name": "The International Lifestyle / Consumer Brand",
+    "type": "Brand / Founder",
+    "location": "Global → Southeast Asia",
+    "pain": "Has validated the brand at home but doesn't know how to enter Thailand — who to talk to, which channels work, how to adapt the product.",
+    "desire": "A single trusted partner who handles the entire market entry — strategy, operations, commercial team.",
+    "channels": ["LinkedIn", "Referral", "Google Search"]
+  },
+  "brand_voice": ["direct", "confident", "results-oriented", "numbers-forward", "no-nonsense"],
+  "brand_values": ["execution over consulting", "speed to market", "local expertise", "transparency", "real results"],
+  "differentiator": "Infrastructure already built. Team already here. Your brand live in 2 weeks.",
+  "competitors": [
+    { "name": "Traditional Consultants", "weakness": "Strategy decks but no execution — you still have to do everything yourself" },
+    { "name": "DIY Market Entry", "weakness": "Takes 6-18 months, Thai bureaucracy, no local network" },
+    { "name": "Local Thai Agencies", "weakness": "No international brand expertise, no owned infrastructure, no operations" }
+  ],
+  "brands_network": ["Salsa Burgers", "Plesh", "Dadybox", "Discoolver", "Taykus", "The Padel Society"],
+  "content_pillars": [
+    {
+      "name": "Thailand Market Entry",
+      "pct": 30,
+      "description": "Market data, opportunities, why Thailand, what makes Bangkok the SEA gateway. Educational content that builds authority.",
+      "angle": "The data-driven case for Thailand that no one is making for Spanish/LATAM brands",
+      "example_posts": [
+        "Thailand has 71M people and a growing middle class. Here's why we're betting on Bangkok.",
+        "5 sectors where foreign brands are winning in Bangkok right now.",
+        "The 3 biggest mistakes brands make when entering Thailand (and how we avoid them)."
+      ]
+    },
+    {
+      "name": "Behind Operations",
+      "pct": 25,
+      "description": "Cloud kitchen, Bangkok office, showroom, daily operations. Real behind-the-scenes content that builds trust.",
+      "angle": "The infrastructure already exists — show don't tell",
+      "example_posts": [
+        "Our cloud kitchen in Sathorn is live. Here's what your brand gets from day one.",
+        "A day in operations: how we manage 3 food brands from one Bangkok kitchen.",
+        "What 'operational base' actually means when you're entering a new country."
+      ]
+    },
+    {
+      "name": "Brand Stories",
+      "pct": 20,
+      "description": "Client success stories — Salsa Burgers, Plesh, others. Social proof in narrative format.",
+      "angle": "Real timelines, real numbers, real obstacles — not polished case studies",
+      "example_posts": [
+        "Salsa Burgers went from idea to first Grab order in 12 days. Here's the timeline.",
+        "Why a Spanish brand chose Bangkok over Singapore as its SEA entry point.",
+        "3 things we learned from launching a food brand in Bangkok during peak season."
+      ]
+    },
+    {
+      "name": "Bangkok & SEA Life",
+      "pct": 15,
+      "description": "Bangkok from the inside — Carlos's perspective on the SEA ecosystem, opportunities only visible from here.",
+      "angle": "The market intelligence only available to people living here",
+      "example_posts": [
+        "What the Bangkok food scene looked like this morning. (And what it means for your brand.)",
+        "Living in Bangkok gives you a view of SEA that you can't get from a flight.",
+        "The SEA startup ecosystem in 2026 — what's moving and what's stalling."
+      ]
+    },
+    {
+      "name": "Founder Resources",
+      "pct": 10,
+      "description": "Practical guides, checklists, tools for founders entering Southeast Asia. Pure utility content.",
+      "angle": "The operational checklist no consulting firm publishes because it gives away their service",
+      "example_posts": [
+        "The 10-question checklist before you commit to any SEA market.",
+        "How to test your product in Bangkok for under $5,000.",
+        "Thai consumer behaviour in 2026 — 5 things that will surprise you."
+      ]
+    }
+  ],
+  "channels": [
+    { "name": "LinkedIn", "priority": "primary", "kpi": "Impressions + connection requests + inbound leads" },
+    { "name": "Instagram", "priority": "primary", "kpi": "Saves + DMs + profile visits" },
+    { "name": "Google (SEO)", "priority": "primary", "kpi": "Rankings for 'brand launch Thailand', 'Bangkok market entry'" },
+    { "name": "YouTube", "priority": "secondary", "kpi": "Watch time + subscriber growth" }
+  ],
+  "campaigns_active": [
+    {
+      "name": "Cloud Kitchen Launch Content",
+      "dates": "Mayo-Junio 2026",
+      "goal": "Position NC Global as the fastest route to live F&B operations in Bangkok",
+      "mechanic": "Behind-the-scenes content series: kitchen walkthrough + brand onboarding process + first week live"
+    },
+    {
+      "name": "SEA Market Entry Series",
+      "dates": "Ongoing",
+      "goal": "Generate inbound leads from international brands researching Thailand entry",
+      "mechanic": "LinkedIn articles + Instagram carrusels → Book a Call (Calendly)"
+    }
+  ],
+  "month1_weeks": [
+    { "week": 1, "theme": "Establish Authority — Why Thailand", "posts": 4, "goal": "200 new LinkedIn followers" },
+    { "week": 2, "theme": "Behind the Operations — Show the Infrastructure", "posts": 4, "goal": "50 profile visits from target audience" },
+    { "week": 3, "theme": "Brand Story — Salsa Burgers Case Study", "posts": 4, "goal": "20 inbound DMs / connection requests" },
+    { "week": 4, "theme": "Founder Resources — Practical Value", "posts": 4, "goal": "500 post impressions on LinkedIn" }
+  ],
+  "influencer_tiers": [
+    { "tier": "International business/founder creators", "followers": "10K-100K", "count": 3, "budget": "[ESTIMATE] €300/mes" },
+    { "tier": "Bangkok expat lifestyle creators", "followers": "5K-50K", "count": 5, "budget": "Barter / content swap" },
+    { "tier": "Carlos Jacoste — Personal Brand", "followers": "Growing", "count": 1, "budget": "Orgánico" }
+  ],
+  "paid_media": [
+    { "channel": "LinkedIn Ads", "budget_pct": 70, "format": "Lead gen forms targeting international brand managers" },
+    { "channel": "Google Search Ads", "budget_pct": 20, "format": "Branded keywords: 'brand launch Thailand', 'Bangkok market entry'" },
+    { "channel": "Instagram/Facebook Ads", "budget_pct": 10, "format": "Retargeting website visitors" }
+  ],
+  "kpis": [
+    { "metric": "Inbound leads / month", "baseline": "~5 [EST]", "target_30d": "15", "target_90d": "40" },
+    { "metric": "LinkedIn followers", "baseline": "[EST] ~500", "target_30d": "700", "target_90d": "1.500" },
+    { "metric": "Book a Call clicks", "baseline": "N/D", "target_30d": "30", "target_90d": "100" },
+    { "metric": "Google ranking 'brand launch Thailand'", "baseline": "Page 2-3", "target_30d": "Page 1 top 5", "target_90d": "Position 1-2" },
+    { "metric": "Brands onboarded", "baseline": "7 in network", "target_30d": "+1", "target_90d": "+3" }
+  ],
+  "action_items": [
+    { "priority": "P1", "task": "Confirmar Line ID oficial @ncglobalassets", "owner": "Nirada", "deadline": "Esta semana" },
+    { "priority": "P1", "task": "Activar LinkedIn Company Page NC Global con contenido semanal", "owner": "Carlos/Nirada", "deadline": "Mayo 2026" },
+    { "priority": "P1", "task": "Publicar Behind Operations — cloud kitchen walkthrough (Reel)", "owner": "Nirada", "deadline": "Mayo 2026" },
+    { "priority": "P2", "task": "Crear caso de estudio Salsa Burgers con timeline y resultados reales", "owner": "Carlos", "deadline": "Junio 2026" },
+    { "priority": "P2", "task": "Configurar Calendly URL de NC Global (actual: jacostech)", "owner": "Carlos", "deadline": "Junio 2026" },
+    { "priority": "P2", "task": "Deploy SF-CMS para NC Global + Vercel Deploy Hook", "owner": "Javier/Josue", "deadline": "Junio 2026" },
+    { "priority": "P3", "task": "Endurecer DMARC: p=none → p=quarantine", "owner": "Javier", "deadline": "Mayo 20" },
+    { "priority": "P3", "task": "Crear canal YouTube @ncglobalassets", "owner": "Nirada", "deadline": "Julio 2026" }
+  ],
+  "colors": {
+    "primary": "#c5a233",
+    "accent": "#a8891f",
+    "bg": "#0D0D0D",
+    "text": "#FAFAF7"
+  },
+  "fonts": {
+    "display": "Montserrat",
+    "body": "Montserrat",
+    "mono": "JetBrains Mono"
+  },
+  "budget_monthly": "[ESTIMATE] €1.000-1.500/mes",
+  "canva_candidates": {
+    "Thailand Market Entry": { "url": "https://www.canva.com/d/YKv2urJSiSWLkgc", "thumb": "https://design.canva.ai/_H9lBBAcgjQbTsW" },
+    "Behind Operations": { "url": "https://www.canva.com/d/eD2SljauH8ezhFr", "thumb": "https://design.canva.ai/J8p3B5FL5PZMr4-" },
+    "Brand Stories": { "url": "https://www.canva.com/d/6Y3LuhFL_LmJyoz", "thumb": "https://design.canva.ai/IpNwUywR0xDaSbd" },
+    "Bangkok & SEA Life": { "url": "https://www.canva.com/d/BGgNVgJ1iObZeKq", "thumb": "https://design.canva.ai/05FL58efB456CuW" },
+    "Founder Resources": { "url": "https://www.canva.com/d/mEXr5UWp0fUt5QK", "thumb": "https://design.canva.ai/WA4jAwwOhmG_u5o" }
+  }
+}
