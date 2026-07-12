@@ -19,10 +19,9 @@ export default function ResetPasswordPage() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [isRecoveryMode, setIsRecoveryMode] = useState(false)
 
-  const supabase = createClient()
-
   // Listen for PASSWORD_RECOVERY auth state change
   useEffect(() => {
+    const supabase = createClient()
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecoveryMode(true)
@@ -32,7 +31,7 @@ export default function ResetPasswordPage() {
     return () => {
       subscription?.unsubscribe()
     }
-  }, [supabase])
+  }, [])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -54,6 +53,7 @@ export default function ResetPasswordPage() {
     }
 
     try {
+      const supabase = createClient()
       const { error: updateError } = await supabase.auth.updateUser({
         password: password,
       })
