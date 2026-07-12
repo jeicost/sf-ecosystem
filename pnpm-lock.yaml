@@ -16,6 +16,49 @@ importers:
         specifier: ^2.0.0
         version: 2.9.15
 
+  apps/ai-agency-sf-next:
+    dependencies:
+      '@anthropic-ai/sdk':
+        specifier: '*'
+        version: 0.39.0
+      '@supabase/supabase-js':
+        specifier: '*'
+        version: 2.106.2
+      clsx:
+        specifier: '*'
+        version: 2.1.1
+      next:
+        specifier: latest
+        version: 16.2.10(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      next-themes:
+        specifier: '*'
+        version: 0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      react:
+        specifier: latest
+        version: 19.2.7
+      react-dom:
+        specifier: latest
+        version: 19.2.7(react@19.2.7)
+      tailwindcss:
+        specifier: '*'
+        version: 4.3.0
+    devDependencies:
+      '@tailwindcss/postcss':
+        specifier: '*'
+        version: 4.3.0
+      '@types/node':
+        specifier: '*'
+        version: 20.19.41
+      '@types/react':
+        specifier: '*'
+        version: 19.2.15
+      '@types/react-dom':
+        specifier: '*'
+        version: 19.2.3(@types/react@19.2.15)
+      typescript:
+        specifier: '*'
+        version: 5.9.3
+
   apps/mira:
     dependencies:
       '@supabase/ssr':
@@ -2897,6 +2940,12 @@ packages:
     peerDependenciesMeta:
       typescript:
         optional: true
+
+  next-themes@0.4.6:
+    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
 
   next@15.3.9:
     resolution: {integrity: sha512-bat50ogkh2esjfkbqmVocL5QunR9RGCSO2oQKFjKeDcEylIgw3JY6CMfGnzoVfXJ9SDLHI546sHmsk90D2ivwQ==}
@@ -6640,6 +6689,11 @@ snapshots:
     transitivePeerDependencies:
       - '@swc/helpers'
 
+  next-themes@0.4.6(react-dom@19.2.7(react@19.2.7))(react@19.2.7):
+    dependencies:
+      react: 19.2.7
+      react-dom: 19.2.7(react@19.2.7)
+
   next@15.3.9(@opentelemetry/api@1.9.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
     dependencies:
       '@next/env': 15.3.9
@@ -6696,8 +6750,8 @@ snapshots:
     dependencies:
       '@next/env': 16.2.10
       '@swc/helpers': 0.5.15
-      baseline-browser-mapping: 2.10.32
-      caniuse-lite: 1.0.30001793
+      baseline-browser-mapping: 2.10.42
+      caniuse-lite: 1.0.30001803
       postcss: 8.4.31
       react: 19.2.7
       react-dom: 19.2.7(react@19.2.7)
