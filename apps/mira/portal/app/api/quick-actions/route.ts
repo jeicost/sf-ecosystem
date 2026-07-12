@@ -184,6 +184,23 @@ export async function POST(req: NextRequest) {
       console.error('Update error:', updateError)
     }
 
+    // Auto-log to project memory (fire and forget, non-blocking)
+    const outputSummary = typeof output_data === 'object'
+      ? JSON.stringify(output_data).slice(0, 200)
+      : String(output_data).slice(0, 200)
+
+    void admin
+      .from('project_memory')
+      .insert({
+        client_id: clientId,
+        title: `Quick Action: ${action_type}`,
+        category: 'action',
+        summary: outputSummary,
+        full_content: output_data,
+        tags: [action_type, department],
+        source_department: department,
+      })
+
     return NextResponse.json({
       success: true,
       action_id: actionId,

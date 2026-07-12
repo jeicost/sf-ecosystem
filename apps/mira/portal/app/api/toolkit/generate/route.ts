@@ -146,6 +146,23 @@ export async function POST(req: NextRequest) {
       console.error('Update error:', updateError)
     }
 
+    // Auto-log to project memory (fire and forget, non-blocking)
+    const resultSummary = typeof result === 'object'
+      ? JSON.stringify(result).slice(0, 200)
+      : String(result).slice(0, 200)
+
+    void admin
+      .from('project_memory')
+      .insert({
+        client_id: clientId,
+        title: `Toolkit: ${tool_slug}`,
+        category: 'generation',
+        summary: resultSummary,
+        full_content: result,
+        tags: [tool_slug, 'toolkit'],
+        source_department: 'toolkit',
+      })
+
     return NextResponse.json({
       success: true,
       queue_id: queueId,

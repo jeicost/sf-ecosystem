@@ -16,15 +16,20 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Generation not found' }, { status: 404 })
     }
 
+    const summary = typeof generation.result_data === 'string'
+      ? generation.result_data.slice(0, 500)
+      : JSON.stringify(generation.result_data).slice(0, 500)
+
     const { data: memory, error: saveError } = await admin
       .from('project_memory')
       .insert({
         client_id: generation.client_id,
-        tool_slug: generation.tool_slug,
+        title: generation.tool_slug ? `${generation.tool_slug} output` : 'Generation',
         category: category,
+        summary: summary,
+        full_content: generation.result_data,
         tags: tags || [],
-        content: generation.result_data,
-        notes: note
+        source_department: 'toolkit'
       })
       .select()
       .single()

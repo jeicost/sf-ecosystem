@@ -1,5 +1,6 @@
 import { fetchBrandBrain } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
+import { getClientMemoryContext } from '@/lib/client-memory'
 
 export interface ToolPromptParams {
   clientId: string
@@ -12,7 +13,16 @@ export async function getToolkitPrompt(
 ): Promise<string | null> {
   const { clientId, inputData } = params
 
-  const brandBrain = await fetchBrandBrain(clientId)
+  const [brandBrain, memoryContext, docContext] = await Promise.all([
+    fetchBrandBrain(clientId),
+    getClientMemoryContext(clientId),
+    retrieveAgentContext({
+      client_id: clientId,
+      context_type: 'all',
+      limit: 3,
+    }),
+  ])
+
   const brandContext = brandBrain
     ? `
 BRAND CONTEXT:
@@ -23,17 +33,15 @@ BRAND CONTEXT:
 `
     : ''
 
-  const docContext = await retrieveAgentContext({
-    client_id: clientId,
-    context_type: 'all',
-    limit: 3,
-  })
-
   const docText = docContext?.documents
     ?.map((d: any) => d.excerpt)
     .join('\n') || ''
 
-  const contextBlock = docText || brandContext ? `\n\nCLIENT DOCUMENTATION:\n${docText || 'No documents available'}\n${brandContext}` : ''
+  const allContext = [docText, brandContext, memoryContext]
+    .filter(Boolean)
+    .join('\n\n')
+
+  const fullContext = allContext ? `\n\nCLIENT DOCUMENTATION:\n${allContext}` : ''
 
   // Prompts específicos por herramienta
   switch (toolSlug) {
@@ -42,7 +50,7 @@ BRAND CONTEXT:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate a brand briefing JSON with these exact sections:
 {
@@ -60,7 +68,7 @@ Generate a brand briefing JSON with these exact sections:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate an SEO audit JSON with this structure:
 {
@@ -83,7 +91,7 @@ Generate an SEO audit JSON with this structure:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate a marketing audit JSON with this structure:
 {
@@ -106,7 +114,7 @@ Generate a marketing audit JSON with this structure:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate a content pack JSON with this structure:
 {
@@ -122,7 +130,7 @@ Generate a content pack JSON with this structure:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate an action plan JSON with this structure:
 {
@@ -138,7 +146,7 @@ Generate an action plan JSON with this structure:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate an investor deck JSON with this structure:
 {
@@ -159,7 +167,7 @@ Generate an investor deck JSON with this structure:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate a competitive analysis JSON with this structure:
 {
@@ -184,7 +192,7 @@ Generate a competitive analysis JSON with this structure:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate a brandbook JSON with this structure:
 {

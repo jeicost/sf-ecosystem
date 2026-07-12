@@ -1,5 +1,6 @@
 import { fetchBrandBrain } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
+import { getClientMemoryContext } from '@/lib/client-memory'
 
 export interface QuickActionPromptParams {
   clientId: string
@@ -12,7 +13,16 @@ export async function getQuickActionPrompt(
 ): Promise<string | null> {
   const { clientId, inputData } = params
 
-  const brandBrain = await fetchBrandBrain(clientId)
+  const [brandBrain, memoryContext, docContext] = await Promise.all([
+    fetchBrandBrain(clientId),
+    getClientMemoryContext(clientId),
+    retrieveAgentContext({
+      client_id: clientId,
+      context_type: 'all',
+      limit: 2,
+    }),
+  ])
+
   const brandContext = brandBrain
     ? `
 BRAND CONTEXT:
@@ -22,17 +32,15 @@ BRAND CONTEXT:
 `
     : ''
 
-  const docContext = await retrieveAgentContext({
-    client_id: clientId,
-    context_type: 'all',
-    limit: 2,
-  })
-
   const docText = docContext?.documents
     ?.map((d: any) => d.excerpt)
     .join('\n') || ''
 
-  const contextBlock = docText || brandContext ? `\n\nCONTEXT:\n${docText || 'No documents available'}\n${brandContext}` : ''
+  const allContext = [docText, brandContext, memoryContext]
+    .filter(Boolean)
+    .join('\n\n')
+
+  const fullContext = allContext ? `\n\nCONTEXT:\n${allContext}` : ''
 
   // Prompts específicos por acción
   // ADMIN
@@ -41,7 +49,7 @@ BRAND CONTEXT:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate a response JSON:
 {
@@ -57,7 +65,7 @@ Generate a response JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate FAQ JSON:
 {
@@ -74,7 +82,7 @@ Generate FAQ JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate tutorial JSON:
 {
@@ -111,7 +119,7 @@ Output ONLY valid JSON (no markdown, no text):
 
 Input:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Return ONLY valid JSON (no markdown):
 {
@@ -129,7 +137,7 @@ Return ONLY valid JSON (no markdown):
 
 Reply to analyze:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Return ONLY valid JSON (no markdown):
 {
@@ -147,7 +155,7 @@ Return ONLY valid JSON (no markdown):
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate content JSON:
 {
@@ -164,7 +172,7 @@ Generate content JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate newsletter JSON:
 {
@@ -182,7 +190,7 @@ Generate newsletter JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate brief JSON:
 {
@@ -200,7 +208,7 @@ Generate brief JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate carousel JSON:
 {
@@ -218,7 +226,7 @@ Generate carousel JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate campaign JSON:
 {
@@ -239,7 +247,7 @@ Generate campaign JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate report JSON:
 {
@@ -257,7 +265,7 @@ Generate report JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate analysis JSON:
 {
@@ -274,7 +282,7 @@ Generate analysis JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate ideas JSON:
 {
@@ -292,7 +300,7 @@ Generate ideas JSON:
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${contextBlock}
+${fullContext}
 
 Generate projection JSON:
 {
