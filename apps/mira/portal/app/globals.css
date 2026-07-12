@@ -194,3 +194,34 @@
 
 /* Ambient glow toned down */
 [data-theme="light"] .fixed.inset-0.pointer-events-none { opacity: 0.2; }
+
+/* Print styles for toolkit tool page */
+@media print {
+  * {
+    background: white !important;
+    color: black !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  nav, header, aside, .sticky, .no-print {
+    display: none !important;
+  }
+
+  #printable-toolkit-result {
+    display: block !important;
+    width: 100% !important;
+    background: white !important;
+    color: black !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
+
+  /* Keep readable margins for printed content */
+  @page {
+    margin: 2cm;
+  }
+}

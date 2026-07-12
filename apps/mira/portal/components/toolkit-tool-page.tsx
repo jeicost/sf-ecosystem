@@ -52,7 +52,7 @@ export default function ToolkitToolPage({
 
       <div className="grid grid-cols-3 gap-6 mb-10">
         {/* Main Content */}
-        <div className="col-span-2">
+        <div className="col-span-2" id="printable-toolkit-result">
           {children}
         </div>
 
@@ -83,7 +83,7 @@ export default function ToolkitToolPage({
 
             {isGenerating && (
               <div className="mt-6 space-y-2">
-                <button className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: `${color}18`, color }}>
+                <button onClick={() => window.print()} className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: `${color}18`, color }}>
                   <Download size={12} />
                   Descargar PDF
                 </button>

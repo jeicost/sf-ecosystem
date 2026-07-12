@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
+import { getClientMemoryContext } from '@/lib/client-memory'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { CLIENT_ID } from '@/lib/constants'
 
@@ -38,9 +39,11 @@ export async function POST(req: NextRequest) {
     const resolvedClientId = clientId ?? CLIENT_ID
     const db = adminClient()
 
-    // Fetch Brand Brain
+    // Fetch Brand Brain + project memory
     const brain = await fetchBrandBrain(resolvedClientId)
     const brainContext = brain ? formatBrandBrainForPrompt(brain) : ''
+    const memoryContext = await getClientMemoryContext(resolvedClientId)
+    const systemExtra = [brainContext, memoryContext].filter(Boolean).join('\n\n---\n\n') || undefined
 
     const briefInput = `
 Cliente: ${client ?? brain?.brandName ?? 'MIRA'}
@@ -57,7 +60,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     const orchestratorOutput = await callAgent(
       'orchestrator',
       `Analiza este brief y determina el plan de acción:\n\n${briefInput}`,
-      brainContext
+      systemExtra
     )
 
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Marco', agentRole: 'orchestrator', taskType: 'brief_analysis', status: 'completed', outputSummary: orchestratorOutput.slice(0, 150) }).catch(() => {})

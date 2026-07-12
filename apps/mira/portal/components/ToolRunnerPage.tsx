@@ -51,7 +51,6 @@ export default function ToolRunnerPage({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [outputFormat, setOutputFormat] = useState<'web' | 'slides'>('web')
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -64,10 +63,7 @@ export default function ToolRunnerPage({
     setSuccess(false)
 
     try {
-      await onGenerate({
-        ...formData,
-        output_format: outputFormat,
-      })
+      await onGenerate(formData)
       setSuccess(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
@@ -209,35 +205,6 @@ export default function ToolRunnerPage({
               )}
             </div>
           ))}
-
-          {/* Output Format Selector */}
-          <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-            <p className="text-sm font-semibold text-white mb-3">Output format</p>
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={() => setOutputFormat('web')}
-                className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  outputFormat === 'web'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                }`}
-              >
-                🌐 Web Report
-              </button>
-              <button
-                type="button"
-                onClick={() => setOutputFormat('slides')}
-                className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                  outputFormat === 'slides'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                }`}
-              >
-                📊 Google Slides
-              </button>
-            </div>
-          </div>
 
           {/* Submit Button */}
           <button

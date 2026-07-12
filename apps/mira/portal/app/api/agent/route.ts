@@ -3,19 +3,9 @@ import Anthropic from '@anthropic-ai/sdk'
 import { createServerClient } from '@supabase/ssr'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
+import { getClientMemoryContext } from '@/lib/client-memory'
+import { AGENT_DISPLAY_NAMES } from '@/lib/agent-meta'
 import { CLIENT_ID } from '@/lib/constants'
-
-const AGENT_DISPLAY_NAMES: Record<string, string> = {
-  orchestrator: 'Marco', 'content-strategist': 'Luna', copywriter: 'Alex',
-  designer: 'Zoe', 'video-editor': 'Kai', 'social-media-manager': 'Noa',
-  'ads-manager': 'Riva', 'community-manager': 'Sam', 'lead-scout': 'Rex',
-  'icp-scorer': 'Vera', 'icebreaker-writer': 'Finn', 'reply-qualifier': 'Quinn',
-  'proposal-writer': 'Nova', strategos: 'Strategos', atlas: 'Atlas',
-  blueprint: 'Blueprint', kairos: 'Kairos', radar: 'Radar', spark: 'Spark',
-  scout: 'Scout', venture: 'Venture', oracle: 'Oracle', ledger: 'Ledger',
-  onboard: 'Onboard', pulse: 'Pulse', herald: 'Herald', midas: 'Midas',
-  quant: 'Quant', fiscal: 'Fiscal', harbor: 'Harbor',
-}
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -67,14 +57,21 @@ export async function POST(req: NextRequest) {
       ? '\n\nNivel de autonomía: ALWAYS ASK. Antes de proponer cualquier acción concreta, pide confirmación explícita al usuario.'
       : ''
 
-    // Enriquecer con Brand Brain si aplica
+    // Enriquecer con Brand Brain + project_memory si aplica
     const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx
     let fullSystem = systemPrompt + dateCtx
+
+    const memoryContext = await getClientMemoryContext(resolvedClientId)
+
     if (includeBrandBrain) {
       const brain = await fetchBrandBrain(resolvedClientId)
-      if (brain) {
-        fullSystem = systemPrompt + dateCtx + `\n\n---\n\n${formatBrandBrainForPrompt(brain)}`
+      const brainContext = brain ? formatBrandBrainForPrompt(brain) : ''
+      const contextBlocks = [brainContext, memoryContext].filter(Boolean)
+      if (contextBlocks.length > 0) {
+        fullSystem += `\n\n---\n\n${contextBlocks.join('\n\n---\n\n')}`
       }
+    } else if (memoryContext) {
+      fullSystem += `\n\n---\n\n${memoryContext}`
     }
 
     // Log inicio de tarea

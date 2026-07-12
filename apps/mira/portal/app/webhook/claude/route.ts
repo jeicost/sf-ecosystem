@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 
-// Real n8n webhook integration
+// Direct Claude call via webhook pattern (n8n integration pending)
 // Receives quick action request, calls Claude, returns result
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY

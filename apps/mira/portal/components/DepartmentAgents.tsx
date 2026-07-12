@@ -1,11 +1,10 @@
 'use client'
 
-import { ALL_AGENTS } from '@/lib/agents'
+import Link from 'next/link'
+import { COMERCIAL_AGENTS } from '@/lib/department-agents'
 
 export default function DepartmentAgents() {
-
-  // Note: Agent schema doesn't have package field, showing first 4 agents for all departments
-  const agents = ALL_AGENTS.slice(0, 4)
+  const agents = COMERCIAL_AGENTS
 
   if (agents.length === 0) return null
 
@@ -16,10 +15,16 @@ export default function DepartmentAgents() {
       </p>
       <div className="grid grid-cols-2 gap-3">
         {agents.map(agent => (
-          <div key={agent.name} className="card px-4 py-3 hover:bg-white/8 transition-all">
-            <p className="text-xs font-medium text-white">{agent.name}</p>
-            <p className="text-[10px] text-[#666] mt-1">{agent.description}</p>
-          </div>
+          <Link key={agent.id} href={`/agent/${agent.id}`} className="card px-4 py-3 hover:bg-white/8 transition-all cursor-pointer">
+            <div className="flex items-start gap-2 mb-2">
+              <span className="text-lg">{agent.emoji}</span>
+              <div>
+                <p className="text-xs font-medium text-white">{agent.name}</p>
+                <p className="text-[10px]" style={{ color: agent.color }}>Hablar →</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-[#666]">{agent.description}</p>
+          </Link>
         ))}
       </div>
     </div>
