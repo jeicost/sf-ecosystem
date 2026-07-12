@@ -79,7 +79,7 @@ export default function BrandPage() {
               <p className="text-sm mb-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
                 {brandProfile?.mission || 'Define la misión, valores, voz y propuesta de valor de tu marca.'}
               </p>
-              <Link href="/brain"
+              <Link href="/brand-brain"
                 className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-lg font-medium"
                 style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
                 Editar Perfil →
@@ -102,7 +102,7 @@ export default function BrandPage() {
                   ? pillars.slice(0, 2).map(p => p.name).join(', ') + (pillars.length > 2 ? '...' : '')
                   : 'Define los 3-5 pilares temáticos principales'}
               </p>
-              <Link href="/brain"
+              <Link href="/brand-brain"
                 className="inline-flex items-center gap-2 text-xs px-4 py-2 rounded-lg font-medium"
                 style={{ background: 'rgba(107,114,128,0.15)', color: '#d1d5db', border: '1px solid rgba(107,114,128,0.2)' }}>
                 Configurar Pillars →

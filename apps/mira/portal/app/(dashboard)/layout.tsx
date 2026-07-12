@@ -110,10 +110,10 @@ useEffect(() => {
       </Link>
 
       {/* Brand Brain — global link */}
-      <Link href="/brain"
+      <Link href="/brand-brain"
         className={clsx(
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path === '/brain'
+          path === '/brand-brain'
             ? 'bg-violet-500/15 text-violet-400'
             : 'text-[#555] hover:text-violet-400 hover:bg-violet-500/8'
         )}>
