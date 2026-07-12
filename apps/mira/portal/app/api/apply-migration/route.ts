@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { requireAuthGate } from '@/lib/auth-gate'
 
 export async function POST(req: NextRequest) {
+  try {
+    await requireAuthGate()
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     console.log('Verifying migration status...')
     const db = adminClient()

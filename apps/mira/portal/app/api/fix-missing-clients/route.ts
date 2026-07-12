@@ -1,7 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse, NextRequest } from 'next/server'
+import { requireAuthGate } from '@/lib/auth-gate'
 
 export async function POST(req: NextRequest) {
+  try {
+    await requireAuthGate()
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 

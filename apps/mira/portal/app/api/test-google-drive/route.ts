@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server'
 import { uploadToDrive } from '@/lib/google-drive'
+import { requireAuthGate } from '@/lib/auth-gate'
 
 export async function GET() {
+  try {
+    await requireAuthGate()
+  } catch {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     // Create a test HTML file
     const testContent = `
