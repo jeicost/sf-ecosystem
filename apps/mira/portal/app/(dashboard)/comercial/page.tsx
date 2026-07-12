@@ -4,13 +4,13 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
 
-const COMERCIAL_META = [
-  { produces: 'Qualified lead list',      href: '/comercial/discovery'  },
-  { produces: 'ICP score 0-100',          href: '/comercial/scoring'    },
-  { produces: 'Personalized icebreaker',  href: '/comercial/icebreaker' },
-  { produces: 'BANT qualification',       href: '/comercial/qualify'    },
-  { produces: 'Closed proposal',          href: '/comercial/proposals'  },
-]
+const COMERCIAL_META: Record<string, { produces: string; href: string }> = {
+  'lead-scout': { produces: 'Qualified lead list',      href: '/comercial/discovery'  },
+  'icp-scorer': { produces: 'ICP score 0-100',          href: '/comercial/scoring'    },
+  'icebreaker-writer': { produces: 'Personalized icebreaker',  href: '/comercial/icebreaker' },
+  'reply-qualifier': { produces: 'BANT qualification',       href: '/comercial/qualify'    },
+  'proposal-writer': { produces: 'Closed proposal',          href: '/comercial/proposals'  },
+}
 
 const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
   name: a.name,
@@ -19,6 +19,8 @@ const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
 }))
 
 export default function ComercialPage() {
+  const agentCount = COMERCIAL_DEPT_AGENTS.length
+  
   return (
     <div className="px-8 py-8">
       <div className="mb-8">
@@ -27,13 +29,13 @@ export default function ComercialPage() {
         </p>
         <h1 className="text-2xl font-semibold text-white tracking-tight">MIRA Sales</h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          5 specialists running your entire B2B acquisition pipeline — from discovery to closed deal.
+          {agentCount} specialists running your entire B2B acquisition pipeline — from discovery to closed deal.
         </p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
-          { label: 'Active agents', value: '5' },
+          { label: 'Active agents', value: String(agentCount) },
           { label: 'Total leads', value: '—' },
           { label: 'Hot leads (≥75)', value: '—' },
           { label: 'Proposals sent', value: '—' },
@@ -57,17 +59,19 @@ export default function ComercialPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
-        {COMERCIAL_DEPT_AGENTS.map((agent, i) => (
-          <AgentCard
-            key={agent.id}
-            agent={agent}
-            status="idle"
-            lastTask={null}
-            step={i + 1}
-            produces={COMERCIAL_META[i].produces}
-            href={COMERCIAL_META[i].href}
-          />
-        ))}
+        {COMERCIAL_DEPT_AGENTS.map((agent) => {
+          const meta = COMERCIAL_META[agent.id]
+          return (
+            <AgentCard
+              key={agent.id}
+              agent={agent}
+              status="idle"
+              lastTask={null}
+              produces={meta?.produces}
+              href={meta?.href ?? `/agent/${agent.id}`}
+            />
+          )
+        })}
       </div>
     </div>
   )
