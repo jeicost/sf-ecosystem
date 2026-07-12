@@ -1,0 +1,6 @@
+node_modules
+.next
+audit-workspace
+salsa-deck.pdf
+salsa-deck-new.pdf
+tsconfig.tsbuildinfo
