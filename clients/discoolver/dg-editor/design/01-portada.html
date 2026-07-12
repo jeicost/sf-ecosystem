@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>01 · Portada — Discoolver Guide Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@1,400;1,700&family=Inter:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #444;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 32px 0 48px;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* A4: 794 × 1123px */
+  .cover {
+    width: 794px;
+    height: 1123px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 56px rgba(0,0,0,0.5);
+    flex-shrink: 0;
+    background: #1a1a1a;
+  }
+
+  /* ── FULL-BLEED BACKGROUND PHOTO ── */
+  .bg-photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: none;
+  }
+
+  .bg-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    pointer-events: none;
+  }
+  .bg-placeholder-icon { font-size: 42px; opacity: 0.28; }
+  .bg-placeholder-txt {
+    font-size: 12px;
+    color: rgba(255,255,255,0.45);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .tint {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+  }
+
+  .top-gradient {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 200px;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.52) 0%, transparent 100%);
+    pointer-events: none;
+  }
+
+  .bottom-gradient {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 380px;
+    background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 60%, rgba(0,0,0,0.82) 100%);
+    pointer-events: none;
+  }
+
+  .layer-top {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 22px 32px 0;
+  }
+
+  .wordmark {
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 92px;
+    color: #ffffff;
+    letter-spacing: -3px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wordmark-sub {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-style: italic;
+    font-weight: 400;
+    color: rgba(255,255,255,0.88);
+    letter-spacing: 0.01em;
+    text-align: right;
+    margin-top: 1px;
+    padding-right: 2px;
+  }
+
+  .layer-headline {
+    position: absolute;
+    top: 300px;
+    left: 0; right: 0;
+    padding: 0 32px;
+  }
+
+  .hl-line1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 82px;
+    color: #ffffff;
+    letter-spacing: 0.01em;
+    line-height: 0.93;
+    display: block;
+    -webkit-font-smoothing: antialiased;
+    text-align: right;
+  }
+
+  .hl-line2 {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 54px;
+    font-style: italic;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    display: block;
+    text-align: right;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .layer-bottom {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    padding: 0 32px 36px;
+  }
+
+  .bottom-guide-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.02em;
+    margin-bottom: 0px;
+    display: block;
+  }
+
+  .bottom-year-row {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+    line-height: 1;
+  }
+
+  .bottom-year-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px;
+    color: #ffffff;
+    letter-spacing: -3px;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .bottom-icon {
+    display: inline-flex;
+    align-items: center;
+    position: relative;
+    top: 2px;
+    margin: 0 1px;
+  }
+
+  .bottom-city {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 62px;
+    color: #ffffff;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    margin-top: -8px;
+    display: block;
+  }
+
+  #photo-input { display: none; }
+
+  .upload-hint {
+    position: absolute;
+    bottom: 220px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.35);
+    padding: 9px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 3px;
+    backdrop-filter: blur(10px);
+    white-space: nowrap;
+    transition: background 0.15s;
+  }
+  .upload-hint:hover { background: rgba(0,0,0,0.7); }
+  .upload-hint.gone { display: none; }
+</style>
+</head>
+<body>
+
+<div class="cover" id="cover">
+
+  <img class="bg-photo" id="bg-photo" alt="protagonista">
+
+  <div class="bg-placeholder" id="bg-placeholder">
+    <div class="bg-placeholder-icon">📷</div>
+    <div class="bg-placeholder-txt">Arrastra la foto aquí o usa el botón</div>
+  </div>
+
+  <div class="tint" id="tint"></div>
+  <div class="top-gradient"></div>
+  <div class="bottom-gradient"></div>
+
+  <div class="layer-top">
+    <div class="wordmark">discoolver</div>
+    <div class="wordmark-sub" id="tw-tagline">coolest places in the world</div>
+  </div>
+
+  <div class="layer-headline" id="layer-headline">
+    <span class="hl-line1" id="tw-line1">INSPIRING</span>
+    <span class="hl-line2" id="tw-line2">the World</span>
+  </div>
+
+  <div class="layer-bottom">
+    <span class="bottom-guide-label">discoolver guide</span>
+    <div class="bottom-year-row">
+      <span class="bottom-year-num">2</span>
+      <span class="bottom-icon">
+        <svg width="106" height="96" viewBox="0 0 110 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="white"/>
+          <polygon points="72,13 110,50 72,87" fill="white"/>
+        </svg>
+      </span>
+      <span class="bottom-year-num" id="tw-year">26</span>
+    </div>
+    <span class="bottom-city" id="tw-city">WORLDWIDE</span>
+  </div>
+
+  <input type="file" id="photo-input" accept="image/*">
+  <button class="upload-hint" id="upload-btn" onclick="document.getElementById('photo-input').click()">
+    📷 &nbsp; Subir foto protagonista
+  </button>
+
+</div>
+
+<script>
+  const photoInput = document.getElementById('photo-input');
+  const bgPhoto    = document.getElementById('bg-photo');
+  const bgPH       = document.getElementById('bg-placeholder');
+  const uploadBtn  = document.getElementById('upload-btn');
+
+  function loadPhoto(file) {
+    if (!file || !file.type.startsWith('image/')) return;
+    const url = URL.createObjectURL(file);
+    bgPhoto.src = url;
+    bgPhoto.style.display = 'block';
+    bgPH.style.display = 'none';
+    uploadBtn.classList.add('gone');
+  }
+
+  photoInput.addEventListener('change', e => loadPhoto(e.target.files[0]));
+
+  const cover = document.getElementById('cover');
+  cover.addEventListener('dragover', e => e.preventDefault());
+  cover.addEventListener('drop', e => { e.preventDefault(); loadPhoto(e.dataTransfer.files[0]); });
+</script>
+
+<!-- Shared tweaks panel system -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+
+<script type="text/babel">
+
+const TWEAK_DEFAULTS = {
+  city:           "WORLDWIDE",
+  year:           "26",
+  tagline:        "coolest places in the world",
+  headline1:      "INSPIRING",
+  headline2:      "the World",
+  headline1Align: "right",
+  bgColor:        "#1a1a1a",
+  tintOpacity:    0,
+};
+
+function PortadaApp() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    // En PDF export (?guide=) el fetch vanilla maneja el DOM — no sobreescribir
+    if (new URLSearchParams(location.search).get('guide')) return;
+    document.getElementById('tw-city').textContent    = t.city.toUpperCase();
+    document.getElementById('tw-year').textContent    = t.year;
+    document.getElementById('tw-tagline').textContent = t.tagline;
+    document.getElementById('tw-line1').textContent   = t.headline1;
+    document.getElementById('tw-line2').textContent   = t.headline2;
+    document.getElementById('tw-line1').style.textAlign = t.headline1Align;
+    document.getElementById('tw-line2').style.textAlign = t.headline1Align;
+    document.getElementById('cover').style.background  = t.bgColor;
+    const tint = document.getElementById('tint');
+    tint.style.background = t.bgColor;
+    tint.style.opacity    = t.tintOpacity;
+  }, [t]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Titular" />
+      <TweakText id="headline1" label="Línea 1 (Bebas)" value={t.headline1} onChange={v => setTweak('headline1', v)} />
+      <TweakText id="headline2" label="Línea 2 (Italic)" value={t.headline2} onChange={v => setTweak('headline2', v)} />
+      <TweakRadio id="headline1Align" label="Alineación" value={t.headline1Align}
+        options={['left', 'right']} onChange={v => setTweak('headline1Align', v)} />
+
+      <TweakSection label="Inferior" />
+      <TweakText id="city"    label="Ciudad"          value={t.city}    onChange={v => setTweak('city', v)} />
+      <TweakText id="year"    label="Año (2 dígitos)" value={t.year}    onChange={v => setTweak('year', v)} />
+      <TweakText id="tagline" label="Tagline wordmark" value={t.tagline} onChange={v => setTweak('tagline', v)} />
+
+      <TweakSection label="Color de fondo" />
+      <TweakColor  id="bgColor"     label="Color base"      value={t.bgColor}     onChange={v => setTweak('bgColor', v)} />
+      <TweakSlider id="tintOpacity" label="Tinte sobre foto" value={t.tintOpacity} min={0} max={0.85} step={0.05} onChange={v => setTweak('tintOpacity', v)} />
+
+      <TweakSection label="Foto" />
+      <TweakButton label="📷  Subir protagonista" onClick={() => document.getElementById('photo-input').click()} />
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.createElement('div')).render(<PortadaApp />);
+</script>
+
+<script>
+// Auto-load from API when ?guide=<id> is present
+(function() {
+  var id = new URLSearchParams(location.search).get('guide');
+  if (!id) return;
+  fetch('/api/v2/guides/' + id + '/export/config')
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) {
+      var s = function(elId, val) { var e = document.getElementById(elId); if (e && val != null) e.textContent = val; };
+      s('tw-city',    (cfg.city || '').toUpperCase());
+      s('tw-year',    cfg.year || '');
+      s('tw-tagline', cfg.coverTagline || '');
+      s('tw-line1',   cfg.coverHeadline1 || '');
+      s('tw-line2',   cfg.coverHeadline2 || '');
+      // Fondo: color sólido de la guía
+      var bg = cfg.coverBgColor || '#0d0d1a';
+      var acc = cfg.primaryColor || cfg.accentColor || '#C8006B';
+      // En modo guide siempre ocultar la UI de upload
+      var uploadBtn = document.getElementById('upload-btn');
+      if (uploadBtn) uploadBtn.style.display = 'none';
+
+      if (cfg.coverPhoto) {
+        var img = document.getElementById('bg-photo');
+        var ph  = document.getElementById('bg-placeholder');
+        if (img) { img.src = cfg.coverPhoto; img.style.display = 'block'; }
+        if (ph)  ph.style.display = 'none';
+        document.getElementById('cover').style.background = bg;
+      } else {
+        // Sin foto: fondo sólido + glow radial con color de colección
+        var ph = document.getElementById('bg-placeholder');
+        if (ph) ph.style.display = 'none';
+        document.getElementById('cover').style.background = bg;
+        // Añadir glow radial centrado con accent color
+        var glow = document.createElement('div');
+        glow.style.cssText = [
+          'position:absolute', 'inset:0', 'pointer-events:none',
+          'background:radial-gradient(ellipse 85% 70% at 50% 46%, ' + acc + '35 0%, ' + acc + '12 38%, transparent 68%)',
+        ].join(';');
+        document.getElementById('cover').insertBefore(glow, document.getElementById('cover').firstChild);
+        // Tinte sutil en esquinas
+        var corners = document.createElement('div');
+        corners.style.cssText = [
+          'position:absolute', 'inset:0', 'pointer-events:none',
+          'background:radial-gradient(ellipse 120% 110% at 50% 50%, transparent 35%, rgba(0,0,0,0.55) 100%)',
+        ].join(';');
+        document.getElementById('cover').appendChild(corners);
+        // Sin foto: centrar headline verticalmente y hacerlo más dramático
+        var layerHl = document.getElementById('layer-headline');
+        if (layerHl) {
+          layerHl.style.top = '50%';
+          layerHl.style.transform = 'translateY(-60%)';
+          layerHl.style.padding = '0 40px';
+        }
+        var hl1 = document.getElementById('tw-line1');
+        var hl2 = document.getElementById('tw-line2');
+        if (hl1) { hl1.style.fontSize = '118px'; hl1.style.letterSpacing = '0.02em'; }
+        if (hl2) { hl2.style.fontSize = '70px'; }
+        // Añadir watermark de ciudad en background
+        var cityText = (cfg.city || '').toUpperCase();
+        var wm = document.createElement('div');
+        wm.style.cssText = [
+          'position:absolute','bottom:160px','left:0','right:0','pointer-events:none',
+          'font-family:\'Bebas Neue\',sans-serif','font-size:180px','color:rgba(255,255,255,0.04)',
+          'letter-spacing:0.06em','text-align:center','line-height:1','user-select:none',
+          'overflow:hidden','white-space:nowrap',
+        ].join(';');
+        wm.textContent = cityText;
+        document.getElementById('cover').appendChild(wm);
+      }
+      var tint = document.getElementById('tint');
+      if (tint && cfg.coverTintOpacity) { tint.style.background = bg; tint.style.opacity = cfg.coverTintOpacity; }
+      // Alineación del headline
+      if (cfg.headlineAlign) {
+        var line1 = document.getElementById('tw-line1');
+        var line2 = document.getElementById('tw-line2');
+        if (line1) line1.style.textAlign = cfg.headlineAlign;
+        if (line2) line2.style.textAlign = cfg.headlineAlign;
+      }
+    }).catch(function(e) { console.warn('[portada-loader]', e); });
+})();
+</script>
+
+</body>
+</html>

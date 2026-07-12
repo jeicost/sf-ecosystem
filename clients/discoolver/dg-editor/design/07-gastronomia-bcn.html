@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>07 · Gastronomía BCN — Discoolver Guide Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=Inter:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #c8c8c8;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 32px 0 48px;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 794px;
+  height: 1123px;
+  background: #fff;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.25);
+  position: relative;
+  overflow: hidden;
+  padding: 42px 56px 72px;
+  flex-shrink: 0;
+}
+
+/* ── PAGE HEADER ── */
+.ph { display: flex; align-items: center; height: 46px; margin-bottom: 5px; }
+.ph-num { font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: #444; line-height: 1; padding-right: 10px; }
+.ph-rule-v { width: 1px; height: 32px; background: #bbb; margin-right: 10px; }
+.ph-icon { margin-right: 8px; display: flex; align-items: center; }
+.ph-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #1A1A2E; letter-spacing: 0.05em; }
+.ph-rule-h { border: none; border-top: 1px solid #e0e0e0; margin-bottom: 10px; }
+
+/* ── SLOGAN ── */
+.slogan { margin-bottom: 14px; line-height: 1; }
+.slogan-over {
+  font-size: 10.5px; font-weight: 700; color: #1C1C1C;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  display: block; margin-bottom: 1px;
+}
+.slogan-city {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 76px; color: #1A1A2E;
+  letter-spacing: -2px; line-height: 0.87;
+  display: block; margin-bottom: 3px;
+}
+.slogan-year {
+  display: inline-flex; align-items: center;
+  font-family: 'Bebas Neue', sans-serif; font-size: 21px;
+  color: #1A1A2E; gap: 1px; line-height: 1;
+}
+
+/* ── SPLIT ROW ── */
+.split { display: flex; gap: 14px; margin-bottom: 18px; height: 160px; }
+.split-l { width: 44%; display: flex; flex-direction: column; gap: 9px; }
+.split-r { flex: 1; }
+
+.excl-box {
+  background: #C8006B;
+  padding: 8px 11px 9px;
+  line-height: 1.2;
+}
+.excl-box .excl-head { display: flex; align-items: baseline; gap: 0; }
+.excl-box .excl-big  { font-family: 'Bebas Neue', sans-serif; font-size: 19px; color: #fff; line-height: 1; }
+.excl-box .excl-small { font-size: 12px; font-weight: 700; color: #fff; letter-spacing: 0.04em; }
+.excl-box .excl-sub { font-size: 9.5px; font-style: italic; color: rgba(255,255,255,0.88); display: block; margin-top: 3px; }
+
+.intro { font-size: 9.5px; color: #444; line-height: 1.58; text-align: justify; }
+.intro .dc { font-family: 'Bebas Neue', sans-serif; font-size: 26px; float: left; line-height: 0.8; margin-right: 2px; color: #1A1A2E; padding-top: 2px; }
+
+.main-photo-ph {
+  width: 100%; height: 100%; background: #d2d2d2;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 6px;
+}
+
+/* ── CARDS GRID ── */
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card { display: flex; flex-direction: column; }
+
+.card-img {
+  width: 100%; height: 126px;
+  background: #d2d2d2; position: relative;
+  margin-bottom: 7px; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-img img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; }
+.card-img-lbl { font-size: 8px; color: #999; letter-spacing: 0.1em; text-transform: uppercase; position: relative; }
+
+/* QR scan decoration */
+.scan-box {
+  position: absolute; bottom: 5px; right: 5px;
+  background: rgba(255,255,255,0.92);
+  border: 1px solid rgba(0,0,0,0.12);
+  padding: 4px 4px 2px;
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  width: 32px;
+}
+.qr-grid { display: grid; grid-template-columns: repeat(5, 2.5px); gap: 0.5px; }
+.qr-grid span { width: 2.5px; height: 2.5px; background: #222; display: block; }
+.qr-grid span.e { background: transparent; }
+.scan-lbl { font-size: 5px; font-weight: 700; color: #555; letter-spacing: 0.04em; text-transform: uppercase; }
+
+.card-name { font-family: 'Bebas Neue', sans-serif; font-size: 13.5px; color: #1A1A2E; letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 1px; }
+.card-tag  { font-size: 9.5px; font-style: italic; color: #555; margin-bottom: 4px; }
+.card-desc { font-size: 8.5px; color: #333; line-height: 1.58; text-align: justify; margin-bottom: 5px; flex: 1; }
+.card-web  { font-size: 8.5px; font-style: italic; color: #C8006B; word-break: break-all; margin-bottom: 1px; }
+.card-addr { font-size: 8.5px; font-style: italic; color: #888; margin-bottom: 6px; }
+
+.disco-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.06em;
+  text-transform: uppercase; color: #1A1A2E; text-decoration: none;
+}
+
+/* ── FOOTER ── */
+.page-footer {
+  position: absolute; bottom: 26px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <div class="ph">
+    <span class="ph-num" id="tw-pagenum">2</span>
+    <div class="ph-rule-v"></div>
+    <div class="ph-icon">
+      <svg class="iso" width="24" height="22" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="ph-label" id="tw-section">GASTRONOMÍA</span>
+  </div>
+  <hr class="ph-rule-h">
+
+  <!-- ── SLOGAN ── -->
+  <div class="slogan">
+    <span class="slogan-over">ESTAS SON LAS SELECCIONES MÁS COOL DE</span>
+    <span class="slogan-city" id="tw-city">BARCELONA</span>
+    <div class="slogan-year">
+      <span>PARA 2</span>
+      <svg class="iso" width="18" height="16" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+      <span id="tw-year">26</span>
+    </div>
+  </div>
+
+  <!-- ── SPLIT ROW ── -->
+  <div class="split">
+    <div class="split-l">
+      <div class="excl-box" id="excl-box">
+        <div class="excl-head">
+          <span class="excl-big">E</span><span class="excl-small">XCLUSIVO</span>
+        </div>
+        <span class="excl-sub">Las mejores propuestas de Barcelona</span>
+      </div>
+      <p class="intro">
+        <span class="dc">L</span>o más selecto de la escena gastronómica barcelonesa, donde la tradición catalana se funde con la vanguardia creativa. Estos son los rincones que todo amante de la buena mesa debería conocer en 2026, elegidos por su propuesta única, ambiente y cocina de autor.
+      </p>
+    </div>
+    <div class="split-r">
+      <div class="main-photo-ph" id="main-photo">
+        <span style="font-size:22px;opacity:0.28;">📷</span>
+        <span style="font-size:9px;color:#888;letter-spacing:0.1em;text-transform:uppercase;">Foto principal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CARDS GRID ── -->
+  <div class="cards">
+
+    <!-- CARD 1: BODEGA SEPÚLVEDA -->
+    <div class="card">
+      <div class="card-img">
+        <span class="card-img-lbl">FOTO</span>
+        <div class="scan-box">
+          <div class="qr-grid" id="qr1"></div>
+          <span class="scan-lbl">SCAN ME</span>
+        </div>
+      </div>
+      <div class="card-name">BODEGA SEPÚLVEDA</div>
+      <div class="card-tag">Taberna de vinos naturales.</div>
+      <p class="card-desc">Un local íntimo en el Eixample donde los vinos de pequeños productores protagonizan cada mesa. La cocina acompaña con propuestas de temporada, sencillas y honestas. El sitio perfecto para descubrir el vino natural con los amigos.</p>
+      <div class="card-web tw-web">Web: https://bodegasepulveda.com</div>
+      <div class="card-addr">Dirección: Carrer de Sepúlveda, 180, Barcelona</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg class="iso" width="13" height="12" viewBox="0 0 110 100" fill="none">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+          <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+        </svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- CARD 2: RESTAURANT COURE -->
+    <div class="card">
+      <div class="card-img">
+        <span class="card-img-lbl">FOTO</span>
+        <div class="scan-box">
+          <div class="qr-grid" id="qr2"></div>
+          <span class="scan-lbl">SCAN ME</span>
+        </div>
+      </div>
+      <div class="card-name">RESTAURANT COURE</div>
+      <div class="card-tag">Alta cocina de autor en el Born.</div>
+      <p class="card-desc">Albert Ventura firma una carta de cocina contemporánea que rinde homenaje al producto mediterráneo. Espacio reducido, experiencia máxima. Reserva con antelación: las mesas vuelan cada semana sin excepción alguna.</p>
+      <div class="card-web tw-web">Web: https://restaurantcoure.com</div>
+      <div class="card-addr">Dirección: Passatge de la Concepció, 5, Barcelona</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg class="iso" width="13" height="12" viewBox="0 0 110 100" fill="none">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+          <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+        </svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- CARD 3: BAR BRUTAL -->
+    <div class="card">
+      <div class="card-img">
+        <span class="card-img-lbl">FOTO</span>
+        <div class="scan-box">
+          <div class="qr-grid" id="qr3"></div>
+          <span class="scan-lbl">SCAN ME</span>
+        </div>
+      </div>
+      <div class="card-name">BAR BRUTAL</div>
+      <div class="card-tag">Vins naturals i cuina honesta.</div>
+      <p class="card-desc">Local de referencia para amantes del vino natural en Barcelona. Ambiente desenfadado, selección de botellas imposible de encontrar en otro sitio, y una cocina que no decepciona nunca. Imprescindible en El Born.</p>
+      <div class="card-web tw-web">Web: https://barbrutal.com</div>
+      <div class="card-addr">Dirección: Carrer de la Princesa, 14, Barcelona</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg class="iso" width="13" height="12" viewBox="0 0 110 100" fill="none">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+          <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+        </svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+  </div><!-- /cards -->
+
+  <!-- ── FOOTER ── -->
+  <div class="page-footer">
+    <span style="font-size:8px;color:#aaa;font-style:italic;" id="tw-footer-l">Guía discoolver Barcelona 2026</span>
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:13px;color:#bbb;">discoolver.com</span>
+  </div>
+
+</div><!-- /page -->
+
+<!-- ── TWEAKS PANEL ── -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+
+const TWEAK_DEFAULTS = {
+  city:         "BARCELONA",
+  sectionName:  "GASTRONOMÍA",
+  pageNumber:   "2",
+  year:         "26",
+  primaryColor: "#C8006B",
+};
+
+function GastronomiaApp() {
+  const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+  React.useEffect(() => {
+    document.getElementById('tw-city').textContent    = t.city;
+    document.getElementById('tw-section').textContent = t.sectionName;
+    document.getElementById('tw-pagenum').textContent = t.pageNumber;
+    document.getElementById('tw-year').textContent    = t.year;
+    document.getElementById('tw-footer-l').textContent = `Guía discoolver ${t.city.charAt(0)+t.city.slice(1).toLowerCase()} 20${t.year}`;
+
+    /* update primary color everywhere */
+    document.getElementById('excl-box').style.background = t.primaryColor;
+    document.querySelectorAll('.tw-web').forEach(el => el.style.color = t.primaryColor);
+    document.querySelectorAll('.iso path').forEach(el => el.setAttribute('fill', t.primaryColor));
+    document.querySelectorAll('.iso polygon').forEach(el => el.setAttribute('fill', t.primaryColor));
+  }, [t]);
+
+  return (
+    <TweaksPanel>
+      <TweakSection label="Página" />
+      <TweakText id="city"        label="Ciudad"   value={t.city}       onChange={v => setTweak('city', v.toUpperCase())} />
+      <TweakText id="sectionName" label="Sección"  value={t.sectionName} onChange={v => setTweak('sectionName', v.toUpperCase())} />
+      <TweakText id="pageNumber"  label="Página"   value={t.pageNumber}  onChange={v => setTweak('pageNumber', v)} />
+      <TweakText id="year"        label="Año (2 dígitos)" value={t.year}  onChange={v => setTweak('year', v)} />
+      <TweakSection label="Color" />
+      <TweakColor id="primaryColor" label="Color primario" value={t.primaryColor} onChange={v => setTweak('primaryColor', v)} />
+    </TweaksPanel>
+  );
+}
+
+ReactDOM.createRoot(document.createElement('div')).render(<GastronomiaApp />);
+</script>
+
+<script>
+/* QR decorative pattern */
+const QR_PAT = [1,1,1,0,1, 1,0,1,0,0, 1,1,1,0,1, 0,0,0,1,1, 1,0,1,1,1];
+['qr1','qr2','qr3'].forEach(function(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  QR_PAT.forEach(function(b) {
+    const s = document.createElement('span');
+    if (!b) s.className = 'e';
+    el.appendChild(s);
+  });
+});
+</script>
+
+</body>
+</html>

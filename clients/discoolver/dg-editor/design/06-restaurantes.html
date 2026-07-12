@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>06 · Restaurantes — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+/* ── SLOGAN OVERSIZE ── */
+.slogan-block { margin-bottom: 16px; line-height: 1; }
+.slogan-line1 {
+  font-size: 10px; font-weight: 700; color: var(--navy);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  display: block; margin-bottom: 2px;
+}
+.slogan-city {
+  font-family: var(--font-display);
+  font-size: 72px; color: var(--navy);
+  letter-spacing: -1px; line-height: 0.9;
+  display: block; margin-bottom: 4px;
+}
+.slogan-year {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-family: var(--font-display); font-size: 22px; color: var(--navy);
+  line-height: 1;
+}
+
+/* ── EXCLUSIVO / TRENDY section tags ── */
+.section-tag {
+  display: inline-flex; align-items: baseline;
+  margin: 12px 0 4px;
+}
+.section-tag .letter {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px; font-style: italic;
+  color: var(--navy); line-height: 1; padding-right: 1px;
+}
+.section-tag .word {
+  font-size: 14px; font-weight: 700;
+  color: var(--navy); text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.section-desc {
+  font-size: 9.5px; font-style: italic;
+  color: var(--muted); margin-bottom: 10px; line-height: 1.4;
+}
+
+/* ── SPLIT ROW (intro + big photo) ── */
+.split-row {
+  display: flex; gap: 14px; margin-bottom: 16px;
+}
+.split-left  { width: 46%; display: flex; flex-direction: column; gap: 10px; }
+.split-right { flex: 1; }
+
+.excl-box {
+  padding: 10px 12px;
+  background: #f5f5f5;
+  border-left: 3px solid var(--navy);
+  display: flex; flex-direction: column; gap: 4px;
+}
+.excl-box .excl-title {
+  display: flex; align-items: baseline; gap: 1px;
+}
+.excl-box .excl-first {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-style: italic; color: var(--navy); line-height: 1;
+}
+.excl-box .excl-rest {
+  font-size: 12px; font-weight: 700;
+  color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em;
+}
+.excl-box .excl-sub {
+  font-size: 9px; font-style: italic; color: var(--muted); line-height: 1.4;
+}
+
+.split-intro { font-size: 9px; color: #444; line-height: 1.6; text-align: justify; }
+.split-intro .drop-cap {
+  font-family: var(--font-display); font-size: 28px;
+  float: left; line-height: 0.78; margin-right: 2px; color: var(--navy); padding-top: 2px;
+}
+
+.big-photo {
+  width: 100%; height: 178px;
+  object-fit: cover; display: block;
+}
+.big-photo-ph {
+  width: 100%; height: 178px;
+  background: #e8e8ec;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 6px;
+}
+
+/* card-photo-sm — inherits 100px from disco-base.css */
+
+/* ── TRENDY horizontal card ── */
+.card-h {
+  display: flex; gap: 11px; align-items: flex-start;
+}
+.card-h-thumb {
+  flex-shrink: 0; width: 118px; height: 78px;
+  background: #d4d4d4; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-h-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.card-h-body { flex: 1; }
+
+/* ── FOOTER ── */
+.cat-footer {
+  position: absolute; bottom: 26px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── HEADER ── -->
+  <div class="page-header">
+    <span class="ph-number">11</span>
+    <div class="ph-divider"></div>
+    <div class="ph-icon">
+      <svg width="24" height="22" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="ph-section">RESTAURANTES</span>
+  </div>
+  <hr class="page-rule">
+
+  <!-- ── SLOGAN ── -->
+  <div class="slogan-block">
+    <span class="slogan-line1">ESTAS SON LAS SELECCIONES MÁS COOL DE</span>
+    <span class="slogan-city" id="tw-city">MUNDO</span>
+    <div class="slogan-year">
+      PARA 2<svg width="18" height="16" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg><span id="tw-year">21</span>
+    </div>
+  </div>
+
+  <!-- ── EXCLUSIVO: split row ── -->
+  <div class="split-row">
+    <div class="split-left">
+      <div class="excl-box">
+        <div class="excl-title">
+          <span class="excl-first">E</span>
+          <span class="excl-rest">XCLUSIVO</span>
+        </div>
+        <span class="excl-sub">Lo más top del mundo, donde debería llevarte tu jefe a comer</span>
+      </div>
+      <p class="split-intro">
+        <span class="drop-cap">L</span>os restaurantes más exclusivos del planeta, seleccionados por nuestro equipo de expertos. Propuestas que trascienden la gastronomía y se convierten en experiencias únicas e irrepetibles.
+      </p>
+    </div>
+    <div class="split-right">
+      <div class="big-photo-ph">
+        <span style="font-size:22px;opacity:0.3;">📷</span>
+        <span class="photo-ph-lbl">Foto principal</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── GRID 3 COL: fichas exclusivas ── -->
+  <div class="card-grid-3" id="grid-main">
+
+    <!-- Card 1: DEN, TOKIO -->
+    <div class="card">
+      <div class="card-photo-sm">
+        <div class="scan-me">
+          <div class="qr-mini" id="qr1"></div>
+          <span class="scan-me-lbl">SCAN</span>
+        </div>
+        <span class="photo-ph-lbl" style="font-size:8px;">FOTO</span>
+      </div>
+      <div class="card-name">DEN, TOKIO</div>
+      <div class="card-tag">Cocina japonesa creativa.</div>
+      <p class="card-desc">El mejor restaurante de Japón interpreta sus platos con un sentido del humor inteligente. Recurre a hábitos de Occidente que superpone a sus trabajos culinarios y desconcierta con sorpresas que esconde en la manga para provocar sonrisas.</p>
+      <div class="card-web">Web: https://www.jimbochoden.com/</div>
+      <div class="card-addr">Dirección: Jingumae 2-3-18, Shibuya, Tokyo, Japón</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+          <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+        </svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- Card 2: MIRAZUR, FRANCIA -->
+    <div class="card">
+      <div class="card-photo-sm">
+        <div class="scan-me">
+          <div class="qr-mini" id="qr2"></div>
+          <span class="scan-me-lbl">SCAN</span>
+        </div>
+        <span class="photo-ph-lbl" style="font-size:8px;">FOTO</span>
+      </div>
+      <div class="card-name">MIRAZUR, FRANCIA</div>
+      <div class="card-tag">La alta cocina francesa.</div>
+      <p class="card-desc">Edificio de los años 30 aferrado a la montaña con vistas al Mediterráneo. Tres estrellas Michelin. Chef Mauro Colagreco encuentra su inspiración en las hortalizas de las huertas del Mirazur, bebiendo de sus orígenes italo-argentinos.</p>
+      <div class="card-web">Web: https://www.mirazur.fr/</div>
+      <div class="card-addr">Dirección: 30 Avenue Aristide Briand, 06500 Menton, Francia</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+          <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+        </svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- Card 3: CENTRAL, LIMA -->
+    <div class="card">
+      <div class="card-photo-sm">
+        <div class="scan-me">
+          <div class="qr-mini" id="qr3"></div>
+          <span class="scan-me-lbl">SCAN</span>
+        </div>
+        <span class="photo-ph-lbl" style="font-size:8px;">FOTO</span>
+      </div>
+      <div class="card-name">CENTRAL, LIMA</div>
+      <div class="card-tag">Gastronomía del Perú en estado puro.</div>
+      <p class="card-desc">Conocido por su interpretación contemporánea de la cocina peruana. Su fundador ha intentado redefinir la gastronomía peruana introduciendo productos indígenas poco conocidos del país en preparaciones de altísimo nivel técnico.</p>
+      <div class="card-web">Web: https://centralrestaurante.com.pe/</div>
+      <div class="card-addr">Dirección: Av. Pedro de Osma 301, Barranco, Lima, Perú</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none">
+          <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+          <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+        </svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+  </div>
+
+  <!-- ── TRENDY ── -->
+  <div class="section-tag">
+    <span class="letter">T</span>
+    <span class="word">RENDY</span>
+  </div>
+  <div class="section-desc">Estos son los sitios que más dieron de hablar en 2020 y seguro que se seguirán escuchando en 2021.</div>
+
+  <!-- GRID 2 COL HORIZONTAL: fichas trendy -->
+  <div class="card-grid-2" id="grid-secondary">
+
+    <!-- Card T1: ELLEN'S STARDUST DINER -->
+    <div class="card card-h">
+      <div class="card-h-thumb">
+        <span style="font-size:18px;opacity:0.3;">📷</span>
+      </div>
+      <div class="card-h-body">
+        <div class="card-name">ELLEN'S STARDUST DINER</div>
+        <div class="card-tag">Nueva York, Estados Unidos.</div>
+        <p class="card-desc">Cafetería ambientada en los años 50 con camareros que cantan como si estuvieras en un musical y una carta de buenas hamburguesas y comida americana. Uno de los diners más originales de toda la gran manzana.</p>
+        <div class="card-web">Web: https://www.ellensstardustdiner.com/</div>
+        <div class="card-addr">1650 Broadway, New York, NY 10019</div>
+        <a href="https://discoolver.com" class="disco-link">
+          <svg width="13" height="12" viewBox="0 0 110 100" fill="none">
+            <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+            <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+          </svg>
+          VER EN DISCOOLVER →
+        </a>
+      </div>
+    </div>
+
+    <!-- Card T2: RICK'S CAFE, JAMAICA -->
+    <div class="card card-h">
+      <div class="card-h-thumb">
+        <span style="font-size:18px;opacity:0.3;">📷</span>
+      </div>
+      <div class="card-h-body">
+        <div class="card-name">RICK'S CAFE, JAMAICA</div>
+        <div class="card-tag">Mar y sabrosa comida a ritmo de Reggae.</div>
+        <p class="card-desc">Café-bar con platos y cócteles caribeños y vistas al mar espectaculares, con música en directo. Ubicado en la cima de un acantilado de 35 pies de altura en el extremo oeste de Jamaica.</p>
+        <div class="card-web">Web: http://www.rickscafejamaica.com/</div>
+        <div class="card-addr">West End, Negril, Jamaica</div>
+        <a href="https://discoolver.com" class="disco-link">
+          <svg width="13" height="12" viewBox="0 0 110 100" fill="none">
+            <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+            <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+          </svg>
+          VER EN DISCOOLVER →
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FOOTER ── -->
+  <div class="cat-footer">
+    <span style="font-size:9px;color:var(--muted);font-style:italic;" id="tw-footer">Guía discoolver Barcelona 2026</span>
+    <span style="font-family:var(--font-display);font-size:14px;color:var(--muted);">11</span>
+  </div>
+
+</div><!-- /page -->
+
+<nav class="page-nav">
+  <a href="04-nota-director.html">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M8 5H2M2 5L4.5 2.5M2 5L4.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+  <a href="03-indice.html" class="page-nav-home">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M1.5 5L5 1.5L8.5 5V9H6.5V7H3.5V9H1.5V5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    </svg>
+    <span class="page-nav-label">Restaurantes</span>
+  </a>
+  <a href="#">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M2 5H8M8 5L5.5 2.5M8 5L5.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+</nav>
+
+<script>
+/* QR decorativo — patrón 5×5 */
+const QR_PATTERN = [1,1,1,0,1, 1,0,1,0,0, 1,1,1,0,1, 0,0,0,1,1, 1,0,1,1,1];
+function makeQR(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  QR_PATTERN.forEach(b => {
+    const c = document.createElement('div');
+    c.className = 'qr-cell' + (b ? '' : ' e');
+    el.appendChild(c);
+  });
+}
+['qr1','qr2','qr3'].forEach(makeQR);
+</script>
+
+
+<script>
+
+window.onGuideData = function(cfg) {
+  // City / year
+  var cityEl = document.querySelector('.slogan-city');
+  var yearEl  = document.getElementById('tw-year');
+  if (cityEl) cityEl.textContent = (cfg.city || '').toUpperCase();
+  if (yearEl) yearEl.textContent  = cfg.year || '';
+
+  // Footer
+  var ft = document.querySelector('.cat-footer span:first-child, .pg-footer span:first-child');
+  if (ft) ft.textContent = 'Guía discoolver ' + cfg.city + ' ' + cfg.year;
+
+  // Big photo — reemplazar placeholder con gradient del guide si no hay foto
+  var bigPh = document.querySelector('.big-photo-ph');
+  if (bigPh) {
+    var acc = cfg.primaryColor || cfg.accentColor || '#C8006B';
+    bigPh.style.background = 'linear-gradient(150deg,' + acc + '28 0%,' + acc + '10 55%,#dddde6 100%)';
+    // Línea decorativa de acento + label
+    bigPh.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px;">'
+      + '<div style="width:32px;height:3px;background:' + acc + ';opacity:0.7;border-radius:2px;"></div>'
+      + '<span style="font-size:8px;letter-spacing:0.1em;color:' + acc + ';opacity:0.5;font-family:Inter,sans-serif;">FOTO PRINCIPAL</span>'
+      + '</div>';
+  }
+
+  // Page number
+  if (cfg.sections && cfg.sections['restaurantes']) {
+    window.injectPageNumber && window.injectPageNumber(cfg.sections['restaurantes'].page_number);
+  }
+
+  // Items — use shared renderers from disco-loader.js
+  var items = (cfg.sections && cfg.sections['restaurantes'] && cfg.sections['restaurantes'].items) || [];
+  var top  = items.slice(0, 3);
+  var rest = items.slice(3, 5);
+
+  var g3 = document.getElementById('grid-main');
+  if (g3 && top.length) g3.innerHTML = top.map(window.renderCard).join('');
+
+  var g2 = document.getElementById('grid-secondary');
+  if (g2 && rest.length) g2.innerHTML = rest.map(window.renderCardH).join('');
+  else if (g2 && !rest.length) g2.style.display = 'none';
+};
+</script>
+
+
+<script src="shared/disco-loader.js"></script>
+</body>
+</html>

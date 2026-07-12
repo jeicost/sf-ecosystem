@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>14 · Local Influencers — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+/* ── TITLE BLOCK editorial bicolor ── */
+.infl-title-block {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 12px;
+}
+.infl-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  line-height: 0.88;
+  letter-spacing: -1px;
+}
+.infl-title .t-navy    { color: var(--navy); display: block; }
+.infl-title .t-magenta { color: var(--magenta); display: block; }
+.infl-manifiesto {
+  max-width: 210px;
+  font-size: 9.5px;
+  font-style: italic;
+  color: var(--muted);
+  line-height: 1.65;
+  text-align: right;
+}
+
+.infl-rule { border: none; border-top: 2px solid var(--navy); margin-bottom: 12px; }
+
+/* ── INTRO pull-quote ── */
+.infl-intro {
+  border-left: 3px solid var(--magenta);
+  background: #f8f8f8;
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 9.5px;
+  font-style: italic;
+  color: #444;
+  line-height: 1.6;
+}
+.infl-intro strong { font-style: normal; font-weight: 700; color: var(--navy); }
+
+/* ── INFLUENCER GRID 2×3 ── */
+.infl-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px 16px;
+}
+
+.infl-card { display: flex; flex-direction: column; }
+
+.infl-photo {
+  width: 100%; height: 148px;
+  background: #d2d2d2; position: relative;
+  overflow: hidden; margin-bottom: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+.infl-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.infl-photo-ph  { font-size: 9px; color: #999; letter-spacing: 0.1em; text-transform: uppercase; position: relative; }
+
+/* ── Platform badge: magenta top-RIGHT ── */
+.platform-badge {
+  position: absolute; top: 6px; right: 6px;
+  background: var(--magenta); color: #fff;
+  font-size: 6.5px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 6px;
+}
+
+.infl-name   { font-family: var(--font-display); font-size: 15px; color: var(--navy); letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 1px; }
+.infl-handle { font-size: 9px; font-weight: 600; color: var(--magenta); margin-bottom: 1px; }
+.infl-city   { font-size: 8.5px; font-style: italic; color: var(--muted); margin-bottom: 5px; }
+.infl-desc   { font-size: 8.5px; color: #333; line-height: 1.55; flex: 1; text-align: justify; margin-bottom: 7px; }
+
+/* ── Stats row ── */
+.infl-stats {
+  display: flex;
+  gap: 14px;
+  padding-top: 6px;
+  border-top: 1px solid #eee;
+  margin-bottom: 6px;
+}
+.infl-stat-item {}
+.infl-stat-num {
+  font-family: var(--font-display);
+  font-size: 14px; color: var(--navy);
+  letter-spacing: 0.02em; line-height: 1;
+  display: block;
+}
+.infl-stat-lbl {
+  font-size: 7px; font-weight: 600;
+  color: var(--muted); letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Category chips ── */
+.infl-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.infl-chip  {
+  font-size: 7px; font-weight: 600;
+  background: #f0f0f0; color: var(--navy);
+  padding: 2px 6px; letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* ── FOOTER ── */
+.pg-footer {
+  position: absolute; bottom: 26px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <span class="ph-number">44</span>
+    <div class="ph-divider"></div>
+    <div class="ph-icon">
+      <svg width="24" height="22" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="ph-section">LOCAL INFLUENCERS</span>
+  </div>
+  <hr class="page-rule">
+
+  <!-- TITLE BLOCK bicolor -->
+  <div class="infl-title-block">
+    <div class="infl-title">
+      <span class="t-navy">LOCAL</span>
+      <span class="t-magenta">INFLU<span style="color:var(--navy)">ENCERS</span></span>
+    </div>
+    <p class="infl-manifiesto">Las personas que con su trabajo en redes sociales generan sinergias positivas ofreciendo gran contenido. No nos importa tanto el número de seguidores como la calidad del contenido generado.</p>
+  </div>
+  <hr class="infl-rule">
+
+  <!-- INTRO PULL-QUOTE -->
+  <div class="infl-intro">
+    En discoolver queremos reconocer a esas personas que con su trabajo y esfuerzo están contribuyendo a la COOLtura popular, no solo reconociendo su trabajo sino también a las personas que están detrás de cada éxito con un solo objetivo: <strong>inspirar al mundo.</strong>
+  </div>
+
+  <!-- INFLUENCER GRID 2×3 -->
+  <div class="infl-grid">
+
+    <!-- 1: ALBA DÍAZ -->
+    <div class="infl-card">
+      <div class="infl-photo">
+        <span class="infl-photo-ph">FOTO</span>
+        <div class="platform-badge">INSTAGRAM</div>
+      </div>
+      <div class="infl-name">ALBA DÍAZ</div>
+      <div class="infl-handle">@albadiazwilstermann</div>
+      <div class="infl-city">Madrid, España</div>
+      <p class="infl-desc">Hija de Vicky Martín Berrocal y Manuel Díaz "El Cordobés". Creadora de contenido de moda, lifestyle y viajes. Su autenticidad y cercanía la han convertido en un referente para la nueva generación.</p>
+      <div class="infl-stats">
+        <div class="infl-stat-item"><span class="infl-stat-num">1.2M</span><span class="infl-stat-lbl">SEGUIDORES</span></div>
+        <div class="infl-stat-item"><span class="infl-stat-num">8.4%</span><span class="infl-stat-lbl">ENGAGEMENT</span></div>
+      </div>
+      <div class="infl-chips">
+        <span class="infl-chip">MODA</span>
+        <span class="infl-chip">LIFESTYLE</span>
+        <span class="infl-chip">VIAJES</span>
+      </div>
+    </div>
+
+    <!-- 2: IBAI LLANOS -->
+    <div class="infl-card">
+      <div class="infl-photo">
+        <span class="infl-photo-ph">FOTO</span>
+        <div class="platform-badge">TIKTOK</div>
+      </div>
+      <div class="infl-name">IBAI LLANOS</div>
+      <div class="infl-handle">@ibaillanos</div>
+      <div class="infl-city">Barcelona, España</div>
+      <p class="infl-desc">Streamer y creador de contenido referente en el mundo hispanohablante. Sus retransmisiones de humor, deportes y eventos especiales han roto todos los récords de audiencia en Twitch en español.</p>
+      <div class="infl-stats">
+        <div class="infl-stat-item"><span class="infl-stat-num">9.8M</span><span class="infl-stat-lbl">SEGUIDORES</span></div>
+        <div class="infl-stat-item"><span class="infl-stat-num">12.1%</span><span class="infl-stat-lbl">ENGAGEMENT</span></div>
+      </div>
+      <div class="infl-chips">
+        <span class="infl-chip">GAMING</span>
+        <span class="infl-chip">HUMOR</span>
+        <span class="infl-chip">DEPORTES</span>
+      </div>
+    </div>
+
+    <!-- 3: DULCEIDA -->
+    <div class="infl-card">
+      <div class="infl-photo">
+        <span class="infl-photo-ph">FOTO</span>
+        <div class="platform-badge">YOUTUBE</div>
+      </div>
+      <div class="infl-name">DULCEIDA</div>
+      <div class="infl-handle">@dulceida</div>
+      <div class="infl-city">Barcelona, España</div>
+      <p class="infl-desc">Pionera del blogging y las redes sociales en España. Referente en moda y lifestyle, su autenticidad y su capacidad para conectar con su audiencia la han convertido en un ícono de la cultura digital española.</p>
+      <div class="infl-stats">
+        <div class="infl-stat-item"><span class="infl-stat-num">3.1M</span><span class="infl-stat-lbl">SEGUIDORES</span></div>
+        <div class="infl-stat-item"><span class="infl-stat-num">5.2%</span><span class="infl-stat-lbl">ENGAGEMENT</span></div>
+      </div>
+      <div class="infl-chips">
+        <span class="infl-chip">MODA</span>
+        <span class="infl-chip">BEAUTY</span>
+        <span class="infl-chip">VIAJES</span>
+      </div>
+    </div>
+
+    <!-- 4: MARINA RIVERS -->
+    <div class="infl-card">
+      <div class="infl-photo">
+        <span class="infl-photo-ph">FOTO</span>
+        <div class="platform-badge">INSTAGRAM</div>
+      </div>
+      <div class="infl-name">MARINA RIVERS</div>
+      <div class="infl-handle">@marinarivers</div>
+      <div class="infl-city">Valencia, España</div>
+      <p class="infl-desc">Creadora de contenido de lifestyle, humor y entretenimiento. Conocida por su naturalidad y sus vlogs del día a día, ha construido una comunidad muy fiel que la sigue en todas sus aventuras y proyectos.</p>
+      <div class="infl-stats">
+        <div class="infl-stat-item"><span class="infl-stat-num">2.4M</span><span class="infl-stat-lbl">SEGUIDORES</span></div>
+        <div class="infl-stat-item"><span class="infl-stat-num">7.8%</span><span class="infl-stat-lbl">ENGAGEMENT</span></div>
+      </div>
+      <div class="infl-chips">
+        <span class="infl-chip">LIFESTYLE</span>
+        <span class="infl-chip">HUMOR</span>
+        <span class="infl-chip">FAMILIA</span>
+      </div>
+    </div>
+
+    <!-- 5: WILLY REX -->
+    <div class="infl-card">
+      <div class="infl-photo">
+        <span class="infl-photo-ph">FOTO</span>
+        <div class="platform-badge">TIKTOK</div>
+      </div>
+      <div class="infl-name">WILLY REX</div>
+      <div class="infl-handle">@willyrex</div>
+      <div class="infl-city">Madrid, España</div>
+      <p class="infl-desc">Youtuber y streamer de gaming, uno de los creadores más veteranos de habla hispana en YouTube. Su trayectoria es un ejemplo de constancia y adaptación a los nuevos formatos y plataformas digitales.</p>
+      <div class="infl-stats">
+        <div class="infl-stat-item"><span class="infl-stat-num">11M</span><span class="infl-stat-lbl">SUSCRIPTORES</span></div>
+        <div class="infl-stat-item"><span class="infl-stat-num">4.9%</span><span class="infl-stat-lbl">ENGAGEMENT</span></div>
+      </div>
+      <div class="infl-chips">
+        <span class="infl-chip">GAMING</span>
+        <span class="infl-chip">ENTRETENIMIENTO</span>
+      </div>
+    </div>
+
+    <!-- 6: ROCÍO OSORNO -->
+    <div class="infl-card">
+      <div class="infl-photo">
+        <span class="infl-photo-ph">FOTO</span>
+        <div class="platform-badge">INSTAGRAM</div>
+      </div>
+      <div class="infl-name">ROCÍO OSORNO</div>
+      <div class="infl-handle">@rocio_osorno</div>
+      <div class="infl-city">Sevilla, España</div>
+      <p class="infl-desc">Diseñadora de moda e influencer de estilo clásico andaluz. Su propuesta estética, elegante y con raíces en la moda española, la ha posicionado como un referente nacional e internacional en el mundo de la moda.</p>
+      <div class="infl-stats">
+        <div class="infl-stat-item"><span class="infl-stat-num">1.8M</span><span class="infl-stat-lbl">SEGUIDORES</span></div>
+        <div class="infl-stat-item"><span class="infl-stat-num">6.3%</span><span class="infl-stat-lbl">ENGAGEMENT</span></div>
+      </div>
+      <div class="infl-chips">
+        <span class="infl-chip">MODA</span>
+        <span class="infl-chip">DISEÑO</span>
+        <span class="infl-chip">LIFESTYLE</span>
+      </div>
+    </div>
+
+  </div><!-- /infl-grid -->
+
+  <!-- FOOTER -->
+  <div class="pg-footer">
+    <span style="font-size:8px;color:var(--muted);font-style:italic;" id="tw-footer">Guía discoolver Barcelona 2026</span>
+    <span style="font-family:var(--font-display);font-size:13px;color:var(--muted);" id="tw-page-num">44</span>
+  </div>
+
+</div>
+
+<nav class="page-nav">
+  <a href="13-shopping.html">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M8 5H2M2 5L4.5 2.5M2 5L4.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <a href="03-indice.html" class="page-nav-home">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L5 1.5L8.5 5V9H6.5V7H3.5V9H1.5V5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <span class="page-nav-label">Influencers</span>
+  </a>
+  <a href="#">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5H8M8 5L5.5 2.5M8 5L5.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</nav>
+
+<script>
+window.onGuideData = function(cfg) {
+  // Footer text
+  var ft = document.getElementById('tw-footer');
+  if (ft && cfg.city) ft.textContent = 'Guía discoolver ' + cfg.city + ' ' + (cfg.year || '');
+
+  // Page number
+  if (cfg.sections && cfg.sections['influencers']) {
+    var pn = cfg.sections['influencers'].page_number;
+    var pnEl = document.getElementById('tw-page-num');
+    if (pnEl && pn) pnEl.textContent = pn;
+    window.injectPageNumber && window.injectPageNumber(pn);
+  }
+
+  // Influencer items — export config puts them at cfg.influencers (top-level), not cfg.sections
+  var items = cfg.influencers || (cfg.sections && cfg.sections['influencers'] && cfg.sections['influencers'].items) || [];
+  if (!items.length) return;
+
+  var grid = document.querySelector('.infl-grid');
+  if (!grid) return;
+
+  grid.innerHTML = items.slice(0, 6).map(function(item) {
+    var photo = item.photo
+      ? '<img src="' + item.photo + '" alt="">'
+      : '<span class="infl-photo-ph">FOTO</span>';
+    var platform = item.platform
+      ? '<div class="platform-badge">' + item.platform.toUpperCase() + '</div>'
+      : '';
+    var stats = (item.stats || []).map(function(s) {
+      return '<div class="infl-stat-item">'
+        + '<span class="infl-stat-num">' + s.num + '</span>'
+        + '<span class="infl-stat-lbl">' + s.label + '</span>'
+        + '</div>';
+    }).join('');
+    var chips = (item.categories || []).map(function(c) {
+      return '<span class="infl-chip">' + c.toUpperCase() + '</span>';
+    }).join('');
+
+    return '<div class="infl-card">'
+      + '<div class="infl-photo">' + photo + platform + '</div>'
+      + '<div class="infl-name">' + (item.name || '').toUpperCase() + '</div>'
+      + (item.handle ? '<div class="infl-handle">@' + item.handle + '</div>' : '')
+      + (item.city ? '<div class="infl-city">' + item.city + '</div>' : '')
+      + (item.description ? '<p class="infl-desc">' + item.description + '</p>' : '')
+      + (stats ? '<div class="infl-stats">' + stats + '</div>' : '')
+      + (chips ? '<div class="infl-chips">' + chips + '</div>' : '')
+      + '</div>';
+  }).join('');
+};
+</script>
+
+<script src="shared/disco-loader.js"></script>
+</body>
+</html>

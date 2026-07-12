@@ -1,0 +1,67 @@
+@font-face {
+  font-family: 'Arial';
+  src: url('fonts/Arial-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Arial';
+  src: url('fonts/Arial-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Arial';
+  src: url('fonts/Arial-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+}
+@font-face {
+  font-family: 'Georgia';
+  src: url('fonts/Georgia-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm 16mm;
+
+  @top-left {
+    content: string(guide-title);
+    font-family: 'Arial', sans-serif;
+    font-size: 7pt;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  @bottom-right {
+    content: counter(page);
+    font-family: 'Arial', sans-serif;
+    font-size: 8pt;
+    color: var(--color-primary);
+    font-weight: 700;
+  }
+}
+
+@page cover-page {
+  margin: 0;
+  @top-left   { content: none; }
+  @bottom-right { content: none; }
+}
+
+@page toc-page {
+  @bottom-right { content: none; }
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--color-text);
+  background: var(--color-background);
+  line-height: 1.55;
+  string-set: guide-title content(attr(data-guide-title));
+}

@@ -1,0 +1,28 @@
+{# ── Section header estilo "11 | RESTAURANTES" ── #}
+<div class="section-header" id="section-{{ section.slug }}">
+  <div class="section-header__number">{{ loop.index }}</div>
+  <div class="section-header__bar"></div>
+  <div class="section-header__title-wrap">
+    <h2 class="section-title">{{ section.name }}</h2>
+  </div>
+</div>
+
+{% if section.content %}
+<p class="section-intro">{{ section.content }}</p>
+{% endif %}
+
+{% for sub in section.subsections if sub.active %}
+<div class="subsection">
+  <h3 class="subsection-title">{{ sub.name }}</h3>
+  <p class="subsection-content">{{ sub.content }}</p>
+</div>
+{% endfor %}
+
+{% set recs = recomendados_by_section.get(section.id, []) %}
+{% if recs %}
+<div class="rec-grid">
+  {% for rec in recs %}
+  {% include "base/_recomendado_card.html" %}
+  {% endfor %}
+</div>
+{% endif %}

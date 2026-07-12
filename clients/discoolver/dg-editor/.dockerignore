@@ -1,0 +1,26 @@
+# Python
+.venv
+__pycache__
+*.pyc
+*.pyo
+.env
+
+# Git
+.git
+.gitignore
+
+# Node build artifacts (staged separately)
+dg-editor/editor/node_modules
+dg-editor/editor/dist
+design-studio/node_modules
+design-studio/dist
+
+# Runtime data
+dg-editor/exports/
+dg-editor/data/
+exports/
+data/
+
+# Misc
+.DS_Store
+*.log

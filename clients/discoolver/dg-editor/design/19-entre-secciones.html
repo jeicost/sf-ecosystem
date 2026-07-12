@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>19 · Entre Secciones — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+/* Full-bleed page — no standard padding */
+.page.divider-page {
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background photo fill */
+.div-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Photo placeholder */
+.div-bg-ph {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1A1A2E 0%, #2d2d4e 40%, #111827 100%);
+}
+
+/* Color overlay — uses primary_color */
+.div-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(200, 0, 107, 0.15) 0%,
+    rgba(17, 24, 39, 0.72) 50%,
+    rgba(17, 24, 39, 0.92) 100%
+  );
+}
+
+/* Top strip */
+.div-top {
+  position: absolute;
+  top: 42px;
+  left: 56px;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.div-logo-icon {
+  opacity: 0.6;
+}
+.div-edition {
+  font-size: 9px;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Central content */
+.div-center {
+  position: absolute;
+  bottom: 130px;
+  left: 56px;
+  right: 56px;
+}
+
+.div-coming {
+  font-size: 10px;
+  color: var(--magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  font-weight: 700;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.div-coming::before {
+  content: '';
+  display: block;
+  width: 32px;
+  height: 1.5px;
+  background: var(--magenta);
+}
+
+.div-section-num {
+  font-family: var(--font-display);
+  font-size: 130px;
+  color: rgba(255,255,255,0.06);
+  line-height: 1;
+  position: absolute;
+  right: 0;
+  bottom: -20px;
+  letter-spacing: -0.02em;
+  user-select: none;
+  pointer-events: none;
+}
+
+.div-title {
+  font-family: var(--font-display);
+  font-size: 72px;
+  color: #fff;
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  margin-bottom: 16px;
+  position: relative;
+  z-index: 1;
+}
+
+.div-tagline {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(255,255,255,0.65);
+  max-width: 340px;
+  line-height: 1.5;
+  position: relative;
+  z-index: 1;
+}
+
+/* Bottom rule */
+.div-bottom {
+  position: absolute;
+  bottom: 42px;
+  left: 56px;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  padding-top: 10px;
+}
+.div-page-num {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+  letter-spacing: 0.06em;
+}
+.div-site {
+  font-size: 8px;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* Decorative vertical magenta line */
+.div-accent-line {
+  position: absolute;
+  left: 56px;
+  top: 90px;
+  bottom: 80px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--magenta), transparent);
+  opacity: 0.6;
+}
+
+/* Selector variants */
+.variant-selector {
+  position: fixed;
+  top: 12px;
+  right: 16px;
+  display: flex;
+  gap: 6px;
+  z-index: 999;
+}
+.variant-btn {
+  font-size: 10px;
+  padding: 4px 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 3px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font-body);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.variant-btn.active { background: var(--magenta); border-color: var(--magenta); }
+
+</style>
+</head>
+<body>
+
+<!-- Color variant switcher (demo only, hidden in export) -->
+<div class="variant-selector">
+  <button class="variant-btn active" onclick="setColor('#C8006B')">Magenta</button>
+  <button class="variant-btn" onclick="setColor('#2563EB')">Blue</button>
+  <button class="variant-btn" onclick="setColor('#059669')">Green</button>
+  <button class="variant-btn" onclick="setColor('#D97706')">Amber</button>
+</div>
+
+<div class="page-wrap">
+<div class="page divider-page">
+
+  <!-- Background (replace src with real photo) -->
+  <div class="div-bg-ph"></div>
+
+  <!-- Overlay -->
+  <div class="div-overlay" id="div-overlay"></div>
+
+  <!-- Vertical accent line -->
+  <div class="div-accent-line"></div>
+
+  <!-- Top: logo + edition -->
+  <div class="div-top">
+    <div class="div-logo-icon">
+      <svg width="18" height="16" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="div-edition">Discoolver Guide · 2026</span>
+  </div>
+
+  <!-- Central block -->
+  <div class="div-center">
+    <div class="div-section-num">06</div>
+
+    <div class="div-coming">A continuación</div>
+
+    <div class="div-title">
+      RESTAU<br>
+      RANTES
+    </div>
+
+    <div class="div-tagline">
+      Las mesas que merece la pena reservar.<br>
+      Cada selección, justificada.
+    </div>
+  </div>
+
+  <!-- Bottom -->
+  <div class="div-bottom">
+    <span class="div-page-num">PÁG. 24</span>
+    <span class="div-site">discoolver.com</span>
+  </div>
+
+</div>
+</div>
+
+<script>
+function setColor(hex) {
+  const r = parseInt(hex.slice(1,3),16),
+        g = parseInt(hex.slice(3,5),16),
+        b = parseInt(hex.slice(5,7),16);
+  document.getElementById('div-overlay').style.background =
+    `linear-gradient(to bottom, rgba(${r},${g},${b},0.18) 0%, rgba(17,24,39,0.72) 50%, rgba(17,24,39,0.92) 100%)`;
+  document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function _applyEntreSeccConfig(cfg) {
+  if (!cfg) return;
+
+  // Apply primary color overlay
+  if (cfg.primaryColor) setColor(cfg.primaryColor);
+
+  // Section number (e.g. "06"), title (e.g. "RESTAURANTES"), tagline, page
+  if (cfg.sectionNum) {
+    var numEl = document.querySelector('.div-section-num');
+    if (numEl) numEl.textContent = cfg.sectionNum;
+  }
+  if (cfg.sectionTitle) {
+    var titleEl = document.querySelector('.div-title');
+    if (titleEl) titleEl.innerHTML = cfg.sectionTitle;
+  }
+  if (cfg.sectionTagline) {
+    var tagEl = document.querySelector('.div-tagline');
+    if (tagEl) tagEl.innerHTML = cfg.sectionTagline;
+  }
+  if (cfg.pageNumber) {
+    var pageEl = document.querySelector('.div-page-num');
+    if (pageEl) pageEl.textContent = 'PÁG. ' + cfg.pageNumber;
+  }
+  if (cfg.edition) {
+    var edEl = document.querySelector('.div-edition');
+    if (edEl) edEl.textContent = 'Discoolver Guide · ' + cfg.edition;
+  }
+  if (cfg.coverPhoto) {
+    var bg = document.querySelector('.div-bg-ph');
+    if (bg) {
+      var img = document.createElement('img');
+      img.src = cfg.coverPhoto;
+      img.className = 'div-bg';
+      bg.parentNode.insertBefore(img, bg);
+      bg.style.display = 'none';
+    }
+  }
+
+  var sel = document.querySelector('.variant-selector');
+  if (sel) sel.style.display = 'none';
+  var nav = document.querySelector('.page-nav');
+  if (nav) nav.style.display = 'none';
+}
+
+if (window.GUIDE_CONFIG) _applyEntreSeccConfig(window.GUIDE_CONFIG);
+window.onGuideData = _applyEntreSeccConfig;
+</script>
+
+<script src="shared/disco-loader.js"></script>
+</body>
+</html>

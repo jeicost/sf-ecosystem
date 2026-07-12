@@ -1,0 +1,15 @@
+{
+  "name": "discoolver-mock-api",
+  "version": "1.0.0",
+  "description": "Mock del backend Spring Boot para desarrollo del editor de guías",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "uuid": "^9.0.0"
+  }
+}

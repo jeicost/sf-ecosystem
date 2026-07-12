@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Discoolver Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --mag:      #C8006B;
+      --mag-dark: #a50057;
+      --navy:     #1A1A2E;
+      --navy-2:   #080810;
+      --bg:       #0D0D16;
+      --surface:  #18182A;
+      --border:   rgba(255,255,255,0.09);
+      --text:     #F0F0F8;
+      --muted:    #70708A;
+      --error:    #EF4444;
+      --radius:   12px;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: "Inter", system-ui, sans-serif;
+      background: var(--navy-2);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── LEFT VISUAL PANEL ── */
+    .visual {
+      flex: 1;
+      background: linear-gradient(140deg, #1A1A2E 0%, #2d0a1e 55%, #12082a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .visual::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 60% at 30% 40%, rgba(200,0,107,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 80% 70%, rgba(100,0,180,0.12) 0%, transparent 60%);
+    }
+
+    .visual-inner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      max-width: 420px;
+    }
+
+    .logo-wrap {
+      margin-bottom: 48px;
+    }
+
+    .logo-wrap img {
+      height: 48px;
+      filter: brightness(0) invert(1);
+    }
+
+    .visual-title {
+      font-family: "Syne", sans-serif;
+      font-size: clamp(2rem, 3.5vw, 3rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+
+    .visual-title span {
+      color: var(--mag);
+    }
+
+    .visual-sub {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.5);
+      line-height: 1.6;
+    }
+
+    .pills {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 40px;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.55);
+      letter-spacing: 0.03em;
+    }
+
+    /* ── RIGHT FORM PANEL ── */
+    .form-panel {
+      width: 460px;
+      min-width: 380px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 48px;
+    }
+
+    .form-box {
+      width: 100%;
+      max-width: 360px;
+    }
+
+    .form-header {
+      margin-bottom: 36px;
+    }
+
+    .form-header h2 {
+      font-family: "Syne", sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .form-header p {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 7px;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      font-size: 0.9rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+
+    .field input:focus {
+      border-color: var(--mag);
+    }
+
+    .field input::placeholder {
+      color: var(--muted);
+      opacity: 0.6;
+    }
+
+    .btn-login {
+      width: 100%;
+      background: var(--mag);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      padding: 13px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      margin-top: 8px;
+      letter-spacing: 0.02em;
+    }
+
+    .btn-login:hover { background: var(--mag-dark); }
+    .btn-login:active { transform: scale(0.98); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .error-msg {
+      display: none;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.83rem;
+      color: var(--error);
+      margin-top: 16px;
+      text-align: center;
+    }
+
+    .error-msg.show { display: block; }
+
+    .pending-msg {
+      display: none;
+      background: rgba(245,158,11,0.1);
+      border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-size: 0.83rem;
+      color: #F59E0B;
+      margin-top: 16px;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    .pending-msg.show { display: block; }
+
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+
+    .apply-link {
+      text-align: center;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .apply-link a {
+      color: var(--mag);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .apply-link a:hover { text-decoration: underline; }
+
+    /* ── Session banner ── */
+    .session-banner {
+      display: none;
+      background: rgba(200,0,107,0.1);
+      border: 1px solid rgba(200,0,107,0.25);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      margin-bottom: 24px;
+      font-size: 0.83rem;
+      line-height: 1.5;
+    }
+
+    .session-banner.show { display: block; }
+
+    .session-banner strong { color: var(--mag); }
+
+    .session-banner-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .btn-go {
+      flex: 1;
+      background: var(--mag);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .btn-switch {
+      flex: 1;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .btn-switch:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .visual { display: none; }
+      .form-panel {
+        width: 100%;
+        min-width: unset;
+        padding: 40px 28px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- LEFT PANEL -->
+  <div class="visual">
+    <div class="visual-inner">
+      <div class="logo-wrap">
+        <img src="/static/images/logo-wordmark.png" alt="Discoolver" onerror="this.style.display='none'">
+      </div>
+      <h1 class="visual-title">
+        El studio de<br><span>guías Discoolver</span>
+      </h1>
+      <p class="visual-sub">
+        Crea, edita y publica guías de ciudad.<br>
+        Colabora con influencers. Conectado al CMS.
+      </p>
+      <div class="pills">
+        <span class="pill">Editor de guías</span>
+        <span class="pill">Portal influencer</span>
+        <span class="pill">CMS bridge</span>
+        <span class="pill">Export PDF</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="form-panel">
+    <div class="form-box">
+<div class="form-header">
+        <h2>Iniciar sesión</h2>
+        <p>Accede con tu cuenta Discoolver Studio</p>
+      </div>
+
+      <form id="login-form" autocomplete="on">
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="tu@discoolver.com"
+            autocomplete="username"
+            required
+          >
+        </div>
+        <div class="field">
+          <label for="password">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button class="btn-login" type="submit" id="btn-submit">
+          Entrar
+        </button>
+      </form>
+
+      <div class="error-msg" id="error-msg">
+        Email o contraseña incorrectos. Inténtalo de nuevo.
+      </div>
+
+      <div class="pending-msg" id="pending-msg">
+        Tu cuenta está pendiente de aprobación.<br>
+        Te avisaremos por email cuando esté activa.
+      </div>
+
+      <hr class="divider">
+
+      <p class="apply-link">
+        ¿Eres influencer y quieres colaborar?
+        <a href="/influencers">Solicita acceso</a>
+      </p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const form    = document.getElementById("login-form");
+  const btn     = document.getElementById("btn-submit");
+  const errMsg  = document.getElementById("error-msg");
+  const pendMsg = document.getElementById("pending-msg");
+
+  // ── Login form ────────────────────────────────────────────────────────────
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    errMsg.classList.remove("show");
+    pendMsg.classList.remove("show");
+
+    const email    = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Entrando…';
+
+    try {
+      const body = new URLSearchParams({ username: email, password });
+      const res  = await fetch("/api/v2/auth/token", {
+        method:  "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body,
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        if (data.detail && data.detail.toLowerCase().includes("pendiente")) {
+          pendMsg.classList.add("show");
+        } else {
+          errMsg.classList.add("show");
+        }
+        return;
+      }
+
+      const data = await res.json();
+
+      if (data.status === "pending") {
+        pendMsg.classList.add("show");
+        return;
+      }
+
+      // Clear any previous session before saving new one
+      localStorage.removeItem("dg_editor_token");
+      localStorage.removeItem("dg_editor_user");
+      localStorage.removeItem("portal_token");
+
+      if (data.role === "influencer") {
+        localStorage.setItem("portal_token", data.access_token);
+        window.location.href = "/portal";
+      } else {
+        localStorage.setItem("dg_editor_token", data.access_token);
+        localStorage.setItem("dg_editor_user", JSON.stringify({
+          name: data.name,
+          role: data.role,
+          email,
+        }));
+        window.location.href = "/editor";
+      }
+
+    } catch (err) {
+      errMsg.textContent = "Error de conexión. Comprueba tu red.";
+      errMsg.classList.add("show");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "Entrar";
+    }
+  });
+</script>
+</body>
+</html>

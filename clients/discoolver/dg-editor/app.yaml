@@ -1,0 +1,71 @@
+name: discoolver-guides-editor
+region: fra  # Frankfurt — close to EU users
+
+services:
+  - name: api
+    dockerfile_path: Dockerfile
+    source_dir: /
+    github:
+      repo: discoolver/guides-editor   # Update with your repo
+      branch: main
+      deploy_on_push: true
+
+    instance_size_slug: professional-xs  # 1 vCPU, 1GB RAM
+    instance_count: 1
+
+    http_port: 8000
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 20
+      period_seconds: 30
+
+    envs:
+      - key: DATABASE_URL
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: ANTHROPIC_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: DO_SPACES_KEY
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: DO_SPACES_SECRET
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: DO_SPACES_BUCKET
+        scope: RUN_TIME
+        value: discoolver-guides
+
+      - key: DO_SPACES_REGION
+        scope: RUN_TIME
+        value: fra1
+
+      - key: DO_SPACES_ENDPOINT
+        scope: RUN_TIME
+        value: https://fra1.digitaloceanspaces.com
+
+      - key: DO_SPACES_CDN_BASE
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+
+      - key: ENVIRONMENT
+        scope: RUN_TIME
+        value: production
+
+    routes:
+      - path: /
+
+databases:
+  - name: discoolver-guides-db
+    engine: PG
+    version: "16"
+    size: db-s-1vcpu-1gb
+    num_nodes: 1

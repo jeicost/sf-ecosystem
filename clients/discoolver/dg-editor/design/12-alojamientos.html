@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>12 · Alojamientos — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+
+
+
+
+
+
+
+
+.big-split-r img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+
+.excl-box-hd { display: flex; align-items: baseline; }
+.excl-box .big { font-family: var(--font-display); font-size: 17px; color: #fff; }
+.excl-box .sm  { font-size: 11px; font-weight: 700; color: #fff; letter-spacing: 0.04em; }
+.excl-box .sub { font-size: 9.5px; font-style: italic; color: rgba(255,255,255,.85); display: block; margin-top: 2px; }
+
+.intro { font-size: 9.5px; color: #444; line-height: 1.58; text-align: justify; }
+.dc    { font-family: var(--font-display); font-size: 26px; float: left; line-height: 0.8; color: var(--navy); margin-right: 2px; padding-top: 2px; }
+
+.cat-typo  { display: flex; align-items: baseline; margin: 12px 0 4px; }
+.cat-first { font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--navy); line-height: 1; padding-right: 1px; }
+.cat-rest  { font-size: 13px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+.cat-sub   { font-size: 9.5px; font-style: italic; color: var(--muted); margin-bottom: 10px; line-height: 1.4; }
+
+.cards-3  { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 12px; }
+.card     { display: flex; flex-direction: column; }
+
+
+
+
+
+/* ── Price-tag badge: top-RIGHT, semitrans negro ── */
+.price-tag {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,0.6); color: #fff;
+  font-size: 7.5px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 2px 6px;
+}
+
+
+
+
+
+
+
+
+
+
+
+/* ── Card img mejorado ── */
+.card-img {
+  width: 100%;
+  height: 100px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 7px;
+  flex-shrink: 0;
+  background: #d4d4d4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.card-img-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.08); pointer-events: none; }
+.card-img-ph { font-size: 8px; color: #aaa; letter-spacing: 0.1em; text-transform: uppercase; position: relative; z-index: 1; }
+.cards-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 12px; }
+.cards-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin-bottom: 12px; }
+.card { display: flex; flex-direction: column; break-inside: avoid; }
+.card-name { font-family: var(--font-display,'Bebas Neue',sans-serif); font-size: 14px; color: #111827; letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 2px; text-transform: uppercase; }
+.card-tag  { font-size: 9px; font-style: italic; color: #555; margin-bottom: 5px; line-height: 1.3; }
+.card-desc { font-size: 8.5px; color: #333; line-height: 1.58; text-align: justify; flex: 1; margin-bottom: 4px; }
+.card-web  { font-size: 8px; color: #C8006B; font-style: italic; margin-bottom: 1px; word-break: break-all; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.card-addr { font-size: 8px; color: #6b7280; font-style: italic; margin-bottom: 5px; }
+.card-where{ font-size: 8px; color: #6b7280; font-style: italic; margin-bottom: 5px; }
+.disco-link { display: inline-flex; align-items: center; gap: 4px; font-size: 7.5px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #111827; text-decoration: none; margin-top: auto; padding-top: 4px; border-top: 1px solid #e5e7eb; }
+
+
+/* ── Slogan de sección ── */
+.slogan-block   { margin-bottom: 14px; line-height: 1; }
+.slogan-over,
+.slogan-line1   { font-size: 9.5px; font-weight: 700; color: var(--navy,#111827);
+                  letter-spacing: 0.08em; text-transform: uppercase; display: block; margin-bottom: 1px; }
+.slogan-city    { font-family: var(--font-display,'Bebas Neue',sans-serif);
+                  font-size: 72px; color: var(--navy,#111827);
+                  letter-spacing: -2px; line-height: 0.88; display: block; margin-bottom: 3px; }
+.slogan-year    { display: inline-flex; align-items: center; gap: 1px;
+                  font-family: var(--font-display,'Bebas Neue',sans-serif);
+                  font-size: 22px; color: var(--navy,#111827); }
+/* ── Big split layout ── */
+.big-split      { display: flex; gap: 14px; margin-bottom: 14px; align-items: stretch; }
+.big-split-l    { width: 46%; display: flex; flex-direction: column; gap: 8px; }
+.big-split-r    { flex: 1; background: #d4d4d4; min-height: 140px; overflow: hidden; }
+.big-split-r img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* ── Category box header ── */
+.excl-box, .cat-boxed { padding: 9px 11px; background: #f5f5f5; border-left: 3px solid var(--navy,#111827); }
+.big  { font-family: var(--font-display,'Bebas Neue',sans-serif); font-size: 22px;
+        font-style: normal; color: var(--navy,#111827); line-height: 1; }
+.sm, .cb-rest { font-size: 12px; font-weight: 700; color: var(--navy,#111827);
+                text-transform: uppercase; letter-spacing: 0.05em; }
+.sub, .cb-sub, .cat-sub { font-size: 9px; font-style: italic; color: #666;
+                           line-height: 1.4; margin-top: 4px; display: block; }
+.intro, .cat-intro { font-size: 9px; color: #444; line-height: 1.6; text-align: justify; }
+.dc { font-family: var(--font-display,'Bebas Neue',sans-serif); font-size: 28px;
+      float: left; line-height: 0.78; margin-right: 2px; color: var(--navy,#111827); padding-top: 2px; }
+/* ── Category typo header ── */
+.cat-typo { display: inline-flex; align-items: baseline; margin: 10px 0 3px; }
+.cat-first { font-family: var(--font-display,'Bebas Neue',sans-serif); font-size: 24px;
+             color: var(--navy,#111827); line-height: 1; }
+/* ── Footer ── */
+.pg-footer { position: absolute; bottom: 26px; left: 56px; right: 56px;
+             display: flex; justify-content: space-between; align-items: center; }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="page-header">
+    <span class="ph-number">30</span>
+    <div class="ph-divider"></div>
+    <div class="ph-icon">
+      <svg width="24" height="22" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="ph-section">ALOJAMIENTOS Y ESPACIOS</span>
+  </div>
+  <hr class="page-rule">
+
+  <div class="slogan-block">
+    <span class="slogan-over">DÓNDE DORMIR EN</span>
+    <span class="slogan-city">BARCELONA</span>
+    <div class="slogan-year">
+      GUÍA 2<svg width="18" height="16" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg><span id="tw-year">26</span>
+    </div>
+  </div>
+
+  <!-- ════ CATEGORÍA 1: ALOJAMIENTOS TOP (BOXED) ════ -->
+  <div class="big-split">
+    <div class="big-split-l">
+      <div class="excl-box">
+        <div class="excl-box-hd">
+          <span class="big">A</span><span class="sm">LOJAMIENTOS TOP</span>
+        </div>
+        <span class="sub">Los espacios más especiales del mundo donde el hospedaje es la experiencia</span>
+      </div>
+      <p class="intro">
+        <span class="dc">N</span>o es solo donde duermes, es parte de tu viaje. Estos alojamientos han sido seleccionados porque en sí mismos son una experiencia única: por su diseño, su historia, su ubicación o su propuesta cultural. El lugar importa.
+      </p>
+    </div>
+    <div class="big-split-r">
+      <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&q=80" alt="Hotel">
+    </div>
+  </div>
+
+  <div class="cards-3" id="grid-main">
+
+    <!-- CARD 1: HOTEL ARTS BARCELONA — LUXURY -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=75" alt="Hotel Arts">
+        <div class="card-img-overlay"></div>
+        <div class="price-tag">LUXURY</div>
+      </div>
+      <div class="card-name">HOTEL ARTS BARCELONA</div>
+      <div class="card-tag">El ícono de lujo frente al mar.</div>
+      <p class="card-desc">Torre emblemática de 44 pisos en la Barceloneta con vistas directas al Mediterráneo. Spa de lujo, restaurante estrella Michelin y acceso privado a la playa. El referente del lujo urbano en Barcelona desde su apertura en 1994.</p>
+      <div class="card-web">Web: https://www.hotelartsbarcelona.com/</div>
+      <div class="card-addr">Carrer de la Marina, 19-21, Barcelona</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none"><path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/><polygon points="72,13 110,50 72,87" fill="#C8006B"/></svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- CARD 2: CASA CAMPER BARCELONA — BOUTIQUE -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=400&q=75" alt="Casa Camper">
+        <div class="card-img-overlay"></div>
+        <div class="price-tag">BOUTIQUE</div>
+      </div>
+      <div class="card-name">CASA CAMPER BARCELONA</div>
+      <div class="card-tag">Design hotel con espíritu libre.</div>
+      <p class="card-desc">Hotel boutique de la marca de calzado Camper en el Raval. Habitaciones con zona de noche y zona de día separadas, snack bar 24h gratuito y una terraza espectacular. Diseño inteligente en pleno barrio cultural de Barcelona.</p>
+      <div class="card-web">Web: https://www.casacamper.com/barcelona</div>
+      <div class="card-addr">Carrer d'Elisabets, 11, Barcelona</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none"><path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/><polygon points="72,13 110,50 72,87" fill="#C8006B"/></svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- CARD 3: YURBBAN TRAFALGAR — APART -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&q=75" alt="Yurbban">
+        <div class="card-img-overlay"></div>
+        <div class="price-tag">APART</div>
+      </div>
+      <div class="card-name">YURBBAN TRAFALGAR</div>
+      <div class="card-tag">Urban chic en el Born.</div>
+      <p class="card-desc">Hotel con rooftop pool y vistas panorámicas a los tejados de Barcelona. Ubicado en el límite entre el Eixample y el Born, el punto perfecto para explorar la ciudad a pie. Ambiente joven y cosmopolita con servicio impecable.</p>
+      <div class="card-web">Web: https://www.yurbban.com/</div>
+      <div class="card-addr">Carrer de Trafalgar, 30, Barcelona</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none"><path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/><polygon points="72,13 110,50 72,87" fill="#C8006B"/></svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+  </div>
+
+  <!-- ════ CATEGORÍA 2: ESPACIOS ÚNICOS (TYPO) ════ -->
+  <div class="cat-typo">
+    <span class="cat-first">E</span><span class="cat-rest">SPACIOS ÚNICOS</span>
+  </div>
+  <div class="cat-sub">Más allá del hotel: espacios que son experiencias en sí mismos.</div>
+
+  <div class="cards-3" style="margin-bottom:0;">
+
+    <!-- CARD 4: THE CAVES, JAMAICA -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1439130490301-25e322d88054?w=400&q=75" alt="Jamaica">
+      </div>
+      <div class="card-name">THE CAVES, JAMAICA</div>
+      <div class="card-tag">Un escondite del océano en el paraíso.</div>
+      <p class="card-desc">Boutique hotel sobre un acantilado en Negril. Cada habitación es diferente, escondida entre la roca viva. Acceso al mar por escaleras de coral, jacuzzis naturales y el legendario Blackwell Rum Bar en la cueva secreta.</p>
+      <div class="card-web">Web: https://www.thecaveshotel.com/</div>
+      <div class="card-addr">Lighthouse Road, West End, Negril, Jamaica</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none"><path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/><polygon points="72,13 110,50 72,87" fill="#C8006B"/></svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- CARD 5: BURJ AL ARAB, DUBAI -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1580674684081-7617fbf3d745?w=400&q=75" alt="Burj Al Arab">
+      </div>
+      <div class="card-name">BURJ AL ARAB, DUBAI</div>
+      <div class="card-tag">El hotel más famoso del mundo.</div>
+      <p class="card-desc">El único hotel del mundo considerado de siete estrellas. Su silueta de vela domina el skyline de Dubai. Suites de más de 170m², helipuerto en la planta 28, restaurantes submarinos y el legendario Sky Bar Gold on 27.</p>
+      <div class="card-web">Web: https://www.jumeirah.com/burj-al-arab</div>
+      <div class="card-addr">Jumeirah Beach Rd, Dubai, Emiratos Árabes Unidos</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none"><path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/><polygon points="72,13 110,50 72,87" fill="#C8006B"/></svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+
+    <!-- CARD 6: MIRAZUR VILLA, MENTON -->
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&q=75" alt="Mirazur Villa">
+      </div>
+      <div class="card-name">MIRAZUR VILLA, MENTON</div>
+      <div class="card-tag">Francia. Vivir el Mediterráneo desde las alturas.</div>
+      <p class="card-desc">Villa privada anexa al restaurante tres estrellas Michelin con vistas al Mediterráneo. Experiencia gastronómica completa con acceso a las huertas del chef Mauro Colagreco, desayuno incluido y estancia en un jardín botánico único.</p>
+      <div class="card-web">Web: https://www.mirazur.fr/</div>
+      <div class="card-addr">30 Avenue Aristide Briand, 06500 Menton, Francia</div>
+      <a href="https://discoolver.com" class="disco-link">
+        <svg width="13" height="12" viewBox="0 0 110 100" fill="none"><path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/><polygon points="72,13 110,50 72,87" fill="#C8006B"/></svg>
+        VER EN DISCOOLVER →
+      </a>
+    </div>
+  </div>
+
+  <div class="pg-footer">
+    <span style="font-size:8px;color:#aaa;font-style:italic;">Guía discoolver Barcelona 2026</span>
+    <span style="font-family:var(--font-display);font-size:13px;color:#bbb;">30</span>
+  </div>
+
+</div>
+
+<nav class="page-nav">
+  <a href="11-experiencias.html">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M8 5H2M2 5L4.5 2.5M2 5L4.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <a href="03-indice.html" class="page-nav-home">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L5 1.5L8.5 5V9H6.5V7H3.5V9H1.5V5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <span class="page-nav-label">Alojamientos</span>
+  </a>
+  <a href="#">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5H8M8 5L5.5 2.5M8 5L5.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</nav>
+
+
+
+
+
+
+<script>
+
+
+window.onGuideData = function(cfg) {
+  var city = (cfg.city||'').toUpperCase();
+  var year = cfg.year||'';
+
+  // Ciudad y año en slogan
+  var cityEl = document.querySelector('.slogan-city');
+  if (cityEl) cityEl.textContent = city;
+  var yearEl = document.getElementById('tw-year');
+  if (yearEl) yearEl.textContent = year;
+
+  // Número de página
+  var sec = cfg.sections && cfg.sections['alojamientos'];
+  var pgNum = sec && sec.pageNumber;
+  var numEl = document.querySelector('.ph-number');
+  if (numEl && pgNum) numEl.textContent = pgNum;
+
+  // Footer
+  var ft = document.querySelector('.pg-footer span:first-child');
+  if (ft) ft.textContent = 'Guía discoolver '+city+' '+year;
+
+  var items = (sec && sec.items) || [];
+
+  // Featured photo
+  var fp = items.find(function(i){return i.photo;});
+  var splitR = document.querySelector('.big-split-r');
+  if (fp && fp.photo && splitR) {
+    splitR.innerHTML = '<img src="'+fp.photo+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">';
+    splitR.style.background='none'; splitR.style.padding='0';
+  }
+
+  // Sub texto de intro
+  var introSub = document.querySelector('.sub');
+  if (introSub && items.length) introSub.textContent = items.length+' selecciones editoriales de '+city;
+
+  var g3 = document.getElementById('grid-main');
+  var g2 = document.getElementById('grid-secondary');
+  // Ocultar sección secundaria (cat-typo + cat-sub) si hay pocos items
+  var catTypo = document.querySelector('.cat-typo');
+  var catSub2 = document.querySelector('.cat-sub');
+
+  if (items.length === 0) {
+    if (g3) g3.style.display = 'none';
+    if (g2) g2.style.display = 'none';
+    if (catTypo) catTypo.style.display = 'none';
+    if (catSub2) catSub2.style.display = 'none';
+  } else if (items.length <= 2) {
+    // 2 items → layout 2 columnas
+    if (g3) { g3.style.gridTemplateColumns='repeat(2,1fr)'; g3.innerHTML = items.map(window.renderCardImg).join(''); }
+    if (g2) g2.style.display = 'none';
+    if (catTypo) catTypo.style.display = 'none';
+    if (catSub2) catSub2.style.display = 'none';
+  } else if (items.length <= 5) {
+    // 3-5 items → todo en grid-main, ocultar sección secundaria
+    if (g3) g3.innerHTML = items.slice(0,3).map(window.renderCardImg).join('');
+    if (g2) {
+      var rest = items.slice(3);
+      if (rest.length) { g2.style.gridTemplateColumns='repeat('+Math.min(rest.length,3)+',1fr)'; g2.innerHTML = rest.map(window.renderCardImg).join(''); if (catTypo) catTypo.style.display='none'; if (catSub2) catSub2.style.display='none'; }
+      else { g2.style.display='none'; if (catTypo) catTypo.style.display='none'; if (catSub2) catSub2.style.display='none'; }
+    }
+  } else {
+    // 6+ items → usar ambas secciones
+    if (g3) g3.innerHTML = items.slice(0,3).map(window.renderCardImg).join('');
+    if (g2) { g2.style.gridTemplateColumns='repeat(3,1fr)'; g2.innerHTML = items.slice(3,6).map(window.renderCardImg).join(''); }
+  }
+};
+</script>
+<script src="shared/disco-loader.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>04 · Nota del Director — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+.director-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+  margin-top: 18px;
+}
+
+/* ── Left column ── */
+.director-intro { margin-bottom: 14px; }
+
+.director-name {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--navy);
+  letter-spacing: 0.02em;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.director-role {
+  font-size: 10px;
+  color: var(--magenta);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.director-photo {
+  width: 100%;
+  height: 220px;
+  margin-bottom: 12px;
+}
+
+.pull-quote {
+  background: var(--navy);
+  color: #fff;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: 13px;
+  font-style: italic;
+  line-height: 1.5;
+  position: relative;
+}
+.pull-quote::before {
+  content: '"';
+  font-family: var(--font-display);
+  font-size: 48px;
+  color: var(--magenta);
+  line-height: 1;
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  opacity: 0.6;
+}
+.pull-quote p { padding-left: 22px; }
+.pull-quote cite {
+  display: block;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 600;
+  color: rgba(255,255,255,0.6);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 8px;
+  padding-left: 22px;
+}
+
+.signature {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sig-line { flex: 1; height: 1px; background: var(--rule); }
+.sig-text { font-size: 9px; color: var(--muted); font-style: italic; white-space: nowrap; }
+
+/* ── Right column ── */
+.criteria-block {
+  margin-top: 14px;
+  border-top: 2px solid var(--navy);
+  padding-top: 10px;
+}
+.criteria-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.criteria-item {
+  margin-bottom: 7px;
+  padding-left: 10px;
+  border-left: 2px solid var(--magenta);
+}
+.criteria-item-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 1px;
+}
+.criteria-item-desc {
+  font-size: 9px;
+  color: #444;
+  line-height: 1.5;
+}
+
+.mission-block {
+  margin-top: 14px;
+  background: #f8f8f8;
+  padding: 12px 14px;
+  border-top: 3px solid var(--magenta);
+}
+.mission-title {
+  font-family: var(--font-display);
+  font-size: 16px;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+.mission-text {
+  font-size: 9px;
+  color: #444;
+  line-height: 1.6;
+}
+
+.becquer-block {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--rule);
+  background: #fafafa;
+}
+.becquer-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--magenta);
+  margin-bottom: 6px;
+}
+.becquer-quote {
+  font-size: 10px;
+  font-style: italic;
+  color: var(--navy);
+  line-height: 1.7;
+}
+.becquer-author {
+  font-size: 9px;
+  color: var(--muted);
+  margin-top: 6px;
+}
+
+.chips-block {
+  margin-top: 16px;
+  border-top: 1px solid var(--rule);
+  padding-top: 10px;
+}
+.chips-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  margin-bottom: 8px;
+}
+.chips-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  font-size: 9px;
+  background: var(--navy);
+  color: #fff;
+  padding: 3px 8px;
+  letter-spacing: 0.04em;
+  font-family: var(--font-display);
+}
+.chip--magenta { background: var(--magenta); }
+
+/* ── COOLtura pillars ── */
+.cooltura-pillars {
+  margin-top: 16px;
+  border-top: 2px solid var(--magenta);
+  padding-top: 10px;
+}
+.cooltura-pillars-label {
+  font-size: 7.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--magenta);
+  margin-bottom: 8px;
+}
+.cooltura-pillars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cooltura-pillar {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  line-height: 1.1;
+}
+.cooltura-pillar::before {
+  content: '●';
+  color: var(--magenta);
+  font-size: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Mini footer ── */
+.mini-footer {
+  position: absolute;
+  bottom: 26px;
+  left: 56px;
+  right: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <span class="ph-number">01</span>
+    <div class="ph-divider"></div>
+    <div class="ph-icon">
+      <svg width="24" height="22" viewBox="0 0 110 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="ph-section">NOTA DEL DIRECTOR</span>
+  </div>
+  <hr class="page-rule">
+
+  <div class="director-layout">
+
+    <!-- LEFT COLUMN -->
+    <div>
+      <div class="director-intro">
+        <div class="director-name" id="tw-name">Carlos Jacoste</div>
+        <div class="director-role" id="tw-role">CEO &amp; Fundador — discoolver</div>
+      </div>
+
+      <div class="director-photo photo-ph" id="tw-director-photo">
+        <span style="font-size:28px;opacity:0.3;">📷</span>
+        <span class="photo-ph-lbl">Foto director</span>
+      </div>
+
+      <!-- Carta del director — se reemplaza dinámicamente -->
+      <div id="tw-letter-body">
+        <p class="body-text">
+          <span class="drop-cap">D</span>iscoolver es la primera guía interactiva de contenidos curados por expertos. Nuestra misión es ayudarte a descubrir los mejores lugares de cada ciudad con la autenticidad y el criterio que mereces.
+        </p>
+        <br>
+        <p class="body-text">Cada recomendación en esta guía ha pasado por un proceso de selección riguroso. No encontrarás aquí franquicias ni cadenas: solo propuestas con alma, con autoría y que merecen tu tiempo y tu dinero.</p>
+      </div>
+
+      <div class="pull-quote" id="tw-pullquote">
+        <p>Conocer y reconocer las mejores propuestas locales y hacerlas asequibles a cualquier viajero.</p>
+        <cite>— Misión discoolver</cite>
+      </div>
+
+      <p class="body-text" id="tw-closing"></p>
+
+      <div class="signature">
+        <div class="sig-line"></div>
+        <div class="sig-text" id="tw-signature">Carlos Jacoste · CEO discoolver · Enero 2021</div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+
+      <p class="body-text" style="margin-bottom:14px;">¿Qué es cool? Es una pregunta que nos hacen mucho y siempre contestamos igual. Lo cool no tiene edad, no tiene precio, no tiene género. A veces algo es cool dada su modernidad, otras gracias a su antigüedad e historia. Es como la buena música: si está hecha con pasión puede poner los pelos de gallina sin importar tu edad, raza o cualquier otro dato. Trasciende...</p>
+
+      <div class="criteria-block">
+        <div class="criteria-title">CRITERIOS DE SELECCIÓN</div>
+        <div class="criteria-item">
+          <div class="criteria-item-name">Atención</div>
+          <div class="criteria-item-desc">La calidad humana en el trato es el primero de nuestros criterios. Nos da lo mismo lo guay que seas si no existe un trato de calidad a tus clientes.</div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-item-name">Autenticidad</div>
+          <div class="criteria-item-desc">No buscamos la típica franquicia de moda. Queremos lugares únicos donde se note la autenticidad de la propuesta para ese mercado en concreto.</div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-item-name">Autoría</div>
+          <div class="criteria-item-desc">Queremos saber quién está detrás del negocio, quién le da color. Sus fundadores, su agencia de marketing, cada detalle cuenta.</div>
+        </div>
+        <div class="criteria-item">
+          <div class="criteria-item-name">Merece la pena</div>
+          <div class="criteria-item-desc">No importa si hay que rascarse el bolsillo o es para todos los públicos. Lo importante es si merece la pena invertir ese dinero y tiempo en la experiencia.</div>
+        </div>
+      </div>
+
+      <div class="mission-block">
+        <div class="mission-title">MISIÓN</div>
+        <p class="mission-text">Reconocer las propuestas más destacadas de cada ciudad y valorar el desempeño de los profesionales detrás de cada una de ellas. Interrelacionar las propuestas más destacadas para generar un turismo sostenible que descubra las joyas escondidas de la ciudad, permitiendo explorar como un auténtico local.</p>
+      </div>
+
+      <div class="becquer-block">
+        <div class="becquer-label">Remix de Bécquer</div>
+        <p class="becquer-quote">"¿Qué es cool? Dices mientras clavas en mi pupila tu pupila azul. ¡Qué es cool! ¿Y tú me lo preguntas? cool... eres tú."</p>
+        <p class="becquer-author">— Un usuario de discoolver</p>
+      </div>
+
+      <div class="chips-block">
+        <div class="chips-label">EN ESTA GUÍA</div>
+        <div class="chips-wrap" id="tw-chips">
+          <span class="chip">RESTAURANTES</span>
+          <span class="chip">FIESTA</span>
+          <span class="chip">OCIO Y EVENTOS</span>
+          <span class="chip">ARTE</span>
+          <span class="chip">EXPERIENCIAS</span>
+          <span class="chip">SHOPPING</span>
+          <span class="chip chip--magenta">INFLUENCERS</span>
+        </div>
+      </div>
+
+      <!-- COOLtura manifesto pillars -->
+      <div class="cooltura-pillars">
+        <div class="cooltura-pillars-label">Nuestra COOLtura</div>
+        <div class="cooltura-pillars-list">
+          <div class="cooltura-pillar">AUTENTICIDAD</div>
+          <div class="cooltura-pillar">AUTORÍA</div>
+          <div class="cooltura-pillar">MERECE LA PENA</div>
+          <div class="cooltura-pillar">AHORA</div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /director-layout -->
+
+  <!-- Mini footer -->
+  <div class="mini-footer">
+    <span style="font-size:9px;color:var(--muted);font-style:italic;" id="tw-footer-left">Guía discoolver Barcelona 2026</span>
+    <span style="font-family:var(--font-display);font-size:11px;color:var(--muted);">discoolver.com</span>
+  </div>
+
+</div>
+
+<!-- Navigation -->
+<nav class="page-nav">
+  <a href="03-indice.html">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M8 5H2M2 5L4.5 2.5M2 5L4.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+  <a href="03-indice.html" class="page-nav-home">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M1.5 5L5 1.5L8.5 5V9H6.5V7H3.5V9H1.5V5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+    </svg>
+    <span class="page-nav-label">Nota del Director</span>
+  </a>
+  <a href="#">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+      <path d="M2 5H8M8 5L5.5 2.5M8 5L5.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </a>
+</nav>
+
+<script>
+(function() {
+  var id = new URLSearchParams(location.search).get('guide');
+  if (!id) return;
+  fetch('/api/v2/guides/' + id + '/export/config')
+    .then(function(r) { return r.json(); })
+    .then(function(cfg) {
+      var s = function(elId, val) { var e = document.getElementById(elId); if (e && val != null) e.textContent = val; };
+      s('tw-name',      cfg.director || '');
+      s('tw-role',      cfg.directorRole || '');
+      s('tw-signature', cfg.directorSignature || '');
+      s('tw-footer-left', 'Guía discoolver ' + (cfg.city||'') + ' ' + (cfg.year||''));
+
+      // Pull-quote
+      if (cfg.directorPullQuote) {
+        var pq = document.getElementById('tw-pullquote');
+        if (pq) pq.innerHTML = '<p>' + cfg.directorPullQuote + '</p>';
+      }
+
+      // Carta del director — ocupa el div tw-letter-body
+      var letterEl = document.getElementById('tw-letter-body');
+      if (letterEl && cfg.directorsLetter) {
+        var paras = cfg.directorsLetter.split(/\n\n+/).filter(function(p) { return p.trim(); });
+        var html = paras.map(function(p, i) {
+          var text = p.trim();
+          if (i === 0) {
+            var first = text.charAt(0);
+            text = '<span class="drop-cap">' + first + '</span>' + text.slice(1);
+          }
+          return '<p class="body-text">' + text + '</p>';
+        }).join('<br>');
+        letterEl.innerHTML = html;
+      }
+
+      // Closing paragraph
+      var closing = document.getElementById('tw-closing');
+      if (closing) closing.style.display = 'none';
+
+      // Director photo
+      if (cfg.directorPhoto) {
+        var ph = document.getElementById('tw-director-photo');
+        if (ph) {
+          ph.innerHTML = '<img src="' + cfg.directorPhoto + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">';
+          ph.classList.remove('photo-ph');
+        }
+      }
+
+      // Chips — secciones activas
+      var chips = document.getElementById('tw-chips');
+      if (chips && cfg.sections) {
+        var LABELS = {
+          restaurantes:'RESTAURANTES', fiesta:'FIESTA', ocioEventos:'OCIO Y EVENTOS',
+          arteExposiciones:'ARTE', experienciasActividades:'EXPERIENCIAS',
+          alojamientos:'ALOJAMIENTOS', shopping:'SHOPPING', influencers:'INFLUENCERS'
+        };
+        var chipHtml = '';
+        for (var k in LABELS) {
+          if (cfg.sections[k] && cfg.sections[k].enabled) {
+            chipHtml += '<span class="chip">' + LABELS[k] + '</span>';
+          }
+        }
+        if (chipHtml) chips.innerHTML = chipHtml;
+      }
+    }).catch(function(e) { console.warn('[director-loader]', e); });
+})();
+</script>
+
+</body>
+</html>

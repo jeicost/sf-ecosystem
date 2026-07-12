@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>18 · 10 Saves en 2 minutos — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+.saves-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  gap: 16px;
+}
+.saves-title-block {}
+.saves-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  color: var(--navy);
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  margin-bottom: 4px;
+}
+.saves-title span { color: var(--magenta); }
+.saves-subtitle {
+  font-size: 9.5px;
+  color: var(--muted);
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+.saves-byline {
+  text-align: right;
+  flex-shrink: 0;
+}
+.saves-byline-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--navy);
+  letter-spacing: 0.04em;
+}
+.saves-byline-role {
+  font-size: 8px;
+  color: var(--magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* 2 × 5 grid */
+.saves-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.save-card {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 9px 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Magenta left accent on odd cards */
+.save-card:nth-child(odd) {
+  border-left: 3px solid var(--magenta);
+}
+
+.save-num {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--rule);
+  line-height: 1;
+  flex-shrink: 0;
+  width: 30px;
+  text-align: right;
+  user-select: none;
+}
+.save-num.top3 { color: var(--magenta); }
+
+.save-body { flex: 1; min-width: 0; }
+
+.save-section-tag {
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--magenta);
+  margin-bottom: 2px;
+}
+
+.save-name {
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: var(--navy);
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+  margin-bottom: 3px;
+}
+
+.save-why {
+  font-size: 8px;
+  color: #444;
+  line-height: 1.5;
+  margin-bottom: 5px;
+}
+
+.save-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.save-badge {
+  display: inline-block;
+  font-size: 6.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+  color: #fff;
+}
+
+.save-addr {
+  font-size: 7px;
+  color: var(--muted);
+  font-style: italic;
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 120px;
+}
+
+/* Bottom strip */
+.saves-strip {
+  position: absolute;
+  bottom: 50px;
+  left: 56px;
+  right: 56px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-top: 1.5px solid var(--navy);
+  padding-top: 8px;
+}
+.saves-strip-label {
+  font-family: var(--font-display);
+  font-size: 11px;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  flex: 1;
+}
+.saves-strip-cta {
+  font-size: 8px;
+  color: var(--magenta);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.saves-strip-cta::after {
+  content: '→';
+  font-family: var(--font-body);
+}
+
+</style>
+</head>
+<body>
+<div class="page-wrap">
+<div class="page">
+
+  <!-- Header -->
+  <div class="page-header">
+    <span class="ph-number">03</span>
+    <div class="ph-divider"></div>
+    <div class="ph-icon">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+      </svg>
+    </div>
+    <span class="ph-section">EDITOR'S PICKS</span>
+  </div>
+  <div class="page-rule"></div>
+
+  <!-- Saves header -->
+  <div class="saves-header">
+    <div class="saves-title-block">
+      <div class="saves-title">10 <span>SAVES</span><br>EN 2 MIN</div>
+      <div class="saves-subtitle">Los imprescindibles de esta edición, curados por el director</div>
+    </div>
+    <div class="saves-byline">
+      <div class="saves-byline-name">CARLOS JACOSTE</div>
+      <div class="saves-byline-role">Director · Discoolver</div>
+    </div>
+  </div>
+
+  <!-- 2×5 grid -->
+  <div class="saves-grid">
+
+    <!-- 1 -->
+    <div class="save-card">
+      <div class="save-num top3">1</div>
+      <div class="save-body">
+        <div class="save-section-tag">Restaurantes</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase que explica por qué este lugar es el primero de la lista y vale la pena ir.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#C8006B;">WOW</span>
+          <span class="save-addr">Calle Ejemplo, 12</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2 -->
+    <div class="save-card">
+      <div class="save-num top3">2</div>
+      <div class="save-body">
+        <div class="save-section-tag">Fiesta</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase que explica por qué este lugar es el segundo y merece tu noche.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#4338CA;">LATE NIGHT</span>
+          <span class="save-addr">Calle Ejemplo, 34</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3 -->
+    <div class="save-card">
+      <div class="save-num top3">3</div>
+      <div class="save-body">
+        <div class="save-section-tag">Experiencias</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase que justifica la selección con un dato concreto o motivo editorial.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#059669;">LOCAL-OWNED</span>
+          <span class="save-addr">Zona Centro</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 -->
+    <div class="save-card">
+      <div class="save-num">4</div>
+      <div class="save-body">
+        <div class="save-section-tag">Alojamientos</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase sobre por qué este hotel o espacio merece estar en tu lista.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#475569;">DESIGN</span>
+          <span class="save-addr">Barrio ejemplo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 -->
+    <div class="save-card">
+      <div class="save-num">5</div>
+      <div class="save-body">
+        <div class="save-section-tag">Arte y Exposiciones</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase sobre por qué esta exposición o espacio cultural vale la visita.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#111827;">ICÓNICO</span>
+          <span class="save-addr">Museo / Galería</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6 -->
+    <div class="save-card">
+      <div class="save-num">6</div>
+      <div class="save-body">
+        <div class="save-section-tag">Shopping</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase sobre qué comprar aquí y por qué no lo encontrarás en otro sitio.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#C8006B;">NUEVO 2026</span>
+          <span class="save-addr">Calle Ejemplo, 56</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7 -->
+    <div class="save-card">
+      <div class="save-num">7</div>
+      <div class="save-body">
+        <div class="save-section-tag">Restaurantes</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase que explica el factor diferencial de este restaurante.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#2563EB;">BEST VIEW</span>
+          <span class="save-addr">Terraza / Rooftop</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 8 -->
+    <div class="save-card">
+      <div class="save-num">8</div>
+      <div class="save-body">
+        <div class="save-section-tag">Ocio y Eventos</div>
+        <div class="save-name">NOMBRE DEL EVENTO</div>
+        <div class="save-why">Una frase sobre por qué este evento o plan de ocio no te puedes perder.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#E11D48;">ROMÁNTICO</span>
+          <span class="save-addr">Fecha ejemplo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 9 -->
+    <div class="save-card">
+      <div class="save-num">9</div>
+      <div class="save-body">
+        <div class="save-section-tag">Experiencias</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase sobre la experiencia única que ofrece este espacio.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#0D9488;">WELLNESS</span>
+          <span class="save-addr">Zona norte</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 10 -->
+    <div class="save-card">
+      <div class="save-num">10</div>
+      <div class="save-body">
+        <div class="save-section-tag">Fiesta</div>
+        <div class="save-name">NOMBRE DEL LUGAR</div>
+        <div class="save-why">Una frase que cierra la lista con el lugar que completa una noche perfecta.</div>
+        <div class="save-footer">
+          <span class="save-badge" style="background:#7C3AED;">SOLO OK</span>
+          <span class="save-addr">Calle Ejemplo, 78</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom strip -->
+  <div class="saves-strip">
+    <span class="saves-strip-label">VER TODOS LOS RECOMENDADOS EN LAS SECCIONES SIGUIENTES</span>
+    <span class="saves-strip-cta">discoolver.com/guia</span>
+  </div>
+
+  <!-- Footer -->
+  <footer class="page-footer">
+    <span>discoolver.com</span>
+    <span>03</span>
+  </footer>
+
+  <!-- Nav -->
+  <nav class="page-nav">
+    <button class="page-nav-btn" title="Anterior">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="page-nav-btn page-nav-home" title="Hub">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>18</span>
+    </button>
+    <button class="page-nav-btn" title="Siguiente">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </nav>
+
+</div>
+</div>
+<script>
+function _apply10SavesConfig(cfg) {
+  if (!cfg || !cfg.topSaves || !cfg.topSaves.length) return;
+
+  var BADGE_COLORS = {
+    'WOW':'#C8006B','NUEVO 2026':'#C8006B','ICÓNICO':'#111827',
+    'LOCAL-OWNED':'#059669','BEST VIEW':'#2563EB','ROMÁNTICO':'#E11D48',
+    'SOLO OK':'#7C3AED','FAMILY OK':'#D97706','DESIGN':'#475569',
+    'WELLNESS':'#0D9488','AF-FRIENDLY':'#65A30D','LATE NIGHT':'#4338CA',
+    'VALUE / €':'#6B7280','SPLURGE / €€€':'#B8860B','LUXURY':'#B8860B',
+  };
+
+  var grid = document.querySelector('.saves-grid');
+  if (!grid) return;
+
+  var items = cfg.topSaves.slice(0, 10);
+  // Rellenar hasta 10 con slots vacíos para mantener el grid completo
+  while (items.length < 10) { items.push(null); }
+  var html = items.map(function(item, i) {
+    var num = i + 1;
+    var cls = num <= 3 ? 'save-num top3' : 'save-num';
+    if (!item) {
+      return '<div class="save-card" style="opacity:0.28;border-style:dashed;border-color:#ccc;">'
+        + '<div class="' + cls + '" style="color:#ccc">' + num + '</div>'
+        + '<div class="save-body"><div class="save-name" style="color:#bbb;font-size:11px;letter-spacing:0.08em;">PRÓXIMAMENTE</div>'
+        + '<div class="save-why" style="color:#ccc;">Selección del director pendiente de publicar</div></div></div>';
+    }
+    var badgeHtml = item.badge
+      ? '<span class="save-badge" style="background:' + (BADGE_COLORS[item.badge] || '#6B7280') + ';">' + item.badge + '</span>'
+      : '';
+    var addrHtml = item.address ? '<span class="save-addr">' + item.address + '</span>' : '';
+    return '<div class="save-card">'
+      + '<div class="' + cls + '">' + num + '</div>'
+      + '<div class="save-body">'
+      + (item.subcategory ? '<div class="save-section-tag">' + item.subcategory + '</div>' : '')
+      + '<div class="save-name">' + (item.name || '') + '</div>'
+      + '<div class="save-why">' + (item.tagline || item.description || '') + '</div>'
+      + '<div class="save-footer">' + badgeHtml + addrHtml + '</div>'
+      + '</div></div>';
+  }).join('');
+
+  grid.innerHTML = html;
+
+  // Update byline with director name from config
+  if (cfg.director) {
+    var bylineName = document.querySelector('.saves-byline-name');
+    if (bylineName) bylineName.textContent = cfg.director.toUpperCase();
+  }
+
+  var nav = document.querySelector('.page-nav');
+  if (nav) nav.style.display = 'none';
+}
+
+if (window.GUIDE_CONFIG) _apply10SavesConfig(window.GUIDE_CONFIG);
+window.onGuideData = _apply10SavesConfig;
+</script>
+
+<script src="shared/disco-loader.js"></script>
+</body>
+</html>

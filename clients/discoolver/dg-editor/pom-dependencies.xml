@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  DEPENDENCIAS PARA DISCOOLVER GUIDES API
+  Copiar y pegar en tu pom.xml dentro de <dependencies>
+
+  Requiere:
+  - Java 11+
+  - Spring Boot 3.0+
+-->
+
+<dependencies>
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- SPRING BOOT STARTERS -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Spring Web MVC -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <!-- Spring Data JPA (para validación y entity support) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+
+    <!-- Logging -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-logging</artifactId>
+    </dependency>
+
+    <!-- Validation -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- MYBATIS -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- MyBatis Spring Boot Starter -->
+    <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>3.0.1</version>
+    </dependency>
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- DATABASE -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- MySQL Connector -->
+    <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>8.0.33</version>
+        <scope>runtime</scope>
+    </dependency>
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- JSON PROCESSING -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- FastJSON v1 (para campos JSON en BD) -->
+    <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>fastjson</artifactId>
+        <version>1.2.83</version>
+    </dependency>
+
+    <!-- Jackson (serialización automática en responses) -->
+    <dependency>
+        <groupId>com.fasterxml.jackson.core</groupId>
+        <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- UTIL -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Lombok (anotaciones @Data, @Slf4j, etc) -->
+    <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <optional>true</optional>
+    </dependency>
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- TESTING -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Spring Boot Test -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- JUnit 5 -->
+    <dependency>
+        <groupId>org.junit.jupiter</groupId>
+        <artifactId>junit-jupiter</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Mockito -->
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- Mockito JUnit Jupiter -->
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-junit-jupiter</artifactId>
+        <scope>test</scope>
+    </dependency>
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- OPCIONAL: JWT / SEGURIDAD -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Spring Security (si necesitas más que JWT) -->
+    <!--
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+    -->
+
+    <!-- JJWT para JWT (elige UNA opción) -->
+    <!--
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-api</artifactId>
+        <version>0.11.5</version>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-impl</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    <dependency>
+        <groupId>io.jsonwebtoken</groupId>
+        <artifactId>jjwt-jackson</artifactId>
+        <version>0.11.5</version>
+        <scope>runtime</scope>
+    </dependency>
+    -->
+
+    <!-- Auth0 Java JWT (alternativa) -->
+    <!--
+    <dependency>
+        <groupId>com.auth0</groupId>
+        <artifactId>java-jwt</artifactId>
+        <version>4.4.0</version>
+    </dependency>
+    -->
+
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+    <!-- OPCIONAL: PDF EXPORT -->
+    <!-- ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- WeasyPrint (vía Python, requiere instalación local) -->
+    <!-- Alternativa: IText, Apache PDFBox, etc -->
+    <!--
+    <dependency>
+        <groupId>com.itextpdf</groupId>
+        <artifactId>itext-core</artifactId>
+        <version>8.0.0</version>
+    </dependency>
+    -->
+
+</dependencies>
+
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+<!-- PLUGINS -->
+<!-- ════════════════════════════════════════════════════════════════════════ -->
+
+<build>
+    <plugins>
+        <!-- Spring Boot Maven Plugin -->
+        <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+                <excludes>
+                    <exclude>
+                        <groupId>org.projectlombok</groupId>
+                        <artifactId>lombok</artifactId>
+                    </exclude>
+                </excludes>
+            </configuration>
+        </plugin>
+
+        <!-- MyBatis Generator (opcional: para generar mappers automáticamente) -->
+        <!--
+        <plugin>
+            <groupId>org.mybatis.generator</groupId>
+            <artifactId>mybatis-generator-maven-plugin</artifactId>
+            <version>1.4.1</version>
+            <configuration>
+                <configurationFile>src/main/resources/generatorConfig.xml</configurationFile>
+            </configuration>
+        </plugin>
+        -->
+    </plugins>
+</build>

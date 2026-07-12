@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>09 · Ocio y Eventos — Discoolver Guide Template</title>
+<link rel="stylesheet" href="shared/disco-base.css">
+<style>
+
+/* ── SLOGAN ── */
+.slogan-block { margin-bottom: 14px; line-height: 1; }
+.slogan-over  { font-size: 10.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--navy); display: block; margin-bottom: 1px; }
+.slogan-city  { font-family: var(--font-display); font-size: 72px; color: var(--navy); letter-spacing: -2px; line-height: 0.87; display: block; margin-bottom: 3px; }
+.slogan-year  { display: inline-flex; align-items: center; gap: 1px; font-family: var(--font-display); font-size: 21px; color: var(--navy); }
+
+/* ── FEATURED EVENT — horizontal ── */
+.event-featured {
+  display: flex; gap: 14px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #eee;
+}
+.event-featured-img {
+  width: 240px; height: 140px;
+  flex-shrink: 0; position: relative; overflow: hidden;
+}
+.event-featured-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.event-featured-img-ph {
+  width: 100%; height: 100%; background: #d2d2d2;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 4px; font-size: 8px;
+  color: #999; letter-spacing: 0.1em; text-transform: uppercase;
+}
+.event-featured-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(to right, transparent 50%, rgba(0,0,0,0.28) 100%);
+}
+.event-featured-body { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.event-featured-tag {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--magenta); margin-bottom: 5px;
+}
+.event-featured-name {
+  font-family: var(--font-display); font-size: 22px; color: var(--navy);
+  letter-spacing: 0.02em; line-height: 1.1; margin-bottom: 4px;
+}
+.event-featured-when {
+  font-size: 9px; font-style: italic; color: var(--muted); margin-bottom: 8px;
+}
+.event-featured-desc {
+  font-size: 9px; color: #444; line-height: 1.55; text-align: justify;
+}
+
+/* ── CATEGORY HEADER: TYPO ── */
+.cat-typo { display: flex; align-items: baseline; margin: 10px 0 4px; }
+.cat-first { font-family: 'Playfair Display', serif; font-size: 24px; font-style: italic; color: var(--navy); line-height: 1; padding-right: 1px; }
+.cat-rest  { font-size: 13px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 0.05em; }
+.cat-sub   { font-size: 9px; font-style: italic; color: var(--muted); margin-bottom: 9px; line-height: 1.4; }
+
+/* ── EVENT CARDS ── */
+.cards-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 10px; }
+.card { display: flex; flex-direction: column; }
+.card-img {
+  width: 100%; height: 90px;
+  background: #d2d2d2; position: relative;
+  overflow: hidden; margin-bottom: 6px;
+  display: flex; align-items: center; justify-content: center;
+}
+.card-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.card-img-ph { font-size: 8px; color: #999; letter-spacing: 0.1em; text-transform: uppercase; position: relative; }
+.card-name { font-family: var(--font-display); font-size: 12.5px; color: var(--navy); letter-spacing: 0.04em; line-height: 1.1; margin-bottom: 2px; }
+.card-when { font-size: 8.5px; font-weight: 600; color: var(--magenta); margin-bottom: 2px; }
+.card-tag  { font-size: 9px; font-style: italic; color: #444; margin-bottom: 4px; line-height: 1.35; }
+.card-desc { font-size: 8.5px; color: #333; line-height: 1.55; flex: 1; text-align: justify; }
+
+/* ── FOOTER ── */
+.pg-footer {
+  position: absolute; bottom: 26px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <span class="ph-number">22</span>
+    <div class="ph-divider"></div>
+    <div class="ph-icon">
+      <svg width="24" height="22" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+    </div>
+    <span class="ph-section">OCIO Y EVENTOS</span>
+  </div>
+  <hr class="page-rule">
+
+  <!-- SLOGAN -->
+  <div class="slogan-block">
+    <span class="slogan-over">LOS MEJORES PLANES DE</span>
+    <span class="slogan-city">BARCELONA</span>
+    <div class="slogan-year">
+      GUÍA 2<svg width="18" height="16" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg><span id="tw-year">26</span>
+    </div>
+  </div>
+
+  <!-- FEATURED EVENT -->
+  <div class="event-featured">
+    <div class="event-featured-img">
+      <img src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=500&q=75" alt="Primavera Sound">
+      <div class="event-featured-grad"></div>
+    </div>
+    <div class="event-featured-body">
+      <div class="event-featured-tag">★ Destacado del año</div>
+      <div class="event-featured-name">PRIMAVERA SOUND BARCELONA</div>
+      <div class="event-featured-when">¿Cuándo? Junio 2026 · Parc del Fòrum, Barcelona</div>
+      <p class="event-featured-desc">El festival de música independiente más importante de Europa, con artistas de talla mundial durante cinco días en el Parc del Fòrum. Una cita imprescindible para los amantes de la música que convierte Barcelona en la capital mundial del indie durante una semana.</p>
+    </div>
+  </div>
+
+  <!-- CONCIERTOS Y FESTIVALES -->
+  <div class="cat-typo">
+    <span class="cat-first">C</span><span class="cat-rest">ONCIERTOS Y FESTIVALES</span>
+  </div>
+  <div class="cat-sub">La música en vivo como experiencia transformadora. Los eventos que no te puedes perder.</div>
+
+  <div class="cards-3" id="grid-main">
+
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=75" alt="Sónar">
+      </div>
+      <div class="card-name">SÓNAR BARCELONA</div>
+      <div class="card-when">Junio 2026</div>
+      <div class="card-tag">Festival de música avanzada y arte digital.</div>
+      <p class="card-desc">El festival referente de la música electrónica, el arte digital y la creatividad. Dos sedes, Sónar de Día y Sónar de Noche, con los mejores artistas de música electrónica del planeta durante 3 días intensos.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1571266028243-d220c6a6f7b9?w=400&q=75" alt="Liceu">
+      </div>
+      <div class="card-name">GRAN TEATRE DEL LICEU</div>
+      <div class="card-when">Temporada 2025-2026</div>
+      <div class="card-tag">Ópera en el templo más emblemático.</div>
+      <p class="card-desc">El teatro de ópera más importante de España y uno de los más reconocidos de Europa. Su temporada incluye ópera, ballet y recitales. El Liceu es patrimonio vivo de la cultura barcelonesa desde 1847.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&q=75" alt="Palau de la Música">
+      </div>
+      <div class="card-name">PALAU DE LA MÚSICA</div>
+      <div class="card-when">Todo el año</div>
+      <div class="card-tag">Música en el edificio modernista más bello.</div>
+      <p class="card-desc">Joya del modernismo catalán declarada Patrimonio de la Humanidad por la UNESCO. La acústica y la luz del sol entrando por la vidriera de Domènech i Montaner hacen de cada concierto una experiencia única e irrepetible.</p>
+    </div>
+  </div>
+
+  <!-- PLANES CULTURALES -->
+  <div class="cat-typo">
+    <span class="cat-first">P</span><span class="cat-rest">LANES CULTURALES</span>
+  </div>
+  <div class="cat-sub">Más allá del concierto: experiencias culturales que amplían horizontes.</div>
+
+  <div class="cards-3" id="grid-secondary" style="margin-bottom:0;">
+
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=75" alt="Sagrada Família">
+      </div>
+      <div class="card-name">SAGRADA FAMÍLIA</div>
+      <div class="card-when">Visita nocturna especial · Todo el año</div>
+      <div class="card-tag">La obra maestra inacabada de Gaudí.</div>
+      <p class="card-desc">La visita nocturna a la Sagrada Família es una experiencia completamente diferente. Las luces interiores crean una atmósfera mágica que transforma la catedral en algo casi irreal. Reserva con mucha antelación, las plazas son limitadas.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=75" alt="MACBA">
+      </div>
+      <div class="card-name">MACBA — NOCHE EN BLANCO</div>
+      <div class="card-when">Septiembre 2026</div>
+      <div class="card-tag">El arte contemporáneo se apodera de la noche.</div>
+      <p class="card-desc">Durante la Nit dels Museus, el MACBA abre sus puertas de forma gratuita hasta la madrugada. Performances en directo, visitas guiadas especiales y activaciones artísticas que convierten la plaza en un espacio de creación colectiva.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-img">
+        <img src="https://images.unsplash.com/photo-1534483509719-3feaee7c30da?w=400&q=75" alt="Boqueria">
+      </div>
+      <div class="card-name">MERCAT DE LA BOQUERIA</div>
+      <div class="card-when">Lunes a Sábado · 8h-20h</div>
+      <div class="card-tag">El mercado más famoso del mundo.</div>
+      <p class="card-desc">Mercado cubierto emblemático en Las Ramblas que acumula más de 170 años de historia gastronómica. Paradas de frutas exóticas, mariscos frescos, jamones y bocados únicos. Evita las horas punta y disfrútalo como un local auténtico.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="pg-footer">
+    <span style="font-size:8px;color:#aaa;font-style:italic;">Guía discoolver Barcelona 2026</span>
+    <span style="font-family:var(--font-display);font-size:13px;color:#bbb;">22</span>
+  </div>
+
+</div>
+
+<nav class="page-nav">
+  <a href="08-fiesta.html">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M8 5H2M2 5L4.5 2.5M2 5L4.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+  <a href="03-indice.html" class="page-nav-home">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M1.5 5L5 1.5L8.5 5V9H6.5V7H3.5V9H1.5V5Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>
+    <span class="page-nav-label">Ocio y Eventos</span>
+  </a>
+  <a href="#">
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5H8M8 5L5.5 2.5M8 5L5.5 7.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </a>
+</nav>
+
+
+<script>
+
+window.onGuideData = function(cfg) {
+  var city = (cfg.city||'').toUpperCase(), year = cfg.year||'';
+  var cityEl = document.querySelector('.slogan-city'); if (cityEl) cityEl.textContent = city;
+  var yearEl = document.getElementById('tw-year');    if (yearEl) yearEl.textContent = year;
+  var sec = cfg.sections && cfg.sections['ocioEventos'];
+  var pgNum = sec && sec.pageNumber;
+  var numEl = document.querySelector('.ph-number');   if (numEl && pgNum) numEl.textContent = pgNum;
+  var ft = document.querySelector('.pg-footer span:first-child'); if (ft) ft.textContent = 'Guía discoolver '+city+' '+year;
+  var items = (sec && sec.items) || [];
+  var fp = items.find(function(i){return i.photo;});
+  var sr = document.querySelector('.big-split-r'); if (fp && fp.photo && sr) { sr.innerHTML='<img src="'+fp.photo+'" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">'; sr.style.background='none'; }
+  var g3 = document.getElementById('grid-main');
+  var g2 = document.getElementById('grid-secondary');
+  var catTypo = document.querySelector('.cat-typo'), catSub = document.querySelector('.cat-sub');
+  if (!items.length) { if(g3)g3.style.display='none'; if(g2)g2.style.display='none'; if(catTypo)catTypo.style.display='none'; if(catSub)catSub.style.display='none'; return; }
+  if (items.length <= 2) {
+    if(g3){g3.style.gridTemplateColumns='repeat(2,1fr)';g3.innerHTML=items.map(window.renderCardImg).join('');}
+    if(g2)g2.style.display='none'; if(catTypo)catTypo.style.display='none'; if(catSub)catSub.style.display='none';
+  } else if (items.length <= 5) {
+    if(g3)g3.innerHTML=items.slice(0,3).map(window.renderCardImg).join('');
+    var rest=items.slice(3); if(g2&&rest.length){g2.style.gridTemplateColumns='repeat('+rest.length+',1fr)';g2.innerHTML=rest.map(window.renderCardImg).join('');if(catTypo)catTypo.style.display='none';if(catSub)catSub.style.display='none';}else if(g2){g2.style.display='none';if(catTypo)catTypo.style.display='none';if(catSub)catSub.style.display='none';}
+  } else {
+    if(g3)g3.innerHTML=items.slice(0,3).map(window.renderCardImg).join('');
+    if(g2){g2.style.gridTemplateColumns='repeat(3,1fr)';g2.innerHTML=items.slice(3,6).map(window.renderCardImg).join('');}
+  }
+};
+</script>
+<script src="shared/disco-loader.js"></script>
+
+</body>
+</html>

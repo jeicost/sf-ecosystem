@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integración iFrame — Editor de Guías Discoolver</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+    }
+    .demo-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+    .header {
+      background: linear-gradient(135deg, #C8006B 0%, #F94E1F 100%);
+      color: white;
+      padding: 40px;
+      text-align: center;
+    }
+    .header h1 { font-size: 32px; margin-bottom: 8px; }
+    .header p { font-size: 16px; opacity: 0.9; }
+    .content {
+      display: grid;
+      grid-template-columns: 1fr 3fr;
+      gap: 0;
+      min-height: 600px;
+    }
+    .sidebar {
+      background: #f9f9f9;
+      padding: 30px;
+      border-right: 1px solid #e0e0e0;
+    }
+    .sidebar h2 {
+      font-size: 18px;
+      margin-bottom: 20px;
+      color: #C8006B;
+    }
+    .sidebar ul {
+      list-style: none;
+    }
+    .sidebar li {
+      margin-bottom: 12px;
+      padding: 10px;
+      background: white;
+      border-radius: 6px;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .sidebar li:hover {
+      background: #f0f0f0;
+      border-left-color: #C8006B;
+    }
+    .sidebar li.active {
+      background: #fff3f8;
+      border-left-color: #C8006B;
+      font-weight: 600;
+    }
+    .main-content {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+    }
+    .iframe-container {
+      flex: 1;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+      display: none;
+    }
+    .iframe-container.active {
+      display: block;
+    }
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      min-height: 500px;
+    }
+    .code-block {
+      background: #2d2d2d;
+      color: #f8f8f2;
+      padding: 20px;
+      border-radius: 8px;
+      font-family: "Monaco", "Menlo", monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      margin-top: 20px;
+      display: none;
+    }
+    .code-block.active {
+      display: block;
+    }
+    .controls {
+      margin-bottom: 20px;
+      padding: 20px;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+    .control-group {
+      margin-bottom: 15px;
+    }
+    .control-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #333;
+    }
+    .control-group input,
+    .control-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: monospace;
+    }
+    .control-group input:focus,
+    .control-group select:focus {
+      outline: none;
+      border-color: #C8006B;
+      box-shadow: 0 0 0 3px rgba(200, 0, 107, 0.1);
+    }
+    .button-group {
+      display: flex;
+      gap: 10px;
+    }
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #C8006B;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #a70058;
+    }
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #333;
+    }
+    .btn-secondary:hover {
+      background: #e0e0e0;
+    }
+    .status {
+      padding: 15px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: none;
+    }
+    .status.show {
+      display: block;
+    }
+    .status.info {
+      background: #e3f2fd;
+      color: #1976d2;
+      border-left: 4px solid #1976d2;
+    }
+    .status.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 4px solid #2e7d32;
+    }
+    .status.error {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #c62828;
+    }
+    .footer {
+      padding: 20px 30px;
+      background: #f5f5f5;
+      border-top: 1px solid #e0e0e0;
+      font-size: 13px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <!-- Header -->
+    <div class="header">
+      <h1>🚀 Editor de Guías Discoolver</h1>
+      <p>Integración iFrame — Demo y documentación</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+      <!-- Sidebar Navigation -->
+      <div class="sidebar">
+        <h2>Ejemplos de Uso</h2>
+        <ul>
+          <li class="nav-item active" data-tab="demo">
+            📱 iFrame en vivo
+          </li>
+          <li class="nav-item" data-tab="code-nextjs">
+            ⚛️ Integración Next.js
+          </li>
+          <li class="nav-item" data-tab="code-react">
+            ⚛️ Integración React
+          </li>
+          <li class="nav-item" data-tab="config">
+            ⚙️ Configuración & variables
+          </li>
+          <li class="nav-item" data-tab="tokens">
+            🔐 Manejo de tokens
+          </li>
+          <li class="nav-item" data-tab="security">
+            🔒 Consideraciones de seguridad
+          </li>
+        </ul>
+      </div>
+
+      <!-- Main Content Area -->
+      <div class="main-content">
+        <!-- Demo: iFrame en vivo -->
+        <div id="demo" class="tab active">
+          <h2>Demo iFrame en vivo</h2>
+          <div class="controls">
+            <div class="control-group">
+              <label for="api-base">URL Base API</label>
+              <input type="text" id="api-base" value="http://localhost:3100" />
+            </div>
+            <div class="control-group">
+              <label for="token">Token</label>
+              <input type="text" id="token" value="mock-dev-token-demo" placeholder="Bearer token..." />
+            </div>
+            <div class="control-group">
+              <label for="guide-id">Guide ID (opcional)</label>
+              <input type="text" id="guide-id" placeholder="Para abrir guía específica" />
+            </div>
+            <div class="button-group">
+              <button class="btn-primary" onclick="loadIFrame()">Cargar iFrame</button>
+              <button class="btn-secondary" onclick="resetForm()">Resetear</button>
+            </div>
+          </div>
+
+          <div id="status" class="status"></div>
+
+          <div class="iframe-container active" id="iframe-demo">
+            <iframe id="editor-iframe" title="Discoolver Guide Editor"></iframe>
+          </div>
+        </div>
+
+        <!-- Next.js Integration -->
+        <div id="code-nextjs" class="tab">
+          <h2>Integración en Next.js 15+ (CMS)</h2>
+          <div class="code-block active">
+            <pre>// app/herramientas/guias/page.tsx
+import { Suspense } from 'react';
+import { getSession } from '@/lib/auth';
+
+export default async function GuidesPage() {
+  const session = await getSession();
+  const token = session?.accessToken;
+
+  // Token se pasa via URL query param
+  const editorUrl = new URL('https://guias.discoolver.com');
+  editorUrl.searchParams.set('token', token);
+  editorUrl.searchParams.set('city', 'Madrid'); // Opcional: prefill city
+
+  return (
+    &lt;main className="h-screen"&gt;
+      &lt;div className="bg-gradient-to-r from-pink-600 to-orange-500 text-white p-6"&gt;
+        &lt;h1 className="text-3xl font-bold"&gt;Editor de Guías&lt;/h1&gt;
+        &lt;p&gt;Crea y edita guías de viaje con IA&lt;/p&gt;
+      &lt;/div&gt;
+
+      &lt;Suspense fallback={&lt;LoadingSpinner /&gt;}&gt;
+        &lt;iframe
+          src={editorUrl.toString()}
+          className="w-full h-full border-0"
+          title="Discoolver Guide Editor"
+          allow="camera; microphone; clipboard-read; clipboard-write"
+        /&gt;
+      &lt;/Suspense&gt;
+    &lt;/main&gt;
+  );
+}</pre>
+          </div>
+        </div>
+
+        <!-- React Integration -->
+        <div id="code-react" class="tab">
+          <h2>Integración en React (con Vite)</h2>
+          <div class="code-block active">
+            <pre>// components/GuideEditor.jsx
+import { useEffect, useRef } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+
+export function GuideEditor({ cityFilter = null }) {
+  const { token } = useAuth();
+  const iframeRef = useRef(null);
+
+  useEffect(() => {
+    if (!token) return;
+
+    // Construir URL con token
+    const editorUrl = new URL('https://guias.discoolver.com');
+    editorUrl.searchParams.set('token', token);
+    if (cityFilter) {
+      editorUrl.searchParams.set('city', cityFilter);
+    }
+
+    // Cargar en iFrame
+    if (iframeRef.current) {
+      iframeRef.current.src = editorUrl.toString();
+    }
+  }, [token, cityFilter]);
+
+  // Escuchar eventos del editor
+  useEffect(() => {
+    const handleMessage = (event) => {
+      // Validar origen
+      if (!event.origin.includes('discoolver.com')) return;
+
+      switch (event.data.type) {
+        case 'GUIDE_SAVED':
+          console.log('Guía guardada:', event.data.guide);
+          // Refrescar lista de guías
+          break;
+        case 'GUIDE_EXPORTED':
+          console.log('PDF generado:', event.data.pdf_url);
+          break;
+        case 'DISCOOLVER_LOGOUT':
+          // Redirigir a login
+          window.location.href = '/login';
+          break;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  return (
+    &lt;iframe
+      ref={iframeRef}
+      title="Discoolver Guide Editor"
+      className="w-full h-screen border-0"
+      allow="camera; microphone; clipboard-read; clipboard-write"
+      sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-modals"
+    /&gt;
+  );
+}
+
+// Uso:
+&lt;GuideEditor cityFilter="Madrid" /&gt;</pre>
+          </div>
+        </div>
+
+        <!-- Configuration -->
+        <div id="code-config" class="tab">
+          <h2>Configuración & Variables de Entorno</h2>
+          <div class="code-block active">
+            <pre>// .env.production
+VITE_API_BASE=https://api.discoolver.com/cms
+VITE_EDITOR_HOST=https://guias.discoolver.com
+VITE_ENABLE_ANALYTICS=true
+
+// .env.development (mock mode)
+VITE_API_BASE=http://localhost:3100
+VITE_EDITOR_HOST=http://localhost:5173
+VITE_ENABLE_ANALYTICS=false
+
+// docker-compose.yml para producción
+version: '3.8'
+services:
+  guias-editor:
+    image: discoolver/guias-editor:latest
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      VITE_API_BASE: https://api.discoolver.com/cms
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3</pre>
+          </div>
+        </div>
+
+        <!-- Token Handling -->
+        <div id="code-tokens" class="tab">
+          <h2>Manejo de Tokens</h2>
+          <div class="code-block active">
+            <pre>// Flujo de autenticación
+
+// 1. CMS genera token
+const session = await getSession(); // { accessToken, expiresAt, ... }
+
+// 2. CMS pasa token via URL al editor
+const editorUrl = `https://guias.discoolver.com?token=${session.accessToken}`;
+
+// 3. Editor lee token de URL y lo guarda en sessionStorage
+const params = new URLSearchParams(location.search);
+const token = params.get('token'); // "Bearer abc123..."
+sessionStorage.setItem('dg_editor_token', token);
+
+// 4. Editor incluye token en todos los requests
+fetch('https://api.discoolver.com/cms/v2/guides', {
+  headers: {
+    'Authorization': `Bearer ${token}`
+  }
+});
+
+// 5. Si token expira (401):
+if (response.status === 401) {
+  // Editor muestra modal: "Sesión expirada"
+  // Usuario debe reautenticarse en el CMS padre
+  window.parent.postMessage(
+    { type: 'DISCOOLVER_SESSION_EXPIRED' },
+    'https://cms.discoolver.com'
+  );
+}
+
+// ⚠️ NOTA: sessionStorage se borra al cerrar la pestaña
+// No usar localStorage en iFrame (cross-origin issues)</pre>
+          </div>
+        </div>
+
+        <!-- Security -->
+        <div id="code-security" class="tab">
+          <h2>🔒 Consideraciones de Seguridad</h2>
+          <div class="code-block active">
+            <pre>// SEGURIDAD EN iFrame
+
+// 1. Token en URL vs Header
+// ✅ Mejor: Pasar token via header (pero en iFrame cross-origin es difícil)
+// ✅ OK: Token en URL con HTTPS + limpiar después de usar
+// ❌ Nunca: Token en localStorage cross-domain
+
+// 2. CORS y SameSite
+// En Spring Boot, configurar:
+@Configuration
+@EnableWebMvc
+public class CorsConfig implements WebMvcConfigurer {
+  @Override
+  public void addCorsMappings(CorsRegistry registry) {
+    registry.addMapping("/cms/v2/**")
+      .allowedOrigins(
+        "https://cms.discoolver.com",
+        "https://guias.discoolver.com"
+      )
+      .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
+      .allowedHeaders("Authorization", "Content-Type")
+      .allowCredentials(false)
+      .maxAge(3600);
+  }
+}
+
+// 3. CSP (Content Security Policy)
+// En respuesta HTTP del editor:
+Content-Security-Policy:
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  img-src 'self' https: data:;
+  style-src 'self' 'unsafe-inline';
+  connect-src 'self' https://api.discoolver.com;
+  frame-ancestors https://cms.discoolver.com;
+
+// 4. Sandbox attributes en HTML
+&lt;iframe
+  sandbox="
+    allow-same-origin
+    allow-scripts
+    allow-forms
+    allow-popups
+    allow-modals
+  "
+/&gt;
+
+// 5. Validar origen en postMessage
+window.addEventListener('message', (event) => {
+  // ✅ Validar origen del mensaje
+  if (!event.origin.startsWith('https://cms.discoolver.com')) {
+    return; // Ignorar
+  }
+  // Procesar evento seguro
+});</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>
+        <strong>Documentación:</strong> Ver <code>API_CONTRACT.md</code> para endpoints completos
+        | <strong>Repo:</strong> github.com/discoolver-group/discoolver-dg-editor
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Tabs
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const tabName = this.dataset.tab;
+
+        // Actualizar navegación
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        this.classList.add('active');
+
+        // Actualizar tabs
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        const tabEl = document.getElementById(tabName);
+        if (tabEl) {
+          tabEl.classList.add('active');
+        }
+
+        // Ocultar iFrame si no es la demo
+        document.getElementById('iframe-demo').style.display = tabName === 'demo' ? 'block' : 'none';
+      });
+    });
+
+    // iFrame Loading
+    function loadIFrame() {
+      const apiBase = document.getElementById('api-base').value || 'http://localhost:3100';
+      const token = document.getElementById('token').value || 'mock-token';
+      const guideId = document.getElementById('guide-id').value;
+
+      let url = `${apiBase.replace('/cms', '')}`; // Remove /cms if present
+      if (guideId) {
+        url += `?token=${encodeURIComponent(token)}&guide_id=${encodeURIComponent(guideId)}`;
+      } else {
+        url += `?token=${encodeURIComponent(token)}`;
+      }
+
+      const iframe = document.getElementById('editor-iframe');
+      iframe.src = url;
+
+      showStatus(`Cargando editor desde: ${url}`, 'info');
+    }
+
+    function resetForm() {
+      document.getElementById('api-base').value = 'http://localhost:3100';
+      document.getElementById('token').value = 'mock-dev-token-demo';
+      document.getElementById('guide-id').value = '';
+      showStatus('', '');
+    }
+
+    function showStatus(message, type = 'info') {
+      const statusEl = document.getElementById('status');
+      if (!message) {
+        statusEl.classList.remove('show');
+        return;
+      }
+      statusEl.textContent = message;
+      statusEl.className = `status show ${type}`;
+    }
+
+    // Auto-load on page load
+    window.addEventListener('load', () => {
+      setTimeout(loadIFrame, 500);
+    });
+  </script>
+</body>
+</html>

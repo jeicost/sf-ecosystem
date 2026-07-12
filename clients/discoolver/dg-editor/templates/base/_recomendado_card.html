@@ -1,0 +1,31 @@
+<div class="rec-card rec-card--{{ rec.category.value }}">
+
+  <div class="rec-card__header">
+    <span class="rec-card__category-badge">{{ rec.category.value | category_label }}</span>
+    <span class="rec-card__price">{{ rec.price_range.value }}</span>
+    {% if rec.rating > 0 %}
+    <span class="rec-card__rating">{{ rec.rating | format_rating }}</span>
+    {% endif %}
+  </div>
+
+  <h3 class="rec-card__name">{{ rec.name }}</h3>
+
+  <p class="rec-card__description">{{ rec.description }}</p>
+
+  {% if rec.address %}
+  <p class="rec-card__address">{{ rec.address }}</p>
+  {% endif %}
+
+  {% if rec.website %}
+  <p class="rec-card__website">{{ rec.website }}</p>
+  {% endif %}
+
+  {% if rec.tags %}
+  <div class="rec-card__tags">
+    {% for tag in rec.tags %}
+    <span class="tag">{{ tag }}</span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+</div>

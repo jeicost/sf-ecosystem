@@ -1,0 +1,155 @@
+# ════════════════════════════════════════════════════════════════════════════
+# Spring Boot Configuration — Discoolver Guides API
+# ════════════════════════════════════════════════════════════════════════════
+# Archivo: application.yml (en src/main/resources/)
+# Uso: mvn spring-boot:run
+# ════════════════════════════════════════════════════════════════════════════
+
+spring:
+  application:
+    name: discoolver-guides-api
+    version: 3.0.0
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # DATASOURCE — MySQL en DigitalOcean
+  # ════════════════════════════════════════════════════════════════════════════
+  datasource:
+    # TODO: Reemplazar con credenciales reales
+    url: jdbc:mysql://localhost:3306/discoolver_guides?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: password123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # Pool de conexiones (opcional: HikariCP es el default)
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1200000
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # JPA / HIBERNATE (opcional: si usas JPA en lugar de puro MyBatis)
+  # ════════════════════════════════════════════════════════════════════════════
+  jpa:
+    hibernate:
+      ddl-auto: validate  # No crear tablas automáticamente (usar SCHEMA_SQL_GUIAS.sql)
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # MYBATIS
+  # ════════════════════════════════════════════════════════════════════════════
+mybatis:
+  # Ubicación de archivos XML de mapeos
+  mapper-locations: classpath:mybatis/*.xml
+
+  # Tipo alias para entities
+  type-aliases-package: com.discoolver.guides.entity
+
+  # Configuración global
+  configuration:
+    # Mapear snake_case de BD a camelCase de Java
+    map-underscore-to-camel-case: true
+
+    # Logging
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+
+    # Cache
+    cache-enabled: true
+    lazy-loading-enabled: true
+    aggressive-lazy-loading: false
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # LOGGING
+  # ════════════════════════════════════════════════════════════════════════════
+logging:
+  level:
+    root: INFO
+    com.discoolver.guides: DEBUG
+    org.springframework.web: INFO
+    org.mybatis: DEBUG
+    org.apache.ibatis: DEBUG
+
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+
+  file:
+    name: logs/guides-api.log
+    max-size: 10MB
+    max-history: 30
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # SERVER
+  # ════════════════════════════════════════════════════════════════════════════
+server:
+  port: 8080
+  servlet:
+    context-path: /
+  compression:
+    enabled: true
+    min-response-size: 1024
+
+  # ════════════════════════════════════════════════════════════════════════════
+  # ACTUATOR (Health checks, metrics)
+  # ════════════════════════════════════════════════════════════════════════════
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+  endpoint:
+    health:
+      show-details: always
+
+# ════════════════════════════════════════════════════════════════════════════
+# PROFILES
+# ════════════════════════════════════════════════════════════════════════════
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/discoolver_guides_dev?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: password123
+
+logging:
+  level:
+    com.discoolver.guides: DEBUG
+    org.mybatis: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?useSSL=true&serverTimezone=UTC
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+logging:
+  level:
+    root: WARN
+    com.discoolver.guides: INFO
+
+  file:
+    name: /var/log/discoolver/guides-api.log
+
+server:
+  port: 8080
+  compression:
+    enabled: true

@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>05 · Reportaje Persona del Año — Discoolver Guide Template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&family=Playfair+Display:ital,wght@1,400;1,700&family=Inter:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 32px 0 48px;
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.page {
+  width: 794px;
+  height: 1123px;
+  background: #fff;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.28);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE 1 — COVER / HERO
+═══════════════════════════════════════════ */
+.cover-page { background: #1A1A2E; }
+
+.cover-bg {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: 0.52;
+  mix-blend-mode: luminosity;
+}
+
+.cover-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(26,26,46,0.28) 0%,
+    rgba(26,26,46,0.08) 30%,
+    rgba(26,26,46,0.15) 55%,
+    rgba(26,26,46,0.88) 82%,
+    rgba(26,26,46,0.97) 100%
+  );
+}
+
+.cover-top {
+  position: absolute; top: 0; left: 0; right: 0;
+  padding: 36px 48px 0;
+  display: flex; justify-content: space-between; align-items: flex-start;
+}
+
+.cover-logo { display: flex; align-items: center; gap: 9px; }
+.cover-wordmark { font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 18px; color: #fff; letter-spacing: -0.3px; }
+.cover-edition { font-size: 9px; color: rgba(255,255,255,0.42); letter-spacing: 0.1em; text-transform: uppercase; text-align: right; line-height: 1.9; }
+
+.cover-content {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 0 48px 52px;
+}
+
+.cover-eyebrow {
+  font-size: 11px; font-weight: 700; letter-spacing: 0.2em;
+  text-transform: uppercase; color: #C8006B; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cover-eyebrow::before {
+  content: ''; display: inline-block;
+  width: 28px; height: 2px; background: #C8006B;
+}
+
+.cover-name {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 116px; color: #fff;
+  letter-spacing: -3px; line-height: 0.85;
+  margin-bottom: 12px;
+}
+
+.cover-tagline {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-style: italic;
+  color: rgba(255,255,255,0.82);
+  margin-bottom: 22px; line-height: 1.4;
+}
+
+.cover-divider { width: 60px; height: 2px; background: #C8006B; margin-bottom: 18px; }
+
+.cover-meta { display: flex; gap: 32px; align-items: flex-end; }
+.cover-meta-item { display: flex; flex-direction: column; gap: 3px; }
+.cover-meta-lbl {
+  font-size: 8px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: rgba(255,255,255,0.38);
+}
+.cover-meta-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px; color: #fff; letter-spacing: 0.04em;
+}
+
+.cover-page-num {
+  position: absolute; bottom: 24px; right: 48px;
+  font-size: 9px; color: rgba(255,255,255,0.3);
+  letter-spacing: 0.08em; font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE 2 — BODY ARTICLE
+═══════════════════════════════════════════ */
+.body-page { padding: 44px 52px 56px; }
+
+.p-header { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; }
+.p-num { font-family: 'Bebas Neue', sans-serif; font-size: 44px; color: #111827; line-height: 1; }
+.p-divider-v { width: 1px; height: 28px; background: rgba(0,0,0,0.15); }
+.p-label { font-family: 'Bebas Neue', sans-serif; font-size: 17px; color: #1A1A2E; letter-spacing: 0.05em; }
+.p-rule { border: none; border-top: 1px solid #e0e0e0; margin-bottom: 16px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+
+.sec-tag {
+  font-family: 'Bebas Neue', sans-serif; font-size: 11px;
+  color: #C8006B; letter-spacing: 0.16em;
+  padding-bottom: 3px; border-bottom: 1.5px solid #C8006B;
+  display: inline-block; margin-bottom: 4px;
+}
+.sec-title {
+  font-family: 'Bebas Neue', sans-serif; font-size: 19px;
+  color: #1A1A2E; letter-spacing: 0.02em; line-height: 1.1; margin-bottom: 6px;
+}
+.body-p {
+  font-size: 9px; color: #333; line-height: 1.65;
+  text-align: justify; margin-bottom: 8px;
+}
+
+.drop-cap {
+  font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+  float: left; line-height: 0.78; margin-right: 3px;
+  color: #1A1A2E; padding-top: 2px;
+}
+
+.article-photo { width: 100%; height: 172px; overflow: hidden; margin-bottom: 10px; position: relative; }
+.article-photo img { width: 100%; height: 100%; object-fit: cover; }
+.article-photo-cap {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 6px 10px; font-size: 7.5px; color: rgba(255,255,255,0.7);
+  background: linear-gradient(transparent, rgba(0,0,0,0.52));
+  font-style: italic;
+}
+
+.pull-q {
+  border-left: 3px solid #C8006B;
+  padding: 8px 12px; margin: 9px 0; background: #f9f9f9;
+}
+.pull-q-text {
+  font-family: 'Playfair Display', serif;
+  font-size: 12.5px; font-style: italic; color: #1A1A2E; line-height: 1.55;
+}
+.pull-q-attr {
+  font-size: 8px; color: #aaa; margin-top: 5px;
+  font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+}
+
+.awards-block {
+  margin-top: 10px; padding: 10px 12px;
+  background: #1A1A2E;
+}
+.awards-lbl {
+  font-size: 8.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: #C8006B; margin-bottom: 6px;
+}
+.awards-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.awards-chip {
+  font-size: 7.5px; background: rgba(255,255,255,0.08);
+  color: #fff; padding: 2px 8px;
+  letter-spacing: 0.04em; font-family: 'Bebas Neue', sans-serif; font-size: 10px;
+}
+
+.p2-footer {
+  position: absolute; bottom: 26px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.p2-footer-txt { font-size: 8.5px; color: #6b7280; font-style: italic; }
+
+/* ═══════════════════════════════════════════
+   PAGE 3 — TIMELINE + RECOMENDADOS
+═══════════════════════════════════════════ */
+.timeline-hd {
+  font-family: 'Bebas Neue', sans-serif; font-size: 16px;
+  color: #1A1A2E; letter-spacing: 0.08em;
+  margin-bottom: 10px; padding-bottom: 5px;
+  border-bottom: 2px solid #1A1A2E;
+}
+
+.tl-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+
+.tl-track { position: relative; padding-left: 20px; }
+.tl-track::before {
+  content: ''; position: absolute;
+  left: 6px; top: 6px; bottom: 6px;
+  width: 2px; background: #e8e8e8;
+}
+
+.tl-block { margin-bottom: 10px; position: relative; }
+.tl-block::before {
+  content: ''; position: absolute;
+  left: -16px; top: 5px;
+  width: 9px; height: 9px;
+  background: #C8006B; border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1px #C8006B;
+}
+
+.tl-year {
+  font-family: 'Bebas Neue', sans-serif; font-size: 15px;
+  color: #C8006B; letter-spacing: 0.06em; line-height: 1; margin-bottom: 3px;
+}
+.tl-items { display: flex; flex-wrap: wrap; gap: 3px; }
+.tl-chip {
+  font-size: 8px; color: #444; background: #f4f4f4;
+  padding: 2px 7px; border-left: 2px solid #C8006B; line-height: 1.5;
+}
+
+.recom-block-hd {
+  background: #1A1A2E; padding: 10px 16px 11px;
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 11px;
+}
+.recom-hd-text {}
+.recom-hd-title { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: #fff; letter-spacing: 0.04em; }
+.recom-hd-sub { font-size: 8.5px; color: rgba(255,255,255,0.45); font-style: italic; margin-top: 1px; }
+
+.recom-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+
+.recom-card { border: 1px solid #efefef; display: flex; flex-direction: column; }
+.recom-thumb { height: 76px; overflow: hidden; position: relative; flex-shrink: 0; }
+.recom-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.recom-thumb-ph { width: 100%; height: 100%; background: #ddd; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.recom-badge-tag {
+  position: absolute; top: 5px; left: 5px;
+  background: #C8006B; color: #fff;
+  font-size: 7px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  padding: 2px 6px;
+}
+.recom-body-inner { padding: 7px 9px 8px; flex: 1; display: flex; flex-direction: column; }
+.recom-name { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: #1A1A2E; letter-spacing: 0.03em; line-height: 1.1; margin-bottom: 1px; }
+.recom-cat { font-size: 8px; font-style: italic; color: #888; margin-bottom: 3px; }
+.recom-desc { font-size: 7.5px; color: #555; line-height: 1.5; flex: 1; margin-bottom: 5px; }
+.recom-foot { display: flex; justify-content: space-between; align-items: center; padding-top: 4px; border-top: 1px solid #f0f0f0; }
+.recom-addr { font-size: 7px; color: #bbb; font-style: italic; flex: 1; margin-right: 5px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.recom-cta {
+  display: inline-flex; align-items: center;
+  background: #C8006B; color: #fff; text-decoration: none;
+  font-size: 6.5px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 3px 7px; white-space: nowrap; flex-shrink: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ PAGE 1: COVER ══════════════════ -->
+<div class="page cover-page">
+  <img class="cover-bg"
+    src="https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=800&q=80"
+    alt="Rosalía">
+  <div class="cover-gradient"></div>
+
+  <div class="cover-top">
+    <div class="cover-logo">
+      <svg width="24" height="22" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="white"/>
+        <polygon points="72,13 110,50 72,87" fill="white"/>
+      </svg>
+      <span class="cover-wordmark">discoolver</span>
+    </div>
+    <div class="cover-edition">Guía Barcelona 2026<br>Persona del Año</div>
+  </div>
+
+  <div class="cover-content">
+    <div class="cover-eyebrow">Persona del Año · discoolver Barcelona 2026</div>
+    <div class="cover-name">ROSALÍA</div>
+    <div class="cover-tagline">"Siento que hago música desde el respeto y la libertad"</div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+      <div class="cover-meta-item">
+        <span class="cover-meta-lbl">Origen</span>
+        <span class="cover-meta-val">BARCELONA</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-lbl">Disciplina</span>
+        <span class="cover-meta-val">MÚSICA</span>
+      </div>
+      <div class="cover-meta-item">
+        <span class="cover-meta-lbl">Año</span>
+        <span class="cover-meta-val">2026</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cover-page-num">P.05</div>
+</div>
+
+<!-- ══════════════════ PAGE 2: BODY ══════════════════ -->
+<div class="page body-page">
+
+  <div class="p-header">
+    <span class="p-num">05</span>
+    <div class="p-divider-v"></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg width="22" height="20" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+      <span class="p-label">REPORTAJE — PERSONA DEL AÑO</span>
+    </div>
+  </div>
+  <hr class="p-rule">
+
+  <div class="two-col">
+
+    <!-- LEFT -->
+    <div>
+      <div class="article-photo">
+        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=600&q=80" alt="Rosalía en concierto">
+        <div class="article-photo-cap">Rosalía en concierto · Barcelona 2025</div>
+      </div>
+
+      <div class="sec-tag">1. ¿Quién es?</div>
+      <p class="body-p">
+        <span class="drop-cap">R</span>osalía Vila Tobella es la artista más influyente que ha dado Barcelona en la última década. Nacida en Sant Esteve Sesrovires, su propuesta fusiona el flamenco más puro con la producción electrónica de vanguardia, creando un lenguaje musical completamente propio que ha sacudido la industria global.
+      </p>
+      <p class="body-p">Formada en la Escola Superior de Música de Catalunya, su debut discográfico <em>Los Ángeles</em> (2017) la reveló como una intérprete de cante flamenco excepcional. Pero fue con <em>El Mal Querer</em> (2018) cuando el mundo entendió que estaba ante un fenómeno sin categoría.</p>
+
+      <div class="pull-q">
+        <div class="pull-q-text">"Barcelona siempre será mi base. Aquí está mi familia, mi historia, mis raíces. Cuando vuelvo, me recargo."</div>
+        <div class="pull-q-attr">— Rosalía, entrevista exclusiva discoolver 2025</div>
+      </div>
+
+      <div class="sec-tag">2. Orígenes</div>
+      <p class="body-p">Creció escuchando a Camarón de la Isla y a Björk en la misma tarde. Esa convivencia aparentemente imposible entre tradición andaluza y experimentación nórdica es la clave de su universo. A los 16 años comenzó clases de cante flamenco, disciplina que domina con la rigor de quien ha dedicado miles de horas a su técnica.</p>
+    </div>
+
+    <!-- RIGHT -->
+    <div>
+      <div class="sec-tag">3. Estilo musical</div>
+      <div class="sec-title">FLAMENCO + VANGUARDIA</div>
+      <p class="body-p">Su colaboración con el productor El Guincho en <em>El Mal Querer</em> definió su sonido: percusiones flamencas procesadas digitalmente, voces superpuestas, y letras que destilan el <em>amor fou</em> de los textos medievales catalanes. Un álbum conceptual que la crítica internacional ubicó entre lo mejor de la década.</p>
+      <p class="body-p">En <em>MOTOMAMI</em> (2022) amplió aún más el espectro: reggaetón deconstruido, trap, bossa nova y bolero conviviendo en 16 tracks que desafiaron cualquier etiqueta. El disco se convirtió en disco de platino en 14 países.</p>
+
+      <div class="sec-tag">4. Colaboraciones</div>
+      <p class="body-p">J Balvin, Travis Scott, Billie Eilish, James Blake, Pharrell Williams, Bad Bunny. La lista de artistas que han buscado trabajar con ella refleja su posición única como puente entre mundos musicales que raramente se tocan.</p>
+
+      <div class="pull-q">
+        <div class="pull-q-text">"Hago lo que siento aunque no encaje en ninguna caja. La libertad es mi único criterio."</div>
+        <div class="pull-q-attr">— Rosalía</div>
+      </div>
+
+      <div class="sec-tag">5. Filosofía</div>
+      <p class="body-p">Su acercamiento al flamenco es de profundo respeto y al mismo tiempo de absoluta libertad creativa. No reivindica pureza: reivindica verdad. Cada proyecto es un ejercicio de honestidad emocional que su público, diverso y global, recibe como suyo.</p>
+
+      <div class="awards-block">
+        <div class="awards-lbl">Reconocimientos destacados</div>
+        <div class="awards-chips">
+          <span class="awards-chip">GRAMMY LATINO ×4</span>
+          <span class="awards-chip">MTV EMA</span>
+          <span class="awards-chip">NME AWARD</span>
+          <span class="awards-chip">BRIT AWARD</span>
+          <span class="awards-chip">PREMIO NAC. MÚSICAS ACTUALES</span>
+          <span class="awards-chip">TIME 100</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p2-footer">
+    <span class="p2-footer-txt">Guía discoolver Barcelona 2026</span>
+    <span class="p2-footer-txt">discoolver.com</span>
+  </div>
+</div>
+
+<!-- ══════════════════ PAGE 3: TIMELINE + RECOMENDADOS ══════════════════ -->
+<div class="page body-page" style="padding-top:40px;">
+
+  <div class="p-header">
+    <span class="p-num">07</span>
+    <div class="p-divider-v"></div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <svg width="22" height="20" viewBox="0 0 110 100" fill="none">
+        <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B"/>
+        <polygon points="72,13 110,50 72,87" fill="#C8006B"/>
+      </svg>
+      <span class="p-label">TRAYECTORIA &amp; RECOMENDADOS</span>
+    </div>
+  </div>
+  <hr class="p-rule">
+
+  <!-- TIMELINE -->
+  <div class="timeline-hd">TRAYECTORIA</div>
+  <div class="tl-cols">
+
+    <div class="tl-track">
+      <div class="tl-block">
+        <div class="tl-year">2016</div>
+        <div class="tl-items">
+          <div class="tl-chip">EP debut independiente</div>
+          <div class="tl-chip">"Antes de morirme" ft. C. Tangana</div>
+        </div>
+      </div>
+      <div class="tl-block">
+        <div class="tl-year">2017</div>
+        <div class="tl-items">
+          <div class="tl-chip">Álbum "Los Ángeles"</div>
+          <div class="tl-chip">Premio Nacional Músicas Actuales</div>
+        </div>
+      </div>
+      <div class="tl-block">
+        <div class="tl-year">2018</div>
+        <div class="tl-items">
+          <div class="tl-chip">"El Mal Querer" — álbum del año</div>
+          <div class="tl-chip">Grammy Latino mejor álbum alternativo</div>
+          <div class="tl-chip">Latin Grammy álbum del año</div>
+        </div>
+      </div>
+      <div class="tl-block">
+        <div class="tl-year">2019</div>
+        <div class="tl-items">
+          <div class="tl-chip">Colaboración con J Balvin "Con Altura"</div>
+          <div class="tl-chip">Coachella — headline</div>
+          <div class="tl-chip">NME Award</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tl-track">
+      <div class="tl-block">
+        <div class="tl-year">2020</div>
+        <div class="tl-items">
+          <div class="tl-chip">"Yo x Ti, Tu x Mi" ft. Ozuna</div>
+          <div class="tl-chip">MTV EMA Best Artist</div>
+        </div>
+      </div>
+      <div class="tl-block">
+        <div class="tl-year">2022</div>
+        <div class="tl-items">
+          <div class="tl-chip">Álbum "MOTOMAMI" — disco del año</div>
+          <div class="tl-chip">Platino en 14 países</div>
+          <div class="tl-chip">TIME 100 Most Influential People</div>
+        </div>
+      </div>
+      <div class="tl-block">
+        <div class="tl-year">2024</div>
+        <div class="tl-items">
+          <div class="tl-chip">"RAUW × ROSALÍA" EP</div>
+          <div class="tl-chip">Gira mundial sold-out</div>
+          <div class="tl-chip">Grammy Best Latin Pop Album</div>
+        </div>
+      </div>
+      <div class="tl-block">
+        <div class="tl-year">2026</div>
+        <div class="tl-items">
+          <div class="tl-chip">Nuevo álbum anunciado</div>
+          <div class="tl-chip">★ Persona del Año discoolver BCN</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECOMENDADOS -->
+  <div class="recom-block-hd">
+    <div class="recom-hd-text">
+      <div class="recom-hd-title">SUS RECOMENDADOS EN BARCELONA</div>
+      <div class="recom-hd-sub">Los lugares favoritos de Rosalía · haz clic para ver la ficha completa en discoolver.com</div>
+    </div>
+    <svg width="24" height="22" viewBox="0 0 110 100" fill="none">
+      <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="white"/>
+      <polygon points="72,13 110,50 72,87" fill="white"/>
+    </svg>
+  </div>
+
+  <div class="recom-grid">
+
+    <a href="https://discoolver.com" class="recom-card">
+      <div class="recom-thumb">
+        <img src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&q=75" alt="">
+        <div class="recom-badge-tag">Bar</div>
+      </div>
+      <div class="recom-body-inner">
+        <div class="recom-name">71 OYSTER BAR</div>
+        <div class="recom-cat">Bar de ostras y cócteles</div>
+        <div class="recom-desc">Speakeasy íntimo con las mejores ostras de la ciudad y coctelería de autor. Ambiente clandestino.</div>
+        <div class="recom-foot">
+          <div class="recom-addr">C/ Enric Granados, 71</div>
+          <a href="#" class="recom-cta">Ver →</a>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://discoolver.com" class="recom-card">
+      <div class="recom-thumb">
+        <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=400&q=75" alt="">
+        <div class="recom-badge-tag">Restaurante</div>
+      </div>
+      <div class="recom-body-inner">
+        <div class="recom-name">DISFRUTAR</div>
+        <div class="recom-cat">Alta cocina de vanguardia</div>
+        <div class="recom-desc">Top 3 en The World's 50 Best. La experiencia gastronómica más exclusiva de Barcelona.</div>
+        <div class="recom-foot">
+          <div class="recom-addr">C/ de Villarroel, 163</div>
+          <a href="#" class="recom-cta">Ver →</a>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://discoolver.com" class="recom-card">
+      <div class="recom-thumb">
+        <img src="https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=75" alt="">
+        <div class="recom-badge-tag">Club</div>
+      </div>
+      <div class="recom-body-inner">
+        <div class="recom-name">SALA BIKINI</div>
+        <div class="recom-cat">Música en directo</div>
+        <div class="recom-desc">La sala de conciertos de referencia en Barcelona. Acústica perfecta y programación infalible.</div>
+        <div class="recom-foot">
+          <div class="recom-addr">Av. Diagonal, 547</div>
+          <a href="#" class="recom-cta">Ver →</a>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://discoolver.com" class="recom-card">
+      <div class="recom-thumb">
+        <img src="https://images.unsplash.com/photo-1543007630-9710e4a00a20?w=400&q=75" alt="">
+        <div class="recom-badge-tag">Bodega</div>
+      </div>
+      <div class="recom-body-inner">
+        <div class="recom-name">EL XAMPANYET</div>
+        <div class="recom-cat">Bodega y tapas</div>
+        <div class="recom-desc">Bodega centenaria en el Born. Cava artesano, anchovas y montaditos que no han cambiado en décadas.</div>
+        <div class="recom-foot">
+          <div class="recom-addr">C/ de Montcada, 22</div>
+          <a href="#" class="recom-cta">Ver →</a>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://discoolver.com" class="recom-card">
+      <div class="recom-thumb">
+        <img src="https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=400&q=75" alt="">
+        <div class="recom-badge-tag">Aloj.</div>
+      </div>
+      <div class="recom-body-inner">
+        <div class="recom-name">HOTEL ARTS</div>
+        <div class="recom-cat">Hotel de lujo frente al mar</div>
+        <div class="recom-desc">El skyline de Barcelona desde la torre más icónica. Piscina infinity, spa y vistas al Mediterráneo.</div>
+        <div class="recom-foot">
+          <div class="recom-addr">C/ de la Marina, 19-21</div>
+          <a href="#" class="recom-cta">Ver →</a>
+        </div>
+      </div>
+    </a>
+
+    <a href="https://discoolver.com" class="recom-card">
+      <div class="recom-thumb">
+        <img src="https://images.unsplash.com/photo-1519683109079-d5f539e1542f?w=400&q=75" alt="">
+        <div class="recom-badge-tag">Cultura</div>
+      </div>
+      <div class="recom-body-inner">
+        <div class="recom-name">PALAU DE LA MÚSICA</div>
+        <div class="recom-cat">Sala de conciertos patrimonio UNESCO</div>
+        <div class="recom-desc">Joya del modernismo catalán. Cada concierto aquí es una experiencia visual y musical sin igual.</div>
+        <div class="recom-foot">
+          <div class="recom-addr">C/ del Palau de la Música, 4-6</div>
+          <a href="#" class="recom-cta">Ver →</a>
+        </div>
+      </div>
+    </a>
+
+  </div>
+
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════
+     PÁGINA 4 — THE VOICE
+     Full-bleed oscura + 1 quote grande centrado
+     Se usa cuando persona_quote está relleno
+     ═══════════════════════════════════════════════════ -->
+<div class="page" style="padding:0; position:relative; overflow:hidden; margin-top:32px;">
+
+  <!-- Background -->
+  <div style="position:absolute; inset:0; background: linear-gradient(160deg, #0f0f1a 0%, #1A1A2E 45%, #0a0a14 100%);"></div>
+
+  <!-- Subtle photo overlay (replace with persona photo) -->
+  <div style="position:absolute; inset:0; background: radial-gradient(ellipse at 70% 40%, rgba(200,0,107,0.08) 0%, transparent 65%);"></div>
+
+  <!-- Vertical magenta accent -->
+  <div style="position:absolute; left:56px; top:80px; bottom:80px; width:2px; background: linear-gradient(to bottom, transparent, var(--magenta) 30%, var(--magenta) 70%, transparent); opacity:0.5;"></div>
+
+  <!-- Top strip -->
+  <div style="position:absolute; top:42px; left:56px; right:56px; display:flex; align-items:center; gap:10px;">
+    <svg width="18" height="16" viewBox="0 0 110 100" fill="none">
+      <path d="M59 0 A59 50 0 0 0 59 100 Z" fill="#C8006B" opacity="0.5"/>
+      <polygon points="72,13 110,50 72,87" fill="#C8006B" opacity="0.5"/>
+    </svg>
+    <span style="font-size:8.5px; color:rgba(255,255,255,0.3); text-transform:uppercase; letter-spacing:0.12em;">La Persona del Año · 2026</span>
+  </div>
+
+  <!-- Central quote -->
+  <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:580px; text-align:center; padding:0 32px;">
+
+    <!-- Opening quote mark -->
+    <div style="font-family:var(--font-display); font-size:72px; color:var(--magenta); line-height:0.6; margin-bottom:20px; opacity:0.6;">"</div>
+
+    <!-- The quote -->
+    <p style="font-family:var(--font-serif); font-style:italic; font-size:24px; color:#fff; line-height:1.45; letter-spacing:-0.01em; margin-bottom:28px;" id="voice-quote">
+      No sigo reglas.<br>Creo cultura.
+    </p>
+
+    <!-- Closing mark + attribution -->
+    <div style="display:flex; align-items:center; justify-content:center; gap:12px;">
+      <div style="width:32px; height:1.5px; background:var(--magenta);"></div>
+      <span style="font-size:9px; color:rgba(255,255,255,0.45); text-transform:uppercase; letter-spacing:0.12em;" id="voice-attr">Bad Bunny · Persona del Año 2026</span>
+      <div style="width:32px; height:1.5px; background:var(--magenta);"></div>
+    </div>
+
+  </div>
+
+  <!-- Bottom strip -->
+  <div style="position:absolute; bottom:42px; left:56px; right:56px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;">
+    <span style="font-size:8px; color:rgba(255,255,255,0.25); text-transform:uppercase; letter-spacing:0.08em;">discoolver.com</span>
+    <span style="font-family:var(--font-display); font-size:11px; color:rgba(255,255,255,0.2); letter-spacing:0.06em;">05</span>
+  </div>
+
+</div>
+
+<script>
+window.onGuideData = function(cfg) {
+  var p = cfg.personaDelAno;
+  if (!p) return;
+
+  // ── Cover page ──────────────────────────────────────────────────────────
+  var nameEl = document.querySelector('.cover-name');
+  if (nameEl && p.name) nameEl.textContent = p.name.toUpperCase();
+
+  var taglineEl = document.querySelector('.cover-tagline');
+  if (taglineEl && p.tagline) taglineEl.textContent = '"' + p.tagline + '"';
+
+  // Cover edition
+  var editionEl = document.querySelector('.cover-edition');
+  if (editionEl) editionEl.innerHTML = 'Guía ' + (cfg.city || '') + ' ' + (cfg.year || '') + '<br>Persona del Año';
+
+  // Cover eyebrow
+  var eyebrowEl = document.querySelector('.cover-eyebrow');
+  if (eyebrowEl) eyebrowEl.textContent = 'Persona del Año · discoolver ' + (cfg.city || '') + ' ' + (cfg.year || '');
+
+  // Cover meta
+  var metaVals = document.querySelectorAll('.cover-meta-val');
+  if (metaVals[0] && p.origen) metaVals[0].textContent = p.origen.toUpperCase();
+  if (metaVals[1] && p.disciplina) metaVals[1].textContent = p.disciplina.toUpperCase();
+  if (metaVals[2] && cfg.year) metaVals[2].textContent = '20' + cfg.year;
+
+  // Cover background photo
+  if (p.photo) {
+    var bgImg = document.querySelector('.cover-bg');
+    if (bgImg) bgImg.src = p.photo;
+  }
+
+  // ── Voice page (page 4) ─────────────────────────────────────────────────
+  if (p.quote) {
+    var qEl = document.getElementById('voice-quote');
+    if (qEl) qEl.textContent = p.quote;
+  }
+  var attrEl = document.getElementById('voice-attr');
+  if (attrEl && p.name) attrEl.textContent = p.name + ' · Persona del Año ' + '20' + (cfg.year || '');
+
+  // ── Body article (page 2) ───────────────────────────────────────────────
+  if (p.bio) {
+    var letterEl = document.querySelector('.body-page .two-col .body-p');
+    if (letterEl) {
+      var first = p.bio.charAt(0);
+      var rest = p.bio.slice(1);
+      letterEl.innerHTML = '<span class="drop-cap">' + first + '</span>' + rest;
+    }
+  }
+
+  // Pull quotes from persona_quotes [{text, attr}]
+  if (p.quotes && p.quotes.length) {
+    var pullEls = document.querySelectorAll('.pull-q');
+    p.quotes.forEach(function(q, i) {
+      if (pullEls[i]) {
+        var textEl = pullEls[i].querySelector('.pull-q-text');
+        var attrEl2 = pullEls[i].querySelector('.pull-q-attr');
+        if (textEl && q.text) textEl.textContent = '"' + q.text + '"';
+        if (attrEl2 && q.attr) attrEl2.textContent = '— ' + q.attr;
+      }
+    });
+  }
+
+  // Footer text
+  document.querySelectorAll('.p2-footer-txt:first-child').forEach(function(el) {
+    el.textContent = 'Guía discoolver ' + (cfg.city || '') + ' ' + (cfg.year || '');
+  });
+
+  // ── Awards chips ────────────────────────────────────────────────────────
+  if (p.awards && p.awards.length) {
+    var chipsEl = document.querySelector('.awards-chips');
+    if (chipsEl) {
+      chipsEl.innerHTML = p.awards.map(function(a) {
+        return '<span class="awards-chip">' + a + '</span>';
+      }).join('');
+    }
+  }
+
+  // ── Timeline (page 3) ───────────────────────────────────────────────────
+  if (p.timeline && p.timeline.length) {
+    var cols = document.querySelector('.tl-cols');
+    if (cols) {
+      var half = Math.ceil(p.timeline.length / 2);
+      var left = p.timeline.slice(0, half);
+      var right = p.timeline.slice(half);
+
+      function renderTrack(items) {
+        return '<div class="tl-track">' + items.map(function(entry) {
+          var chips = (entry.items || []).map(function(txt) {
+            return '<div class="tl-chip">' + txt + '</div>';
+          }).join('');
+          return '<div class="tl-block">'
+            + '<div class="tl-year">' + (entry.year || '') + '</div>'
+            + '<div class="tl-items">' + chips + '</div>'
+            + '</div>';
+        }).join('') + '</div>';
+      }
+
+      cols.innerHTML = renderTrack(left) + renderTrack(right);
+    }
+  }
+
+  // ── Recomendados grid (page 3) ──────────────────────────────────────────
+  if (p.recomendados && p.recomendados.length) {
+    var grid = document.querySelector('.recom-grid');
+    if (grid) {
+      grid.innerHTML = p.recomendados.slice(0, 6).map(function(item) {
+        var photo = item.photo
+          ? '<img src="' + item.photo + '" alt="">'
+          : '<div class="recom-thumb-ph">📷</div>';
+        var badge = item.badge
+          ? '<div class="recom-badge-tag">' + item.badge + '</div>'
+          : '';
+        return '<a href="' + (item.discoolver_url || '#') + '" class="recom-card">'
+          + '<div class="recom-thumb">' + photo + badge + '</div>'
+          + '<div class="recom-body-inner">'
+          + '<div class="recom-name">' + (item.name || '').toUpperCase() + '</div>'
+          + (item.tagline ? '<div class="recom-cat">' + item.tagline + '</div>' : '')
+          + (item.description ? '<div class="recom-desc">' + item.description + '</div>' : '')
+          + '<div class="recom-foot">'
+          + (item.address ? '<div class="recom-addr">' + item.address + '</div>' : '')
+          + '<span class="recom-cta">Ver →</span>'
+          + '</div></div></a>';
+      }).join('');
+    }
+  }
+};
+</script>
+
+<script src="shared/disco-loader.js"></script>
+</body>
+</html>
