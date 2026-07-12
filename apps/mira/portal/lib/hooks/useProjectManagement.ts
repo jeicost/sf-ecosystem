@@ -1,11 +1,6 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/database'
-
-const supabase = createBrowserClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
 
 type Project = Database['public']['Tables']['mira_projects']['Row']
 
@@ -18,6 +13,13 @@ interface ProjectInput {
 export function useProjectManagement() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  const supabase = useMemo(() =>
+    createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    ), []
+  )
 
   const createProject = async (input: ProjectInput): Promise<Project | null> => {
     setLoading(true)
