@@ -20,11 +20,11 @@ export async function GET(request: NextRequest) {
       .select('autonomy, tone_level')
       .eq('client_id', clientId)
       .eq('agent_role', agentRole)
-      .single()
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
-      // PGRST116 = no rows found (normal case for first load)
-      throw error
+    // Always return defaults if no row found or error
+    if (error) {
+      console.warn('Error fetching agent settings (returning defaults):', error)
     }
 
     return NextResponse.json({
@@ -32,11 +32,12 @@ export async function GET(request: NextRequest) {
       toneLevel: data?.tone_level || 0.5,
     })
   } catch (err) {
-    console.error('Error fetching agent settings:', err)
-    return NextResponse.json(
-      { error: 'Failed to fetch settings' },
-      { status: 500 }
-    )
+    console.error('Error in agent settings endpoint:', err)
+    // Return defaults even on error
+    return NextResponse.json({
+      autonomy: 'always_ask',
+      toneLevel: 0.5,
+    })
   }
 }
 
