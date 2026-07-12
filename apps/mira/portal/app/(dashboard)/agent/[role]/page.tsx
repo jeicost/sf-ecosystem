@@ -5,11 +5,13 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
   ArrowLeft, CheckCircle, Clock, AlertCircle, Zap, Hand, Shield,
-  Copy, Check, Eye, EyeOff, TrendingUp, MessageSquare, Send,
+  Copy, Check, Eye, EyeOff, TrendingUp, MessageSquare, Send, Sparkles,
 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { AGENT_METADATA } from '@/lib/agent-meta'
+import { AGENT_DETAILS } from '@/lib/agent-details'
+import { getQuickPrompts } from '@/lib/agent-quick-prompts'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import type { AgentPackage } from '@/lib/types'
 
@@ -89,10 +91,54 @@ export default function AgentPage() {
   const [activeTab, setActiveTab] = useState<TabId>('chat')
   const [autonomy, setAutonomy] = useState<AutonomyLevel>('always_ask')
   const [toneLevel, setToneLevel] = useState(0.5)
+  const [settingsLoading, setSettingsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [inputValue, setInputValue] = useState('')
 
   const agent = AGENT_METADATA[role]
+  const agentDetails = AGENT_DETAILS[role]
+  const quickPrompts = getQuickPrompts(role)
+
+  // Load settings from API on mount
+  useEffect(() => {
+    if (!clientId) return
+    loadSettings()
+  }, [clientId, role])
+
+  async function loadSettings() {
+    try {
+      const res = await fetch(
+        `/api/agent-settings?clientId=${clientId}&agentRole=${role}`
+      )
+      if (!res.ok) throw new Error('Failed to load settings')
+      const data = await res.json()
+      setAutonomy(data.autonomy)
+      setToneLevel(data.toneLevel)
+    } catch (err) {
+      console.error('Error loading settings:', err)
+    } finally {
+      setSettingsLoading(false)
+    }
+  }
+
+  // Save settings to API when changed
+  async function saveSettings(newAutonomy: AutonomyLevel, newTone: number) {
+    if (!clientId) return
+    try {
+      await fetch('/api/agent-settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId,
+          agentRole: role,
+          autonomy: newAutonomy,
+          toneLevel: newTone,
+        }),
+      })
+    } catch (err) {
+      console.error('Error saving settings:', err)
+    }
+  }
 
   if (!agent) {
     return (
@@ -109,7 +155,7 @@ export default function AgentPage() {
   const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy })
   const improveAreas = IMPROVEMENT_AREAS[agent.department as AgentPackage] || IMPROVEMENT_AREAS.default
   const systemPrompt = getAgentPrompt(role)
-  const recentTasks = DEFAULT_RECENT_TASKS[role] || [
+  const recentTasks = agentDetails?.recentTasks || [
     { id: '1', task: 'Task 1', status: 'completed', timeAgo: '2h' },
     { id: '2', task: 'Task 2', status: 'completed', timeAgo: '4h' },
     { id: '3', task: 'Task 3', status: 'working', timeAgo: 'now' },
@@ -185,12 +231,19 @@ export default function AgentPage() {
               <p className="text-xs text-slate-400 mb-4">How formal or casual is {agent.name}?</p>
               <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-400">Casual</span>
-                <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div
-                    className="h-full transition-all"
-                    style={{ width: `${toneLevel * 100}%`, background: agent.color }}
-                  />
-                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.1"
+                  value={toneLevel}
+                  onChange={(e) => {
+                    const newTone = parseFloat(e.target.value)
+                    setToneLevel(newTone)
+                    saveSettings(autonomy, newTone)
+                  }}
+                  className="flex-1 h-2 bg-slate-700 rounded-full cursor-pointer accent-blue-500"
+                />
                 <span className="text-xs text-slate-400">Formal</span>
               </div>
             </div>
@@ -206,7 +259,10 @@ export default function AgentPage() {
                   return (
                     <button
                       key={opt.id}
-                      onClick={() => setAutonomy(opt.id)}
+                      onClick={() => {
+                        setAutonomy(opt.id)
+                        saveSettings(opt.id, toneLevel)
+                      }}
                       className={clsx(
                         'p-4 rounded-lg border-2 text-left transition-all',
                         selected
@@ -274,9 +330,21 @@ export default function AgentPage() {
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 ? (
-                <div className="flex flex-col items-center justify-center h-full text-slate-400">
-                  <MessageSquare size={40} className="mb-3 opacity-50" />
-                  <p className="text-sm">Start a conversation with {agent.name}</p>
+                <div className="flex flex-col items-center justify-center h-full">
+                  <MessageSquare size={40} className="mb-3 opacity-50 text-slate-400" />
+                  <p className="text-sm text-slate-400 mb-6">Start a conversation with {agent.name}</p>
+                  <div className="grid grid-cols-1 gap-2 w-full max-w-xs">
+                    {quickPrompts.map((prompt, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => handleSendMessage(prompt)}
+                        className="text-left p-3 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-xs text-slate-300 hover:text-white transition-all flex items-start gap-2"
+                      >
+                        <Sparkles size={14} className="mt-0.5 flex-shrink-0" />
+                        <span>{prompt}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               ) : (
                 messages.map((msg, idx) => (
