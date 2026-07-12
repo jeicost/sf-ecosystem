@@ -84,36 +84,51 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// TODO: Implement these functions with real Tavily + Claude APIs
+// Tavily integration (NOT IMPLEMENTED)
 async function searchTavily(sector: string, geo: string) {
-  // Mock data for now
+  // Tavily requires:
+  // - TAVILY_API_KEY environment variable
+  // - Valid API key from tavily.com dashboard
+  // - Proper rate limiting per tier
+
+  if (!process.env.TAVILY_API_KEY) {
+    return [
+      {
+        status: 'not_connected',
+        sector,
+        geo,
+        message: 'Tavily integration not configured. Contact admin to enable.',
+        documentation: 'https://docs.tavily.com/docs/tavily-api',
+      },
+    ]
+  }
+
+  // TODO: Implement real Tavily API call
+  // Example: fetch('https://api.tavily.com/search', {
+  //   method: 'POST',
+  //   headers: { 'Content-Type': 'application/json' },
+  //   body: JSON.stringify({ api_key: TAVILY_API_KEY, query: `${sector} companies in ${geo}` })
+  // })
+
   return [
     {
-      company: 'LogiTech Solutions',
-      website: 'logitech-solutions.es',
-      industry: 'Logistics Software',
-      size: '50-200 employees',
-      revenue: '€10-50M',
-      description: '3PL management platform',
+      status: 'not_connected',
+      sector,
+      geo,
+      message: 'Tavily integration pending implementation',
     },
-    // ... more results
   ]
 }
 
-async function scoreLeadsAgainstICP(
-  clientId: string,
-  leads: any[]
-) {
-  // Dadybox ICP:
-  // Industries: Logistics 3PL, Fulfillment, E-commerce
-  // Size: 20-500 employees, €10-500M revenue
-  // Geography: Spain, LATAM, Europe
+async function scoreLeadsAgainstICP(clientId: string, leads: any[]) {
+  // ICP scoring requires Claude analysis
+  // Current implementation: MOCK (returns random scores)
+  // Real implementation: Claude analyzes lead vs ICP profile from client_documentation
 
-  const scored = leads.map((lead: any) => ({
+  return leads.map((lead: any) => ({
     ...lead,
-    heat_score: Math.floor(Math.random() * 100),  // TODO: Real scoring
-    icp_fit: 'high',  // TODO: Real ICP matching
+    heat_score: lead.status === 'not_connected' ? 0 : Math.random(),
+    icp_fit: lead.status === 'not_connected' ? 'not_connected' : 'unknown',
+    note: 'ICP scoring disabled until Tavily + Claude integration complete',
   }))
-
-  return scored
 }

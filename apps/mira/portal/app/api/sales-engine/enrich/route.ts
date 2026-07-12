@@ -114,20 +114,33 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// TODO: Implement real API calls
+// Apollo.io integration (NOT IMPLEMENTED)
 async function enrichViaApollo(companyName: string) {
-  // Mock Apollo response
+  // Apollo.io API requires:
+  // - APOLLO_API_KEY environment variable
+  // - Valid API key from apollo.io dashboard
+  // - Proper rate limiting (1000 calls/month on free tier)
+
+  if (!process.env.APOLLO_API_KEY) {
+    return {
+      status: 'not_connected',
+      company: companyName,
+      message: 'Apollo.io integration not configured. Contact admin to enable.',
+      documentation: 'https://apolloio.gitbook.io/apollo-api/getting-started/authentication',
+    }
+  }
+
+  // TODO: Implement real Apollo.io API call
+  // Example: fetch('https://api.apollo.io/v1/companies/match', {
+  //   method: 'POST',
+  //   headers: { 'Cache-Control': 'no-cache', 'Content-Type': 'application/json', 'x-api-key': APOLLO_API_KEY },
+  //   body: JSON.stringify({ domain: website })
+  // })
+
   return {
+    status: 'not_connected',
     company: companyName,
-    persons: [
-      {
-        name: 'CEO Name',
-        email: 'ceo@company.com',
-        phone: '+34-XXX-XXX-XXXX',
-        role: 'CEO',
-        title: 'Chief Executive Officer',
-      },
-    ],
+    message: 'Apollo.io integration pending implementation',
   }
 }
 

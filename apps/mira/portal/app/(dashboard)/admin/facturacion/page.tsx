@@ -23,6 +23,16 @@ const STATUS_CONFIG = {
 export default function Page() {
   return (
     <div className="px-8 py-8 max-w-4xl">
+      {/* WARNING BANNER: Sample data only */}
+      <div className="mb-6 p-4 rounded-lg" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)' }}>
+        <p className="text-sm font-medium" style={{ color: '#FBBF24' }}>
+          ⚠️ Sample Data Only — Stripe integration not configured
+        </p>
+        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          All MRR, clients, and payment data shown are examples. Connect Stripe to see real billing. Contact admin to set up STRIPE_API_KEY.
+        </p>
+      </div>
+
       <div className="mb-6">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(99,102,241,0.8)' }}>
           Admin · Ledger
