@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Send } from 'lucide-react'
+import { Send, Upload, Loader2, Check, AlertCircle, X } from 'lucide-react'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { useActiveClient } from '@/lib/client-context'
 
@@ -30,13 +30,35 @@ export default function AgentWorkspace({
 }: AgentWorkspaceProps) {
   const [input, setInput] = useState('')
   const [showQuickPrompts, setShowQuickPrompts] = useState(true)
+  const [documents, setDocuments] = useState<any[]>([])
+  const [uploading, setUploading] = useState(false)
+  const [showDocuments, setShowDocuments] = useState(false)
+  const [docError, setDocError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const { activeClient } = useActiveClient()
 
   const { messages, isLoading, sendMessage } = useAgentChat({
     role,
     clientId: activeClient?.id || '',
   })
+
+  // Load documents on mount
+  useEffect(() => {
+    if (!activeClient?.id) return
+    const loadDocuments = async () => {
+      try {
+        const res = await fetch(`/api/agent/${role}/documents?clientId=${activeClient.id}`)
+        if (res.ok) {
+          const { data } = await res.json()
+          setDocuments(data || [])
+        }
+      } catch (err) {
+        console.error('Failed to load documents:', err)
+      }
+    }
+    loadDocuments()
+  }, [activeClient?.id, role])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -60,6 +82,41 @@ export default function AgentWorkspace({
     setShowQuickPrompts(false)
     setInput('')
     await sendMessage(prompt)
+  }
+
+  const handleDocumentUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !activeClient?.id) return
+
+    setUploading(true)
+    setDocError(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('clientId', activeClient.id)
+
+      const res = await fetch(`/api/agent/${role}/upload-document`, {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to upload document')
+      }
+
+      const { data: newDoc } = await res.json()
+      setDocuments([...documents, newDoc])
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    } catch (err) {
+      setDocError(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setUploading(false)
+    }
   }
 
   return (
@@ -149,8 +206,49 @@ export default function AgentWorkspace({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="px-4 py-4 border-t border-[#1E1E1E]" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      {/* Documents Section */}
+      {documents.length > 0 && (
+        <div className="px-4 py-3 border-t border-[#1E1E1E]" style={{ background: 'rgba(255,255,255,0.01)' }}>
+          <button
+            onClick={() => setShowDocuments(!showDocuments)}
+            className="text-xs font-medium text-white flex items-center gap-2 mb-2 hover:text-[#CCC]"
+          >
+            📄 Documentos ({documents.length}) {showDocuments ? '▼' : '▶'}
+          </button>
+          {showDocuments && (
+            <div className="space-y-2 max-h-40 overflow-y-auto">
+              {documents.map((doc) => (
+                <div key={doc.id} className="flex items-center justify-between p-2 bg-[#1E1E1E] rounded text-xs">
+                  <div className="flex-1">
+                    <p className="text-white truncate">{doc.original_filename}</p>
+                    <p className="text-[#666]">{doc.document_type}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {doc.analysis_status === 'completed' && (
+                      <Check size={14} className="text-green-400" />
+                    )}
+                    {doc.analysis_status === 'processing' && (
+                      <Loader2 size={14} className="text-blue-400 animate-spin" />
+                    )}
+                    {doc.analysis_status === 'failed' && (
+                      <AlertCircle size={14} className="text-red-400" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Input + Upload */}
+      <div className="px-4 py-4 border-t border-[#1E1E1E] space-y-2" style={{ background: 'rgba(255,255,255,0.02)' }}>
+        {docError && (
+          <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded">
+            <AlertCircle size={14} />
+            {docError}
+          </div>
+        )}
         <form onSubmit={handleSendMessage} className="flex gap-2">
           <input
             type="text"
@@ -159,6 +257,23 @@ export default function AgentWorkspace({
             placeholder={placeholder}
             disabled={isLoading}
             className="flex-1 px-3 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-sm text-white placeholder-[#666] focus:border-[#555] focus:outline-none transition-colors disabled:opacity-50"
+          />
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+            className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50 bg-[#1E1E1E] border border-[#333] hover:border-[#555]"
+            title="Upload document"
+          >
+            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            onChange={handleDocumentUpload}
+            disabled={uploading}
+            className="hidden"
+            accept=".pdf,.doc,.docx,.txt,.md,.csv"
           />
           <button
             type="submit"

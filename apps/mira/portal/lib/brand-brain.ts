@@ -141,3 +141,32 @@ export async function logAgentActivity(params: {
     started_at: new Date().toISOString(),
   })
 }
+
+export async function getAgentDocumentContext(clientId: string, agentRole: string): Promise<string | null> {
+  const db = getAdminClient()
+
+  const { data: docs } = await db
+    .from('agent_documents')
+    .select('original_filename, extracted_text, analysis_summary')
+    .eq('client_id', clientId)
+    .eq('agent_role', agentRole)
+    .eq('analysis_status', 'completed')
+    .order('uploaded_at', { ascending: false })
+    .limit(5)
+
+  if (!docs || docs.length === 0) return null
+
+  const docContext = docs
+    .map((doc) => `
+## Documento: ${doc.original_filename}
+### Resumen:
+${doc.analysis_summary || doc.extracted_text?.slice(0, 500) || 'Sin contenido'}
+`)
+    .join('\n---\n')
+
+  return `## CONTEXTO DE DOCUMENTOS SUBIDOS
+
+${docContext}
+
+Use estos documentos como contexto adicional para responder las preguntas del usuario.`
+}

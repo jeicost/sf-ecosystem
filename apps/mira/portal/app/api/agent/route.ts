@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import Anthropic from '@anthropic-ai/sdk'
 import { createServerClient } from '@supabase/ssr'
 import { getAgentPrompt } from '@/lib/agent-prompts'
-import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
+import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { AGENT_DISPLAY_NAMES } from '@/lib/agent-meta'
 import { CLIENT_ID } from '@/lib/constants'
@@ -57,21 +57,23 @@ export async function POST(req: NextRequest) {
       ? '\n\nNivel de autonomía: ALWAYS ASK. Antes de proponer cualquier acción concreta, pide confirmación explícita al usuario.'
       : ''
 
-    // Enriquecer con Brand Brain + project_memory si aplica
+    // Enriquecer con Brand Brain + project_memory + agent documents si aplica
     const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx
     let fullSystem = systemPrompt + dateCtx
 
     const memoryContext = await getClientMemoryContext(resolvedClientId)
+    const docContext = await getAgentDocumentContext(resolvedClientId, role)
 
     if (includeBrandBrain) {
       const brain = await fetchBrandBrain(resolvedClientId)
       const brainContext = brain ? formatBrandBrainForPrompt(brain) : ''
-      const contextBlocks = [brainContext, memoryContext].filter(Boolean)
+      const contextBlocks = [brainContext, memoryContext, docContext].filter(Boolean)
       if (contextBlocks.length > 0) {
         fullSystem += `\n\n---\n\n${contextBlocks.join('\n\n---\n\n')}`
       }
-    } else if (memoryContext) {
-      fullSystem += `\n\n---\n\n${memoryContext}`
+    } else if (memoryContext || docContext) {
+      const contextBlocks = [memoryContext, docContext].filter(Boolean)
+      fullSystem += `\n\n---\n\n${contextBlocks.join('\n\n---\n\n')}`
     }
 
     // Log inicio de tarea
