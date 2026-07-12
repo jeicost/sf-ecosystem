@@ -58,7 +58,7 @@ const IMPROVEMENT_AREAS: Record<AgentPackage | 'default', { label: string; pct: 
     { label: 'Framework application', pct: 85 },
     { label: 'Signal detection', pct: 79 },
   ],
-  admin: [
+  operaciones: [
     { label: 'Alert accuracy', pct: 96 },
     { label: 'System coverage', pct: 88 },
     { label: 'Response time', pct: 92 },

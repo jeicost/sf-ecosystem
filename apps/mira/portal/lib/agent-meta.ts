@@ -41,7 +41,7 @@ export interface AgentMetadata {
   description: string
   color: string
   gradient: string
-  department: 'comercial' | 'marketing' | 'estrategia' | 'operaciones'
+  department: 'comercial' | 'marketing' | 'estrategia' | 'operaciones' | 'innovacion' | 'finanzas'
 }
 
 export const AGENT_METADATA: Record<string, AgentMetadata> = {
@@ -295,7 +295,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     description: 'Generador de ideas',
     color: '#FBBF24',
     gradient: 'from-amber-400 to-orange-500',
-    department: 'operaciones',
+    department: 'innovacion',
   },
 
   // Finanzas (3)
@@ -306,7 +306,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     description: 'Optimizador de ingresos',
     color: '#FBBF24',
     gradient: 'from-yellow-400 to-orange-500',
-    department: 'operaciones',
+    department: 'finanzas',
   },
   quant: {
     id: 'quant',
@@ -315,7 +315,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     description: 'Analista de datos',
     color: '#3B82F6',
     gradient: 'from-blue-500 to-cyan-600',
-    department: 'operaciones',
+    department: 'finanzas',
   },
   fiscal: {
     id: 'fiscal',
@@ -324,7 +324,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     description: 'Auditor financiero',
     color: '#6366F1',
     gradient: 'from-indigo-500 to-blue-600',
-    department: 'operaciones',
+    department: 'finanzas',
   },
 }
 
@@ -365,7 +365,13 @@ export const OPERACIONES_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['pulse'],
   AGENT_METADATA['onboard'],
   AGENT_METADATA['harbor'],
+]
+
+export const INNOVACION_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['spark'],
+]
+
+export const FINANZAS_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['midas'],
   AGENT_METADATA['quant'],
   AGENT_METADATA['fiscal'],
