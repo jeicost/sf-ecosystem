@@ -12,10 +12,12 @@ interface AgentCardProps {
 }
 
 const STATUS_CONFIG: Record<AgentStatus, { dot: string; label: string; animate: boolean }> = {
-  idle:      { dot: 'rgba(255,255,255,0.2)', label: 'Ready',   animate: false },
-  working:   { dot: '#4ade80',              label: 'Working',  animate: true  },
-  waiting:   { dot: '#fbbf24',              label: 'Pending',  animate: true  },
-  completed: { dot: '#60a5fa',              label: 'Done',     animate: false },
+  idle:       { dot: 'rgba(255,255,255,0.2)', label: 'Ready',      animate: false },
+  active:     { dot: '#4ade80',               label: 'Active',     animate: true  },
+  pending:    { dot: '#fbbf24',               label: 'Pending',    animate: true  },
+  processing: { dot: '#4ade80',               label: 'Processing', animate: true  },
+  complete:   { dot: '#60a5fa',               label: 'Done',       animate: false },
+  inactive:   { dot: 'rgba(255,255,255,0.1)', label: 'Inactive',   animate: false },
 }
 
 export default function AgentCard({
@@ -93,7 +95,7 @@ export default function AgentCard({
           </div>
           <div className="min-w-0">
             <h3 className="font-semibold text-white text-[15px] leading-tight">{agent.name}</h3>
-            <p className="text-[11px] mt-0.5 font-medium" style={{ color: c }}>{agent.role}</p>
+            <p className="text-[11px] mt-0.5 font-medium" style={{ color: c }}>{agent.description}</p>
           </div>
         </div>
 
@@ -102,7 +104,7 @@ export default function AgentCard({
           className="text-[11px] leading-relaxed italic flex-1 mb-4"
           style={{ color: 'rgba(255,255,255,0.38)' }}
         >
-          &ldquo;{agent.tagline}&rdquo;
+          &ldquo;{agent.description}&rdquo;
         </p>
 
         {/* Produces chip */}

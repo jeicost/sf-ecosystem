@@ -51,7 +51,6 @@ export default function ToolRunnerPage({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [result, setResult] = useState<any>(null)
   const [outputFormat, setOutputFormat] = useState<'web' | 'slides'>('web')
 
   const handleChange = (field: string, value: any) => {
@@ -65,11 +64,10 @@ export default function ToolRunnerPage({
     setSuccess(false)
 
     try {
-      const result = await onGenerate({
+      await onGenerate({
         ...formData,
         output_format: outputFormat,
       })
-      setResult(result)
       setSuccess(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import { FileText, Download, Eye, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { CLIENT_ID } from '@/lib/constants'

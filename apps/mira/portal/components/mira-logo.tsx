@@ -20,7 +20,6 @@ export default function MiraLogo({ size = 32, variant = 'icon', glow = false, cl
 
   const strokeW = size < 24 ? 9 : size < 36 ? 7.5 : size < 56 ? 6 : 5.5
   const pupilR  = size < 24 ? 5 : size < 36 ? 3.5 : 2.2
-  const glowSize = size * 1.5
 
   const Icon = (
     <svg viewBox="0 0 100 100" fill="none" width={size} height={size} className={variant === 'icon' ? className : undefined}>

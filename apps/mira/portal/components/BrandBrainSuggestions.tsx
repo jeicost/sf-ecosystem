@@ -11,7 +11,6 @@ interface BrandBrainSuggestionsProps {
 }
 
 export default function BrandBrainSuggestions({
-  documentId,
   suggestions,
   onApply,
   onDismiss,

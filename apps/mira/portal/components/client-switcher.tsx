@@ -1,8 +1,8 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
-import { ChevronDown, Check, Building2 } from 'lucide-react'
+import { ChevronDown, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
-import { useActiveClient, type ActiveClient } from '@/lib/client-context'
+import { useActiveClient } from '@/lib/client-context'
 import { clsx } from 'clsx'
 
 interface ClientRow {

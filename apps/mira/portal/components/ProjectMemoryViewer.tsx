@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BookOpen, Pin, Archive, Loader2, AlertCircle, Tag } from 'lucide-react'
+import { BookOpen, Pin, Archive, Loader2, AlertCircle } from 'lucide-react'
 
 interface MemoryItem {
   id: string

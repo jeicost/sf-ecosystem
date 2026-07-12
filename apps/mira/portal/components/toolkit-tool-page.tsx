@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ReactNode } from 'react'
-import { ArrowLeft, Download, Copy, Share2 } from 'lucide-react'
+import { ArrowLeft, Download, Share2 } from 'lucide-react'
 
 interface ToolkitToolPageProps {
   icon: string

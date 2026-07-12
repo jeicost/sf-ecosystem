@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'MIRA — AI Agency Platform',
   description: '30 agentes de IA + Quick Actions framework para escalar tu negocio.',

@@ -1,5 +1,5 @@
 import {
-  Users, LayoutDashboard, CheckSquare, BarChart3, MessageSquarePlus, Brain,
+  Users, LayoutDashboard, CheckSquare, BarChart3, MessageSquarePlus,
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
   Search, MessageSquare, FileText,
 } from 'lucide-react'

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Loader2, Check, AlertCircle, Upload, X } from 'lucide-react'
+import { Save, Loader2, Check, AlertCircle, Upload } from 'lucide-react'
 import BrandBrainSuggestions from './BrandBrainSuggestions'
 
 interface BrandData {

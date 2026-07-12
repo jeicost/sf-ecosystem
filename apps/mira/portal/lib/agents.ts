@@ -1,12 +1,10 @@
 // Types
-export type AgentStatus = 'idle' | 'working' | 'waiting' | 'completed'
+export type AgentStatus = 'active' | 'inactive' | 'pending' | 'idle' | 'processing' | 'complete'
 
 const baseAgents = [
   {
     id: 'ai-strategist',
     name: 'AI Strategist',
-    role: 'Strategy',
-    tagline: 'Strategic planning and business analysis',
     description: 'Strategic planning and business analysis',
     icon: '🎯',
     emoji: '🎯',
@@ -17,8 +15,6 @@ const baseAgents = [
   {
     id: 'content-creator',
     name: 'Content Creator',
-    role: 'Content',
-    tagline: 'Content generation and copywriting',
     description: 'Content generation and copywriting',
     icon: '✍️',
     emoji: '✍️',
@@ -29,8 +25,6 @@ const baseAgents = [
   {
     id: 'brand-expert',
     name: 'Brand Expert',
-    role: 'Brand',
-    tagline: 'Brand strategy and positioning',
     description: 'Brand strategy and positioning',
     icon: '🏷️',
     emoji: '🏷️',
@@ -41,8 +35,6 @@ const baseAgents = [
   {
     id: 'seo-specialist',
     name: 'SEO Specialist',
-    role: 'SEO',
-    tagline: 'SEO optimization and keyword research',
     description: 'SEO optimization and keyword research',
     icon: '🔍',
     emoji: '🔍',
@@ -53,8 +45,6 @@ const baseAgents = [
   {
     id: 'marketing-manager',
     name: 'Marketing Manager',
-    role: 'Marketing',
-    tagline: 'Marketing campaigns and strategy',
     description: 'Marketing campaigns and strategy',
     icon: '📢',
     emoji: '📢',
@@ -68,10 +58,10 @@ export type Agent = typeof baseAgents[0]
 
 export const AGENTS = baseAgents
 export const ALL_AGENTS = baseAgents
-export const INNOVACION_AGENTS = baseAgents
-export const COMERCIAL_AGENTS = baseAgents
-export const ESTRATEGIA_AGENTS = baseAgents
-export const FINANZAS_AGENTS = baseAgents
+export const INNOVACION_AGENTS = baseAgents.slice(0, 4)
+export const COMERCIAL_AGENTS = baseAgents.slice(0, 4)
+export const ESTRATEGIA_AGENTS = baseAgents.slice(0, 4)
+export const FINANZAS_AGENTS = baseAgents.slice(0, 4)
 export const ADMIN_AGENTS = baseAgents.slice(0, 4)
 
 export const AGENT_PROMPTS: Record<string, string> = {

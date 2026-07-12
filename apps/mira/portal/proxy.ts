@@ -3,8 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { PLAN_SECTIONS } from '@/lib/plans'
 import type { UserPlan } from '@/lib/plans'
 
-const SECTION_SLUGS = ['marketing', 'comercial', 'estrategia', 'innovacion', 'admin', 'finanzas']
-
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const devBypass = process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true'
