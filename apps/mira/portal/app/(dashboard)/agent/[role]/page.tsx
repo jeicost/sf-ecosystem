@@ -1,3 +1,4 @@
+// FASE B: Agent page with full settings persistence + quick prompts + real activity fallback
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
