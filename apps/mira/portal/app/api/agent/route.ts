@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
       agentName,
       agentRole: role,
       taskType: message.slice(0, 80),
-      status: 'working',
+      status: 'in_progress',
     }).catch(() => {})
 
     // Streaming response

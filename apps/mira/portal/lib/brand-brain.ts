@@ -14,6 +14,9 @@ export interface BrandBrainContext {
   brandPersonality: string[]
   bannedPhrases: string[]
   pillars: Array<{ name: string; description: string; weight: number; exampleHooks: string[] }>
+  tagline?: string
+  audiences?: any[]
+  visualIdentitySummary?: string
 }
 
 export async function fetchBrandBrain(clientId: string): Promise<BrandBrainContext | null> {
@@ -21,7 +24,7 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
 
   const [profileRes, pillarsRes] = await Promise.all([
     db.from('brand_profiles')
-      .select('name, mission, tone_of_voice, values, description')
+      .select('name, mission, tone_of_voice, values, description, brand_data')
       .eq('client_id', clientId)
       .maybeSingle(),
     db.from('content_pillars')
@@ -33,6 +36,28 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
   if (!profileRes.data) return null
 
   const p = profileRes.data
+  const brandData = (p.brand_data as any) ?? {}
+
+  let visualIdentitySummary = ''
+  if (brandData.visual_identity && typeof brandData.visual_identity === 'object') {
+    const vi = brandData.visual_identity
+    if (vi.colors && typeof vi.colors === 'object') {
+      const colorsList = Object.entries(vi.colors)
+        .filter(([k]) => !k.includes('notes'))
+        .map(([k, v]) => `${k}: ${v}`)
+        .join(', ')
+      if (colorsList) visualIdentitySummary += `Colores: ${colorsList}. `
+    }
+    if (vi.typography && typeof vi.typography === 'object') {
+      const typeList = Object.entries(vi.typography)
+        .filter(([k]) => !k.includes('notes'))
+        .map(([, v]) => v)
+        .join(', ')
+      if (typeList) visualIdentitySummary += `Tipografía: ${typeList}. `
+    }
+    if (vi.status) visualIdentitySummary += `Status: ${vi.status}.`
+  }
+
   return {
     brandName: p.name ?? '',
     mission: p.mission ?? '',
@@ -45,6 +70,9 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
       weight: 1,
       exampleHooks: (pi.examples as string[]) ?? [],
     })),
+    tagline: brandData.identity?.tagline ?? undefined,
+    audiences: brandData.audiences ?? undefined,
+    visualIdentitySummary: visualIdentitySummary || undefined,
   }
 }
 
@@ -57,7 +85,7 @@ export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
     .map(p => `- ${p.name} (${Math.round(p.weight * 100)}%): ${p.description}`)
     .join('\n')
 
-  return `
+  let result = `
 ## BRAND BRAIN — ${brain.brandName}
 
 **Misión:** ${brain.mission}
@@ -71,6 +99,27 @@ export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
 **Pilares de contenido:**
 ${pillarsStr}
 `.trim()
+
+  if (brain.tagline) {
+    result += `\n\n**Tagline:** ${brain.tagline}`
+  }
+
+  if (brain.visualIdentitySummary) {
+    result += `\n\n**Identidad Visual:** ${brain.visualIdentitySummary}`
+  }
+
+  if (brain.audiences && brain.audiences.length > 0) {
+    const audiencesStr = brain.audiences
+      .map((a: any) => {
+        if (typeof a === 'string') return a
+        if (typeof a === 'object' && a.name) return `${a.name}${a.description ? ': ' + a.description : ''}`
+        return JSON.stringify(a)
+      })
+      .join(', ')
+    result += `\n\n**Audiencias:** ${audiencesStr}`
+  }
+
+  return result
 }
 
 export async function logAgentActivity(params: {
@@ -78,7 +127,7 @@ export async function logAgentActivity(params: {
   agentName: string
   agentRole: string
   taskType: string
-  status: 'working' | 'completed' | 'failed'
+  status: 'pending' | 'in_progress' | 'completed' | 'failed'
   outputSummary?: string
 }) {
   const db = getAdminClient()

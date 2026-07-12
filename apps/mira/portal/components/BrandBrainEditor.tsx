@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Save, Loader2, Check, AlertCircle, Upload } from 'lucide-react'
+import { useActiveClient } from '@/lib/client-context'
 import BrandBrainSuggestions from './BrandBrainSuggestions'
 
 interface BrandData {
@@ -12,7 +13,13 @@ interface BrandData {
   hero_features?: Record<string, string>
   business_model?: string
   tone_and_voice?: Record<string, string>
-  visual_identity?: string
+  visual_identity?: {
+    status?: string
+    colors?: Record<string, string>
+    typography?: Record<string, string>
+    logo?: Record<string, string>
+    imagery_style?: string
+  }
   competitive_positioning?: string
   go_to_market?: string
   strategy_roadmap?: string
@@ -34,6 +41,7 @@ interface BrandProfile {
 type TabType = 'identity' | 'what_it_is' | 'audiences' | 'value_prop' | 'features' | 'business' | 'tone' | 'visual' | 'competitive' | 'go_to_market' | 'strategy' | 'documents'
 
 export default function BrandBrainEditor() {
+  const { activeClient } = useActiveClient()
   const [profile, setProfile] = useState<BrandProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -48,7 +56,9 @@ export default function BrandBrainEditor() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await fetch('/api/brand-brain')
+        const url = new URL('/api/brand-brain', window.location.origin)
+        if (activeClient?.id) url.searchParams.set('clientId', activeClient.id)
+        const res = await fetch(url)
         if (!res.ok) throw new Error('Failed to fetch brand profile')
         const { data } = await res.json()
         setProfile(data || {
@@ -67,7 +77,13 @@ export default function BrandBrainEditor() {
             hero_features: { feature_1: '', feature_2: '', feature_3: '' },
             business_model: '',
             tone_and_voice: {},
-            visual_identity: '',
+            visual_identity: {
+              status: 'missing',
+              colors: {},
+              typography: {},
+              logo: {},
+              imagery_style: '',
+            },
             competitive_positioning: '',
             go_to_market: '',
             strategy_roadmap: '',
@@ -77,7 +93,9 @@ export default function BrandBrainEditor() {
         })
 
         // Fetch documents
-        const docsRes = await fetch('/api/brand-brain/documents')
+        const docsUrl = new URL('/api/brand-brain/documents', window.location.origin)
+        if (activeClient?.id) docsUrl.searchParams.set('clientId', activeClient.id)
+        const docsRes = await fetch(docsUrl)
         if (docsRes.ok) {
           const { data: docs } = await docsRes.json()
           setDocuments(docs || [])
@@ -89,8 +107,8 @@ export default function BrandBrainEditor() {
       }
     }
 
-    fetchProfile()
-  }, [])
+    if (activeClient?.id) fetchProfile()
+  }, [activeClient?.id])
 
   const handleSave = async () => {
     if (!profile) return
@@ -99,10 +117,12 @@ export default function BrandBrainEditor() {
     setError(null)
 
     try {
+      const body = { ...profile } as any
+      if (activeClient?.id) body.clientId = activeClient.id
       const res = await fetch('/api/brand-brain', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profile),
+        body: JSON.stringify(body),
       })
 
       if (!res.ok) {
@@ -130,6 +150,7 @@ export default function BrandBrainEditor() {
       const formData = new FormData()
       formData.append('file', file)
       formData.append('brand_profile_id', profile.id)
+      if (activeClient?.id) formData.append('clientId', activeClient.id)
 
       const res = await fetch('/api/brand-brain/upload-document', {
         method: 'POST',
@@ -405,7 +426,238 @@ export default function BrandBrainEditor() {
 
         {activeTab === 'visual' && (
           <div className="space-y-4">
-            <TextareaInput label="Visual Identity" value={profile.brand_data?.visual_identity || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, visual_identity: v } })} placeholder="Primary color, secondary colors, typography, logo style, aesthetic" />
+            {/* Status Badge */}
+            <div className="flex items-center gap-3">
+              <label className="block text-sm font-medium text-white">Status:</label>
+              <select
+                value={(profile.brand_data?.visual_identity as any)?.status || 'missing'}
+                onChange={(e) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      status: e.target.value,
+                    },
+                  },
+                })}
+                className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-purple-500 focus:outline-none"
+              >
+                <option value="confirmed">✅ Confirmed (Client approved)</option>
+                <option value="proposed">⏳ Proposed (Pending decision)</option>
+                <option value="missing">❌ Missing (Not documented)</option>
+              </select>
+            </div>
+
+            {/* Colors Section */}
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="text-sm font-medium text-white mb-4">Colors</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {['primary', 'secondary', 'accent', 'neutral'].map((colorRole) => (
+                  <div key={colorRole}>
+                    <label className="block text-xs font-medium text-gray-400 mb-2 capitalize">{colorRole}</label>
+                    <div className="flex gap-2">
+                      <div className="flex-1">
+                        <input
+                          type="text"
+                          value={(profile.brand_data?.visual_identity as any)?.colors?.[colorRole] || ''}
+                          onChange={(e) => setProfile({
+                            ...profile,
+                            brand_data: {
+                              ...profile.brand_data,
+                              visual_identity: {
+                                ...(profile.brand_data?.visual_identity as any),
+                                colors: {
+                                  ...(profile.brand_data?.visual_identity as any)?.colors,
+                                  [colorRole]: e.target.value,
+                                },
+                              },
+                            },
+                          })}
+                          placeholder="#000000"
+                          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none text-xs"
+                        />
+                      </div>
+                      <input
+                        type="color"
+                        value={(profile.brand_data?.visual_identity as any)?.colors?.[colorRole] || '#000000'}
+                        onChange={(e) => setProfile({
+                          ...profile,
+                          brand_data: {
+                            ...profile.brand_data,
+                            visual_identity: {
+                              ...(profile.brand_data?.visual_identity as any),
+                              colors: {
+                                ...(profile.brand_data?.visual_identity as any)?.colors,
+                                [colorRole]: e.target.value,
+                              },
+                            },
+                          },
+                        })}
+                        className="w-12 h-10 rounded cursor-pointer border border-white/10"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <TextareaInput
+                label="Color Notes (roles, usage rules)"
+                value={(profile.brand_data?.visual_identity as any)?.colors?.notes || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      colors: {
+                        ...(profile.brand_data?.visual_identity as any)?.colors,
+                        notes: v,
+                      },
+                    },
+                  },
+                })}
+                placeholder="E.g., Primary on dark backgrounds, never accent on white..."
+              />
+            </div>
+
+            {/* Typography Section */}
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="text-sm font-medium text-white mb-4">Typography</h3>
+              <div className="space-y-3">
+                <TextInput
+                  label="Heading Font"
+                  value={(profile.brand_data?.visual_identity as any)?.typography?.heading_font || ''}
+                  onChange={(v) => setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      visual_identity: {
+                        ...(profile.brand_data?.visual_identity as any),
+                        typography: {
+                          ...(profile.brand_data?.visual_identity as any)?.typography,
+                          heading_font: v,
+                        },
+                      },
+                    },
+                  })}
+                  placeholder="E.g., Inter Bold, Playfair Display"
+                />
+                <TextInput
+                  label="Body Font"
+                  value={(profile.brand_data?.visual_identity as any)?.typography?.body_font || ''}
+                  onChange={(v) => setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      visual_identity: {
+                        ...(profile.brand_data?.visual_identity as any),
+                        typography: {
+                          ...(profile.brand_data?.visual_identity as any)?.typography,
+                          body_font: v,
+                        },
+                      },
+                    },
+                  })}
+                  placeholder="E.g., Inter, Open Sans"
+                />
+                <TextInput
+                  label="Accent Font"
+                  value={(profile.brand_data?.visual_identity as any)?.typography?.accent_font || ''}
+                  onChange={(v) => setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      visual_identity: {
+                        ...(profile.brand_data?.visual_identity as any),
+                        typography: {
+                          ...(profile.brand_data?.visual_identity as any)?.typography,
+                          accent_font: v,
+                        },
+                      },
+                    },
+                  })}
+                  placeholder="E.g., Montserrat, DM Serif Display"
+                />
+                <TextareaInput
+                  label="Typography Notes (usage by section)"
+                  value={(profile.brand_data?.visual_identity as any)?.typography?.notes || ''}
+                  onChange={(v) => setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      visual_identity: {
+                        ...(profile.brand_data?.visual_identity as any),
+                        typography: {
+                          ...(profile.brand_data?.visual_identity as any)?.typography,
+                          notes: v,
+                        },
+                      },
+                    },
+                  })}
+                  placeholder="E.g., Heading font for H1-H3, body for p-text, accent sparingly..."
+                />
+              </div>
+            </div>
+
+            {/* Logo Section */}
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="text-sm font-medium text-white mb-4">Logo</h3>
+              <TextInput
+                label="Logo URL"
+                value={(profile.brand_data?.visual_identity as any)?.logo?.primary_url || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      logo: {
+                        ...(profile.brand_data?.visual_identity as any)?.logo,
+                        primary_url: v,
+                      },
+                    },
+                  },
+                })}
+                placeholder="URL to logo file (PNG recommended)"
+              />
+              <TextareaInput
+                label="Logo Usage Rules"
+                value={(profile.brand_data?.visual_identity as any)?.logo?.notes || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      logo: {
+                        ...(profile.brand_data?.visual_identity as any)?.logo,
+                        notes: v,
+                      },
+                    },
+                  },
+                })}
+                placeholder="E.g., Use on dark backgrounds, minimum 110px, clear space required, etc."
+              />
+            </div>
+
+            {/* Imagery Style */}
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="text-sm font-medium text-white mb-4">Imagery & Aesthetic</h3>
+              <TextareaInput
+                value={(profile.brand_data?.visual_identity as any)?.imagery_style || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      imagery_style: v,
+                    },
+                  },
+                })}
+                placeholder="Mood, lighting, photography style, prohibited imagery, visual references, etc."
+              />
+            </div>
           </div>
         )}
 

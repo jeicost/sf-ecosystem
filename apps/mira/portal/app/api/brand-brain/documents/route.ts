@@ -5,6 +5,9 @@ import { adminClient } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
   try {
+    const searchParams = req.nextUrl.searchParams
+    const explicitClientId = searchParams.get('clientId')
+
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -20,7 +23,9 @@ export async function GET(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     let clientId: string
-    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
+    if (explicitClientId) {
+      clientId = explicitClientId
+    } else if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
       clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
     } else if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
@@ -28,14 +33,14 @@ export async function GET(req: NextRequest) {
       const admin = adminClient()
       const { data: accessData } = await admin
         .from('mira_project_access')
-        .select('client_id')
+        .select('project_id')
         .eq('user_id', user.id)
-        .single()
+        .limit(1)
 
-      if (!accessData) {
+      if (!accessData?.length) {
         return NextResponse.json({ error: 'No client access' }, { status: 403 })
       }
-      clientId = accessData.client_id
+      clientId = accessData[0].project_id
     }
 
     const admin = adminClient()

@@ -42,14 +42,14 @@ export async function POST(req: NextRequest) {
     } else {
       const { data: accessData } = await admin
         .from('mira_project_access')
-        .select('client_id')
+        .select('project_id')
         .eq('user_id', user.id)
-        .single()
+        .limit(1)
 
-      if (!accessData) {
+      if (!accessData?.length) {
         return NextResponse.json({ error: 'No client access' }, { status: 403 })
       }
-      clientId = accessData.client_id
+      clientId = accessData[0].project_id
     }
 
     // Get the document (verify ownership)

@@ -55,7 +55,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
 `.trim()
 
     // ── Paso 1: Marco analiza el brief ─────────────────────────────────────
-    logAgentActivity({ clientId: resolvedClientId, agentName: 'Marco', agentRole: 'orchestrator', taskType: 'brief_analysis', status: 'working' }).catch(() => {})
+    logAgentActivity({ clientId: resolvedClientId, agentName: 'Marco', agentRole: 'orchestrator', taskType: 'brief_analysis', status: 'in_progress' }).catch(() => {})
 
     const orchestratorOutput = await callAgent(
       'orchestrator',
@@ -66,7 +66,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Marco', agentRole: 'orchestrator', taskType: 'brief_analysis', status: 'completed', outputSummary: orchestratorOutput.slice(0, 150) }).catch(() => {})
 
     // ── Paso 2: Luna genera el ángulo y el brief enriquecido ───────────────
-    logAgentActivity({ clientId: resolvedClientId, agentName: 'Luna', agentRole: 'content-strategist', taskType: 'brief_enrichment', status: 'working' }).catch(() => {})
+    logAgentActivity({ clientId: resolvedClientId, agentName: 'Luna', agentRole: 'content-strategist', taskType: 'brief_enrichment', status: 'in_progress' }).catch(() => {})
 
     const strategyOutput = await callAgent(
       'content-strategist',
@@ -77,7 +77,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Luna', agentRole: 'content-strategist', taskType: 'brief_enrichment', status: 'completed', outputSummary: strategyOutput.slice(0, 150) }).catch(() => {})
 
     // ── Paso 3: Alex genera el copy final ─────────────────────────────────
-    logAgentActivity({ clientId: resolvedClientId, agentName: 'Alex', agentRole: 'copywriter', taskType: 'copy_generation', status: 'working' }).catch(() => {})
+    logAgentActivity({ clientId: resolvedClientId, agentName: 'Alex', agentRole: 'copywriter', taskType: 'copy_generation', status: 'in_progress' }).catch(() => {})
 
     const copyOutput = await callAgent(
       'copywriter',
