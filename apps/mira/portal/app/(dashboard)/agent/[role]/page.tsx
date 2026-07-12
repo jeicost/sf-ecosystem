@@ -1,11 +1,11 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
-  ArrowLeft, BarChart2, MessageSquare,
-  Send, TrendingUp, Shield, Zap, Hand, Eye, EyeOff,
+  ArrowLeft, CheckCircle, Clock, AlertCircle, Zap, Hand, Shield,
+  Copy, Check, Eye, EyeOff, TrendingUp, MessageSquare, Send,
 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { getAgentPrompt } from '@/lib/agent-prompts'
@@ -14,22 +14,24 @@ import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import type { AgentPackage } from '@/lib/types'
 
 type AutonomyLevel = 'always_ask' | 'full_auto'
+type TabId = 'about' | 'history' | 'chat' | 'performance'
+
+const TABS: { id: TabId; label: string; icon: any }[] = [
+  { id: 'about', label: 'About', icon: EyeOff },
+  { id: 'history', label: 'Activity', icon: Clock },
+  { id: 'chat', label: 'Chat', icon: MessageSquare },
+  { id: 'performance', label: 'Performance', icon: TrendingUp },
+]
 
 const AUTONOMY_OPTIONS: { id: AutonomyLevel; label: string; description: string; icon: any }[] = [
   { id: 'always_ask', label: 'Always ask', description: 'Nothing goes out without your explicit ok.', icon: Hand },
-  { id: 'full_auto', label: 'Autonomous mode', description: 'Executes and notifies. No interruptions.', icon: Zap },
+  { id: 'full_auto', label: 'Full autonomy', description: 'Executes and notifies. No interruptions.', icon: Zap },
 ]
 
-const DEFAULT_AUTONOMY: Record<string, AutonomyLevel> = {
-  orchestrator: 'always_ask',
-  'content-strategist': 'full_auto',
-  copywriter: 'always_ask',
-  designer: 'always_ask',
-  'content-repurposer': 'always_ask',
-  'video-editor': 'always_ask',
-  'social-media-manager': 'always_ask',
-  'ads-manager': 'full_auto',
-  'community-manager': 'always_ask',
+const TASK_STATUS_CONFIG: Record<string, { icon: any; color: string }> = {
+  completed: { icon: CheckCircle, color: 'text-green-500' },
+  working: { icon: Zap, color: 'text-blue-500' },
+  waiting: { icon: Clock, color: 'text-yellow-500' },
 }
 
 const IMPROVEMENT_AREAS: Record<AgentPackage | 'default', { label: string; pct: number }[]> = {
@@ -70,209 +72,278 @@ const IMPROVEMENT_AREAS: Record<AgentPackage | 'default', { label: string; pct: 
   ],
 }
 
+const DEFAULT_RECENT_TASKS: Record<string, any> = {
+  orchestrator: [
+    { id: '1', task: 'Coordinated "DIP NOW" campaign for Salsa Burgers', status: 'completed', timeAgo: '2h' },
+    { id: '2', task: 'Assigned Reels brief: Luna → Alex → Zoe', status: 'completed', timeAgo: '4h' },
+    { id: '3', task: 'Reviewing weekly team pipeline', status: 'working', timeAgo: 'now' },
+  ],
+}
+
 export default function AgentPage() {
   const router = useRouter()
   const params = useParams()
   const role = params.role as string
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id || ''
-  const [autonomy, setAutonomy] = useState<AutonomyLevel>(DEFAULT_AUTONOMY[role] || 'always_ask')
-  const [showSystemPrompt, setShowSystemPrompt] = useState(false)
+  const [activeTab, setActiveTab] = useState<TabId>('chat')
+  const [autonomy, setAutonomy] = useState<AutonomyLevel>('always_ask')
+  const [toneLevel, setToneLevel] = useState(0.5)
+  const [copied, setCopied] = useState(false)
+  const [inputValue, setInputValue] = useState('')
 
   const agent = AGENT_METADATA[role]
 
-  const { messages, isLoading, sendMessage } = useAgentChat({
-    role,
-    clientId,
-    autonomy,
-  })
-
   if (!agent) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-3xl font-bold mb-2">Agente no encontrado</h1>
-        <p className="text-gray-500 mb-4">El agente "{role}" no existe</p>
-        <Link href="/comercial" className="text-blue-600 hover:underline">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
+        <h1 className="text-3xl font-bold text-white mb-2">Agente no encontrado</h1>
+        <p className="text-gray-400 mb-6">El agente "{role}" no existe</p>
+        <Link href="/comercial" className="text-blue-400 hover:text-blue-300 transition">
           Volver a agentes
         </Link>
       </div>
     )
   }
 
+  const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy })
   const improveAreas = IMPROVEMENT_AREAS[agent.department as AgentPackage] || IMPROVEMENT_AREAS.default
   const systemPrompt = getAgentPrompt(role)
+  const recentTasks = DEFAULT_RECENT_TASKS[role] || [
+    { id: '1', task: 'Task 1', status: 'completed', timeAgo: '2h' },
+    { id: '2', task: 'Task 2', status: 'completed', timeAgo: '4h' },
+    { id: '3', task: 'Task 3', status: 'working', timeAgo: 'now' },
+  ]
+
+  const handleCopyPrompt = () => {
+    navigator.clipboard.writeText(systemPrompt)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleSendMessage = (msg?: string) => {
+    const text = msg || inputValue
+    if (!text.trim()) return
+    sendMessage(text)
+    setInputValue('')
+  }
 
   return (
-    <div className="flex h-screen bg-white">
-      {/* Left Sidebar - Agent Info */}
-      <div className="w-80 border-r border-gray-200 overflow-y-auto p-6 bg-gray-50">
-        {/* Back Button */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+      <div className="px-8 py-8 max-w-4xl mx-auto">
+        {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="flex items-center text-gray-600 hover:text-gray-900 mb-6 transition"
+          className="flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-8 transition-colors"
         >
-          <ArrowLeft size={20} className="mr-2" />
-          <span>Back</span>
+          <ArrowLeft size={16} />
+          Back
         </button>
 
-        {/* Agent Header */}
-        <div className="mb-8">
+        {/* Header */}
+        <div className="flex items-center gap-6 mb-8">
           <div
             className={clsx(
-              'w-16 h-16 rounded-lg flex items-center justify-center text-4xl mb-4',
+              'w-20 h-20 rounded-3xl flex items-center justify-center text-5xl flex-shrink-0',
               agent.gradient
             )}
+            style={{ boxShadow: `0 12px 32px ${agent.color}40` }}
           >
             {agent.emoji}
           </div>
-          <h1 className="text-2xl font-bold mb-2">{agent.name}</h1>
-          <p className="text-sm text-gray-600">{agent.description}</p>
-        </div>
-
-        {/* Autonomy Selector */}
-        <div className="mb-8">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3">Autonomy Level</h3>
-          <div className="space-y-2">
-            {AUTONOMY_OPTIONS.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => setAutonomy(opt.id)}
-                className={clsx(
-                  'w-full p-3 rounded-lg border-2 text-left transition',
-                  autonomy === opt.id
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                )}
-              >
-                <div className="flex items-center gap-2">
-                  <opt.icon size={16} className="text-gray-600" />
-                  <div>
-                    <div className="font-medium text-sm">{opt.label}</div>
-                    <div className="text-xs text-gray-500">{opt.description}</div>
-                  </div>
-                </div>
-              </button>
-            ))}
+          <div>
+            <h1 className="text-3xl font-bold text-white">{agent.name}</h1>
+            <p className="text-slate-400 text-sm mt-1">{agent.description}</p>
           </div>
         </div>
 
-        {/* Improvement Areas */}
-        <div className="mb-8">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <TrendingUp size={16} />
-            Performance Metrics
-          </h3>
-          <div className="space-y-3">
-            {improveAreas.map((area) => (
-              <div key={area.label} className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-gray-600">{area.label}</span>
-                  <span className="font-semibold text-gray-900">{area.pct}%</span>
-                </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+        {/* Tabs */}
+        <div className="border-b border-slate-700 flex gap-0 mb-8">
+          {TABS.map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setActiveTab(id)}
+              className={clsx(
+                'flex items-center gap-2 px-4 py-3 text-sm border-b-2 transition-colors',
+                activeTab === id
+                  ? 'border-blue-500 text-white'
+                  : 'border-transparent text-slate-400 hover:text-white'
+              )}
+            >
+              <Icon size={16} />
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab: About */}
+        {activeTab === 'about' && (
+          <div className="space-y-6">
+            {/* Tone level */}
+            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              <h3 className="text-sm font-semibold text-white mb-1">Communication Tone</h3>
+              <p className="text-xs text-slate-400 mb-4">How formal or casual is {agent.name}?</p>
+              <div className="flex items-center gap-3">
+                <span className="text-xs text-slate-400">Casual</span>
+                <div className="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-green-500 transition-all"
-                    style={{ width: `${area.pct}%` }}
+                    className="h-full transition-all"
+                    style={{ width: `${toneLevel * 100}%`, background: agent.color }}
+                  />
+                </div>
+                <span className="text-xs text-slate-400">Formal</span>
+              </div>
+            </div>
+
+            {/* Autonomy */}
+            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              <h3 className="text-sm font-semibold text-white mb-1">Autonomy Level</h3>
+              <p className="text-xs text-slate-400 mb-4">When does {agent.name} need your approval?</p>
+              <div className="grid grid-cols-2 gap-3">
+                {AUTONOMY_OPTIONS.map(opt => {
+                  const Icon = opt.icon
+                  const selected = autonomy === opt.id
+                  return (
+                    <button
+                      key={opt.id}
+                      onClick={() => setAutonomy(opt.id)}
+                      className={clsx(
+                        'p-4 rounded-lg border-2 text-left transition-all',
+                        selected
+                          ? 'border-blue-500 bg-blue-500/10'
+                          : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
+                      )}
+                    >
+                      <Icon size={16} className="mb-2" style={{ color: selected ? agent.color : '#94a3b8' }} />
+                      <p className="text-xs font-semibold text-white">{opt.label}</p>
+                      <p className="text-xs text-slate-400 mt-1 leading-tight">{opt.description}</p>
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* System Prompt */}
+            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-white">System Prompt</h3>
+                <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: `${agent.color}25`, color: agent.color }}>
+                  v3.1 · active
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mb-4">Active instructions that define how {agent.name} thinks.</p>
+              <div className="bg-black/50 rounded-lg p-4 font-mono text-xs text-slate-400 max-h-48 overflow-y-auto border border-slate-700 whitespace-pre-wrap mb-3">
+                {systemPrompt.substring(0, 800)}
+                {systemPrompt.length > 800 && '...'}
+              </div>
+              <button
+                onClick={handleCopyPrompt}
+                className="flex items-center justify-center gap-2 text-xs px-4 py-2 rounded-lg border transition-all w-full hover:opacity-80"
+                style={{ borderColor: `${agent.color}40`, color: copied ? '#22c55e' : agent.color }}
+              >
+                {copied ? <Check size={14} /> : <Copy size={14} />}
+                {copied ? 'Copied!' : 'Copy system prompt'}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Activity */}
+        {activeTab === 'history' && (
+          <div className="space-y-3">
+            <p className="text-xs text-slate-400 mb-4">Latest tasks executed by {agent.name}.</p>
+            {recentTasks.map((task: any) => {
+              const cfg = TASK_STATUS_CONFIG[task.status]
+              const StatusIcon = cfg.icon
+              return (
+                <div key={task.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 flex items-start gap-3">
+                  <StatusIcon size={16} className={clsx('mt-0.5 shrink-0', cfg.color)} />
+                  <div className="flex-1">
+                    <p className="text-sm text-slate-200">{task.task}</p>
+                    <p className="text-xs text-slate-500 mt-1">{task.timeAgo}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {/* Tab: Chat */}
+        {activeTab === 'chat' && (
+          <div className="flex flex-col h-[600px] bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden">
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                  <MessageSquare size={40} className="mb-3 opacity-50" />
+                  <p className="text-sm">Start a conversation with {agent.name}</p>
+                </div>
+              ) : (
+                messages.map((msg, idx) => (
+                  <div key={idx} className={clsx('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
+                    <div
+                      className={clsx(
+                        'max-w-xs px-4 py-2 rounded-lg text-sm',
+                        msg.role === 'user'
+                          ? 'bg-blue-600 text-white rounded-br-none'
+                          : 'bg-slate-700 text-slate-100 rounded-bl-none'
+                      )}
+                    >
+                      {msg.content}
+                    </div>
+                  </div>
+                ))
+              )}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="bg-slate-700 text-slate-100 px-4 py-2 rounded-lg rounded-bl-none animate-pulse text-sm">
+                    {agent.name} is thinking...
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Input */}
+            <div className="border-t border-slate-700 p-4 bg-slate-800/50">
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="Ask something..."
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+                  className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 text-sm"
+                />
+                <button
+                  onClick={() => handleSendMessage()}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition flex items-center gap-2 text-sm"
+                >
+                  <Send size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Performance */}
+        {activeTab === 'performance' && (
+          <div className="space-y-4">
+            {improveAreas.map((area) => (
+              <div key={area.label} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-slate-200">{area.label}</span>
+                  <span className="text-sm font-semibold text-white">{area.pct}%</span>
+                </div>
+                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full transition-all"
+                    style={{ width: `${area.pct}%`, background: agent.color }}
                   />
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-        {/* System Prompt Preview */}
-        <div>
-          <button
-            onClick={() => setShowSystemPrompt(!showSystemPrompt)}
-            className="w-full p-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition flex items-center justify-between"
-          >
-            <span className="text-sm font-medium text-gray-900">System Prompt</span>
-            {showSystemPrompt ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
-          {showSystemPrompt && (
-            <div className="mt-3 p-3 bg-gray-100 rounded-lg text-xs text-gray-700 max-h-40 overflow-y-auto whitespace-pre-wrap">
-              {systemPrompt.substring(0, 500)}
-              {systemPrompt.length > 500 && '...'}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="border-b border-gray-200 p-6 bg-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900">Chat with {agent.name}</h2>
-              <p className="text-sm text-gray-500 mt-1">
-                Autonomy: <span className="font-medium">{autonomy === 'always_ask' ? 'Always Ask' : 'Autonomous'}</span>
-              </p>
-            </div>
-            <BarChart2 size={24} className="text-gray-400" />
-          </div>
-        </div>
-
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4">
-          {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full text-gray-400">
-              <MessageSquare size={48} className="mb-4 opacity-50" />
-              <p>Start a conversation with {agent.name}</p>
-            </div>
-          ) : (
-            messages.map((msg, idx) => (
-              <div key={idx} className={clsx('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
-                <div
-                  className={clsx(
-                    'max-w-md px-4 py-2 rounded-lg',
-                    msg.role === 'user'
-                      ? 'bg-blue-500 text-white rounded-br-none'
-                      : 'bg-gray-100 text-gray-900 rounded-bl-none'
-                  )}
-                >
-                  {msg.content}
-                </div>
-              </div>
-            ))
-          )}
-          {isLoading && (
-            <div className="flex justify-start">
-              <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg animate-pulse">
-                {agent.name} is thinking...
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Input */}
-        <div className="border-t border-gray-200 p-6 bg-white">
-          <div className="flex gap-3">
-            <input
-              type="text"
-              placeholder="Ask something..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' && e.currentTarget.value) {
-                  sendMessage(e.currentTarget.value)
-                  e.currentTarget.value = ''
-                }
-              }}
-            />
-            <button
-              onClick={() => {
-                const input = document.querySelector('input[placeholder="Ask something..."]') as HTMLInputElement
-                if (input?.value) {
-                  sendMessage(input.value)
-                  input.value = ''
-                }
-              }}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition flex items-center gap-2"
-            >
-              <Send size={18} />
-            </button>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   )
