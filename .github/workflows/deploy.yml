@@ -19,7 +19,7 @@ jobs:
           cd apps/startup-factory-web
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy ai-agency-sf-next to Vercel
         env:
@@ -30,7 +30,7 @@ jobs:
           cd apps/ai-agency-sf-next
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy mira portal to Vercel
         env:
@@ -41,7 +41,7 @@ jobs:
           cd apps/mira/portal
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-cms to Vercel
         env:
@@ -52,7 +52,7 @@ jobs:
           cd apps/sf-cms
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy mira-landing to Vercel
         env:
@@ -63,7 +63,7 @@ jobs:
           cd apps/mira-landing
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-crm to Vercel
         env:
@@ -74,7 +74,7 @@ jobs:
           cd apps/sf-crm
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-links to Vercel
         env:
@@ -85,4 +85,4 @@ jobs:
           cd apps/sf-links
           mkdir -p .vercel
           echo "{\"projectId\": \"$VERCEL_PROJECT_ID\", \"orgId\": \"$VERCEL_ORG_ID\"}" > .vercel/project.json
-          npx vercel deploy --prod --token=$VERCEL_TOKEN
+          npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
