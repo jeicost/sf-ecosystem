@@ -1,0 +1,28 @@
+{
+  "name": "ai-agency-sf-next",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "next-themes": "*",
+    "@anthropic-ai/sdk": "*",
+    "@supabase/supabase-js": "*",
+    "clsx": "*",
+    "tailwindcss": "*"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "*",
+    "@types/node": "*",
+    "@types/react": "*",
+    "@types/react-dom": "*",
+    "typescript": "*"
+  }
+}
