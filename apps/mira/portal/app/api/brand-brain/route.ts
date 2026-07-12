@@ -29,14 +29,14 @@ export async function GET(req: NextRequest) {
       const admin = adminClient()
       const { data: accessData } = await admin
         .from('mira_project_access')
-        .select('client_id')
+        .select('project_id')
         .eq('user_id', user.id)
         .single()
 
       if (!accessData) {
         return NextResponse.json({ error: 'No client access' }, { status: 403 })
       }
-      clientId = accessData.client_id
+      clientId = accessData.project_id
     }
 
     const admin = adminClient()
@@ -89,14 +89,14 @@ export async function PUT(req: NextRequest) {
       const admin = adminClient()
       const { data: accessData } = await admin
         .from('mira_project_access')
-        .select('client_id')
+        .select('project_id')
         .eq('user_id', user.id)
         .single()
 
       if (!accessData) {
         return NextResponse.json({ error: 'No client access' }, { status: 403 })
       }
-      clientId = accessData.client_id
+      clientId = accessData.project_id
     }
 
     const admin = adminClient()
