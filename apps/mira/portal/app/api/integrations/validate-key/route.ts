@@ -3,26 +3,23 @@ import { getApiValidator } from '@/lib/integrations/api-validators'
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { toolId, apiKey } = body
+    const { toolId, apiKey } = await request.json()
 
     if (!toolId || !apiKey) {
-      return NextResponse.json({ error: 'Missing toolId or apiKey' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Missing toolId or apiKey' },
+        { status: 400 }
+      )
     }
 
-    // Validate API key
     const validator = getApiValidator(toolId)
     const result = await validator(apiKey)
 
-    return NextResponse.json({
-      valid: result.valid,
-      error: result.error,
-      accountInfo: result.accountInfo,
-    })
+    return NextResponse.json(result)
   } catch (error) {
-    console.error('API key validation error:', error)
+    console.error('Error validating API key:', error)
     return NextResponse.json(
-      { error: 'Validation failed', valid: false },
+      { valid: false, error: 'Validation error' },
       { status: 500 }
     )
   }

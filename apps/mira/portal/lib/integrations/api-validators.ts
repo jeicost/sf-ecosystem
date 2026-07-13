@@ -1,7 +1,4 @@
-/**
- * API Key validators for each tool.
- * Each validator attempts a simple API call to verify the key is valid.
- */
+// Real API key validators for integration tools
 
 export interface ApiValidationResult {
   valid: boolean
@@ -13,165 +10,128 @@ export interface ApiValidationResult {
   }
 }
 
-export const validateCanvaApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// Canva API Key Validator
+export async function validateCanvaApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.canva.com/v1/canvases', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
+    const res = await fetch('https://api.canva.com/v1/user/info', {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
     })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      return { valid: false, error: `API returned ${response.status}` }
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
+    return {
+      valid: true,
+      accountInfo: { email: data.user?.email, name: data.user?.name },
     }
-
-    return { valid: true }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-export const validateBufferApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// Buffer API Key Validator
+export async function validateBufferApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.buffer.com/1/user.json', {
-      headers: { Authorization: `Bearer ${apiKey}` },
-    })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      return { valid: false, error: `API returned ${response.status}` }
-    }
-
-    const data = await response.json()
+    const res = await fetch('https://api.bufferapp.com/1/user.json?access_token=' + apiKey)
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
     return {
       valid: true,
       accountInfo: { email: data.email, name: data.name, id: data.id },
     }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-export const validateHootsuiteApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// Hootsuite API Key Validator
+export async function validateHootsuiteApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.hootsuite.com/v1/me', {
-      headers: { Authorization: `Bearer ${apiKey}` },
+    const res = await fetch('https://api.hootsuite.com/v1/me', {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
     })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      return { valid: false, error: `API returned ${response.status}` }
-    }
-
-    const data = await response.json()
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
     return {
       valid: true,
-      accountInfo: { email: data.email, id: data.id },
+      accountInfo: { email: data.email, name: data.name, id: data.id },
     }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-export const validateFreepikApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// Freepik API Key Validator
+export async function validateFreepikApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.freepik.com/v1/auth/me', {
+    const res = await fetch('https://api.freepik.com/v1/info/profile', {
       headers: { 'x-freepik-api-key': apiKey },
     })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      return { valid: false, error: `API returned ${response.status}` }
-    }
-
-    const data = await response.json()
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
     return {
       valid: true,
-      accountInfo: { email: data.user?.email, id: data.user?.id },
+      accountInfo: { email: data.email, name: data.name },
     }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-export const validateAnthropicApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// Anthropic (Claude) API Key Validator
+export async function validateAnthropicApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       headers: {
         'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
         'content-type': 'application/json',
+        'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-haiku-20240307',
-        max_tokens: 1,
-        messages: [{ role: 'user', content: 'test' }],
+        model: 'claude-opus-4-1',
+        max_tokens: 10,
+        messages: [{ role: 'user', content: 'ping' }],
       }),
     })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      // 400 is ok for this test (bad request due to token), means key is valid
-      if (response.status !== 400) return { valid: false, error: `API returned ${response.status}` }
-    }
-
-    return { valid: true }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+    if (!res.ok && res.status !== 400) return { valid: false, error: 'Invalid API key' }
+    return { valid: true, accountInfo: { id: 'anthropic_key_verified' } }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-export const validateOpenAiApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// OpenAI API Key Validator
+export async function validateOpenAiApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.openai.com/v1/models', {
-      headers: { Authorization: `Bearer ${apiKey}` },
+    const res = await fetch('https://api.openai.com/v1/models', {
+      headers: { 'Authorization': `Bearer ${apiKey}` },
     })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      return { valid: false, error: `API returned ${response.status}` }
-    }
-
-    return { valid: true }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    return { valid: true, accountInfo: { id: 'openai_key_verified' } }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-export const validateMagnificApiKey = async (apiKey: string): Promise<ApiValidationResult> => {
+// Magnific AI API Key Validator
+export async function validateMagnificApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const response = await fetch('https://api.magnific.ai/v1/api_key/validate', {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-      },
+    const res = await fetch('https://api.magnific.ai/v1/account', {
+      headers: { 'x-api-key': apiKey },
     })
-
-    if (!response.ok) {
-      if (response.status === 401) return { valid: false, error: 'Invalid API key' }
-      return { valid: false, error: `API returned ${response.status}` }
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
+    return {
+      valid: true,
+      accountInfo: { email: data.email, name: data.name, id: data.id },
     }
-
-    return { valid: true }
-  } catch (error) {
-    return { valid: false, error: 'Network error. API may be unreachable.' }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
   }
 }
 
-// Fallback validator for tools without real API validation
-export const validateGenericApiKey = (apiKey: string): ApiValidationResult => {
-  if (!apiKey || apiKey.trim().length < 5) {
-    return { valid: false, error: 'API key must be at least 5 characters' }
-  }
-  return { valid: true }
-}
-
-export const getApiValidator = (
-  toolId: string
-): ((apiKey: string) => Promise<ApiValidationResult>) => {
-  const validators: Record<string, (apiKey: string) => Promise<ApiValidationResult>> = {
+// Factory function to get the right validator
+export function getApiValidator(toolId: string) {
+  const validators: Record<string, (key: string) => Promise<ApiValidationResult>> = {
     canva: validateCanvaApiKey,
     buffer: validateBufferApiKey,
     hootsuite: validateHootsuiteApiKey,
@@ -181,5 +141,5 @@ export const getApiValidator = (
     magnific: validateMagnificApiKey,
   }
 
-  return validators[toolId] || (async (key) => Promise.resolve(validateGenericApiKey(key)))
+  return validators[toolId] || (async () => ({ valid: false, error: 'No validator for this tool' }))
 }
