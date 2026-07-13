@@ -77,28 +77,29 @@ export default function ReportesPage() {
           Reportes por Herramienta
         </p>
         <div className="grid grid-cols-2 gap-4">
-          {[
-            { tool: 'Brand Briefing', uses: 2, avgRating: 4.8, lastUsed: '2026-07-09' },
-            { tool: 'SEO Audit', uses: 3, avgRating: 4.6, lastUsed: '2026-07-08' },
-            { tool: 'Content Pack', uses: 5, avgRating: 4.9, lastUsed: '2026-07-07' },
-            { tool: 'Marketing Audit', uses: 1, avgRating: 4.7, lastUsed: '2026-07-06' },
-          ].map(report => (
-            <div key={report.tool} className="card px-5 py-4">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <p className="text-sm font-semibold text-white">{report.tool}</p>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>{report.uses} usos</p>
+          {stats?.toolReports && stats.toolReports.length > 0 ? (
+            stats.toolReports.map((report: any) => (
+              <div key={report.tool} className="card px-5 py-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <p className="text-sm font-semibold text-white">{report.tool}</p>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>{report.uses} usos</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold text-yellow-400">{report.avgRating.toFixed(1)}</p>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>★ rating</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold text-yellow-400">{report.avgRating}</p>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>★ rating</p>
-                </div>
+                <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  Última vez: {new Date(report.lastUsed).toLocaleDateString('es-ES')}
+                </p>
               </div>
-              <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                Última vez: {new Date(report.lastUsed).toLocaleDateString('es-ES')}
-              </p>
+            ))
+          ) : (
+            <div className="col-span-2 text-center py-6" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              <p className="text-sm">Sin reportes generados aún</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
 
