@@ -1,6 +1,7 @@
 import { OPERACIONES_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
+import DepartmentAgents from '@/components/DepartmentAgents'
 
 const ADMIN_META = [
   { produces: 'P&L & invoices' },
@@ -48,6 +49,10 @@ export default function AdminPage() {
         accentColor="#10B981"
       />
 
+      <div className="mb-8">
+        <DepartmentAgents department="operaciones" />
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         {OPERACIONES_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
@@ -55,8 +60,8 @@ export default function AdminPage() {
             agent={agent}
             status="idle"
             lastTask={null}
-            step={i + 1}
             produces={ADMIN_META[i].produces}
+            href={`/agent/${agent.id}`}
           />
         ))}
       </div>

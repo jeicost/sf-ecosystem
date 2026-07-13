@@ -147,6 +147,11 @@ export const AGENT_QUICK_PROMPTS: Record<string, string[]> = {
     'Cómo podríamos innovar en [área]?',
     'Genera conceptos disruptivos para nuestro sector',
   ],
+  scout: [
+    'Encuentra oportunidades de negocio en [sector]',
+    'Identifica leads en base a estos criterios',
+    'Mapea el mercado para descubrir nuevas cuentas',
+  ],
 }
 
 export function getQuickPrompts(role: string): string[] {

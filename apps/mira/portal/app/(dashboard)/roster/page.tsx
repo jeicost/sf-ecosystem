@@ -4,6 +4,7 @@ import { MARKETING_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
+import DepartmentAgents from '@/components/DepartmentAgents'
 
 const MARKETING_META = [
   { produces: 'Brief & task queue' },
@@ -24,11 +25,11 @@ const PIPELINE_STEPS = MARKETING_DEPT_AGENTS.map(a => ({
 
 const OTHER_SECTIONS = [
   {
-    href: '/comercial/pipeline',
+    href: '/comercial',
     icon: '🚀',
     name: 'MIRA Sales',
     desc: 'B2B pipeline, AI scoring, icebreakers',
-    count: 5,
+    count: 7,
     color: '#EF4444',
   },
   {
@@ -36,7 +37,7 @@ const OTHER_SECTIONS = [
     icon: '🔭',
     name: 'MIRA Strategy',
     desc: '90-day plans, audits, business plans',
-    count: 4,
+    count: 7,
     color: '#6366F1',
   },
   {
@@ -44,7 +45,7 @@ const OTHER_SECTIONS = [
     icon: '💡',
     name: 'MIRA Innovation',
     desc: 'Trends, Design Thinking, projects',
-    count: 5,
+    count: 1,
     color: '#F97316',
   },
   {
@@ -59,8 +60,8 @@ const OTHER_SECTIONS = [
     href: '/finanzas',
     icon: '💰',
     name: 'MIRA Finance',
-    desc: 'Wealth, investment, FI planning',
-    count: 4,
+    desc: 'Revenue, data analytics, audits',
+    count: 3,
     color: '#F59E0B',
   },
 ]
@@ -100,6 +101,8 @@ export default function RosterPage() {
 
       <MarketingQuickActions />
 
+      <DepartmentAgents department="marketing" />
+
       <div className="grid grid-cols-4 gap-4">
         {MARKETING_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
@@ -108,7 +111,7 @@ export default function RosterPage() {
             status="idle"
             lastTask={null}
             step={i + 1}
-            produces={MARKETING_META[i].produces}
+            produces={MARKETING_META[i]?.produces}
           />
         ))}
       </div>

@@ -4,7 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
-import { AGENT_DISPLAY_NAMES } from '@/lib/agent-meta'
+import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 import { CLIENT_ID } from '@/lib/constants'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
@@ -23,6 +23,12 @@ export async function POST(req: NextRequest) {
     if (!role || !message) {
       return new Response(JSON.stringify({ error: 'role y message son requeridos' }), {
         status: 400, headers: { 'Content-Type': 'application/json' }
+      })
+    }
+
+    if (!AGENT_METADATA[role]) {
+      return new Response(JSON.stringify({ error: `Agente '${role}' no encontrado` }), {
+        status: 404, headers: { 'Content-Type': 'application/json' }
       })
     }
 

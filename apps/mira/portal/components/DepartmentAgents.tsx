@@ -1,10 +1,30 @@
 'use client'
 
 import Link from 'next/link'
-import { COMERCIAL_AGENTS } from '@/lib/department-agents'
+import {
+  COMERCIAL_DEPT_AGENTS,
+  MARKETING_DEPT_AGENTS,
+  ESTRATEGIA_DEPT_AGENTS,
+  OPERACIONES_DEPT_AGENTS,
+  INNOVACION_DEPT_AGENTS,
+  FINANZAS_DEPT_AGENTS,
+} from '@/lib/agent-meta'
 
-export default function DepartmentAgents() {
-  const agents = COMERCIAL_AGENTS
+const DEPT_AGENTS = {
+  comercial: COMERCIAL_DEPT_AGENTS,
+  marketing: MARKETING_DEPT_AGENTS,
+  estrategia: ESTRATEGIA_DEPT_AGENTS,
+  operaciones: OPERACIONES_DEPT_AGENTS,
+  innovacion: INNOVACION_DEPT_AGENTS,
+  finanzas: FINANZAS_DEPT_AGENTS,
+}
+
+interface DepartmentAgentsProps {
+  department?: 'comercial' | 'marketing' | 'estrategia' | 'operaciones' | 'innovacion' | 'finanzas'
+}
+
+export default function DepartmentAgents({ department = 'comercial' }: DepartmentAgentsProps) {
+  const agents = DEPT_AGENTS[department]
 
   if (agents.length === 0) return null
 
