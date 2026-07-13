@@ -150,8 +150,7 @@ export default function AgentPage() {
   }
 
   const handleDocumentUpload = async (file: File) => {
-    if (!clientId) return
-    setUploadingDoc(true)
+    if (!clientId) throw new Error('No client context')
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -159,13 +158,12 @@ export default function AgentPage() {
         method: 'POST',
         body: formData,
       })
-      if (!res.ok) throw new Error('Upload failed')
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Upload failed')
       setShowUploader(false)
       sendMessage(`I've uploaded a document: ${file.name}. Please analyze it and provide insights.`)
     } catch (err) {
-      console.error('Upload error:', err)
-    } finally {
-      setUploadingDoc(false)
+      throw err
     }
   }
 

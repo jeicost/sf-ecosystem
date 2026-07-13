@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { Upload, AlertCircle, CheckCircle2 } from 'lucide-react'
 
 interface DocumentUploaderProps {
-  onUploadComplete: (file: File) => void
+  onUploadComplete: (file: File) => Promise<void>
   acceptedTypes?: string[]
   maxSizeMB?: number
 }
@@ -57,7 +57,7 @@ export default function DocumentUploader({
 
     setIsUploading(true)
     try {
-      onUploadComplete(file)
+      await onUploadComplete(file)
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
