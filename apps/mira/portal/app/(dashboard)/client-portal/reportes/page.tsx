@@ -99,8 +99,12 @@ export default function ReportesPage() {
                     <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>{report.uses} usos</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-lg font-bold text-yellow-400">{report.avgRating.toFixed(1)}</p>
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>★ rating</p>
+                    <p className="text-lg font-bold text-yellow-400">
+                      {report.avgRating !== null ? report.avgRating.toFixed(1) : '—'}
+                    </p>
+                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                      {report.avgRating !== null ? '★ rating' : 'sin rating'}
+                    </p>
                   </div>
                 </div>
                 <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>

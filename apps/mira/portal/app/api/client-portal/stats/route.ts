@@ -97,13 +97,50 @@ export async function GET(request: NextRequest) {
       console.error('Error fetching tool stats:', e)
     }
 
+    // Query ratings from generation_feedback
+    const toolRatings: Record<string, { sum: number; count: number }> = {}
+    try {
+      const { data: feedbackData } = await db
+        .from('deliverables')
+        .select(`
+          tool_slug,
+          generation_feedback (rating)
+        `)
+        .eq('client_id', clientId)
+
+      if (feedbackData) {
+        feedbackData.forEach(item => {
+          const tool = item.tool_slug
+          if (!toolRatings[tool]) {
+            toolRatings[tool] = { sum: 0, count: 0 }
+          }
+          const feedbacks = item.generation_feedback as Array<{ rating: number | null }>
+          feedbacks.forEach(fb => {
+            if (fb.rating) {
+              toolRatings[tool].sum += fb.rating
+              toolRatings[tool].count += 1
+            }
+          })
+        })
+      }
+    } catch (e) {
+      console.error('Error fetching ratings:', e)
+    }
+
     // Convert to array format for reportes page
-    const toolReports = Object.entries(toolStats).map(([tool, stats]) => ({
-      tool: formatToolName(tool),
-      uses: stats.uses || 0,
-      avgRating: 4.5 + Math.random() * 0.4, // 4.5-4.9 range
-      lastUsed: stats.lastUsed || new Date().toISOString(),
-    }))
+    const toolReports = Object.entries(toolStats).map(([tool, stats]) => {
+      const ratings = toolRatings[tool]
+      const avgRating = ratings && ratings.count > 0
+        ? ratings.sum / ratings.count
+        : null
+
+      return {
+        tool: formatToolName(tool),
+        uses: stats.uses || 0,
+        avgRating: avgRating ? parseFloat(avgRating.toFixed(1)) : null,
+        lastUsed: stats.lastUsed || new Date().toISOString(),
+      }
+    })
 
     return NextResponse.json({
       contentGenerated,
