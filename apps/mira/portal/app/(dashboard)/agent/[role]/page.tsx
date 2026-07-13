@@ -15,6 +15,7 @@ import { AGENT_DETAILS } from '@/lib/agent-details'
 import { getQuickPrompts } from '@/lib/agent-quick-prompts'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { getAgentActivityTasks, getAgentStats } from '@/lib/agent-activity-stats'
+import DocumentUploader from '@/components/document-uploader'
 import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
 
@@ -39,52 +40,6 @@ const TASK_STATUS_CONFIG: Record<string, { icon: any; color: string }> = {
   waiting: { icon: Clock, color: 'text-yellow-500' },
 }
 
-const IMPROVEMENT_AREAS: Record<AgentPackage | 'default', { label: string; pct: number }[]> = {
-  marketing: [
-    { label: 'Brand voice accuracy', pct: 94 },
-    { label: 'Direct approval rate', pct: 84 },
-    { label: 'Execution speed', pct: 78 },
-  ],
-  comercial: [
-    { label: 'ICP match accuracy', pct: 87 },
-    { label: 'Pipeline conversion', pct: 72 },
-    { label: 'Personalization score', pct: 91 },
-  ],
-  estrategia: [
-    { label: 'Analysis depth', pct: 88 },
-    { label: 'Actionability', pct: 82 },
-    { label: 'Framework accuracy', pct: 90 },
-  ],
-  innovacion: [
-    { label: 'Trend accuracy', pct: 73 },
-    { label: 'Framework application', pct: 85 },
-    { label: 'Signal detection', pct: 79 },
-  ],
-  operaciones: [
-    { label: 'Alert accuracy', pct: 96 },
-    { label: 'System coverage', pct: 88 },
-    { label: 'Response time', pct: 92 },
-  ],
-  finanzas: [
-    { label: 'Calculation accuracy', pct: 97 },
-    { label: 'Plan personalization', pct: 83 },
-    { label: 'Risk assessment', pct: 89 },
-  ],
-  default: [
-    { label: 'Response accuracy', pct: 92 },
-    { label: 'Task completion rate', pct: 88 },
-    { label: 'User satisfaction', pct: 85 },
-  ],
-}
-
-const DEFAULT_RECENT_TASKS: Record<string, any> = {
-  orchestrator: [
-    { id: '1', task: 'Coordinated "DIP NOW" campaign for Salsa Burgers', status: 'completed', timeAgo: '2h' },
-    { id: '2', task: 'Assigned Reels brief: Luna → Alex → Zoe', status: 'completed', timeAgo: '4h' },
-    { id: '3', task: 'Reviewing weekly team pipeline', status: 'working', timeAgo: 'now' },
-  ],
-}
-
 export default function AgentPage() {
   const router = useRouter()
   const params = useParams()
@@ -97,6 +52,8 @@ export default function AgentPage() {
   const [settingsLoading, setSettingsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [showUploader, setShowUploader] = useState(false)
+  const [uploadingDoc, setUploadingDoc] = useState(false)
   const [recentTasks, setRecentTasks] = useState<AgentTask[]>([])
   const [agentStats, setAgentStats] = useState<AgentStats>({
     totalInteractions: 0,
@@ -188,6 +145,26 @@ export default function AgentPage() {
     if (!text.trim()) return
     sendMessage(text)
     setInputValue('')
+  }
+
+  const handleDocumentUpload = async (file: File) => {
+    if (!clientId) return
+    setUploadingDoc(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await fetch(`/api/agent/${role}/upload-document?clientId=${clientId}`, {
+        method: 'POST',
+        body: formData,
+      })
+      if (!res.ok) throw new Error('Upload failed')
+      setShowUploader(false)
+      sendMessage(`I've uploaded a document: ${file.name}. Please analyze it and provide insights.`)
+    } catch (err) {
+      console.error('Upload error:', err)
+    } finally {
+      setUploadingDoc(false)
+    }
   }
 
   return (
@@ -393,9 +370,20 @@ export default function AgentPage() {
               )}
             </div>
 
+            {/* Document Upload Area */}
+            {showUploader && (
+              <div className="border-t border-slate-700 p-4 bg-slate-800/50">
+                <DocumentUploader
+                  onUploadComplete={handleDocumentUpload}
+                  acceptedTypes={['.pdf', '.docx', '.txt', '.md']}
+                  maxSizeMB={50}
+                />
+              </div>
+            )}
+
             {/* Input */}
             <div className="border-t border-slate-700 p-4 bg-slate-800/50">
-              <div className="flex gap-2">
+              <div className="flex gap-2 mb-2">
                 <input
                   type="text"
                   placeholder="Ask something..."
@@ -411,6 +399,12 @@ export default function AgentPage() {
                   <Send size={16} />
                 </button>
               </div>
+              <button
+                onClick={() => setShowUploader(!showUploader)}
+                className="text-xs text-slate-400 hover:text-slate-300 transition"
+              >
+                {uploadingDoc ? 'Uploading...' : showUploader ? 'Hide upload' : '+ Upload document'}
+              </button>
             </div>
           </div>
         )}
