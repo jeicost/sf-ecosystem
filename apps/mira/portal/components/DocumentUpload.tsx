@@ -52,16 +52,31 @@ export default function DocumentUpload() {
       const fileSize = file.size
       const fileMimeType = file.type
 
-      // In production, you'd upload to a storage service (S3, Supabase Storage, etc.)
-      // For now, we'll just store metadata with a placeholder URL
-      const fileUrl = `data:${fileMimeType};name=${encodeURIComponent(fileName)}`
+      // Upload file to Supabase Storage
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('docType', docType)
 
-      const res = await fetch('/api/documents', {
+      const res = await fetch('/api/documents/upload', {
+        method: 'POST',
+        body: formData,
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Failed to upload document')
+      }
+
+      const { fileUrl, documentId } = await res.json()
+
+      // Save document metadata with real URL
+      const metaRes = await fetch('/api/documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          id: documentId,
           doc_type: docType,
-          title: fileName.replace(/\.[^/.]+$/, ''), // Remove extension
+          title: fileName.replace(/\.[^/.]+$/, ''),
           description: `Uploaded on ${new Date().toLocaleDateString()}`,
           file_url: fileUrl,
           file_size: fileSize,
@@ -70,9 +85,8 @@ export default function DocumentUpload() {
         }),
       })
 
-      if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to upload document')
+      if (!metaRes.ok) {
+        throw new Error('Failed to save document metadata')
       }
 
       setSuccess(true)
