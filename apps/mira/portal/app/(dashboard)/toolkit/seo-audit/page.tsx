@@ -93,19 +93,22 @@ export default function SeoAuditPage() {
 }
 
 function SeoAuditResult({ data }: { data?: any }) {
+  // Map statCards from response or use fallback
+  const statCards = data?.statCards || [
+    { label: 'Pages Indexed', value: '142', color: '#22c55e' },
+    { label: 'Core Web Vitals', value: 'Needs Work', color: '#f59e0b' },
+    { label: 'Ranking Keywords', value: '1,247', color: '#3b82f6' },
+    { label: 'Backlink Profile', value: '3.2K', color: '#a78bfa' },
+  ]
+
   return (
     <ReportTemplate
       title="SEO Audit Report"
       subtitle="Complete technical & content analysis with competitive benchmarking"
-      score={data?.score || 72}
-      scoreLabel="SEO Health Score"
-      statCards={[
-        { label: 'Pages Indexed', value: data?.indexedPages || '142', color: '#22c55e' },
-        { label: 'Core Web Vitals', value: data?.coreWebVitals || 'Needs Work', color: '#f59e0b' },
-        { label: 'Ranking Keywords', value: data?.keywords || '1,247', color: '#3b82f6' },
-        { label: 'Backlink Profile', value: data?.backlinks || '3.2K', color: '#a78bfa' },
-      ]}
-      sections={[
+      score={data?.overall_score || 72}
+      scoreLabel={data?.scoreLabel || 'SEO Health Score'}
+      statCards={statCards}
+      sections={data?.sections || [
         {
           title: 'Technical SEO',
           findings: [
@@ -157,7 +160,7 @@ function SeoAuditResult({ data }: { data?: any }) {
 - burgers-madrid.es: Higher DA (42 vs your 38), recent link acquisition`,
         },
       ]}
-      actions={[
+      actions={data?.actions || [
         {
           id: 1,
           title: 'Fix mobile viewport meta tag',
@@ -200,7 +203,7 @@ function SeoAuditResult({ data }: { data?: any }) {
         },
       ]}
       accentColor="#F87171"
-      generatedAt="just now"
+      generatedAt={data?.generatedAt || 'just now'}
     />
   )
 }

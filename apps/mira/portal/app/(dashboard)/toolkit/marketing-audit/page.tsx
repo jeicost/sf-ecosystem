@@ -96,19 +96,22 @@ export default function MarketingAuditPage() {
 }
 
 function MarketingAuditResult({ data }: { data?: any }) {
+  // Map statCards from response or use fallback
+  const statCards = data?.statCards || [
+    { label: 'Active Channels', value: '4', color: '#22c55e' },
+    { label: 'Quarterly Reach', value: '145K', color: '#3b82f6' },
+    { label: 'Campaign ROI', value: '3.2x', color: '#a78bfa' },
+    { label: 'Team Efficiency', value: '78%', color: '#f59e0b' },
+  ]
+
   return (
     <ReportTemplate
       title="Marketing Audit Report"
       subtitle="Comprehensive channel analysis, competitor benchmarking & quarterly roadmap"
-      score={data?.score || 68}
-      scoreLabel="Marketing Health Score"
-      statCards={[
-        { label: 'Active Channels', value: data?.channels || '4', color: '#22c55e' },
-        { label: 'Quarterly Reach', value: data?.reach || '145K', color: '#3b82f6' },
-        { label: 'Campaign ROI', value: data?.roi || '3.2x', color: '#a78bfa' },
-        { label: 'Team Efficiency', value: data?.efficiency || '78%', color: '#f59e0b' },
-      ]}
-      sections={[
+      score={data?.overall_score || 68}
+      scoreLabel={data?.scoreLabel || 'Marketing Health Score'}
+      statCards={statCards}
+      sections={data?.sections || [
         {
           title: 'Channel Performance',
           findings: [
@@ -174,7 +177,7 @@ Recommended reallocation:
 - Influencer partnerships (new) → 20% (€5,000)`,
         },
       ]}
-      actions={[
+      actions={data?.actions || [
         {
           id: 1,
           title: 'Implement Instagram content calendar (3x/week minimum)',
@@ -225,7 +228,7 @@ Recommended reallocation:
         },
       ]}
       accentColor="#60A5FA"
-      generatedAt="just now"
+      generatedAt={data?.generatedAt || 'just now'}
     />
   )
 }

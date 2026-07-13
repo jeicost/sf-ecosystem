@@ -5,6 +5,8 @@ import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { Loader2, CheckCircle, AlertCircle, Zap } from 'lucide-react'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { useActiveClient } from '@/lib/client-context'
+import { CLIENT_ID } from '@/lib/constants'
 
 interface Generation {
   id: string
@@ -17,6 +19,9 @@ interface Generation {
 }
 
 export default function ToolkitHub() {
+  const { activeClient } = useActiveClient()
+  const clientId = activeClient?.id ?? CLIENT_ID
+
   const [generations, setGenerations] = useState<Generation[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -24,7 +29,7 @@ export default function ToolkitHub() {
   // Fetch generations on mount
   useEffect(() => {
     fetchGenerations()
-    
+
     // Poll for updates every 5 seconds if there are pending/processing items
     const interval = setInterval(() => {
       setGenerations((prev) => {
@@ -37,7 +42,7 @@ export default function ToolkitHub() {
     }, 5000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [clientId])
 
   const fetchGenerations = async () => {
     try {
@@ -45,6 +50,7 @@ export default function ToolkitHub() {
       const { data, error: dbError } = await client
         .from('generation_queue')
         .select('id, tool_slug, status, result_data, created_at, completed_at, error_message')
+        .eq('client_id', clientId)
         .order('created_at', { ascending: false })
         .limit(50)
 

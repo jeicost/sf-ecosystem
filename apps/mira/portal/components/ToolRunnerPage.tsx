@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { fetchBrandBrainData } from '@/lib/brand-brain-loader'
 import { useActiveClient } from '@/lib/client-context'
@@ -45,6 +46,8 @@ export default function ToolRunnerPage({
 }: ToolRunnerPageProps) {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
+  const searchParams = useSearchParams()
+  const resultQueueId = searchParams.get('result')
 
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {}
@@ -71,6 +74,36 @@ export default function ToolRunnerPage({
     }
     loadBrandData()
   }, [clientId])
+
+  // Load saved result if ?result=id is in URL
+  useEffect(() => {
+    if (!resultQueueId) return
+
+    const loadSavedResult = async () => {
+      try {
+        const res = await fetch(`/api/toolkit/status?queue_id=${resultQueueId}`)
+        if (!res.ok) {
+          setError('Could not load saved result')
+          return
+        }
+
+        const data = await res.json()
+        if (data.status === 'completed' && data.result_data) {
+          setResultData(data.result_data)
+          setSuccess(true)
+        } else if (data.status === 'failed') {
+          setError(data.error_message || 'Generation failed')
+        } else {
+          setError('Result not ready yet')
+        }
+      } catch (err) {
+        console.error('Error loading saved result:', err)
+        setError('Failed to load result')
+      }
+    }
+
+    loadSavedResult()
+  }, [resultQueueId])
 
   // Poll for generation result every 2 seconds
   useEffect(() => {
