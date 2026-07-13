@@ -7,8 +7,14 @@ import StatCard from '@/components/stat-card'
 import { getClientStats } from '@/lib/client-portal-service'
 import { createClient } from '@/lib/supabase'
 
+interface TrendData {
+  months: Array<{ monthYear: string; count: number; label: string }>
+  trend: { percentChange: number; confidence: string; message?: string }
+}
+
 export default function ReportesPage() {
   const [stats, setStats] = useState<any>(null)
+  const [trends, setTrends] = useState<TrendData | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -32,8 +38,15 @@ export default function ReportesPage() {
         }
 
         if (clientId) {
-          const data = await getClientStats(clientId)
-          setStats(data)
+          const statsData = await getClientStats(clientId)
+          setStats(statsData)
+
+          // Fetch trends data
+          const trendsRes = await fetch(`/api/client-portal/trends?clientId=${clientId}`)
+          if (trendsRes.ok) {
+            const trendsData = await trendsRes.json()
+            setTrends(trendsData)
+          }
         }
       } catch (error) {
         console.error('Failed to fetch stats:', error)
@@ -109,21 +122,43 @@ export default function ReportesPage() {
           Tendencias Mensuales
         </p>
         <div className="card px-6 py-8">
-          <div className="flex items-end justify-between h-32">
-            {['Jun', 'Jul (parcial)'].map((month, i) => (
-              <div key={month} className="flex flex-col items-center gap-2">
-                <div className="w-12 rounded-t" style={{
-                  height: i === 0 ? '120px' : '80px',
-                  background: 'linear-gradient(180deg, #8B5CF6 0%, rgba(139,92,246,0.3) 100%)',
-                  boxShadow: '0 4px 12px rgba(139,92,246,0.2)',
-                }}></div>
-                <p className="text-xs text-white font-medium">{month}</p>
+          {trends && trends.months && trends.months.length > 0 ? (
+            <>
+              <div className="flex items-end justify-between h-32">
+                {trends.months.map((month, i) => {
+                  const maxCount = Math.max(...trends.months.map((m) => m.count)) || 1
+                  const heightPercent = (month.count / maxCount) * 100
+                  const barHeight = Math.max(20, (heightPercent / 100) * 120) // Min 20px, max 120px
+                  return (
+                    <div key={month.monthYear} className="flex flex-col items-center gap-2">
+                      <div className="w-12 rounded-t" style={{
+                        height: `${barHeight}px`,
+                        background: 'linear-gradient(180deg, #8B5CF6 0%, rgba(139,92,246,0.3) 100%)',
+                        boxShadow: '0 4px 12px rgba(139,92,246,0.2)',
+                        transition: 'height 0.3s ease-out',
+                      }}></div>
+                      <div className="text-center">
+                        <p className="text-xs text-white font-medium">{month.label}</p>
+                        <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                          {month.count} {month.count === 1 ? 'generación' : 'generaciones'}
+                        </p>
+                      </div>
+                    </div>
+                  )
+                })}
               </div>
-            ))}
-          </div>
-          <p className="text-xs mt-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            📊 Proyección: +15% de uso en julio vs junio
-          </p>
+              <p className="text-xs mt-4" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                📊 {trends.trend.message || `${trends.trend.percentChange > 0 ? '+' : ''}${trends.trend.percentChange}%`}
+                {trends.trend.confidence === 'partial' && ' (mes parcial)'}
+              </p>
+            </>
+          ) : (
+            <div className="flex items-center justify-center h-32">
+              <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                No hay datos suficientes para mostrar tendencias
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
