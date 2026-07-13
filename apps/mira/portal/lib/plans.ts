@@ -5,8 +5,8 @@ export type UserPlan = 'super_admin' | 'admin' | 'scale' | 'growth' | 'starter'
 // ─── Queried version can replace this in Fase 4 when caching/cache-invalidation is added
 export const PLAN_SECTIONS: Record<UserPlan, string[]> = {
   super_admin: ['marketing', 'comercial', 'estrategia', 'innovacion', 'admin', 'finanzas'],
-  admin:   ['marketing', 'comercial', 'estrategia', 'innovacion', 'admin', 'finanzas'],
-  scale:   ['marketing', 'comercial', 'estrategia', 'innovacion', 'admin', 'finanzas'],
+  admin:   ['marketing', 'comercial', 'estrategia', 'innovacion', 'finanzas'],
+  scale:   ['marketing', 'comercial', 'estrategia', 'innovacion', 'finanzas'],
   growth:  ['marketing', 'comercial', 'estrategia'],
   starter: ['marketing'],
 }

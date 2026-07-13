@@ -46,7 +46,7 @@ export default function HomePage() {
 
   // Redirect regular clients to client portal
   useEffect(() => {
-    if (plan && plan !== 'super_admin' && plan !== 'admin') {
+    if (plan && plan !== 'super_admin') {
       redirect('/client-portal')
     }
   }, [plan])
@@ -55,7 +55,7 @@ export default function HomePage() {
     <div className="px-8 py-8 max-w-5xl">
 
       {/* Super Admin: Clients Dashboard | Regular users: Teams + Projects */}
-      {plan === 'super_admin' || plan === 'admin' ? (
+      {plan === 'super_admin' ? (
         <div className="mb-10">
           <AdminClientsOverview />
         </div>
