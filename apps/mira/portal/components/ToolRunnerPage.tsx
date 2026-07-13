@@ -30,7 +30,7 @@ export interface ToolConfig {
 interface ToolRunnerPageProps {
   config: ToolConfig
   onGenerate: (formData: Record<string, any>) => Promise<any>
-  resultComponent?: React.ReactNode
+  resultComponent?: any
   isLoading?: boolean
 }
 
@@ -51,6 +51,7 @@ export default function ToolRunnerPage({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [resultData, setResultData] = useState<any>(null)
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -61,9 +62,11 @@ export default function ToolRunnerPage({
     setIsLoading(true)
     setError(null)
     setSuccess(false)
+    setResultData(null)
 
     try {
-      await onGenerate(formData)
+      const data = await onGenerate(formData)
+      setResultData(data)
       setSuccess(true)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
@@ -227,9 +230,13 @@ export default function ToolRunnerPage({
             )}
           </button>
         </form>
-      ) : (
-        resultComponent
-      )}
+      ) : resultComponent ? (
+        typeof resultComponent === 'function' ? (
+          (resultComponent as any)({ data: resultData })
+        ) : (
+          resultComponent
+        )
+      ) : null}
     </div>
   )
 }
