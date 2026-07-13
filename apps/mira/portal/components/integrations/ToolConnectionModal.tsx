@@ -32,6 +32,9 @@ export default function ToolConnectionModal({
   const [accountHandle, setAccountHandle] = useState('')
   const [authToken, setAuthToken] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [validating, setValidating] = useState(false)
+  const [validationStatus, setValidationStatus] = useState<'valid' | 'invalid' | null>(null)
+  const [accountInfo, setAccountInfo] = useState<any>(null)
 
   if (!isOpen) return null
 
@@ -39,9 +42,15 @@ export default function ToolConnectionModal({
     e.preventDefault()
     setError(null)
 
-    if (tool.authType === 'api-key' && !authToken.trim()) {
-      setError('API Key is required')
-      return
+    if (tool.authType === 'api-key') {
+      if (!authToken.trim()) {
+        setError('API Key is required')
+        return
+      }
+      if (validationStatus !== 'valid') {
+        setError('Please wait for validation to complete or provide a valid API key')
+        return
+      }
     }
 
     try {
@@ -53,6 +62,8 @@ export default function ToolConnectionModal({
       setAccountEmail('')
       setAccountHandle('')
       setAuthToken('')
+      setValidationStatus(null)
+      setAccountInfo(null)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to connect tool'
       setError(message)
@@ -68,6 +79,53 @@ export default function ToolConnectionModal({
       const message = err instanceof Error ? err.message : 'Failed to start OAuth flow'
       setError(message)
     }
+  }
+
+  const validateApiKey = async (key: string) => {
+    if (!key.trim()) {
+      setValidationStatus(null)
+      setAccountInfo(null)
+      return
+    }
+
+    setValidating(true)
+    try {
+      const response = await fetch('/api/integrations/validate-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ toolId: tool.id, apiKey: key }),
+      })
+
+      const result = await response.json()
+      setValidationStatus(result.valid ? 'valid' : 'invalid')
+      if (result.valid && result.accountInfo) {
+        setAccountInfo(result.accountInfo)
+        setError(null)
+      } else if (!result.valid) {
+        setAccountInfo(null)
+        setError(result.error || 'Invalid API key')
+      }
+    } catch (err) {
+      setValidationStatus('invalid')
+      setAccountInfo(null)
+      setError('Validation error')
+    } finally {
+      setValidating(false)
+    }
+  }
+
+  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setAuthToken(value)
+
+    // Debounce validation
+    const timer = setTimeout(() => {
+      if (tool.authType === 'api-key') {
+        validateApiKey(value)
+      }
+    }, 500)
+
+    return () => clearTimeout(timer)
   }
 
   return (
@@ -104,21 +162,38 @@ export default function ToolConnectionModal({
               <>
                 {/* Auth Token Input */}
                 <div>
-                  <label htmlFor="token" className="block text-xs font-semibold text-[#666] mb-2">
-                    API Key / Token <span className="text-[#FF6B6B]">*</span>
+                  <label htmlFor="token" className="block text-xs font-semibold text-[#666] mb-2 flex items-center justify-between">
+                    <span>API Key / Token <span className="text-[#FF6B6B]">*</span></span>
+                    {validating && <span className="text-xs text-[#8B5CF6]">Validating...</span>}
+                    {validationStatus === 'valid' && <span className="text-xs text-[#10B981]">✓ Valid</span>}
+                    {validationStatus === 'invalid' && <span className="text-xs text-[#FF6B6B]">✗ Invalid</span>}
                   </label>
                   <input
                     id="token"
                     type="password"
                     placeholder="sk-xxxxxxxxx or your-api-key"
                     value={authToken}
-                    onChange={(e) => setAuthToken(e.target.value)}
-                    className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+                    onChange={handleTokenChange}
+                    className={`w-full px-3 py-2 rounded bg-[#1E1E1E] border text-sm text-white placeholder-[#666] focus:outline-none transition-colors ${
+                      validationStatus === 'valid'
+                        ? 'border-[#10B981] focus:border-[#10B981]'
+                        : validationStatus === 'invalid'
+                          ? 'border-[#FF6B6B] focus:border-[#FF6B6B]'
+                          : 'border-[#333] focus:border-[#EC4899]'
+                    }`}
                     autoComplete="off"
                   />
                   <p className="text-xs text-[#666] mt-1">
                     Your credentials are encrypted and never shared
                   </p>
+
+                  {/* Account Info Display */}
+                  {accountInfo && (
+                    <div className="mt-3 p-2 rounded bg-[#10B981]10 border border-[#10B981]30 text-xs text-[#10B981]">
+                      {accountInfo.email && <div>Account: {accountInfo.email}</div>}
+                      {accountInfo.name && <div>Name: {accountInfo.name}</div>}
+                    </div>
+                  )}
                 </div>
 
                 {/* Optional Email Input */}
@@ -208,8 +283,9 @@ export default function ToolConnectionModal({
               {tool.authType === 'api-key' && (
                 <button
                   type="submit"
-                  disabled={isConnecting}
-                  className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                  disabled={isConnecting || validating || validationStatus !== 'valid'}
+                  className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
+                  title={validationStatus !== 'valid' ? 'Please validate the API key first' : ''}
                 >
                   {isConnecting ? (
                     <>
