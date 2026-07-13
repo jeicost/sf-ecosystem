@@ -5,17 +5,49 @@ type Locale = 'es' | 'en'
 
 const translations: Record<Locale, Record<string, string>> = {
   es: {
-    // UI
+    // SIDEBAR NAVIGATION
     'nav.home': 'Inicio',
+    'nav.my-team': 'Mi Equipo',
+    'nav.command': 'Command',
+    'nav.approvals': 'Aprobaciones',
+    'nav.performance': 'Rendimiento',
+    'nav.new-brief': 'Nuevo Brief',
     'nav.brand-brain': 'Brand Brain',
-    'nav.toolkit': 'Toolkit',
+    'nav.toolkit': 'Centro de Reportes',
     'nav.quick-actions': 'Acciones Rápidas',
     'nav.integrations': 'Integraciones',
     'nav.admin': 'Admin',
+    'nav.users': 'Usuarios',
+    'nav.billing': 'Facturación',
+    'nav.system': 'Sistema',
     'nav.logout': 'Cerrar sesión',
     'nav.language': 'Idioma',
 
-    // Brand Brain
+    // SECTION HEADERS
+    'section.marketing': 'MIRA Marketing',
+    'section.marketing.desc': 'Campañas, briefs, publicación de contenido',
+    'section.comercial': 'MIRA Sales',
+    'section.comercial.desc': 'Pipeline B2B, puntuación de IA, icebreakers',
+    'section.estrategia': 'MIRA Strategy',
+    'section.estrategia.desc': 'Planes 90 días, auditorías, planes de negocio',
+    'section.innovacion': 'MIRA Innovation',
+    'section.innovacion.desc': 'Tendencias, Design Thinking, oportunidades',
+    'section.finanzas': 'MIRA Finance',
+    'section.finanzas.desc': 'Ingresos, análisis de datos, auditorías',
+    'section.admin': 'MIRA Admin',
+    'section.admin.desc': 'Facturación, onboarding, observabilidad',
+
+    // STAT LABELS
+    'stat.active-agents': 'Agentes activos',
+    'stat.pending': 'Pendiente',
+    'stat.system-alerts': 'Alertas del sistema',
+    'stat.onboarding': 'Clientes en onboarding',
+    'stat.leads': 'Leads',
+    'stat.proposals': 'Propuestas',
+    'stat.pipeline-value': 'Valor del pipeline',
+    'stat.conversion-rate': 'Tasa de conversión',
+
+    // BRAND BRAIN
     'brain.title': 'Mi Brand Brain',
     'brain.subtitle': 'Perfil de marca, pilares de contenido y voz',
     'brain.identity': 'Tu Identidad',
@@ -25,37 +57,48 @@ const translations: Record<Locale, Record<string, string>> = {
     'brain.no-configured': 'No configurado',
     'brain.status': 'Estado Actual',
 
-    // Toolkit
-    'toolkit.title': 'Centro de Herramientas',
+    // TOOLKIT
+    'toolkit.title': 'Centro de Reportes',
+    'toolkit.subtitle': 'Genera entregables con IA',
     'toolkit.generate': 'Generar',
     'toolkit.download-pdf': 'Descargar PDF',
     'toolkit.save-to-drive': 'Guardar en Google Drive',
     'toolkit.result': 'Resultado',
+    'toolkit.seo-audit': 'SEO Audit',
+    'toolkit.marketing-audit': 'Marketing Audit',
+    'toolkit.action-plan': 'Action Plan 30/60/90',
+    'toolkit.competitive-analysis': 'Análisis Competitivo',
+    'toolkit.investor-deck': 'Investor Deck',
+    'toolkit.brandbook': 'Brandbook',
+    'toolkit.brand-briefing': 'Brand Briefing',
+    'toolkit.content-pack': 'Content Pack',
+    'toolkit.marketing-campaign': 'Generador de Campañas',
+    'toolkit.community-blueprint': 'Community Blueprint',
 
-    // Quick Actions
+    // QUICK ACTIONS
     'actions.title': 'Acciones Rápidas',
     'actions.generating': 'Generando...',
     'actions.complete': 'Completado',
     'actions.save-to-memory': 'Guardar en Memoria',
     'actions.copy': 'Copiar',
 
-    // Agents (30)
-    'agent.orchestrator': 'Marco — Orquestador',
+    // AGENTS (30)
+    'agent.marco': 'Marco — Orquestador',
     'agent.strategos': 'Strategos — Arquitecto Estratégico',
     'agent.atlas': 'Atlas — Cartógrafo de Sistemas',
-    'agent.content-strategist': 'Luna — Estratega de Contenido',
-    'agent.copywriter': 'Alex — Copywriter',
+    'agent.luna': 'Luna — Estratega de Contenido',
+    'agent.alex': 'Alex — Copywriter',
     'agent.herald': 'Herald — Anunciador',
-    'agent.designer': 'Zoe — Diseñador',
-    'agent.video-editor': 'Kai — Editor de Video',
-    'agent.social-media-manager': 'Noa — Estratega Social',
-    'agent.community-manager': 'Sam — Community Manager',
-    'agent.ads-manager': 'Riva — Gestor de Anuncios',
-    'agent.lead-scout': 'Rex — Cazador de Leads',
-    'agent.icp-scorer': 'Vera — Calificador ICP',
-    'agent.icebreaker-writer': 'Finn — Escritor de Icebreakers',
-    'agent.reply-qualifier': 'Quinn — Calificador de Respuestas',
-    'agent.proposal-writer': 'Nova — Arquitecta de Propuestas',
+    'agent.zoe': 'Zoe — Diseñador',
+    'agent.kai': 'Kai — Editor de Video',
+    'agent.noa': 'Noa — Estratega Social',
+    'agent.sam': 'Sam — Community Manager',
+    'agent.riva': 'Riva — Gestor de Anuncios',
+    'agent.rex': 'Rex — Cazador de Leads',
+    'agent.vera': 'Vera — Calificador ICP',
+    'agent.finn': 'Finn — Escritor de Icebreakers',
+    'agent.quinn': 'Quinn — Calificador de Respuestas',
+    'agent.nova': 'Nova — Arquitecta de Propuestas',
     'agent.blueprint': 'Blueprint — Planificador',
     'agent.kairos': 'Kairos — Experto en Timing',
     'agent.radar': 'Radar — Oficial de Inteligencia',
@@ -71,7 +114,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'agent.onboard': 'Onboard — Arquitecto de Onboarding',
     'agent.harbor': 'Harbor — Fortaleza Estratégica',
 
-    // Common
+    // COMMON
     'common.loading': 'Cargando...',
     'common.error': 'Error',
     'common.success': 'Éxito',
@@ -79,20 +122,57 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.save': 'Guardar',
     'common.delete': 'Eliminar',
     'common.edit': 'Editar',
+    'common.close': 'Cerrar',
+    'common.back': 'Atrás',
+    'common.other-teams': 'Otros equipos disponibles',
+    'common.agents-total': 'agentes totales',
+    'common.no-data': 'Sin datos',
   },
 
   en: {
-    // UI
+    // SIDEBAR NAVIGATION
     'nav.home': 'Home',
+    'nav.my-team': 'My Team',
+    'nav.command': 'Command',
+    'nav.approvals': 'Approvals',
+    'nav.performance': 'Performance',
+    'nav.new-brief': 'New Brief',
     'nav.brand-brain': 'Brand Brain',
-    'nav.toolkit': 'Toolkit',
+    'nav.toolkit': 'Centro de Reportes',
     'nav.quick-actions': 'Quick Actions',
     'nav.integrations': 'Integrations',
     'nav.admin': 'Admin',
+    'nav.users': 'Users',
+    'nav.billing': 'Billing',
+    'nav.system': 'System',
     'nav.logout': 'Logout',
     'nav.language': 'Language',
 
-    // Brand Brain
+    // SECTION HEADERS
+    'section.marketing': 'MIRA Marketing',
+    'section.marketing.desc': 'Campaigns, briefs, content publishing',
+    'section.comercial': 'MIRA Sales',
+    'section.comercial.desc': 'B2B pipeline, AI scoring, icebreakers',
+    'section.estrategia': 'MIRA Strategy',
+    'section.estrategia.desc': '90-day plans, audits, business plans',
+    'section.innovacion': 'MIRA Innovation',
+    'section.innovacion.desc': 'Trends, Design Thinking, opportunities',
+    'section.finanzas': 'MIRA Finance',
+    'section.finanzas.desc': 'Revenue, data analytics, audits',
+    'section.admin': 'MIRA Admin',
+    'section.admin.desc': 'Billing, onboarding, observability',
+
+    // STAT LABELS
+    'stat.active-agents': 'Active agents',
+    'stat.pending': 'Pending',
+    'stat.system-alerts': 'System alerts',
+    'stat.onboarding': 'Onboarding clients',
+    'stat.leads': 'Leads',
+    'stat.proposals': 'Proposals',
+    'stat.pipeline-value': 'Pipeline value',
+    'stat.conversion-rate': 'Conversion rate',
+
+    // BRAND BRAIN
     'brain.title': 'My Brand Brain',
     'brain.subtitle': 'Brand profile, content pillars, and voice',
     'brain.identity': 'Your Identity',
@@ -102,37 +182,48 @@ const translations: Record<Locale, Record<string, string>> = {
     'brain.no-configured': 'Not configured',
     'brain.status': 'Current Status',
 
-    // Toolkit
+    // TOOLKIT
     'toolkit.title': 'Toolkit',
+    'toolkit.subtitle': 'Generate deliverables with AI',
     'toolkit.generate': 'Generate',
     'toolkit.download-pdf': 'Download PDF',
     'toolkit.save-to-drive': 'Save to Google Drive',
     'toolkit.result': 'Result',
+    'toolkit.seo-audit': 'SEO Audit',
+    'toolkit.marketing-audit': 'Marketing Audit',
+    'toolkit.action-plan': 'Action Plan 30/60/90',
+    'toolkit.competitive-analysis': 'Competitive Analysis',
+    'toolkit.investor-deck': 'Investor Deck',
+    'toolkit.brandbook': 'Brandbook',
+    'toolkit.brand-briefing': 'Brand Briefing',
+    'toolkit.content-pack': 'Content Pack',
+    'toolkit.marketing-campaign': 'Campaign Generator',
+    'toolkit.community-blueprint': 'Community Blueprint',
 
-    // Quick Actions
+    // QUICK ACTIONS
     'actions.title': 'Quick Actions',
     'actions.generating': 'Generating...',
     'actions.complete': 'Complete',
     'actions.save-to-memory': 'Save to Memory',
     'actions.copy': 'Copy',
 
-    // Agents (30)
-    'agent.orchestrator': 'Marco — Orchestrator',
+    // AGENTS (30)
+    'agent.marco': 'Marco — Orchestrator',
     'agent.strategos': 'Strategos — Strategic Architect',
     'agent.atlas': 'Atlas — System Mapper',
-    'agent.content-strategist': 'Luna — Content Strategist',
-    'agent.copywriter': 'Alex — Copywriter',
+    'agent.luna': 'Luna — Content Strategist',
+    'agent.alex': 'Alex — Copywriter',
     'agent.herald': 'Herald — Announcer',
-    'agent.designer': 'Zoe — Designer',
-    'agent.video-editor': 'Kai — Video Editor',
-    'agent.social-media-manager': 'Noa — Social Strategist',
-    'agent.community-manager': 'Sam — Community Builder',
-    'agent.ads-manager': 'Riva — Ads Strategist',
-    'agent.lead-scout': 'Rex — Lead Scout',
-    'agent.icp-scorer': 'Vera — ICP Scorer',
-    'agent.icebreaker-writer': 'Finn — Icebreaker Writer',
-    'agent.reply-qualifier': 'Quinn — Reply Qualifier',
-    'agent.proposal-writer': 'Nova — Proposal Architect',
+    'agent.zoe': 'Zoe — Designer',
+    'agent.kai': 'Kai — Video Editor',
+    'agent.noa': 'Noa — Social Strategist',
+    'agent.sam': 'Sam — Community Builder',
+    'agent.riva': 'Riva — Ads Strategist',
+    'agent.rex': 'Rex — Lead Scout',
+    'agent.vera': 'Vera — ICP Scorer',
+    'agent.finn': 'Finn — Icebreaker Writer',
+    'agent.quinn': 'Quinn — Reply Qualifier',
+    'agent.nova': 'Nova — Proposal Architect',
     'agent.blueprint': 'Blueprint — Planner',
     'agent.kairos': 'Kairos — Timing Expert',
     'agent.radar': 'Radar — Intelligence Officer',
@@ -148,7 +239,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'agent.onboard': 'Onboard — Onboarding Architect',
     'agent.harbor': 'Harbor — Strategy Fortress',
 
-    // Common
+    // COMMON
     'common.loading': 'Loading...',
     'common.error': 'Error',
     'common.success': 'Success',
@@ -156,6 +247,11 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.save': 'Save',
     'common.delete': 'Delete',
     'common.edit': 'Edit',
+    'common.close': 'Close',
+    'common.back': 'Back',
+    'common.other-teams': 'Other available teams',
+    'common.agents-total': 'agents total',
+    'common.no-data': 'No data',
   },
 }
 
