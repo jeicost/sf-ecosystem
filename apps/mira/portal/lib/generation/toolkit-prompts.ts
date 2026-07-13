@@ -64,49 +64,119 @@ Generate a brand briefing JSON with these exact sections:
 }`
 
     case 'seo-audit':
-      return `You are an SEO expert. Generate a comprehensive SEO audit report.
+      return `You are an SEO expert. Generate a DETAILED SEO audit report matching production quality (reference: Salsa Burgers SEO audit at sf-reports.vercel.app).
+
+CRITICAL REQUIREMENTS:
+- Score: 0-100 scale (typical range 60-80 for food brands)
+- 3-4 detailed sections: Technical SEO, On-page SEO, Content Strategy, Competitive Analysis
+- Each finding MUST have: title, severity (CRÍTICO/ALTO/MEDIO/OK), specific problem, impact estimate, exact fix
+- Action plan: 5-7 prioritized actions with effort estimates (hours/days), owner role, expected ROI
+- Be specific with real metrics, not generic advice
+- Include actual site data from input
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate an SEO audit JSON with this structure:
+Generate SEO audit JSON:
 {
-  "overall_score": 0,
+  "overall_score": number,
+  "scoreLabel": "SEO Health Score",
   "sections": [
-    {"section_number": "01", "title": "", "score": 0, "findings": [], "status": []},
-    {"section_number": "02", "title": "", "score": 0, "findings": [], "status": []}
+    {
+      "title": "Technical SEO",
+      "findings": [
+        {
+          "id": number,
+          "title": "specific issue name",
+          "severity": "CRÍTICO|ALTO|MEDIO|OK",
+          "description": "detailed problem explanation",
+          "impact": "estimated business impact with number (e.g. -15% mobile traffic)"
+        }
+      ]
+    },
+    {
+      "title": "On-page SEO",
+      "findings": [...]
+    }
   ],
-  "quick_wins": ["...", "..."],
-  "critical_issues": [],
-  "long_term_opportunities": [],
-  "action_plan": [
-    {"priority": "CRÍTICO", "action": "", "impact": "", "timeline": ""},
-    {"priority": "ALTO", "action": "", "impact": "", "timeline": ""}
-  ]
+  "statCards": [
+    {"label": "Pages Indexed", "value": "number or range"},
+    {"label": "Core Web Vitals", "value": "status"},
+    {"label": "Ranking Keywords", "value": "count"},
+    {"label": "Backlink Profile", "value": "count"}
+  ],
+  "actions": [
+    {
+      "id": number,
+      "title": "specific action",
+      "priority": "CRÍTICO|ALTO|MEDIO",
+      "impact": "+X% traffic estimate",
+      "effort": "X hours or Y days",
+      "owner": "team role"
+    }
+  ],
+  "generatedAt": "just now"
 }`
 
     case 'marketing-audit':
-      return `You are a marketing auditor. Generate a comprehensive marketing audit report.
+      return `You are a marketing auditor. Generate a DETAILED marketing audit matching production quality (reference: Salsa Burgers marketing audit at sf-reports.vercel.app).
+
+CRITICAL REQUIREMENTS:
+- Overall score: 0-100 (typical range 50-80)
+- 6 category scores with detailed findings (not generic, use brand data)
+- Brand & Positioning section (identity strength, consistency, positioning vs competitors)
+- Conversion Funnel section (CTA clarity, order flow, friction points)
+- Trust & Authority section (social proof, reviews, credentials)
+- Quick Wins: 5 high-impact, low-effort actions (tagged by area, estimated ROI)
+- Each finding MUST have severity, impact estimate, specific fix
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate a marketing audit JSON with this structure:
+Generate marketing audit JSON:
 {
-  "overall_score": 0,
-  "categories": [
-    {"name": "Content Strategy", "score": 0, "findings": [], "recommendations": []},
-    {"name": "Social Media", "score": 0, "findings": [], "recommendations": []},
-    {"name": "Paid Media", "score": 0, "findings": [], "recommendations": []},
-    {"name": "SEO", "score": 0, "findings": [], "recommendations": []},
-    {"name": "Email Marketing", "score": 0, "findings": [], "recommendations": []},
-    {"name": "Conversion", "score": 0, "findings": [], "recommendations": []}
+  "overall_score": number,
+  "scoreLabel": "Marketing Health Score",
+  "statCards": [
+    {"label": "Brand Identity Score", "value": "number/100"},
+    {"label": "Conversion Funnel", "value": "score/100"},
+    {"label": "Social Media", "value": "score/100"},
+    {"label": "Local Marketing", "value": "score/100"}
   ],
-  "quick_wins": ["...", "..."],
-  "strategic_opportunities": [],
-  "6_month_roadmap": [{"quarter": "", "focus": "", "actions": []}]
+  "sections": [
+    {
+      "title": "Brand & Positioning",
+      "findings": [
+        {
+          "id": number,
+          "title": "specific issue",
+          "severity": "CRÍTICO|ALTO|MEDIO|OK",
+          "description": "problem + impact"
+        }
+      ]
+    },
+    {
+      "title": "Conversion Funnel",
+      "findings": [...]
+    },
+    {
+      "title": "Trust & Authority (E-E-A-T)",
+      "findings": [...]
+    }
+  ],
+  "quickWins": [
+    {
+      "id": number,
+      "title": "action",
+      "priority": "ALTO",
+      "impact": "+X% conversions or revenue",
+      "effort": "Easy",
+      "owner": "Role"
+    }
+  ],
+  "generatedAt": "just now"
 }`
 
     case 'content-pack':
