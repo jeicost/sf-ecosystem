@@ -338,7 +338,7 @@ export default function ToolRunnerPage({
         </form>
       ) : resultComponent ? (
         typeof resultComponent === 'function' ? (
-          (resultComponent as any)({ data: resultData?.result })
+          (resultComponent as any)({ data: resultData })
         ) : (
           resultComponent
         )

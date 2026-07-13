@@ -97,20 +97,75 @@ export default function InvestorDeckPage() {
     <ToolRunnerPage
       config={TOOL_CONFIG}
       onGenerate={handleGenerate}
-      resultComponent={<InvestorDeckResult />}
+      resultComponent={InvestorDeckResult}
     />
   )
 }
 
-function InvestorDeckResult() {
+function InvestorDeckResult({ data }: { data?: any }) {
+  if (!data) {
+    return (
+      <div className="card p-6 space-y-6">
+        <div>
+          <p className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: '#34D399' }}>
+            ✓ Investor Deck Generado
+          </p>
+          <p className="text-sm text-gray-400">Tu presentación para inversores está lista con análisis de mercado y financiero.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="card p-6 space-y-6">
+    <div className="space-y-6">
+      {/* Title */}
       <div>
         <p className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: '#34D399' }}>
-          ✓ Investor Deck Generado
+          ✓ Presentación de Inversión
         </p>
-        <p className="text-sm text-gray-400">Tu presentación para inversores está lista con análisis de mercado y financiero.</p>
+        <h2 className="text-2xl font-semibold text-white">{data.title || 'Deck para Inversores'}</h2>
+        <p className="text-sm text-gray-400 mt-2">{data.executive_summary || data.summary || 'Tu presentación está lista.'}</p>
       </div>
+
+      {/* Slides */}
+      {data.slides && data.slides.length > 0 && (
+        <div className="card p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Diapositivas</h3>
+          <div className="space-y-4">
+            {data.slides.map((slide: any, idx: number) => (
+              <div key={idx} className="border-l-2 border-emerald-500 pl-4">
+                <p className="font-semibold text-white">
+                  {idx + 1}. {slide.title || slide.name || `Slide ${idx + 1}`}
+                </p>
+                <p className="text-sm text-gray-400 mt-1">{slide.content || slide.description || ''}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Market Opportunity */}
+      {data.market_opportunity && (
+        <div className="card p-6 bg-emerald-500/5 border-emerald-500/20">
+          <h3 className="text-lg font-semibold text-white mb-2">Oportunidad de Mercado</h3>
+          <p className="text-sm text-gray-300">{data.market_opportunity}</p>
+        </div>
+      )}
+
+      {/* Financials */}
+      {data.financials && (
+        <div className="card p-6">
+          <h3 className="text-lg font-semibold text-white mb-4">Proyecciones Financieras</h3>
+          <p className="text-sm text-gray-400">{data.financials}</p>
+        </div>
+      )}
+
+      {/* Raw JSON fallback */}
+      {(!data.slides || data.slides.length === 0) && !data.market_opportunity && !data.financials && (
+        <div className="card p-6 bg-white/2">
+          <p className="text-sm text-gray-400 font-mono">{JSON.stringify(data, null, 2).slice(0, 500)}...</p>
+        </div>
+      )}
     </div>
   )
 }

@@ -71,7 +71,7 @@ Path: Settings → Domains → click domain → select from dropdown → Save
 Add environment variable to all 3 projects (Production):
 
 ```
-REVALIDATE_SECRET = sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9
+REVALIDATE_SECRET = [ROTATED]
 ```
 
 ### Step 3: Smoke Test (2 min)
@@ -92,7 +92,7 @@ https://www.startupsfactory.es/blog
 
 ```bash
 curl -X POST https://www.startupsfactory.es/api/revalidate \
-  -H "x-revalidate-secret: sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -H "Content-Type: application/json" \
   -d '{"paths":["/blog"]}'
 
