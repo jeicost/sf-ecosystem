@@ -2,6 +2,7 @@
   "name": "@sf/cms-client",
   "version": "0.1.0",
   "description": "Shared CMS client library for SF sites — types, fetchers, and renderers",
+  "private": true,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
