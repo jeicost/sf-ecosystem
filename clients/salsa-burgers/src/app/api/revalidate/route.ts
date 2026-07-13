@@ -1,35 +1,43 @@
 import { revalidatePath } from 'next/cache'
-import type { NextRequest } from 'next/server'
-
-const REVALIDATE_SECRET = process.env.REVALIDATE_SECRET || 'dev-secret-unsafe'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
-  const secret = request.headers.get('x-revalidate-secret')
+  const secret = process.env.REVALIDATE_SECRET
 
-  if (secret !== REVALIDATE_SECRET) {
-    return new Response('Unauthorized', { status: 401 })
+  if (!secret) {
+    return NextResponse.json(
+      { error: 'REVALIDATE_SECRET environment variable is not set' },
+      { status: 500 },
+    )
   }
 
-  const { type, slug } = await request.json()
+  const providedSecret = request.headers.get('x-revalidate-secret')
+  if (providedSecret !== secret) {
+    return NextResponse.json({ error: 'Invalid or missing x-revalidate-secret header' }, { status: 401 })
+  }
 
   try {
-    if (type === 'post' && slug) {
-      revalidatePath(`/blog/${slug}`)
-      revalidatePath('/blog')
-    } else if (type === 'page' && slug) {
-      revalidatePath(`/${slug}`)
-    } else if (type === 'all') {
-      revalidatePath('/', 'layout')
+    const payload = (await request.json()) as any
+
+    if (payload.paths && Array.isArray(payload.paths)) {
+      for (const path of payload.paths) {
+        revalidatePath(path)
+      }
+    } else if (payload.type && payload.slug) {
+      if (payload.type === 'post') {
+        revalidatePath(`/blog/${payload.slug}`)
+        revalidatePath('/blog')
+      } else if (payload.type === 'page') {
+        revalidatePath(`/${payload.slug}`)
+      }
     }
 
-    return Response.json(
+    return NextResponse.json(
       { revalidated: true, timestamp: new Date().toISOString() },
-      { status: 200 }
+      { status: 200 },
     )
   } catch (err) {
-    return Response.json(
-      { error: `Revalidation failed: ${String(err)}` },
-      { status: 500 }
-    )
+    const message = err instanceof Error ? err.message : String(err)
+    return NextResponse.json({ error: `Revalidation failed: ${message}` }, { status: 500 })
   }
 }

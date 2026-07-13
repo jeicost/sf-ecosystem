@@ -1,7 +1,6 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
-import ReportTemplate from '@/components/ReportTemplate'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'marketing-audit',
@@ -96,139 +95,210 @@ export default function MarketingAuditPage() {
 }
 
 function MarketingAuditResult({ data }: { data?: any }) {
-  // Map statCards from response or use fallback
   const statCards = data?.statCards || [
-    { label: 'Active Channels', value: '4', color: '#22c55e' },
-    { label: 'Quarterly Reach', value: '145K', color: '#3b82f6' },
-    { label: 'Campaign ROI', value: '3.2x', color: '#a78bfa' },
-    { label: 'Team Efficiency', value: '78%', color: '#f59e0b' },
+    { label: 'Brand Identity Score', value: '87/100', description: 'Strong USP and visual identity' },
+    { label: 'Conversion Funnel', value: '80/100', description: 'ORDER NOW visible, integrations strong' },
+    { label: 'Social Media', value: '35/100', status: 'critical', description: 'Links but no proof' },
+    { label: 'Content Marketing', value: '40/100', status: 'critical', description: 'Blog inactive 2+ months' },
+    { label: 'Lead Capture', value: '55/100', status: 'warning', description: 'No email or newsletter' },
+    { label: 'Local Marketing', value: '70/100', description: 'Active but no GMB link' },
   ]
 
-  return (
-    <ReportTemplate
-      title="Marketing Audit Report"
-      subtitle="Comprehensive channel analysis, competitor benchmarking & quarterly roadmap"
-      score={data?.overall_score || 68}
-      scoreLabel={data?.scoreLabel || 'Marketing Health Score'}
-      statCards={statCards}
-      sections={data?.sections || [
-        {
-          title: 'Channel Performance',
-          findings: [
-            {
-              id: 1,
-              title: 'Instagram underperforming on engagement',
-              severity: 'critical',
-              description: 'Engagement rate dropped 35% YoY. Posting frequency too low (1x/week vs competitors 4x/week).',
-              impact: '-€8.5K quarterly revenue',
-            },
-            {
-              id: 2,
-              title: 'Email list decay',
-              severity: 'warning',
-              description: 'Unsubscribe rate 2.1% (industry avg 0.5%). No re-engagement campaigns in 6 months.',
-              impact: '-12K engaged subscribers',
-            },
-            {
-              id: 3,
-              title: 'Google Ads optimization',
-              severity: 'ok',
-              description: 'ROAS 3.8x, CPA €12. Competitive bid strategy well-tuned.',
-            },
-            {
-              id: 4,
-              title: 'Organic search growth',
-              severity: 'ok',
-              description: 'Ranking for 127 keywords (+48 YoY). Top 10 positions for 23 high-intent keywords.',
-            },
-          ],
-        },
-        {
-          title: 'Competitive Landscape',
-          findings: [
-            {
-              id: 5,
-              title: 'Competitor content velocity',
-              severity: 'warning',
-              description: 'Top competitor (salsa-central.es) publishing 12 pieces/month vs your 4. Winning share-of-voice.',
-              impact: '-18% social reach',
-            },
-            {
-              id: 6,
-              title: 'Email list size gap',
-              severity: 'warning',
-              description: 'Your list: 24K. Competitor: 78K. They capture emails via 3 lead magnets you lack.',
-              impact: 'Lower customer LTV',
-            },
-          ],
-        },
-        {
-          title: 'Budget Allocation Analysis',
-          content: `Current spend (€25,000/year):
-- Google Ads: 45% (€11,250) → ROAS 3.8x ✓ Continue
-- Social media tools & ads: 25% (€6,250) → Engagement declining
-- Email platform & automation: 15% (€3,750) → List decaying
-- SEO & content: 15% (€3,750) → Best organic growth
+  const sections = data?.sections || []
 
-Recommended reallocation:
-- Reduce Ads (over-optimized) → 35% (€8,750)
-- Increase content production → 25% (€6,250)
-- Email nurture system → 20% (€5,000)
-- Influencer partnerships (new) → 20% (€5,000)`,
-        },
-      ]}
-      actions={data?.actions || [
-        {
-          id: 1,
-          title: 'Implement Instagram content calendar (3x/week minimum)',
-          priority: 'high',
-          impact: '+35% engagement rate (restore to baseline)',
-          effort: '4 hours setup, 6h/week ongoing',
-          owner: 'Social manager',
-        },
-        {
-          id: 2,
-          title: 'Launch email re-engagement campaign + weekly newsletter',
-          priority: 'high',
-          impact: '+5K active subscribers, +€4K quarterly revenue',
-          effort: '8 hours setup, 2h/week ongoing',
-          owner: 'Email specialist',
-        },
-        {
-          id: 3,
-          title: 'Build 3 lead magnets (guide, template, webinar)',
-          priority: 'high',
-          impact: '+18K emails captured annually, close competitive gap',
-          effort: '2 weeks',
-          owner: 'Content + Design team',
-        },
-        {
-          id: 4,
-          title: 'Hire freelance content writer (2 posts/week)',
-          priority: 'medium',
-          impact: '+8 pieces/month, +48% social reach',
-          effort: 'Hiring: 1 week, ongoing 6h/week',
-          owner: 'Marketing lead',
-        },
-        {
-          id: 5,
-          title: 'Pilot influencer partnerships (micro, 3 influencers)',
-          priority: 'medium',
-          impact: '+45K reach, +€2K revenue',
-          effort: 'Outreach & management: 6h/week',
-          owner: 'Growth team',
-        },
-        {
-          id: 6,
-          title: 'Optimize Google Ads for lower-funnel keywords',
-          priority: 'low',
-          impact: '+0.3x ROAS (modest, budget-dependent)',
-          effort: '2 hours/month optimization',
-          owner: 'PPC specialist',
-        },
-      ]}
-      accentColor="#60A5FA"
-      generatedAt={data?.generatedAt || 'just now'}
-    />
+  return (
+    <div className="w-full">
+      {/* Header */}
+      <div className="bg-black border-b border-white/10 p-6 md:p-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <div className="text-xs text-red-500 font-mono mb-1">STARTUP FACTORY · SF MARKETING AUDIT</div>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">
+              MARKETING <br /> AUDIT
+            </h1>
+            <p className="text-gray-400 max-w-2xl text-sm md:text-base">
+              Diagnóstico de brand, conversion funnel, social presencia y estrategia digital
+            </p>
+          </div>
+          <div className="text-right">
+            <div className="text-6xl font-black text-yellow-400 mb-1">
+              {data?.overall_score || 68}
+            </div>
+            <div className="text-xs text-gray-500">{data?.scoreLabel || 'Marketing Health Score'}</div>
+            {data?.overall_trend && (
+              <div className="text-xs text-green-400 mt-2">{data.overall_trend}</div>
+            )}
+          </div>
+        </div>
+
+        {/* 6 Stat Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          {statCards.map((card: any, idx: number) => (
+            <div
+              key={idx}
+              className={`p-3 rounded-lg border ${
+                card.status === 'critical'
+                  ? 'border-red-500/30 bg-red-500/5'
+                  : card.status === 'warning'
+                    ? 'border-orange-500/30 bg-orange-500/5'
+                    : 'border-white/10 bg-white/5'
+              }`}
+            >
+              <div className={`text-lg md:text-2xl font-black mb-1 ${
+                card.status === 'critical'
+                  ? 'text-red-400'
+                  : card.status === 'warning'
+                    ? 'text-orange-400'
+                    : 'text-blue-400'
+              }`}>
+                {card.value}
+              </div>
+              <div className="text-xs text-gray-400 font-semibold">{card.label}</div>
+              {card.description && (
+                <div className="text-xs text-gray-500 mt-1">{card.description}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Main Sections */}
+      {sections.length > 0 && (
+        <div className="bg-black p-6 md:p-8 space-y-8">
+          {sections.map((section: any, sIdx: number) => {
+            // 4-CARD SECTIONS (Brand, Funnel, Social, etc)
+            if (section.type === 'cards' && section.cards) {
+              return (
+                <div key={sIdx}>
+                  <div className="mb-6">
+                    <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
+                    {section.description && (
+                      <p className="text-sm text-gray-400">{section.description}</p>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {section.cards.map((card: any, cIdx: number) => {
+                      const borderColorMap: Record<string, string> = {
+                        teal: 'border-teal-500',
+                        red: 'border-red-500',
+                        orange: 'border-orange-500',
+                        green: 'border-green-500',
+                      }
+                      const borderColor = borderColorMap[card.color_border as string] || 'border-white/20'
+
+                      return (
+                        <div key={cIdx} className={`border-l-4 ${borderColor} bg-white/5 p-4 rounded-r`}>
+                          <h3 className="font-bold text-white mb-2">+ {card.title}</h3>
+                          <p className="text-sm text-gray-400">{card.content}</p>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            }
+
+            // E-E-A-T MATRIX
+            if (section.type === 'eeat_matrix' && section.dimensions) {
+              return (
+                <div key={sIdx}>
+                  <div className="mb-6">
+                    {section.icon && <div className="text-2xl mb-2">{section.icon}</div>}
+                    <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
+                    {section.description && (
+                      <p className="text-sm text-gray-400">{section.description}</p>
+                    )}
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {section.dimensions.map((dim: any, dIdx: number) => {
+                      const statusColor = {
+                        Strong: 'text-teal-400',
+                        Present: 'text-yellow-400',
+                        Weak: 'text-orange-400',
+                      }[dim.status] || 'text-gray-400'
+
+                      return (
+                        <div key={dIdx} className="border border-white/10 bg-white/5 p-4 rounded text-center">
+                          <div className={`text-lg font-bold mb-2 ${statusColor}`}>{dim.status}</div>
+                          <div className="text-sm font-semibold text-white mb-2">{dim.name}</div>
+                          {dim.content && (
+                            <div className="text-xs text-gray-500">{dim.content}</div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )
+            }
+
+            // Standard findings section
+            return (
+              <div key={sIdx}>
+                <h2 className="text-2xl font-bold text-white uppercase mb-4">{section.title}</h2>
+                <div className="space-y-3">
+                  {section.findings?.map((finding: any, fIdx: number) => (
+                    <div key={fIdx} className="border-l-2 border-yellow-500 bg-white/5 p-4 rounded-r">
+                      <div className="flex items-start justify-between gap-4 mb-2">
+                        <div className="font-bold text-white">{finding.title}</div>
+                        <span className={`text-xs font-semibold px-2 py-1 rounded whitespace-nowrap ${
+                          finding.severity === 'critical' ? 'bg-red-500/20 text-red-400' :
+                          finding.severity === 'warning' ? 'bg-orange-500/20 text-orange-400' :
+                          'bg-green-500/20 text-green-400'
+                        }`}>
+                          {finding.severity?.toUpperCase()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-400">{finding.description}</p>
+                      {finding.impact && (
+                        <div className="text-xs text-red-400 mt-2">Impact: {finding.impact}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Quick Wins Section */}
+      {data?.quickWins && data.quickWins.length > 0 && (
+        <div className="bg-black border-t border-white/10 p-6 md:p-8">
+          <h2 className="text-2xl font-bold text-white uppercase mb-6 flex items-center gap-2">
+            ⚡ Quick Wins
+          </h2>
+          <div className="space-y-3">
+            {data.quickWins.map((action: any, idx: number) => (
+              <div key={idx} className="border border-white/10 bg-white/5 p-4 rounded-lg hover:bg-white/8 transition">
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <div>
+                    <div className="font-bold text-white">{idx + 1}. {action.title}</div>
+                    {action.description && (
+                      <p className="text-sm text-gray-400 mt-1">{action.description}</p>
+                    )}
+                  </div>
+                  {action.effort_tag && (
+                    <span className="text-xs font-semibold px-2 py-1 rounded bg-green-500/20 text-green-400 whitespace-nowrap">
+                      {action.effort_tag}
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-4 text-xs text-gray-400">
+                  {action.impact && <div>💰 {action.impact}</div>}
+                  {action.effort_hours && <div>⏱️ {action.effort_hours}h</div>}
+                  {action.roi_score && <div>ROI: {action.roi_score}/10</div>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="bg-black border-t border-white/10 p-6 md:p-8 text-center text-xs text-gray-500">
+        {data?.generatedAt && <div>Generated {data.generatedAt}</div>}
+      </div>
+    </div>
   )
 }
