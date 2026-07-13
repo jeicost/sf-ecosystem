@@ -29,8 +29,8 @@ out/
 .DS_Store
 
 # Vercel
-.vercel/*
-!.vercel/project.json
+.vercel/output/
+.vercel/caches/
 .vercel-build-output/
 
 # OS
@@ -56,11 +56,9 @@ coverage/
 # API keys and secrets (if accidentally created)
 .secrets/
 secrets.json
-.vercel
 
 # MCP configuration with secrets
 .mcp.json
 
 # Claude personal settings with tokens
 .claude/settings.local.json
-.vercel/

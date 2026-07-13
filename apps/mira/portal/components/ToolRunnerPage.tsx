@@ -58,6 +58,7 @@ export default function ToolRunnerPage({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [resultData, setResultData] = useState<any>(null)
+  const [pollingQueueId, setPollingQueueId] = useState<string | null>(null)
 
   // Load Brand Brain data on mount
   useEffect(() => {
@@ -71,6 +72,36 @@ export default function ToolRunnerPage({
     loadBrandData()
   }, [clientId])
 
+  // Poll for generation result every 2 seconds
+  useEffect(() => {
+    if (!pollingQueueId) return
+
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/toolkit/status?queue_id=${pollingQueueId}`)
+        if (!res.ok) return
+
+        const data = await res.json()
+        if (data.status === 'completed' && data.result_data) {
+          setResultData(data.result_data)
+          setSuccess(true)
+          setIsLoading(false)
+          setPollingQueueId(null)
+          clearInterval(interval)
+        } else if (data.status === 'failed') {
+          setError(data.error_message || 'Generation failed')
+          setIsLoading(false)
+          setPollingQueueId(null)
+          clearInterval(interval)
+        }
+      } catch (err) {
+        console.error('Polling error:', err)
+      }
+    }, 2000)
+
+    return () => clearInterval(interval)
+  }, [pollingQueueId])
+
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
   }
@@ -81,14 +112,25 @@ export default function ToolRunnerPage({
     setError(null)
     setSuccess(false)
     setResultData(null)
+    setPollingQueueId(null)
 
     try {
       const data = await onGenerate(formData)
-      setResultData(data)
-      setSuccess(true)
+      if (data?.queue_id) {
+        // Start polling for result
+        setPollingQueueId(data.queue_id)
+        // If result is already available, use it immediately
+        if (data?.result) {
+          setResultData(data.result)
+          setSuccess(true)
+          setIsLoading(false)
+        }
+      } else {
+        setError('No queue ID returned')
+        setIsLoading(false)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error')
-    } finally {
       setIsLoading(false)
     }
   }
@@ -128,6 +170,19 @@ export default function ToolRunnerPage({
             <div>
               <p className="font-semibold text-red-400">Error</p>
               <p className="text-sm text-gray-400 mt-1">{error}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading State - Waiting for Result */}
+      {pollingQueueId && isLoading && (
+        <div className="card p-4 border-blue-500/20 mb-6">
+          <div className="flex items-start gap-3">
+            <Loader2 size={20} className="animate-spin" style={{ color: '#3B82F6' }} />
+            <div>
+              <p className="font-semibold text-blue-400">Generando...</p>
+              <p className="text-sm text-gray-400 mt-1">Claude está analizando tu solicitud (puede tomar 30-60 segundos)</p>
             </div>
           </div>
         </div>
