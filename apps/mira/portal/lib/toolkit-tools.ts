@@ -1,21 +1,40 @@
-export const TOOLKIT_TOOLS = [
-  {
-    slug: 'brand-briefing',
-    icon: '🧠',
-    name: 'Brand Briefing',
-    description: 'Pack completo de inteligencia de marca: 23 secciones, planes de contenido, Brand Brain JSON y roadmap.',
-    time: '~20 min',
-    color: '#EC4899',
-    href: '/toolkit/brand-briefing'
-  },
+export interface ToolkitTool {
+  slug: string
+  icon: string
+  name: string
+  description: string
+  time: string
+  color: string
+  href: string
+}
+
+export const TOOLKIT_TOOLS: ToolkitTool[] = [
   {
     slug: 'seo-audit',
     icon: '🔍',
     name: 'Auditoría SEO',
     description: 'Diagnóstico técnico completo: on-page, Core Web Vitals, keywords, content gaps, backlinks y plan de acción prioritizado.',
     time: '~3 min',
-    color: '#06B6D4',
+    color: '#F87171',
     href: '/toolkit/seo-audit'
+  },
+  {
+    slug: 'brand-briefing',
+    icon: '💭',
+    name: 'Brand Briefing',
+    description: 'Pack completo de inteligencia de marca: 23 secciones, planes de contenido, Brand Brain JSON y roadmap.',
+    time: '~20 min',
+    color: '#A78BFA',
+    href: '/toolkit/brand-briefing'
+  },
+  {
+    slug: 'action-plan',
+    icon: '🎯',
+    name: 'Plan de Acción 30/60/90',
+    description: 'Plan de acción específico por semanas con acciones, KPIs, owners y recursos. Bebe del briefing existente.',
+    time: '~3 min',
+    color: '#FF6B35',
+    href: '/toolkit/action-plan'
   },
   {
     slug: 'content-pack',
@@ -23,7 +42,7 @@ export const TOOLKIT_TOOLS = [
     name: 'Content Pack',
     description: '15 posts listos para publicar + 10 scripts de Reel/TikTok + estrategia de plataformas.',
     time: '~10 min',
-    color: '#8B5CF6',
+    color: '#FBBF24',
     href: '/toolkit/content-pack'
   },
   {
@@ -32,25 +51,16 @@ export const TOOLKIT_TOOLS = [
     name: 'Auditoría de Marketing',
     description: 'Análisis de 6 dimensiones: contenido, canales, conversión, posicionamiento.',
     time: '~4 min',
-    color: '#F59E0B',
+    color: '#60A5FA',
     href: '/toolkit/marketing-audit'
   },
   {
-    slug: 'action-plan',
-    icon: '📋',
-    name: 'Plan de Acción 30/60/90',
-    description: 'Plan de acción específico por semanas con acciones, KPIs, owners y recursos. Bebe del briefing existente.',
-    time: '~3 min',
-    color: '#10B981',
-    href: '/toolkit/action-plan'
-  },
-  {
     slug: 'investor-deck',
-    icon: '💼',
+    icon: '📈',
     name: 'Investor Deck',
     description: 'Pitch deck profesional (15-20 slides) con financials, tracción, TAM/SAM/SOM y modelo.',
     time: '~5 min',
-    color: '#F87171',
+    color: '#34D399',
     href: '/toolkit/investor-deck'
   },
   {
@@ -59,13 +69,13 @@ export const TOOLKIT_TOOLS = [
     name: 'Análisis Competitivo',
     description: 'Mapeo de 5-7 competidores, strengths/weaknesses, pricing, go-to-market y positioning gaps.',
     time: '~7 min',
-    color: '#06B6D4',
+    color: '#EC4899',
     href: '/toolkit/competitive-analysis'
   },
   {
     slug: 'brandbook-content-system',
     icon: '📚',
-    name: 'Brandbook Content System',
+    name: 'Brandbook + Content System',
     description: 'Sistema completo de contenidos de marca: guías de tono, templates, arquetipos de personajes, calendarios editoriales y playbooks de contenido por canal.',
     time: '~30 min',
     color: '#8B5CF6',
@@ -90,3 +100,8 @@ export const TOOLKIT_TOOLS = [
     href: '/toolkit/community-growth-blueprint'
   },
 ]
+
+// Helper to get tool by slug
+export const getToolBySlug = (slug: string): ToolkitTool | undefined => {
+  return TOOLKIT_TOOLS.find(t => t.slug === slug)
+}

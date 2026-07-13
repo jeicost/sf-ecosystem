@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { Loader2, CheckCircle, AlertCircle, Zap } from 'lucide-react'
+import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 
 interface Generation {
   id: string
@@ -14,17 +15,6 @@ interface Generation {
   result_data?: Record<string, any>
   error_message?: string
 }
-
-const TOOLS = [
-  { slug: 'action-plan', icon: '🎯', title: 'Action Plan 30/60/90', color: '#FF6B35' },
-  { slug: 'brand-briefing', icon: '💭', title: 'Brand Briefing', color: '#A78BFA' },
-  { slug: 'seo-audit', icon: '🔍', title: 'SEO Audit', color: '#F87171' },
-  { slug: 'marketing-audit', icon: '📊', title: 'Marketing Audit', color: '#60A5FA' },
-  { slug: 'content-pack', icon: '📝', title: 'Content Pack', color: '#FBBF24' },
-  { slug: 'investor-deck', icon: '📈', title: 'Investor Deck', color: '#34D399' },
-  { slug: 'competitive-analysis', icon: '⚔️', title: 'Competitive Analysis', color: '#EC4899' },
-  { slug: 'brandbook-content-system', icon: '📚', title: 'Brandbook + Content', color: '#8B5CF6' },
-]
 
 export default function ToolkitHub() {
   const [generations, setGenerations] = useState<Generation[]>([])
@@ -76,13 +66,18 @@ export default function ToolkitHub() {
   }
 
   const getToolColor = (slug: string) => {
-    const tool = TOOLS.find((t) => t.slug === slug)
+    const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
     return tool?.color || '#9CA3AF'
   }
 
   const getToolIcon = (slug: string) => {
-    const tool = TOOLS.find((t) => t.slug === slug)
+    const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
     return tool?.icon || '⚡'
+  }
+
+  const getToolTitle = (slug: string) => {
+    const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
+    return tool?.name || slug
   }
 
   const getStatusIcon = (status: string) => {
@@ -129,15 +124,15 @@ export default function ToolkitHub() {
       <div className="mb-12">
         <h2 className="text-lg font-semibold mb-4 text-white">Generar Nuevo</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {TOOLS.map((tool) => (
+          {TOOLKIT_TOOLS.map((tool) => (
             <Link
               key={tool.slug}
-              href={`/toolkit/${tool.slug}`}
+              href={tool.href}
               className="card p-4 hover:bg-white/8 transition-all cursor-pointer border-l-4"
               style={{ borderLeftColor: tool.color }}
             >
               <p className="text-2xl mb-2">{tool.icon}</p>
-              <p className="text-sm font-semibold text-white">{tool.title}</p>
+              <p className="text-sm font-semibold text-white">{tool.name}</p>
             </Link>
           ))}
         </div>
