@@ -11,7 +11,8 @@ import { getActiveSectionFromPath } from '@/lib/sections'
 import { getUser, clearUser, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
-import { CLIENT_ID } from '@/lib/constants'
+// Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
+// import { CLIENT_ID } from '@/lib/constants'
 import { Home, BookOpen, Brain, Zap, Layers } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
@@ -57,21 +58,27 @@ useEffect(() => {
   }, [router, path])
 
   useEffect(() => {
+    // Get client_id from user metadata (not hardcoded)
     const db = createClient()
-    db.from('approval_queue').select('id', { count: 'exact', head: true })
-      .eq('client_id', CLIENT_ID).eq('status', 'pending_review')
-      .then(({ count }) => setPending(count ?? 0))
+    db.auth.getUser().then(({ data: { user } }) => {
+      const clientId = user?.user_metadata?.client_id as string | undefined
+      if (!clientId) return // Super admin has no single client
 
-    const channel = db.channel('sidebar-approvals')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'approvals', filter: `client_id=eq.${CLIENT_ID}` },
-        () => {
-          db.from('approval_queue').select('id', { count: 'exact', head: true })
-            .eq('client_id', CLIENT_ID).eq('status', 'pending_review')
-            .then(({ count }) => setPending(count ?? 0))
-        }
-      ).subscribe()
-    return () => { db.removeChannel(channel) }
+      db.from('approval_queue').select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).eq('status', 'pending_review')
+        .then(({ count }) => setPending(count ?? 0))
+
+      const channel = db.channel('sidebar-approvals')
+        .on('postgres_changes',
+          { event: '*', schema: 'public', table: 'approvals', filter: `client_id=eq.${clientId}` },
+          () => {
+            db.from('approval_queue').select('id', { count: 'exact', head: true })
+              .eq('client_id', clientId).eq('status', 'pending_review')
+              .then(({ count }) => setPending(count ?? 0))
+          }
+        ).subscribe()
+      return () => { db.removeChannel(channel) }
+    })
   }, [])
 
   function toggleTheme() {

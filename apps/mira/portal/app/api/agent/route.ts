@@ -5,7 +5,8 @@ import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
-import { CLIENT_ID } from '@/lib/constants'
+// Removed hardcoded CLIENT_ID import - now reads from user_metadata or requires explicit clientId
+// import { CLIENT_ID } from '@/lib/constants'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -33,8 +34,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Leer client_id del usuario autenticado si no viene en el body
-    let resolvedClientId = clientId ?? CLIENT_ID
-    if (!clientId) {
+    let resolvedClientId = clientId
+    if (!resolvedClientId) {
       try {
         const supabase = createServerClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -42,10 +43,19 @@ export async function POST(req: NextRequest) {
           { cookies: { getAll: () => req.cookies.getAll(), setAll: () => {} } }
         )
         const { data: { user } } = await supabase.auth.getUser()
-        if (user?.user_metadata?.client_id) {
-          resolvedClientId = user.user_metadata.client_id
+        if (!user?.user_metadata?.client_id) {
+          return new Response(
+            JSON.stringify({ error: 'clientId no especificado y usuario no tiene client_id asignado' }),
+            { status: 400, headers: { 'Content-Type': 'application/json' } }
+          )
         }
-      } catch { /* fallback al CLIENT_ID constante */ }
+        resolvedClientId = user.user_metadata.client_id
+      } catch (err) {
+        return new Response(
+          JSON.stringify({ error: 'Error obtener client_id del usuario' }),
+          { status: 401, headers: { 'Content-Type': 'application/json' } }
+        )
+      }
     }
 
     // Fecha actual para agentes que la necesitan (Herald, Radar, etc.)

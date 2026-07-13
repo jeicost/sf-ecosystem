@@ -4,7 +4,9 @@ import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { getAgentPrompt } from '@/lib/agent-prompts'
-import { CLIENT_ID } from '@/lib/constants'
+// Removed hardcoded CLIENT_ID import - now requires explicit clientId
+// import { CLIENT_ID } from '@/lib/constants'
+import { createServerClient } from '@supabase/ssr'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
@@ -36,7 +38,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
     }
 
-    const resolvedClientId = clientId ?? CLIENT_ID
+    // Get clientId from request or from authenticated user
+    let resolvedClientId = clientId
+    if (!resolvedClientId) {
+      try {
+        const supabase = createServerClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+          { cookies: { getAll: () => req.cookies.getAll(), setAll: () => {} } }
+        )
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user?.user_metadata?.client_id) {
+          return NextResponse.json(
+            { error: 'clientId no especificado y usuario no tiene client_id asignado' },
+            { status: 400 }
+          )
+        }
+        resolvedClientId = user.user_metadata.client_id
+      } catch (err) {
+        return NextResponse.json(
+          { error: 'Error obtener client_id del usuario' },
+          { status: 401 }
+        )
+      }
+    }
     const db = adminClient()
 
     // Fetch Brand Brain + project memory
