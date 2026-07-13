@@ -18,7 +18,6 @@ export interface MiraSection {
   color: string
   icon: string
   navItems: NavItem[]
-  locked: boolean
 }
 
 export const SECTIONS: MiraSection[] = [
@@ -35,7 +34,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
       { href: '/brief',       label: 'New Brief',    icon: MessageSquarePlus },
     ],
-    locked: false,
   },
   {
     slug: 'comercial',
@@ -53,7 +51,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/comercial/proposals',  label: 'Nova — Proposals',  icon: FileText },
       { href: '/comercial/icp',        label: 'ICP Profile',       icon: Target },
     ],
-    locked: false,
   },
   {
     slug: 'estrategia',
@@ -66,7 +63,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/estrategia/plan',      label: '90-Day Plan', icon: Map },
       { href: '/estrategia/auditoria', label: 'Audit',       icon: CheckSquare },
     ],
-    locked: false,
   },
   {
     slug: 'innovacion',
@@ -79,7 +75,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/innovacion/tendencias', label: 'Trends',    icon: TrendingUp },
       { href: '/innovacion/proyectos',  label: 'Projects',  icon: Lightbulb },
     ],
-    locked: false,
   },
   {
     slug: 'admin',
@@ -93,7 +88,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/admin/facturacion', label: 'Billing',   icon: BarChart3 },
       { href: '/admin/sistema',     label: 'System',    icon: Settings },
     ],
-    locked: false,
   },
   {
     slug: 'finanzas',
@@ -106,7 +100,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/finanzas/plan',     label: 'My Plan',    icon: Map },
       { href: '/finanzas/cartera',  label: 'Portfolio',  icon: TrendingUp },
     ],
-    locked: false,
   },
 ]
 
