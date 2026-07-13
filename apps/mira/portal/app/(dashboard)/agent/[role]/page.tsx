@@ -14,7 +14,9 @@ import { AGENT_METADATA } from '@/lib/agent-meta'
 import { AGENT_DETAILS } from '@/lib/agent-details'
 import { getQuickPrompts } from '@/lib/agent-quick-prompts'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
+import { getAgentActivityTasks, getAgentStats } from '@/lib/agent-activity-stats'
 import type { AgentPackage } from '@/lib/types'
+import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
 
 type AutonomyLevel = 'always_ask' | 'full_auto'
 type TabId = 'about' | 'history' | 'chat' | 'performance'
@@ -95,15 +97,23 @@ export default function AgentPage() {
   const [settingsLoading, setSettingsLoading] = useState(true)
   const [copied, setCopied] = useState(false)
   const [inputValue, setInputValue] = useState('')
+  const [recentTasks, setRecentTasks] = useState<AgentTask[]>([])
+  const [agentStats, setAgentStats] = useState<AgentStats>({
+    totalInteractions: 0,
+    completionRate: 0,
+    averageResponseTime: '—',
+    lastActive: '—',
+  })
 
   const agent = AGENT_METADATA[role]
   const agentDetails = AGENT_DETAILS[role]
   const quickPrompts = getQuickPrompts(role)
 
-  // Load settings from API on mount
+  // Load settings and activity data from API on mount
   useEffect(() => {
     if (!clientId) return
     loadSettings()
+    loadActivityData()
   }, [clientId, role])
 
   async function loadSettings() {
@@ -119,6 +129,17 @@ export default function AgentPage() {
       console.error('Error loading settings:', err)
     } finally {
       setSettingsLoading(false)
+    }
+  }
+
+  async function loadActivityData() {
+    try {
+      const tasks = await getAgentActivityTasks(clientId, role)
+      const stats = await getAgentStats(clientId, role)
+      setRecentTasks(tasks)
+      setAgentStats(stats)
+    } catch (err) {
+      console.error('Error loading activity data:', err)
     }
   }
 
@@ -154,13 +175,7 @@ export default function AgentPage() {
   }
 
   const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy })
-  const improveAreas = IMPROVEMENT_AREAS[agent.department as AgentPackage] || IMPROVEMENT_AREAS.default
   const systemPrompt = getAgentPrompt(role)
-  const recentTasks = agentDetails?.recentTasks || [
-    { id: '1', task: 'Task 1', status: 'completed', timeAgo: '2h' },
-    { id: '2', task: 'Task 2', status: 'completed', timeAgo: '4h' },
-    { id: '3', task: 'Task 3', status: 'working', timeAgo: 'now' },
-  ]
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(systemPrompt)
@@ -309,19 +324,25 @@ export default function AgentPage() {
         {activeTab === 'history' && (
           <div className="space-y-3">
             <p className="text-xs text-slate-400 mb-4">Latest tasks executed by {agent.name}.</p>
-            {recentTasks.map((task: any) => {
-              const cfg = TASK_STATUS_CONFIG[task.status]
-              const StatusIcon = cfg.icon
-              return (
-                <div key={task.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 flex items-start gap-3">
-                  <StatusIcon size={16} className={clsx('mt-0.5 shrink-0', cfg.color)} />
-                  <div className="flex-1">
-                    <p className="text-sm text-slate-200">{task.task}</p>
-                    <p className="text-xs text-slate-500 mt-1">{task.timeAgo}</p>
+            {recentTasks.length === 0 ? (
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
+                <p className="text-sm text-slate-400">No activity yet</p>
+              </div>
+            ) : (
+              recentTasks.map((task) => {
+                const cfg = TASK_STATUS_CONFIG[task.status]
+                const StatusIcon = cfg.icon
+                return (
+                  <div key={task.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 flex items-start gap-3">
+                    <StatusIcon size={16} className={clsx('mt-0.5 shrink-0', cfg.color)} />
+                    <div className="flex-1">
+                      <p className="text-sm text-slate-200">{task.task}</p>
+                      <p className="text-xs text-slate-500 mt-1">{task.timeAgo}</p>
+                    </div>
                   </div>
-                </div>
-              )
-            })}
+                )
+              })
+            )}
           </div>
         )}
 
@@ -397,20 +418,32 @@ export default function AgentPage() {
         {/* Tab: Performance */}
         {activeTab === 'performance' && (
           <div className="space-y-4">
-            {improveAreas.map((area) => (
-              <div key={area.label} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-slate-200">{area.label}</span>
-                  <span className="text-sm font-semibold text-white">{area.pct}%</span>
-                </div>
-                <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                  <div
-                    className="h-full transition-all"
-                    style={{ width: `${area.pct}%`, background: agent.color }}
-                  />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <p className="text-xs text-slate-400 mb-1">Total Interactions</p>
+                <p className="text-2xl font-bold text-white">{agentStats.totalInteractions}</p>
+              </div>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <p className="text-xs text-slate-400 mb-1">Completion Rate</p>
+                <div className="flex items-center gap-2">
+                  <p className="text-2xl font-bold text-white">{agentStats.completionRate}%</p>
+                  <div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
+                    <div
+                      className="h-full transition-all"
+                      style={{ width: `${agentStats.completionRate}%`, background: agent.color }}
+                    />
+                  </div>
                 </div>
               </div>
-            ))}
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <p className="text-xs text-slate-400 mb-1">Avg Response Time</p>
+                <p className="text-2xl font-bold text-white">{agentStats.averageResponseTime}</p>
+              </div>
+              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
+                <p className="text-xs text-slate-400 mb-1">Last Active</p>
+                <p className="text-2xl font-bold text-white">{agentStats.lastActive}</p>
+              </div>
+            </div>
           </div>
         )}
       </div>
