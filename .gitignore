@@ -29,7 +29,8 @@ out/
 .DS_Store
 
 # Vercel
-.vercel/
+.vercel/*
+!.vercel/project.json
 .vercel-build-output/
 
 # OS
