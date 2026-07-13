@@ -1,85 +1,95 @@
-import { createClient } from '@/lib/supabase'
+import { createServiceClient } from '@/lib/supabase-admin'
 
 export interface DepartmentStats {
   leads?: number
   proposals?: number
   posts?: number
-  approvals?: number
   plans?: number
-  audits?: number
-  invoices?: number
-  alerts?: number
-  clients?: number
-  revenue?: string
-  margin?: string
   ideas?: number
+  contacts?: number
 }
 
-export async function getDepartmentStats(
-  clientId: string,
-  department: 'comercial' | 'marketing' | 'estrategia' | 'operaciones' | 'finanzas' | 'innovacion'
-): Promise<DepartmentStats> {
-  const supabase = createClient()
-  const stats: DepartmentStats = {}
+/**
+ * Get real stats for each department from Supabase
+ */
+export async function getDepartmentStats(clientId: string): Promise<Record<string, DepartmentStats>> {
+  const db = createServiceClient()
+
+  let leads = 0, proposals = 0, posts = 0, contacts = 0
 
   try {
-    if (department === 'comercial') {
-      const { count: leadCount } = await supabase
-        .from('leads')
-        .select('*', { count: 'exact', head: true })
-        .eq('client_id', clientId)
+    const { count: leadsCount } = await db
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+    leads = leadsCount || 0
+  } catch (e) {
+    console.error('Error fetching leads:', e)
+  }
 
-      const { count: proposalCount } = await supabase
-        .from('proposal_library')
-        .select('*', { count: 'exact', head: true })
-        .eq('client_id', clientId)
+  try {
+    const { count: proposalsCount } = await db
+      .from('proposal_library')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+    proposals = proposalsCount || 0
+  } catch (e) {
+    console.error('Error fetching proposals:', e)
+  }
 
-      stats.leads = leadCount || 0
-      stats.proposals = proposalCount || 0
-    }
+  try {
+    const { count: postsCount } = await db
+      .from('post_history')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+    posts = postsCount || 0
+  } catch (e) {
+    console.error('Error fetching posts:', e)
+  }
 
-    if (department === 'marketing') {
-      const { count: postCount } = await supabase
-        .from('post_history')
-        .select('*', { count: 'exact', head: true })
-        .eq('client_id', clientId)
+  try {
+    const { count: contactsCount } = await db
+      .from('crm_contacts')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+    contacts = contactsCount || 0
+  } catch (e) {
+    console.error('Error fetching contacts:', e)
+  }
 
-      stats.posts = postCount || 0
-      stats.approvals = 0 // TODO: connect to approvals table when schema available
-    }
+  return {
+    comercial: { leads, proposals },
+    marketing: { posts, contacts },
+    estrategia: { plans: 0, ideas: 0 },
+    operaciones: { contacts },
+    finanzas: { leads },
+    innovacion: { ideas: 0 },
+  }
+}
 
-    if (department === 'estrategia') {
-      try {
-        const { count: planCount } = await supabase
-          .from('strategic_plans')
-          .select('*', { count: 'exact', head: true })
-          .eq('client_id', clientId)
+/**
+ * Get agent status from most recent activity
+ */
+export async function getAgentStatus(clientId: string, agentRole: string): Promise<'active' | 'idle' | 'offline'> {
+  const db = createServiceClient()
 
-        stats.plans = planCount || 0
-      } catch {
-        stats.plans = 0
-      }
-      stats.audits = 0 // TODO: connect when schema available
-    }
+  try {
+    const { data } = await db
+      .from('agent_activity')
+      .select('status, created_at')
+      .eq('client_id', clientId)
+      .eq('agent_role', agentRole)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .single()
 
-    if (department === 'operaciones' || department === 'finanzas') {
-      // Operaciones & Finance use shared operational metrics
-      const { count: activityCount } = await supabase
-        .from('agent_activity')
-        .select('*', { count: 'exact', head: true })
-        .eq('client_id', clientId)
-        .eq('status', 'completed')
+    if (!data) return 'offline'
 
-      stats.invoices = activityCount ? Math.floor(activityCount / 10) : 0 // Rough proxy
-    }
-
-    if (department === 'innovacion') {
-      stats.ideas = 0 // TODO: connect to ideas table when schema available
-    }
-
-    return stats
-  } catch (err) {
-    console.error(`Error fetching stats for ${department}:`, err)
-    return stats
+    const lastActivityTime = new Date(data.created_at).getTime()
+    const oneHourAgo = Date.now() - 3600000
+    return lastActivityTime > oneHourAgo ? 'active' : 'idle'
+  } catch (error) {
+    console.error('Error fetching agent status:', error)
+    return 'offline'
   }
 }

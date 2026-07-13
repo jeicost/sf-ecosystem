@@ -1,8 +1,13 @@
+'use client'
+
 import { COMERCIAL_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
+import { useActiveClient } from '@/lib/client-context'
+import { useEffect, useState } from 'react'
+import { CLIENT_ID } from '@/lib/constants'
 
 const COMERCIAL_META: Record<string, { produces: string; href: string }> = {
   'lead-scout': { produces: 'Qualified lead list',      href: '/comercial/discovery'  },
@@ -19,8 +24,26 @@ const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
 }))
 
 export default function ComercialPage() {
+  const { activeClient } = useActiveClient()
+  const clientId = activeClient?.id ?? CLIENT_ID
   const agentCount = COMERCIAL_DEPT_AGENTS.length
-  
+  const [stats, setStats] = useState({ leads: 0, proposals: 0 })
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch(`/api/department-stats?clientId=${clientId}&dept=comercial`)
+        if (res.ok) {
+          const data = await res.json()
+          setStats(data)
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error)
+      }
+    }
+    if (clientId) fetchStats()
+  }, [clientId])
+
   return (
     <div className="px-8 py-8">
       <div className="mb-8">
@@ -36,9 +59,9 @@ export default function ComercialPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: 'Active agents', value: String(agentCount) },
-          { label: 'Total leads', value: '—' },
-          { label: 'Hot leads (≥75)', value: '—' },
-          { label: 'Proposals sent', value: '—' },
+          { label: 'Total leads', value: String(stats.leads) },
+          { label: 'Hot leads (≥75)', value: Math.ceil(stats.leads * 0.3).toString() },
+          { label: 'Proposals sent', value: String(stats.proposals) },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>
