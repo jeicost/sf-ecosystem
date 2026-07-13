@@ -211,11 +211,12 @@ function MarketingAuditResult({ data }: { data?: any }) {
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {section.dimensions.map((dim: any, dIdx: number) => {
-                      const statusColor = {
+                      const statusColorMap: Record<string, string> = {
                         Strong: 'text-teal-400',
                         Present: 'text-yellow-400',
                         Weak: 'text-orange-400',
-                      }[dim.status] || 'text-gray-400'
+                      }
+                      const statusColor = statusColorMap[dim.status as string] || 'text-gray-400'
 
                       return (
                         <div key={dIdx} className="border border-white/10 bg-white/5 p-4 rounded text-center">
