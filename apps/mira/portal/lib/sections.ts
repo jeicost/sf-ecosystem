@@ -89,6 +89,7 @@ export const SECTIONS: MiraSection[] = [
     icon: '⚙️',
     navItems: [
       { href: '/admin',             label: 'My Team',   icon: Users },
+      { href: '/admin/users',       label: 'Users',     icon: Users },
       { href: '/admin/facturacion', label: 'Billing',   icon: BarChart3 },
       { href: '/admin/sistema',     label: 'System',    icon: Settings },
     ],
@@ -104,8 +105,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/finanzas',          label: 'My Team',    icon: Users },
       { href: '/finanzas/plan',     label: 'My Plan',    icon: Map },
       { href: '/finanzas/cartera',  label: 'Portfolio',  icon: TrendingUp },
-      { href: '/agent/fiscal',      label: 'Tax',        icon: Settings },
-      { href: '/agent/harbor',      label: 'FIRE Plan',  icon: Map },
     ],
     locked: false,
   },
