@@ -67,53 +67,255 @@ Generate a brand briefing JSON with these exact sections:
       return `You are an SEO expert. Generate a DETAILED SEO audit report matching production quality (reference: Salsa Burgers SEO audit at sf-reports.vercel.app).
 
 CRITICAL REQUIREMENTS:
-- Score: 0-100 scale (typical range 60-80 for food brands)
-- 3-4 detailed sections: Technical SEO, On-page SEO, Content Strategy, Competitive Analysis
-- Each finding MUST have: title, severity (CRÍTICO/ALTO/MEDIO/OK), specific problem, impact estimate, exact fix
-- Action plan: 5-7 prioritized actions with effort estimates (hours/days), owner role, expected ROI
-- Be specific with real metrics, not generic advice
-- Include actual site data from input
+- Score: 0-100 scale (typical range 60-80 for food brands) with trend (+X points in 90 days)
+- 4 stat cards MUST be: Style Chars (vs ideal <60), Images Alt Text (X/Y), Schema Types Active (count), Hreflang Tags (count/language)
+- Sections MUST follow this structure:
+  * On-Page SEO (10 elements table: Title tag, Meta description, H1, H2/Structure, Images/Alt, URL structure, Canonical, Current ranking, Technical status, etc.)
+  * SEO Técnico (10+ checks: HTTPS/SSL, Sitemap.xml, Robots.txt, Mobile/Viewport, GTM+GA4, Hreflang EN/TH, Schema Restaurant, Page Speed, Core Web Vitals, Preload críticos)
+  * Schema Markup (6 schemas: Restaurant, AggregateRating, OpeningHours, Geo+PostalAddress, FAQPage, Article/BlogPosting with status active/missing)
+  * Keywords Target (6 keywords with volume, intent, priority)
+  * Blog & Contenido (4 assessment rows: Blog active, Frecuencia, Article schema, Internal linking)
+- Each finding MUST have: title, status (OK/LARGO/FALTA/DESACTUALIZADO), current value, recommendation, analysis
+- Action plan: 6 prioritized actions with severity tags, specific impact, exact effort estimate
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate SEO audit JSON:
+Generate SEO audit JSON (EXACT STRUCTURE):
 {
-  "overall_score": number,
+  "overall_score": number (60-80),
+  "overall_trend": "string like '+8 points in 90 days'",
   "scoreLabel": "SEO Health Score",
+  "statCards": [
+    {"label": "Style Chars (Ideal <60)", "value": "69", "status": "warning", "description": "Title tag truncates in SERPs..."},
+    {"label": "Imágenes con Alt Text", "value": "20/20", "status": "perfect", "description": "All images properly described..."},
+    {"label": "Schema Types Activos", "value": "5", "status": "good", "description": "Restaurant, AggregateRating, etc..."},
+    {"label": "Hreflang Tags EN/TH", "value": "0", "status": "critical", "description": "No hreflang declarations..."}
+  ],
   "sections": [
     {
-      "title": "Technical SEO",
-      "findings": [
+      "title": "On-Page SEO",
+      "description": "On-page elements, meta tags, heading structure",
+      "type": "table",
+      "elements": [
         {
-          "id": number,
-          "title": "specific issue name",
-          "severity": "CRÍTICO|ALTO|MEDIO|OK",
-          "description": "detailed problem explanation",
-          "impact": "estimated business impact with number (e.g. -15% mobile traffic)"
+          "element": "Title tag",
+          "status": "warning|ok|critical|falta",
+          "current": "actual title text",
+          "recommendation": "suggested title",
+          "analysis": "Detailed explanation: X chars, truncates at Y, loses Z keywords. FIX: recommendation."
+        },
+        {
+          "element": "Meta description",
+          "status": "ok",
+          "current": "current meta",
+          "recommendation": "improved meta",
+          "analysis": "..."
+        },
+        {
+          "element": "H1",
+          "status": "critical",
+          "current": "current H1",
+          "recommendation": "new H1",
+          "analysis": "Zero keywords, no relevance signal. FIX: merge brand + keyword..."
+        },
+        {
+          "element": "H2 / Estructura",
+          "status": "aceptable|ok",
+          "analysis": "..."
+        },
+        {
+          "element": "Imágenes / Alt text",
+          "status": "perfect|ok",
+          "analysis": "..."
+        },
+        {
+          "element": "URL estructura",
+          "status": "ok",
+          "analysis": "..."
+        },
+        {
+          "element": "Canonical",
+          "status": "ok",
+          "analysis": "..."
+        },
+        {
+          "element": "Hreflang EN/TH",
+          "status": "falta|ok",
+          "analysis": "..."
+        },
+        {
+          "element": "Visually hidden H1",
+          "status": "aceptable|falta",
+          "analysis": "Option: CSS-only H1 with SEO keywords..."
+        },
+        {
+          "element": "Content freshness",
+          "status": "ok|warning",
+          "analysis": "..."
         }
       ]
     },
     {
-      "title": "On-page SEO",
-      "findings": [...]
+      "title": "SEO Técnico",
+      "description": "Technical infrastructure, crawlability, performance",
+      "type": "table",
+      "checks": [
+        {
+          "check": "HTTPS / SSL",
+          "status": "ok|critical",
+          "description": "Active certificate, automatic redirect to HTTPS, Vercel CDN global..."
+        },
+        {
+          "check": "Sitemap.xml",
+          "status": "ok|missing",
+          "count": 7,
+          "description": "7 indexed URLs with changefreq, priority, lastmod. Referenced in robots.txt..."
+        },
+        {
+          "check": "Robots.txt",
+          "status": "ok|warning",
+          "description": "Allow: /*, no critical resources blocked. Sitemap declared correctly..."
+        },
+        {
+          "check": "Mobile / Viewport",
+          "status": "ok|critical",
+          "description": "Viewport meta present, fully responsive, FCP mobile ~900ms with video optimization..."
+        },
+        {
+          "check": "GTM + GA4",
+          "status": "ok|missing",
+          "description": "Google Tag Manager active, GA4 configured, conversion tracking available..."
+        },
+        {
+          "check": "Hreflang EN/TH",
+          "status": "falta|ok",
+          "description": "CRÍTICO: Multilingual site but no hreflang declarations. FIX: Add hreflang-en, hreflang-th in head..."
+        },
+        {
+          "check": "Schema Restaurant",
+          "status": "ok|missing",
+          "description": "Restaurant + AggregateRating + OpeningHours + Geo + PostalAddress implemented..."
+        },
+        {
+          "check": "Page Speed",
+          "status": "mejorable|ok",
+          "description": "Desktop FCP 900ms ok, mobile FCP 1.8s (CDN cold). Hero 3.6MB total..."
+        },
+        {
+          "check": "Core Web Vitals",
+          "status": "needs_work|ok",
+          "description": "LCP, FID, CLS - mobile metrics need optimization..."
+        },
+        {
+          "check": "Preload críticos",
+          "status": "missing|ok",
+          "description": "Fonts, hero images should use preload/prefetch directives..."
+        }
+      ]
+    },
+    {
+      "title": "Schema Markup",
+      "description": "Structured data for rich snippets",
+      "type": "schema_cards",
+      "schemas": [
+        {"name": "Restaurant", "status": "active", "color": "green", "impact": "Rich snippets en SERPs locales"},
+        {"name": "AggregateRating", "status": "active", "color": "green", "impact": "Star ratings en search results"},
+        {"name": "OpeningHoursSpecification", "status": "active", "color": "green", "impact": "Store hours en SERPs"},
+        {"name": "GeoCoordinates + PostalAddress", "status": "active", "color": "green", "impact": "Location rich snippets"},
+        {"name": "FAQPage", "status": "missing", "color": "red", "opportunity": "If 6 common Q&A: FAQ rich snippets high CTR..."},
+        {"name": "Article / BlogPosting", "status": "missing", "color": "red", "opportunity": "Blog posts without schema: no editorial rich snippets..."}
+      ]
+    },
+    {
+      "title": "Keywords Target",
+      "description": "Keyword landscape y opportunities",
+      "type": "table",
+      "keywords": [
+        {
+          "keyword": "burger delivery bangkok",
+          "volume": "Alto",
+          "intent": "Transaccional",
+          "priority": "#1",
+          "current_rank": "not ranking|position X"
+        },
+        {
+          "keyword": "wagyu burger bangkok",
+          "volume": "Medio",
+          "intent": "Comercial",
+          "priority": "#1"
+        },
+        {
+          "keyword": "best burger bangkok",
+          "volume": "Alto",
+          "intent": "Comercial",
+          "priority": "#2"
+        },
+        {
+          "keyword": "grab food burger bangkok",
+          "volume": "Medio",
+          "intent": "Transaccional",
+          "priority": "Quick win"
+        },
+        {
+          "keyword": "artisan burger sauce bangkok",
+          "volume": "Long-tail",
+          "intent": "Informacional",
+          "priority": "Blog topic"
+        },
+        {
+          "keyword": "salsa burgers",
+          "volume": "Branded",
+          "intent": "Branded",
+          "priority": "Already ranking"
+        }
+      ]
+    },
+    {
+      "title": "Blog & Contenido",
+      "description": "Blog content strategy y opportunities",
+      "type": "table",
+      "assessment": [
+        {
+          "element": "Blog activo",
+          "status": "ok|missing",
+          "count": 4,
+          "description": "4 posts published with relevant topics: delivery, Grab, sauces, Wagyu. Basic SEO structure present..."
+        },
+        {
+          "element": "Frecuencia",
+          "status": "desactualizado|ok",
+          "last_post": "Marzo 2025",
+          "days_ago": 65,
+          "description": "~2 months without activity. Google interprets as negative freshness signal for food sites..."
+        },
+        {
+          "element": "Article schema",
+          "status": "falta|ok",
+          "impact": "No BlogPosting/Article schema = no editorial rich snippets in SERPs. Missing CTR opportunity...",
+          "recommendation": "Add BlogPosting schema to all blog posts with datePublished, author, headline..."
+        },
+        {
+          "element": "Internal linking",
+          "status": "mejorable|ok",
+          "description": "Posts don't link to each other or menu/delivery pages. Missing link equity opportunities..."
+        }
+      ]
     }
-  ],
-  "statCards": [
-    {"label": "Pages Indexed", "value": "number or range"},
-    {"label": "Core Web Vitals", "value": "status"},
-    {"label": "Ranking Keywords", "value": "count"},
-    {"label": "Backlink Profile", "value": "count"}
   ],
   "actions": [
     {
-      "id": number,
-      "title": "specific action",
+      "id": 1,
+      "number": 1,
+      "title": "Specific action title",
+      "description": "Detailed description",
       "priority": "CRÍTICO|ALTO|MEDIO",
-      "impact": "+X% traffic estimate",
-      "effort": "X hours or Y days",
-      "owner": "team role"
+      "severity_tag": "warning|critical|info",
+      "impact": "+X% traffic (e.g., '+20-35% impressions')",
+      "effort": "X hours or Y days exact estimate",
+      "owner": "team role",
+      "expected_roi": "number/10"
     }
   ],
   "generatedAt": "just now"
@@ -123,57 +325,111 @@ Generate SEO audit JSON:
       return `You are a marketing auditor. Generate a DETAILED marketing audit matching production quality (reference: Salsa Burgers marketing audit at sf-reports.vercel.app).
 
 CRITICAL REQUIREMENTS:
-- Overall score: 0-100 (typical range 50-80)
-- 6 category scores with detailed findings (not generic, use brand data)
-- Brand & Positioning section (identity strength, consistency, positioning vs competitors)
-- Conversion Funnel section (CTA clarity, order flow, friction points)
-- Trust & Authority section (social proof, reviews, credentials)
-- Quick Wins: 5 high-impact, low-effort actions (tagged by area, estimated ROI)
-- Each finding MUST have severity, impact estimate, specific fix
+- Overall score: 0-100 (typical range 50-80) with trend (+X points in 90 days)
+- 6 category scores: Brand Identity, Conversion Funnel, Social Media, Content Marketing, Lead Capture, Local Marketing
+- Sections MUST follow this structure (4 color-coded cards per section):
+  * Brand & Posicionamiento (4 cards: USP clarity, Visual Identity, Hero Product, Google Business Link)
+  * Conversion Funnel (4 cards: ORDER NOW visibility, GRAB/LINE MAN integration, WhatsApp Business, Email Capture gaps)
+  * Social Media & Contenido (4 cards: Social proof, Instagram feed, Blog frequency, Reviews section)
+  * Trust & Autoridad (E-E-A-T matrix with 4 dimensions: Experience, Expertise, Authority, Trust)
+- Quick Wins: 5 actions with effort_tag (Fácil/Medio), ROI estimate, specific hours/timeframe
+- Each card MUST have: title, status (strong/present/missing/warning), color_border (teal/red/orange/green), detailed content
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate marketing audit JSON:
+Generate marketing audit JSON (EXACT STRUCTURE):
 {
-  "overall_score": number,
+  "overall_score": number (50-80),
+  "overall_trend": "string like '+8 points in 90 days'",
   "scoreLabel": "Marketing Health Score",
   "statCards": [
-    {"label": "Brand Identity Score", "value": "number/100"},
-    {"label": "Conversion Funnel", "value": "score/100"},
-    {"label": "Social Media", "value": "score/100"},
-    {"label": "Local Marketing", "value": "score/100"}
+    {"label": "Brand Identity", "value": "number/100", "description": "short desc"},
+    {"label": "Conversion Funnel", "value": "number/100", "description": "short desc"},
+    {"label": "Social Media", "value": "number/100", "description": "short desc", "status": "critical"},
+    {"label": "Content Marketing", "value": "number/100", "description": "short desc", "status": "critical"},
+    {"label": "Lead Capture", "value": "number/100", "description": "short desc", "status": "warning"},
+    {"label": "Local Marketing", "value": "number/100", "description": "short desc"}
   ],
   "sections": [
     {
-      "title": "Brand & Positioning",
-      "findings": [
+      "title": "Brand & Posicionamiento",
+      "description": "Identidad visual, propuesta de valor y consistencia de marca",
+      "type": "cards",
+      "cards": [
         {
-          "id": number,
-          "title": "specific issue",
-          "severity": "CRÍTICO|ALTO|MEDIO|OK",
-          "description": "problem + impact"
+          "title": "USP Muy Claro",
+          "status": "strong",
+          "color_border": "teal",
+          "content": "Brief content explaining brand's unique selling proposition..."
+        },
+        {
+          "title": "Identidad Visual Fuerte",
+          "status": "strong|present|missing",
+          "color_border": "red|teal|orange",
+          "content": "..."
+        },
+        {
+          "title": "Producto Hero Bien Destacado",
+          "status": "strong|present|missing",
+          "color_border": "teal",
+          "content": "..."
+        },
+        {
+          "title": "Google My Business Link",
+          "status": "strong|missing",
+          "color_border": "orange",
+          "content": "..."
         }
       ]
     },
     {
       "title": "Conversion Funnel",
-      "findings": [...]
+      "description": "CTA clarity, order flow y friction points",
+      "type": "cards",
+      "icon": "funnel",
+      "cards": [
+        {"title": "ORDER NOW Siempre Visible", "status": "strong", "color_border": "teal", "content": "..."},
+        {"title": "GRAB + LINE MAN Integrados", "status": "strong", "color_border": "teal", "content": "..."},
+        {"title": "WhatsApp Business Activo", "status": "strong|present", "color_border": "teal", "content": "..."},
+        {"title": "Sin Captación de Email", "status": "missing", "color_border": "orange", "content": "..."}
+      ]
     },
     {
-      "title": "Trust & Authority (E-E-A-T)",
-      "findings": [...]
+      "title": "Social Media & Contenido",
+      "description": "Presencia, engagement y estrategia de contenido",
+      "type": "cards",
+      "cards": [
+        {"title": "Redes Sociales: Links sin Proof", "status": "warning", "color_border": "orange", "content": "..."},
+        {"title": "Sin Feed de Instagram en Web", "status": "missing", "color_border": "orange", "content": "..."},
+        {"title": "Blog sin Actualizar", "status": "warning", "color_border": "orange", "content": "..."},
+        {"title": "Sección de Reviews Activa", "status": "strong", "color_border": "teal", "content": "..."}
+      ]
+    },
+    {
+      "title": "Trust & Autoridad (E-E-A-T)",
+      "description": "Experiencia, expertise, autoridad, confianza",
+      "type": "eeat_matrix",
+      "icon": "star",
+      "dimensions": [
+        {"name": "Experience", "status": "Strong|Present|Weak", "content": "..."},
+        {"name": "Expertise", "status": "Strong|Present|Weak", "content": "..."},
+        {"name": "Authority", "status": "Strong|Present|Weak", "content": "..."},
+        {"name": "Trust", "status": "Strong|Present|Weak", "content": "..."}
+      ]
     }
   ],
   "quickWins": [
     {
-      "id": number,
-      "title": "action",
-      "priority": "ALTO",
-      "impact": "+X% conversions or revenue",
-      "effort": "Easy",
-      "owner": "Role"
+      "id": 1,
+      "number": 1,
+      "title": "Specific action",
+      "description": "Detailed description of what to do",
+      "effort_tag": "Fácil - Alto ROI",
+      "effort_hours": "number of hours (e.g., 15 min = 0.25)",
+      "impact": "+X% metric (e.g., '+20-35% GMB impressions')",
+      "roi_score": "8/10"
     }
   ],
   "generatedAt": "just now"
