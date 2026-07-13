@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import SectionSwitcher from '@/components/section-switcher'
 import ClientSwitcher from '@/components/client-switcher'
+import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider } from '@/lib/client-context'
 import { getActiveSectionFromPath } from '@/lib/sections'
 import { getUser, clearUser, type MiraUser } from '@/lib/auth'
@@ -248,6 +249,7 @@ useEffect(() => {
               style={{ left: theme === 'light' ? '17px' : '2px' }} />
           </div>
         </button>
+        <LanguageSwitcher />
       </div>
 
       {/* User */}

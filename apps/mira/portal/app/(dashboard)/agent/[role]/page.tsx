@@ -15,6 +15,7 @@ import { AGENT_DETAILS } from '@/lib/agent-details'
 import { getQuickPrompts } from '@/lib/agent-quick-prompts'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { getAgentActivityTasks, getAgentStats } from '@/lib/agent-activity-stats'
+import { useLocaleContext } from '@/app/locale-provider'
 import DocumentUploader from '@/components/document-uploader'
 import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
@@ -131,8 +132,9 @@ export default function AgentPage() {
     )
   }
 
+  const { locale } = useLocaleContext()
   const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy })
-  const systemPrompt = getAgentPrompt(role)
+  const systemPrompt = getAgentPrompt(role, locale)
 
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(systemPrompt)
