@@ -1,7 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { fetchBrandBrainData } from '@/lib/brand-brain-loader'
+import { useActiveClient } from '@/lib/client-context'
+import { CLIENT_ID } from '@/lib/constants'
 
 export interface ToolField {
   name: string
@@ -40,6 +43,9 @@ export default function ToolRunnerPage({
   resultComponent,
   isLoading: externalLoading = false,
 }: ToolRunnerPageProps) {
+  const { activeClient } = useActiveClient()
+  const clientId = activeClient?.id ?? CLIENT_ID
+
   const [formData, setFormData] = useState<Record<string, any>>(() => {
     const initial: Record<string, any> = {}
     config.fields.forEach((field) => {
@@ -52,6 +58,18 @@ export default function ToolRunnerPage({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [resultData, setResultData] = useState<any>(null)
+
+  // Load Brand Brain data on mount
+  useEffect(() => {
+    const loadBrandData = async () => {
+      if (!clientId) return
+      const brandData = await fetchBrandBrainData(clientId)
+      if (Object.keys(brandData).length > 0) {
+        setFormData((prev) => ({ ...prev, ...brandData }))
+      }
+    }
+    loadBrandData()
+  }, [clientId])
 
   const handleChange = (field: string, value: any) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
