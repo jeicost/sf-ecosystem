@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { X, ExternalLink } from 'lucide-react'
+import { X, ExternalLink, ArrowRight } from 'lucide-react'
 
 interface ToolConnectionModalProps {
   tool: {
@@ -9,6 +9,7 @@ interface ToolConnectionModalProps {
     emoji: string
     setupUrl: string
     description: string
+    authType: 'api-key' | 'oauth' | 'native'
   }
   isOpen: boolean
   isConnecting: boolean
@@ -38,6 +39,11 @@ export default function ToolConnectionModal({
     e.preventDefault()
     setError(null)
 
+    if (tool.authType === 'api-key' && !authToken.trim()) {
+      setError('API Key is required')
+      return
+    }
+
     try {
       await onConnect({
         accountEmail: accountEmail || undefined,
@@ -49,6 +55,17 @@ export default function ToolConnectionModal({
       setAuthToken('')
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to connect tool'
+      setError(message)
+    }
+  }
+
+  const handleOAuthStart = async () => {
+    setError(null)
+    try {
+      const redirectUrl = `/api/integrations/oauth/${tool.id}/start?clientId=${new URLSearchParams(window.location.search).get('clientId') || ''}`
+      window.location.href = redirectUrl
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to start OAuth flow'
       setError(message)
     }
   }
@@ -83,53 +100,65 @@ export default function ToolConnectionModal({
 
           {/* Content */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {/* Email Input */}
-            <div>
-              <label htmlFor="email" className="block text-xs font-semibold text-[#666] mb-2">
-                Email / Account
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={accountEmail}
-                onChange={(e) => setAccountEmail(e.target.value)}
-                className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
-              />
-            </div>
+            {tool.authType === 'api-key' && (
+              <>
+                {/* Auth Token Input */}
+                <div>
+                  <label htmlFor="token" className="block text-xs font-semibold text-[#666] mb-2">
+                    API Key / Token <span className="text-[#FF6B6B]">*</span>
+                  </label>
+                  <input
+                    id="token"
+                    type="password"
+                    placeholder="sk-xxxxxxxxx or your-api-key"
+                    value={authToken}
+                    onChange={(e) => setAuthToken(e.target.value)}
+                    className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+                    autoComplete="off"
+                  />
+                  <p className="text-xs text-[#666] mt-1">
+                    Your credentials are encrypted and never shared
+                  </p>
+                </div>
 
-            {/* Handle Input */}
-            <div>
-              <label htmlFor="handle" className="block text-xs font-semibold text-[#666] mb-2">
-                Handle / Username (Optional)
-              </label>
-              <input
-                id="handle"
-                type="text"
-                placeholder="@yourhandle"
-                value={accountHandle}
-                onChange={(e) => setAccountHandle(e.target.value)}
-                className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
-              />
-            </div>
+                {/* Optional Email Input */}
+                <div>
+                  <label htmlFor="email" className="block text-xs font-semibold text-[#666] mb-2">
+                    Email / Account (Optional)
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={accountEmail}
+                    onChange={(e) => setAccountEmail(e.target.value)}
+                    className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+                  />
+                </div>
+              </>
+            )}
 
-            {/* Auth Token Input */}
-            <div>
-              <label htmlFor="token" className="block text-xs font-semibold text-[#666] mb-2">
-                API Key / Token (Optional)
-              </label>
-              <input
-                id="token"
-                type="password"
-                placeholder="sk-xxxxxxxxx"
-                value={authToken}
-                onChange={(e) => setAuthToken(e.target.value)}
-                className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
-              />
-              <p className="text-xs text-[#666] mt-1">
-                Your credentials are encrypted and never shared
-              </p>
-            </div>
+            {tool.authType === 'oauth' && (
+              <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30">
+                <p className="text-sm text-white mb-3">
+                  Click below to connect via {tool.name}. You'll be redirected to authorize MIRA.
+                </p>
+                <p className="text-xs text-[#999]">
+                  This is a secure OAuth connection. You can disconnect anytime from this page.
+                </p>
+              </div>
+            )}
+
+            {tool.authType === 'native' && (
+              <div className="p-3 rounded bg-[#10B981]10 border border-[#10B981]30">
+                <p className="text-sm text-white">
+                  ✓ {tool.name} is natively integrated and ready to use.
+                </p>
+                <p className="text-xs text-[#999] mt-2">
+                  No additional configuration needed. Your agents can access {tool.name} immediately.
+                </p>
+              </div>
+            )}
 
             {/* Error Message */}
             {error && (
@@ -139,19 +168,21 @@ export default function ToolConnectionModal({
             )}
 
             {/* Info Box */}
-            <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30 text-xs text-[#999]">
-              <p className="font-semibold text-[#EC4899] mb-1">Don't have an account yet?</p>
-              <p>{tool.description}</p>
-              <a
-                href={tool.setupUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 mt-2 text-[#EC4899] hover:text-[#FF1493]"
-              >
-                Create account
-                <ExternalLink size={12} />
-              </a>
-            </div>
+            {tool.authType !== 'native' && (
+              <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30 text-xs text-[#999]">
+                <p className="font-semibold text-[#EC4899] mb-1">Don't have an account yet?</p>
+                <p>{tool.description}</p>
+                <a
+                  href={tool.setupUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 mt-2 text-[#EC4899] hover:text-[#FF1493]"
+                >
+                  Create account
+                  <ExternalLink size={12} />
+                </a>
+              </div>
+            )}
 
             {/* Actions */}
             <div className="flex gap-3 pt-4">
@@ -161,22 +192,35 @@ export default function ToolConnectionModal({
                 disabled={isConnecting}
                 className="flex-1 px-4 py-2 rounded bg-[#1E1E1E] text-white text-sm font-medium hover:bg-[#333] disabled:opacity-50 transition-all"
               >
-                Cancel
+                {tool.authType === 'native' ? 'Close' : 'Cancel'}
               </button>
-              <button
-                type="submit"
-                disabled={isConnecting}
-                className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
-              >
-                {isConnecting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    Connecting...
-                  </>
-                ) : (
-                  'Connect Account'
-                )}
-              </button>
+              {tool.authType === 'oauth' && (
+                <button
+                  type="button"
+                  onClick={handleOAuthStart}
+                  disabled={isConnecting}
+                  className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                >
+                  Authorize with {tool.name.split('(')[0].trim()}
+                  <ArrowRight size={14} />
+                </button>
+              )}
+              {tool.authType === 'api-key' && (
+                <button
+                  type="submit"
+                  disabled={isConnecting}
+                  className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                >
+                  {isConnecting ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                      Connecting...
+                    </>
+                  ) : (
+                    'Connect Account'
+                  )}
+                </button>
+              )}
             </div>
           </form>
         </div>

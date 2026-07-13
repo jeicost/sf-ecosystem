@@ -15,9 +15,28 @@ export default function IntegrationsPage() {
   const [mounted, setMounted] = useState(false)
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     setMounted(true)
+
+    // Check for OAuth callback messages
+    const params = new URLSearchParams(window.location.search)
+    const success = params.get('success')
+    const error = params.get('error')
+
+    if (success) {
+      setSuccessMessage(`${success} connected successfully!`)
+      // Clear URL
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setSuccessMessage(null), 5000)
+    }
+    if (error) {
+      setErrorMessage(`Connection failed: ${error}`)
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
   }, [])
 
   const selectedTool = MARKETPLACE_TOOLS.find((t) => t.id === selectedToolId)
@@ -84,6 +103,17 @@ export default function IntegrationsPage() {
   return (
     <>
       <div className="space-y-8">
+        {successMessage && (
+          <div className="p-4 rounded bg-[#10B981]20 border border-[#10B981] text-[#10B981]">
+            ✓ {successMessage}
+          </div>
+        )}
+        {errorMessage && (
+          <div className="p-4 rounded bg-[#FF6B6B]20 border border-[#FF6B6B] text-[#FF6B6B]">
+            ✕ {errorMessage}
+          </div>
+        )}
+
         <div>
           <h1 className="text-4xl font-bold text-white mb-2">Integrations</h1>
           <p className="text-[#999]">
@@ -101,7 +131,14 @@ export default function IntegrationsPage() {
 
       {selectedTool && (
         <ToolConnectionModal
-          tool={selectedTool}
+          tool={{
+            id: selectedTool.id,
+            name: selectedTool.name,
+            emoji: selectedTool.emoji,
+            setupUrl: selectedTool.setupUrl,
+            description: selectedTool.description,
+            authType: selectedTool.authType,
+          }}
           isOpen={selectedToolId !== null}
           isConnecting={isConnecting}
           onClose={() => setSelectedToolId(null)}

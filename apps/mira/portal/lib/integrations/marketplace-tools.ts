@@ -11,7 +11,14 @@ export interface MarketplaceTool {
   isCritical: boolean
   affiliateUrl?: string
   status: 'connected' | 'disconnected' | 'locked'
+  authType: 'api-key' | 'oauth' | 'native'
 }
+
+export const AUTH_TYPE_LABELS = {
+  'api-key': 'Requires API Key',
+  'oauth': 'Requires OAuth',
+  'native': 'Native Integration',
+} as const
 
 export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   // Design Tools
@@ -28,6 +35,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     isCritical: true,
     affiliateUrl: 'https://canva.com/affiliate',
     status: 'disconnected',
+    authType: 'api-key',
   },
   {
     id: 'figma',
@@ -41,6 +49,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'innovation'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'oauth',
   },
 
   // Social Media Tools
@@ -56,6 +65,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'admin'],
     isCritical: true,
     status: 'disconnected',
+    authType: 'api-key',
   },
   {
     id: 'hootsuite',
@@ -69,6 +79,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'api-key',
   },
 
   // Sales & CRM Tools
@@ -84,6 +95,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['sales', 'strategy'],
     isCritical: true,
     status: 'disconnected',
+    authType: 'oauth',
   },
   {
     id: 'salesforce',
@@ -97,6 +109,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['sales', 'finance'],
     isCritical: true,
     status: 'disconnected',
+    authType: 'oauth',
   },
 
   // Communication & Productivity
@@ -112,6 +125,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['admin', 'marketing', 'sales'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'oauth',
   },
   {
     id: 'google-workspace',
@@ -125,9 +139,24 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['admin', 'finance', 'strategy'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'oauth',
+  },
+  {
+    id: 'google-drive',
+    name: 'Google Drive',
+    emoji: '☁️',
+    category: 'Productivity',
+    description: 'Cloud storage & document management for shared files and collaboration',
+    pricing: 'free',
+    setupUrl: 'https://drive.google.com',
+    agentsUnlocked: ['onboard', 'midas', 'quant', 'zoe'],
+    departments: ['admin', 'finance', 'strategy', 'marketing'],
+    isCritical: false,
+    status: 'connected',
+    authType: 'native',
   },
 
-  // AI Integration Tools (NEW)
+  // AI Integration Tools
   {
     id: 'anthropic',
     name: 'Claude (Anthropic)',
@@ -140,6 +169,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'innovation', 'strategy'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'api-key',
   },
   {
     id: 'openai',
@@ -153,9 +183,10 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'innovation', 'strategy'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'api-key',
   },
 
-  // Media & Design Enhancement Tools (NEW)
+  // Media & Design Enhancement Tools
   {
     id: 'freepik',
     name: 'Freepik',
@@ -168,6 +199,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'innovation'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'api-key',
   },
   {
     id: 'magnific',
@@ -181,5 +213,6 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'innovation'],
     isCritical: false,
     status: 'disconnected',
+    authType: 'api-key',
   },
 ]
