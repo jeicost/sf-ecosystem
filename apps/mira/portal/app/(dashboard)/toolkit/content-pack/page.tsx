@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import ToolResultComponent from '@/components/ToolResultComponent'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'content-pack',
@@ -103,20 +104,11 @@ export default function ContentPackPage() {
     <ToolRunnerPage
       config={TOOL_CONFIG}
       onGenerate={handleGenerate}
-      resultComponent={<ContentPackResult />}
+      resultComponent={ContentPackResult}
     />
   )
 }
 
-function ContentPackResult() {
-  return (
-    <div className="card p-6 space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: '#FBBF24' }}>
-          ✓ Content Pack Generado
-        </p>
-        <p className="text-sm text-gray-400">Tu pack de contenido está listo con temas, formatos y calendario editorial.</p>
-      </div>
-    </div>
-  )
+function ContentPackResult({ data }: { data?: any }) {
+  return <ToolResultComponent slug="content-pack" data={data} />
 }

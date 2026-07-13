@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import ToolResultComponent from '@/components/ToolResultComponent'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'brandbook-content-system',

@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import ToolResultComponent from '@/components/ToolResultComponent'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'brand-briefing',
@@ -87,20 +87,11 @@ export default function BrandBriefingPage() {
     <ToolRunnerPage
       config={TOOL_CONFIG}
       onGenerate={handleGenerate}
-      resultComponent={<BrandBriefingResult />}
+      resultComponent={BrandBriefingResult}
     />
   )
 }
 
-function BrandBriefingResult() {
-  return (
-    <div className="card p-6 space-y-6">
-      <div>
-        <p className="text-xs uppercase tracking-widest font-semibold mb-4" style={{ color: '#A78BFA' }}>
-          ✓ Brand Briefing Generado
-        </p>
-        <p className="text-sm text-gray-400">Tu briefing de marca está listo para revisar y compartir con el equipo.</p>
-      </div>
-    </div>
-  )
+function BrandBriefingResult({ data }: { data?: any }) {
+  return <ToolResultComponent slug="brand-briefing" data={data} />
 }
