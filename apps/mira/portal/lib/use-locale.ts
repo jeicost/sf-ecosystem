@@ -1,21 +1,23 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useEffect, useState } from 'react'
 
 type Locale = 'es' | 'en'
 
 export function useLocale(): { locale: Locale; setLocale: (locale: Locale) => void } {
-  const getLocale = useCallback((): Locale => {
-    if (typeof window === 'undefined') return 'es'
-    return (localStorage.getItem('locale') as Locale) || 'es'
+  const [locale, setLocaleState] = useState<Locale>('es')
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    const stored = (localStorage.getItem('locale') as Locale) || 'es'
+    setLocaleState(stored)
+    setMounted(true)
   }, [])
 
-  const setLocale = useCallback((locale: Locale) => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('locale', locale)
-      window.location.reload() // Reload para aplicar traducción global
-    }
-  }, [])
+  const setLocale = (newLocale: Locale) => {
+    localStorage.setItem('locale', newLocale)
+    setLocaleState(newLocale)
+  }
 
-  return { locale: getLocale(), setLocale }
+  return { locale: mounted ? locale : 'es', setLocale }
 }

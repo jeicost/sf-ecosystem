@@ -11,9 +11,10 @@ export interface UseAgentChatOptions {
   role: string
   clientId: string
   autonomy?: 'always_ask' | 'full_auto'
+  locale?: 'es' | 'en'
 }
 
-export function useAgentChat({ role, clientId, autonomy }: UseAgentChatOptions) {
+export function useAgentChat({ role, clientId, autonomy, locale = 'es' }: UseAgentChatOptions) {
   const [messages, setMessages] = useState<AgentMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -37,6 +38,7 @@ export function useAgentChat({ role, clientId, autonomy }: UseAgentChatOptions) 
           clientId,
           includeBrandBrain: true,
           autonomy,
+          locale,
         }),
         signal: abortControllerRef.current.signal,
       })

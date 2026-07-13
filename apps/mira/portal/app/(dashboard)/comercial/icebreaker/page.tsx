@@ -4,6 +4,7 @@ import { Loader2, Copy, Check, Zap, Users, RefreshCw } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocale } from '@/lib/use-locale'
 import { CLIENT_ID, HOT_SCORE_THRESHOLD } from '@/lib/constants'
 import { clsx } from 'clsx'
 
@@ -22,6 +23,7 @@ function parseVariants(text: string): string[] {
 export default function IcebreakerPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
+  const { locale } = useLocale()
 
   const [mode, setMode]           = useState<Mode>('manual')
   const [hotLeads, setHotLeads]   = useState<Lead[]>([])
@@ -64,7 +66,7 @@ export default function IcebreakerPage() {
       const res = await fetch('/api/agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: 'icebreaker-writer', message, includeBrandBrain: true }),
+        body: JSON.stringify({ role: 'icebreaker-writer', message, includeBrandBrain: true, locale }),
       })
       if (!res.ok || !res.body) throw new Error('Error')
       const reader = res.body.getReader()

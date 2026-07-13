@@ -4,6 +4,7 @@ import { Loader2, RefreshCw, Send } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocale } from '@/lib/use-locale'
 import { CLIENT_ID, HOT_SCORE_THRESHOLD, WARM_SCORE_THRESHOLD } from '@/lib/constants'
 import { scoreLabel } from '@/lib/score-utils'
 import { clsx } from 'clsx'
@@ -35,6 +36,7 @@ interface ChatMessage { role: 'user' | 'vera'; content: string }
 export default function ScoringPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
+  const { locale } = useLocale()
 
   const [allLeads, setAllLeads] = useState<Lead[]>([])
   const [topLeads, setTopLeads] = useState<Lead[]>([])
@@ -92,7 +94,7 @@ export default function ScoringPage() {
       const res = await fetch('/api/agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: 'icp-scorer', message: fullMessage, includeBrandBrain: true }),
+        body: JSON.stringify({ role: 'icp-scorer', message: fullMessage, includeBrandBrain: true, locale }),
       })
       if (!res.body) throw new Error('no stream')
       const reader = res.body.getReader()

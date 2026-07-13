@@ -18,7 +18,7 @@ const MAX_TOKENS: Record<string, number> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { role, message, clientId, includeBrandBrain = true, autonomy } = await req.json()
+    const { role, message, clientId, includeBrandBrain = true, autonomy, locale = 'es' } = await req.json()
 
     if (!role || !message) {
       return new Response(JSON.stringify({ error: 'role y message son requeridos' }), {
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     })
 
     const agentName = AGENT_DISPLAY_NAMES[role] ?? role
-    const systemPrompt = getAgentPrompt(role)
+    const systemPrompt = getAgentPrompt(role, locale as 'es' | 'en')
 
     // Instrucción de autonomía según nivel elegido por el usuario
     const autonomyCtx = autonomy === 'full_auto'

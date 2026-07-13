@@ -133,7 +133,7 @@ export default function AgentPage() {
   }
 
   const { locale } = useLocaleContext()
-  const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy })
+  const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy, locale })
   const systemPrompt = getAgentPrompt(role, locale)
 
   const handleCopyPrompt = () => {

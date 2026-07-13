@@ -8,11 +8,11 @@ import { CLIENT_ID } from '@/lib/constants'
 
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
-async function callAgent(role: string, message: string, systemExtra?: string): Promise<string> {
+async function callAgent(role: string, message: string, systemExtra?: string, locale: 'es' | 'en' = 'es'): Promise<string> {
   const today = new Date().toLocaleDateString('es-ES', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
-  const base = getAgentPrompt(role) + `\n\nFecha actual: ${today}`
+  const base = getAgentPrompt(role, locale) + `\n\nFecha actual: ${today}`
   const system = systemExtra ? `${base}\n\n---\n\n${systemExtra}` : base
 
   const response = await anthropic.messages.create({
@@ -30,7 +30,7 @@ async function callAgent(role: string, message: string, systemExtra?: string): P
 
 export async function POST(req: NextRequest) {
   try {
-    const { client, platform, pillar, format, objetivo, notas, clientId } = await req.json()
+    const { client, platform, pillar, format, objetivo, notas, clientId, locale = 'es' } = await req.json()
 
     if (!platform || !pillar || !format || !objetivo) {
       return NextResponse.json({ error: 'Faltan campos requeridos' }, { status: 400 })
@@ -60,7 +60,8 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     const orchestratorOutput = await callAgent(
       'orchestrator',
       `Analiza este brief y determina el plan de acción:\n\n${briefInput}`,
-      systemExtra
+      systemExtra,
+      locale
     )
 
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Marco', agentRole: 'orchestrator', taskType: 'brief_analysis', status: 'completed', outputSummary: orchestratorOutput.slice(0, 150) }).catch(() => {})
@@ -71,7 +72,8 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     const strategyOutput = await callAgent(
       'content-strategist',
       `Enriquece este brief con ángulo editorial, hook principal y estructura:\n\n${briefInput}\n\nAnálisis de Marco:\n${orchestratorOutput}`,
-      brainContext
+      brainContext,
+      locale
     )
 
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Luna', agentRole: 'content-strategist', taskType: 'brief_enrichment', status: 'completed', outputSummary: strategyOutput.slice(0, 150) }).catch(() => {})
@@ -82,7 +84,8 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     const copyOutput = await callAgent(
       'copywriter',
       `Genera el copy para publicar. Plataforma: ${platform}. Formato: ${format}.\n\nBrief de Luna:\n${strategyOutput}`,
-      brainContext
+      brainContext,
+      locale
     )
 
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Alex', agentRole: 'copywriter', taskType: 'copy_generation', status: 'completed', outputSummary: copyOutput.slice(0, 150) }).catch(() => {})
