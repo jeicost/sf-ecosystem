@@ -3,6 +3,7 @@ import { FINANZAS_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
+import { FinanzasQuickActions } from '@/components/quick-actions/FinanzasQuickActions'
 
 const FINANZAS_META: Record<string, { produces: string }> = {
   'midas': { produces: 'Revenue forecast' },
@@ -96,6 +97,11 @@ export default function FinanzasPage() {
 
       <div className="mb-8">
         <DepartmentAgents department="finanzas" />
+      </div>
+
+      <div className="mb-8">
+        <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>Quick actions</p>
+        <FinanzasQuickActions />
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">

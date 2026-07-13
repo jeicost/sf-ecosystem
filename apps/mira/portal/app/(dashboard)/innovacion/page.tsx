@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { INNOVACION_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import DepartmentAgents from '@/components/DepartmentAgents'
+import { InnovacionQuickActions } from '@/components/quick-actions/InnovacionQuickActions'
 
 const INNOVACION_META: Record<string, { produces: string }> = {
   'spark': { produces: 'Trend forecast & ideas' },
@@ -81,6 +82,11 @@ export default function InnovacionPage() {
 
       <div className="mb-8">
         <DepartmentAgents department="innovacion" />
+      </div>
+
+      <div className="mb-8">
+        <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>Quick actions</p>
+        <InnovacionQuickActions />
       </div>
 
       <div className="grid grid-cols-1 gap-4 max-w-md">

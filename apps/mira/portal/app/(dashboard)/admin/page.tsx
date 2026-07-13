@@ -2,6 +2,7 @@ import { OPERACIONES_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
+import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
 
 const ADMIN_META = [
   { produces: 'P&L & invoices' },
@@ -51,6 +52,11 @@ export default function AdminPage() {
 
       <div className="mb-8">
         <DepartmentAgents department="operaciones" />
+      </div>
+
+      <div className="mb-8">
+        <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>Quick actions</p>
+        <AdminQuickActions />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
