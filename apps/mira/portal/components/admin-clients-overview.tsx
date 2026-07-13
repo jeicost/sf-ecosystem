@@ -18,34 +18,70 @@ interface ClientRow {
   logo_url: string | null
   primary_color: string | null
   created_at: string
+  status?: string
+}
+
+interface DeliverableStats {
+  [clientId: string]: {
+    count: number
+    tools: string[]
+  }
 }
 
 export default function AdminClientsOverview() {
   const [clients, setClients] = useState<ClientRow[]>([])
+  const [deliverableStats, setDeliverableStats] = useState<DeliverableStats>({})
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchData = async () => {
       const db = createClient()
-      const { data, error } = await db
+
+      // Fetch clients
+      const { data: clientsData, error: clientsError } = await db
         .from('clients')
-        .select('id,name,slug,icp,onboarding_status,logo_url,primary_color,created_at')
+        .select('id,name,slug,icp,onboarding_status,logo_url,primary_color,created_at,status')
         .order('name')
 
-      if (error) {
-        console.error('Error fetching clients:', error)
-      } else if (data) {
-        setClients(data)
+      if (clientsError) {
+        console.error('Error fetching clients:', clientsError)
+      } else if (clientsData) {
+        setClients(clientsData)
       }
+
+      // Fetch deliverables stats: count + distinct tools per client
+      const { data: genData, error: genError } = await db
+        .from('generation_queue')
+        .select('client_id, tool_slug')
+        .eq('status', 'completed')
+
+      if (genError) {
+        console.error('Error fetching generations:', genError)
+      } else if (genData) {
+        const stats: DeliverableStats = {}
+        genData.forEach((row: any) => {
+          if (!stats[row.client_id]) {
+            stats[row.client_id] = { count: 0, tools: [] }
+          }
+          stats[row.client_id].count += 1
+          if (!stats[row.client_id].tools.includes(row.tool_slug)) {
+            stats[row.client_id].tools.push(row.tool_slug)
+          }
+        })
+        setDeliverableStats(stats)
+      }
+
       setLoading(false)
     }
 
-    fetchClients()
+    fetchData()
   }, [])
 
   const onboardingCompletedCount = clients.filter(
     c => c.onboarding_status === 'completed' || c.onboarding_status === 'onboarded'
   ).length
+
+  const totalDeliverables = Object.values(deliverableStats).reduce((sum, stat) => sum + stat.count, 0)
 
   return (
     <>
@@ -71,7 +107,7 @@ export default function AdminClientsOverview() {
 
       <div className="grid grid-cols-4 gap-3 mb-8">
         <StatCard label="Clientes Activos" value={clients.length} />
-        <StatCard label="Onboarding Completado" value={onboardingCompletedCount} />
+        <StatCard label="Entregables Generados" value={totalDeliverables} />
         <StatCard label="Agentes Disponibles" value={Object.keys(AGENT_METADATA).length} />
         <StatCard label="Herramientas AI" value={TOOLKIT_TOOLS.length} />
       </div>
@@ -86,18 +122,25 @@ export default function AdminClientsOverview() {
             <h2 className="text-lg font-semibold text-white">Clientes Activos</h2>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {clients.map(client => (
-              <ClientCard
-                key={client.id}
-                id={client.id}
-                name={client.name}
-                slug={client.slug}
-                logoUrl={client.logo_url}
-                primaryColor={client.primary_color}
-                onboardingStatus={client.onboarding_status || 'En progreso'}
-                createdAt={client.created_at}
-              />
-            ))}
+            {clients.map(client => {
+              const stats = deliverableStats[client.id]
+              return (
+                <ClientCard
+                  key={client.id}
+                  id={client.id}
+                  name={client.name}
+                  slug={client.slug}
+                  logoUrl={client.logo_url}
+                  primaryColor={client.primary_color}
+                  icp={client.icp}
+                  status={client.status}
+                  onboardingStatus={client.onboarding_status || 'En progreso'}
+                  createdAt={client.created_at}
+                  deliverableCount={stats?.count || 0}
+                  toolsUsed={stats?.tools || []}
+                />
+              )
+            })}
           </div>
         </>
       )}

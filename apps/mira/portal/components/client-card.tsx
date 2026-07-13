@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useActiveClient } from '@/lib/client-context'
 import { ChevronRight } from 'lucide-react'
+import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 
 interface ClientCardProps {
   id: string
@@ -10,8 +11,12 @@ interface ClientCardProps {
   slug: string
   logoUrl: string | null
   primaryColor: string | null
+  icp?: string | null
+  status?: string | null
   onboardingStatus?: string
   createdAt: string
+  deliverableCount?: number
+  toolsUsed?: string[]
 }
 
 export default function ClientCard({
@@ -20,8 +25,12 @@ export default function ClientCard({
   slug,
   logoUrl,
   primaryColor,
+  icp,
+  status,
   onboardingStatus,
   createdAt,
+  deliverableCount = 0,
+  toolsUsed = [],
 }: ClientCardProps) {
   const router = useRouter()
   const { setActiveClient } = useActiveClient()
@@ -33,6 +42,16 @@ export default function ClientCard({
     .join('')
     .toUpperCase()
     .slice(0, 2)
+
+  const isActive = status === 'active'
+
+  // Map tool slugs to readable names
+  const toolNames = toolsUsed
+    .slice(0, 2)
+    .map(slug => {
+      const tool = TOOLKIT_TOOLS.find(t => t.slug === slug)
+      return tool?.name || slug.replace(/-/g, ' ')
+    })
 
   const handleClick = () => {
     setActiveClient({
@@ -49,6 +68,7 @@ export default function ClientCard({
       className="card px-5 py-4 cursor-pointer transition hover:border-opacity-100 hover:scale-[1.01]"
       style={{ borderColor: 'rgba(255,255,255,0.08)' }}
     >
+      {/* Header: Logo + Name + Status Badge */}
       <div className="flex items-start gap-4 mb-3">
         <div
           className="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 font-semibold text-white"
@@ -68,24 +88,41 @@ export default function ClientCard({
             initials
           )}
         </div>
-        <div className="flex-1">
-          <h3 className="font-semibold text-white text-sm">{name}</h3>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
-            {new Date(createdAt).toLocaleDateString('es-ES')}
-          </p>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h3 className="font-semibold text-white text-sm truncate">{name}</h3>
+            {isActive && (
+              <span className="px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 flex-shrink-0">
+                Activo
+              </span>
+            )}
+          </div>
+          {icp && (
+            <p className="text-xs text-gray-400 truncate mb-1">{icp}</p>
+          )}
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        {onboardingStatus && (
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-green-500"></div>
-            <span className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              {onboardingStatus}
+      {/* Tool tags */}
+      {toolNames.length > 0 && (
+        <div className="flex flex-wrap gap-1 mb-3">
+          {toolNames.map((toolName, i) => (
+            <span key={i} className="px-2 py-1 text-xs rounded-full" style={{ background: 'rgba(139,92,246,0.2)', color: '#c4b5fd' }}>
+              {toolName}
             </span>
-          </div>
-        )}
-        <ChevronRight size={14} style={{ color: 'rgba(255,255,255,0.3)' }} className="transition group-hover:translate-x-1" />
+          ))}
+        </div>
+      )}
+
+      {/* Divider + Footer: Deliverables count + CTA */}
+      <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+        <div className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          {deliverableCount} {deliverableCount === 1 ? 'entregable' : 'entregables'}
+        </div>
+        <div className="flex items-center gap-1 text-xs text-blue-400">
+          Abrir espacio
+          <ChevronRight size={14} style={{ color: 'rgba(59, 130, 246, 0.6)' }} />
+        </div>
       </div>
     </div>
   )
