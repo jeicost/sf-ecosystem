@@ -2,42 +2,75 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { uploadFileToStorage, initializeStorageBucket } from '@/lib/supabase-storage'
+import { AGENT_METADATA } from '@/lib/agent-meta'
 import Anthropic from '@anthropic-ai/sdk'
 
 const claude = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
+const ALLOWED_MIME_TYPES = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain',
+]
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
+
 export async function POST(
   req: NextRequest,
   { params }: { params: { role: string } }
 ) {
   try {
+    const { searchParams } = new URL(req.url)
+    const clientId = searchParams.get('clientId')
     const formData = await req.formData()
     const file = formData.get('file') as File
-    const clientId = formData.get('clientId') as string
 
-    if (!file || !clientId) {
+    // Validate clientId (from query string)
+    if (!clientId) {
       return NextResponse.json(
-        { error: 'Missing file or clientId' },
+        { error: 'Missing clientId query parameter' },
         { status: 400 }
       )
     }
 
-    // Validate file size (max 10MB)
-    const MAX_FILE_SIZE = 10 * 1024 * 1024
-    if (file.size > MAX_FILE_SIZE) {
+    if (!clientId.match(/^[a-f0-9-]{36}$/i)) {
       return NextResponse.json(
-        { error: `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB` },
-        { status: 413 }
+        { error: 'Invalid clientId format' },
+        { status: 400 }
       )
     }
 
-    // Validate file type
-    const ALLOWED_TYPES = ['text/plain', 'text/markdown', 'application/pdf', 'text/csv']
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // Validate file exists
+    if (!file) {
       return NextResponse.json(
-        { error: 'Invalid file type. Allowed: TXT, MD, PDF, CSV' },
+        { error: 'No file provided' },
+        { status: 400 }
+      )
+    }
+
+    // Validate agent role exists
+    if (!AGENT_METADATA[params.role]) {
+      return NextResponse.json(
+        { error: 'Unknown agent role' },
+        { status: 400 }
+      )
+    }
+
+    // Validate file MIME type
+    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+      return NextResponse.json(
+        { error: `File type not allowed. Accepted: PDF, DOCX, TXT. Got: ${file.type}` },
+        { status: 400 }
+      )
+    }
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: `File size exceeds 50MB limit. Got: ${Math.round(file.size / 1024 / 1024)}MB` },
         { status: 400 }
       )
     }
@@ -60,20 +93,34 @@ export async function POST(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // Read file content
+    // Initialize storage bucket (idempotent)
+    const bucketReady = await initializeStorageBucket()
+    if (!bucketReady) {
+      return NextResponse.json(
+        { error: 'Failed to initialize storage' },
+        { status: 500 }
+      )
+    }
+
+    // Upload file to Supabase Storage
+    const uploadResult = await uploadFileToStorage(clientId, params.role, file)
+    if (!uploadResult.success) {
+      return NextResponse.json(
+        { error: uploadResult.error || 'Upload failed' },
+        { status: 500 }
+      )
+    }
+
+    // Read file content for analysis (best effort for text files)
     let text = ''
     try {
       const buffer = await file.arrayBuffer()
       text = Buffer.from(buffer).toString('utf-8')
       if (text.includes('\x00')) {
-        console.warn('Possible non-UTF8 file detected')
+        console.warn('Possible non-UTF8 file detected, skipping analysis')
       }
     } catch (decodeError) {
-      console.error('Failed to decode file:', decodeError)
-      return NextResponse.json(
-        { error: 'Failed to read file. Ensure it is a valid text file.' },
-        { status: 400 }
-      )
+      console.warn('Could not decode file as text, analysis will be skipped')
     }
 
     // Detect document type from filename
@@ -86,7 +133,7 @@ export async function POST(
 
     const admin = adminClient()
 
-    // Store document in Supabase
+    // Store document metadata + storage URL in Supabase
     const { data: docData, error: docError } = await admin
       .from('agent_documents')
       .insert({
@@ -98,68 +145,77 @@ export async function POST(
         file_size: file.size,
         file_mime_type: file.type,
         original_filename: file.name,
-        extracted_text: text,
-        analysis_status: 'processing',
+        file_url: uploadResult.url,
+        extracted_text: text || null,
+        analysis_status: text ? 'processing' : 'skipped',
         uploaded_by: user.id,
       })
       .select()
       .single()
 
     if (docError) {
+      console.error('Document DB error:', docError)
       return NextResponse.json({ error: docError.message }, { status: 500 })
     }
 
-    // Analyze document with Claude in background
-    (async () => {
-      try {
-        const analysis = await claude.messages.create({
-          model: 'claude-opus-4-1',
-          max_tokens: 1000,
-          messages: [
-            {
-              role: 'user',
-              content: `Analyze this document and provide:
+    // Analyze document with Claude in background (only if text extracted)
+    if (text) {
+      (async () => {
+        try {
+          const analysis = await claude.messages.create({
+            model: 'claude-opus-4-1',
+            max_tokens: 1000,
+            messages: [
+              {
+                role: 'user',
+                content: `Analyze this document and provide:
 1. Brief summary (2-3 sentences)
 2. Key points (bullet list, max 5)
 3. How it relates to the agent's role
 
 Document:
 ${text.slice(0, 5000)}${text.length > 5000 ? '...' : ''}`,
-            },
-          ],
-        })
-
-        const analysisText = analysis.content
-          .filter((b) => b.type === 'text')
-          .map((b) => (b as { type: 'text'; text: string }).text)
-          .join('')
-
-        // Extract key points (simple splitting by bullet or line)
-        const keyPoints = analysisText
-          .split('\n')
-          .filter((line) => line.trim().startsWith('-') || line.trim().startsWith('•'))
-          .slice(0, 5)
-          .map((line) => line.replace(/^[-•]\s*/, '').trim())
-
-        await admin
-          .from('agent_documents')
-          .update({
-            analysis_status: 'completed',
-            analysis_summary: analysisText,
-            key_points: keyPoints,
-            analyzed_at: new Date().toISOString(),
+              },
+            ],
           })
-          .eq('id', docData.id)
-      } catch (analyzeError) {
-        console.error('Document analysis error:', analyzeError)
-        await admin
-          .from('agent_documents')
-          .update({ analysis_status: 'failed' })
-          .eq('id', docData.id)
-      }
-    })()
 
-    return NextResponse.json({ data: docData }, { status: 201 })
+          const analysisText = analysis.content
+            .filter((b) => b.type === 'text')
+            .map((b) => (b as { type: 'text'; text: string }).text)
+            .join('')
+
+          // Extract key points (simple splitting by bullet or line)
+          const keyPoints = analysisText
+            .split('\n')
+            .filter((line) => line.trim().startsWith('-') || line.trim().startsWith('•'))
+            .slice(0, 5)
+            .map((line) => line.replace(/^[-•]\s*/, '').trim())
+
+          await admin
+            .from('agent_documents')
+            .update({
+              analysis_status: 'completed',
+              analysis_summary: analysisText,
+              key_points: keyPoints,
+              analyzed_at: new Date().toISOString(),
+            })
+            .eq('id', docData.id)
+        } catch (analyzeError) {
+          console.error('Document analysis error:', analyzeError)
+          await admin
+            .from('agent_documents')
+            .update({ analysis_status: 'failed' })
+            .eq('id', docData.id)
+        }
+      })()
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: docData,
+      file_url: uploadResult.url,
+      fileName: file.name,
+    })
   } catch (error) {
     console.error('Upload document error:', error)
     return NextResponse.json(
