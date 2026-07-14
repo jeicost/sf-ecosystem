@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { LocaleProvider } from './locale-provider'
 import './globals.css'
 
+// Force Vercel redeploy after npm registry recovery
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
