@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@sf/cms-client": "file:../../packages/cms-client",
     "@vercel/analytics": "^2.0.1",
     "lucide-react": "^1.14.0",
     "motion": "^12.38.0",
