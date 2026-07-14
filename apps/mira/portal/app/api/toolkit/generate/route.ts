@@ -132,6 +132,14 @@ export async function POST(req: NextRequest) {
 
     const generationTime = Date.now() - startTime
 
+    // Debug: log what we're saving
+    console.log(`[${tool_slug}] Saving result for queue ${queueId}:`, {
+      hasResult: !!result,
+      resultKeys: Object.keys(result),
+      resultSize: JSON.stringify(result).length,
+      sampleData: JSON.stringify(result).slice(0, 200),
+    })
+
     // Update queue with result
     const { error: updateError } = await admin
       .from('generation_queue')

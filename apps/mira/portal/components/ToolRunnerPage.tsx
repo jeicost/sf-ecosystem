@@ -89,7 +89,9 @@ export default function ToolRunnerPage({
 
         const data = await res.json()
         if (data.status === 'completed' && data.result_data) {
-          setResultData(data.result_data)
+          // Parse if it's a string (Supabase might return as text)
+          const parsed = typeof data.result_data === 'string' ? JSON.parse(data.result_data) : data.result_data
+          setResultData(parsed)
           setSuccess(true)
         } else if (data.status === 'failed') {
           setError(data.error_message || 'Generation failed')
@@ -116,7 +118,9 @@ export default function ToolRunnerPage({
 
         const data = await res.json()
         if (data.status === 'completed' && data.result_data) {
-          setResultData(data.result_data)
+          // Parse if it's a string (Supabase might return as text)
+          const parsed = typeof data.result_data === 'string' ? JSON.parse(data.result_data) : data.result_data
+          setResultData(parsed)
           setSuccess(true)
           setIsLoading(false)
           setPollingQueueId(null)
@@ -154,7 +158,8 @@ export default function ToolRunnerPage({
         setPollingQueueId(data.queue_id)
         // If result is already available, use it immediately
         if (data?.result) {
-          setResultData(data.result)
+          const parsed = typeof data.result === 'string' ? JSON.parse(data.result) : data.result
+          setResultData(parsed)
           setSuccess(true)
           setIsLoading(false)
         }

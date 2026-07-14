@@ -1,1 +1,16 @@
-{}
+{
+  "services": {
+    "sf-sales-engine": {
+      "root": "apps/sf-sales-engine"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": {
+        "type": "service",
+        "service": "sf-sales-engine"
+      }
+    }
+  ]
+}
