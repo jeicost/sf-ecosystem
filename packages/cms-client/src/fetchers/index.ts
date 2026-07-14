@@ -73,25 +73,28 @@ async function cmsFetch<T>(
 
 /**
  * Fetch a single page by slug (with all its sections)
+ * Maps sections_json → sections for the Page interface
  */
 export async function fetchPage(
   slug: string,
   options?: FetchOptions,
 ): Promise<Page> {
-  const data = await cmsFetch<CmsApiResponse<Page>>(
-    `/api/public/pages/${slug}`,
-    options,
-  )
+  const url = `/api/public/pages?slug=${encodeURIComponent(slug)}`
+  const rawPage = await cmsFetch<any>(url, options)
 
-  if (data.error) {
-    throw new Error(`Failed to fetch page "${slug}": ${data.error}`)
+  if (!rawPage) {
+    throw new Error(`Failed to fetch page "${slug}": not found`)
   }
 
-  return data.data
+  return {
+    ...rawPage,
+    sections: rawPage.sections_json || [],
+  }
 }
 
 /**
  * Fetch all pages (or filtered by status)
+ * Maps sections_json → sections for each Page
  */
 export async function fetchPages(
   options?: FetchOptions & { status?: 'draft' | 'published' },
@@ -99,13 +102,13 @@ export async function fetchPages(
   const url =
     options?.status ? `/api/public/pages?status=${options.status}` : '/api/public/pages'
 
-  const data = await cmsFetch<CmsApiResponse<Page[]>>(url, options)
+  const response = await cmsFetch<any>(url, options)
+  const pages = response.pages || response || []
 
-  if (data.error) {
-    throw new Error(`Failed to fetch pages: ${data.error}`)
-  }
-
-  return data.data
+  return pages.map((page: any) => ({
+    ...page,
+    sections: page.sections_json || [],
+  }))
 }
 
 /**
@@ -115,16 +118,14 @@ export async function fetchPost(
   slug: string,
   options?: FetchOptions,
 ): Promise<Post> {
-  const data = await cmsFetch<CmsApiResponse<Post>>(
-    `/api/public/posts/${slug}`,
-    options,
-  )
+  const url = `/api/public/posts?slug=${encodeURIComponent(slug)}`
+  const rawPost = await cmsFetch<any>(url, options)
 
-  if (data.error) {
-    throw new Error(`Failed to fetch post "${slug}": ${data.error}`)
+  if (!rawPost) {
+    throw new Error(`Failed to fetch post "${slug}": not found`)
   }
 
-  return data.data
+  return rawPost
 }
 
 /**
@@ -136,29 +137,21 @@ export async function fetchPosts(
   const url =
     options?.status ? `/api/public/posts?status=${options.status}` : '/api/public/posts'
 
-  const data = await cmsFetch<CmsApiResponse<Post[]>>(url, options)
-
-  if (data.error) {
-    throw new Error(`Failed to fetch posts: ${data.error}`)
-  }
-
-  return data.data
+  const response = await cmsFetch<any>(url, options)
+  return response.posts || response || []
 }
 
 /**
  * Fetch global site settings (GA4 ID, GTM container, etc.)
+ * TODO: Requires /api/public/settings endpoint in SF-CMS
  */
 export async function fetchSettings(
   options?: FetchOptions,
 ): Promise<Settings> {
-  const data = await cmsFetch<CmsApiResponse<Settings>>(
-    '/api/public/settings',
-    options,
-  )
-
-  if (data.error) {
-    throw new Error(`Failed to fetch settings: ${data.error}`)
+  try {
+    const url = '/api/public/settings'
+    return await cmsFetch<Settings>(url, options)
+  } catch {
+    return {}
   }
-
-  return data.data
 }

@@ -56,16 +56,30 @@ export function createRevalidateHandler(config?: RevalidateHandlerConfig) {
     }
 
     try {
-      const payload = (await request.json()) as RevalidatePayload
+      const payload = (await request.json()) as any
 
-      // Support both webhook payload formats
-      if (payload.paths && Array.isArray(payload.paths)) {
-        // Format: {paths: [...]} — revalidate paths directly
+      // Support Supabase native Database Webhook format
+      if (payload.table && payload.record && (payload.type === 'INSERT' || payload.type === 'UPDATE' || payload.type === 'DELETE')) {
+        const table = payload.table as string
+        const slug = payload.record.slug as string | undefined
+
+        if (slug) {
+          if (table === 'posts') {
+            revalidatePath(`/blog/${slug}`)
+            revalidatePath('/blog')
+          } else if (table === 'pages') {
+            revalidatePath(`/${slug}`)
+          }
+        }
+      }
+      // Support custom {paths: [...]} format
+      else if (payload.paths && Array.isArray(payload.paths)) {
         for (const path of payload.paths) {
           revalidatePath(path)
         }
-      } else if (payload.type && payload.slug) {
-        // Format: {type: 'post'|'page', slug}
+      }
+      // Support custom {type, slug} format
+      else if (payload.type && payload.slug) {
         if (payload.type === 'post') {
           revalidatePath(`/blog/${payload.slug}`)
           revalidatePath('/blog')
