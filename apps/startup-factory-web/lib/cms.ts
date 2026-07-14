@@ -1,6 +1,6 @@
-const BASE = process.env.CMS_BASE_URL ?? 'https://sf-cms.vercel.app'
-const KEY  = process.env.CMS_API_KEY ?? ''
-const PROJ = process.env.CMS_PROJECT ?? 'startupsfactory'
+const BASE = process.env.SF_CMS_API_URL ?? 'https://cms.startupsfactory.es'
+const KEY  = process.env.SF_CMS_API_KEY ?? ''
+const PROJ = process.env.SF_CMS_PROJECT_SLUG ?? 'startupsfactory'
 
 export interface CmsPost {
   id: string

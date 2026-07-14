@@ -6,8 +6,10 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { useActiveClient } from '@/lib/client-context'
+import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useEffect, useState } from 'react'
 import { CLIENT_ID } from '@/lib/constants'
+import type { AgentStatus } from '@/lib/agent-meta'
 
 const COMERCIAL_META: Record<string, { produces: string; href: string }> = {
   'lead-scout': { produces: 'Qualified lead list',      href: '/comercial/discovery'  },
@@ -28,6 +30,7 @@ export default function ComercialPage() {
   const clientId = activeClient?.id ?? CLIENT_ID
   const agentCount = COMERCIAL_DEPT_AGENTS.length
   const [stats, setStats] = useState({ leads: 0, proposals: 0 })
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -43,6 +46,15 @@ export default function ComercialPage() {
     }
     if (clientId) fetchStats()
   }, [clientId])
+
+  useEffect(() => {
+    const fetchAgentStatuses = async () => {
+      const agentIds = COMERCIAL_DEPT_AGENTS.map(a => a.id)
+      const statuses = await getAgentStatuses(agentIds)
+      setAgentStatuses(statuses)
+    }
+    fetchAgentStatuses()
+  }, [])
 
   return (
     <div className="px-8 py-8">
@@ -84,11 +96,12 @@ export default function ComercialPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
         {COMERCIAL_DEPT_AGENTS.map((agent) => {
           const meta = COMERCIAL_META[agent.id]
+          const status = agentStatuses[agent.id] ?? 'idle'
           return (
             <AgentCard
               key={agent.id}
               agent={agent}
-              status="idle"
+              status={status}
               lastTask={null}
               produces={meta?.produces}
               href={meta?.href ?? `/agent/${agent.id}`}

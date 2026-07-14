@@ -1,9 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import { ESTRATEGIA_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { StrategyQuickActions } from '@/components/quick-actions/StrategyQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
+import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useEffect, useState } from 'react'
+import type { AgentStatus } from '@/lib/agent-meta'
 
 const ESTRATEGIA_META: Record<string, { produces: string }> = {
   'strategos': { produces: '90-day board' },
@@ -66,6 +71,16 @@ const OTHER_SECTIONS = [
 
 export default function EstrategiaPage() {
   const agentCount = ESTRATEGIA_DEPT_AGENTS.length
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+
+  useEffect(() => {
+    const fetchAgentStatuses = async () => {
+      const agentIds = ESTRATEGIA_DEPT_AGENTS.map(a => a.id)
+      const statuses = await getAgentStatuses(agentIds)
+      setAgentStatuses(statuses)
+    }
+    fetchAgentStatuses()
+  }, [])
 
   return (
     <div className="px-8 py-8">
