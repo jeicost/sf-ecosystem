@@ -12,12 +12,12 @@ interface AgentCardProps {
 }
 
 const STATUS_CONFIG: Record<AgentStatus, { dot: string; label: string; animate: boolean }> = {
-  idle:       { dot: 'rgba(255,255,255,0.2)', label: 'Ready',      animate: false },
-  active:     { dot: '#4ade80',               label: 'Active',     animate: true  },
-  pending:    { dot: '#fbbf24',               label: 'Pending',    animate: true  },
-  processing: { dot: '#4ade80',               label: 'Processing', animate: true  },
-  complete:   { dot: '#60a5fa',               label: 'Done',       animate: false },
-  inactive:   { dot: 'rgba(255,255,255,0.1)', label: 'Inactive',   animate: false },
+  idle:       { dot: '#6b7280',               label: 'Ready',      animate: false },
+  active:     { dot: '#10b981',               label: 'Active',     animate: true  },
+  pending:    { dot: '#f59e0b',               label: 'Pending',    animate: true  },
+  processing: { dot: '#3b82f6',               label: 'Processing', animate: true  },
+  complete:   { dot: '#10b981',               label: 'Done',       animate: false },
+  inactive:   { dot: '#374151',               label: 'Inactive',   animate: false },
 }
 
 export default function AgentCard({
