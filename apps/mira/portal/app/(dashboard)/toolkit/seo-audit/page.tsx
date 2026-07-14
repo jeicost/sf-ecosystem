@@ -178,7 +178,7 @@ function SeoAuditResult({ data }: { data?: any }) {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm border-collapse">
                       <thead>
-                        <tr className="border-b border-white/20">
+                        <tr className="border-b-2 border-white/30">
                           <th className="text-left py-3 px-4 text-white font-bold">Element</th>
                           <th className="text-left py-3 px-4 text-white font-bold">Status</th>
                           <th className="text-left py-3 px-4 text-white font-bold">Analysis</th>
@@ -186,7 +186,7 @@ function SeoAuditResult({ data }: { data?: any }) {
                       </thead>
                       <tbody>
                         {section.elements.map((elem: any, eIdx: number) => (
-                          <tr key={eIdx} className="border-b border-white/10 hover:bg-white/5 transition">
+                          <tr key={eIdx} className="border-b border-white/15 hover:bg-white/5 transition">
                             <td className="py-3 px-4 text-white font-semibold">{elem.element}</td>
                             <td className="py-3 px-4">
                               <span className={`text-xs font-bold px-2 py-1 rounded ${
