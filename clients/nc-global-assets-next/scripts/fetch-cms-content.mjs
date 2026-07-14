@@ -20,7 +20,7 @@ const HEADERS = { 'x-api-key': process.env.CMS_API_KEY }
 
 const CMS_API_URL = process.env.CMS_API_URL
 const CMS_API_KEY = process.env.CMS_API_KEY
-const PROJECT_ID = process.env.PROJECT_ID || 'ncglobal'
+const PROJECT_ID = process.env.PROJECT_ID || 'ncglobalassets'
 
 if (!CMS_API_URL || !CMS_API_KEY) {
   console.log('⚠️   CMS_API_URL or CMS_API_KEY not set — skipping content fetch')
