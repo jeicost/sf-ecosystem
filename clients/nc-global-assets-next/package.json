@@ -10,7 +10,7 @@
     "fetch-cms": "node scripts/fetch-cms-content.mjs"
   },
   "dependencies": {
-    "@sf/cms-client": "workspace:*",
+    "@sf/cms-client": "file:../../packages/cms-client",
     "next": "^16.0.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",

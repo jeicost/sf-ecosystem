@@ -10,7 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@sf/cms-client": "workspace:*",
+    "@sf/cms-client": "file:../../packages/cms-client",
     "@fontsource/dm-sans": "^5.2.8",
     "@fontsource/space-grotesk": "^5.2.10",
     "next": "16.2.4",
