@@ -1,0 +1,8 @@
+{
+  "experimentalServices": {
+    "sf-sales-engine": {
+      "entrypoint": "apps/sf-sales-engine",
+      "routePrefix": "/"
+    }
+  }
+}
