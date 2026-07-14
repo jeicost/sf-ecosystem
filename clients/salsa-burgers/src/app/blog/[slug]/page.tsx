@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getAllPosts, getPostBySlug } from "@/lib/cms";
+import { getPosts, getPostBySlug } from "@/lib/cms";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
 export const revalidate = 3600
 
 export async function generateStaticParams() {
-  const posts = await getAllPosts();
+  const posts = await getPosts();
   return posts.map((p) => ({ slug: p.slug }));
 }
 

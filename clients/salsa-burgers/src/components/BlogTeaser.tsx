@@ -1,8 +1,8 @@
 import Link from "next/link";
-import { getAllPosts } from "@/lib/cms";
+import { getPosts } from "@/lib/cms";
 
 export async function BlogTeaser() {
-  const posts = await getAllPosts();
+  const posts = await getPosts();
   const featured = posts.slice(0, 3);
   if (featured.length === 0) return null;
 

@@ -1,11 +1,11 @@
 import { MetadataRoute } from "next";
-import { getAllPosts } from "@/lib/cms";
+import { getPosts } from "@/lib/cms";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://www.salsaburgers.com";
   const now = new Date();
 
-  const posts = await getAllPosts();
+  const posts = await getPosts();
   const postEntries: MetadataRoute.Sitemap = posts.map((p) => ({
     url: `${base}/blog/${p.slug}`,
     lastModified: p.published_at ? new Date(p.published_at) : now,

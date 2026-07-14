@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getAllPosts } from "@/lib/cms";
+import { getPosts } from "@/lib/cms";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
@@ -20,7 +20,7 @@ function formatDate(iso: string) {
 }
 
 export default async function BlogPage() {
-  const posts = await getAllPosts();
+  const posts = await getPosts();
 
   return (
     <main className="bg-[#0a0a0a] min-h-screen">
