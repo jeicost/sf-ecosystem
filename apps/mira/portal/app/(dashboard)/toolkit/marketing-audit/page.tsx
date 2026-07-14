@@ -171,6 +171,7 @@ function MarketingAuditResult({ data }: { data?: any }) {
               return (
                 <div key={sIdx}>
                   <div className="mb-6">
+                    {section.icon && <div className="text-2xl mb-2">{section.icon}</div>}
                     <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
                     {section.description && (
                       <p className="text-sm text-gray-400">{section.description}</p>
@@ -271,7 +272,7 @@ function MarketingAuditResult({ data }: { data?: any }) {
           </h2>
           <div className="space-y-3">
             {data.quickWins.map((action: any, idx: number) => (
-              <div key={idx} className="border border-white/10 bg-white/5 p-4 rounded-lg hover:bg-white/8 transition">
+              <div key={idx} className="border-l-2 border-yellow-500 bg-white/5 p-4 rounded-lg hover:bg-white/8 transition">
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <div>
                     <div className="font-bold text-white">{idx + 1}. {action.title}</div>
