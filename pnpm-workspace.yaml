@@ -2,6 +2,7 @@ packages:
   - 'apps/*'
   - 'apps/*/*'
   - 'packages/*'
+  - 'clients/*'
 allowBuilds:
   esbuild: true
   sharp: true

@@ -44,3 +44,4 @@ audit-workspace/
 public/images/pasted_text/
 .env*.local
 content/
+.vercel
