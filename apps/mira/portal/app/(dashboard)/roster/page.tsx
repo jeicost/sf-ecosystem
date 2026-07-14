@@ -6,6 +6,8 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
 import type { AgentStatus } from '@/lib/agent-meta'
 
@@ -70,6 +72,7 @@ const OTHER_SECTIONS = [
 ]
 
 export default function RosterPage() {
+  const { locale } = useLocaleContext()
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
@@ -85,20 +88,20 @@ export default function RosterPage() {
     <div className="px-8 py-8">
       <div className="mb-8">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(139,92,246,0.8)', letterSpacing: '0.12em' }}>
-          Marketing
+          {t('section.marketing', locale)}
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">My Team</h1>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">{t('header.marketing', locale)}</h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          8 marketing specialists working for your brand. Click any to meet them.
+          {t('header.marketing-desc', locale)}
         </p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
-          { label: 'Active agents', value: '8' },
-          { label: 'Posts this week', value: '—' },
-          { label: 'In approval', value: '0' },
-          { label: 'Open alerts', value: '0' },
+          { label: t('stat.active-agents', locale), value: '8' },
+          { label: t('stat.posts-week', locale), value: '—' },
+          { label: t('stat.in-approval', locale), value: '0' },
+          { label: t('stat.open-alerts', locale), value: '0' },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

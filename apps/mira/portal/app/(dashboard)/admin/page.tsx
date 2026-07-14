@@ -6,6 +6,8 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
 import type { AgentStatus } from '@/lib/agent-meta'
 
@@ -23,6 +25,7 @@ const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
 }))
 
 export default function AdminPage() {
+  const { locale } = useLocaleContext()
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
@@ -38,20 +41,20 @@ export default function AdminPage() {
     <div className="px-8 py-8">
       <div className="mb-8">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(16,185,129,0.8)', letterSpacing: '0.12em' }}>
-          Admin
+          {t('section.admin', locale)}
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">MIRA Admin</h1>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">{t('header.admin', locale)}</h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          4 agents managing internal operations. Nothing is lost, nothing is forgotten.
+          {t('header.admin-desc', locale)}
         </p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
-          { label: 'Active agents', value: '4' },
-          { label: 'Pending invoices', value: '—' },
-          { label: 'System alerts', value: '0' },
-          { label: 'Onboarding clients', value: '—' },
+          { label: t('stat.active-agents', locale), value: '4' },
+          { label: t('stat.pending-invoices', locale), value: '—' },
+          { label: t('stat.system-alerts', locale), value: '0' },
+          { label: t('stat.onboarding', locale), value: '—' },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

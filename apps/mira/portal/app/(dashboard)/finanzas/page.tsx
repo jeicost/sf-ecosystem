@@ -7,6 +7,8 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { FinanzasQuickActions } from '@/components/quick-actions/FinanzasQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
 import type { AgentStatus } from '@/lib/agent-meta'
 
@@ -66,6 +68,7 @@ const OTHER_SECTIONS = [
 ]
 
 export default function FinanzasPage() {
+  const { locale } = useLocaleContext()
   const agentCount = FINANZAS_DEPT_AGENTS.length
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
@@ -82,20 +85,20 @@ export default function FinanzasPage() {
     <div className="px-8 py-8">
       <div className="mb-8">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(245,158,11,0.8)', letterSpacing: '0.12em' }}>
-          Finance
+          {t('section.finanzas', locale)}
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">MIRA Finance</h1>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">{t('header.finance', locale)}</h1>
         <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          {agentCount} specialists managing agency revenue, data analytics, and audit compliance.
+          {t('header.finance-desc', locale)}
         </p>
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
-          { label: 'Active agents', value: String(agentCount) },
-          { label: 'Monthly revenue', value: '—' },
-          { label: 'Profit margin', value: '—' },
-          { label: 'Audit status', value: '—' },
+          { label: t('stat.active-agents', locale), value: String(agentCount) },
+          { label: t('stat.monthly-revenue', locale), value: '—' },
+          { label: t('stat.profit-margin', locale), value: '—' },
+          { label: t('stat.audit-status', locale), value: '—' },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

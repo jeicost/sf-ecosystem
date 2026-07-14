@@ -127,6 +127,45 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.other-teams': 'Otros equipos disponibles',
     'common.agents-total': 'agentes totales',
     'common.no-data': 'Sin datos',
+
+    // SECTION HEADERS & DESCRIPTIONS
+    'header.sales': 'MIRA Sales',
+    'header.sales-desc': '7 especialistas ejecutando tu pipeline B2B completo — desde descubrimiento hasta cierre de deal',
+    'header.marketing': 'My Team',
+    'header.marketing-desc': '8 especialistas de marketing trabajando para tu marca. Haz clic en cualquiera para conocerlos',
+    'header.strategy': 'MIRA Strategy',
+    'header.strategy-desc': '7 especialistas para que cualquier founder tenga control total de su negocio',
+    'header.innovation': 'MIRA Innovation',
+    'header.innovation-desc': '1 especialista detectando tendencias, validando ideas, y explorando oportunidades emergentes',
+    'header.finance': 'MIRA Finance',
+    'header.finance-desc': '3 especialistas manejando ingresos de la agencia, análisis de datos, y cumplimiento de auditoría',
+    'header.admin': 'MIRA Admin',
+    'header.admin-desc': '4 agentes manejando operaciones internas. Nada se pierde, nada se olvida',
+
+    // STAT LABELS EXPANDED
+    'stat.total-leads': 'Leads totales',
+    'stat.hot-leads': 'Hot leads (≥75)',
+    'stat.posts-week': 'Posts esta semana',
+    'stat.in-approval': 'En aprobación',
+    'stat.open-alerts': 'Alertas abiertas',
+    'stat.active-plans': 'Planes activos',
+    'stat.audits': 'Auditorías',
+    'stat.business-plans': 'Planes de negocio',
+    'stat.pending-invoices': 'Facturas pendientes',
+    'stat.trends-monitored': 'Tendencias monitoreadas',
+    'stat.ideas-validated': 'Ideas validadas',
+    'stat.opportunities': 'Oportunidades',
+    'stat.monthly-revenue': 'Ingresos mensuales',
+    'stat.profit-margin': 'Margen de ganancia',
+    'stat.audit-status': 'Estado de auditoría',
+
+    // BUTTONS
+    'btn.generate': 'Generar',
+    'btn.send': 'Enviar',
+    'btn.create': 'Crear',
+    'btn.update': 'Actualizar',
+    'btn.delete': 'Eliminar',
+    'btn.back-to-home': 'Volver al inicio',
   },
 
   en: {
@@ -252,6 +291,45 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.other-teams': 'Other available teams',
     'common.agents-total': 'agents total',
     'common.no-data': 'No data',
+
+    // SECTION HEADERS & DESCRIPTIONS
+    'header.sales': 'MIRA Sales',
+    'header.sales-desc': '7 specialists running your entire B2B acquisition pipeline — from discovery to closed deal',
+    'header.marketing': 'My Team',
+    'header.marketing-desc': '8 marketing specialists working for your brand. Click any to meet them',
+    'header.strategy': 'MIRA Strategy',
+    'header.strategy-desc': '7 specialists so any founder can take full control of their business',
+    'header.innovation': 'MIRA Innovation',
+    'header.innovation-desc': '1 specialist detecting trends, validating ideas, and scouting emerging opportunities',
+    'header.finance': 'MIRA Finance',
+    'header.finance-desc': '3 specialists managing agency revenue, data analytics, and audit compliance',
+    'header.admin': 'MIRA Admin',
+    'header.admin-desc': '4 agents managing internal operations. Nothing is lost, nothing is forgotten',
+
+    // STAT LABELS EXPANDED
+    'stat.total-leads': 'Total leads',
+    'stat.hot-leads': 'Hot leads (≥75)',
+    'stat.posts-week': 'Posts this week',
+    'stat.in-approval': 'In approval',
+    'stat.open-alerts': 'Open alerts',
+    'stat.active-plans': 'Active plans',
+    'stat.audits': 'Audits',
+    'stat.business-plans': 'Business plans',
+    'stat.pending-invoices': 'Pending invoices',
+    'stat.trends-monitored': 'Trends monitored',
+    'stat.ideas-validated': 'Ideas validated',
+    'stat.opportunities': 'Opportunities',
+    'stat.monthly-revenue': 'Monthly revenue',
+    'stat.profit-margin': 'Profit margin',
+    'stat.audit-status': 'Audit status',
+
+    // BUTTONS
+    'btn.generate': 'Generate',
+    'btn.send': 'Send',
+    'btn.create': 'Create',
+    'btn.update': 'Update',
+    'btn.delete': 'Delete',
+    'btn.back-to-home': 'Back to home',
   },
 }
 
