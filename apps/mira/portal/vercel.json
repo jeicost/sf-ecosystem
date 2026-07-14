@@ -3,5 +3,7 @@
   "installCommand": "pnpm install",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "nodeVersion": "24.15.0"
+  "env": {
+    "NODE_ENV": "production"
+  }
 }
