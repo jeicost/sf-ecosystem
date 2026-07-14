@@ -1,11 +1,14 @@
 /**
  * SF-CMS Integration for Salsa Burgers
- * 
+ *
  * Fetches pages, posts, and settings from https://cms.startupsfactory.es
  * Supports ISR (Incremental Static Regeneration) via /api/revalidate webhook
  */
 
-import { initCmsClient, fetchPages, fetchPosts, fetchSettings, type Page, type Post } from '../../packages/cms-client/dist/index'
+const cmsClient = require('../../packages/cms-client/dist/index.js')
+const { initCmsClient, fetchPages, fetchPosts, fetchSettings } = cmsClient
+type Page = any
+type Post = any
 
 const apiUrl = process.env.SF_CMS_API_URL || 'https://cms.startupsfactory.es'
 const apiKey = process.env.SF_CMS_API_KEY || ''
