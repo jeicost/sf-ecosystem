@@ -1,10 +1,58 @@
 import { fetchBrandBrain } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
+import { adminClient } from '@/lib/supabase'
 
 export interface ToolPromptParams {
   clientId: string
   inputData: Record<string, any>
+}
+
+// Toolkit-specific memory queries: which tags to load from project_memory
+const TOOLKIT_MEMORY_QUERIES: Record<string, string[]> = {
+  'brand-briefing': [],
+  'marketing-audit': ['brand_briefing', 'marketing_history', 'customer_feedback'],
+  'content-pack': ['brand_briefing', 'marketing_audit', 'past_content'],
+  'action-plan': ['brand_briefing', 'marketing_audit', 'content_pack', 'team_capacity'],
+  'competitive-analysis': ['brand_briefing', 'market_research', 'competitor_tracking'],
+  'seo-audit': ['content_pack', 'keyword_tracking', 'seo_history'],
+  'brandbook': ['brand_briefing', 'content_pack', 'marketing_audit', 'competitive_analysis', 'seo_audit'],
+  'investor-deck': ['brand_briefing', 'action_plan', 'traction_data'],
+}
+
+// Fetch toolkit-specific dependencies from project_memory
+async function getToolkitDependencies(clientId: string, toolSlug: string): Promise<Record<string, any>> {
+  const tags = TOOLKIT_MEMORY_QUERIES[toolSlug] || []
+  if (tags.length === 0) return {}
+
+  const admin = adminClient()
+  const dependencies: Record<string, any> = {}
+
+  try {
+    for (const tag of tags) {
+      const { data } = await admin
+        .from('project_memory')
+        .select('*')
+        .eq('client_id', clientId)
+        .contains('tags', [tag])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
+
+      if (data) {
+        dependencies[tag] = {
+          id: data.id,
+          data: data.full_content,
+          title: data.title,
+        }
+      }
+    }
+  } catch (error) {
+    // Silently fail if dependencies not found (optional, not blocking)
+    console.warn(`Could not load dependencies for ${toolSlug}:`, error)
+  }
+
+  return dependencies
 }
 
 export async function getToolkitPrompt(
@@ -13,7 +61,7 @@ export async function getToolkitPrompt(
 ): Promise<string | null> {
   const { clientId, inputData } = params
 
-  const [brandBrain, memoryContext, docContext] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, toolkitDeps] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId),
     retrieveAgentContext({
@@ -21,15 +69,22 @@ export async function getToolkitPrompt(
       context_type: 'all',
       limit: 3,
     }),
+    getToolkitDependencies(clientId, toolSlug),
   ])
 
+  // Expanded Brand Brain Context with all essential data
   const brandContext = brandBrain
     ? `
-BRAND CONTEXT:
+BRAND CONTEXT (Source of Truth):
 - Name: ${brandBrain.brandName}
 - Mission: ${brandBrain.mission}
-- Tone: ${Object.entries(brandBrain.toneOfVoice).map(([k, v]) => `${k}: ${v}`).join(', ')}
+- Tagline: ${brandBrain.tagline || 'Not defined'}
+- Personality: ${brandBrain.brandPersonality?.join(', ') || 'Not defined'}
 - Pillars: ${brandBrain.pillars.map(p => `${p.name} (${p.description})`).join('; ')}
+- Tone of Voice: ${Object.entries(brandBrain.toneOfVoice || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}
+- Visual Identity Summary: ${brandBrain.visualIdentitySummary || 'Not defined'}
+- Target Audiences: ${brandBrain.audiences ? JSON.stringify(brandBrain.audiences) : 'Not defined'}
+- Banned Phrases: ${brandBrain.bannedPhrases?.join(', ') || 'None'}
 `
     : ''
 
@@ -37,34 +92,61 @@ BRAND CONTEXT:
     ?.map((d: any) => d.excerpt)
     .join('\n') || ''
 
-  const allContext = [docText, brandContext, memoryContext]
+  // Build dependency context for toolkits that reference previous outputs
+  const dependencyContext = Object.entries(toolkitDeps)
+    .map(([tag, dep]: [string, any]) => {
+      return `\n[DEPENDENCY: ${tag}] (${dep.title})\nID: ${dep.id}\nData: ${JSON.stringify(dep.data).slice(0, 500)}...`
+    })
+    .join('\n')
+
+  const allContext = [docText, brandContext, dependencyContext, memoryContext]
     .filter(Boolean)
     .join('\n\n')
 
-  const fullContext = allContext ? `\n\nCLIENT DOCUMENTATION:\n${allContext}` : ''
+  const fullContext = allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : ''
 
   // Prompts específicos por herramienta
   switch (toolSlug) {
     case 'brand-briefing':
-      return `You are a brand strategist. Generate a comprehensive brand briefing document with JSON structure.
+      return `You are a brand strategist creating the SOURCE OF TRUTH for this brand.
+
+⚠️ CRITICAL: This is TIER 1. You are defining canonical brand data that will be referenced by ALL other toolkits.
+- Brand pillars you define here MUST be used exactly by Content Pack, Marketing Audit, and Brandbook.
+- Brand voice you define here will be the standard for all content.
+- Do NOT generate duplicate or conflicting data. Ensure internal consistency.
+- Include warnings if any data seems contradictory (e.g., "premium brand but budget messaging").
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate a brand briefing JSON with these exact sections:
+Generate a COMPREHENSIVE brand briefing JSON with ALL these sections:
 {
-  "brand_identity": {"name": "", "mission": "", "proposition": ""},
-  "target_audience": {"description": "", "personas": [], "pain_points": []},
+  "brand_story": {"founding": "", "origin_narrative": "", "why_exists": ""},
+  "brand_identity": {"name": "", "mission": "", "vision": "", "values": [], "personality": []},
+  "brand_promise": {"covenant": "", "customer_expectation": "", "guarantee": ""},
+  "competitive_positioning": {"vs_alternatives": "", "unique_advantage": ""},
+  "target_audience": {"description": "", "personas": [{"name": "", "behavior": "", "pain_points": []}]},
   "brand_pillars": [{"name": "", "description": "", "examples": []}],
-  "content_strategy": {"pillars": [], "content_types": [], "calendar": []},
-  "brand_voice": {"tone": "", "personality": [], "messaging": []},
-  "visual_identity": {"colors": [], "typography": "", "imagery": ""},
-  "success_metrics": {"kpis": [], "tracking": []}
+  "brand_voice": {"tone": "", "traits": [], "messaging": [], "do_examples": [], "dont_examples": []},
+  "visual_identity": {"colors": [{"name": "", "hex": "", "usage": ""}], "typography": {"heading": "", "body": ""}, "imagery_style": ""},
+  "content_strategy": {"pillars": [], "content_types": [], "calendar_12month": []},
+  "customer_journey_touchpoints": {"awareness": [], "consideration": [], "decision": [], "loyalty": []},
+  "brand_values_in_practice": [{"value": "", "example": ""}],
+  "brand_evolution": {"2_year_roadmap": "", "potential_expansions": []},
+  "success_metrics": {"kpis": [{"name": "", "target": "", "tracking": ""}], "health_dashboard": ""},
+  "data_coherence": {"conflicts_detected": false, "warnings": []}
 }`
 
     case 'seo-audit':
-      return `You are an SEO expert. Generate a DETAILED SEO audit report matching production quality (reference: Salsa Burgers SEO audit at sf-reports.vercel.app).
+      return `You are an SEO expert validating technical execution of brand strategy through organic search.
+
+⚠️ TIER 5: TECHNICAL VALIDATION TOOLKIT
+- CRITICAL: Load Content Pack topics and keywords, Competitive Analysis keyword rankings
+- VALIDATE that target keywords align with Content Pack content pillars/topics
+- FLAG if keyword strategy contradicts content strategy (e.g., "targeting 'cheap' when brand says premium")
+- Include keyword_alignment field with status: aligned|misaligned
+- Competitive benchmark should show if we're winning, losing, or missing keywords vs top competitors
 
 CRITICAL REQUIREMENTS:
 - Score: 0-100 scale (typical range 60-80 for food brands) with trend (+X points in 90 days)
@@ -322,7 +404,14 @@ Generate SEO audit JSON (EXACT STRUCTURE):
 }`
 
     case 'marketing-audit':
-      return `You are a marketing auditor. Generate a DETAILED marketing audit matching production quality (reference: Salsa Burgers marketing audit at sf-reports.vercel.app).
+      return `You are a marketing auditor validating that current marketing ALIGNS with Brand Briefing.
+
+⚠️ TIER 2: VALIDATION TOOLKIT
+- Load Brand Briefing from dependencies (if available)
+- CRITICAL: Validate that current marketing applies the brand correctly
+- FLAG contradictions: if brand says "premium" but marketing says "cheapest", FAIL with error
+- Include "coherence_check" in output with status: aligned|misaligned|conflicts
+- If Brand Briefing exists, compare pillars/voice/positioning against current marketing strategy
 
 CRITICAL REQUIREMENTS:
 - Overall score: 0-100 (typical range 50-80) with trend (+X points in 90 days)
@@ -432,102 +521,225 @@ Generate marketing audit JSON (EXACT STRUCTURE):
       "roi_score": "8/10"
     }
   ],
+  "coherence_check": {
+    "brand_briefing_id": "uuid or 'not_loaded'",
+    "pillars_aligned": true,
+    "voice_aligned": true,
+    "positioning_aligned": true,
+    "conflicts": []
+  },
   "generatedAt": "just now"
 }`
 
     case 'content-pack':
-      return `You are a content strategist. Generate a comprehensive content pack.
+      return `You are a content strategist building content strategy aligned with Brand Briefing.
+
+⚠️ TIER 3: CONTENT STRATEGY TOOLKIT
+- CRITICAL: Load Brand Briefing pillars from dependencies
+- content_pillars MUST match Brand Briefing pillars EXACTLY (same names, same order)
+- If mismatch detected (different pillar names), FAIL with error: "ERROR: Pillars mismatch. Brand Briefing says [X,Y,Z], cannot generate [A,B,C]"
+- Use Brand Voice tone and messaging throughout all content
+- Map content to Brand Briefing target audience personas
+- Include "dependencies" section with brand_briefing_id and pillar_alignment status
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate a content pack JSON with this structure:
+Generate a COMPREHENSIVE content pack JSON with ALL sections:
 {
-  "blog_posts": [{"title": "", "outline": [], "seo_keywords": [], "cta": ""}],
-  "social_content": {"reels": [{"topic": "", "script": ""}], "posts": [{"format": "", "copy": ""}]},
-  "email_sequences": [{"subject": "", "angle": "", "body_outline": []}],
-  "video_briefs": [{"type": "", "topic": "", "length": "", "script_outline": []}],
-  "strategy": {"pillars": [], "calendar": [], "metrics": []}
+  "brand_briefing_id": "uuid or 'not_loaded'",
+  "pillar_alignment": "exact_match|mismatch|warning",
+  "dependencies": {"brand_briefing": "", "marketing_audit": ""},
+  "content_pillars": [{"name": "", "description": "", "content_types": [], "monthly_volume": ""}],
+  "blog_content_hub": [{"title": "", "outline": [], "seo_keywords": [], "target_audience": "", "word_count": ""}],
+  "social_media_strategy": {
+    "instagram": [{"type": "", "script": "", "visual_notes": ""}],
+    "tiktok": [{"script": "", "duration": "", "audio": ""}],
+    "linkedin": [{"angle": "", "copy": ""}]
+  },
+  "email_sequences": [{"name": "", "subject": "", "body_outline": [], "cta": "", "send_timing": ""}],
+  "video_content_briefs": [{"type": "", "script_outline": "", "visuals": ""}],
+  "content_repurposing": {"blog_post_to_5_formats": {"source": "", "formats": []}},
+  "distribution_amplification": {"channels": [{"platform": "", "cadence": "", "tactics": []}]},
+  "content_governance": {"creators": [], "approvers": [], "sla": ""},
+  "seasonal_campaigns": {"q1": "", "q2": "", "q3": "", "q4": ""},
+  "analytics_measurement": {"kpis_per_type": {}, "dashboards": "", "cadence": ""},
+  "brand_aligned_checklist": {"voice_check": "", "visual_check": "", "messaging_check": ""},
+  "ugc_strategy": {"hashtags": [], "testimonial_program": "", "community_content": ""},
+  "content_calendar": {"12_month_rolling": []}
 }`
 
     case 'action-plan':
-      return `You are a strategy consultant. Generate a 30/60/90 day action plan.
+      return `You are a strategy consultant orchestrating 30/60/90 day execution aligned with Brand Briefing mission.
+
+⚠️ TIER 4: OPERATIONAL PLANNING TOOLKIT
+- CRITICAL: Load Brand Briefing mission/vision, Marketing Audit gaps, Content Pack calendar
+- OKRs MUST align with Brand Briefing success_metrics
+- Actions MUST address Marketing Audit gaps and Content Pack deliverables
+- If OKRs contradict brand mission (e.g., "scale cheaply" vs "premium positioning"), FAIL
+- Include dependencies section with all toolkit IDs and alignment status
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate an action plan JSON with this structure:
+Generate a COMPREHENSIVE action plan JSON:
 {
-  "30_day_sprint": {"focus": "", "actions": [{"action": "", "owner": "", "metric": ""}]},
-  "60_day_push": {"focus": "", "actions": [{"action": "", "owner": "", "metric": ""}]},
-  "90_day_vision": {"focus": "", "actions": [{"action": "", "owner": "", "metric": ""}]},
+  "brand_briefing_id": "uuid",
+  "marketing_audit_id": "uuid",
+  "content_pack_id": "uuid",
+  "dependencies": {"brand_briefing": "", "marketing_audit": "", "content_pack": ""},
+  "mission_alignment": {"okr_1": "aligned|warning", "okr_2": "aligned|warning"},
+  "executive_summary": "",
+  "quarterly_okrs": [{"q": 1, "objectives": []}],
+  "30_day_sprint": {"focus": "", "weekly_milestones": [], "actions": [{"title": "", "owner": "", "effort": "", "metric": ""}]},
+  "60_day_push": {"focus": "", "weekly_milestones": [], "actions": []},
+  "90_day_vision": {"focus": "", "actions": []},
+  "success_definition": {"criteria": [], "exit_thresholds": []},
+  "resource_requirements": {"team": [], "budget": "", "tools": []},
+  "team_capacity": {"roles": [], "fte": "", "hiring_plan": []},
+  "budget_breakdown": {"engineering": "", "marketing": "", "ops": "", "contingency": ""},
   "kpis": [{"metric": "", "target": "", "tracking": ""}],
-  "resources_needed": []
+  "learning_loops": {"weekly_reviews": "", "monthly_retros": "", "iteration_cadence": ""},
+  "stakeholder_communication": {"audience": [], "cadence": "", "format": ""},
+  "risk_mitigation": [{"risk": "", "probability": "", "impact": "", "mitigation": ""}],
+  "escalation_procedures": {"decision_framework": "", "approval_levels": []}
 }`
 
     case 'investor-deck':
-      return `You are a fundraising expert. Generate an investor pitch deck outline.
+      return `You are a fundraising expert synthesizing all brand + market + operations data into coherent investor narrative.
+
+⚠️ TIER 7: EXTERNAL STAKEHOLDER TOOLKIT
+- CRITICAL: Load Brand Briefing mission, Competitive Analysis market data, Action Plan OKRs, Marketing Audit traction
+- Synthesize into single coherent investor story (no contradictions allowed)
+- FAIL if Brand Briefing says "premium" but Action Plan budgets "discount growth"
+- Cite all claims back to source (verifiable to original toolkit)
+- Narrative coherence is paramount: investors will spot inconsistencies
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate an investor deck JSON with this structure:
+Generate COMPREHENSIVE investor deck JSON:
 {
-  "title_slide": {"company": "", "tagline": "", "founder": ""},
-  "problem": {"description": "", "market_size": "", "pain_points": []},
-  "solution": {"description": "", "unique_value": "", "market_fit": ""},
-  "market": {"tam": "", "sam": "", "som": "", "trend": ""},
-  "business_model": {"revenue_streams": [], "pricing": "", "unit_economics": {}},
-  "traction": {"metrics": [], "customers": [], "growth_rate": ""},
-  "team": [{"name": "", "role": "", "background": ""}],
-  "financials": {"revenue": "", "cac": "", "ltv": "", "burn_rate": ""},
-  "ask": {"amount": "", "use_of_funds": [], "valuation": ""},
-  "closing": {"cta": ""}
+  "brand_briefing_id": "uuid",
+  "competitive_analysis_id": "uuid",
+  "action_plan_id": "uuid",
+  "marketing_audit_id": "uuid",
+  "seo_audit_id": "uuid",
+  "narrative_coherence": "verified|contradictions_found",
+  "conflicts": [],
+  "title_slide": {"company": "", "tagline": "", "mission": ""},
+  "executive_summary": {"problem_solution_market": "", "why_now": ""},
+  "the_problem": {"tam": "", "market_segments": "", "pain_points": [], "incumbent_solutions": ""},
+  "the_solution": {"description": "", "how_it_works": "", "unique_value_prop": "", "defensibility": ""},
+  "go_to_market": {"acquisition_channels": [], "partnerships": "", "sales_process": ""},
+  "business_model": {"revenue_streams": [], "pricing_strategy": "", "pricing_tiers": []},
+  "unit_economics": {"cac": "", "ltv": "", "payback_period": "", "gross_margin": ""},
+  "market_and_competition": {"market_size": "", "growth_rate": "", "competitive_landscape": [], "differentiation": ""},
+  "traction_and_validation": {"customers_count": "", "revenue_mrr_arr": "", "key_metrics": [], "growth_trajectory": "", "awards_partnerships": ""},
+  "customer_testimonials": [{"quote": "", "customer": "", "company": ""}],
+  "team": [{"name": "", "role": "", "background": "", "wins": []}],
+  "board_and_advisors": [{"name": "", "background": ""}],
+  "financials": {"funding_history": "", "monthly_burn": "", "24mo_revenue_projection": ""},
+  "risks_and_mitigation": [{"risk": "", "probability": "", "mitigation": ""}],
+  "product_roadmap": {"next_12_months": [{"q": "", "milestone": ""}], "how_funding_accelerates": ""},
+  "the_ask": {"amount": "", "valuation": "", "post_money": "", "use_of_funds_breakdown": [{"category": "", "percentage": ""}], "expected_milestones": []},
+  "contact_and_next_steps": {"contact_email": "", "process_timeline": "", "links": []}
 }`
 
     case 'competitive-analysis':
-      return `You are a competitive strategist. Generate a competitive analysis report.
+      return `You are a competitive strategist validating that Brand Briefing positioning is defensible.
+
+⚠️ TIER 2: MARKET INTELLIGENCE TOOLKIT
+- CRITICAL: Load Brand Briefing positioning from dependencies
+- VALIDATE that brand's competitive positioning is defensible vs market reality
+- FLAG if positioning needs adjustment (e.g., "market consolidating, recommend pivot")
+- Include positioning_validation field with status: verified|at_risk|needs_pivot
+- If contradiction found, surface it: "ALERT: Brand says premium but all competitors undercut price"
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate a competitive analysis JSON with this structure:
+Generate a COMPREHENSIVE competitive analysis JSON with ALL sections:
 {
-  "competitors": [
+  "brand_briefing_id": "uuid",
+  "positioning_validation": "verified|at_risk|needs_pivot",
+  "recommended_adjustments": [],
+  "executive_summary": "",
+  "market_landscape": {"size": "", "growth_rate": "", "segments": [], "trends": [], "buying_criteria": []},
+  "market_trends_disruption": {"new_players": "", "emerging_tech": "", "consolidation": ""},
+  "competitive_matrix": [
     {
       "name": "",
+      "founded": "",
       "positioning": "",
       "strengths": [],
       "weaknesses": [],
-      "pricing": "",
+      "pricing_model": "",
+      "target_customer": "",
       "go_to_market": "",
-      "market_share": ""
+      "product_maturity": ""
     }
   ],
-  "landscape": {"trends": [], "gaps": [], "opportunities": []},
-  "positioning_recommendation": {"differentiation": "", "messaging": "", "target": ""},
-  "action_plan": [{"priority": "", "action": "", "timeline": ""}]
+  "pricing_comparison": [{"company": "", "tiers": [], "typical_price": ""}],
+  "pricing_strategy_recommendation": "",
+  "competitive_advantages": [{"vs_competitor": "", "advantages": [], "disadvantages": []}],
+  "feature_parity_matrix": {"features": [], "your_product": [], "competitor_a": [], "competitor_b": []},
+  "swot_vs_competitors": {"strengths": [], "weaknesses": [], "opportunities": [], "threats": []},
+  "cac_growth_metrics": {"estimated_cac": "", "growth_rate": "", "market_share": ""},
+  "customer_satisfaction": {"nps": "", "retention_rate": "", "churn": ""},
+  "partnership_ecosystem": {"integrations": [], "api_strategy": ""},
+  "market_positioning": {"2x2_matrix": "", "your_position": ""},
+  "winning_strategy": {"differentiation": "", "gtm_strategy": "", "sales_strategy": "", "marketing_angles": []},
+  "market_opportunities": {"underserved_segments": [], "adjacent_markets": [], "vertical_expansion": []},
+  "key_takeaways": {"top_3_competitors": [], "top_3_differentiation": [], "top_3_opportunities": []}
 }`
 
     case 'brandbook-content-system':
-      return `You are a brand strategist. Generate a comprehensive brandbook and content system.
+      return `You are a brand strategist creating the LIVING OPERATIONAL MANUAL for this brand.
+
+⚠️ TIER 6: MASTER ORCHESTRATOR TOOLKIT
+- CRITICAL: Load ALL previous toolkit outputs (Brand Briefing, Content Pack, Marketing Audit, etc.)
+- DO NOT re-define Brand Briefing data. PULL it verbatim and cite source.
+- DO NOT re-define Content Pack calendar. PULL it and cite source.
+- For EVERY section, cite source: {"section": "brand_pillars", "source": "brand_briefing", "source_id": "..."}
+- FAIL if contradictions detected between sources
+- Include full reconciliation summary and conflict log
+- This is the living document that evolves as toolkits are re-run
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate a brandbook JSON with this structure:
+Generate COMPREHENSIVE brandbook JSON that REFERENCES (not re-defines) all sources:
 {
-  "brand_identity": {"logo_guidelines": "", "color_palette": [], "typography": ""},
-  "tone_of_voice": {"voice": "", "personality": [], "do_dont": {"do": [], "dont": []}},
-  "content_pillars": [{"name": "", "themes": [], "content_types": []}],
-  "content_templates": [{"type": "", "structure": "", "example": ""}],
-  "editorial_calendar": [{"month": "", "theme": "", "content_plan": []}],
-  "channel_playbooks": [{"channel": "", "format": "", "frequency": "", "best_practices": []}]
+  "brand_briefing_id": "uuid",
+  "content_pack_id": "uuid",
+  "marketing_audit_id": "uuid",
+  "competitive_analysis_id": "uuid",
+  "seo_audit_id": "uuid",
+  "reconciliation": {"conflicts": [], "verified": true, "last_updated": ""},
+  "version": "1.0",
+  "brand_story": {"source": "brand_briefing", "founding": "", "origin_narrative": "", "why_exists": ""},
+  "brand_identity": {"source": "brand_briefing", "name": "", "mission": "", "vision": "", "values": [], "personality": []},
+  "brand_promise": {"source": "brand_briefing", "covenant": "", "customer_expectation": "", "guarantee": ""},
+  "competitive_positioning": {"source": "competitive_analysis", "how_differentiate": "", "vs_top_3": ""},
+  "target_audience": {"source": "brand_briefing", "description": "", "personas": []},
+  "brand_pillars": {"source": "brand_briefing", "pillars": [{"name": "", "description": ""}]},
+  "brand_voice": {"source": "brand_briefing", "tone": "", "traits": [], "real_copy_examples": [], "do_examples": [], "dont_examples": []},
+  "visual_identity": {"source": "brand_briefing", "colors": [], "typography": "", "imagery_style": "", "usage_case_studies": []},
+  "content_templates": {"source": "content_pack", "blog": {}, "social": {}, "email": {}, "video": {}},
+  "editorial_calendar": {"source": "content_pack", "12_month_rolling": []},
+  "channel_playbooks": {"source": "content_pack", "instagram": {}, "tiktok": {}, "email": {}, "blog": {}},
+  "packaging_collateral": {"email_signatures": "", "ppt_templates": "", "social_templates": ""},
+  "crisis_communication": {"guidelines": "", "tone": "", "approval_chain": ""},
+  "employee_brand": {"internal_mission": "", "advocacy_program": "", "guidelines": ""},
+  "brand_evolution": {"source": "brand_briefing", "2_year_roadmap": "", "potential_expansions": []},
+  "guidelines_dos_donts": {"do": [], "dont": []},
+  "living_document_notes": {"review_cadence": "quarterly", "last_audit": "", "next_scheduled_review": ""}
 }`
 
     default:
