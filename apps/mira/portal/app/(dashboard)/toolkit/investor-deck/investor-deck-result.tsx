@@ -10,35 +10,37 @@ export function InvestorDeckResult({ data }: { data?: any }) {
     'product_roadmap', 'the_ask', 'contact_and_next_steps'
   ]
 
+  const brandColor = data?.brandColor || '#8B5CF6'
+
   return (
-    <div className="w-full">
+    <div className="w-full bg-gradient-to-b from-gray-950 via-black to-gray-950">
       {/* Header */}
-      <div className="bg-black border-b border-white/10 p-6 md:p-8">
-        <h1 className="text-5xl font-black text-white mb-2">INVESTOR DECK</h1>
-        <p className="text-gray-400 max-w-2xl">17-slide pitch deck: market, competition, traction, team, financials, and ask</p>
+      <div className="border-b border-white/5 p-6 md:p-8 md:pb-12">
+        <h1 className="text-5xl md:text-6xl font-black text-white mb-3 tracking-tight">INVESTOR DECK</h1>
+        <p className="text-gray-400 max-w-2xl text-sm leading-relaxed">17-slide pitch deck: market, competition, traction, team, financials, and ask</p>
       </div>
 
       {/* Slides Navigation */}
-      <div className="bg-black border-b border-white/10 p-6 flex items-center justify-between">
+      <div className="border-b border-white/5 p-6 flex items-center justify-between backdrop-blur-sm">
         <button
           onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
-          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded text-white text-sm"
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors"
         >
           ← Previous
         </button>
-        <div className="text-gray-400 text-sm">
+        <div className="text-gray-400 text-sm font-medium">
           Slide {currentSlide + 1} of {slides.length}
         </div>
         <button
           onClick={() => setCurrentSlide(Math.min(slides.length - 1, currentSlide + 1))}
-          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded text-white text-sm"
+          className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-white text-sm font-medium transition-colors"
         >
           Next →
         </button>
       </div>
 
       {/* Slide Content */}
-      <div className="bg-black p-6 md:p-8 space-y-8 min-h-96">
+      <div className="p-6 md:p-8 space-y-8 min-h-96">
         {currentSlide === 0 && data.title_slide && (
           <section>
             <h2 className="text-4xl font-black text-white mb-4">{data.title_slide.company}</h2>
@@ -256,7 +258,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
       </div>
 
       {/* Footer */}
-      <div className="bg-black border-t border-white/10 p-6 md:p-8 text-center text-xs text-gray-500">
+      <div className="border-t border-white/5 p-6 md:p-8 text-center text-xs text-gray-500">
         {data?.generatedAt && <div>Generated {data.generatedAt}</div>}
       </div>
     </div>
