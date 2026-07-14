@@ -1,7 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
-import ToolResultComponent from '@/components/ToolResultComponent'
+import { ContentPackResult } from './content-pack-result'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'content-pack',
@@ -109,6 +109,3 @@ export default function ContentPackPage() {
   )
 }
 
-function ContentPackResult({ data }: { data?: any }) {
-  return <ToolResultComponent slug="content-pack" data={data} />
-}
