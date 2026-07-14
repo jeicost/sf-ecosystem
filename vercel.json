@@ -1,16 +1,3 @@
 {
-  "services": {
-    "sf-sales-engine": {
-      "root": "apps/sf-sales-engine"
-    }
-  },
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": {
-        "type": "service",
-        "service": "sf-sales-engine"
-      }
-    }
-  ]
+  "buildCommand": "npm run build --prefix packages/cms-client && npm run build --prefix clients/salsa-burgers"
 }
