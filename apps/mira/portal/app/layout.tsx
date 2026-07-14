@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import { LocaleProvider } from './locale-provider'
 import './globals.css'
 
-// Force Vercel redeploy - Opción A complete (dynamic agent status + cleanup)
+// Force Vercel redeploy - Opción A complete + Opción B i18n (ES/EN on all pages)
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
