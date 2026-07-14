@@ -107,8 +107,8 @@ function SeoAuditResult({ data }: { data?: any }) {
       <div className="bg-black border-b border-white/10 p-6 md:p-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <div className="text-xs text-red-500 font-mono mb-1">STARTUP FACTORY · SF DIGITAL AUDIT</div>
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-2">
+            <div className="text-xs text-red-500 font-mono mb-2">STARTUP FACTORY · SF DIGITAL AUDIT</div>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-3">
               SEO AUDIT <br /> SALSA BURGERS
             </h1>
             <p className="text-gray-400 max-w-2xl text-sm md:text-base">
@@ -170,7 +170,7 @@ function SeoAuditResult({ data }: { data?: any }) {
               return (
                 <div key={sIdx}>
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
+                    <h2 className="text-2xl font-black text-white uppercase mb-1">{section.title}</h2>
                     {section.description && (
                       <p className="text-sm text-gray-400">{section.description}</p>
                     )}
@@ -214,7 +214,7 @@ function SeoAuditResult({ data }: { data?: any }) {
               return (
                 <div key={sIdx}>
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
+                    <h2 className="text-2xl font-black text-white uppercase mb-1">{section.title}</h2>
                     {section.description && (
                       <p className="text-sm text-gray-400">{section.description}</p>
                     )}
@@ -249,7 +249,7 @@ function SeoAuditResult({ data }: { data?: any }) {
               return (
                 <div key={sIdx}>
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
+                    <h2 className="text-2xl font-black text-white uppercase mb-1">{section.title}</h2>
                     {section.description && (
                       <p className="text-sm text-gray-400">{section.description}</p>
                     )}
@@ -275,7 +275,7 @@ function SeoAuditResult({ data }: { data?: any }) {
               return (
                 <div key={sIdx}>
                   <div className="mb-6">
-                    <h2 className="text-2xl font-bold text-white uppercase mb-1">{section.title}</h2>
+                    <h2 className="text-2xl font-black text-white uppercase mb-1">{section.title}</h2>
                     {section.description && (
                       <p className="text-sm text-gray-400">{section.description}</p>
                     )}
