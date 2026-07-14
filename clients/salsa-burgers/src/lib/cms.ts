@@ -5,15 +5,22 @@
  * Supports ISR (Incremental Static Regeneration) via /api/revalidate webhook
  */
 
-import { fetchPages, fetchPosts, fetchSettings, type Page, type Post } from '@sf/cms-client'
+import { initCmsClient, fetchPages, fetchPosts, fetchSettings, type Page, type Post } from '../../packages/cms-client/dist/index'
 
 const apiUrl = process.env.SF_CMS_API_URL || 'https://cms.startupsfactory.es'
-const apiKey = process.env.SF_CMS_API_KEY
+const apiKey = process.env.SF_CMS_API_KEY || ''
 const projectSlug = process.env.SF_CMS_PROJECT_SLUG || 'salsaburgers'
 
 if (!apiKey) {
   console.warn('[CMS] SF_CMS_API_KEY is not set — CMS content will not load')
 }
+
+// Initialize CMS client
+initCmsClient({
+  apiUrl,
+  apiKey,
+  projectSlug,
+})
 
 /**
  * Fetch all pages for this project from CMS
@@ -22,11 +29,7 @@ if (!apiKey) {
 export async function getPages() {
   if (!apiKey) return []
   try {
-    return await fetchPages(projectSlug, { 
-      baseUrl: apiUrl,
-      apiKey,
-      revalidate: 60,
-    })
+    return await fetchPages({ revalidate: 60 })
   } catch (err) {
     console.error('[CMS] Failed to fetch pages:', err)
     return []
@@ -40,11 +43,7 @@ export async function getPages() {
 export async function getPosts() {
   if (!apiKey) return []
   try {
-    return await fetchPosts(projectSlug, {
-      baseUrl: apiUrl,
-      apiKey,
-      revalidate: 60,
-    })
+    return await fetchPosts({ revalidate: 60 })
   } catch (err) {
     console.error('[CMS] Failed to fetch posts:', err)
     return []

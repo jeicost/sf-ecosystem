@@ -1,3 +1,0 @@
-{
-  "buildCommand": "npm run build --prefix packages/cms-client && npm run build --prefix clients/salsa-burgers"
-}
