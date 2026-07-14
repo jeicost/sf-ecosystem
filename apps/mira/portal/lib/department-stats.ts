@@ -15,7 +15,7 @@ export interface DepartmentStats {
 export async function getDepartmentStats(clientId: string): Promise<Record<string, DepartmentStats>> {
   const db = createServiceClient()
 
-  let leads = 0, proposals = 0, posts = 0, contacts = 0
+  let leads = 0, proposals = 0, posts = 0, contacts = 0, plans = 0, ideas = 0
 
   try {
     const { count: leadsCount } = await db
@@ -57,13 +57,35 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
     console.error('Error fetching contacts:', e)
   }
 
+  try {
+    const { count: plansCount } = await db
+      .from('generation_queue')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('agent_type', 'estrategia')
+    plans = plansCount || 0
+  } catch (e) {
+    console.error('Error fetching plans:', e)
+  }
+
+  try {
+    const { count: ideasCount } = await db
+      .from('generation_queue')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('agent_type', 'innovacion')
+    ideas = ideasCount || 0
+  } catch (e) {
+    console.error('Error fetching ideas:', e)
+  }
+
   return {
     comercial: { leads, proposals },
     marketing: { posts, contacts },
-    estrategia: { plans: 0, ideas: 0 },
+    estrategia: { plans, ideas: 0 },
     operaciones: { contacts },
     finanzas: { leads },
-    innovacion: { ideas: 0 },
+    innovacion: { ideas },
   }
 }
 

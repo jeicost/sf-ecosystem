@@ -254,7 +254,7 @@ export default function AgentWorkspace({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={placeholder}
+            placeholder={`${placeholder} (Enter para enviar)`}
             disabled={isLoading}
             className="flex-1 px-3 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-sm text-white placeholder-[#666] focus:border-[#555] focus:outline-none transition-colors disabled:opacity-50"
           />
@@ -263,7 +263,7 @@ export default function AgentWorkspace({
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
             className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50 bg-[#1E1E1E] border border-[#333] hover:border-[#555]"
-            title="Upload document"
+            title="Upload document (Max 50MB)"
           >
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
           </button>
