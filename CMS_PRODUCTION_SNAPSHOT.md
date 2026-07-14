@@ -79,7 +79,7 @@ REVALIDATE_SECRET = [ROTATED]
 ```bash
 # 1. Log in to SF-CMS
 https://cms.startupsfactory.es
-User: jacostech@gmail.com / SFcms2026!
+User: jacostech@gmail.com / [ROTATED]
 
 # 2. Create & publish a test post
 

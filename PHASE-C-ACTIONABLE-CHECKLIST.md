@@ -1,7 +1,7 @@
 # Phase C: CMS-to-Web Sync — Actionable Checklist
 
 **Goal:** All three webs read from SF-CMS and update instantly when content is published.  
-**Secret Key:** `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+**Secret Key:** `[ROTATED]`
 
 ---
 
@@ -13,7 +13,7 @@
 3. → **Settings** → **Environment Variables**
 4. Click **Add New Variable**
    - Name: `REVALIDATE_SECRET`
-   - Value: `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+   - Value: `[ROTATED]`
    - Environments: **Production** (select)
 5. Click **Save & Deploy**
 6. ✅ Verify it deployed (watch build log)
@@ -24,7 +24,7 @@
 3. → **Settings** → **Environment Variables**
 4. Click **Add New Variable**
    - Name: `REVALIDATE_SECRET`
-   - Value: `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+   - Value: `[ROTATED]`
    - Environments: **Production**
 5. Click **Save & Deploy**
 6. ✅ Verify it deployed
@@ -35,7 +35,7 @@
 3. → **Settings** → **Environment Variables**
 4. Click **Add New Variable**
    - Name: `REVALIDATE_SECRET`
-   - Value: `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+   - Value: `[ROTATED]`
    - Environments: **Production**
 5. Click **Save & Deploy**
 6. ✅ Verify it deployed
@@ -50,21 +50,21 @@ Run these curl commands to verify the secrets were applied correctly:
 # Test NC Global
 curl -X POST https://nc-global-assets-next.vercel.app/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 # Expected: {"revalidated":true,"timestamp":"2026-05-21T..."}
 
 # Test Salsa Burgers
 curl -X POST https://www.salsaburgers.com/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 # Expected: {"revalidated":true,"timestamp":"2026-05-21T..."}
 
 # Test Startup Factory
 curl -X POST https://startupsfactory.es/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 # Expected: {"revalidated":true,"timestamp":"2026-05-21T..."}
 ```
@@ -85,7 +85,7 @@ If any return `401 Unauthorized`, the env var didn't apply. If `404 Not Found`, 
   - `https://nc-global-assets-next.vercel.app/api/revalidate`
   - `https://www.salsaburgers.com/api/revalidate`
   - `https://startupsfactory.es/api/revalidate`
-- All three use same secret: `x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+- All three use same secret: `x-revalidate-secret: [ROTATED]`
 - Body template: `{"type":"post","slug":"{{ post.slug }}"}`
 
 ---
