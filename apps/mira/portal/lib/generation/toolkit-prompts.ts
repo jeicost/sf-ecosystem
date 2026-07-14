@@ -14,7 +14,7 @@ const TOOLKIT_MEMORY_QUERIES: Record<string, string[]> = {
   'marketing-audit': ['brand_briefing', 'marketing_history', 'customer_feedback'],
   'content-pack': ['brand_briefing', 'marketing_audit', 'past_content'],
   'action-plan': ['brand_briefing', 'marketing_audit', 'content_pack', 'team_capacity'],
-  'competitive-analysis': ['brand_briefing', 'market_research', 'competitor_tracking'],
+  'competitive-analysis': [],  // Made independent - doesn't require prior dependencies
   'seo-audit': ['content_pack', 'keyword_tracking', 'seo_history'],
   'brandbook': ['brand_briefing', 'content_pack', 'marketing_audit', 'competitive_analysis', 'seo_audit'],
   'investor-deck': ['brand_briefing', 'action_plan', 'traction_data'],
@@ -650,52 +650,54 @@ Generate COMPREHENSIVE investor deck JSON:
 }`
 
     case 'competitive-analysis':
-      return `You are a competitive strategist validating that Brand Briefing positioning is defensible.
+      return `You are a competitive strategist analyzing market landscape and competitive positioning.
 
-⚠️ TIER 2: MARKET INTELLIGENCE TOOLKIT
-- CRITICAL: Load Brand Briefing positioning from dependencies
-- VALIDATE that brand's competitive positioning is defensible vs market reality
-- FLAG if positioning needs adjustment (e.g., "market consolidating, recommend pivot")
-- Include positioning_validation field with status: verified|at_risk|needs_pivot
-- If contradiction found, surface it: "ALERT: Brand says premium but all competitors undercut price"
+MARKET INTELLIGENCE TOOLKIT
+Analyze competitive landscape based on user input and generate actionable competitive intelligence.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
-${fullContext}
 
-Generate a COMPREHENSIVE competitive analysis JSON with ALL sections:
+Generate COMPETITIVE ANALYSIS JSON with these core sections:
 {
-  "brand_briefing_id": "uuid",
-  "positioning_validation": "verified|at_risk|needs_pivot",
-  "recommended_adjustments": [],
-  "executive_summary": "",
-  "market_landscape": {"size": "", "growth_rate": "", "segments": [], "trends": [], "buying_criteria": []},
-  "market_trends_disruption": {"new_players": "", "emerging_tech": "", "consolidation": ""},
+  "positioning_validation": "verified|at_risk|needs_adjustment",
+  "recommended_adjustments": ["adjustment 1", "adjustment 2"],
+  "executive_summary": "2-3 paragraph overview of competitive landscape and positioning",
+  "market_landscape": {
+    "size": "market size estimate",
+    "growth_rate": "growth percentage and trends",
+    "segments": ["segment 1", "segment 2"],
+    "trends": ["trend 1", "trend 2"]
+  },
   "competitive_matrix": [
     {
-      "name": "",
-      "founded": "",
-      "positioning": "",
-      "strengths": [],
-      "weaknesses": [],
-      "pricing_model": "",
-      "target_customer": "",
-      "go_to_market": "",
-      "product_maturity": ""
+      "name": "competitor name",
+      "positioning": "how they position themselves",
+      "strengths": ["strength 1", "strength 2"],
+      "weaknesses": ["weakness 1", "weakness 2"],
+      "pricing_model": "their pricing approach",
+      "target_customer": "their target segment"
     }
   ],
-  "pricing_comparison": [{"company": "", "tiers": [], "typical_price": ""}],
-  "pricing_strategy_recommendation": "",
-  "competitive_advantages": [{"vs_competitor": "", "advantages": [], "disadvantages": []}],
-  "feature_parity_matrix": {"features": [], "your_product": [], "competitor_a": [], "competitor_b": []},
-  "swot_vs_competitors": {"strengths": [], "weaknesses": [], "opportunities": [], "threats": []},
-  "cac_growth_metrics": {"estimated_cac": "", "growth_rate": "", "market_share": ""},
-  "customer_satisfaction": {"nps": "", "retention_rate": "", "churn": ""},
-  "partnership_ecosystem": {"integrations": [], "api_strategy": ""},
-  "market_positioning": {"2x2_matrix": "", "your_position": ""},
-  "winning_strategy": {"differentiation": "", "gtm_strategy": "", "sales_strategy": "", "marketing_angles": []},
-  "market_opportunities": {"underserved_segments": [], "adjacent_markets": [], "vertical_expansion": []},
-  "key_takeaways": {"top_3_competitors": [], "top_3_differentiation": [], "top_3_opportunities": []}
+  "pricing_comparison": [
+    {"company": "company name", "price_range": "$X-Y", "value_prop": "their value proposition"}
+  ],
+  "swot_vs_competitors": {
+    "strengths": ["your strength 1", "your strength 2"],
+    "weaknesses": ["weakness vs competitors"],
+    "opportunities": ["market opportunity"],
+    "threats": ["competitive threat"]
+  },
+  "winning_strategy": {
+    "differentiation": "how to differentiate from competitors",
+    "gtm_strategy": "go-to-market strategy",
+    "marketing_angles": ["angle 1", "angle 2"]
+  },
+  "key_takeaways": {
+    "top_3_competitors": ["competitor 1", "competitor 2", "competitor 3"],
+    "top_3_differentiation": ["diff 1", "diff 2", "diff 3"],
+    "top_3_opportunities": ["opp 1", "opp 2", "opp 3"]
+  }
 }`
 
     case 'brandbook-content-system':
