@@ -1,8 +1,13 @@
+'use client'
+
 import Link from 'next/link'
 import { INNOVACION_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { InnovacionQuickActions } from '@/components/quick-actions/InnovacionQuickActions'
+import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useEffect, useState } from 'react'
+import type { AgentStatus } from '@/lib/agent-meta'
 
 const INNOVACION_META: Record<string, { produces: string }> = {
   'spark': { produces: 'Trend forecast & ideas' },
@@ -53,6 +58,16 @@ const OTHER_SECTIONS = [
 
 export default function InnovacionPage() {
   const agentCount = INNOVACION_DEPT_AGENTS.length
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+
+  useEffect(() => {
+    const fetchAgentStatuses = async () => {
+      const agentIds = INNOVACION_DEPT_AGENTS.map(a => a.id)
+      const statuses = await getAgentStatuses(agentIds)
+      setAgentStatuses(statuses)
+    }
+    fetchAgentStatuses()
+  }, [])
 
   return (
     <div className="px-8 py-8">

@@ -1,9 +1,14 @@
+'use client'
+
 import Link from 'next/link'
 import { FINANZAS_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { FinanzasQuickActions } from '@/components/quick-actions/FinanzasQuickActions'
+import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useEffect, useState } from 'react'
+import type { AgentStatus } from '@/lib/agent-meta'
 
 const FINANZAS_META: Record<string, { produces: string }> = {
   'midas': { produces: 'Revenue forecast' },
@@ -62,6 +67,16 @@ const OTHER_SECTIONS = [
 
 export default function FinanzasPage() {
   const agentCount = FINANZAS_DEPT_AGENTS.length
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+
+  useEffect(() => {
+    const fetchAgentStatuses = async () => {
+      const agentIds = FINANZAS_DEPT_AGENTS.map(a => a.id)
+      const statuses = await getAgentStatuses(agentIds)
+      setAgentStatuses(statuses)
+    }
+    fetchAgentStatuses()
+  }, [])
 
   return (
     <div className="px-8 py-8">
@@ -109,7 +124,7 @@ export default function FinanzasPage() {
           <AgentCard
             key={agent.id}
             agent={agent}
-            status="idle"
+            status={agentStatuses[agent.id] ?? 'idle'}
             lastTask={null}
             produces={FINANZAS_META[agent.id]?.produces}
             href={`/agent/${agent.id}`}

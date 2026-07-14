@@ -1,8 +1,13 @@
+'use client'
+
 import { OPERACIONES_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
+import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useEffect, useState } from 'react'
+import type { AgentStatus } from '@/lib/agent-meta'
 
 const ADMIN_META = [
   { produces: 'P&L & invoices' },
@@ -18,6 +23,17 @@ const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
 }))
 
 export default function AdminPage() {
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+
+  useEffect(() => {
+    const fetchAgentStatuses = async () => {
+      const agentIds = OPERACIONES_DEPT_AGENTS.map(a => a.id)
+      const statuses = await getAgentStatuses(agentIds)
+      setAgentStatuses(statuses)
+    }
+    fetchAgentStatuses()
+  }, [])
+
   return (
     <div className="px-8 py-8">
       <div className="mb-8">
@@ -64,7 +80,7 @@ export default function AdminPage() {
           <AgentCard
             key={agent.id}
             agent={agent}
-            status="idle"
+            status={agentStatuses[agent.id] ?? 'idle'}
             lastTask={null}
             produces={ADMIN_META[i].produces}
             href={`/agent/${agent.id}`}

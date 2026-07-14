@@ -27,10 +27,19 @@ async function fetchCms<T>(path: string): Promise<T> {
 }
 
 export async function getPosts(): Promise<CmsPost[]> {
-  const data = await fetchCms<{ posts: CmsPost[] }>(
-    `/api/public/posts?project=${PROJ}&status=published`
-  )
-  return data.posts ?? []
+  if (!KEY) {
+    console.warn('[CMS] API key not available, returning empty posts')
+    return []
+  }
+  try {
+    const data = await fetchCms<{ posts: CmsPost[] }>(
+      `/api/public/posts?project=${PROJ}&status=published`
+    )
+    return data.posts ?? []
+  } catch (err) {
+    console.warn('[CMS] Failed to fetch posts:', err)
+    return []
+  }
 }
 
 export async function getPost(slug: string): Promise<CmsPost | null> {

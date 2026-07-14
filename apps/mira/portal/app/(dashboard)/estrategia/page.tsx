@@ -124,7 +124,7 @@ export default function EstrategiaPage() {
           <AgentCard
             key={agent.id}
             agent={agent}
-            status="idle"
+            status={agentStatuses[agent.id] ?? 'idle'}
             lastTask={null}
             produces={ESTRATEGIA_META[agent.id]?.produces}
             href={`/agent/${agent.id}`}
