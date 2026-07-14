@@ -1,7 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
-import { BrandbookResult } from '../brandbook/brandbook-result'
+import { BrandbookContentSystemResult } from './brandbook-result'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'brandbook-content-system',
@@ -95,7 +95,7 @@ export default function BrandBookPage() {
     <ToolRunnerPage
       config={TOOL_CONFIG}
       onGenerate={handleGenerate}
-      resultComponent={BrandbookResult}
+      resultComponent={BrandbookContentSystemResult}
     />
   )
 }
