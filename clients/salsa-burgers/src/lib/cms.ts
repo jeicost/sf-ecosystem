@@ -5,10 +5,78 @@
  * Supports ISR (Incremental Static Regeneration) via /api/revalidate webhook
  */
 
-const cmsClient = require('../../packages/cms-client/dist/index.js')
-const { initCmsClient, fetchPages, fetchPosts, fetchSettings } = cmsClient
-type Page = any
-type Post = any
+export interface Page {
+  id: string
+  slug: string
+  title: string
+  seo_title?: string
+  seo_description?: string
+  og_image_url?: string
+  sections_json: any[]
+  sections?: any[]
+  updated_at?: string
+  [key: string]: any
+}
+
+export interface Post {
+  id: string
+  slug: string
+  title: string
+  excerpt?: string
+  content_html?: string
+  cover_url?: string
+  published_at?: string
+  author_name?: string
+  seo_title?: string
+  seo_description?: string
+  og_image_url?: string
+  [key: string]: any
+}
+
+interface FetcherConfig {
+  apiUrl: string
+  apiKey: string
+  projectSlug: string
+}
+
+let config: FetcherConfig | null = null
+
+function initCmsClient(cfg: FetcherConfig) {
+  config = cfg
+}
+
+function getConfig(): FetcherConfig {
+  if (!config) throw new Error('@sf/cms-client not initialized')
+  return config
+}
+
+async function cmsFetch<T>(path: string, opts?: any): Promise<T> {
+  const cfg = getConfig()
+  const url = new URL(path, cfg.apiUrl)
+  url.searchParams.set('project', cfg.projectSlug)
+
+  const res = await fetch(url.toString(), {
+    headers: { 'x-api-key': cfg.apiKey, 'Content-Type': 'application/json' },
+    next: { revalidate: opts?.revalidate ?? 60 },
+  })
+
+  if (!res.ok) throw new Error(`CMS API error (${res.status}): ${res.statusText}`)
+  return res.json()
+}
+
+async function fetchPages(opts?: any): Promise<Page[]> {
+  const response = await cmsFetch<any>('/api/public/pages', opts)
+  const pages = response.pages || response || []
+  return pages.map((page: any) => ({
+    ...page,
+    sections: page.sections_json || [],
+  }))
+}
+
+async function fetchPosts(opts?: any): Promise<Post[]> {
+  const response = await cmsFetch<any>('/api/public/posts', opts)
+  return response.posts || response || []
+}
 
 const apiUrl = process.env.SF_CMS_API_URL || 'https://cms.startupsfactory.es'
 const apiKey = process.env.SF_CMS_API_KEY || ''
@@ -18,12 +86,7 @@ if (!apiKey) {
   console.warn('[CMS] SF_CMS_API_KEY is not set — CMS content will not load')
 }
 
-// Initialize CMS client
-initCmsClient({
-  apiUrl,
-  apiKey,
-  projectSlug,
-})
+initCmsClient({ apiUrl, apiKey, projectSlug })
 
 /**
  * Fetch all pages for this project from CMS
