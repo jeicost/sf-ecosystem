@@ -48,19 +48,19 @@
 
 **Status:** Needs to be set on all 3 projects  
 **Scope:** Production environment  
-**Value:** `sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9`  
+**Value:** `[ROTATED]`  
 
 Must match the value used in Supabase webhook headers (`x-revalidate-secret`)
 
 **How to Set:**
 ```bash
 # Option 1: Vercel UI
-# Project Settings → Environment Variables → Add REVALIDATE_SECRET = sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9 → Select Production → Save
+# Project Settings → Environment Variables → Add REVALIDATE_SECRET = [ROTATED] → Select Production → Save
 
 # Option 2: CLI (if authenticated)
 cd /path/to/project
 VERCEL_PROJECT_ID="prj_..." VERCEL_ORG_ID="team_..." \
-vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9"
+vercel env add REVALIDATE_SECRET production --value="[ROTATED]"
 ```
 
 ### CMS_API_URL (already set)
@@ -92,7 +92,7 @@ vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f
 | **Table** | `posts` |
 | **Events** | INSERT, UPDATE, DELETE |
 | **Webhook Method** | POST |
-| **Auth Header** | `x-revalidate-secret: sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9` |
+| **Auth Header** | `x-revalidate-secret: [ROTATED]` |
 
 ### Webhook URLs
 
@@ -171,7 +171,7 @@ vercel --prod --yes
 
 **Super Admin:**
 - Email: `jacostech@gmail.com`
-- Password: `SFcms2026!`
+- Password: `[ROTATED]`
 
 **Other Users:**
 - Editor: `nirada@startupsfactory.es` (project-scoped)
@@ -192,7 +192,7 @@ curl -I https://www.startupsfactory.es/api/revalidate
 
 ```bash
 curl -X POST https://www.startupsfactory.es/api/revalidate \
-  -H "x-revalidate-secret: sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -H "Content-Type: application/json" \
   -d '{"paths":["/blog"]}'
 

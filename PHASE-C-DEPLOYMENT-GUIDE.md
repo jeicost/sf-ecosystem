@@ -24,7 +24,7 @@ Updated pages live (instant)
 
 ## Step 1: Set Environment Variable (REVALIDATE_SECRET)
 
-Generated secret: `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+Generated secret: `[ROTATED]`
 
 ### For Each Project (nc-global-assets-next, startup-factory-web, salsa-burgers-web):
 
@@ -33,7 +33,7 @@ Generated secret: `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
 3. Go to **Settings** → **Environment Variables**
 4. Click **Add New Variable**
    - Name: `REVALIDATE_SECRET`
-   - Value: `cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=`
+   - Value: `[ROTATED]`
    - Environments: **Production**
 5. Click **Save & Deploy**
 
@@ -63,7 +63,7 @@ All three webs already have revalidation endpoints:
 # Test NC Global Assets Next
 curl -X POST https://nc-global-assets-next-jeicosts-projects.vercel.app/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 
 # Expected response:
@@ -111,7 +111,7 @@ In SF-CMS admin panel:
 - **Headers:**
   ```
   Content-Type: application/json
-  x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=
+  x-revalidate-secret: [ROTATED]
   ```
 - **Body:**
   ```json

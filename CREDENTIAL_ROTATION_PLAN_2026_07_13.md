@@ -23,7 +23,7 @@ Tres credenciales reales en **texto plano commiteado** en el repositorio:
 | Campo | Valor |
 |-------|-------|
 | Ubicación | `CMS_PRODUCTION_SNAPSHOT.md` línea 74 |
-| Secreto | `sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9` |
+| Secreto | `[ROTATED]` |
 | Propósito | Header `x-revalidate-secret` para POST `/api/revalidate` en las 3 webs |
 | Proyectos Vercel afectados | `startup-factory-web`, `salsa-burgers-web`, `nc-global-assets` |
 | Riesgo | 🔴 ALTO — anyone can trigger ISR revalidates en las 3 webs (no es modificación de contenido, pero es DoS vector si publicamos secret) |
@@ -34,7 +34,7 @@ Tres credenciales reales en **texto plano commiteado** en el repositorio:
 | Campo | Valor |
 |-------|-------|
 | Ubicación | `CMS_PRODUCTION_SNAPSHOT.md` línea 82 |
-| Contraseña | `SFcms2026!` |
+| Contraseña | `[ROTATED]` |
 | Usuario | `jacostech@gmail.com` (superadmin) |
 | Aplicación | SF-CMS login (`cms.startupsfactory.es`) |
 | Riesgo | 🔴 ALTO — anyone can log in and modify all content, user permissions, etc. |
@@ -180,7 +180,7 @@ O manualmente:
 
 ---
 
-## PASO 3: Rotar Admin Password (SFcms2026!)
+## PASO 3: Rotar Admin Password ([ROTATED])
 
 **Duración:** 5 minutos  
 **Riesgo:** ✅ BAJO — afecta solo a acceso UI, no a pipeline automatizado
@@ -272,7 +272,7 @@ cd apps/startup-factory-web && vercel --prod
 
 # 3. Smoke test:
 curl -X POST https://www.startupsfactory.es/api/revalidate \
-  -H "x-revalidate-secret: sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -H "Content-Type: application/json" \
   -d '{"paths":["/blog"]}'
 

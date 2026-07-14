@@ -132,7 +132,7 @@ SF-CMS (Next.js 15, TypeScript)
 
 | Secreto | Ubicación | Riesgo | Acción |
 |---------|-----------|--------|--------|
-| Admin password `SFcms2026!` | `CMS_PRODUCTION_SNAPSHOT.md` | 🔴 Alto | Rotar en Supabase |
+| Admin password `[ROTATED]` | `CMS_PRODUCTION_SNAPSHOT.md` | 🔴 Alto | Rotar en Supabase |
 | `REVALIDATE_SECRET` (sk_live_...) | `CMS_PRODUCTION_SNAPSHOT.md` | 🔴 Alto | Generar nuevo en Vercel env vars |
 | Supabase service_role key | `scripts/fix-sf-cms-schema.mjs` | 🔴 Crítico | Rotarla en Supabase, purgar de repo |
 | CMS API keys (por proyecto) | Documentos varios | 🟡 Medio | Regenerar por proyecto en Supabase |
@@ -143,7 +143,7 @@ SF-CMS (Next.js 15, TypeScript)
 
 ## PAT de Vercel (seguridad)
 
-- **Token:** `vcp_0kdkILq0uWbiRymwJpKcIjEEaDH9asAQjrJqXnxZNhTdEkaFtp38KSYf`
+- **Token:** `[ROTATED]`
 - **Uso:** Intentado para descargar deployment (falló con 410, pero listó archivos correctamente)
 - **Almacenamiento:** `~/.vercel/cms-recovery-pat` (NO commited)
 - **Revocación:** vercel.com/account/tokens, buscar "SF-CMS Source Recovery"

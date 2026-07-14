@@ -52,12 +52,12 @@
 
 After domain alias fix, set `REVALIDATE_SECRET` on each Vercel project.
 
-**Value:** `sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9`  
+**Value:** `[ROTATED]`  
 *Generate new one with: `openssl rand -hex 32`*
 
 **Via Vercel UI:**
 1. Project Settings → Environment Variables
-2. Add new: `REVALIDATE_SECRET` = `sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9`
+2. Add new: `REVALIDATE_SECRET` = `[ROTATED]`
 3. Select "Production" + "Preview" (or all)
 4. Save
 
@@ -68,17 +68,17 @@ After domain alias fix, set `REVALIDATE_SECRET` on each Vercel project.
 cd /Users/carlosjacoste/Desktop/Claude/apps/startup-factory-web
 VERCEL_PROJECT_ID=prj_XqOuowAPVwCIquJSGvtW1j7D1iiE \
 VERCEL_ORG_ID=team_7QGpRqqi1FjrJugGLL0sDehf \
-vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9"
+vercel env add REVALIDATE_SECRET production --value="[ROTATED]"
 
 cd /Users/carlosjacoste/Desktop/Claude/clients/nc-global-assets-next
 VERCEL_PROJECT_ID=prj_GqKIJAxeq8ZgJ9VB6GYIr3O7qwlD \
 VERCEL_ORG_ID=team_7QGpRqqi1FjrJugGLL0sDehf \
-vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9"
+vercel env add REVALIDATE_SECRET production --value="[ROTATED]"
 
 cd /Users/carlosjacoste/Desktop/Claude/clients/salsa-burgers/web
 VERCEL_PROJECT_ID=prj_ermiutbVMzAyE8lRL3mrot8g5JRC \
 VERCEL_ORG_ID=team_7QGpRqqi1FjrJugGLL0sDehf \
-vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9"
+vercel env add REVALIDATE_SECRET production --value="[ROTATED]"
 ```
 
 ---
@@ -87,7 +87,7 @@ vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f
 
 1. Log in to SF-CMS (cms.startupsfactory.es)
    - User: `carlos@startupsfactory.es` or `jacostech@gmail.com` (super admin)
-   - Password: `SFcms2026!`
+   - Password: `[ROTATED]`
 
 2. Create test post:
    - Title: "Test ISR Post 2026-05-21"
@@ -107,7 +107,7 @@ vercel env add REVALIDATE_SECRET production --value="sk_live_revalidate_prod_e7f
 5. Verify webhook payload (optional):
    ```bash
    curl -X POST https://www.startupsfactory.es/api/revalidate \
-     -H "x-revalidate-secret: sk_live_revalidate_prod_e7f9a2c8d4b1f3e6a9c2b5d8e1f4a7c9" \
+     -H "x-revalidate-secret: [ROTATED]" \
      -H "Content-Type: application/json" \
      -d '{"paths":["/blog"]}'
    

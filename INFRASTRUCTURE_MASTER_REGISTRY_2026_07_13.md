@@ -207,7 +207,7 @@ Contenido live en dominio público
 ## CONTACTO PARA DECISIONES
 
 User: Carlos Jacoste (jacostech@gmail.com)  
-Token: `vcp_0kdkILq0uWbiRymwJpKcIjEEaDH9asAQjrJqXnxZNhTdEkaFtp38KSYf` (SF-CMS Source Recovery, no revocar hasta próxima sesión)
+Token: `[ROTATED]` (SF-CMS Source Recovery, no revocar hasta próxima sesión)
 
 ---
 

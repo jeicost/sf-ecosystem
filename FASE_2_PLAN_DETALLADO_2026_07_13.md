@@ -144,7 +144,7 @@ openssl rand -hex 32
 Después de actualizar Vercel Y Supabase:
 
 1. Abre https://cms.startupsfactory.es
-2. Login: `jacostech@gmail.com` / `SFcms2026!` (aún válida)
+2. Login: `jacostech@gmail.com` / `[ROTATED]` (aún válida)
 3. Crea un POST NUEVO con título "TEST-REVALIDATE-[fecha]"
 4. Publica
 5. Abre https://www.startupsfactory.es/blog (o la url de blog si existe)
@@ -257,7 +257,7 @@ Co-Authored-By: Claude Haiku 4.5 <noreply@anthropic.com>"
 **Edita estos archivos y reemplaza credenciales con placeholders:**
 
 1. **CMS_PRODUCTION_SNAPSHOT.md**
-   - Línea 82: Reemplaza `SFcms2026!` con `[ROTATED]`
+   - Línea 82: Reemplaza `[ROTATED]` con `[ROTATED]`
    - Línea 74: Reemplaza `sk_live_revalidate_prod_e7f...` con `[ROTATED]`
 
 2. **REVALIDATE_SETUP_STATUS.md**

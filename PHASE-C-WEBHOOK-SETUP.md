@@ -24,7 +24,7 @@ Go to **Settings** → **Webhooks** → **Create New Webhook**
 | **Event** | `post.published` |
 | **URL** | `https://nc-global-assets-next.vercel.app/api/revalidate` |
 | **Method** | `POST` |
-| **Auth Header** | `x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=` |
+| **Auth Header** | `x-revalidate-secret: [ROTATED]` |
 | **Body Template** | See below |
 | **Active** | ✅ Yes |
 
@@ -51,7 +51,7 @@ Go to **Settings** → **Webhooks** → **Create New Webhook**
 | **Event** | `post.published` |
 | **URL** | `https://www.salsaburgers.com/api/revalidate` |
 | **Method** | `POST` |
-| **Auth Header** | `x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=` |
+| **Auth Header** | `x-revalidate-secret: [ROTATED]` |
 | **Body Template** | (same as above) |
 | **Active** | ✅ Yes |
 
@@ -65,7 +65,7 @@ Go to **Settings** → **Webhooks** → **Create New Webhook**
 | **Event** | `post.published` |
 | **URL** | `https://startupsfactory.es/api/revalidate` |
 | **Method** | `POST` |
-| **Auth Header** | `x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=` |
+| **Auth Header** | `x-revalidate-secret: [ROTATED]` |
 | **Body Template** | (same as above) |
 | **Active** | ✅ Yes |
 
@@ -83,7 +83,7 @@ If you want pages (hero, services, FAQ, etc.) to update instantly when edited in
 | **Event** | `page.published` |
 | **URL** | `https://nc-global-assets-next.vercel.app/api/revalidate` |
 | **Method** | `POST` |
-| **Auth Header** | `x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=` |
+| **Auth Header** | `x-revalidate-secret: [ROTATED]` |
 | **Body Template** | (see below) |
 | **Active** | ✅ Yes |
 
@@ -111,7 +111,7 @@ If you want a single webhook to trigger a full rebuild of all content:
 | **Event** | `cms.bulk_update_complete` or custom event |
 | **URL** | `https://nc-global-assets-next.vercel.app/api/revalidate` |
 | **Method** | `POST` |
-| **Auth Header** | `x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=` |
+| **Auth Header** | `x-revalidate-secret: [ROTATED]` |
 | **Body Template** | (see below) |
 | **Active** | ✅ Yes |
 
@@ -165,7 +165,7 @@ All should show the test post within 5-10 seconds.
 
 | Symptom | Cause | Fix |
 |---------|-------|-----|
-| **401 Unauthorized** | REVALIDATE_SECRET env var not set or wrong value | Set `REVALIDATE_SECRET=cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=` in Vercel Settings → Environment Variables for each project |
+| **401 Unauthorized** | REVALIDATE_SECRET env var not set or wrong value | Set `REVALIDATE_SECRET=[ROTATED]` in Vercel Settings → Environment Variables for each project |
 | **404 Not Found** | Endpoint URL is wrong or site not deployed | Verify URL is exactly `https://domain.com/api/revalidate` (not `/api/revalidate/`) |
 | **Post doesn't appear after 30s** | Webhook didn't fire or body template is wrong | Check CMS webhook delivery logs; verify body JSON is valid |
 | **Only 1 of 3 webs updated** | One webhook failed silently | Check individual webhook logs in CMS; test each endpoint separately with curl |
@@ -180,19 +180,19 @@ If webhooks aren't working, you can manually trigger a rebuild:
 # Revalidate NC Global
 curl -X POST https://nc-global-assets-next.vercel.app/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 
 # Revalidate Salsa Burgers
 curl -X POST https://www.salsaburgers.com/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 
 # Revalidate Startup Factory
 curl -X POST https://startupsfactory.es/api/revalidate \
   -H "Content-Type: application/json" \
-  -H "x-revalidate-secret: cUizyvMKA8xDv2I7aYxBLdNiw7fuwZtypc3+QStlH6g=" \
+  -H "x-revalidate-secret: [ROTATED]" \
   -d '{"type":"all"}'
 ```
 
