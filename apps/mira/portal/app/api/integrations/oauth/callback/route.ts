@@ -66,7 +66,13 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const redirectUri = getOAuthRedirectUri()
+    const redirectUri = getOAuthRedirectUri(tool)
+
+    if (!oauthConfig.tokenUrl) {
+      return NextResponse.redirect(
+        `/integrations?error=${encodeURIComponent('OAuth token URL not configured')}`
+      )
+    }
 
     const tokenResponse = await fetch(oauthConfig.tokenUrl, {
       method: 'POST',
