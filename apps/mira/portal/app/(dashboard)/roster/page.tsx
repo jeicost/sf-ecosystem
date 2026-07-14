@@ -5,6 +5,9 @@ import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
+import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useEffect, useState } from 'react'
+import type { AgentStatus } from '@/lib/agent-meta'
 
 const MARKETING_META = [
   { produces: 'Brief & task queue' },
@@ -67,6 +70,17 @@ const OTHER_SECTIONS = [
 ]
 
 export default function RosterPage() {
+  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+
+  useEffect(() => {
+    const fetchAgentStatuses = async () => {
+      const agentIds = MARKETING_DEPT_AGENTS.map(a => a.id)
+      const statuses = await getAgentStatuses(agentIds)
+      setAgentStatuses(statuses)
+    }
+    fetchAgentStatuses()
+  }, [])
+
   return (
     <div className="px-8 py-8">
       <div className="mb-8">
@@ -108,7 +122,7 @@ export default function RosterPage() {
           <AgentCard
             key={agent.id}
             agent={agent}
-            status="idle"
+            status={agentStatuses[agent.id] ?? 'idle'}
             lastTask={null}
             step={i + 1}
             produces={MARKETING_META[i]?.produces}

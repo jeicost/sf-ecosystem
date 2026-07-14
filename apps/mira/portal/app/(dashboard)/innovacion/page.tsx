@@ -109,7 +109,7 @@ export default function InnovacionPage() {
           <AgentCard
             key={agent.id}
             agent={agent}
-            status="idle"
+            status={agentStatuses[agent.id] ?? 'idle'}
             lastTask={null}
             produces={INNOVACION_META[agent.id]?.produces}
             href={`/agent/${agent.id}`}
