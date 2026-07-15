@@ -6,7 +6,8 @@ import { Loader2, ArrowRight, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { getUser, isSuperAdmin } from '@/lib/auth'
 import AdminClientsOverview from '@/components/admin-clients-overview'
-import { redirect } from 'next/navigation'
+import StatCard from '@/components/stat-card'
+import { getClientStats } from '@/lib/client-portal-service'
 
 const TEAMS = [
   { slug: 'marketing',  label: 'Marketing',  icon: '🎯', color: '#8B5CF6', href: '/roster',              agents: 8, desc: 'Content · Copy · Ads · Community' },
@@ -17,10 +18,18 @@ const TEAMS = [
   { slug: 'finanzas',   label: 'Finance',     icon: '💰', color: '#F59E0B', href: '/finanzas',            agents: 4, desc: 'Wealth · Investments · Tax · FIRE' },
 ]
 
+const QUICK_ACCESS = [
+  { icon: '📁', label: 'Documentación', href: '/client-portal/documentation', color: '#8B5CF6' },
+  { icon: '📦', label: 'Entregas', href: '/client-portal/entregas', color: '#6366F1' },
+  { icon: '🎨', label: 'Brand Brain', href: '/brand-brain', color: '#10B981' },
+  { icon: '⚙️', label: 'Configuración', href: '/client-portal/config', color: '#EF4444' },
+]
+
 export default function HomePage() {
   const [userName, setUserName] = useState('')
   const [plan, setPlan] = useState('')
   const [projects, setProjects] = useState<any[]>([])
+  const [stats, setStats] = useState<any>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -31,31 +40,40 @@ export default function HomePage() {
     }
 
     const db = createClient()
-    db.auth.getUser().then(({ data }) => {
+    db.auth.getUser().then(async ({ data }) => {
       if (!data.user) return
       const meta = data.user.user_metadata ?? {}
       setUserName(meta.name ?? data.user.email ?? '')
       setPlan(meta.plan ?? '')
-    })
 
-    db.from('mira_projects').select('*').order('created_at', { ascending: false })
-      .then(({ data }) => { setProjects(data ?? []); setLoading(false) })
+      // Fetch client stats if not super_admin
+      if (!isSuperAdmin({ id: data.user.id, plan: meta.plan ?? '' } as any)) {
+        let cId = meta.client_id
+        if (!cId) {
+          const { data: access } = await db
+            .from('mira_project_access')
+            .select('project_id')
+            .eq('user_id', data.user.id)
+            .limit(1)
+            .single()
+          cId = access?.project_id
+        }
+        if (cId) {
+          const statsData = await getClientStats(cId)
+          setStats(statsData)
+        }
+      }
+
+      db.from('mira_projects').select('*').order('created_at', { ascending: false })
+        .then(({ data: projects }) => { setProjects(projects ?? []); setLoading(false) })
+    })
   }, [])
 
   const firstName = userName.split(' ')[0] || userName
 
-  // Redirect regular clients to client portal
-  useEffect(() => {
-    const user = getUser()
-    if (plan && !isSuperAdmin(user)) {
-      redirect('/client-portal')
-    }
-  }, [plan])
-
   return (
     <div className="px-8 py-8 max-w-5xl">
-
-      {/* Super Admin: Clients Dashboard | Regular users: Teams + Projects */}
+      {/* Super Admin: Clients Dashboard | Regular users: Full Portal */}
       {isSuperAdmin(getUser()) ? (
         <div className="mb-10">
           <AdminClientsOverview />
@@ -77,6 +95,49 @@ export default function HomePage() {
                 {plan}
               </span>}
             </p>
+          </div>
+
+          {/* Stats */}
+          {stats && (
+            <div className="grid grid-cols-3 gap-3 mb-10">
+              <StatCard label="Entregas Generadas" value={stats.contentGenerated} hint="Este mes" />
+              <StatCard label="Herramientas Usadas" value={`${stats.toolsUsed}/7`} hint="Toolkit completo" />
+              <StatCard label="Últimas 30 días" value={`${stats.timeSavedHours.toFixed(1)}h`} hint="Tiempo ahorrado con IA" />
+            </div>
+          )}
+
+          {/* Quick Access */}
+          <div className="mb-10">
+            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              Accesos rápidos
+            </p>
+            <div className="grid grid-cols-4 gap-3 mb-10">
+              {QUICK_ACCESS.map(action => (
+                <Link
+                  key={action.href}
+                  href={action.href}
+                  className="group relative flex flex-col rounded-xl p-4 overflow-hidden transition-all duration-200 hover:scale-[1.02]"
+                  style={{
+                    background: 'rgba(255,255,255,0.03)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.borderColor = `${action.color}35`
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement
+                    el.style.borderColor = 'rgba(255,255,255,0.08)'
+                  }}
+                >
+                  <div className="text-lg mb-2">{action.icon}</div>
+                  <p className="text-[12px] font-semibold text-white">{action.label}</p>
+                  <div className="mt-auto pt-2">
+                    <ArrowRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: action.color }} />
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
 
           {/* 6 Teams grid */}
