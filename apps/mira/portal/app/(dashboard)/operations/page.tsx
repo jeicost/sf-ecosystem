@@ -118,7 +118,7 @@ export default function AdminPage() {
       </div>
 
       <div className="mb-8">
-        <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>Quick actions</p>
+        <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('section.quick-actions', locale)}</p>
         <AdminQuickActions />
       </div>
 
