@@ -34,14 +34,14 @@ export interface ToolConfig {
 interface ToolRunnerPageProps {
   config: ToolConfig
   onGenerate: (formData: Record<string, any>) => Promise<any>
-  resultComponent?: any
+  resultComponent?: React.ComponentType<{ data?: any }>
   isLoading?: boolean
 }
 
 export default function ToolRunnerPage({
   config,
   onGenerate,
-  resultComponent,
+  resultComponent: ResultComponent,
   isLoading: externalLoading = false,
 }: ToolRunnerPageProps) {
   const { activeClient } = useActiveClient()
@@ -341,12 +341,8 @@ export default function ToolRunnerPage({
             )}
           </button>
         </form>
-      ) : resultComponent ? (
-        typeof resultComponent === 'function' ? (
-          (resultComponent as any)({ data: resultData })
-        ) : (
-          resultComponent
-        )
+      ) : ResultComponent ? (
+        <ResultComponent data={resultData} />
       ) : null}
     </div>
   )
