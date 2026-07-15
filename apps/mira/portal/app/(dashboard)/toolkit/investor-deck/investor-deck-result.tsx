@@ -44,7 +44,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
         {currentSlide === 0 && data.title_slide && (
           <section>
             <h2 className="text-4xl font-black text-white mb-4">{data.title_slide.company}</h2>
-            <div className="text-xl text-yellow-400 font-bold mb-3">{data.title_slide.tagline}</div>
+            <div className="text-xl font-bold mb-3" style={{color: '#ffd740'}}>{data.title_slide.tagline}</div>
             <div className="text-gray-400">Mission: {data.title_slide.mission}</div>
           </section>
         )}
@@ -60,7 +60,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
         {currentSlide === 2 && data.the_problem && (
           <section>
             <h2 className="text-3xl font-black text-white mb-4">The Problem</h2>
-            <div className="text-3xl text-red-400 font-bold mb-3">TAM: {data.the_problem.tam}</div>
+            <div className="text-3xl font-bold mb-3" style={{color: '#ff5a72'}}>TAM: {data.the_problem.tam}</div>
             <div className="space-y-2">
               {data.the_problem.pain_points && data.the_problem.pain_points.map((pp: string, idx: number) => (
                 <div key={idx} className="text-gray-300">• {pp}</div>
@@ -73,8 +73,8 @@ export function InvestorDeckResult({ data }: { data?: any }) {
           <section>
             <h2 className="text-3xl font-black text-white mb-4">The Solution</h2>
             <p className="text-gray-300 mb-3">{data.the_solution.description}</p>
-            <div className="border-l-4 border-green-500 bg-green-500/5 p-4 rounded-r">
-              <div className="text-green-400 font-bold mb-1">UNIQUE VALUE PROP</div>
+            <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.05)'}}>
+              <div className="font-bold mb-1" style={{color: '#00e676'}}>UNIQUE VALUE PROP</div>
               <p className="text-gray-300">{data.the_solution.unique_value_prop}</p>
             </div>
           </section>
@@ -133,7 +133,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
         {currentSlide === 7 && data.market_and_competition && (
           <section>
             <h2 className="text-3xl font-black text-white mb-4">Market & Competition</h2>
-            <div className="text-2xl text-green-400 font-bold mb-2">Market Size: {data.market_and_competition.market_size}</div>
+            <div className="text-2xl font-bold mb-2" style={{color: '#00e676'}}>Market Size: {data.market_and_competition.market_size}</div>
             <div className="text-gray-300">Growth Rate: {data.market_and_competition.growth_rate}</div>
             <div className="text-gray-400 text-sm mt-2">Differentiation: {data.market_and_competition.differentiation}</div>
           </section>
@@ -144,7 +144,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
             <h2 className="text-3xl font-black text-white mb-4">Traction</h2>
             <div className="space-y-2">
               <div><span className="text-gray-400">Customers:</span> <span className="text-white font-bold">{data.traction_and_validation.customers_count}</span></div>
-              <div><span className="text-gray-400">Revenue:</span> <span className="text-green-400 font-bold">{data.traction_and_validation.revenue_mrr_arr}</span></div>
+              <div><span className="text-gray-400">Revenue:</span> <span className="font-bold" style={{color: '#00e676'}}>{data.traction_and_validation.revenue_mrr_arr}</span></div>
               <div><span className="text-gray-400">Growth:</span> <span className="text-white font-bold">{data.traction_and_validation.growth_trajectory}</span></div>
             </div>
           </section>
@@ -153,7 +153,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
         {currentSlide === 9 && data.customer_testimonials && data.customer_testimonials.length > 0 && (
           <section>
             <h2 className="text-3xl font-black text-white mb-4">Customer Testimonials</h2>
-            <div className="border-l-4 border-blue-500 bg-blue-500/5 p-4 rounded-r">
+            <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#4d7cff', backgroundColor: 'rgba(77,124,255,0.05)'}}>
               <p className="text-gray-300 italic mb-2">{data.customer_testimonials[0].quote}</p>
               <div className="text-sm text-gray-400">— {data.customer_testimonials[0].customer}, {data.customer_testimonials[0].company}</div>
             </div>
@@ -194,8 +194,8 @@ export function InvestorDeckResult({ data }: { data?: any }) {
             <h2 className="text-3xl font-black text-white mb-4">Financials</h2>
             <div className="space-y-2">
               <div><span className="text-gray-400">Funding History:</span> <span className="text-white font-bold">{data.financials.funding_history}</span></div>
-              <div><span className="text-gray-400">Monthly Burn:</span> <span className="text-red-400 font-bold">{data.financials.monthly_burn}</span></div>
-              <div><span className="text-gray-400">24mo Projection:</span> <span className="text-green-400 font-bold">{data.financials['24mo_revenue_projection']}</span></div>
+              <div><span className="text-gray-400">Monthly Burn:</span> <span className="font-bold" style={{color: '#ff5a72'}}>{data.financials.monthly_burn}</span></div>
+              <div><span className="text-gray-400">24mo Projection:</span> <span className="font-bold" style={{color: '#00e676'}}>{data.financials['24mo_revenue_projection']}</span></div>
             </div>
           </section>
         )}
@@ -217,7 +217,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
         {currentSlide === 14 && data.product_roadmap && (
           <section>
             <h2 className="text-3xl font-black text-white mb-4">Product Roadmap</h2>
-            <div className="border-l-4 border-purple-500 bg-purple-500/5 p-4 rounded-r">
+            <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#4d7cff', backgroundColor: 'rgba(77,124,255,0.05)'}}>
               <div className="text-gray-300 mb-2">{data.product_roadmap.how_funding_accelerates}</div>
               {data.product_roadmap.next_12_months && (
                 <div className="mt-3 text-xs text-gray-400 space-y-1">
@@ -234,7 +234,7 @@ export function InvestorDeckResult({ data }: { data?: any }) {
           <section>
             <h2 className="text-3xl font-black text-white mb-4">The Ask</h2>
             <div className="space-y-3">
-              <div className="text-4xl font-black text-green-400">{data.the_ask.amount}</div>
+              <div className="text-4xl font-black" style={{color: '#00e676'}}>{data.the_ask.amount}</div>
               <div className="text-gray-400">Valuation: <span className="text-white font-bold">{data.the_ask.valuation}</span></div>
               <div className="border border-white/10 bg-white/5 p-4 rounded mt-4">
                 <div className="text-xs text-gray-400 font-bold mb-2">USE OF FUNDS</div>

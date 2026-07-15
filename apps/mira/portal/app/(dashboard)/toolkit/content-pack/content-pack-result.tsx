@@ -20,7 +20,7 @@ export function ContentPackResult({ data }: { data?: any }) {
             <h2 className="text-2xl font-black text-white uppercase mb-4">Content Pillars</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.content_pillars.map((pillar: any, idx: number) => (
-                <div key={idx} className="border-l-4 border-yellow-500 bg-white/5 p-4 rounded-r">
+                <div key={idx} className="border-l-4 bg-white/5 p-4 rounded-r" style={{borderColor: '#ffd740'}}>
                   <div className="font-bold text-white mb-2">{idx + 1}. {pillar.name}</div>
                   <p className="text-sm text-gray-400 mb-2">{pillar.description}</p>
                   {pillar.content_types && (
@@ -54,7 +54,7 @@ export function ContentPackResult({ data }: { data?: any }) {
                   )}
                   <div className="flex gap-2 flex-wrap">
                     {post.seo_keywords && post.seo_keywords.slice(0, 3).map((kw: string, kidx: number) => (
-                      <div key={kidx} className="bg-blue-500/20 text-blue-400 text-xs px-2 py-1 rounded">{kw}</div>
+                      <div key={kidx} className="text-xs px-2 py-1 rounded" style={{backgroundColor: 'rgba(77,124,255,0.2)', color: '#4d7cff'}}>{kw}</div>
                     ))}
                   </div>
                   {post.target_audience && <div className="text-xs text-gray-500 mt-2">Audience: {post.target_audience}</div>}
@@ -102,7 +102,7 @@ export function ContentPackResult({ data }: { data?: any }) {
                       Body: {Array.isArray(seq.body_outline) ? seq.body_outline.join(' → ') : seq.body_outline}
                     </div>
                   )}
-                  {seq.cta && <div className="text-xs text-green-400">CTA: {seq.cta}</div>}
+                  {seq.cta && <div className="text-xs" style={{color: '#00e676'}}>CTA: {seq.cta}</div>}
                   {seq.send_timing && <div className="text-xs text-gray-500">Timing: {seq.send_timing}</div>}
                 </div>
               ))}
@@ -250,7 +250,7 @@ export function ContentPackResult({ data }: { data?: any }) {
                   <div className="text-xs text-gray-400 font-bold mb-2">CAMPAIGN HASHTAGS</div>
                   <div className="flex flex-wrap gap-2">
                     {data.ugc_strategy.hashtags.slice(0, 5).map((tag: string, idx: number) => (
-                      <div key={idx} className="bg-pink-500/20 text-pink-400 text-xs px-2 py-1 rounded">{tag}</div>
+                      <div key={idx} className="text-xs px-2 py-1 rounded" style={{backgroundColor: 'rgba(255,61,87,0.2)', color: '#ff5a72'}}>{tag}</div>
                     ))}
                   </div>
                 </div>
@@ -273,8 +273,8 @@ export function ContentPackResult({ data }: { data?: any }) {
 
         {/* COHERENCE CHECK */}
         {data.dependencies && (
-          <div className="border-l-4 border-green-500 bg-green-500/5 p-4 rounded-r mt-8">
-            <div className="text-xs text-green-400 font-bold">✓ DATA COHERENCE</div>
+          <div className="border-l-4 p-4 rounded-r mt-8" style={{borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.05)'}}>
+            <div className="text-xs font-bold" style={{color: '#00e676'}}>✓ DATA COHERENCE</div>
             <div className="text-xs text-gray-400 mt-1">
               Brand Briefing ID: {data.brand_briefing_id || 'loaded'}
             </div>

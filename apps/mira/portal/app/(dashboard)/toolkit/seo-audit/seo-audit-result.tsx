@@ -30,8 +30,11 @@ export function SeoAuditResult({ data }: { data?: any }) {
       <div className="border-b border-white/5 p-6 md:p-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {statCards.map((card: any, idx: number) => (
-            <div key={idx} className={`p-4 rounded-xl border transition-all backdrop-blur-sm ${card.status === 'critical' ? 'border-red-500/40 bg-red-500/8' : card.status === 'perfect' ? 'border-green-500/40 bg-green-500/8' : card.status === 'warning' ? 'border-amber-500/40 bg-amber-500/8' : 'border-white/10 bg-white/5'}`}>
-              <div className={`text-3xl font-black mb-2 ${card.status === 'critical' ? 'text-red-400' : card.status === 'perfect' ? 'text-green-400' : card.status === 'warning' ? 'text-amber-400' : 'text-blue-400'}`}>{card.value}</div>
+            <div key={idx} className="p-4 rounded-xl border transition-all backdrop-blur-sm" style={{
+              borderColor: card.status === 'critical' ? 'rgba(255,61,87,0.4)' : card.status === 'perfect' ? 'rgba(0,230,118,0.4)' : card.status === 'warning' ? 'rgba(255,215,64,0.4)' : 'rgba(255,255,255,0.1)',
+              backgroundColor: card.status === 'critical' ? 'rgba(255,61,87,0.08)' : card.status === 'perfect' ? 'rgba(0,230,118,0.08)' : card.status === 'warning' ? 'rgba(255,215,64,0.08)' : 'rgba(255,255,255,0.05)'
+            }}>
+              <div className="text-3xl font-black mb-2" style={{color: card.status === 'critical' ? '#ff5a72' : card.status === 'perfect' ? '#00e676' : card.status === 'warning' ? '#ffd740' : '#4d7cff'}}>{card.value}</div>
               <div className="text-xs text-gray-400 font-medium leading-tight">{card.label}</div>
             </div>
           ))}
@@ -58,7 +61,10 @@ export function SeoAuditResult({ data }: { data?: any }) {
                       <tr key={eidx} className="border-b border-white/5 hover:bg-white/3 transition-colors">
                         <td className="py-4 px-4 text-white">{elem.element}</td>
                         <td className="py-4 px-4">
-                          <span className={`text-xs font-bold px-3 py-1.5 rounded-full ${elem.status === 'critical' ? 'bg-red-500/20 text-red-300' : elem.status === 'perfect' ? 'bg-green-500/20 text-green-300' : 'bg-blue-500/20 text-blue-300'}`}>
+                          <span className="text-xs font-bold px-3 py-1.5 rounded-full" style={{
+                            backgroundColor: elem.status === 'critical' ? 'rgba(255,61,87,0.2)' : elem.status === 'perfect' ? 'rgba(0,230,118,0.2)' : 'rgba(77,124,255,0.2)',
+                            color: elem.status === 'critical' ? '#ff5a72' : elem.status === 'perfect' ? '#00e676' : '#7a9fff'
+                          }}>
                             {elem.status?.toUpperCase()}
                           </span>
                         </td>
@@ -72,8 +78,11 @@ export function SeoAuditResult({ data }: { data?: any }) {
             {section.type === 'schema_cards' && section.schemas && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {section.schemas.map((schema: any, sidx: number) => (
-                  <div key={sidx} className={`p-4 rounded-xl border backdrop-blur-sm ${schema.status === 'active' ? 'border-green-500/30 bg-green-500/8' : 'border-red-500/30 bg-red-500/8'}`}>
-                    <div className={`font-bold mb-2 text-sm ${schema.status === 'active' ? 'text-green-400' : 'text-red-400'}`}>● {schema.name}</div>
+                  <div key={sidx} className="p-4 rounded-xl border backdrop-blur-sm" style={{
+                    borderColor: schema.status === 'active' ? 'rgba(0,230,118,0.3)' : 'rgba(255,61,87,0.3)',
+                    backgroundColor: schema.status === 'active' ? 'rgba(0,230,118,0.08)' : 'rgba(255,61,87,0.08)'
+                  }}>
+                    <div className="font-bold mb-2 text-sm" style={{color: schema.status === 'active' ? '#00e676' : '#ff5a72'}}>● {schema.name}</div>
                     <div className="text-xs text-gray-400 leading-relaxed">{schema.impact || schema.opportunity}</div>
                   </div>
                 ))}
@@ -85,9 +94,9 @@ export function SeoAuditResult({ data }: { data?: any }) {
                   <div key={kidx} className="border border-white/10 bg-white/5 p-4 rounded-xl backdrop-blur-sm">
                     <div className="font-semibold text-white mb-3">{kw.keyword}</div>
                     <div className="text-xs text-gray-400 space-y-2">
-                      {kw.volume && <div>Volume: <span className="text-amber-400 font-semibold">{kw.volume}</span></div>}
-                      {kw.intent && <div>Intent: <span className="text-blue-400 font-semibold">{kw.intent}</span></div>}
-                      {kw.priority && <div>Priority: <span className="text-green-400 font-semibold">{kw.priority}</span></div>}
+                      {kw.volume && <div>Volume: <span className="font-semibold" style={{color: '#ffd740'}}>{kw.volume}</span></div>}
+                      {kw.intent && <div>Intent: <span className="font-semibold" style={{color: '#4d7cff'}}>{kw.intent}</span></div>}
+                      {kw.priority && <div>Priority: <span className="font-semibold" style={{color: '#00e676'}}>{kw.priority}</span></div>}
                     </div>
                   </div>
                 ))}
@@ -105,7 +114,10 @@ export function SeoAuditResult({ data }: { data?: any }) {
                 <div key={aidx} className="border border-white/10 bg-gradient-to-r from-white/5 to-transparent p-4 rounded-xl backdrop-blur-sm hover:border-white/20 transition-all">
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <div className="font-semibold text-white">{aidx + 1}. {action.title}</div>
-                    {action.priority && <span className={`text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap ${action.priority === 'CRÍTICO' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'}`}>{action.priority}</span>}
+                    {action.priority && <span className="text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap" style={{
+                      backgroundColor: action.priority === 'CRÍTICO' ? 'rgba(255,61,87,0.2)' : 'rgba(255,215,64,0.2)',
+                      color: action.priority === 'CRÍTICO' ? '#ff5a72' : '#ffd740'
+                    }}>{action.priority}</span>}
                   </div>
                   {action.description && <p className="text-sm text-gray-400 mb-3">{action.description}</p>}
                   <div className="flex flex-wrap gap-4 text-xs text-gray-400">

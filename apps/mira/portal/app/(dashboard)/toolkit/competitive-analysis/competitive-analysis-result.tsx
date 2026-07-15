@@ -11,7 +11,12 @@ export function CompetitiveAnalysisResult({ data }: { data?: any }) {
         <h1 className="text-5xl md:text-6xl font-black text-white mb-3 tracking-tight">COMPETITIVE ANALYSIS</h1>
         <p className="text-gray-400 max-w-2xl text-sm leading-relaxed">Market intelligence: landscape, competitive matrix, positioning, SWOT, pricing, and winning strategy</p>
         {data.positioning_validation && (
-          <div className={`mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold ${data.positioning_validation === 'verified' ? 'bg-green-500/10 border border-green-500/30 text-green-400' : 'bg-orange-500/10 border border-orange-500/30 text-orange-400'}`}>
+          <div className="mt-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style={{
+            backgroundColor: data.positioning_validation === 'verified' ? 'rgba(0,230,118,0.1)' : 'rgba(255,90,31,0.1)',
+            borderColor: data.positioning_validation === 'verified' ? 'rgba(0,230,118,0.3)' : 'rgba(255,90,31,0.3)',
+            borderWidth: '1px',
+            color: data.positioning_validation === 'verified' ? '#00e676' : '#ff5a1f'
+          }}>
             {data.positioning_validation === 'verified' ? '✓' : '⚠'} Positioning: {data.positioning_validation}
           </div>
         )}
@@ -42,7 +47,7 @@ export function CompetitiveAnalysisResult({ data }: { data?: any }) {
               {data.market_landscape.growth_rate && (
                 <div className="border border-white/10 bg-white/5 p-4 rounded">
                   <div className="text-xs text-gray-400 font-bold mb-1">GROWTH RATE</div>
-                  <p className="text-sm text-green-400 font-bold">{data.market_landscape.growth_rate}</p>
+                  <p className="text-sm font-bold" style={{color: '#00e676'}}>{data.market_landscape.growth_rate}</p>
                 </div>
               )}
             </div>
@@ -89,8 +94,8 @@ export function CompetitiveAnalysisResult({ data }: { data?: any }) {
             <h2 className="text-2xl font-black text-white uppercase mb-4">SWOT Analysis</h2>
             <div className="grid grid-cols-2 gap-4">
               {data.swot_vs_competitors.strengths && (
-                <div className="border-l-4 border-green-500 bg-green-500/5 p-4 rounded-r">
-                  <div className="text-xs text-green-400 font-bold mb-2">STRENGTHS</div>
+                <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.05)'}}>
+                  <div className="text-xs font-bold mb-2" style={{color: '#00e676'}}>STRENGTHS</div>
                   <ul className="text-xs text-gray-300 space-y-1">
                     {data.swot_vs_competitors.strengths.slice(0, 3).map((s: string, i: number) => (
                       <li key={i}>• {s}</li>
@@ -99,8 +104,8 @@ export function CompetitiveAnalysisResult({ data }: { data?: any }) {
                 </div>
               )}
               {data.swot_vs_competitors.opportunities && (
-                <div className="border-l-4 border-blue-500 bg-blue-500/5 p-4 rounded-r">
-                  <div className="text-xs text-blue-400 font-bold mb-2">OPPORTUNITIES</div>
+                <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#4d7cff', backgroundColor: 'rgba(77,124,255,0.05)'}}>
+                  <div className="text-xs font-bold mb-2" style={{color: '#4d7cff'}}>OPPORTUNITIES</div>
                   <ul className="text-xs text-gray-300 space-y-1">
                     {data.swot_vs_competitors.opportunities.slice(0, 3).map((o: string, i: number) => (
                       <li key={i}>• {o}</li>
@@ -116,7 +121,7 @@ export function CompetitiveAnalysisResult({ data }: { data?: any }) {
         {data.winning_strategy && (
           <section>
             <h2 className="text-2xl font-black text-white uppercase mb-4">Winning Strategy</h2>
-            <div className="border-l-4 border-purple-500 bg-purple-500/5 p-4 rounded-r">
+            <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#4d7cff', backgroundColor: 'rgba(77,124,255,0.05)'}}>
               <p className="text-sm text-gray-300">{typeof data.winning_strategy === 'string' ? data.winning_strategy : JSON.stringify(data.winning_strategy).slice(0, 300)}</p>
             </div>
           </section>
@@ -153,8 +158,11 @@ export function CompetitiveAnalysisResult({ data }: { data?: any }) {
 
         {/* Positioning Validation */}
         {data.positioning_validation && (
-          <div className={`border-l-4 ${data.positioning_validation === 'verified' ? 'border-green-500 bg-green-500/5' : 'border-orange-500 bg-orange-500/5'} p-4 rounded-r mt-8`}>
-            <div className={`text-xs font-bold ${data.positioning_validation === 'verified' ? 'text-green-400' : 'text-orange-400'}`}>
+          <div className="border-l-4 p-4 rounded-r mt-8" style={{
+            borderColor: data.positioning_validation === 'verified' ? '#00e676' : '#ff5a1f',
+            backgroundColor: data.positioning_validation === 'verified' ? 'rgba(0,230,118,0.05)' : 'rgba(255,90,31,0.05)'
+          }}>
+            <div className="text-xs font-bold" style={{color: data.positioning_validation === 'verified' ? '#00e676' : '#ff5a1f'}}>
               {data.positioning_validation === 'verified' ? '✓ POSITIONING VERIFIED' : '⚠️ POSITIONING AT RISK'}
             </div>
             {data.recommended_adjustments && data.recommended_adjustments.length > 0 && (
