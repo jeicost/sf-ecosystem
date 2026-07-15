@@ -107,7 +107,9 @@ export function getSectionBySlug(slug: string): MiraSection | undefined {
   return SECTIONS.find(s => s.slug === slug)
 }
 
-export function getActiveSectionFromPath(pathname: string): MiraSection {
-  const match = SECTIONS.find(s => s.slug !== DEFAULT_SECTION_SLUG && pathname.startsWith(`/${s.slug}`))
-  return match ?? SECTIONS.find(s => s.slug === DEFAULT_SECTION_SLUG) ?? SECTIONS[0]
+export function getActiveSectionFromPath(pathname: string): MiraSection | undefined {
+  // Only return a section if the path explicitly matches one of the 6 department routes
+  // For global pages (Toolkit, Brand Brain, Integrations, etc.), return undefined
+  // This puts the sidebar in a "neutral" state (no department navItems)
+  return SECTIONS.find(s => pathname.startsWith(`/${s.slug}`))
 }

@@ -24,7 +24,7 @@ function SidebarContent() {
   const [theme, setThemeState]  = useState<Theme>('dark')
   const [pendingCount, setPending] = useState(0)
   const activeSection = getActiveSectionFromPath(path)
-  const navItems = activeSection.navItems
+  const navItems = activeSection?.navItems ?? []
 
 useEffect(() => {
     const stored = getUser()
@@ -173,15 +173,17 @@ useEffect(() => {
 
       {/* Section switcher */}
       <div className="mt-2">
-        <SectionSwitcher activeSlug={activeSection.slug} userPlan={user.plan} />
+        <SectionSwitcher activeSlug={activeSection?.slug ?? ''} userPlan={user.plan} />
       </div>
 
       {/* Section label */}
-      <div className="px-4 pt-3 pb-1">
-        <p className="text-[9px] uppercase tracking-widest font-medium" style={{ color: activeSection.color }}>
-          {activeSection.shortName}
-        </p>
-      </div>
+      {activeSection && (
+        <div className="px-4 pt-3 pb-1">
+          <p className="text-[9px] uppercase tracking-widest font-medium" style={{ color: activeSection.color }}>
+            {activeSection.shortName}
+          </p>
+        </div>
+      )}
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-1 space-y-0.5">
