@@ -28,8 +28,8 @@ export async function generateMetadata({
       title: post.seo_title || post.title,
       description: post.seo_description || post.excerpt,
       type: "article",
-      ...(post.published_at publishedTime: post.published_at,publishedTime: post.published_at, { publishedTime: post.published_at }),
-      ...(post.author_name authors: [post.author_name],authors: [post.author_name], { authors: [post.author_name] }),
+      ...(post.published_at ? { publishedTime: post.published_at } : {}),
+      ...(post.author_name ? { authors: [post.author_name] } : {}),
     },
   };
 }
