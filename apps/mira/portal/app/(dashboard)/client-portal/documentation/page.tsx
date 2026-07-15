@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { FileText, AlertCircle } from 'lucide-react'
 import DocumentUploader from '@/components/document-uploader'
 import DocumentList from '@/components/document-list'
-import { CLIENT_ID } from '@/lib/constants'
+import { createClient } from '@/lib/supabase'
 
 interface Document {
   id: string
@@ -24,15 +24,44 @@ export default function DocumentationPage() {
   const [docTitle, setDocTitle] = useState('')
   const [docTags, setDocTags] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [clientId, setClientId] = useState<string | null>(null)
 
   useEffect(() => {
-    loadDocuments()
+    const fetchClientId = async () => {
+      try {
+        const db = createClient()
+        const { data: { user } } = await db.auth.getUser()
+        if (!user) return
+
+        const meta = user.user_metadata || {}
+        let cId = meta.client_id
+
+        if (!cId) {
+          const { data: access } = await db
+            .from('mira_project_access')
+            .select('project_id')
+            .eq('user_id', user.id)
+            .limit(1)
+            .single()
+          cId = access?.project_id
+        }
+
+        setClientId(cId)
+        if (cId) {
+          loadDocuments(cId)
+        }
+      } catch (error) {
+        console.error('Error fetching client ID:', error)
+      }
+    }
+
+    fetchClientId()
   }, [])
 
-  const loadDocuments = async () => {
+  const loadDocuments = async (cId: string) => {
     try {
       setIsLoading(true)
-      const res = await fetch(`/api/client/documentation?client_id=${CLIENT_ID}`)
+      const res = await fetch(`/api/client/documentation?client_id=${cId}`)
       if (res.ok) {
         const data = await res.json()
         setDocuments(data)
@@ -51,10 +80,15 @@ export default function DocumentationPage() {
       return
     }
 
+    if (!clientId) {
+      setError('Cliente no identificado')
+      return
+    }
+
     try {
       const formData = new FormData()
       formData.append('file', file)
-      formData.append('client_id', CLIENT_ID)
+      formData.append('client_id', clientId)
       formData.append('title', docTitle)
       formData.append('doc_type', docType)
       formData.append('tags', docTags)
@@ -74,7 +108,9 @@ export default function DocumentationPage() {
       setDocType('brand_book')
       setError(null)
 
-      await loadDocuments()
+      if (clientId) {
+        await loadDocuments(clientId)
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
     }
@@ -85,8 +121,8 @@ export default function DocumentationPage() {
       const res = await fetch(`/api/client/documentation/${id}`, {
         method: 'DELETE',
       })
-      if (res.ok) {
-        await loadDocuments()
+      if (res.ok && clientId) {
+        await loadDocuments(clientId)
       }
     } catch (err) {
       console.error('Error deleting document:', err)
