@@ -180,6 +180,17 @@ export default function ConfigPage() {
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
               Facturación
             </p>
+
+            {/* Stripe Not Configured Warning */}
+            <div className="mb-4 p-4 rounded-lg" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)' }}>
+              <p className="text-sm font-medium" style={{ color: '#FBBF24' }}>
+                ⚠️ Sample Data Only — Stripe integration not configured
+              </p>
+              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                All MRR, clients, and payment data shown are examples. Connect Stripe to see real billing. Contact admin to set up STRIPE_API_KEY.
+              </p>
+            </div>
+
             <div className="card px-5 py-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
