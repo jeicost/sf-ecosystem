@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, ArrowRight, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
-import { getUser } from '@/lib/auth'
+import { getUser, isSuperAdmin } from '@/lib/auth'
 import AdminClientsOverview from '@/components/admin-clients-overview'
 import { redirect } from 'next/navigation'
 
@@ -46,7 +46,8 @@ export default function HomePage() {
 
   // Redirect regular clients to client portal
   useEffect(() => {
-    if (plan && plan !== 'super_admin') {
+    const user = getUser()
+    if (plan && !isSuperAdmin(user)) {
       redirect('/client-portal')
     }
   }, [plan])
@@ -55,7 +56,7 @@ export default function HomePage() {
     <div className="px-8 py-8 max-w-5xl">
 
       {/* Super Admin: Clients Dashboard | Regular users: Teams + Projects */}
-      {plan === 'super_admin' ? (
+      {isSuperAdmin(getUser()) ? (
         <div className="mb-10">
           <AdminClientsOverview />
         </div>

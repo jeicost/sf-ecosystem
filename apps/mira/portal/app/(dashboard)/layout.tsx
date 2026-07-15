@@ -8,7 +8,7 @@ import ClientSwitcher from '@/components/client-switcher'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider } from '@/lib/client-context'
 import { getActiveSectionFromPath } from '@/lib/sections'
-import { getUser, clearUser, type MiraUser } from '@/lib/auth'
+import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
@@ -158,7 +158,7 @@ useEffect(() => {
       </Link>
 
       {/* Admin Panel — super_admin only */}
-      {user.plan === 'super_admin' && (
+      {isSuperAdmin(user) && (
         <Link href="/admin/users"
           className={clsx(
             'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',

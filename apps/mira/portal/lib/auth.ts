@@ -29,3 +29,7 @@ export function setUser(user: MiraUser) {
 export function clearUser() {
   localStorage.removeItem('mira_user')
 }
+
+export function isSuperAdmin(user: MiraUser | null): boolean {
+  return user?.plan === 'super_admin'
+}
