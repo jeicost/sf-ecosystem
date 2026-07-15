@@ -13,7 +13,7 @@ const TEAMS = [
   { slug: 'comercial',  label: 'Sales',       icon: '🚀', color: '#EF4444', href: '/comercial',           agents: 5, desc: 'Discovery · Scoring · Proposals' },
   { slug: 'estrategia', label: 'Strategy',    icon: '🔭', color: '#6366F1', href: '/estrategia',          agents: 4, desc: 'Plans · Audits · Competitive' },
   { slug: 'innovacion', label: 'Innovation',  icon: '💡', color: '#F97316', href: '/innovacion',          agents: 5, desc: 'Trends · Design Thinking · Foresight' },
-  { slug: 'admin',      label: 'Admin',       icon: '⚙️', color: '#10B981', href: '/admin',               agents: 4, desc: 'Billing · Onboarding · Observability' },
+  { slug: 'operations', label: 'Operations',  icon: '⚙️', color: '#10B981', href: '/operations', agents: 4, desc: 'Billing · Onboarding · Observability' },
   { slug: 'finanzas',   label: 'Finance',     icon: '💰', color: '#F59E0B', href: '/finanzas',            agents: 4, desc: 'Wealth · Investments · Tax · FIRE' },
 ]
 

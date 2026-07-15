@@ -4,7 +4,7 @@ export type UserPlan = 'super_admin' | 'admin' | 'scale' | 'growth' | 'starter'
 // ─── This mapping is replicated in Supabase's section_access_rules table (Fase 2)
 // ─── Queried version can replace this in Fase 4 when caching/cache-invalidation is added
 export const PLAN_SECTIONS: Record<UserPlan, string[]> = {
-  super_admin: ['marketing', 'comercial', 'estrategia', 'innovacion', 'admin', 'finanzas'],
+  super_admin: ['marketing', 'comercial', 'estrategia', 'innovacion', 'operations', 'finanzas'],
   admin:   ['marketing', 'comercial', 'estrategia', 'innovacion', 'finanzas'],
   scale:   ['marketing', 'comercial', 'estrategia', 'innovacion', 'finanzas'],
   growth:  ['marketing', 'comercial', 'estrategia'],

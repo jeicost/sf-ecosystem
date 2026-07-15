@@ -41,7 +41,7 @@ const OTHER_SECTIONS = [
     color: '#6366F1',
   },
   {
-    href: '/admin',
+    href: '/operations',
     icon: '⚙️',
     name: 'MIRA Admin',
     desc: 'Billing, onboarding, observability',
