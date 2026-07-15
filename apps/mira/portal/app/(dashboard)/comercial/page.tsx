@@ -5,6 +5,7 @@ import { COMERCIAL_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
+import RelevantToolsSection from '@/components/relevant-tools-section'
 import { useActiveClient } from '@/lib/client-context'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -138,6 +139,8 @@ export default function ComercialPage() {
           )
         })}
       </div>
+
+      <RelevantToolsSection department="comercial" limit={3} />
 
       <div className="mt-10">
         <p className="text-[11px] uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>

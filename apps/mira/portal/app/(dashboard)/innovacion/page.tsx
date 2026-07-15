@@ -3,7 +3,9 @@
 import Link from 'next/link'
 import { INNOVACION_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
+
 import { InnovacionQuickActions } from '@/components/quick-actions/InnovacionQuickActions'
+import RelevantToolsSection from '@/components/relevant-tools-section'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
@@ -119,6 +121,8 @@ export default function InnovacionPage() {
           />
         ))}
       </div>
+
+      <RelevantToolsSection department="innovacion" limit={3} />
 
       <div className="mt-10">
         <p className="text-[11px] uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>

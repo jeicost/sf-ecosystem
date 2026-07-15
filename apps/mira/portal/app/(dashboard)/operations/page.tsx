@@ -4,7 +4,9 @@ import Link from 'next/link'
 import { OPERACIONES_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
+
 import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
+import RelevantToolsSection from '@/components/relevant-tools-section'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
@@ -134,6 +136,8 @@ export default function AdminPage() {
           />
         ))}
       </div>
+
+      <RelevantToolsSection department="operations" limit={3} />
 
       <div className="mt-10">
         <p className="text-[11px] uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>
