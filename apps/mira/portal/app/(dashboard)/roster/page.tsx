@@ -6,6 +6,7 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
@@ -74,6 +75,7 @@ const OTHER_SECTIONS = [
 export default function RosterPage() {
   const { locale } = useLocaleContext()
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
+  const { stats } = useDepartmentStats('marketing')
 
   useEffect(() => {
     const fetchAgentStatuses = async () => {
@@ -99,8 +101,8 @@ export default function RosterPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: '8' },
-          { label: t('stat.posts-week', locale), value: '—' },
-          { label: t('stat.in-approval', locale), value: '0' },
+          { label: t('stat.posts-week', locale), value: String(stats.posts || '0') },
+          { label: t('stat.in-approval', locale), value: String(stats.contacts || '0') },
           { label: t('stat.open-alerts', locale), value: '0' },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
