@@ -128,7 +128,7 @@ const STEPS: Step[] = [
       { emoji: '📰', name: 'Herald',  role: 'Internal Reporting' },
     ],
     quickWin: 'Herald sends you a briefing every morning. Nothing to configure — it just starts.',
-    cta: { label: 'Check system →', href: '/admin/sistema' },
+    cta: { label: 'Check system →', href: '/operations/system' },
   },
   {
     id: 'finanzas', type: 'dept', color: '#F59E0B', icon: '💰',

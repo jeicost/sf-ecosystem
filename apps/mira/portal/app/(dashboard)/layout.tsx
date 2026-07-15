@@ -159,10 +159,10 @@ useEffect(() => {
 
       {/* Admin Panel — super_admin only */}
       {isSuperAdmin(user) && (
-        <Link href="/admin/users"
+        <Link href="/operations/users"
           className={clsx(
             'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-            path.startsWith('/admin')
+            path.startsWith('/operations')
               ? 'bg-red-500/15 text-red-400'
               : 'text-[#555] hover:text-red-400 hover:bg-red-500/8'
           )}>
