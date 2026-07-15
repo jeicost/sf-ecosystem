@@ -6,6 +6,7 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
@@ -26,6 +27,7 @@ const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
 
 export default function AdminPage() {
   const { locale } = useLocaleContext()
+  const { stats } = useDepartmentStats('operations')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
@@ -52,9 +54,9 @@ export default function AdminPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: '4' },
-          { label: t('stat.pending-invoices', locale), value: '—' },
+          { label: t('stat.pending-invoices', locale), value: String(stats.contacts ?? 0) },
           { label: t('stat.system-alerts', locale), value: '0' },
-          { label: t('stat.onboarding', locale), value: '—' },
+          { label: t('stat.onboarding', locale), value: String(stats.contacts ?? 0) },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

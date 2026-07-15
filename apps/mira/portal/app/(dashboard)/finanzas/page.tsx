@@ -7,6 +7,7 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { FinanzasQuickActions } from '@/components/quick-actions/FinanzasQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
@@ -70,6 +71,7 @@ const OTHER_SECTIONS = [
 export default function FinanzasPage() {
   const { locale } = useLocaleContext()
   const agentCount = FINANZAS_DEPT_AGENTS.length
+  const { stats } = useDepartmentStats('finanzas')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
@@ -96,9 +98,9 @@ export default function FinanzasPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.monthly-revenue', locale), value: '—' },
-          { label: t('stat.profit-margin', locale), value: '—' },
-          { label: t('stat.audit-status', locale), value: '—' },
+          { label: t('stat.monthly-revenue', locale), value: String(stats.leads ?? 0) },
+          { label: t('stat.profit-margin', locale), value: String(stats.leads ?? 0) },
+          { label: t('stat.audit-status', locale), value: String(stats.leads ?? 0) },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

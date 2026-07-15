@@ -7,6 +7,7 @@ import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuick
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { useActiveClient } from '@/lib/client-context'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
@@ -32,23 +33,8 @@ export default function ComercialPage() {
   const { locale } = useLocaleContext()
   const clientId = activeClient?.id ?? CLIENT_ID
   const agentCount = COMERCIAL_DEPT_AGENTS.length
-  const [stats, setStats] = useState({ leads: 0, proposals: 0 })
+  const { stats } = useDepartmentStats('comercial')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch(`/api/department-stats?clientId=${clientId}&dept=comercial`)
-        if (res.ok) {
-          const data = await res.json()
-          setStats(data)
-        }
-      } catch (error) {
-        console.error('Failed to fetch stats:', error)
-      }
-    }
-    if (clientId) fetchStats()
-  }, [clientId])
 
   useEffect(() => {
     const fetchAgentStatuses = async () => {
@@ -74,9 +60,9 @@ export default function ComercialPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.total-leads', locale), value: String(stats.leads) },
-          { label: t('stat.hot-leads', locale), value: Math.ceil(stats.leads * 0.3).toString() },
-          { label: t('stat.proposals', locale), value: String(stats.proposals) },
+          { label: t('stat.total-leads', locale), value: String(stats.leads ?? 0) },
+          { label: t('stat.hot-leads', locale), value: Math.ceil((stats.leads ?? 0) * 0.3).toString() },
+          { label: t('stat.proposals', locale), value: String(stats.proposals ?? 0) },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

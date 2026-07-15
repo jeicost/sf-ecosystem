@@ -6,6 +6,7 @@ import AgentCard from '@/components/agent-card'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { InnovacionQuickActions } from '@/components/quick-actions/InnovacionQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
@@ -61,6 +62,7 @@ const OTHER_SECTIONS = [
 export default function InnovacionPage() {
   const { locale } = useLocaleContext()
   const agentCount = INNOVACION_DEPT_AGENTS.length
+  const { stats } = useDepartmentStats('innovacion')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
@@ -87,9 +89,9 @@ export default function InnovacionPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.trends-monitored', locale), value: '—' },
-          { label: t('stat.ideas-validated', locale), value: '—' },
-          { label: t('stat.opportunities', locale), value: '—' },
+          { label: t('stat.trends-monitored', locale), value: String(stats.ideas ?? 0) },
+          { label: t('stat.ideas-validated', locale), value: String(stats.ideas ?? 0) },
+          { label: t('stat.opportunities', locale), value: String(stats.ideas ?? 0) },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>

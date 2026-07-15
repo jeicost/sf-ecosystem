@@ -7,6 +7,7 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { StrategyQuickActions } from '@/components/quick-actions/StrategyQuickActions'
 import DepartmentAgents from '@/components/DepartmentAgents'
 import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
@@ -74,6 +75,7 @@ const OTHER_SECTIONS = [
 export default function EstrategiaPage() {
   const { locale } = useLocaleContext()
   const agentCount = ESTRATEGIA_DEPT_AGENTS.length
+  const { stats } = useDepartmentStats('estrategia')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
   useEffect(() => {
@@ -100,9 +102,9 @@ export default function EstrategiaPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.active-plans', locale), value: '—' },
-          { label: t('stat.audits', locale), value: '—' },
-          { label: t('stat.business-plans', locale), value: '—' },
+          { label: t('stat.active-plans', locale), value: String(stats.plans ?? 0) },
+          { label: t('stat.audits', locale), value: String(stats.plans ?? 0) },
+          { label: t('stat.business-plans', locale), value: String(stats.plans ?? 0) },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>
