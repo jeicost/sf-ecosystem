@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { FINANZAS_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import DepartmentAgents from '@/components/DepartmentAgents'
 import { FinanzasQuickActions } from '@/components/quick-actions/FinanzasQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -95,7 +94,7 @@ export default function FinanzasPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-3 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
           { label: t('stat.monthly-revenue', locale), value: String(stats.leads ?? 0) },
@@ -116,7 +115,6 @@ export default function FinanzasPage() {
       />
 
       <div className="mb-8">
-        <DepartmentAgents department="finanzas" />
       </div>
 
       <div className="mb-8">
@@ -124,7 +122,7 @@ export default function FinanzasPage() {
         <FinanzasQuickActions />
       </div>
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-3 gap-4 lg:grid-cols-3">
         {FINANZAS_DEPT_AGENTS.map((agent) => (
           <AgentCard
             key={agent.id}

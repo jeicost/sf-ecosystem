@@ -1,9 +1,9 @@
 'use client'
 
+import Link from 'next/link'
 import { OPERACIONES_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import DepartmentAgents from '@/components/DepartmentAgents'
 import { AdminQuickActions } from '@/components/quick-actions/AdminQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -24,6 +24,49 @@ const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
   emoji: a.emoji,
   color: a.color,
 }))
+
+const OTHER_SECTIONS = [
+  {
+    href: '/roster',
+    icon: '🎯',
+    name: 'MIRA Marketing',
+    desc: 'Content, copy, ads, community',
+    count: 8,
+    color: '#8B5CF6',
+  },
+  {
+    href: '/comercial',
+    icon: '🚀',
+    name: 'MIRA Sales',
+    desc: 'B2B pipeline, AI scoring, icebreakers',
+    count: 7,
+    color: '#EF4444',
+  },
+  {
+    href: '/estrategia',
+    icon: '🔭',
+    name: 'MIRA Strategy',
+    desc: '90-day plans, audits, business plans',
+    count: 7,
+    color: '#6366F1',
+  },
+  {
+    href: '/innovacion',
+    icon: '💡',
+    name: 'MIRA Innovation',
+    desc: 'Trends, Design Thinking, projects',
+    count: 1,
+    color: '#F97316',
+  },
+  {
+    href: '/finanzas',
+    icon: '💰',
+    name: 'MIRA Finance',
+    desc: 'Revenue, data analytics, audits',
+    count: 3,
+    color: '#F59E0B',
+  },
+]
 
 export default function AdminPage() {
   const { locale } = useLocaleContext()
@@ -51,7 +94,7 @@ export default function AdminPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-3 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: '4' },
           { label: t('stat.pending-invoices', locale), value: String(stats.contacts ?? 0) },
@@ -72,7 +115,6 @@ export default function AdminPage() {
       />
 
       <div className="mb-8">
-        <DepartmentAgents department="operaciones" />
       </div>
 
       <div className="mb-8">
@@ -80,7 +122,7 @@ export default function AdminPage() {
         <AdminQuickActions />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         {OPERACIONES_DEPT_AGENTS.map((agent, i) => (
           <AgentCard
             key={agent.id}
@@ -91,6 +133,35 @@ export default function AdminPage() {
             href={`/agent/${agent.id}`}
           />
         ))}
+      </div>
+
+      <div className="mt-10">
+        <p className="text-[11px] uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          Other available teams — <span className="text-white normal-case">30 agents total</span>
+        </p>
+        <div className="grid grid-cols-5 gap-3">
+          {OTHER_SECTIONS.map((s) => (
+            <Link
+              key={s.href}
+              href={s.href}
+              className="card px-4 py-3 transition-all group hover:scale-[1.02]"
+              style={{
+                borderColor: 'rgba(255,255,255,0.09)',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = `${s.color}40` }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.09)' }}
+            >
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-base">{s.icon}</span>
+                <p className="text-xs text-white font-medium">{s.name}</p>
+              </div>
+              <p className="text-[10px] text-[#555] mt-0.5">{s.desc}</p>
+              <p className="text-[10px] mt-1.5 font-medium" style={{ color: `${s.color}90` }}>
+                {s.count} agents · Active →
+              </p>
+            </Link>
+          ))}
+        </div>
       </div>
     </div>
   )

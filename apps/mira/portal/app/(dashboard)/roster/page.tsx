@@ -4,7 +4,6 @@ import { MARKETING_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
-import DepartmentAgents from '@/components/DepartmentAgents'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
@@ -119,8 +118,6 @@ export default function RosterPage() {
       />
 
       <MarketingQuickActions />
-
-      <DepartmentAgents department="marketing" />
 
       <div className="grid grid-cols-4 gap-4">
         {MARKETING_DEPT_AGENTS.map((agent, i) => (

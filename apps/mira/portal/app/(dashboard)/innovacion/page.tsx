@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { INNOVACION_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentCard from '@/components/agent-card'
-import DepartmentAgents from '@/components/DepartmentAgents'
 import { InnovacionQuickActions } from '@/components/quick-actions/InnovacionQuickActions'
 import { getAgentStatuses } from '@/lib/get-agent-status'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -86,7 +85,7 @@ export default function InnovacionPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-1 gap-3 mb-8">
         {[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
           { label: t('stat.trends-monitored', locale), value: String(stats.ideas ?? 0) },
@@ -101,7 +100,6 @@ export default function InnovacionPage() {
       </div>
 
       <div className="mb-8">
-        <DepartmentAgents department="innovacion" />
       </div>
 
       <div className="mb-8">
