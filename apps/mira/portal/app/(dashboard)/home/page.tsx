@@ -7,6 +7,7 @@ import { createClient } from '@/lib/supabase'
 import { getUser, isSuperAdmin } from '@/lib/auth'
 import AdminClientsOverview from '@/components/admin-clients-overview'
 import StatCard from '@/components/stat-card'
+import UnifiedHistory from '@/components/unified-history'
 import { getClientStats } from '@/lib/client-portal-service'
 
 const TEAMS = [
@@ -105,6 +106,14 @@ export default function HomePage() {
               <StatCard label="Últimas 30 días" value={`${stats.timeSavedHours.toFixed(1)}h`} hint="Tiempo ahorrado con IA" />
             </div>
           )}
+
+          {/* Recent Generations */}
+          <div className="mb-10">
+            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              Your recent generations
+            </p>
+            <UnifiedHistory />
+          </div>
 
           {/* Quick Access */}
           <div className="mb-10">
