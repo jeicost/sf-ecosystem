@@ -9,12 +9,16 @@ const instances = [
   {
     name: 'nnevhtfxuawexliwlbmh (shared)',
     url: 'https://nnevhtfxuawexliwlbmh.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDUzNTUsImV4cCI6MjA5MzUyMTM1NX0.BTQkTUL4rOzhQXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww',
+    anonKey: process.env.AUDIT_SOURCE_ANON_KEY || (function() {
+      throw new Error('AUDIT_SOURCE_ANON_KEY env var not set for nnevhtfxuawexliwlbmh');
+    })(),
   },
   {
     name: 'dmzecrlkclocqaywkjtc (cms/links)',
     url: 'https://dmzecrlkclocqaywkjtc.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtemVjcmxrY2xvY3FheXdranRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgxOTcwNTYsImV4cCI6MjA5Mzc3MzA1Nn0.CTjtWmhkg-9wbIhkEn-0dw3wTKJMssfuRf0lu1DuseE',
+    anonKey: process.env.AUDIT_CMS_ANON_KEY || (function() {
+      throw new Error('AUDIT_CMS_ANON_KEY env var not set for dmzecrlkclocqaywkjtc');
+    })(),
   },
 ];
 

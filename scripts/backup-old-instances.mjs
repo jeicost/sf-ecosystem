@@ -22,7 +22,9 @@ const INSTANCES = [
   {
     name: 'nnevhtfxuawexliwlbmh',
     url: 'https://nnevhtfxuawexliwlbmh.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDUzNTUsImV4cCI6MjA5MzUyMTM1NX0.BTQkTUL4rOzhQXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww',
+    anonKey: process.env.BACKUP_SOURCE_ANON_KEY || (function() {
+      throw new Error('BACKUP_SOURCE_ANON_KEY env var not set for nnevhtfxuawexliwlbmh backup');
+    })(),
     tables: [
       'brand_brains',
       'tool_runs',

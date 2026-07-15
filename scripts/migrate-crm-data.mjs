@@ -16,8 +16,10 @@
 import { createClient } from '@supabase/supabase-js';
 
 const SOURCE_INSTANCE = {
-  url: 'https://nnevhtfxuawexliwlbmh.supabase.co',
-  anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uZXZodGZ4dWF3ZXhsaXdsYm1oIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc5NDUzNTUsImV4cCI6MjA5MzUyMTM1NX0.BTQkTUL4rOzhQXC0kPlcyn5xQ8M45Qps3lIZmrGP2Ww',
+  url: process.env.SOURCE_SUPABASE_URL || 'https://nnevhtfxuawexliwlbmh.supabase.co',
+  anonKey: process.env.SOURCE_SUPABASE_ANON_KEY || (function() {
+    throw new Error('SOURCE_SUPABASE_ANON_KEY env var not set');
+  })(),
 };
 
 const TARGET_INSTANCE = {
