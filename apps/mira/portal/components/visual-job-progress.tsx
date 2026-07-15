@@ -64,7 +64,7 @@ export function VisualJobProgress({
   }
 
   const states = ['accepted', 'planning', 'rendering', 'qa', 'completed', 'error'] as const
-  const currentStateIndex = states.indexOf(jobStatus.status as any)
+  const currentStateIndex = states.indexOf(jobStatus.status as VisualJobStatusType)
 
   return (
     <div className="space-y-6">

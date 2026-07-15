@@ -43,7 +43,7 @@ export class MockVisualProvider implements VisualGenerationProvider {
     }
   }
 
-  async getJob(jobId: string): Promise<JobStatus> {
+  async getJob(jobId: string): Promise<VisualJobStatus> {
     const job = this.jobs.get(jobId)
     if (!job) {
       return {
@@ -93,7 +93,7 @@ export class MockVisualProvider implements VisualGenerationProvider {
       ? job.input.request.numberOfSlides ?? 5
       : 1
 
-    const states: Array<JobStatus['status']> = ['planning', 'rendering', 'qa', 'completed']
+    const states: Array<VisualJobStatusType> = ['planning', 'rendering', 'qa', 'completed']
     let currentStateIndex = 0
 
     const progressInterval = setInterval(() => {
