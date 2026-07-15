@@ -1,7 +1,7 @@
 // Visual generation provider interface — decoupled from any specific implementation
 // Enables swapping between mock (testing) and real (OpenAI, Midjourney, etc.) providers
 
-export type VisualJobStatus = 'accepted' | 'planning' | 'rendering' | 'qa' | 'completed' | 'error'
+export type VisualJobStatusType = 'accepted' | 'planning' | 'rendering' | 'qa' | 'completed' | 'error'
 export type VisualAssetType = 'post' | 'carousel_slide' | 'image_edit'
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'revision_requested'
 
@@ -33,7 +33,7 @@ export interface VisualJobAccepted {
 
 export interface VisualJobStatus {
   jobId: string
-  status: VisualJobStatus
+  status: VisualJobStatusType
   progress?: {
     current: number
     total: number

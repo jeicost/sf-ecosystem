@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { CheckCircle2, Clock, AlertCircle, Download, ThumbsUp, ThumbsDown, MessageSquare } from 'lucide-react'
-import type { VisualJobStatus, VisualAsset, ApprovalStatus } from '@/lib/generation/visual-provider'
+import type { VisualJobStatus, VisualJobStatusType, VisualAsset, ApprovalStatus } from '@/lib/generation/visual-provider'
 
 interface VisualJobProgressProps {
   jobId: string
@@ -64,7 +64,7 @@ export function VisualJobProgress({
   }
 
   const states = ['accepted', 'planning', 'rendering', 'qa', 'completed'] as const
-  const currentStateIndex = states.indexOf(jobStatus.status as any)
+  const currentStateIndex = states.indexOf(jobStatus.status as VisualJobStatusType)
 
   return (
     <div className="space-y-6">
