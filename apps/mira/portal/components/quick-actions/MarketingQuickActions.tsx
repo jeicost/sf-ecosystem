@@ -171,6 +171,112 @@ export function MarketingQuickActions() {
         </div>
       ),
     },
+    {
+      id: 'crear_post_visual',
+      title: '🎨 Post Visual',
+      description: 'Generate social post with AI image',
+      actionType: 'crear_post_visual',
+      form: (
+        <div className="space-y-3">
+          <input
+            type="text"
+            name="topic"
+            placeholder="Post topic"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            required
+          />
+          <textarea
+            name="copy"
+            placeholder="Post copy/description"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+          />
+          <select
+            name="platform"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            required
+          >
+            <option value="instagram">Instagram</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="twitter">Twitter</option>
+          </select>
+          <input
+            type="text"
+            name="style"
+            placeholder="Image style (e.g., minimalist, vibrant, professional)"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'crear_carrusel_visual',
+      title: '📸 Carousel Visual',
+      description: 'Generate carousel with AI-generated images',
+      actionType: 'crear_carrusel_visual',
+      form: (
+        <div className="space-y-3">
+          <textarea
+            name="concept"
+            placeholder="Carousel concept or story"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            required
+          />
+          <input
+            type="number"
+            name="numberOfSlides"
+            placeholder="Number of slides"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            defaultValue="5"
+            min="2"
+            max="10"
+          />
+          <input
+            type="text"
+            name="style"
+            placeholder="Visual style (e.g., minimal, bold, gradient)"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+          />
+          <input
+            type="text"
+            name="cta"
+            placeholder="Call-to-action text (optional)"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+          />
+        </div>
+      ),
+    },
+    {
+      id: 'editar_imagen_visual',
+      title: '✏️ Editar Imagen',
+      description: 'Refine and edit AI-generated images',
+      actionType: 'editar_imagen_visual',
+      form: (
+        <div className="space-y-3">
+          <input
+            type="text"
+            name="imageUrl"
+            placeholder="Image URL (paste link to existing image)"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            required
+          />
+          <textarea
+            name="refinement"
+            placeholder="What to change? (e.g., 'make background darker', 'fix the text')"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            required
+          />
+          <select
+            name="preserveElements"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+          >
+            <option value="">No protected elements</option>
+            <option value="text">Keep text as is</option>
+            <option value="logo">Keep logo as is</option>
+            <option value="layout">Keep layout as is</option>
+          </select>
+        </div>
+      ),
+    },
   ]
 
   return (

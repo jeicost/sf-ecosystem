@@ -312,5 +312,71 @@ Generate projection JSON:
 }`
   }
 
+  // VISUAL GENERATION (NEW — async flow via Visual Production Agent)
+  if (actionType === 'crear_post_visual') {
+    return `You are a visual content strategist. Generate directives for an AI image generator to create a social media post with integrated visual design.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate visual post spec JSON:
+{
+  "post_copy": "The exact text/copy that will appear on the post",
+  "visual_direction": "Detailed visual direction for AI image generator (color palette, composition, mood, style)",
+  "hashtags": ["hashtag1", "hashtag2"],
+  "call_to_action": "Main CTA for the post",
+  "platform_optimized_for": "instagram|linkedin|twitter",
+  "brand_guidelines_applied": "Specific brand elements/colors/fonts to emphasize",
+  "image_generation_prompt": "Detailed prompt for image generator (background, subjects, lighting, style, mood)"
+}`
+  }
+
+  if (actionType === 'crear_carrusel_visual') {
+    return `You are a visual storyteller. Generate directives for an AI image generator to create a multi-slide carousel with integrated visuals.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate carousel spec JSON:
+{
+  "carousel_title": "Overall carousel title/theme",
+  "slides": [
+    {
+      "slide_number": 1,
+      "copy": "Text/copy for this slide",
+      "visual_direction": "Visual style/composition for this slide",
+      "image_generation_prompt": "Specific prompt for image generator for this slide"
+    }
+  ],
+  "overall_visual_theme": "Cohesive visual direction across all slides",
+  "brand_guidelines": "Brand colors/fonts/elements to weave throughout",
+  "final_cta_slide": "Call-to-action text for last slide",
+  "hashtags": ["hashtag1"]
+}`
+  }
+
+  if (actionType === 'editar_imagen_visual') {
+    return `You are a visual refinement specialist. Generate detailed refinement directives for editing an existing AI-generated image.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate refinement spec JSON:
+{
+  "original_image_analysis": "What the current image shows",
+  "refinement_request": "What the user wants changed",
+  "specific_changes": [
+    {"element": "Name of element to change", "current_state": "How it looks now", "desired_state": "How it should look"}
+  ],
+  "protected_elements": ["Elements that must NOT be regenerated (e.g., text, logo)"],
+  "color_adjustments": "Any specific color changes needed",
+  "composition_notes": "Notes on layout/framing adjustments",
+  "refinement_prompt": "Detailed prompt for image generator to apply refinements while preserving protected elements"
+}`
+  }
+
   return null
 }
