@@ -2,7 +2,8 @@ import {
   VisualGenerationProvider,
   VisualJobInput,
   VisualJobAccepted,
-  VisualJobStatus as JobStatus,
+  VisualJobStatus,
+  VisualJobStatusType,
   VisualFeedback,
   VisualAsset,
   ApprovalStatus
@@ -12,7 +13,7 @@ import {
 export class MockVisualProvider implements VisualGenerationProvider {
   private jobs = new Map<string, {
     input: VisualJobInput
-    status: JobStatus['status']
+    status: VisualJobStatusType
     assets: VisualAsset[]
     createdAt: Date
     currentSlide: number
