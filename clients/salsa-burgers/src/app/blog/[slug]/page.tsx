@@ -127,7 +127,7 @@ export default async function BlogPostPage({
         {/* Content */}
         <div
           className="prose-salsa"
-          dangerouslySetInnerHTML={{ __html: post.content_html }}
+          dangerouslySetInnerHTML={{ __html: post.content_html || "" }}
         />
 
         {/* Back */}
