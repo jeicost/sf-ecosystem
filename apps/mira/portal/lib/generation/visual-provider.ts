@@ -51,6 +51,7 @@ export interface VisualAsset {
   approvalStatus: ApprovalStatus
   createdAt: string
   providerJobId?: string // reference to external job (OpenAI, etc.)
+  slideIndex?: number // for carousel slides
 }
 
 export interface VisualFeedback {
