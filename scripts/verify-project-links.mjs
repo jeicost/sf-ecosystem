@@ -101,10 +101,10 @@ function checkFolder(entry) {
 
 function liveCheck(entry) {
   try {
-    const out = execSync(`vercel project inspect ${entry.projectName} --yes`, {
+    const out = execSync(`vercel project inspect ${entry.projectName} --yes 2>&1`, {
       cwd: REPO_ROOT,
       encoding: 'utf8',
-      stdio: ['ignore', 'pipe', 'pipe'],
+      shell: true,
     });
 
     if (!out.includes(entry.projectId)) {
