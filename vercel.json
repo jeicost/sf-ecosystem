@@ -1,8 +1,7 @@
 {
   "services": {
     "sf-sales-engine": {
-      "entrypoint": "apps/sf-sales-engine",
-      "routePrefix": "/"
+      "entrypoint": "apps/sf-sales-engine"
     }
   }
 }
