@@ -106,9 +106,23 @@ function liveCheck(entry) {
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'pipe'],
     });
-    return out.includes(entry.projectId)
-      ? { status: 'PASS', message: 'live project confirmed' }
-      : { status: 'FAIL', message: 'live inspect did not confirm expected projectId' };
+
+    if (!out.includes(entry.projectId)) {
+      return { status: 'FAIL', message: 'live inspect did not confirm expected projectId' };
+    }
+
+    // Also validate Root Directory — should be "." for all registered projects
+    const rootDirMatch = out.match(/Root Directory\s+(.+?)(?:\n|$)/);
+    const actualRootDir = rootDirMatch ? rootDirMatch[1].trim() : null;
+
+    if (actualRootDir && actualRootDir !== '.' && actualRootDir !== '') {
+      return {
+        status: 'FAIL',
+        message: `Root Directory mismatch — found "${actualRootDir}", expected "." (empty). Fix in Vercel dashboard: Settings → Build and Deployment → Root Directory → clear field → Save`,
+      };
+    }
+
+    return { status: 'PASS', message: 'live project confirmed, Root Directory correct' };
   } catch (e) {
     return { status: 'FAIL', message: `vercel inspect failed: ${e.message.split('\n')[0]}` };
   }
