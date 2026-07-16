@@ -1,7 +1,9 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabaseUrl = 'https://dmzecrlkclocqaywkjtc.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRtemVjcmxrY2xvY3FheXdranRjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODE5NzA1NiwiZXhwIjoyMDkzNzczMDU2fQ.2R1sgxfh80MX4_ysVBKxm5X9nuswRwYps3E2rfGM3cw';
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || (function() {
+  throw new Error('SUPABASE_SERVICE_ROLE_KEY env var not set (SF-CMS service role)');
+})();
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
