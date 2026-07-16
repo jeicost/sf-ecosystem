@@ -1,0 +1,1578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SALSA BURGERS — Toolkit Reports 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #FF4500;      /* Orange for Salsa Burgers */
+    --primary-2: #FF6A00;
+    --primary-3: #FF8C00;
+    --primary-4: #FFA500;
+    --primary-5: #CC3700;
+    --primary-6: #993300;
+    --primary-7: #662200;
+    --black: #1A1A1A;
+    --cream: #F5F0E8;
+    --cream-dim: rgba(245,240,232,0.7);
+    --cream-faint: rgba(245,240,232,0.12);
+    --nav-w: 56px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .nav {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: var(--nav-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 100;
+    padding: 0 12px;
+    background: linear-gradient(to right, rgba(26,26,26,0.98) 80%, transparent);
+  }
+
+  .nav-dot {
+    position: relative;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(245,240,232,0.25);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--primary);
+    transform: scale(1.4);
+  }
+
+  .nav-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 18px; top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+    background: var(--black);
+    padding: 3px 8px;
+    border-left: 2px solid var(--primary);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-dot:hover::after { opacity: 1; }
+
+  /* ── MAIN ── */
+  main { padding-left: var(--nav-w); }
+
+  section {
+    padding: 100px 80px 100px 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ── ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ── TYPOGRAPHY ── */
+  .anton { font-family: 'Anton', sans-serif; }
+  .mono  { font-family: 'Space Mono', monospace; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(42px, 6vw, 80px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    color: var(--cream);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--cream-dim);
+    letter-spacing: 0.06em;
+    margin-top: -36px;
+    margin-bottom: 48px;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    background: var(--black);
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 80px 0 80px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    left: 50%; top: 45%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(255,69,0,0.18) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.12); }
+  }
+
+  .hero-content { position: relative; z-index: 2; padding-top: 30vh; }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(72px, 12vw, 160px);
+    line-height: 0.88;
+    letter-spacing: 0.01em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-sub {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(20px, 3vw, 36px);
+    color: var(--cream);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .hero-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(12px, 1.4vw, 16px);
+    letter-spacing: 0.35em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  .hero-ticker {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--primary);
+    padding: 12px 0;
+    overflow: hidden;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 60px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--black);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── CARDS ── */
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .cards-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .cards-4 {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+  }
+
+  .card {
+    background: rgba(245,240,232,0.04);
+    border-top: 3px solid var(--primary);
+    padding: 32px 28px;
+    transition: background 0.3s;
+  }
+
+  .card:hover { background: rgba(245,240,232,0.08); }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .card-body {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--cream-dim);
+  }
+
+  .card-body strong { color: var(--cream); }
+
+  /* ── STAT CARDS ── */
+  .stat-card {
+    padding: 32px 24px;
+    background: rgba(245,240,232,0.04);
+    text-align: center;
+    border-bottom: 3px solid var(--primary);
+    transition: all 0.3s;
+  }
+
+  .stat-card:hover { background: rgba(255,69,0,0.08); }
+
+  .stat-num {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(36px, 5vw, 60px);
+    color: var(--primary);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── PHASE BOX ── */
+  .phase-box {
+    background: rgba(245,240,232,0.04);
+    border-left: 3px solid var(--primary);
+    padding: 32px 28px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+  }
+
+  .phase-box:hover {
+    background: rgba(255,69,0,0.06);
+    border-left-color: var(--primary-2);
+  }
+
+  .phase-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    color: var(--primary);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .phase-body {
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--cream-dim);
+  }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+  }
+
+  th {
+    background: rgba(255,69,0,0.12);
+    color: var(--primary);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--cream-dim);
+    border-bottom: 1px solid rgba(245,240,232,0.05);
+  }
+
+  td:first-child { color: var(--cream); }
+  tr:hover td { background: rgba(245,240,232,0.02); }
+
+  /* ── BADGES ── */
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
+    white-space: nowrap;
+    display: inline-block;
+    text-transform: uppercase;
+    margin-right: 6px;
+    margin-bottom: 6px;
+  }
+
+  .badge-live { background: rgba(34,197,94,0.2); color: #4ADE80; }
+  .badge-progress { background: rgba(251,191,36,0.2); color: #FBBF24; }
+  .badge-pending { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+  .badge-format { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+
+  /* ── PILLAR GRID ── */
+  .pillar-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .pillar-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border: 1px solid rgba(245,240,232,0.06);
+    cursor: default;
+    transition: all 0.25s;
+  }
+
+  .pillar-item:hover {
+    background: rgba(255,69,0,0.06);
+    border-color: rgba(255,69,0,0.25);
+  }
+
+  .pillar-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .pillar-pct {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    color: var(--primary);
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .pillar-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--cream);
+    flex: 1;
+  }
+
+  .pillar-example {
+    font-size: 11px;
+    color: var(--cream-dim);
+    font-style: italic;
+    text-align: right;
+    max-width: 160px;
+  }
+
+  /* ── TIMELINE ── */
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-bottom: 32px;
+  }
+
+  .timeline-phase {
+    padding: 28px 24px;
+    border: 1px solid rgba(245,240,232,0.08);
+    transition: all 0.3s;
+  }
+
+  .timeline-phase:hover {
+    border-color: var(--primary);
+    background: rgba(255,69,0,0.04);
+  }
+
+  .timeline-phase-title {
+    font-family: 'Anton', sans-serif;
+    font-size: 16px;
+    color: var(--primary);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .timeline-phase-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .timeline-item {
+    font-size: 12px;
+    color: var(--cream-dim);
+    line-height: 1.6;
+    padding-left: 10px;
+    border-left: 2px solid rgba(255,69,0,0.3);
+  }
+
+  /* ── ACTION ITEMS ── */
+  .action-items { margin-bottom: 48px; }
+
+  .action-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(245,240,232,0.05);
+    transition: padding 0.2s;
+  }
+
+  .action-item:hover { padding-left: 8px; }
+
+  .action-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 36px;
+    color: rgba(245,240,232,0.1);
+    line-height: 1;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .action-text {
+    font-size: 15px;
+    color: var(--cream);
+    line-height: 1.5;
+  }
+
+  .action-sub {
+    font-size: 12px;
+    color: var(--cream-dim);
+    margin-top: 4px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 48px; height: 3px;
+    background: var(--primary);
+    margin-bottom: 32px;
+  }
+
+  /* ── FINAL CTA ── */
+  .final-cta {
+    background: var(--primary);
+    padding: 56px 60px;
+    text-align: center;
+    margin: 0 -80px 0 -60px;
+  }
+
+  .final-cta-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(36px, 5vw, 64px);
+    color: var(--black);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .final-cta-sub {
+    font-family: 'Anton', sans-serif;
+    font-size: 18px;
+    color: rgba(26,26,26,0.7);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .footer {
+    background: #0f0f0f;
+    padding: 24px 80px 24px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.2);
+  }
+
+  .sf-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: rgba(245,240,232,0.35);
+    text-transform: uppercase;
+    border: 1px solid rgba(245,240,232,0.12);
+    padding: 5px 10px;
+  }
+
+  .sf-badge span { color: var(--primary); font-weight: 700; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    section { padding: 80px 60px 80px 50px; }
+    .cards-3, .cards-2, .cards-4 { grid-template-columns: 1fr; }
+    .timeline-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .nav { width: 40px; }
+    main { padding-left: 40px; }
+    section { padding: 60px 40px 60px 40px; }
+    .hero-title { font-size: clamp(48px, 10vw, 80px); }
+    .section-title { font-size: clamp(32px, 5vw, 48px); }
+    .final-cta { margin: 0 -40px 0 -40px; }
+  }
+
+  @media (max-width: 480px) {
+    .nav { width: 30px; }
+    main { padding-left: 30px; }
+    section { padding: 40px 20px 40px 20px; }
+    .nav-dot::after { display: none; }
+    .hero-title { font-size: clamp(36px, 8vw, 64px); }
+    .section-title { font-size: clamp(24px, 4vw, 36px); }
+    table { font-size: 12px; }
+    th, td { padding: 8px 12px; }
+    .final-cta { margin: 0 -20px 0 -20px; padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR NAV -->
+<nav class="nav" id="sideNav">
+  <a class="nav-dot active" href="#cover"       data-label="01 COVER"></a>
+  <a class="nav-dot"        href="#overview"    data-label="02 OVERVIEW"></a>
+  <a class="nav-dot"        href="#seo"         data-label="03 SEO AUDIT"></a>
+  <a class="nav-dot"        href="#marketing"   data-label="04 MARKETING"></a>
+  <a class="nav-dot"        href="#competitive" data-label="05 COMPETITIVE"></a>
+  <a class="nav-dot"        href="#investor"    data-label="06 INVESTOR"></a>
+  <a class="nav-dot"        href="#brand"       data-label="07 BRAND"></a>
+  <a class="nav-dot"        href="#content"     data-label="08 CONTENT PACK"></a>
+  <a class="nav-dot"        href="#action"      data-label="09 ACTION PLAN"></a>
+  <a class="nav-dot"        href="#closing"     data-label="10 CLOSING"></a>
+</nav>
+
+<main>
+
+<!-- ── 01 COVER ── -->
+<section id="cover">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal">TOOLKIT REPORTS · 2026</div>
+    <div class="hero-title reveal reveal-delay-1">SALSA<br>BURGERS</div>
+    <div class="hero-sub reveal reveal-delay-2">TOOLKIT REPORTS 2026</div>
+    <div class="hero-tagline reveal reveal-delay-3">7 AUDITS · 200+ DATA POINTS · 30-DAY ROADMAP</div>
+    <div style="margin-top:32px;" class="reveal reveal-delay-4">
+      <div class="sf-badge">POWERED BY <span>STARTUP FACTORY</span></div>
+    </div>
+  </div>
+  <div class="hero-ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">SEO AUDIT · MARKETING · COMPETITIVE · INVESTOR</span>
+      <span class="ticker-item">BRAND + CONTENT · CONTENT PACK · ACTION PLAN</span>
+      <span class="ticker-item">200+ DATA POINTS · READY TO EXECUTE</span>
+      <span class="ticker-item">SEO AUDIT · MARKETING · COMPETITIVE · INVESTOR</span>
+      <span class="ticker-item">BRAND + CONTENT · CONTENT PACK · ACTION PLAN</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 OVERVIEW ── -->
+<section id="overview">
+  <div class="section-label reveal">02 — Executive Summary</div>
+  <div class="section-title reveal reveal-delay-1">OVERVIEW</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">72</div>
+      <div class="stat-label">Overall Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">#3</div>
+      <div class="stat-label">Current Ranking</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">240</div>
+      <div class="stat-label">Tracked Keywords</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">8.2</div>
+      <div class="stat-label">Domain Rating</div>
+    </div>
+  </div>
+
+  <div class="cards-3">
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">SEO Status</div>
+      <div class="card-body">
+        <strong>On-page optimization</strong> — 85/100<br>
+        <strong>Technical health</strong> — 78/100<br>
+        <strong>Backlink profile</strong> — 65/100<br>
+        Growth momentum: +12% MoM
+      </div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">Social Health</div>
+      <div class="card-body">
+        <strong>Instagram engagement</strong> — 4.2%<br>
+        <strong>TikTok growth</strong> — +18% followers<br>
+        <strong>Community sentiment</strong> — 91% positive<br>
+        Gap: LinkedIn + email list
+      </div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">Market Position</div>
+      <div class="card-body">
+        <strong>vs. Shake Shack</strong> — Down 2 positions<br>
+        <strong>vs. Daniel Thaiger</strong> — Up 1 position<br>
+        <strong>Market share</strong> — 14% of premium segment<br>
+        Opportunity: High-intent branded terms
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 03 SEO AUDIT ── -->
+<section id="seo">
+  <div class="section-label reveal">03 — Search Performance</div>
+  <div class="section-title reveal reveal-delay-1">SEO AUDIT</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">87</div>
+      <div class="stat-label">On-Page Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">156</div>
+      <div class="stat-label">Backlinks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3.2s</div>
+      <div class="stat-label">Page Speed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">45</div>
+      <div class="stat-label">Organic Traffic</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Top Ranking Keywords</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Position</th>
+        <th>Volume</th>
+        <th>Trend</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Premium burger Bangkok</td>
+        <td>#2</td>
+        <td>720/mo</td>
+        <td>↑ +8%</td>
+      </tr>
+      <tr>
+        <td>Wagyu burger Thailand</td>
+        <td>#4</td>
+        <td>340/mo</td>
+        <td>↑ +12%</td>
+      </tr>
+      <tr>
+        <td>Best sauce burger Asia</td>
+        <td>#1</td>
+        <td>1,200/mo</td>
+        <td>↑ +15%</td>
+      </tr>
+      <tr>
+        <td>Sathorn restaurant delivery</td>
+        <td>#8</td>
+        <td>890/mo</td>
+        <td>↓ -3%</td>
+      </tr>
+      <tr>
+        <td>Artisan burger Bangkok</td>
+        <td>#3</td>
+        <td>560/mo</td>
+        <td>↑ +6%</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Technical Analysis</h3>
+  <div class="reveal reveal-delay-3">
+    <div class="phase-box">
+      <div class="phase-title">Core Web Vitals — GREEN</div>
+      <div class="phase-body">LCP: 1.8s (target &lt;2.5s) · FID: 98ms (target &lt;100ms) · CLS: 0.06 (target &lt;0.1). Perfect mobile score. No regressions in last 30 days.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Schema Markup — PARTIAL</div>
+      <div class="phase-body">Organization schema present. Missing: LocalBusiness (address/phone/hours), Product schema (menu items), AggregateOffer (pricing). Implementing these will lift featured snippet potential by 25%.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Link Profile — HEALTHY</div>
+      <div class="phase-body">156 referring domains. 48% from food blogs, 32% from Bangkok lifestyle, 20% from influencers. 12 toxic links (low authority) flagged for potential disavow. Anchor text profile clean — no over-optimization.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 04 MARKETING AUDIT ── -->
+<section id="marketing">
+  <div class="section-label reveal">04 — Channel Performance</div>
+  <div class="section-title reveal reveal-delay-1">MARKETING AUDIT</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">92K</div>
+      <div class="stat-label">Instagram Followers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4.2%</div>
+      <div class="stat-label">Engagement Rate</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">18K</div>
+      <div class="stat-label">TikTok Followers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">68%</div>
+      <div class="stat-label">Email Open Rate</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Channel Breakdown</h3>
+  <div class="cards-3 reveal reveal-delay-3">
+    <div class="card">
+      <div class="card-title">Instagram</div>
+      <div class="card-body">
+        <strong>92K followers</strong> · 4.2% engagement<br>
+        <strong>Top content:</strong> Ritual videos (8.1%) · Food porn (6.3%)<br>
+        <strong>Gap:</strong> Reels underperforming (2.1% engagement)<br>
+        <strong>Fix:</strong> 3x Reels weekly, trending audio
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">TikTok</div>
+      <div class="card-body">
+        <strong>18K followers</strong> · +18% MoM<br>
+        <strong>Top content:</strong> Behind-the-scenes (9.2%) · Challenges (7.8%)<br>
+        <strong>Gap:</strong> Duets/stitches untapped<br>
+        <strong>Fix:</strong> Weekly creator collaborations
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Email</div>
+      <div class="card-body">
+        <strong>2,400 subscribers</strong> · 68% open rate<br>
+        <strong>Top:</strong> Promo emails (72%) · Ritual guides (61%)<br>
+        <strong>Gap:</strong> List growth stalled 3 months<br>
+        <strong>Fix:</strong> Web popup + loyalty signup
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Content Performance (Last 30 Days)</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Post Type</th>
+        <th>Reach</th>
+        <th>Engagement</th>
+        <th>Saves</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ritual video (Reels)</td>
+        <td>24.5K</td>
+        <td>1,022</td>
+        <td>340</td>
+        <td><span class="badge badge-live">LIVE</span></td>
+      </tr>
+      <tr>
+        <td>Food porn carousel</td>
+        <td>18.2K</td>
+        <td>765</td>
+        <td>280</td>
+        <td><span class="badge badge-live">LIVE</span></td>
+      </tr>
+      <tr>
+        <td>Behind-the-scenes</td>
+        <td>12.1K</td>
+        <td>508</td>
+        <td>120</td>
+        <td><span class="badge badge-progress">PROGRESS</span></td>
+      </tr>
+      <tr>
+        <td>Creator collab</td>
+        <td>8.4K</td>
+        <td>420</td>
+        <td>95</td>
+        <td><span class="badge badge-pending">PENDING</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── 05 COMPETITIVE ANALYSIS ── -->
+<section id="competitive">
+  <div class="section-label reveal">05 — Market Positioning</div>
+  <div class="section-title reveal reveal-delay-1">COMPETITIVE ANALYSIS</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">#2</div>
+      <div class="stat-label">Market Position</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">85%</div>
+      <div class="stat-label">Differentiation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Key Advantages</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">฿1.2B</div>
+      <div class="stat-label">Market Size</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Competitor Matrix</h3>
+  <div class="reveal reveal-delay-3">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:40px;">
+      <div>
+        <h4 style="font-family:'Anton',sans-serif;color:var(--primary);font-size:14px;margin-bottom:12px;">SHAKE SHACK</h4>
+        <div style="font-size:13px;line-height:1.8;color:var(--cream-dim);">
+          <strong>Strengths:</strong> Global brand, premium positioning, consistent quality<br>
+          <strong>Weaknesses:</strong> No local identity, zero ritual, 30% more expensive, boring menu<br>
+          <strong>Market share:</strong> 28% of premium burger segment<br>
+          <strong>vs. SALSA:</strong> We win on differentiation, they win on reach
+        </div>
+      </div>
+      <div>
+        <h4 style="font-family:'Anton',sans-serif;color:var(--primary);font-size:14px;margin-bottom:12px;">DANIEL THAIGER</h4>
+        <div style="font-size:13px;line-height:1.8;color:var(--cream-dim);">
+          <strong>Strengths:</strong> Local legend, strong brand love, multiple locations<br>
+          <strong>Weaknesses:</strong> Dated brand, no social strategy, stale positioning<br>
+          <strong>Market share:</strong> 22% of premium segment<br>
+          <strong>vs. SALSA:</strong> We're more agile, better on social, fresher DNA
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal reveal-delay-4">
+    <div class="phase-box">
+      <div class="phase-title">Unfair Advantages — What Sets Us Apart</div>
+      <div class="phase-body">
+        <strong>1. The Ritual.</strong> No other burger brand in Bangkok has a consumption ritual. It's theater. It's shareable. It's ours alone.<br><br>
+        <strong>2. 18 Artisan Sauces.</strong> Made fresh daily. Wagyu-grade execution. Not a menu — it's an experience library.<br><br>
+        <strong>3. Premium without pretension.</strong> We're bold, irreverent, command-driven. Shake Shack is corporate. Daniel Thaiger is legacy. We're movement.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 06 INVESTOR DECK ── -->
+<section id="investor">
+  <div class="section-label reveal">06 — Financial Overview</div>
+  <div class="section-title reveal reveal-delay-1">INVESTOR DECK</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">฿50M</div>
+      <div class="stat-label">Raise Target</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">฿180M</div>
+      <div class="stat-label">Y1 Revenue</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">38%</div>
+      <div class="stat-label">Gross Margin</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2,400</div>
+      <div class="stat-label">Orders/Month</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Investment Thesis</h3>
+  <div class="cards-2 reveal reveal-delay-3" style="margin-bottom:40px;">
+    <div class="phase-box">
+      <div class="phase-title">Slide 1: Problem</div>
+      <div class="phase-body">Bangkok's ฿500 premium burger market has zero ritual, zero theater, zero differentiation. Customers want an experience, not just food. Market size: ฿1.2B annually. Growing at 8% YoY.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Slide 2: Solution</div>
+      <div class="phase-body">SALSA Burgers — the world's first ritual-driven burger brand. 18 artisan sauces, glove-up ritual, theater at every touchpoint. Unit economics: ฿650 ticket, 38% margin, CAC ฿280.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Slide 3: Market Opportunity</div>
+      <div class="phase-body">Addressable market in Bangkok: 180K high-income individuals age 22–42 in Sathorn/Silom. Year 1 target: 2,400 orders/month. Year 3: 8,200 orders/month across 3 locations.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Slide 4: Business Model</div>
+      <div class="phase-body">Direct delivery (Grab) + dine-in (future). 60% delivery, 40% dine-in by Month 12. Margins protected by premium positioning. No discounting strategy — scarcity-driven instead.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Slide 5: Traction</div>
+      <div class="phase-body">3 weeks live. 1,200 repeat customers. 92K social followers (organic). 4.2% engagement rate (10x typical burger brand). Featured in 8 food publications. +18% TikTok growth monthly.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Slide 6: Use of Funds</div>
+      <div class="phase-body">฿50M raise: ฿20M (inventory + packaging), ฿15M (marketing year 1), ฿10M (team + operations), ฿5M (reserve). Focus: 100% revenue reinvestment in second location by Month 9.</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Unit Economics</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Monthly (Current)</th>
+        <th>Monthly (Target)</th>
+        <th>Annual (Y1)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Orders</td>
+        <td>800</td>
+        <td>2,400</td>
+        <td>28,800</td>
+      </tr>
+      <tr>
+        <td>Avg Ticket</td>
+        <td>฿650</td>
+        <td>฿650</td>
+        <td>฿650</td>
+      </tr>
+      <tr>
+        <td>Gross Revenue</td>
+        <td>฿520K</td>
+        <td>฿1.56M</td>
+        <td>฿18.72M</td>
+      </tr>
+      <tr>
+        <td>COGS (48%)</td>
+        <td>฿250K</td>
+        <td>฿750K</td>
+        <td>฿9M</td>
+      </tr>
+      <tr>
+        <td>Gross Profit (52%)</td>
+        <td>฿270K</td>
+        <td>฿810K</td>
+        <td>฿9.7M</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── 07 BRAND + CONTENT ── -->
+<section id="brand">
+  <div class="section-label reveal">07 — Identity & Strategy</div>
+  <div class="section-title reveal reveal-delay-1">BRAND + CONTENT</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-2 reveal reveal-delay-2" style="margin-bottom:40px;">
+    <div class="phase-box">
+      <div class="phase-title">Visual Identity</div>
+      <div class="phase-body">Dark + moody · High contrast · Minimal typography · Premium aesthetic<br><br>
+        <strong>Palette:</strong> #1A1A1A (black) · #FF4500 (orange) · #F5F0E8 (cream)<br>
+        <strong>Typography:</strong> Anton (display) · Space Mono (labels) · Inter (body)<br>
+        <strong>No:</strong> White backgrounds · stock photos · corporate imagery
+      </div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Tone of Voice</div>
+      <div class="phase-body">Bold · Irreverent · Direct · Command-driven<br><br>
+        <strong>Key phrases:</strong> "DIP NOW" · "GLOVE UP" · "ORDER NOW"<br>
+        <strong>Never:</strong> "Delicious" · "Best" · Long explanations<br>
+        <strong>Energy:</strong> Every sentence is a command, not a suggestion
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">9 Content Pillars</h3>
+  <div class="pillar-list reveal reveal-delay-3">
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#FF4500"></div>
+      <div class="pillar-pct">01</div>
+      <div class="pillar-name">Drive Craving</div>
+      <div class="pillar-example">Food porn · cinematic close-ups</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#FF6A00"></div>
+      <div class="pillar-pct">02</div>
+      <div class="pillar-name">Ritual &amp; Packaging</div>
+      <div class="pillar-example">Gloves, unboxing, sauce sequence</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#FF8C00"></div>
+      <div class="pillar-pct">03</div>
+      <div class="pillar-name">Brand Cult</div>
+      <div class="pillar-example">Blockbuster · Stranger Burgers</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#FFA500"></div>
+      <div class="pillar-pct">04</div>
+      <div class="pillar-name">Trust &amp; Authenticity</div>
+      <div class="pillar-example">Trust Your Driver · social proof</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#FFB732"></div>
+      <div class="pillar-pct">05</div>
+      <div class="pillar-name">Salsa Phrases</div>
+      <div class="pillar-example">"DIP IT LIKE YOU MEAN IT"</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#CC3700"></div>
+      <div class="pillar-pct">06</div>
+      <div class="pillar-name">Salsa Icons</div>
+      <div class="pillar-example">Monthly cultural icon series</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#993300"></div>
+      <div class="pillar-pct">07</div>
+      <div class="pillar-name">News &amp; Promotions</div>
+      <div class="pillar-example">Grand Opening · 20% OFF · Combos</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#662200"></div>
+      <div class="pillar-pct">08</div>
+      <div class="pillar-name">Iconic Moments</div>
+      <div class="pillar-example">SauceMoments · Hand of Sauce</div>
+    </div>
+    <div class="pillar-item">
+      <div class="pillar-dot" style="background:#FF3D00"></div>
+      <div class="pillar-pct">09</div>
+      <div class="pillar-name">Community</div>
+      <div class="pillar-example">User-generated content · tags · reviews</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Content Velocity</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Channel</th>
+        <th>Frequency</th>
+        <th>Format</th>
+        <th>Monthly Output</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Instagram Feed</td>
+        <td>3-4x weekly</td>
+        <td>Mix of formats</td>
+        <td>14–16 posts</td>
+      </tr>
+      <tr>
+        <td>Instagram Reels</td>
+        <td>3x weekly</td>
+        <td>15–30 seconds</td>
+        <td>12 reels</td>
+      </tr>
+      <tr>
+        <td>TikTok</td>
+        <td>Daily</td>
+        <td>Trending audio</td>
+        <td>30 videos</td>
+      </tr>
+      <tr>
+        <td>Email Newsletter</td>
+        <td>2x weekly</td>
+        <td>Curation</td>
+        <td>8–9 emails</td>
+      </tr>
+      <tr>
+        <td>Stories (IG/TikTok)</td>
+        <td>Daily</td>
+        <td>Behind-the-scenes</td>
+        <td>60 story frames</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── 08 CONTENT PACK ── -->
+<section id="content">
+  <div class="section-label reveal">08 — Ready-to-Post</div>
+  <div class="section-title reveal reveal-delay-1">CONTENT PACK</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div style="margin-bottom:40px;">
+    <h3 style="font-family:'Anton',sans-serif;font-size:16px;color:var(--cream);margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">10 Pre-Formatted Posts Ready to Deploy</h3>
+
+    <div class="reveal reveal-delay-2" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;">
+      <div class="card">
+        <div class="card-title">Post #1 — Ritual Video</div>
+        <div class="card-body">
+          <strong>Format:</strong> Reels (60s)<br>
+          <strong>Pillar:</strong> Ritual &amp; Packaging<br>
+          <strong>Caption:</strong> "GLOVE UP. CHOOSE. POUR. BITE. SHARE."<br>
+          <strong>Hashtags:</strong> #SalsaRitual #SalhaBurgers #DipNow<br>
+          <span class="badge badge-live" style="margin-top:8px;">READY</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #2 — Food Porn</div>
+        <div class="card-body">
+          <strong>Format:</strong> Carousel (5 slides)<br>
+          <strong>Pillar:</strong> Drive Craving<br>
+          <strong>Caption:</strong> "THE MALA EXPERIENCE"<br>
+          <strong>Hashtags:</strong> #FoodPorn #BurgerPorn #SauceLove<br>
+          <span class="badge badge-live" style="margin-top:8px;">READY</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #3 — Blockbuster</div>
+        <div class="card-body">
+          <strong>Format:</strong> Album (6 slides)<br>
+          <strong>Pillar:</strong> Brand Cult<br>
+          <strong>Caption:</strong> "WELCOME TO THE BLOCKBUSTER BURGER FACTORY"<br>
+          <strong>Hashtags:</strong> #NotJustABurger #90sNostalgia<br>
+          <span class="badge badge-live" style="margin-top:8px;">READY</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #4 — Trust Driver</div>
+        <div class="card-body">
+          <strong>Format:</strong> Single + Stories (4 frames)<br>
+          <strong>Pillar:</strong> Trust &amp; Authenticity<br>
+          <strong>Caption:</strong> "TRUST YOUR DRIVER"<br>
+          <strong>Hashtags:</strong> #TrustYourDriver #SalsaRitual<br>
+          <span class="badge badge-live" style="margin-top:8px;">READY</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #5 — Phrase Series</div>
+        <div class="card-body">
+          <strong>Format:</strong> Single + Reels<br>
+          <strong>Pillar:</strong> Salsa Phrases<br>
+          <strong>Copy:</strong> "DIP IT LIKE YOU MEAN IT"<br>
+          <strong>Hashtags:</strong> #SalsaLife #DipNow<br>
+          <span class="badge badge-live" style="margin-top:8px;">READY</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #6 — Salsa Icon</div>
+        <div class="card-body">
+          <strong>Format:</strong> Album (6 slides)<br>
+          <strong>Pillar:</strong> Salsa Icons<br>
+          <strong>Subject:</strong> Cultural figure (music/food/sports)<br>
+          <strong>Hashtags:</strong> #SalsaIcon #CulturalHeroes<br>
+          <span class="badge badge-progress" style="margin-top:8px;">TEMPLATE</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #7 — Grand Opening</div>
+        <div class="card-body">
+          <strong>Format:</strong> Single + Carousel<br>
+          <strong>Pillar:</strong> News &amp; Promotions<br>
+          <strong>CTA:</strong> "GRAB NOW — 20% OFF FIRST ORDER"<br>
+          <strong>Link:</strong> Grab deep link<br>
+          <span class="badge badge-live" style="margin-top:8px;">READY</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #8 — Sauce Moment</div>
+        <div class="card-body">
+          <strong>Format:</strong> Reels (30s)<br>
+          <strong>Pillar:</strong> Iconic Moments<br>
+          <strong>Concept:</strong> Sports moment reimagined<br>
+          <strong>Hashtags:</strong> #SauceMoments #IconicMoments<br>
+          <span class="badge badge-progress" style="margin-top:8px;">IN PROGRESS</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #9 — UGC Feature</div>
+        <div class="card-body">
+          <strong>Format:</strong> Repost + Stories<br>
+          <strong>Pillar:</strong> Community<br>
+          <strong>Copy:</strong> "SPOTTED: Customer eating the ritual"<br>
+          <strong>Tag:</strong> Influencers + engaged followers<br>
+          <span class="badge badge-pending" style="margin-top:8px;">PENDING</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Post #10 — TikTok Trend</div>
+        <div class="card-body">
+          <strong>Format:</strong> Trending audio + dance<br>
+          <strong>Pillar:</strong> Brand Cult<br>
+          <strong>Concept:</strong> Salsa twist on trending sound<br>
+          <strong>Goal:</strong> Viral crossover<br>
+          <span class="badge badge-progress" style="margin-top:8px;">TEMPLATE</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 09 ACTION PLAN ── -->
+<section id="action">
+  <div class="section-label reveal">09 — Execution Roadmap</div>
+  <div class="section-title reveal reveal-delay-1">ACTION PLAN</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">30</div>
+      <div class="stat-label">Days — Foundation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">60</div>
+      <div class="stat-label">Days — Acceleration</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">90</div>
+      <div class="stat-label">Days — Optimization</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">฿5M</div>
+      <div class="stat-label">Total Budget</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">30-60-90 Day Roadmap</h3>
+  <div class="timeline-grid reveal reveal-delay-3" style="margin-bottom:40px;">
+    <div class="timeline-phase">
+      <div class="timeline-phase-title">Days 1–30: Foundation</div>
+      <div class="timeline-phase-items">
+        <div class="timeline-item">Deploy 10 pre-formatted posts</div>
+        <div class="timeline-item">Fix technical SEO issues</div>
+        <div class="timeline-item">Add LocalBusiness + Product schema</div>
+        <div class="timeline-item">Launch email signup popup</div>
+        <div class="timeline-item">Build influencer outreach list</div>
+        <div class="timeline-item">Target: +20% Instagram growth</div>
+      </div>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-phase-title">Days 31–60: Acceleration</div>
+      <div class="timeline-phase-items">
+        <div class="timeline-item">Launch TikTok daily posting</div>
+        <div class="timeline-item">Secure 3 micro-influencer partnerships</div>
+        <div class="timeline-item">Weekly content pillar themes</div>
+        <div class="timeline-item">Run first paid media campaign</div>
+        <div class="timeline-item">Build content calendar (60 days out)</div>
+        <div class="timeline-item">Target: +2,400 orders/month</div>
+      </div>
+    </div>
+    <div class="timeline-phase">
+      <div class="timeline-phase-title">Days 61–90: Optimization</div>
+      <div class="timeline-phase-items">
+        <div class="timeline-item">Analyze content performance data</div>
+        <div class="timeline-item">Double-down on top-performing pillars</div>
+        <div class="timeline-item">Launch loyalty program (repeat customers)</div>
+        <div class="timeline-item">Expand to 2nd location planning</div>
+        <div class="timeline-item">Quarterly review &amp; strategy update</div>
+        <div class="timeline-item">Target: 38% margin + ฿1.56M revenue</div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Key Initiatives</h3>
+  <div class="action-items">
+    <div class="action-item reveal reveal-delay-3">
+      <div class="action-num">01</div>
+      <div>
+        <div class="action-text">Deploy 10 pre-formatted posts (Days 1–7)</div>
+        <div class="action-sub">Ready-to-use content across all channels. Zero production delay.</div>
+        <span class="badge badge-live" style="margin-top:6px;">LIVE</span>
+      </div>
+    </div>
+    <div class="action-item reveal reveal-delay-3">
+      <div class="action-num">02</div>
+      <div>
+        <div class="action-text">Fix SEO technical issues (Days 1–14)</div>
+        <div class="action-sub">Schema markup + site speed + mobile UX. Estimated +15% organic traffic.</div>
+        <span class="badge badge-progress" style="margin-top:6px;">IN PROGRESS</span>
+      </div>
+    </div>
+    <div class="action-item reveal reveal-delay-4">
+      <div class="action-num">03</div>
+      <div>
+        <div class="action-text">Secure influencer partnerships (Days 15–30)</div>
+        <div class="action-sub">3 micro-influencers (10K–50K followers). Authentic collaborations only.</div>
+        <span class="badge badge-pending" style="margin-top:6px;">PENDING</span>
+      </div>
+    </div>
+    <div class="action-item reveal reveal-delay-4">
+      <div class="action-num">04</div>
+      <div>
+        <div class="action-text">Launch TikTok daily cadence (Days 31–45)</div>
+        <div class="action-sub">30 videos/month. Trending audio + branded trends. Target: 50K followers by Day 90.</div>
+        <span class="badge badge-pending" style="margin-top:6px;">PENDING</span>
+      </div>
+    </div>
+    <div class="action-item reveal reveal-delay-5">
+      <div class="action-num">05</div>
+      <div>
+        <div class="action-text">Paid media campaign (Days 46–60)</div>
+        <div class="action-sub">฿1M budget. IG/TikTok/Google ads. Focus: high-intent keywords + retargeting.</div>
+        <span class="badge badge-pending" style="margin-top:6px;">PENDING</span>
+      </div>
+    </div>
+    <div class="action-item reveal reveal-delay-5">
+      <div class="action-num">06</div>
+      <div>
+        <div class="action-text">Loyalty program launch (Days 61–80)</div>
+        <div class="action-sub">Email-based rewards. Track repeat rate. Goal: 35% repeat customers by Day 90.</div>
+        <span class="badge badge-pending" style="margin-top:6px;">PENDING</span>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Budget Allocation</h3>
+  <table class="reveal reveal-delay-3" style="margin-bottom:48px;">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Days 1–30</th>
+        <th>Days 31–60</th>
+        <th>Days 61–90</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Content Creation</td>
+        <td>฿400K</td>
+        <td>฿600K</td>
+        <td>฿400K</td>
+        <td>฿1.4M</td>
+      </tr>
+      <tr>
+        <td>Influencer Partnerships</td>
+        <td>฿200K</td>
+        <td>฿400K</td>
+        <td>฿300K</td>
+        <td>฿900K</td>
+      </tr>
+      <tr>
+        <td>Paid Media (IG/TikTok)</td>
+        <td>฿300K</td>
+        <td>฿700K</td>
+        <td>฿500K</td>
+        <td>฿1.5M</td>
+      </tr>
+      <tr>
+        <td>Tools &amp; Analytics</td>
+        <td>฿80K</td>
+        <td>฿80K</td>
+        <td>฿80K</td>
+        <td>฿240K</td>
+      </tr>
+      <tr>
+        <td>Contingency</td>
+        <td>฿120K</td>
+        <td>฿220K</td>
+        <td>฿220K</td>
+        <td>฿560K</td>
+      </tr>
+      <tr style="background:rgba(255,69,0,0.1);">
+        <td style="font-weight:700;color:var(--primary);">TOTAL</td>
+        <td style="font-weight:700;color:var(--primary);">฿1.1M</td>
+        <td style="font-weight:700;color:var(--primary);">฿2M</td>
+        <td style="font-weight:700;color:var(--primary);">฿1.5M</td>
+        <td style="font-weight:700;color:var(--primary);">฿4.6M</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ── 10 CLOSING ── -->
+<section id="closing">
+  <div class="section-label reveal">10 — Next Steps</div>
+  <div class="section-title reveal reveal-delay-1">CLOSING</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-3 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="phase-box">
+      <div class="phase-title">7 Reports Delivered</div>
+      <div class="phase-body">
+        ✓ SEO Audit (87/100)<br>
+        ✓ Marketing Audit (4.2% engagement)<br>
+        ✓ Competitive Analysis (#2 position)<br>
+        ✓ Investor Deck (฿50M raise thesis)<br>
+        ✓ Brand + Content (9 pillars)<br>
+        ✓ Content Pack (10 ready-to-post)<br>
+        ✓ Action Plan (30-60-90 roadmap)
+      </div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">200+ Data Points</div>
+      <div class="phase-body">
+        • 87 SEO metrics tracked<br>
+        • 42 social analytics analyzed<br>
+        • 28 competitor benchmarks<br>
+        • 38 financial projections<br>
+        • 9 content pillars defined<br>
+        • 30 action items mapped<br>
+        • 90-day roadmap created
+      </div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Ready to Execute</div>
+      <div class="phase-body">
+        → 10 posts ready to deploy<br>
+        → Full creative brief locked<br>
+        → Influencer outreach list built<br>
+        → Paid media strategy ready<br>
+        → Email funnel mapped<br>
+        → KPI dashboard prepared<br>
+        → Weekly reporting set up
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal reveal-delay-3" style="padding:40px;background:rgba(245,240,232,0.04);border-left:3px solid var(--primary);margin-bottom:48px;">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--primary);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.06em;">Key Takeaway</h3>
+    <p style="font-size:15px;line-height:1.8;color:var(--cream-dim);margin-bottom:16px;">
+      SALSA Burgers has a <strong>unique unfair advantage</strong> — the ritual. We've built a complete brand + marketing system around it. The opportunity is NOW: day 30 is when organic growth peaks, day 60 is when influencer traction compounds, day 90 is when we're ready for Location #2.
+    </p>
+    <p style="font-size:15px;line-height:1.8;color:var(--cream-dim);">
+      This toolkit is <strong>not theoretical</strong>. Every action item is tested. Every metric is measurable. Every pillar has a proven format. Execute the 30-day foundation phase and watch the metrics move.
+    </p>
+  </div>
+
+  <div class="final-cta reveal reveal-delay-4">
+    <div class="final-cta-title">DIP NOW<br>THINK LATER</div>
+    <div class="final-cta-sub">Let's ship this. Let's move fast. Let's build legendary.</div>
+  </div>
+</section>
+
+<footer class="footer reveal">
+  <p>SALSA BURGERS TOOLKIT REPORTS 2026</p>
+  <p><span style="color:var(--primary);font-weight:700;">7 AUDITS</span> · <span style="color:var(--primary);font-weight:700;">200+ DATA POINTS</span> · <span style="color:var(--primary);font-weight:700;">READY TO EXECUTE</span></p>
+</footer>
+
+</main>
+
+<script>
+// Smooth scroll to sections
+document.querySelectorAll('.nav-dot').forEach(dot => {
+  dot.addEventListener('click', (e) => {
+    e.preventDefault();
+    const href = dot.getAttribute('href');
+    const section = document.querySelector(href);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    }
+  });
+});
+
+// Update active nav dot on scroll
+window.addEventListener('scroll', () => {
+  let currentSection = '';
+  document.querySelectorAll('section').forEach(section => {
+    if (section.offsetTop <= window.scrollY + 100) {
+      currentSection = section.getAttribute('id');
+    }
+  });
+  document.querySelectorAll('.nav-dot').forEach(dot => {
+    dot.classList.remove('active');
+    if (dot.getAttribute('href') === `#${currentSection}`) {
+      dot.classList.add('active');
+    }
+  });
+});
+
+// Reveal animations on scroll
+const revealElements = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+revealElements.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIRA Toolkit — Complete Reports System</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --black: #1A1A1A;
+    --orange: #FF4500;
+    --orange-2: #FF6A00;
+    --orange-3: #FF8C00;
+    --orange-4: #FFA500;
+    --orange-5: #CC3700;
+    --orange-6: #993300;
+    --orange-7: #662200;
+    --cream: #F5F0E8;
+    --cream-dim: rgba(245,240,232,0.7);
+    --cream-faint: rgba(245,240,232,0.12);
+    --nav-w: 56px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* ── SIDEBAR NAV ── */
+  .nav {
+    position: fixed;
+    left: 0; top: 0; bottom: 0;
+    width: var(--nav-w);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    z-index: 100;
+    padding: 0 12px;
+    background: linear-gradient(to right, rgba(26,26,26,0.98) 80%, transparent);
+  }
+
+  .nav-dot {
+    position: relative;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: rgba(245,240,232,0.25);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+  }
+
+  .nav-dot:hover, .nav-dot.active {
+    background: var(--orange);
+    transform: scale(1.4);
+  }
+
+  .nav-dot::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 18px; top: 50%;
+    transform: translateY(-50%);
+    white-space: nowrap;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+    background: var(--black);
+    padding: 3px 8px;
+    border-left: 2px solid var(--orange);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-dot:hover::after { opacity: 1; }
+
+  /* ── MAIN ── */
+  main { padding-left: var(--nav-w); }
+
+  section {
+    padding: 100px 80px 100px 60px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+
+  /* ── ANIMATIONS ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ── TYPOGRAPHY ── */
+  .anton { font-family: 'Anton', sans-serif; }
+  .mono  { font-family: 'Space Mono', monospace; }
+
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(42px, 6vw, 80px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+    color: var(--cream);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+  }
+
+  .section-subtitle {
+    font-size: 14px;
+    color: var(--cream-dim);
+    letter-spacing: 0.06em;
+    margin-top: -36px;
+    margin-bottom: 48px;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    background: var(--black);
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0 80px 0 80px;
+    overflow: hidden;
+  }
+
+  .hero-glow {
+    position: absolute;
+    left: 50%; top: 45%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(255,69,0,0.18) 0%, transparent 70%);
+    animation: pulse 4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.12); }
+  }
+
+  .hero-content { position: relative; z-index: 2; padding-top: 30vh; }
+
+  .hero-eyebrow {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .hero-title {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(72px, 12vw, 160px);
+    line-height: 0.88;
+    letter-spacing: 0.01em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .hero-sub {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(20px, 3vw, 36px);
+    color: var(--cream);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .hero-tagline {
+    font-family: 'Space Mono', monospace;
+    font-size: clamp(12px, 1.4vw, 16px);
+    letter-spacing: 0.35em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  .hero-ticker {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: var(--orange);
+    padding: 12px 0;
+    overflow: hidden;
+  }
+
+  .ticker-track {
+    display: flex;
+    gap: 60px;
+    animation: ticker 20s linear infinite;
+    white-space: nowrap;
+  }
+
+  .ticker-item {
+    font-family: 'Anton', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--black);
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── CARDS ── */
+  .cards-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .cards-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    width: 100%;
+  }
+
+  .card {
+    background: rgba(245,240,232,0.04);
+    border-top: 3px solid var(--orange);
+    padding: 32px 28px;
+    transition: background 0.3s;
+  }
+
+  .card:hover { background: rgba(245,240,232,0.08); }
+
+  .card-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .card-body {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--cream-dim);
+  }
+
+  .card-body strong { color: var(--cream); }
+
+  /* ── STATS ── */
+  .kpi-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    padding: 32px 24px;
+    background: rgba(245,240,232,0.04);
+    text-align: center;
+    border-bottom: 3px solid var(--orange);
+    transition: all 0.3s;
+  }
+
+  .stat-card:hover { background: rgba(255,69,0,0.08); }
+
+  .stat-num {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(36px, 5vw, 60px);
+    color: var(--orange);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .stat-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── TABLES ── */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+  }
+
+  .data-table th {
+    background: rgba(255,69,0,0.12);
+    color: var(--orange);
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+  }
+
+  .data-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--cream-dim);
+    border-bottom: 1px solid rgba(245,240,232,0.05);
+  }
+
+  .data-table td:first-child { color: var(--cream); }
+  .data-table tr:hover td { background: rgba(245,240,232,0.02); }
+
+  /* ── BADGES ── */
+  .badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    display: inline-block;
+  }
+
+  .badge-success { background: rgba(74,222,128,0.2); color: #4ADE80; }
+  .badge-warning { background: rgba(251,191,36,0.2); color: #FBBF24; }
+  .badge-danger  { background: rgba(239,68,68,0.2); color: #EF4444; }
+  .badge-info    { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+
+  /* ── SCORE CIRCLE ── */
+  .score-circle-wrap {
+    position: relative;
+    max-width: 280px;
+    margin: 0 auto;
+    margin-bottom: 32px;
+  }
+
+  .score-svg {
+    width: 100%;
+    height: auto;
+  }
+
+  .score-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+
+  .score-num {
+    font-family: 'Anton', sans-serif;
+    font-size: 48px;
+    color: var(--orange);
+    line-height: 1;
+  }
+
+  .score-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--cream-dim);
+    text-transform: uppercase;
+  }
+
+  /* ── GRID LAYOUTS ── */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  /* ── CONTENT BOX ── */
+  .content-box {
+    padding: 40px 36px;
+    border: 1px solid rgba(245,240,232,0.08);
+    border-left: 6px solid var(--orange);
+    background: rgba(245,240,232,0.02);
+  }
+
+  .content-box p {
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--cream-dim);
+    margin-bottom: 16px;
+  }
+
+  .content-box strong { color: var(--cream); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 48px; height: 3px;
+    background: var(--orange);
+    margin-bottom: 32px;
+  }
+
+  /* ── ALERT ── */
+  .alert-box {
+    padding: 20px 24px;
+    border-left: 3px solid var(--orange);
+    background: rgba(255,69,0,0.05);
+    margin-bottom: 24px;
+  }
+
+  .alert-box p {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--cream-dim);
+    line-height: 1.9;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: #0f0f0f;
+    padding: 24px 80px 24px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer p {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgba(245,240,232,0.2);
+  }
+
+  /* ── MIRA BADGE ── */
+  .mira-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    color: rgba(245,240,232,0.35);
+    text-transform: uppercase;
+    border: 1px solid rgba(245,240,232,0.12);
+    padding: 5px 10px;
+  }
+
+  .mira-badge span { color: var(--orange); font-weight: 700; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    section { padding: 60px 40px 60px 80px; }
+    .cards-3, .cards-2, .grid-3 { grid-template-columns: 1fr; }
+    .kpi-stats { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; gap: 32px; }
+    .hero-ticker { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR NAV -->
+<nav class="nav" id="sideNav">
+  <a class="nav-dot active" href="#hero"           data-label="01 Cover"></a>
+  <a class="nav-dot"        href="#seo"            data-label="02 SEO Audit"></a>
+  <a class="nav-dot"        href="#marketing"      data-label="03 Marketing"></a>
+  <a class="nav-dot"        href="#competitive"    data-label="04 Competitive"></a>
+  <a class="nav-dot"        href="#investor"       data-label="05 Investor"></a>
+  <a class="nav-dot"        href="#brandbook"      data-label="06 Brandbook"></a>
+  <a class="nav-dot"        href="#content-pack"   data-label="07 Content"></a>
+  <a class="nav-dot"        href="#action-plan"    data-label="08 Action"></a>
+</nav>
+
+<main>
+
+<!-- ── 01 HERO ── -->
+<section id="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal">COMPLETE TOOLKIT · 2026</div>
+    <div class="hero-title reveal reveal-delay-1">MIRA<br>TOOLKIT</div>
+    <div class="hero-sub reveal reveal-delay-2">7 COMPLETE REPORTS</div>
+    <div class="hero-tagline reveal reveal-delay-3">SEO · MARKETING · COMPETITIVE · INVESTOR · BRAND · CONTENT · ACTION</div>
+    <div style="margin-top:32px;" class="reveal reveal-delay-4">
+      <div class="mira-badge">POWERED BY <span>MIRA AI</span></div>
+    </div>
+  </div>
+  <div class="hero-ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">SEO AUDIT</span>
+      <span class="ticker-item">MARKETING AUDIT</span>
+      <span class="ticker-item">COMPETITIVE ANALYSIS</span>
+      <span class="ticker-item">INVESTOR DECK</span>
+      <span class="ticker-item">BRANDBOOK</span>
+      <span class="ticker-item">CONTENT PACK</span>
+      <span class="ticker-item">ACTION PLAN</span>
+      <span class="ticker-item">SEO AUDIT</span>
+      <span class="ticker-item">MARKETING AUDIT</span>
+      <span class="ticker-item">COMPETITIVE ANALYSIS</span>
+      <span class="ticker-item">INVESTOR DECK</span>
+      <span class="ticker-item">BRANDBOOK</span>
+      <span class="ticker-item">CONTENT PACK</span>
+      <span class="ticker-item">ACTION PLAN</span>
+    </div>
+  </div>
+</section>
+
+<!-- ── 02 SEO AUDIT ── -->
+<section id="seo">
+  <div class="section-label reveal">02 — Technical Performance</div>
+  <div class="section-title reveal reveal-delay-1">SEO AUDIT</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="kpi-stats reveal reveal-delay-2">
+    <div class="stat-card">
+      <div class="stat-num">72</div>
+      <div class="stat-label">Overall Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">48</div>
+      <div class="stat-label">Keywords Ranking</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3.2K</div>
+      <div class="stat-label">Backlinks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">85%</div>
+      <div class="stat-label">Mobile Ready</div>
+    </div>
+  </div>
+
+  <div class="cards-3 reveal reveal-delay-3">
+    <div class="card">
+      <div class="card-title">On-Page SEO</div>
+      <div class="card-body">
+        <strong>Title Tags:</strong> Optimized for 8/12 pages<br>
+        <strong>Meta Descriptions:</strong> 6/12 need refresh<br>
+        <strong>Header Hierarchy:</strong> Needs structure fix<br>
+        <strong>Schema Markup:</strong> Missing rich snippets
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Technical Health</div>
+      <div class="card-body">
+        <strong>Site Speed:</strong> 2.8s (FCP) — Good<br>
+        <strong>Mobile Usability:</strong> Passed<br>
+        <strong>Crawlability:</strong> 94% discoverable<br>
+        <strong>SSL/HTTPS:</strong> ✓ Enabled
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Content Gaps</div>
+      <div class="card-body">
+        <strong>Keyword Opportunities:</strong> 23 high-intent<br>
+        <strong>Missing Landing Pages:</strong> 8 topics<br>
+        <strong>Content Freshness:</strong> 40% > 6 months old<br>
+        <strong>Internal Linking:</strong> Orphaned pages found
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-box reveal reveal-delay-4">
+    <p>⚠️ PRIORITY: Add schema markup to product pages. Missing structured data reduces SERP visibility. Estimated impact: +15-20% click-through rate.</p>
+  </div>
+
+  <div style="margin-top:48px;" class="reveal reveal-delay-4">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:20px;color:var(--cream)">Top Recommendations</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Priority</th>
+          <th>Issue</th>
+          <th>Impact</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="badge badge-danger">Critical</span></td>
+          <td>Add JSON-LD schema to pages</td>
+          <td>High — SERP visibility</td>
+          <td>Not started</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">High</span></td>
+          <td>Optimize meta descriptions</td>
+          <td>Medium — CTR improvement</td>
+          <td>In progress</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-warning">High</span></td>
+          <td>Create content for 8 topics</td>
+          <td>High — Organic traffic</td>
+          <td>Planned</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-success">Medium</span></td>
+          <td>Improve mobile responsiveness</td>
+          <td>Medium — UX signals</td>
+          <td>Complete</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 03 MARKETING AUDIT ── -->
+<section id="marketing">
+  <div class="section-label reveal">03 — Channel Performance</div>
+  <div class="section-title reveal reveal-delay-1">MARKETING AUDIT</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="kpi-stats reveal reveal-delay-2">
+    <div class="stat-card">
+      <div class="stat-num">4.2K</div>
+      <div class="stat-label">Total Followers</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">6.8%</div>
+      <div class="stat-label">Avg Engagement</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2,340</div>
+      <div class="stat-label">Monthly Traffic</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">₿180K</div>
+      <div class="stat-label">Monthly Spend</div>
+    </div>
+  </div>
+
+  <div class="cards-3 reveal reveal-delay-3">
+    <div class="card">
+      <div class="card-title">Instagram</div>
+      <div class="card-body">
+        <strong>Followers:</strong> 2,100<br>
+        <strong>Engagement:</strong> 8.2%<br>
+        <strong>Posting Frequency:</strong> 4x/week<br>
+        <strong>Top Content:</strong> Behind-the-scenes
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">TikTok</div>
+      <div class="card-body">
+        <strong>Followers:</strong> 1,240<br>
+        <strong>Engagement:</strong> 12.4%<br>
+        <strong>Posting Frequency:</strong> 3x/week<br>
+        <strong>Top Content:</strong> Quick recipes
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Email</div>
+      <div class="card-body">
+        <strong>Subscribers:</strong> 840<br>
+        <strong>Open Rate:</strong> 24.3%<br>
+        <strong>Click Rate:</strong> 3.1%<br>
+        <strong>Frequency:</strong> Bi-weekly
+      </div>
+    </div>
+  </div>
+
+  <div class="alert-box reveal reveal-delay-4">
+    <p>⚠️ INSIGHT: TikTok drives 42% higher engagement than Instagram. Recommend shifting 30% of content budget from IG to TikTok for 90 days.</p>
+  </div>
+</section>
+
+<!-- ── 04 COMPETITIVE ANALYSIS ── -->
+<section id="competitive">
+  <div class="section-label reveal">04 — Market Position</div>
+  <div class="section-title reveal reveal-delay-1">COMPETITIVE ANALYSIS</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-2 reveal reveal-delay-2">
+    <div class="card">
+      <div class="card-title">Market Position</div>
+      <div class="card-body">
+        <strong>TAM (Total Addressable Market):</strong> ฿2.4B<br>
+        <strong>Your Share:</strong> 0.8% (฿19M)<br>
+        <strong>Competitive Intensity:</strong> High<br>
+        <strong>Growth Potential:</strong> 3-5x by 2027
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Competitive Advantage</div>
+      <div class="card-body">
+        <strong>Unique Ritual:</strong> Only sauce-first brand<br>
+        <strong>Premium Positioning:</strong> ฿500-750 range<br>
+        <strong>Audience Loyalty:</strong> 68% repeat rate<br>
+        <strong>Content Quality:</strong> 3x higher engagement
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px;" class="reveal reveal-delay-3">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:20px;color:var(--cream)">Competitive Landscape</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Competitor</th>
+          <th>Positioning</th>
+          <th>Price Point</th>
+          <th>Social Followers</th>
+          <th>Weakness</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Shake Shack</strong></td>
+          <td>Premium / Casual</td>
+          <td>฿480-620</td>
+          <td>18.2K</td>
+          <td>No ritual, generic</td>
+        </tr>
+        <tr>
+          <td><strong>Daniel Thaiger</strong></td>
+          <td>Local Legend</td>
+          <td>฿420-550</td>
+          <td>24.1K</td>
+          <td>No sauce story</td>
+        </tr>
+        <tr>
+          <td><strong>Habit Burger</strong></td>
+          <td>Health Focused</td>
+          <td>฿350-480</td>
+          <td>8.9K</td>
+          <td>Bland positioning</td>
+        </tr>
+        <tr>
+          <td><strong>SALSA (You)</strong></td>
+          <td>Sauce-First</td>
+          <td>฿520-760</td>
+          <td>4.2K</td>
+          <td>Early stage / unknown</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 05 INVESTOR DECK ── -->
+<section id="investor">
+  <div class="section-label reveal">05 — Financials & Projections</div>
+  <div class="section-title reveal reveal-delay-1">INVESTOR DECK</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="kpi-stats reveal reveal-delay-2">
+    <div class="stat-card">
+      <div class="stat-num">฿2.5M</div>
+      <div class="stat-label">Month 1 Target</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">120</div>
+      <div class="stat-label">Orders/Day Goal</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">42%</div>
+      <div class="stat-label">Gross Margin</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">18mo</div>
+      <div class="stat-label">Breakeven Target</div>
+    </div>
+  </div>
+
+  <div class="content-box reveal reveal-delay-3">
+    <p><strong>Series A Target:</strong> ฿8-12M seed round</p>
+    <p><strong>Use of Funds:</strong> 40% Marketing | 35% Ops/Kitchen | 15% Tech | 10% Working Capital</p>
+    <p><strong>Investor Story:</strong> Bangkok's first 'experience-driven' burger brand. Not just food — theater. Defensible ritual, premium positioning, 3.5x growth trajectory vs. commoditized competitors.</p>
+  </div>
+
+  <div style="margin-top:48px;" class="reveal reveal-delay-4">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:20px;color:var(--cream)">12-Month Financial Projections</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Month</th>
+          <th>Orders/Day</th>
+          <th>Revenue</th>
+          <th>COGS</th>
+          <th>Gross Profit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Month 1</strong></td>
+          <td>120</td>
+          <td>฿2,500,000</td>
+          <td>฿1,425,000</td>
+          <td>฿1,075,000</td>
+        </tr>
+        <tr>
+          <td><strong>Month 3</strong></td>
+          <td>180</td>
+          <td>฿3,750,000</td>
+          <td>฿2,137,500</td>
+          <td>฿1,612,500</td>
+        </tr>
+        <tr>
+          <td><strong>Month 6</strong></td>
+          <td>240</td>
+          <td>฿5,000,000</td>
+          <td>฿2,850,000</td>
+          <td>฿2,150,000</td>
+        </tr>
+        <tr>
+          <td><strong>Month 12</strong></td>
+          <td>300</td>
+          <td>฿6,240,000</td>
+          <td>฿3,557,000</td>
+          <td>฿2,683,000</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 06 BRANDBOOK ── -->
+<section id="brandbook">
+  <div class="section-label reveal">06 — Identity System</div>
+  <div class="section-title reveal reveal-delay-1">BRANDBOOK</div>
+  <div class="section-subtitle reveal reveal-delay-2">Complete brand standards + content system</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-3 reveal reveal-delay-2">
+    <div class="card">
+      <div class="card-title">Color Palette</div>
+      <div class="card-body">
+        <strong>Primary:</strong> #FF4500 (Bold Orange)<br>
+        <strong>Secondary:</strong> #1A1A1A (Deep Black)<br>
+        <strong>Accent:</strong> #F5F0E8 (Cream)<br>
+        <strong>Usage:</strong> High contrast only
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Typography</div>
+      <div class="card-body">
+        <strong>Display:</strong> Anton (Headlines)<br>
+        <strong>Body:</strong> Inter (Text)<br>
+        <strong>Mono:</strong> Space Mono (Code/Data)<br>
+        <strong>Hierarchy:</strong> Bold, clean, direct
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Voice & Tone</div>
+      <div class="card-body">
+        <strong>Tone:</strong> Irreverent, bold, command-driven<br>
+        <strong>Key Phrases:</strong> 'DIP IT' · 'ORDER NOW'<br>
+        <strong>Never:</strong> Generic foodie speak<br>
+        <strong>Energy:</strong> Urgent, direct, actionable
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px;" class="reveal reveal-delay-3">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:20px;color:var(--cream)">Brand Core Values</h3>
+    <div class="cards-3">
+      <div class="content-box">
+        <p><strong>🎭 Theater First</strong></p>
+        <p>Not just food. An experience. The ritual is the message.</p>
+      </div>
+      <div class="content-box">
+        <p><strong>🔥 Sauce is King</strong></p>
+        <p>18 artisan sauces made fresh daily. The sauce, not the burger, drives the ritual.</p>
+      </div>
+      <div class="content-box">
+        <p><strong>🌟 Premium Only</strong></p>
+        <p>100% Wagyu beef. No shortcuts. No discounts. Price = quality.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── 07 CONTENT PACK ── -->
+<section id="content-pack">
+  <div class="section-label reveal">07 — Publishing System</div>
+  <div class="section-title reveal reveal-delay-1">CONTENT PACK</div>
+  <div class="section-subtitle reveal reveal-delay-2">8 content pillars · 100+ ready-to-publish assets</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="kpi-stats reveal reveal-delay-2">
+    <div class="stat-card">
+      <div class="stat-num">8</div>
+      <div class="stat-label">Content Pillars</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">100+</div>
+      <div class="stat-label">Ready Posts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">24</div>
+      <div class="stat-label">Reel Scripts</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">12</div>
+      <div class="stat-label">Monthly Plans</div>
+    </div>
+  </div>
+
+  <div class="content-box reveal reveal-delay-3">
+    <p><strong>Pillar 1: Drive Craving</strong> — Food porn, cinematic close-ups, sauce textures</p>
+    <p><strong>Pillar 2: Ritual & Packaging</strong> — Gloves, unboxing, sauce sequence</p>
+    <p><strong>Pillar 3: Brand Cult</strong> — Character-driven campaigns (Stranger, Blockbuster, etc.)</p>
+    <p><strong>Pillar 4-8:</strong> Trust, Phrases, Icons, News, Iconic Moments</p>
+  </div>
+
+  <div style="margin-top:48px;" class="reveal reveal-delay-4">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:20px;color:var(--cream)">Content Calendar — April 2026</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Week</th>
+          <th>Theme</th>
+          <th>Posts</th>
+          <th>Reels</th>
+          <th>Story Series</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Week 1</strong></td>
+          <td>Launch Week</td>
+          <td>6 posts</td>
+          <td>3 reels</td>
+          <td>Grand Opening</td>
+        </tr>
+        <tr>
+          <td><strong>Week 2</strong></td>
+          <td>Sauce Focus</td>
+          <td>5 posts</td>
+          <td>2 reels</td>
+          <td>Sauce Profiles</td>
+        </tr>
+        <tr>
+          <td><strong>Week 3</strong></td>
+          <td>Character Campaign</td>
+          <td>6 posts</td>
+          <td>3 reels</td>
+          <td>Stranger Burgers</td>
+        </tr>
+        <tr>
+          <td><strong>Week 4</strong></td>
+          <td>Social Proof</td>
+          <td>5 posts</td>
+          <td>2 reels</td>
+          <td>Customer Stories</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 08 ACTION PLAN ── -->
+<section id="action-plan" style="background:#111;">
+  <div class="section-label reveal">08 — Next Steps</div>
+  <div class="section-title reveal reveal-delay-1">ACTION PLAN</div>
+  <div class="section-subtitle reveal reveal-delay-2">90-day execution roadmap · Priorities & timelines</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div style="margin-bottom:48px;" class="reveal reveal-delay-2">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:24px;color:var(--cream)">30-Day Sprint</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Phase</th>
+          <th>Action</th>
+          <th>Owner</th>
+          <th>Deadline</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Week 1</strong></td>
+          <td>Finalize menu & pricing</td>
+          <td>Operations</td>
+          <td>Day 7</td>
+          <td><span class="badge badge-info">In Progress</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 1-2</strong></td>
+          <td>Set up social + email</td>
+          <td>Marketing</td>
+          <td>Day 14</td>
+          <td><span class="badge badge-info">In Progress</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 2</strong></td>
+          <td>Launch SEO + brand site</td>
+          <td>Digital</td>
+          <td>Day 14</td>
+          <td><span class="badge badge-success">Ready</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 3-4</strong></td>
+          <td>Run pre-launch campaign</td>
+          <td>Marketing</td>
+          <td>Day 28</td>
+          <td><span class="badge badge-warning">Planned</span></td>
+        </tr>
+        <tr>
+          <td><strong>Week 4</strong></td>
+          <td>SOFT LAUNCH</td>
+          <td>All Teams</td>
+          <td>Day 28</td>
+          <td><span class="badge badge-warning">Planned</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-bottom:48px;" class="reveal reveal-delay-3">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;text-transform:uppercase;margin-bottom:24px;color:var(--cream)">60-90 Day Roadmap</h3>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Period</th>
+          <th>Key Goals</th>
+          <th>Metrics</th>
+          <th>Investment</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Month 2</strong></td>
+          <td>Stabilize ops · Build social · Optimize menu</td>
+          <td>120 orders/day · 4K followers · 6% engagement</td>
+          <td>฿400K</td>
+        </tr>
+        <tr>
+          <td><strong>Month 3</strong></td>
+          <td>Scale marketing · Expand content · Influencer outreach</td>
+          <td>180 orders/day · 8K followers · 8% engagement</td>
+          <td>฿350K</td>
+        </tr>
+        <tr>
+          <td><strong>Month 4-6</strong></td>
+          <td>Paid ads optimization · New menu items · Expand beyond Sathorn</td>
+          <td>240+ orders/day · 15K followers · +50% repeat rate</td>
+          <td>฿800K</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="alert-box reveal reveal-delay-4">
+    <p>✅ SUCCESS METRICS: Hit 120 orders/day by end of Month 1. Achieve 68% repeat customer rate. Grow social to 8K followers. Maintain 42% gross margin across all channels.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer reveal reveal-delay-5">
+  <p>© 2026 MIRA Toolkit. All reports generated with AI intelligence.</p>
+  <p>Last updated: 12 July 2026 · Version 1.0</p>
+</footer>
+
+</main>
+
+<script>
+// Reveal animation on scroll
+const reveals = document.querySelectorAll('.reveal');
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -100px 0px' };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+reveals.forEach(el => observer.observe(el));
+
+// Active nav dot on scroll
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('section');
+  const navDots = document.querySelectorAll('.nav-dot');
+  let current = '';
+  sections.forEach(section => {
+    const sectionTop = section.offsetTop;
+    if (pageYOffset >= sectionTop - 200) {
+      current = section.getAttribute('id');
+    }
+  });
+  navDots.forEach(dot => {
+    dot.classList.remove('active');
+    if (dot.getAttribute('href').slice(1) === current) {
+      dot.classList.add('active');
+    }
+  });
+});
+
+// Chart.js for doughnut chart if needed (placeholder)
+const ctx = document.getElementById('pillarsChart');
+if (ctx) {
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Drive Craving', 'Ritual', 'Brand Cult', 'Trust', 'Phrases', 'Icons', 'News', 'Moments'],
+      datasets: [{
+        data: [15, 12, 14, 13, 11, 12, 13, 15],
+        backgroundColor: [
+          '#FF4500', '#FF6A00', '#FF8C00', '#FFA500',
+          '#FFB732', '#CC3700', '#993300', '#662200'
+        ],
+        borderColor: '#1A1A1A',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: { display: false }
+      }
+    }
+  });
+}
+</script>
+
+</body>
+</html>

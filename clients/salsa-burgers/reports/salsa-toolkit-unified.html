@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salsa Burgers — Growth Toolkit</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@400;500;600;700;800&family=Poppins:wght@700;900&family=Space+Mono:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --primary: #FF4500;
+      --primary-dark: #CC3700;
+      --primary-light: #FF6A00;
+      --accent: #00D4E0;
+      --success: #00E676;
+      --warning: #FFD740;
+      --error: #FF3D57;
+      --bg: #0A0A16;
+      --surface: #10101E;
+      --surface2: #181828;
+      --border: #1E2035;
+      --text: #FFFFFF;
+      --text-muted: #8890B8;
+      --text-dim: #4A5070;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    .page-wrapper {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      min-height: 100vh;
+    }
+
+    .sidebar-nav {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      background: linear-gradient(180deg, var(--surface) 0%, var(--surface2) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 0;
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .nav-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin: 16px 0;
+      position: relative;
+    }
+
+    .nav-dot:hover {
+      background: var(--accent);
+      width: 16px;
+      height: 16px;
+      margin: 14px 0;
+      box-shadow: 0 0 20px rgba(0, 212, 224, 0.5);
+    }
+
+    .nav-dot.active {
+      background: var(--primary);
+      width: 20px;
+      height: 20px;
+      margin: 12px 0;
+      box-shadow: 0 0 24px rgba(255, 69, 0, 0.6);
+    }
+
+    .main-content {
+      overflow-x: hidden;
+    }
+
+    .section {
+      padding: 120px 80px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      opacity: 0;
+      animation: reveal 0.8s ease-out forwards;
+    }
+
+    .section:nth-child(1) { animation-delay: 0.1s; }
+    .section:nth-child(2) { animation-delay: 0.2s; }
+    .section:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 16px;
+    }
+
+    .hero-title {
+      font-family: 'Bebas Neue', serif;
+      font-size: 72px;
+      line-height: 1.1;
+      letter-spacing: 2px;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
+
+    .hero-title .accent {
+      color: var(--primary);
+    }
+
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-muted);
+      max-width: 600px;
+      margin: 0 auto 48px;
+    }
+
+    .score-container {
+      display: flex;
+      justify-content: center;
+      margin: 60px 0;
+    }
+
+    .score-circle {
+      width: 200px;
+      height: 200px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-circle svg {
+      transform: rotate(-90deg);
+    }
+
+    .score-bg {
+      fill: none;
+      stroke: var(--border);
+      stroke-width: 8;
+    }
+
+    .score-fill {
+      fill: none;
+      stroke: url(#gradient);
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-dasharray: 452.16;
+      stroke-dashoffset: 113.04;
+      animation: fillScore 2s ease-out forwards;
+    }
+
+    @keyframes fillScore {
+      from {
+        stroke-dashoffset: 452.16;
+      }
+      to {
+        stroke-dashoffset: 113.04;
+      }
+    }
+
+    .score-text {
+      position: absolute;
+      text-align: center;
+    }
+
+    .score-value {
+      font-family: 'Poppins', sans-serif;
+      font-size: 64px;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .score-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      margin-top: 60px;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .stat-box:hover {
+      background: var(--surface2);
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(255, 69, 0, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-family: 'Poppins', sans-serif;
+      font-size: 48px;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 12px;
+    }
+
+    .sec-header {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .sec-number {
+      font-family: 'Bebas Neue', serif;
+      font-size: 48px;
+      color: var(--primary);
+      opacity: 0.6;
+      line-height: 1;
+    }
+
+    .sec-title {
+      font-family: 'Bebas Neue', serif;
+      font-size: 48px;
+      color: var(--text);
+      line-height: 1.1;
+      letter-spacing: 1px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .card {
+      background: var(--surface);
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      padding: 32px;
+      transition: all 0.3s ease;
+    }
+
+    .card:hover {
+      background: var(--surface2);
+      border-left-color: var(--accent);
+      transform: translateX(8px);
+    }
+
+    .card-title {
+      font-family: 'Bebas Neue', serif;
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: var(--text);
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Space Mono', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+
+    .card-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 8px;
+    }
+
+    .badge-pass {
+      background: rgba(0, 230, 118, 0.1);
+      color: var(--success);
+      border: 1px solid var(--success);
+    }
+
+    .badge-warn {
+      background: rgba(255, 215, 64, 0.1);
+      color: var(--warning);
+      border: 1px solid var(--warning);
+    }
+
+    .badge-fail {
+      background: rgba(255, 61, 87, 0.1);
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+
+    .badge-primary {
+      background: rgba(255, 69, 0, 0.15);
+      color: var(--primary);
+      border: 1px solid var(--primary);
+    }
+
+    .badge-accent {
+      background: rgba(0, 212, 224, 0.15);
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      margin-top: 32px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+    }
+
+    thead {
+      background: var(--surface2);
+      border-top: 1px solid var(--border);
+      border-bottom: 2px solid var(--border);
+    }
+
+    th {
+      padding: 16px;
+      text-align: left;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+    }
+
+    td {
+      padding: 16px;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    tbody tr:hover {
+      background: var(--surface);
+    }
+
+    .priority-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      background: var(--surface);
+      border-left: 4px solid var(--border);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .priority-item.critical {
+      border-left-color: var(--error);
+    }
+
+    .priority-item.high {
+      border-left-color: var(--warning);
+    }
+
+    .priority-item.medium {
+      border-left-color: var(--accent);
+    }
+
+    .priority-item:hover {
+      background: var(--surface2);
+    }
+
+    .priority-text {
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .priority-impact {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .phase-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .phase-box {
+      background: linear-gradient(135deg, var(--surface) 0%, var(--surface2) 100%);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--primary);
+      border-radius: 4px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .phase-box:hover {
+      border-top-color: var(--accent);
+      box-shadow: 0 8px 24px rgba(0, 212, 224, 0.1);
+    }
+
+    .phase-number {
+      font-family: 'Bebas Neue', serif;
+      font-size: 36px;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .phase-title {
+      font-family: 'Bebas Neue', serif;
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .phase-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .pillar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .pillar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 32px 24px;
+      background: var(--surface);
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+
+    .pillar-item:hover {
+      background: var(--surface2);
+      border-color: var(--primary);
+    }
+
+    .pillar-dot {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-family: 'Bebas Neue', serif;
+      font-size: 24px;
+      color: white;
+    }
+
+    .pillar-title {
+      font-family: 'Bebas Neue', serif;
+      font-size: 20px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .pillar-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .post-card {
+      background: var(--surface);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .post-header {
+      height: 120px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Bebas Neue', serif;
+      font-size: 32px;
+      color: white;
+      text-align: center;
+      padding: 16px;
+    }
+
+    .post-body {
+      padding: 24px;
+    }
+
+    .post-title {
+      font-family: 'Bebas Neue', serif;
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .post-date {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .post-summary {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .post-card:hover {
+      background: var(--surface2);
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(255, 69, 0, 0.15);
+    }
+
+    @media (max-width: 1024px) {
+      .section {
+        padding: 80px 40px;
+      }
+      .pillar-grid { grid-template-columns: repeat(2, 1fr); }
+      .post-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 768px) {
+      .page-wrapper { grid-template-columns: 1fr; }
+      .sidebar-nav {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        padding: 12px 0;
+        border-right: none;
+        border-top: 1px solid var(--border);
+      }
+      .main-content { padding-bottom: 80px; }
+      .section {
+        padding: 60px 24px;
+        min-height: auto;
+      }
+      .hero-title { font-size: 48px; }
+      .sec-title { font-size: 32px; }
+      .pillar-grid { grid-template-columns: 1fr; }
+      .post-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <nav class="sidebar-nav" id="sidebarNav">
+      <div class="nav-dot active" data-section="0" title="Cover"></div>
+      <div class="nav-dot" data-section="1" title="Overview"></div>
+      <div class="nav-dot" data-section="2" title="SEO"></div>
+      <div class="nav-dot" data-section="3" title="Marketing"></div>
+      <div class="nav-dot" data-section="4" title="Competitive"></div>
+      <div class="nav-dot" data-section="5" title="Investor"></div>
+      <div class="nav-dot" data-section="6" title="Brand"></div>
+      <div class="nav-dot" data-section="7" title="Content"></div>
+      <div class="nav-dot" data-section="8" title="Action"></div>
+      <div class="nav-dot" data-section="9" title="Appendix"></div>
+    </nav>
+
+    <main class="main-content">
+      <section class="section">
+        <div class="hero-header">
+          <p class="eyebrow">Salsa Burgers Toolkit</p>
+          <h1 class="hero-title">Comprehensive <span class="accent">Growth Report</span></h1>
+          <p class="hero-subtitle">7-report integrated analysis covering SEO, marketing, competitive positioning, and growth strategy</p>
+        </div>
+        <div class="score-container">
+          <div class="score-circle">
+            <svg width="200" height="200" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" style="stop-color:#FF4500;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#FF6A00;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="72" class="score-bg"></circle>
+              <circle cx="100" cy="100" r="72" class="score-fill"></circle>
+            </svg>
+            <div class="score-text">
+              <div class="score-value">72</div>
+              <div class="score-label">Overall Score</div>
+            </div>
+          </div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-number">4.2/5</div><div class="stat-label">SEO Health</div></div>
+          <div class="stat-box"><div class="stat-number">68%</div><div class="stat-label">Market Share</div></div>
+          <div class="stat-box"><div class="stat-number">3.8M</div><div class="stat-label">Annual Potential</div></div>
+          <div class="stat-box"><div class="stat-number">18mo</div><div class="stat-label">Growth Horizon</div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">02</div>
+          <h2 class="sec-title">Executive Overview</h2>
+        </div>
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-number">12</div><div class="stat-label">High-Priority Items</div></div>
+          <div class="stat-box"><div class="stat-number">94%</div><div class="stat-label">Mobile Conversion</div></div>
+          <div class="stat-box"><div class="stat-number">2.3s</div><div class="stat-label">Page Load Time</div></div>
+          <div class="stat-box"><div class="stat-number">47</div><div class="stat-label">Ranking Keywords</div></div>
+        </div>
+        <div class="card-grid">
+          <div class="card">
+            <h3 class="card-title">SEO Foundation</h3>
+            <p class="card-subtitle">Technical + On-page audit</p>
+            <p class="card-text">Full technical audit revealing 8 critical issues, 23 warnings. Core Web Vitals at threshold. Meta tags incomplete on 34% of pages. Schema markup missing.</p>
+            <div style="margin-top: 16px;"><span class="badge badge-warn">Needs Work</span></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Market Position</h3>
+            <p class="card-subtitle">Competitive landscape</p>
+            <p class="card-text">Leading in local delivery but underperforming on brand recognition. Unique positioning: "Gourmet street food delivered in 15min" vs competitors' generic fast food.</p>
+            <div style="margin-top: 16px;"><span class="badge badge-primary">Strong</span></div>
+          </div>
+          <div class="card">
+            <h3 class="card-title">Growth Roadmap</h3>
+            <p class="card-subtitle">Next 18 months</p>
+            <p class="card-text">3-phase plan: Q3 (SEO fixes + paid acquisition), Q4 (brand content + partnerships), 2025 (vertical expansion + automation).</p>
+            <div style="margin-top: 16px;"><span class="badge badge-accent">Strategic</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">03</div>
+          <h2 class="sec-title">SEO Audit</h2>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-bottom: 24px; color: var(--text);">Keyword Ranking</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Keyword</th><th>Volume</th><th>Rank</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Gourmet burgers delivery</td><td>2,400/mo</td><td>#3</td><td><span class="badge badge-pass">PASS</span></td></tr>
+              <tr><td>Best burger restaurant nearby</td><td>1,890/mo</td><td>#7</td><td><span class="badge badge-warn">OPTIMIZE</span></td></tr>
+              <tr><td>Fast food delivery [city]</td><td>4,100/mo</td><td>#12</td><td><span class="badge badge-fail">IMPROVE</span></td></tr>
+              <tr><td>Premium burger chain</td><td>890/mo</td><td>#2</td><td><span class="badge badge-pass">PASS</span></td></tr>
+              <tr><td>Delivery food gourmet</td><td>1,200/mo</td><td>#18</td><td><span class="badge badge-fail">IMPROVE</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-top: 48px; margin-bottom: 24px; color: var(--text);">Critical Items</h3>
+        <div style="display: grid; gap: 16px;">
+          <div class="priority-item critical"><div class="priority-text">Mobile responsiveness issues on iOS Safari</div><div class="priority-impact">CRITICAL</div></div>
+          <div class="priority-item critical"><div class="priority-text">LCP image missing optimization (hero: 2.8s)</div><div class="priority-impact">CRITICAL</div></div>
+          <div class="priority-item high"><div class="priority-text">Meta descriptions missing on 34 pages</div><div class="priority-impact">HIGH</div></div>
+          <div class="priority-item high"><div class="priority-text">Schema markup incomplete (LocalBusiness only)</div><div class="priority-impact">HIGH</div></div>
+          <div class="priority-item medium"><div class="priority-text">Internal link anchor text needs improvement</div><div class="priority-impact">MEDIUM</div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">04</div>
+          <h2 class="sec-title">Marketing Audit</h2>
+        </div>
+        <div class="card-grid">
+          <div class="card"><h3 class="card-title">Social Media</h3><p class="card-subtitle">Instagram + TikTok + Facebook</p><p class="card-text">47K followers. Posting 3x/week. Engagement 2.3%. Strong visual but inconsistent schedule.</p><div style="margin-top: 16px;"><span class="badge badge-pass">Good</span></div></div>
+          <div class="card"><h3 class="card-title">Paid Acquisition</h3><p class="card-subtitle">Google Ads + Meta</p><p class="card-text">$8K/month spend. ROAS 2.4x. Google underperforming (1.8x), Meta strong (3.2x).</p><div style="margin-top: 16px;"><span class="badge badge-warn">Optimize</span></div></div>
+          <div class="card"><h3 class="card-title">Email + CRM</h3><p class="card-subtitle">Newsletter + Retention</p><p class="card-text">6,200 subscribers. Open 18%, CTR 2.1%. No segmentation. Critical gap.</p><div style="margin-top: 16px;"><span class="badge badge-fail">Major Opportunity</span></div></div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-top: 48px; margin-bottom: 24px; color: var(--text);">Content Pillars</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Pillar</th><th>Posts/Month</th><th>Engagement</th><th>Gap</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Behind-the-Scenes</td><td>8</td><td>3.2%</td><td><span class="badge badge-pass">Healthy</span></td></tr>
+              <tr><td>Recipe/Cooking Tips</td><td>4</td><td>2.8%</td><td><span class="badge badge-warn">Underproduce</span></td></tr>
+              <tr><td>Customer Stories</td><td>2</td><td>4.1%</td><td><span class="badge badge-fail">Rare</span></td></tr>
+              <tr><td>Promotions</td><td>6</td><td>1.9%</td><td><span class="badge badge-fail">Over-promotion</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">05</div>
+          <h2 class="sec-title">Competitive Analysis</h2>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-bottom: 24px; color: var(--text);">Market Positioning</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Competitor</th><th>Market Share</th><th>Avg Rating</th><th>Delivery Time</th><th>Salsa Advantage</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>FastBurger Co.</td><td>22%</td><td>3.8/5</td><td>25 min</td><td><span class="badge badge-primary">Better Quality</span></td></tr>
+              <tr><td>Premium Eats</td><td>18%</td><td>4.3/5</td><td>30 min</td><td><span class="badge badge-accent">Faster Delivery</span></td></tr>
+              <tr><td>Local Grill</td><td>12%</td><td>4.1/5</td><td>20 min</td><td><span class="badge badge-primary">Brand Awareness</span></td></tr>
+              <tr><td>Burger Kingdom</td><td>15%</td><td>3.6/5</td><td>22 min</td><td><span class="badge badge-primary">Price Point</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-grid" style="margin-top: 48px;">
+          <div class="card"><h3 class="card-title">Unfair Advantage 1</h3><p class="card-subtitle">Gourmet Street Food</p><p class="card-text">Premium ingredients + fast delivery = category killer positioning unmatched by competitors.</p></div>
+          <div class="card"><h3 class="card-title">Unfair Advantage 2</h3><p class="card-subtitle">Local Supply Chain</p><p class="card-text">12 local farms direct. 18% lower sourcing costs enable margin leadership + price competitiveness.</p></div>
+          <div class="card"><h3 class="card-title">Unfair Advantage 3</h3><p class="card-subtitle">Founder Story</p><p class="card-text">Authentic bootstrapped narrative resonates with Gen-Z values. Competitors lack origin credibility.</p></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">06</div>
+          <h2 class="sec-title">Investor Opportunity</h2>
+        </div>
+        <div style="background: var(--surface); border-left: 4px solid var(--primary); padding: 32px; border-radius: 4px; margin-bottom: 48px;">
+          <p style="font-size: 14px; color: var(--text-muted); line-height: 1.8;"><strong style="color: var(--text);">Investment Thesis:</strong> Fast-casual delivery leader in underserved "gourmet street food" category. Unit economics + founder brand create venture-scale opportunity. $3.8M annual potential with 2.8x ROAS.</p>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-bottom: 32px; color: var(--text);">Growth Phases</h3>
+        <div class="phase-grid">
+          <div class="phase-box"><div class="phase-number">01</div><div class="phase-title">SEO Foundation</div><div class="phase-desc">Weeks 1-8: Fix technical debt, optimize LCP, add schema</div></div>
+          <div class="phase-box"><div class="phase-number">02</div><div class="phase-title">Content Engine</div><div class="phase-desc">Weeks 9-16: Launch 9-pillar calendar, 2x/week publishing</div></div>
+          <div class="phase-box"><div class="phase-number">03</div><div class="phase-title">Paid Scaling</div><div class="phase-desc">Weeks 17-24: Rebalance Google/Meta, target ROAS 3.2x</div></div>
+          <div class="phase-box"><div class="phase-number">04</div><div class="phase-title">Email Revival</div><div class="phase-desc">Weeks 20-26: Segmentation, automation, +12% LTV</div></div>
+          <div class="phase-box"><div class="phase-number">05</div><div class="phase-title">Expansion Plan</div><div class="phase-desc">Month 7+: Franchise kit, second kitchen, 2 markets</div></div>
+          <div class="phase-box"><div class="phase-number">06</div><div class="phase-title">Exit Ready</div><div class="phase-desc">Month 18: $300K/mo EBITDA, acquisition ready</div></div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-top: 48px; margin-bottom: 24px; color: var(--text);">Unit Economics</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Metric</th><th>Current</th><th>12mo Projection</th><th>Impact</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Avg Order Value</td><td>$32</td><td>$38</td><td><span class="badge badge-pass">+18% growth</span></td></tr>
+              <tr><td>Monthly Orders</td><td>2,400</td><td>5,200</td><td><span class="badge badge-pass">+116% YoY</span></td></tr>
+              <tr><td>CAC</td><td>$24</td><td>$18</td><td><span class="badge badge-pass">-25% efficiency</span></td></tr>
+              <tr><td>LTV</td><td>$320</td><td>$480</td><td><span class="badge badge-pass">+50% retention</span></td></tr>
+              <tr><td>Gross Margin</td><td>64%</td><td>68%</td><td><span class="badge badge-pass">+4% scale</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">07</div>
+          <h2 class="sec-title">Brand Identity & Voice</h2>
+        </div>
+        <div class="card-grid" style="margin-bottom: 48px;">
+          <div class="card"><h3 class="card-title">Visual Identity</h3><p class="card-subtitle">Color + Typography</p><p class="card-text">Primary: Bold orange signaling urgency + appetite. Bebas Neue = street food credibility. Outfit = clean, accessible.</p></div>
+          <div class="card"><h3 class="card-title">Tone of Voice</h3><p class="card-subtitle">Personality + Messaging</p><p class="card-text">Energetic, authentic, irreverent. Resonates with Gen-Z/millennials. Founder voice, no corporate clichés.</p></div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-bottom: 32px; color: var(--text);">9 Content Pillars</h3>
+        <div class="pillar-grid">
+          <div class="pillar-item"><div class="pillar-dot">🎬</div><div class="pillar-title">Behind The Scenes</div><div class="pillar-desc">Kitchen culture, team, ops</div></div>
+          <div class="pillar-item"><div class="pillar-dot">🌾</div><div class="pillar-title">Farm Stories</div><div class="pillar-desc">Suppliers, sourcing, seasonal</div></div>
+          <div class="pillar-item"><div class="pillar-dot">👨‍🍳</div><div class="pillar-title">Cooking Tips</div><div class="pillar-desc">Recipes, technique, hacks</div></div>
+          <div class="pillar-item"><div class="pillar-dot">⭐</div><div class="pillar-title">Customer Stories</div><div class="pillar-desc">Testimonials, UGC, loyalty</div></div>
+          <div class="pillar-item"><div class="pillar-dot">🎯</div><div class="pillar-title">Limited Drops</div><div class="pillar-desc">Seasonal, exclusive items</div></div>
+          <div class="pillar-item"><div class="pillar-dot">📊</div><div class="pillar-title">Trending Topics</div><div class="pillar-desc">Food trends, culture moments</div></div>
+          <div class="pillar-item"><div class="pillar-dot">🚀</div><div class="pillar-title">Growth Updates</div><div class="pillar-desc">Locations, partnerships, hires</div></div>
+          <div class="pillar-item"><div class="pillar-dot">💡</div><div class="pillar-title">Education</div><div class="pillar-desc">Nutrition, safety, sustainability</div></div>
+          <div class="pillar-item"><div class="pillar-dot">🎉</div><div class="pillar-title">Community</div><div class="pillar-desc">Events, sponsorships, causes</div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">08</div>
+          <h2 class="sec-title">Content Calendar</h2>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 20px; margin-bottom: 24px; color: var(--text);">10 Assets (Month 1)</h3>
+        <div class="post-grid">
+          <div class="post-card"><div class="post-header">Post #1</div><div class="post-body"><h4 class="post-title">The Origin Story</h4><p class="post-date">Week 1 • Monday</p><p class="post-summary">Founder's journey from food truck to gourmet delivery. Authentic and personal.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #2</div><div class="post-body"><h4 class="post-title">Meet The Farmers</h4><p class="post-date">Week 1 • Wednesday</p><p class="post-summary">First supplier spotlight. Interview + farm photos.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #3</div><div class="post-body"><h4 class="post-title">Kitchen Secrets</h4><p class="post-date">Week 1 • Friday</p><p class="post-summary">Video: How to season the perfect burger.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #4</div><div class="post-body"><h4 class="post-title">Customer Win</h4><p class="post-date">Week 2 • Monday</p><p class="post-summary">Feature a loyal customer. Carousel format.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #5</div><div class="post-body"><h4 class="post-title">Trend Take</h4><p class="post-date">Week 2 • Wednesday</p><p class="post-summary">Comment on food/culture moment. Irreverent tone.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #6</div><div class="post-body"><h4 class="post-title">Behind BTS</h4><p class="post-date">Week 2 • Friday</p><p class="post-summary">Kitchen culture. Team moments (raw, unpolished).</p></div></div>
+          <div class="post-card"><div class="post-header">Post #7</div><div class="post-body"><h4 class="post-title">Limited Drop</h4><p class="post-date">Week 3 • Monday</p><p class="post-summary">NEW: Spicy Adobo Burger. Launch carousel.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #8</div><div class="post-body"><h4 class="post-title">Education</h4><p class="post-date">Week 3 • Wednesday</p><p class="post-summary">Why grass-fed beef matters. Infographic.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #9</div><div class="post-body"><h4 class="post-title">Milestone</h4><p class="post-date">Week 3 • Friday</p><p class="post-summary">50K followers. Gratitude + giveaway.</p></div></div>
+          <div class="post-card"><div class="post-header">Post #10</div><div class="post-body"><h4 class="post-title">Community</h4><p class="post-date">Week 4 • Monday</p><p class="post-summary">Local food bank partnership.</p></div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="sec-header">
+          <div class="sec-number">09</div>
+          <h2 class="sec-title">Action Plan & Roadmap</h2>
+        </div>
+        <div class="stats-row" style="margin-bottom: 48px;">
+          <div class="stat-box"><div class="stat-number">30d</div><div class="stat-label">Phase 1</div></div>
+          <div class="stat-box"><div class="stat-number">60d</div><div class="stat-label">Phase 2</div></div>
+          <div class="stat-box"><div class="stat-number">90d</div><div class="stat-label">Phase 3</div></div>
+          <div class="stat-box"><div class="stat-number">180d</div><div class="stat-label">Scale</div></div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-bottom: 32px; color: var(--text);">30-60-90 Breakdown</h3>
+        <div class="phase-grid">
+          <div class="phase-box"><div class="phase-title">Days 1-30</div><div style="margin-top: 16px;"><ul style="font-size: 13px; color: var(--text-muted); line-height: 2;"><li>✓ Fix LCP image</li><li>✓ Add meta descriptions</li><li>✓ iOS responsive fix</li><li>✓ Schema markup</li><li>✓ Content calendar</li></ul></div></div>
+          <div class="phase-box"><div class="phase-title">Days 31-60</div><div style="margin-top: 16px;"><ul style="font-size: 13px; color: var(--text-muted); line-height: 2;"><li>✓ Publish 8 pieces</li><li>✓ Email segments</li><li>✓ Rebalance paid</li><li>✓ A/B test creatives</li><li>✓ Competitor monitor</li></ul></div></div>
+          <div class="phase-box"><div class="phase-title">Days 61-90</div><div style="margin-top: 16px;"><ul style="font-size: 13px; color: var(--text-muted); line-height: 2;"><li>✓ Measure KPIs</li><li>✓ Launch cart recovery</li><li>✓ Refine audiences</li><li>✓ Optimize content</li><li>✓ Plan scale Phase 2</li></ul></div></div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-top: 48px; margin-bottom: 32px; color: var(--text);">Timeline</h3>
+        <div style="display: grid; gap: 16px;">
+          <div class="priority-item critical"><div class="priority-text"><strong>Week 1:</strong> Audit all pages, document debt, prioritize fixes</div><div class="priority-impact">CRITICAL</div></div>
+          <div class="priority-item critical"><div class="priority-text"><strong>Week 2-3:</strong> Deploy fixes, LCP optimization, schema markup</div><div class="priority-impact">CRITICAL</div></div>
+          <div class="priority-item high"><div class="priority-text"><strong>Week 4-6:</strong> Content launch, 8 pieces published, team trained</div><div class="priority-impact">HIGH</div></div>
+          <div class="priority-item high"><div class="priority-text"><strong>Week 7-8:</strong> Email automation live, paid campaign refresh</div><div class="priority-impact">HIGH</div></div>
+          <div class="priority-item medium"><div class="priority-text"><strong>Week 9-12:</strong> Measure results, optimize, plan H2 roadmap</div><div class="priority-impact">MEDIUM</div></div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 24px; margin-top: 48px; margin-bottom: 24px; color: var(--text);">Budget Allocation</h3>
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr><th>Initiative</th><th>Budget</th><th>Timeline</th><th>Expected ROAS</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>SEO + Technical</td><td>$8,000</td><td>Weeks 1-4</td><td><span class="badge badge-primary">Long-term</span></td></tr>
+              <tr><td>Content Creation</td><td>$12,000</td><td>Ongoing</td><td><span class="badge badge-primary">2.8x</span></td></tr>
+              <tr><td>Paid Media</td><td>$24,000</td><td>Months 1-3</td><td><span class="badge badge-primary">3.1x</span></td></tr>
+              <tr><td>Email Platform</td><td>$4,000</td><td>Week 7-8</td><td><span class="badge badge-primary">1.8x</span></td></tr>
+              <tr><td>Analytics</td><td>$3,000</td><td>Ongoing</td><td><span class="badge badge-accent">Data-driven</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section" style="padding-bottom: 240px;">
+        <div class="sec-header">
+          <div class="sec-number">10</div>
+          <h2 class="sec-title">Appendix</h2>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 20px; margin-bottom: 24px; color: var(--text);">FAQ</h3>
+        <div style="display: grid; gap: 24px;">
+          <div style="background: var(--surface); border-left: 4px solid var(--primary); padding: 24px; border-radius: 4px;">
+            <h4 style="font-family: 'Bebas Neue', serif; font-size: 16px; color: var(--text); margin-bottom: 8px;">SEO Results Timeline</h4>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">Technical fixes improve within 4-8 weeks. Content growth takes 8-12 weeks. Focus on quick technical wins first.</p>
+          </div>
+          <div style="background: var(--surface); border-left: 4px solid var(--primary); padding: 24px; border-radius: 4px;">
+            <h4 style="font-family: 'Bebas Neue', serif; font-size: 16px; color: var(--text); margin-bottom: 8px;">Tracking ROI</h4>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">UTM tracking on social, email segmentation by pillar, organic attribution via GSC. Monthly dashboard.</p>
+          </div>
+          <div style="background: var(--surface); border-left: 4px solid var(--primary); padding: 24px; border-radius: 4px;">
+            <h4 style="font-family: 'Bebas Neue', serif; font-size: 16px; color: var(--text); margin-bottom: 8px;">Google Ads Pause</h4>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">No. Reduce 30%, reallocate to Meta (3.2x ROAS). Optimize landing page + keywords during this phase.</p>
+          </div>
+          <div style="background: var(--surface); border-left: 4px solid var(--primary); padding: 24px; border-radius: 4px;">
+            <h4 style="font-family: 'Bebas Neue', serif; font-size: 16px; color: var(--text); margin-bottom: 8px;">Content Publishing</h4>
+            <p style="font-size: 13px; color: var(--text-muted); line-height: 1.8;">Founder (Tue/Fri), Social manager (Mon/Wed/Thu), Guest (customers). Weekly planning + batch creation.</p>
+          </div>
+        </div>
+        <h3 style="font-family: 'Bebas Neue', serif; font-size: 20px; margin-top: 48px; margin-bottom: 24px; color: var(--text);">Tools & References</h3>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+          <div style="background: var(--surface); padding: 16px; border-radius: 4px;">
+            <p style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">SEO Tools</p>
+            <ul style="font-size: 13px; color: var(--text); list-style: none; line-height: 1.8;"><li>• Semrush</li><li>• Google Search Console</li><li>• Lighthouse CI</li></ul>
+          </div>
+          <div style="background: var(--surface); padding: 16px; border-radius: 4px;">
+            <p style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Content Tools</p>
+            <ul style="font-size: 13px; color: var(--text); list-style: none; line-height: 1.8;"><li>• Later</li><li>• Buffer</li><li>• Canva</li></ul>
+          </div>
+          <div style="background: var(--surface); padding: 16px; border-radius: 4px;">
+            <p style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Email Tools</p>
+            <ul style="font-size: 13px; color: var(--text); list-style: none; line-height: 1.8;"><li>• Klaviyo</li><li>• ActiveCampaign</li></ul>
+          </div>
+          <div style="background: var(--surface); padding: 16px; border-radius: 4px;">
+            <p style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">Analytics</p>
+            <ul style="font-size: 13px; color: var(--text); list-style: none; line-height: 1.8;"><li>• GA4</li><li>• Mixpanel</li></ul>
+          </div>
+        </div>
+        <div style="background: var(--surface2); border: 1px solid var(--border); border-radius: 4px; padding: 32px; margin-top: 48px; text-align: center;">
+          <p style="font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">Report Generated</p>
+          <p style="font-size: 14px; color: var(--text); font-weight: 600;">July 12, 2026 — Salsa Burgers Growth Toolkit</p>
+          <p style="font-size: 12px; color: var(--text-dim); margin-top: 16px;">7-report integrated analysis. SEO, marketing, competitive, investor thesis, brand, content, action plan. Production-ready.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    const navDots = document.querySelectorAll('.nav-dot');
+    const sections = document.querySelectorAll('.section');
+
+    navDots.forEach((dot) => {
+      dot.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.section);
+        sections[index].scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    const observerOptions = { threshold: 0.3 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const index = Array.from(sections).indexOf(entry.target);
+          navDots.forEach((dot) => dot.classList.remove('active'));
+          if (navDots[index]) navDots[index].classList.add('active');
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach((section) => observer.observe(section));
+  </script>
+</body>
+</html>

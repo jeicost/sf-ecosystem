@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Salsa Burgers — Reportes de Desempeño</title>
+  <style>
+    /* ====== CSS VARIABLES — EDIT HERE FOR DIFFERENT CLIENTS ====== */
+    :root {
+      --primary: #B61010;
+      --accent: #D49222;
+      --dark-bg: #07080f;
+      --surface: #0e0f1a;
+      --border: #252840;
+      --text: #eeeef5;
+      --text-muted: #9090b0;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --error: #EF4444;
+
+      /* Typography */
+      --font-display: 'Impact', 'Arial Black', 'Trebuchet MS', sans-serif;
+      --font-body: 'Segoe UI', '-apple-system', 'BlinkMacSystemFont', 'Arial', sans-serif;
+      --font-mono: 'Courier New', monospace;
+
+      /* Spacing scale */
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --space-12: 3rem;
+      --space-16: 4rem;
+      --space-24: 6rem;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --duration-fast: 150ms;
+      --duration-base: 250ms;
+      --duration-slow: 500ms;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      background: var(--dark-bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ====== HEADER & NAVIGATION ====== */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: linear-gradient(180deg, var(--surface) 0%, rgba(14, 15, 26, 0.95) 100%);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+      padding: var(--space-4) var(--space-6);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      text-transform: uppercase;
+    }
+
+    .logo span {
+      color: var(--primary);
+    }
+
+    nav ul {
+      display: flex;
+      gap: var(--space-8);
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    nav a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color var(--duration-base) var(--ease-smooth);
+      position: relative;
+    }
+
+    nav a:hover {
+      color: var(--primary);
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary);
+      transition: width var(--duration-base) var(--ease-smooth);
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Mobile menu */
+    @media (max-width: 768px) {
+      nav ul {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        background: var(--surface);
+        padding: var(--space-6);
+        gap: var(--space-4);
+        display: none;
+        border-bottom: 1px solid var(--border);
+      }
+
+      nav ul.active {
+        display: flex;
+      }
+
+      .menu-toggle {
+        display: block;
+      }
+    }
+
+    /* ====== HERO SECTION ====== */
+    .hero {
+      background: linear-gradient(135deg, rgba(182, 16, 16, 0.15) 0%, rgba(212, 146, 34, 0.1) 100%);
+      border-bottom: 4px solid var(--primary);
+      padding: var(--space-24) var(--space-6);
+      text-align: center;
+      animation: fadeInUp 1s var(--ease-out);
+    }
+
+    .hero-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero-tagline {
+      font-size: 1rem;
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: var(--space-6);
+      animation: fadeInUp 0.8s var(--ease-out) 0.1s backwards;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      margin-bottom: var(--space-6);
+      animation: fadeInUp 0.8s var(--ease-out) 0.2s backwards;
+    }
+
+    .hero-title span {
+      color: var(--primary);
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: var(--space-12);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeInUp 0.8s var(--ease-out) 0.3s backwards;
+    }
+
+    /* ====== DIVIDER ====== */
+    .divider {
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary) 0%, transparent 100%);
+      margin: var(--space-16) auto;
+      width: 100%;
+      max-width: 200px;
+    }
+
+    /* ====== SECTIONS ====== */
+    section {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-24) var(--space-6);
+      animation: fadeInUp 0.8s var(--ease-out);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-8);
+      margin-bottom: var(--space-16);
+      border-bottom: 4px solid var(--primary);
+      padding-bottom: var(--space-8);
+    }
+
+    .section-number {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1;
+      opacity: 0.3;
+    }
+
+    .section-title-group h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      text-transform: uppercase;
+      margin-bottom: var(--space-4);
+    }
+
+    .section-title-group p {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ====== STAT BOXES ====== */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: var(--space-8);
+      margin-bottom: var(--space-16);
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, rgba(182, 16, 16, 0.1) 0%, rgba(212, 146, 34, 0.05) 100%);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: var(--space-12);
+      transition: all var(--duration-base) var(--ease-smooth);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100px;
+      height: 100px;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+      opacity: 0.05;
+      border-radius: 50%;
+    }
+
+    .stat-box:hover {
+      border-left-color: var(--accent);
+      box-shadow: 0 12px 24px rgba(182, 16, 16, 0.1);
+      transform: translateY(-4px);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: var(--space-4);
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 3rem;
+      font-weight: bold;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: var(--space-4);
+    }
+
+    .stat-change {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .stat-change.positive {
+      color: var(--success);
+    }
+
+    .stat-change.negative {
+      color: var(--error);
+    }
+
+    /* ====== CARDS GRID ====== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: var(--space-8);
+      margin-bottom: var(--space-16);
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: var(--space-8);
+      transition: all var(--duration-base) var(--ease-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent), transparent);
+      opacity: 0;
+      transition: opacity var(--duration-base) var(--ease-smooth);
+    }
+
+    .card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 12px 32px rgba(182, 16, 16, 0.15);
+      transform: translateY(-8px);
+    }
+
+    .card:hover::before {
+      opacity: 1;
+    }
+
+    .card-emoji {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-4);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: var(--space-4);
+      color: var(--text);
+    }
+
+    .card-content {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      line-height: 1.8;
+    }
+
+    /* ====== TABLES ====== */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: var(--space-16);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+
+    thead {
+      background: rgba(182, 16, 16, 0.05);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    th {
+      padding: var(--space-6);
+      text-align: left;
+      font-weight: 700;
+      color: var(--primary);
+      text-transform: uppercase;
+      font-size: 0.85rem;
+      letter-spacing: 0.5px;
+    }
+
+    td {
+      padding: var(--space-6);
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tbody tr:hover {
+      background: rgba(182, 16, 16, 0.03);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: var(--space-2) var(--space-4);
+      background: rgba(182, 16, 16, 0.2);
+      color: var(--primary);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge.success {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .badge.warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    /* ====== TIMELINE ====== */
+    .timeline {
+      position: relative;
+      padding: var(--space-12) 0;
+      margin-bottom: var(--space-16);
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+    }
+
+    .timeline-item {
+      margin-bottom: var(--space-16);
+      position: relative;
+      width: calc(50% - var(--space-8));
+    }
+
+    .timeline-item:nth-child(odd) {
+      margin-left: 0;
+      text-align: right;
+      padding-right: var(--space-8);
+    }
+
+    .timeline-item:nth-child(even) {
+      margin-left: auto;
+      text-align: left;
+      padding-left: var(--space-8);
+    }
+
+    .timeline-item::after {
+      content: '';
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      background: var(--primary);
+      border: 3px solid var(--surface);
+      border-radius: 50%;
+      top: 12px;
+      transition: all var(--duration-base) var(--ease-smooth);
+    }
+
+    .timeline-item:nth-child(odd)::after {
+      right: calc(-50% - 8px);
+    }
+
+    .timeline-item:nth-child(even)::after {
+      left: calc(-50% - 8px);
+    }
+
+    .timeline-item:hover::after {
+      width: 20px;
+      height: 20px;
+      background: var(--accent);
+      box-shadow: 0 0 16px rgba(212, 146, 34, 0.5);
+    }
+
+    .timeline-content {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: var(--space-8);
+      transition: all var(--duration-base) var(--ease-smooth);
+    }
+
+    .timeline-item:hover .timeline-content {
+      border-color: var(--primary);
+      box-shadow: 0 8px 24px rgba(182, 16, 16, 0.1);
+    }
+
+    .timeline-label {
+      font-size: 0.9rem;
+      color: var(--accent);
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-bottom: var(--space-4);
+      letter-spacing: 1px;
+    }
+
+    .timeline-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: var(--space-4);
+    }
+
+    .timeline-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    /* ====== PHASE BOXES ====== */
+    .phases-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: var(--space-8);
+      margin-bottom: var(--space-16);
+    }
+
+    .phase-box {
+      padding: var(--space-12);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      transition: all var(--duration-base) var(--ease-smooth);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .phase-box.phase-1 {
+      background: linear-gradient(135deg, rgba(182, 16, 16, 0.15) 0%, rgba(182, 16, 16, 0.05) 100%);
+      border-left: 4px solid var(--primary);
+    }
+
+    .phase-box.phase-2 {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+      border-left: 4px solid var(--warning);
+    }
+
+    .phase-box.phase-3 {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.05) 100%);
+      border-left: 4px solid var(--success);
+    }
+
+    .phase-box:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .phase-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--space-4);
+    }
+
+    .phase-box.phase-1 .phase-label {
+      color: var(--primary);
+    }
+
+    .phase-box.phase-2 .phase-label {
+      color: var(--warning);
+    }
+
+    .phase-box.phase-3 .phase-label {
+      color: var(--success);
+    }
+
+    .phase-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: var(--space-6);
+      color: var(--text);
+    }
+
+    .phase-list {
+      list-style: none;
+    }
+
+    .phase-list li {
+      padding: var(--space-3) 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      padding-left: var(--space-6);
+      position: relative;
+    }
+
+    .phase-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    /* ====== PROGRESS BARS ====== */
+    .progress-item {
+      margin-bottom: var(--space-12);
+    }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+    }
+
+    .progress-name {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-value {
+      font-family: var(--font-mono);
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 10px;
+      transition: width 0.8s var(--ease-smooth);
+      animation: slideIn 1s var(--ease-smooth) 0.3s backwards;
+    }
+
+    /* ====== FOOTER ====== */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: var(--space-16) var(--space-6);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: var(--space-24);
+    }
+
+    footer p {
+      max-width: 600px;
+      margin: 0 auto var(--space-6);
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-8);
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color var(--duration-base) var(--ease-smooth);
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    /* ====== ANIMATIONS ====== */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        width: 0;
+      }
+      to {
+        width: var(--progress-width);
+      }
+    }
+
+    /* ====== RESPONSIVE ====== */
+    @media (max-width: 1024px) {
+      section {
+        padding: var(--space-16) var(--space-6);
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .section-number {
+        font-size: 3rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        padding: var(--space-16) var(--space-6);
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1rem;
+      }
+
+      .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-4);
+      }
+
+      .section-number {
+        font-size: 2.5rem;
+      }
+
+      .section-title-group h2 {
+        font-size: 1.8rem;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline::before {
+        left: 8px;
+      }
+
+      .timeline-item,
+      .timeline-item:nth-child(odd),
+      .timeline-item:nth-child(even) {
+        width: 100%;
+        margin-left: 0;
+        text-align: left;
+        padding-left: 50px;
+        padding-right: 0;
+      }
+
+      .timeline-item::after,
+      .timeline-item:nth-child(odd)::after,
+      .timeline-item:nth-child(even)::after {
+        left: 0;
+      }
+
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+
+      table {
+        font-size: 0.85rem;
+      }
+
+      th, td {
+        padding: var(--space-4);
+      }
+
+      .badge {
+        padding: var(--space-1) var(--space-3);
+        font-size: 0.75rem;
+      }
+
+      nav ul {
+        gap: var(--space-4);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-container {
+        gap: var(--space-4);
+      }
+
+      .logo {
+        font-size: 1.5rem;
+      }
+
+      .hero-title {
+        font-size: 1.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+      }
+
+      section {
+        padding: var(--space-12) var(--space-4);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- HEADER & NAVIGATION -->
+  <header>
+    <div class="header-container">
+      <div class="logo">Salsa <span>Reports</span></div>
+      <button class="menu-toggle" id="menuToggle">☰</button>
+      <nav>
+        <ul id="navMenu">
+          <li><a href="#overview">Overview</a></li>
+          <li><a href="#marketing">Marketing</a></li>
+          <li><a href="#sales">Sales</a></li>
+          <li><a href="#operations">Operations</a></li>
+          <li><a href="#finance">Finance</a></li>
+          <li><a href="#customer">Customer</a></li>
+          <li><a href="#growth">Growth</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <p class="hero-tagline">📊 Informe de Desempeño</p>
+      <h1 class="hero-title">
+        <span>Salsa</span> Burgers<br>
+        Resultados Q3 2024
+      </h1>
+      <p class="hero-subtitle">
+        Análisis exhaustivo de performance, métricas clave y oportunidades de crecimiento
+      </p>
+    </div>
+  </section>
+
+  <!-- SECTION 1: OVERVIEW -->
+  <section id="overview">
+    <div class="section-header">
+      <span class="section-number">1</span>
+      <div class="section-title-group">
+        <h2>📈 Overview Ejecutivo</h2>
+        <p>Resumen de desempeño del trimestre</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">💰 Ingresos Totales</div>
+        <div class="stat-value">$847,250</div>
+        <div class="stat-change positive">↑ 18.5% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🍔 Órdenes Completadas</div>
+        <div class="stat-value">12,847</div>
+        <div class="stat-change positive">↑ 22.3% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">⭐ Calificación Promedio</div>
+        <div class="stat-value">4.8</div>
+        <div class="stat-change positive">↑ 0.3 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">👥 Clientes Nuevos</div>
+        <div class="stat-value">2,143</div>
+        <div class="stat-change positive">↑ 31.7% vs Q2</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin-bottom: var(--space-8); text-transform: uppercase;">Highlights Principales</h3>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-emoji">🎯</div>
+        <h4 class="card-title">Meta Alcanzada</h4>
+        <p class="card-content">Superamos la meta de ingresos con un crecimiento del 18.5%, impulsado por las promociones de verano y la expansión de delivery a nuevas zonas.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">📱</div>
+        <h4 class="card-title">Apps & Digital</h4>
+        <p class="card-content">La app móvil alcanzó 45K descargas con una retención del 68%. El delivery online representa el 52% de las órdenes totales.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🌟</div>
+        <h4 class="card-title">Satisfacción Máxima</h4>
+        <p class="card-content">Nuestro NPS mejoró a 72 puntos. El 94% de clientes recomendaría Salsa Burgers a un amigo, reflejando calidad consistente.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">💼</div>
+        <h4 class="card-title">Innovación Producto</h4>
+        <p class="card-content">Lanzamos 5 nuevas hamburguesas premium y la línea vegana consolidó el 18% de ventas totales en el mes 3.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 2: MARKETING -->
+  <section id="marketing">
+    <div class="section-header">
+      <span class="section-number">2</span>
+      <div class="section-title-group">
+        <h2>📢 Marketing & Reach</h2>
+        <p>Campañas, conversiones y engagement</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">📺 Alcance Total</div>
+        <div class="stat-value">2.3M</div>
+        <div class="stat-change positive">↑ 45.2% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">💬 Engagement Rate</div>
+        <div class="stat-value">7.8%</div>
+        <div class="stat-change positive">↑ 2.1 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🎬 Contenido Viral</div>
+        <div class="stat-value">18</div>
+        <div class="stat-change positive">↑ 150% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">💵 CAC</div>
+        <div class="stat-value">$12.50</div>
+        <div class="stat-change negative">↓ 8.3% vs Q2</div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Campañas por Canal</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Canal</th>
+            <th>Inversión</th>
+            <th>Impresiones</th>
+            <th>Clicks</th>
+            <th>Conversiones</th>
+            <th>ROI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Instagram</td>
+            <td>$45,000</td>
+            <td>950K</td>
+            <td>28,500</td>
+            <td>3,420</td>
+            <td><span class="badge success">380%</span></td>
+          </tr>
+          <tr>
+            <td>TikTok</td>
+            <td>$38,000</td>
+            <td>1.2M</td>
+            <td>42,000</td>
+            <td>5,640</td>
+            <td><span class="badge success">425%</span></td>
+          </tr>
+          <tr>
+            <td>Google Ads</td>
+            <td>$52,000</td>
+            <td>380K</td>
+            <td>15,200</td>
+            <td>2,850</td>
+            <td><span class="badge success">285%</span></td>
+          </tr>
+          <tr>
+            <td>Email Marketing</td>
+            <td>$8,500</td>
+            <td>—</td>
+            <td>12,400</td>
+            <td>1,860</td>
+            <td><span class="badge success">650%</span></td>
+          </tr>
+          <tr>
+            <td>Influencers</td>
+            <td>$35,000</td>
+            <td>2.8M</td>
+            <td>89,000</td>
+            <td>4,230</td>
+            <td><span class="badge success">310%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Contenido Top 10</h3>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-emoji">🎥</div>
+        <h4 class="card-title">#1 Hamburguesa XXL</h4>
+        <p class="card-content">"Desafío de 3kg de carne" — 2.4M visualizaciones, 180K shares. Viral en TikTok por 7 días consecutivos.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">👨‍🍳</div>
+        <h4 class="card-title">#2 Chef Maestro</h4>
+        <p class="card-content">Serie "Detrás del Sabor" — 1.8M vistas, 45K conversaciones. Autenticidad + behind-the-scenes.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">❤️</div>
+        <h4 class="card-title">#3 Testimonios Real</h4>
+        <p class="card-content">Historias de clientes genuinas — 1.2M alcance, 8.2% engagement. Baja inversión, alto impacto.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🎁</div>
+        <h4 class="card-title">#4 Sorteo Verano</h4>
+        <p class="card-content">Promoción de 50 órdenes gratis — 950K alcance, 28.3K participantes. Generó 1,200 clientes nuevos.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🌶️</div>
+        <h4 class="card-title">#5 Salsa Challenge</h4>
+        <p class="card-content">UGC + Challenge branded — 856K vistas, 12K videos participantes. Costo/resultado imbatible.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🚀</div>
+        <h4 class="card-title">#6 Lanzamiento Vegana</h4>
+        <p class="card-content">Posicionamiento de inclusión — 742K alcance, 6.5% conversión. Atrae nuevo segmento de mercado.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">⭐</div>
+        <h4 class="card-title">#7 Review de Lujo</h4>
+        <p class="card-content">Reseña premium de influencer gastronómico — 630K alcance, 4.2% CTR. Posiciona premium.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🎬</div>
+        <h4 class="card-title">#8 Making Of Spot</h4>
+        <p class="card-content">Comercial TV — 520K vistas, 5.8% engagement. Reach masivo en target 25-45.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🔥</div>
+        <h4 class="card-title">#9 Trending Meme</h4>
+        <p class="card-content">Respuesta viral a trend global — 485K alcance, 0 inversión. Cultura + timing = oro.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">📸</div>
+        <h4 class="card-title">#10 Feed Estético</h4>
+        <p class="card-content">Fotografía consistente + branded — 410K alcance, 9.1% engagement. Base de confianza.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: SALES -->
+  <section id="sales">
+    <div class="section-header">
+      <span class="section-number">3</span>
+      <div class="section-title-group">
+        <h2>💳 Sales & Revenue</h2>
+        <p>Ventas por canal, ticket promedio, retención</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">🛒 Ticket Promedio</div>
+        <div class="stat-value">$65.90</div>
+        <div class="stat-change positive">↑ 12.4% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🔄 Tasa Retención</div>
+        <div class="stat-value">72%</div>
+        <div class="stat-change positive">↑ 8.2% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">👁️ Clientes Repeat</div>
+        <div class="stat-value">8,450</div>
+        <div class="stat-change positive">↑ 41.3% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🎯 Conversión</div>
+        <div class="stat-value">3.2%</div>
+        <div class="stat-change positive">↑ 0.7 pts vs Q2</div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Ingresos por Segmento</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Segmento</th>
+            <th>Órdenes</th>
+            <th>Ingresos</th>
+            <th>% del Total</th>
+            <th>Ticket Promedio</th>
+            <th>Crecimiento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Delivery Online</strong></td>
+            <td>6,680</td>
+            <td>$440,280</td>
+            <td>52%</td>
+            <td>$65.90</td>
+            <td><span class="badge success">+28%</span></td>
+          </tr>
+          <tr>
+            <td><strong>Presencial Local</strong></td>
+            <td>4,240</td>
+            <td>$279,160</td>
+            <td>33%</td>
+            <td>$65.80</td>
+            <td><span class="badge success">+12%</span></td>
+          </tr>
+          <tr>
+            <td><strong>Catering & Eventos</strong></td>
+            <td>927</td>
+            <td>$127,810</td>
+            <td>15%</td>
+            <td>$137.80</td>
+            <td><span class="badge success">+45%</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Top Productos</h3>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-emoji">🏆</div>
+        <h4 class="card-title">Salsa Deluxe XXL</h4>
+        <p class="card-content">3,240 órdenes — $212,880 en revenue. Producto bandera con 89% de satisfacción. Fuerte en catering.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🌶️</div>
+        <h4 class="card-title">Salsa Picante</h4>
+        <p class="card-content">2,850 órdenes — $187,650 en revenue. Favorito de millennials. Crecimiento +35% MoM.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🥗</div>
+        <h4 class="card-title">Veggie Salsa</h4>
+        <p class="card-content">1,640 órdenes — $107,800 en revenue. Alcanza Gen Z. Margen +18% vs hamburguesitas.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🍟</div>
+        <h4 class="card-title">Salsa Fries Premium</h4>
+        <p class="card-content">1,280 órdenes — $84,160 en revenue. Acompañamiento más vendido. Upsell perfecto.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Proyección 30-60-90 Días</h3>
+
+    <div style="margin-bottom: var(--space-16);">
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">30 días</span>
+          <span class="progress-value">$285,000 (Target: $270K)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 105%; width: 105%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">60 días</span>
+          <span class="progress-value">$580,000 (Target: $550K)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 105%; width: 105%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">90 días</span>
+          <span class="progress-value">$900,000 (Target: $850K)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 106%; width: 106%;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: OPERATIONS -->
+  <section id="operations">
+    <div class="section-header">
+      <span class="section-number">4</span>
+      <div class="section-title-group">
+        <h2>⚙️ Operaciones & Eficiencia</h2>
+        <p>Procesos, costos y productividad</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">⏱️ Tiempo Prep Promedio</div>
+        <div class="stat-value">12.5 min</div>
+        <div class="stat-change negative">↑ 1.2 min vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">📦 Órdenes Canceladas</div>
+        <div class="stat-value">2.3%</div>
+        <div class="stat-change positive">↓ 0.8 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🎯 Precisión Pedidos</div>
+        <div class="stat-value">97.8%</div>
+        <div class="stat-change positive">↑ 1.2 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">💼 Costo de Operación</div>
+        <div class="stat-value">38%</div>
+        <div class="stat-change positive">↓ 2.1 pts vs Q2</div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Matriz de Operaciones por Ubicación</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Ubicación</th>
+            <th>Órdenes/Día</th>
+            <th>Tiempo Prep</th>
+            <th>Costo Operativo</th>
+            <th>Satisfacción</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Centro (HQ)</strong></td>
+            <td>485</td>
+            <td>11.2 min</td>
+            <td>$1,240</td>
+            <td>4.9 ⭐</td>
+            <td><span class="badge success">ÓPTIMO</span></td>
+          </tr>
+          <tr>
+            <td><strong>Norte (Nueva)</strong></td>
+            <td>320</td>
+            <td>13.8 min</td>
+            <td>$890</td>
+            <td>4.7 ⭐</td>
+            <td><span class="badge">ESCALANDO</span></td>
+          </tr>
+          <tr>
+            <td><strong>Sur (Expansion)</strong></td>
+            <td>215</td>
+            <td>14.5 min</td>
+            <td>$620</td>
+            <td>4.6 ⭐</td>
+            <td><span class="badge warning">SETUP</span></td>
+          </tr>
+          <tr>
+            <td><strong>Delivery Hub</strong></td>
+            <td>580</td>
+            <td>9.8 min</td>
+            <td>$1,850</td>
+            <td>4.8 ⭐</td>
+            <td><span class="badge success">EXCELENTE</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Iniciativas de Mejora Implementadas</h3>
+
+    <div class="phases-grid">
+      <div class="phase-box phase-1">
+        <div class="phase-label">Junio</div>
+        <div class="phase-title">Automatización Punto de Venta</div>
+        <ul class="phase-list">
+          <li>Sistema POS integrado 100%</li>
+          <li>Reducción errores: -45%</li>
+          <li>Velocidad procesamiento +38%</li>
+        </ul>
+      </div>
+      <div class="phase-box phase-2">
+        <div class="phase-label">Julio</div>
+        <div class="phase-title">Optimización Inventario</div>
+        <ul class="phase-list">
+          <li>Sistema FIFO implementado</li>
+          <li>Desperdicio reducido: -22%</li>
+          <li>Costo ingredientes -8%</li>
+        </ul>
+      </div>
+      <div class="phase-box phase-3">
+        <div class="phase-label">Agosto</div>
+        <div class="phase-title">Entrenamiento Equipo</div>
+        <ul class="phase-list">
+          <li>Certificación 95 staff</li>
+          <li>Satisfacción empleado +28%</li>
+          <li>Rotación reducida: -15%</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: FINANCE -->
+  <section id="finance">
+    <div class="section-header">
+      <span class="section-number">5</span>
+      <div class="section-title-group">
+        <h2>💰 Finanzas & Márgenes</h2>
+        <p>Análisis profundo de rentabilidad</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">📊 Margen Bruto</div>
+        <div class="stat-value">62%</div>
+        <div class="stat-change positive">↑ 3.2 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🏦 Margen Neto</div>
+        <div class="stat-value">18%</div>
+        <div class="stat-change positive">↑ 2.1 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">💸 Costo COGS</div>
+        <div class="stat-value">38%</div>
+        <div class="stat-change positive">↓ 2.5 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🎯 Payback Period</div>
+        <div class="stat-value">8.2 meses</div>
+        <div class="stat-change positive">↓ 0.8 mes vs Q2</div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Desglose de Gastos</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Categoría</th>
+            <th>Monto</th>
+            <th>% de Ingresos</th>
+            <th>vs Q2</th>
+            <th>Proyección Anual</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>COGS (Ingredientes)</strong></td>
+            <td>$322,195</td>
+            <td>38%</td>
+            <td><span class="badge success">-2.5%</span></td>
+            <td>$1,288,780</td>
+          </tr>
+          <tr>
+            <td><strong>Nómina</strong></td>
+            <td>$203,100</td>
+            <td>24%</td>
+            <td><span class="badge">-0.2%</span></td>
+            <td>$812,400</td>
+          </tr>
+          <tr>
+            <td><strong>Marketing & Ads</strong></td>
+            <td>$178,325</td>
+            <td>21%</td>
+            <td><span class="badge warning">+3.1%</span></td>
+            <td>$713,300</td>
+          </tr>
+          <tr>
+            <td><strong>Rent & Utilities</strong></td>
+            <td>$84,725</td>
+            <td>10%</td>
+            <td><span class="badge">-0.1%</span></td>
+            <td>$338,900</td>
+          </tr>
+          <tr>
+            <td><strong>Delivery & Logistics</strong></td>
+            <td>$59,308</td>
+            <td>7%</td>
+            <td><span class="badge">+1.2%</span></td>
+            <td>$237,232</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Proyección Trimestral</h3>
+
+    <div style="margin-bottom: var(--space-16);">
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Q4 Ingresos</span>
+          <span class="progress-value">$1,050,000 (Target: $1M)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 105%; width: 105%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Q4 Margen Neto</span>
+          <span class="progress-value">19.2% ($201,600 profit)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 96%; width: 96%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Año Fiscal 2024</span>
+          <span class="progress-value">$3,250,000 (Target: $3M)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 108%; width: 108%;"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 6: CUSTOMER INSIGHTS -->
+  <section id="customer">
+    <div class="section-header">
+      <span class="section-number">6</span>
+      <div class="section-title-group">
+        <h2>👥 Customer Insights</h2>
+        <p>Análisis de audiencia y comportamiento</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">👤 Base de Clientes</div>
+        <div class="stat-value">28,450</div>
+        <div class="stat-change positive">↑ 19.2% vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">📞 NPS Score</div>
+        <div class="stat-value">72</div>
+        <div class="stat-change positive">↑ 8 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">💬 Sentiment Promedio</div>
+        <div class="stat-value">4.8 ⭐</div>
+        <div class="stat-change positive">↑ 0.4 pts vs Q2</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">📲 App Engagement</div>
+        <div class="stat-value">68%</div>
+        <div class="stat-change positive">↑ 12 pts vs Q2</div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Segmentación de Audiencia</h3>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-emoji">🎓</div>
+        <h4 class="card-title">Gen Z (18-24)</h4>
+        <p class="card-content"><strong>32% de audiencia</strong> — Mayoría delivery + social media. Engagement en TikTok. Sensible a sostenibilidad y opciones veganas.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">💼</div>
+        <h4 class="card-title">Millennials (25-40)</h4>
+        <p class="card-content"><strong>45% de audiencia</strong> — Balanza delivery/presencial. Valoran experiencia + calidad. Frecuencia: 2-3 veces/mes.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">👨‍👩‍👧‍👦</div>
+        <h4 class="card-title">Familias (40+)</h4>
+        <p class="card-content"><strong>23% de audiencia</strong> — Presencial preferente para comidas en grupo. Fidelidad alta. Catering events potencial.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Comentarios & Feedback Top</h3>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Tema</th>
+            <th>Menciones</th>
+            <th>Sentimiento</th>
+            <th>Acción</th>
+            <th>Impacto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Calidad Consistente</strong></td>
+            <td>2,450</td>
+            <td><span class="badge success">POSITIVO</span></td>
+            <td>Mantener estándares</td>
+            <td>Retención ↑ 15%</td>
+          </tr>
+          <tr>
+            <td><strong>Tiempo de Entrega</strong></td>
+            <td>1,240</td>
+            <td><span class="badge warning">MIXTO</span></td>
+            <td>Logística optimizada</td>
+            <td>Satisfaction +3.2%</td>
+          </tr>
+          <tr>
+            <td><strong>Opciones Veganas</strong></td>
+            <td>890</td>
+            <td><span class="badge success">POSITIVO</span></td>
+            <td>Expandir línea</td>
+            <td>TAM +18% nuevo seg</td>
+          </tr>
+          <tr>
+            <td><strong>Precios</strong></td>
+            <td>520</td>
+            <td><span class="badge">NEUTRAL</span></td>
+            <td>Promociones estratégicas</td>
+            <td>Conversión ↑ 2.1%</td>
+          </tr>
+          <tr>
+            <td><strong>Atención al Cliente</strong></td>
+            <td>1,680</td>
+            <td><span class="badge success">POSITIVO</span></td>
+            <td>Mantener equipo</td>
+            <td>Recomendación 94%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- SECTION 7: GROWTH ROADMAP -->
+  <section id="growth">
+    <div class="section-header">
+      <span class="section-number">7</span>
+      <div class="section-title-group">
+        <h2>🚀 Growth Roadmap 2024-2025</h2>
+        <p>Estrategia de expansión y oportunidades</p>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">📍 Nuevas Ubicaciones</div>
+        <div class="stat-value">3</div>
+        <div class="stat-change positive">Confirmadas Q4</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🌍 Market Expansion</div>
+        <div class="stat-value">2</div>
+        <div class="stat-change positive">En prospección</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">💻 Iniciativas Digital</div>
+        <div class="stat-value">4</div>
+        <div class="stat-change positive">En desarrollo</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">🎯 Revenue Target 2025</div>
+        <div class="stat-value">$5.2M</div>
+        <div class="stat-change positive">+60% vs 2024</div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Timeline 30-60-90 Días</h3>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <div class="timeline-label">Mes 1 (Septiembre)</div>
+          <div class="timeline-title">🎯 Phase 1: Consolidation</div>
+          <div class="timeline-desc">Optimización de operaciones existentes, expansión de línea vegana a 8 SKUs, lanzamiento del programa de lealtad v2.0.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <div class="timeline-label">Mes 2 (Octubre)</div>
+          <div class="timeline-title">📍 Phase 2: Expansion</div>
+          <div class="timeline-desc">Apertura de ubicación Norte confirmada, soft launch de marketplace de terceros, inicio de exploración para ubicación Sur.</div>
+        </div>
+      </div>
+
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <div class="timeline-label">Mes 3 (Noviembre)</div>
+          <div class="timeline-title">🚀 Phase 3: Scale</div>
+          <div class="timeline-desc">Operación dual Centro+Norte + 70% capac, lanzamiento de franquicia lite, campaña Holiday masiva +35% presupuesto.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Iniciativas Clave & Inversión</h3>
+
+    <div class="cards-grid">
+      <div class="card">
+        <div class="card-emoji">🏪</div>
+        <h4 class="card-title">Expansión Física</h4>
+        <p class="card-content"><strong>Inversión: $180K</strong> — 3 ubicaciones nuevas. Proyección: +$280K/año en revenue. Payback: 7.7 meses.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">💻</div>
+        <h4 class="card-title">Tech Stack Upgrade</h4>
+        <p class="card-content"><strong>Inversión: $45K</strong> — AI para personalización, dashboard analytics avanzado. ROI esperado: +$120K/año.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">📱</div>
+        <h4 class="card-title">App Nativa v2</h4>
+        <p class="card-content"><strong>Inversión: $60K</strong> — Funciones loyalty, pagos integrados, AR menu preview. Target: 100K users activos.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🤝</div>
+        <h4 class="card-title">Franquicia Lite</h4>
+        <p class="card-content"><strong>Inversión: $30K</strong> (marketing) — Modelo asset-light. Target: 5 franquicias año 1. Revenue: +$400K potencial.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🌱</div>
+        <h4 class="card-title">Línea Healthy</h4>
+        <p class="card-content"><strong>Inversión: $25K</strong> (I+D) — Opciones bajas calorías, proteína alta. TAM +12%. Margen: +5 puntos.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🎁</div>
+        <h4 class="card-title">Lealtad Premium</h4>
+        <p class="card-content"><strong>Inversión: $15K</strong> (software) — Tier system con rewards exclusivos. Target: 40% de clientes en Q1 2025.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family: var(--font-display); font-size: 1.8rem; margin: var(--space-16) 0 var(--space-8); text-transform: uppercase;">Financiero: Proyecciones 12 Meses</h3>
+
+    <div style="margin-bottom: var(--space-16);">
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Q4 2024</span>
+          <span class="progress-value">$1,050K (Target: $1M)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 105%; width: 105%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Q1 2025</span>
+          <span class="progress-value">$1,340K (Target: $1.2M)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 112%; width: 112%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Q2 2025</span>
+          <span class="progress-value">$1,640K (Target: $1.5M)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 109%; width: 109%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Q3 2025</span>
+          <span class="progress-value">$1,180K (Seasonal low)</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 79%; width: 79%;"></div>
+        </div>
+      </div>
+
+      <div class="progress-item">
+        <div class="progress-label">
+          <span class="progress-name">Total 2025 (Target)</span>
+          <span class="progress-value">$5,200K Revenue</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="--progress-width: 100%; width: 100%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-grid" style="margin-top: var(--space-16);">
+      <div class="card">
+        <div class="card-emoji">⚠️</div>
+        <h4 class="card-title">Risk Mitigation</h4>
+        <p class="card-content">Contingency fund: 10% de presupuesto en reserva. Monitoreo mensual de KPIs. Adaptación ágil si conversión baja de meta.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">🎯</div>
+        <h4 class="card-title">Success Metrics</h4>
+        <p class="card-content">Revenue MoM crecimiento ≥8%. Retención ≥72%. Nuevo TAM penetration ≥5% Q1. App adoption: 40% activos.</p>
+      </div>
+      <div class="card">
+        <div class="card-emoji">📊</div>
+        <h4 class="card-title">Review Cadence</h4>
+        <p class="card-content">Semanal: operaciones + ventas. Mensual: financiero + marketing. Trimestral: estrategia + ajustes roadmap.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>
+      <strong>Salsa Burgers — Informe de Desempeño Q3 2024</strong><br>
+      Análisis completo, estrategia de crecimiento y roadmap de expansión 2025
+    </p>
+    <div class="footer-links">
+      <a href="#overview">Volver al Inicio</a>
+      <span>•</span>
+      <a href="#growth">Ver Roadmap</a>
+      <span>•</span>
+      <a href="#contact">Contacto</a>
+    </div>
+  </footer>
+
+  <!-- JAVASCRIPT -->
+  <script>
+    // Mobile menu toggle
+    const menuToggle = document.getElementById('menuToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    menuToggle.addEventListener('click', () => {
+      navMenu.classList.toggle('active');
+    });
+
+    // Close menu when link is clicked
+    navMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
+      });
+    });
+
+    // Smooth scroll navigation
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const headerHeight = 70;
+          const targetPosition = target.offsetTop - headerHeight;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+    // Animate progress bars on scroll
+    const observerOptions = {
+      threshold: 0.3,
+      rootMargin: '0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !entry.target.dataset.animated) {
+          const fill = entry.target.querySelector('.progress-fill');
+          if (fill) {
+            entry.target.dataset.animated = 'true';
+            const width = fill.style.width;
+            fill.style.width = '0';
+            setTimeout(() => {
+              fill.style.width = width;
+            }, 100);
+          }
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.progress-item').forEach(item => {
+      observer.observe(item);
+    });
+
+    // Section animations on scroll
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animation = 'fadeInUp 0.8s ease-out forwards';
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('section').forEach(section => {
+      sectionObserver.observe(section);
+    });
+
+    // Add scroll indicator to header
+    window.addEventListener('scroll', () => {
+      const header = document.querySelector('header');
+      if (window.scrollY > 50) {
+        header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+      } else {
+        header.style.boxShadow = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
