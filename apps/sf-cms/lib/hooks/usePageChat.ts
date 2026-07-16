@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 
-interface ChatMessage {
+interface Message {
   role: 'user' | 'assistant'
   content: string
 }
@@ -10,81 +10,61 @@ interface ChatMessage {
 interface Section {
   id: string
   type: string
-  data: Record<string, any>
+  data: Record<string, unknown>
 }
 
-interface UsePageChatOptions {
-  pageId?: string | null
-  isNew?: boolean
-}
-
-export function usePageChat(options: UsePageChatOptions) {
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+export function usePageChat({ pageId, isNew }: { pageId: string; isNew: boolean }) {
+  const [messages, setMessages] = useState<Message[]>([])
   const [currentSections, setCurrentSections] = useState<Section[]>([])
-  const [pageId, setPageId] = useState(options.pageId)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const sendMessage = async (instruction: string) => {
-    if (!instruction.trim()) return
+  const sendMessage = useCallback(
+    async (instruction: string) => {
+      try {
+        setIsLoading(true)
+        setMessages((prev) => [...prev, { role: 'user', content: instruction }])
 
-    // Add user message to chat
-    const userMessage = { role: 'user' as const, content: instruction }
-    setMessages((prev) => [...prev, userMessage])
-    setIsLoading(true)
-    setError(null)
+        const response = await fetch(`/api/admin/pages/${pageId}/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ instruction }),
+        })
 
-    try {
-      const response = await fetch('/api/admin/pages/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          instruction,
-          pageId: pageId,
-          isNew: options.isNew,
-        }),
-      })
+        if (!response.ok) {
+          const error = await response.json()
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: 'assistant',
+              content: `Error: ${error.error || 'Failed to process request'}`,
+            },
+          ])
+          return
+        }
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `HTTP ${response.status}`)
+        const data = await response.json()
+        setCurrentSections(data.sections_json)
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `Updated ${data.sections_json.length} section(s) ✓`,
+          },
+        ])
+      } catch (error) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            content: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+          },
+        ])
+      } finally {
+        setIsLoading(false)
       }
+    },
+    [pageId]
+  )
 
-      const { sectionsJson, pageIdNew } = await response.json()
-
-      // Update local sections
-      setCurrentSections(sectionsJson)
-
-      // If this was a new page, update the pageId for future requests
-      if (options.isNew && pageIdNew) {
-        setPageId(pageIdNew)
-      }
-
-      // Add assistant message
-      const assistantMessage = {
-        role: 'assistant' as const,
-        content: `✅ Page ${options.isNew ? 'created' : 'updated'} with ${sectionsJson.length} section${sectionsJson.length !== 1 ? 's' : ''}`,
-      }
-      setMessages((prev) => [...prev, assistantMessage])
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown error'
-      setError(errorMsg)
-      const errorMessage = {
-        role: 'assistant' as const,
-        content: `❌ Error: ${errorMsg}`,
-      }
-      setMessages((prev) => [...prev, errorMessage])
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  return {
-    messages,
-    isLoading,
-    error,
-    sendMessage,
-    currentSections,
-    pageId,
-  }
+  return { messages, isLoading, sendMessage, currentSections }
 }

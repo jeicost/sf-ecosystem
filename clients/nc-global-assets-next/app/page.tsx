@@ -16,6 +16,11 @@ import { OurModel } from '@/components/sections/OurModel'
 import { CompareSection } from '@/components/sections/CompareSection'
 import { Ecosystem } from '@/components/sections/Ecosystem'
 import { BrandsProjects } from '@/components/sections/BrandsProjects'
+import { Testimonials } from '@/components/sections/Testimonials'
+import { Team } from '@/components/sections/Team'
+import { FAQ } from '@/components/sections/FAQ'
+import { LeadMagnet } from '@/components/sections/LeadMagnet'
+import { FinalCTA } from '@/components/sections/FinalCTA'
 
 export const metadata = {
   title: 'NC Global Assets — Bangkok Operating Partner for International Brands',
@@ -48,7 +53,12 @@ export default function HomePage() {
       <Ecosystem />
       <BrandsProjects />
 
-      {/* Fase 3: Bottom sections (Testimonials, Team, FAQ, LeadMagnet, FinalCTA) - TODO */}
+      {/* Fase 3: Bottom sections (Testimonials, Team, FAQ, LeadMagnet, FinalCTA) */}
+      <Testimonials />
+      <Team />
+      <FAQ />
+      <LeadMagnet />
+      <FinalCTA />
     </>
   )
 }
