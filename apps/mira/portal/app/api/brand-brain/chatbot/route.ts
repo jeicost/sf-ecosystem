@@ -99,7 +99,7 @@ When ALL sections are complete (brand + pillars + sales + context), end with:
 
     // 4. Extract structured data if present
     const structuredMatch = botText.match(
-      /<structured_data>(.*?)<\/structured_data>/s
+      /<structured_data>([\s\S]*?)<\/structured_data>/
     )
     let structuredData = null
 
@@ -121,8 +121,8 @@ When ALL sections are complete (brand + pillars + sales + context), end with:
 
     // 7. Return response
     const cleanBotText = botText
-      .replace(/<structured_data>.*?<\/structured_data>/s, '')
-      .replace(/<conversation_complete>.*?<\/conversation_complete>/s, '')
+      .replace(/<structured_data>[\s\S]*?<\/structured_data>/, '')
+      .replace(/<conversation_complete>[\s\S]*?<\/conversation_complete>/, '')
       .trim()
 
     return NextResponse.json({
