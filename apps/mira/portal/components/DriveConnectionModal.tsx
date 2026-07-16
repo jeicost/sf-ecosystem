@@ -3,13 +3,13 @@
 import { useState, useEffect } from 'react'
 import {
   X,
-  GoogleDrive,
+  Cloud,
   Loader2,
   CheckCircle,
   AlertCircle,
   Folder,
   File,
-  Toggle2,
+  ToggleRight,
   Unlink,
   RefreshCw,
   ChevronRight,
@@ -372,7 +372,7 @@ export default function DriveConnectionModal({
         >
           <div className="flex items-center gap-3">
             <div className="p-2 rounded-lg" style={{ background: 'rgba(99,102,241,0.1)' }}>
-              <GoogleDrive size={20} style={{ color: '#4F46E5' }} />
+              <Cloud size={20} style={{ color: '#4F46E5' }} />
             </div>
             <div>
               <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>
@@ -432,7 +432,7 @@ export default function DriveConnectionModal({
                   borderColor: 'rgba(99,102,241,0.2)',
                 }}
               >
-                <GoogleDrive
+                <Cloud
                   size={32}
                   style={{ color: '#6366F1', margin: '0 auto 16px' }}
                 />
@@ -458,7 +458,7 @@ export default function DriveConnectionModal({
                     </>
                   ) : (
                     <>
-                      <GoogleDrive size={16} />
+                      <Cloud size={16} />
                       Sign in with Google
                     </>
                   )}
@@ -652,7 +652,7 @@ export default function DriveConnectionModal({
                   }}
                   aria-label={`${state.autoSyncEnabled ? 'Disable' : 'Enable'} auto-sync`}
                 >
-                  <Toggle2 size={20} />
+                  <ToggleRight size={20} />
                 </button>
               </div>
             </section>
