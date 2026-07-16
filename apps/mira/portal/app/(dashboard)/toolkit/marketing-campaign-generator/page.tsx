@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { Play, Loader2 } from 'lucide-react'
 import ToolkitToolPage from '@/components/toolkit-tool-page'
+import { useActiveClient } from '@/lib/client-context'
 import { CLIENT_ID } from '@/lib/constants'
 
 interface FormData {
@@ -20,6 +21,8 @@ interface GeneratedCampaign {
 }
 
 export default function MarketingCampaignGeneratorPage() {
+  const { activeClient } = useActiveClient()
+  const clientId = activeClient?.id ?? CLIENT_ID
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedCampaign, setGeneratedCampaign] = useState<GeneratedCampaign | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -54,7 +57,7 @@ export default function MarketingCampaignGeneratorPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          client_id: CLIENT_ID,
+          client_id: clientId,
           audience: formData.audience,
           budget: parseInt(formData.budget),
           channels: formData.channels,
