@@ -8,6 +8,14 @@ import { Tape } from '@/components/sections/Tape'
 import { Intro } from '@/components/sections/Intro'
 import { MarketStats } from '@/components/sections/MarketStats'
 import { WhatWeDo } from '@/components/sections/WhatWeDo'
+import { OperatingPartner } from '@/components/sections/OperatingPartner'
+import { WhyThailand } from '@/components/sections/WhyThailand'
+import { Infrastructure } from '@/components/sections/Infrastructure'
+import { WhoWeWorkWith } from '@/components/sections/WhoWeWorkWith'
+import { OurModel } from '@/components/sections/OurModel'
+import { CompareSection } from '@/components/sections/CompareSection'
+import { Ecosystem } from '@/components/sections/Ecosystem'
+import { BrandsProjects } from '@/components/sections/BrandsProjects'
 
 export const metadata = {
   title: 'NC Global Assets — Bangkok Operating Partner for International Brands',
@@ -22,13 +30,25 @@ export const metadata = {
 export default function HomePage() {
   return (
     <>
+      {/* Fase 1: Core home sections */}
       <Hero />
       <HeroStrip />
       <Tape />
       <Intro />
       <MarketStats />
       <WhatWeDo />
-      {/* Remaining sections (OperatingPartner, WhyThailand, Infrastructure, etc.) - TODO Fase 2 */}
+
+      {/* Fase 2: Secondary home sections */}
+      <OperatingPartner />
+      <WhyThailand />
+      <Infrastructure />
+      <WhoWeWorkWith />
+      <OurModel />
+      <CompareSection />
+      <Ecosystem />
+      <BrandsProjects />
+
+      {/* Fase 3: Bottom sections (Testimonials, Team, FAQ, LeadMagnet, FinalCTA) - TODO */}
     </>
   )
 }
