@@ -1,14 +1,27 @@
-export const metadata = {
-  title: 'Services — NC Global Assets',
+import type { Metadata } from 'next'
+import { Eyebrow } from '@/lib/constants'
+
+export const metadata: Metadata = {
+  title: 'Services — Brand Launch, F&B Operations — NC Global Assets',
+  description: 'Brand representation, go-to-market planning, cloud kitchen operations, local fulfillment and market entry in Bangkok, Thailand.',
+  alternates: { canonical: '/services' },
+  openGraph: {
+    type: 'website',
+    url: 'https://www.ncglobalassets.com/services',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+  },
 }
 
 export default function ServicesPage() {
   return (
-    <main className="py-20">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8">Services</h1>
-        <p className="text-gray-600">TODO: Port services section from clients/nc-global-assets/src/App.jsx</p>
+    <section className="svc-hero">
+      <div className="container">
+        <Eyebrow style={{ color: 'var(--accent)' }}>Services</Eyebrow>
+        <h1 className="svc-hero__headline">
+          Three ways we<br/>
+          <span className="gold italic">work with you</span>
+        </h1>
       </div>
-    </main>
+    </section>
   )
 }

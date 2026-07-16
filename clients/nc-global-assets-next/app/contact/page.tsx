@@ -1,14 +1,27 @@
-export const metadata = {
+import type { Metadata } from 'next'
+import { Eyebrow } from '@/lib/constants'
+
+export const metadata: Metadata = {
   title: 'Contact — NC Global Assets',
+  description: 'Get in touch with NC Global Assets. We reply from Bangkok within 24 hours.',
+  alternates: { canonical: '/contact' },
+  openGraph: {
+    type: 'website',
+    url: 'https://www.ncglobalassets.com/contact',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630 }],
+  },
 }
 
 export default function ContactPage() {
   return (
-    <main className="py-20">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-8">Contact</h1>
-        <p className="text-gray-600">TODO: Port contact section from clients/nc-global-assets/src/App.jsx</p>
+    <section className="svc-hero">
+      <div className="container">
+        <Eyebrow style={{ color: 'var(--accent)' }}>Contact</Eyebrow>
+        <h1 className="svc-hero__headline">
+          Let's talk about<br/>
+          <span className="gold italic">your Thailand entry</span>
+        </h1>
       </div>
-    </main>
+    </section>
   )
 }
