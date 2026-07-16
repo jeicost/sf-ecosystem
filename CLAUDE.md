@@ -40,6 +40,12 @@ Read `ARCHITECTURE.md` for the full system design and client/product map.
 
 ---
 
+## Project / Domain Registry
+
+**Single source of truth** for which local folder maps to which Vercel project, domain, and Supabase project: [`docs/PROJECT_REGISTRY.md`](docs/PROJECT_REGISTRY.md). Consult before any deployment or domain change. Includes blocklisted project IDs and incident log.
+
+---
+
 ## Commands
 
 ### Root (all apps via Turborepo)
@@ -61,16 +67,18 @@ cd apps/sf-crm && npm run lint
 
 ### Deploy (each app is independent)
 
+**Before any `vercel --prod` (or bare `vercel`), verify project links:**
 ```bash
-cd apps/<app-name>
+node scripts/verify-project-links.mjs <folder>   # e.g. clients/salsa-burgers
+```
+Must print **PASS** before proceeding. Full registry: [`docs/PROJECT_REGISTRY.md`](docs/PROJECT_REGISTRY.md).
+
+```bash
+cd apps/<app-name>   # or clients/<client-name>
 vercel --prod
 ```
 
-Every app that deploys to Vercel **must have** `.vercel/project.json` with its own `projectId`. Without it, Vercel uses the parent `.vercel/project.json` (which points to sf-cms) and the deploy goes to the wrong project. Always verify before deploying:
-
-```bash
-cat apps/<app-name>/.vercel/project.json
-```
+Every app that deploys to Vercel **must have** its own `.vercel/project.json` with the correct `projectId` (see [`docs/PROJECT_REGISTRY.md`](docs/PROJECT_REGISTRY.md)). The monorepo **ROOT must NEVER have a `.vercel/project.json`** — a bare `vercel` command from repo root has no correct target and must fail loudly, not silently deploy into whichever project happens to be linked there.
 
 ---
 
@@ -89,16 +97,14 @@ Apps declare shared packages as workspace dependencies. They are not published t
 
 ## Supabase
 
-All SF tools share one Supabase project: **`nnevhtfxuawexliwlbmh`**
+The SF ecosystem uses **two separate Supabase projects** — do not assume one shared project. Full detail, env var locations, and rationale: [`docs/SUPABASE_CONFIG.md`](docs/SUPABASE_CONFIG.md).
 
-Tables owned by each product:
-- **MIRA**: `mira_clients`, `mira_users`, `mira_subscriptions`, agent-specific tables
-- **SF Sales Engine / SF CRM**: `leads` (SF workspace, `client_id = 00000000-...-000001`), `crm_contacts` (Discoolver and other workspaces), `lead_activities`, `discovery_runs`, `icp_profiles`, `proposal_library`
-- **SF CMS**: `projects`, `pages`, `sections`, `posts`
+- **`nnevhtfxuawexliwlbmh`** — shared project. Used by: MIRA, ai-agency-sf-next, SF-CRM, SF-Sales-Engine.
+- **`dmzecrlkclocqaywkjtc`** — SF-CMS only, isolated by design (content isolation between client sites).
 
-**Important field quirk**: `leads.icebreaker_used` (Sales Engine table) ≠ `crm_contacts.icebreaker` (CRM generic table). Different column names for the same concept.
+Before wiring a new tool to Supabase, check [`docs/SUPABASE_CONFIG.md`](docs/SUPABASE_CONFIG.md) first to decide which project it belongs to.
 
-Schema migrations live in `apps/sf-sales-engine/supabase/migrations/`. Apply via Supabase dashboard SQL editor — there is no automated migration runner.
+Schema migrations live in `apps/sf-sales-engine/supabase/migrations/` (for nnevhtf...) and `apps/sf-cms/supabase/migrations/` (for dmzecrl...). Apply via Supabase dashboard SQL editor — there is no automated migration runner.
 
 ---
 
@@ -113,7 +119,7 @@ Client projects under `clients/` are not part of the Turborepo workspace. Each d
 | Discoolver dg-editor | FastAPI + React | Railway / manual |
 | NC Global Assets | Vite + React | `vercel --prod` |
 
-**Before touching any client domain config**, check `memory/clients_production_domains_registry.md` first.
+**Before touching any client domain config**, check [`docs/PROJECT_REGISTRY.md`](docs/PROJECT_REGISTRY.md) for correct Vercel project mappings.
 
 ---
 
