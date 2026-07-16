@@ -10,7 +10,7 @@ function getAdminClient() {
 export interface BrandBrainContext {
   brandName: string
   mission: string
-  toneOfVoice: Record<string, string>
+  toneOfVoice: string
   brandPersonality: string[]
   bannedPhrases: string[]
   pillars: Array<{ name: string; description: string; weight: number; exampleHooks: string[] }>
@@ -61,7 +61,7 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
   return {
     brandName: p.name ?? '',
     mission: p.mission ?? '',
-    toneOfVoice: (p.tone_of_voice as Record<string, string>) ?? {},
+    toneOfVoice: p.tone_of_voice ?? '',
     brandPersonality: (p.values as string[]) ?? [],
     bannedPhrases: [],
     pillars: (pillarsRes.data ?? []).map((pi: any) => ({
@@ -77,10 +77,6 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
 }
 
 export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
-  const toneStr = Object.entries(brain.toneOfVoice)
-    .map(([k, v]) => `${k}: ${v}`)
-    .join(', ')
-
   const pillarsStr = brain.pillars
     .map(p => `- ${p.name} (${Math.round(p.weight * 100)}%): ${p.description}`)
     .join('\n')
@@ -90,7 +86,7 @@ export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
 
 **Misión:** ${brain.mission}
 
-**Tono de voz:** ${toneStr}
+**Tono de voz:** ${brain.toneOfVoice}
 
 **Personalidad de marca:** ${brain.brandPersonality.join(', ')}
 
@@ -147,9 +143,9 @@ export async function getAgentDocumentContext(clientId: string, agentRole: strin
 
   const { data: docs } = await db
     .from('agent_documents')
-    .select('original_filename, extracted_text, analysis_summary')
+    .select('title, original_filename, extracted_text, analysis_summary')
     .eq('client_id', clientId)
-    .eq('agent_role', agentRole)
+    .in('agent_role', [agentRole, 'general'])
     .eq('analysis_status', 'completed')
     .order('uploaded_at', { ascending: false })
     .limit(5)
@@ -158,7 +154,7 @@ export async function getAgentDocumentContext(clientId: string, agentRole: strin
 
   const docContext = docs
     .map((doc) => `
-## Documento: ${doc.original_filename}
+## Documento: ${doc.original_filename || doc.title || 'Sin título'}
 ### Resumen:
 ${doc.analysis_summary || doc.extracted_text?.slice(0, 500) || 'Sin contenido'}
 `)

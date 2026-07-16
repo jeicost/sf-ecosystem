@@ -139,36 +139,95 @@ When ALL sections are complete (brand + pillars + sales + context), end with:
   }
 }
 
+const ALLOWED_COLUMNS: Record<string, Set<string>> = {
+  brand_profiles: new Set([
+    'name',
+    'tone_of_voice',
+    'values',
+    'description',
+    'proposition',
+    'brand_data',
+  ]),
+  content_pillars: new Set([
+    'title',
+    'description',
+    'keywords',
+    'examples',
+  ]),
+  agent_documents: new Set([
+    'title',
+    'content',
+    'document_type',
+    'url',
+  ]),
+  project_memory: new Set([
+    'content',
+    'memory_type',
+  ]),
+}
+
+function validateAndFilterUpdates(
+  section: string,
+  updates: Record<string, any>
+): Record<string, any> {
+  const allowedFields = ALLOWED_COLUMNS[section]
+
+  if (!allowedFields) {
+    console.warn(`Unknown section: ${section}`)
+    return updates
+  }
+
+  const filtered: Record<string, any> = {}
+  const rejected: string[] = []
+
+  for (const [key, value] of Object.entries(updates)) {
+    if (allowedFields.has(key)) {
+      filtered[key] = value
+    } else {
+      rejected.push(key)
+    }
+  }
+
+  if (rejected.length > 0) {
+    console.warn(
+      `Filtered out disallowed columns for ${section}: ${rejected.join(', ')}`
+    )
+  }
+
+  return filtered
+}
+
 async function saveBrandBrainUpdate(
   db: any,
   clientId: string,
   data: any
 ) {
   const { section, updates } = data
+  const filteredUpdates = validateAndFilterUpdates(section, updates)
 
   try {
     if (section === 'brand_profiles') {
       await db.from('brand_profiles').upsert({
         client_id: clientId,
-        ...updates,
+        ...filteredUpdates,
         updated_at: new Date().toISOString(),
       })
     } else if (section === 'content_pillars') {
       await db.from('content_pillars').insert({
         client_id: clientId,
-        ...updates,
+        ...filteredUpdates,
         created_at: new Date().toISOString(),
       })
     } else if (section === 'agent_documents') {
       await db.from('agent_documents').insert({
         client_id: clientId,
-        ...updates,
+        ...filteredUpdates,
         created_at: new Date().toISOString(),
       })
     } else if (section === 'project_memory') {
       await db.from('project_memory').insert({
         client_id: clientId,
-        ...updates,
+        ...filteredUpdates,
         created_at: new Date().toISOString(),
       })
     }
