@@ -2,7 +2,7 @@
 // Single source of truth for department colors, names, icons, and agent counts
 
 export interface DepartmentMetadata {
-  slug: 'marketing' | 'comercial' | 'estrategia' | 'innovacion' | 'operations' | 'finanzas'
+  slug: 'marketing' | 'comercial' | 'strategy' | 'operations' | 'finanzas'
   id: string // Alias for slug (for backward compatibility)
   name: string // English display name
   nameEs: string // Spanish display name
@@ -42,29 +42,17 @@ export const DEPARTMENT_METADATA: Record<DepartmentMetadata['slug'], DepartmentM
     count: 7,
     color: '#EF4444',
   },
-  estrategia: {
-    slug: 'estrategia',
-    id: 'estrategia',
-    href: '/estrategia',
+  strategy: {
+    slug: 'strategy',
+    id: 'strategy',
+    href: '/strategy',
     icon: '🔭',
     name: 'Strategy',
     nameEs: 'Estrategia',
-    description: 'Plans · Audits · Competitive Analysis',
-    descriptionEs: 'Planes · Auditorías · Análisis Competitivo',
-    count: 7,
+    description: 'Plans · Audits · Trends · Design Thinking',
+    descriptionEs: 'Planes · Auditorías · Tendencias · Innovación',
+    count: 8,
     color: '#6366F1',
-  },
-  innovacion: {
-    slug: 'innovacion',
-    id: 'innovacion',
-    href: '/innovacion',
-    icon: '💡',
-    name: 'Innovation',
-    nameEs: 'Innovación',
-    description: 'Trends · Design Thinking · Foresight',
-    descriptionEs: 'Tendencias · Pensamiento de Diseño · Previsión',
-    count: 1,
-    color: '#F97316',
   },
   operations: {
     slug: 'operations',

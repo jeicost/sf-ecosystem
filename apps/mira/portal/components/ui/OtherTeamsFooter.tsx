@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { DEPARTMENT_METADATA, type DepartmentInfo } from '@/lib/department-meta'
 
-type CurrentDept = 'marketing' | 'comercial' | 'estrategia' | 'innovacion' | 'operations' | 'finanzas'
+type CurrentDept = 'marketing' | 'comercial' | 'strategy' | 'operations' | 'finanzas'
 
 interface OtherTeamsFooterProps {
   currentDept: CurrentDept

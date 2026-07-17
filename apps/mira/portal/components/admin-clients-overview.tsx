@@ -106,7 +106,7 @@ export default function AdminClientsOverview() {
         </div>
       </div>
 
-      <div className="grid grid-cols-4 gap-3 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
         <StatCard label="Clientes Activos" value={clients.length} />
         <StatCard label="Entregables Generados" value={totalDeliverables} />
         <StatCard label="Agentes Disponibles" value={Object.keys(AGENT_METADATA).length} />
@@ -122,7 +122,7 @@ export default function AdminClientsOverview() {
           <div className="mb-4">
             <h2 className="text-lg font-semibold text-white">Clientes Activos</h2>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {clients.map(client => {
               const stats = deliverableStats[client.id]
               return (

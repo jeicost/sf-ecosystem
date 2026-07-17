@@ -21,15 +21,9 @@ export default function AgentGrid({
   metaByAgentId = {},
   hrefFn = (id) => `/agent/${id}`,
 }: AgentGridProps) {
-  // Formula-driven column count: 6+ agents = 4 cols, 4+ = 3 cols, 2+ = 2 cols, else 1
-  const colCount = agents.length >= 6 ? 4 : agents.length >= 4 ? 3 : agents.length >= 2 ? 2 : 1
-
   return (
     <div
-      className="grid gap-6"
-      style={{
-        gridTemplateColumns: `repeat(${colCount}, 1fr)`,
-      }}
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
     >
       {agents.map((agent) => {
         const meta = metaByAgentId?.[agent.id]

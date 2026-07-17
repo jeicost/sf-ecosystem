@@ -35,6 +35,7 @@ const PIPELINE_STEPS = MARKETING_DEPT_AGENTS.map(a => ({
 
 export default function RosterPage() {
   const { locale } = useLocaleContext()
+  const agentCount = MARKETING_DEPT_AGENTS.length
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
   const { stats } = useDepartmentStats('marketing')
 
@@ -60,10 +61,10 @@ export default function RosterPage() {
 
       <StatRow
         items={[
-          { label: t('stat.active-agents', locale), value: '8' },
-          { label: t('stat.posts-week', locale), value: String(stats.posts || '0') },
-          { label: t('stat.in-approval', locale), value: String(stats.contacts || '0') },
-          { label: t('stat.open-alerts', locale), value: '0' },
+          { label: t('stat.active-agents', locale), value: String(agentCount) },
+          { label: t('stat.posts-week', locale), value: String(stats.posts ?? 0) },
+          { label: t('stat.in-approval', locale), value: String(stats.contacts ?? 0) },
+          { label: t('stat.open-alerts', locale), value: String(stats.alerts ?? 0) },
         ]}
       />
 

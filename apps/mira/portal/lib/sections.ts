@@ -53,27 +53,17 @@ export const SECTIONS: MiraSection[] = [
     ],
   },
   {
-    slug: 'estrategia',
+    slug: 'strategy',
     name: 'MIRA Strategy',
     shortName: 'Strategy',
     color: '#6366F1',
     icon: '🔭',
     navItems: [
-      { href: '/estrategia',           label: 'My Team',     icon: Users },
-      { href: '/estrategia/plan',      label: '90-Day Plan', icon: Map },
-      { href: '/estrategia/auditoria', label: 'Audit',       icon: CheckSquare },
-    ],
-  },
-  {
-    slug: 'innovacion',
-    name: 'MIRA Innovation',
-    shortName: 'Innovation',
-    color: '#F97316',
-    icon: '💡',
-    navItems: [
-      { href: '/innovacion',            label: 'My Team',   icon: Users },
-      { href: '/innovacion/tendencias', label: 'Trends',    icon: TrendingUp },
-      { href: '/innovacion/proyectos',  label: 'Projects',  icon: Lightbulb },
+      { href: '/strategy',           label: 'My Team',       icon: Users },
+      { href: '/strategy/plan',      label: '90-Day Plan',   icon: Map },
+      { href: '/strategy/auditoria', label: 'Audit',         icon: CheckSquare },
+      { href: '/strategy/tendencias', label: 'Trends',       icon: TrendingUp },
+      { href: '/strategy/proyectos',  label: 'Innovation',   icon: Lightbulb },
     ],
   },
   {

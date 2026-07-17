@@ -6,7 +6,7 @@ export interface ToolkitTool {
   time: string
   color: string
   href: string
-  departments?: string[] // e.g., ['marketing', 'estrategia']
+  departments?: string[] // e.g., ['marketing', 'strategy']
 }
 
 export const TOOLKIT_TOOLS: ToolkitTool[] = [
@@ -18,7 +18,7 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     time: '~3 min',
     color: '#F87171',
     href: '/toolkit/seo-audit',
-    departments: ['marketing', 'estrategia']
+    departments: ['marketing', 'strategy']
   },
   {
     slug: 'brand-briefing',
@@ -28,7 +28,7 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     time: '~20 min',
     color: '#A78BFA',
     href: '/toolkit/brand-briefing',
-    departments: ['marketing', 'comercial', 'estrategia']
+    departments: ['marketing', 'comercial', 'strategy']
   },
   {
     slug: 'action-plan',
@@ -38,7 +38,7 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     time: '~3 min',
     color: '#FF6B35',
     href: '/toolkit/action-plan',
-    departments: ['estrategia', 'finanzas']
+    departments: ['strategy', 'finanzas']
   },
   {
     slug: 'content-pack',
@@ -68,7 +68,7 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     time: '~5 min',
     color: '#34D399',
     href: '/toolkit/investor-deck',
-    departments: ['finanzas', 'estrategia']
+    departments: ['finanzas', 'strategy']
   },
   {
     slug: 'competitive-analysis',
@@ -78,7 +78,7 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     time: '~7 min',
     color: '#EC4899',
     href: '/toolkit/competitive-analysis',
-    departments: ['estrategia', 'comercial']
+    departments: ['strategy', 'comercial']
   },
   {
     slug: 'brandbook-content-system',

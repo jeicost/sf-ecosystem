@@ -262,6 +262,6 @@ export type Database = {
   }
 }
 
-export type AgentPackage = 'marketing' | 'comercial' | 'operaciones' | 'estrategia' | 'innovacion' | 'finanzas'
+export type AgentPackage = 'marketing' | 'comercial' | 'operaciones' | 'strategy' | 'finanzas'
 
 export type AgentStatus = 'idle' | 'working' | 'completed' | 'waiting'

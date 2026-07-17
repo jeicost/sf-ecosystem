@@ -62,10 +62,10 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
       .from('generation_queue')
       .select('id', { count: 'exact', head: true })
       .eq('client_id', clientId)
-      .eq('agent_type', 'estrategia')
+      .eq('agent_type', 'strategy')
     plans = plansCount || 0
   } catch (e) {
-    console.error('Error fetching plans:', e)
+    console.error('Error fetching strategy plans:', e)
   }
 
   try {
@@ -73,7 +73,8 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
       .from('generation_queue')
       .select('id', { count: 'exact', head: true })
       .eq('client_id', clientId)
-      .eq('agent_type', 'innovacion')
+      .eq('agent_type', 'strategy')
+      .eq('agent_role', 'spark')
     ideas = ideasCount || 0
   } catch (e) {
     console.error('Error fetching ideas:', e)
@@ -82,10 +83,9 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
   return {
     comercial: { leads, proposals },
     marketing: { posts, contacts },
-    estrategia: { plans, ideas: 0 },
+    strategy: { plans, ideas },
     operaciones: { contacts },
     finanzas: { leads },
-    innovacion: { ideas },
   }
 }
 

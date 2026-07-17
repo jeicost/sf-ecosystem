@@ -44,7 +44,7 @@ export interface AgentMetadata {
   descriptionEs: string // Spanish short description
   color: string
   gradient: string
-  department: 'comercial' | 'marketing' | 'estrategia' | 'operaciones' | 'innovacion' | 'finanzas'
+  department: 'comercial' | 'marketing' | 'strategy' | 'operaciones' | 'finanzas'
 }
 
 export const AGENT_METADATA: Record<string, AgentMetadata> = {
@@ -202,7 +202,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     department: 'marketing',
   },
 
-  // Estrategia (7)
+  // Strategy (8 - 7 from old estrategia + 1 from old innovacion)
   strategos: {
     id: 'strategos',
     name: 'Strategos',
@@ -211,7 +211,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Estratega maestro',
     color: '#7C3AED',
     gradient: 'from-violet-600 to-purple-600',
-    department: 'estrategia',
+    department: 'strategy',
   },
   blueprint: {
     id: 'blueprint',
@@ -221,7 +221,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Arquitecto de planes',
     color: '#06B6D4',
     gradient: 'from-cyan-500 to-blue-500',
-    department: 'estrategia',
+    department: 'strategy',
   },
   atlas: {
     id: 'atlas',
@@ -231,7 +231,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Cartógrafo de tendencias',
     color: '#3B82F6',
     gradient: 'from-blue-500 to-cyan-500',
-    department: 'estrategia',
+    department: 'strategy',
   },
   kairos: {
     id: 'kairos',
@@ -241,7 +241,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Experto en timing estratégico',
     color: '#D946EF',
     gradient: 'from-fuchsia-500 to-purple-600',
-    department: 'estrategia',
+    department: 'strategy',
   },
   radar: {
     id: 'radar',
@@ -251,7 +251,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Detector de oportunidades',
     color: '#06B6D4',
     gradient: 'from-cyan-500 to-blue-600',
-    department: 'estrategia',
+    department: 'strategy',
   },
   venture: {
     id: 'venture',
@@ -261,7 +261,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Arquitecto de negocios',
     color: '#8B5CF6',
     gradient: 'from-purple-500 to-indigo-600',
-    department: 'estrategia',
+    department: 'strategy',
   },
   oracle: {
     id: 'oracle',
@@ -271,7 +271,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     descriptionEs: 'Visionario de futuros',
     color: '#7C3AED',
     gradient: 'from-violet-500 to-purple-600',
-    department: 'estrategia',
+    department: 'strategy',
   },
 
   // Operaciones (4)
@@ -316,16 +316,16 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     department: 'operaciones',
   },
 
-  // Innovación (1)
+  // Strategy - Innovation (merged)
   spark: {
     id: 'spark',
     name: 'Spark',
     emoji: '⚡',
-    description: 'Idea generator',
-    descriptionEs: 'Generador de ideas',
+    description: 'Idea generator & trend scout',
+    descriptionEs: 'Generador de ideas y detector de tendencias',
     color: '#FBBF24',
     gradient: 'from-amber-400 to-orange-500',
-    department: 'innovacion',
+    department: 'strategy',
   },
 
   // Finanzas (3)
@@ -383,7 +383,7 @@ export const MARKETING_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['community-manager'],
 ]
 
-export const ESTRATEGIA_DEPT_AGENTS: AgentMetadata[] = [
+export const STRATEGY_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['strategos'],
   AGENT_METADATA['blueprint'],
   AGENT_METADATA['atlas'],
@@ -391,17 +391,18 @@ export const ESTRATEGIA_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['radar'],
   AGENT_METADATA['venture'],
   AGENT_METADATA['oracle'],
+  AGENT_METADATA['spark'],
 ]
+
+// Backward compatibility aliases
+export const ESTRATEGIA_DEPT_AGENTS = STRATEGY_DEPT_AGENTS
+export const INNOVACION_DEPT_AGENTS = [AGENT_METADATA['spark']]
 
 export const OPERACIONES_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['ledger'],
   AGENT_METADATA['pulse'],
   AGENT_METADATA['onboard'],
   AGENT_METADATA['harbor'],
-]
-
-export const INNOVACION_DEPT_AGENTS: AgentMetadata[] = [
-  AGENT_METADATA['spark'],
 ]
 
 export const FINANZAS_DEPT_AGENTS: AgentMetadata[] = [

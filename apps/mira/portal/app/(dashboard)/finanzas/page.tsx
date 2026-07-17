@@ -57,9 +57,9 @@ export default function FinanzasPage() {
       <StatRow
         items={[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.monthly-revenue', locale), value: String(stats.leads ?? 0) },
-          { label: t('stat.profit-margin', locale), value: String(stats.leads ?? 0) },
-          { label: t('stat.audit-status', locale), value: String(stats.leads ?? 0) },
+          { label: t('stat.monthly-revenue', locale), value: String(stats.revenue ?? 0) },
+          { label: t('stat.profit-margin', locale), value: String(stats.margin ?? 0) },
+          { label: t('stat.audit-status', locale), value: String(stats.audits ?? 0) },
         ]}
       />
 

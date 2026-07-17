@@ -31,6 +31,7 @@ const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
 
 export default function AdminPage() {
   const { locale } = useLocaleContext()
+  const agentCount = OPERACIONES_DEPT_AGENTS.length
   const { stats } = useDepartmentStats('operations')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
 
@@ -56,10 +57,10 @@ export default function AdminPage() {
 
       <StatRow
         items={[
-          { label: t('stat.active-agents', locale), value: '4' },
-          { label: t('stat.pending-invoices', locale), value: String(stats.contacts ?? 0) },
-          { label: t('stat.system-alerts', locale), value: '0' },
-          { label: t('stat.onboarding', locale), value: String(stats.contacts ?? 0) },
+          { label: t('stat.active-agents', locale), value: String(agentCount) },
+          { label: t('stat.pending-invoices', locale), value: String(stats.invoices ?? 0) },
+          { label: t('stat.system-alerts', locale), value: String(stats.alerts ?? 0) },
+          { label: t('stat.onboarding', locale), value: String(stats.onboarded ?? 0) },
         ]}
       />
 

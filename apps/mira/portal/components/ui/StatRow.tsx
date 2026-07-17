@@ -11,14 +11,9 @@ interface StatRowProps {
 }
 
 export default function StatRow({ items }: StatRowProps) {
-  const colCount = Math.min(items.length, 4)
-
   return (
     <div
-      className="grid gap-3 mb-8"
-      style={{
-        gridTemplateColumns: `repeat(${colCount}, 1fr)`,
-      }}
+      className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8"
     >
       {items.map((item, idx) => (
         <div key={idx} className="card px-4 py-3">

@@ -92,7 +92,7 @@ export default function HomePage() {
 
           {/* Stats */}
           {stats && (
-            <div className="grid grid-cols-3 gap-3 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-10">
               <StatCard label="Entregas Generadas" value={stats.contentGenerated} hint="Este mes" />
               <StatCard label="Herramientas Usadas" value={`${stats.toolsUsed}/7`} hint="Toolkit completo" />
               <StatCard label="Últimas 30 días" value={`${stats.timeSavedHours.toFixed(1)}h`} hint="Tiempo ahorrado con IA" />

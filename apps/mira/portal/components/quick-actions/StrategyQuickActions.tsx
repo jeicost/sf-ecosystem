@@ -124,6 +124,84 @@ export function StrategyQuickActions() {
         </div>
       ),
     },
+    // Innovation actions (merged from innovacion section)
+    {
+      id: 'tendencias_analisis',
+      title: t('actions.strategy.tendencias_analisis', locale),
+      description: t('actions.strategy.tendencias_analisis.desc', locale),
+      actionType: 'analizar_tendencias',
+      form: (
+        <div className="space-y-3">
+          <input
+            type="text"
+            name="sector"
+            placeholder="Industry sector"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            required
+          />
+          <select
+            name="region"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            required
+          >
+            <option value="españa">España</option>
+            <option value="europa">Europa</option>
+            <option value="global">Global</option>
+          </select>
+        </div>
+      ),
+    },
+    {
+      id: 'innovation_audit',
+      title: t('actions.strategy.innovation_audit', locale),
+      description: t('actions.strategy.innovation_audit.desc', locale),
+      actionType: 'auditar_innovacion',
+      form: (
+        <div className="space-y-3">
+          <textarea
+            name="current_state"
+            placeholder="Describe current innovation efforts"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm resize-none h-20"
+            required
+          />
+          <select
+            name="focus"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            required
+          >
+            <option value="product">Producto</option>
+            <option value="process">Proceso</option>
+            <option value="business">Modelo de Negocio</option>
+          </select>
+        </div>
+      ),
+    },
+    {
+      id: 'innovation_roadmap',
+      title: t('actions.strategy.innovation_roadmap', locale),
+      description: t('actions.strategy.innovation_roadmap.desc', locale),
+      actionType: 'roadmap_innovacion',
+      form: (
+        <div className="space-y-3">
+          <input
+            type="text"
+            name="strategic_goal"
+            placeholder="Main innovation goal"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            required
+          />
+          <select
+            name="timeline"
+            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            required
+          >
+            <option value="3">3 meses</option>
+            <option value="6">6 meses</option>
+            <option value="12">12 meses</option>
+          </select>
+        </div>
+      ),
+    },
   ]
 
   return (
