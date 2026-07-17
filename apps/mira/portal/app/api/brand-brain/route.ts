@@ -5,9 +5,6 @@ import { adminClient } from '@/lib/supabase'
 
 export async function GET(req: NextRequest) {
   try {
-    const searchParams = req.nextUrl.searchParams
-    const explicitClientId = searchParams.get('clientId')
-
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -22,28 +19,24 @@ export async function GET(req: NextRequest) {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    let clientId: string
-    if (explicitClientId) {
-      clientId = explicitClientId
-    } else if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
-      clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
-    } else if (authError || !user) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    } else {
-      const admin = adminClient()
-      const { data: accessData } = await admin
-        .from('mira_project_access')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .limit(1)
-
-      if (!accessData?.length) {
-        return NextResponse.json({ error: 'No client access' }, { status: 403 })
-      }
-      clientId = accessData[0].project_id
     }
 
+    // SECURITY FIX: Never trust explicitClientId from request params/body.
+    // Always derive from the authenticated user's access grants.
     const admin = adminClient()
+    const { data: accessData } = await admin
+      .from('mira_project_access')
+      .select('project_id')
+      .eq('user_id', user.id)
+      .limit(1)
+
+    if (!accessData?.length) {
+      return NextResponse.json({ error: 'No client access' }, { status: 403 })
+    }
+    const clientId = accessData[0].project_id
+
     const { data, error } = await admin
       .from('brand_profiles')
       .select('*')
@@ -67,7 +60,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json()
-    const { id, client_id, brand_data, name, mission, tone_of_voice, values, description, clientId: explicitClientId } = body
+    const { id, brand_data, name, mission, tone_of_voice, values, description } = body
 
     const cookieStore = await cookies()
     const supabase = createServerClient(
@@ -83,28 +76,23 @@ export async function PUT(req: NextRequest) {
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-    let clientId: string
-    if (explicitClientId) {
-      clientId = explicitClientId
-    } else if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
-      clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
-    } else if (authError || !user) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    } else {
-      const admin = adminClient()
-      const { data: accessData } = await admin
-        .from('mira_project_access')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .limit(1)
-
-      if (!accessData?.length) {
-        return NextResponse.json({ error: 'No client access' }, { status: 403 })
-      }
-      clientId = accessData[0].project_id
     }
 
+    // SECURITY FIX: Never trust explicitClientId from request params/body.
+    // Always derive from the authenticated user's access grants.
     const admin = adminClient()
+    const { data: accessData } = await admin
+      .from('mira_project_access')
+      .select('project_id')
+      .eq('user_id', user.id)
+      .limit(1)
+
+    if (!accessData?.length) {
+      return NextResponse.json({ error: 'No client access' }, { status: 403 })
+    }
+    const clientId = accessData[0].project_id
 
     // If no ID, create new profile
     if (!id) {

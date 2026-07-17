@@ -7,25 +7,14 @@ export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
   const devBypass = process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true'
 
-  // Public routes — skip all checks
+  // Public routes — skip auth checks
+  // NOTE: API routes are NOT in this list. They must be protected at middleware or route level.
+  // Debug/seed/init routes (debug-*, fix-*, init-*, populate-*, etc.) have their own requireAuthGate()
+  // and will 401 if called without auth — they should NOT skip auth at the middleware layer.
   if (
     pathname.startsWith('/login') ||
     pathname.startsWith('/reset-password') ||
-    pathname.startsWith('/api/webhook') ||
-    pathname.startsWith('/api/brand-brain') || // Agent Brain API (public)
-    pathname.startsWith('/api/drive-references') || // Drive upload (public)
-    pathname.startsWith('/api/agent-interactions') || // Interaction logging (public)
-    pathname.startsWith('/api/debug') ||
-    pathname.startsWith('/api/fix') ||
-    pathname.startsWith('/api/diagnose') ||
-    pathname.startsWith('/api/schema') ||
-    pathname.startsWith('/api/load-data') ||
-    pathname.startsWith('/api/init-clients') ||
-    pathname.startsWith('/api/list-clients') ||
-    pathname.startsWith('/api/populate-salsa') ||
-    pathname.startsWith('/api/populate-all-clients') ||
-    pathname.startsWith('/api/load-missing-pillars') ||
-    pathname.startsWith('/api/fix-missing-clients') ||
+    pathname.startsWith('/api/webhook') || // Webhooks verify x-webhook-secret header, not user auth
     // Development bypass: allow toolkit pages without auth for local testing
     (devBypass && (
       pathname.startsWith('/toolkit') ||
