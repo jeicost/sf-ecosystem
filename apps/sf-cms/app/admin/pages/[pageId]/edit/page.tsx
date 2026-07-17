@@ -99,11 +99,32 @@ export default function PageEditorPage() {
   }
 
   async function handleUndo() {
+    if (!page) return
+
     try {
-      setError('Undo not yet implemented')
-      setTimeout(() => setError(''), 3000)
+      setError('')
+      const response = await fetch(`/api/admin/pages/${pageId}/versions`)
+      if (!response.ok) throw new Error('Failed to fetch versions')
+
+      const { versions } = await response.json()
+      if (!versions || versions.length === 0) {
+        setError('No previous versions available')
+        setTimeout(() => setError(''), 3000)
+        return
+      }
+
+      const previousVersion = versions[0]
+      setPage({
+        ...page,
+        sections_json: previousVersion.sections_json,
+      })
+
+      setError('✓ Restored to previous version. Click Save to persist.')
+      setTimeout(() => setError(''), 5000)
     } catch (err) {
+      console.error('Error:', err)
       setError('Failed to restore version')
+      setTimeout(() => setError(''), 3000)
     }
   }
 
