@@ -44,7 +44,7 @@ interface BrandProfile {
   updated_at: string
 }
 
-type TabType = 'identity' | 'what_it_is' | 'audiences' | 'value_prop' | 'features' | 'business' | 'tone' | 'visual' | 'competitive' | 'go_to_market' | 'strategy' | 'documents'
+type TabType = 'brand_identity' | 'audience_market' | 'voice_visual' | 'content_strategy' | 'business_ops' | 'documents'
 
 export default function BrandBrainEditor() {
   const { activeClient } = useActiveClient()
@@ -55,7 +55,7 @@ export default function BrandBrainEditor() {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [activeTab, setActiveTab] = useState<TabType>('identity')
+  const [activeTab, setActiveTab] = useState<TabType>('brand_identity')
   const [documents, setDocuments] = useState<any[]>([])
   const [suggestions, setSuggestions] = useState<Record<string, any> | null>(null)
   const [analyzing, setAnalyzing] = useState<string | null>(null)
@@ -336,21 +336,15 @@ export default function BrandBrainEditor() {
         />
       )}
 
-      {/* Tabs - 12 Fields + Documents */}
+      {/* Tabs - 6 Consolidated Fields */}
       <div className="flex gap-1 mb-6 border-b border-white/10 overflow-x-auto pb-2">
         {[
-          { id: 'identity', label: '🎯 Identity', icon: '📛' },
-          { id: 'what_it_is', label: '❓ What It Is', icon: '📝' },
-          { id: 'audiences', label: '👥 Audiences', icon: '🎯' },
-          { id: 'value_prop', label: '💎 Value Prop', icon: '✨' },
-          { id: 'features', label: '⭐ Hero Features', icon: '🚀' },
-          { id: 'business', label: '💰 Business Model', icon: '💵' },
-          { id: 'tone', label: '💬 Tone & Voice', icon: '🗣️' },
-          { id: 'visual', label: '🎨 Visual Identity', icon: '🎭' },
-          { id: 'competitive', label: '⚔️ Competitive', icon: '🎯' },
-          { id: 'go_to_market', label: '📚 Content Strategy', icon: '📝' },
-          { id: 'strategy', label: '📋 Strategy & Ops', icon: '📊' },
-          { id: 'documents', label: '📄 Documents', icon: '📁' },
+          { id: 'brand_identity', label: '🎯 Brand Identity' },
+          { id: 'audience_market', label: '👥 Audience & Market' },
+          { id: 'voice_visual', label: '💬 Voice & Visual' },
+          { id: 'content_strategy', label: '📚 Content Strategy' },
+          { id: 'business_ops', label: '💼 Business & Ops' },
+          { id: 'documents', label: '📄 Documents' },
         ].map((tab) => (
           <button
             key={tab.id}
