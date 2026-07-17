@@ -333,6 +333,49 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // COMERCIAL: SCORING
     'comercial.scoring.no-leads': 'No hay leads aún. Usa Rex para descubrir leads.',
+    'comercial.scoring.distribution': 'Distribución',
+    'comercial.scoring.distribution-desc': 'Distribución de leads por clasificación ICP. Pregunta a Vera para analizar.',
+    'comercial.scoring.scorer-live': 'ICP Scorer · Análisis en vivo',
+
+    // COMERCIAL: ICP
+    'comercial.icp.no-icp-configured': 'No tienes un ICP configurado aún.',
+    'comercial.icp.min-budget-usd': 'Presupuesto mínimo (USD)',
+    'comercial.icp.min-budget': 'Presupuesto mínimo',
+    'comercial.icp.company-sizes': 'Tamaños de empresa',
+    'comercial.icp.geographies': 'Geografías',
+    'comercial.icp.decision-maker-signals': 'Señales de decision maker',
+    'comercial.icp.disqualifiers': 'Factores de descalificación',
+
+    // COMERCIAL: QUALIFY (Additional)
+    'comercial.qualify.lead-optional': 'Lead (opcional — enriquece el análisis)',
+    'comercial.qualify.purchase-signals': 'Señales de compra detectadas',
+
+    // COMERCIAL: PIPELINE (Additional)
+    'comercial.pipeline.negotiation': 'Negociación',
+    'comercial.pipeline.geography': 'Geografía',
+    'comercial.pipeline.size': 'Tamaño',
+
+    // COMERCIAL: DISCOVERY (Additional)
+    'comercial.discovery.find-companies': 'Encuentra empresas que encajan con tu ICP usando búsqueda web avanzada + IA.',
+    'comercial.discovery.geography': 'Geografía',
+    'comercial.discovery.limit': 'Límite:',
+    'comercial.discovery.added-to-pipeline': 'añadidas al pipeline automáticamente',
+
+    // ERROR MESSAGES
+    'error.page-load-error': 'Error al cargar la página',
+    'error.something-wrong': 'Algo salió mal. Intenta recargar.',
+
+    // HOME PAGE
+    'home.quick-shortcuts': 'Accesos rápidos',
+    'home.documentation': 'Documentación',
+    'home.configuration': 'Configuración',
+    'home.last-30-days': 'Últimas 30 días',
+    'home.time-saved-ai': 'Tiempo ahorrado con IA',
+    'home.deliveries': 'Entregas',
+
+    // COMMON
+    'common.not-available': 'No disponible',
+    'common.retry': 'Reintentar',
   },
 
   en: {
@@ -664,6 +707,49 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // COMERCIAL: SCORING
     'comercial.scoring.no-leads': 'No leads yet. Use Rex to discover leads.',
+    'comercial.scoring.distribution': 'Distribution',
+    'comercial.scoring.distribution-desc': 'Lead distribution by ICP classification. Ask Vera to analyze.',
+    'comercial.scoring.scorer-live': 'ICP Scorer · Live analysis',
+
+    // COMERCIAL: ICP
+    'comercial.icp.no-icp-configured': 'You don\'t have an ICP configured yet.',
+    'comercial.icp.min-budget-usd': 'Minimum budget (USD)',
+    'comercial.icp.min-budget': 'Minimum budget',
+    'comercial.icp.company-sizes': 'Company sizes',
+    'comercial.icp.geographies': 'Geographies',
+    'comercial.icp.decision-maker-signals': 'Decision maker signals',
+    'comercial.icp.disqualifiers': 'Disqualifying factors',
+
+    // COMERCIAL: QUALIFY (Additional)
+    'comercial.qualify.lead-optional': 'Lead (optional — enriches analysis)',
+    'comercial.qualify.purchase-signals': 'Purchase signals detected',
+
+    // COMERCIAL: PIPELINE (Additional)
+    'comercial.pipeline.negotiation': 'Negotiation',
+    'comercial.pipeline.geography': 'Geography',
+    'comercial.pipeline.size': 'Size',
+
+    // COMERCIAL: DISCOVERY (Additional)
+    'comercial.discovery.find-companies': 'Find companies that fit your ICP using advanced web search + AI.',
+    'comercial.discovery.geography': 'Geography',
+    'comercial.discovery.limit': 'Limit:',
+    'comercial.discovery.added-to-pipeline': 'automatically added to pipeline',
+
+    // ERROR MESSAGES
+    'error.page-load-error': 'Error loading page',
+    'error.something-wrong': 'Something went wrong. Try reloading.',
+
+    // HOME PAGE
+    'home.quick-shortcuts': 'Quick shortcuts',
+    'home.documentation': 'Documentation',
+    'home.configuration': 'Configuration',
+    'home.last-30-days': 'Last 30 days',
+    'home.time-saved-ai': 'Time saved with AI',
+    'home.deliveries': 'Deliveries',
+
+    // COMMON
+    'common.not-available': 'Not available',
+    'common.retry': 'Retry',
   },
 }
 

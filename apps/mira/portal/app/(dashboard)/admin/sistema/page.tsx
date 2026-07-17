@@ -6,13 +6,23 @@ import StatRow from '@/components/ui/StatRow'
 import Card from '@/components/ui/Card'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
+import { useDepartmentStats } from '@/lib/use-department-stats'
+import {
+  MARKETING_DEPT_AGENTS,
+  COMERCIAL_DEPT_AGENTS,
+  STRATEGY_DEPT_AGENTS,
+  OPERACIONES_DEPT_AGENTS,
+  FINANZAS_DEPT_AGENTS,
+} from '@/lib/agent-meta'
 
-const SYSTEM_METRICS = [
-  { label: 'admin.system.uptime', value: '99.2%', delta: 'Last 30 days' },
-  { label: 'admin.system.avg-latency', value: '2.8s', delta: 'Within threshold' },
-  { label: 'admin.system.errors-caught', value: '3', delta: 'Before client' },
-  { label: 'admin.system.ai-cost', value: '$47', delta: '$15 under budget' },
-]
+const TOTAL_AGENTS =
+  MARKETING_DEPT_AGENTS.length +
+  COMERCIAL_DEPT_AGENTS.length +
+  STRATEGY_DEPT_AGENTS.length +
+  OPERACIONES_DEPT_AGENTS.length +
+  FINANZAS_DEPT_AGENTS.length
+
+const TOTAL_DEPARTMENTS = 5
 
 const AGENT_STATUS = [
   { emoji: '🎬', name: 'Marco', status: 'idle' },
@@ -36,6 +46,14 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function Page() {
   const { locale } = useLocaleContext()
+  const { stats } = useDepartmentStats('operations')
+
+  const SYSTEM_METRICS = [
+    { label: 'admin.system.total-agents', value: String(TOTAL_AGENTS), delta: 'Across all depts' },
+    { label: 'admin.system.total-depts', value: String(TOTAL_DEPARTMENTS), delta: 'Active teams' },
+    { label: 'admin.system.clients-connected', value: String(stats.clients ?? 0), delta: 'Using MIRA' },
+    { label: 'admin.system.uptime', value: '99.2%', delta: 'Last 30 days' },
+  ]
 
   return (
     <div className="space-y-8">

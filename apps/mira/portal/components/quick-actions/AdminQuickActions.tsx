@@ -92,7 +92,7 @@ export function AdminQuickActions() {
     <div className="space-y-6">
       <div>
         <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton
               key={action.id}

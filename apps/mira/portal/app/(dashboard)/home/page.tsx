@@ -112,7 +112,7 @@ export default function HomePage() {
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
               Accesos rápidos
             </p>
-            <div className="grid grid-cols-4 gap-3 mb-10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
               {QUICK_ACCESS.map(action => (
                 <Link
                   key={action.href}
@@ -146,7 +146,7 @@ export default function HomePage() {
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
               Your teams
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {Object.values(DEPARTMENT_METADATA).map(dept => (
                 <Link key={dept.slug} href={dept.href}
                   className="group relative flex flex-col rounded-2xl p-5 overflow-hidden transition-all duration-200 hover:scale-[1.01]"
@@ -225,7 +225,7 @@ export default function HomePage() {
               </Link>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
               {projects.map(p => (
                 <Link key={p.id} href={`/projects/${p.slug}`}
                   className="group rounded-2xl p-4 transition-all hover:bg-white/3"
