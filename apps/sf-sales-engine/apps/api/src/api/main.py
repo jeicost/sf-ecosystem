@@ -4,7 +4,7 @@ from typing import AsyncGenerator
 import structlog
 from fastapi import FastAPI
 
-from api.routers import discovery, health, leads
+from api.routers import discovery, health, leads, leads_search
 
 log = structlog.get_logger()
 
@@ -25,3 +25,4 @@ app = FastAPI(
 app.include_router(health.router)
 app.include_router(discovery.router, prefix="/discovery", tags=["discovery"])
 app.include_router(leads.router, prefix="/leads", tags=["leads"])
+app.include_router(leads_search.router, prefix="/leads", tags=["leads"])
