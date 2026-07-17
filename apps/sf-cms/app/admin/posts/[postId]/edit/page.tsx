@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import { RichTextEditor } from '@/components/editor/RichTextEditor'
 
 interface Post {
   id: string
@@ -161,13 +162,11 @@ export default function PostEditorPage() {
           <h2 className="text-lg font-bold text-slate-900">Content</h2>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">HTML Content</label>
-            <textarea
+            <label className="block text-sm font-medium text-slate-700 mb-2">Content</label>
+            <RichTextEditor
               value={post.content_html}
-              onChange={(e) => setPost({ ...post, content_html: e.target.value })}
-              rows={12}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 font-mono text-sm"
-              placeholder="Enter HTML content..."
+              onChange={(html) => setPost({ ...post, content_html: html })}
+              placeholder="Write your content here..."
             />
           </div>
 
