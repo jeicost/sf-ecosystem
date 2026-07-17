@@ -2,7 +2,7 @@
   "name": "sf-ecosystem",
   "version": "1.0.0",
   "description": "Startup Factory Ecosystem — Monorepo with Turborepo",
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@9.15.9",
   "private": true,
   "scripts": {
     "build": "turbo build",
