@@ -2,6 +2,70 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { getWorkspace } from '@/lib/workspaces'
 
+// Mock data for local development/testing
+const MOCK_LEADS = [
+  {
+    first_name: 'Sarah',
+    last_name: 'Chen',
+    email: 'sarah.chen@acme.com',
+    email_verified: true,
+    title: 'VP of Sales',
+    company_name: 'ACME Corp',
+    company_website: 'acme.com',
+    industry: 'Technology',
+    geography: 'San Francisco, CA',
+    linkedin_url: 'https://linkedin.com/in/sarahchen',
+  },
+  {
+    first_name: 'Michael',
+    last_name: 'Rodriguez',
+    email: 'mrodriguez@acme.com',
+    email_verified: true,
+    title: 'Head of Growth',
+    company_name: 'ACME Corp',
+    company_website: 'acme.com',
+    industry: 'Technology',
+    geography: 'San Francisco, CA',
+    linkedin_url: 'https://linkedin.com/in/mrodriguez',
+  },
+  {
+    first_name: 'Elena',
+    last_name: 'Kowalski',
+    email: 'elena@acme.com',
+    email_verified: false,
+    title: 'Product Lead',
+    company_name: 'ACME Corp',
+    company_website: 'acme.com',
+    industry: 'Technology',
+    geography: 'New York, NY',
+    linkedin_url: 'https://linkedin.com/in/ekowalski',
+  },
+  {
+    first_name: 'James',
+    last_name: 'Smith',
+    email: 'james.smith@acme.com',
+    email_verified: true,
+    title: 'Engineering Manager',
+    company_name: 'ACME Corp',
+    company_website: 'acme.com',
+    industry: 'Technology',
+    geography: 'San Francisco, CA',
+    linkedin_url: 'https://linkedin.com/in/jsmith',
+  },
+  {
+    first_name: 'Amanda',
+    last_name: 'Lee',
+    email: 'amanda.lee@acme.com',
+    email_verified: true,
+    title: 'Marketing Director',
+    company_name: 'ACME Corp',
+    company_website: 'acme.com',
+    industry: 'Technology',
+    geography: 'Austin, TX',
+    linkedin_url: 'https://linkedin.com/in/alee',
+  },
+]
+
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAuth()
@@ -37,6 +101,40 @@ export async function POST(request: NextRequest) {
         { error: 'Sales engine not configured' },
         { status: 500 }
       )
+    }
+
+    // For development with mock API key, return mock data
+    if (salesEngineKey === 'dev-local-test-key-2026') {
+      const mockLimit = Math.min(limit || 25, 5)
+      const mockLeads = MOCK_LEADS.slice(0, mockLimit)
+
+      // Simulate realistic cost metrics
+      const costUsd = mockLeads.length * 0.015 // $0.015 per lead from Apollo
+      const monthlySpendUsd = 2.45 // Simulate some prior usage
+      const monthlyLimitUsd = 150.0
+      const hitsLimit = (monthlySpendUsd + costUsd) / monthlyLimitUsd >= 0.9
+
+      const results = mockLeads.map((lead) => ({
+        firstName: lead.first_name,
+        lastName: lead.last_name,
+        company: lead.company_name,
+        title: lead.title,
+        email: lead.email,
+        emailVerified: lead.email_verified,
+        linkedinUrl: lead.linkedin_url,
+        industry: lead.industry,
+        geography: lead.geography,
+      }))
+
+      return NextResponse.json({
+        success: true,
+        results,
+        totalCount: results.length,
+        costUsd,
+        monthlySpendUsd: monthlySpendUsd + costUsd,
+        monthlyLimitUsd,
+        hitsLimit,
+      })
     }
 
     const searchPayload = {
