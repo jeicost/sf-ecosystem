@@ -365,26 +365,41 @@ export default function BrandBrainEditor() {
 
       {/* Tab Content - 11 Fields */}
       <div className="card p-6 mb-6 space-y-4">
-        {activeTab === 'identity' && (
-          <div className="space-y-4">
-            <TextInput label="Brand Name" value={profile.brand_data?.identity?.name || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, name: v } } })} placeholder="e.g., Discoolver" />
-            <TextInput label="Tagline" value={profile.brand_data?.identity?.tagline || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, tagline: v } } })} placeholder="Short, memorable phrase" />
-            <TextInput label="One-Liner" value={profile.brand_data?.identity?.one_liner || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, one_liner: v } } })} placeholder="What does your brand do?" />
-            <TextareaInput label="Mission" value={profile.brand_data?.identity?.mission || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, mission: v } } })} placeholder="Your mission and purpose" />
-            <TextareaInput label="Vision" value={profile.brand_data?.identity?.vision || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, vision: v } } })} placeholder="Your long-term vision" />
-            <TextInput label="Enemy" value={profile.brand_data?.identity?.enemy || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, enemy: v } } })} placeholder="What do you compete against? (mindset, competitor, problem)" />
+        {activeTab === 'brand_identity' && (
+          <div className="space-y-6">
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-4">Core Identity</h3>
+              <TextInput label="Brand Name" value={profile.brand_data?.identity?.name || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, name: v } } })} placeholder="e.g., Discoolver" />
+              <TextInput label="Tagline" value={profile.brand_data?.identity?.tagline || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, tagline: v } } })} placeholder="Short, memorable phrase" />
+              <TextInput label="One-Liner" value={profile.brand_data?.identity?.one_liner || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, one_liner: v } } })} placeholder="What does your brand do?" />
+            </div>
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-4">Mission & Vision</h3>
+              <TextareaInput label="Mission" value={profile.brand_data?.identity?.mission || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, mission: v } } })} placeholder="Your mission and purpose" />
+              <TextareaInput label="Vision" value={profile.brand_data?.identity?.vision || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, vision: v } } })} placeholder="Your long-term vision" />
+            </div>
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-4">What Your Brand Is</h3>
+              <label className="block text-xs text-gray-400 mb-2">(5-7 simultaneous things)</label>
+              <TextareaInput value={profile.brand_data?.what_it_is || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, what_it_is: v } })} placeholder="1. Curated discovery platform&#10;2. Influencer-powered marketplace&#10;3. AI-assisted city explorer&#10;..." />
+              <p className="text-xs text-gray-500 mt-2">Separate each item with a line break</p>
+            </div>
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-4">Value & Positioning</h3>
+              <TextareaInput label="Value Proposition" value={profile.brand_data?.value_proposition || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, value_proposition: v } })} placeholder="Problems you solve + emotional promise + time/money saved" />
+              <TextInput label="Enemy" value={profile.brand_data?.identity?.enemy || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, enemy: v } } })} placeholder="What do you compete against? (mindset, competitor, problem)" />
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-white mb-4">Hero Features</h3>
+              <p className="text-xs text-gray-400 mb-4">Three differentiators that lead your narrative</p>
+              <TextInput label="Feature 1" value={profile.brand_data?.hero_features?.feature_1 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_1: v } } })} />
+              <TextInput label="Feature 2" value={profile.brand_data?.hero_features?.feature_2 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_2: v } } })} />
+              <TextInput label="Feature 3" value={profile.brand_data?.hero_features?.feature_3 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_3: v } } })} />
+            </div>
           </div>
         )}
 
-        {activeTab === 'what_it_is' && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-white">What Your Brand Is (5-7 simultaneous things)</label>
-            <TextareaInput value={profile.brand_data?.what_it_is || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, what_it_is: v } })} placeholder="1. Curated discovery platform&#10;2. Influencer-powered marketplace&#10;3. AI-assisted city explorer&#10;..." />
-            <p className="text-xs text-gray-500">Separate each item with a line break</p>
-          </div>
-        )}
-
-        {activeTab === 'audiences' && (
+        {activeTab === 'audience_market' && (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-white">Primary Audiences (6 Segments)</label>
             <p className="text-xs text-gray-400 mb-4">Format: Segment | Need | Key Message (one per line)</p>
@@ -419,13 +434,13 @@ export default function BrandBrainEditor() {
           </div>
         )}
 
-        {activeTab === 'value_prop' && (
+        {activeTab === 'brand_identity' && (
           <div className="space-y-4">
             <TextareaInput label="Value Proposition" value={profile.brand_data?.value_proposition || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, value_proposition: v } })} placeholder="Problems you solve + emotional promise + time/money saved" />
           </div>
         )}
 
-        {activeTab === 'features' && (
+        {activeTab === 'brand_identity' && (
           <div className="space-y-4">
             <p className="text-xs text-gray-400 mb-4">Three hero features/differentiators that lead your narrative</p>
             <TextInput label="Feature 1" value={profile.brand_data?.hero_features?.feature_1 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_1: v } } })} />
@@ -434,13 +449,13 @@ export default function BrandBrainEditor() {
           </div>
         )}
 
-        {activeTab === 'business' && (
+        {activeTab === 'business_ops' && (
           <div className="space-y-4">
             <TextareaInput label="Business Model" value={profile.brand_data?.business_model || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, business_model: v } })} placeholder="Revenue streams, pricing tiers, customer types (B2C/B2B/B2B2C)" />
           </div>
         )}
 
-        {activeTab === 'tone' && (
+        {activeTab === 'voice_visual' && (
           <div className="space-y-6">
             {/* Archetypes */}
             <div className="border-b border-white/10 pb-4">
@@ -528,7 +543,7 @@ export default function BrandBrainEditor() {
           </div>
         )}
 
-        {activeTab === 'visual' && (
+        {activeTab === 'voice_visual' && (
           <div className="space-y-4">
             {/* Status Badge */}
             <div className="flex items-center gap-3">
@@ -848,13 +863,13 @@ export default function BrandBrainEditor() {
           </div>
         )}
 
-        {activeTab === 'competitive' && (
+        {activeTab === 'audience_market' && (
           <div className="space-y-4">
             <TextareaInput label="Competitive Positioning" value={profile.brand_data?.competitive_positioning || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, competitive_positioning: v } })} placeholder="Who are competitors, what makes you unique, market opportunities" />
           </div>
         )}
 
-        {activeTab === 'go_to_market' && (
+        {activeTab === 'content_strategy' && (
           <div className="space-y-6">
             {/* Go-to-Market Channels */}
             <div className="border-b border-white/10 pb-4">
@@ -909,7 +924,7 @@ export default function BrandBrainEditor() {
           </div>
         )}
 
-        {activeTab === 'strategy' && (
+        {activeTab === 'content_strategy' && (
           <div className="space-y-6">
             {/* Strategy & Roadmap */}
             <div className="border-b border-white/10 pb-4">
