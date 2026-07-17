@@ -514,7 +514,7 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Vocabulary */}
-            <div>
+            <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-3">Vocabulary Rules</h3>
               <label className="block text-xs font-medium text-gray-400 mb-2">✅ Words to Use (comma-separated)</label>
               <TextareaInput
@@ -547,36 +547,34 @@ export default function BrandBrainEditor() {
                 placeholder="barato, rápido porque sí, líder del mercado, revolucionario..."
               />
             </div>
-          </div>
-        )}
 
-        {activeTab === 'voice_visual' && (
-          <div className="space-y-4">
             {/* Status Badge */}
-            <div className="flex items-center gap-3">
-              <label className="block text-sm font-medium text-white">Status:</label>
-              <select
-                value={(profile.brand_data?.visual_identity as any)?.status || 'missing'}
-                onChange={(e) => setProfile({
-                  ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    visual_identity: {
-                      ...(profile.brand_data?.visual_identity as any),
-                      status: e.target.value,
+            <div className="border-b border-white/10 pb-4">
+              <div className="flex items-center gap-3">
+                <label className="block text-sm font-medium text-white">Visual Status:</label>
+                <select
+                  value={(profile.brand_data?.visual_identity as any)?.status || 'missing'}
+                  onChange={(e) => setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      visual_identity: {
+                        ...(profile.brand_data?.visual_identity as any),
+                        status: e.target.value,
+                      },
                     },
-                  },
-                })}
-                className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-purple-500 focus:outline-none"
-              >
-                <option value="confirmed">✅ Confirmed (Client approved)</option>
-                <option value="proposed">⏳ Proposed (Pending decision)</option>
-                <option value="missing">❌ Missing (Not documented)</option>
-              </select>
+                  })}
+                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-purple-500 focus:outline-none"
+                >
+                  <option value="confirmed">✅ Confirmed (Client approved)</option>
+                  <option value="proposed">⏳ Proposed (Pending decision)</option>
+                  <option value="missing">❌ Missing (Not documented)</option>
+                </select>
+              </div>
             </div>
 
             {/* Colors Section */}
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-4">Colors</h3>
               <div className="grid grid-cols-2 gap-4">
                 {['primary', 'secondary', 'accent', 'neutral'].map((colorRole) => (
@@ -647,7 +645,7 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Typography Section */}
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-4">Typography</h3>
               <div className="space-y-3">
                 <TextInput
@@ -726,7 +724,7 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Logo Section */}
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-4">Logo</h3>
               <TextInput
                 label="Logo URL"
@@ -767,7 +765,7 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Imagery Style */}
-            <div className="border-t border-white/10 pt-4">
+            <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-4">Imagery & Aesthetic</h3>
               <TextareaInput
                 value={(profile.brand_data?.visual_identity as any)?.imagery_style || ''}
@@ -786,7 +784,7 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Mascot / Character */}
-            <div className="border-t border-white/10 pt-4">
+            <div>
               <h3 className="text-sm font-medium text-white mb-4">Brand Mascot / Character</h3>
               <TextInput
                 label="Mascot Name"
@@ -869,6 +867,7 @@ export default function BrandBrainEditor() {
             </div>
           </div>
         )}
+
 
         {activeTab === 'audience_market' && (
           <div className="space-y-4">
