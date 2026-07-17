@@ -415,36 +415,43 @@ export default function BrandBrainEditor() {
         )}
 
         {activeTab === 'audience_market' && (
-          <div className="space-y-4">
-            <label className="block text-sm font-medium text-white">Primary Audiences (6 Segments)</label>
-            <p className="text-xs text-gray-400 mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
-            <TextareaInput
-              value={(profile.brand_data?.audiences || []).map((a: any) =>
-                typeof a === 'string' ? a : `${a.segment || ''} 🔹 ${a.need || ''} 🔹 ${a.message || ''}`
-              ).join('\n')}
-              onChange={(v) => setProfile({
-                ...profile,
-                brand_data: {
-                  ...profile.brand_data,
-                  audiences: v.split('\n').filter(l => l.trim()).map(line => {
-                    const [segment, need, message] = line.split('🔹').map(s => s.trim())
-                    return { segment, need, message }
-                  })
-                }
-              })}
-              placeholder="E-commerce emergente 🔹 Ordenar operaciones 🔹 Valida y crece sin complicarte&#10;E-commerce en crecimiento 🔹 Soportar volumen 🔹 Campañas sin caos&#10;..."
-            />
-            <div className="border-t border-white/10 pt-4">
-              <h4 className="text-xs font-semibold text-gray-300 mb-3">Preview:</h4>
-              <div className="space-y-2 text-xs">
-                {(profile.brand_data?.audiences || []).map((a: any, i: number) => (
-                  <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
-                    <div className="font-medium text-white">{a.segment || a}</div>
-                    <div className="text-gray-400 text-xs mt-1">{a.need || a}</div>
-                    <div className="text-purple-300 text-xs mt-1">{a.message || a}</div>
-                  </div>
-                ))}
+          <div className="space-y-6">
+            <div>
+              <h3 className="text-sm font-medium text-white mb-3">Primary Audiences (6 Segments)</h3>
+              <p className="text-xs text-gray-400 mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
+              <TextareaInput
+                value={(profile.brand_data?.audiences || []).map((a: any) =>
+                  typeof a === 'string' ? a : `${a.segment || ''} 🔹 ${a.need || ''} 🔹 ${a.message || ''}`
+                ).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    audiences: v.split('\n').filter(l => l.trim()).map(line => {
+                      const [segment, need, message] = line.split('🔹').map(s => s.trim())
+                      return { segment, need, message }
+                    })
+                  }
+                })}
+                placeholder="E-commerce emergente 🔹 Ordenar operaciones 🔹 Valida y crece sin complicarte&#10;E-commerce en crecimiento 🔹 Soportar volumen 🔹 Campañas sin caos&#10;..."
+              />
+              <div className="border-t border-white/10 pt-4 mt-4">
+                <h4 className="text-xs font-semibold text-gray-300 mb-3">Preview:</h4>
+                <div className="space-y-2 text-xs">
+                  {(profile.brand_data?.audiences || []).map((a: any, i: number) => (
+                    <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
+                      <div className="font-medium text-white">{a.segment || a}</div>
+                      <div className="text-gray-400 text-xs mt-1">{a.need || a}</div>
+                      <div className="text-purple-300 text-xs mt-1">{a.message || a}</div>
+                    </div>
+                  ))}
+                </div>
               </div>
+            </div>
+
+            <div className="border-t border-white/10 pt-6">
+              <h3 className="text-sm font-medium text-white mb-3">Competitive Positioning</h3>
+              <TextareaInput value={profile.brand_data?.competitive_positioning || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, competitive_positioning: v } })} placeholder="Who are competitors, what makes you unique, market opportunities" />
             </div>
           </div>
         )}
@@ -871,6 +878,16 @@ export default function BrandBrainEditor() {
 
         {activeTab === 'content_strategy' && (
           <div className="space-y-6">
+            {/* Strategy & Roadmap */}
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-3">Strategy & Roadmap</h3>
+              <TextareaInput
+                value={profile.brand_data?.strategy_roadmap || ''}
+                onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, strategy_roadmap: v } })}
+                placeholder="90-day plan, growth model, strategic principles, key milestones"
+              />
+            </div>
+
             {/* Go-to-Market Channels */}
             <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-3">Go-to-Market & Channels</h3>
@@ -912,27 +929,13 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Editorial Rhythm */}
-            <div>
+            <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-3">Editorial Rhythm & Calendar</h3>
               <p className="text-xs text-gray-400 mb-3">Weekly publishing rhythm, formats, and which pillar content for each day</p>
               <TextareaInput
                 value={profile.brand_data?.editorial_rhythm || ''}
                 onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, editorial_rhythm: v } })}
                 placeholder="Lunes/Martes: E-com Playbook (framework + checklist)&#10;Miércoles: Dadybox en Acción (servicio, backstage)&#10;Jueves/Viernes: Radar Logístico (actualidad, caso)&#10;Fin de semana: Entregas Mágicas (creatividad, alcance)&#10;Principio: Publicar por función, no por llenar calendario."
-              />
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'content_strategy' && (
-          <div className="space-y-6">
-            {/* Strategy & Roadmap */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Strategy & Roadmap</h3>
-              <TextareaInput
-                value={profile.brand_data?.strategy_roadmap || ''}
-                onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, strategy_roadmap: v } })}
-                placeholder="90-day plan, growth model, strategic principles, key milestones"
               />
             </div>
 

@@ -1,6 +1,16 @@
 {
   "$schema": "https://turbo.build/json-schema.json",
   "globalDependencies": ["**/.env.local"],
+  "globalEnv": [
+    "SUPABASE_SERVICE_ROLE_KEY",
+    "ANTHROPIC_API_KEY",
+    "TAVILY_API_KEY",
+    "REVALIDATE_SECRET",
+    "GOOGLE_SERVICE_ACCOUNT_KEY",
+    "GOOGLE_DRIVE_FOLDER_ID",
+    "GOOGLE_OAUTH_CLIENT_ID",
+    "GOOGLE_OAUTH_CLIENT_SECRET"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

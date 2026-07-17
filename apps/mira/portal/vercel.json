@@ -1,5 +1,5 @@
 {
-  "buildCommand": "npm run build",
+  "buildCommand": "turbo build --filter=mira-portal... --no-daemon",
   "installCommand": "npm install",
   "outputDirectory": ".next",
   "framework": "nextjs",
