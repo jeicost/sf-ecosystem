@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { createLead, createCrmContact } from '@/lib/db'
 import { calculateScore, validateEmail } from '@/lib/utils'
+import { handleApiError } from '@/lib/api-errors'
 
 export async function POST(request: NextRequest) {
   try {
@@ -84,10 +85,6 @@ export async function POST(request: NextRequest) {
       ...results,
     })
   } catch (error) {
-    console.error('Import error:', error)
-    return NextResponse.json(
-      { error: 'Failed to import leads' },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to import leads')
   }
 }

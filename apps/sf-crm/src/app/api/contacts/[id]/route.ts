@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { updateLead, updateCrmContact, getLead, getCrmContact } from '@/lib/db'
+import { handleApiError } from '@/lib/api-errors'
 
 export async function PATCH(
   request: NextRequest,
@@ -38,10 +39,6 @@ export async function PATCH(
     const updated = await updateCrmContact(contactId, body)
     return NextResponse.json({ data: updated })
   } catch (error) {
-    console.error('Update contact error:', error)
-    return NextResponse.json(
-      { error: 'Failed to update contact' },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to update contact')
   }
 }

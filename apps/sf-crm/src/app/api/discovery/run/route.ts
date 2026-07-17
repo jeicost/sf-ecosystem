@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { createDiscoveryRun } from '@/lib/db'
+import { handleApiError } from '@/lib/api-errors'
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,10 +39,6 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
-    console.error('Discovery run error:', error)
-    return NextResponse.json(
-      { error: 'Failed to start discovery run' },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to start discovery run')
   }
 }

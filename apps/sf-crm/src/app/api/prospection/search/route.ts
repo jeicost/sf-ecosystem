@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { getWorkspace } from '@/lib/workspaces'
+import { handleApiError } from '@/lib/api-errors'
 
 // Mock data for local development/testing
 const MOCK_LEADS = [
@@ -69,10 +70,6 @@ const MOCK_LEADS = [
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAuth()
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { query, industries, jobTitles, companySizes, limit } = await request.json()
 
     if (!query || query.trim().length === 0) {
@@ -86,7 +83,7 @@ export async function POST(request: NextRequest) {
     const workspace = getWorkspace(session.workspace.id)
     if (!workspace || !workspace.clientId) {
       return NextResponse.json(
-        { error: 'Workspace client ID not configured' },
+        { error: 'Prospection search is not configured for this workspace yet' },
         { status: 400 }
       )
     }
@@ -201,13 +198,6 @@ export async function POST(request: NextRequest) {
       hitsLimit: data.hits_limit,
     })
   } catch (error) {
-    console.error('Prospection search error:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to search prospects',
-        detail: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to search prospects')
   }
 }

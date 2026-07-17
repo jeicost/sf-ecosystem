@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { createOutreachEmail, createActivity } from '@/lib/db'
+import { handleApiError } from '@/lib/api-errors'
 
 // This would use Resend API in production
 // For now, we'll create mock implementation
@@ -68,10 +69,6 @@ export async function POST(request: NextRequest) {
       ...results,
     })
   } catch (error) {
-    console.error('Send email error:', error)
-    return NextResponse.json(
-      { error: 'Failed to send emails' },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to send emails')
   }
 }

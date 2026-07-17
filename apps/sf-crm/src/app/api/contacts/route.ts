@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { getLeads, getCrmContacts } from '@/lib/db'
+import { handleApiError } from '@/lib/api-errors'
 
 export async function GET(request: NextRequest) {
   try {
@@ -17,10 +18,6 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: result.data, total: result.total })
   } catch (error) {
-    console.error('List contacts error:', error)
-    return NextResponse.json(
-      { error: 'Failed to load contacts' },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to load contacts')
   }
 }

@@ -1,3 +1,4 @@
+import { handleApiError } from '@/lib/api-errors'
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { bulkUpdateLeads, bulkUpdateCrmContacts } from '@/lib/db'
@@ -33,10 +34,6 @@ export async function PATCH(request: NextRequest) {
       updated: ids.length,
     })
   } catch (error) {
-    console.error('Bulk update error:', error)
-    return NextResponse.json(
-      { error: 'Failed to perform bulk update' },
-      { status: 500 }
-    )
+    return handleApiError(error, 'Failed to perform bulk update')
   }
 }

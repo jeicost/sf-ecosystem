@@ -57,10 +57,17 @@ export async function clearSession(): Promise<void> {
   cookieStore.delete(SESSION_COOKIE_NAME)
 }
 
+export class AuthError extends Error {
+  constructor(message = 'Unauthorized: No valid session') {
+    super(message)
+    this.name = 'AuthError'
+  }
+}
+
 export async function requireAuth(): Promise<AuthSession> {
   const session = await getSession()
   if (!session) {
-    throw new Error('Unauthorized: No valid session')
+    throw new AuthError()
   }
   return session
 }

@@ -23,6 +23,23 @@ function mapCrmContactRow(row: any): CrmContact {
   }
 }
 
+// Inverse: translate camelCase to snake_case for writes
+function unmapCrmContactRow(contact: Partial<CrmContact>): Record<string, any> {
+  const mapped: Record<string, any> = {}
+  if (contact.firstName !== undefined) mapped.first_name = contact.firstName
+  if (contact.lastName !== undefined) mapped.last_name = contact.lastName
+  if (contact.company !== undefined) mapped.company_name = contact.company
+  if (contact.title !== undefined) mapped.title = contact.title
+  if (contact.email !== undefined) mapped.email = contact.email
+  if (contact.linkedinUrl !== undefined) mapped.linkedin_url = contact.linkedinUrl
+  if (contact.geography !== undefined) mapped.geography = contact.geography
+  if (contact.industry !== undefined) mapped.industry = contact.industry
+  if (contact.score !== undefined) mapped.hot_score = contact.score
+  if (contact.stage !== undefined) mapped.stage = contact.stage
+  if (contact.notes !== undefined) mapped.notes = contact.notes
+  return mapped
+}
+
 // Leads (SF Workspace)
 export async function getLeads(clientId: string, options?: { page?: number; limit?: number; stage?: string; search?: string }) {
   const page = options?.page || 1
@@ -113,20 +130,22 @@ export async function getCrmContact(id: string): Promise<CrmContact | null> {
 }
 
 export async function createCrmContact(workspaceId: string, contact: Omit<CrmContact, 'id' | 'createdAt' | 'updatedAt'>): Promise<CrmContact> {
+  const unmapped = unmapCrmContactRow(contact)
   const { data, error } = await supabase
     .from('crm_contacts')
-    .insert([{ ...contact, workspace_id: workspaceId }])
+    .insert([{ ...unmapped, workspace_id: workspaceId }])
     .select()
     .single()
 
   if (error) throw error
-  return data as CrmContact
+  return mapCrmContactRow(data)
 }
 
 export async function updateCrmContact(id: string, updates: Partial<CrmContact>): Promise<CrmContact> {
-  const { data, error } = await supabase.from('crm_contacts').update(updates).eq('id', id).select().single()
+  const unmapped = unmapCrmContactRow(updates)
+  const { data, error } = await supabase.from('crm_contacts').update(unmapped).eq('id', id).select().single()
   if (error) throw error
-  return data as CrmContact
+  return mapCrmContactRow(data)
 }
 
 export async function deleteCrmContact(id: string): Promise<void> {
