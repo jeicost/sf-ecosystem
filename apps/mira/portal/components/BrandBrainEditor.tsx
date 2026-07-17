@@ -13,16 +13,23 @@ interface BrandData {
   hero_features?: Record<string, string>
   business_model?: string
   tone_and_voice?: Record<string, string>
+  voice_archetypes?: string[]
+  voice_principles?: Array<{ name: string; example: string }>
+  voice_vocabulary?: { do: string[]; dont: string[] }
   visual_identity?: {
     status?: string
     colors?: Record<string, string>
     typography?: Record<string, string>
     logo?: Record<string, string>
     imagery_style?: string
+    mascot_dady?: { specs: string; model_sheet_status: string; approved_anchors: string }
   }
   competitive_positioning?: string
   go_to_market?: string
+  content_pillars?: Array<{ name: string; function: string; description: string; topics: string; claim: string }>
+  editorial_rhythm?: string
   strategy_roadmap?: string
+  qa_rules?: { formula: string; checklist: string[]; what_to_avoid: string[] }
 }
 
 interface BrandProfile {
@@ -328,7 +335,7 @@ export default function BrandBrainEditor() {
         />
       )}
 
-      {/* Tabs - 11 Fields + Documents */}
+      {/* Tabs - 12 Fields + Documents */}
       <div className="flex gap-1 mb-6 border-b border-white/10 overflow-x-auto pb-2">
         {[
           { id: 'identity', label: '🎯 Identity', icon: '📛' },
@@ -340,8 +347,8 @@ export default function BrandBrainEditor() {
           { id: 'tone', label: '💬 Tone & Voice', icon: '🗣️' },
           { id: 'visual', label: '🎨 Visual Identity', icon: '🎭' },
           { id: 'competitive', label: '⚔️ Competitive', icon: '🎯' },
-          { id: 'go_to_market', label: '🚀 Go-to-Market', icon: '📢' },
-          { id: 'strategy', label: '📋 Strategy', icon: '📊' },
+          { id: 'go_to_market', label: '📚 Content Strategy', icon: '📝' },
+          { id: 'strategy', label: '📋 Strategy & Ops', icon: '📊' },
           { id: 'documents', label: '📄 Documents', icon: '📁' },
         ].map((tab) => (
           <button
@@ -384,9 +391,36 @@ export default function BrandBrainEditor() {
 
         {activeTab === 'audiences' && (
           <div className="space-y-4">
-            <label className="block text-sm font-medium text-white">Primary Audiences</label>
-            <TextareaInput value={(profile.brand_data?.audiences || []).join('\n')} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, audiences: v.split('\n').filter(a => a.trim()) } })} placeholder="Segment 1&#10;Segment 2&#10;Segment 3&#10;Segment 4" />
-            <p className="text-xs text-gray-500">One audience per line (e.g., Entrepreneurs, Enterprises, Corporates, Startups)</p>
+            <label className="block text-sm font-medium text-white">Primary Audiences (6 Segments)</label>
+            <p className="text-xs text-gray-400 mb-4">Format: Segment | Need | Key Message (one per line)</p>
+            <TextareaInput
+              value={(profile.brand_data?.audiences || []).map((a: any) =>
+                typeof a === 'string' ? a : `${a.segment || ''} | ${a.need || ''} | ${a.message || ''}`
+              ).join('\n')}
+              onChange={(v) => setProfile({
+                ...profile,
+                brand_data: {
+                  ...profile.brand_data,
+                  audiences: v.split('\n').filter(l => l.trim()).map(line => {
+                    const [segment, need, message] = line.split('|').map(s => s.trim())
+                    return { segment, need, message }
+                  })
+                }
+              })}
+              placeholder="E-commerce emergente | Ordenar operaciones | Valida y crece sin complicarte&#10;E-commerce en crecimiento | Soportar volumen | Campañas sin caos&#10;..."
+            />
+            <div className="border-t border-white/10 pt-4">
+              <h4 className="text-xs font-semibold text-gray-300 mb-3">Preview:</h4>
+              <div className="space-y-2 text-xs">
+                {(profile.brand_data?.audiences || []).map((a: any, i: number) => (
+                  <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
+                    <div className="font-medium text-white">{a.segment || a}</div>
+                    <div className="text-gray-400 text-xs mt-1">{a.need || a}</div>
+                    <div className="text-purple-300 text-xs mt-1">{a.message || a}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 
@@ -412,15 +446,90 @@ export default function BrandBrainEditor() {
         )}
 
         {activeTab === 'tone' && (
-          <div className="space-y-4">
-            <TextareaInput label="Tone & Voice + Key Messages" value={profile.brand_data?.tone_and_voice ? Object.entries(profile.brand_data.tone_and_voice).map(([k, v]) => `${k}: ${v}`).join('\n') : ''} onChange={(v) => {
-              const tone: Record<string, string> = {}
-              v.split('\n').forEach(line => {
-                const [k, ...rest] = line.split(':')
-                if (k && rest.length > 0) tone[k.trim()] = rest.join(':').trim()
-              })
-              setProfile({ ...profile, brand_data: { ...profile.brand_data, tone_and_voice: tone } })
-            }} placeholder="Professional: Executive communication&#10;Accessible: Understandable by anyone&#10;Innovative: Forward-thinking" />
+          <div className="space-y-6">
+            {/* Archetypes */}
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-3">Brand Archetypes</h3>
+              <TextInput
+                label="Primary Archetype"
+                value={profile.brand_data?.voice_archetypes?.[0] || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    voice_archetypes: [v, profile.brand_data?.voice_archetypes?.[1] || '']
+                  }
+                })}
+                placeholder="e.g., El Aliado Experto"
+              />
+              <TextInput
+                label="Secondary Archetype"
+                value={profile.brand_data?.voice_archetypes?.[1] || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    voice_archetypes: [profile.brand_data?.voice_archetypes?.[0] || '', v]
+                  }
+                })}
+                placeholder="e.g., El Mago Operativo"
+              />
+            </div>
+
+            {/* Voice Principles */}
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-3">5 Voice Principles</h3>
+              <p className="text-xs text-gray-400 mb-3">Format: Principle | Example (one per line)</p>
+              <TextareaInput
+                value={(profile.brand_data?.voice_principles || []).map((p: any) => `${p.name} | ${p.example}`).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    voice_principles: v.split('\n').filter(l => l.trim()).map(line => {
+                      const [name, example] = line.split('|').map(s => s.trim())
+                      return { name, example }
+                    })
+                  }
+                })}
+                placeholder="Claro | Controla stock, pedidos y devoluciones desde un solo panel.&#10;Práctico | Si tu inventario no está actualizado, tu marketing vende problemas.&#10;..."
+              />
+            </div>
+
+            {/* Vocabulary */}
+            <div>
+              <h3 className="text-sm font-medium text-white mb-3">Vocabulary Rules</h3>
+              <label className="block text-xs font-medium text-gray-400 mb-2">✅ Words to Use (comma-separated)</label>
+              <TextareaInput
+                value={(profile.brand_data?.voice_vocabulary?.do || []).join(', ')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    voice_vocabulary: {
+                      ...profile.brand_data?.voice_vocabulary,
+                      do: v.split(',').map(s => s.trim()).filter(s => s)
+                    }
+                  }
+                })}
+                placeholder="stock bajo control, pedidos sin fricción, logística conectada, margen..."
+              />
+              <label className="block text-xs font-medium text-gray-400 mb-2 mt-4">❌ Words to Avoid (comma-separated)</label>
+              <TextareaInput
+                value={(profile.brand_data?.voice_vocabulary?.dont || []).join(', ')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    voice_vocabulary: {
+                      ...profile.brand_data?.voice_vocabulary,
+                      dont: v.split(',').map(s => s.trim()).filter(s => s)
+                    }
+                  }
+                })}
+                placeholder="barato, rápido porque sí, líder del mercado, revolucionario..."
+              />
+            </div>
           </div>
         )}
 
@@ -658,6 +767,89 @@ export default function BrandBrainEditor() {
                 placeholder="Mood, lighting, photography style, prohibited imagery, visual references, etc."
               />
             </div>
+
+            {/* Mascot / Character */}
+            <div className="border-t border-white/10 pt-4">
+              <h3 className="text-sm font-medium text-white mb-4">Brand Mascot / Character</h3>
+              <TextInput
+                label="Mascot Name"
+                value={(profile.brand_data?.visual_identity as any)?.mascot_dady?.specs?.split('|')[0] || ''}
+                onChange={(v) => {
+                  const specs = profile.brand_data?.visual_identity as any
+                  const currentSpecs = specs?.mascot_dady?.specs || ''
+                  const rest = currentSpecs.split('|').slice(1).join('|')
+                  setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      visual_identity: {
+                        ...(profile.brand_data?.visual_identity as any),
+                        mascot_dady: {
+                          specs: `${v}${rest ? '|' + rest : ''}`,
+                          model_sheet_status: specs?.mascot_dady?.model_sheet_status || '',
+                          approved_anchors: specs?.mascot_dady?.approved_anchors || ''
+                        },
+                      },
+                    },
+                  })
+                }}
+                placeholder="e.g., Dady"
+              />
+              <TextareaInput
+                label="Mascot Specs & Personality"
+                value={(profile.brand_data?.visual_identity as any)?.mascot_dady?.specs || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      mascot_dady: {
+                        ...(profile.brand_data?.visual_identity as any)?.mascot_dady,
+                        specs: v,
+                      },
+                    },
+                  },
+                })}
+                placeholder="Description, personality, voice, scene rules, design language..."
+              />
+              <TextInput
+                label="Model Sheet Status"
+                value={(profile.brand_data?.visual_identity as any)?.mascot_dady?.model_sheet_status || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      mascot_dady: {
+                        ...(profile.brand_data?.visual_identity as any)?.mascot_dady,
+                        model_sheet_status: v,
+                      },
+                    },
+                  },
+                })}
+                placeholder="e.g., Pilot visual - formal orthographic sheet pending"
+              />
+              <TextareaInput
+                label="Approved Visual Anchors"
+                value={(profile.brand_data?.visual_identity as any)?.mascot_dady?.approved_anchors || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    visual_identity: {
+                      ...(profile.brand_data?.visual_identity as any),
+                      mascot_dady: {
+                        ...(profile.brand_data?.visual_identity as any)?.mascot_dady,
+                        approved_anchors: v,
+                      },
+                    },
+                  },
+                })}
+                placeholder="List of 4 reference images, URLs, or descriptions"
+              />
+            </div>
           </div>
         )}
 
@@ -668,14 +860,133 @@ export default function BrandBrainEditor() {
         )}
 
         {activeTab === 'go_to_market' && (
-          <div className="space-y-4">
-            <TextareaInput label="Go-to-Market & Channels" value={profile.brand_data?.go_to_market || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, go_to_market: v } })} placeholder="How you reach customers, main channels (Instagram, LinkedIn, Events, etc.), tactics" />
+          <div className="space-y-6">
+            {/* Go-to-Market Channels */}
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-3">Go-to-Market & Channels</h3>
+              <TextareaInput
+                value={profile.brand_data?.go_to_market || ''}
+                onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, go_to_market: v } })}
+                placeholder="How you reach customers, main channels (Instagram, LinkedIn, Events, etc.), tactics"
+              />
+            </div>
+
+            {/* Content Pillars */}
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-3">4 Content Pillars</h3>
+              <p className="text-xs text-gray-400 mb-3">Format: Pillar | Function | Topics | Claim (one per line)</p>
+              <TextareaInput
+                value={(profile.brand_data?.content_pillars || []).map((p: any) =>
+                  `${p.name} | ${p.function} | ${p.topics} | ${p.claim}`
+                ).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    content_pillars: v.split('\n').filter(l => l.trim()).map(line => {
+                      const [name, func, topics, claim] = line.split('|').map(s => s.trim())
+                      return { name, function: func, description: '', topics, claim }
+                    })
+                  }
+                })}
+                placeholder="Radar Logístico | Actualidad y tendencias | Noticias, cases, crisis | Lo que pasa en logística afecta tu e-commerce&#10;Dadybox en Acción | Servicios y procesos | SGA, picking, envíos | Así convertimos tu logística en operación escalable&#10;..."
+              />
+              {(profile.brand_data?.content_pillars || []).length > 0 && (
+                <div className="mt-4 space-y-2 text-xs">
+                  <p className="text-gray-300 font-medium">Pillars Summary:</p>
+                  {(profile.brand_data?.content_pillars || []).map((p: any, i: number) => (
+                    <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
+                      <div className="font-medium text-purple-300">{p.name}</div>
+                      <div className="text-gray-400 mt-1">{p.function}</div>
+                      <div className="text-gray-500 text-xs mt-1 italic">"{p.claim}"</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Editorial Rhythm */}
+            <div>
+              <h3 className="text-sm font-medium text-white mb-3">Editorial Rhythm & Calendar</h3>
+              <p className="text-xs text-gray-400 mb-3">Weekly publishing rhythm, formats, and which pillar content for each day</p>
+              <TextareaInput
+                value={profile.brand_data?.editorial_rhythm || ''}
+                onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, editorial_rhythm: v } })}
+                placeholder="Lunes/Martes: E-com Playbook (framework + checklist)&#10;Miércoles: Dadybox en Acción (servicio, backstage)&#10;Jueves/Viernes: Radar Logístico (actualidad, caso)&#10;Fin de semana: Entregas Mágicas (creatividad, alcance)&#10;Principio: Publicar por función, no por llenar calendario."
+              />
+            </div>
           </div>
         )}
 
         {activeTab === 'strategy' && (
-          <div className="space-y-4">
-            <TextareaInput label="Strategy & Roadmap" value={profile.brand_data?.strategy_roadmap || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, strategy_roadmap: v } })} placeholder="90-day plan, growth model, strategic principles, key milestones" />
+          <div className="space-y-6">
+            {/* Strategy & Roadmap */}
+            <div className="border-b border-white/10 pb-4">
+              <h3 className="text-sm font-medium text-white mb-3">Strategy & Roadmap</h3>
+              <TextareaInput
+                value={profile.brand_data?.strategy_roadmap || ''}
+                onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, strategy_roadmap: v } })}
+                placeholder="90-day plan, growth model, strategic principles, key milestones"
+              />
+            </div>
+
+            {/* QA Rules & Operations */}
+            <div>
+              <h3 className="text-sm font-medium text-white mb-3">QA Rules & Content Operations</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">Base Formula (Problem → Solution → Benefit → Result → CTA)</label>
+                  <TextareaInput
+                    value={profile.brand_data?.qa_rules?.formula || ''}
+                    onChange={(v) => setProfile({
+                      ...profile,
+                      brand_data: {
+                        ...profile.brand_data,
+                        qa_rules: { ...profile.brand_data?.qa_rules, formula: v }
+                      }
+                    })}
+                    placeholder="1. Problem: Real challenge&#10;2. System: How we solve it&#10;3. Benefit: What improves&#10;4. Result: Metric/proof&#10;5. CTA: Next action"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">7-Point QA Checklist (one per line)</label>
+                  <TextareaInput
+                    value={(profile.brand_data?.qa_rules?.checklist || []).join('\n')}
+                    onChange={(v) => setProfile({
+                      ...profile,
+                      brand_data: {
+                        ...profile.brand_data,
+                        qa_rules: {
+                          ...profile.brand_data?.qa_rules,
+                          checklist: v.split('\n').filter(l => l.trim())
+                        }
+                      }
+                    })}
+                    placeholder="¿Aporta algo útil o solo rellena calendario?&#10;¿Problema desde perspectiva del cliente?&#10;¿Conecta con control, margen, experiencia o escala?&#10;¿Hay lección real aunque sea creativo?&#10;¿CTA encaja con etapa del funnel?&#10;¿Diseño respeta colores, jerarquía y legibilidad?&#10;¿Claims legales verificados?"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-gray-400 mb-2">What to AVOID (comma-separated)</label>
+                  <TextareaInput
+                    value={(profile.brand_data?.qa_rules?.what_to_avoid || []).join(', ')}
+                    onChange={(v) => setProfile({
+                      ...profile,
+                      brand_data: {
+                        ...profile.brand_data,
+                        qa_rules: {
+                          ...profile.brand_data?.qa_rules,
+                          what_to_avoid: v.split(',').map(s => s.trim()).filter(s => s)
+                        }
+                      }
+                    })}
+                    placeholder="Posts sin aprendizaje, claims sin prueba, hablar de magia sin explicar, estilos visuales inconsistentes, solo hablar de marca..."
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
