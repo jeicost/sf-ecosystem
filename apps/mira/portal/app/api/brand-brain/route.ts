@@ -37,17 +37,23 @@ export async function GET(req: NextRequest) {
     }
     const clientId = accessData[0].project_id
 
-    const { data, error } = await admin
-      .from('brand_profiles')
-      .select('*')
-      .eq('client_id', clientId)
-      .maybeSingle()
+    const [{ data: profileData, error: profileError }, { data: pillarsData, error: pillarsError }] = await Promise.all([
+      admin
+        .from('brand_profiles')
+        .select('*')
+        .eq('client_id', clientId)
+        .maybeSingle(),
+      admin
+        .from('content_pillars')
+        .select('*')
+        .eq('client_id', clientId),
+    ])
 
-    if (error) {
+    if (profileError) {
       return NextResponse.json({ data: null, message: 'No brand profile yet' }, { status: 200 })
     }
 
-    return NextResponse.json({ data }, { status: 200 })
+    return NextResponse.json({ data: profileData, pillars: pillarsData || [] }, { status: 200 })
   } catch (error) {
     console.error('Brand brain GET error:', error)
     return NextResponse.json(
@@ -60,7 +66,7 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const body = await req.json()
-    const { id, brand_data, name, mission, tone_of_voice, values, description } = body
+    const { id, brand_data, name, mission, tone_of_voice, values, description, pillars } = body
 
     const cookieStore = await cookies()
     const supabase = createServerClient(
@@ -135,6 +141,22 @@ export async function PUT(req: NextRequest) {
 
     if (updateError) {
       return NextResponse.json({ error: updateError.message }, { status: 500 })
+    }
+
+    // If pillars are provided, upsert them to the content_pillars table
+    if (pillars && Array.isArray(pillars)) {
+      const pillarsWithClientId = pillars.map(p => ({
+        ...p,
+        client_id: clientId,
+      }))
+
+      const { error: pillarsError } = await admin
+        .from('content_pillars')
+        .upsert(pillarsWithClientId, { onConflict: 'client_id,pillar_name' })
+
+      if (pillarsError) {
+        console.error('Error upserting pillars:', pillarsError)
+      }
     }
 
     return NextResponse.json({ data: updatedProfile }, { status: 200 })

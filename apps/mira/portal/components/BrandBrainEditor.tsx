@@ -26,7 +26,6 @@ interface BrandData {
   }
   competitive_positioning?: string
   go_to_market?: string
-  content_pillars?: Array<{ name: string; function: string; description: string; topics: string; claim: string }>
   editorial_rhythm?: string
   strategy_roadmap?: string
   qa_rules?: { formula?: string; checklist?: string[]; what_to_avoid?: string[] }
@@ -50,6 +49,7 @@ type TabType = 'identity' | 'what_it_is' | 'audiences' | 'value_prop' | 'feature
 export default function BrandBrainEditor() {
   const { activeClient } = useActiveClient()
   const [profile, setProfile] = useState<BrandProfile | null>(null)
+  const [pillars, setPillars] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -67,7 +67,8 @@ export default function BrandBrainEditor() {
         if (activeClient?.id) url.searchParams.set('clientId', activeClient.id)
         const res = await fetch(url)
         if (!res.ok) throw new Error('Failed to fetch brand profile')
-        const { data } = await res.json()
+        const { data, pillars: fetchedPillars } = await res.json()
+        setPillars(fetchedPillars || [])
         setProfile(data || {
           id: '',
           client_id: '',
@@ -124,7 +125,7 @@ export default function BrandBrainEditor() {
     setError(null)
 
     try {
-      const body = { ...profile } as any
+      const body = { ...profile, pillars } as any
       if (activeClient?.id) body.clientId = activeClient.id
       const res = await fetch('/api/brand-brain', {
         method: 'PUT',
@@ -874,30 +875,26 @@ export default function BrandBrainEditor() {
             {/* Content Pillars */}
             <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-3">4 Content Pillars</h3>
-              <p className="text-xs text-gray-400 mb-3">Format: Pillar | Function | Topics | Claim (one per line)</p>
+              <p className="text-xs text-gray-400 mb-3">Format: Pillar Name | Description | Claim (one per line)</p>
               <TextareaInput
-                value={(profile.brand_data?.content_pillars || []).map((p: any) =>
-                  `${p.name} | ${p.function} | ${p.topics} | ${p.claim}`
+                value={(pillars || []).map((p: any) =>
+                  `${p.pillar_name} | ${p.description} | ${p.claim || ''}`
                 ).join('\n')}
-                onChange={(v) => setProfile({
-                  ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    content_pillars: v.split('\n').filter(l => l.trim()).map(line => {
-                      const [name, func, topics, claim] = line.split('|').map(s => s.trim())
-                      return { name, function: func, description: '', topics, claim }
-                    })
-                  }
-                })}
-                placeholder="Radar Logístico | Actualidad y tendencias | Noticias, cases, crisis | Lo que pasa en logística afecta tu e-commerce&#10;Dadybox en Acción | Servicios y procesos | SGA, picking, envíos | Así convertimos tu logística en operación escalable&#10;..."
+                onChange={(v) => setPillars(
+                  v.split('\n').filter(l => l.trim()).map(line => {
+                    const [pillar_name, description, claim] = line.split('|').map(s => s.trim())
+                    return { pillar_name, description, claim, themes: [], examples: [] }
+                  })
+                )}
+                placeholder="Radar Logístico | Actualidad y tendencias en logística | Lo que pasa en logística afecta tu e-commerce&#10;Dadybox en Acción | Servicios y procesos reales | Así convertimos tu logística en operación escalable&#10;..."
               />
-              {(profile.brand_data?.content_pillars || []).length > 0 && (
+              {(pillars || []).length > 0 && (
                 <div className="mt-4 space-y-2 text-xs">
                   <p className="text-gray-300 font-medium">Pillars Summary:</p>
-                  {(profile.brand_data?.content_pillars || []).map((p: any, i: number) => (
+                  {(pillars || []).map((p: any, i: number) => (
                     <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
-                      <div className="font-medium text-purple-300">{p.name}</div>
-                      <div className="text-gray-400 mt-1">{p.function}</div>
+                      <div className="font-medium text-purple-300">{p.pillar_name}</div>
+                      <div className="text-gray-400 mt-1">{p.description}</div>
                       <div className="text-gray-500 text-xs mt-1 italic">"{p.claim}"</div>
                     </div>
                   ))}
