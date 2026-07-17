@@ -66,14 +66,17 @@ export async function PATCH(
 
     // Create version snapshot if content changed
     if (content_html && content_html !== currentPost.content_html) {
-      await client
+      const { error: revisionErr } = await client
         .from('posts_revisions')
         .insert({
           post_id: postId,
           content_html: currentPost.content_html,
+          created_by: 'admin',
           created_at: new Date().toISOString(),
         })
         .single()
+
+      if (revisionErr) throw revisionErr
     }
 
     // Update post
