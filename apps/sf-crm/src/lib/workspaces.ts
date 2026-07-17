@@ -5,7 +5,7 @@ export const WORKSPACES: Workspace[] = [
     id: '00000000-0000-0000-0000-000001',
     name: 'Startup Factory',
     type: 'sf',
-    clientId: '00000000-0000-0000-0000-000001',
+    clientId: '00000000-0000-0000-0000-000000000001',
     logo: '/logos/sf.png',
   },
   {
