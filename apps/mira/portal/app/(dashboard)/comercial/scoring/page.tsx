@@ -4,9 +4,9 @@ import { Loader2, RefreshCw, Send } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { HOT_SCORE_THRESHOLD, WARM_SCORE_THRESHOLD } from '@/lib/constants'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import { CLIENT_ID, HOT_SCORE_THRESHOLD, WARM_SCORE_THRESHOLD } from '@/lib/constants'
 import { scoreLabel } from '@/lib/score-utils'
 import { clsx } from 'clsx'
 
@@ -36,7 +36,7 @@ interface ChatMessage { role: 'user' | 'vera'; content: string }
 
 export default function ScoringPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const { locale } = useLocaleContext()
 
   const [allLeads, setAllLeads] = useState<Lead[]>([])

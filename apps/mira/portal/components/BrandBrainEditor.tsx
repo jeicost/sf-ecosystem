@@ -203,16 +203,17 @@ export default function BrandBrainEditor() {
       const { suggestedUpdates } = await res.json()
       setSuggestions(suggestedUpdates)
 
-      // Update document status in list
-      setDocuments(
-        documents.map((doc) =>
+      // Update document status in list using functional updater to avoid race condition
+      setDocuments(prev =>
+        prev.map((doc) =>
           doc.id === documentId ? { ...doc, analysis_status: 'completed' } : doc
         )
       )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Analysis failed')
-      setDocuments(
-        documents.map((doc) =>
+      // Update status to failed using functional updater
+      setDocuments(prev =>
+        prev.map((doc) =>
           doc.id === documentId ? { ...doc, analysis_status: 'failed' } : doc
         )
       )
@@ -230,15 +231,29 @@ export default function BrandBrainEditor() {
     try {
       const newBrandData = { ...profile.brand_data } as BrandData
 
-      // Deep merge for nested objects (identity, hero_features, tone_and_voice)
+      // Intelligent merge: deep merge for objects, smart merge for arrays
       Object.entries(updates).forEach(([key, value]) => {
-        if (value) {
+        if (value !== null && value !== undefined) {
           const existingValue = newBrandData[key as keyof BrandData]
+
+          // Deep merge for nested objects
           if (typeof value === 'object' && !Array.isArray(value) && typeof existingValue === 'object' && !Array.isArray(existingValue)) {
-            // Deep merge for nested objects
             newBrandData[key as keyof BrandData] = { ...existingValue, ...value }
-          } else {
-            // Direct assignment for primitives and arrays
+          }
+          // Smart merge for arrays: append new items (avoid duplicates by key field)
+          else if (Array.isArray(value) && Array.isArray(existingValue)) {
+            const merged = [...existingValue]
+            value.forEach((newItem: any) => {
+              // Check if item already exists by comparing full object
+              const exists = merged.some(existing => JSON.stringify(existing) === JSON.stringify(newItem))
+              if (!exists) {
+                merged.push(newItem)
+              }
+            })
+            newBrandData[key as keyof BrandData] = merged as any
+          }
+          // Direct assignment for primitives and other cases
+          else {
             newBrandData[key as keyof BrandData] = value
           }
         }
@@ -402,22 +417,22 @@ export default function BrandBrainEditor() {
         {activeTab === 'audience_market' && (
           <div className="space-y-4">
             <label className="block text-sm font-medium text-white">Primary Audiences (6 Segments)</label>
-            <p className="text-xs text-gray-400 mb-4">Format: Segment | Need | Key Message (one per line)</p>
+            <p className="text-xs text-gray-400 mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
             <TextareaInput
               value={(profile.brand_data?.audiences || []).map((a: any) =>
-                typeof a === 'string' ? a : `${a.segment || ''} | ${a.need || ''} | ${a.message || ''}`
+                typeof a === 'string' ? a : `${a.segment || ''} 🔹 ${a.need || ''} 🔹 ${a.message || ''}`
               ).join('\n')}
               onChange={(v) => setProfile({
                 ...profile,
                 brand_data: {
                   ...profile.brand_data,
                   audiences: v.split('\n').filter(l => l.trim()).map(line => {
-                    const [segment, need, message] = line.split('|').map(s => s.trim())
+                    const [segment, need, message] = line.split('🔹').map(s => s.trim())
                     return { segment, need, message }
                   })
                 }
               })}
-              placeholder="E-commerce emergente | Ordenar operaciones | Valida y crece sin complicarte&#10;E-commerce en crecimiento | Soportar volumen | Campañas sin caos&#10;..."
+              placeholder="E-commerce emergente 🔹 Ordenar operaciones 🔹 Valida y crece sin complicarte&#10;E-commerce en crecimiento 🔹 Soportar volumen 🔹 Campañas sin caos&#10;..."
             />
             <div className="border-t border-white/10 pt-4">
               <h4 className="text-xs font-semibold text-gray-300 mb-3">Preview:</h4>
@@ -474,20 +489,20 @@ export default function BrandBrainEditor() {
             {/* Voice Principles */}
             <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-3">5 Voice Principles</h3>
-              <p className="text-xs text-gray-400 mb-3">Format: Principle | Example (one per line)</p>
+              <p className="text-xs text-gray-400 mb-3">Format: Principle 🔹 Example (one per line)</p>
               <TextareaInput
-                value={(profile.brand_data?.voice_principles || []).map((p: any) => `${p.name} | ${p.example}`).join('\n')}
+                value={(profile.brand_data?.voice_principles || []).map((p: any) => `${p.name} 🔹 ${p.example}`).join('\n')}
                 onChange={(v) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
                     voice_principles: v.split('\n').filter(l => l.trim()).map(line => {
-                      const [name, example] = line.split('|').map(s => s.trim())
+                      const [name, example] = line.split('🔹').map(s => s.trim())
                       return { name, example }
                     })
                   }
                 })}
-                placeholder="Claro | Controla stock, pedidos y devoluciones desde un solo panel.&#10;Práctico | Si tu inventario no está actualizado, tu marketing vende problemas.&#10;..."
+                placeholder="Claro 🔹 Controla stock, pedidos y devoluciones desde un solo panel.&#10;Práctico 🔹 Si tu inventario no está actualizado, tu marketing vende problemas.&#10;..."
               />
             </div>
 
@@ -869,18 +884,18 @@ export default function BrandBrainEditor() {
             {/* Content Pillars */}
             <div className="border-b border-white/10 pb-4">
               <h3 className="text-sm font-medium text-white mb-3">4 Content Pillars</h3>
-              <p className="text-xs text-gray-400 mb-3">Format: Pillar Name | Description | Claim (one per line)</p>
+              <p className="text-xs text-gray-400 mb-3">Format: Pillar Name 🔹 Description 🔹 Claim (one per line)</p>
               <TextareaInput
                 value={(pillars || []).map((p: any) =>
-                  `${p.pillar_name} | ${p.description} | ${p.claim || ''}`
+                  `${p.pillar_name} 🔹 ${p.description} 🔹 ${p.claim || ''}`
                 ).join('\n')}
                 onChange={(v) => setPillars(
                   v.split('\n').filter(l => l.trim()).map(line => {
-                    const [pillar_name, description, claim] = line.split('|').map(s => s.trim())
+                    const [pillar_name, description, claim] = line.split('🔹').map(s => s.trim())
                     return { pillar_name, description, claim, themes: [], examples: [] }
                   })
                 )}
-                placeholder="Radar Logístico | Actualidad y tendencias en logística | Lo que pasa en logística afecta tu e-commerce&#10;Dadybox en Acción | Servicios y procesos reales | Así convertimos tu logística en operación escalable&#10;..."
+                placeholder="Radar Logístico 🔹 Actualidad y tendencias en logística 🔹 Lo que pasa en logística afecta tu e-commerce&#10;Dadybox en Acción 🔹 Servicios y procesos reales 🔹 Así convertimos tu logística en operación escalable&#10;..."
               />
               {(pillars || []).length > 0 && (
                 <div className="mt-4 space-y-2 text-xs">

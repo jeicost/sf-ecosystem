@@ -6,7 +6,6 @@ import type { IcpProfile } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
 function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
@@ -66,7 +65,7 @@ type EditableIcp = Omit<IcpProfile, 'id' | 'client_id' | 'updated_at'>
 
 export default function IcpPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const { locale } = useLocaleContext()
 
   const [icp, setIcp]       = useState<IcpProfile | null>(null)

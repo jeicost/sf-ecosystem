@@ -4,8 +4,8 @@ import { Loader2, Copy, Check, Zap, Users, RefreshCw } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
 import { useLocale } from '@/lib/use-locale'
-import { CLIENT_ID, HOT_SCORE_THRESHOLD } from '@/lib/constants'
 import { clsx } from 'clsx'
 
 const ICEBREAKER_COLS = 'id,hot_score,company_name,first_name,last_name,title,industry,geography,trigger_event,linkedin_summary,icebreaker_used'
@@ -22,7 +22,7 @@ function parseVariants(text: string): string[] {
 
 export default function IcebreakerPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const { locale } = useLocale()
 
   const [mode, setMode]           = useState<Mode>('manual')

@@ -3,9 +3,9 @@ import { useEffect, useState, useMemo, useCallback } from 'react'
 import { Loader2, X, ExternalLink, Mail, LinkedinIcon } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
+import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t, type Locale } from '@/lib/i18n'
-import { CLIENT_ID, HOT_SCORE_THRESHOLD } from '@/lib/constants'
 import type { Lead, LeadStage } from '@/lib/types'
 import LeadCard from '@/components/lead-card'
 import { scoreLabel } from '@/lib/score-utils'
@@ -32,7 +32,7 @@ const PIPELINE_COLS = 'id,stage,hot_score,company_name,first_name,last_name,titl
 
 export default function PipelinePage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const { locale } = useLocaleContext()
 
   const [leads, setLeads] = useState<Lead[]>([])

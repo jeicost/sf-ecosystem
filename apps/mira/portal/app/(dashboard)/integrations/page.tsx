@@ -4,14 +4,13 @@ import { useToolConnections } from '@/lib/hooks/useToolConnections'
 import ToolsMarketplace from '@/components/integrations/ToolsMarketplace'
 import ToolConnectionModal from '@/components/integrations/ToolConnectionModal'
 import { MARKETPLACE_TOOLS } from '@/lib/integrations/marketplace-tools'
-import { CLIENT_ID } from '@/lib/constants'
 import { useEffect, useState } from 'react'
 
 export default function IntegrationsPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const { connectedTools, userSubscriptionPlan, isLoading, connectTool, disconnectTool } =
-    useToolConnections(clientId)
+    useToolConnections(clientId || '')
   const [mounted, setMounted] = useState(false)
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null)
   const [isConnecting, setIsConnecting] = useState(false)

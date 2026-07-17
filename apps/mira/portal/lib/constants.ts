@@ -4,10 +4,9 @@
  * Use: activeClient?.id ?? null (from ClientProvider)
  * Or: user.user_metadata?.client_id (from auth context)
  *
- * This constant is kept only for backward compatibility during transition.
- * Using this constant will route users to wrong client.
+ * This constant has been removed. All pages must use activeClient?.id
+ * Falling back to CLIENT_ID will cause routing errors.
  */
-export const CLIENT_ID = '714a028e-a16d-428c-b8a9-3338f56f0a9c' // ❌ DO NOT USE
 
 export const DEFAULT_SECTION_SLUG = 'marketing'
 

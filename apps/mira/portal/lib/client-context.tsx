@@ -26,6 +26,9 @@ const CLIENT_NAMES: Record<string, { name: string; slug: string }> = {
   'c375bb80-b0d1-4923-a73a-ac96a3ce7799': { name: 'Salsa Burgers', slug: 'salsa-burgers' },
   '160d5a90-0da7-4db1-a1fb-9c29ea57a736': { name: 'Discoolver', slug: 'discoolver' },
   'cef0a1b7-aabb-4239-a5a8-28ece0d1819b': { name: 'Startup Factory', slug: 'startup-factory' },
+  'a1c3e5f7-b9d1-4a2b-c3e5-f7a9b1d3e5f7': { name: 'NC Global Assets', slug: 'nc-global-assets' },
+  'b2d4f6a8-c0e2-4b3c-d4f6-a8b2c4e6f8a0': { name: 'LIDAR Home', slug: 'lidar-home' },
+  'c3e5f7b9-d1f3-4c4d-e5f7-b9c3d5e7f9b1': { name: 'CERO Agency', slug: 'cero-agency' },
 }
 
 export function ClientProvider({ children }: { children: ReactNode }) {

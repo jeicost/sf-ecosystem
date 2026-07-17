@@ -6,7 +6,6 @@ import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
 const CLASS_LABEL: Record<string, { label: string; color: string; bg: string }> = {
@@ -18,7 +17,7 @@ const CLASS_LABEL: Record<string, { label: string; color: string; bg: string }> 
 
 export default function QualifyPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const { locale } = useLocaleContext()
 
   const [leads, setLeads]           = useState<Lead[]>([])

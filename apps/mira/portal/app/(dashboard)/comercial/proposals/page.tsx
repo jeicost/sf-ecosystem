@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import { Loader2, FileText, Copy, Check, Save } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
 interface CallBrief {
@@ -23,7 +22,7 @@ const EMPTY: CallBrief = {
 
 export default function ProposalsPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
 
   const [brief, setBrief]         = useState<CallBrief>(EMPTY)
   const [output, setOutput]       = useState('')

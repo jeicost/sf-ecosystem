@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { FileText, Download, Eye, Calendar } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
-import { CLIENT_ID } from '@/lib/constants'
+import { useActiveClient } from '@/lib/client-context'
 
 interface Report {
   id: string
@@ -14,18 +14,24 @@ interface Report {
 }
 
 export default function RecentReports() {
+  const { activeClient } = useActiveClient()
   const [reports, setReports] = useState<Report[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchReports = async () => {
+      if (!activeClient?.id) {
+        setLoading(false)
+        return
+      }
+
       const db = createClient()
 
       // Get recent deliverables (reports)
       const { data } = await db
         .from('deliverables')
         .select('id, name, output_type, created_at, resource_name')
-        .eq('client_id', CLIENT_ID)
+        .eq('client_id', activeClient.id)
         .order('created_at', { ascending: false })
         .limit(5)
 
@@ -43,7 +49,7 @@ export default function RecentReports() {
     }
 
     fetchReports()
-  }, [])
+  }, [activeClient?.id])
 
   if (loading) {
     return (

@@ -4,7 +4,6 @@ import { Bell, CheckSquare, Activity, AlertTriangle, Loader2 } from 'lucide-reac
 import { createClient } from '@/lib/supabase'
 import type { Alert, ApprovalItem } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 
 const AGENT_META: Record<string, { emoji: string; color: string }> = {
   'content-strategist':  { emoji: '🔍', color: '#06B6D4' },
@@ -33,7 +32,7 @@ function timeAgo(ts: string) {
 
 export default function CommandPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
 
   const [alerts, setAlerts] = useState<Alert[]>([])
   const [approvals, setApprovals] = useState<ApprovalItem[]>([])

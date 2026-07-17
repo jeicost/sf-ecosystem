@@ -5,7 +5,6 @@ import { createClient } from '@/lib/supabase'
 import { clsx } from 'clsx'
 import type { ApprovalItem } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 
 type FilterTab = 'all' | 'pending' | 'approved' | 'rejected'
 type LocalStatus = 'pending_review' | 'approved' | 'rejected'
@@ -27,7 +26,7 @@ function timeAgo(ts: string) {
 
 export default function ApprovalsPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
 
   const [items, setItems] = useState<ApprovalItem[]>([])
   const [filter, setFilter] = useState<FilterTab>('pending')

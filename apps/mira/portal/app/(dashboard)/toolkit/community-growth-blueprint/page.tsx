@@ -4,7 +4,6 @@ import { useState, useRef } from 'react'
 import { Play, Loader2 } from 'lucide-react'
 import ToolkitToolPage from '@/components/toolkit-tool-page'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 
 interface CommunityFormData {
   current_size: string
@@ -22,7 +21,7 @@ interface GeneratedBlueprint {
 
 export default function CommunityGrowthBlueprintPage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const [isGenerating, setIsGenerating] = useState(false)
   const [generatedBlueprint, setGeneratedBlueprint] = useState<GeneratedBlueprint | null>(null)
   const [error, setError] = useState<string | null>(null)

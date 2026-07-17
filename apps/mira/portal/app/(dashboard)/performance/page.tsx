@@ -4,7 +4,6 @@ import { TrendingUp, TrendingDown, Users, Heart, Eye, Share2, Activity, Loader2 
 import { clsx } from 'clsx'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 
 type Period = '7d' | '30d' | '90d'
 
@@ -56,7 +55,7 @@ function timeAgo(ts: string) {
 
 export default function PerformancePage() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
 
   const [period, setPeriod] = useState<Period>('7d')
   const [posts, setPosts] = useState<PostRow[]>([])

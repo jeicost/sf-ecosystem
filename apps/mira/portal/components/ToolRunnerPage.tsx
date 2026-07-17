@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { fetchBrandBrainData } from '@/lib/brand-brain-loader'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 
 export interface ToolField {
   name: string
@@ -45,7 +44,7 @@ export default function ToolRunnerPage({
   isLoading: externalLoading = false,
 }: ToolRunnerPageProps) {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const searchParams = useSearchParams()
   const resultQueueId = searchParams.get('result')
 

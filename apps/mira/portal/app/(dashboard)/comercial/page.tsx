@@ -15,7 +15,6 @@ import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
-import { CLIENT_ID } from '@/lib/constants'
 import type { AgentStatus } from '@/lib/agent-meta'
 
 const COMERCIAL_META: Record<string, { produces: string; href: string }> = {
@@ -36,7 +35,7 @@ const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
 export default function ComercialPage() {
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
   const agentCount = COMERCIAL_DEPT_AGENTS.length
   const { stats } = useDepartmentStats('comercial')
   const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})

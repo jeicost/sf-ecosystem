@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
-import { CLIENT_ID } from '@/lib/constants'
+import { useActiveClient } from '@/lib/client-context'
 
 interface ClientInfo {
   id: string
@@ -14,19 +14,26 @@ interface ClientInfo {
 }
 
 export default function ClientPageQuickAccess() {
+  const { activeClient } = useActiveClient()
   const [client, setClient] = useState<ClientInfo | null>(null)
   const [reportCount, setReportCount] = useState(0)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchClientInfo = async () => {
+      if (!activeClient?.id) {
+        setLoading(false)
+        return
+      }
+
       const db = createClient()
+      const clientId = activeClient.id
 
       // Get current client
       const { data: clientData } = await db
         .from('clients')
         .select('id, name, slug, logo_url')
-        .eq('id', CLIENT_ID)
+        .eq('id', clientId)
         .single()
 
       if (clientData) {
@@ -36,7 +43,7 @@ export default function ClientPageQuickAccess() {
         const { count } = await db
           .from('deliverables')
           .select('id', { count: 'exact', head: true })
-          .eq('client_id', CLIENT_ID)
+          .eq('client_id', clientId)
 
         setReportCount(count || 0)
       }
@@ -45,7 +52,7 @@ export default function ClientPageQuickAccess() {
     }
 
     fetchClientInfo()
-  }, [])
+  }, [activeClient?.id])
 
   if (loading || !client) {
     return (

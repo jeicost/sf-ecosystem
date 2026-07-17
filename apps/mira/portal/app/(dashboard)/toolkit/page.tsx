@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { Loader2, CheckCircle, AlertCircle, Zap } from 'lucide-react'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { useActiveClient } from '@/lib/client-context'
-import { CLIENT_ID } from '@/lib/constants'
 
 interface Generation {
   id: string
@@ -20,7 +19,7 @@ interface Generation {
 
 export default function ToolkitHub() {
   const { activeClient } = useActiveClient()
-  const clientId = activeClient?.id ?? CLIENT_ID
+  const clientId = activeClient?.id
 
   const [generations, setGenerations] = useState<Generation[]>([])
   const [loading, setLoading] = useState(true)
