@@ -15,7 +15,7 @@ interface BrandData {
   tone_and_voice?: Record<string, string>
   voice_archetypes?: string[]
   voice_principles?: Array<{ name: string; example: string }>
-  voice_vocabulary?: { do: string[]; dont: string[] }
+  voice_vocabulary?: { do?: string[]; dont?: string[] }
   visual_identity?: {
     status?: string
     colors?: Record<string, string>
@@ -29,7 +29,7 @@ interface BrandData {
   content_pillars?: Array<{ name: string; function: string; description: string; topics: string; claim: string }>
   editorial_rhythm?: string
   strategy_roadmap?: string
-  qa_rules?: { formula: string; checklist: string[]; what_to_avoid: string[] }
+  qa_rules?: { formula?: string; checklist?: string[]; what_to_avoid?: string[] }
 }
 
 interface BrandProfile {

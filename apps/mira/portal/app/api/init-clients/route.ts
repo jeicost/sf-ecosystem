@@ -36,7 +36,7 @@ export async function POST() {
     const { error: salsa_error } = await supabase
       .from('clients')
       .upsert({
-        id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         name: 'Salsa Burgers',
         slug: 'salsa-burgers',
         status: 'active'
@@ -75,7 +75,7 @@ export async function POST() {
     const { error: bp_salsa } = await supabase
       .from('brand_profiles')
       .upsert({
-        client_id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         name: 'Salsa Burgers',
         mission: 'Crear la experiencia de burger más memorable del mercado',
         values: ['Autenticidad', 'Calidad', 'Comunidad'],

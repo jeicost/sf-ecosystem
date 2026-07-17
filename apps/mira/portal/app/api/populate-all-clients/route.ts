@@ -19,15 +19,6 @@ export async function POST() {
 
   try {
     const clients = {
-      dadybox: {
-        id: 'e664873b-034d-48cd-9a45-8631672ef375',
-        name: 'Dadybox',
-        mission: 'Revolucionar la logística de e-commerce en Latinoamérica',
-        values: ['Velocidad', 'Precisión', 'Innovación'],
-        tone_of_voice: 'Profesional, confiable, directo',
-        description: 'Plataforma de logística inteligente para e-commerce que conecta almacenamiento, SGA, preparación de pedidos, packaging, envíos, checkout, tracking y devoluciones.',
-        proposition: 'La logística es tu competencia, no tu burden'
-      },
       salsa: {
         id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         name: 'Salsa Burgers',
@@ -67,40 +58,10 @@ export async function POST() {
       if (!error) updatedCount++
     }
 
-    console.log(`✅ Profiles updated: ${updatedCount}/4`)
+    console.log(`✅ Profiles updated: ${updatedCount}/3`)
 
-    // Now populate pillars for each client
+    // Now populate pillars for each client (Dadybox managed separately by populate-dadybox endpoint)
     const pillarsData = {
-      dadybox: [
-        {
-          client_id: 'e664873b-034d-48cd-9a45-8631672ef375',
-          pillar_name: 'Radar Logístico',
-          description: 'Actualidad, análisis, tendencias, casos y operaciones logísticas globales.',
-          themes: [{ name: 'Noticias logísticas' }, { name: 'Case studies' }, { name: 'Crisis management' }, { name: 'Tecnología' }],
-          examples: ['Hook fuerte', 'Contexto', 'Problema logístico', 'Lección', 'Cierre Dadybox']
-        },
-        {
-          client_id: 'e664873b-034d-48cd-9a45-8631672ef375',
-          pillar_name: 'Dadybox en Acción',
-          description: 'Servicios, procesos, backstage y capacidades reales.',
-          themes: [{ name: 'SGA' }, { name: 'Picking & packaging' }, { name: 'Envíos' }, { name: 'Devoluciones' }],
-          examples: ['Problema', 'Solución', 'Proceso', 'Beneficio', 'Resultado', 'CTA']
-        },
-        {
-          client_id: 'e664873b-034d-48cd-9a45-8631672ef375',
-          pillar_name: 'Entregas Mágicas',
-          description: 'Entregas imposibles en escenarios extremos para explicar desafíos logísticos.',
-          themes: [{ name: 'Imposibles' }, { name: 'Legendarias' }, { name: 'De película' }, { name: 'Extremas' }],
-          examples: ['Lugar imposible', 'Obstáculo', 'Datos', 'Solución ficticia', 'Lección real', 'Cierre']
-        },
-        {
-          client_id: 'e664873b-034d-48cd-9a45-8631672ef375',
-          pillar_name: 'E-com Playbook',
-          description: 'Educación, frameworks y buenas prácticas de logística e-commerce.',
-          themes: [{ name: 'KPIs' }, { name: 'Inventario' }, { name: 'SGA' }, { name: 'Checkout' }],
-          examples: ['Problema', 'Error común', 'Framework', 'Ejemplo', 'Checklist', 'CTA']
-        }
-      ],
       salsa: [
         {
           client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',

@@ -149,9 +149,9 @@ const ALLOWED_COLUMNS: Record<string, Set<string>> = {
     'brand_data',
   ]),
   content_pillars: new Set([
-    'title',
+    'pillar_name',
     'description',
-    'keywords',
+    'themes',
     'examples',
   ]),
   agent_documents: new Set([
