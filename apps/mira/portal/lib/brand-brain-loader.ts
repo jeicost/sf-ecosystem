@@ -20,7 +20,7 @@ export async function fetchBrandBrainData(clientId: string): Promise<BrandBrainD
     const { data, error } = await client
       .from('brand_profiles')
       .select('*')
-      .eq('id', clientId)
+      .eq('client_id', clientId)
       .single()
 
     if (error || !data) {
