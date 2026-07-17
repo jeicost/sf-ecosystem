@@ -70,7 +70,7 @@ export async function POST() {
 
     let pillar_count = 0
     for (const pillar of pillars) {
-      const { error } = await supabase.from('content_pillars').upsert(pillar)
+      const { error } = await supabase.from('content_pillars').upsert(pillar, { onConflict: 'client_id,pillar_name' })
       if (!error) pillar_count++
     }
 

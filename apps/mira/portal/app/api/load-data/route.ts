@@ -41,7 +41,7 @@ export async function POST() {
     const { error: salsa_bp_error } = await supabase
       .from('brand_profiles')
       .upsert({
-        client_id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         name: 'Salsa Burgers',
         mission: 'Crear la experiencia de burger más memorable del mercado.',
         values: ['Autenticidad', 'Calidad', 'Comunidad', 'Innovación'],
@@ -85,7 +85,7 @@ export async function POST() {
     ]
 
     for (const pillar of dadybox_pillars) {
-      const { error } = await supabase.from('content_pillars').upsert(pillar)
+      const { error } = await supabase.from('content_pillars').upsert(pillar, { onConflict: 'client_id,pillar_name' })
       if (error) {
         results.dadybox_pillar_error = error.message
         break
@@ -97,28 +97,28 @@ export async function POST() {
     // Load Salsa pillars
     const salsa_pillars = [
       {
-        client_id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         pillar_name: 'Drive Craving',
         description: 'Making people hungry for Salsa',
         themes: [{ name: 'Visual storytelling' }],
         examples: ['Behind the scenes', 'Burger photography']
       },
       {
-        client_id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         pillar_name: 'Ritual & Packaging',
         description: 'The unboxing experience',
         themes: [{ name: 'Brand experience' }],
         examples: ['Packaging design', 'First impression']
       },
       {
-        client_id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         pillar_name: 'Brand Cult',
         description: 'Community and loyalty',
         themes: [{ name: 'Community building' }],
         examples: ['Loyalty program', 'Events']
       },
       {
-        client_id: '714a028e-a16d-428c-b8a9-3338f56f0a9c',
+        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
         pillar_name: 'Trust & Authenticity',
         description: 'Why people believe in us',
         themes: [{ name: 'Authenticity' }],
@@ -127,7 +127,7 @@ export async function POST() {
     ]
 
     for (const pillar of salsa_pillars) {
-      const { error } = await supabase.from('content_pillars').upsert(pillar)
+      const { error } = await supabase.from('content_pillars').upsert(pillar, { onConflict: 'client_id,pillar_name' })
       if (error) {
         results.salsa_pillar_error = error.message
         break

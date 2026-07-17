@@ -56,36 +56,6 @@ export async function POST() {
 
     results.discoolver_client = disc_error ? { error: disc_error.message } : { success: true }
 
-    // Now load brand profiles
-    const { error: bp_dadybox } = await supabase
-      .from('brand_profiles')
-      .upsert({
-        client_id: 'e664873b-034d-48cd-9a45-8631672ef375',
-        name: 'Dadybox',
-        mission: 'Revolucionar la logística de e-commerce en Latinoamérica',
-        values: ['Velocidad', 'Precisión', 'Innovación'],
-        tone_of_voice: 'Profesional, confiable, directo',
-        description: 'Plataforma de logística inteligente para e-commerce',
-        proposition: 'La logística es tu competencia, no tu burden'
-      })
-
-    results.dadybox_profile = bp_dadybox ? { error: bp_dadybox.message } : { success: true }
-
-    // Salsa brand profile
-    const { error: bp_salsa } = await supabase
-      .from('brand_profiles')
-      .upsert({
-        client_id: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
-        name: 'Salsa Burgers',
-        mission: 'Crear la experiencia de burger más memorable del mercado',
-        values: ['Autenticidad', 'Calidad', 'Comunidad'],
-        tone_of_voice: 'Casual, passionate, authentic',
-        description: 'Premium burger joint con filosofía craft',
-        proposition: 'The burger that makes you feel alive'
-      })
-
-    results.salsa_profile = bp_salsa ? { error: bp_salsa.message } : { success: true }
-
     return NextResponse.json({ status: 'Clients initialized', results })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })
