@@ -37,3 +37,5 @@ yarn-error.log*
 # Vercel
 .vercel/
 !.vercel/project.json
+.vercel
+.env*.local
