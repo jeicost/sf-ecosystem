@@ -1,0 +1,136 @@
+.container {
+  padding: 30px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  transition: color var(--transition-fast);
+}
+
+.backButton:hover {
+  color: var(--color-primary-dark);
+}
+
+.titleSection {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.titleSection h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.scoreBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.scoreBadge.hot {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+}
+
+.scoreBadge.warm {
+  background: rgba(245, 158, 11, 0.1);
+  color: #f59e0b;
+}
+
+.scoreBadge.cold {
+  background: rgba(107, 114, 128, 0.1);
+  color: #6b7280;
+}
+
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section h2 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.value {
+  font-size: 16px;
+  color: var(--text-primary);
+  margin: 0;
+  word-break: break-word;
+}
+
+.link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-size: 16px;
+  transition: color var(--transition-fast);
+}
+
+.link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius-md);
+  padding: 15px;
+  color: #ef4444;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .titleSection {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .titleSection h1 {
+    font-size: 24px;
+  }
+
+  .card {
+    grid-template-columns: 1fr;
+    padding: 20px;
+  }
+}

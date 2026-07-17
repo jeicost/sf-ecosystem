@@ -14,14 +14,12 @@ const SECTIONS = [
     title: 'Pipeline',
     items: [
       { label: 'Pipeline', href: '/pipeline' },
-      { label: 'Stages', href: '/pipeline?view=stages' },
     ],
   },
   {
     title: 'Prospection',
     items: [
       { label: 'Search', href: '/prospection' },
-      { label: 'Import', href: '/prospection?view=import' },
     ],
   },
   {
@@ -44,22 +42,18 @@ const SECTIONS = [
     title: 'Discovery',
     items: [
       { label: 'Runs', href: '/discovery' },
-      { label: 'New Run', href: '/discovery?view=new' },
     ],
   },
   {
     title: 'Métricas',
     items: [
       { label: 'Overview', href: '/metrics' },
-      { label: 'Pipeline Health', href: '/metrics?tab=pipeline' },
-      { label: 'Team Performance', href: '/metrics?tab=team' },
     ],
   },
   {
     title: 'Connections',
     items: [
       { label: 'Integrations', href: '/integrations' },
-      { label: 'API Keys', href: '/integrations?tab=api' },
     ],
   },
 ]

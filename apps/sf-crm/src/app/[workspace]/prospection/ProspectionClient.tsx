@@ -35,6 +35,8 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [costData, setCostData] = useState<Omit<SearchResponse, 'results' | 'success'> | null>(null)
+  const [addingIds, setAddingIds] = useState(new Set<number>())
+  const [addedIds, setAddedIds] = useState(new Set<number>())
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -82,6 +84,57 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
       setCostData(null)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleAddToPipeline(idx: number, result: SearchResponse['results'][0]) {
+    try {
+      setAddingIds((prev) => new Set(prev).add(idx))
+      const response = await fetch('/api/leads/import', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          leads: [result],
+          workspaceId,
+        }),
+      })
+
+      if (!response.ok) {
+        const data = await response.json()
+        console.error('Failed to add to pipeline:', data)
+        setAddingIds((prev) => {
+          const next = new Set(prev)
+          next.delete(idx)
+          return next
+        })
+        setError(data.error || 'Failed to add prospect to pipeline')
+        return
+      }
+
+      setAddingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(idx)
+        return next
+      })
+      setAddedIds((prev) => new Set(prev).add(idx))
+
+      // Reset "Added" state after 2 seconds
+      setTimeout(() => {
+        setAddedIds((prev) => {
+          const next = new Set(prev)
+          next.delete(idx)
+          return next
+        })
+      }, 2000)
+    } catch (err) {
+      setAddingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(idx)
+        return next
+      })
+      const message = err instanceof Error ? err.message : 'Unknown error'
+      console.error('Add to pipeline error:', err)
+      setError(message)
     }
   }
 
@@ -149,8 +202,11 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
             <h2>Results ({results.length})</h2>
           </div>
           <div className={styles.resultsList}>
-            {results.map((result, idx) => (
-              <div key={idx} className={styles.resultCard}>
+            {results.map((result, idx) => {
+              const isAdding = addingIds.has(idx)
+              const isAdded = addedIds.has(idx)
+              return (
+                <div key={idx} className={styles.resultCard}>
                 <div className={styles.resultHeader}>
                   <div className={styles.resultName}>
                     <strong>{result.firstName} {result.lastName}</strong>
@@ -190,12 +246,17 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
                       LinkedIn →
                     </a>
                   )}
-                  <button className={styles.addButton}>
-                    Add to Pipeline
+                  <button
+                    className={styles.addButton}
+                    onClick={() => handleAddToPipeline(idx, result)}
+                    disabled={isAdding || isAdded}
+                  >
+                    {isAdding ? 'Adding...' : isAdded ? 'Added ✓' : 'Add to Pipeline'}
                   </button>
                 </div>
-              </div>
-            ))}
+                </div>
+              )
+            })}
           </div>
         </div>
       )}

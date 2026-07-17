@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import type { Workspace } from '@/types'
 import styles from './outreach.module.css'
 
@@ -10,10 +11,20 @@ interface OutreachClientProps {
 }
 
 export default function OutreachClient({ workspaceId, workspace }: OutreachClientProps) {
+  const searchParams = useSearchParams()
   const [tab, setTab] = useState<'campaigns' | 'compose'>('campaigns')
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [recipients, setRecipients] = useState('')
+
+  useEffect(() => {
+    const view = searchParams.get('view')
+    if (view === 'compose') {
+      setTab('compose')
+    } else {
+      setTab('campaigns')
+    }
+  }, [searchParams])
 
   async function handleSendEmail(e: React.FormEvent) {
     e.preventDefault()

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import type { Workspace, Contact } from '@/types'
 import { getHotScore } from '@/lib/utils'
@@ -12,11 +13,19 @@ interface ContactsClientProps {
 }
 
 export default function ContactsClient({ workspaceId, workspace }: ContactsClientProps) {
+  const searchParams = useSearchParams()
   const [contacts, setContacts] = useState<Contact[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterScore, setFilterScore] = useState<'all' | 'hot' | 'warm' | 'cold'>('all')
+
+  useEffect(() => {
+    const scoreParam = searchParams.get('score')
+    if (scoreParam === 'hot' || scoreParam === 'warm' || scoreParam === 'cold') {
+      setFilterScore(scoreParam)
+    }
+  }, [searchParams])
 
   useEffect(() => {
     async function loadContacts() {
