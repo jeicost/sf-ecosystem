@@ -1,8 +1,9 @@
-import { createClient } from '@/lib/supabase/server'
+import { requireSession } from '@/lib/auth/require-session'
+import { createAdminClient } from '@/lib/supabase/admin'
 import Anthropic from '@anthropic-ai/sdk'
 import { PAGE_EDITOR_SYSTEM_PROMPT } from '@/lib/page-editor-system-prompt'
 
-const client = new Anthropic({
+const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
@@ -12,12 +13,16 @@ export async function POST(
 ) {
   const { pageId } = await params
   try {
+    if (!(await requireSession())) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const { instruction } = await req.json()
     if (!instruction || typeof instruction !== 'string') {
       return Response.json({ error: 'Invalid instruction' }, { status: 400 })
     }
 
-    const supabase = await createClient()
+    const supabase = createAdminClient()
 
     const { data: page, error: pageError } = await supabase
       .from('pages')
@@ -31,8 +36,8 @@ export async function POST(
 
     const currentSections = page.sections_json || []
 
-    const response = await client.messages.create({
-      model: 'claude-opus-4-1',
+    const response = await anthropic.messages.create({
+      model: 'claude-opus-4-8',
       max_tokens: 4096,
       system: PAGE_EDITOR_SYSTEM_PROMPT,
       messages: [

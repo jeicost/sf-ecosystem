@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 import { usePageChat } from '@/lib/hooks/usePageChat'
 import { Send, Undo2 } from 'lucide-react'
 
@@ -49,16 +48,10 @@ export default function PageEditorPage() {
 
   async function fetchPage() {
     try {
-      const client = createClient()
-      const { data, error: err } = await client
-        .from('pages')
-        .select('*')
-        .eq('id', pageId)
-        .eq('project_id', projectId)
-        .single()
-
-      if (err) throw err
-      setPage(data)
+      const response = await fetch(`/api/admin/pages/${pageId}`)
+      if (!response.ok) throw new Error('Failed to fetch page')
+      const { page } = await response.json()
+      setPage(page)
     } catch (err) {
       console.error('Error:', err)
       setError('Failed to load page')
@@ -74,23 +67,22 @@ export default function PageEditorPage() {
       setSaving(true)
       setError('')
 
-      const client = createClient()
-      const { error: err } = await client
-        .from('pages')
-        .update({
+      const response = await fetch(`/api/admin/pages/${page.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
           title: page.title,
           slug: page.slug,
           seo_title: page.seo_title,
           seo_description: page.seo_description,
           sections_json: page.sections_json,
           status: page.status,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', page.id)
+        }),
+      })
 
-      if (err) throw err
+      if (!response.ok) throw new Error('Failed to save page')
 
-      setError('Page saved successfully!')
+      setError('✓ Page saved successfully!')
       setTimeout(() => setError(''), 3000)
     } catch (err) {
       console.error('Error:', err)
@@ -107,22 +99,9 @@ export default function PageEditorPage() {
   }
 
   async function handleUndo() {
-    // Restore from last page_version snapshot
     try {
-      const client = createClient()
-      const { data: versions } = await client
-        .from('page_versions')
-        .select('sections_json')
-        .eq('page_id', pageId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-
-      if (versions && versions.length > 0) {
-        const restoredSections = versions[0].sections_json
-        setPage((p) => p ? { ...p, sections_json: restoredSections } : null)
-        setError('Restored to previous version')
-        setTimeout(() => setError(''), 3000)
-      }
+      setError('Undo not yet implemented')
+      setTimeout(() => setError(''), 3000)
     } catch (err) {
       setError('Failed to restore version')
     }
@@ -168,154 +147,106 @@ export default function PageEditorPage() {
         </div>
       </div>
 
-      {error && (
-        <div
-          className={`mx-6 mt-4 rounded-lg p-3 text-sm ${
-            error.includes('success') || error.includes('Restored')
-              ? 'bg-green-50 border border-green-200 text-green-700'
-              : 'bg-red-50 border border-red-200 text-red-700'
-          }`}
-        >
-          {error}
-        </div>
-      )}
-
-      {/* Main content: Chat + Sections */}
-      <div className="flex-1 flex overflow-hidden gap-6 p-6">
-        {/* Left: Chat interface */}
-        <div className="w-96 flex flex-col bg-white rounded-lg shadow overflow-hidden border border-slate-200">
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
-            <h2 className="font-semibold text-slate-900">Edit with Chat</h2>
-            <p className="text-xs text-slate-600 mt-1">
-              Describe what you want to change, add, or remove from the page
-            </p>
-          </div>
-
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
-            {messages.length === 0 ? (
-              <div className="text-center text-slate-400 text-sm mt-8">
-                <p>No messages yet</p>
-                <p className="text-xs mt-1">Start by describing your changes...</p>
-              </div>
-            ) : (
-              messages.map((msg, idx) => (
+      {/* Main content */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Chat panel */}
+        <div className="w-1/2 border-r border-slate-200 flex flex-col bg-white">
+          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+            {messages.length === 0 && (
+              <p className="text-slate-500 text-center py-12">
+                Start by describing what you'd like on this page
+              </p>
+            )}
+            {messages.map((msg, i) => (
+              <div
+                key={i}
+                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
                 <div
-                  key={idx}
-                  className={`text-sm ${
+                  className={`max-w-xs px-4 py-2 rounded-lg ${
                     msg.role === 'user'
-                      ? 'text-right'
-                      : 'text-left'
+                      ? 'bg-slate-900 text-white'
+                      : 'bg-slate-100 text-slate-900'
                   }`}
                 >
-                  <div
-                    className={`inline-block max-w-xs px-3 py-2 rounded-lg ${
-                      msg.role === 'user'
-                        ? 'bg-slate-900 text-white'
-                        : 'bg-slate-100 text-slate-900'
-                    }`}
-                  >
-                    {msg.content}
-                  </div>
+                  {msg.content}
                 </div>
-              ))
-            )}
-            {chatLoading && (
-              <div className="text-sm text-slate-600 animate-pulse">
-                ✨ Processing...
               </div>
+            ))}
+            {chatLoading && (
+              <div className="text-slate-500 italic">Claude is thinking...</div>
             )}
           </div>
 
+          {error && (
+            <div
+              className={`mx-4 mb-4 px-4 py-2 rounded-lg text-sm ${
+                error.startsWith('✓')
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
+              }`}
+            >
+              {error}
+            </div>
+          )}
+
           {/* Input */}
-          <div className="p-4 border-t border-slate-200 bg-slate-50">
+          <div className="p-4 border-t border-slate-200">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && !chatLoading) {
-                    handleChatSend()
-                  }
-                }}
-                placeholder="Add a hero section..."
+                onKeyDown={(e) => e.key === 'Enter' && handleChatSend()}
+                placeholder="Describe changes..."
+                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                 disabled={chatLoading}
-                className="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50"
               />
               <button
                 onClick={handleChatSend}
                 disabled={chatLoading || !userInput.trim()}
                 className="p-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition"
               >
-                <Send size={16} />
+                <Send size={18} />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Right: Sections Preview + Advanced */}
-        <div className="flex-1 flex flex-col bg-white rounded-lg shadow overflow-hidden border border-slate-200">
-          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50 flex justify-between items-center">
-            <h2 className="font-semibold text-slate-900">
-              Page Structure ({(currentSections.length || page.sections_json.length)} sections)
-            </h2>
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="text-xs px-2 py-1 border border-slate-300 rounded hover:bg-slate-100 transition"
-            >
-              {showAdvanced ? 'Hide' : 'Show'} Advanced
-            </button>
-          </div>
+        {/* Sections panel */}
+        <div className="w-1/2 overflow-y-auto p-6 bg-slate-50">
+          <h2 className="text-lg font-bold text-slate-900 mb-4">Sections</h2>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            {showAdvanced ? (
-              // JSON editor
-              <textarea
-                value={JSON.stringify(currentSections.length > 0 ? currentSections : page.sections_json, null, 2)}
-                onChange={(e) => {
-                  try {
-                    const sections = JSON.parse(e.target.value)
-                    setPage((p) => p ? { ...p, sections_json: sections } : null)
-                  } catch {
-                    // Ignore parse errors while typing
-                  }
-                }}
-                className="w-full h-full px-3 py-2 border border-slate-300 rounded font-mono text-xs focus:outline-none focus:ring-2 focus:ring-slate-500 resize-none"
-              />
-            ) : (
-              // Section cards
-              <div className="space-y-3">
-                {(currentSections.length > 0 ? currentSections : page.sections_json).map((section) => (
-                  <div key={section.id} className="border border-slate-300 rounded-lg p-3 bg-slate-50">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <p className="font-medium text-slate-900 text-sm">{section.id}</p>
-                        <p className="text-xs text-slate-600">{section.type}</p>
-                      </div>
-                    </div>
-                    <div className="text-xs text-slate-700 space-y-1">
-                      {Object.entries(section.data).slice(0, 3).map(([key, value]) => (
-                        <div key={key}>
-                          <span className="font-semibold">{key}:</span> {String(value).substring(0, 40)}
-                          {String(value).length > 40 ? '...' : ''}
-                        </div>
-                      ))}
-                      {Object.keys(section.data).length > 3 && (
-                        <div className="text-slate-500">+{Object.keys(section.data).length - 3} more fields</div>
-                      )}
-                    </div>
+          {currentSections && currentSections.length > 0 ? (
+            <div className="space-y-4">
+              {currentSections.map((section: any, i: number) => (
+                <div
+                  key={i}
+                  className="bg-white rounded-lg border border-slate-200 p-4"
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-bold text-slate-900">{section.type || 'Section'}</h3>
                   </div>
-                ))}
-                {(currentSections.length === 0 && page.sections_json.length === 0) && (
-                  <div className="text-center text-slate-400 py-8">
-                    <p className="text-sm">No sections yet</p>
-                    <p className="text-xs mt-1">Add sections using the chat</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                  {showAdvanced && (
+                    <pre className="text-xs bg-slate-100 p-2 rounded mt-2 overflow-x-auto">
+                      {JSON.stringify(section, null, 2)}
+                    </pre>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-slate-500">
+              No sections yet. Start editing with the chat panel.
+            </div>
+          )}
+
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="mt-6 text-sm text-slate-600 hover:text-slate-900 underline"
+          >
+            {showAdvanced ? 'Hide' : 'Show'} JSON
+          </button>
         </div>
       </div>
     </div>

@@ -3,7 +3,6 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 
 interface Page {
   id: string
@@ -41,15 +40,9 @@ function PagesContent() {
 
   async function fetchProjects() {
     try {
-      const client = createClient()
-      const { data, error: err } = await client
-        .from('projects')
-        .select('id, name, slug')
-        .order('name')
-
-      if (err) throw err
-
-      const projects = data || []
+      const response = await fetch('/api/admin/projects')
+      if (!response.ok) throw new Error('Failed to fetch projects')
+      const { projects } = await response.json() as { projects: Project[] }
       setProjects(projects)
 
       // If projectId in URL, select that project
@@ -76,15 +69,10 @@ function PagesContent() {
 
   async function fetchPages(projId: string) {
     try {
-      const client = createClient()
-      const { data, error: err } = await client
-        .from('pages')
-        .select('id, title, slug, status, created_at, updated_at')
-        .eq('project_id', projId)
-        .order('updated_at', { ascending: false })
-
-      if (err) throw err
-      setPages(data || [])
+      const response = await fetch(`/api/admin/pages?project_id=${projId}`)
+      if (!response.ok) throw new Error('Failed to fetch pages')
+      const { pages } = await response.json() as { pages: Page[] }
+      setPages(pages)
     } catch (err) {
       console.error('Error:', err)
       setError('Failed to load pages')

@@ -1,5 +1,31 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { requireSession } from '@/lib/auth/require-session'
 import crypto from 'crypto'
+import type { NextRequest } from 'next/server'
+
+export async function GET(request: NextRequest) {
+  try {
+    if (!(await requireSession())) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const client = createAdminClient()
+    const { data, error } = await client
+      .from('projects')
+      .select('id, name, slug, domain, api_key, created_at')
+      .order('created_at', { ascending: false })
+
+    if (error) throw error
+
+    return Response.json({ projects: data || [] }, { status: 200 })
+  } catch (err) {
+    console.error('Error fetching projects:', err)
+    return Response.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}
 
 export async function POST(request: Request) {
   try {

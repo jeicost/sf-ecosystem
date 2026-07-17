@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/client'
 
 interface Project {
   id: string
@@ -24,14 +23,10 @@ export default function ProjectsPage() {
 
   async function fetchProjects() {
     try {
-      const client = createClient()
-      const { data, error: err } = await client
-        .from('projects')
-        .select('id, name, slug, domain, api_key, created_at')
-        .order('created_at', { ascending: false })
-
-      if (err) throw err
-      setProjects(data || [])
+      const response = await fetch('/api/admin/projects')
+      if (!response.ok) throw new Error('Failed to fetch projects')
+      const { projects } = await response.json() as { projects: Project[] }
+      setProjects(projects)
     } catch (err) {
       console.error('Error:', err)
       setError('Failed to load projects')
