@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
+    "build:mira-portal": "turbo build --filter=mira-portal... --no-daemon",
     "dev": "turbo dev",
     "lint": "turbo lint",
     "type-check": "turbo type-check",
