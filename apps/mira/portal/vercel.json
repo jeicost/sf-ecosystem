@@ -1,6 +1,5 @@
 {
-  "buildCommand": "pnpm run build:mira-portal",
-  "installCommand": "npm install",
+  "buildCommand": "cd ../.. && turbo run build --filter=mira-portal...",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
