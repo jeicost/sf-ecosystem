@@ -203,59 +203,61 @@ export default function HomePage() {
         </>
       )}
 
-      {/* Projects */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'rgba(255,255,255,0.2)' }}>
-            Projects
-          </p>
-          <Link href="/projects/new"
-            className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg transition-all hover:bg-white/5"
-            style={{ color: 'rgba(255,255,255,0.4)' }}>
-            <Plus size={12} />
-            New project
-          </Link>
-        </div>
-
-        {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 size={16} className="animate-spin text-[#444]" />
-          </div>
-        ) : projects.length === 0 ? (
-          <div className="rounded-2xl py-10 text-center"
-            style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.08)' }}>
-            <p className="text-sm text-[#444] mb-3">No projects yet</p>
+      {/* Projects — only visible to super_admin (dead scaffolding for regular users) */}
+      {isSuperAdmin(getUser()) && (
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              Projects
+            </p>
             <Link href="/projects/new"
-              className="inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg transition-all"
-              style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
-              <Plus size={12} /> Create your first project
+              className="flex items-center gap-1.5 text-[11px] font-medium px-3 py-1.5 rounded-lg transition-all hover:bg-white/5"
+              style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <Plus size={12} />
+              New project
             </Link>
           </div>
-        ) : (
-          <div className="grid grid-cols-3 gap-3">
-            {projects.map(p => (
-              <Link key={p.id} href={`/projects/${p.slug}`}
-                className="group rounded-2xl p-4 transition-all hover:bg-white/3"
-                style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                <div className="flex items-start justify-between mb-3">
-                  <p className="text-sm font-medium text-white group-hover:text-violet-300 transition-colors">{p.name}</p>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-medium"
-                    style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}>
-                    Active
-                  </span>
-                </div>
-                <p className="text-[10px] mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>{p.slug}</p>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
-                    {new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
-                  </span>
-                  <ArrowRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity text-[#555]" />
-                </div>
+
+          {loading ? (
+            <div className="flex items-center justify-center py-8">
+              <Loader2 size={16} className="animate-spin text-[#444]" />
+            </div>
+          ) : projects.length === 0 ? (
+            <div className="rounded-2xl py-10 text-center"
+              style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.08)' }}>
+              <p className="text-sm text-[#444] mb-3">No projects yet</p>
+              <Link href="/projects/new"
+                className="inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg transition-all"
+                style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
+                <Plus size={12} /> Create your first project
               </Link>
-            ))}
-          </div>
-        )}
-      </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {projects.map(p => (
+                <Link key={p.id} href={`/projects/${p.slug}`}
+                  className="group rounded-2xl p-4 transition-all hover:bg-white/3"
+                  style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  <div className="flex items-start justify-between mb-3">
+                    <p className="text-sm font-medium text-white group-hover:text-violet-300 transition-colors">{p.name}</p>
+                    <span className="text-[9px] px-2 py-0.5 rounded-full font-medium"
+                      style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}>
+                      Active
+                    </span>
+                  </div>
+                  <p className="text-[10px] mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>{p.slug}</p>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
+                      {new Date(p.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                    </span>
+                    <ArrowRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity text-[#555]" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   )
 }

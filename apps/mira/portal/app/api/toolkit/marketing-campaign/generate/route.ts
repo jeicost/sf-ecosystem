@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
 
     // Generate campaign via Claude
     const message = await claude.messages.create({
-      model: 'claude-opus-4-1-20250805',
+      model: 'claude-sonnet-4-6',
       max_tokens: 2000,
       messages: [
         {

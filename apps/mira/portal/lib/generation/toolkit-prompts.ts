@@ -657,6 +657,7 @@ Analyze competitive landscape based on user input and generate actionable compet
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
+${fullContext}
 
 Generate COMPETITIVE ANALYSIS JSON with these core sections:
 {

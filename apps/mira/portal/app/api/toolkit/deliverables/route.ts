@@ -21,19 +21,39 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { data, error } = await supabase
-      .from('generation_queue')
-      .select('*')
-      .eq('status', 'completed')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false })
-      .limit(10)
+    // Query both generation_queue (shared pipeline) and toolkit_results (campaign/blueprint specific)
+    const [generationData, toolkitData] = await Promise.all([
+      supabase
+        .from('generation_queue')
+        .select('*')
+        .eq('status', 'completed')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10),
+      supabase
+        .from('toolkit_results')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'success')
+        .order('created_at', { ascending: false })
+        .limit(10),
+    ])
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    if (generationData.error) {
+      return NextResponse.json({ error: generationData.error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ data: data || [] })
+    if (toolkitData.error) {
+      return NextResponse.json({ error: toolkitData.error.message }, { status: 500 })
+    }
+
+    // Combine and sort by created_at descending
+    const combined = [
+      ...(generationData.data || []),
+      ...(toolkitData.data || []),
+    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+
+    return NextResponse.json({ data: combined.slice(0, 10) })
   } catch (err) {
     console.error('Deliverables error:', err)
     return NextResponse.json(

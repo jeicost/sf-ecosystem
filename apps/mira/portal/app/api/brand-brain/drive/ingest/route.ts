@@ -2,7 +2,13 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import * as mammoth from 'mammoth'
 import type { SyncResponse, SyncedDocument, DriveSourceMetadata } from '@/lib/drive-connection.types'
+
+export const runtime = 'nodejs'
+
+// pdf-parse is CommonJS, use dynamic import for ESM compatibility
+const pdfParse = require('pdf-parse')
 
 /**
  * POST /api/brand-brain/drive/ingest
@@ -393,12 +399,16 @@ async function downloadAndExtractText(
     let text = ''
 
     if (mimeType === 'application/pdf') {
-      // PDF extraction would require a library like pdfjs or pdf-parse
-      // For now, return placeholder indicating need for PDF library
-      console.warn('PDF extraction not yet implemented. Requires pdf-parse library.')
-      return {
-        success: false,
-        error: 'PDF extraction requires additional setup',
+      try {
+        const buffer = Buffer.from(await response.arrayBuffer())
+        const pdfData = await pdfParse(buffer)
+        text = pdfData.text || ''
+      } catch (pdfError) {
+        console.error('PDF parsing error:', pdfError)
+        return {
+          success: false,
+          error: `Failed to extract text from PDF: ${pdfError instanceof Error ? pdfError.message : 'Unknown error'}`,
+        }
       }
     } else if (
       mimeType === 'text/plain' ||
@@ -411,11 +421,16 @@ async function downloadAndExtractText(
     } else if (
       mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     ) {
-      // DOCX extraction would require a library like mammoth or docx-parser
-      console.warn('DOCX extraction not yet implemented. Requires docx library.')
-      return {
-        success: false,
-        error: 'DOCX extraction requires additional setup',
+      try {
+        const buffer = Buffer.from(await response.arrayBuffer())
+        const result = await mammoth.extractRawText({ buffer })
+        text = result.value || ''
+      } catch (docxError) {
+        console.error('DOCX parsing error:', docxError)
+        return {
+          success: false,
+          error: `Failed to extract text from DOCX: ${docxError instanceof Error ? docxError.message : 'Unknown error'}`,
+        }
       }
     } else {
       return {
