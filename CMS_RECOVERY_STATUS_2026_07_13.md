@@ -162,3 +162,25 @@ El código del CMS está de facto "recuperable" pero técnicamente requiere más
 - ⚠️ El código fuente local fue borrado (pero no es el único copy — Vercel lo tiene)
 
 **Decisión recomendada:** Proceder con seguridad (rotar secretos, crear repo nuevo, documentar arquitectura) sin presión de "recuperar el código ahora". Si es necesario después, lo hacemos.
+
+---
+
+## Actualización 2026-07-17 — Investigación cerrada
+
+**Conclusión definitiva tras investigación exhaustiva adicional:**
+
+El código fuente del editor WYSIWYG original (GenericSectionEditor, que vive en `cms.startupsfactory.es`) **no es técnicamente recuperable** mediante ninguna vía que probamos:
+
+1. ✅ **Comprobación: No hay registro de URL de submodule.** El gitlink de `apps/sf-cms` (modo `160000`) nunca tuvo un `.gitmodules` que registrara su URL. `git log --all` sobre `.gitmodules`, `.git/config`, y `git reflog --all` confirman ausencia total de metadata de submodule. La cadena de SHAs del submodulo es de un espacio de commits externo sin referencia en este repo. Conclusión: fue un "phantom submodule" sin URL documentada desde el inicio.
+
+2. ✅ **Comprobación: GenericSectionEditor nunca existió en este repo.** `git log --all -p -S"GenericSectionEditor"` devuelve resultados únicamente en `CMS_RECOVERY_STATUS_2026_07_13.md` (parte de una investigación anterior). No hay archivo `.tsx`/`.ts` que lo implemente en ningún commit de este repo. El listado de 128 archivos obtenido vía Vercel API fue una reconstrucción de memoria a partir del deployment vivo — no una descarga de código verificada.
+
+3. ✅ **Comprobación: Source maps no expuestos.** El deployment en producción (`cms.startupsfactory.es`) no expone `/_next/static/chunks/*.js.map` — 404 en los 3 chunks aleatorios comprobados. Esta vía habitual de recuperar código de builds de producción no es viable aquí.
+
+4. ✅ **Comprobación: Descarga vía API de Vercel falla con 410.** Intento previo (13 jul) determinó que el deployment (`dpl_GX8WMcYdL3tkFxo5qrrSbFj7Vx5J`) está fuera de la ventana de retención de archivos vivos de Vercel (90 días), devuelve HTTP 410 "Gone".
+
+5. ✅ **El editor conversacional SÍ es código real y está intacto.** Introducido en `8ded677` (15 jul), mejorado en `8ded677`→`63964f3` (17 jul) con fix de Undo + endpoints REST. Sigue funcional en producción.
+
+**Decisión del usuario:** No perseguir más esta vía de recuperación. **El editor conversacional (funcional hoy, en SF-CMS Etapa 1) queda como la solución real en este repo.** Reconstruir un editor WYSIWYG/drag-drop (GenericSectionEditor) queda como ítem de roadmap futuro, fuera del scope actual — no es bloqueante para el funcionamiento del CMS hoy.
+
+**Implicación arquitectónica:** El deployment en `cms.startupsfactory.es` (con editor WYSIWYG) continuará funcionando independientemente (vive en la cuenta externa de Vercel, no depende de este repo). Si algún día se necesita ese código, habría que contactar con el propietario de esa cuenta o investigar backups/descargas previas a 2026-07-12. Este repo tiene su propia versión funcional del CMS (conversacional), que es lo que capturamos en Etapa 1.

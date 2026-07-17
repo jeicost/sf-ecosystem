@@ -3,6 +3,21 @@
 
 ---
 
+## ⚠️ ESTADO: ROTACIÓN PENDIENTE (2026-07-17)
+
+**Verificado a fecha 2026-07-17:** Este plan fue escrito el 13 de julio pero **no se ejecutó todavía**. Las credenciales listadas a continuación siguen siendo **válidas en producción**. 
+
+**Hallazgo crítico:** La Supabase `service_role` key documentada en "PASO 1" es la misma que está actualmente en uso en:
+- `scripts/fix-sf-cms-schema.mjs` (localizada en texto plano en repo)
+- `apps/sf-cms/.env.local` (descargada vía `vercel env pull` el 17 jul)
+- Script ejecutable `scripts/init-qa-harness.mjs` (usada para crear datos de prueba el 17 jul)
+
+Esto significa: **cualquiera que tenga acceso a este repo o commits históricos puede acceder a toda la base de datos SF-CMS (Supabase `dmzecrlkclocqaywkjtc`) hasta que se rote la key.** El riesgo de seguridad sigue siendo 🔴 CRÍTICO.
+
+**Acción recomendada:** Ejecutar este plan **tan pronto como sea posible**, en al menos el PASO 1 (rotar service_role key) y PASO 2 (rotar REVALIDATE_SECRET si las webs están activas). El PASO 3 es menos crítico. Ver CHECKLIST FINAL al final de este documento.
+
+---
+
 ## SITUACIÓN ACTUAL (Riesgos)
 
 Tres credenciales reales en **texto plano commiteado** en el repositorio:
