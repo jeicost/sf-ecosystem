@@ -20,7 +20,7 @@ const HEADERS = { 'x-api-key': process.env.CMS_API_KEY }
 
 const CMS_API_URL = process.env.CMS_API_URL
 const CMS_API_KEY = process.env.CMS_API_KEY
-const PROJECT_ID = process.env.PROJECT_ID || '' // Optional explicit project filtering
+const PROJECT_SLUG = process.env.PROJECT_SLUG || 'ncglobalassets'
 
 if (!CMS_API_URL || !CMS_API_KEY) {
   console.error('❌  Missing CMS_API_URL or CMS_API_KEY')
@@ -37,9 +37,9 @@ async function main() {
   try {
     console.log('📡  Fetching content from SF-CMS…')
 
-    const postsQuery = `${CMS_API_URL}/posts?status=published${PROJECT_ID ? `&project_id=${PROJECT_ID}` : ''}`
-    const pagesQuery = `${CMS_API_URL}/pages${PROJECT_ID ? `?project_id=${PROJECT_ID}` : ''}`
-    const settingsQuery = `${CMS_API_URL}/settings${PROJECT_ID ? `?project_id=${PROJECT_ID}` : ''}`
+    const postsQuery = `${CMS_API_URL}/posts?status=published&project=${PROJECT_SLUG}`
+    const pagesQuery = `${CMS_API_URL}/pages?project=${PROJECT_SLUG}`
+    const settingsQuery = `${CMS_API_URL}/settings?project=${PROJECT_SLUG}`
 
     const [{ posts }, { pages }, settings] = await Promise.all([
       fetchJson(postsQuery),

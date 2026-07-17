@@ -59,7 +59,7 @@ async function main() {
     const [{ posts }, { pages }, settings] = await Promise.all([
       fetchJson(`${CMS_API_URL}/posts?status=published&project=${PROJECT_SLUG}`),
       fetchJson(`${CMS_API_URL}/pages?project=${PROJECT_SLUG}`),
-      fetchJson(`${CMS_API_URL}/settings`).catch(() => ({})),
+      fetchJson(`${CMS_API_URL}/settings?project=${PROJECT_SLUG}`).catch(() => ({})),
     ])
 
     console.log(`✅  Posts: ${posts.length} · Pages: ${pages.length}`)
