@@ -80,7 +80,7 @@ export default function PipelinePage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 size={20} className="text-[#444] animate-spin" />
+      <Loader2 size={20} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />
     </div>
   )
 
@@ -88,7 +88,7 @@ export default function PipelinePage() {
     <div className="px-8 py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-white">Pipeline Comercial</h1>
-        <p className="text-[#555] mt-1 text-sm">Leads activos y su estado en el ciclo de ventas.</p>
+        <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Leads activos y su estado en el ciclo de ventas.</p>
       </div>
 
       {/* Stats */}
@@ -100,7 +100,7 @@ export default function PipelinePage() {
           { label: 'En pipeline',    value: activeCount },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
-            <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>
+            <p className="text-[11px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
             <p className="text-xl font-semibold text-white">{value}</p>
           </div>
         ))}
@@ -114,7 +114,7 @@ export default function PipelinePage() {
             <div key={key} className="flex-shrink-0 w-52">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 rounded-full" style={{ background: color }} />
-                <span className="text-xs font-medium text-[#888]">{label}</span>
+                <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
                 <span
                   className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full font-semibold"
                   style={{ background: `${color}20`, color }}
@@ -122,8 +122,8 @@ export default function PipelinePage() {
               </div>
               <div className="space-y-2">
                 {cols.length === 0 ? (
-                  <div className="border border-dashed border-[#1A1A1A] rounded-lg h-16 flex items-center justify-center">
-                    <span className="text-[10px] text-[#333]">Vacío</span>
+                  <div className="border-dashed rounded-lg h-16 flex items-center justify-center" style={{ borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Vacío</span>
                   </div>
                 ) : cols.map(lead => (
                   <LeadCard
@@ -160,22 +160,23 @@ function LeadModal({ lead, onClose, onStageChange }: {
     <div className="fixed inset-0 z-50 flex items-center justify-end" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
       <div
-        className="relative w-[420px] h-full bg-[#0c0c0c] border-l border-[#1a1a1a] overflow-y-auto flex flex-col"
+        className="relative w-[420px] h-full overflow-y-auto flex flex-col"
+        style={{ background: 'var(--bg-page)', borderLeftColor: 'var(--border-subtle)', borderLeftWidth: '1px' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="px-6 py-5 border-b border-[#141414] flex items-start justify-between">
+        <div className="px-6 py-5 flex items-start justify-between" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
           <div>
             <p className="text-lg font-semibold text-white leading-tight">{lead.company_name ?? '—'}</p>
-            <p className="text-[12px] text-[#555] mt-0.5">{displayName} · {lead.title ?? '—'}</p>
+            <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>{displayName} · {lead.title ?? '—'}</p>
           </div>
-          <button onClick={onClose} className="text-[#444] hover:text-white transition-colors mt-0.5">
+          <button onClick={onClose} className="hover:text-white transition-colors mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
             <X size={18} />
           </button>
         </div>
 
         {/* Score + Stage */}
-        <div className="px-6 py-4 flex items-center gap-3 border-b border-[#141414]">
+        <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-semibold"
             style={{ background: `${score.color}15`, border: `1px solid ${score.color}30`, color: score.color }}>
             {score.emoji} {lead.hot_score ?? '—'}
@@ -185,7 +186,7 @@ function LeadModal({ lead, onClose, onStageChange }: {
             {stageInfo?.label ?? lead.stage}
           </div>
           {lead.bant_score !== null && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] text-[#666] bg-[#111] border border-[#1a1a1a]">
+            <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px]" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               BANT {lead.bant_score}/4
             </div>
           )}
@@ -200,15 +201,15 @@ function LeadModal({ lead, onClose, onStageChange }: {
 
           {lead.trigger_event && (
             <div>
-              <p className="text-[10px] text-[#444] uppercase tracking-wider mb-1">Trigger event</p>
+              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Trigger event</p>
               <p className="text-[12px] text-[#888] italic">{lead.trigger_event}</p>
             </div>
           )}
 
           {lead.icebreaker_used && (
             <div>
-              <p className="text-[10px] text-[#444] uppercase tracking-wider mb-1">Icebreaker</p>
-              <p className="text-[12px] text-[#777] leading-relaxed bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg p-3">
+              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Icebreaker</p>
+              <p className="text-[12px] leading-relaxed rounded-lg p-3" style={{ color: 'var(--text-secondary)', background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                 {lead.icebreaker_used}
               </p>
             </div>
@@ -216,37 +217,37 @@ function LeadModal({ lead, onClose, onStageChange }: {
 
           {lead.notes && (
             <div>
-              <p className="text-[10px] text-[#444] uppercase tracking-wider mb-1">Notas</p>
-              <p className="text-[12px] text-[#777]">{lead.notes}</p>
+              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Notas</p>
+              <p className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{lead.notes}</p>
             </div>
           )}
         </div>
 
         {/* Links */}
-        <div className="px-6 py-4 border-t border-[#141414] flex gap-2 flex-wrap">
+        <div className="px-6 py-4 flex gap-2 flex-wrap" style={{ borderTopColor: 'var(--border-subtle)', borderTopWidth: '1px' }}>
           {lead.email && (
             <a href={`mailto:${lead.email}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#666] bg-[#111] border border-[#1a1a1a] hover:text-white hover:border-[#2a2a2a] transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <Mail size={11} /> {lead.email}
             </a>
           )}
           {lead.linkedin_url && (
             <a href={lead.linkedin_url} target="_blank" rel="noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#666] bg-[#111] border border-[#1a1a1a] hover:text-white hover:border-[#2a2a2a] transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <LinkedinIcon size={11} /> LinkedIn
             </a>
           )}
           {lead.company_website && (
             <a href={lead.company_website} target="_blank" rel="noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#666] bg-[#111] border border-[#1a1a1a] hover:text-white hover:border-[#2a2a2a] transition-all">
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <ExternalLink size={11} /> Web
             </a>
           )}
         </div>
 
         {/* Stage actions */}
-        <div className="px-6 py-4 border-t border-[#141414]">
-          <p className="text-[10px] text-[#444] uppercase tracking-wider mb-2">Cambiar etapa</p>
+        <div className="px-6 py-4" style={{ borderTopColor: 'var(--border-subtle)', borderTopWidth: '1px' }}>
+          <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Cambiar etapa</p>
           <div className="flex flex-wrap gap-1.5">
             {STAGES.filter(s => s.key !== lead.stage).map(s => (
               <button
@@ -276,8 +277,8 @@ function InfoRow({ label, value }: { label: string; value: string | null | undef
   if (!value) return null
   return (
     <div className="flex items-center justify-between">
-      <p className="text-[10px] text-[#444] uppercase tracking-wider">{label}</p>
-      <p className="text-[12px] text-[#777]">{value}</p>
+      <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{label}</p>
+      <p className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{value}</p>
     </div>
   )
 }

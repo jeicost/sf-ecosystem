@@ -16,7 +16,9 @@ import { getQuickPrompts } from '@/lib/agent-quick-prompts'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { getAgentActivityTasks, getAgentStats } from '@/lib/agent-activity-stats'
 import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import DocumentUploader from '@/components/document-uploader'
+import Card from '@/components/ui/Card'
 import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
 
@@ -120,19 +122,24 @@ export default function AgentPage() {
     }
   }
 
+  const { locale } = useLocaleContext()
+
   if (!agent) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-gray-900 to-black">
-        <h1 className="text-3xl font-bold text-white mb-2">Agente no encontrado</h1>
-        <p className="text-gray-400 mb-6">El agente "{role}" no existe</p>
-        <Link href="/comercial" className="text-blue-400 hover:text-blue-300 transition">
-          Volver a agentes
+      <div className="flex flex-col items-center justify-center min-h-screen" style={{ background: 'var(--bg-page)' }}>
+        <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
+          {t('agent.not-found.title', locale)}
+        </h1>
+        <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
+          {t('agent.not-found.description', locale).replace('{role}', role)}
+        </p>
+        <Link href="/comercial" style={{ color: 'var(--text-tertiary)' }} className="hover:opacity-80 transition">
+          {t('common.back-to-home', locale)}
         </Link>
       </div>
     )
   }
 
-  const { locale } = useLocaleContext()
   const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy, locale })
   const systemPrompt = getAgentPrompt(role, locale)
 
@@ -168,46 +175,52 @@ export default function AgentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+    <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
       <div className="px-8 py-8 max-w-4xl mx-auto">
         {/* Back button */}
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-slate-400 hover:text-white text-sm mb-8 transition-colors"
+          className="flex items-center gap-2 text-sm mb-8 transition-colors"
+          style={{ color: 'var(--text-secondary)', opacity: 0.8 }}
         >
           <ArrowLeft size={16} />
-          Back
+          {t('common.back', locale)}
         </button>
 
         {/* Header */}
         <div className="flex items-center gap-6 mb-8">
           <div
-            className={clsx(
-              'w-20 h-20 rounded-3xl flex items-center justify-center text-5xl flex-shrink-0',
-              agent.gradient
-            )}
-            style={{ boxShadow: `0 12px 32px ${agent.color}40` }}
+            className="w-20 h-20 rounded-3xl flex items-center justify-center text-5xl flex-shrink-0"
+            style={{
+              background: `linear-gradient(135deg, ${agent.color}30, ${agent.color}10)`,
+              border: `1px solid ${agent.color}30`,
+              boxShadow: `0 12px 32px ${agent.color}25`,
+            }}
           >
             {agent.emoji}
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-white">{agent.name}</h1>
-            <p className="text-slate-400 text-sm mt-1">{agent.description}</p>
+            <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
+              {agent.name}
+            </h1>
+            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
+              {agent.description}
+            </p>
           </div>
         </div>
 
         {/* Tabs */}
-        <div className="border-b border-slate-700 flex gap-0 mb-8">
+        <div className="flex gap-0 mb-8" style={{ borderBottom: '1px solid var(--border)' }}>
           {TABS.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
-              className={clsx(
-                'flex items-center gap-2 px-4 py-3 text-sm border-b-2 transition-colors',
-                activeTab === id
-                  ? 'border-blue-500 text-white'
-                  : 'border-transparent text-slate-400 hover:text-white'
-              )}
+              className="flex items-center gap-2 px-4 py-3 text-sm transition-colors"
+              style={{
+                borderBottomWidth: '2px',
+                borderBottomColor: activeTab === id ? agent.color : 'transparent',
+                color: activeTab === id ? 'var(--text-primary)' : 'var(--text-secondary)',
+              }}
             >
               <Icon size={16} />
               {label}
@@ -219,11 +232,11 @@ export default function AgentPage() {
         {activeTab === 'about' && (
           <div className="space-y-6">
             {/* Tone level */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              <h3 className="text-sm font-semibold text-white mb-1">Communication Tone</h3>
-              <p className="text-xs text-slate-400 mb-4">How formal or casual is {agent.name}?</p>
+            <Card radius="card" padding="lg">
+              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Communication Tone</h3>
+              <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>How formal or casual is {agent.name}?</p>
               <div className="flex items-center gap-3">
-                <span className="text-xs text-slate-400">Casual</span>
+                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>Casual</span>
                 <input
                   type="range"
                   min="0"
@@ -235,16 +248,20 @@ export default function AgentPage() {
                     setToneLevel(newTone)
                     saveSettings(autonomy, newTone)
                   }}
-                  className="flex-1 h-2 bg-slate-700 rounded-full cursor-pointer accent-blue-500"
+                  className="flex-1 h-2 rounded-full cursor-pointer"
+                  style={{
+                    background: `linear-gradient(to right, var(--bg-surface) 0%, ${agent.color} ${toneLevel * 100}%, var(--bg-surface) ${toneLevel * 100}%, var(--bg-surface) 100%)`,
+                    accentColor: agent.color,
+                  }}
                 />
-                <span className="text-xs text-slate-400">Formal</span>
+                <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>Formal</span>
               </div>
-            </div>
+            </Card>
 
             {/* Autonomy */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
-              <h3 className="text-sm font-semibold text-white mb-1">Autonomy Level</h3>
-              <p className="text-xs text-slate-400 mb-4">When does {agent.name} need your approval?</p>
+            <Card radius="card" padding="lg">
+              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Autonomy Level</h3>
+              <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>When does {agent.name} need your approval?</p>
               <div className="grid grid-cols-2 gap-3">
                 {AUTONOMY_OPTIONS.map(opt => {
                   const Icon = opt.icon
@@ -256,32 +273,35 @@ export default function AgentPage() {
                         setAutonomy(opt.id)
                         saveSettings(opt.id, toneLevel)
                       }}
-                      className={clsx(
-                        'p-4 rounded-lg border-2 text-left transition-all',
-                        selected
-                          ? 'border-blue-500 bg-blue-500/10'
-                          : 'border-slate-700 bg-slate-800/50 hover:border-slate-600'
-                      )}
+                      className="p-4 rounded-lg text-left transition-all"
+                      style={{
+                        background: selected ? `${agent.color}15` : 'var(--bg-surface)',
+                        border: `2px solid ${selected ? agent.color : 'var(--border)'}`,
+                      }}
                     >
-                      <Icon size={16} className="mb-2" style={{ color: selected ? agent.color : '#94a3b8' }} />
-                      <p className="text-xs font-semibold text-white">{opt.label}</p>
-                      <p className="text-xs text-slate-400 mt-1 leading-tight">{opt.description}</p>
+                      <Icon size={16} className="mb-2" style={{ color: selected ? agent.color : 'var(--text-secondary)' }} />
+                      <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{opt.label}</p>
+                      <p className="text-xs mt-1 leading-tight" style={{ color: 'var(--text-secondary)' }}>{opt.description}</p>
                     </button>
                   )
                 })}
               </div>
-            </div>
+            </Card>
 
             {/* System Prompt */}
-            <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+            <Card radius="card" padding="lg">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold text-white">System Prompt</h3>
+                <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>System Prompt</h3>
                 <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: `${agent.color}25`, color: agent.color }}>
                   v3.1 · active
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mb-4">Active instructions that define how {agent.name} thinks.</p>
-              <div className="bg-black/50 rounded-lg p-4 font-mono text-xs text-slate-400 max-h-48 overflow-y-auto border border-slate-700 whitespace-pre-wrap mb-3">
+              <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>Active instructions that define how {agent.name} thinks.</p>
+              <div className="rounded-lg p-4 font-mono text-xs max-h-48 overflow-y-auto whitespace-pre-wrap mb-3" style={{
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-secondary)',
+              }}>
                 {systemPrompt.substring(0, 800)}
                 {systemPrompt.length > 800 && '...'}
               </div>
@@ -293,30 +313,30 @@ export default function AgentPage() {
                 {copied ? <Check size={14} /> : <Copy size={14} />}
                 {copied ? 'Copied!' : 'Copy system prompt'}
               </button>
-            </div>
+            </Card>
           </div>
         )}
 
         {/* Tab: Activity */}
         {activeTab === 'history' && (
           <div className="space-y-3">
-            <p className="text-xs text-slate-400 mb-4">Latest tasks executed by {agent.name}.</p>
+            <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>Latest tasks executed by {agent.name}.</p>
             {recentTasks.length === 0 ? (
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-8 text-center">
-                <p className="text-sm text-slate-400">No activity yet</p>
-              </div>
+              <Card radius="card" padding="lg" className="text-center">
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No activity yet</p>
+              </Card>
             ) : (
               recentTasks.map((task) => {
                 const cfg = TASK_STATUS_CONFIG[task.status]
                 const StatusIcon = cfg.icon
                 return (
-                  <div key={task.id} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 flex items-start gap-3">
+                  <Card key={task.id} radius="card" padding="lg" className="flex items-start gap-3">
                     <StatusIcon size={16} className={clsx('mt-0.5 shrink-0', cfg.color)} />
                     <div className="flex-1">
-                      <p className="text-sm text-slate-200">{task.task}</p>
-                      <p className="text-xs text-slate-500 mt-1">{task.timeAgo}</p>
+                      <p className="text-sm" style={{ color: 'var(--text-primary)' }}>{task.task}</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>{task.timeAgo}</p>
                     </div>
-                  </div>
+                  </Card>
                 )
               })
             )}
@@ -325,19 +345,27 @@ export default function AgentPage() {
 
         {/* Tab: Chat */}
         {activeTab === 'chat' && (
-          <div className="flex flex-col h-[600px] bg-slate-800/30 border border-slate-700 rounded-xl overflow-hidden">
+          <div className="flex flex-col h-[600px] rounded-xl overflow-hidden" style={{
+            background: 'var(--bg-surface)',
+            border: '1px solid var(--border)',
+          }}>
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4">
               {messages.length === 0 ? (
                 <div className="flex flex-col items-center justify-center h-full">
-                  <MessageSquare size={40} className="mb-3 opacity-50 text-slate-400" />
-                  <p className="text-sm text-slate-400 mb-6">Start a conversation with {agent.name}</p>
+                  <MessageSquare size={40} className="mb-3" style={{ opacity: 0.5, color: 'var(--text-secondary)' }} />
+                  <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>Start a conversation with {agent.name}</p>
                   <div className="grid grid-cols-1 gap-2 w-full max-w-xs">
                     {quickPrompts.map((prompt, idx) => (
                       <button
                         key={idx}
                         onClick={() => handleSendMessage(prompt)}
-                        className="text-left p-3 rounded-lg bg-slate-700/50 hover:bg-slate-700 border border-slate-600 text-xs text-slate-300 hover:text-white transition-all flex items-start gap-2"
+                        className="text-left p-3 rounded-lg text-xs transition-all flex items-start gap-2 hover:opacity-80"
+                        style={{
+                          background: 'var(--bg-card)',
+                          border: '1px solid var(--border-subtle)',
+                          color: 'var(--text-secondary)',
+                        }}
                       >
                         <Sparkles size={14} className="mt-0.5 flex-shrink-0" />
                         <span>{prompt}</span>
@@ -349,12 +377,13 @@ export default function AgentPage() {
                 messages.map((msg, idx) => (
                   <div key={idx} className={clsx('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
                     <div
-                      className={clsx(
-                        'max-w-xs px-4 py-2 rounded-lg text-sm',
-                        msg.role === 'user'
-                          ? 'bg-blue-600 text-white rounded-br-none'
-                          : 'bg-slate-700 text-slate-100 rounded-bl-none'
-                      )}
+                      className="max-w-xs px-4 py-2 rounded-lg text-sm"
+                      style={{
+                        background: msg.role === 'user' ? `${agent.color}20` : `${agent.color}15`,
+                        color: 'var(--text-primary)',
+                        borderBottomRightRadius: msg.role === 'user' ? 0 : undefined,
+                        borderBottomLeftRadius: msg.role === 'user' ? undefined : 0,
+                      }}
                     >
                       {msg.content}
                     </div>
@@ -363,7 +392,10 @@ export default function AgentPage() {
               )}
               {isLoading && (
                 <div className="flex justify-start">
-                  <div className="bg-slate-700 text-slate-100 px-4 py-2 rounded-lg rounded-bl-none animate-pulse text-sm">
+                  <div className="px-4 py-2 rounded-lg rounded-bl-none animate-pulse text-sm" style={{
+                    background: `${agent.color}15`,
+                    color: 'var(--text-primary)',
+                  }}>
                     {agent.name} is thinking...
                   </div>
                 </div>
@@ -372,7 +404,7 @@ export default function AgentPage() {
 
             {/* Document Upload Area */}
             {showUploader && (
-              <div className="border-t border-slate-700 p-4 bg-slate-800/50">
+              <div className="p-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
                 <DocumentUploader
                   onUploadComplete={handleDocumentUpload}
                   acceptedTypes={['.pdf', '.docx', '.txt', '.md']}
@@ -382,7 +414,7 @@ export default function AgentPage() {
             )}
 
             {/* Input */}
-            <div className="border-t border-slate-700 p-4 bg-slate-800/50">
+            <div className="p-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
               <div className="flex gap-2 mb-2">
                 <input
                   type="text"
@@ -390,18 +422,28 @@ export default function AgentPage() {
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 text-sm"
+                  className="flex-1 px-4 py-2 rounded-lg text-sm focus:outline-none transition-all"
+                  style={{
+                    background: 'var(--bg-surface)',
+                    border: `1px solid var(--border)`,
+                    color: 'var(--text-primary)',
+                  }}
                 />
                 <button
                   onClick={() => handleSendMessage()}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition flex items-center gap-2 text-sm"
+                  className="px-4 py-2 rounded-lg transition flex items-center gap-2 text-sm hover:opacity-90"
+                  style={{
+                    background: agent.color,
+                    color: '#ffffff',
+                  }}
                 >
                   <Send size={16} />
                 </button>
               </div>
               <button
                 onClick={() => setShowUploader(!showUploader)}
-                className="text-xs text-slate-400 hover:text-slate-300 transition"
+                className="text-xs transition hover:opacity-80"
+                style={{ color: 'var(--text-secondary)' }}
               >
                 {uploadingDoc ? 'Uploading...' : showUploader ? 'Hide upload' : '+ Upload document'}
               </button>
@@ -413,30 +455,30 @@ export default function AgentPage() {
         {activeTab === 'performance' && (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                <p className="text-xs text-slate-400 mb-1">Total Interactions</p>
-                <p className="text-2xl font-bold text-white">{agentStats.totalInteractions}</p>
-              </div>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                <p className="text-xs text-slate-400 mb-1">Completion Rate</p>
+              <Card radius="card" padding="lg">
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Total Interactions</p>
+                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.totalInteractions}</p>
+              </Card>
+              <Card radius="card" padding="lg">
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Completion Rate</p>
                 <div className="flex items-center gap-2">
-                  <p className="text-2xl font-bold text-white">{agentStats.completionRate}%</p>
-                  <div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
+                  <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.completionRate}%</p>
+                  <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--bg-surface)' }}>
                     <div
                       className="h-full transition-all"
                       style={{ width: `${agentStats.completionRate}%`, background: agent.color }}
                     />
                   </div>
                 </div>
-              </div>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                <p className="text-xs text-slate-400 mb-1">Avg Response Time</p>
-                <p className="text-2xl font-bold text-white">{agentStats.averageResponseTime}</p>
-              </div>
-              <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-                <p className="text-xs text-slate-400 mb-1">Last Active</p>
-                <p className="text-2xl font-bold text-white">{agentStats.lastActive}</p>
-              </div>
+              </Card>
+              <Card radius="card" padding="lg">
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Avg Response Time</p>
+                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.averageResponseTime}</p>
+              </Card>
+              <Card radius="card" padding="lg">
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Last Active</p>
+                <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.lastActive}</p>
+              </Card>
             </div>
           </div>
         )}

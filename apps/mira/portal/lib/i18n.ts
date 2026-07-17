@@ -77,10 +77,87 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // QUICK ACTIONS
     'actions.title': 'Acciones Rápidas',
+    'actions.quick-actions': 'Acciones Rápidas',
     'actions.generating': 'Generando...',
     'actions.complete': 'Completado',
     'actions.save-to-memory': 'Guardar en Memoria',
     'actions.copy': 'Copiar',
+    'actions.cancel': 'Cancelar',
+    'actions.processing': 'Procesando...',
+    'actions.generate': 'Generar',
+    'actions.generating-item': 'Generando {item}...',
+    'actions.error-generating': 'Error al generar {item}',
+    'actions.ready': '{item} Listo',
+    'actions.ai-content-ready': 'Tu contenido generado con IA está listo para usar',
+    'actions.preview': 'Vista Previa',
+    'actions.save-options': 'Opciones de Guardado',
+    'actions.saved-to-memory': 'Guardado en Memoria',
+    'actions.save-to-drive': 'Guardar en Google Drive',
+    'actions.raw-output': 'Salida Bruta',
+    'actions.open-in-drive': 'Abrir en Google Drive →',
+    'actions.scenes': 'Escenas',
+
+    // QUICK ACTIONS - MARKETING
+    'actions.marketing.crear_post': 'Crear Post',
+    'actions.marketing.crear_post.desc': 'Generar post de redes sociales con imagen IA',
+    'actions.marketing.crear_newsletter': 'Crear Newsletter',
+    'actions.marketing.crear_newsletter.desc': 'Generar newsletter de 5 artículos',
+    'actions.marketing.crear_video_brief': 'Crear Video Brief',
+    'actions.marketing.crear_video_brief.desc': 'Generar script de video y storyboard',
+    'actions.marketing.crear_carousel': 'Crear Carousel',
+    'actions.marketing.crear_carousel.desc': 'Diseñar concepto de diapositivas de carousel',
+    'actions.marketing.crear_campaña_ads': 'Crear Campaña Ads',
+    'actions.marketing.crear_campaña_ads.desc': 'Generar estrategia de ads y variaciones de copy',
+    'actions.marketing.crear_post_visual': 'Post Visual',
+    'actions.marketing.crear_post_visual.desc': 'Generar post de redes sociales con imagen IA',
+    'actions.marketing.crear_carrusel_visual': 'Carousel Visual',
+    'actions.marketing.crear_carrusel_visual.desc': 'Generar carousel con imágenes generadas por IA',
+    'actions.marketing.editar_imagen_visual': 'Editar Imagen',
+    'actions.marketing.editar_imagen_visual.desc': 'Refinar y editar imágenes generadas por IA',
+
+    // QUICK ACTIONS - COMERCIAL
+    'actions.comercial.crear_campaña': 'Crear Campaña',
+    'actions.comercial.crear_campaña.desc': 'Generar campaña de outreach con icebreakers personalizados',
+    'actions.comercial.generar_icp': 'Generar ICP',
+    'actions.comercial.generar_icp.desc': 'Calificar leads contra tu perfil de cliente ideal',
+    'actions.comercial.crear_propuesta': 'Crear Propuesta',
+    'actions.comercial.crear_propuesta.desc': 'Generar propuesta de ventas profesional en PDF',
+    'actions.comercial.calificar_reply': 'Calificar Reply',
+    'actions.comercial.calificar_reply.desc': 'Analizar respuesta de prospecto y puntuar BANT',
+
+    // QUICK ACTIONS - STRATEGY
+    'actions.strategy.generar_reporte': 'Generar Reporte',
+    'actions.strategy.generar_reporte.desc': 'Generar reporte de rendimiento con KPIs',
+    'actions.strategy.analizar_competencia': 'Analizar Competencia',
+    'actions.strategy.analizar_competencia.desc': 'Matriz de análisis competitivo y oportunidades',
+    'actions.strategy.brainstorm_ideas': 'Brainstorm Ideas',
+    'actions.strategy.brainstorm_ideas.desc': 'Generar 100 ideas con top 5 recomendaciones',
+    'actions.strategy.proyectar_revenue': 'Proyectar Revenue',
+    'actions.strategy.proyectar_revenue.desc': 'Generar proyecciones de ingresos con escenarios',
+
+    // QUICK ACTIONS - FINANZAS
+    'actions.finanzas.proyeccion_financiera': 'Proyección Financiera',
+    'actions.finanzas.proyeccion_financiera.desc': 'Generar pronóstico financiero de 12 meses',
+    'actions.finanzas.analisis_cash_flow': 'Análisis de Cash Flow',
+    'actions.finanzas.analisis_cash_flow.desc': 'Analizar patrones de flujo de caja',
+    'actions.finanzas.optimizacion_costos': 'Optimización de Costos',
+    'actions.finanzas.optimizacion_costos.desc': 'Identificar oportunidades de optimización de costos',
+
+    // QUICK ACTIONS - INNOVACION
+    'actions.innovacion.tendencias_analisis': 'Análisis de Tendencias',
+    'actions.innovacion.tendencias_analisis.desc': 'Identificar tendencias emergentes del mercado',
+    'actions.innovacion.innovation_audit': 'Auditoría de Innovación',
+    'actions.innovacion.innovation_audit.desc': 'Evaluar madurez de innovación',
+    'actions.innovacion.innovation_roadmap': 'Roadmap de Innovación',
+    'actions.innovacion.innovation_roadmap.desc': 'Generar plan de innovación de 12 meses',
+
+    // QUICK ACTIONS - ADMIN
+    'actions.admin.responder_ticket': 'Responder Ticket',
+    'actions.admin.responder_ticket.desc': 'Generar respuesta de soporte profesional',
+    'actions.admin.crear_faq': 'Crear FAQ',
+    'actions.admin.crear_faq.desc': 'Generar documento FAQ para base de conocimiento',
+    'actions.admin.crear_tutorial': 'Crear Tutorial',
+    'actions.admin.crear_tutorial.desc': 'Generar tutorial paso a paso con script',
 
     // AGENTS (30)
     'agent.marco': 'Marco — Orquestador',
@@ -124,9 +201,14 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.edit': 'Editar',
     'common.close': 'Cerrar',
     'common.back': 'Atrás',
+    'common.back-to-home': 'Volver al inicio',
     'common.other-teams': 'Otros equipos disponibles',
     'common.agents-total': 'agentes totales',
     'common.no-data': 'Sin datos',
+
+    // AGENT PAGE
+    'agent.not-found.title': 'Agente no encontrado',
+    'agent.not-found.description': 'El agente "{role}" no existe',
 
     // SECTION HEADERS & DESCRIPTIONS
     'header.sales': 'MIRA Sales',
@@ -166,6 +248,95 @@ const translations: Record<Locale, Record<string, string>> = {
     'btn.update': 'Actualizar',
     'btn.delete': 'Eliminar',
     'btn.back-to-home': 'Volver al inicio',
+
+    // ADMIN
+    'admin.greeting': 'Buenos días, equipo 👋',
+    'admin.section-label': 'Clientes y Operaciones',
+
+    // ADMIN: USERS PAGE
+    'admin.users.title': 'Gestión de Usuarios',
+    'admin.users.subtitle': 'Controla acceso, planes y almacenamiento',
+    'admin.users.total-users': 'Total de usuarios',
+    'admin.users.active-projects': 'Proyectos activos',
+    'admin.users.table.email': 'Email',
+    'admin.users.table.company': 'Empresa',
+    'admin.users.table.plan': 'Plan',
+    'admin.users.table.status': 'Estado',
+    'admin.users.table.projects': 'Proyectos',
+    'admin.users.table.created': 'Creado',
+    'admin.users.table.actions': 'Acciones',
+    'admin.users.status-active': 'Activo',
+    'admin.users.status-paused': 'Pausado',
+    'admin.users.status-cancelled': 'Cancelado',
+    'admin.users.no-projects': 'Sin proyectos asignados',
+    'admin.users.projects-header': 'Proyectos de',
+    'admin.users.last-access': 'Último acceso',
+    'admin.users.storage': 'Storage',
+    'admin.users.usage': 'Uso',
+    'admin.users.active': 'Activo',
+    'admin.users.inactive': 'Inactivo',
+    'admin.users.edit-storage': 'Editar GB',
+
+    // ADMIN: BILLING PAGE
+    'admin.billing.title': 'Billing & P&L',
+    'admin.billing.subtitle': 'Ni un dólar se pierde cuando Ledger está activo',
+    'admin.billing.sample-warning': 'Sample Data Only',
+    'admin.billing.sample-desc': 'Integración con Stripe no configurada. Todos los datos de MRR, clientes y pagos mostrados son ejemplos. Conecta Stripe para ver datos reales.',
+    'admin.billing.mrr': 'MRR',
+    'admin.billing.ai-costs': 'Costos IA',
+    'admin.billing.net-margin': 'Margen neto',
+    'admin.billing.overdue': 'Vencido',
+    'admin.billing.client-billing': 'Facturación de clientes',
+    'admin.billing.current-month': 'Mes actual',
+    'admin.billing.status-paid': 'Pagado',
+    'admin.billing.status-overdue': 'Vencido',
+    'admin.billing.status-pending': 'Pendiente',
+
+    // ADMIN: SYSTEM PAGE
+    'admin.system.title': 'Salud del Sistema',
+    'admin.system.subtitle': 'Veo todo antes de que sea un problema. Cero puntos ciegos',
+    'admin.system.uptime': 'Disponibilidad',
+    'admin.system.avg-latency': 'Latencia promedio',
+    'admin.system.errors-caught': 'Errores capturados',
+    'admin.system.ai-cost': 'Costo IA semanal',
+    'admin.system.agent-status': 'Estado de agentes',
+
+    // COMERCIAL: DISCOVERY
+    'comercial.discovery.starting-search': 'Iniciando búsqueda...',
+    'comercial.discovery.searching': 'Buscando...',
+    'comercial.discovery.search-btn': 'Buscar con Rex',
+    'comercial.discovery.add': 'Añadir',
+    'comercial.discovery.in-pipeline': 'En pipeline',
+
+    // COMERCIAL: ICEBREAKER
+    'comercial.icebreaker.error-generate': 'Error al generar. Inténtalo de nuevo.',
+    'comercial.icebreaker.no-hot-leads': 'No hay leads hot (≥75) en el pipeline.',
+    'comercial.icebreaker.manual-entry': 'Entrada manual',
+    'comercial.icebreaker.from-pipeline': 'Desde pipeline',
+    'comercial.icebreaker.generating': 'Finn escribiendo…',
+    'comercial.icebreaker.copied': 'Copiado',
+
+    // COMERCIAL: QUALIFY
+    'comercial.qualify.loading-leads': 'Cargando leads...',
+    'comercial.qualify.no-specific-lead': '— Sin lead específico —',
+    'comercial.qualify.reply-placeholder': 'Pega aquí el mensaje que recibiste del prospect...',
+    'comercial.qualify.analyzing': 'Quinn analizando...',
+    'comercial.qualify.vera-prompt': 'Pregúntame sobre el pipeline',
+    'comercial.qualify.vera-placeholder': 'Pregunta a Vera...',
+    'comercial.qualify.vera-q1': '¿Cuáles son nuestros leads más prometedores?',
+    'comercial.qualify.vera-q2': '¿Qué industrias tienen mejor score?',
+    'comercial.qualify.vera-q3': '¿Cómo mejorar la calidad del pipeline?',
+
+    // COMERCIAL: PROPOSALS
+    'comercial.proposals.error-generate': 'Error al generar. Inténtalo de nuevo.',
+
+    // COMERCIAL: PIPELINE
+    'comercial.pipeline.empty': 'Vacío',
+    'comercial.pipeline.change-stage': 'Cambiar etapa',
+    'comercial.pipeline.no-leads': 'No hay leads aún. Usa Rex para descubrir leads.',
+
+    // COMERCIAL: SCORING
+    'comercial.scoring.no-leads': 'No hay leads aún. Usa Rex para descubrir leads.',
   },
 
   en: {
@@ -241,10 +412,87 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // QUICK ACTIONS
     'actions.title': 'Quick Actions',
+    'actions.quick-actions': 'Quick Actions',
     'actions.generating': 'Generating...',
     'actions.complete': 'Complete',
     'actions.save-to-memory': 'Save to Memory',
     'actions.copy': 'Copy',
+    'actions.cancel': 'Cancel',
+    'actions.processing': 'Processing...',
+    'actions.generate': 'Generate',
+    'actions.generating-item': 'Generating {item}...',
+    'actions.error-generating': 'Error generating {item}',
+    'actions.ready': '{item} Ready',
+    'actions.ai-content-ready': 'Your AI generated content is ready to use',
+    'actions.preview': 'Preview',
+    'actions.save-options': 'Save Options',
+    'actions.saved-to-memory': 'Saved to Memory',
+    'actions.save-to-drive': 'Save to Google Drive',
+    'actions.raw-output': 'Raw Output',
+    'actions.open-in-drive': 'Open in Google Drive →',
+    'actions.scenes': 'Scenes',
+
+    // QUICK ACTIONS - MARKETING
+    'actions.marketing.crear_post': 'Create Post',
+    'actions.marketing.crear_post.desc': 'Generate social media post with AI image',
+    'actions.marketing.crear_newsletter': 'Create Newsletter',
+    'actions.marketing.crear_newsletter.desc': 'Generate 5-article newsletter',
+    'actions.marketing.crear_video_brief': 'Create Video Brief',
+    'actions.marketing.crear_video_brief.desc': 'Generate video script and storyboard',
+    'actions.marketing.crear_carousel': 'Create Carousel',
+    'actions.marketing.crear_carousel.desc': 'Design carousel slides concept',
+    'actions.marketing.crear_campaña_ads': 'Create Ads Campaign',
+    'actions.marketing.crear_campaña_ads.desc': 'Generate ads strategy and copy variations',
+    'actions.marketing.crear_post_visual': 'Post Visual',
+    'actions.marketing.crear_post_visual.desc': 'Generate social post with AI image',
+    'actions.marketing.crear_carrusel_visual': 'Carousel Visual',
+    'actions.marketing.crear_carrusel_visual.desc': 'Generate carousel with AI-generated images',
+    'actions.marketing.editar_imagen_visual': 'Edit Image',
+    'actions.marketing.editar_imagen_visual.desc': 'Refine and edit AI-generated images',
+
+    // QUICK ACTIONS - COMERCIAL
+    'actions.comercial.crear_campaña': 'Create Campaign',
+    'actions.comercial.crear_campaña.desc': 'Generate outreach campaign with personalized icebreakers',
+    'actions.comercial.generar_icp': 'Generate ICP',
+    'actions.comercial.generar_icp.desc': 'Score leads against your ideal customer profile',
+    'actions.comercial.crear_propuesta': 'Create Proposal',
+    'actions.comercial.crear_propuesta.desc': 'Generate a professional sales proposal PDF',
+    'actions.comercial.calificar_reply': 'Qualify Reply',
+    'actions.comercial.calificar_reply.desc': 'Analyze prospect response and score BANT',
+
+    // QUICK ACTIONS - STRATEGY
+    'actions.strategy.generar_reporte': 'Generate Report',
+    'actions.strategy.generar_reporte.desc': 'Generate performance report with KPIs',
+    'actions.strategy.analizar_competencia': 'Analyze Competition',
+    'actions.strategy.analizar_competencia.desc': 'Competitive analysis matrix & opportunities',
+    'actions.strategy.brainstorm_ideas': 'Brainstorm Ideas',
+    'actions.strategy.brainstorm_ideas.desc': 'Generate 100 ideas with top 5 recommendations',
+    'actions.strategy.proyectar_revenue': 'Project Revenue',
+    'actions.strategy.proyectar_revenue.desc': 'Generate revenue projections with scenarios',
+
+    // QUICK ACTIONS - FINANZAS
+    'actions.finanzas.proyeccion_financiera': 'Financial Projection',
+    'actions.finanzas.proyeccion_financiera.desc': 'Generate 12-month financial forecast',
+    'actions.finanzas.analisis_cash_flow': 'Cash Flow Analysis',
+    'actions.finanzas.analisis_cash_flow.desc': 'Analyze cash flow patterns',
+    'actions.finanzas.optimizacion_costos': 'Cost Optimization',
+    'actions.finanzas.optimizacion_costos.desc': 'Identify cost optimization opportunities',
+
+    // QUICK ACTIONS - INNOVACION
+    'actions.innovacion.tendencias_analisis': 'Trends Analysis',
+    'actions.innovacion.tendencias_analisis.desc': 'Identify emerging market trends',
+    'actions.innovacion.innovation_audit': 'Innovation Audit',
+    'actions.innovacion.innovation_audit.desc': 'Evaluate innovation maturity',
+    'actions.innovacion.innovation_roadmap': 'Innovation Roadmap',
+    'actions.innovacion.innovation_roadmap.desc': 'Generate 12-month innovation plan',
+
+    // QUICK ACTIONS - ADMIN
+    'actions.admin.responder_ticket': 'Respond to Ticket',
+    'actions.admin.responder_ticket.desc': 'Generate professional support response',
+    'actions.admin.crear_faq': 'Create FAQ',
+    'actions.admin.crear_faq.desc': 'Generate FAQ document for knowledge base',
+    'actions.admin.crear_tutorial': 'Create Tutorial',
+    'actions.admin.crear_tutorial.desc': 'Generate step-by-step tutorial with script',
 
     // AGENTS (30)
     'agent.marco': 'Marco — Orchestrator',
@@ -288,9 +536,14 @@ const translations: Record<Locale, Record<string, string>> = {
     'common.edit': 'Edit',
     'common.close': 'Close',
     'common.back': 'Back',
+    'common.back-to-home': 'Back to home',
     'common.other-teams': 'Other available teams',
     'common.agents-total': 'agents total',
     'common.no-data': 'No data',
+
+    // AGENT PAGE
+    'agent.not-found.title': 'Agent not found',
+    'agent.not-found.description': 'The agent "{role}" does not exist',
 
     // SECTION HEADERS & DESCRIPTIONS
     'header.sales': 'MIRA Sales',
@@ -330,6 +583,95 @@ const translations: Record<Locale, Record<string, string>> = {
     'btn.update': 'Update',
     'btn.delete': 'Delete',
     'btn.back-to-home': 'Back to home',
+
+    // ADMIN
+    'admin.greeting': 'Good morning, team 👋',
+    'admin.section-label': 'Clients & Operations',
+
+    // ADMIN: USERS PAGE
+    'admin.users.title': 'User Management',
+    'admin.users.subtitle': 'Control access, plans and storage',
+    'admin.users.total-users': 'Total users',
+    'admin.users.active-projects': 'Active projects',
+    'admin.users.table.email': 'Email',
+    'admin.users.table.company': 'Company',
+    'admin.users.table.plan': 'Plan',
+    'admin.users.table.status': 'Status',
+    'admin.users.table.projects': 'Projects',
+    'admin.users.table.created': 'Created',
+    'admin.users.table.actions': 'Actions',
+    'admin.users.status-active': 'Active',
+    'admin.users.status-paused': 'Paused',
+    'admin.users.status-cancelled': 'Cancelled',
+    'admin.users.no-projects': 'No projects assigned',
+    'admin.users.projects-header': 'Projects for',
+    'admin.users.last-access': 'Last access',
+    'admin.users.storage': 'Storage',
+    'admin.users.usage': 'Usage',
+    'admin.users.active': 'Active',
+    'admin.users.inactive': 'Inactive',
+    'admin.users.edit-storage': 'Edit GB',
+
+    // ADMIN: BILLING PAGE
+    'admin.billing.title': 'Billing & P&L',
+    'admin.billing.subtitle': 'Not a single dollar is lost when Ledger is active',
+    'admin.billing.sample-warning': 'Sample Data Only',
+    'admin.billing.sample-desc': 'Stripe integration not configured. All MRR, client and payment data shown are examples. Connect Stripe to see real billing.',
+    'admin.billing.mrr': 'MRR',
+    'admin.billing.ai-costs': 'AI costs',
+    'admin.billing.net-margin': 'Net margin',
+    'admin.billing.overdue': 'Overdue',
+    'admin.billing.client-billing': 'Client billing',
+    'admin.billing.current-month': 'Current month',
+    'admin.billing.status-paid': 'Paid',
+    'admin.billing.status-overdue': 'Overdue',
+    'admin.billing.status-pending': 'Pending',
+
+    // ADMIN: SYSTEM PAGE
+    'admin.system.title': 'System Health',
+    'admin.system.subtitle': 'I see everything before it becomes a problem. Zero blind spots',
+    'admin.system.uptime': 'Uptime',
+    'admin.system.avg-latency': 'Avg latency',
+    'admin.system.errors-caught': 'Errors caught',
+    'admin.system.ai-cost': 'Weekly AI cost',
+    'admin.system.agent-status': 'Agent status',
+
+    // COMERCIAL: DISCOVERY
+    'comercial.discovery.starting-search': 'Starting search...',
+    'comercial.discovery.searching': 'Searching...',
+    'comercial.discovery.search-btn': 'Search with Rex',
+    'comercial.discovery.add': 'Add',
+    'comercial.discovery.in-pipeline': 'In pipeline',
+
+    // COMERCIAL: ICEBREAKER
+    'comercial.icebreaker.error-generate': 'Error generating. Try again.',
+    'comercial.icebreaker.no-hot-leads': 'No hot leads (≥75) in pipeline.',
+    'comercial.icebreaker.manual-entry': 'Manual entry',
+    'comercial.icebreaker.from-pipeline': 'From pipeline',
+    'comercial.icebreaker.generating': 'Finn writing…',
+    'comercial.icebreaker.copied': 'Copied',
+
+    // COMERCIAL: QUALIFY
+    'comercial.qualify.loading-leads': 'Loading leads...',
+    'comercial.qualify.no-specific-lead': '— No specific lead —',
+    'comercial.qualify.reply-placeholder': 'Paste the message you received from the prospect...',
+    'comercial.qualify.analyzing': 'Quinn analyzing...',
+    'comercial.qualify.vera-prompt': 'Ask me about the pipeline',
+    'comercial.qualify.vera-placeholder': 'Ask Vera...',
+    'comercial.qualify.vera-q1': 'What are our most promising leads?',
+    'comercial.qualify.vera-q2': 'Which industries have better scores?',
+    'comercial.qualify.vera-q3': 'How to improve pipeline quality?',
+
+    // COMERCIAL: PROPOSALS
+    'comercial.proposals.error-generate': 'Error generating. Try again.',
+
+    // COMERCIAL: PIPELINE
+    'comercial.pipeline.empty': 'Empty',
+    'comercial.pipeline.change-stage': 'Change stage',
+    'comercial.pipeline.no-leads': 'No leads yet. Use Rex to discover leads.',
+
+    // COMERCIAL: SCORING
+    'comercial.scoring.no-leads': 'No leads yet. Use Rex to discover leads.',
   },
 }
 

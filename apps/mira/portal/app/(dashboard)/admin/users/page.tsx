@@ -4,6 +4,10 @@ import { useEffect, useState } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import UserManagementTable from '@/components/admin/UserManagementTable'
 import StorageLimitModal from '@/components/admin/StorageLimitModal'
+import PageHeader from '@/components/ui/PageHeader'
+import StatRow from '@/components/ui/StatRow'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface UserWithProjects {
   id: string
@@ -32,6 +36,7 @@ export default function AdminUsersPage() {
     projectId: string
   } | null>(null)
   const [currentLimit, setCurrentLimit] = useState(10)
+  const { locale } = useLocaleContext()
 
   const supabase = createBrowserClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -129,22 +134,37 @@ export default function AdminUsersPage() {
     }
   }
 
+  const totalProjects = users.reduce((sum, u) => sum + u.projects.length, 0)
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        <div className="animate-spin">⏳</div>
+        <div className="animate-spin text-2xl">⏳</div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">🔐 Super Admin — Gestión de Usuarios</h1>
-        <p className="text-gray-500 mt-2">
-          Total de usuarios: {users.length} | Proyectos activos: {users.reduce((sum, u) => sum + u.projects.length, 0)}
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Admin"
+        title={t('admin.users.title', locale)}
+        subtitle={t('admin.users.subtitle', locale)}
+        eyebrowColor="#6366F1"
+      />
+
+      <StatRow
+        items={[
+          {
+            label: t('admin.users.total-users', locale),
+            value: users.length,
+          },
+          {
+            label: t('admin.users.active-projects', locale),
+            value: totalProjects,
+          },
+        ]}
+      />
 
       <UserManagementTable
         users={users}

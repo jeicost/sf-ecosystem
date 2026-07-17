@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Check, X, Loader2, Download, Heart, Save } from 'lucide-react'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 // import Image from 'next/image' // TODO: Image not yet used
 
 interface QuickActionResultProps {
@@ -18,6 +20,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   const [isSaving, setIsSaving] = useState(false)
   const [liked, setLiked] = useState(false)
   const [isMemorySaved, setIsMemorySaved] = useState(false)
+  const { locale } = useLocaleContext()
 
   useEffect(() => {
     const pollResult = async () => {
@@ -118,7 +121,9 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
     return (
       <div className="card px-6 py-8 text-center">
         <Loader2 size={32} className="animate-spin text-purple-400 mx-auto mb-2" />
-        <p className="text-sm text-gray-400">Generating {resourceName}...</p>
+        <p className="text-sm text-gray-400">
+          {t('actions.generating-item', locale).replace('{item}', resourceName)}
+        </p>
       </div>
     )
   }
@@ -129,7 +134,9 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
         <div className="flex items-start gap-3">
           <X size={20} style={{ color: '#EF4444' }} />
           <div>
-            <p className="font-semibold text-red-400">Error generating {resourceName}</p>
+            <p className="font-semibold text-red-400">
+              {t('actions.error-generating', locale).replace('{item}', resourceName)}
+            </p>
             <p className="text-sm text-gray-400 mt-1">{error}</p>
           </div>
         </div>
@@ -149,8 +156,10 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           <div className="flex items-start gap-3">
             <Check size={20} style={{ color: '#22C55E' }} />
             <div>
-              <p className="font-semibold text-green-400">{resourceName} Ready</p>
-              <p className="text-sm text-gray-400 mt-1">Your AI generated content is ready to use</p>
+              <p className="font-semibold text-green-400">
+                {t('actions.ready', locale).replace('{item}', resourceName)}
+              </p>
+              <p className="text-sm text-gray-400 mt-1">{t('actions.ai-content-ready', locale)}</p>
             </div>
           </div>
           <button
@@ -165,13 +174,13 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
 
       {/* Content Preview */}
       <div className="card px-6 py-4">
-        <h3 className="font-semibold text-white mb-3">Preview</h3>
-        <ContentPreview outputType={displayOutputType} outputData={output_data} />
+        <h3 className="font-semibold text-white mb-3">{t('actions.preview', locale)}</h3>
+        <ContentPreview outputType={displayOutputType} outputData={output_data} locale={locale} />
       </div>
 
       {/* Action Buttons */}
       <div className="card px-6 py-4 space-y-2">
-        <h3 className="font-semibold text-white mb-3">Save Options</h3>
+        <h3 className="font-semibold text-white mb-3">{t('actions.save-options', locale)}</h3>
 
         <button
           onClick={handleSaveToMemory}
@@ -182,12 +191,12 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           {isMemorySaved ? (
             <>
               <Check size={16} />
-              Saved to Memory
+              {t('actions.saved-to-memory', locale)}
             </>
           ) : (
             <>
               <Save size={16} />
-              Save to Memory
+              {t('actions.save-to-memory', locale)}
             </>
           )}
         </button>
@@ -200,14 +209,14 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           >
             {isSaving && <Loader2 size={16} className="animate-spin" />}
             <Download size={16} />
-            Save to Google Drive
+            {t('actions.save-to-drive', locale)}
           </button>
         )}
       </div>
 
       {/* Raw Data */}
       <details className="card px-6 py-4">
-        <summary className="cursor-pointer font-semibold text-white mb-2">Raw Output</summary>
+        <summary className="cursor-pointer font-semibold text-white mb-2">{t('actions.raw-output', locale)}</summary>
         <pre className="text-xs text-gray-400 bg-black/30 p-3 rounded mt-2 overflow-x-auto max-h-64">
           {JSON.stringify(output_data, null, 2)}
         </pre>
@@ -221,7 +230,7 @@ function extractSummary(outputData: any, _outputType: string): string {
   if (outputData.title) return outputData.title
   if (outputData.copy) return outputData.copy.substring(0, 200)
   if (outputData.script) return outputData.script.substring(0, 200)
-  return 'Resultado generado'
+  return t('actions.complete', 'es')
 }
 
 function determineCategoryFromDepartment(department: string): string {
@@ -235,7 +244,7 @@ function determineCategoryFromDepartment(department: string): string {
   return categoryMap[department] || 'insight'
 }
 
-function ContentPreview({ outputType, outputData }: { outputType: string; outputData: any }) {
+function ContentPreview({ outputType, outputData, locale }: { outputType: string; outputData: any; locale: 'es' | 'en' }) {
   switch (outputType) {
     case 'image':
       return (
@@ -266,7 +275,7 @@ function ContentPreview({ outputType, outputData }: { outputType: string; output
           )}
           {outputData.file_id && (
             <a href={outputData.google_drive_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-400">
-              Open in Google Drive →
+              {t('actions.open-in-drive', locale)}
             </a>
           )}
         </div>
@@ -278,7 +287,9 @@ function ContentPreview({ outputType, outputData }: { outputType: string; output
           {outputData.script && <p className="text-sm text-gray-300">{outputData.script.substring(0, 200)}...</p>}
           {outputData.scenes && (
             <div className="text-xs bg-white/5 p-2 rounded">
-              <p className="font-semibold text-white mb-1">{outputData.scenes.length} Scenes</p>
+              <p className="font-semibold text-white mb-1">
+                {outputData.scenes.length} {t('actions.scenes', locale)}
+              </p>
               {outputData.scenes.slice(0, 2).map((scene: any, i: number) => (
                 <p key={i} className="text-gray-400 text-xs">{scene.time}: {scene.action}</p>
               ))}

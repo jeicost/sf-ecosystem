@@ -1,79 +1,85 @@
+'use client'
+
 import AgentWorkspace from '@/components/agent-workspace'
+import PageHeader from '@/components/ui/PageHeader'
+import StatRow from '@/components/ui/StatRow'
+import Card from '@/components/ui/Card'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 const SYSTEM_METRICS = [
-  { label: 'Uptime',       value: '99.2%',  delta: 'Last 30 days',     status: 'ok',    color: '#22C55E' },
-  { label: 'Avg latency',  value: '2.8s',   delta: 'Within threshold',  status: 'ok',    color: '#22C55E' },
-  { label: 'Errors caught',value: '3',      delta: 'Before client',    status: 'review', color: '#F59E0B' },
-  { label: 'Weekly AI cost',value: '$47',   delta: '$15 under budget',  status: 'ok',    color: '#22C55E' },
+  { label: 'admin.system.uptime', value: '99.2%', delta: 'Last 30 days' },
+  { label: 'admin.system.avg-latency', value: '2.8s', delta: 'Within threshold' },
+  { label: 'admin.system.errors-caught', value: '3', delta: 'Before client' },
+  { label: 'admin.system.ai-cost', value: '$47', delta: '$15 under budget' },
 ]
 
 const AGENT_STATUS = [
-  { emoji: '🎬', name: 'Marco',  status: 'idle' },
-  { emoji: '🔍', name: 'Luna',   status: 'working' },
-  { emoji: '✍️', name: 'Alex',   status: 'idle' },
-  { emoji: '🎨', name: 'Zoe',    status: 'idle' },
-  { emoji: '🎞️', name: 'Kai',    status: 'idle' },
-  { emoji: '📅', name: 'Noa',    status: 'waiting' },
-  { emoji: '📣', name: 'Riva',   status: 'working' },
-  { emoji: '💬', name: 'Sam',    status: 'idle' },
-  { emoji: '🔍', name: 'Rex',    status: 'working' },
-  { emoji: '🎯', name: 'Vera',   status: 'idle' },
-  { emoji: '✍️', name: 'Finn',   status: 'idle' },
+  { emoji: '🎬', name: 'Marco', status: 'idle' },
+  { emoji: '🔍', name: 'Luna', status: 'working' },
+  { emoji: '✍️', name: 'Alex', status: 'idle' },
+  { emoji: '🎨', name: 'Zoe', status: 'idle' },
+  { emoji: '🎞️', name: 'Kai', status: 'idle' },
+  { emoji: '📅', name: 'Noa', status: 'waiting' },
+  { emoji: '📣', name: 'Riva', status: 'working' },
+  { emoji: '💬', name: 'Sam', status: 'idle' },
+  { emoji: '🔍', name: 'Rex', status: 'working' },
+  { emoji: '🎯', name: 'Vera', status: 'idle' },
+  { emoji: '✍️', name: 'Finn', status: 'idle' },
 ]
 
-const STATUS_DOT: Record<string, string> = {
-  idle:    'rgba(255,255,255,0.2)',
+const STATUS_COLORS: Record<string, string> = {
+  idle: 'rgba(255,255,255,0.2)',
   working: '#22C55E',
   waiting: '#F59E0B',
 }
 
 export default function Page() {
+  const { locale } = useLocaleContext()
+
   return (
-    <div className="px-8 py-8 max-w-4xl">
-      <div className="mb-6">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(245,158,11,0.8)' }}>
-          Admin · Pulse
-        </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">System Health</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          I see everything before it becomes a problem. Zero blind spots.
-        </p>
-      </div>
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Admin · Pulse"
+        title={t('admin.system.title', locale)}
+        subtitle={t('admin.system.subtitle', locale)}
+        eyebrowColor="#F59E0B"
+      />
 
       {/* System metrics */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        {SYSTEM_METRICS.map(m => (
-          <div key={m.label} className="card px-4 py-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                {m.label}
-              </span>
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: m.color }} />
-            </div>
-            <p className="text-xl font-bold text-white">{m.value}</p>
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{m.delta}</p>
-          </div>
-        ))}
-      </div>
+      <StatRow
+        items={SYSTEM_METRICS.map((m) => ({
+          label: t(m.label, locale),
+          value: m.value,
+          hint: m.delta,
+        }))}
+      />
 
       {/* Agent status grid */}
-      <div className="rounded-2xl p-5 mb-8"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-4"
-          style={{ color: 'rgba(255,255,255,0.3)' }}>Agent status</p>
+      <Card radius="hero" padding="lg">
+        <p
+          className="text-[10px] uppercase tracking-widest font-semibold mb-4"
+          style={{ color: 'rgba(255,255,255,0.3)' }}
+        >
+          {t('admin.system.agent-status', locale)}
+        </p>
         <div className="flex flex-wrap gap-2">
-          {AGENT_STATUS.map(a => (
-            <div key={a.name}
+          {AGENT_STATUS.map((a) => (
+            <div
+              key={a.name}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+            >
               <span className="text-sm leading-none">{a.emoji}</span>
               <span className="text-[11px] text-white">{a.name}</span>
-              <div className={`w-1.5 h-1.5 rounded-full ${a.status === 'working' ? 'animate-pulse' : ''}`}
-                style={{ background: STATUS_DOT[a.status] }} />
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${a.status === 'working' ? 'animate-pulse' : ''}`}
+                style={{ background: STATUS_COLORS[a.status] }}
+              />
             </div>
           ))}
         </div>
-      </div>
+      </Card>
 
       <AgentWorkspace
         role="pulse"

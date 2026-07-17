@@ -1,5 +1,4 @@
-import { redirect } from 'next/navigation'
+// This file exists for backward compatibility only.
+// Marketing department is now at /roster (unchanged, just rebranded)
 
-export default function MarketingRedirect() {
-  redirect('/roster')
-}
+export { default } from '../roster/page'

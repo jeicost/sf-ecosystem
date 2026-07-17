@@ -3,15 +3,18 @@
 import { useState } from 'react'
 import { QuickActionButton } from '../QuickActionButton'
 import { QuickActionResult } from '../QuickActionResult'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export function ComercialQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  const { locale } = useLocaleContext()
 
   const actions = [
     {
       id: 'crear_campaña',
-      title: 'Crear Campaña',
-      description: 'Generate outreach campaign with personalized icebreakers',
+      title: t('actions.comercial.crear_campaña', locale),
+      description: t('actions.comercial.crear_campaña.desc', locale),
       actionType: 'crear_campaña',
       form: (
         <div className="space-y-3">
@@ -42,8 +45,8 @@ export function ComercialQuickActions() {
     },
     {
       id: 'generar_icp',
-      title: 'Generar ICP',
-      description: 'Score leads against your ideal customer profile',
+      title: t('actions.comercial.generar_icp', locale),
+      description: t('actions.comercial.generar_icp.desc', locale),
       actionType: 'generar_icp',
       form: (
         <div className="space-y-3">
@@ -64,8 +67,8 @@ export function ComercialQuickActions() {
     },
     {
       id: 'crear_propuesta',
-      title: 'Crear Propuesta',
-      description: 'Generate a professional sales proposal PDF',
+      title: t('actions.comercial.crear_propuesta', locale),
+      description: t('actions.comercial.crear_propuesta.desc', locale),
       actionType: 'crear_propuesta',
       form: (
         <div className="space-y-3">
@@ -94,8 +97,8 @@ export function ComercialQuickActions() {
     },
     {
       id: 'calificar_reply',
-      title: 'Calificar Reply',
-      description: 'Analyze prospect response and score BANT',
+      title: t('actions.comercial.calificar_reply', locale),
+      description: t('actions.comercial.calificar_reply.desc', locale),
       actionType: 'calificar_reply',
       form: (
         <div className="space-y-3">
@@ -120,7 +123,7 @@ export function ComercialQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">⚡ Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

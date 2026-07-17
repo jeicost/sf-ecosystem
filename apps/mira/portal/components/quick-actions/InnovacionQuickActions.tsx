@@ -3,15 +3,18 @@
 import { useState } from 'react'
 import { QuickActionButton } from '../QuickActionButton'
 import { QuickActionResult } from '../QuickActionResult'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export function InnovacionQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  const { locale } = useLocaleContext()
 
   const actions = [
     {
       id: 'tendencias_analisis',
-      title: 'Análisis de Tendencias',
-      description: 'Identify emerging market trends',
+      title: t('actions.innovacion.tendencias_analisis', locale),
+      description: t('actions.innovacion.tendencias_analisis.desc', locale),
       actionType: 'analizar_tendencias',
       form: (
         <div className="space-y-3">
@@ -36,8 +39,8 @@ export function InnovacionQuickActions() {
     },
     {
       id: 'innovation_audit',
-      title: 'Auditoría de Innovación',
-      description: 'Evaluate innovation maturity',
+      title: t('actions.innovacion.innovation_audit', locale),
+      description: t('actions.innovacion.innovation_audit.desc', locale),
       actionType: 'auditar_innovacion',
       form: (
         <div className="space-y-3">
@@ -61,8 +64,8 @@ export function InnovacionQuickActions() {
     },
     {
       id: 'innovation_roadmap',
-      title: 'Roadmap de Innovación',
-      description: 'Generate 12-month innovation plan',
+      title: t('actions.innovacion.innovation_roadmap', locale),
+      description: t('actions.innovacion.innovation_roadmap.desc', locale),
       actionType: 'roadmap_innovacion',
       form: (
         <div className="space-y-3">
@@ -90,7 +93,7 @@ export function InnovacionQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">⚡ Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

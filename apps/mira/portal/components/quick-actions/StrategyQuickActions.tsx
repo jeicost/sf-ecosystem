@@ -3,15 +3,18 @@
 import { useState } from 'react'
 import { QuickActionButton } from '../QuickActionButton'
 import { QuickActionResult } from '../QuickActionResult'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export function StrategyQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  const { locale } = useLocaleContext()
 
   const actions = [
     {
       id: 'generar_reporte',
-      title: 'Generar Reporte',
-      description: 'Generate performance report with KPIs',
+      title: t('actions.strategy.generar_reporte', locale),
+      description: t('actions.strategy.generar_reporte.desc', locale),
       actionType: 'generar_reporte',
       form: (
         <div className="space-y-3">
@@ -44,8 +47,8 @@ export function StrategyQuickActions() {
     },
     {
       id: 'analizar_competencia',
-      title: 'Analizar Competencia',
-      description: 'Competitive analysis matrix & opportunities',
+      title: t('actions.strategy.analizar_competencia', locale),
+      description: t('actions.strategy.analizar_competencia.desc', locale),
       actionType: 'analizar_competencia',
       form: (
         <div className="space-y-3">
@@ -69,8 +72,8 @@ export function StrategyQuickActions() {
     },
     {
       id: 'brainstorm_ideas',
-      title: 'Brainstorm Ideas',
-      description: 'Generate 100 ideas with top 5 recommendations',
+      title: t('actions.strategy.brainstorm_ideas', locale),
+      description: t('actions.strategy.brainstorm_ideas.desc', locale),
       actionType: 'brainstorm_ideas',
       form: (
         <div className="space-y-3">
@@ -91,8 +94,8 @@ export function StrategyQuickActions() {
     },
     {
       id: 'proyectar_revenue',
-      title: 'Proyectar Revenue',
-      description: 'Generate revenue projections with scenarios',
+      title: t('actions.strategy.proyectar_revenue', locale),
+      description: t('actions.strategy.proyectar_revenue.desc', locale),
       actionType: 'proyectar_revenue',
       form: (
         <div className="space-y-3">
@@ -126,7 +129,7 @@ export function StrategyQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">⚡ Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

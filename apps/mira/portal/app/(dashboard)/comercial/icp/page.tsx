@@ -25,8 +25,8 @@ function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
   return (
     <div className="flex flex-wrap gap-1.5">
       {list.map((item, i) => (
-        <span key={i} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full border"
-          style={{ borderColor: `${color}30`, color, background: `${color}10` }}>
+        <span key={i} className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full"
+          style={{ borderColor: `${color}30`, color, background: `${color}10`, borderWidth: '1px' }}>
           {item}
           {editing && onRemove && (
             <button onClick={() => onRemove(i)} className="hover:text-red-400 transition-colors ml-0.5">
@@ -35,13 +35,13 @@ function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
           )}
         </span>
       ))}
-      {list.length === 0 && !editing && <p className="text-[11px] text-[#444] italic">No definido</p>}
+      {list.length === 0 && !editing && <p className="text-[11px] italic" style={{ color: 'var(--text-tertiary)' }}>No definido</p>}
       {editing && onAdd && (
         <div className="flex items-center gap-1">
           <input value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             placeholder="Añadir..."
-            className="bg-[#111] border border-[#1c1c1c] rounded-full px-2.5 py-1 text-[11px] text-white placeholder-[#333] focus:outline-none w-28" />
+            className="rounded-full px-2.5 py-1 text-[11px] text-white focus:outline-none w-28" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }} />
           <button onClick={handleAdd} className="text-[#555] hover:text-white transition-colors">
             <Plus size={11} />
           </button>
@@ -54,7 +54,7 @@ function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="card p-5">
-      <h3 className="text-[11px] uppercase tracking-wider text-[#555] mb-3">{title}</h3>
+      <h3 className="text-[11px] uppercase tracking-wider mb-3" style={{ color: 'var(--text-secondary)' }}>{title}</h3>
       {children}
     </div>
   )
@@ -127,7 +127,7 @@ export default function IcpPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 size={20} className="text-[#444] animate-spin" />
+      <Loader2 size={20} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />
     </div>
   )
 
@@ -148,7 +148,7 @@ export default function IcpPage() {
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-2xl font-semibold text-white">ICP Profile</h1>
-          <p className="text-[#555] mt-1 text-sm">
+          <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
             {(view as IcpProfile | null)?.icp_name ?? 'Ideal Customer Profile'} — criterios de scoring para Rex y Vera.
           </p>
         </div>
@@ -156,7 +156,7 @@ export default function IcpPage() {
           {editing ? (
             <>
               <button onClick={() => setEditing(false)}
-                className="px-4 py-2 text-xs rounded-lg text-[#555] hover:text-white border border-[#1a1a1a] transition-all">
+                className="px-4 py-2 text-xs rounded-lg hover:text-white transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                 Cancelar
               </button>
               <button onClick={save} disabled={saving}
@@ -167,7 +167,7 @@ export default function IcpPage() {
             </>
           ) : (
             <button onClick={startEdit}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg bg-[#1A1A1A] text-[#888] hover:text-white border border-[#222] transition-all">
+              className="flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg hover:text-white transition-all" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <Edit2 size={12} /> Editar ICP
             </button>
           )}
@@ -178,23 +178,23 @@ export default function IcpPage() {
       {editing && draft && (
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="card p-4">
-            <label className="block text-[10px] text-[#444] uppercase tracking-wider mb-2">Nombre del ICP</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Nombre del ICP</label>
             <input value={draft.icp_name ?? ''} onChange={e => setDraft(d => d ? { ...d, icp_name: e.target.value } : d)}
               placeholder="Ej: Venture Builder LATAM"
-              className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none" />
+              className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
-            <label className="block text-[10px] text-[#444] uppercase tracking-wider mb-2">Presupuesto mínimo (USD)</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Presupuesto mínimo (USD)</label>
             <input type="number" value={draft.min_budget_usd ?? ''} onChange={e => setDraft(d => d ? { ...d, min_budget_usd: Number(e.target.value) || null } : d)}
               placeholder="Ej: 5000"
-              className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none" />
+              className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
         </div>
       )}
 
       {!icp && !editing ? (
         <div className="card py-16 text-center">
-          <p className="text-[#555] text-sm mb-2">No tienes un ICP configurado aún.</p>
+          <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>No tienes un ICP configurado aún.</p>
           <button onClick={startEdit}
             className="mt-4 px-5 py-2.5 rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 border border-[#EF4444]/25 text-sm transition-all">
             Crear ICP
@@ -216,9 +216,9 @@ export default function IcpPage() {
 
           {!editing && icp?.min_budget_usd !== null && icp?.min_budget_usd !== undefined && (
             <div className="col-span-2 card p-5">
-              <h3 className="text-[11px] uppercase tracking-wider text-[#555] mb-2">Presupuesto mínimo</h3>
+              <h3 className="text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Presupuesto mínimo</h3>
               <p className="text-2xl font-semibold text-white">
-                ${icp.min_budget_usd.toLocaleString()} <span className="text-sm text-[#555] font-normal">USD</span>
+                ${icp.min_budget_usd.toLocaleString()} <span className="text-sm font-normal" style={{ color: 'var(--text-secondary)' }}>USD</span>
               </p>
             </div>
           )}

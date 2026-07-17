@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface StorageLimitModalProps {
   isOpen: boolean
@@ -17,6 +19,7 @@ export default function StorageLimitModal({
 }: StorageLimitModalProps) {
   const [newLimit, setNewLimit] = useState(currentLimit)
   const [saving, setSaving] = useState(false)
+  const { locale } = useLocaleContext()
 
   if (!isOpen) return null
 
@@ -31,13 +34,19 @@ export default function StorageLimitModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-lg p-6 w-96 shadow-xl">
-        <h2 className="text-xl font-semibold mb-4">Editar Límite de Storage</h2>
+      <div
+        className="rounded-2xl p-6 w-96 shadow-xl"
+        style={{
+          background: 'rgba(255,255,255,0.04)',
+          border: '1px solid rgba(255,255,255,0.09)',
+        }}
+      >
+        <h2 className="text-xl font-semibold mb-4 text-white">{t('admin.users.edit-limit-title', locale)}</h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2">
-              Límite actual: {currentLimit} GB
+            <label className="block text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+              {t('admin.users.current-limit', locale).replace('{limit}', currentLimit.toString())}
             </label>
             <input
               type="number"
@@ -46,11 +55,18 @@ export default function StorageLimitModal({
               step="1"
               value={newLimit}
               onChange={(e) => setNewLimit(Number(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Ingresa nuevo límite en GB"
+              className="w-full px-3 py-2 rounded-lg font-medium focus:outline-none transition-all"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#ffffff',
+              }}
+              onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
+              placeholder={t('admin.users.new-limit-placeholder', locale)}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              Rango: 1 - 1000 GB
+            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              {t('admin.users.range', locale)}
             </p>
           </div>
 
@@ -58,16 +74,25 @@ export default function StorageLimitModal({
             <button
               onClick={onClose}
               disabled={saving}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-50"
+              className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50"
+              style={{
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid rgba(255,255,255,0.12)',
+                color: '#ffffff',
+              }}
             >
-              Cancelar
+              {t('common.cancel', locale)}
             </button>
             <button
               onClick={handleSave}
               disabled={saving || newLimit === currentLimit}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                background: newLimit === currentLimit ? 'rgba(99,102,241,0.2)' : '#6366F1',
+                color: newLimit === currentLimit ? '#6366F166' : '#ffffff',
+              }}
             >
-              {saving ? 'Guardando...' : 'Guardar'}
+              {saving ? t('admin.users.saving', locale) : t('common.save', locale)}
             </button>
           </div>
         </div>

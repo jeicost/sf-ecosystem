@@ -151,7 +151,7 @@ Genera las 3 variantes ahora.`
 
   if (loadingLeads) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 size={20} className="text-[#444] animate-spin" />
+      <Loader2 size={20} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />
     </div>
   )
 
@@ -163,20 +163,22 @@ Genera las 3 variantes ahora.`
             <span className="text-xl">✍️</span>
             <h1 className="text-2xl font-semibold text-white">Finn — Icebreaker</h1>
           </div>
-          <p className="text-[#555] text-sm">Genera 3 variantes de primer mensaje ultra-personalizado.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera 3 variantes de primer mensaje ultra-personalizado.</p>
         </div>
       </div>
 
       {/* Mode tabs */}
-      <div className="flex gap-1 mb-6 bg-[#0D0D0D] p-1 rounded-xl border border-[#1A1A1A] w-fit">
+      <div className="flex gap-1 mb-6 p-1 rounded-xl w-fit" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
         <button onClick={() => setMode('manual')}
           className={clsx('flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-all',
-            mode === 'manual' ? 'bg-white/10 text-white font-medium' : 'text-[#555] hover:text-white')}>
+            mode === 'manual' ? 'bg-white/10 text-white font-medium' : 'hover:text-white')}
+          style={mode !== 'manual' ? { color: 'var(--text-secondary)' } : undefined}>
           <Zap size={12} /> Entrada manual
         </button>
         <button onClick={() => setMode('from-lead')}
           className={clsx('flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-all',
-            mode === 'from-lead' ? 'bg-white/10 text-white font-medium' : 'text-[#555] hover:text-white')}>
+            mode === 'from-lead' ? 'bg-white/10 text-white font-medium' : 'hover:text-white')}
+          style={mode !== 'from-lead' ? { color: 'var(--text-secondary)' } : undefined}>
           <Users size={12} /> Desde pipeline
           {hotLeads.length > 0 && (
             <span className="bg-red-500/20 text-red-400 text-[10px] px-1.5 rounded-full">{hotLeads.length}</span>
@@ -197,23 +199,23 @@ Genera las 3 variantes ahora.`
               { label: 'Geografía', field: 'geography' as const, placeholder: 'Madrid, España' },
             ].map(({ label, field, placeholder }) => (
               <div key={field} className="card p-3">
-                <label className="block text-[10px] text-[#555] uppercase tracking-wider mb-1.5">{label}</label>
+                <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>{label}</label>
                 <input value={manualForm[field]} onChange={e => f(field, e.target.value)} placeholder={placeholder}
-                  className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none" />
+                  className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
               </div>
             ))}
           </div>
           <div className="card p-4">
-            <label className="block text-[10px] text-[#555] uppercase tracking-wider mb-1.5">Evento trigger (opcional)</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>Evento trigger (opcional)</label>
             <input value={manualForm.triggerEvent} onChange={e => f('triggerEvent', e.target.value)}
               placeholder="Ej: Acaban de levantar una ronda Serie A de $5M"
-              className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none" />
+              className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
-            <label className="block text-[10px] text-[#555] uppercase tracking-wider mb-1.5">Notas LinkedIn</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>Notas LinkedIn</label>
             <textarea value={manualForm.linkedinNote} onChange={e => f('linkedinNote', e.target.value)}
               placeholder="Ej: Publicó sobre IA la semana pasada..."
-              rows={3} className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none resize-none leading-relaxed" />
+              rows={3} className="w-full bg-transparent text-sm text-white outline-none resize-none leading-relaxed" style={{ color: 'var(--text-primary)' }} />
           </div>
           <button onClick={generateManual} disabled={!manualValid || generating}
             className="w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
@@ -236,9 +238,9 @@ Genera las 3 variantes ahora.`
           ) : (
             <>
               <div className="card p-5">
-                <label className="block text-[11px] text-[#555] uppercase tracking-wider mb-2">Selecciona un lead hot</label>
+                <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Selecciona un lead hot</label>
                 <select value={selectedId} onChange={e => { setSelectedId(e.target.value); setRawText(''); setVariants([]) }}
-                  className="w-full bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none appearance-none">
+                  className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                   <option value="">— Elige un lead —</option>
                   {hotLeads.map(l => (
                     <option key={l.id} value={l.id}>
@@ -259,20 +261,20 @@ Genera las 3 variantes ahora.`
                       { label: 'Geografía', val: selected.geography },
                     ].map(({ label, val }) => (
                       <div key={label}>
-                        <p className="text-[11px] text-[#444] mb-0.5">{label}</p>
+                        <p className="text-[11px] mb-0.5" style={{ color: 'var(--text-tertiary)' }}>{label}</p>
                         <p className="text-[#ccc]">{val ?? '—'}</p>
                       </div>
                     ))}
                   </div>
                   {selected.trigger_event && (
-                    <div className="bg-[#0A0A0A] rounded-lg p-3 border border-[#1A1A1A]">
-                      <p className="text-[11px] text-amber-400/70 mb-1">Trigger event</p>
+                    <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                      <p className="text-[11px] mb-1" style={{ color: 'rgba(180, 83, 9, 0.7)' }}>Trigger event</p>
                       <p className="text-sm text-[#ccc]">{selected.trigger_event}</p>
                     </div>
                   )}
                   {selected.icebreaker_used && (
-                    <div className="bg-[#0A0A0A] rounded-lg p-3 border border-green-500/15">
-                      <p className="text-[11px] text-green-400/60 mb-1">Icebreaker guardado</p>
+                    <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'rgba(34, 197, 94, 0.15)', borderWidth: '1px' }}>
+                      <p className="text-[11px] mb-1" style={{ color: 'rgba(134, 239, 172, 0.6)' }}>Icebreaker guardado</p>
                       <p className="text-sm text-[#ccc] italic">{selected.icebreaker_used}</p>
                     </div>
                   )}
@@ -294,28 +296,29 @@ Genera las 3 variantes ahora.`
       {(rawText || generating) && (
         <div className="card p-5 mt-4">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] text-[#555] uppercase tracking-wider">✍️ Finn — {displayVariants.length > 1 ? '3 Variantes' : 'Resultado'}</p>
-            {generating && <Loader2 size={12} className="text-[#444] animate-spin" />}
+            <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>✍️ Finn — {displayVariants.length > 1 ? '3 Variantes' : 'Resultado'}</p>
+            {generating && <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />}
           </div>
 
           {displayVariants.length > 1 ? (
             <>
               {/* Tabs */}
-              <div className="flex gap-1 mb-4 p-1 bg-[#0A0A0A] rounded-lg border border-[#141414]">
+              <div className="flex gap-1 mb-4 p-1 rounded-lg" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                 {displayVariants.map((_, i) => (
                   <button key={i} onClick={() => setActiveTab(i)}
                     className={clsx(
-                      'flex-1 py-1.5 text-[11px] rounded-md transition-all font-medium',
-                      activeTab === i ? 'bg-[#EAB308]/15 text-[#EAB308] border border-[#EAB308]/25' : 'text-[#555] hover:text-white'
-                    )}>
+                      'flex-1 py-1.5 text-[11px] rounded-md transition-all font-medium border',
+                      activeTab === i ? 'bg-[#EAB308]/15 text-[#EAB308] border-[#EAB308]/25' : 'hover:text-white border-transparent'
+                    )}
+                    style={activeTab !== i ? { color: 'var(--text-secondary)' } : undefined}>
                     {VARIANT_LABELS[i] ?? `Variante ${i + 1}`}
                   </button>
                 ))}
               </div>
 
               {/* Current variant */}
-              <div className="bg-[#0A0A0A] rounded-lg p-4 border border-[#141414] mb-3">
-                <pre className="text-sm text-[#ddd] leading-relaxed whitespace-pre-wrap font-sans">
+              <div className="rounded-lg p-4 mb-3" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans" style={{ color: 'var(--text-primary)' }}>
                   {displayVariants[activeTab]}
                 </pre>
               </div>
@@ -323,7 +326,7 @@ Genera las 3 variantes ahora.`
               {/* Actions */}
               <div className="flex gap-2">
                 <button onClick={() => copy(displayVariants[activeTab])}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#666] bg-[#111] border border-[#1a1a1a] hover:text-white transition-all">
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border transition-all hover:text-white" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
                   {copied ? <><Check size={11} className="text-emerald-400" /> Copiado</> : <><Copy size={11} /> Copiar</>}
                 </button>
                 {selected && (
@@ -338,7 +341,7 @@ Genera las 3 variantes ahora.`
                   </button>
                 )}
                 <button onClick={mode === 'from-lead' ? generateFromLead : generateManual}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#555] hover:text-white transition-all">
+                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)' }}>
                   <RefreshCw size={11} /> Regenerar
                 </button>
               </div>

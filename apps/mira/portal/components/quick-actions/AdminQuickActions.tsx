@@ -3,15 +3,18 @@
 import { useState } from 'react'
 import { QuickActionButton } from '../QuickActionButton'
 import { QuickActionResult } from '../QuickActionResult'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export function AdminQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  const { locale } = useLocaleContext()
 
   const actions = [
     {
       id: 'responder_ticket',
-      title: 'Responder Ticket',
-      description: 'Generate professional support response',
+      title: t('actions.admin.responder_ticket', locale),
+      description: t('actions.admin.responder_ticket.desc', locale),
       actionType: 'responder_ticket',
       form: (
         <div className="space-y-3">
@@ -35,8 +38,8 @@ export function AdminQuickActions() {
     },
     {
       id: 'crear_faq',
-      title: 'Crear FAQ',
-      description: 'Generate FAQ document for knowledge base',
+      title: t('actions.admin.crear_faq', locale),
+      description: t('actions.admin.crear_faq.desc', locale),
       actionType: 'crear_faq',
       form: (
         <div className="space-y-3">
@@ -59,8 +62,8 @@ export function AdminQuickActions() {
     },
     {
       id: 'crear_tutorial',
-      title: 'Crear Tutorial',
-      description: 'Generate step-by-step tutorial with script',
+      title: t('actions.admin.crear_tutorial', locale),
+      description: t('actions.admin.crear_tutorial.desc', locale),
       actionType: 'crear_tutorial',
       form: (
         <div className="space-y-3">
@@ -88,7 +91,7 @@ export function AdminQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">⚡ Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton
@@ -96,7 +99,7 @@ export function AdminQuickActions() {
               title={action.title}
               description={action.description}
               actionType={action.actionType}
-              department="community"
+              department="admin"
               inputForm={action.form}
               onActionComplete={(actionId) => setActiveActionId(actionId)}
             />
@@ -108,7 +111,7 @@ export function AdminQuickActions() {
         <QuickActionResult
           actionId={activeActionId}
           resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
-          department="community"
+          department="admin"
         />
       )}
     </div>

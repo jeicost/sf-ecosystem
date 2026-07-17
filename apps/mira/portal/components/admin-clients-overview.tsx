@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { AGENT_METADATA } from '@/lib/agent-meta'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { t, defaultLocale } from '@/lib/i18n'
 import StatCard from './stat-card'
 import ClientCard from './client-card'
 
@@ -87,11 +88,11 @@ export default function AdminClientsOverview() {
     <>
       <div className="mb-6">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-3" style={{ color: 'rgba(139,92,246,0.6)', letterSpacing: '0.12em' }}>
-          Buenos días, equipo 👋
+          {t('admin.greeting', defaultLocale)}
         </p>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-white tracking-tight mb-1">Clientes y Operaciones</h1>
+            <h1 className="text-3xl font-semibold text-white tracking-tight mb-1">{t('admin.section-label', defaultLocale)}</h1>
             <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
               Gestión unificada de todos los clientes y su progreso en MIRA
             </p>

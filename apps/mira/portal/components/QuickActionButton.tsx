@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Loader2, Sparkles } from 'lucide-react'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 interface QuickActionButtonProps {
   title: string
@@ -24,6 +26,7 @@ export function QuickActionButton({
 }: QuickActionButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const { locale } = useLocaleContext()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -84,7 +87,7 @@ export function QuickActionButton({
                   className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 bg-white/5 hover:bg-white/10 transition-colors"
                   disabled={isLoading}
                 >
-                  Cancel
+                  {t('actions.cancel', locale)}
                 </button>
                 <button
                   type="submit"
@@ -94,12 +97,12 @@ export function QuickActionButton({
                   {isLoading ? (
                     <>
                       <Loader2 size={16} className="animate-spin" />
-                      Processing...
+                      {t('actions.processing', locale)}
                     </>
                   ) : (
                     <>
                       <Sparkles size={16} />
-                      Generate
+                      {t('actions.generate', locale)}
                     </>
                   )}
                 </button>

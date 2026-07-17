@@ -3,15 +3,18 @@
 import { useState } from 'react'
 import { QuickActionButton } from '../QuickActionButton'
 import { QuickActionResult } from '../QuickActionResult'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export function MarketingQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  const { locale } = useLocaleContext()
 
   const actions = [
     {
       id: 'crear_post',
-      title: 'Crear Post',
-      description: 'Generate social media post with AI image',
+      title: t('actions.marketing.crear_post', locale),
+      description: t('actions.marketing.crear_post.desc', locale),
       actionType: 'crear_post',
       form: (
         <div className="space-y-3">
@@ -45,8 +48,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'crear_newsletter',
-      title: 'Crear Newsletter',
-      description: 'Generate 5-article newsletter',
+      title: t('actions.marketing.crear_newsletter', locale),
+      description: t('actions.marketing.crear_newsletter.desc', locale),
       actionType: 'crear_newsletter',
       form: (
         <div className="space-y-3">
@@ -76,8 +79,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'crear_video_brief',
-      title: 'Crear Video Brief',
-      description: 'Generate video script and storyboard',
+      title: t('actions.marketing.crear_video_brief', locale),
+      description: t('actions.marketing.crear_video_brief.desc', locale),
       actionType: 'crear_video_brief',
       form: (
         <div className="space-y-3">
@@ -111,8 +114,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'crear_carousel',
-      title: 'Crear Carousel',
-      description: 'Design carousel slides concept',
+      title: t('actions.marketing.crear_carousel', locale),
+      description: t('actions.marketing.crear_carousel.desc', locale),
       actionType: 'crear_carousel',
       form: (
         <div className="space-y-3">
@@ -140,8 +143,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'crear_campaña_ads',
-      title: 'Crear Campaña Ads',
-      description: 'Generate ads strategy and copy variations',
+      title: t('actions.marketing.crear_campaña_ads', locale),
+      description: t('actions.marketing.crear_campaña_ads.desc', locale),
       actionType: 'crear_campaña_ads',
       form: (
         <div className="space-y-3">
@@ -173,8 +176,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'crear_post_visual',
-      title: '🎨 Post Visual',
-      description: 'Generate social post with AI image',
+      title: t('actions.marketing.crear_post_visual', locale),
+      description: t('actions.marketing.crear_post_visual.desc', locale),
       actionType: 'crear_post_visual',
       form: (
         <div className="space-y-3">
@@ -210,8 +213,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'crear_carrusel_visual',
-      title: '📸 Carousel Visual',
-      description: 'Generate carousel with AI-generated images',
+      title: t('actions.marketing.crear_carrusel_visual', locale),
+      description: t('actions.marketing.crear_carrusel_visual.desc', locale),
       actionType: 'crear_carrusel_visual',
       form: (
         <div className="space-y-3">
@@ -247,8 +250,8 @@ export function MarketingQuickActions() {
     },
     {
       id: 'editar_imagen_visual',
-      title: '✏️ Editar Imagen',
-      description: 'Refine and edit AI-generated images',
+      title: t('actions.marketing.editar_imagen_visual', locale),
+      description: t('actions.marketing.editar_imagen_visual.desc', locale),
       actionType: 'editar_imagen_visual',
       form: (
         <div className="space-y-3">
@@ -282,7 +285,7 @@ export function MarketingQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">⚡ Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

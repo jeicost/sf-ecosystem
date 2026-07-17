@@ -10,7 +10,7 @@ import { scoreLabel } from '@/lib/score-utils'
 import { clsx } from 'clsx'
 
 function ScoreBadge({ score }: { score: number | null }) {
-  if (score === null) return <span className="text-[#444] text-xs">—</span>
+  if (score === null) return <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>—</span>
   const { emoji, color } = scoreLabel(score)
   return (
     <span className="text-xs font-bold px-2 py-0.5 rounded" style={{ background: `${color}20`, color }}>
@@ -23,7 +23,7 @@ function ScoreBar({ value, max, color }: { value: number; max: number; color: st
   const pct = max > 0 ? Math.round((value / max) * 100) : 0
   return (
     <div className="flex items-center gap-3">
-      <div className="flex-1 h-1.5 bg-[#111] rounded-full overflow-hidden">
+      <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-surface)' }}>
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
       </div>
       <span className="text-sm font-semibold text-white w-8 text-right">{value}</span>
@@ -129,7 +129,7 @@ export default function ScoringPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 size={20} className="text-[#444] animate-spin" />
+      <Loader2 size={20} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />
     </div>
   )
 
@@ -141,7 +141,7 @@ export default function ScoringPage() {
             <span className="text-xl">🎯</span>
             <h1 className="text-2xl font-semibold text-white">Vera — Score Distribution</h1>
           </div>
-          <p className="text-[#555] text-sm">Distribución de leads por clasificación ICP. Pregunta a Vera para analizar.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Distribución de leads por clasificación ICP. Pregunta a Vera para analizar.</p>
         </div>
       </div>
 
@@ -157,7 +157,7 @@ export default function ScoringPage() {
               { label: 'Cold (<50)',   value: cold.length, color: '#3B82F6' },
             ].map(({ label, value, color }) => (
               <div key={label} className="card px-4 py-3">
-                <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>
+                <p className="text-[11px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
                 <p className="text-2xl font-semibold" style={{ color }}>{value}</p>
               </div>
             ))}
@@ -173,7 +173,7 @@ export default function ScoringPage() {
                 { label: '🔵 Cold (<50)', value: cold.length, pct: coldPct, color: '#3B82F6' },
               ].map(({ label, value, pct, color }) => (
                 <div key={label}>
-                  <div className="flex justify-between text-[11px] text-[#555] mb-1.5">
+                  <div className="flex justify-between text-[11px] mb-1.5" style={{ color: 'var(--text-secondary)' }}>
                     <span>{label}</span><span>{pct}%</span>
                   </div>
                   <ScoreBar value={value} max={total} color={color} />
@@ -184,32 +184,32 @@ export default function ScoringPage() {
 
           {/* Table */}
           <div className="card overflow-hidden">
-            <div className="px-5 py-4 border-b border-[#1A1A1A]">
+            <div className="px-5 py-4" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
               <h2 className="text-sm font-medium text-white">Top {topLeads.length} por score</h2>
             </div>
             {topLeads.length === 0 ? (
-              <div className="py-12 text-center text-sm text-[#555]">
+              <div className="py-12 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
                 No hay leads aún. Usa Rex para descubrir leads.
               </div>
             ) : (
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-[#1A1A1A]">
+                  <tr style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
                     {['Empresa', 'Cargo', 'Industria', 'Score', ''].map(h => (
-                      <th key={h} className="px-5 py-3 text-left text-[10px] uppercase tracking-wider text-[#444]">{h}</th>
+                      <th key={h} className="px-5 py-3 text-left text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {topLeads.map(lead => (
-                    <tr key={lead.id} className="border-b border-[#0D0D0D] hover:bg-white/2 transition-colors group">
+                    <tr key={lead.id} className="hover:bg-white/2 transition-colors group" style={{ borderBottomColor: 'var(--bg-page)', borderBottomWidth: '1px' }}>
                       <td className="px-5 py-3 text-sm text-white font-medium">{lead.company_name ?? '—'}</td>
-                      <td className="px-5 py-3 text-sm text-[#666]">{lead.title ?? '—'}</td>
-                      <td className="px-5 py-3 text-sm text-[#666]">{lead.industry ?? '—'}</td>
+                      <td className="px-5 py-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{lead.title ?? '—'}</td>
+                      <td className="px-5 py-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{lead.industry ?? '—'}</td>
                       <td className="px-5 py-3"><ScoreBadge score={lead.hot_score} /></td>
                       <td className="px-5 py-3">
                         <button onClick={() => rescoreLead(lead)} disabled={rescoring === lead.id}
-                          className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] text-[#444] hover:text-white transition-all">
+                          className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] hover:text-white transition-all" style={{ color: 'var(--text-tertiary)' }}>
                           {rescoring === lead.id
                             ? <Loader2 size={10} className="animate-spin" />
                             : <RefreshCw size={10} />}
@@ -227,11 +227,11 @@ export default function ScoringPage() {
         {/* RIGHT — Vera chat */}
         <div className="flex flex-col">
           <div className="card flex flex-col h-[600px]">
-            <div className="px-4 py-3 border-b border-[#141414] flex items-center gap-2">
+            <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
               <span className="text-base">🎯</span>
               <div>
                 <p className="text-[12px] font-semibold text-white">Vera</p>
-                <p className="text-[10px] text-[#444]">ICP Scorer · Análisis en vivo</p>
+                <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>ICP Scorer · Análisis en vivo</p>
               </div>
             </div>
 
@@ -239,10 +239,10 @@ export default function ScoringPage() {
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {chatMessages.length === 0 && (
                 <div className="text-center pt-8">
-                  <p className="text-[11px] text-[#444] mb-4">Pregúntame sobre el pipeline</p>
+                  <p className="text-[11px] mb-4" style={{ color: 'var(--text-tertiary)' }}>Pregúntame sobre el pipeline</p>
                   {['¿Cuáles son nuestros leads más prometedores?', '¿Qué industrias tienen mejor score?', '¿Cómo mejorar la calidad del pipeline?'].map(q => (
                     <button key={q} onClick={() => { setChatInput(q); }}
-                      className="block w-full text-left px-3 py-2 mb-1.5 rounded-lg text-[11px] text-[#555] hover:text-white hover:bg-white/5 transition-all border border-[#141414] hover:border-[#222]">
+                      className="block w-full text-left px-3 py-2 mb-1.5 rounded-lg text-[11px] hover:text-white hover:bg-white/5 transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                       {q}
                     </button>
                   ))}
@@ -253,8 +253,8 @@ export default function ScoringPage() {
                   <div className={clsx(
                     'max-w-[90%] px-3 py-2 rounded-xl text-[12px] leading-relaxed',
                     msg.role === 'user'
-                      ? 'bg-[#EF4444]/15 text-white border border-[#EF4444]/20'
-                      : 'bg-[#111] text-[#ccc] border border-[#1a1a1a]'
+                      ? 'text-white'
+                      : 'text-white'
                   )}>
                     {msg.content || <Loader2 size={10} className="animate-spin text-[#444]" />}
                   </div>
@@ -263,14 +263,14 @@ export default function ScoringPage() {
             </div>
 
             {/* Input */}
-            <div className="px-3 py-3 border-t border-[#141414]">
+            <div className="px-3 py-3" style={{ borderTopColor: 'var(--border-subtle)', borderTopWidth: '1px' }}>
               <div className="flex gap-2">
                 <input
                   value={chatInput}
                   onChange={e => setChatInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendChat()}
                   placeholder="Pregunta a Vera..."
-                  className="flex-1 bg-[#0f0f0f] border border-[#1c1c1c] rounded-lg px-3 py-2 text-[12px] text-white placeholder-[#333] focus:border-[#EF4444]/30 focus:outline-none transition-colors"
+                  className="flex-1 rounded-lg px-3 py-2 text-[12px] text-white focus:outline-none transition-colors" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
                 />
                 <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
                   className="p-2 rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 disabled:opacity-30 transition-all">

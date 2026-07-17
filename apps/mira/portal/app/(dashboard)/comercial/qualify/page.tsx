@@ -94,21 +94,21 @@ export default function QualifyPage() {
           <span className="text-xl">💬</span>
           <h1 className="text-2xl font-semibold text-white">Quinn — Qualify</h1>
         </div>
-        <p className="text-[#555] text-sm">Analiza respuestas de outreach con BANT y genera el follow-up perfecto.</p>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Analiza respuestas de outreach con BANT y genera el follow-up perfecto.</p>
       </div>
 
       {/* Lead selector */}
       <div className="card p-5 mb-4">
-        <label className="block text-[11px] text-[#555] uppercase tracking-wider mb-2">
+        <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
           Lead (opcional — enriquece el análisis)
         </label>
         {loadingLeads ? (
-          <div className="flex items-center gap-2 text-[#444] text-sm">
+          <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
             <Loader2 size={12} className="animate-spin" /> Cargando leads...
           </div>
         ) : (
           <select value={selectedId} onChange={e => setSelectedId(e.target.value)}
-            className="w-full bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none appearance-none">
+            className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
             <option value="">— Sin lead específico —</option>
             {leads.map(l => (
               <option key={l.id} value={l.id}>
@@ -122,7 +122,7 @@ export default function QualifyPage() {
 
       {/* Reply input */}
       <div className="card p-5 mb-4">
-        <label className="block text-[11px] text-[#555] uppercase tracking-wider mb-2">
+        <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
           Respuesta recibida <span className="text-[#EF4444]">*</span>
         </label>
         <textarea
@@ -130,7 +130,8 @@ export default function QualifyPage() {
           onChange={e => setReplyText(e.target.value)}
           placeholder="Pega aquí el mensaje que recibiste del prospect..."
           rows={5}
-          className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none resize-none leading-relaxed"
+          className="w-full bg-transparent text-sm text-white outline-none resize-none leading-relaxed"
+          style={{ color: 'var(--text-primary)' }}
         />
       </div>
 
@@ -160,12 +161,12 @@ export default function QualifyPage() {
                       {cls.label}
                     </div>
                     {parsed.bant_score !== undefined && (
-                      <div className="px-2.5 py-1 rounded-lg text-[11px] text-[#666] bg-[#111] border border-[#1a1a1a]">
+                      <div className="px-2.5 py-1 rounded-lg text-[11px]" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                         BANT {parsed.bant_score}/4
                       </div>
                     )}
                   </div>
-                  <MessageSquare size={14} className="text-[#333]" />
+                  <MessageSquare size={14} style={{ color: 'var(--text-muted)' }} />
                 </div>
 
                 {/* BANT breakdown */}
@@ -175,7 +176,7 @@ export default function QualifyPage() {
                       const val = parsed[`bant_${k}`]
                       return (
                         <div key={k} className="text-center">
-                          <p className="text-[9px] uppercase tracking-wider text-[#444] mb-1">{k}</p>
+                          <p className="text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{k}</p>
                           <div className={clsx(
                             'text-[11px] font-semibold px-2 py-1 rounded',
                             val === 'yes' ? 'text-green-400 bg-green-400/10' : val === 'no' ? 'text-red-400 bg-red-400/10' : 'text-[#555] bg-[#111]'
@@ -192,7 +193,7 @@ export default function QualifyPage() {
               {/* Next move */}
               {parsed.next_move && (
                 <div className="card p-4">
-                  <p className="text-[10px] text-[#444] uppercase tracking-wider mb-2">Siguiente movimiento</p>
+                  <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Siguiente movimiento</p>
                   <p className="text-sm text-white">{parsed.next_move}</p>
                 </div>
               )}
@@ -201,13 +202,13 @@ export default function QualifyPage() {
               {parsed.suggested_reply && (
                 <div className="card p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-[10px] text-[#444] uppercase tracking-wider">Mensaje sugerido</p>
+                    <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Mensaje sugerido</p>
                     <button onClick={() => copy(parsed.suggested_reply)}
-                      className="flex items-center gap-1 text-[10px] text-[#555] hover:text-white transition-all">
+                      className="flex items-center gap-1 text-[10px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)' }}>
                       {copied ? <><Check size={10} className="text-green-400" /> Copiado</> : <><Copy size={10} /> Copiar</>}
                     </button>
                   </div>
-                  <p className="text-sm text-[#ddd] leading-relaxed bg-[#0A0A0A] rounded-lg p-3 border border-[#141414]">
+                  <p className="text-sm leading-relaxed rounded-lg p-3" style={{ color: 'var(--text-primary)', background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                     {parsed.suggested_reply}
                   </p>
                 </div>
@@ -216,7 +217,7 @@ export default function QualifyPage() {
               {/* Buying signals */}
               {parsed.buying_signals?.length > 0 && (
                 <div className="card p-4">
-                  <p className="text-[10px] text-[#444] uppercase tracking-wider mb-2">Señales de compra detectadas</p>
+                  <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Señales de compra detectadas</p>
                   <div className="flex flex-wrap gap-1.5">
                     {(parsed.buying_signals as string[]).map(s => (
                       <span key={s} className="text-[11px] px-2 py-1 rounded-full bg-green-400/8 text-green-400 border border-green-400/15">
@@ -229,7 +230,7 @@ export default function QualifyPage() {
             </>
           ) : (
             <div className="card p-5">
-              <pre className="text-sm text-[#ddd] leading-relaxed whitespace-pre-wrap font-sans">{output}</pre>
+              <pre className="text-sm leading-relaxed whitespace-pre-wrap font-sans" style={{ color: 'var(--text-primary)' }}>{output}</pre>
             </div>
           )}
         </div>

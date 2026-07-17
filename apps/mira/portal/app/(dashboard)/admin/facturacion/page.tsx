@@ -1,97 +1,112 @@
+'use client'
+
+import { AlertTriangle } from 'lucide-react'
 import AgentWorkspace from '@/components/agent-workspace'
+import PageHeader from '@/components/ui/PageHeader'
+import StatRow from '@/components/ui/StatRow'
+import Card from '@/components/ui/Card'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 const PNL = [
-  { label: 'MRR',          value: '$4,800', delta: '+$1,200 this month', positive: true,  color: '#22C55E' },
-  { label: 'AI costs',     value: '$190',   delta: 'APIs + tools',       positive: true,  color: '#F59E0B' },
-  { label: 'Net margin',   value: '75%',    delta: 'After all costs',    positive: true,  color: '#6366F1' },
-  { label: 'Overdue',      value: '1',      delta: 'Day 7 — follow up',  positive: false, color: '#EF4444' },
+  { label: 'admin.billing.mrr', value: '$4,800', delta: '+$1,200', color: '#22C55E' },
+  { label: 'admin.billing.ai-costs', value: '$190', delta: 'APIs + tools', color: '#F59E0B' },
+  { label: 'admin.billing.net-margin', value: '75%', delta: 'After all costs', color: '#6366F1' },
+  { label: 'admin.billing.overdue', value: '1', delta: 'Day 7 — follow up', color: '#EF4444' },
 ]
 
 const CLIENTS = [
-  { name: 'Salsa Burgers',  mrr: '$1,200', status: 'paid',    daysAgo: 3 },
-  { name: 'Discoolver',     mrr: '$1,800', status: 'paid',    daysAgo: 5 },
-  { name: 'NC Global',      mrr: '$900',   status: 'overdue', daysAgo: 7 },
-  { name: 'Jacoste',        mrr: '$900',   status: 'pending', daysAgo: 0 },
+  { name: 'Salsa Burgers', mrr: '$1,200', status: 'paid', daysAgo: 3 },
+  { name: 'Discoolver', mrr: '$1,800', status: 'paid', daysAgo: 5 },
+  { name: 'NC Global', mrr: '$900', status: 'overdue', daysAgo: 7 },
+  { name: 'Jacoste', mrr: '$900', status: 'pending', daysAgo: 0 },
 ]
 
-const STATUS_CONFIG = {
-  paid:    { label: 'Paid',    color: '#22C55E', bg: 'rgba(34,197,94,0.1)'  },
-  overdue: { label: 'Overdue', color: '#EF4444', bg: 'rgba(239,68,68,0.1)' },
-  pending: { label: 'Pending', color: '#F59E0B', bg: 'rgba(245,158,11,0.1)' },
+const STATUS_CONFIG: Record<string, { label: string; bg: string; text: string }> = {
+  paid: { label: 'admin.billing.status-paid', bg: '#10B98120', text: '#10B981cc' },
+  overdue: { label: 'admin.billing.status-overdue', bg: '#EF444420', text: '#EF4444cc' },
+  pending: { label: 'admin.billing.status-pending', bg: '#F59E0B20', text: '#F59E0Bcc' },
 }
 
 export default function Page() {
+  const { locale } = useLocaleContext()
+
   return (
-    <div className="px-8 py-8 max-w-4xl">
+    <div className="space-y-8">
+      <PageHeader
+        eyebrow="Admin · Ledger"
+        title={t('admin.billing.title', locale)}
+        subtitle={t('admin.billing.subtitle', locale)}
+        eyebrowColor="#6366F1"
+      />
+
       {/* WARNING BANNER: Sample data only */}
-      <div className="mb-6 p-4 rounded-lg" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)' }}>
-        <p className="text-sm font-medium" style={{ color: '#FBBF24' }}>
-          ⚠️ Sample Data Only — Stripe integration not configured
-        </p>
-        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
-          All MRR, clients, and payment data shown are examples. Connect Stripe to see real billing. Contact admin to set up STRIPE_API_KEY.
-        </p>
-      </div>
-
-      <div className="mb-6">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(99,102,241,0.8)' }}>
-          Admin · Ledger
-        </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Billing & P&L</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Not a single dollar is lost to disorganization when Ledger is active.
-        </p>
-      </div>
-
-      {/* P&L summary */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
-        {PNL.map(item => (
-          <div key={item.label} className="card px-4 py-3">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
-                {item.label}
-              </span>
-              <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
-            </div>
-            <p className="text-xl font-bold" style={{ color: item.positive ? '#fff' : item.color }}>{item.value}</p>
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{item.delta}</p>
+      <Card radius="hero" padding="md">
+        <div className="flex gap-3">
+          <AlertTriangle className="w-5 h-5 flex-shrink-0" style={{ color: '#F59E0B' }} />
+          <div>
+            <p className="font-semibold text-white mb-1">{t('admin.billing.sample-warning', locale)}</p>
+            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              {t('admin.billing.sample-desc', locale)}
+            </p>
           </div>
-        ))}
-      </div>
+        </div>
+      </Card>
+
+      {/* P&L summary — using StatRow */}
+      <StatRow
+        items={PNL.map((item) => ({
+          label: t(item.label, locale),
+          value: item.value,
+          hint: item.delta,
+        }))}
+      />
 
       {/* Client billing table */}
-      <div className="rounded-2xl overflow-hidden mb-8"
-        style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
-        <div className="px-5 py-3 flex items-center justify-between"
-          style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-          <span className="text-[10px] uppercase tracking-widest font-semibold"
-            style={{ color: 'rgba(255,255,255,0.3)' }}>Client billing</span>
-          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>Current month</span>
+      <Card radius="hero" padding="lg">
+        <div
+          className="px-1 py-3 flex items-center justify-between mb-4"
+          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+        >
+          <span
+            className="text-[10px] uppercase tracking-widest font-semibold"
+            style={{ color: 'rgba(255,255,255,0.3)' }}
+          >
+            {t('admin.billing.client-billing', locale)}
+          </span>
+          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+            {t('admin.billing.current-month', locale)}
+          </span>
         </div>
         {CLIENTS.map((client, i) => {
           const s = STATUS_CONFIG[client.status as keyof typeof STATUS_CONFIG]
           return (
-            <div key={client.name}
-              className="px-5 py-4 flex items-center justify-between"
+            <div
+              key={client.name}
+              className="px-1 py-4 flex items-center justify-between"
               style={{
                 background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
                 borderBottom: i < CLIENTS.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
-              }}>
+              }}
+            >
               <div>
                 <p className="text-sm font-medium text-white">{client.name}</p>
                 {client.status === 'overdue' && (
-                  <p className="text-[10px]" style={{ color: '#EF4444' }}>Day {client.daysAgo} overdue — follow up</p>
+                  <p className="text-[10px]" style={{ color: '#EF4444' }}>
+                    Day {client.daysAgo} overdue — follow up
+                  </p>
                 )}
               </div>
               <div className="flex items-center gap-4">
                 <span className="text-sm font-semibold text-white">{client.mrr}</span>
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full font-semibold"
-                  style={{ background: s.bg, color: s.color }}>{s.label}</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full font-semibold" style={{ background: s.bg, color: s.text }}>
+                  {t(s.label, locale)}
+                </span>
               </div>
             </div>
           )
         })}
-      </div>
+      </Card>
 
       <AgentWorkspace
         role="ledger"

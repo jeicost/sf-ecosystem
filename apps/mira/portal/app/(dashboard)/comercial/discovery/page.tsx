@@ -113,7 +113,7 @@ export default function DiscoveryPage() {
             <span className="text-[22px]">🔍</span>
             <h1 className="text-2xl font-semibold text-white">Rex — Lead Discovery</h1>
           </div>
-          <p className="text-[#555] text-sm">Encuentra empresas que encajan con tu ICP usando búsqueda web avanzada + IA.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Encuentra empresas que encajan con tu ICP usando búsqueda web avanzada + IA.</p>
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function DiscoveryPage() {
       <div className="card p-5 mb-8">
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="col-span-2">
-            <label className="text-[11px] text-[#444] uppercase tracking-wider block mb-1.5">
+            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
               Palabras clave <span className="text-[#EF4444]">*</span>
             </label>
             <input
@@ -129,40 +129,59 @@ export default function DiscoveryPage() {
               onChange={e => setKeywords(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && runDiscovery()}
               placeholder='Ej: "venture builder España" o "startup studio LATAM"'
-              className="w-full bg-[#0f0f0f] border border-[#1c1c1c] rounded-lg px-3 py-2.5 text-sm text-white placeholder-[#333] focus:border-[#EF4444]/40 focus:outline-none transition-colors"
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none transition-colors"
+              style={{
+                background: 'var(--bg-page)',
+                borderColor: 'var(--border-subtle)',
+                borderWidth: '1px',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
           <div>
-            <label className="text-[11px] text-[#444] uppercase tracking-wider block mb-1.5">Industria</label>
+            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>Industria</label>
             <input
               value={industry}
               onChange={e => setIndustry(e.target.value)}
               placeholder='Ej: "Venture Capital" o "SaaS B2B"'
-              className="w-full bg-[#0f0f0f] border border-[#1c1c1c] rounded-lg px-3 py-2.5 text-sm text-white placeholder-[#333] focus:border-[#EF4444]/40 focus:outline-none transition-colors"
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none transition-colors"
+              style={{
+                background: 'var(--bg-page)',
+                borderColor: 'var(--border-subtle)',
+                borderWidth: '1px',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
           <div>
-            <label className="text-[11px] text-[#444] uppercase tracking-wider block mb-1.5">Geografía</label>
+            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>Geografía</label>
             <input
               value={geography}
               onChange={e => setGeography(e.target.value)}
               placeholder='Ej: "España" o "LATAM"'
-              className="w-full bg-[#0f0f0f] border border-[#1c1c1c] rounded-lg px-3 py-2.5 text-sm text-white placeholder-[#333] focus:border-[#EF4444]/40 focus:outline-none transition-colors"
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none transition-colors"
+              style={{
+                background: 'var(--bg-page)',
+                borderColor: 'var(--border-subtle)',
+                borderWidth: '1px',
+                color: 'var(--text-primary)',
+              }}
             />
           </div>
         </div>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-[11px] text-[#444]">Límite:</span>
+            <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>Límite:</span>
             {[10, 20, 30, 50].map(n => (
               <button key={n} onClick={() => setLimit(n)}
                 className={clsx(
-                  'px-2.5 py-1 rounded text-[11px] transition-all',
+                  'px-2.5 py-1 rounded text-[11px] transition-all border',
                   limit === n
-                    ? 'bg-[#EF4444]/15 border border-[#EF4444]/30 text-[#f87171]'
-                    : 'text-[#444] hover:text-white border border-transparent'
-                )}>
+                    ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#f87171]'
+                    : 'hover:text-white border-transparent'
+                )}
+                style={limit !== n ? { color: 'var(--text-tertiary)' } : undefined}>
                 {n}
               </button>
             ))}
@@ -183,7 +202,7 @@ export default function DiscoveryPage() {
         </div>
 
         {status && (
-          <div className="mt-4 flex items-center gap-2 text-[12px] text-[#EF4444]/70">
+          <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: 'rgba(239,68,68,0.7)' }}>
             <Loader2 size={12} className="animate-spin" />
             {status}
           </div>
@@ -235,8 +254,8 @@ function LeadGroup({ title, color, leads, added, onAdd, collapsed = false }: {
       >
         <div className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />
         <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color }}>{title}</span>
-        <span className="text-[10px] text-[#444] ml-1">({leads.length})</span>
-        <ChevronDown size={12} className={clsx('text-[#444] transition-transform ml-1', !open && '-rotate-90')} />
+        <span className="text-[10px] ml-1" style={{ color: 'var(--text-tertiary)' }}>({leads.length})</span>
+        <ChevronDown size={12} className={clsx('transition-transform ml-1', !open && '-rotate-90')} style={{ color: 'var(--text-tertiary)' }} />
       </button>
 
       {open && (
@@ -271,25 +290,25 @@ function DiscoveryLeadRow({ lead, added, onAdd }: {
           <p className="text-sm font-medium text-white">{lead.company_name}</p>
           {lead.company_website && (
             <a href={lead.company_website} target="_blank" rel="noreferrer"
-              className="text-[10px] text-[#444] hover:text-[#888] transition-colors">↗</a>
+              className="text-[10px] transition-colors" style={{ color: 'var(--text-tertiary)' }}>↗</a>
           )}
         </div>
         {lead.key_person_name && (
-          <p className="text-[11px] text-[#555] mb-1">
+          <p className="text-[11px] mb-1" style={{ color: 'var(--text-secondary)' }}>
             {lead.key_person_name}{lead.key_person_title ? ` · ${lead.key_person_title}` : ''}
           </p>
         )}
-        <p className="text-[11px] text-[#444] mb-2">{lead.description}</p>
+        <p className="text-[11px] mb-2" style={{ color: 'var(--text-tertiary)' }}>{lead.description}</p>
         <div className="flex flex-wrap gap-1">
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#111] text-[#555]">{lead.industry}</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#111] text-[#444]">📍 {lead.geography}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>{lead.industry}</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}>📍 {lead.geography}</span>
           {lead.trigger_signals.slice(0, 2).map(s => (
             <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-[#EF4444]/10 text-[#f87171] border border-[#EF4444]/20">
               ⚡ {s}
             </span>
           ))}
         </div>
-        <p className="text-[10px] text-[#444] mt-1.5 italic">{lead.reason}</p>
+        <p className="text-[10px] mt-1.5 italic" style={{ color: 'var(--text-tertiary)' }}>{lead.reason}</p>
       </div>
 
       {/* Add button */}

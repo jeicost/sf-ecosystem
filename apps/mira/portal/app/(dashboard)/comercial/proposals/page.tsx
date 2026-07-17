@@ -91,17 +91,17 @@ export default function ProposalsPage() {
           <span className="text-xl">📄</span>
           <h1 className="text-2xl font-semibold text-white">Nova — Proposals</h1>
         </div>
-        <p className="text-[#555] text-sm">Genera propuestas comerciales completas desde el brief de una llamada.</p>
+        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera propuestas comerciales completas desde el brief de una llamada.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-6">
         {/* LEFT — Brief form */}
         <div>
-          <p className="text-[11px] text-[#444] uppercase tracking-wider mb-4">Call Brief</p>
+          <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>Call Brief</p>
           <div className="space-y-3">
             {FIELDS.map(({ field, label, placeholder, required, textarea }) => (
               <div key={field} className="card p-4">
-                <label className="block text-[10px] text-[#555] uppercase tracking-wider mb-1.5">
+                <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>
                   {label} {required && <span className="text-[#EF4444]">*</span>}
                 </label>
                 {textarea ? (
@@ -110,14 +110,16 @@ export default function ProposalsPage() {
                     onChange={e => set(field, e.target.value)}
                     placeholder={placeholder}
                     rows={3}
-                    className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none resize-none leading-relaxed"
+                    className="w-full bg-transparent text-sm text-white outline-none resize-none leading-relaxed"
+                    style={{ color: 'var(--text-primary)' }}
                   />
                 ) : (
                   <input
                     value={brief[field]}
                     onChange={e => set(field, e.target.value)}
                     placeholder={placeholder}
-                    className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none"
+                    className="w-full bg-transparent text-sm text-white outline-none"
+                    style={{ color: 'var(--text-primary)' }}
                   />
                 )}
               </div>
@@ -142,10 +144,10 @@ export default function ProposalsPage() {
           {output ? (
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] text-[#555] uppercase tracking-wider">📄 Nova — Propuesta generada</p>
+                <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>📄 Nova — Propuesta generada</p>
                 <div className="flex gap-2">
                   <button onClick={copy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] text-[#666] bg-[#111] border border-[#1a1a1a] hover:text-white transition-all">
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                     {copied ? <><Check size={11} className="text-emerald-400" /> Copiado</> : <><Copy size={11} /> Copiar</>}
                   </button>
                   {saved && (
@@ -169,9 +171,9 @@ export default function ProposalsPage() {
           ) : (
             <div className="card flex-1 flex items-center justify-center min-h-[400px]">
               <div className="text-center">
-                <FileText size={32} className="text-[#222] mx-auto mb-3" />
-                <p className="text-[#444] text-sm">La propuesta aparecerá aquí</p>
-                <p className="text-[#333] text-[11px] mt-1">Completa el brief y pulsa Generar</p>
+                <FileText size={32} className="mx-auto mb-3" style={{ color: 'var(--border-subtle)' }} />
+                <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>La propuesta aparecerá aquí</p>
+                <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>Completa el brief y pulsa Generar</p>
               </div>
             </div>
           )}
@@ -191,27 +193,27 @@ function ProposalPreview({ markdown }: { markdown: string }) {
           <h1 key={i} className="text-xl font-bold text-white mb-3 mt-0">{line.slice(2)}</h1>
         )
         if (line.startsWith('## ')) return (
-          <h2 key={i} className="text-base font-semibold text-white mb-2 mt-5 pb-1 border-b border-[#1a1a1a]">{line.slice(3)}</h2>
+          <h2 key={i} className="text-base font-semibold text-white mb-2 mt-5 pb-1" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>{line.slice(3)}</h2>
         )
         if (line.startsWith('### ')) return (
-          <h3 key={i} className="text-sm font-semibold text-[#ccc] mb-1.5 mt-4">{line.slice(4)}</h3>
+          <h3 key={i} className="text-sm font-semibold mb-1.5 mt-4" style={{ color: 'rgba(204, 204, 204, 1)' }}>{line.slice(4)}</h3>
         )
         if (line.startsWith('| ')) return (
-          <div key={i} className="text-[12px] text-[#888] font-mono bg-[#0A0A0A] px-3 py-1 rounded border-b border-[#141414]">{line}</div>
+          <div key={i} className="text-[12px] font-mono px-3 py-1 rounded" style={{ color: 'var(--text-secondary)', background: 'var(--bg-page)', borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>{line}</div>
         )
         if (line.startsWith('- ') || line.startsWith('* ')) return (
-          <p key={i} className="text-[13px] text-[#aaa] leading-relaxed flex gap-2 mb-1">
-            <span className="text-[#555]">·</span>{line.slice(2)}
+          <p key={i} className="text-[13px] leading-relaxed flex gap-2 mb-1" style={{ color: 'rgba(170, 170, 170, 1)' }}>
+            <span style={{ color: 'var(--text-secondary)' }}>·</span>{line.slice(2)}
           </p>
         )
         if (line.match(/^\d+\. /)) return (
-          <p key={i} className="text-[13px] text-[#aaa] leading-relaxed mb-1">{line}</p>
+          <p key={i} className="text-[13px] leading-relaxed mb-1" style={{ color: 'rgba(170, 170, 170, 1)' }}>{line}</p>
         )
         if (line.startsWith('---')) return (
-          <hr key={i} className="border-[#1a1a1a] my-4" />
+          <hr key={i} className="my-4" style={{ borderColor: 'var(--border-subtle)' }} />
         )
         if (line.trim() === '') return <div key={i} className="h-2" />
-        return <p key={i} className="text-[13px] text-[#aaa] leading-relaxed mb-1">{line}</p>
+        return <p key={i} className="text-[13px] leading-relaxed mb-1" style={{ color: 'rgba(170, 170, 170, 1)' }}>{line}</p>
       })}
     </div>
   )
