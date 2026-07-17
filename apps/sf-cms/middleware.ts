@@ -7,7 +7,7 @@ export async function middleware(request: NextRequest) {
   if (path.startsWith('/admin') || path.startsWith('/api/admin')) {
     const sessionCookie = request.cookies.get('sf-cms-session')
 
-    if (!sessionCookie) {
+    if (!sessionCookie || sessionCookie.value !== 'authenticated') {
       if (path.startsWith('/api/admin')) {
         return new Response('Unauthorized', { status: 401 })
       }
