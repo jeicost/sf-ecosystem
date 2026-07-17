@@ -4,6 +4,8 @@ import { Loader2, Send, Copy, Check, MessageSquare } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
@@ -17,6 +19,7 @@ const CLASS_LABEL: Record<string, { label: string; color: string; bg: string }> 
 export default function QualifyPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
+  const { locale } = useLocaleContext()
 
   const [leads, setLeads]           = useState<Lead[]>([])
   const [selectedId, setSelectedId] = useState('')
@@ -100,7 +103,7 @@ export default function QualifyPage() {
       {/* Lead selector */}
       <div className="card p-5 mb-4">
         <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
-          Lead (opcional — enriquece el análisis)
+          {t('comercial.qualify.lead-optional', locale)}
         </label>
         {loadingLeads ? (
           <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
@@ -171,7 +174,7 @@ export default function QualifyPage() {
 
                 {/* BANT breakdown */}
                 {parsed.bant_budget && (
-                  <div className="grid grid-cols-4 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
                     {(['budget', 'authority', 'need', 'timeline'] as const).map(k => {
                       const val = parsed[`bant_${k}`]
                       return (
@@ -217,7 +220,7 @@ export default function QualifyPage() {
               {/* Buying signals */}
               {parsed.buying_signals?.length > 0 && (
                 <div className="card p-4">
-                  <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Señales de compra detectadas</p>
+                  <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.qualify.purchase-signals', locale)}</p>
                   <div className="flex flex-wrap gap-1.5">
                     {(parsed.buying_signals as string[]).map(s => (
                       <span key={s} className="text-[11px] px-2 py-1 rounded-full bg-green-400/8 text-green-400 border border-green-400/15">

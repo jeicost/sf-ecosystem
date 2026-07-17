@@ -1,7 +1,7 @@
 // Centralized i18n translations for MIRA Portal
 // Usage: t('key', locale) — locale: 'es' | 'en'
 
-type Locale = 'es' | 'en'
+export type Locale = 'es' | 'en'
 
 const translations: Record<Locale, Record<string, string>> = {
   es: {

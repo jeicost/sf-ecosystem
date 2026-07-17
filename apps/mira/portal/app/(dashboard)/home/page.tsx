@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { Loader2, ArrowRight, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { getUser, isSuperAdmin } from '@/lib/auth'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import AdminClientsOverview from '@/components/admin-clients-overview'
 import StatCard from '@/components/stat-card'
 import UnifiedHistory from '@/components/unified-history'
@@ -12,14 +14,15 @@ import PageHeader from '@/components/ui/PageHeader'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { getClientStats } from '@/lib/client-portal-service'
 
-const QUICK_ACCESS = [
-  { icon: '📁', label: 'Documentación', href: '/client-portal/documentation', color: '#8B5CF6' },
-  { icon: '📦', label: 'Entregas', href: '/client-portal/entregas', color: '#6366F1' },
-  { icon: '🎨', label: 'Brand Brain', href: '/brand-brain', color: '#10B981' },
-  { icon: '⚙️', label: 'Configuración', href: '/client-portal/config', color: '#EF4444' },
+const QUICK_ACCESS_CONFIG = [
+  { icon: '📁', labelKey: 'home.documentation', href: '/client-portal/documentation', color: '#8B5CF6' },
+  { icon: '📦', labelKey: 'home.deliveries', href: '/client-portal/entregas', color: '#6366F1' },
+  { icon: '🎨', labelKey: 'brain.title', href: '/brand-brain', color: '#10B981' },
+  { icon: '⚙️', labelKey: 'home.configuration', href: '/client-portal/config', color: '#EF4444' },
 ]
 
 export default function HomePage() {
+  const { locale } = useLocaleContext()
   const [userName, setUserName] = useState('')
   const [plan, setPlan] = useState('')
   const [projects, setProjects] = useState<any[]>([])
@@ -95,7 +98,7 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-10">
               <StatCard label="Entregas Generadas" value={stats.contentGenerated} hint="Este mes" />
               <StatCard label="Herramientas Usadas" value={`${stats.toolsUsed}/7`} hint="Toolkit completo" />
-              <StatCard label="Últimas 30 días" value={`${stats.timeSavedHours.toFixed(1)}h`} hint="Tiempo ahorrado con IA" />
+              <StatCard label={t('home.last-30-days', locale)} value={`${stats.timeSavedHours.toFixed(1)}h`} hint={t('home.time-saved-ai', locale)} />
             </div>
           )}
 
@@ -110,10 +113,10 @@ export default function HomePage() {
           {/* Quick Access */}
           <div className="mb-10">
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
-              Accesos rápidos
+              {t('home.quick-shortcuts', locale)}
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
-              {QUICK_ACCESS.map(action => (
+              {QUICK_ACCESS_CONFIG.map(action => (
                 <Link
                   key={action.href}
                   href={action.href}
@@ -132,7 +135,7 @@ export default function HomePage() {
                   }}
                 >
                   <div className="text-lg mb-2">{action.icon}</div>
-                  <p className="text-[12px] font-semibold text-white">{action.label}</p>
+                  <p className="text-[12px] font-semibold text-white">{t(action.labelKey, locale)}</p>
                   <div className="mt-auto pt-2">
                     <ArrowRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity" style={{ color: action.color }} />
                   </div>

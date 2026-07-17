@@ -94,7 +94,7 @@ export default function ProposalsPage() {
         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera propuestas comerciales completas desde el brief de una llamada.</p>
       </div>
 
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* LEFT — Brief form */}
         <div>
           <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>Call Brief</p>

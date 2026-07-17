@@ -33,7 +33,7 @@ export default function Page() {
       </div>
 
       {/* Portfolio metrics */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
         {PORTFOLIO_METRICS.map(m => (
           <div key={m.label} className="card px-4 py-3">
             <div className="flex items-center justify-between mb-2">
@@ -48,7 +48,7 @@ export default function Page() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
         {/* Allocation visual */}
         <div className="rounded-2xl p-5"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>

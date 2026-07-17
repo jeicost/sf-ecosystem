@@ -4,6 +4,8 @@ import { Loader2, Edit2, Check, X, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { IcpProfile } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
@@ -65,6 +67,7 @@ type EditableIcp = Omit<IcpProfile, 'id' | 'client_id' | 'updated_at'>
 export default function IcpPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
+  const { locale } = useLocaleContext()
 
   const [icp, setIcp]       = useState<IcpProfile | null>(null)
   const [loading, setLoading]  = useState(true)
@@ -134,13 +137,13 @@ export default function IcpPage() {
   const view = editing ? draft : icp
   const ARRAY_FIELDS: { field: keyof EditableIcp; label: string; color: string }[] = [
     { field: 'industries',              label: 'Industrias objetivo',       color: '#8B5CF6' },
-    { field: 'company_sizes',           label: 'Tamaños de empresa',        color: '#3B82F6' },
+    { field: 'company_sizes',           label: t('comercial.icp.company-sizes', locale),        color: '#3B82F6' },
     { field: 'geographies',             label: 'Geografías',                color: '#06B6D4' },
     { field: 'job_titles',              label: 'Cargos objetivo',           color: '#F59E0B' },
     { field: 'pain_points',             label: 'Pain points detectados',    color: '#10B981' },
     { field: 'trigger_events',          label: 'Trigger events',            color: '#F97316' },
-    { field: 'decision_maker_signals',  label: 'Señales de decision maker', color: '#EC4899' },
-    { field: 'disqualifiers',           label: 'Factores de descalificación', color: '#EF4444' },
+    { field: 'decision_maker_signals',  label: t('comercial.icp.decision-maker-signals', locale), color: '#EC4899' },
+    { field: 'disqualifiers',           label: t('comercial.icp.disqualifiers', locale), color: '#EF4444' },
   ]
 
   return (
@@ -176,7 +179,7 @@ export default function IcpPage() {
 
       {/* ICP name + budget (edit mode) */}
       {editing && draft && (
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="card p-4">
             <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Nombre del ICP</label>
             <input value={draft.icp_name ?? ''} onChange={e => setDraft(d => d ? { ...d, icp_name: e.target.value } : d)}
@@ -184,7 +187,7 @@ export default function IcpPage() {
               className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
-            <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Presupuesto mínimo (USD)</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.icp.min-budget-usd', locale)}</label>
             <input type="number" value={draft.min_budget_usd ?? ''} onChange={e => setDraft(d => d ? { ...d, min_budget_usd: Number(e.target.value) || null } : d)}
               placeholder="Ej: 5000"
               className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
@@ -194,14 +197,14 @@ export default function IcpPage() {
 
       {!icp && !editing ? (
         <div className="card py-16 text-center">
-          <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>No tienes un ICP configurado aún.</p>
+          <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icp.no-icp-configured', locale)}</p>
           <button onClick={startEdit}
             className="mt-4 px-5 py-2.5 rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 border border-[#EF4444]/25 text-sm transition-all">
             Crear ICP
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {ARRAY_FIELDS.map(({ field, label, color }) => (
             <Section key={field} title={label}>
               <ChipList
@@ -216,7 +219,7 @@ export default function IcpPage() {
 
           {!editing && icp?.min_budget_usd !== null && icp?.min_budget_usd !== undefined && (
             <div className="col-span-2 card p-5">
-              <h3 className="text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Presupuesto mínimo</h3>
+              <h3 className="text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icp.min-budget', locale)}</h3>
               <p className="text-2xl font-semibold text-white">
                 ${icp.min_budget_usd.toLocaleString()} <span className="text-sm font-normal" style={{ color: 'var(--text-secondary)' }}>USD</span>
               </p>

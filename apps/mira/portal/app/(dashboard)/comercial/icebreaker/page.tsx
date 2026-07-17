@@ -189,7 +189,7 @@ Genera las 3 variantes ahora.`
       {/* ── MANUAL ── */}
       {mode === 'manual' && (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { label: 'Nombre *', field: 'firstName' as const, placeholder: 'Carlos' },
               { label: 'Apellido', field: 'lastName' as const, placeholder: 'García' },
@@ -253,7 +253,7 @@ Genera las 3 variantes ahora.`
               {selected && (
                 <div className="card p-5 space-y-3">
                   <p className="text-[11px] text-[#555] uppercase tracking-wider">Contexto del lead</p>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     {[
                       { label: 'Empresa', val: selected.company_name },
                       { label: 'Cargo', val: selected.title },

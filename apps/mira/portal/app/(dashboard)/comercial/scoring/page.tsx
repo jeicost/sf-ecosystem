@@ -4,7 +4,8 @@ import { Loader2, RefreshCw, Send } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { CLIENT_ID, HOT_SCORE_THRESHOLD, WARM_SCORE_THRESHOLD } from '@/lib/constants'
 import { scoreLabel } from '@/lib/score-utils'
 import { clsx } from 'clsx'
@@ -36,7 +37,7 @@ interface ChatMessage { role: 'user' | 'vera'; content: string }
 export default function ScoringPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
 
   const [allLeads, setAllLeads] = useState<Lead[]>([])
   const [topLeads, setTopLeads] = useState<Lead[]>([])
@@ -141,15 +142,15 @@ export default function ScoringPage() {
             <span className="text-xl">🎯</span>
             <h1 className="text-2xl font-semibold text-white">Vera — Score Distribution</h1>
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Distribución de leads por clasificación ICP. Pregunta a Vera para analizar.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('comercial.scoring.distribution-desc', locale)}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {/* LEFT — Stats + Table */}
         <div className="col-span-2 space-y-6">
           {/* Stats */}
-          <div className="grid grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
               { label: 'Total',        value: total,       color: '#888' },
               { label: 'Hot (≥75)',    value: hot.length,  color: '#EF4444' },
@@ -165,7 +166,7 @@ export default function ScoringPage() {
 
           {/* Distribution */}
           <div className="card p-6">
-            <h2 className="text-sm font-medium text-white mb-5">Distribución</h2>
+            <h2 className="text-sm font-medium text-white mb-5">{t('comercial.scoring.distribution', locale)}</h2>
             <div className="space-y-4">
               {[
                 { label: '🔥 Hot (≥75)', value: hot.length, pct: hotPct, color: '#EF4444' },
@@ -231,7 +232,7 @@ export default function ScoringPage() {
               <span className="text-base">🎯</span>
               <div>
                 <p className="text-[12px] font-semibold text-white">Vera</p>
-                <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>ICP Scorer · Análisis en vivo</p>
+                <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.scoring.scorer-live', locale)}</p>
               </div>
             </div>
 

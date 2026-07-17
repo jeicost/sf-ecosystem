@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { Search, Loader2, Plus, CheckCircle2, ChevronDown } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { CLIENT_ID } from '@/lib/constants'
 import { clsx } from 'clsx'
 
@@ -30,6 +32,7 @@ const CLASS_STYLE: Record<string, { color: string; bg: string; label: string }> 
 export default function DiscoveryPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id ?? CLIENT_ID
+  const { locale } = useLocaleContext()
 
   const [keywords, setKeywords]   = useState('')
   const [industry, setIndustry]   = useState('')
@@ -113,13 +116,13 @@ export default function DiscoveryPage() {
             <span className="text-[22px]">🔍</span>
             <h1 className="text-2xl font-semibold text-white">Rex — Lead Discovery</h1>
           </div>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Encuentra empresas que encajan con tu ICP usando búsqueda web avanzada + IA.</p>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('comercial.discovery.find-companies', locale)}</p>
         </div>
       </div>
 
       {/* Search form */}
       <div className="card p-5 mb-8">
-        <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="col-span-2">
             <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
               Palabras clave <span className="text-[#EF4444]">*</span>
@@ -154,7 +157,7 @@ export default function DiscoveryPage() {
             />
           </div>
           <div>
-            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>Geografía</label>
+            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.discovery.geography', locale)}</label>
             <input
               value={geography}
               onChange={e => setGeography(e.target.value)}
@@ -172,7 +175,7 @@ export default function DiscoveryPage() {
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>Límite:</span>
+            <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.discovery.limit', locale)}</span>
             {[10, 20, 30, 50].map(n => (
               <button key={n} onClick={() => setLimit(n)}
                 className={clsx(
@@ -216,7 +219,7 @@ export default function DiscoveryPage() {
             <p className="text-sm text-white font-medium">{leads.length} empresas encontradas</p>
             {savedCount !== null && (
               <span className="flex items-center gap-1 text-[11px] text-green-400">
-                <CheckCircle2 size={11} /> {savedCount} añadidas al pipeline automáticamente
+                <CheckCircle2 size={11} /> {savedCount} {t('comercial.discovery.added-to-pipeline', locale)}
               </span>
             )}
           </div>

@@ -44,7 +44,7 @@ export default function Page() {
       </div>
 
       {/* P&L summary */}
-      <div className="grid grid-cols-4 gap-3 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-6">
         {PNL.map(item => (
           <div key={item.label} className="card px-4 py-3">
             <div className="flex items-center justify-between mb-2">

@@ -16,7 +16,7 @@ export default function RelevantToolsSection({ department, limit = 3 }: Relevant
       <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
         Relevant Toolkit Tools
       </p>
-      <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${Math.min(tools.length, 3)}, 1fr)` }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {tools.map((tool) => (
           <Link
             key={tool.slug}
