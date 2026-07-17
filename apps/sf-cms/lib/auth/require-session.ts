@@ -1,14 +1,18 @@
-import { cookies } from 'next/headers'
+import { createClient as createServerClient } from '@/lib/supabase/server'
 
 export async function requireSession() {
-  const cookieStore = await cookies()
-  const session = cookieStore.get('sf-cms-session')
+  try {
+    const supabase = await createServerClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-  if (!session || session.value !== 'authenticated') {
+    if (!user) {
+      return false
+    }
+
+    return true
+  } catch (err) {
     return false
   }
-
-  return true
 }
 
 export async function requireSessionOrThrow() {
