@@ -1,16 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { requireClientAccess } from '@/lib/require-client-access'
+import { adminClient } from '@/lib/supabase'
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const clientId = searchParams.get('clientId')
+    // SECURITY FIX: Authenticate user and validate client access
+    // Never trust clientId from request params
+    const { user, clientId } = await requireClientAccess()
 
-    if (!clientId) {
-      return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
-    }
-
-    const db = createServiceClient()
+    const db = adminClient()
 
     const { data, error } = await db
       .from('brand_profiles')
@@ -31,6 +29,12 @@ export async function GET(request: NextRequest) {
       updated_at: data.updated_at,
     })
   } catch (error) {
+    if (error instanceof Error && error.message.includes('Forbidden')) {
+      return NextResponse.json({ error: 'Forbidden: No client access' }, { status: 403 })
+    }
+    if (error instanceof Error && error.message.includes('Unauthorized')) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
     console.error('Error in client-portal brand:', error)
     return NextResponse.json(null, { status: 200 })
   }
