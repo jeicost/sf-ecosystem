@@ -112,3 +112,41 @@
   border-color: var(--color-danger);
   color: var(--color-danger);
 }
+
+.button.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background: var(--bg-tertiary);
+}
+
+.comingSoon {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(168, 85, 247, 0.05) 100%);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 60px 30px;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.comingSoon .icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.comingSoon h2 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.comingSoon p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.comingSoon .details {
+  font-size: 13px;
+  margin-bottom: 0;
+}

@@ -105,6 +105,13 @@ export default function IntegrationsClient({ workspace }: IntegrationsClientProp
         <p>{workspace.name}</p>
       </div>
 
+      <div className={styles.comingSoon}>
+        <p className={styles.icon}>🔧</p>
+        <h2>Integration Hub Coming Soon</h2>
+        <p>We're building a comprehensive integration marketplace for seamless third-party connections.</p>
+        <p className={styles.details}>Check back soon for OAuth, API key management, and one-click integrations with your favorite tools.</p>
+      </div>
+
       {categories.map(category => {
         const categoryIntegrations = INTEGRATIONS.filter(i => i.category === category)
         if (categoryIntegrations.length === 0) return null
@@ -117,15 +124,11 @@ export default function IntegrationsClient({ workspace }: IntegrationsClientProp
                 <div key={integration.id} className={styles.card}>
                   <div className={styles.cardHeader}>
                     <strong>{integration.name}</strong>
-                    {integration.connected && (
-                      <span className={styles.badge}>Connected</span>
-                    )}
+                    <span className={styles.badge}>Coming Soon</span>
                   </div>
                   <p className={styles.description}>{integration.description}</p>
-                  <button
-                    className={`${styles.button} ${integration.connected ? styles.disconnect : styles.connect}`}
-                  >
-                    {integration.connected ? 'Disconnect' : 'Connect'}
+                  <button className={`${styles.button} ${styles.disabled}`} disabled>
+                    Coming Soon
                   </button>
                 </div>
               ))}

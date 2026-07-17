@@ -1,7 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
-import { createDiscoveryRun } from '@/lib/db'
+import { createDiscoveryRun, getDiscoveryRuns } from '@/lib/db'
 import { handleApiError } from '@/lib/api-errors'
+
+export async function GET() {
+  try {
+    const session = await requireAuth()
+    const { data } = await getDiscoveryRuns(session.workspace.id, { limit: 100 })
+    return NextResponse.json({ data })
+  } catch (error) {
+    return handleApiError(error, 'Failed to fetch discovery runs')
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

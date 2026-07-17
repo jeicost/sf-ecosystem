@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { Workspace } from '@/types'
 import styles from './discovery.module.css'
 
@@ -13,6 +13,22 @@ export default function DiscoveryClient({ workspaceId, workspace }: DiscoveryCli
   const [runs, setRuns] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [company, setCompany] = useState('')
+
+  useEffect(() => {
+    async function loadRuns() {
+      try {
+        const response = await fetch('/api/discovery/run')
+        if (response.ok) {
+          const data = await response.json()
+          setRuns(data.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to load discovery runs:', error)
+      }
+    }
+
+    loadRuns()
+  }, [])
 
   async function handleNewRun(e: React.FormEvent) {
     e.preventDefault()

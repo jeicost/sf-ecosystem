@@ -16,6 +16,8 @@ export default function OutreachClient({ workspaceId, workspace }: OutreachClien
   const [subject, setSubject] = useState('')
   const [body, setBody] = useState('')
   const [recipients, setRecipients] = useState('')
+  const [emails, setEmails] = useState<any[]>([])
+  const [loadingEmails, setLoadingEmails] = useState(false)
 
   useEffect(() => {
     const view = searchParams.get('view')
@@ -25,6 +27,25 @@ export default function OutreachClient({ workspaceId, workspace }: OutreachClien
       setTab('campaigns')
     }
   }, [searchParams])
+
+  useEffect(() => {
+    async function loadEmails() {
+      try {
+        setLoadingEmails(true)
+        const response = await fetch('/api/outreach/emails')
+        if (response.ok) {
+          const data = await response.json()
+          setEmails(data.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to load outreach emails:', error)
+      } finally {
+        setLoadingEmails(false)
+      }
+    }
+
+    loadEmails()
+  }, [])
 
   async function handleSendEmail(e: React.FormEvent) {
     e.preventDefault()
@@ -77,9 +98,32 @@ export default function OutreachClient({ workspaceId, workspace }: OutreachClien
 
       {tab === 'campaigns' && (
         <div className={styles.content}>
-          <div className={styles.empty}>
-            <p>No campaigns yet</p>
-          </div>
+          {loadingEmails ? (
+            <div className={styles.empty}>
+              <p>Loading emails...</p>
+            </div>
+          ) : emails.length === 0 ? (
+            <div className={styles.empty}>
+              <p>No emails sent yet</p>
+            </div>
+          ) : (
+            <div className={styles.emailsList}>
+              {emails.map((email: any) => (
+                <div key={email.id} className={styles.emailCard}>
+                  <div className={styles.emailHeader}>
+                    <strong>To: {email.to}</strong>
+                    <span className={`${styles.status} ${styles[email.status]}`}>
+                      {email.status}
+                    </span>
+                  </div>
+                  <p className={styles.emailSubject}>{email.subject}</p>
+                  <p className={styles.emailDate}>
+                    {new Date(email.sent_at || email.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
