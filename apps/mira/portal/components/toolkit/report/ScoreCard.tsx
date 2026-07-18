@@ -6,40 +6,49 @@ interface ScoreCardProps {
   maxScore?: number
   description?: string
   findings?: string[]
+  brandColor?: string
 }
 
-export function ScoreCard({ title, score, maxScore = 100, description, findings }: ScoreCardProps) {
+export function ScoreCard({ title, score, maxScore = 100, description, findings, brandColor = '#FF4500' }: ScoreCardProps) {
   const percentage = Math.round((score / maxScore) * 100)
   let color = '#EF4444' // red
   if (percentage >= 75) color = '#10B981' // green
   else if (percentage >= 50) color = '#F59E0B' // amber
 
   return (
-    <div className="rounded-lg p-4" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <div className="flex items-start justify-between mb-3">
+    <div className="p-8 rounded-none" style={{
+      background: 'rgba(245,240,232,0.04)',
+      borderTop: `3px solid ${brandColor}`,
+      transition: 'all 0.3s ease'
+    }}>
+      <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="font-semibold text-white mb-1">{title}</h3>
-          {description && <p className="text-sm text-white/60">{description}</p>}
+          <p className="text-xs font-black uppercase tracking-widest mb-2" style={{ color: brandColor }}>
+            {title.toUpperCase()}
+          </p>
+          {description && <p className="text-sm text-white/60 leading-relaxed">{description}</p>}
         </div>
-        <div className="text-right">
-          <div className="text-2xl font-bold text-white">{score}</div>
-          <div className="text-xs text-white/40">/ {maxScore}</div>
+        <div className="text-right flex-shrink-0">
+          <div style={{ fontFamily: 'Anton, sans-serif' }} className="text-6xl font-black" style={{ color: brandColor }}>
+            {score}
+          </div>
+          <div className="text-xs text-white/40 mt-1">of {maxScore}</div>
         </div>
       </div>
 
       {/* Progress bar */}
-      <div className="w-full h-2 rounded-full bg-white/10 overflow-hidden">
+      <div className="w-full h-3 rounded-full bg-white/5 overflow-hidden mt-4 mb-4">
         <div
-          className="h-full rounded-full transition-all"
+          className="h-full rounded-full transition-all duration-300"
           style={{ width: `${percentage}%`, background: color }}
         />
       </div>
 
       {findings && findings.length > 0 && (
-        <ul className="mt-3 space-y-1 text-sm text-white/70">
+        <ul className="mt-4 space-y-2 text-sm text-white/70">
           {findings.map((finding, i) => (
-            <li key={i} className="flex items-start gap-2">
-              <span className="text-white/40">•</span>
+            <li key={i} className="flex items-start gap-3">
+              <span className="text-white/30 flex-shrink-0 pt-1">◆</span>
               <span>{finding}</span>
             </li>
           ))}

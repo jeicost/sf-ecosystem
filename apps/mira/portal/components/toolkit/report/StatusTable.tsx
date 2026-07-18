@@ -8,9 +8,10 @@ interface StatusItem {
 
 interface StatusTableProps {
   items: StatusItem[]
+  brandColor?: string
 }
 
-export function StatusTable({ items }: StatusTableProps) {
+export function StatusTable({ items, brandColor = '#FF4500' }: StatusTableProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'OK':
@@ -38,28 +39,34 @@ export function StatusTable({ items }: StatusTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-white/10">
+    <div className="overflow-x-auto rounded-none border-collapse" style={{ borderBottom: `1px solid rgba(245,240,232,0.05)` }}>
       <table className="w-full">
         <thead>
-          <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-white/70">Element</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-white/70">Status</th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-white/70">Detail</th>
+          <tr style={{ background: `${brandColor}12`, borderBottom: `2px solid ${brandColor}40` }}>
+            <th style={{ fontFamily: 'Space Mono, monospace' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest" style={{ color: brandColor, letterSpacing: '0.15em' }}>
+              Element
+            </th>
+            <th style={{ fontFamily: 'Space Mono, monospace' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest" style={{ color: brandColor, letterSpacing: '0.15em' }}>
+              Status
+            </th>
+            <th style={{ fontFamily: 'Space Mono, monospace' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest" style={{ color: brandColor, letterSpacing: '0.15em' }}>
+              Detail
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-white/5">
           {items.map((item, i) => (
-            <tr key={i} style={{ background: i % 2 ? 'rgba(255,255,255,0.01)' : 'transparent' }}>
-              <td className="px-4 py-3 text-sm text-white">{item.element}</td>
-              <td className="px-4 py-3 text-sm">
+            <tr key={i} className="hover:bg-white/3 transition-colors" style={{ background: 'transparent' }}>
+              <td className="px-6 py-4 text-sm text-white font-medium">{item.element}</td>
+              <td className="px-6 py-4 text-sm">
                 <span
-                  className="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-white"
+                  className="inline-flex items-center justify-center w-6 h-6 rounded-full font-bold text-xs"
                   style={{ background: `${getStatusColor(item.status)}20`, color: getStatusColor(item.status) }}
                 >
                   {getStatusBadge(item.status)}
                 </span>
               </td>
-              <td className="px-4 py-3 text-sm text-white/70">{item.detail}</td>
+              <td className="px-6 py-4 text-sm text-white/70">{item.detail}</td>
             </tr>
           ))}
         </tbody>

@@ -9,9 +9,10 @@ interface ActionItem {
 
 interface ActionPlanProps {
   items: ActionItem[]
+  brandColor?: string
 }
 
-export function ActionPlan({ items }: ActionPlanProps) {
+export function ActionPlan({ items, brandColor = '#FF4500' }: ActionPlanProps) {
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'CRÍTICO':
@@ -26,34 +27,36 @@ export function ActionPlan({ items }: ActionPlanProps) {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {items.map((item, i) => (
         <div
           key={i}
-          className="rounded-lg p-4 flex items-start gap-4"
+          className="p-6 flex items-start gap-6 transition-all rounded-none"
           style={{
-            background: 'rgba(255,255,255,0.03)',
-            border: `1px solid ${getPriorityColor(item.priority)}20`,
+            background: 'rgba(245,240,232,0.04)',
             borderLeft: `3px solid ${getPriorityColor(item.priority)}`,
+            borderBottom: `1px solid rgba(245,240,232,0.05)`,
           }}
         >
           <div
-            className="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white"
-            style={{ background: `${getPriorityColor(item.priority)}30`, color: getPriorityColor(item.priority) }}
+            className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center text-sm font-black"
+            style={{ background: `${getPriorityColor(item.priority)}20`, color: getPriorityColor(item.priority) }}
           >
-            {item.priority[0]}
+            {i + 1}
           </div>
 
           <div className="flex-1">
-            <p className="font-semibold text-white mb-1">{item.action}</p>
-            <div className="flex items-center gap-4 text-xs text-white/60">
-              {item.impact && <span>Impact: {item.impact}</span>}
-              {item.timeline && <span>Timeline: {item.timeline}</span>}
+            <p style={{ fontFamily: 'Anton, sans-serif' }} className="font-black text-white mb-2 uppercase tracking-wide">
+              {item.action}
+            </p>
+            <div className="flex items-center gap-6 text-xs text-white/60">
+              {item.impact && <span>Impact: <span className="text-white/80">{item.impact}</span></span>}
+              {item.timeline && <span>Timeline: <span className="text-white/80">{item.timeline}</span></span>}
             </div>
           </div>
 
           <span
-            className="flex-shrink-0 text-xs font-semibold px-2 py-1 rounded-full"
+            className="flex-shrink-0 text-xs font-black px-4 py-2 rounded-full uppercase tracking-widest"
             style={{
               background: `${getPriorityColor(item.priority)}20`,
               color: getPriorityColor(item.priority),
