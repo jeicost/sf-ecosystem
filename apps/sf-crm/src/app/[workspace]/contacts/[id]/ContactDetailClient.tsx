@@ -68,7 +68,9 @@ export default function ContactDetailClient({
         </button>
         <div className={styles.titleSection}>
           <h1>
-            {contact.firstName} {contact.lastName}
+            {contact.firstName && contact.lastName
+              ? `${contact.firstName} ${contact.lastName}`
+              : contact.company || 'Contact'}
           </h1>
           <span className={`${styles.scoreBadge} ${styles[scoreClass]}`}>
             {scoreClass.toUpperCase()}
