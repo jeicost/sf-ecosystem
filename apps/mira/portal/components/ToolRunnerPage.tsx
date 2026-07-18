@@ -341,7 +341,29 @@ export default function ToolRunnerPage({
           </button>
         </form>
       ) : ResultComponent ? (
-        <ResultComponent data={resultData} />
+        <div className="space-y-6">
+          <ResultComponent data={resultData} />
+          {pollingQueueId && (
+            <div className="flex gap-3 pt-6 border-t border-white/5">
+              <button
+                onClick={() => {
+                  if (pollingQueueId) {
+                    window.location.href = `/api/toolkit/export?queue_id=${pollingQueueId}`
+                  }
+                }}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors text-sm"
+              >
+                📥 Descargar HTML
+              </button>
+              <button
+                onClick={() => setResultData(null)}
+                className="px-6 py-3 rounded-lg font-semibold text-white bg-white/10 hover:bg-white/20 transition-colors text-sm"
+              >
+                ↻ Nuevamente
+              </button>
+            </div>
+          )}
+        </div>
       ) : null}
     </div>
   )

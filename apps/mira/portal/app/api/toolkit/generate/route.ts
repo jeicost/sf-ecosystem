@@ -132,12 +132,34 @@ export async function POST(req: NextRequest) {
 
     const generationTime = Date.now() - startTime
 
+    // Inject brandColor from Brand Brain
+    let brandColor = '#8B5CF6' // default purple fallback
+    try {
+      const { data: brandProfile } = await admin
+        .from('brand_profiles')
+        .select('brand_data')
+        .eq('client_id', clientId)
+        .single()
+
+      if (brandProfile?.brand_data?.visual_identity?.colors?.primary) {
+        brandColor = brandProfile.brand_data.visual_identity.colors.primary
+      }
+    } catch (e) {
+      console.warn('Could not fetch brand color:', e)
+    }
+
+    // Add brandColor to result
+    const resultWithBrandColor = {
+      ...result,
+      brandColor,
+    }
+
     // Debug: log what we're saving
     console.log(`[${tool_slug}] Saving result for queue ${queueId}:`, {
-      hasResult: !!result,
-      resultKeys: Object.keys(result),
-      resultSize: JSON.stringify(result).length,
-      sampleData: JSON.stringify(result).slice(0, 200),
+      hasResult: !!resultWithBrandColor,
+      resultKeys: Object.keys(resultWithBrandColor),
+      resultSize: JSON.stringify(resultWithBrandColor).length,
+      brandColor,
     })
 
     // Update queue with result
@@ -145,7 +167,7 @@ export async function POST(req: NextRequest) {
       .from('generation_queue')
       .update({
         status: 'completed',
-        result_data: result,
+        result_data: resultWithBrandColor,
         completed_at: new Date().toISOString(),
       })
       .eq('id', queueId)

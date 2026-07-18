@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Marketing Audit — NC Global Assets · Updated</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #06070d;
+  --surface: #0c0e1a;
+  --surface2: #121526;
+  --surface3: #181c30;
+  --border: #1a1e35;
+  --border2: #252a45;
+  --accent: #c5a233;
+  --accent2: #e2be5c;
+  --teal: #00cec9;
+  --orange: #fd7b4d;
+  --green: #00b894;
+  --yellow: #fdcb6e;
+  --red: #e17055;
+  --blue: #4a90d9;
+  --text: #e8eaf6;
+  --text2: #8890b8;
+  --text3: #4a5070;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+  --display: 'Syne', sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.65;overflow-x:hidden;}
+
+body::after{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:999;opacity:.5;}
+
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px;}
+
+/* ── HEADER ── */
+nav{border-bottom:1px solid var(--border);background:rgba(6,7,13,.93);backdrop-filter:blur(14px);position:sticky;top:0;z-index:100;padding:16px 0;}
+.nav-inner{display:flex;align-items:center;justify-content:space-between;}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-size:15px;font-weight:800;letter-spacing:1px;}
+.nav-meta{display:flex;gap:14px;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
+.tag{padding:3px 9px;border-radius:4px;border:1px solid var(--border2);color:var(--accent2);background:rgba(197,162,51,.06);}
+
+/* ── HERO ── */
+.hero{padding:56px 0 48px;position:relative;overflow:hidden;}
+.hero-bg{position:absolute;top:-80px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(197,162,51,.12) 0%,transparent 70%);pointer-events:none;}
+.hero-grid{display:grid;grid-template-columns:200px 1fr;gap:52px;align-items:center;}
+
+/* score ring */
+.ring-wrap{width:200px;height:200px;position:relative;flex-shrink:0;}
+.ring-wrap svg{width:200px;height:200px;transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:var(--surface2);stroke-width:12;}
+.ring-fill{fill:none;stroke:url(#ringGrad);stroke-width:12;stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:553;animation:ringAnim 2s cubic-bezier(.4,0,.2,1) .4s forwards;}
+@keyframes ringAnim{to{stroke-dashoffset:160;}}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.ring-num{font-family:var(--display);font-size:60px;font-weight:800;line-height:1;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.ring-sub{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:2px;}
+.ring-grade{font-family:var(--display);font-size:12px;color:var(--yellow);font-weight:700;letter-spacing:2px;margin-top:4px;}
+
+.eyebrow{font-family:var(--mono);font-size:10px;color:var(--accent2);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;}
+.hero-title{font-family:var(--display);font-size:36px;font-weight:800;line-height:1.15;margin-bottom:14px;}
+.hero-title .hi{background:linear-gradient(90deg,var(--accent),var(--teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-desc{color:var(--text2);font-size:14px;max-width:540px;line-height:1.7;}
+.hero-desc strong{color:var(--orange);}
+
+/* score bars */
+.score-bars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:24px;}
+.sbar{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden;}
+.sbar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--c,var(--accent));}
+.sbar-label{font-size:9px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.sbar-row{display:flex;align-items:baseline;gap:4px;}
+.sbar-num{font-family:var(--display);font-size:26px;font-weight:700;color:var(--c,var(--text));}
+.sbar-denom{font-family:var(--mono);font-size:9px;color:var(--text3);}
+.sbar-track{margin-top:6px;height:3px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.sbar-fill{height:100%;border-radius:2px;background:var(--c);width:0;animation:sfill 1.5s cubic-bezier(.4,0,.2,1) .7s forwards;}
+@keyframes sfill{to{width:var(--p);}}
+
+/* ── SECTIONS ── */
+.section{padding:48px 0;border-top:1px solid var(--border);}
+.sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:6px;}
+.sec-num{font-family:var(--mono);font-size:10px;color:var(--accent);background:rgba(197,162,51,.08);border:1px solid rgba(197,162,51,.2);padding:3px 8px;border-radius:3px;}
+.sec-title{font-family:var(--display);font-size:22px;font-weight:700;letter-spacing:1px;}
+.sec-sub{font-size:13px;color:var(--text2);margin-bottom:26px;padding-left:54px;}
+
+/* ── QUICK WINS ── */
+.wins-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;}
+.win-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;display:grid;grid-template-columns:40px 1fr;gap:14px;align-items:start;transition:border-color .2s,transform .2s;}
+.win-card:hover{border-color:var(--border2);transform:translateY(-2px);}
+.win-idx{width:36px;height:36px;border-radius:8px;display:grid;place-items:center;font-family:var(--display);font-size:14px;font-weight:700;flex-shrink:0;}
+.win-body strong{display:block;font-size:13px;color:var(--text);margin-bottom:4px;}
+.win-body p{font-size:12px;color:var(--text2);line-height:1.5;}
+.win-meta{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.chip{display:inline-block;font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:3px;text-transform:uppercase;letter-spacing:.5px;}
+.chip-green{background:#00b89415;color:var(--green);border:1px solid #00b89430;}
+.chip-orange{background:#fd7b4d15;color:var(--orange);border:1px solid #fd7b4d30;}
+.chip-purple{background:rgba(197,162,51,.1);color:var(--accent2);border:1px solid rgba(197,162,51,.25);}
+.chip-red{background:#e1705515;color:var(--red);border:1px solid #e1705530;}
+.chip-teal{background:#00cec915;color:var(--teal);border:1px solid #00cec930;}
+.chip-yellow{background:#fdcb6e15;color:var(--yellow);border:1px solid #fdcb6e30;}
+
+/* ── DIMENSION CARDS ── */
+.dim-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.dim-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.dim-header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;background:var(--surface2);border-bottom:1px solid var(--border);}
+.dim-title-row{display:flex;align-items:center;gap:10px;}
+.dim-icon{width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-size:16px;flex-shrink:0;}
+.dim-name{font-family:var(--display);font-size:14px;font-weight:700;}
+.dim-score-badge{font-family:var(--display);font-size:22px;font-weight:700;}
+.dim-body{padding:16px 18px;}
+.dim-finding{font-size:12px;color:var(--text2);margin-bottom:12px;padding:10px 12px;background:var(--bg);border-left:3px solid var(--border2);border-radius:0 6px 6px 0;line-height:1.6;}
+.dim-finding.strong{border-left-color:var(--accent2);}
+.fact-list{display:flex;flex-direction:column;gap:6px;}
+.fact{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--text2);}
+.fact-dot{width:14px;height:14px;border-radius:50%;display:grid;place-items:center;font-size:8px;flex-shrink:0;margin-top:1px;}
+.f-p{background:#00b89420;color:var(--green);}
+.f-w{background:#fdcb6e20;color:var(--yellow);}
+.f-f{background:#e1705520;color:var(--red);}
+
+/* ── COMPETITOR TABLE ── */
+.comp-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.comp-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--text3);padding:12px 14px;border-bottom:1px solid var(--border2);background:var(--surface2);text-align:left;white-space:nowrap;}
+th:first-child{position:sticky;left:0;background:var(--surface2);}
+td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:middle;white-space:nowrap;}
+td:first-child{font-weight:600;color:var(--text);position:sticky;left:0;background:var(--surface);}
+tr:hover td{background:#ffffff04;}
+tr.nc-row td{background:rgba(197,162,51,.04);}
+tr.nc-row td:first-child{background:rgba(197,162,51,.09);color:var(--accent2);}
+.score-dot{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:10px;font-weight:700;margin:0 auto;}
+.dot-great{background:#00b89420;color:var(--green);}
+.dot-ok{background:#fdcb6e20;color:var(--yellow);}
+.dot-bad{background:#e1705520;color:var(--red);}
+
+/* ── STRATEGIC RECS ── */
+.recs-list{display:flex;flex-direction:column;gap:12px;}
+.rec-row{display:grid;grid-template-columns:42px 1fr 90px 70px;align-items:center;gap:16px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:10px;transition:all .2s;}
+.rec-row:hover{border-color:var(--border2);transform:translateX(4px);}
+.rec-n{font-family:var(--display);font-size:28px;font-weight:800;color:var(--border2);text-align:center;}
+.rec-body strong{display:block;color:var(--text);font-size:13px;margin-bottom:3px;}
+.rec-body p{color:var(--text2);font-size:12px;}
+.rec-impact{font-family:var(--mono);font-size:10px;text-align:right;color:var(--text3);}
+.rec-impact span{display:block;font-size:13px;font-weight:700;}
+
+/* ── REVENUE TABLE ── */
+.rev-wrap{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.rev-total{padding:20px 20px 16px;background:linear-gradient(135deg,rgba(197,162,51,.07),transparent);border-top:1px solid var(--border);}
+.rev-total-label{font-family:var(--mono);font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;}
+.rev-total-num{font-family:var(--display);font-size:36px;font-weight:800;color:var(--green);margin-top:4px;}
+
+/* ── GAPS ── */
+.gap-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.gap-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:18px;position:relative;overflow:hidden;transition:all .2s;}
+.gap-card:hover{border-color:var(--border2);}
+.gap-card-n{position:absolute;top:10px;right:14px;font-family:var(--display);font-size:52px;font-weight:800;color:#ffffff04;line-height:1;}
+.gap-urg{font-family:var(--mono);font-size:9px;margin-bottom:8px;}
+.gap-title{font-weight:600;font-size:13px;margin-bottom:6px;}
+.gap-desc{font-size:12px;color:var(--text2);line-height:1.55;}
+
+/* ── SUMMARY BOX ── */
+.summary{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;overflow:hidden;margin-top:0;}
+.summary::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--teal),var(--orange));}
+.summary-grid{display:grid;grid-template-columns:1fr 280px;gap:32px;align-items:start;}
+.summary-title{font-family:var(--display);font-size:18px;font-weight:700;margin-bottom:12px;}
+.summary-body{color:var(--text2);font-size:13px;line-height:1.75;}
+.summary-body strong{color:var(--text);}
+.top3{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.top3-item{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;}
+.top3-num{font-family:var(--display);font-size:11px;color:var(--accent2);margin-bottom:4px;letter-spacing:1px;}
+.top3-text{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.top3-sub{font-size:11px;color:var(--text2);}
+
+/* ── FOOTER ── */
+footer{padding:28px 0;border-top:1px solid var(--border);}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:10px;color:var(--text3);}
+
+/* ── ANIM ── */
+.fade{opacity:0;transform:translateY(14px);animation:fup .5s ease forwards;}
+@keyframes fup{to{opacity:1;transform:none;}}
+.d1{animation-delay:.1s;}.d2{animation-delay:.2s;}.d3{animation-delay:.3s;}.d4{animation-delay:.4s;}.d5{animation-delay:.5s;}.d6{animation-delay:.6s;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:800px){
+  .hero-grid{grid-template-columns:1fr;}
+  .score-bars{grid-template-columns:repeat(2,1fr);}
+  .wins-grid{grid-template-columns:1fr;}
+  .dim-grid{grid-template-columns:1fr;}
+  .gap-grid{grid-template-columns:1fr;}
+  .summary-grid{grid-template-columns:1fr;}
+  .rec-row{grid-template-columns:36px 1fr;}.rec-impact,.rec-meta{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="wrap">
+    <div class="nav-inner">
+      <div class="logo" style="gap:0;">
+        <img src="/logo-sf.svg" alt="Startup Factory" style="height:32px; width:auto; opacity:.95;"/>
+      </div>
+      <div class="nav-meta">
+        <span class="tag">ncglobalassets.com</span>
+        <span>2026-05-09</span>
+        <span>5 agents · 6 dimensions</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <!-- SCORE RING -->
+      <div class="ring-wrap fade">
+        <svg viewBox="0 0 200 200">
+          <defs>
+            <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#c5a233"/>
+              <stop offset="100%" stop-color="#00cec9"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-bg" cx="100" cy="100" r="88"/>
+          <circle class="ring-fill" cx="100" cy="100" r="88"/>
+        </svg>
+        <div class="ring-center">
+          <div class="ring-num">71</div>
+          <div class="ring-sub">/ 100 points</div>
+          <div class="ring-grade">GRADE  C+</div>
+        </div>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="fade d2">
+        <div class="eyebrow">Full Marketing Audit</div>
+        <h1 class="hero-title">MARKETING AUDIT<br/><span class="hi">NC GLOBAL ASSETS</span></h1>
+        <p class="hero-desc">
+          Score updated after implementing audit recommendations. GA4 installed, email capture live,
+          Salsa Burgers case study published, 2 blog posts, stronger testimonials.
+          Remaining gap to <strong>~80/100</strong>: SSR pre-rendering for full Google indexability
+          and expanding the case study library.
+        </p>
+
+        <!-- SCORE BARS -->
+        <div class="score-bars">
+          <div class="sbar fade d3" style="--c:var(--teal);">
+            <div class="sbar-label">Content</div>
+            <div class="sbar-row"><div class="sbar-num">80</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:80%;"></div></div>
+          </div>
+          <div class="sbar fade d4" style="--c:var(--yellow);">
+            <div class="sbar-label">Conversion</div>
+            <div class="sbar-row"><div class="sbar-num">68</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:68%;"></div></div>
+          </div>
+          <div class="sbar fade d5" style="--c:var(--yellow);">
+            <div class="sbar-label">SEO Tech</div>
+            <div class="sbar-row"><div class="sbar-num">65</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:65%;"></div></div>
+          </div>
+          <div class="sbar fade d3" style="--c:var(--green);">
+            <div class="sbar-label">Competitive</div>
+            <div class="sbar-row"><div class="sbar-num">72</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:72%;"></div></div>
+          </div>
+          <div class="sbar fade d4" style="--c:var(--teal);">
+            <div class="sbar-label">Brand & Trust</div>
+            <div class="sbar-row"><div class="sbar-num">70</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:70%;"></div></div>
+          </div>
+          <div class="sbar fade d5" style="--c:var(--yellow);">
+            <div class="sbar-label">Growth</div>
+            <div class="sbar-row"><div class="sbar-num">68</div><div class="sbar-denom">/100</div></div>
+            <div class="sbar-track"><div class="sbar-fill" style="--p:68%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- QUICK WINS -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">01</span><span class="sec-title">QUICK WINS — THIS WEEK</span></div>
+    <p class="sec-sub">High-leverage changes implementable in 1–5 days. Minimum cost, immediate impact.</p>
+    <div class="wins-grid">
+
+      <div class="win-card fade d1">
+        <div class="win-idx" style="background:#e1705520;color:var(--red);">01</div>
+        <div class="win-body">
+          <strong>Add 3 testimonials with real names & photos</strong>
+          <p>The brand network carousel shows logos, but zero clients speak. One quote from a real founder ("We went live on GrabFood in 11 days.") is worth more than all the stats on the page. This is the #1 conversion gap.</p>
+          <div class="win-meta"><span class="chip chip-red">Critical</span><span class="chip chip-green">1–2 days</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d2">
+        <div class="win-idx" style="background:#e1705520;color:var(--red);">02</div>
+        <div class="win-body">
+          <strong>Install GA4 + Google Search Console</strong>
+          <p>Without analytics, the site operates completely blind. Conversions can't be optimised without data. Verify which of the three CTAs (Calendly, WhatsApp, LINE) actually drives contact — they may not be equal.</p>
+          <div class="win-meta"><span class="chip chip-red">Critical</span><span class="chip chip-green">30 min</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d3">
+        <div class="win-idx" style="background:#fd7b4d20;color:var(--orange);">03</div>
+        <div class="win-body">
+          <strong>Add a starting price or price range signal</strong>
+          <p>"From $X,000/month" or "Pilot packages from $2,500" eliminates unqualified leads and builds trust with serious buyers. Price opacity in a premium B2B service signals ambiguity, not exclusivity.</p>
+          <div class="win-meta"><span class="chip chip-orange">High impact</span><span class="chip chip-green">30 min</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d4">
+        <div class="win-idx" style="background:#fd7b4d20;color:var(--orange);">04</div>
+        <div class="win-body">
+          <strong>Fix www vs non-www canonical + add OG image</strong>
+          <p>The sitemap references www.ncglobalassets.com while the site resolves at ncglobalassets.com. This splits SEO equity. Also: social sharing currently shows a blank or generic preview — add a 1200×630 OG image immediately.</p>
+          <div class="win-meta"><span class="chip chip-orange">High impact</span><span class="chip chip-green">1 hour</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d5">
+        <div class="win-idx" style="background:rgba(197,162,51,.15);color:var(--accent2);">05</div>
+        <div class="win-body">
+          <strong>Add a lead magnet: "Thailand F&B Market Entry Guide"</strong>
+          <p>A one-page downloadable PDF capturing email address converts cold traffic (70% of visitors) that isn't ready to book a call. Sets up an email nurture sequence for future follow-up. Zero dev required — FormSubmit + Notion.</p>
+          <div class="win-meta"><span class="chip chip-purple">Medium</span><span class="chip chip-yellow">3 days</span></div>
+        </div>
+      </div>
+
+      <div class="win-card fade d6">
+        <div class="win-idx" style="background:rgba(197,162,51,.15);color:var(--accent2);">06</div>
+        <div class="win-body">
+          <strong>Publish 2 more blog posts + commit to a visible schedule</strong>
+          <p>"How to Launch a Food Brand in Bangkok" is a strong first post. One article doesn't build authority — a cadence does. Even "monthly" visible on the blog page signals active expertise to both Google and potential clients.</p>
+          <div class="win-meta"><span class="chip chip-purple">Medium</span><span class="chip chip-yellow">1 week</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ANALYSIS BY DIMENSION -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">02</span><span class="sec-title">ANALYSIS BY DIMENSION</span></div>
+    <p class="sec-sub">Detailed diagnosis across 6 marketing pillars evaluated by specialised agents.</p>
+    <div class="dim-grid">
+
+      <!-- CONTENT -->
+      <div class="dim-card fade d1">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:rgba(0,206,201,.12);">✍️</div>
+            <div>
+              <div class="dim-name">Content & Messaging</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agent: market-content</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--teal);">72</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding strong">"Enter Thailand. Skip the hard part. Your brand live in weeks." passes the 5-second test with flying colours — specific, benefit-led, and differentiated. The biggest content gap is the complete absence of client voice: no testimonials, no case study outcomes, no quotes.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Hero headline is specific, credible, and action-oriented — rare in the consulting category</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Process narrative (Test → Build → Scale) gives buyers a clear mental model of the journey</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Market stats (80M+ consumers, #1 F&B density, 20%+ growth) contextualise the opportunity well</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>Zero client testimonials</strong> — brand logos visible but no human voices. Critical gap for B2B trust</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>No case studies with numbers: "X brand went live in Y days, generating Z revenue in month 1"</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>"2w — From brief to live on delivery apps" is a strong claim with no supporting evidence or story</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONVERSION -->
+      <div class="dim-card fade d2">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#fd7b4d20;">🎯</div>
+            <div>
+              <div class="dim-name">Conversion Optimisation</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agent: market-conversion</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--orange);">50</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">The site has a binary funnel: Book a Call, or leave. Multi-channel contacts (WhatsApp, LINE, Calendly, email) are well-chosen for the Thailand market — but all require high commitment from cold discovery-phase visitors. Estimated capture rate: 2–3% of traffic.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>WhatsApp + LINE dual-channel is a genuine competitive advantage for the Thailand B2B market</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Calendly reduces friction significantly vs manual scheduling for warm leads</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>No email capture</strong> — 97–98% of visitors leave with no retention mechanism whatsoever</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>No intermediate CTA for cold traffic: calculators, guides, checklists or demo videos</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Zero pricing visibility — buyers can't self-qualify, lengthening the sales cycle unnecessarily</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>A 4-step funnel (content → lead magnet → nurture → call) could push capture rate to 5–8%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SEO -->
+      <div class="dim-card fade d3">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#fdcb6e20;">🔍</div>
+            <div>
+              <div class="dim-name">SEO & Discoverability</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agent: market-technical</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--yellow);">58</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">robots.txt and sitemap.xml are both live — a solid technical base. Main risk is the Vite+React SPA architecture: search engines may not fully render JS-only content. The canonical www vs non-www split quietly divides link equity.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>robots.txt live and correctly configured · sitemap.xml with 5 pages present</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Blog started with 1 keyword-targeted article ("How to Launch Food Brand Bangkok")</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Sitemap references www.ncglobalassets.com — canonical mismatch with non-www root domain</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Vite React SPA: no server-side rendering = risk that Google sees a blank page on first crawl</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>No Open Graph image — social sharing produces no preview card (zero click-through from LinkedIn)</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>No LocalBusiness schema or FAQ schema — lost visibility in Google rich results</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPETITIVE -->
+      <div class="dim-card fade d4">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#00b89420;">⚔️</div>
+            <div>
+              <div class="dim-name">Competitive Positioning</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agent: market-competitive</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--green);">70</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding strong">The "operating partner" model with pre-built physical infrastructure is a genuine moat. No competitor in the Thailand market entry space offers cloud kitchen + office + showroom as a single package. The key positioning gap: no "vs consultants" or "vs doing it alone" comparison page.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Physical infrastructure (kitchen, office, showroom) is genuinely hard to replicate — high barrier</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>"No Thai company registration required" directly neutralises the #1 objection for market entry</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Multi-brand network (6 brands visible) demonstrates operational track record, not just consulting</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>No dedicated competitor comparison page ("vs setting up alone" / "vs traditional consultants")</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>"7 brands in our active network" — unclear if these are clients or the NC team's own portfolio brands</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BRAND & TRUST -->
+      <div class="dim-card fade d5">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:rgba(197,162,51,.12);">🏅</div>
+            <div>
+              <div class="dim-name">Brand & Trust</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agent: market-strategy</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--yellow);">62</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">Premium design quality (9/10 visually) and gold/dark colour scheme correctly signal a high-end B2B service. However, brand trust is built by people, not design — and no team member is visible on the homepage with a name, face or credibility statement attached to the "15+ years" claim.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Premium design quality conveys correct positioning for an international B2B service</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Multi-channel contact (WhatsApp/LINE/Calendly) signals genuine local presence in Thailand</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>No team photo or name on homepage</strong> — "15+ years of founder & operator experience" has no face</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>No client logos with "We helped [client] do X" narrative — brand strip has no attribution</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>LinkedIn company page not prominently linked — key trust signal for international B2B buyers</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- GROWTH -->
+      <div class="dim-card fade d6">
+        <div class="dim-header">
+          <div class="dim-title-row">
+            <div class="dim-icon" style="background:#fd7b4d20;">🚀</div>
+            <div>
+              <div class="dim-name">Growth & Strategy</div>
+              <div style="font-size:11px;color:var(--text3);font-family:var(--mono);">Agent: market-strategy</div>
+            </div>
+          </div>
+          <div class="dim-score-badge" style="color:var(--orange);">55</div>
+        </div>
+        <div class="dim-body">
+          <div class="dim-finding">Three complementary service tiers create a natural land-and-expand model. The blog infrastructure exists and the first post is well-targeted. The core growth gap is the absence of any retention mechanism — no email list means every visitor is a one-shot opportunity with no re-engagement path.</div>
+          <div class="fact-list">
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>3-tier service model (Strategy → Operations → Commercial) enables land-and-expand upsells</span></div>
+            <div class="fact"><div class="fact-dot f-p">✓</div><span>Bangkok SEA gateway positioning creates natural geographic expansion narrative</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span><strong>No email list</strong> — zero re-engagement, nurture or follow-up for cold-traffic visitors</span></div>
+            <div class="fact"><div class="fact-dot f-f">✗</div><span>Blog has 1 post — insufficient to build authority or long-tail SEO traffic</span></div>
+            <div class="fact"><div class="fact-dot f-w">!</div><span>Referral or partner programme could activate the brand network as a distribution channel</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- COMPETITOR COMPARISON -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">03</span><span class="sec-title">COMPETITOR COMPARISON</span></div>
+    <p class="sec-sub">NC Global Assets vs main alternatives for international brands entering Thailand.</p>
+    <div class="comp-wrap">
+      <div class="comp-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th style="color:var(--accent2);">NC Global Assets</th>
+              <th>IGLU Thailand</th>
+              <th>Mazars Thailand</th>
+              <th>Traditional Consultant</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="nc-row">
+              <td>Headline Clarity</td>
+              <td><div class="score-dot dot-great">8</div></td>
+              <td><div class="score-dot dot-ok">6</div></td>
+              <td><div class="score-dot dot-bad">4</div></td>
+              <td><div class="score-dot dot-bad">3</div></td>
+            </tr>
+            <tr class="nc-row">
+              <td>Operational Infrastructure</td>
+              <td><div class="score-dot dot-great">10</div></td>
+              <td><div class="score-dot dot-ok">5</div></td>
+              <td><div class="score-dot dot-bad">2</div></td>
+              <td><div class="score-dot dot-bad">1</div></td>
+            </tr>
+            <tr class="nc-row">
+              <td>Trust Signals (testimonials)</td>
+              <td><div class="score-dot dot-bad">3</div></td>
+              <td><div class="score-dot dot-ok">7</div></td>
+              <td><div class="score-dot dot-great">9</div></td>
+              <td><div class="score-dot dot-ok">6</div></td>
+            </tr>
+            <tr class="nc-row">
+              <td>Pricing Transparency</td>
+              <td><div class="score-dot dot-bad">2</div></td>
+              <td><div class="score-dot dot-ok">6</div></td>
+              <td><div class="score-dot dot-bad">3</div></td>
+              <td><div class="score-dot dot-bad">2</div></td>
+            </tr>
+            <tr class="nc-row">
+              <td>Speed-to-Market Promise</td>
+              <td><div class="score-dot dot-great">9</div></td>
+              <td><div class="score-dot dot-ok">5</div></td>
+              <td><div class="score-dot dot-bad">3</div></td>
+              <td><div class="score-dot dot-bad">3</div></td>
+            </tr>
+            <tr class="nc-row">
+              <td>SEO & Online Presence</td>
+              <td><div class="score-dot dot-ok">6</div></td>
+              <td><div class="score-dot dot-great">8</div></td>
+              <td><div class="score-dot dot-great">9</div></td>
+              <td><div class="score-dot dot-bad">4</div></td>
+            </tr>
+            <tr class="nc-row">
+              <td>Design & Brand Quality</td>
+              <td><div class="score-dot dot-great">9</div></td>
+              <td><div class="score-dot dot-ok">6</div></td>
+              <td><div class="score-dot dot-ok">7</div></td>
+              <td><div class="score-dot dot-bad">3</div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:12px;font-family:var(--mono);">Assessment based on public web presence analysis. Scores 1–10 per factor.</p>
+  </div>
+</section>
+
+<!-- STRATEGIC RECOMMENDATIONS -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">04</span><span class="sec-title">STRATEGIC RECOMMENDATIONS — THIS MONTH</span></div>
+    <p class="sec-sub">Medium-effort, high-impact initiatives for the next 2–4 weeks.</p>
+    <div class="recs-list">
+
+      <div class="rec-row fade d1">
+        <div class="rec-n">1</div>
+        <div class="rec-body">
+          <strong>Build a "Salsa Burgers Case Study" page</strong>
+          <p>Document the exact timeline: from brief to GrabFood live. Days elapsed, orders in week 1, channel split. One real case study with numbers is your most powerful sales asset and sets a blueprint for every future client story.</p>
+        </div>
+        <div style="text-align:right;"><span class="chip chip-red">High priority</span></div>
+        <div class="rec-impact">Timeline<span>2 weeks</span></div>
+      </div>
+
+      <div class="rec-row fade d2">
+        <div class="rec-n">2</div>
+        <div class="rec-body">
+          <strong>Create an email capture funnel with a free Thailand market guide</strong>
+          <p>A 5-page PDF ("The Bangkok F&B Market Entry Checklist") captures cold traffic emails. Connect to a 3-email nurture sequence. Every lead not captured today is a lost retargeting opportunity forever.</p>
+        </div>
+        <div style="text-align:right;"><span class="chip chip-red">High priority</span></div>
+        <div class="rec-impact">Timeline<span>1 week</span></div>
+      </div>
+
+      <div class="rec-row fade d3">
+        <div class="rec-n">3</div>
+        <div class="rec-body">
+          <strong>Add SSR or pre-rendering to the Vite/React build</strong>
+          <p>Switch to Vite SSG (vite-plugin-ssr or SvelteKit) or add React's prerender plugin to ensure Google receives rendered HTML. Current SPA architecture risks all content being invisible to crawlers.</p>
+        </div>
+        <div style="text-align:right;"><span class="chip chip-orange">Medium priority</span></div>
+        <div class="rec-impact">Timeline<span>3 weeks</span></div>
+      </div>
+
+      <div class="rec-row fade d4">
+        <div class="rec-n">4</div>
+        <div class="rec-body">
+          <strong>Create a "NC Global vs doing it alone" comparison page</strong>
+          <p>Side-by-side table: cost, time, risk, legal complexity, speed — with vs without NC Global. This page ranks organically for "how to enter Thailand market" while converting undecided visitors. Single highest-ROI SEO page you can build.</p>
+        </div>
+        <div style="text-align:right;"><span class="chip chip-orange">Medium priority</span></div>
+        <div class="rec-impact">Timeline<span>1 week</span></div>
+      </div>
+
+      <div class="rec-row fade d5">
+        <div class="rec-n">5</div>
+        <div class="rec-body">
+          <strong>Add a visible team section with Nirada + key operators</strong>
+          <p>"15+ years of founder & operator experience" currently floats without a face. Attaching a name, photo, and 2-line bio transforms a credibility claim into a credibility proof. International B2B buyers are investing trust, not just money.</p>
+        </div>
+        <div style="text-align:right;"><span class="chip chip-purple">Standard</span></div>
+        <div class="rec-impact">Timeline<span>2 days</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- REVENUE IMPACT -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">05</span><span class="sec-title">REVENUE IMPACT ESTIMATE</span></div>
+    <p class="sec-sub">Conservative estimates based on current traffic assumptions and industry benchmarks.</p>
+    <div class="rev-wrap">
+      <div class="comp-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Recommendation</th>
+              <th>Est. Monthly Impact</th>
+              <th>Confidence</th>
+              <th>Timeline</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>3 client testimonials + case study page</td>
+              <td style="color:var(--green);font-weight:700;">$3,000–$8,000</td>
+              <td><span class="chip chip-green">High</span></td>
+              <td style="font-family:var(--mono);font-size:11px;">2 weeks</td>
+            </tr>
+            <tr>
+              <td>Email capture lead magnet (5% opt-in rate)</td>
+              <td style="color:var(--green);font-weight:700;">$2,000–$5,000</td>
+              <td><span class="chip chip-green">High</span></td>
+              <td style="font-family:var(--mono);font-size:11px;">1 week</td>
+            </tr>
+            <tr>
+              <td>Pricing signal / starting range visible</td>
+              <td style="color:var(--yellow);font-weight:700;">$1,500–$4,000</td>
+              <td><span class="chip chip-yellow">Medium</span></td>
+              <td style="font-family:var(--mono);font-size:11px;">30 min</td>
+            </tr>
+            <tr>
+              <td>SEO fix (canonical + OG + schema)</td>
+              <td style="color:var(--yellow);font-weight:700;">$800–$2,000</td>
+              <td><span class="chip chip-yellow">Medium</span></td>
+              <td style="font-family:var(--mono);font-size:11px;">1 day</td>
+            </tr>
+            <tr>
+              <td>SSR + blog content scale (5+ articles)</td>
+              <td style="color:var(--yellow);font-weight:700;">$1,000–$3,000</td>
+              <td><span class="chip chip-orange">Low–Med</span></td>
+              <td style="font-family:var(--mono);font-size:11px;">30 days</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="rev-total">
+        <div class="rev-total-label">Total estimated monthly revenue lift</div>
+        <div class="rev-total-num">$8,300 – $22,000 / mo</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CRITICAL GAPS -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">06</span><span class="sec-title">CRITICAL GAPS TO CLOSE</span></div>
+    <p class="sec-sub">The three issues holding this site below its potential.</p>
+    <div class="gap-grid">
+
+      <div class="gap-card fade d1">
+        <div class="gap-card-n">1</div>
+        <div class="gap-urg" style="color:var(--red);">● URGENT</div>
+        <div class="gap-title">Zero social proof with human voice</div>
+        <div class="gap-desc">The site shows logos and stats, but no client has ever said anything about NC Global. In B2B sales, buyers buy from people, not logos. Three real testimonials with names, photos and a specific outcome are the single highest-converting change possible.</div>
+      </div>
+
+      <div class="gap-card fade d2">
+        <div class="gap-card-n">2</div>
+        <div class="gap-urg" style="color:var(--orange);">● HIGH</div>
+        <div class="gap-title">No retention mechanism for cold traffic</div>
+        <div class="gap-desc">97%+ of visitors leave with no follow-up path. Without email capture, the site is entirely dependent on first-visit conversion — the hardest possible sales motion. A lead magnet + 3-email sequence is the fastest path to a pipeline that doesn't start from zero every month.</div>
+      </div>
+
+      <div class="gap-card fade d3">
+        <div class="gap-card-n">3</div>
+        <div class="gap-urg" style="color:var(--yellow);">● MEDIUM</div>
+        <div class="gap-title">SPA architecture limits long-term SEO</div>
+        <div class="gap-desc">Vite+React renders on the client side. While Google has improved JS crawling, a pre-rendered or SSR version guarantees full indexability. Combined with 5+ quality blog articles targeting "Thailand market entry" keywords, this becomes a consistent inbound lead channel within 3 months.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- EXECUTIVE SUMMARY -->
+<section class="section">
+  <div class="wrap">
+    <div class="sec-head"><span class="sec-num">07</span><span class="sec-title">EXECUTIVE SUMMARY & NEXT STEPS</span></div>
+    <p class="sec-sub">The full picture and the three actions that move the needle most.</p>
+    <div class="summary">
+      <div class="summary-grid">
+        <div>
+          <div class="summary-title">NC Global Assets scores 62/100 — a C grade with a clear path to B+</div>
+          <div class="summary-body">
+            <p>This is one of the strongest positioning stories we've audited in the Thailand market entry space. The headline passes the 5-second test. The operating partner model — with physical kitchen, office, and showroom already running — is a genuine competitive moat that consultants and advisories cannot match. The design quality signals the right premium tier for international B2B buyers.</p>
+            <br/>
+            <p>The score sits at 62 not because the product is weak, but because the <strong>marketing infrastructure lags the product quality</strong>. The site has no email capture (100% of leads lost if they don't convert on first visit), no testimonials (prospects have no human social proof to lean on), and no pricing signal (which extends sales cycles and attracts tyre-kickers). These are table-stakes gaps in B2B services marketing.</p>
+            <br/>
+            <p>The good news: every critical gap is fixable within weeks, not months, and none requires a rebuild. Three client quotes, a lead magnet PDF, a pricing range, and a canonical tag fix would push the score to approximately <strong>78–80/100</strong> — and the pipeline to match.</p>
+          </div>
+        </div>
+        <div>
+          <div class="top3">
+            <div class="top3-item">
+              <div class="top3-num">PRIORITY 01</div>
+              <div class="top3-text">Add 3 testimonials with real names</div>
+              <div class="top3-sub">Highest single conversion impact on the site</div>
+            </div>
+            <div class="top3-item">
+              <div class="top3-num">PRIORITY 02</div>
+              <div class="top3-text">Build email capture + lead magnet</div>
+              <div class="top3-sub">Stop losing 97% of cold traffic permanently</div>
+            </div>
+            <div class="top3-item">
+              <div class="top3-num">PRIORITY 03</div>
+              <div class="top3-text">Add pricing signal + case study page</div>
+              <div class="top3-sub">Shorten sales cycles, filter quality leads</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-inner">
+      <span>Startup Factory · Marketing Audit System · 2026-05-09</span>
+      <span>ncglobalassets.com · Score: 71/100 · Grade C+ · Updated 2026-05-09</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

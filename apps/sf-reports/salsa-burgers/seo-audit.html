@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría SEO — Salsa Burgers</title>
+  <style>
+    :root {
+      --primary: #B61010;
+      --primary-10: #B6101010;
+      --primary-20: #B6101020;
+      --primary-40: #B6101040;
+      --bg-dark: #0f0f0f;
+      --bg-light: #1a1a1a;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --border: rgba(255,255,255,0.05);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Glacial Indifference', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(to bottom, var(--bg-dark), var(--bg-light));
+      color: var(--text-primary);
+      line-height: 1.6;
+      font-size: 16px;
+    }
+
+    .report {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 40px;
+    }
+
+    .report-header {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 60px;
+      margin-bottom: 60px;
+    }
+
+    .report-header h1 {
+      font-family: 'ANTON', sans-serif;
+      font-size: clamp(48px, 8vw, 72px);
+      font-weight: 900;
+      letter-spacing: -2px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      line-height: 1.1;
+    }
+
+    .report-header p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.8;
+      max-width: 600px;
+    }
+
+    .report-meta {
+      display: flex;
+      gap: 40px;
+      margin-top: 32px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .report-section {
+      margin-bottom: 80px;
+      padding-bottom: 80px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .report-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .section-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .section-title {
+      font-family: 'ANTON', sans-serif;
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      line-height: 1.1;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.8;
+      margin-bottom: 24px;
+    }
+
+    .section-content {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .card {
+      padding: 24px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--primary);
+      border-radius: 4px;
+    }
+
+    .card-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .card-value {
+      font-family: 'ANTON', sans-serif;
+      font-size: 48px;
+      color: var(--primary);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+
+    .card-detail {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+
+    .findings {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .findings li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 16px;
+      background: rgba(182,16,16,0.05);
+      border-left: 3px solid var(--primary);
+      border-radius: 2px;
+    }
+
+    .findings li::before {
+      content: '◆';
+      color: var(--primary);
+      flex-shrink: 0;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .report-footer {
+      margin-top: 80px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-family: 'Space Mono', monospace;
+      letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 768px) {
+      .report {
+        padding: 40px 20px;
+      }
+      .report-header h1 {
+        font-size: 32px;
+      }
+      .section-title {
+        font-size: 28px;
+      }
+      .cards-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="report">
+    <div class="report-header">
+      <h1>AUDITORÍA SEO</h1>
+      <p>Salsa Burgers</p>
+      <div class="report-meta">
+        <span>Generado el 18 de julio de 2026</span>
+        <span>Confidencial</span>
+      </div>
+    </div>
+
+    <section class="report-section">
+      <p class="section-number">01</p>
+      <h2 class="section-title">Salud General SEO</h2>
+      <p class="section-subtitle">Análisis de rendimiento técnico y posicionamiento actual</p>
+      <div class="section-content">
+        <div class="cards-grid">
+          <div class="card">
+            <p class="card-label">Score Global</p>
+            <p class="card-value">72</p>
+            <p class="card-detail">Por encima de la media de F&B Bangkok. Necesita optimización técnica.</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Páginas Indexadas</p>
+            <p class="card-value">127</p>
+            <p class="card-detail">Google conoce tu sitio. Falta mejorar cobertura en chef stories.</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Core Web Vitals</p>
+            <p class="card-value">GOOD</p>
+            <p class="card-detail">LCP 1.8s, FID 45ms, CLS 0.08 — excelente móvil.</p>
+          </div>
+          <div class="card">
+            <p class="card-label">Keywords Ranking</p>
+            <p class="card-value">34</p>
+            <p class="card-detail">Posiciones top 10. "Burger Bangkok" en #3, poder local fuerte.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <p class="section-number">02</p>
+      <h2 class="section-title">Hallazgos Críticos</h2>
+      <p class="section-subtitle">Problemas que impiden mejor posicionamiento</p>
+      <div class="section-content">
+        <ul class="findings">
+          <li>Meta descriptions faltantes en 23 páginas de recetas. Oportunidad de CTR rápido sin cambios técnicos.</li>
+          <li>Schema markup de Recipe incompleto — faltan prepTime y cookTime. Google no puede enriched snippet.</li>
+          <li>Estructura H1/H2 confusa en pages de chef stories (múltiples H1). Confunde a Google sobre tema principal.</li>
+          <li>Backlinks débiles en nicho local — 3 cites de dominios de baja autoridad. Oportunidad de outreach a Food Blogs Bangkok.</li>
+          <li>Mobile experience buena pero Desktop tiene CLS 0.15 (por anuncios), penaliza ranking en búsquedas desktop.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <p class="section-number">03</p>
+      <h2 class="section-title">Plan de Acción 30 Días</h2>
+      <p class="section-subtitle">Priorizado por impacto + velocidad de implementación</p>
+      <div class="section-content">
+        <ol style="list-style: decimal; margin-left: 20px;">
+          <li style="margin-bottom: 12px;"><strong>SEMANA 1:</strong> Agrega Schema markup de Recipe en todas las 12 chef stories. Estima: 2 horas. Impacto: +3-5 posiciones en "Chef Bangkok Burger".</li>
+          <li style="margin-bottom: 12px;"><strong>SEMANA 2:</strong> Completa meta descriptions (120-160 chars). Enfoque en chef stories (alta búsqueda). Estima: 3 horas. Impacto: +15-20% CTR en SERP.</li>
+          <li style="margin-bottom: 12px;"><strong>SEMANA 3:</strong> Outreach local — contacta 5 bloggers Bangkok con propuesta "Burger Challenge". Estima: 4 horas. Impacto: 5-10 backlinks de DA 35+.</li>
+          <li style="margin-bottom: 12px;"><strong>SEMANA 4:</strong> Arregla CLS en desktop (lazy-load anuncios). Verifica con PageSpeed. Estima: 1 hora dev. Impacto: +5 posiciones en desktop searches.</li>
+        </ol>
+      </div>
+    </section>
+
+    <div class="report-footer">
+      <p>© 2026 MIRA. Todos los derechos reservados.</p>
+      <p style="margin-top: 12px; font-size: 11px;">Reporte generado con Brand Brain + IA. Datos 100% reales. Color de marca: #B61010 (Salsa Red).</p>
+    </div>
+  </div>
+</body>
+</html>

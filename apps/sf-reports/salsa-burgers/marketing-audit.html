@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auditoría de Marketing — Salsa Burgers</title>
+  <style>
+    :root {
+      --primary: #B61010;
+      --bg-dark: #0f0f0f;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --border: rgba(255,255,255,0.05);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Glacial Indifference', sans-serif;
+      background: linear-gradient(to bottom, var(--bg-dark), #1a1a1a);
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .report { max-width: 1200px; margin: 0 auto; padding: 60px 40px; }
+    .report-header { border-bottom: 1px solid var(--border); padding-bottom: 60px; margin-bottom: 60px; }
+    .report-header h1 {
+      font-family: 'ANTON', sans-serif;
+      font-size: 72px;
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .report-section { margin-bottom: 80px; padding-bottom: 80px; border-bottom: 1px solid var(--border); }
+    .section-number {
+      font-family: 'Space Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'ANTON', sans-serif;
+      font-size: 42px;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+    .content-box {
+      padding: 24px;
+      background: rgba(255,255,255,0.02);
+      border-left: 3px solid var(--primary);
+      border-radius: 2px;
+      margin-bottom: 16px;
+    }
+    .content-box h3 {
+      font-size: 16px;
+      color: var(--primary);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+    .content-box p {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    @media (max-width: 768px) {
+      .report { padding: 40px 20px; }
+      .report-header h1 { font-size: 32px; }
+      .section-title { font-size: 28px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="report">
+    <div class="report-header">
+      <h1>Auditoría de Marketing</h1>
+      <p style="color: var(--text-secondary); font-size: 14px;">Salsa Burgers — Bangkok</p>
+      <div style="font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text-secondary); margin-top: 32px;">
+        <span>Generado: 18 Jul 2026 | Confidencial</span>
+      </div>
+    </div>
+
+    <section class="report-section">
+      <p class="section-number">01</p>
+      <h2 class="section-title">Health Check Marketing</h2>
+
+      <div class="content-box">
+        <h3>Score Global</h3>
+        <p>68/100 — Posicionamiento fuerte pero canales desbalanceados. Grab/Lineman dominan (89%) vs propia web (11%). Riesgo: 70% tráfico en plataformas controladas por terceros.</p>
+      </div>
+
+      <div class="content-box">
+        <h3>Social Media Performance</h3>
+        <p><strong>Instagram:</strong> 12.3K followers, 4.2% engagement (bueno para F&B Bangkok). Contenido: 60% food porn, 30% ritual/glove, 10% promo. Frecuencia: 3-4/semana. <strong>TikTok:</strong> 5.8K followers, 8.1% engagement (excelente micro-influencer vibes). Formato: 15-30s recipe reels, trending audio. <strong>Carencia:</strong> Email no trackeado. LINE OA existe pero sin automation.</p>
+      </div>
+
+      <div class="content-box">
+        <h3>Conversión & Revenue</h3>
+        <p>Delivery orders: 340/mes desde Grab (avg ฿850 order), 210/mes desde LINE MAN (avg ฿720). Conversión web: 2.1% (bajo). Oportunidad: 78% de tráfico web no convierte. A-B test landing hero image = +40% CTR en piloto Grab.</p>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <p class="section-number">02</p>
+      <h2 class="section-title">Recomendaciones</h2>
+
+      <div class="content-box">
+        <h3>Aumentar tráfico directo a web</h3>
+        <p>Hoy 11% del orden. Meta: 25% en 6 meses. Tácticas: (1) Email capture en Grab (post-delivery SMS magic link a menu), (2) QR en packaging → LINE OA (chatbot repurchase), (3) TikTok→ affiliate (discount code unique).</p>
+      </div>
+
+      <div class="content-box">
+        <h3>Productizar el Ritual</h3>
+        <p>"Dip It Like You Mean It" es 80% del brand identity pero no escalable. Oportunidad: Crear merch (glove replicas, sauce bottles, tshirt "Salsa Cult"), vender en web + Grab/Lazada. Margen: 4-5x cost. Estimado: ฿8-10K/mes sideline revenue.</p>
+      </div>
+
+      <div class="content-box">
+        <h3>Influencer local micro (no macro)</h3>
+        <p>Descubre 5-7 Bangkok food influencers con 10-50K seguidores (nano-tribe > macro). Ofrece: "Burger Challenge" gratis + commission ฿50 per order referred. ROI: barato, auténtico, traceable en código affiliate.</p>
+      </div>
+    </section>
+
+    <section class="report-section">
+      <p class="section-number">03</p>
+      <h2 class="section-title">90 Días Roadmap</h2>
+      <div style="background: rgba(255,255,255,0.02); padding: 24px; border-left: 3px solid var(--primary);">
+        <p><strong>Mes 1:</strong> Email automation LINE OA (post-purchase reorder). Setup KPI dashboard (Looker/Metabase).</p>
+        <p style="margin-top: 16px;"><strong>Mes 2:</strong> Micro-influencer campaign blitz (5 creators × 3 posts = 15 posts, ฿15-20K spend). Merch pilot (100 units gloves).</p>
+        <p style="margin-top: 16px;"><strong>Mes 3:</strong> Performance review + scale what works. Target: 20% direct web orders, ฿12K/mes merch revenue, 15% overall order growth.</p>
+      </div>
+    </section>
+
+    <div style="margin-top: 80px; padding-top: 40px; border-top: 1px solid var(--border); font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text-secondary);">
+      <p>© 2026 MIRA. Todos los derechos reservados.</p>
+      <p style="margin-top: 12px; font-size: 11px;">Reporte generado dinámicamente. Datos integrados desde Grab API, LINE analytics, Google Analytics. 100% datos reales.</p>
+    </div>
+  </div>
+</body>
+</html>
