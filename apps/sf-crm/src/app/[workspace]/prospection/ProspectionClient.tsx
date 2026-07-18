@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Papa from 'papaparse'
 import type { Workspace } from '@/types'
 import styles from './prospection.module.css'
 
@@ -30,6 +31,7 @@ interface SearchResponse {
 }
 
 export default function ProspectionClient({ workspaceId, workspace }: ProspectionClientProps) {
+  const [tab, setTab] = useState<'search' | 'import'>('search')
   const [searchQuery, setSearchQuery] = useState('')
   const [results, setResults] = useState<SearchResponse['results']>([])
   const [loading, setLoading] = useState(false)
@@ -37,6 +39,8 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
   const [costData, setCostData] = useState<Omit<SearchResponse, 'results' | 'success'> | null>(null)
   const [addingIds, setAddingIds] = useState(new Set<number>())
   const [addedIds, setAddedIds] = useState(new Set<number>())
+  const [csvResults, setCsvResults] = useState<{ imported: number; failed: number; errors: string[] } | null>(null)
+  const [csvLoading, setCsvLoading] = useState(false)
 
   async function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -138,6 +142,52 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
     }
   }
 
+  async function handleCsvImport(file: File) {
+    setCsvLoading(true)
+    setCsvResults(null)
+    try {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: async (results) => {
+          const rows = results.data as Record<string, any>[]
+          const leads = rows.map(row => ({
+            firstName: row.first_name || row.firstName || '',
+            lastName: row.last_name || row.lastName || '',
+            email: row.email || '',
+            company: row.company || row.company_name || '',
+            title: row.title || '',
+            phone: row.phone || '',
+            linkedinUrl: row.linkedin || row.linkedin_url || '',
+            geography: row.geography || row.location || '',
+            industry: row.industry || '',
+          }))
+
+          const response = await fetch('/api/leads/import', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ leads, workspaceId }),
+          })
+
+          const data = await response.json()
+          setCsvResults({
+            imported: data.imported || 0,
+            failed: data.failed || 0,
+            errors: data.errors || [],
+          })
+          setCsvLoading(false)
+        },
+        error: (error) => {
+          setError(`CSV parse error: ${error.message}`)
+          setCsvLoading(false)
+        },
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'CSV import failed')
+      setCsvLoading(false)
+    }
+  }
+
   const budgetPercentage = costData
     ? (costData.monthlySpendUsd / costData.monthlyLimitUsd) * 100
     : 0
@@ -149,28 +199,99 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
         <p>{workspace.name}</p>
       </div>
 
-      <div className={styles.searchSection}>
-        <form onSubmit={handleSearch} className={styles.searchForm}>
-          <input
-            type="text"
-            placeholder="Enter company domain (e.g., acme.com)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={styles.searchInput}
-          />
-          <button type="submit" disabled={loading} className={styles.searchButton}>
-            {loading ? 'Searching...' : 'Search'}
-          </button>
-        </form>
+      <div style={{ marginBottom: '20px', display: 'flex', gap: '10px' }}>
+        <button
+          onClick={() => setTab('search')}
+          style={{
+            padding: '10px 15px',
+            background: tab === 'search' ? 'var(--color-primary)' : 'var(--bg-secondary)',
+            color: tab === 'search' ? 'white' : 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-md)',
+            cursor: 'pointer',
+            fontWeight: tab === 'search' ? '600' : '400',
+          }}
+        >
+          Search Apollo
+        </button>
+        <button
+          onClick={() => setTab('import')}
+          style={{
+            padding: '10px 15px',
+            background: tab === 'import' ? 'var(--color-primary)' : 'var(--bg-secondary)',
+            color: tab === 'import' ? 'white' : 'var(--text-primary)',
+            border: '1px solid var(--border-color)',
+            borderRadius: 'var(--radius-md)',
+            cursor: 'pointer',
+            fontWeight: tab === 'import' ? '600' : '400',
+          }}
+        >
+          Import CSV
+        </button>
       </div>
 
-      {error && (
+      {tab === 'search' && (
+        <div className={styles.searchSection}>
+          <form onSubmit={handleSearch} className={styles.searchForm}>
+            <input
+              type="text"
+              placeholder="Enter company domain (e.g., acme.com)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className={styles.searchInput}
+            />
+            <button type="submit" disabled={loading} className={styles.searchButton}>
+              {loading ? 'Searching...' : 'Search'}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {tab === 'import' && (
+        <div className={styles.searchSection}>
+          <div style={{ padding: '20px', background: 'var(--bg-secondary)', borderRadius: 'var(--radius-md)', border: '2px dashed var(--border-color)' }}>
+            <label style={{ display: 'flex', flexDirection: 'column', gap: '10px', cursor: 'pointer' }}>
+              <span style={{ fontWeight: '600' }}>📁 Upload CSV file</span>
+              <input
+                type="file"
+                accept=".csv"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    handleCsvImport(e.target.files[0])
+                  }
+                }}
+                disabled={csvLoading}
+                style={{ fontSize: '14px' }}
+              />
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                Expected columns: email, first_name, last_name, company, title, phone, linkedin, geography, industry
+              </span>
+            </label>
+          </div>
+          {csvResults && (
+            <div style={{ marginTop: '15px', padding: '15px', background: 'rgba(34, 197, 94, 0.1)', borderRadius: 'var(--radius-md)', border: '1px solid var(--color-success)' }}>
+              <div>✓ Imported: <strong>{csvResults.imported}</strong></div>
+              <div>✗ Failed: <strong>{csvResults.failed}</strong></div>
+              {csvResults.errors.length > 0 && (
+                <div style={{ marginTop: '10px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                  <p>Errors:</p>
+                  <ul style={{ margin: '5px 0 0 20px' }}>
+                    {csvResults.errors.map((err, i) => <li key={i}>{err}</li>)}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {error && tab === 'search' && (
         <div className={styles.errorBanner}>
           <span>⚠️ {error}</span>
         </div>
       )}
 
-      {costData && (
+      {tab === 'search' && costData && (
         <div className={styles.costIndicator}>
           <div className={styles.costRow}>
             <span className={styles.costLabel}>Monthly Budget:</span>
@@ -196,7 +317,7 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
         </div>
       )}
 
-      {results.length > 0 && (
+      {tab === 'search' && results.length > 0 && (
         <div className={styles.results}>
           <div className={styles.resultsHeader}>
             <h2>Results ({results.length})</h2>
@@ -261,7 +382,7 @@ export default function ProspectionClient({ workspaceId, workspace }: Prospectio
         </div>
       )}
 
-      {!results.length && !loading && !error && (
+      {tab === 'search' && !results.length && !loading && !error && (
         <div className={styles.empty}>
           <p>🔍 Enter a company domain to search for prospects</p>
         </div>
