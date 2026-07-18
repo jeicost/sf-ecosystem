@@ -1,5 +1,4 @@
-import { getSession } from '@/lib/auth'
-import { redirect } from 'next/navigation'
+import { requireWorkspaceSession } from '@/lib/auth'
 import DiscoveryClient from './DiscoveryClient'
 
 export const metadata = {
@@ -12,10 +11,7 @@ export default async function DiscoveryPage({
   params: Promise<{ workspace: string }>
 }) {
   const { workspace } = await params
-  const session = await getSession()
-  if (!session || session.workspace.id !== workspace) {
-    redirect('/')
-  }
+  const workspaceData = await requireWorkspaceSession(workspace)
 
-  return <DiscoveryClient workspaceId={workspace} workspace={session.workspace} />
+  return <DiscoveryClient workspaceId={workspace} workspace={workspaceData} />
 }

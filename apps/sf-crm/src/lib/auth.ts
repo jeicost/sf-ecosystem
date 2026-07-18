@@ -1,5 +1,6 @@
 import { cookies } from 'next/headers'
-import type { AuthSession } from '@/types'
+import { redirect } from 'next/navigation'
+import type { AuthSession, Workspace } from '@/types'
 import { validateWorkspacePassword, getWorkspace } from './workspaces'
 
 const SESSION_COOKIE_NAME = 'sf-crm-session'
@@ -74,4 +75,13 @@ export async function requireAuth(): Promise<AuthSession> {
 
 export function verifyWorkspacePassword(workspaceType: string, password: string): boolean {
   return validateWorkspacePassword(workspaceType, password)
+}
+
+// Helper for page.tsx files: validates session and workspace match, redirects if invalid
+export async function requireWorkspaceSession(workspaceId: string): Promise<Workspace> {
+  const session = await getSession()
+  if (!session || session.workspace.id !== workspaceId) {
+    redirect('/')
+  }
+  return session.workspace
 }
