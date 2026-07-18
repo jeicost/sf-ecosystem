@@ -1,15 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Resend } from 'resend'
 import { requireAuth } from '@/lib/auth'
 import { createOutreachEmail, createActivity } from '@/lib/db'
 import { handleApiError } from '@/lib/api-errors'
 
-// This would use Resend API in production
-// For now, we'll create mock implementation
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: NextRequest) {
   try {
-    await requireAuth()
-    const { subject, body, recipients, workspaceId } = await request.json()
+    const session = await requireAuth()
+    const { subject, body, recipients, workspaceId, contactId } = await request.json()
 
     if (!Array.isArray(recipients) || recipients.length === 0) {
       return NextResponse.json(
@@ -25,36 +25,57 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    if (!process.env.RESEND_API_KEY) {
+      return NextResponse.json(
+        { error: 'Resend API key not configured' },
+        { status: 500 }
+      )
+    }
+
     const results = {
       sent: 0,
       failed: 0,
       emails: [] as any[],
+      errors: [] as string[],
     }
 
     for (const email of recipients) {
       try {
-        // In production, call Resend API here
-        // const response = await resend.emails.send({ to: email, subject, html: body })
+        // Send via Resend API
+        const response = await resend.emails.send({
+          from: 'noreply@startupsfactory.es',
+          to: email,
+          subject,
+          html: body,
+        })
 
-        // For now, create local record
+        if (response.error) {
+          results.failed++
+          results.errors.push(`${email}: ${response.error.message}`)
+          continue
+        }
+
+        // Create local record
         const outreachEmail = await createOutreachEmail({
-          contactId: '', // Would be looked up from contact
+          contactId: contactId || '',
           to: email,
           subject,
           body,
           status: 'sent',
           sentAt: new Date().toISOString(),
-          workspaceId,
+          workspaceId: workspaceId || session.workspace.id,
         })
 
         // Log activity
-        await createActivity({
-          contactId: '', // Would be looked up from contact
-          type: 'email_sent',
-          description: `Email sent: ${subject}`,
-          metadata: { emailId: outreachEmail.id },
-          createdBy: 'system',
-        })
+        if (contactId) {
+          await createActivity({
+            contactId,
+            type: 'email_sent',
+            description: `Email sent: ${subject}`,
+            metadata: { emailId: outreachEmail.id, resendId: response.data?.id },
+            createdBy: session.workspace.id,
+          })
+        }
 
         results.sent++
         results.emails.push(outreachEmail)
