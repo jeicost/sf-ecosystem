@@ -16,7 +16,7 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAuth()
-    const { company, workspaceId } = await request.json()
+    const { company, workspaceId, icpId } = await request.json()
 
     if (!company || company.trim().length === 0) {
       return NextResponse.json(
@@ -25,27 +25,43 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create discovery run record
+    // Create discovery run record in pending status
     const run = await createDiscoveryRun({
       workspaceId: workspaceId || session.workspace.id,
       clientId: session.workspace.clientId,
       company: company.trim(),
-      status: 'pending',
+      status: 'running',
       results: {},
     })
 
-    // In production, this would:
-    // 1. Call Sales Engine discovery API
-    // 2. Update run status to 'running'
-    // 3. Process results asynchronously
-    // 4. Update run with results and status 'completed'
+    // Fire off discovery via SF-Sales-Engine (non-blocking)
+    const salesEngineUrl = process.env.SALES_ENGINE_API_URL || 'http://localhost:8000'
+    const salesEngineKey = process.env.SALES_ENGINE_API_KEY
 
-    // For now, return mock pending status
+    if (salesEngineKey && salesEngineKey !== 'dev-local-test-key-2026') {
+      // Call discovery endpoint in background (don't wait for response)
+      fetch(`${salesEngineUrl}/discovery/run`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': salesEngineKey,
+        },
+        body: JSON.stringify({
+          client_id: session.workspace.clientId,
+          icp_id: icpId,
+          query: company.trim(),
+        }),
+      }).catch((err) => {
+        console.error('Background discovery call failed:', err)
+      })
+    }
+
     return NextResponse.json({
       success: true,
       run: {
         ...run,
-        status: 'pending',
+        status: 'running',
+        message: 'Discovery started. Results will update as they come in.',
       },
     })
   } catch (error) {

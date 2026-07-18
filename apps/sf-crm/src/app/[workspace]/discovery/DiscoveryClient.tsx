@@ -28,6 +28,10 @@ export default function DiscoveryClient({ workspaceId, workspace }: DiscoveryCli
     }
 
     loadRuns()
+
+    // Poll for updates every 5 seconds
+    const interval = setInterval(loadRuns, 5000)
+    return () => clearInterval(interval)
   }, [])
 
   async function handleNewRun(e: React.FormEvent) {
