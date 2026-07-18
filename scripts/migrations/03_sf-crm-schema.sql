@@ -63,8 +63,10 @@ CREATE TABLE IF NOT EXISTS pipeline_stages (
 
 -- Leads (from sf-crm / Startup Factory)
 -- Used by SF workspace only; Dadybox/Discoolver use crm_contacts instead
+-- workspace_id allows RLS isolation (all leads from SF workspace share workspace_id)
 CREATE TABLE IF NOT EXISTS leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  workspace_id TEXT NOT NULL,
   client_id UUID NOT NULL,
   first_name TEXT,
   last_name TEXT,
@@ -266,7 +268,7 @@ CREATE POLICY "Usage log: Workspace access" ON usage_log
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_crm_contacts_workspace ON crm_contacts(workspace_id);
 CREATE INDEX IF NOT EXISTS idx_leads_workspace ON leads(workspace_id);
-CREATE INDEX IF NOT EXISTS idx_leads_score ON leads(score DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_hot_score ON leads(hot_score DESC);
 CREATE INDEX IF NOT EXISTS idx_lead_activities_lead_id ON lead_activities(lead_id);
 CREATE INDEX IF NOT EXISTS idx_discovery_runs_workspace ON discovery_runs(workspace_id);
 CREATE INDEX IF NOT EXISTS idx_outbound_log_lead_id ON outbound_log(lead_id);
