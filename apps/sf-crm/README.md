@@ -61,11 +61,12 @@ APOLLO_API_KEY=...
 
 ## Database Schema
 
-### leads (SF Workspace)
-- `id`, `client_id`, `first_name`, `last_name`, `company_name`, `title`, `email`, `phone`, `linkedin_url`, `geography`, `industry`, `score`, `stage`, `icebreaker_used`, `proposal_sent`
+### leads (SF Workspace only)
+- `id` (UUID), `client_id` (UUID), `first_name`, `last_name`, `company_name`, `title`, `email`, `phone`, `linkedin_url`, `geography`, `industry`, `hot_score` (INT, 0-100), `stage`, `icebreaker_used`, `proposal_sent`, `created_at`, `updated_at`
 
-### crm_contacts (Other Workspaces)
-- `id`, `workspace_id`, `first_name`, `last_name`, `company`, `title`, `email`, `phone`, `linkedin_url`, `geography`, `industry`, `score`, `stage`
+### crm_contacts (Dadybox, Discoolver, other workspaces)
+- `id` (UUID), `workspace_id` (TEXT), `first_name`, `last_name`, `company_name`, `title`, `email`, `phone`, `linkedin_url`, `geography`, `industry`, `hot_score` (INT, 0-100), `stage`, `notes`, `created_at`, `updated_at`
+- **Important**: camelCase ↔ snake_case mapping handled by `lib/db.ts` (mapCrmContactRow / unmapCrmContactRow)
 
 ### lead_activities
 - `id`, `contact_id`, `type`, `description`, `metadata`, `created_at`, `created_by`

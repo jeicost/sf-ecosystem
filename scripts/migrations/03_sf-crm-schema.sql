@@ -31,18 +31,22 @@ CREATE TABLE IF NOT EXISTS workspaces (
 );
 
 -- CRM Contacts (from sf-crm) - main contacts table
+-- Maps to db.ts mapCrmContactRow: camelCase ↔ snake_case translation
 CREATE TABLE IF NOT EXISTS crm_contacts (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   workspace_id TEXT NOT NULL,
-  name TEXT NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
   email TEXT,
   phone TEXT,
-  company TEXT,
+  company_name TEXT,
   title TEXT,
-  source TEXT,
-  status TEXT DEFAULT 'lead',
+  linkedin_url TEXT,
+  geography TEXT,
+  industry TEXT,
+  hot_score INT DEFAULT 0,
+  stage TEXT DEFAULT 'prospect',
   notes TEXT,
-  metadata JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
@@ -57,22 +61,24 @@ CREATE TABLE IF NOT EXISTS pipeline_stages (
   created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Leads (from sf-sales-engine)
+-- Leads (from sf-crm / Startup Factory)
+-- Used by SF workspace only; Dadybox/Discoolver use crm_contacts instead
 CREATE TABLE IF NOT EXISTS leads (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  workspace_id TEXT NOT NULL,
-  company_name TEXT NOT NULL,
-  website TEXT,
+  client_id UUID NOT NULL,
+  first_name TEXT,
+  last_name TEXT,
+  email TEXT,
+  phone TEXT,
+  company_name TEXT,
+  title TEXT,
+  linkedin_url TEXT,
+  geography TEXT,
   industry TEXT,
-  employee_count TEXT,
-  revenue_range TEXT,
-  decision_maker_name TEXT,
-  decision_maker_email TEXT,
-  decision_maker_phone TEXT,
-  discovery_status TEXT DEFAULT 'discovered',
-  score INT,
-  icp_fit TEXT,
-  discovered_at TIMESTAMP,
+  hot_score INT DEFAULT 0,
+  stage TEXT DEFAULT 'prospect',
+  icebreaker_used BOOLEAN DEFAULT false,
+  proposal_sent BOOLEAN DEFAULT false,
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
