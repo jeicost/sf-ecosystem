@@ -11,6 +11,12 @@ interface SidebarProps {
 
 const SECTIONS = [
   {
+    title: 'Overview',
+    items: [
+      { label: 'Dashboard', href: '/dashboard' },
+    ],
+  },
+  {
     title: 'Pipeline',
     items: [
       { label: 'Pipeline', href: '/pipeline' },

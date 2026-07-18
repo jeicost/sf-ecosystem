@@ -32,7 +32,7 @@ export default function LoginPage() {
         return
       }
 
-      router.push(`/${selectedWorkspace}/pipeline`)
+      router.push(`/${selectedWorkspace}/dashboard`)
     } catch (err) {
       setError('An error occurred. Please try again.')
       setLoading(false)
