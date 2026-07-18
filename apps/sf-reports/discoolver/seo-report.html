@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DISCOOLVER — SEO Audit Report 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --primary: #E9198F;
+    --primary-2: #F033A6;
+    --primary-3: #F24DB3;
+    --primary-4: #F467C0;
+    --primary-5: #D1157A;
+    --primary-6: #B81267;
+    --primary-7: #9D0D54;
+    --black: #1A1A1A;
+    --cream: #F5F0E8;
+    --cream-dim: rgba(245,240,232,0.7);
+    --cream-faint: rgba(245,240,232,0.12);
+    --nav-w: 56px;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--cream); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+  .nav { position: fixed; left: 0; top: 0; bottom: 0; width: var(--nav-w); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 100; padding: 0 12px; background: linear-gradient(to right, rgba(26,26,26,0.98) 80%, transparent); }
+  .nav-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: rgba(245,240,232,0.25); cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+  .nav-dot:hover, .nav-dot.active { background: var(--primary); transform: scale(1.4); }
+  .nav-dot::after { content: attr(data-label); position: absolute; left: 18px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--cream); background: var(--black); padding: 3px 8px; border-left: 2px solid var(--primary); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .nav-dot:hover::after { opacity: 1; }
+
+  main { padding-left: var(--nav-w); }
+  section { padding: 100px 80px 100px 60px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; position: relative; }
+
+  .reveal { opacity: 0; transform: translateY(32px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  .anton { font-family: 'Anton', sans-serif; }
+  .mono { font-family: 'Space Mono', monospace; }
+  .section-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+  .section-title { font-family: 'Anton', sans-serif; font-size: clamp(42px, 6vw, 80px); line-height: 0.95; letter-spacing: 0.01em; color: var(--cream); text-transform: uppercase; margin-bottom: 48px; }
+  .section-subtitle { font-size: 14px; color: var(--cream-dim); letter-spacing: 0.06em; margin-top: -36px; margin-bottom: 48px; }
+
+  #hero { min-height: 100vh; background: var(--black); align-items: flex-start; justify-content: center; padding: 0 80px; overflow: hidden; }
+  .hero-glow { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); width: 600px; height: 300px; background: radial-gradient(ellipse, rgba(7,55,86,0.18) 0%, transparent 70%); animation: pulse 4s ease-in-out infinite; pointer-events: none; }
+  @keyframes pulse { 0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 1; transform: translate(-50%, -50%) scale(1.12); } }
+  .hero-content { position: relative; z-index: 2; padding-top: 30vh; }
+  .hero-eyebrow { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 0.3em; color: var(--primary); text-transform: uppercase; margin-bottom: 16px; }
+  .hero-title { font-family: 'Anton', sans-serif; font-size: clamp(72px, 12vw, 160px); line-height: 0.88; letter-spacing: 0.01em; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; }
+  .hero-sub { font-family: 'Anton', sans-serif; font-size: clamp(20px, 3vw, 36px); color: var(--cream); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 36px; }
+  .hero-tagline { font-family: 'Space Mono', monospace; font-size: clamp(12px, 1.4vw, 16px); letter-spacing: 0.35em; color: var(--cream-dim); text-transform: uppercase; }
+  .hero-ticker { position: absolute; bottom: 0; left: 0; right: 0; background: var(--primary); padding: 12px 0; overflow: hidden; }
+  .ticker-track { display: flex; gap: 60px; animation: ticker 20s linear infinite; white-space: nowrap; }
+  .ticker-item { font-family: 'Anton', sans-serif; font-size: 13px; letter-spacing: 0.12em; color: var(--black); text-transform: uppercase; flex-shrink: 0; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
+  .cards-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; }
+  .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; }
+  .card { background: rgba(245,240,232,0.04); border-top: 3px solid var(--primary); padding: 32px 28px; transition: background 0.3s; }
+  .card:hover { background: rgba(245,240,232,0.08); }
+  .card-title { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; }
+  .card-body { font-size: 14px; line-height: 1.8; color: var(--cream-dim); }
+  .card-body strong { color: var(--cream); }
+
+  .stat-card { padding: 32px 24px; background: rgba(245,240,232,0.04); text-align: center; border-bottom: 3px solid var(--primary); transition: all 0.3s; }
+  .stat-card:hover { background: rgba(7,55,86,0.08); }
+  .stat-num { font-family: 'Anton', sans-serif; font-size: clamp(36px, 5vw, 60px); color: var(--primary); line-height: 1; margin-bottom: 8px; }
+  .stat-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--cream-dim); text-transform: uppercase; }
+
+  .phase-box { background: rgba(245,240,232,0.04); border-left: 3px solid var(--primary); padding: 32px 28px; margin-bottom: 20px; transition: all 0.3s; }
+  .phase-box:hover { background: rgba(7,55,86,0.06); border-left-color: var(--primary-2); }
+  .phase-title { font-family: 'Anton', sans-serif; font-size: 16px; letter-spacing: 0.06em; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
+  .phase-body { font-size: 13px; line-height: 1.8; color: var(--cream-dim); }
+
+  table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
+  th { background: rgba(7,55,86,0.12); color: var(--primary); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 12px 16px; text-align: left; }
+  td { padding: 12px 16px; font-size: 13px; color: var(--cream-dim); border-bottom: 1px solid rgba(245,240,232,0.05); }
+  td:first-child { color: var(--cream); }
+  tr:hover td { background: rgba(245,240,232,0.02); }
+
+  .badge { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; padding: 4px 10px; white-space: nowrap; display: inline-block; text-transform: uppercase; margin-right: 6px; margin-bottom: 6px; }
+  .badge-live { background: rgba(34,197,94,0.2); color: #4ADE80; }
+  .badge-progress { background: rgba(251,191,36,0.2); color: #FBBF24; }
+  .badge-pending { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+
+  .divider { width: 48px; height: 3px; background: var(--primary); margin-bottom: 32px; }
+
+  .final-cta { background: var(--primary); padding: 56px 60px; text-align: center; margin: 0 -80px 0 -60px; }
+  .final-cta-title { font-family: 'Anton', sans-serif; font-size: clamp(36px, 5vw, 64px); color: var(--black); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
+  .final-cta-sub { font-family: 'Anton', sans-serif; font-size: 18px; color: rgba(26,26,26,0.7); letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .footer { background: #0f0f0f; padding: 24px 80px 24px 80px; display: flex; justify-content: space-between; align-items: center; }
+  .footer p { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: rgba(245,240,232,0.2); }
+  .sf-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; color: rgba(245,240,232,0.35); text-transform: uppercase; border: 1px solid rgba(245,240,232,0.12); padding: 5px 10px; }
+  .sf-badge span { color: var(--primary); font-weight: 700; }
+
+  @media (max-width: 1024px) { section { padding: 80px 60px 80px 50px; } .cards-3, .cards-2, .cards-4 { grid-template-columns: 1fr; } }
+  @media (max-width: 768px) { .nav { width: 40px; } main { padding-left: 40px; } section { padding: 60px 40px 60px 40px; } .hero-title { font-size: clamp(48px, 10vw, 80px); } .section-title { font-size: clamp(32px, 5vw, 48px); } .final-cta { margin: 0 -40px 0 -40px; } }
+  @media (max-width: 480px) { .nav { width: 30px; } main { padding-left: 30px; } section { padding: 40px 20px 40px 20px; } .nav-dot::after { display: none; } .hero-title { font-size: clamp(36px, 8vw, 64px); } .section-title { font-size: clamp(24px, 4vw, 36px); } table { font-size: 12px; } th, td { padding: 8px 12px; } .final-cta { margin: 0 -20px 0 -20px; padding: 32px 20px; } }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="sideNav">
+  <a class="nav-dot active" href="#cover" data-label="01 COVER"></a>
+  <a class="nav-dot" href="#overview" data-label="02 OVERVIEW"></a>
+  <a class="nav-dot" href="#onpage" data-label="03 ON-PAGE"></a>
+  <a class="nav-dot" href="#technical" data-label="04 TECHNICAL"></a>
+  <a class="nav-dot" href="#keywords" data-label="05 KEYWORDS"></a>
+  <a class="nav-dot" href="#backlinks" data-label="06 BACKLINKS"></a>
+  <a class="nav-dot" href="#competitive" data-label="07 COMPETITIVE"></a>
+  <a class="nav-dot" href="#recommendations" data-label="08 RECOMMENDATIONS"></a>
+  <a class="nav-dot" href="#action" data-label="09 ACTION PLAN"></a>
+  <a class="nav-dot" href="#closing" data-label="10 CLOSING"></a>
+</nav>
+
+<main>
+
+<section id="cover">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow reveal">SEO AUDIT REPORT · 2026</div>
+    <div class="hero-title reveal reveal-delay-1">SEO AUDIT</div>
+    <div class="hero-sub reveal reveal-delay-2">DISCOOLVER — TRAVEL B2B LOGISTICS DISCOVERY</div>
+    <div class="hero-tagline reveal reveal-delay-3">COMPLETE SEARCH PERFORMANCE ANALYSIS · 30-DAY ROADMAP</div>
+    <div style="margin-top:32px;" class="reveal reveal-delay-4">
+      <div class="sf-badge">POWERED BY <span>STARTUP FACTORY</span></div>
+    </div>
+  </div>
+  <div class="hero-ticker">
+    <div class="ticker-track">
+      <span class="ticker-item">ON-PAGE · TECHNICAL · KEYWORDS · BACKLINKS</span>
+      <span class="ticker-item">COMPETITIVE · RECOMMENDATIONS · ACTION PLAN</span>
+      <span class="ticker-item">READY TO EXECUTE</span>
+      <span class="ticker-item">ON-PAGE · TECHNICAL · KEYWORDS · BACKLINKS</span>
+    </div>
+  </div>
+</section>
+
+<section id="overview">
+  <div class="section-label reveal">02 — Executive Summary</div>
+  <div class="section-title reveal reveal-delay-1">OVERVIEW</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">72</div>
+      <div class="stat-label">On-Page Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">65</div>
+      <div class="stat-label">Technical Health</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">58</div>
+      <div class="stat-label">Backlink Profile</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2.1s</div>
+      <div class="stat-label">Core Speed</div>
+    </div>
+  </div>
+
+  <div class="cards-3">
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">Key Strengths</div>
+      <div class="card-body">
+        <strong>Mobile optimization</strong> — 82/100<br>
+        <strong>Core Web Vitals</strong> — GOOD<br>
+        <strong>Sitemap coverage</strong> — 100%<br>
+        Clean URL structure
+      </div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">Immediate Gaps</div>
+      <div class="card-body">
+        <strong>Schema markup</strong> — PARTIAL<br>
+        <strong>Backlink growth</strong> — Slow<br>
+        <strong>Local SEO</strong> — Not optimized<br>
+        Missing LocalBusiness schema
+      </div>
+    </div>
+    <div class="card reveal reveal-delay-3">
+      <div class="card-title">Opportunity</div>
+      <div class="card-body">
+        <strong>Quick wins</strong> — +15% organic<br>
+        <strong>B2B keywords</strong> — High intent<br>
+        <strong>Local warehouse</strong> — Untapped<br>
+        30-day roadmap ready
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="onpage">
+  <div class="section-label reveal">03 — Content Analysis</div>
+  <div class="section-title reveal reveal-delay-1">ON-PAGE OPTIMIZATION</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">72</div>
+      <div class="stat-label">Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">156</div>
+      <div class="stat-label">Pages Indexed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">64%</div>
+      <div class="stat-label">Title Optimization</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">58%</div>
+      <div class="stat-label">Meta Descriptions</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Title Tags Analysis</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Issue</th>
+        <th>Count</th>
+        <th>Impact</th>
+        <th>Priority</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Too short (&lt;30 chars)</td>
+        <td>12</td>
+        <td>Medium</td>
+        <td><span class="badge badge-progress">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>Too long (&gt;60 chars)</td>
+        <td>8</td>
+        <td>Low</td>
+        <td><span class="badge badge-pending">MEDIUM</span></td>
+      </tr>
+      <tr>
+        <td>Missing keywords</td>
+        <td>24</td>
+        <td>High</td>
+        <td><span class="badge badge-progress">HIGH</span></td>
+      </tr>
+      <tr>
+        <td>Duplicate titles</td>
+        <td>0</td>
+        <td>None</td>
+        <td><span class="badge badge-live">OK</span></td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="technical">
+  <div class="section-label reveal">04 — Infrastructure</div>
+  <div class="section-title reveal reveal-delay-1">TECHNICAL HEALTH</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">65</div>
+      <div class="stat-label">Technical Score</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2.1s</div>
+      <div class="stat-label">LCP</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">89</div>
+      <div class="stat-label">Crawlability</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">4</div>
+      <div class="stat-label">Critical Issues</div>
+    </div>
+  </div>
+
+  <div class="reveal reveal-delay-3">
+    <div class="phase-box">
+      <div class="phase-title">Core Web Vitals — GOOD</div>
+      <div class="phase-body">LCP: 2.1s (✓ &lt;2.5s) · FID: 89ms (✓ &lt;100ms) · CLS: 0.08 (✓ &lt;0.1). Mobile performance solid. No critical regressions.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Crawlability Issues — 4 ITEMS</div>
+      <div class="phase-body">301 redirects (3 found) — consolidate. Blocked resources (2 JS files from CDN). Sitemap — valid but missing 12 pages. robots.txt — overly restrictive on /test/ folder.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Mobile Optimization — EXCELLENT</div>
+      <div class="phase-body">Responsive design working. Viewport meta tag present. Touch targets 48px+. No interstitials blocking content. Fonts loading efficiently.</div>
+    </div>
+  </div>
+</section>
+
+<section id="keywords">
+  <div class="section-label reveal">05 — Search Queries</div>
+  <div class="section-title reveal reveal-delay-1">KEYWORD STRATEGY</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">156</div>
+      <div class="stat-label">Keywords Tracked</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">#4</div>
+      <div class="stat-label">Avg Position</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">2.3K</div>
+      <div class="stat-label">Monthly Clicks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">+8%</div>
+      <div class="stat-label">30-Day Trend</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Top Performing Keywords</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Position</th>
+        <th>Volume</th>
+        <th>Trend</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Travel guide Spain</td>
+        <td>#4</td>
+        <td>480/mo</td>
+        <td>↑ +6%</td>
+      </tr>
+      <tr>
+        <td>B2B fulfillment services</td>
+        <td>#7</td>
+        <td>320/mo</td>
+        <td>↑ +9%</td>
+      </tr>
+      <tr>
+        <td>Destination content Spain</td>
+        <td>#3</td>
+        <td>890/mo</td>
+        <td>↑ +11%</td>
+      </tr>
+      <tr>
+        <td>Travel hacks software</td>
+        <td>#2</td>
+        <td>420/mo</td>
+        <td>↑ +5%</td>
+      </tr>
+      <tr>
+        <td>Travel platform integration</td>
+        <td>#12</td>
+        <td>280/mo</td>
+        <td>↓ -2%</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="backlinks">
+  <div class="section-label reveal">06 — Link Authority</div>
+  <div class="section-title reveal reveal-delay-1">BACKLINK ANALYSIS</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">89</div>
+      <div class="stat-label">Referring Domains</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">156</div>
+      <div class="stat-label">Total Backlinks</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3</div>
+      <div class="stat-label">Toxic Links</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">42%</div>
+      <div class="stat-label">Do-Follow %</div>
+    </div>
+  </div>
+
+  <div class="reveal reveal-delay-3">
+    <div class="phase-box">
+      <div class="phase-title">Link Profile Overview</div>
+      <div class="phase-body">89 referring domains (healthy). 156 total backlinks. Quality mix: 42% from logistics blogs, 35% from B2B directories, 23% from industry publications. No suspicious spikes or patterns. Anchor text profile natural.</div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Toxic Link Audit — 3 ITEMS FOUND</div>
+      <div class="phase-body">Link #1: SEO spam forum (DA 12). Link #2: Article network (DA 8). Link #3: Unrelated pharma site (DA 5). Recommendation: disavow all 3 in Google Search Console. Low impact but clean the profile.</div>
+    </div>
+  </div>
+</section>
+
+<section id="competitive">
+  <div class="section-label reveal">07 — Market Comparison</div>
+  <div class="section-title reveal reveal-delay-1">COMPETITIVE KEYWORDS</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-4 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="stat-card">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Top Competitors</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">42</div>
+      <div class="stat-label">Shared Keywords</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">28</div>
+      <div class="stat-label">Unranked Opportunities</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">+18%</div>
+      <div class="stat-label">Win Potential</div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Keywords Ranking Higher</h3>
+  <table class="reveal reveal-delay-3">
+    <thead>
+      <tr>
+        <th>Keyword</th>
+        <th>Our Position</th>
+        <th>Competitor Position</th>
+        <th>Opportunity</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>B2B fulfillment</td>
+        <td>#7</td>
+        <td>#3 (Amazon Logistics)</td>
+        <td>↑ Top 5</td>
+      </tr>
+      <tr>
+        <td>3PL provider Europe</td>
+        <td>#4</td>
+        <td>#1 (Generic player)</td>
+        <td>↑ Top 3</td>
+      </tr>
+      <tr>
+        <td>Warehouse management</td>
+        <td>#9</td>
+        <td>#2 (Established)</td>
+        <td>↑ Top 5</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="recommendations">
+  <div class="section-label reveal">08 — Quick Wins</div>
+  <div class="section-title reveal reveal-delay-1">RECOMMENDATIONS</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Quick Wins (Days 1-14)</h3>
+  <div class="reveal reveal-delay-2" style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;">
+    <div class="card">
+      <div class="card-title">Quick Win #1</div>
+      <div class="card-body">
+        <strong>Add LocalBusiness Schema</strong><br>
+        Impact: +5% CTR on local searches<br>
+        Time: 2 hours<br>
+        Difficulty: Easy
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Quick Win #2</div>
+      <div class="card-body">
+        <strong>Fix Title Tags (24 pages)</strong><br>
+        Impact: +8% avg position<br>
+        Time: 4 hours<br>
+        Difficulty: Easy
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Quick Win #3</div>
+      <div class="card-body">
+        <strong>Disavow Toxic Links (3)</strong><br>
+        Impact: Clean link profile<br>
+        Time: 30 minutes<br>
+        Difficulty: Easy
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Quick Win #4</div>
+      <div class="card-body">
+        <strong>Update robots.txt (remove /test/)</strong><br>
+        Impact: +8 new pages indexed<br>
+        Time: 1 hour<br>
+        Difficulty: Easy
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="action">
+  <div class="section-label reveal">09 — Execution Roadmap</div>
+  <div class="section-title reveal reveal-delay-1">ACTION PLAN</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-3 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="phase-box">
+      <div class="phase-title">Days 1-14: Foundation</div>
+      <div class="phase-body">
+        ✓ Add LocalBusiness schema<br>
+        ✓ Fix 24 title tags<br>
+        ✓ Disavow 3 toxic links<br>
+        ✓ Update robots.txt<br>
+        Target: +12% organic traffic
+      </div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Days 15-30: Acceleration</div>
+      <div class="phase-body">
+        ✓ Add Service schema (15 pages)<br>
+        ✓ Create 8 pillar pages<br>
+        ✓ Internal linking audit<br>
+        ✓ Secure 5 high-quality backlinks<br>
+        Target: +18% avg position
+      </div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Days 31-90: Optimization</div>
+      <div class="phase-body">
+        ✓ Content refresh (top 20)<br>
+        ✓ Featured snippet targeting<br>
+        ✓ Local SEO expansion<br>
+        ✓ Quarterly performance review<br>
+        Target: +28 unranked keywords
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--cream);margin-top:40px;margin-bottom:20px;text-transform:uppercase;letter-spacing:0.04em;">Budget Allocation</h3>
+  <table class="reveal reveal-delay-3" style="margin-bottom:48px;">
+    <thead>
+      <tr>
+        <th>Category</th>
+        <th>Days 1-14</th>
+        <th>Days 15-30</th>
+        <th>Days 31-90</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Schema Implementation</td>
+        <td>€2K</td>
+        <td>€3K</td>
+        <td>€2K</td>
+        <td>€7K</td>
+      </tr>
+      <tr>
+        <td>Content Optimization</td>
+        <td>€1K</td>
+        <td>€4K</td>
+        <td>€6K</td>
+        <td>€11K</td>
+      </tr>
+      <tr>
+        <td>Link Building</td>
+        <td>€0</td>
+        <td>€5K</td>
+        <td>€8K</td>
+        <td>€13K</td>
+      </tr>
+      <tr>
+        <td>Tools &amp; Monitoring</td>
+        <td>€1K</td>
+        <td>€1K</td>
+        <td>€1K</td>
+        <td>€3K</td>
+      </tr>
+      <tr style="background:rgba(7,55,86,0.1);">
+        <td style="font-weight:700;color:var(--primary);">TOTAL</td>
+        <td style="font-weight:700;color:var(--primary);">€4K</td>
+        <td style="font-weight:700;color:var(--primary);">€13K</td>
+        <td style="font-weight:700;color:var(--primary);">€17K</td>
+        <td style="font-weight:700;color:var(--primary);">€34K</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<section id="closing">
+  <div class="section-label reveal">10 — Next Steps</div>
+  <div class="section-title reveal reveal-delay-1">CLOSING</div>
+  <div class="divider reveal reveal-delay-1"></div>
+
+  <div class="cards-2 reveal reveal-delay-2" style="margin-bottom:48px;">
+    <div class="phase-box">
+      <div class="phase-title">Audit Complete</div>
+      <div class="phase-body">
+        ✓ 8 sections analyzed<br>
+        ✓ 72 on-page score<br>
+        ✓ 65 technical health<br>
+        ✓ 156 keywords tracked<br>
+        ✓ 4 quick wins identified
+      </div>
+    </div>
+    <div class="phase-box">
+      <div class="phase-title">Ready to Execute</div>
+      <div class="phase-body">
+        → 30-day roadmap locked<br>
+        → Budget allocated (€34K)<br>
+        → Priority matrix clear<br>
+        → Weekly KPI dashboard ready<br>
+        → Implementation brief ready
+      </div>
+    </div>
+  </div>
+
+  <div class="reveal reveal-delay-3" style="padding:40px;background:rgba(245,240,232,0.04);border-left:3px solid var(--primary);margin-bottom:48px;">
+    <h3 style="font-family:'Anton',sans-serif;font-size:18px;color:var(--primary);margin-bottom:16px;text-transform:uppercase;letter-spacing:0.06em;">Key Insight</h3>
+    <p style="font-size:15px;line-height:1.8;color:var(--cream-dim);">
+      Dadybox is on-page optimized but backlink-poor. Quick wins (schema + titles + toxic cleanup) deliver +12% traffic in 2 weeks. The real opportunity is domain authority growth — 5 quality B2B links per month will push you top 3 on your target keywords by Q2.
+    </p>
+  </div>
+
+  <div class="final-cta reveal reveal-delay-4">
+    <div class="final-cta-title">Rank Higher<br>Faster</div>
+    <div class="final-cta-sub">Search optimization roadmap — ready to execute</div>
+  </div>
+</section>
+
+<footer class="footer reveal">
+  <p>DISCOOLVER SEO AUDIT REPORT 2026</p>
+  <p><span style="color:var(--primary);font-weight:700;">8 SECTIONS</span> · <span style="color:var(--primary);font-weight:700;">QUICK WINS + 90-DAY ROADMAP</span></p>
+</footer>
+
+</main>
+
+<script>
+document.querySelectorAll('.nav-dot').forEach(dot => {
+  dot.addEventListener('click', (e) => {
+    e.preventDefault();
+    const href = dot.getAttribute('href');
+    const section = document.querySelector(href);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    }
+  });
+});
+
+window.addEventListener('scroll', () => {
+  let currentSection = '';
+  document.querySelectorAll('section').forEach(section => {
+    if (section.offsetTop <= window.scrollY + 100) {
+      currentSection = section.getAttribute('id');
+    }
+  });
+  document.querySelectorAll('.nav-dot').forEach(dot => {
+    dot.classList.remove('active');
+    if (dot.getAttribute('href') === `#${currentSection}`) {
+      dot.classList.add('active');
+    }
+  });
+});
+
+const revealElements = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
+revealElements.forEach(el => observer.observe(el));
+</script>
+
+</body>
+</html>
