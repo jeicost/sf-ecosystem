@@ -13,7 +13,7 @@ export function ReportSection({ number, title, subtitle, children, brandColor = 
     <div className="mb-16 pb-16" style={{ borderBottom: `1px solid rgba(245,240,232,0.05)` }}>
       <div className="mb-8">
         {number && (
-          <p style={{ fontFamily: 'Space Mono, monospace' }} className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: brandColor, opacity: 0.7, letterSpacing: '0.2em' }}>
+          <p style={{ fontFamily: 'Space Mono, monospace', color: brandColor, opacity: 0.7, letterSpacing: '0.2em' }} className="text-xs font-black uppercase tracking-widest mb-3">
             {number}
           </p>
         )}

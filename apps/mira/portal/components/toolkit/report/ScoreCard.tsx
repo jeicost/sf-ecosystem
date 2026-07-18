@@ -29,7 +29,7 @@ export function ScoreCard({ title, score, maxScore = 100, description, findings,
           {description && <p className="text-sm text-white/60 leading-relaxed">{description}</p>}
         </div>
         <div className="text-right flex-shrink-0">
-          <div style={{ fontFamily: 'Anton, sans-serif' }} className="text-6xl font-black" style={{ color: brandColor }}>
+          <div style={{ fontFamily: 'Anton, sans-serif', color: brandColor }} className="text-6xl font-black">
             {score}
           </div>
           <div className="text-xs text-white/40 mt-1">of {maxScore}</div>

@@ -43,13 +43,13 @@ export function StatusTable({ items, brandColor = '#FF4500' }: StatusTableProps)
       <table className="w-full">
         <thead>
           <tr style={{ background: `${brandColor}12`, borderBottom: `2px solid ${brandColor}40` }}>
-            <th style={{ fontFamily: 'Space Mono, monospace' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest" style={{ color: brandColor, letterSpacing: '0.15em' }}>
+            <th style={{ fontFamily: 'Space Mono, monospace', color: brandColor, letterSpacing: '0.15em' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest">
               Element
             </th>
-            <th style={{ fontFamily: 'Space Mono, monospace' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest" style={{ color: brandColor, letterSpacing: '0.15em' }}>
+            <th style={{ fontFamily: 'Space Mono, monospace', color: brandColor, letterSpacing: '0.15em' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest">
               Status
             </th>
-            <th style={{ fontFamily: 'Space Mono, monospace' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest" style={{ color: brandColor, letterSpacing: '0.15em' }}>
+            <th style={{ fontFamily: 'Space Mono, monospace', color: brandColor, letterSpacing: '0.15em' }} className="px-6 py-4 text-left text-xs font-black uppercase tracking-widest">
               Detail
             </th>
           </tr>
