@@ -47,7 +47,7 @@ export default function GalleryPage() {
         {generations.map((gen) => {
           const info = TOOLS_INFO[gen.tool_slug] || { icon: '⚡', color: '#9CA3AF', name: gen.tool_slug }
           return (
-            <Link key={gen.id} href={`/toolkit/${gen.tool_slug}?result=${gen.id}`}>
+            <Link key={gen.id} href={`/toolkit/report/${gen.id}`}>
               <div className="card p-6 hover:bg-white/10 cursor-pointer h-full" style={{ borderLeft: `4px solid ${info.color}` }}>
                 <div className="text-4xl mb-3">{info.icon}</div>
                 <h3 className="font-semibold text-white mb-2">{info.name}</h3>
