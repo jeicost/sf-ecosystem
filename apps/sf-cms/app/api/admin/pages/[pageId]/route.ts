@@ -102,3 +102,32 @@ export async function PATCH(
     )
   }
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ pageId: string }> }
+) {
+  try {
+    if (!(await requireSession())) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { pageId } = await params
+    const client = createAdminClient()
+
+    const { error } = await client
+      .from('pages')
+      .delete()
+      .eq('id', pageId)
+
+    if (error) throw error
+
+    return Response.json({ deleted: true }, { status: 200 })
+  } catch (err) {
+    console.error('Error deleting page:', err)
+    return Response.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    )
+  }
+}

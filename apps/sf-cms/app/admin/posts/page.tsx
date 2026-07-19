@@ -77,6 +77,31 @@ function PostsContent() {
     }
   }
 
+  async function handleDuplicate(postId: string) {
+    if (!selectedProject) return
+    try {
+      const response = await fetch(`/api/admin/posts/${postId}/duplicate`, { method: 'POST' })
+      if (!response.ok) throw new Error('Failed to duplicate post')
+      await fetchPosts(selectedProject.id)
+    } catch (err) {
+      console.error('Error:', err)
+      setError('Failed to duplicate post')
+    }
+  }
+
+  async function handleDelete(postId: string, title: string) {
+    if (!selectedProject) return
+    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return
+    try {
+      const response = await fetch(`/api/admin/posts/${postId}`, { method: 'DELETE' })
+      if (!response.ok) throw new Error('Failed to delete post')
+      await fetchPosts(selectedProject.id)
+    } catch (err) {
+      console.error('Error:', err)
+      setError('Failed to delete post')
+    }
+  }
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-8">
@@ -162,12 +187,28 @@ function PostsContent() {
                           </div>
                         </div>
 
-                        <Link
-                          href={`/admin/posts/${post.id}/edit?project=${selectedProject.id}`}
-                          className="ml-4 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-sm"
-                        >
-                          Edit
-                        </Link>
+                        <div className="ml-4 flex gap-2">
+                          <Link
+                            href={`/admin/posts/${post.id}/edit?project=${selectedProject.id}`}
+                            className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-sm"
+                          >
+                            Edit
+                          </Link>
+                          <button
+                            onClick={() => handleDuplicate(post.id)}
+                            className="px-3 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition text-sm"
+                            title="Duplicate as draft"
+                          >
+                            Duplicate
+                          </button>
+                          <button
+                            onClick={() => handleDelete(post.id, post.title)}
+                            className="px-3 py-2 border border-red-200 text-red-600 rounded-lg hover:bg-red-50 transition text-sm"
+                            title="Delete post"
+                          >
+                            Delete
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
