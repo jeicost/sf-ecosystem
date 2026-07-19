@@ -1,4 +1,7 @@
-import { createClient } from '@/lib/supabase'
+// Server-side only: this module runs inside API routes / generation libs.
+// Use the service-role client — the browser/anon client has no session here
+// and its key is rejected, which silently dropped document context.
+import { adminClient } from '@/lib/supabase'
 
 export interface RetrievedDocument {
   id: string
@@ -34,7 +37,7 @@ export async function retrieveAgentContext(params: {
       return null
     }
 
-    const db = createClient()
+    const db = adminClient()
 
     let q = db
       .from('client_documentation')

@@ -116,6 +116,14 @@ export async function POST(req: NextRequest) {
       ],
     })
 
+    if (message.stop_reason === 'max_tokens') {
+      await admin
+        .from('quick_actions_results')
+        .update({ status: 'failed', error_message: 'Output truncated at max_tokens' })
+        .eq('id', actionId)
+      return NextResponse.json({ error: 'Output truncated — try a shorter input' }, { status: 500 })
+    }
+
     // Extract text from Claude response
     const rawText = (message.content[0] as any)?.text || ''
 
@@ -186,6 +194,14 @@ export async function POST(req: NextRequest) {
           output_data = { ...spec, image_url: imageUrl }
         }
       }
+    }
+
+    if (Object.keys(output_data).length === 0) {
+      await admin
+        .from('quick_actions_results')
+        .update({ status: 'failed', error_message: 'Empty result after JSON parse' })
+        .eq('id', actionId)
+      return NextResponse.json({ error: 'Empty result after JSON parse' }, { status: 500 })
     }
 
     const processingTime = Date.now() - startTime
