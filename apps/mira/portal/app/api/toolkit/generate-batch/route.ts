@@ -92,8 +92,8 @@ async function generateToolReport(
 
         // Concatenate all text blocks (models may emit non-text blocks first)
         const text = message.content
-          .filter((b): b is { type: 'text'; text: string } => 'text' in b)
-          .map((b) => b.text)
+          .map((b) => ('text' in b ? b.text : ''))
+          .filter(Boolean)
           .join('\n')
         result = extractJson(text)
 
