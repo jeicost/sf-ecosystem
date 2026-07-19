@@ -61,6 +61,26 @@ const REGISTRY = [
     projectId: 'prj_GqKIJAxeq8ZgJ9VB6GYIr3O7qwlD',
     optional: true, // not yet linked; WIP — don't fail the whole run if unlinked
   },
+  {
+    folder: 'clients/discoolver/creators-landing',
+    projectName: 'discoolver-creators-landing',
+    projectId: 'prj_No9UIOs54YPJW4iVQyeWnoNVpXG4',
+  },
+  {
+    folder: 'clients/discoolver/briefing',
+    projectName: 'discoolver-briefing',
+    projectId: 'prj_leUpb2tNZkSikGVeVHUt8JwJujQZ',
+  },
+  {
+    folder: 'clients/discoolver/deliverables/investor-deck-site',
+    projectName: 'discoolver-investor-deck',
+    projectId: 'prj_clu0ci7Z7FuvEsPq6GkHzvXliP48',
+  },
+  {
+    folder: 'clients/discoolver/design-studio',
+    projectName: 'discoolver-design-studio',
+    projectId: 'prj_SoMU6F5A7bvp85cfPIFimYo5B2jP',
+  },
 ];
 
 // Known-bad project IDs that must NEVER appear in any project.json.

@@ -22,13 +22,17 @@ Never run `vercel` or `vercel --prod` from the monorepo ROOT. Always `cd` into t
 |---|---|---|---|---|---|---|
 | `apps/mira/portal` | mira-portal | `prj_75UXcFgDkNPjJWKtPMu9o2XijCjL` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none (vercel.app only) | `nnevhtfxuawexliwlbmh` | **ZERO INTERFERENCE** — do not modify config without explicit request. MIRA is off-limits. |
 | `apps/startup-factory-web` | startup-factory-web | `prj_XqOuowAPVwCIquJSGvtW1j7D1iiE` | `jeicosts-projects` | startupsfactory.es | `nnevhtfxuawexliwlbmh` (via shared tools) | SF main marketing site. Root Directory on Vercel = "." |
-| `apps/sf-cms` | sf-cms | `prj_istn9Vc3c7zd17QkzakT9CUWmW3B` | `jeicosts-projects` | (cms.startupsfactory.es is on EXTERNAL account — do not touch) | `dmzecrlkclocqaywkjtc` | Content management platform (isolated Supabase project by design). **DEPLOY ONLY VIA GIT PUSH**, never `cd apps/sf-cms && vercel --prod`. Depends on `@sf/cms-client`, `@sf/supabase`, `@sf/auth` (workspace packages). Vercel CLI cannot resolve these from a subdirectory upload; git-triggered deployment has full monorepo access. CLI config TBD (see Etapa 6 in plan). |
+| `apps/sf-cms` | sf-cms | `prj_istn9Vc3c7zd17QkzakT9CUWmW3B` | `team_7QGpRqqi1FjrJugGLL0sDehf` | cms.startupsfactory.es, sf-cms.vercel.app | `dmzecrlkclocqaywkjtc` | **UPDATED 2026-07-19:** Domain was OURS all along (see resolved finding below). App is now self-contained (no workspace deps) — CLI deploy from `apps/sf-cms` works. Project has NO git integration; deploy via `cd apps/sf-cms && vercel --prod`. |
 | `apps/sf-crm` | sf-crm | `prj_TR1XsOLUpLcpQxsu5yFmYKGEvJfk` | `team_7QGpRqqi1FjrJugGLL0sDehf` | sf-crm-phi.vercel.app | `nnevhtfxuawexliwlbmh` | CRM platform (internal use). |
 | `packages/cms-client` | cms-client | `prj_KjoFaJi7fH4b2OC14wDEzH8lm74N` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none | — | Shared NPM package (not typically deployed standalone). |
 | `clients/salsa-burgers` | salsa-burgers-web | `prj_ermiutbVMzAyE8lRL3mrot8g5JRC` | `team_7QGpRqqi1FjrJugGLL0sDehf` | salsaburgers.com, www.salsaburgers.com | — | **FIXED 2026-07-16:** Was mislinked to orphan project (`prj_CE4lSOWL...`). Now points to real production project. |
 | `clients/nc-global-assets` | nc-global-assets | `prj_dglycSdtgX52oCSDNqAfq8JeME82` | `jeicosts-projects` | ncglobalassets.com, www.ncglobalassets.com | — | Legacy Vite SPA (being replaced by nc-global-assets-next). |
 | `clients/nc-global-assets-next` | nc-global-assets-next | `prj_GqKIJAxeq8ZgJ9VB6GYIr3O7qwlD` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none (WIP) | — | Next.js port of NC Global (mid-migration, low priority, zero production risk). |
 | `apps/sf-links` | sf-links | (not yet inspected) | — | links.startupsfactory.es | — | Link shortener (currently unlinked locally, low priority). |
+| `clients/discoolver/creators-landing` | discoolver-creators-landing | `prj_No9UIOs54YPJW4iVQyeWnoNVpXG4` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-creators-landing-jeicosts-projects.vercel.app | — | Static HTML landing. Deployed 2026-07-19. |
+| `clients/discoolver/briefing` | discoolver-briefing | `prj_leUpb2tNZkSikGVeVHUt8JwJujQZ` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-briefing-jeicosts-projects.vercel.app | — | Static HTML briefing page. Deployed 2026-07-19. |
+| `clients/discoolver/deliverables/investor-deck-site` | discoolver-investor-deck | `prj_clu0ci7Z7FuvEsPq6GkHzvXliP48` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-investor-deck-jeicosts-projects.vercel.app | — | Static HTML + investor deck PDF. Deployed 2026-07-19. |
+| `clients/discoolver/design-studio` | discoolver-design-studio | `prj_SoMU6F5A7bvp85cfPIFimYo5B2jP` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-design-studio-jeicosts-projects.vercel.app | — | Vite + React design template studio. Deployed 2026-07-19. |
 
 ---
 
@@ -42,25 +46,17 @@ Never run `vercel` or `vercel --prod` from the monorepo ROOT. Always `cd` into t
 
 ---
 
-## Critical Finding: cms.startupsfactory.es Lives in External Account
+## RESOLVED Finding (2026-07-19): cms.startupsfactory.es Was Ours All Along
 
-**Status:** 🟡 Documented, affects SF-CMS cutover decisions.
+**Status:** ✅ Resolved. The "external account" theory was WRONG.
 
-The live admin at `cms.startupsfactory.es` and `sf-cms.vercel.app` is NOT served by the `sf-cms` project under our Vercel account (`prj_istn9Vc3c7zd17QkzakT9CUWmW3B`). Evidence:
+The domain `cms.startupsfactory.es` and the alias `sf-cms.vercel.app` were attached to OUR `sf-cms` project (`prj_istn9Vc3c7zd17QkzakT9CUWmW3B`) the whole time. What looked like an "external app" was our own **stale production deployment from 2026-05-25** (the project had no git integration, so months of pushes never deployed; the old UI predated the local rebuild and was mistaken for a lost external app).
 
-1. `sf-cms.vercel.app` cannot exist as an alias in our account because it's already taken by the external deployment.
-2. `curl -I sf-cms.vercel.app/login` and `curl -I cms.startupsfactory.es/login` both return the same HTTP `etag: 0796e3da47772d6e87b547b99855f358` — they are the same deployment.
-3. Our local project `sf-cms` is served as `sf-cms-jeicosts-projects.vercel.app` (the auto-generated alias).
+**What happened on 2026-07-19:** a fresh CLI deploy (`cd apps/sf-cms && vercel --prod`) replaced the stale deployment. `cms.startupsfactory.es` now serves the rebuilt CMS (Supabase Auth login, settings/media APIs). The DNS cutover planned as "Fase 2.2" happened implicitly — no DNS change was ever needed.
 
-**Implication:** The CMS admin currently in use (with dashboard, stats, rich Post editor) was deployed from a different Vercel account (likely the original before the code-loss incident of 2026-07-12). We cannot:
-- See its source code
-- Modify it directly
-- Roll it back via our Vercel dashboard
+**Rollback:** possible at any time from the Vercel dashboard (promote the 2026-05-25 deployment `sf-q1lijxlt2`). Note the old deployment's build may also contain the "lost" admin source (uploaded at deploy time) — potentially recoverable via `vercel pull`/build artifacts if ever needed.
 
-**Path to Cutover (viable without external account access):**
-- `cms.startupsfactory.es` is a subdomain of `startupsfactory.es`, which **we own** (DNS managed externally, not in Vercel DNS).
-- We control the DNS and can re-point the subdomain to our own `sf-cms` project (`prj_istn9Vc3c7zd17QkzakT9CUWmW3B`) at any time via `vercel domains add cms.startupsfactory.es sf-cms`.
-- This is a **high-impact, irreversible action** (the external admin becomes inaccessible on that URL) — requires explicit user approval, not included in general plan approvals.
+**Also fixed 2026-07-19:** Vercel SSO Deployment Protection was enabled on sf-cms (and applied to new projects by team default), blocking public API access with 302 redirects. Removed via API (`ssoProtection: null`) for sf-cms and the 4 discoolver projects. New projects will need the same toggle.
 
 ---
 
