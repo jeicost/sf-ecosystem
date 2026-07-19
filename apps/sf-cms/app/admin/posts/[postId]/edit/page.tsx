@@ -15,6 +15,7 @@ interface Post {
   published_at?: string
   seo_title?: string
   seo_description?: string
+  canonical_url?: string
   status: string
 }
 
@@ -70,6 +71,7 @@ export default function PostEditorPage() {
           published_at: post.published_at,
           seo_title: post.seo_title,
           seo_description: post.seo_description,
+          canonical_url: post.canonical_url,
           status: post.status,
         }),
       })
@@ -247,6 +249,17 @@ export default function PostEditorPage() {
               rows={2}
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
               placeholder="Meta description (max 160 chars)"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Canonical URL</label>
+            <input
+              type="text"
+              value={post.canonical_url || ''}
+              onChange={(e) => setPost({ ...post, canonical_url: e.target.value })}
+              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+              placeholder="https://example.com/blog/post-slug (leave empty to self-canonicalize)"
             />
           </div>
         </div>

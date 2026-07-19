@@ -47,7 +47,7 @@ export async function PATCH(
 
     const { postId } = await params
     const body = await request.json()
-    const { title, slug, status, content_html, excerpt, category, author_name, seo_title, seo_description } = body
+    const { title, slug, status, content_html, excerpt, category, author_name, seo_title, seo_description, canonical_url } = body
 
     const client = createAdminClient()
 
@@ -90,6 +90,7 @@ export async function PATCH(
     if (author_name !== undefined) updateData.author_name = author_name
     if (seo_title !== undefined) updateData.seo_title = seo_title
     if (seo_description !== undefined) updateData.seo_description = seo_description
+    if (canonical_url !== undefined) updateData.canonical_url = canonical_url
     updateData.updated_at = new Date().toISOString()
 
     const { data: post, error: updateErr } = await client
