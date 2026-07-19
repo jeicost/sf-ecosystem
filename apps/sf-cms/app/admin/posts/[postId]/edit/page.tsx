@@ -167,6 +167,7 @@ export default function PostEditorPage() {
               value={post.content_html}
               onChange={(html) => setPost({ ...post, content_html: html })}
               placeholder="Write your content here..."
+              projectId={projectId}
             />
           </div>
 

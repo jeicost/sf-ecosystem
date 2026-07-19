@@ -3,21 +3,26 @@
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
-import { useCallback } from 'react'
+import Image from '@tiptap/extension-image'
+import { useCallback, useState } from 'react'
+import { ImagePicker } from '@/components/media/ImagePicker'
 
 interface RichTextEditorProps {
   value: string
   onChange: (value: string) => void
   placeholder?: string
+  projectId?: string
 }
 
-export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, placeholder, projectId }: RichTextEditorProps) {
+  const [pickerOpen, setPickerOpen] = useState(false)
   const editor = useEditor({
     extensions: [
       StarterKit,
       Link.configure({
         openOnClick: false,
       }),
+      Image,
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -103,7 +108,31 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
         >
           1. List
         </ToolbarButton>
+
+        {projectId && (
+          <>
+            <div style={{ width: '1px', backgroundColor: '#ddd', margin: '0.25rem 0' }} />
+            <ToolbarButton
+              onClick={() => setPickerOpen(true)}
+              active={false}
+              title="Insert image"
+            >
+              🖼 Img
+            </ToolbarButton>
+          </>
+        )}
       </div>
+
+      {projectId && (
+        <ImagePicker
+          projectId={projectId}
+          open={pickerOpen}
+          onClose={() => setPickerOpen(false)}
+          onSelect={(url, alt) => {
+            editor.chain().focus().setImage({ src: url, alt: alt || '' }).run()
+          }}
+        />
+      )}
 
       {/* Editor */}
       <EditorContent
@@ -161,6 +190,13 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
           padding-left: 1em;
           margin: 0.5em 0;
           opacity: 0.6;
+        }
+
+        .tiptap img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 6px;
+          margin: 0.5em 0;
         }
       `}</style>
     </div>

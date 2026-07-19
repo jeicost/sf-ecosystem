@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { usePageChat } from '@/lib/hooks/usePageChat'
 import { Send, Undo2 } from 'lucide-react'
+import { ChatUploadWidget } from '@/components/media/ChatUploadWidget'
 
 interface Section {
   id: string
@@ -214,6 +215,12 @@ export default function PageEditorPage() {
           {/* Input */}
           <div className="p-4 border-t border-slate-200">
             <div className="flex gap-2">
+              <ChatUploadWidget
+                projectId={projectId}
+                onUploaded={(url) =>
+                  setUserInput((prev) => (prev ? `${prev} ${url}` : `Add this image: ${url}`))
+                }
+              />
               <input
                 type="text"
                 value={userInput}

@@ -39,6 +39,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             Posts
           </Link>
+          <Link
+            href="/admin/media"
+            className="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"
+          >
+            Media
+          </Link>
         </nav>
 
         <div className="mt-auto pt-8 border-t border-slate-700">
