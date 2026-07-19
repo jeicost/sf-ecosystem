@@ -3,7 +3,30 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import * as mammoth from 'mammoth'
+import Anthropic from '@anthropic-ai/sdk'
 import type { SyncResponse, SyncedDocument, DriveSourceMetadata } from '@/lib/drive-connection.types'
+
+// AI summary of an ingested document — falls back to an excerpt if the call fails
+async function summarizeDocument(fileName: string, text: string): Promise<string> {
+  try {
+    const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+    const message = await claude.messages.create({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 512,
+      messages: [
+        {
+          role: 'user',
+          content: `Resume este documento en 3-5 frases en español, capturando su propósito y los puntos clave para una base de conocimiento de marca.\n\nDocumento: "${fileName}"\n\n${text.slice(0, 12000)}`,
+        },
+      ],
+    })
+    const block = message.content[0]
+    const summary = block && 'text' in block ? block.text.trim() : ''
+    return summary || text.substring(0, 500)
+  } catch {
+    return text.substring(0, 500)
+  }
+}
 
 export const runtime = 'nodejs'
 
@@ -199,8 +222,7 @@ export async function POST(req: NextRequest) {
           continue
         }
 
-        // Generate summary (placeholder - would use Claude in production)
-        const summary = downloadResult.text.substring(0, 500)
+        const summary = await summarizeDocument(file.name, downloadResult.text)
 
         // Create metadata for Drive source
         const sourceMetadata: DriveSourceMetadata = {

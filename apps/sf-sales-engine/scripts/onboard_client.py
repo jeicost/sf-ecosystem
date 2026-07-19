@@ -39,7 +39,7 @@ def onboard(slug: str, name: str, tier: str) -> None:
     log.info("client.onboarded", slug=slug, client_id=client_id, path=str(dest))
     print(f"\n✅ Cliente '{slug}' creado en clients/{slug}/")
     print(f"   UUID: {client_id}")
-    print(f"\nSiguientes pasos:")
+    print("\nSiguientes pasos:")
     print(f"   1. Edita clients/{slug}/icp-profile.yaml con el ICP del cliente")
     print(f"   2. Edita clients/{slug}/sources.yaml con las fuentes activas")
     print(f"   3. Añade el client_id a Supabase: make seed-brain slug={slug}")

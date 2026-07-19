@@ -1,6 +1,5 @@
-import structlog
 import httpx
-from scrapers.models import RawLead, ScraperResult
+import structlog
 
 log = structlog.get_logger()
 

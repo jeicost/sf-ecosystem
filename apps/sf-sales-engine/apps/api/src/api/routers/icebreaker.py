@@ -13,9 +13,9 @@ import httpx
 import structlog
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from supabase import AsyncClient
 
 from api.deps import get_settings, get_supabase
+from supabase import AsyncClient
 
 log = structlog.get_logger()
 router = APIRouter()
@@ -147,7 +147,7 @@ async def _save_icebreaker(
                 else:
                     log.error("save_icebreaker.failed", lead_id=lead_id, status=r.status_code, response=r.text[:200])
                     return False
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.warning("save_icebreaker.timeout", lead_id=lead_id, attempt=attempt + 1)
             if attempt < MAX_RETRIES - 1:
                 await asyncio.sleep(RETRY_DELAY * (2 ** attempt))

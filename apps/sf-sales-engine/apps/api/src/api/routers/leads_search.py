@@ -1,20 +1,19 @@
 """Lead search via Apollo with enrichment, caching, and cost tracking."""
 from pathlib import Path
-from typing import Any
 from uuid import UUID
 
 import structlog
 import yaml
+from enrichment import cache
+from enrichment.core import EnrichmentEngine
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from supabase import AsyncClient
-
-from api.deps import get_supabase, get_settings
-from enrichment.core import EnrichmentEngine
-from enrichment import cache
 from scrapers.apollo import ApolloScraper
 from scrapers.hunter import HunterScraper
 from scrapers.models import RawLead
+
+from api.deps import get_settings, get_supabase
+from supabase import AsyncClient
 
 log = structlog.get_logger()
 router = APIRouter()

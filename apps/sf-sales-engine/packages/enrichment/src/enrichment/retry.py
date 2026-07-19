@@ -1,6 +1,8 @@
 import asyncio
+from collections.abc import Callable, Coroutine
+from typing import TypeVar
+
 import structlog
-from typing import Callable, TypeVar, Coroutine
 
 log = structlog.get_logger()
 

@@ -3,7 +3,10 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
+import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import Anthropic from '@anthropic-ai/sdk'
+
+const VISUAL_ACTIONS = ['crear_post_visual', 'crear_carrusel_visual', 'editar_imagen_visual']
 
 const claude = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
@@ -44,16 +47,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     } else {
       const admin = adminClient()
+      // NOTE: project_id in mira_project_access is the CLIENT id (FK to clients — legacy naming)
       const { data: accessData, error: accessError } = await admin
         .from('mira_project_access')
-        .select('client_id')
+        .select('project_id')
         .eq('user_id', user.id)
+        .limit(1)
         .single()
 
       if (accessError || !accessData) {
         return NextResponse.json({ error: 'No client access found' }, { status: 403 })
       }
-      clientId = accessData.client_id
+      clientId = accessData.project_id
     }
 
     const admin = adminClient()
@@ -101,7 +106,7 @@ export async function POST(req: NextRequest) {
 
     // Call Claude
     const message = await claude.messages.create({
-      model: 'claude-opus-4-1',
+      model: 'claude-opus-4-8',
       max_tokens: 4000,
       messages: [
         {
@@ -163,6 +168,22 @@ export async function POST(req: NextRequest) {
               // JSON extraction failed silently
             }
           }
+        }
+      }
+    }
+
+    // Visual actions: generate the actual image from the spec via OpenAI
+    if (VISUAL_ACTIONS.includes(action_type) && Object.keys(output_data).length > 0) {
+      const spec = output_data as Record<string, any>
+      const imagePrompt: string | undefined =
+        spec.image_generation_prompt ||
+        spec.refinement_prompt ||
+        spec.slides?.[0]?.image_generation_prompt ||
+        spec.visual_direction
+      if (imagePrompt) {
+        const imageUrl = await generateAndStoreImage(imagePrompt, clientId, actionId)
+        if (imageUrl) {
+          output_data = { ...spec, image_url: imageUrl }
         }
       }
     }

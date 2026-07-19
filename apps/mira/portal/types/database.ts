@@ -13,6 +13,7 @@ export interface MiraUser {
 export interface MiraProject {
   id: string
   user_id: string
+  client_id: string | null
   name: string
   slug: string
   description: string | null

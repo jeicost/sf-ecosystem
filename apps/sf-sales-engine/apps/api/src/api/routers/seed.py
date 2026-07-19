@@ -23,9 +23,9 @@ import httpx
 import structlog
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile
 from pydantic import BaseModel
-from supabase import AsyncClient
 
-from api.deps import get_supabase, get_settings
+from api.deps import get_settings, get_supabase
+from supabase import AsyncClient
 
 log = structlog.get_logger()
 router = APIRouter()
@@ -313,7 +313,7 @@ async def sync_notion(leads: list[dict]) -> int:
                         await asyncio.sleep(1)
                     else:
                         log.warning("notion.page_failed", company=company_name, status=r.status_code, response=r.text[:200])
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     log.warning("notion.timeout", company=company_name)
                 except httpx.RequestError as e:
                     log.warning("notion.request_error", company=company_name, error=str(e))

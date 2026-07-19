@@ -19,7 +19,7 @@ const MAX_TOKENS: Record<string, number> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { role, message, clientId, includeBrandBrain = true, autonomy, locale = 'es' } = await req.json()
+    const { role, message, clientId, projectId, includeBrandBrain = true, autonomy, locale = 'es' } = await req.json()
 
     if (!role || !message) {
       return new Response(JSON.stringify({ error: 'role y message son requeridos' }), {
@@ -58,6 +58,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Contexto de proyecto: si el chat viene desde un proyecto concreto
+    let projectCtx = ''
+    if (projectId) {
+      try {
+        const { adminClient } = await import('@/lib/supabase')
+        const { data: proj } = await adminClient()
+          .from('mira_projects')
+          .select('name, description')
+          .eq('id', projectId)
+          .single()
+        if (proj) {
+          projectCtx = `\n\nPROYECTO ACTIVO: "${proj.name}"${proj.description ? ` — ${proj.description}` : ''}. Las decisiones e insights de esta conversación pertenecen a este proyecto.`
+        }
+      } catch { /* proyecto no encontrado: continuar sin contexto */ }
+    }
+
     // Fecha actual para agentes que la necesitan (Herald, Radar, etc.)
     const today = new Date().toLocaleDateString('es-ES', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
@@ -74,7 +90,7 @@ export async function POST(req: NextRequest) {
       : ''
 
     // Enriquecer con Brand Brain + project_memory + agent documents si aplica
-    const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx
+    const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + projectCtx
     let fullSystem = systemPrompt + dateCtx
 
     const memoryContext = await getClientMemoryContext(resolvedClientId)

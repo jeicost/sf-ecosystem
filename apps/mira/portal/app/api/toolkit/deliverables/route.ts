@@ -21,19 +21,28 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    // Resolve client from query param or user metadata; batch reports have user_id NULL,
+    // so filtering must be by client_id (RLS already scopes access via mira_project_access)
+    const { searchParams } = new URL(req.url)
+    const clientId = searchParams.get('client_id') || user.user_metadata?.client_id
+
+    if (!clientId) {
+      return NextResponse.json({ error: 'Missing client context' }, { status: 400 })
+    }
+
     // Query both generation_queue (shared pipeline) and toolkit_results (campaign/blueprint specific)
     const [generationData, toolkitData] = await Promise.all([
       supabase
         .from('generation_queue')
         .select('*')
         .eq('status', 'completed')
-        .eq('user_id', user.id)
+        .eq('client_id', clientId)
         .order('created_at', { ascending: false })
         .limit(10),
       supabase
         .from('toolkit_results')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('client_id', clientId)
         .eq('status', 'success')
         .order('created_at', { ascending: false })
         .limit(10),

@@ -1,5 +1,6 @@
-import structlog
 import httpx
+import structlog
+
 from notion_sync.models import NotionLead, SyncResult
 
 log = structlog.get_logger()

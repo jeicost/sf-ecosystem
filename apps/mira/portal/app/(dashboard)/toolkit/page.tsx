@@ -204,7 +204,7 @@ export default function ToolkitHub() {
 
                       {gen.status === 'completed' && (
                         <Link
-                          href={`/toolkit/${gen.tool_slug}?result=${gen.id}`}
+                          href={`/toolkit/report/${gen.id}`}
                           className="px-3 py-1 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-white transition-colors"
                         >
                           Ver →

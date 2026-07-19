@@ -2,7 +2,6 @@
 import pytest
 import respx
 from httpx import Response
-
 from src.scrapers.hunter import HunterScraper
 
 HUNTER_BASE_URL = "https://api.hunter.io/v2"

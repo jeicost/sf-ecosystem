@@ -12,9 +12,9 @@ import structlog
 import yaml
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from supabase import AsyncClient
 
 from api.deps import get_settings, get_supabase
+from supabase import AsyncClient
 
 log = structlog.get_logger()
 router = APIRouter()
@@ -184,7 +184,7 @@ async def tavily_search(api_key: str, query: str, max_results: int = 8) -> list[
                 else:
                     log.error("tavily.error", query=query[:50], status=r.status_code, response=r.text[:200])
                     return []
-        except asyncio.TimeoutError:
+        except TimeoutError:
             log.warning("tavily.timeout", query=query[:50], attempt=attempt + 1)
             if attempt < MAX_RETRIES - 1:
                 await asyncio.sleep(RETRY_DELAY * (2 ** attempt))
@@ -425,7 +425,7 @@ async def sync_notion(leads: list[dict], notion_api_key: str, db_id: str) -> int
                         await asyncio.sleep(1)
                     else:
                         log.warning("notion.page_failed", company=company_name, status=r.status_code, response=r.text[:200])
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     log.warning("notion.timeout", company=company_name)
                 except httpx.RequestError as e:
                     log.warning("notion.request_error", company=company_name, error=str(e))

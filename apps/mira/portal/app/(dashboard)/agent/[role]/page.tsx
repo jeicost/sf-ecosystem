@@ -1,7 +1,7 @@
 // FASE B: Agent page with full settings persistence + quick prompts + real activity fallback
 'use client'
 import { useState, useRef, useEffect } from 'react'
-import { useRouter, useParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
@@ -49,6 +49,8 @@ export default function AgentPage() {
   const role = params.role as string
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id || ''
+  const searchParams = useSearchParams()
+  const projectId = searchParams.get('project')
   const [activeTab, setActiveTab] = useState<TabId>('chat')
   const [autonomy, setAutonomy] = useState<AutonomyLevel>('always_ask')
   const [toneLevel, setToneLevel] = useState(0.5)
@@ -140,7 +142,7 @@ export default function AgentPage() {
     )
   }
 
-  const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, autonomy, locale })
+  const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, projectId, autonomy, locale })
   const systemPrompt = getAgentPrompt(role, locale)
 
   const handleCopyPrompt = () => {

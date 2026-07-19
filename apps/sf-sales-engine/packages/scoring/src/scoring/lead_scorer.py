@@ -1,5 +1,6 @@
 import anthropic
 import structlog
+
 from scoring.models import LeadScore, ScoringInput
 
 log = structlog.get_logger()

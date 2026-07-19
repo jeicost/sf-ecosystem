@@ -15,8 +15,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/reset-password') ||
     pathname.startsWith('/api/webhook') || // Webhooks verify x-webhook-secret header, not user auth
-    pathname.startsWith('/api/toolkit/generate-batch') || // Batch report generation
-    pathname.startsWith('/api/toolkit/export') || // Report exports
+    pathname.startsWith('/api/toolkit/generate-batch') || // Batch generation — protected by x-batch-secret in the route
     // Development bypass: allow toolkit pages without auth for local testing
     (devBypass && (
       pathname.startsWith('/toolkit') ||

@@ -1,6 +1,7 @@
-import structlog
-import httpx
 from typing import TypedDict
+
+import httpx
+import structlog
 
 log = structlog.get_logger()
 

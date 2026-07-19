@@ -1,10 +1,10 @@
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 import structlog
 from fastapi import FastAPI
 
-from api.routers import discovery, health, leads, leads_search
+from api.routers import discovery, health, icebreaker, leads, leads_search, outreach, webhooks
 
 log = structlog.get_logger()
 
@@ -26,3 +26,6 @@ app.include_router(health.router)
 app.include_router(discovery.router, prefix="/discovery", tags=["discovery"])
 app.include_router(leads.router, prefix="/leads", tags=["leads"])
 app.include_router(leads_search.router, prefix="/leads", tags=["leads"])
+app.include_router(icebreaker.router, prefix="/icebreaker", tags=["icebreaker"])
+app.include_router(outreach.router, prefix="/outreach", tags=["outreach"])
+app.include_router(webhooks.router, prefix="/webhooks", tags=["webhooks"])

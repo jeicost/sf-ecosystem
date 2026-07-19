@@ -2,11 +2,11 @@ import asyncio
 import os
 from datetime import datetime
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
-import anthropic
 import httpx
 import structlog
+
 from supabase import AsyncClient, create_async_client
 
 log = structlog.get_logger()
@@ -38,7 +38,7 @@ async def _exponential_backoff_retry(
     for attempt in range(MAX_RETRIES):
         try:
             return await func(*args, **kwargs)
-        except asyncio.TimeoutError as e:
+        except TimeoutError as e:
             last_error = e
             if attempt < MAX_RETRIES - 1:
                 log.warning(
@@ -227,7 +227,7 @@ async def run_discovery(ctx: dict, client_id: str, icp_id: str, geo_filter: str 
 
         return result
 
-    except asyncio.TimeoutError as e:
+    except TimeoutError:
         error_msg = f"Discovery run timeout after {MAX_RETRIES} attempts"
         log.error(
             "discovery_run.timeout",

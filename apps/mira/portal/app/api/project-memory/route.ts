@@ -39,16 +39,20 @@ export async function GET(req: NextRequest) {
     // Get query params
     const { searchParams } = new URL(req.url)
     const category = searchParams.get('category')
+    const projectId = searchParams.get('project_id')
     const limit = parseInt(searchParams.get('limit') || '20')
 
     let query = admin
       .from('project_memory')
-      .select('id, title, category, summary, tags, source_department, created_at, is_pinned')
+      .select('id, title, category, summary, tags, source_department, created_at, is_pinned, project_id')
       .eq('client_id', clientId)
       .eq('is_archived', false)
 
     if (category) {
       query = query.eq('category', category)
+    }
+    if (projectId) {
+      query = query.eq('project_id', projectId)
     }
 
     const { data, error } = await query
@@ -103,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     const clientId = accessData.project_id
     const body = await req.json()
-    const { actionId, title, category, summary, tags, sourceDepartment, fullContent } = body
+    const { actionId, title, category, summary, tags, sourceDepartment, fullContent, projectId } = body
 
     if (!actionId || !title || !category) {
       return NextResponse.json(
@@ -116,6 +120,7 @@ export async function POST(req: NextRequest) {
       .from('project_memory')
       .insert({
         client_id: clientId,
+        project_id: projectId || null,
         action_id: actionId,
         title,
         category,

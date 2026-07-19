@@ -1,7 +1,8 @@
 """Cache and usage tracking for enrichment API calls."""
-import structlog
 from datetime import datetime, timedelta
-from typing import Any
+
+import structlog
+
 from supabase import AsyncClient
 
 log = structlog.get_logger()

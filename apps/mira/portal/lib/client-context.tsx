@@ -6,6 +6,8 @@ export interface ActiveClient {
   id: string
   name: string
   slug: string
+  logoUrl?: string | null
+  primaryColor?: string | null
 }
 
 interface ClientContextValue {
@@ -20,7 +22,7 @@ const ClientContext = createContext<ClientContextValue>({
 
 const STORAGE_KEY = 'mira_active_client'
 
-// Client name mappings — avoids RLS issues by not querying the table
+// Fallback name mappings for when the clients row is not readable (RLS edge cases)
 const CLIENT_NAMES: Record<string, { name: string; slug: string }> = {
   'e664873b-034d-48cd-9a45-8631672ef375': { name: 'Dadybox', slug: 'dadybox' },
   'c375bb80-b0d1-4923-a73a-ac96a3ce7799': { name: 'Salsa Burgers', slug: 'salsa-burgers' },
@@ -42,16 +44,29 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
         if (!user) return
 
-        // Get client_id from user metadata
         const clientId = user.user_metadata?.client_id as string | undefined
 
-        if (clientId && CLIENT_NAMES[clientId]) {
-          const { name, slug } = CLIENT_NAMES[clientId]
-          const client: ActiveClient = { id: clientId, name, slug }
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
-          setActiveClientState(client)
-          console.log('✅ Loaded client:', name)
-          return
+        if (clientId) {
+          // Fetch real client row (name, logo, brand color) — RLS scopes access
+          const { data: row } = await supabase
+            .from('clients')
+            .select('id, name, slug, logo_url, primary_color')
+            .eq('id', clientId)
+            .maybeSingle()
+
+          const fallback = CLIENT_NAMES[clientId]
+          if (row || fallback) {
+            const client: ActiveClient = {
+              id: clientId,
+              name: row?.name || fallback?.name || 'Cliente',
+              slug: row?.slug || fallback?.slug || clientId,
+              logoUrl: row?.logo_url || null,
+              primaryColor: row?.primary_color || null,
+            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
+            setActiveClientState(client)
+            return
+          }
         }
 
         // Fallback to localStorage if no client_id
@@ -66,6 +81,16 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
     initializeClient()
   }, [])
+
+  // Expose the client brand color as a CSS variable for white-label accents
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    if (activeClient?.primaryColor) {
+      document.documentElement.style.setProperty('--client-primary', activeClient.primaryColor)
+    } else {
+      document.documentElement.style.removeProperty('--client-primary')
+    }
+  }, [activeClient?.primaryColor])
 
   function setActiveClient(c: ActiveClient) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(c))

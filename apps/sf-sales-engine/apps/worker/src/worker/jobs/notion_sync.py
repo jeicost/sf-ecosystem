@@ -5,9 +5,10 @@ from typing import Any
 from uuid import uuid4
 
 import structlog
-from supabase import AsyncClient, create_async_client
 from notion_sync import NotionSyncClient
 from notion_sync.models import NotionLead
+
+from supabase import AsyncClient, create_async_client
 
 log = structlog.get_logger()
 
@@ -38,7 +39,7 @@ async def _exponential_backoff_retry(
     for attempt in range(MAX_RETRIES):
         try:
             return await func(*args, **kwargs)
-        except asyncio.TimeoutError as e:
+        except TimeoutError as e:
             last_error = e
             if attempt < MAX_RETRIES - 1:
                 log.warning(
@@ -318,7 +319,7 @@ async def sync_to_notion(
             f"errors {result_stats.get('errors', 0)}",
         }
 
-    except asyncio.TimeoutError as e:
+    except TimeoutError:
         error_msg = f"Notion sync timeout after {MAX_RETRIES} attempts"
         log.error(
             "notion_sync.timeout",

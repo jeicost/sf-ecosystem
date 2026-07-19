@@ -745,6 +745,89 @@ Generate COMPREHENSIVE brandbook JSON that REFERENCES (not re-defines) all sourc
   "living_document_notes": {"review_cadence": "quarterly", "last_audit": "", "next_scheduled_review": ""}
 }`
 
+    case 'marketing-campaign-generator':
+      return `You are a marketing strategist. Generate a comprehensive 30-day marketing campaign for this brand.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Use the brand context above (pillars, tone of voice, audiences) to make every activity brand-specific — no generic filler.
+
+Provide the campaign in this exact JSON format:
+{
+  "campaign_overview": "1-2 sentence summary",
+  "week_1": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
+  "week_2": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
+  "week_3": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
+  "week_4": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
+  "channel_distribution": {
+    "LinkedIn": {"percentage": 35, "focus": "..."},
+    "Email": {"percentage": 25, "focus": "..."},
+    "Content+SEO": {"percentage": 20, "focus": "..."},
+    "Events+Community": {"percentage": 20, "focus": "..."}
+  },
+  "kpis": {
+    "reach_target": 50000,
+    "engagement_rate": 0.05,
+    "ctr_target": 0.02,
+    "conversion_rate": 0.005,
+    "cac_target": 60
+  },
+  "success_metrics": ["...", "...", "..."]
+}`
+
+    case 'community-growth-blueprint':
+      return `You are a community strategist. Generate a comprehensive 90-day community growth blueprint for this brand.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Use the brand context above (pillars, tone of voice, audiences) so initiatives fit this specific community — no generic filler.
+
+Provide the blueprint in this exact JSON format:
+{
+  "strategy_summary": "2-3 sentence overview of the growth strategy",
+  "month_1_foundation": {
+    "theme": "Foundation & Activation",
+    "focus": "...",
+    "key_initiatives": ["...", "...", "..."],
+    "expected_growth": "..."
+  },
+  "month_2_growth": {
+    "theme": "Growth & Engagement",
+    "focus": "...",
+    "key_initiatives": ["...", "...", "..."],
+    "expected_growth": "..."
+  },
+  "month_3_retention": {
+    "theme": "Retention & Monetization",
+    "focus": "...",
+    "key_initiatives": ["...", "...", "..."],
+    "expected_growth": "..."
+  },
+  "engagement_playbook": {
+    "daily_check_ins": "...",
+    "weekly_ama": "...",
+    "monthly_workshop": "...",
+    "quarterly_event": "..."
+  },
+  "influencer_sourcing": {
+    "tier_1_micro": "...",
+    "tier_2_power_users": "...",
+    "tier_3_experts": "..."
+  },
+  "metrics": {
+    "target_members": "...",
+    "engagement_rate": 0.50,
+    "retention_rate": 0.80,
+    "referral_rate": 0.30,
+    "monthly_active": "..."
+  },
+  "risks_and_mitigations": ["Risk: ...", "Mitigation: ..."]
+}`
+
     default:
       return null
   }

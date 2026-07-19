@@ -22,12 +22,23 @@ target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]
-ignore = ["E501"]
+# E501: line length handled by formatter, not worth blocking on.
+# B008: FastAPI's Depends()-in-default is the framework's intended pattern, not a bug.
+ignore = ["E501", "B008"]
 
 [tool.mypy]
 strict = true
 python_version = "3.12"
 ignore_missing_imports = false
+explicit_package_bases = true
+mypy_path = [
+    "apps/api/src",
+    "apps/worker/src",
+    "packages/scrapers/src",
+    "packages/enrichment/src",
+    "packages/scoring/src",
+    "packages/notion_sync/src",
+]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

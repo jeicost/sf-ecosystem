@@ -123,19 +123,32 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         </div>
       </div>
 
-      {/* Agents Section */}
+      {/* Trabajar en este proyecto */}
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-white">Agents</h2>
+        <h2 className="text-2xl font-bold text-white">Trabajar en este proyecto</h2>
+        <div className="grid gap-4 md:grid-cols-2">
           <Link
-            href={`/projects/${project.slug}/agents/new`}
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm font-medium transition"
+            href={`/agent/orchestrator?project=${project.id}`}
+            className="p-6 bg-gray-900 border border-gray-800 hover:border-purple-500/50 rounded-lg transition group"
           >
-            + Add Agent
+            <p className="text-lg font-semibold text-white group-hover:text-purple-300 transition">
+              💬 Chatear con contexto del proyecto
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Habla con los agentes: lo que se decida aquí se guarda en la memoria de este proyecto.
+            </p>
           </Link>
-        </div>
-        <div className="p-8 bg-gray-900 border-2 border-dashed border-gray-700 rounded-lg text-center">
-          <p className="text-gray-400">No agents yet. Create your first agent to get started.</p>
+          <Link
+            href={`/project-memory?project=${project.id}`}
+            className="p-6 bg-gray-900 border border-gray-800 hover:border-purple-500/50 rounded-lg transition group"
+          >
+            <p className="text-lg font-semibold text-white group-hover:text-purple-300 transition">
+              🧠 Memoria del proyecto
+            </p>
+            <p className="text-gray-400 text-sm mt-2">
+              Insights, decisiones y acciones registradas para este proyecto.
+            </p>
+          </Link>
         </div>
       </div>
 

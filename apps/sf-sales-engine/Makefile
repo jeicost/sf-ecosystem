@@ -1,7 +1,7 @@
-.PHONY: install lint test dev-api dev-n8n seed-vbs discover-leads migrate
+.PHONY: install lint test dev-api seed-vbs discover-leads migrate
 
 install:
-	uv sync --all-packages
+	uv sync --all-packages --all-extras
 
 lint:
 	uv run ruff check .
@@ -12,10 +12,6 @@ test:
 
 dev-api:
 	uv run --package api uvicorn api.main:app --reload --port 8000
-
-dev-n8n:
-	docker compose up n8n -d
-	@echo "n8n running at http://localhost:5678"
 
 seed-vbs:
 	uv run python scripts/seed_vbs.py

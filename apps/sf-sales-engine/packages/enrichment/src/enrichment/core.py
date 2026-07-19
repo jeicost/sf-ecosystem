@@ -1,11 +1,13 @@
+from urllib.parse import urlparse
+
 import structlog
+from scrapers.apollo import ApolloAuthError, ApolloRateLimitError
+from scrapers.models import RawLead
+
+from enrichment import cache
 from enrichment.dedup import deduplicate
 from enrichment.models import EnrichedLead, TriggerSignal
 from enrichment.retry import with_retry
-from enrichment import cache
-from scrapers.models import RawLead
-from scrapers.apollo import ApolloRateLimitError, ApolloAuthError
-from urllib.parse import urlparse
 from supabase import AsyncClient
 
 log = structlog.get_logger()

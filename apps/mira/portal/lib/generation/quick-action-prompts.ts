@@ -312,6 +312,121 @@ Generate projection JSON:
 }`
   }
 
+  // FINANZAS
+  if (actionType === 'proyeccion_financiera') {
+    return `You are a financial analyst. Build a 12-month financial projection for this business.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate projection JSON:
+{
+  "executive_summary": "2-3 sentence summary of the financial outlook",
+  "assumptions": ["assumption 1", "assumption 2"],
+  "monthly_projection": [{"month": "", "revenue": "", "costs": "", "profit": ""}],
+  "break_even_analysis": {"break_even_month": "", "monthly_fixed_costs": "", "notes": ""},
+  "scenarios": {"conservative": "", "base": "", "optimistic": ""},
+  "key_risks": ["risk 1", "risk 2"],
+  "recommendations": ["rec 1", "rec 2"]
+}`
+  }
+
+  if (actionType === 'analisis_cashflow') {
+    return `You are a treasury specialist. Analyze cash flow health and produce an actionable cash flow analysis.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate cashflow JSON:
+{
+  "summary": "Current cash position assessment in 2-3 sentences",
+  "inflows": [{"source": "", "amount": "", "frequency": "", "reliability": "alta|media|baja"}],
+  "outflows": [{"category": "", "amount": "", "frequency": "", "optimizable": true}],
+  "runway_months": "",
+  "cash_gaps": [{"period": "", "gap": "", "mitigation": ""}],
+  "improvement_actions": [{"action": "", "impact": "", "effort": "bajo|medio|alto"}],
+  "alerts": ["alert 1"]
+}`
+  }
+
+  if (actionType === 'optimizar_costos') {
+    return `You are a cost optimization consultant. Identify concrete savings opportunities without harming growth.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate optimization JSON:
+{
+  "summary": "2-3 sentence overview of savings potential",
+  "cost_categories": [{"category": "", "current_monthly": "", "optimized_monthly": "", "savings": "", "how": ""}],
+  "quick_wins": [{"action": "", "monthly_savings": "", "implementation_time": ""}],
+  "structural_changes": [{"change": "", "annual_impact": "", "risk": ""}],
+  "do_not_cut": ["Investment that must be protected and why"],
+  "total_potential_savings": {"monthly": "", "annual": ""}
+}`
+  }
+
+  // STRATEGY / INNOVACIÓN
+  if (actionType === 'analizar_tendencias') {
+    return `You are a trends analyst. Identify and analyze the most relevant market trends for this brand's industry.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate trends JSON:
+{
+  "industry_context": "2-3 sentence context of where the industry is heading",
+  "trends": [{"name": "", "description": "", "maturity": "emergente|creciendo|consolidada", "relevance": "alta|media|baja", "opportunity": "", "first_move": ""}],
+  "threats": [{"threat": "", "timeline": "", "mitigation": ""}],
+  "recommended_bets": [{"bet": "", "why_now": "", "investment_level": "bajo|medio|alto"}],
+  "watch_list": ["trend to monitor 1", "trend to monitor 2"]
+}`
+  }
+
+  if (actionType === 'auditar_innovacion') {
+    return `You are an innovation consultant. Audit this company's innovation capacity and portfolio.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate audit JSON:
+{
+  "innovation_score": 0,
+  "summary": "2-3 sentence assessment",
+  "dimensions": [{"dimension": "Cultura|Procesos|Portfolio|Tecnología|Talento", "score": 0, "findings": "", "gap": ""}],
+  "strengths": ["strength 1"],
+  "weaknesses": ["weakness 1"],
+  "benchmarks": [{"competitor_or_leader": "", "what_they_do": "", "lesson": ""}],
+  "priority_initiatives": [{"initiative": "", "impact": "", "effort": "bajo|medio|alto", "timeline": ""}]
+}`
+  }
+
+  if (actionType === 'roadmap_innovacion') {
+    return `You are an innovation strategist. Build a 12-month innovation roadmap for this brand.
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate roadmap JSON:
+{
+  "vision": "Where innovation takes this brand in 12 months",
+  "horizons": {
+    "h1_core": {"focus": "Optimize the core business", "initiatives": [{"name": "", "quarter": "Q1|Q2|Q3|Q4", "outcome": ""}]},
+    "h2_adjacent": {"focus": "Adjacent opportunities", "initiatives": [{"name": "", "quarter": "", "outcome": ""}]},
+    "h3_transformational": {"focus": "Transformational bets", "initiatives": [{"name": "", "quarter": "", "outcome": ""}]}
+  },
+  "quarterly_milestones": [{"quarter": "", "milestone": "", "success_metric": ""}],
+  "resources_needed": [{"resource": "", "for_what": "", "when": ""}],
+  "kill_criteria": ["Condition under which an initiative should be stopped"]
+}`
+  }
+
   // VISUAL GENERATION (NEW — async flow via Visual Production Agent)
   if (actionType === 'crear_post_visual') {
     return `You are a visual content strategist. Generate directives for an AI image generator to create a social media post with integrated visual design.

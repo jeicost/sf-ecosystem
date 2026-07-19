@@ -1,5 +1,3 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
@@ -22,82 +20,92 @@ const TOOLKIT_TOOLS = [
   'community-growth-blueprint',
 ]
 
+const MAX_ATTEMPTS = 3
+
+function extractJson(text: string): Record<string, unknown> {
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
+  if (fenced) {
+    try {
+      return JSON.parse(fenced[1])
+    } catch {
+      // fall through to brace match
+    }
+  }
+  const braces = text.match(/\{[\s\S]*\}/)
+  if (braces) {
+    try {
+      return JSON.parse(braces[0])
+    } catch {
+      // fall through
+    }
+  }
+  return {}
+}
+
 async function generateToolReport(
-  admin: any,
+  admin: ReturnType<typeof adminClient>,
   clientId: string,
   userId: string | null,
   toolSlug: string,
-  inputData: any
+  inputData: Record<string, unknown>
 ): Promise<string> {
+  const { data: queueData, error: queueError } = await admin
+    .from('generation_queue')
+    .insert({
+      client_id: clientId,
+      user_id: userId,
+      tool_slug: toolSlug,
+      input_data: inputData,
+      status: 'processing',
+    })
+    .select('id')
+    .single()
+
+  if (queueError || !queueData) {
+    console.error(`[${toolSlug}] Queue insert error:`, queueError)
+    throw new Error(`Queue insert failed: ${queueError?.message ?? 'unknown'}`)
+  }
+
+  const queueId = queueData.id
+
   try {
-    // Insert generation request into queue with 'processing' status
-    const { data: queueData, error: queueError } = await admin
-      .from('generation_queue')
-      .insert({
-        client_id: clientId,
-        user_id: userId,
-        tool_slug: toolSlug,
-        input_data: inputData,
-        status: 'processing',
-      })
-      .select('id')
-      .single()
+    const prompt = await getToolkitPrompt(toolSlug, { clientId, inputData })
+    if (!prompt) throw new Error('Unknown tool')
 
-    if (queueError || !queueData) {
-      console.error(`[${toolSlug}] Queue insert error:`, queueError)
-      throw new Error('Queue insert failed')
-    }
+    let result: Record<string, unknown> = {}
+    let lastError = ''
 
-    const queueId = queueData.id
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const message = await claude.messages.create({
+          model: 'claude-opus-4-8',
+          max_tokens: 16000,
+          messages: [{ role: 'user', content: prompt }],
+        })
 
-    // Generate prompt for this tool
-    const prompt = await getToolkitPrompt(toolSlug, {
-      clientId,
-      inputData,
-    })
-
-    if (!prompt) {
-      await admin
-        .from('generation_queue')
-        .update({ status: 'failed', error_message: 'Unknown tool' })
-        .eq('id', queueId)
-      throw new Error('Unknown tool')
-    }
-
-    // Call Claude
-    const message = await claude.messages.create({
-      model: 'claude-opus-4-1',
-      max_tokens: 4000,
-      messages: [
-        {
-          role: 'user',
-          content: prompt,
-        },
-      ],
-    })
-
-    // Extract JSON from Claude's response
-    let result = {}
-    const textContent = message.content[0]
-    if (textContent && 'text' in textContent) {
-      const text = textContent.text
-      let jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-      if (jsonMatch) {
-        try {
-          result = JSON.parse(jsonMatch[1])
-        } catch (e) {
-          console.error(`[${toolSlug}] Failed to parse JSON from markdown block:`, e)
+        if (message.stop_reason === 'max_tokens') {
+          throw new Error('Response truncated at max_tokens')
         }
-      } else {
-        jsonMatch = text.match(/\{[\s\S]*\}/)
-        if (jsonMatch) {
-          try {
-            result = JSON.parse(jsonMatch[0])
-          } catch (e) {
-            console.error(`[${toolSlug}] Failed to parse JSON from text:`, e)
-          }
+
+        const textContent = message.content[0]
+        const text = textContent && 'text' in textContent ? textContent.text : ''
+        result = extractJson(text)
+
+        if (Object.keys(result).length === 0) {
+          throw new Error('Empty result after JSON parse')
+        }
+        break
+      } catch (err) {
+        lastError = err instanceof Error ? err.message : 'Unknown error'
+        result = {}
+        if (attempt < MAX_ATTEMPTS) {
+          await new Promise((r) => setTimeout(r, 5000))
         }
       }
+    }
+
+    if (Object.keys(result).length === 0) {
+      throw new Error(lastError || 'Generation produced empty result')
     }
 
     // Fetch brand color
@@ -112,83 +120,84 @@ async function generateToolReport(
       if (brandProfile?.brand_data?.visual_identity?.colors?.primary) {
         brandColor = brandProfile.brand_data.visual_identity.colors.primary
       }
-    } catch (e) {
-      console.warn(`[${toolSlug}] Could not fetch brand color:`, e)
+    } catch {
+      console.warn(`[${toolSlug}] Could not fetch brand color`)
     }
 
-    const resultWithBrandColor = {
-      ...result,
-      brandColor,
-    }
-
-    // Update queue with result
     const { error: updateError } = await admin
       .from('generation_queue')
       .update({
         status: 'completed',
-        result_data: resultWithBrandColor,
+        result_data: { ...result, brandColor },
         completed_at: new Date().toISOString(),
       })
       .eq('id', queueId)
 
-    if (updateError) {
-      console.error(`[${toolSlug}] Update error:`, updateError)
-      throw new Error('Update failed')
-    }
+    if (updateError) throw new Error(`Update failed: ${updateError.message}`)
 
-    console.log(`[${toolSlug}] ✅ Generated successfully: ${queueId}`)
+    console.log(`[${toolSlug}] ✅ Generated: ${queueId}`)
     return queueId
   } catch (error) {
-    console.error(`[${toolSlug}] Generation error:`, error)
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    await admin
+      .from('generation_queue')
+      .update({ status: 'failed', error_message: message })
+      .eq('id', queueId)
+    console.error(`[${toolSlug}] Generation failed:`, message)
     throw error
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { client_id, input_data } = await req.json()
+    const secret = process.env.BATCH_SECRET
+    if (!secret || req.headers.get('x-batch-secret') !== secret) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const body = await req.json()
+    const { client_id, input_data = {} } = body
 
     if (!client_id) {
       return NextResponse.json({ error: 'Missing client_id' }, { status: 400 })
     }
 
-    // Batch generation allowed (internal endpoint)
-    // In production, consider adding rate limiting or auth
+    const toolsToRun: string[] =
+      Array.isArray(body.tools) && body.tools.length > 0
+        ? body.tools.filter((t: string) => TOOLKIT_TOOLS.includes(t))
+        : TOOLKIT_TOOLS
 
     const admin = adminClient()
     const userId = null // batch-generated, no specific user
 
-    console.log(`🚀 Starting batch generation for client: ${client_id}`)
+    console.log(`🚀 Batch generation for ${client_id}: ${toolsToRun.length} tools`)
 
     const results: Record<string, string> = {}
     const errors: Record<string, string> = {}
 
-    // Generate all 10 tools sequentially (to avoid rate limits)
-    for (const toolSlug of TOOLKIT_TOOLS) {
+    for (const toolSlug of toolsToRun) {
       try {
-        const queueId = await generateToolReport(
+        results[toolSlug] = await generateToolReport(
           admin,
           client_id,
           userId,
           toolSlug,
-          input_data[toolSlug] || {}
+          (input_data as Record<string, Record<string, unknown>>)[toolSlug] || {}
         )
-        results[toolSlug] = queueId
-        // Small delay between calls to avoid rate limiting
-        await new Promise(resolve => setTimeout(resolve, 2000))
+        await new Promise((r) => setTimeout(r, 2000))
       } catch (error) {
         errors[toolSlug] = error instanceof Error ? error.message : 'Unknown error'
       }
     }
 
-    console.log(`✅ Batch generation complete for ${client_id}`)
+    console.log(`✅ Batch complete for ${client_id}: ${Object.keys(results).length}/${toolsToRun.length}`)
 
     return NextResponse.json({
       success: true,
       client_id,
       generated: results,
       errors,
-      total: TOOLKIT_TOOLS.length,
+      total: toolsToRun.length,
       success_count: Object.keys(results).length,
     })
   } catch (error) {

@@ -67,17 +67,18 @@ Startup studio con tres patas:
 ## Infraestructura (invisible al usuario)
 
 ```
-agency-os/              ← Motor central (git)
-├── agents/             ← 30 agentes YAML
-├── clients/            ← Brand Brains (salsa-burgers, mira, discoolver…)
-├── portal/             ← MIRA portal (Next.js)
-├── workflows/          ← n8n workflows (Railway)
-├── supabase/           ← Migraciones · DB compartida
-└── scripts/            ← onboard-client, seed-brain, seed-express
+apps/mira/portal/       ← MIRA portal (Next.js) — 30 agentes, prompts en TS (lib/agent-meta.ts)
+apps/sf-sales-engine/   ← Motor comercial (Python/FastAPI, Railway) — discovery/enrichment/scoring
+apps/sf-crm/            ← CRM (Next.js, Vercel) — pipeline, contactos, prospection
+supabase/               ← Migraciones por app (no hay una carpeta central única)
 
-n8n Railway:  agency-os-production-6b4a.up.railway.app
-Supabase:     nnevhtfxuawexliwlbmh (compartido: MIRA + AI Agency SF + Sales)
+Supabase: nnevhtfxuawexliwlbmh (compartido: MIRA + sf-crm + sf-sales-engine + AI Agency SF)
 ```
+
+Nota (2026-07-19): esta sección describía un `agency-os/` con n8n en Railway que **ya no existe** —
+fue reemplazado por `apps/mira` hace tiempo, y el n8n de Railway asociado (`agency-os-production-6b4a.up.railway.app`)
+es una referencia muerta. Ningún componente del stack actual depende de n8n; MIRA y sf-sales-engine
+llaman a Claude directamente desde sus rutas API.
 
 ---
 
@@ -85,13 +86,14 @@ Supabase:     nnevhtfxuawexliwlbmh (compartido: MIRA + AI Agency SF + Sales)
 
 ```
 Desktop/Claude/
-├── agency/
-│   ├── agency-os/          ← motor (git · n8n · Supabase · portal MIRA)
+├── apps/
+│   ├── mira/               ← MIRA SaaS portal — 30 agentes IA (git)
 │   ├── ai-agency-sf-next/  ← portal ops interno (git)
 │   ├── startup-factory-web/← web SF (git)
 │   ├── sf-cms/             ← CMS (git)
 │   ├── sf-reports/         ← portal auditorías para clientes
-│   ├── sf-sales-engine/    ← motor comercial
+│   ├── sf-sales-engine/    ← motor comercial (git · Supabase · sin n8n)
+│   ├── sf-crm/             ← CRM (git)
 │   ├── sf-links/           ← linktree SF
 │   └── mira-landing/       ← landing venta MIRA (Vercel)
 │
@@ -109,6 +111,10 @@ Desktop/Claude/
 ---
 
 ## Flujo de trabajo con un cliente nuevo
+
+> ⚠️ Sección desactualizada (2026-07-19): `pnpm seed:express` ya no existe en el repo.
+> No se investigó a fondo cuál es el flujo de onboarding vigente — fuera del alcance
+> de la revisión de n8n/MIRA de esta sesión. Verificar antes de seguir estos pasos.
 
 ```
 1. Brand Brain express

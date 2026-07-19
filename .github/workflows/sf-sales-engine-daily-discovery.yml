@@ -1,0 +1,47 @@
+name: sf-sales-engine daily discovery
+
+# Replaces the old n8n workflows/data-pipeline/discovery-trigger.json (cron 6am
+# UTC, never actually deployed). Runs the same discovery script a human would
+# run by hand (`make discover-leads`) — Tavily search → Claude Haiku extraction
+# + scoring → Supabase + Notion — on a schedule instead of a dead n8n graph.
+#
+# Simpler and more reliable than routing through the deployed FastAPI
+# /discovery/run endpoint: no dependency on Railway being up, no HTTP hop,
+# same script already used for manual runs so there's only one code path to
+# trust.
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # 6am UTC daily, same time the old n8n workflow targeted
+  workflow_dispatch: {}   # manual trigger from the Actions tab for testing
+
+defaults:
+  run:
+    working-directory: apps/sf-sales-engine
+
+jobs:
+  discover-leads:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
+
+      - name: Set up Python
+        run: uv python install 3.12
+
+      - name: Install dependencies
+        run: uv sync --all-packages --all-extras
+
+      - name: Run discovery
+        run: uv run python scripts/discover_leads.py
+        env:
+          SUPABASE_URL: ${{ secrets.SF_SALES_ENGINE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SF_SALES_ENGINE_SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.SF_SALES_ENGINE_ANTHROPIC_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.SF_SALES_ENGINE_TAVILY_API_KEY }}
+          NOTION_API_KEY: ${{ secrets.SF_SALES_ENGINE_NOTION_API_KEY }}
+          NOTION_VBS_DATABASE_ID: ${{ secrets.SF_SALES_ENGINE_NOTION_VBS_DATABASE_ID }}

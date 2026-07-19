@@ -31,7 +31,6 @@ Desktop/Claude/
 │   ├── nc-global-assets/      # Web (Vite+React) + deliverables
 │   └── dadybox/               # Playwright playbooks + deliverables
 │
-├── agency/agency-os/          # Motor central — agents YAML, n8n workflows, Supabase migrations
 ├── tools/                     # Local MCPs (apple-mail, freepik, google-slides)
 └── scripts/                   # Root automation scripts (migrations, seeding)
 ```

@@ -1,7 +1,7 @@
-import pytest
 import httpx
+import pytest
 import respx
-from scrapers.apollo import ApolloScraper, ApolloAuthError, ApolloRateLimitError
+from scrapers.apollo import ApolloAuthError, ApolloRateLimitError, ApolloScraper
 from scrapers.models import RawLead, ScraperResult
 
 

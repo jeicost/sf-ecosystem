@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/database'
+import { getStoredClientId } from '@/lib/client-context'
 
 type Project = Database['public']['Tables']['mira_projects']['Row']
 
@@ -43,11 +44,16 @@ export function useProjectManagement() {
         .replace(/\s+/g, '-')
         .replace(/-+/g, '-')
 
+      // Sub-proyecto del cliente activo: client_id viene del contexto (o metadata)
+      const clientId =
+        getStoredClientId() || (authUser.user_metadata?.client_id as string | undefined) || null
+
       const { data: projectData, error: projectError } = await supabase
         .from('mira_projects')
         .insert([
           {
             user_id: userData.id,
+            client_id: clientId,
             name: input.name,
             slug,
             description: input.description,
@@ -60,18 +66,8 @@ export function useProjectManagement() {
 
       if (projectError) throw projectError
 
-      const { error: accessError } = await supabase
-        .from('mira_project_access')
-        .insert([
-          {
-            user_id: userData.id,
-            project_id: projectData.id,
-            role: 'owner',
-          },
-        ])
-
-      if (accessError) throw accessError
-
+      // NOTE: no insert into mira_project_access — that table maps users→clients
+      // (its project_id FK points to clients.id) and is managed at the client level.
       return projectData
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to create project'

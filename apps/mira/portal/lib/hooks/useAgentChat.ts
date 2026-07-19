@@ -10,11 +10,12 @@ export interface AgentMessage {
 export interface UseAgentChatOptions {
   role: string
   clientId: string
+  projectId?: string | null
   autonomy?: 'always_ask' | 'full_auto'
   locale?: 'es' | 'en'
 }
 
-export function useAgentChat({ role, clientId, autonomy, locale = 'es' }: UseAgentChatOptions) {
+export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es' }: UseAgentChatOptions) {
   const [messages, setMessages] = useState<AgentMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,6 +37,7 @@ export function useAgentChat({ role, clientId, autonomy, locale = 'es' }: UseAge
           role,
           message,
           clientId,
+          projectId: projectId || undefined,
           includeBrandBrain: true,
           autonomy,
           locale,
