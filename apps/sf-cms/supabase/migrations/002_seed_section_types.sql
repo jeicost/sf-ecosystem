@@ -1,8 +1,21 @@
 -- Seed section_types registry with the 8 types the conversational page editor
--- already knows about (lib/page-editor-system-prompt.ts). Previously this
--- table existed with zero rows — nothing tied the admin/renderer to a shared
--- source of truth. schema_json documents fields for humans/tools; the editor
--- itself still relies on the system prompt, not this table, at runtime.
+-- already knows about (lib/page-editor-system-prompt.ts). schema_json
+-- documents fields for humans/tools; the editor itself still relies on the
+-- system prompt, not this table, at runtime.
+--
+-- NOTE (2026-07-19): CREATE TABLE included because 001_create_sf_cms_schema.sql
+-- was applied to production without ever creating section_types — confirmed
+-- via a 404 on a direct REST query. Every other table from 001 exists; this
+-- one silently never landed. Kept IF NOT EXISTS so re-running 001 in a fresh
+-- environment (where it DOES create the table) won't conflict with this file.
+
+CREATE TABLE IF NOT EXISTS section_types (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL UNIQUE,
+  description TEXT,
+  schema_json JSONB NOT NULL,
+  created_at TIMESTAMP DEFAULT NOW()
+);
 
 INSERT INTO section_types (name, description, schema_json) VALUES
 ('hero', 'Page entry point with headline, CTA and background image', '{
