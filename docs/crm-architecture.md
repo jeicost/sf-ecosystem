@@ -10,10 +10,42 @@ Hay **tres sistemas desconectados** que comparten proyecto Supabase (`nnevhtfxua
 |---|---|---|---|
 | **MIRA comercial** (`apps/mira/portal/app/api/comercial/*`) | Discovery real (Tavily + Claude Haiku), qualify, icebreaker, proposal (streaming + brand_profiles) | `leads`, `lead_activities`, `icp_profiles`, `proposal_library`, `prospect_context` | ✅ **Funcional** con `TAVILY_API_KEY` |
 | **MIRA sales-engine** (`apps/mira/portal/app/api/sales-engine/*`) | discover/enrich/sync-crm | `lead_discovery_results`, `apollo_enrichment_results`, `crm_contacts` | 🔴 **Mock** (Tavily "NOT IMPLEMENTED", Apollo stub, scoring aleatorio) |
-| **sf-crm** (`apps/sf-crm`) | UI CRM: contacts, pipeline, discovery, outreach, prospection | `crm_contacts`, `leads`, `discovery_runs`, `outreach_emails` | ✅ Funcional pero lee `crm_contacts`, que solo alimenta el mock |
-| **sf-sales-engine** (Python FastAPI :8000) | Motor real: scrapers, enrichment, scoring, Apollo+Hunter (integrados 2026-07-17), Instantly/Telegram (2026-07-19) | migrations propias `001-003` | ✅ Funcional pero **MIRA nunca lo llama** |
+| **sf-crm** (`apps/sf-crm`) | UI CRM: Dashboard, contacts, pipeline, discovery, outreach (Resend), prospection (Apollo search + CSV import) | `crm_contacts`, `leads`, `discovery_runs`, `outreach_emails` | ✅ Funcional. `crm_contacts` ya recibe datos **reales** hoy por 2 vías propias, no solo por el mock: "Add to Pipeline" tras una búsqueda Apollo real en Prospection, y el importador CSV (`POST /api/leads/import`, usado por ambas UIs) |
+| **sf-sales-engine** (Python FastAPI, Railway) | Motor real: scrapers, enrichment, scoring, Apollo+Hunter (2026-07-17). Ampliado 2026-07-19 (ver detalle abajo) tras eliminar n8n (nunca desplegado) | migrations propias `001-003` | ✅ Funcional pero **MIRA nunca lo llama** |
 
-**La fractura:** el lead-gen real de MIRA escribe en `leads`; el CRM lee `crm_contacts`. Nada conecta ambas mitades salvo el camino mock.
+**La fractura:** el lead-gen real de MIRA escribe en `leads`; el CRM lee `crm_contacts`. Nada conecta ambas mitades salvo el camino mock — **pero `crm_contacts` ya no depende solo de ese mock**, sf-crm también la alimenta directamente (ver fila de arriba).
+
+### sf-sales-engine — endpoints reales disponibles hoy (2026-07-19)
+
+n8n fue evaluado y eliminado (nunca estuvo desplegado; ver `sf_sales_engine_n8n_removed_2026_07_19` en memoria). Todo lo que iba a hacer n8n son ahora llamadas directas a Claude desde FastAPI, mismo patrón que ya usa MIRA:
+
+| Endpoint | Reemplaza (n8n) | Nota |
+|---|---|---|
+| `POST /discovery/run` | `discovery-trigger.json` | Además tiene cron propio diario (`.github/workflows/sf-sales-engine-daily-discovery.yml`, 6am UTC) — **no hace falta que MIRA construya su propio disparador periódico** |
+| `POST /leads/search` | — | Apollo+Hunter+cache, ya consumido por sf-crm Prospection |
+| `POST /icebreaker/generate` | `icebreaker-generator.json` | Ver ⚠️ duplicación abajo |
+| `POST /outreach/send/{lead_id}` | `instantly-campaign-launcher.json` | Vía Instantly (campañas secuenciadas) — canal **distinto** al de sf-crm, ver nota de outreach abajo |
+| `POST /outreach/generate-proposal` | `call-brief-to-proposal.json` | Ver ⚠️ duplicación abajo |
+| `POST /webhooks/hot-lead` | `hot-lead-alert.json` | Pensado para un Supabase Database Webhook en `leads` (hot_score≥75) — alerta Telegram + icebreaker automático |
+| `POST /webhooks/instantly-reply` | `reply-classifier.json` | Clasifica respuestas con Haiku, actualiza `stage` |
+
+Env vars nuevas que estos endpoints necesitan (además de `SALES_ENGINE_API_URL`/`SALES_ENGINE_API_KEY` que ya menciona este doc): `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `INSTANTLY_API_KEY`, `WEBHOOK_SECRET`.
+
+### ⚠️ Duplicación a resolver en Fase C (nueva, no estaba prevista)
+
+El trabajo de hoy en sf-sales-engine creó dos duplicados que este doc no contemplaba al escribirse:
+
+- **Icebreaker**: existe en MIRA (`comercial/icebreaker`, contexto Tavily) **y** en sf-sales-engine (`/icebreaker/generate`, contexto Commercial Brain RAG). No son intercambiables sin decidir cuál es la canónica.
+- **Propuesta**: existe en MIRA (`comercial/proposal`, streaming + brand_profiles) **y** en sf-sales-engine (`/outreach/generate-proposal`, RAG de `proposal_library`).
+
+La Fase C no debe limitarse a sustituir los stubs de `discover`/`enrich` — también tiene que decidir cuál de las dos implementaciones de icebreaker/proposal se conserva antes de construir el puente, o quedarán dos caminos activos escribiendo resultados distintos para el mismo lead.
+
+### Dos canales de outreach (no son redundantes)
+
+- **sf-crm → Resend** (`POST /api/outreach/send-email`): envío de un email suelto, compuesto a mano, para un contacto puntual.
+- **sf-sales-engine → Instantly** (`POST /outreach/send/{lead_id}`): añade el lead a una campaña con secuencia automática de varios emails.
+
+Mantener ambos — cubren casos de uso distintos, no hay que elegir uno.
 
 ## Decisiones propuestas
 
@@ -32,3 +64,8 @@ Hay **tres sistemas desconectados** que comparten proyecto Supabase (`nnevhtfxua
 
 ## Decisión abierta
 - ¿CRM propio (sf-crm) como producto final o sincronización con CRM externo (HubSpot/Pipedrive) para clientes que ya tengan uno? Recomendación: sf-crm para el servicio gestionado; conector externo como fase posterior.
+
+## Referencias (memoria de sesión, 2026-07-19)
+- `sf_sales_engine_n8n_removed_2026_07_19` — detalle completo de los endpoints nuevos, qué reemplazan, y qué queda pendiente de configurar (env vars, Supabase Database Webhook, GitHub secrets del cron).
+- `mira_sf_crm_mira_integration_roadmap` — roadmap equivalente diseñado desde el lado de sf-crm/sf-sales-engine, converge con las Fases A-D de este doc.
+- `mira_concurrent_work_caution` — antes de ejecutar cualquier fase, confirmar que no hay otro proceso trabajando en `apps/mira/` en paralelo (pasó activamente durante la sesión del 2026-07-19: 6+ commits concurrentes, dos de ellos absorbieron sin querer cambios de otra sesión por compartir el mismo índice de git).
