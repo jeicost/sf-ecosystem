@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireSession } from '@/lib/auth/require-session'
+import { captureError } from '@/lib/capture-error'
 import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
 
@@ -19,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({ projects: data || [] }, { status: 200 })
   } catch (err) {
-    console.error('Error fetching projects:', err)
+    await captureError(err, { route: 'GET /api/admin/projects' })
     return Response.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
       .single()
 
     if (error) {
-      console.error('DB error:', error)
+      await captureError(error, { route: 'POST /api/admin/projects' })
       return Response.json({ error: 'Failed to create project' }, { status: 500 })
     }
 
@@ -114,7 +115,7 @@ export async function POST(request: Request) {
       },
     )
   } catch (err) {
-    console.error('Error:', err)
+    await captureError(err, { route: 'POST /api/admin/projects' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -1,6 +1,7 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logActivity } from '@/lib/audit-log'
+import { captureError } from '@/lib/capture-error'
 import type { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
 
     return Response.json({ posts: data || [] }, { status: 200 })
   } catch (err) {
-    console.error('Error fetching posts:', err)
+    await captureError(err, { route: 'GET /api/admin/posts' })
     return Response.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -103,7 +104,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     )
   } catch (err) {
-    console.error('Error creating post:', err)
+    await captureError(err, { route: 'POST /api/admin/posts' })
     return Response.json(
       { error: 'Internal server error' },
       { status: 500 }

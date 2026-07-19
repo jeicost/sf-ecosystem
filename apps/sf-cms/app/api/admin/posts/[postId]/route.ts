@@ -2,6 +2,7 @@ import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { triggerDeployHook } from '@/lib/deploy-hook'
 import { logActivity } from '@/lib/audit-log'
+import { captureError } from '@/lib/capture-error'
 import type { NextRequest } from 'next/server'
 
 export async function GET(
@@ -30,7 +31,7 @@ export async function GET(
 
     return Response.json({ post }, { status: 200 })
   } catch (err) {
-    console.error('Error fetching post:', err)
+    await captureError(err, { route: 'GET /api/admin/posts/[postId]' })
     return Response.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -120,7 +121,7 @@ export async function PATCH(
 
     return Response.json({ post }, { status: 200 })
   } catch (err) {
-    console.error('Error updating post:', err)
+    await captureError(err, { route: 'PATCH /api/admin/posts/[postId]' })
     return Response.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -165,7 +166,7 @@ export async function DELETE(
 
     return Response.json({ deleted: true }, { status: 200 })
   } catch (err) {
-    console.error('Error deleting post:', err)
+    await captureError(err, { route: 'DELETE /api/admin/posts/[postId]' })
     return Response.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { captureError } from '@/lib/capture-error'
 
 /**
  * Public settings endpoint: GET /api/public/settings
@@ -54,7 +55,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (err) {
-    console.error('Error fetching settings:', err)
+    await captureError(err, { route: 'GET /api/public/settings' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

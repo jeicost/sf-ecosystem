@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { captureError } from '@/lib/capture-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: Request) {
@@ -65,7 +66,7 @@ export async function GET(request: Request) {
       .range(offset, offset + limit - 1)
 
     if (error) {
-      console.error('DB error:', error)
+      await captureError(error, { route: 'GET /api/public/pages' })
       return Response.json({ error: 'Database error' }, { status: 500 })
     }
 
@@ -76,7 +77,7 @@ export async function GET(request: Request) {
       },
     })
   } catch (err) {
-    console.error('Error:', err)
+    await captureError(err, { route: 'GET /api/public/pages' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
