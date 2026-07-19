@@ -3,6 +3,39 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 
+// Resolve which client the user may act on. super_admin can target any client
+// (the active workspace); regular users only clients they have a grant for.
+async function resolveClientId(
+  admin: ReturnType<typeof adminClient>,
+  user: { id: string; user_metadata?: Record<string, unknown> },
+  requestedClientId: string | null
+): Promise<string | null> {
+  const isSuperAdmin = user.user_metadata?.plan === 'super_admin'
+
+  if (requestedClientId) {
+    if (isSuperAdmin) return requestedClientId
+    const { data: grant } = await admin
+      .from('mira_project_access')
+      .select('project_id')
+      .eq('user_id', user.id)
+      .eq('project_id', requestedClientId)
+      .limit(1)
+    if (grant?.length) return requestedClientId
+  }
+
+  const { data: accessData } = await admin
+    .from('mira_project_access')
+    .select('project_id')
+    .eq('user_id', user.id)
+    .limit(1)
+  if (accessData?.length) return accessData[0].project_id
+
+  if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {
+    return user.user_metadata.client_id
+  }
+  return null
+}
+
 export async function GET(req: NextRequest) {
   try {
     const cookieStore = await cookies()
@@ -23,19 +56,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // SECURITY FIX: Never trust explicitClientId from request params/body.
-    // Always derive from the authenticated user's access grants.
     const admin = adminClient()
-    const { data: accessData } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .limit(1)
-
-    if (!accessData?.length) {
+    const clientId = await resolveClientId(
+      admin,
+      user,
+      new URL(req.url).searchParams.get('clientId')
+    )
+    if (!clientId) {
       return NextResponse.json({ error: 'No client access' }, { status: 403 })
     }
-    const clientId = accessData[0].project_id
 
     const [{ data: profileData, error: profileError }, { data: pillarsData, error: pillarsError }] = await Promise.all([
       admin
@@ -86,19 +115,15 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    // SECURITY FIX: Never trust explicitClientId from request params/body.
-    // Always derive from the authenticated user's access grants.
     const admin = adminClient()
-    const { data: accessData } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .limit(1)
-
-    if (!accessData?.length) {
+    const clientId = await resolveClientId(
+      admin,
+      user,
+      typeof body.client_id === 'string' ? body.client_id : null
+    )
+    if (!clientId) {
       return NextResponse.json({ error: 'No client access' }, { status: 403 })
     }
-    const clientId = accessData[0].project_id
 
     // If no ID, create new profile
     if (!id) {
