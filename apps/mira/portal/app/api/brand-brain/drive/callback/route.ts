@@ -43,6 +43,18 @@ export async function GET(req: NextRequest) {
   if (!clientId) return backTo('error&reason=no_client')
 
   try {
+    // La tabla exige user_id: lo tomamos de la sesión del navegador que vuelve de Google
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+      { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+    )
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) return backTo('error&reason=no_session')
+
     const admin = adminClient()
     const tokens = await exchangeCodeForTokens(code)
     if (!tokens.success || !tokens.accessToken) return backTo('error&reason=token_exchange')
@@ -55,6 +67,7 @@ export async function GET(req: NextRequest) {
       .maybeSingle()
 
     const row = {
+      user_id: user.id,
       access_token: tokens.accessToken,
       refresh_token: tokens.refreshToken || null,
       token_expires_at: tokenExpiresAt,
