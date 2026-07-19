@@ -9,6 +9,12 @@
  * Env vars required:
  *   CMS_API_URL  — https://cms.startupsfactory.es/api/public
  *   CMS_API_KEY  — project API key from SF-CMS Settings
+ *
+ * NOTE: this is a standalone script, not a `@sf/cms-client/build` consumer —
+ * Vercel deploys this app via an isolated `npm install` in this directory
+ * only (confirmed 2026-07-19: `workspace:*` deps fail with EUNSUPPORTEDPROTOCOL
+ * here), so it cannot depend on the pnpm-workspace-only shared package.
+ * The logic below is kept in sync by hand with packages/cms-client/src/build/fetch-content.ts.
  */
 
 import fs from 'fs'
@@ -92,6 +98,7 @@ async function main() {
         seoDescription: seoData.seo_description || page.seo_description || '',
         ogImage:        seoData.og_image        || page.og_image_url    || '',
         keywords:       seoData.keywords        || '',
+        canonicalUrl:   page.canonical_url      || null,
         schema: {
           type:         seoData.schema_type        || 'Organization',
           name:         seoData.schema_name        || 'Startup Factory',
@@ -159,11 +166,10 @@ ${entries.join('\n')}
     console.log('🗺   public/sitemap.xml updated')
 
   } catch (err) {
-    console.error('❌  CMS fetch failed:', err.message)
-    // Fallback: use cached content
-    const pagesPath = path.join(ROOT, 'content', 'pages.json')
-    if (!fs.existsSync(pagesPath)) process.exit(1)
-    console.warn('⚠️  Using cached content from previous build')
+    console.warn('⚠️  CMS fetch failed:', err.message, '— keeping cached content (never failing the build)')
+    // Never process.exit(1) here: content/ is gitignored, so on a fresh Vercel
+    // checkout no cache exists yet — exiting 1 would fail the ENTIRE deploy
+    // just because the CMS was briefly unreachable. Confirmed 2026-07-19.
   }
 }
 
