@@ -5,6 +5,7 @@ import { adminClient } from '@/lib/supabase'
 import { generateEditorialHTML, type Section } from '@/lib/export/editorial-template'
 import { generatePlaybookHTML, type PlaybookSection } from '@/lib/export/templates/playbook-template'
 import { generateDeckHTML, type DeckSlide } from '@/lib/export/templates/deck-template'
+import { generateDeckPptx } from '@/lib/export/templates/deck-pptx'
 import { getAdapter } from '@/lib/export/adapters'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 
@@ -213,8 +214,47 @@ export async function GET(req: NextRequest) {
     const tool = TOOLKIT_TOOLS.find((t) => t.slug === toolSlug)
     const toolTitle = tool?.name || DOC_TITLES[toolSlug] || toolSlug
     const template = searchParams.get('template')
+    const format = searchParams.get('format')
 
     const brand = { clientName, primaryColor: brandColor, logoUrl: null }
+
+    // ── PPTX real (pptxgenjs) — decks de documentos y toolkit con template=deck ──
+    if (format === 'pptx') {
+      let pptxSlides: DeckSlide[] | null = null
+      let pptxTitle = toolTitle
+      let pptxSubtitle = clientName
+      if (toolSlug === 'doc-deck' || (toolSlug.startsWith('doc-') && template === 'deck')) {
+        pptxSlides = Array.isArray(result.slides) ? (result.slides as DeckSlide[]) : []
+        pptxTitle = (result.title as string) || toolTitle
+        pptxSubtitle = (result.subtitle as string) || clientName
+      } else if (!toolSlug.startsWith('doc-') && template === 'deck') {
+        const sections = getAdapter(toolSlug)(result)
+        pptxSlides = sectionsToSlides(toolTitle, clientName, sections)
+      }
+      if (!pptxSlides) {
+        return NextResponse.json(
+          { error: 'PPTX export is only available for deck documents (doc-deck or template=deck)' },
+          { status: 400 }
+        )
+      }
+      const buffer = await generateDeckPptx({
+        brand,
+        title: pptxTitle,
+        subtitle: pptxSubtitle,
+        slides: pptxSlides,
+      })
+      const pptxFilename = `${toolSlug}_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pptx`
+      return new NextResponse(new Uint8Array(buffer), {
+        status: 200,
+        headers: {
+          'Content-Type':
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'Content-Disposition': `attachment; filename="${pptxFilename}"`,
+          'Content-Length': String(buffer.length),
+        },
+      })
+    }
+
     let html: string
 
     if (toolSlug === 'doc-deck' || (toolSlug.startsWith('doc-') && template === 'deck')) {
@@ -226,13 +266,14 @@ export async function GET(req: NextRequest) {
         slides: Array.isArray(result.slides) ? (result.slides as DeckSlide[]) : [],
       })
     } else if (toolSlug.startsWith('doc-')) {
-      // Playbook / informe de resultados / one-pager
+      // Playbook / informe de resultados / one-pager (one-pager = compacto, 1 página)
       html = generatePlaybookHTML({
         brand,
         docLabel: DOC_TITLES[toolSlug] || 'Documento',
         title: (result.title as string) || toolTitle,
         subtitle: (result.subtitle as string) || clientName,
         sections: Array.isArray(result.sections) ? (result.sections as PlaybookSection[]) : [],
+        compact: toolSlug === 'doc-onepager',
       })
     } else {
       // Reportes del toolkit — pipeline editorial (con ?template=deck para presentar)

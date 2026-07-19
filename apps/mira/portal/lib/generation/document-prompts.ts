@@ -86,14 +86,32 @@ Devuelve SOLO este JSON:
   "title": "Título de la presentación",
   "subtitle": "Subtítulo",
   "slides": [
-    {"layout": "cover", "title": "", "subtitle": ""},
+    {"layout": "cover", "title": "", "subtitle": "", "image_prompt": "descripción visual para la imagen de fondo de portada (escena/concepto, sin texto)"},
+    {"layout": "agenda", "title": "Agenda", "items": ["Punto 1", "Punto 2", "Punto 3"]},
     {"layout": "section", "title": "Nombre del bloque", "subtitle": "Qué cubre"},
     {"layout": "content", "title": "", "body": "Párrafo breve en HTML simple", "bullets": ["punto 1", "punto 2"]},
     {"layout": "stats", "title": "", "stats": [{"value": "", "label": ""}]},
+    {"layout": "timeline", "title": "Roadmap", "items": [{"label": "Q1", "title": "Hito", "body": "1 frase"}]},
+    {"layout": "comparison", "title": "Antes vs. Después", "left": {"title": "Opción A", "bullets": ["..."]}, "right": {"title": "Opción B", "bullets": ["..."]}},
+    {"layout": "quote", "title": "", "quote": "Cita potente de 1-2 frases", "author": "Nombre, cargo"},
+    {"layout": "image", "title": "", "body": "Párrafo breve", "bullets": ["..."], "wants_image": true, "image_prompt": "descripción visual de la imagen (escena/concepto, sin texto)"},
+    {"layout": "chart", "title": "", "subtitle": "", "chart": {"type": "bar", "labels": ["Ene", "Feb"], "data": [10, 20]}},
     {"layout": "closing", "title": "Cierre / CTA", "subtitle": ""}
   ]
 }
-Genera 10-16 slides: cover, 3-4 bloques de sección con sus slides de contenido, al menos 2 slides de stats con cifras concretas, y closing con llamada a la acción. Máximo 4 bullets por slide, frases cortas de presentación (no párrafos largos).`
+Guía de layouts (usa cada uno con su shape exacto):
+- "cover": portada. Incluye SIEMPRE "image_prompt" describiendo una imagen de fondo evocadora (sin texto ni logos).
+- "agenda": índice numerado — "items" es un array de strings (3-7 puntos cortos).
+- "section": separador de bloque con número gigante.
+- "content": título + body/bullets (máx 4 bullets, frases cortas).
+- "stats": cifras grandes — 2-4 stats con "value" corto ("+40%", "3x") y "label".
+- "timeline": fases/roadmap — 3-5 "items" con {"label", "title", "body"} (label = fase/fecha corta).
+- "comparison": dos columnas "left"/"right", cada una {"title", "bullets"} (2-4 bullets por lado).
+- "quote": cita destacada — "quote" (1-2 frases) + "author" opcional.
+- "image": imagen a un lado + texto al otro. Marca "wants_image": true y escribe "image_prompt" (descripción visual concreta, sin texto en la imagen). MÁXIMO 2 slides con wants_image en todo el deck.
+- "chart": un gráfico — "chart" con "type" (bar|line|doughnut), "labels" (strings) y "data" (números). Úsalo solo si tienes cifras reales o del brief.
+
+Genera 10-16 slides: cover, agenda, 3-4 bloques de sección con sus slides de contenido, al menos 2 slides de stats con cifras concretas, y closing con llamada a la acción. VARIEDAD OBLIGATORIA: incluye al menos 1 slide "timeline" o "comparison", y al menos 1 "quote" cuando el contenido lo permita. Máximo 4 bullets por slide, frases cortas de presentación (no párrafos largos).`
 
     case 'doc-results':
       return `Eres un analista que redacta informes de resultados periódicos. Genera un informe de resultados claro y honesto para esta marca con los datos que aporte el usuario (si faltan datos, deja los valores como "—" y céntrate en la estructura narrativa). Todo en ESPAÑOL.

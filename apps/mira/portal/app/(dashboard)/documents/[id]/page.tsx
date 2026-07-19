@@ -13,6 +13,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   const [chatOpen, setChatOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [input, setInput] = useState('')
+  const [slideTarget, setSlideTarget] = useState('') // 1-based; empty = todo el documento
   const [refining, setRefining] = useState(false)
   const [iframeKey, setIframeKey] = useState(0)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -25,14 +26,23 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   async function handleRefine() {
     const instruction = input.trim()
     if (!instruction || refining) return
+    const slideNum = parseInt(slideTarget, 10)
+    const hasSlideTarget = Number.isInteger(slideNum) && slideNum >= 1
     setInput('')
-    setMessages((m) => [...m, { role: 'user', content: instruction }])
+    setMessages((m) => [
+      ...m,
+      { role: 'user', content: hasSlideTarget ? `[Slide ${slideNum}] ${instruction}` : instruction },
+    ])
     setRefining(true)
     try {
       const res = await fetch('/api/documents/refine', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ queue_id: id, instruction }),
+        body: JSON.stringify({
+          queue_id: id,
+          instruction,
+          ...(hasSlideTarget ? { slide_index: slideNum - 1 } : {}),
+        }),
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Error')
@@ -89,6 +99,12 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
           >
             📥 HTML
           </a>
+          <a
+            href={`/api/toolkit/export?queue_id=${id}&format=pptx`}
+            className="text-sm px-3 py-1.5 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+          >
+            📥 PPTX
+          </a>
         </div>
       </div>
 
@@ -133,22 +149,45 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
               )}
               <div ref={chatEndRef} />
             </div>
-            <div className="p-3 border-t border-white/10 flex gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
-                placeholder="Tu instrucción…"
-                disabled={refining}
-                className="flex-1 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-xs focus:border-amber-500 outline-none"
-              />
-              <button
-                onClick={handleRefine}
-                disabled={refining || !input.trim()}
-                className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:bg-white/10 disabled:text-white/30 text-black text-xs font-semibold transition"
-              >
-                →
-              </button>
+            <div className="p-3 border-t border-white/10 space-y-2">
+              <div className="flex items-center gap-2">
+                <label className="text-white/40 text-[11px] shrink-0">Slide a editar</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={slideTarget}
+                  onChange={(e) => setSlideTarget(e.target.value)}
+                  placeholder="Todo el documento"
+                  disabled={refining}
+                  className="flex-1 px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-white text-xs focus:border-amber-500 outline-none placeholder:text-white/25"
+                />
+                {slideTarget && (
+                  <button
+                    onClick={() => setSlideTarget('')}
+                    className="text-white/40 hover:text-white text-xs px-1"
+                    title="Editar todo el documento"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
+                  placeholder="Tu instrucción…"
+                  disabled={refining}
+                  className="flex-1 px-3 py-2 rounded-lg bg-black/40 border border-white/10 text-white text-xs focus:border-amber-500 outline-none"
+                />
+                <button
+                  onClick={handleRefine}
+                  disabled={refining || !input.trim()}
+                  className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:bg-white/10 disabled:text-white/30 text-black text-xs font-semibold transition"
+                >
+                  →
+                </button>
+              </div>
             </div>
           </div>
         )}

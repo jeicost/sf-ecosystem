@@ -27,6 +27,9 @@ export interface PlaybookOptions {
   title: string
   subtitle?: string
   sections: PlaybookSection[]
+  // One-pager mode: sin índice ni contraportada, todas las secciones
+  // apiladas en UNA sola página con tipografía compacta.
+  compact?: boolean
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -406,6 +409,61 @@ body {
 .back-cover-strip { position: absolute; left: 0; right: 0; height: 5px; background: ${t.accent}; }
 .back-tagline { font-size: 11pt; color: ${rgba('#FFFFFF', 0.55)}; margin-top: 14px; }
 
+/* ── COMPACT (one-pager) ───────────────────────────────────── */
+.compact-hero {
+  background: ${t.primary};
+  color: ${t.primaryInk};
+  padding: 8mm 12mm 7mm;
+  position: relative;
+  overflow: hidden;
+}
+.compact-hero .eyebrow { margin-bottom: 6px; }
+.compact-title {
+  font-size: 19pt; font-weight: 900; line-height: 1.1;
+  letter-spacing: -0.6px; color: ${t.primaryInk}; max-width: 165mm;
+}
+.compact-subtitle {
+  font-size: 9.5pt; color: ${rgba('#FFFFFF', 0.65)};
+  line-height: 1.5; margin-top: 4px; max-width: 160mm;
+}
+.compact-body { padding: 6mm 12mm 8mm; }
+.compact-section { margin-bottom: 5mm; page-break-inside: avoid; break-inside: avoid; }
+.compact-section:last-child { margin-bottom: 0; }
+.compact-section-title {
+  font-size: 10.5pt; font-weight: 800; color: ${t.ink};
+  letter-spacing: -0.2px; margin-bottom: 2mm;
+  display: flex; align-items: center; gap: 7px;
+}
+.compact-section-title::before {
+  content: ''; display: inline-block; width: 16px; height: 3px;
+  background: ${t.accent}; border-radius: 2px; flex-shrink: 0;
+}
+.compact-section .body-text { font-size: 8.5pt; line-height: 1.6; margin-bottom: 2mm; }
+.compact-section .body-text p { margin-bottom: 1.5mm; }
+.compact-section .stat-row { gap: 7px; margin: 2.5mm 0; }
+.compact-section .stat-box { padding: 9px 10px; border-radius: 8px; }
+.compact-section .stat-box.solo { margin: 2.5mm 0; }
+.compact-section .stat-value { font-size: 17pt; letter-spacing: -1px; margin-bottom: 3px; }
+.compact-section .stat-label { font-size: 7.5pt; }
+.compact-section .tip-box { padding: 8px 11px; margin: 2.5mm 0; border-radius: 8px; }
+.compact-section .tip-box-label { font-size: 6.5pt; margin-bottom: 4px; }
+.compact-section .tip-box-content { font-size: 8.5pt; line-height: 1.5; }
+.compact-section .step-list { margin: 2mm 0; }
+.compact-section .step-item { gap: 8px; padding-bottom: 6px; margin-bottom: 6px; }
+.compact-section .step-num { font-size: 12pt; min-width: 20px; }
+.compact-section .step-title { font-size: 9pt; margin-bottom: 1px; }
+.compact-section .step-text { font-size: 8.5pt; line-height: 1.5; }
+.compact-section .data-table { margin: 2.5mm 0; }
+.compact-section .data-table th { padding: 5px 8px; font-size: 7pt; }
+.compact-section .data-table td { padding: 5px 8px; font-size: 7.5pt; }
+.compact-footer-strip {
+  background: ${t.accent};
+  padding: 6px 12mm;
+  display: flex; justify-content: space-between; align-items: center;
+  position: absolute; bottom: 0; left: 0; right: 0;
+}
+.compact-footer-strip span { font-size: 7pt; font-weight: 700; color: ${t.accentInk}; }
+
 /* ── PRINT ─────────────────────────────────────────────────── */
 @page { size: A4; margin: 0; }
 @media print {
@@ -577,14 +635,59 @@ function renderBackCover(o: PlaybookOptions, t: PlaybookTheme): string {
 }
 
 // ─────────────────────────────────────────────────────────────
+// Compact one-pager: a single page with all sections stacked
+// ─────────────────────────────────────────────────────────────
+
+function renderCompactPage(o: PlaybookOptions, t: PlaybookTheme): string {
+  const docLabel = o.docLabel || 'One-Pager'
+  const sections = o.sections
+    .map(
+      (sec) => `
+    <div class="compact-section">
+      <div class="compact-section-title">${esc(sec.title)}</div>
+      ${sec.body ? `<div class="body-text">${sec.body}</div>` : ''}
+      ${sec.stats ? renderStats(sec.stats) : ''}
+      ${sec.steps && sec.steps.length > 0 ? renderSteps(sec.steps) : ''}
+      ${sec.table ? renderTable(sec.table) : ''}
+      ${sec.tips ? renderTips(sec.tips, o.brand.clientName) : ''}
+    </div>`
+    )
+    .join('')
+
+  return `
+<div class="page light-page" style="padding-bottom:14mm">
+  <div class="compact-hero">
+    ${arcTopRight(t, 70)}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5mm">
+      <div>${brandMark(o.brand, 20, t.primaryInk)}</div>
+      <div class="cover-badge">${esc(docLabel)}</div>
+    </div>
+    <div class="compact-title">${esc(o.title)}</div>
+    ${o.subtitle ? `<div class="compact-subtitle">${esc(o.subtitle)}</div>` : ''}
+  </div>
+  <div class="compact-body">${sections}</div>
+  <div class="compact-footer-strip">
+    <span>${esc(o.brand.clientName)}</span>
+    <span>${esc(docLabel)}</span>
+  </div>
+</div>`
+}
+
+// ─────────────────────────────────────────────────────────────
 // Main
 // ─────────────────────────────────────────────────────────────
 
 export function generatePlaybookHTML(options: PlaybookOptions): string {
   const t = buildTheme(options.brand)
-  const sectionsHtml = options.sections
-    .map((sec, i) => renderSection(sec, i + 1, options, t))
-    .join('')
+
+  // Compact mode (one-pager): no cover spread, no TOC, no back cover —
+  // a single page with the hero band and all sections stacked.
+  const bodyHtml = options.compact
+    ? renderCompactPage(options, t)
+    : `${renderCover(options, t)}
+${renderToc(options, t)}
+${options.sections.map((sec, i) => renderSection(sec, i + 1, options, t)).join('')}
+${renderBackCover(options, t)}`
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -595,10 +698,7 @@ export function generatePlaybookHTML(options: PlaybookOptions): string {
 <style>${buildCss(t)}</style>
 </head>
 <body>
-${renderCover(options, t)}
-${renderToc(options, t)}
-${sectionsHtml}
-${renderBackCover(options, t)}
+${bodyHtml}
 </body>
 </html>`
 }

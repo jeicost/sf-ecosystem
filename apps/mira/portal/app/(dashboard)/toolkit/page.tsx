@@ -26,6 +26,7 @@ const CATEGORY_MAP: Record<string, string> = {
   'brand-briefing': 'Brand Intelligence',
   'brandbook-content-system': 'Brand Intelligence',
   'content-pack': 'Content',
+  'content-engine': 'Content',
   'marketing-campaign-generator': 'Content',
   'community-growth-blueprint': 'Content',
   'action-plan': 'Strategy',

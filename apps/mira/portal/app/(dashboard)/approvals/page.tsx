@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { CheckSquare, Clock, AlertTriangle, Check, Edit3, X, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { clsx } from 'clsx'
@@ -74,9 +75,17 @@ export default function ApprovalsPage() {
 
   return (
     <div className="px-8 py-8">
-      <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-white">Approval Queue</h1>
-        <p className="text-[#555] mt-1 text-sm">Review and approve content before it goes live.</p>
+      <div className="mb-6 flex items-end justify-between flex-wrap gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold text-white">Approval Queue</h1>
+          <p className="text-[#555] mt-1 text-sm">Review and approve content before it goes live.</p>
+        </div>
+        <Link
+          href="/calendar"
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs bg-[#1A1A1A] text-[#888] hover:text-white transition-colors"
+        >
+          📅 Ver calendario
+        </Link>
       </div>
 
       {/* Stats */}

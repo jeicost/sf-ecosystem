@@ -51,6 +51,16 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     departments: ['marketing', 'comercial']
   },
   {
+    slug: 'content-engine',
+    icon: '🏭',
+    name: 'Content Engine',
+    description: 'Motor de contenido por pilares: elige pilares, plataformas y volumen — genera posts listos para revisar en la Cola de Aprobación y el calendario editorial.',
+    time: '~5 min',
+    color: '#22D3EE',
+    href: '/toolkit/content-engine',
+    departments: ['marketing', 'comercial']
+  },
+  {
     slug: 'marketing-audit',
     icon: '📊',
     name: 'Auditoría de Marketing',

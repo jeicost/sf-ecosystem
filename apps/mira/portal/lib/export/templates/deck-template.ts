@@ -10,13 +10,52 @@
 
 import type { PlaybookBrand } from './playbook-template'
 
+export interface DeckTimelineItem {
+  label: string // e.g. "Q1", "Fase 1", "2026"
+  title: string
+  body?: string
+}
+
+export interface DeckComparisonSide {
+  title: string
+  bullets: string[]
+}
+
+export interface DeckChart {
+  type: 'bar' | 'line' | 'doughnut'
+  labels: string[]
+  data: number[]
+}
+
 export interface DeckSlide {
-  layout: 'cover' | 'section' | 'content' | 'stats' | 'closing'
+  layout:
+    | 'cover'
+    | 'section'
+    | 'content'
+    | 'stats'
+    | 'closing'
+    | 'timeline'
+    | 'comparison'
+    | 'quote'
+    | 'image'
+    | 'chart'
+    | 'agenda'
   title: string
   subtitle?: string
   body?: string // HTML — inserted as-is
   bullets?: string[]
   stats?: { value: string; label: string }[]
+  // timeline → DeckTimelineItem[] · agenda → string[]
+  items?: (DeckTimelineItem | string)[]
+  left?: DeckComparisonSide // comparison
+  right?: DeckComparisonSide // comparison
+  quote?: string // quote
+  author?: string // quote
+  imageUrl?: string // image layout · cover background
+  chart?: DeckChart // chart layout (Chart.js, loaded only when present)
+  // AI-image generation hints (set by the model, consumed at generation time)
+  wants_image?: boolean
+  image_prompt?: string
 }
 
 export interface DeckOptions {
@@ -64,7 +103,7 @@ function rgba(hex: string, alpha: number): string {
   return `rgba(${r},${g},${b},${alpha})`
 }
 
-function mix(a: string, b: string, t: number): string {
+export function mix(a: string, b: string, t: number): string {
   const ca = hexToRgb(a)
   const cb = hexToRgb(b)
   const ch = (x: number, y: number) =>
@@ -79,7 +118,7 @@ function luminance(hex: string): number {
   return (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255
 }
 
-interface DeckTheme {
+export interface DeckTheme {
   primary: string
   accent: string
   accentDark: string
@@ -89,7 +128,7 @@ interface DeckTheme {
   gradient: string // cover / closing background
 }
 
-function buildTheme(brand: PlaybookBrand): DeckTheme {
+export function buildDeckTheme(brand: PlaybookBrand): DeckTheme {
   const primary = brand.primaryColor
   const accent = brand.accentColor ?? mix(primary, '#FFFFFF', 0.55)
   const darkBase = luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.65)
@@ -274,6 +313,90 @@ body {
   font-size: 1.4em; font-weight: 700; color: ${t.accentInk}; letter-spacing: 0.03em;
 }
 
+/* ── TIMELINE ──────────────────────────────────────────────── */
+.timeline-row { display: flex; gap: 1.8em; margin-top: 2.2em; position: relative; }
+.timeline-row::before {
+  content: ''; position: absolute; top: 0.5em; left: 0.55em; right: 3em;
+  height: 0.18em; background: ${rgba(t.accent, 0.35)}; border-radius: 1px;
+}
+.timeline-item { flex: 1; position: relative; padding-top: 1.8em; min-width: 0; }
+.timeline-item::before {
+  content: ''; position: absolute; top: 0; left: 0;
+  width: 1.1em; height: 1.1em; border-radius: 50%;
+  background: ${t.accent}; border: 0.22em solid #FFFFFF;
+  box-shadow: 0 0 0 1px ${rgba(t.accent, 0.4)};
+}
+.timeline-label {
+  font-size: 1.05em; font-weight: 800; letter-spacing: 0.16em;
+  text-transform: uppercase; color: ${t.accentDark}; margin-bottom: 0.5em;
+}
+.timeline-title { font-size: 1.6em; font-weight: 800; color: ${t.ink}; margin-bottom: 0.35em; line-height: 1.25; }
+.timeline-body { font-size: 1.25em; line-height: 1.55; color: ${rgba(t.ink, 0.7)}; }
+
+/* ── COMPARISON ────────────────────────────────────────────── */
+.compare-row { display: flex; gap: 2em; margin-top: 1.8em; }
+.compare-col {
+  flex: 1; border-radius: 1em; overflow: hidden;
+  background: ${rgba(t.primary, 0.04)}; border: 1px solid ${rgba(t.primary, 0.1)};
+}
+.compare-head { padding: 1.1em 1.4em; font-size: 1.6em; font-weight: 800; letter-spacing: -0.01em; }
+.compare-col.col-a .compare-head { background: ${t.primary}; color: ${t.primaryInk}; }
+.compare-col.col-b .compare-head { background: ${t.accent}; color: ${t.accentInk}; }
+.compare-col .bullet-list { margin: 0; padding: 1.2em 1.4em 1.4em; }
+.compare-col .bullet-list li { font-size: 1.45em; }
+
+/* ── QUOTE ─────────────────────────────────────────────────── */
+.quote-mark {
+  font-size: 14em; line-height: 0.55; font-weight: 900;
+  color: ${t.accent}; opacity: 0.55; font-family: Georgia, serif;
+}
+.quote-text {
+  font-size: 3.1em; font-weight: 700; line-height: 1.38;
+  color: #FFFFFF; max-width: 22em; letter-spacing: -0.015em;
+}
+.quote-author { margin-top: 1.6em; font-size: 1.5em; color: rgba(255,255,255,0.6); font-weight: 600; }
+.quote-author::before { content: '— '; color: ${t.accent}; }
+
+/* ── IMAGE SPLIT ───────────────────────────────────────────── */
+.image-split { flex: 1; display: flex; position: relative; z-index: 2; min-height: 0; }
+.image-half {
+  width: 44%; flex-shrink: 0;
+  background-size: cover; background-position: center;
+  background-color: ${rgba(t.primary, 0.08)};
+}
+.image-content {
+  flex: 1; display: flex; flex-direction: column; justify-content: center;
+  padding: 5em 5em 4em; min-width: 0;
+}
+
+/* ── CHART ─────────────────────────────────────────────────── */
+.chart-box { flex: 1; position: relative; margin-top: 1.5em; min-height: 0; }
+.chart-box canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; }
+
+/* ── AGENDA ────────────────────────────────────────────────── */
+.agenda-list { margin-top: 1.4em; display: flex; flex-direction: column; max-width: 54em; }
+.agenda-item {
+  display: flex; align-items: center; gap: 1.4em;
+  border-bottom: 1px solid ${rgba(t.primary, 0.1)};
+  padding: 0.9em 0;
+}
+.agenda-item:last-child { border-bottom: none; }
+.agenda-num {
+  font-size: 3.2em; font-weight: 900; color: ${t.accent};
+  line-height: 1; min-width: 1.65em; letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.agenda-text { font-size: 1.9em; font-weight: 700; color: ${t.ink}; line-height: 1.3; }
+
+/* ── COVER IMAGE OVERLAY ───────────────────────────────────── */
+.cover-image-bg {
+  position: absolute; inset: 0; background-size: cover; background-position: center;
+}
+.cover-image-overlay {
+  position: absolute; inset: 0;
+  background: linear-gradient(160deg, rgba(6,8,14,0.82) 0%, rgba(6,8,14,0.55) 55%, rgba(6,8,14,0.78) 100%);
+}
+
 /* ── NAV UI (screen only) ──────────────────────────────────── */
 .deck-ui { position: fixed; z-index: 50; }
 #deck-counter {
@@ -322,10 +445,14 @@ body {
 
 function renderCoverSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
   const strip = s.subtitle ?? o.subtitle ?? o.title
+  const imageBg = s.imageUrl
+    ? `<div class="cover-image-bg deco" style="background-image:url('${esc(s.imageUrl)}')"></div><div class="cover-image-overlay deco"></div>`
+    : ''
   return `
 <section class="slide slide-gradient on-dark">
+  ${imageBg}
   ${glowOverlay(t)}
-  ${accentCircle(t, 12)}
+  ${s.imageUrl ? '' : accentCircle(t, 12)}
   <div class="logo-bar">${brandMark(o.brand, 2.4, '#FFFFFF')}</div>
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4em 8em 1.5em;position:relative;z-index:2">
     <div class="eyebrow" style="justify-content:center">${esc(o.brand.clientName)}</div>
@@ -435,6 +562,229 @@ function renderClosingSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string 
 }
 
 // ─────────────────────────────────────────────────────────────
+// New layout renderers (timeline, comparison, quote, image,
+// chart, agenda) — same brand-parametrized visual language
+// ─────────────────────────────────────────────────────────────
+
+function normalizeTimelineItems(items: DeckSlide['items']): DeckTimelineItem[] {
+  if (!items) return []
+  return items.map((it) =>
+    typeof it === 'string' ? { label: '', title: it } : { label: it.label ?? '', title: it.title ?? '', body: it.body }
+  )
+}
+
+function renderTimelineSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
+  const items = normalizeTimelineItems(s.items).slice(0, 6)
+  const cells = items
+    .map(
+      (it) => `
+    <div class="timeline-item">
+      ${it.label ? `<div class="timeline-label">${esc(it.label)}</div>` : ''}
+      <div class="timeline-title">${esc(it.title)}</div>
+      ${it.body ? `<div class="timeline-body">${esc(it.body)}</div>` : ''}
+    </div>`
+    )
+    .join('')
+  return `
+<section class="slide slide-light">
+  ${accentStripeTop(t)}
+  <div class="logo-bar">${brandMark(o.brand, 2.2, t.ink)}</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6em 6em 4em;position:relative;z-index:2">
+    <div class="slide-title">${esc(s.title)}</div>
+    ${s.subtitle ? `<div class="slide-subtitle">${esc(s.subtitle)}</div>` : ''}
+    ${s.body ? `<div class="slide-body">${s.body}</div>` : ''}
+    <div class="timeline-row">${cells}</div>
+  </div>
+</section>`
+}
+
+function renderComparisonSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
+  const col = (side: DeckComparisonSide | undefined, cls: string) => {
+    if (!side) return ''
+    const bullets = (side.bullets ?? [])
+      .map((b) => `<li>${esc(b)}</li>`)
+      .join('')
+    return `
+    <div class="compare-col ${cls}">
+      <div class="compare-head">${esc(side.title)}</div>
+      <ul class="bullet-list">${bullets}</ul>
+    </div>`
+  }
+  return `
+<section class="slide slide-light">
+  ${accentStripeTop(t)}
+  <div class="logo-bar">${brandMark(o.brand, 2.2, t.ink)}</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6em 6em 4em;position:relative;z-index:2">
+    <div class="slide-title">${esc(s.title)}</div>
+    ${s.subtitle ? `<div class="slide-subtitle">${esc(s.subtitle)}</div>` : ''}
+    <div class="compare-row">${col(s.left, 'col-a')}${col(s.right, 'col-b')}</div>
+  </div>
+</section>`
+}
+
+function renderQuoteSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
+  const quote = s.quote ?? s.title
+  return `
+<section class="slide slide-gradient on-dark">
+  ${glowOverlay(t)}
+  ${ringsDecoration(t)}
+  <div class="logo-bar">${brandMark(o.brand, 2.2, '#FFFFFF')}</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:4em 9em;position:relative;z-index:2">
+    <div class="quote-mark">&ldquo;</div>
+    <div class="quote-text">${esc(quote)}</div>
+    ${s.author ? `<div class="quote-author">${esc(s.author)}</div>` : ''}
+  </div>
+</section>`
+}
+
+function renderImageSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
+  // Without an image URL, degrade gracefully to a content slide
+  if (!s.imageUrl) return renderContentSlide(s, o, t)
+  const bullets =
+    s.bullets && s.bullets.length > 0
+      ? `<ul class="bullet-list">${s.bullets.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>`
+      : ''
+  return `
+<section class="slide slide-light">
+  ${accentStripeTop(t)}
+  <div class="image-split">
+    <div class="image-half" style="background-image:url('${esc(s.imageUrl)}')"></div>
+    <div class="image-content">
+      <div style="margin-bottom:1.6em">${brandMark(o.brand, 2.2, t.ink)}</div>
+      <div class="slide-title" style="font-size:3.8em">${esc(s.title)}</div>
+      ${s.subtitle ? `<div class="slide-subtitle">${esc(s.subtitle)}</div>` : ''}
+      ${s.body ? `<div class="slide-body">${s.body}</div>` : ''}
+      ${bullets}
+    </div>
+  </div>
+</section>`
+}
+
+function renderChartSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme, chartId: string): string {
+  return `
+<section class="slide slide-light">
+  ${accentStripeTop(t)}
+  <div class="logo-bar">${brandMark(o.brand, 2.2, t.ink)}</div>
+  <div style="flex:1;display:flex;flex-direction:column;padding:6em 6em 4em;position:relative;z-index:2;min-height:0">
+    <div class="slide-title" style="font-size:3.8em">${esc(s.title)}</div>
+    ${s.subtitle ? `<div class="slide-subtitle">${esc(s.subtitle)}</div>` : ''}
+    ${s.body ? `<div class="slide-body">${s.body}</div>` : ''}
+    <div class="chart-box"><canvas id="${chartId}"></canvas></div>
+  </div>
+</section>`
+}
+
+function renderAgendaSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
+  const items = (s.items ?? [])
+    .map((it) => (typeof it === 'string' ? it : it.title))
+    .filter(Boolean)
+    .slice(0, 8)
+  const rows = items
+    .map(
+      (text, i) => `
+    <div class="agenda-item">
+      <div class="agenda-num">${String(i + 1).padStart(2, '0')}</div>
+      <div class="agenda-text">${esc(text)}</div>
+    </div>`
+    )
+    .join('')
+  return `
+<section class="slide slide-light">
+  ${accentStripeTop(t)}
+  ${accentCircle(t, 7)}
+  <div class="logo-bar">${brandMark(o.brand, 2.2, t.ink)}</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:6em 6em 4em;position:relative;z-index:2">
+    <div class="slide-title">${esc(s.title)}</div>
+    ${s.subtitle ? `<div class="slide-subtitle">${esc(s.subtitle)}</div>` : ''}
+    <div class="agenda-list">${rows}</div>
+  </div>
+</section>`
+}
+
+// ─────────────────────────────────────────────────────────────
+// Chart.js wiring — CDN loaded only when the deck has charts
+// ─────────────────────────────────────────────────────────────
+
+interface DeckChartInstance {
+  id: string
+  chart: DeckChart
+}
+
+function buildChartConfig(chart: DeckChart, t: DeckTheme): Record<string, unknown> {
+  const type = ['bar', 'line', 'doughnut'].includes(chart.type) ? chart.type : 'bar'
+  const labels = (chart.labels ?? []).map(String)
+  const data = (chart.data ?? []).map(Number)
+  const doughnutPalette = labels.map((_, i) => mix(t.primary, t.accent, labels.length > 1 ? i / (labels.length - 1) : 0))
+  const dataset =
+    type === 'doughnut'
+      ? { data, backgroundColor: doughnutPalette, borderColor: '#FFFFFF', borderWidth: 2 }
+      : type === 'line'
+        ? {
+            data,
+            borderColor: t.accentDark,
+            backgroundColor: rgba(t.accent, 0.15),
+            fill: true,
+            tension: 0.35,
+            pointBackgroundColor: t.accentDark,
+            pointRadius: 4,
+            borderWidth: 3,
+          }
+        : { data, backgroundColor: rgba(t.accent, 0.85), hoverBackgroundColor: t.accent, borderRadius: 6 }
+  const scales =
+    type === 'doughnut'
+      ? undefined
+      : {
+          x: { grid: { display: false }, ticks: { color: rgba(t.ink, 0.65), font: { family: 'Inter', weight: 600 } } },
+          y: {
+            grid: { color: rgba(t.ink, 0.08) },
+            border: { display: false },
+            ticks: { color: rgba(t.ink, 0.5), font: { family: 'Inter' } },
+          },
+        }
+  return {
+    type,
+    data: { labels, datasets: [dataset] },
+    options: {
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend:
+          type === 'doughnut'
+            ? { position: 'right', labels: { color: rgba(t.ink, 0.75), font: { family: 'Inter', weight: 600 } } }
+            : { display: false },
+      },
+      ...(scales ? { scales } : {}),
+    },
+  }
+}
+
+function buildChartScript(instances: DeckChartInstance[], t: DeckTheme): string {
+  if (instances.length === 0) return ''
+  const configs = instances.map((inst) => ({ id: inst.id, config: buildChartConfig(inst.chart, t) }))
+  const json = JSON.stringify(configs).replace(/<\/script/gi, '<\\/script')
+  return `
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  var charts = ${json};
+  function draw() {
+    if (typeof Chart === 'undefined') return;
+    charts.forEach(function (c) {
+      var el = document.getElementById(c.id);
+      if (el) { try { new Chart(el, c.config); } catch (e) { /* chart failed, deck still works */ } }
+    });
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', draw);
+  } else {
+    draw();
+  }
+})();
+</script>`
+}
+
+// ─────────────────────────────────────────────────────────────
 // Navigation script (no template-literal interpolation inside)
 // ─────────────────────────────────────────────────────────────
 
@@ -486,8 +836,9 @@ const NAV_SCRIPT = `
 // ─────────────────────────────────────────────────────────────
 
 export function generateDeckHTML(options: DeckOptions): string {
-  const t = buildTheme(options.brand)
+  const t = buildDeckTheme(options.brand)
   let sectionCount = 0
+  const chartInstances: DeckChartInstance[] = []
   const slidesHtml = options.slides
     .map((slide) => {
       switch (slide.layout) {
@@ -500,6 +851,22 @@ export function generateDeckHTML(options: DeckOptions): string {
           return renderStatsSlide(slide, options, t)
         case 'closing':
           return renderClosingSlide(slide, options, t)
+        case 'timeline':
+          return renderTimelineSlide(slide, options, t)
+        case 'comparison':
+          return renderComparisonSlide(slide, options, t)
+        case 'quote':
+          return renderQuoteSlide(slide, options, t)
+        case 'image':
+          return renderImageSlide(slide, options, t)
+        case 'agenda':
+          return renderAgendaSlide(slide, options, t)
+        case 'chart': {
+          if (!slide.chart) return renderContentSlide(slide, options, t)
+          const chartId = `deck-chart-${chartInstances.length}`
+          chartInstances.push({ id: chartId, chart: slide.chart })
+          return renderChartSlide(slide, options, t, chartId)
+        }
         case 'content':
         default:
           return renderContentSlide(slide, options, t)
@@ -523,6 +890,7 @@ ${slidesHtml}
 <div class="deck-ui deck-zone" id="deck-zone-right" title="Siguiente"></div>
 <div class="deck-ui" id="deck-counter">1 / ${options.slides.length}</div>
 <div class="deck-ui" id="deck-hint">&larr; &rarr; navegar &middot; F pantalla completa</div>
+${buildChartScript(chartInstances, t)}
 <script>${NAV_SCRIPT}</script>
 </body>
 </html>`

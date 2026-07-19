@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { queue_id, instruction } = await req.json()
+    const { queue_id, instruction, slide_index } = await req.json()
     if (!queue_id || !instruction) {
       return NextResponse.json({ error: 'Missing queue_id or instruction' }, { status: 400 })
     }
@@ -60,13 +60,31 @@ export async function POST(req: NextRequest) {
 
     const { brandColor, _history, ...currentDoc } = row.result_data || {}
 
-    const message = await createMessageForClient(row.client_id, 'documents/refine', {
-      model: 'claude-opus-4-8',
-      max_tokens: 16000,
-      messages: [
-        {
-          role: 'user',
-          content: `Eres un editor de documentos. Aquí está el JSON actual de un documento generado (tipo: ${row.tool_slug}):
+    // ── Modo slide único: regenerar SOLO una slide del deck ──
+    const slides = Array.isArray(currentDoc.slides)
+      ? (currentDoc.slides as Record<string, unknown>[])
+      : null
+    const slideMode =
+      Number.isInteger(slide_index) &&
+      slides !== null &&
+      slide_index >= 0 &&
+      slide_index < slides.length
+
+    const prompt = slideMode
+      ? `Eres un editor de presentaciones. Estás editando UNA sola slide de un deck titulado "${String(
+          currentDoc.title ?? ''
+        )}" (subtítulo: "${String(currentDoc.subtitle ?? '')}"). Esta es la slide ${
+          (slide_index as number) + 1
+        } (JSON actual):
+
+\`\`\`json
+${JSON.stringify(slides![slide_index as number], null, 2)}
+\`\`\`
+
+Instrucción del usuario: "${instruction}"
+
+Aplica SOLO los cambios pedidos a ESTA slide, conservando su layout y estructura de keys salvo que la instrucción pida cambiarlos (layouts válidos: cover, section, content, stats, closing, timeline, comparison, quote, image, chart, agenda). Mismo idioma. Devuelve SOLO el JSON de esta slide revisada (un único objeto), nada más.`
+      : `Eres un editor de documentos. Aquí está el JSON actual de un documento generado (tipo: ${row.tool_slug}):
 
 \`\`\`json
 ${JSON.stringify(currentDoc, null, 2)}
@@ -74,9 +92,12 @@ ${JSON.stringify(currentDoc, null, 2)}
 
 Instrucción del usuario: "${instruction}"
 
-Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estructura de keys, mismo idioma). Devuelve el JSON completo revisado, nada más.`,
-        },
-      ],
+Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estructura de keys, mismo idioma). Devuelve el JSON completo revisado, nada más.`
+
+    const message = await createMessageForClient(row.client_id, 'documents/refine', {
+      model: 'claude-opus-4-8',
+      max_tokens: slideMode ? 4000 : 16000,
+      messages: [{ role: 'user', content: prompt }],
     })
 
     if (message.stop_reason === 'max_tokens') {
@@ -92,12 +113,31 @@ Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estru
 
     // Keep a short revision history inside result_data
     const history = Array.isArray(_history) ? _history.slice(-4) : []
-    history.push({ instruction, at: new Date().toISOString() })
+    history.push({
+      instruction,
+      at: new Date().toISOString(),
+      ...(slideMode ? { slide_index } : {}),
+    })
+
+    let nextDoc: Record<string, unknown>
+    if (slideMode) {
+      // Sustituir solo la slide editada; conservar la imagen si la revisión no trae una
+      const original = slides![slide_index as number]
+      const revisedSlide: Record<string, unknown> = { ...revised }
+      if (!revisedSlide.imageUrl && original?.imageUrl) {
+        revisedSlide.imageUrl = original.imageUrl
+      }
+      const nextSlides = [...slides!]
+      nextSlides[slide_index as number] = revisedSlide
+      nextDoc = { ...currentDoc, slides: nextSlides }
+    } else {
+      nextDoc = revised
+    }
 
     const { error: updateError } = await admin
       .from('generation_queue')
       .update({
-        result_data: { ...revised, brandColor, _history: history },
+        result_data: { ...nextDoc, brandColor, _history: history },
         completed_at: new Date().toISOString(),
       })
       .eq('id', queue_id)

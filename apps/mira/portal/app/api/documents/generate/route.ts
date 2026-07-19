@@ -5,6 +5,55 @@ import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { getDocumentPrompt, DOC_TYPES } from '@/lib/generation/document-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { generateAndStoreImage } from '@/lib/generation/openai-image'
+
+// Doc-deck only: generate AI images (cover + up to 2 marked slides, max 3 total).
+// Best-effort — any failure leaves the deck without images, never fails generation.
+async function attachDeckImages(
+  result: Record<string, unknown>,
+  brandColor: string,
+  clientId: string,
+  queueId: string
+): Promise<void> {
+  try {
+    if (!Array.isArray(result.slides)) return
+    const slides = result.slides as Record<string, unknown>[]
+    const styleSuffix = ` — Estilo: fotografía/ilustración editorial premium para una presentación de negocio, paleta dominada por el color de marca ${brandColor}, composición limpia, sin texto, sin letras, sin logos.`
+
+    const targets: { slide: Record<string, unknown>; prompt: string }[] = []
+
+    const cover = slides.find((s) => s?.layout === 'cover')
+    if (cover) {
+      const coverPrompt =
+        typeof cover.image_prompt === 'string' && cover.image_prompt.trim()
+          ? cover.image_prompt
+          : `Imagen de fondo abstracta y elegante para la portada de una presentación titulada "${String(result.title ?? '')}"`
+      targets.push({ slide: cover, prompt: coverPrompt })
+    }
+
+    const wanted = slides
+      .filter(
+        (s) =>
+          s !== cover &&
+          s?.wants_image === true &&
+          typeof s.image_prompt === 'string' &&
+          (s.image_prompt as string).trim().length > 0
+      )
+      .slice(0, 2)
+    for (const s of wanted) targets.push({ slide: s, prompt: s.image_prompt as string })
+
+    for (const target of targets.slice(0, 3)) {
+      try {
+        const url = await generateAndStoreImage(target.prompt + styleSuffix, clientId, queueId)
+        if (url) target.slide.imageUrl = url
+      } catch (err) {
+        console.error('[documents/generate] Deck image failed (continuing):', err)
+      }
+    }
+  } catch (err) {
+    console.error('[documents/generate] attachDeckImages error (continuing):', err)
+  }
+}
 
 export const maxDuration = 300
 
@@ -113,6 +162,11 @@ export async function POST(req: NextRequest) {
         .eq('id', clientId)
         .single()
       if (clientRow?.primary_color) brandColor = clientRow.primary_color
+
+      // Doc-deck: AI images for cover + marked slides (best-effort, never blocks)
+      if (doc_type === 'doc-deck') {
+        await attachDeckImages(result, brandColor, clientId, queueId)
+      }
 
       const { error: updateError } = await admin
         .from('generation_queue')
