@@ -59,15 +59,22 @@ export async function POST(request: Request) {
 
     const client = createAdminClient()
 
-    // Check if project already exists
+    // Check if project already exists — return its identity (never api_key)
+    // so callers like landing-builder can recover idempotently on re-runs
     const { data: existing } = await client
       .from('projects')
-      .select('id')
+      .select('id, slug, name')
       .eq('slug', slug)
       .single()
 
     if (existing) {
-      return Response.json({ error: 'Project slug already exists' }, { status: 409 })
+      return Response.json(
+        {
+          error: 'Project slug already exists',
+          existing: { id: existing.id, slug: existing.slug, name: existing.name },
+        },
+        { status: 409 },
+      )
     }
 
     // Create project
