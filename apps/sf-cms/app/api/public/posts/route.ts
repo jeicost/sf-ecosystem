@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 export async function GET(request: Request) {
   try {
@@ -9,6 +10,10 @@ export async function GET(request: Request) {
 
     if (!apiKey) {
       return Response.json({ error: 'Missing x-api-key header' }, { status: 401 })
+    }
+
+    if (!checkRateLimit(apiKey)) {
+      return Response.json({ error: 'Too many requests' }, { status: 429 })
     }
 
     const client = createAdminClient()

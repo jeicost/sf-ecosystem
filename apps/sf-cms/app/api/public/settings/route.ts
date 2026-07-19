@@ -1,4 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkRateLimit } from '@/lib/rate-limit'
 
 /**
  * Public settings endpoint: GET /api/public/settings
@@ -14,6 +15,10 @@ export async function GET(request: Request) {
 
     if (!apiKey) {
       return Response.json({ error: 'Missing x-api-key header' }, { status: 401 })
+    }
+
+    if (!checkRateLimit(apiKey)) {
+      return Response.json({ error: 'Too many requests' }, { status: 429 })
     }
 
     if (!projectSlug) {
