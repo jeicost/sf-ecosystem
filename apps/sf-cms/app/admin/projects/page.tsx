@@ -9,6 +9,7 @@ interface Project {
   slug: string
   domain?: string
   api_key: string
+  vercel_hook_url?: string | null
   created_at: string
 }
 
@@ -16,6 +17,8 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [hookDrafts, setHookDrafts] = useState<Record<string, string>>({})
+  const [savingHook, setSavingHook] = useState<string | null>(null)
 
   useEffect(() => {
     fetchProjects()
@@ -27,11 +30,31 @@ export default function ProjectsPage() {
       if (!response.ok) throw new Error('Failed to fetch projects')
       const { projects } = await response.json() as { projects: Project[] }
       setProjects(projects)
+      setHookDrafts(
+        Object.fromEntries(projects.map((p) => [p.id, p.vercel_hook_url || '']))
+      )
     } catch (err) {
       console.error('Error:', err)
       setError('Failed to load projects')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function saveHook(projectId: string) {
+    setSavingHook(projectId)
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vercel_hook_url: hookDrafts[projectId] || null }),
+      })
+      if (!response.ok) throw new Error('Failed to save deploy hook')
+    } catch (err) {
+      console.error('Error:', err)
+      setError('Failed to save deploy hook')
+    } finally {
+      setSavingHook(null)
     }
   }
 
@@ -85,6 +108,33 @@ export default function ProjectsPage() {
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
                     Created {new Date(project.created_at).toLocaleDateString()}
+                  </p>
+
+                  <div className="mt-3 flex items-center gap-2">
+                    <label className="text-xs font-medium text-slate-600 shrink-0">
+                      Deploy Hook:
+                    </label>
+                    <input
+                      type="text"
+                      value={hookDrafts[project.id] ?? ''}
+                      onChange={(e) =>
+                        setHookDrafts((prev) => ({ ...prev, [project.id]: e.target.value }))
+                      }
+                      placeholder="https://api.vercel.com/v1/integrations/deploy/..."
+                      className="flex-1 max-w-md px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-500"
+                    />
+                    <button
+                      onClick={() => saveHook(project.id)}
+                      disabled={savingHook === project.id}
+                      className="px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200 rounded transition disabled:opacity-50"
+                    >
+                      {savingHook === project.id ? 'Saving…' : 'Save'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Optional: paste a Vercel Deploy Hook URL to auto-redeploy this project's
+                    site whenever a page or post is published here (~1-2 min to go live, no
+                    manual redeploy needed).
                   </p>
                 </div>
 

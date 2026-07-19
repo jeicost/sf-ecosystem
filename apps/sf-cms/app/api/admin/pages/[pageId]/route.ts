@@ -1,5 +1,6 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { triggerDeployHook } from '@/lib/deploy-hook'
 import type { NextRequest } from 'next/server'
 
 export async function GET(
@@ -92,6 +93,11 @@ export async function PATCH(
       .single()
 
     if (updateErr) throw updateErr
+
+    // Non-blocking: never fails or delays the save if the hook is broken/unset
+    if (page.status === 'published') {
+      await triggerDeployHook(page.project_id)
+    }
 
     return Response.json({ page }, { status: 200 })
   } catch (err) {

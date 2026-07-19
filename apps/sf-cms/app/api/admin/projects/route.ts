@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
     const client = createAdminClient()
     const { data, error } = await client
       .from('projects')
-      .select('id, name, slug, domain, api_key, created_at')
+      .select('id, name, slug, domain, api_key, vercel_hook_url, created_at')
       .order('created_at', { ascending: false })
 
     if (error) throw error
