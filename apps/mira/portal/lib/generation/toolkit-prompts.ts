@@ -3,6 +3,19 @@ import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
 
+// tone_of_voice may be a plain string or an object — never spread a string into chars
+function formatTone(tone: unknown): string {
+  if (!tone) return 'Not defined'
+  if (typeof tone === 'string') return tone
+  if (typeof tone === 'object') {
+    return Object.entries(tone as Record<string, unknown>)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(', ')
+  }
+  return String(tone)
+}
+
+
 export interface ToolPromptParams {
   clientId: string
   inputData: Record<string, any>
@@ -81,7 +94,7 @@ BRAND CONTEXT (Source of Truth):
 - Tagline: ${brandBrain.tagline || 'Not defined'}
 - Personality: ${brandBrain.brandPersonality?.join(', ') || 'Not defined'}
 - Pillars: ${brandBrain.pillars.map(p => `${p.name} (${p.description})`).join('; ')}
-- Tone of Voice: ${Object.entries(brandBrain.toneOfVoice || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}
+- Tone of Voice: ${formatTone(brandBrain.toneOfVoice)}
 - Visual Identity Summary: ${brandBrain.visualIdentitySummary || 'Not defined'}
 - Target Audiences: ${brandBrain.audiences ? JSON.stringify(brandBrain.audiences) : 'Not defined'}
 - Banned Phrases: ${brandBrain.bannedPhrases?.join(', ') || 'None'}

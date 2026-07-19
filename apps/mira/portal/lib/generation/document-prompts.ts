@@ -5,6 +5,19 @@ import { fetchBrandBrain } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { retrieveAgentContext } from '@/lib/agent-context'
 
+// tone_of_voice may be a plain string or an object — never spread a string into chars
+function formatTone(tone: unknown): string {
+  if (!tone) return 'Not defined'
+  if (typeof tone === 'string') return tone
+  if (typeof tone === 'object') {
+    return Object.entries(tone as Record<string, unknown>)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(', ')
+  }
+  return String(tone)
+}
+
+
 export const DOC_TYPES = ['doc-playbook', 'doc-deck', 'doc-results', 'doc-onepager'] as const
 export type DocType = (typeof DOC_TYPES)[number]
 
@@ -31,7 +44,7 @@ BRAND CONTEXT (source of truth — usa esto en todo el documento):
 - Nombre: ${brandBrain.brandName}
 - Misión: ${brandBrain.mission}
 - Pilares: ${brandBrain.pillars.map((p) => `${p.name} (${p.description})`).join('; ')}
-- Tono de voz: ${Object.entries(brandBrain.toneOfVoice || {}).map(([k, v]) => `${k}: ${v}`).join(', ')}
+- Tono de voz: ${formatTone(brandBrain.toneOfVoice)}
 - Audiencias: ${brandBrain.audiences ? JSON.stringify(brandBrain.audiences) : 'No definidas'}
 `
     : ''

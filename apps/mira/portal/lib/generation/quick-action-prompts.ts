@@ -2,6 +2,19 @@ import { fetchBrandBrain } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 
+// tone_of_voice may be a plain string or an object — never spread a string into chars
+function formatTone(tone: unknown): string {
+  if (!tone) return 'Not defined'
+  if (typeof tone === 'string') return tone
+  if (typeof tone === 'object') {
+    return Object.entries(tone as Record<string, unknown>)
+      .map(([k, v]) => `${k}: ${v}`)
+      .join(', ')
+  }
+  return String(tone)
+}
+
+
 export interface QuickActionPromptParams {
   clientId: string
   inputData: Record<string, any>
@@ -28,7 +41,7 @@ export async function getQuickActionPrompt(
 BRAND CONTEXT:
 - Name: ${brandBrain.brandName}
 - Mission: ${brandBrain.mission}
-- Tone: ${Object.entries(brandBrain.toneOfVoice).map(([k, v]) => `${k}: ${v}`).join(', ')}
+- Tone: ${formatTone(brandBrain.toneOfVoice)}
 `
     : ''
 
