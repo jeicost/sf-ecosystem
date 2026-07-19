@@ -138,8 +138,13 @@ function renderChart(chart: ChartSpec, chartId: string, brandColor: string): str
     data: chart.data,
     label: chart.label || '',
   })
+  const specAttr = spec
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/'/g, '&#39;')
   return `<div class="chart-wrap reveal reveal-delay-2">
-    <canvas id="${chartId}" data-chart='${spec.replace(/'/g, '&#39;')}' data-color="${brandColor}"></canvas>
+    <canvas id="${chartId}" data-chart='${specAttr}' data-color="${brandColor}"></canvas>
   </div>`
 }
 

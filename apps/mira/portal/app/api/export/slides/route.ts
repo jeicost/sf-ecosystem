@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function POST(req: NextRequest) {
   try {
@@ -10,6 +11,12 @@ export async function POST(req: NextRequest) {
     const { data: generation } = await admin.from('generation_queue').select('*').eq('id', queue_id).single()
 
     if (!generation) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    const user = await getSessionUser()
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!(await userCanAccessClient(user, generation.client_id))) {
+      return NextResponse.json({ error: 'No access to this generation' }, { status: 403 })
+    }
 
     const slidesContent = formatForSlides(generation)
     return NextResponse.json({

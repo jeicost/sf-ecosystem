@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { userCanAccessClient } from '@/lib/resolve-client'
 import { getDocumentPrompt, DOC_TYPES } from '@/lib/generation/document-prompts'
 import Anthropic from '@anthropic-ai/sdk'
 
@@ -48,8 +49,11 @@ export async function POST(req: NextRequest) {
 
     const admin = adminClient()
 
-    // Resolve client: explicit id or the user's client
+    // Resolve client: explicit id (validated against the user's grants) or the user's client
     let clientId = client_id as string | undefined
+    if (clientId && !(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
     if (!clientId) {
       clientId = user.user_metadata?.client_id
     }

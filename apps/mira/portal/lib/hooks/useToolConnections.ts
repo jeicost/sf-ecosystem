@@ -40,6 +40,9 @@ export function useToolConnections(clientId: string) {
 
     if (clientId) {
       fetchTools()
+    } else {
+      // Sin cliente activo aún: no dejar la UI en loading infinito
+      setIsLoading(false)
     }
   }, [clientId])
 

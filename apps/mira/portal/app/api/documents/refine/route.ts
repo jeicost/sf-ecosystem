@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { userCanAccessClient } from '@/lib/resolve-client'
 import Anthropic from '@anthropic-ai/sdk'
 
 export const maxDuration = 300
@@ -47,12 +48,16 @@ export async function POST(req: NextRequest) {
     const admin = adminClient()
     const { data: row, error } = await admin
       .from('generation_queue')
-      .select('id, tool_slug, result_data, status')
+      .select('id, client_id, tool_slug, result_data, status')
       .eq('id', queue_id)
       .single()
 
     if (error || !row || row.status !== 'completed') {
       return NextResponse.json({ error: 'Document not found or not completed' }, { status: 404 })
+    }
+
+    if (!(await userCanAccessClient(user, row.client_id))) {
+      return NextResponse.json({ error: 'No access to this document' }, { status: 403 })
     }
 
     const { brandColor, _history, ...currentDoc } = row.result_data || {}

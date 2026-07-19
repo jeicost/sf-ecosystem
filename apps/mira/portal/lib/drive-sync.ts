@@ -253,12 +253,16 @@ async function walkFolderTree(
 ): Promise<{ files: DriveFileEntry[]; tree: string[] } | { error: string }> {
   const files: DriveFileEntry[] = []
   const tree: string[] = []
+  const visited = new Set<string>()
+  const MAX_FOLDERS_VISITED = 60 // guardarraíl contra árboles patológicos (atajos/multi-parent)
   const queue: Array<{ folderId: string; depth: number; pathPrefix: string }> = [
     { folderId: rootFolderId, depth: 1, pathPrefix: '' },
   ]
 
   while (queue.length > 0 && files.length < MAX_FILES_TOTAL) {
     const { folderId, depth, pathPrefix } = queue.shift()!
+    if (visited.has(folderId) || visited.size >= MAX_FOLDERS_VISITED) continue
+    visited.add(folderId)
     const listed = await listFolderChildren(token, folderId)
     if ('error' in listed) {
       // Root-level listing failure aborts the sync; subfolder failures are skipped
@@ -467,18 +471,28 @@ export async function syncDriveFolder(
         .eq('source_metadata->>google_drive_file_id', file.id)
         .limit(1)
 
+      // Shape real de agent_documents (migración 0022 + columna source_metadata añadida en 0032):
+      // NOT NULL: agent_role, document_type, title, analysis_status
+      const docRow = {
+        title: file.name,
+        agent_role: 'brand',
+        document_type: 'drive_sync',
+        analysis_status: 'completed',
+        extracted_text: extraction.text,
+        analysis_summary: summary,
+        description: summary.slice(0, 300),
+        file_url: file.webViewLink || null,
+        original_filename: file.name,
+        file_size: parseInt(file.size || '0'),
+        file_mime_type: file.mimeType,
+        source_metadata: sourceMetadata,
+        updated_at: new Date().toISOString(),
+      }
+
       if (existing?.length) {
         const { error: updateError } = await admin
           .from('agent_documents')
-          .update({
-            title: file.name,
-            content: extraction.text,
-            summary,
-            source_metadata: sourceMetadata,
-            file_size: parseInt(file.size || '0'),
-            file_mime_type: file.mimeType,
-            updated_at: new Date().toISOString(),
-          })
+          .update(docRow)
           .eq('id', existing[0].id)
         if (updateError) {
           console.error(`Drive sync: failed to update document "${file.path}":`, updateError)
@@ -487,16 +501,8 @@ export async function syncDriveFolder(
       } else {
         const { error: insertError } = await admin.from('agent_documents').insert({
           client_id: clientId,
-          title: file.name,
-          document_type: 'drive_sync',
-          content: extraction.text,
-          summary,
-          source_type: 'google_drive',
-          source_metadata: sourceMetadata,
-          file_size: parseInt(file.size || '0'),
-          file_mime_type: file.mimeType,
+          ...docRow,
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
         })
         if (insertError) {
           console.error(`Drive sync: failed to insert document "${file.path}":`, insertError)
@@ -533,10 +539,11 @@ export async function syncDriveFolder(
       .contains('tags', ['drive_map', folderRow.id])
       .limit(1)
 
-    if (existingMemory?.length) {
-      await admin.from('project_memory').update(memoryPayload).eq('id', existingMemory[0].id)
-    } else {
-      await admin.from('project_memory').insert(memoryPayload)
+    const memoryResult = existingMemory?.length
+      ? await admin.from('project_memory').update(memoryPayload).eq('id', existingMemory[0].id)
+      : await admin.from('project_memory').insert(memoryPayload)
+    if (memoryResult.error) {
+      console.error('Drive sync: folder map write failed:', memoryResult.error.message)
     }
   } catch (memoryError) {
     // The map is best-effort — a memory failure should not fail the whole sync

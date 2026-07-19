@@ -117,6 +117,7 @@ export default function BrandBrainEditor() {
     }
 
     if (activeClient?.id) fetchProfile()
+    else setLoading(false) // sin cliente activo: no dejar loading infinito
   }, [activeClient?.id])
 
   const handleSave = async () => {

@@ -20,6 +20,36 @@ export type ResolveResult =
  * IMPORTANT: mira_project_access.project_id holds the CLIENT id (legacy naming, see 0025).
  * Use in every route that reads/writes tenant data via the service (RLS-bypassing) client.
  */
+/** Get the authenticated user from request cookies (or null). */
+export async function getSessionUser() {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+  )
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  return user
+}
+
+/** True if the user is super_admin or has a grant for the given client. */
+export async function userCanAccessClient(
+  user: { id: string; user_metadata?: Record<string, unknown> },
+  clientId: string
+): Promise<boolean> {
+  if (user.user_metadata?.plan === 'super_admin') return true
+  const admin = adminClient()
+  const { data: grant } = await admin
+    .from('mira_project_access')
+    .select('project_id')
+    .eq('user_id', user.id)
+    .eq('project_id', clientId)
+    .limit(1)
+  return !!grant?.length
+}
+
 export async function resolveRequestClient(requestedClientId: string | null): Promise<ResolveResult> {
   const cookieStore = await cookies()
   const supabase = createServerClient(

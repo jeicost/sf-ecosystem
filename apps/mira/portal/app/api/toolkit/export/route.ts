@@ -91,6 +91,20 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Generation not yet completed' }, { status: 400 })
     }
 
+    // Ownership: el reporte debe pertenecer a un cliente al que el usuario tenga acceso
+    const isSuperAdmin = user.user_metadata?.plan === 'super_admin'
+    if (!isSuperAdmin) {
+      const { data: grant } = await admin
+        .from('mira_project_access')
+        .select('project_id')
+        .eq('user_id', user.id)
+        .eq('project_id', queueData.client_id)
+        .limit(1)
+      if (!grant?.length) {
+        return NextResponse.json({ error: 'No access to this report' }, { status: 403 })
+      }
+    }
+
     const { data: brandData } = await admin
       .from('brand_profiles')
       .select('name, brand_data')
@@ -129,6 +143,7 @@ export async function GET(req: NextRequest) {
       // Playbook / informe de resultados / one-pager
       html = generatePlaybookHTML({
         brand,
+        docLabel: DOC_TITLES[toolSlug] || 'Documento',
         title: (result.title as string) || toolTitle,
         subtitle: (result.subtitle as string) || clientName,
         sections: Array.isArray(result.sections) ? (result.sections as PlaybookSection[]) : [],

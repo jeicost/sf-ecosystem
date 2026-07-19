@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(req: NextRequest) {
   try {
@@ -10,10 +11,15 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Missing queue_id' }, { status: 400 })
     }
 
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
     const admin = adminClient()
     const { data, error } = await admin
       .from('generation_queue')
-      .select('id, status, result_data, error_message, created_at, completed_at')
+      .select('id, client_id, status, result_data, error_message, created_at, completed_at')
       .eq('id', queue_id)
       .single()
 
@@ -23,6 +29,10 @@ export async function GET(req: NextRequest) {
 
     if (!data) {
       return NextResponse.json({ error: 'Queue entry not found' }, { status: 404 })
+    }
+
+    if (!(await userCanAccessClient(user, data.client_id))) {
+      return NextResponse.json({ error: 'No access to this generation' }, { status: 403 })
     }
 
     return NextResponse.json({

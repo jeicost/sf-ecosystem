@@ -23,6 +23,7 @@ export interface PlaybookSection {
 
 export interface PlaybookOptions {
   brand: PlaybookBrand
+  docLabel?: string // etiqueta de portada/footer (default "Playbook")
   title: string
   subtitle?: string
   sections: PlaybookSection[]
@@ -423,12 +424,13 @@ body {
 
 function renderCover(o: PlaybookOptions, t: PlaybookTheme): string {
   const b = o.brand
+  const docLabel = o.docLabel || 'Playbook'
   return `
 <div class="page dark-page">
   ${arcTopRight(t, 130)}
   <div class="cover-top">
     <div>${brandMark(b, 26, t.primaryInk)}</div>
-    <div class="cover-badge">Playbook</div>
+    <div class="cover-badge">${esc(docLabel)}</div>
   </div>
   <div class="cover-hero">
     <div class="eyebrow">${esc(b.clientName)}</div>
@@ -438,7 +440,7 @@ function renderCover(o: PlaybookOptions, t: PlaybookTheme): string {
   </div>
   <div class="cover-footer-strip">
     <span>${esc(b.clientName)}</span>
-    <span>Playbook</span>
+    <span>${esc(docLabel)}</span>
   </div>
 </div>`
 }
