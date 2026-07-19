@@ -1,5 +1,6 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
+import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
 
 /**
@@ -42,10 +43,16 @@ export async function POST(
       newSlug = `${source.slug}-copy-${i}`
     }
 
+    // client_slug/section_id: NOT NULL columns not in the tracked schema
+    // (drift from earlier ad-hoc scripts, confirmed 2026-07-19) — client_slug
+    // reused from the source row, section_id freshly generated (no FK, just
+    // needs a unique-ish value matching the convention on existing rows).
     const { data: copy, error: insertErr } = await client
       .from('pages')
       .insert({
         project_id: source.project_id,
+        client_slug: source.client_slug,
+        section_id: `page-${newSlug}-${crypto.randomBytes(4).toString('hex')}`,
         slug: newSlug,
         title: `${source.title} (copy)`,
         seo_title: source.seo_title,

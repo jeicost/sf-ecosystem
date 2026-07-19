@@ -1,5 +1,6 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
+import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -69,11 +70,28 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // pages.client_slug and pages.section_id are NOT NULL columns not present
+    // in the tracked schema migrations (drift from earlier ad-hoc scripts,
+    // confirmed 2026-07-19) — this insert 500'd without them. client_slug
+    // mirrors the parent project's; section_id has no FK, just needs a
+    // unique-ish value (matches the convention seen on existing rows).
+    const { data: project, error: projectError } = await client
+      .from('projects')
+      .select('client_slug')
+      .eq('id', project_id)
+      .single()
+
+    if (projectError || !project) {
+      return Response.json({ error: 'Project not found' }, { status: 404 })
+    }
+
     // Create page with empty sections
     const { data: page, error } = await client
       .from('pages')
       .insert({
         project_id,
+        client_slug: project.client_slug,
+        section_id: `page-${slug}-${crypto.randomBytes(4).toString('hex')}`,
         title,
         slug,
         status: 'draft',
