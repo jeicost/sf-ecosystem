@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getPosts } from "@/lib/cms";
+import { getPosts } from "@/lib/cms-posts";
 
 export async function BlogTeaser() {
   const posts = await getPosts();

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPost } from "@/lib/cms";
+import { getPost } from "@/lib/cms-posts";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { notFound } from "next/navigation";

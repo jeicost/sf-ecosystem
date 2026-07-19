@@ -1,5 +1,5 @@
 import { MetadataRoute } from "next";
-import { getPosts } from "@/lib/cms";
+import { getPosts } from "@/lib/cms-posts";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://www.salsaburgers.com";

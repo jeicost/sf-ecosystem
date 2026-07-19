@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     // In production, consider adding rate limiting or auth
 
     const admin = adminClient()
-    const userId = 'batch-generator-service'
+    const userId = null // batch-generated, no specific user
 
     console.log(`🚀 Starting batch generation for client: ${client_id}`)
 

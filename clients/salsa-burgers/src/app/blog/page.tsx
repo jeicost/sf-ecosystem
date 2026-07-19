@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getPosts } from "@/lib/cms";
+import { getPosts } from "@/lib/cms-posts";
 import { Nav } from "@/components/Nav";
 import { Footer } from "@/components/Footer";
 
