@@ -13,7 +13,6 @@ export async function onRequestError(
   request: { path: string; method: string },
   context: { routerKind: string; routeType: string }
 ) {
-  const dsn = process.env.SENTRY_DSN
   const message = err instanceof Error ? err.message : String(err)
   const stack = err instanceof Error ? err.stack : undefined
 
@@ -25,12 +24,17 @@ export async function onRequestError(
     stack,
   })
 
-  if (!dsn) return
+  // @sentry/node uses Node-only APIs (fs, child_process, etc.) — this file's
+  // register()/onRequestError run in BOTH the nodejs and edge runtimes
+  // (middleware.ts is edge), and importing it unconditionally broke the edge
+  // build ("Edge Function referencing unsupported modules"). Guard so the
+  // dynamic import only ever happens in the nodejs runtime.
+  if (process.env.NEXT_RUNTIME !== 'nodejs' || !process.env.SENTRY_DSN) return
 
   try {
     const Sentry = await import('@sentry/node')
     if (!Sentry.getClient()) {
-      Sentry.init({ dsn, tracesSampleRate: 0 })
+      Sentry.init({ dsn: process.env.SENTRY_DSN, tracesSampleRate: 0 })
     }
     Sentry.captureException(err, {
       tags: {
