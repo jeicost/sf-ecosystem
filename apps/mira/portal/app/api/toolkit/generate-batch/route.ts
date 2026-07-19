@@ -90,12 +90,17 @@ async function generateToolReport(
           throw new Error('Response truncated at max_tokens')
         }
 
-        const textContent = message.content[0]
-        const text = textContent && 'text' in textContent ? textContent.text : ''
+        // Concatenate all text blocks (models may emit non-text blocks first)
+        const text = message.content
+          .filter((b): b is { type: 'text'; text: string } => 'text' in b)
+          .map((b) => b.text)
+          .join('\n')
         result = extractJson(text)
 
         if (Object.keys(result).length === 0) {
-          throw new Error('Empty result after JSON parse')
+          throw new Error(
+            `Empty parse. stop=${message.stop_reason} blocks=[${message.content.map((b) => b.type).join(',')}] text[0:300]=${text.slice(0, 300)}`
+          )
         }
         break
       } catch (err) {
