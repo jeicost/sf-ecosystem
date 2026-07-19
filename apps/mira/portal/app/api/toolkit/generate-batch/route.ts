@@ -3,6 +3,9 @@ import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
 import Anthropic from '@anthropic-ai/sdk'
 
+// Long-running generation: allow up to 800s on Vercel (fluid compute)
+export const maxDuration = 800
+
 const claude = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })

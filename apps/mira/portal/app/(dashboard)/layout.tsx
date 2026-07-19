@@ -145,6 +145,22 @@ useEffect(() => {
         <span>Toolkit</span>
       </Link>
 
+      {/* Documentos — global link */}
+      <Link href="/documents"
+        className={clsx(
+          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+          path.startsWith('/documents')
+            ? 'bg-amber-500/15 text-amber-400'
+            : 'text-[#555] hover:text-amber-400 hover:bg-amber-500/8'
+        )}>
+        <span className="text-sm">📄</span>
+        <span>Documentos</span>
+        <span className="ml-auto text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+          style={{ background: 'rgba(251,191,36,0.15)', color: 'rgba(251,191,36,0.7)' }}>
+          NEW
+        </span>
+      </Link>
+
       {/* Integrations */}
       <Link href="/integrations"
         className={clsx(

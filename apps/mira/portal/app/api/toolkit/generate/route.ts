@@ -5,6 +5,9 @@ import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
 import Anthropic from '@anthropic-ai/sdk'
 
+// Single-tool generation with opus can take minutes
+export const maxDuration = 300
+
 const claude = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
@@ -93,8 +96,8 @@ export async function POST(req: NextRequest) {
 
     // Call Claude
     const message = await claude.messages.create({
-      model: 'claude-opus-4-1',
-      max_tokens: 4000,
+      model: 'claude-opus-4-8',
+      max_tokens: 16000,
       messages: [
         {
           role: 'user',
@@ -102,6 +105,14 @@ export async function POST(req: NextRequest) {
         },
       ],
     })
+
+    if (message.stop_reason === 'max_tokens') {
+      await admin
+        .from('generation_queue')
+        .update({ status: 'failed', error_message: 'Response truncated at max_tokens' })
+        .eq('id', queueId)
+      return NextResponse.json({ error: 'Response truncated' }, { status: 500 })
+    }
 
     // Extract JSON from Claude's response
     let result = {}
@@ -128,6 +139,15 @@ export async function POST(req: NextRequest) {
           }
         }
       }
+    }
+
+    // Never save an empty report as completed
+    if (Object.keys(result).length === 0) {
+      await admin
+        .from('generation_queue')
+        .update({ status: 'failed', error_message: 'Empty result after JSON parse' })
+        .eq('id', queueId)
+      return NextResponse.json({ error: 'Empty result after JSON parse' }, { status: 500 })
     }
 
     const generationTime = Date.now() - startTime
