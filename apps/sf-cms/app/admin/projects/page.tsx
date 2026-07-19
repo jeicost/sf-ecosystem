@@ -58,7 +58,8 @@ export default function ProjectsPage() {
         <div className="bg-slate-50 rounded-lg border border-slate-200 p-12 text-center">
           <p className="text-slate-600 mb-4">No projects yet</p>
           <p className="text-sm text-slate-500">
-            Projects are created automatically when you build a new landing page
+            Create one below, or have the landing-builder agent register it automatically
+            when CMS integration is enabled during a new landing&apos;s intake
           </p>
         </div>
       ) : (
