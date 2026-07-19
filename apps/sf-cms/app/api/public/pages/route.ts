@@ -1,5 +1,4 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { type Page } from '@sf/cms-client'
 
 export async function GET(request: Request) {
   try {
