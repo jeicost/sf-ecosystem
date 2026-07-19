@@ -25,7 +25,7 @@ const TOOLKIT_TOOLS = [
 async function generateToolReport(
   admin: any,
   clientId: string,
-  userId: string,
+  userId: string | null,
   toolSlug: string,
   inputData: any
 ): Promise<string> {
