@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
         'x-api-key': ANTHROPIC_API_KEY,
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-1',
+        model: 'claude-opus-4-8',
         max_tokens: 2000,
         messages: [
           {

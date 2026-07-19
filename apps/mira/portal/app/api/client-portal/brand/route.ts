@@ -17,28 +17,19 @@ export async function GET(request: NextRequest) {
     }
 
     const db = createServiceClient()
-
     const { data, error } = await db
-      .from('clients')
-      .select('id, name, owner_email, status, created_at, logo_url, primary_color')
-      .eq('id', auth.clientId)
-      .single()
+      .from('brand_profiles')
+      .select('name, mission, tone_of_voice, values, description, brand_data')
+      .eq('client_id', auth.clientId)
+      .maybeSingle()
 
     if (error || !data) {
       return NextResponse.json(null)
     }
 
-    return NextResponse.json({
-      id: data.id,
-      name: data.name,
-      email: data.owner_email,
-      plan: data.status || 'standard',
-      created_at: data.created_at,
-      logo_url: data.logo_url,
-      primary_color: data.primary_color,
-    })
+    return NextResponse.json(data)
   } catch (error) {
-    console.error('Error in client-portal info:', error)
+    console.error('Error in client-portal brand:', error)
     return NextResponse.json(null, { status: 200 })
   }
 }

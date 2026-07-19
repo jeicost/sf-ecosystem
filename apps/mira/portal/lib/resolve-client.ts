@@ -1,0 +1,78 @@
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { adminClient } from '@/lib/supabase'
+
+export interface ResolvedClient {
+  userId: string
+  clientId: string
+}
+
+export type ResolveResult =
+  | { ok: true; userId: string; clientId: string }
+  | { ok: false; status: 401 | 403; error: string }
+
+/**
+ * Authenticate the request and resolve which client the user may act on.
+ * - super_admin may target any requestedClientId (active workspace).
+ * - Regular users must have a grant in mira_project_access for the requested client;
+ *   otherwise falls back to their first granted client.
+ *
+ * IMPORTANT: mira_project_access.project_id holds the CLIENT id (legacy naming, see 0025).
+ * Use in every route that reads/writes tenant data via the service (RLS-bypassing) client.
+ */
+export async function resolveRequestClient(requestedClientId: string | null): Promise<ResolveResult> {
+  const cookieStore = await cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll: () => cookieStore.getAll(),
+        setAll: () => {},
+      },
+    }
+  )
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { ok: false, status: 401, error: 'Unauthorized' }
+  }
+
+  const admin = adminClient()
+  const isSuperAdmin = user.user_metadata?.plan === 'super_admin'
+
+  if (requestedClientId) {
+    if (isSuperAdmin) {
+      return { ok: true, userId: user.id, clientId: requestedClientId }
+    }
+    const { data: grant } = await admin
+      .from('mira_project_access')
+      .select('project_id')
+      .eq('user_id', user.id)
+      .eq('project_id', requestedClientId)
+      .limit(1)
+    if (grant?.length) {
+      return { ok: true, userId: user.id, clientId: requestedClientId }
+    }
+    return { ok: false, status: 403, error: 'No access to this client' }
+  }
+
+  // No explicit client: use the user's first granted client
+  const { data: accessData } = await admin
+    .from('mira_project_access')
+    .select('project_id')
+    .eq('user_id', user.id)
+    .limit(1)
+  if (accessData?.length) {
+    return { ok: true, userId: user.id, clientId: accessData[0].project_id }
+  }
+
+  if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {
+    return { ok: true, userId: user.id, clientId: user.user_metadata.client_id }
+  }
+
+  return { ok: false, status: 403, error: 'No client access' }
+}

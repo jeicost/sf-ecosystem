@@ -87,7 +87,7 @@ export async function validateAnthropicApiKey(apiKey: string): Promise<ApiValida
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-1',
+        model: 'claude-opus-4-8',
         max_tokens: 10,
         messages: [{ role: 'user', content: 'ping' }],
       }),

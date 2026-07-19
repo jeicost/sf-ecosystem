@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     const admin = adminClient()
 
     // Get a test user/client (first one available or hardcoded)
-    const { data: projectAccess } = await admin.from('mira_project_access').select('user_id, client_id').limit(1).single()
+    const { data: projectAccess } = await admin.from('mira_project_access').select('user_id, project_id').limit(1).single()
 
     if (!projectAccess) {
       return NextResponse.json({ error: 'No test user/client found in database' }, { status: 500 })
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     const { data: result, error: insertError } = await admin
       .from('quick_actions_results')
       .insert({
-        client_id: projectAccess.client_id,
+        client_id: projectAccess.project_id,
         user_id: projectAccess.user_id,
         department,
         action_type,

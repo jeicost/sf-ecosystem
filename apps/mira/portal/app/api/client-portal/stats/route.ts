@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-admin'
+import { resolveRequestClient } from '@/lib/resolve-client'
 
 function formatToolName(slug: string): string {
   const names: Record<string, string> = {
@@ -24,6 +25,11 @@ export async function GET(request: NextRequest) {
 
     if (!clientId) {
       return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    }
+
+    const auth = await resolveRequestClient(clientId)
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
     }
 
     const db = createServiceClient()

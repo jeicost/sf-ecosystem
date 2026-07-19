@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-admin'
+import { resolveRequestClient } from '@/lib/resolve-client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,22 +11,28 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
     }
 
+    const auth = await resolveRequestClient(clientId)
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status })
+    }
+
     const db = createServiceClient()
 
+    // Canonical source: content_pillars table (one row per pillar)
     const { data, error } = await db
-      .from('brand_profiles')
-      .select('content_pillars')
-      .eq('id', clientId)
-      .single()
+      .from('content_pillars')
+      .select('id, pillar_name, description, themes')
+      .eq('client_id', auth.clientId)
 
-    if (error || !data?.content_pillars) {
+    if (error || !data?.length) {
       return NextResponse.json([])
     }
 
-    // Convert array of pillar strings to objects with name
-    const pillars = (data.content_pillars || []).map((name: string) => ({
-      id: name.toLowerCase().replace(/\s+/g, '-'),
-      name,
+    const pillars = data.map((p) => ({
+      id: p.id,
+      name: p.pillar_name,
+      description: p.description,
+      themes: p.themes,
     }))
 
     return NextResponse.json(pillars)

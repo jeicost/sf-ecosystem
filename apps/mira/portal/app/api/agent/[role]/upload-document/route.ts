@@ -163,7 +163,7 @@ export async function POST(
       (async () => {
         try {
           const analysis = await claude.messages.create({
-            model: 'claude-opus-4-1',
+            model: 'claude-opus-4-8',
             max_tokens: 1000,
             messages: [
               {

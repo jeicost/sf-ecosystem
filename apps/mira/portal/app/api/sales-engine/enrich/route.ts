@@ -172,7 +172,7 @@ async function generatePersonalizedEmail(
   const contactName = apolloData.persons?.[0]?.name || 'Team'
 
   const message = await claude.messages.create({
-    model: 'claude-opus-4-1-20250805',
+    model: 'claude-opus-4-8',
     max_tokens: 500,
     messages: [
       {

@@ -105,7 +105,7 @@ Analyze the document and return ONLY valid JSON (no markdown, no text before/aft
 Only include fields where you found relevant information. Leave empty/null for fields with no clear data.`
 
     const message = await claude.messages.create({
-      model: 'claude-opus-4-1',
+      model: 'claude-opus-4-8',
       max_tokens: 2000,
       messages: [
         {
