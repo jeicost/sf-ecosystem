@@ -3,18 +3,15 @@
 
 ---
 
-## ⚠️ ESTADO: ROTACIÓN PENDIENTE (2026-07-17)
+## ✅ ESTADO: ROTACIÓN COMPLETADA (2026-07-19)
 
-**Verificado a fecha 2026-07-17:** Este plan fue escrito el 13 de julio pero **no se ejecutó todavía**. Las credenciales listadas a continuación siguen siendo **válidas en producción**. 
+**PASO 1 (Supabase `service_role` key) — ✅ HECHO 2026-07-19.** Rotada con estrategia zero-downtime (nuevo sistema `sb_secret_*` de Supabase: se creó una key nueva sin borrar la vieja, se actualizó en Vercel + `.env.local`, se hizo smoke test, y solo entonces quedó pendiente borrar la vieja). Ningún script tenía la key hardcodeada — todos (`fix-sf-cms-schema.mjs`, `init-qa-harness.mjs`, `scripts/adhoc/*`) ya leían de `process.env`. Verificado: los 3 sitios cliente y MIRA no se vieron afectados (no dependen de esta key directamente). Pendiente no urgente: borrar la key vieja (`default`) en el dashboard de Supabase.
 
-**Hallazgo crítico:** La Supabase `service_role` key documentada en "PASO 1" es la misma que está actualmente en uso en:
-- `scripts/fix-sf-cms-schema.mjs` (localizada en texto plano en repo)
-- `apps/sf-cms/.env.local` (descargada vía `vercel env pull` el 17 jul)
-- Script ejecutable `scripts/init-qa-harness.mjs` (usada para crear datos de prueba el 17 jul)
+**PASO 2 (REVALIDATE_SECRET) — mayormente obsoleto.** El patrón live-fetch + webhook de revalidación que usaba este secreto fue reemplazado el 2026-07-19 por fetch build-time (ver sesión `SESSION_2026_07_19_SF_CMS_WEBS_DISCOOLVER_COMPLETE.md`) — el endpoint `/api/revalidate` en los 3 sitios cliente ya no tiene ningún llamador real. Rotar este secreto ya no es crítico; sigue siendo buena higiene si se quiere cerrar del todo.
 
-Esto significa: **cualquiera que tenga acceso a este repo o commits históricos puede acceder a toda la base de datos SF-CMS (Supabase `dmzecrlkclocqaywkjtc`) hasta que se rote la key.** El riesgo de seguridad sigue siendo 🔴 CRÍTICO.
+**PASO 3 (Admin Password) — obsoleto, ya no aplica.** El login por password compartido fue reemplazado por Supabase Auth (email+password individual) el 2026-07-17. No hay "admin password" que rotar.
 
-**Acción recomendada:** Ejecutar este plan **tan pronto como sea posible**, en al menos el PASO 1 (rotar service_role key) y PASO 2 (rotar REVALIDATE_SECRET si las webs están activas). El PASO 3 es menos crítico. Ver CHECKLIST FINAL al final de este documento.
+**Hallazgo relacionado:** `cms.startupsfactory.es` resultó ser nuestro propio proyecto Vercel (congelado desde mayo, no una cuenta externa) — ver la sesión del 2026-07-19 para el detalle completo.
 
 ---
 

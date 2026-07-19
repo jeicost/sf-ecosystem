@@ -403,6 +403,10 @@ for line in $(cat .env.production.update); do
   vercel env add $key --environments production <<< "$value"
 done
 
+# 4b. Clean up local files with real secrets (now covered by .gitignore too, but
+#     don't leave plaintext secrets on disk any longer than needed)
+rm -f .env.production .env.production.backup .env.production.update
+
 # 5. Deploy
 vercel --prod
 
