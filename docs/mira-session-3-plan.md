@@ -2,11 +2,13 @@
 
 > Diagnóstico cerrado el 2026-07-19 con exploración multi-agente + decisiones de producto del usuario. Estado de partida: los 11 puntos originales certificados por la review multi-agente (ver memoria `MIRA_REVIEW_MULTIAGENTE_2026_07_19`).
 
-## Decisiones de producto (confirmadas por el usuario)
+## Decisiones de producto (confirmadas por el usuario — actualizadas 2ª ronda)
 1. **Toolkit "como el original de ai agency" = AMBAS experiencias**: portada de entregables por cliente (estilo `apps/sf-reports/{cliente}/index.html`) + deck unificado tipo `toolkit-reports.html`.
-2. **BYO Claude**: key del cliente en Integraciones con **fallback a la de plataforma** + registro de consumo por cliente.
-3. **"Juntar" = CRM** (no CMS): ejecutar la integración CRM/Sales Engine en el departamento comercial (`docs/crm-architecture.md`).
+2. **BYO Claude**: key del cliente en Integraciones con **fallback a la de plataforma** + registro de consumo. **Visibilidad: admin ve todo, cada cliente ve el suyo** (transparencia que incentiva conectar key).
+3. **"Juntar" = SOLO CRM** (re-confirmado; el CMS queda explícitamente fuera): ejecutar `docs/crm-architecture.md`.
 4. **Presentaciones: TODO** — calidad visual, imágenes IA, export PPTX real y edición slide a slide.
+5. **White-label total**: cuando un cliente se loguea, SU logo es la marca principal del sidebar + "powered by MIRA" discreto. Super admin sigue viendo MIRA.
+6. **Orden delegado a Claude**: A (experiencia cliente) → B (modelo de negocio) → C (producción) → D (CRM+seguridad).
 
 ## F0 — Arranque (10 min): cerrar Drive
 - Usuario: clic "Connect" en /integrations (esquema ya desbloqueado, callback arreglado).
