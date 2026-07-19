@@ -1,5 +1,6 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { logActivity } from '@/lib/audit-log'
 import type { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -83,6 +84,14 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) throw error
+
+    await logActivity({
+      projectId: project_id,
+      action: 'create',
+      resourceType: 'post',
+      resourceId: post.id,
+      newValues: { title: post.title, slug: post.slug, status: post.status },
+    })
 
     return Response.json(
       {

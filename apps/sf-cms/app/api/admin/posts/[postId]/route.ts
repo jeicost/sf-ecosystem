@@ -1,6 +1,7 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { triggerDeployHook } from '@/lib/deploy-hook'
+import { logActivity } from '@/lib/audit-log'
 import type { NextRequest } from 'next/server'
 
 export async function GET(
@@ -103,6 +104,15 @@ export async function PATCH(
 
     if (updateErr) throw updateErr
 
+    await logActivity({
+      projectId: post.project_id,
+      action: status === 'published' && currentPost.status !== 'published' ? 'publish' : 'update',
+      resourceType: 'post',
+      resourceId: post.id,
+      oldValues: { title: currentPost.title, slug: currentPost.slug, status: currentPost.status },
+      newValues: { title: post.title, slug: post.slug, status: post.status },
+    })
+
     // Non-blocking: never fails or delays the save if the hook is broken/unset
     if (post.status === 'published') {
       await triggerDeployHook(post.project_id)
@@ -130,12 +140,28 @@ export async function DELETE(
     const { postId } = await params
     const client = createAdminClient()
 
+    const { data: existing } = await client
+      .from('posts')
+      .select('project_id, title, slug, status')
+      .eq('id', postId)
+      .single()
+
     const { error } = await client
       .from('posts')
       .delete()
       .eq('id', postId)
 
     if (error) throw error
+
+    if (existing) {
+      await logActivity({
+        projectId: existing.project_id,
+        action: 'delete',
+        resourceType: 'post',
+        resourceId: postId,
+        oldValues: { title: existing.title, slug: existing.slug, status: existing.status },
+      })
+    }
 
     return Response.json({ deleted: true }, { status: 200 })
   } catch (err) {
