@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 // Long-running generation: allow up to 800s on Vercel (fluid compute)
 export const maxDuration = 800
-
-const claude = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
 
 const TOOLKIT_TOOLS = [
   'seo-audit',
@@ -80,7 +76,7 @@ async function generateToolReport(
 
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
-        const message = await claude.messages.create({
+        const message = await createMessageForClient(clientId, 'toolkit/generate-batch', {
           model: 'claude-opus-4-8',
           max_tokens: 16000,
           messages: [{ role: 'user', content: prompt }],

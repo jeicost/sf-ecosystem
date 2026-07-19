@@ -3,11 +3,9 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 export const maxDuration = 300
-
-const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 function extractJson(text: string): Record<string, unknown> {
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
@@ -62,7 +60,7 @@ export async function POST(req: NextRequest) {
 
     const { brandColor, _history, ...currentDoc } = row.result_data || {}
 
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(row.client_id, 'documents/refine', {
       model: 'claude-opus-4-8',
       max_tokens: 16000,
       messages: [

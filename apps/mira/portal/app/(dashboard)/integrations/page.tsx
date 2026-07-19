@@ -3,6 +3,7 @@ import { useActiveClient } from '@/lib/client-context'
 import { useToolConnections } from '@/lib/hooks/useToolConnections'
 import ToolsMarketplace from '@/components/integrations/ToolsMarketplace'
 import ToolConnectionModal from '@/components/integrations/ToolConnectionModal'
+import UsageCard from '@/components/UsageCard'
 import { MARKETPLACE_TOOLS } from '@/lib/integrations/marketplace-tools'
 import { useEffect, useState } from 'react'
 
@@ -161,6 +162,8 @@ export default function IntegrationsPage() {
             Connect your favorite tools and services to power your MIRA agents.
           </p>
         </div>
+
+        {clientId && <UsageCard clientId={clientId} />}
 
         <ToolsMarketplace
           connectedTools={driveConnected ? [...connectedTools, 'google-drive'] : connectedTools}

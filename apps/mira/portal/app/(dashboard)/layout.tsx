@@ -6,7 +6,7 @@ import { clsx } from 'clsx'
 import SectionSwitcher from '@/components/section-switcher'
 import ClientSwitcher from '@/components/client-switcher'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
-import { ClientProvider } from '@/lib/client-context'
+import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { getActiveSectionFromPath } from '@/lib/sections'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
@@ -20,6 +20,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 function SidebarContent() {
   const path = usePathname()
   const router = useRouter()
+  const { activeClient } = useActiveClient()
   const [user, setUser]         = useState<MiraUser | null>(null)
   const [theme, setThemeState]  = useState<Theme>('dark')
   const [pendingCount, setPending] = useState(0)
@@ -91,18 +92,48 @@ useEffect(() => {
 
   return (
     <>
-      {/* Logo */}
+      {/* Logo — white-label: el cliente ve SU marca; super_admin ve MIRA */}
       <div className="px-4 py-4 border-b border-[#131313]">
-        <Link href="/home" className="flex items-center gap-2 group">
-          <div style={{ filter: 'drop-shadow(0 0 8px rgba(124,58,237,0.3))' }}
-            className="transition-all group-hover:drop-shadow-[0_0_12px_rgba(124,58,237,0.5)]">
-            <MiraLogo size={26} variant="icon" />
-          </div>
-          <div>
-            <span style={{ fontSize: '13px', fontWeight: 700, color: '#f0f0f8', letterSpacing: '-0.03em' }}>MIRA</span>
-            <p className="text-[9px] text-[#2a2a2a] leading-none mt-0.5">AI Agency Platform</p>
-          </div>
-        </Link>
+        {!isSuperAdmin(user) && activeClient?.logoUrl ? (
+          <Link href="/home" className="flex items-center gap-2.5 group">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={activeClient.logoUrl}
+              alt={activeClient.name}
+              className="h-8 w-auto max-w-[140px] object-contain transition-all group-hover:opacity-90"
+              style={{
+                filter: activeClient.primaryColor
+                  ? `drop-shadow(0 0 8px ${activeClient.primaryColor}40)`
+                  : undefined,
+              }}
+            />
+            <div className="min-w-0">
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  color: '#f0f0f8',
+                  letterSpacing: '-0.03em',
+                }}
+                className="block truncate"
+              >
+                {activeClient.name}
+              </span>
+              <p className="text-[9px] text-[#2a2a2a] leading-none mt-0.5">powered by MIRA</p>
+            </div>
+          </Link>
+        ) : (
+          <Link href="/home" className="flex items-center gap-2 group">
+            <div style={{ filter: 'drop-shadow(0 0 8px rgba(124,58,237,0.3))' }}
+              className="transition-all group-hover:drop-shadow-[0_0_12px_rgba(124,58,237,0.5)]">
+              <MiraLogo size={26} variant="icon" />
+            </div>
+            <div>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: '#f0f0f8', letterSpacing: '-0.03em' }}>MIRA</span>
+              <p className="text-[9px] text-[#2a2a2a] leading-none mt-0.5">AI Agency Platform</p>
+            </div>
+          </Link>
+        )}
       </div>
 
       {/* Client switcher */}

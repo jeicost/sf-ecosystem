@@ -75,6 +75,92 @@ export async function GET(req: NextRequest) {
     const queue_id = searchParams.get('queue_id')
     const inline = searchParams.get('inline') === '1'
 
+    // ── Modo OVERVIEW: compila el último reporte de cada tool en un solo deck editorial ──
+    if (searchParams.get('overview') === '1') {
+      const overviewClientId = searchParams.get('clientId')
+      if (!overviewClientId) {
+        return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+      }
+      const isSuper = user.user_metadata?.plan === 'super_admin'
+      if (!isSuper) {
+        const adminCheck = adminClient()
+        const { data: grant } = await adminCheck
+          .from('mira_project_access')
+          .select('project_id')
+          .eq('user_id', user.id)
+          .eq('project_id', overviewClientId)
+          .limit(1)
+        if (!grant?.length) {
+          return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+        }
+      }
+
+      const admin = adminClient()
+      const [{ data: rows }, { data: clientRow2 }] = await Promise.all([
+        admin
+          .from('generation_queue')
+          .select('id, tool_slug, result_data, created_at')
+          .eq('client_id', overviewClientId)
+          .eq('status', 'completed')
+          .order('created_at', { ascending: false }),
+        admin.from('clients').select('name, primary_color, logo_url').eq('id', overviewClientId).single(),
+      ])
+
+      // Última generación por tool, en el orden del catálogo
+      const latestByTool = new Map<string, { id: string; result_data: Record<string, unknown> }>()
+      for (const r of rows || []) {
+        if (!latestByTool.has(r.tool_slug)) latestByTool.set(r.tool_slug, r)
+      }
+
+      const overviewSections: Section[] = []
+      for (const tool of TOOLKIT_TOOLS) {
+        const row = latestByTool.get(tool.slug)
+        if (!row) continue
+        const toolSections = getAdapter(tool.slug)(row.result_data as Record<string, unknown>)
+        // 1-2 secciones destacadas por tool: la primera (resumen/stats) + la primera con tabla o phases
+        const picked: Section[] = []
+        if (toolSections[0]) picked.push(toolSections[0])
+        const rich = toolSections.slice(1).find((s) => s.table?.rows?.length || s.phases?.length || s.chart)
+        if (rich) picked.push(rich)
+        picked.forEach((s, i) => {
+          overviewSections.push({
+            ...s,
+            title: i === 0 ? tool.name : s.title,
+            navLabel: i === 0 ? tool.name : undefined,
+            label: `${tool.name.toUpperCase()}${i > 0 ? ` — ${s.title.toUpperCase()}` : ''}`,
+            content:
+              (s.content || '') +
+              (i === picked.length - 1
+                ? `<p style="margin-top:24px"><a href="/toolkit/report/${row.id}" style="color:var(--primary);font-family:'Space Mono',monospace;font-size:12px;letter-spacing:0.1em;text-decoration:none">VER INFORME COMPLETO →</a></p>`
+                : ''),
+          })
+        })
+      }
+
+      if (overviewSections.length === 0) {
+        return NextResponse.json({ error: 'No completed reports for this client' }, { status: 404 })
+      }
+
+      const html = generateEditorialHTML({
+        clientName: clientRow2?.name || 'Cliente',
+        brandColor: clientRow2?.primary_color || '#8B5CF6',
+        toolTitle: 'Toolkit Completo',
+        subtitle: clientRow2?.name || '',
+        tagline: `${latestByTool.size} informes · generado con MIRA`,
+        sections: overviewSections,
+      })
+
+      return new NextResponse(html, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/html; charset=utf-8',
+          'Content-Disposition': inline
+            ? 'inline'
+            : `attachment; filename="toolkit-completo_${(clientRow2?.name || 'cliente').replace(/\s+/g, '_')}.html"`,
+        },
+      })
+    }
+
     if (!queue_id) {
       return NextResponse.json({ error: 'Missing queue_id' }, { status: 400 })
     }

@@ -4,13 +4,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 const VISUAL_ACTIONS = ['crear_post_visual', 'crear_carrusel_visual', 'editar_imagen_visual']
-
-const claude = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now()
@@ -105,7 +101,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Call Claude
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(clientId, 'quick-actions', {
       model: 'claude-opus-4-8',
       max_tokens: 4000,
       messages: [

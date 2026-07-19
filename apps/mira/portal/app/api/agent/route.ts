@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
 import { createServerClient } from '@supabase/ssr'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
@@ -7,8 +7,6 @@ import { getClientMemoryContext } from '@/lib/client-memory'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 // Removed hardcoded CLIENT_ID import - now reads from user_metadata or requires explicit clientId
 // import { CLIENT_ID } from '@/lib/constants'
-
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
 
 // Agentes que generan documentos largos necesitan más tokens
 const MAX_TOKENS: Record<string, number> = {
@@ -117,6 +115,9 @@ export async function POST(req: NextRequest) {
       status: 'in_progress',
     }).catch(() => {})
 
+    // BYO-Claude: resolve the client's key (fallback to platform) before streaming
+    const { client: anthropic, usedClientKey } = await getClaudeForClient(resolvedClientId)
+
     // Streaming response
     const encoder = new TextEncoder()
     const stream = new ReadableStream({
@@ -137,6 +138,18 @@ export async function POST(req: NextRequest) {
               controller.enqueue(encoder.encode(text))
             }
           }
+
+          // Usage logging: the stream has finished, so finalMessage() resolves immediately
+          try {
+            const finalMessage = await anthropicStream.finalMessage()
+            logUsage({
+              clientId: resolvedClientId,
+              route: 'agent',
+              model: 'claude-sonnet-4-6',
+              usage: finalMessage.usage,
+              usedClientKey,
+            })
+          } catch { /* usage logging must never break the stream */ }
 
           // Log completado
           logAgentActivity({

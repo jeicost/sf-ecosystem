@@ -3,14 +3,10 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 // Single-tool generation with opus can take minutes
 export const maxDuration = 300
-
-const claude = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
 
 export async function POST(req: NextRequest) {
   const startTime = Date.now()
@@ -44,16 +40,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     } else {
       const admin = adminClient()
+      // NOTE: project_id in mira_project_access is the CLIENT id (FK to clients — legacy naming)
       const { data: accessData, error: accessError } = await admin
         .from('mira_project_access')
-        .select('client_id')
+        .select('project_id')
         .eq('user_id', user.id)
+        .limit(1)
         .single()
 
       if (accessError || !accessData) {
         return NextResponse.json({ error: 'No client access found' }, { status: 403 })
       }
-      clientId = accessData.client_id
+      clientId = accessData.project_id
     }
 
     const admin = adminClient()
@@ -95,7 +93,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Call Claude
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(clientId, 'toolkit/generate', {
       model: 'claude-opus-4-8',
       max_tokens: 16000,
       messages: [

@@ -10,7 +10,7 @@
  * Token handling mirrors app/api/brand-brain/drive/ingest/route.ts.
  */
 
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 import * as mammoth from 'mammoth'
 import type { adminClient } from '@/lib/supabase'
 
@@ -359,10 +359,9 @@ async function downloadAndExtractText(
 
 // ─── AI summaries ────────────────────────────────────────────────
 
-async function summarizeDocument(fileName: string, text: string): Promise<string> {
+async function summarizeDocument(clientId: string, fileName: string, text: string): Promise<string> {
   try {
-    const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(clientId, 'drive-sync', {
       model: HAIKU_MODEL,
       max_tokens: 512,
       messages: [
@@ -381,6 +380,7 @@ async function summarizeDocument(fileName: string, text: string): Promise<string
 }
 
 async function generateFolderMap(
+  clientId: string,
   folderName: string,
   tree: string[],
   docSummaries: Array<{ path: string; summary: string }>,
@@ -394,8 +394,7 @@ async function generateFolderMap(
   const fallback = `La carpeta "${folderName}" contiene ${tree.length} elementos (${docSummaries.length} documentos analizados y ${otherFilesCount} archivos no textuales como imágenes o diseños).`
 
   try {
-    const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(clientId, 'drive-sync', {
       model: HAIKU_MODEL,
       max_tokens: 512,
       messages: [
@@ -462,7 +461,7 @@ export async function syncDriveFolder(
         continue
       }
 
-      const summary = await summarizeDocument(file.name, extraction.text)
+      const summary = await summarizeDocument(clientId, file.name, extraction.text)
       const sourceMetadata = {
         folder_id: folderRow.folder_id,
         drive_folder_row: folderRow.id,
@@ -528,7 +527,7 @@ export async function syncDriveFolder(
 
   // 5. Folder map → project_memory (insight, dedup by tags [drive_map, folderRow.id])
   const folderName = folderRow.folder_name || 'Carpeta de Drive'
-  const mapSummary = await generateFolderMap(folderName, tree, docSummaries, otherFilesCount)
+  const mapSummary = await generateFolderMap(clientId, folderName, tree, docSummaries, otherFilesCount)
 
   try {
     const memoryPayload = {

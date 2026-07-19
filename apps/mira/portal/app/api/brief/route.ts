@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
@@ -8,16 +8,14 @@ import { getAgentPrompt } from '@/lib/agent-prompts'
 // import { CLIENT_ID } from '@/lib/constants'
 import { createServerClient } from '@supabase/ssr'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-
-async function callAgent(role: string, message: string, systemExtra?: string, locale: 'es' | 'en' = 'es'): Promise<string> {
+async function callAgent(clientId: string, role: string, message: string, systemExtra?: string, locale: 'es' | 'en' = 'es'): Promise<string> {
   const today = new Date().toLocaleDateString('es-ES', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   })
   const base = getAgentPrompt(role, locale) + `\n\nFecha actual: ${today}`
   const system = systemExtra ? `${base}\n\n---\n\n${systemExtra}` : base
 
-  const response = await anthropic.messages.create({
+  const response = await createMessageForClient(clientId, 'brief', {
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     system,
@@ -83,6 +81,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Marco', agentRole: 'orchestrator', taskType: 'brief_analysis', status: 'in_progress' }).catch(() => {})
 
     const orchestratorOutput = await callAgent(
+      resolvedClientId,
       'orchestrator',
       `Analiza este brief y determina el plan de acción:\n\n${briefInput}`,
       systemExtra,
@@ -95,6 +94,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Luna', agentRole: 'content-strategist', taskType: 'brief_enrichment', status: 'in_progress' }).catch(() => {})
 
     const strategyOutput = await callAgent(
+      resolvedClientId,
       'content-strategist',
       `Enriquece este brief con ángulo editorial, hook principal y estructura:\n\n${briefInput}\n\nAnálisis de Marco:\n${orchestratorOutput}`,
       brainContext,
@@ -107,6 +107,7 @@ Notas adicionales: ${notas ?? 'Ninguna'}
     logAgentActivity({ clientId: resolvedClientId, agentName: 'Alex', agentRole: 'copywriter', taskType: 'copy_generation', status: 'in_progress' }).catch(() => {})
 
     const copyOutput = await callAgent(
+      resolvedClientId,
       'copywriter',
       `Genera el copy para publicar. Plataforma: ${platform}. Formato: ${format}.\n\nBrief de Luna:\n${strategyOutput}`,
       brainContext,

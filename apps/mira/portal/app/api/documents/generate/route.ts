@@ -4,11 +4,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { getDocumentPrompt, DOC_TYPES } from '@/lib/generation/document-prompts'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 export const maxDuration = 300
-
-const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 function extractJson(text: string): Record<string, unknown> {
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
@@ -94,7 +92,7 @@ export async function POST(req: NextRequest) {
       const prompt = await getDocumentPrompt(doc_type, { clientId, inputData: input_data })
       if (!prompt) throw new Error('Unknown doc type')
 
-      const message = await claude.messages.create({
+      const message = await createMessageForClient(clientId, 'documents/generate', {
         model: 'claude-opus-4-8',
         max_tokens: 16000,
         messages: [{ role: 'user', content: prompt }],

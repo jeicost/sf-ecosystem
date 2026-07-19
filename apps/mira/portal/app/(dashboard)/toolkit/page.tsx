@@ -1,49 +1,84 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
-import { Loader2, CheckCircle, AlertCircle, Zap } from 'lucide-react'
+import { Syne } from 'next/font/google'
+import { Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { useActiveClient } from '@/lib/client-context'
+import DeliverableCard, { DeliverableGeneration } from '@/components/toolkit/DeliverableCard'
+import LandingsSection, { ClientLanding } from '@/components/toolkit/LandingsSection'
 
-interface Generation {
-  id: string
-  tool_slug: string
+const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'] })
+
+const FALLBACK_BRAND = '#8B5CF6'
+
+interface Generation extends DeliverableGeneration {
   status: 'queued' | 'processing' | 'completed' | 'failed'
-  created_at: string
-  completed_at?: string
-  result_data?: Record<string, any>
   error_message?: string
+}
+
+// ─── Category map ────────────────────────────────────────────
+const CATEGORY_MAP: Record<string, string> = {
+  'seo-audit': 'Digital Audit',
+  'marketing-audit': 'Digital Audit',
+  'brand-briefing': 'Brand Intelligence',
+  'brandbook-content-system': 'Brand Intelligence',
+  'content-pack': 'Content',
+  'marketing-campaign-generator': 'Content',
+  'community-growth-blueprint': 'Content',
+  'action-plan': 'Strategy',
+  'investor-deck': 'Strategy',
+  'competitive-analysis': 'Strategy',
+}
+
+function getCategory(slug: string): string {
+  if (CATEGORY_MAP[slug]) return CATEGORY_MAP[slug]
+  if (slug.startsWith('doc-')) return 'Documents'
+  return 'Toolkit'
+}
+
+const FALLBACK_DESCRIPTIONS: Record<string, string> = {
+  'Digital Audit': 'Diagnóstico digital completo con hallazgos priorizados y plan de acción.',
+  'Brand Intelligence': 'Inteligencia de marca: estrategia, tono, pilares y sistema de contenidos.',
+  Content: 'Contenido listo para publicar, adaptado a la voz y canales de la marca.',
+  Strategy: 'Análisis estratégico con recomendaciones accionables para el negocio.',
+  Documents: 'Documento generado a partir del conocimiento de marca del cliente.',
+  Toolkit: 'Entregable generado con el toolkit de IA de MIRA.',
+}
+
+function getToolMeta(slug: string) {
+  const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
+  const category = getCategory(slug)
+  return {
+    icon: tool?.icon || (slug.startsWith('doc-') ? '📄' : '⚡'),
+    name: tool?.name || slug.replace(/^doc-/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+    description: tool?.description || FALLBACK_DESCRIPTIONS[category],
+    category,
+  }
+}
+
+// hex → rgba string with alpha (for the radial glow)
+function hexToRgba(hex: string, alpha: number): string {
+  const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  if (!m) return `rgba(139, 92, 246, ${alpha})`
+  return `rgba(${parseInt(m[1], 16)}, ${parseInt(m[2], 16)}, ${parseInt(m[3], 16)}, ${alpha})`
 }
 
 export default function ToolkitHub() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
+  const brandColor = activeClient?.primaryColor || FALLBACK_BRAND
 
   const [generations, setGenerations] = useState<Generation[]>([])
+  const [landings, setLandings] = useState<ClientLanding[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [showGenerate, setShowGenerate] = useState(false)
 
-  // Fetch generations on mount
-  useEffect(() => {
-    fetchGenerations()
-
-    // Poll for updates every 5 seconds if there are pending/processing items
-    const interval = setInterval(() => {
-      setGenerations((prev) => {
-        const hasPending = prev.some((g) => g.status !== 'completed' && g.status !== 'failed')
-        if (hasPending) {
-          fetchGenerations()
-        }
-        return prev
-      })
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [clientId])
-
-  const fetchGenerations = async () => {
+  const fetchGenerations = useCallback(async () => {
+    if (!clientId) return
     try {
       const client = createClient()
       const { data, error: dbError } = await client
@@ -58,7 +93,7 @@ export default function ToolkitHub() {
         setError(`Database error: ${dbError.message}`)
         setGenerations([])
       } else {
-        setGenerations(data || [])
+        setGenerations((data as Generation[]) || [])
         setError(null)
       }
     } catch (err) {
@@ -68,162 +103,308 @@ export default function ToolkitHub() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [clientId])
 
-  const getToolColor = (slug: string) => {
-    const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
-    return tool?.color || '#9CA3AF'
-  }
+  // Fetch generations + poll every 5s while there are pending items
+  useEffect(() => {
+    if (!clientId) return
+    fetchGenerations()
 
-  const getToolIcon = (slug: string) => {
-    const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
-    return tool?.icon || '⚡'
-  }
+    const interval = setInterval(() => {
+      setGenerations((prev) => {
+        const hasPending = prev.some((g) => g.status !== 'completed' && g.status !== 'failed')
+        if (hasPending) {
+          fetchGenerations()
+        }
+        return prev
+      })
+    }, 5000)
 
-  const getToolTitle = (slug: string) => {
-    const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
-    return tool?.name || slug
-  }
+    return () => clearInterval(interval)
+  }, [clientId, fetchGenerations])
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle size={16} className="text-green-400" />
-      case 'processing':
-        return <Loader2 size={16} className="text-blue-400 animate-spin" />
-      case 'failed':
-        return <AlertCircle size={16} className="text-red-400" />
-      default:
-        return <Zap size={16} className="text-gray-400" />
+  // Fetch client settings → landings
+  useEffect(() => {
+    if (!clientId) return
+    const client = createClient()
+    client
+      .from('clients')
+      .select('settings')
+      .eq('id', clientId)
+      .maybeSingle()
+      .then(({ data }) => {
+        const raw = (data?.settings as Record<string, any> | null)?.landings
+        if (Array.isArray(raw)) {
+          setLandings(
+            raw.filter(
+              (l): l is ClientLanding =>
+                l && typeof l.title === 'string' && typeof l.url === 'string'
+            )
+          )
+        } else {
+          setLandings([])
+        }
+      })
+  }, [clientId])
+
+  // ─── Derived data ──────────────────────────────────────────
+  const completed = generations.filter((g) => g.status === 'completed')
+  const inProgress = generations.filter((g) => g.status === 'queued' || g.status === 'processing')
+  const failed = generations.filter((g) => g.status === 'failed')
+
+  // Latest completed per tool_slug (generations already sorted desc) + older versions
+  const latestByTool = new Map<string, { latest: Generation; history: Generation[] }>()
+  for (const gen of completed) {
+    const entry = latestByTool.get(gen.tool_slug)
+    if (!entry) {
+      latestByTool.set(gen.tool_slug, { latest: gen, history: [] })
+    } else {
+      entry.history.push(gen)
     }
   }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-500/20 text-green-400'
-      case 'processing':
-        return 'bg-blue-500/20 text-blue-400'
-      case 'failed':
-        return 'bg-red-500/20 text-red-400'
-      default:
-        return 'bg-gray-500/20 text-gray-400'
-    }
-  }
+  const deliverables = Array.from(latestByTool.values())
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
   }
 
+  const clientName = activeClient?.name || 'Toolkit'
+  const clientInitial = clientName.charAt(0).toUpperCase()
+
   return (
-    <div className="px-8 py-8 max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-12">
-        <p className="text-xs uppercase tracking-widest font-semibold mb-2 text-gray-500">Portal</p>
-        <h1 className="text-3xl font-semibold text-white mb-2">Toolkit</h1>
-        <p className="text-sm text-gray-400">Genera content, reportes, y estrategias con IA. Todos tus entregables en un solo lugar.</p>
-      </div>
+    <div className="relative mx-auto max-w-6xl px-8 py-10">
+      {/* Radial glow behind hero */}
+      <div
+        className="pointer-events-none absolute left-1/2 top-8 -z-0 h-[380px] w-[680px] max-w-full -translate-x-1/2"
+        style={{
+          background: `radial-gradient(ellipse, ${hexToRgba(brandColor, 0.15)} 0%, transparent 70%)`,
+        }}
+        aria-hidden
+      />
 
-      {/* Crear Nuevo Entregable */}
-      <div className="mb-12">
-        <h2 className="text-lg font-semibold mb-4 text-white">Generar Nuevo</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {TOOLKIT_TOOLS.map((tool) => (
-            <Link
-              key={tool.slug}
-              href={tool.href}
-              className="card p-4 hover:bg-white/8 transition-all cursor-pointer border-l-4"
-              style={{ borderLeftColor: tool.color }}
-            >
-              <p className="text-2xl mb-2">{tool.icon}</p>
-              <p className="text-sm font-semibold text-white">{tool.name}</p>
-            </Link>
-          ))}
+      {/* ─── Hero ─────────────────────────────────────────── */}
+      <div className="relative z-10 flex flex-col items-center pb-12 pt-6 text-center">
+        {/* Client badge */}
+        <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1.5 pl-2.5 pr-4">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
+          <span className="font-mono text-[11px] text-gray-400">
+            Cliente · <strong className="text-xs font-semibold text-white">{clientName}</strong>
+          </span>
         </div>
+
+        {/* Logo */}
+        {activeClient?.logoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={activeClient.logoUrl}
+            alt={clientName}
+            className="mb-5 h-14 w-14 rounded-2xl border border-white/10 bg-white/5 object-contain p-1.5"
+          />
+        ) : (
+          <div
+            className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 text-2xl font-bold text-white ${syne.className}`}
+            style={{ background: hexToRgba(brandColor, 0.2) }}
+          >
+            {clientInitial}
+          </div>
+        )}
+
+        <h1 className={`mb-3 text-4xl font-extrabold leading-[1.15] text-white md:text-5xl ${syne.className}`}>
+          Entregables{' '}
+          <span
+            className="bg-clip-text text-transparent"
+            style={{ backgroundImage: `linear-gradient(135deg, ${brandColor}, ${hexToRgba(brandColor, 0.6)})` }}
+          >
+            {clientName}
+          </span>
+        </h1>
+
+        <p className="max-w-xl text-[15px] leading-relaxed text-gray-400">
+          Centro de entregables · {completed.length} {completed.length === 1 ? 'informe generado' : 'informes generados'}
+        </p>
       </div>
 
-      {/* Centro de Reportes */}
-      <div>
-        <h2 className="text-lg font-semibold mb-4 text-white">Centro de Reportes</h2>
-        
-        {error && (
-          <div className="card p-4 border-red-500/20 mb-6">
-            <div className="flex items-start gap-3">
-              <AlertCircle size={18} className="text-red-400 mt-0.5" />
-              <div>
-                <p className="text-sm font-semibold text-red-400">Error</p>
-                <p className="text-xs text-gray-400 mt-1">{error}</p>
-              </div>
+      {/* ─── Error banner ─────────────────────────────────── */}
+      {error && (
+        <div className="card relative z-10 mb-6 border-red-500/20 p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle size={18} className="mt-0.5 text-red-400" />
+            <div>
+              <p className="text-sm font-semibold text-red-400">Error</p>
+              <p className="mt-1 text-xs text-gray-400">{error}</p>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
+      {/* ─── In-progress chips ────────────────────────────── */}
+      {inProgress.length > 0 && (
+        <div className="relative z-10 mb-8 flex flex-wrap items-center justify-center gap-3">
+          {inProgress.map((gen) => {
+            const meta = getToolMeta(gen.tool_slug)
+            return (
+              <div
+                key={gen.id}
+                className="inline-flex animate-pulse items-center gap-2 rounded-full border border-blue-400/20 bg-blue-500/10 px-4 py-2"
+              >
+                <Loader2 size={13} className="animate-spin text-blue-400" />
+                <span className="text-xs font-medium text-blue-300">
+                  Generando {meta.name}…
+                </span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ─── Deliverables grid ────────────────────────────── */}
+      <div className="relative z-10">
         {loading ? (
-          <div className="card p-8 flex items-center justify-center gap-3">
+          <div className="card flex items-center justify-center gap-3 p-10">
             <Loader2 size={20} className="animate-spin text-gray-400" />
-            <p className="text-gray-400">Cargando generaciones...</p>
-          </div>
-        ) : generations.length === 0 ? (
-          <div className="card p-8 text-center">
-            <p className="text-gray-400">No hay generaciones aún</p>
-            <p className="text-xs text-gray-500 mt-2">Selecciona un tool arriba para crear tu primer entregable</p>
+            <p className="text-gray-400">Cargando entregables...</p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {generations.map((gen) => {
-              const completionTime = gen.completed_at
-                ? `${Math.round((new Date(gen.completed_at).getTime() - new Date(gen.created_at).getTime()) / 1000)}s`
-                : '—'
-
-              return (
-                <div
-                  key={gen.id}
-                  className="card p-4 border-l-4 hover:bg-white/5 transition-colors"
-                  style={{ borderLeftColor: getToolColor(gen.tool_slug) }}
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {/* Featured: full toolkit overview */}
+            <Link
+              href="/toolkit/overview"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.4)]"
+              style={{
+                borderColor: hexToRgba(brandColor, 0.35),
+                background: `linear-gradient(135deg, ${hexToRgba(brandColor, 0.12)}, transparent 60%)`,
+              }}
+            >
+              <div className="absolute inset-x-0 top-0 h-[3px]" style={{ background: brandColor }} />
+              <div>
+                <p
+                  className="mb-3 font-mono text-[9px] uppercase tracking-[0.12em] opacity-80"
+                  style={{ color: brandColor }}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 flex items-center gap-4">
-                      <span className="text-xl">{getToolIcon(gen.tool_slug)}</span>
-                      <div className="flex-1">
-                        <p className="font-semibold text-white capitalize">
-                          {gen.tool_slug.replace(/-/g, ' ')}
-                        </p>
-                        <p className="text-xs text-gray-500">{formatDate(gen.created_at)}</p>
-                      </div>
-                    </div>
+                  Vista general
+                </p>
+                <p className="mb-3 text-[26px] leading-none">📊</p>
+                <h3 className={`mb-2 text-[17px] font-bold text-white ${syne.className}`}>
+                  Ver Toolkit completo
+                </h3>
+                <p className="text-[13px] leading-relaxed text-gray-400">
+                  Panorámica de todos los entregables, métricas y evolución del cliente en una sola vista.
+                </p>
+              </div>
+              <div className="mt-5 flex items-center justify-end border-t border-white/5 pt-4">
+                <span
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5"
+                  style={{ color: brandColor }}
+                >
+                  Ver Toolkit completo →
+                </span>
+              </div>
+            </Link>
 
-                    <div className="flex items-center gap-4">
-                      <div className="text-right">
-                        <div className={`flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(gen.status)}`}>
-                          {getStatusIcon(gen.status)}
-                          <span className="capitalize">{gen.status}</span>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">{completionTime}</p>
-                      </div>
-
-                      {gen.status === 'completed' && (
-                        <Link
-                          href={`/toolkit/report/${gen.id}`}
-                          className="px-3 py-1 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-white transition-colors"
-                        >
-                          Ver →
-                        </Link>
-                      )}
-
-                      {gen.status === 'failed' && (
-                        <div className="text-xs text-red-400">
-                          {gen.error_message || 'Unknown error'}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+            {deliverables.map(({ latest, history }) => {
+              const meta = getToolMeta(latest.tool_slug)
+              return (
+                <DeliverableCard
+                  key={latest.tool_slug}
+                  category={meta.category}
+                  icon={meta.icon}
+                  title={meta.name}
+                  description={meta.description}
+                  brandColor={brandColor}
+                  latest={latest}
+                  history={history}
+                  titleFontClass={syne.className}
+                />
               )
             })}
+
+            {deliverables.length === 0 && (
+              <div className="card flex flex-col items-center justify-center p-10 text-center md:col-span-1">
+                <p className="mb-2 text-2xl">✨</p>
+                <p className="text-sm text-gray-400">Aún no hay entregables completados</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Genera tu primer informe desde &quot;Generar Nuevo&quot;
+                </p>
+              </div>
+            )}
           </div>
         )}
       </div>
+
+      {/* ─── Failed generations ───────────────────────────── */}
+      {failed.length > 0 && (
+        <div className="relative z-10 mt-8 space-y-2">
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500">
+            Generaciones fallidas
+          </p>
+          {failed.map((gen) => {
+            const meta = getToolMeta(gen.tool_slug)
+            return (
+              <div key={gen.id} className="card flex items-center gap-3 border-red-500/15 p-4">
+                <AlertCircle size={16} className="flex-shrink-0 text-red-400" />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-semibold text-white">{meta.name}</p>
+                  <p className="truncate text-xs text-red-400/80">
+                    {gen.error_message || 'Unknown error'}
+                  </p>
+                </div>
+                <p className="flex-shrink-0 font-mono text-[10px] text-gray-500">
+                  {formatDate(gen.created_at)}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {/* ─── Landings activas ─────────────────────────────── */}
+      <div className="relative z-10">
+        <LandingsSection landings={landings} brandColor={brandColor} titleFontClass={syne.className} />
+      </div>
+
+      {/* ─── Generar Nuevo (collapsible, compact) ─────────── */}
+      <div className="relative z-10 mt-12">
+        <button
+          onClick={() => setShowGenerate((v) => !v)}
+          className="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-5 py-4 transition-colors hover:bg-white/[0.06]"
+        >
+          <span className="flex items-center gap-3">
+            <span className="text-lg">⚡</span>
+            <span className={`text-sm font-bold text-white ${syne.className}`}>Generar Nuevo</span>
+            <span className="font-mono text-[10px] text-gray-500">
+              {TOOLKIT_TOOLS.length} tools disponibles
+            </span>
+          </span>
+          {showGenerate ? (
+            <ChevronUp size={16} className="text-gray-400" />
+          ) : (
+            <ChevronDown size={16} className="text-gray-400" />
+          )}
+        </button>
+
+        {showGenerate && (
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {TOOLKIT_TOOLS.map((tool) => (
+              <Link
+                key={tool.slug}
+                href={tool.href}
+                className="card cursor-pointer border-l-4 p-3.5 transition-all hover:bg-white/8"
+                style={{ borderLeftColor: tool.color }}
+              >
+                <p className="mb-1.5 text-xl">{tool.icon}</p>
+                <p className="text-xs font-semibold leading-snug text-white">{tool.name}</p>
+                <p className="mt-1 font-mono text-[9px] text-gray-500">{tool.time}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ─── Footer meta ──────────────────────────────────── */}
+      <p className="relative z-10 mt-12 text-center font-mono text-[11px] text-gray-600">
+        Preparado por Startup Factory · Confidencial · Solo para uso del cliente
+      </p>
     </div>
   )
 }

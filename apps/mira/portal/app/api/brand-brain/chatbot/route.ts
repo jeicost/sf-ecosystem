@@ -1,10 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { Anthropic } from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 import { createClient } from '@/lib/supabase'
-
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
 
 export async function POST(request: NextRequest) {
   try {
@@ -87,7 +83,7 @@ When ALL sections are complete (brand + pillars + sales + context), end with:
       content: message,
     })
 
-    const response = await anthropic.messages.create({
+    const response = await createMessageForClient(clientId, 'brand-brain/chatbot', {
       model: 'claude-opus-4-8',
       max_tokens: 1000,
       system: systemPrompt,
