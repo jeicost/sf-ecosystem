@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { adminClient } from '@/lib/supabase'
+import { userCanAccessClient } from '@/lib/resolve-client'
 
 // GET: Fetch project memory for client
 export async function GET(req: NextRequest) {
@@ -175,6 +176,21 @@ export async function PATCH(req: NextRequest) {
     }
 
     const admin = adminClient()
+
+    // Ownership: cargar la fila y verificar el grant sobre su client_id antes de actualizar
+    const { data: memoryRow, error: memoryError } = await admin
+      .from('project_memory')
+      .select('id, client_id')
+      .eq('id', memoryId)
+      .maybeSingle()
+
+    if (memoryError || !memoryRow) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    if (!(await userCanAccessClient(user, memoryRow.client_id))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
     const updates: Record<string, any> = {}
     if (isPinned !== undefined) updates.is_pinned = isPinned
     if (isArchived !== undefined) updates.is_archived = isArchived

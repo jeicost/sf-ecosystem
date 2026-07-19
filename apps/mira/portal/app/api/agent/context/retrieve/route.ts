@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { retrieveAgentContext } from '@/lib/agent-context'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 interface RetrieveContextRequest {
   client_id: string
@@ -23,6 +24,14 @@ export async function POST(req: NextRequest) {
         { error: 'client_id required' },
         { status: 400 }
       )
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, client_id))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
     const result = await retrieveAgentContext({

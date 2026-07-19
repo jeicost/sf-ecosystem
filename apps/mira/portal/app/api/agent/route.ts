@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 // Removed hardcoded CLIENT_ID import - now reads from user_metadata or requires explicit clientId
 // import { CLIENT_ID } from '@/lib/constants'
@@ -33,6 +34,20 @@ export async function POST(req: NextRequest) {
 
     // Leer client_id del usuario autenticado si no viene en el body
     let resolvedClientId = clientId
+    if (resolvedClientId) {
+      // clientId explícito: validar contra la sesión antes de usarlo
+      const user = await getSessionUser()
+      if (!user) {
+        return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+          status: 401, headers: { 'Content-Type': 'application/json' }
+        })
+      }
+      if (!(await userCanAccessClient(user, resolvedClientId))) {
+        return new Response(JSON.stringify({ error: 'No access to this client' }), {
+          status: 403, headers: { 'Content-Type': 'application/json' }
+        })
+      }
+    }
     if (!resolvedClientId) {
       try {
         const supabase = createServerClient(

@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { userCanAccessClient } from '@/lib/resolve-client'
 import { uploadFileToStorage, initializeStorageBucket } from '@/lib/supabase-storage'
 import { AGENT_METADATA } from '@/lib/agent-meta'
 import Anthropic from '@anthropic-ai/sdk'
@@ -91,6 +92,11 @@ export async function POST(
 
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // clientId explícito: validar el grant antes de usarlo
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
     // Initialize storage bucket (idempotent)

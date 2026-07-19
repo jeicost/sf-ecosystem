@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { adminClient } from '@/lib/supabase'
+import { requireLeadAccess } from '@/lib/comercial/lead-access'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
   const { id } = await params
+
+  // Ownership: cargar el lead y verificar acceso del usuario a su client_id
+  const access = await requireLeadAccess(id)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+
   const body = await req.json()
 
   const allowed = ['stage', 'notes', 'assigned_to', 'icebreaker_used', 'hot_score', 'bant_score',
@@ -22,6 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
   }
 
+  const supabase = adminClient()
   const { data, error } = await supabase
     .from('leads')
     .update(update)
@@ -34,18 +36,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
   const { id } = await params
 
-  const [{ data: lead }, { data: activities }] = await Promise.all([
-    supabase.from('leads').select('*').eq('id', id).single(),
-    supabase.from('lead_activities').select('*').eq('lead_id', id).order('created_at', { ascending: false }).limit(10),
-  ])
+  const access = await requireLeadAccess(id)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
 
-  if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
-  return NextResponse.json({ lead, activities: activities ?? [] })
+  const supabase = adminClient()
+  const { data: activities } = await supabase
+    .from('lead_activities')
+    .select('*')
+    .eq('lead_id', id)
+    .order('created_at', { ascending: false })
+    .limit(10)
+
+  return NextResponse.json({ lead: access.lead, activities: activities ?? [] })
 }

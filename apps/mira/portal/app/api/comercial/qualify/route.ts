@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import Anthropic from '@anthropic-ai/sdk'
+import { adminClient } from '@/lib/supabase'
+import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
+import { requireLeadAccess } from '@/lib/comercial/lead-access'
 
 const STAGE_MAP: Record<string, string> = {
   interested: 'qualified',
@@ -10,26 +11,20 @@ const STAGE_MAP: Record<string, string> = {
 }
 
 export async function POST(req: NextRequest) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-
   const { leadId, replyText } = await req.json()
   if (!leadId || !replyText) {
     return NextResponse.json({ error: 'leadId and replyText required' }, { status: 400 })
   }
 
-  const { data: lead } = await supabase
-    .from('leads')
-    .select('first_name,last_name,company_name,title,industry')
-    .eq('id', leadId)
-    .single()
+  const access = await requireLeadAccess(leadId)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  const { lead } = access
+
+  const supabase = adminClient()
 
   const prompt = `Eres Quinn, Reply Qualifier de MIRA. Analiza esta respuesta de cold outreach.
 
-PROSPECT: ${[lead?.first_name, lead?.last_name].filter(Boolean).join(' ') || 'Desconocido'} — ${lead?.title ?? ''} en ${lead?.company_name ?? 'empresa desconocida'}
+PROSPECT: ${[lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Desconocido'} — ${lead.title ?? ''} en ${lead.company_name ?? 'empresa desconocida'}
 
 RESPUESTA RECIBIDA:
 """
@@ -52,6 +47,9 @@ Analiza y devuelve JSON exacto (sin markdown):
 bant_score = suma de los 4 "yes" (0-4).
 Classification: interested=muestra interés real, not_now=sin interés ahora pero puede volver, not_interested=rechazo claro, referral=deriva a otra persona.`
 
+  // BYO-Claude: key del cliente dueño del lead (fallback plataforma) + usage log
+  const { client: anthropic, usedClientKey } = await getClaudeForClient(lead.client_id)
+
   const encoder = new TextEncoder()
   const stream = new ReadableStream({
     async start(controller) {
@@ -68,6 +66,17 @@ Classification: interested=muestra interés real, not_now=sin interés ahora per
           controller.enqueue(encoder.encode(chunk.delta.text))
         }
       }
+
+      try {
+        const finalMessage = await anthropicStream.finalMessage()
+        logUsage({
+          clientId: lead.client_id,
+          route: 'comercial/qualify',
+          model: 'claude-haiku-4-5-20251001',
+          usage: finalMessage.usage,
+          usedClientKey,
+        })
+      } catch { /* usage logging must never break the stream */ }
 
       // Parse and update lead stage
       try {

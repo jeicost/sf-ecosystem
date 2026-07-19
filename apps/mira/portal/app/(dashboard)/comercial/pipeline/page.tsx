@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { Loader2, X, ExternalLink, Mail, LinkedinIcon } from 'lucide-react'
+import { Loader2, X, ExternalLink, Mail, LinkedinIcon, Send, Check } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
@@ -167,6 +167,52 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
   const stageInfo = STAGES.find(s => s.key === lead.stage)
   const stageLabel = getStageLabel(lead.stage, locale)
 
+  // Puente leads → crm_contacts (Fase B): estado del envío a CRM
+  const [crmStatus, setCrmStatus] = useState<'idle' | 'checking' | 'sending' | 'sent' | 'error'>('checking')
+  const [crmMessage, setCrmMessage] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    setCrmStatus('checking')
+    setCrmMessage(null)
+    fetch(`/api/comercial/leads/${lead.id}`)
+      .then(r => (r.ok ? r.json() : null))
+      .then(data => {
+        if (cancelled) return
+        const promoted = (data?.activities ?? []).some(
+          (a: { metadata?: Record<string, unknown> | null }) => a.metadata && (a.metadata as Record<string, unknown>).event === 'promoted_to_crm'
+        )
+        setCrmStatus(promoted ? 'sent' : 'idle')
+      })
+      .catch(() => { if (!cancelled) setCrmStatus('idle') })
+    return () => { cancelled = true }
+  }, [lead.id])
+
+  const sendToCrm = async () => {
+    setCrmStatus('sending')
+    setCrmMessage(null)
+    try {
+      const res = await fetch('/api/comercial/promote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId: lead.id }),
+      })
+      const data = await res.json()
+      if (res.ok && data.success) {
+        setCrmStatus('sent')
+        setCrmMessage(data.already_promoted
+          ? `Ya estaba en CRM (${data.workspace}) — datos actualizados`
+          : `Enviado a CRM (${data.workspace})`)
+      } else {
+        setCrmStatus('error')
+        setCrmMessage(data.error ?? 'Error enviando a CRM')
+      }
+    } catch {
+      setCrmStatus('error')
+      setCrmMessage('Error de red enviando a CRM')
+    }
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-end" onClick={onClose}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
@@ -253,6 +299,32 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <ExternalLink size={11} /> Web
             </a>
+          )}
+        </div>
+
+        {/* Enviar a CRM (puente leads → crm_contacts) */}
+        <div className="px-6 py-4" style={{ borderTopColor: 'var(--border-subtle)', borderTopWidth: '1px' }}>
+          <button
+            onClick={sendToCrm}
+            disabled={crmStatus === 'sent' || crmStatus === 'sending' || crmStatus === 'checking'}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-[12px] font-medium transition-all disabled:cursor-not-allowed"
+            style={crmStatus === 'sent'
+              ? { background: '#22C55E15', border: '1px solid #22C55E30', color: '#22C55E' }
+              : { background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}
+          >
+            {crmStatus === 'sending' || crmStatus === 'checking' ? (
+              <Loader2 size={13} className="animate-spin" />
+            ) : crmStatus === 'sent' ? (
+              <Check size={13} />
+            ) : (
+              <Send size={13} />
+            )}
+            {crmStatus === 'sent' ? 'En CRM' : crmStatus === 'sending' ? 'Enviando...' : 'Enviar a CRM →'}
+          </button>
+          {crmMessage && (
+            <p className="mt-2 text-[11px]" style={{ color: crmStatus === 'error' ? '#EF4444' : 'var(--text-secondary)' }}>
+              {crmMessage}
+            </p>
           )}
         </div>
 

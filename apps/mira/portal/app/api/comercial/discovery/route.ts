@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import Anthropic from '@anthropic-ai/sdk'
+import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 interface TavilyResult { title: string; url: string; content: string }
 
@@ -33,10 +34,10 @@ interface ExtractedCompany {
   trigger_signals: string[]
 }
 
-async function extractCompanies(results: TavilyResult[], icp: Record<string, unknown>, anthropic: Anthropic): Promise<ExtractedCompany[]> {
+async function extractCompanies(results: TavilyResult[], icp: Record<string, unknown>, clientId: string): Promise<ExtractedCompany[]> {
   const content = results.map(r => `TITLE: ${r.title}\nURL: ${r.url}\nCONTENT: ${r.content}`).join('\n\n---\n\n')
 
-  const msg = await anthropic.messages.create({
+  const msg = await createMessageForClient(clientId, 'comercial/discovery', {
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 2048,
     messages: [{
@@ -63,8 +64,8 @@ Only include companies clearly identifiable from the results. Skip vague mention
   } catch { return [] }
 }
 
-async function scoreCompany(company: ExtractedCompany, icp: Record<string, unknown>, anthropic: Anthropic): Promise<{ score: number; classification: string; reason: string }> {
-  const msg = await anthropic.messages.create({
+async function scoreCompany(company: ExtractedCompany, icp: Record<string, unknown>, clientId: string): Promise<{ score: number; classification: string; reason: string }> {
+  const msg = await createMessageForClient(clientId, 'comercial/discovery', {
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 256,
     messages: [{
@@ -96,17 +97,18 @@ hot>=75, warm=50-74, cold=20-49, disqualify<20`
 }
 
 export async function POST(req: NextRequest) {
-  const { keywords, industry, geography, limit = 20, clientId } = await req.json()
+  const { keywords, industry, geography, limit = 20, clientId: requestedClientId } = await req.json()
 
-  if (!keywords || !clientId) {
+  if (!keywords || !requestedClientId) {
     return NextResponse.json({ error: 'keywords and clientId required' }, { status: 400 })
   }
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+  // Fase A: validar pertenencia del clientId del body y usar SIEMPRE el validado
+  const resolved = await resolveRequestClient(requestedClientId)
+  if (!resolved.ok) return NextResponse.json({ error: resolved.error }, { status: resolved.status })
+  const clientId = resolved.clientId
+
+  const supabase = adminClient()
   const TAVILY_KEY = process.env.TAVILY_API_KEY!
 
   const { data: icp } = await supabase
@@ -144,7 +146,7 @@ export async function POST(req: NextRequest) {
 
         send({ type: 'status', message: `Analizando ${allResults.length} fuentes con IA...` })
 
-        const companies = await extractCompanies(allResults, icpData as Record<string, unknown>, anthropic)
+        const companies = await extractCompanies(allResults, icpData as Record<string, unknown>, clientId)
         const unique = companies.filter((c, i, arr) =>
           arr.findIndex(x => x.company_name.toLowerCase() === c.company_name.toLowerCase()) === i
         ).slice(0, limit)
@@ -153,7 +155,7 @@ export async function POST(req: NextRequest) {
 
         const scored = []
         for (const company of unique) {
-          const scoring = await scoreCompany(company, icpData as Record<string, unknown>, anthropic)
+          const scoring = await scoreCompany(company, icpData as Record<string, unknown>, clientId)
           scored.push({ ...company, ...scoring })
         }
 

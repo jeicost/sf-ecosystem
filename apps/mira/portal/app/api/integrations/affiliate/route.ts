@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface AffiliateTrackingRequest {
@@ -17,6 +18,14 @@ export async function POST(request: NextRequest) {
 
     if (!clientId || !toolId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
     const db = createServiceClient()

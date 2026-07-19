@@ -1,25 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
-import Anthropic from '@anthropic-ai/sdk'
+import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
 
 interface EnrichmentRequest {
   client_id: string
   discovery_result_id: string
 }
 
-const claude = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+interface DiscoveredLead {
+  company_name?: string
+  company?: string // shape antiguo del mock, por compatibilidad
+  company_website?: string
+  website?: string
+  industry?: string
+  heat_score?: number
+}
 
 /**
- * Sales Engine Enrichment Endpoint (Opción 3, Phase 2)
+ * Sales Engine Enrichment — vía motor Python (Fase C).
  *
- * Enriches leads with:
- * 1. Apollo.io: Find decision makers (names, emails, phones)
- * 2. Hunter.io (fallback): Email verification
- * 3. Claude: Generate personalized cold email using company handbook
+ * Antes: mock (Apollo stub + email personalizado con Claude). Ahora, por cada
+ * empresa del discovery, pide contactos reales al motor
+ * (`POST {SALES_ENGINE_API_URL}/leads/search` con company_domain — Apollo por
+ * dominio + verificación Hunter + cache).
  *
- * Returns: enriched lead data ready for CRM sync
+ * Ya NO genera emails personalizados: el icebreaker canónico del ecosistema es
+ * /api/comercial/icebreaker (decisión 2026-07-19, docs/crm-architecture.md).
+ * Si el motor no responde → 503 claro, NUNCA volver al mock.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -33,19 +40,26 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const db = createClient()
-    const { data: userData } = await db.auth.getUser()
+    // Auth de sesión + tenant (patrón Fase A) — antes esta ruta era anon
+    const resolved = await resolveRequestClient(client_id)
+    if (!resolved.ok) return NextResponse.json({ error: resolved.error }, { status: resolved.status })
+    const clientId = resolved.clientId
 
-    if (!userData?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const engineUrl = process.env.SALES_ENGINE_API_URL
+    const engineKey = process.env.SALES_ENGINE_API_KEY
+    if (!engineUrl || !engineKey) {
+      return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
     }
 
-    // Fetch discovery results
+    const db = adminClient()
+
+    // Fetch discovery results — scoped al cliente validado
     const { data: discovery, error: discoveryError } = await db
       .from('lead_discovery_results')
       .select('*')
       .eq('id', discovery_result_id)
-      .single()
+      .eq('client_id', clientId)
+      .maybeSingle()
 
     if (discoveryError || !discovery) {
       return NextResponse.json(
@@ -54,49 +68,67 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Enrich each lead
     const enrichedLeads = []
+    const sourceLeads: DiscoveredLead[] = Array.isArray(discovery.leads_data) ? discovery.leads_data : []
 
-    if (discovery.leads_data && Array.isArray(discovery.leads_data)) {
-      for (const lead of discovery.leads_data.slice(0, 5)) {  // Limit to 5 for demo
-        // TODO: Call Apollo.io API
-        const apolloData = await enrichViaApollo(lead.company)
+    for (const lead of sourceLeads.slice(0, 5)) {
+      const companyName = lead.company_name ?? lead.company ?? null
+      const domain = lead.company_website ?? lead.website ?? null
+      if (!companyName && !domain) continue
 
-        // TODO: Fetch company handbook context
-        const handbookContext = await fetchCompanyContext(client_id)
-
-        // Generate personalized email via Claude
-        const personalizedEmail = await generatePersonalizedEmail(
-          lead,
-          apolloData,
-          handbookContext
-        )
-
-        // Save enrichment result
-        const { data: enrichResult } = await db
-          .from('apollo_enrichment_results')
-          .insert({
-            client_id,
-            created_by: userData.user.id,
-            discovery_result_id,
-            company_name: lead.company,
-            industry: lead.industry,
-            website: lead.website,
-            heat_score: lead.heat_score,
-            apollo_data: apolloData,
-            company_handbook_context: handbookContext,
-            personalization_email: personalizedEmail,
-            crm_ready: true,
-            status: 'ready',
-          })
-          .select()
-          .single()
-
-        enrichedLeads.push({
-          ...enrichResult,
-          personalization_email: personalizedEmail,
+      // Contactos reales vía motor Python (Apollo domain search + Hunter + cache)
+      let persons: unknown[] = []
+      try {
+        const engineRes = await fetch(`${engineUrl}/leads/search`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-API-Key': engineKey,
+          },
+          body: JSON.stringify({
+            client_id: clientId,
+            company_domain: domain ?? companyName,
+            limit: 5,
+          }),
         })
+        if (engineRes.status === 402) {
+          const err = await engineRes.json().catch(() => ({}))
+          return NextResponse.json(
+            { error: 'Monthly API limit exceeded', detail: err.detail },
+            { status: 402 }
+          )
+        }
+        if (!engineRes.ok) {
+          const err = await engineRes.json().catch(() => ({}))
+          console.error('Sales engine enrich error:', engineRes.status, err)
+          return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
+        }
+        const engineData = await engineRes.json()
+        persons = engineData.leads ?? []
+      } catch (fetchErr) {
+        console.error('Sales engine unreachable:', fetchErr)
+        return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
       }
+
+      // Save enrichment result (misma tabla que antes: apollo_enrichment_results)
+      const { data: enrichResult } = await db
+        .from('apollo_enrichment_results')
+        .insert({
+          client_id: clientId,
+          created_by: resolved.userId,
+          discovery_result_id,
+          company_name: companyName,
+          industry: lead.industry ?? null,
+          website: domain,
+          heat_score: lead.heat_score ?? null,
+          apollo_data: { persons, source: 'sales-engine' },
+          crm_ready: persons.length > 0,
+          status: 'ready',
+        })
+        .select()
+        .single()
+
+      if (enrichResult) enrichedLeads.push(enrichResult)
     }
 
     return NextResponse.json({
@@ -112,94 +144,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Apollo.io integration (NOT IMPLEMENTED)
-async function enrichViaApollo(companyName: string) {
-  // Apollo.io API requires:
-  // - APOLLO_API_KEY environment variable
-  // - Valid API key from apollo.io dashboard
-  // - Proper rate limiting (1000 calls/month on free tier)
-
-  if (!process.env.APOLLO_API_KEY) {
-    return {
-      status: 'not_connected',
-      company: companyName,
-      message: 'Apollo.io integration not configured. Contact admin to enable.',
-      documentation: 'https://apolloio.gitbook.io/apollo-api/getting-started/authentication',
-    }
-  }
-
-  // TODO: Implement real Apollo.io API call
-  // Example: fetch('https://api.apollo.io/v1/companies/match', {
-  //   method: 'POST',
-  //   headers: { 'Cache-Control': 'no-cache', 'Content-Type': 'application/json', 'x-api-key': APOLLO_API_KEY },
-  //   body: JSON.stringify({ domain: website })
-  // })
-
-  return {
-    status: 'not_connected',
-    company: companyName,
-    message: 'Apollo.io integration pending implementation',
-  }
-}
-
-async function fetchCompanyContext(clientId: string) {
-  // Fetch company handbook from client_documentation
-  try {
-    const res = await fetch('http://localhost:3000/api/agent/context/retrieve', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: clientId,
-        context_type: 'company',
-        query: 'company mission, products, target customers, value proposition',
-        limit: 1,
-      }),
-    })
-    const data = await res.json()
-    return data.documents?.[0]?.excerpt || 'No company context available'
-  } catch {
-    return 'No company context available'
-  }
-}
-
-async function generatePersonalizedEmail(
-  lead: any,
-  apolloData: any,
-  handbookContext: string
-) {
-  const contactName = apolloData.persons?.[0]?.name || 'Team'
-
-  const message = await claude.messages.create({
-    model: 'claude-opus-4-8',
-    max_tokens: 500,
-    messages: [
-      {
-        role: 'user',
-        content: `Write a personalized cold email for a sales prospect.
-
-PROSPECT:
-- Company: ${lead.company}
-- Contact: ${contactName}
-- Industry: ${lead.industry}
-- Website: ${lead.website}
-
-OUR OFFERING (from Dadybox handbook):
-${handbookContext}
-
-Requirements:
-- Short (3-4 sentences max)
-- Reference something specific from their website or industry
-- Make it personal, not templated
-- Include clear CTA
-- Professional but conversational tone
-
-Email:`,
-      },
-    ],
-  })
-
-  const textContent = message.content[0]
-  return textContent.type === 'text' ? textContent.text : ''
 }

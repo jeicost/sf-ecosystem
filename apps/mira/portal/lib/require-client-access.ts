@@ -11,7 +11,8 @@ import { requireAuthGate } from '@/lib/auth-gate'
  *   // Now proceed with queries filtered by clientId
  */
 export async function requireClientAccess() {
-  const user = await requireAuthGate()
+  // Session-only gate: this helper is for normal-user routes, not admin ones
+  const user = await requireAuthGate(false)
 
   const admin = adminClient()
   const { data: accessData } = await admin

@@ -1,21 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
+import { promoteLeadToCrm } from '@/lib/comercial/promote-lead'
 
 interface SyncRequest {
   client_id: string
   enrichment_result_ids: string[]
 }
 
+interface ApolloPerson {
+  first_name?: string | null
+  last_name?: string | null
+  email?: string | null
+  title?: string | null
+  linkedin_url?: string | null
+  geography?: string | null
+}
+
 /**
- * Sales Engine CRM Sync Endpoint (Opción 3, Phase 3)
+ * Sales Engine CRM Sync (Fase C).
  *
- * Syncs enriched leads to crm_contacts table
- * Creates contact records that Dadybox can see and manage in their CRM UI
- *
- * Maps:
- * - apollo_enrichment_results → crm_contacts
- * - personalized_email → initial_outreach
- * - heat_score → hot_score
+ * Reescrito sobre el módulo canónico del puente: cada enrichment se materializa
+ * como fila de staging en `leads` y se promueve con promoteLeadToCrm()
+ * (lib/comercial/promote-lead.ts) — un ÚNICO camino escribe en crm_contacts,
+ * con el mismo mapeo tenant (client_workspaces) y la misma dedup.
  */
 export async function POST(req: NextRequest) {
   try {
@@ -29,19 +37,19 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const db = createClient()
-    const { data: userData } = await db.auth.getUser()
+    // Auth de sesión + tenant (patrón Fase A) — antes esta ruta era anon
+    const resolved = await resolveRequestClient(client_id)
+    if (!resolved.ok) return NextResponse.json({ error: resolved.error }, { status: resolved.status })
+    const clientId = resolved.clientId
 
-    if (!userData?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const db = adminClient()
 
-    // Fetch enrichment results
+    // Fetch enrichment results — scoped al cliente validado
     const { data: enrichments, error: enrichError } = await db
       .from('apollo_enrichment_results')
       .select('*')
       .in('id', enrichment_result_ids)
-      .eq('client_id', client_id)
+      .eq('client_id', clientId)
 
     if (enrichError || !enrichments || enrichments.length === 0) {
       return NextResponse.json(
@@ -50,37 +58,53 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Sync each enrichment to crm_contacts
     const syncedLeads = []
 
     for (const enrichment of enrichments) {
-      const crmData = {
-        client_id,
-        company_name: enrichment.company_name,
-        industry: enrichment.industry,
-        website: enrichment.website,
-        hot_score: enrichment.heat_score,  // Map heat_score → hot_score
-        status: 'prospect',
-        source: 'sales-engine-tavily-discovery',
-        contact_info: enrichment.apollo_data?.persons?.[0] || {},
-        notes: `Discovered via Dadybox Sales Engine\nPersonalized email generated: ${enrichment.personalization_email?.substring(0, 100)}...`,
-        engagement_stage: 'initial',
-        last_contacted_at: new Date().toISOString(),
-      }
+      const person: ApolloPerson = enrichment.apollo_data?.persons?.[0] ?? {}
 
-      // Insert into crm_contacts
-      const { data: crmContact, error: crmError } = await db
-        .from('crm_contacts')
-        .insert(crmData)
-        .select()
+      // 1. Staging: upsert en `leads` (mismo conflict target que el discovery Tavily)
+      const { data: stagedLead, error: stageError } = await db
+        .from('leads')
+        .upsert(
+          {
+            client_id: clientId,
+            first_name: person.first_name ?? null,
+            last_name: person.last_name ?? null,
+            title: person.title ?? null,
+            email: person.email ?? null,
+            linkedin_url: person.linkedin_url ?? null,
+            company_name: enrichment.company_name,
+            company_website: enrichment.website ?? null,
+            industry: enrichment.industry ?? null,
+            geography: person.geography ?? null,
+            stage: 'prospected',
+            hot_score: enrichment.heat_score ?? 0,
+            source: 'sales_engine_enrich',
+          },
+          { onConflict: 'client_id,company_name', ignoreDuplicates: false }
+        )
+        .select('id')
         .single()
 
-      if (!crmError && crmContact) {
-        // Update enrichment_result with CRM sync status
+      if (stageError || !stagedLead) {
+        syncedLeads.push({
+          enrichment_id: enrichment.id,
+          company: enrichment.company_name,
+          status: 'failed',
+          error: stageError?.message ?? 'No se pudo crear el lead de staging',
+        })
+        continue
+      }
+
+      // 2. Promoción canónica leads → crm_contacts
+      const promo = await promoteLeadToCrm(db, stagedLead.id, clientId)
+
+      if (promo.ok) {
         await db
           .from('apollo_enrichment_results')
           .update({
-            crm_contact_id: crmContact.id,
+            crm_contact_id: promo.crmContactId,
             crm_sync_status: 'synced',
             synced_at: new Date().toISOString(),
           })
@@ -88,7 +112,7 @@ export async function POST(req: NextRequest) {
 
         syncedLeads.push({
           enrichment_id: enrichment.id,
-          crm_contact_id: crmContact.id,
+          crm_contact_id: promo.crmContactId,
           company: enrichment.company_name,
           status: 'synced',
         })
@@ -97,7 +121,7 @@ export async function POST(req: NextRequest) {
           enrichment_id: enrichment.id,
           company: enrichment.company_name,
           status: 'failed',
-          error: crmError?.message,
+          error: promo.error,
         })
       }
     }
@@ -109,7 +133,6 @@ export async function POST(req: NextRequest) {
       synced_count: successCount,
       total_count: syncedLeads.length,
       leads: syncedLeads,
-      next_action: `View ${successCount} new prospects in Dadybox CRM (/ws-dadybox/crm/contacts)`,
     })
   } catch (error) {
     console.error('Sync error:', error)

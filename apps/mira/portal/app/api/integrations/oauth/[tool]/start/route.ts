@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildOAuthUrl, getOAuthConfig } from '@/lib/integrations/oauth-config'
 import { createServiceClient } from '@/lib/supabase-admin'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(
   request: NextRequest,
@@ -13,6 +14,14 @@ export async function GET(
 
     if (!clientId) {
       return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
     const oauthConfig = getOAuthConfig(tool)

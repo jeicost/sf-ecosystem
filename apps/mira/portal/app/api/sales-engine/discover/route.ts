@@ -1,28 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
 
 interface DiscoveryRequest {
   client_id: string
   sector: string
   geo?: string
+  limit?: number
 }
 
 /**
- * Sales Engine Discovery Endpoint (Opción 3, Phase 1)
+ * Sales Engine Discovery — discovery "profundo" vía motor Python (Fase C).
  *
- * Discovers leads by sector using Tavily
- * Returns: lead data ready for Apollo enrichment
+ * Antes: mock (Tavily "NOT IMPLEMENTED" + scoring aleatorio). Ahora llama al
+ * motor real sf-sales-engine (`POST {SALES_ENGINE_API_URL}/leads/search`,
+ * Apollo + Hunter + cache + cost tracking) — el mismo endpoint que ya consume
+ * sf-crm Prospection (auth por header X-API-Key).
  *
- * Flow:
- * 1. Tavily search: "logistics software companies in Spain"
- * 2. Score each lead against Dadybox ICP (Claude)
- * 3. Return hot/warm/cold leads
- * 4. Store in lead_discovery_results
+ * El discovery "ligero" (Tavily) sigue siendo /api/comercial/discovery.
+ * Si el motor no responde → 503 claro, NUNCA volver al mock.
  */
 export async function POST(req: NextRequest) {
   try {
     const body: DiscoveryRequest = await req.json()
-    const { client_id, sector, geo = 'Spain' } = body
+    const { client_id, sector, geo = 'Spain', limit = 25 } = body
 
     if (!client_id || !sector) {
       return NextResponse.json(
@@ -31,34 +32,77 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const db = createClient()
-    const { data: userData } = await db.auth.getUser()
+    // Auth de sesión + tenant (patrón Fase A) — antes esta ruta era anon
+    const resolved = await resolveRequestClient(client_id)
+    if (!resolved.ok) return NextResponse.json({ error: resolved.error }, { status: resolved.status })
+    const clientId = resolved.clientId
 
-    if (!userData?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const engineUrl = process.env.SALES_ENGINE_API_URL
+    const engineKey = process.env.SALES_ENGINE_API_KEY
+    if (!engineUrl || !engineKey) {
+      return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
     }
 
-    // TODO: Implement Tavily search
-    const tavilyResults = await searchTavily(sector, geo)
+    const startedAt = Date.now()
+    let engineData: {
+      leads?: unknown[]
+      total?: number
+      cost_usd?: number
+      monthly_spend_usd?: number
+      monthly_limit_usd?: number
+      hits_limit?: boolean
+    }
+    try {
+      const engineRes = await fetch(`${engineUrl}/leads/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-API-Key': engineKey,
+        },
+        body: JSON.stringify({
+          client_id: clientId,
+          industries: [sector],
+          geographies: geo ? [geo] : undefined,
+          limit: Math.min(limit, 100),
+        }),
+      })
 
-    // TODO: Score leads against Dadybox ICP using Claude
-    const scoredLeads = await scoreLeadsAgainstICP(client_id, tavilyResults)
+      if (engineRes.status === 402) {
+        const err = await engineRes.json().catch(() => ({}))
+        return NextResponse.json(
+          { error: 'Monthly API limit exceeded', detail: err.detail },
+          { status: 402 }
+        )
+      }
+      if (!engineRes.ok) {
+        const err = await engineRes.json().catch(() => ({}))
+        console.error('Sales engine discovery error:', engineRes.status, err)
+        return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
+      }
+      engineData = await engineRes.json()
+    } catch (fetchErr) {
+      console.error('Sales engine unreachable:', fetchErr)
+      return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
+    }
 
-    // Store discovery results
+    const leads = engineData.leads ?? []
+
+    // Store discovery results (misma tabla que antes: lead_discovery_results)
+    const db = adminClient()
     const { data: result, error } = await db
       .from('lead_discovery_results')
       .insert({
-        client_id,
-        created_by: userData.user.id,
+        client_id: clientId,
+        created_by: resolved.userId,
         discovery_sector: sector,
         discovery_geo: geo,
-        discovery_source: 'tavily',
-        total_leads_found: scoredLeads.length,
-        leads_data: scoredLeads,
+        discovery_source: 'sales-engine-apollo',
+        total_leads_found: leads.length,
+        leads_data: leads,
         discovery_query: `${sector} companies in ${geo}`,
         status: 'success',
         completed_at: new Date().toISOString(),
-        processing_time_ms: 0, // TODO: track actual time
+        processing_time_ms: Date.now() - startedAt,
       })
       .select()
       .single()
@@ -71,8 +115,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       discovery_id: result.id,
-      total_leads: scoredLeads.length,
-      leads: scoredLeads.slice(0, 10),  // Return first 10
+      total_leads: leads.length,
+      leads: leads.slice(0, 10),
+      cost_usd: engineData.cost_usd,
+      monthly_spend_usd: engineData.monthly_spend_usd,
+      monthly_limit_usd: engineData.monthly_limit_usd,
+      hits_limit: engineData.hits_limit,
       next_phase: 'enrichment - Apollo/Hunter data lookup',
     })
   } catch (error) {
@@ -82,53 +130,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-// Tavily integration (NOT IMPLEMENTED)
-async function searchTavily(sector: string, geo: string) {
-  // Tavily requires:
-  // - TAVILY_API_KEY environment variable
-  // - Valid API key from tavily.com dashboard
-  // - Proper rate limiting per tier
-
-  if (!process.env.TAVILY_API_KEY) {
-    return [
-      {
-        status: 'not_connected',
-        sector,
-        geo,
-        message: 'Tavily integration not configured. Contact admin to enable.',
-        documentation: 'https://docs.tavily.com/docs/tavily-api',
-      },
-    ]
-  }
-
-  // TODO: Implement real Tavily API call
-  // Example: fetch('https://api.tavily.com/search', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify({ api_key: TAVILY_API_KEY, query: `${sector} companies in ${geo}` })
-  // })
-
-  return [
-    {
-      status: 'not_connected',
-      sector,
-      geo,
-      message: 'Tavily integration pending implementation',
-    },
-  ]
-}
-
-async function scoreLeadsAgainstICP(clientId: string, leads: any[]) {
-  // ICP scoring requires Claude analysis
-  // Current implementation: MOCK (returns random scores)
-  // Real implementation: Claude analyzes lead vs ICP profile from client_documentation
-
-  return leads.map((lead: any) => ({
-    ...lead,
-    heat_score: lead.status === 'not_connected' ? 0 : Math.random(),
-    icp_fit: lead.status === 'not_connected' ? 'not_connected' : 'unknown',
-    note: 'ICP scoring disabled until Tavily + Claude integration complete',
-  }))
 }

@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function DELETE(req: NextRequest, { params }: any) {
   try {
     const id = params.id
 
-    const db = createClient()
-    const { data: user } = await db.auth.getUser()
-
+    const user = await getSessionUser()
     if (!user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -15,8 +14,31 @@ export async function DELETE(req: NextRequest, { params }: any) {
       )
     }
 
+    const admin = adminClient()
+
+    // Ownership: cargar el documento y verificar el grant sobre su client_id
+    const { data: doc, error: docError } = await admin
+      .from('client_documentation')
+      .select('id, client_id')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (docError || !doc) {
+      return NextResponse.json(
+        { error: 'Not found' },
+        { status: 404 }
+      )
+    }
+
+    if (!(await userCanAccessClient(user, doc.client_id))) {
+      return NextResponse.json(
+        { error: 'No access to this client' },
+        { status: 403 }
+      )
+    }
+
     // Soft delete: mark as archived
-    const { error } = await db
+    const { error } = await admin
       .from('client_documentation')
       .update({ is_archived: true })
       .eq('id', id)

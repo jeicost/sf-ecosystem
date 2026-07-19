@@ -1,16 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
 
 export async function PATCH(req: NextRequest) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
   const body = await req.json()
-  const { clientId, ...fields } = body
+  const { clientId: requestedClientId, ...fields } = body
 
-  if (!clientId) return NextResponse.json({ error: 'clientId required' }, { status: 400 })
+  if (!requestedClientId) return NextResponse.json({ error: 'clientId required' }, { status: 400 })
+
+  // Fase A: validar pertenencia del clientId del body y usar SIEMPRE el validado
+  const resolved = await resolveRequestClient(requestedClientId)
+  if (!resolved.ok) return NextResponse.json({ error: resolved.error }, { status: resolved.status })
+  const clientId = resolved.clientId
+
+  const supabase = adminClient()
 
   const allowed = [
     'icp_name', 'industries', 'company_sizes', 'geographies',

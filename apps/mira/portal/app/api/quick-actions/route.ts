@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { createMessageForClient } from '@/lib/anthropic-client'
@@ -267,6 +268,16 @@ export async function GET(req: NextRequest) {
 
     if (error || !data) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    // Ownership: la fila pertenece a un cliente — validar el grant antes de devolverla
+    const user = await getSessionUser()
+    if (!user) {
+      if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS !== 'true') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
+    } else if (!(await userCanAccessClient(user, data.client_id))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
     return NextResponse.json(data)

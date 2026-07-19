@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(req: NextRequest) {
   try {
@@ -23,12 +24,16 @@ export async function GET(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     let clientId: string
-    if (explicitClientId) {
-      clientId = explicitClientId
-    } else if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
-      clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
+    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
+      clientId = explicitClientId || 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
     } else if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    } else if (explicitClientId) {
+      // clientId explícito: validar el grant antes de usarlo
+      if (!(await userCanAccessClient(user, explicitClientId))) {
+        return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+      }
+      clientId = explicitClientId
     } else {
       const admin = adminClient()
       const { data: accessData } = await admin

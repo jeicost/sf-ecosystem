@@ -1,31 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import Anthropic from '@anthropic-ai/sdk'
+import { adminClient } from '@/lib/supabase'
+import { createMessageForClient } from '@/lib/anthropic-client'
+import { requireLeadAccess } from '@/lib/comercial/lead-access'
 
+// Icebreaker CANÓNICO del ecosistema (decisión 2026-07-19, docs/crm-architecture.md):
+// esta ruta es la única que MIRA usa para icebreakers. El /icebreaker/generate del
+// motor Python queda solo para el camino automático (webhook hot-lead).
 export async function POST(req: NextRequest) {
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
-
   const { leadId } = await req.json()
-  if (!leadId) return NextResponse.json({ error: 'leadId required' }, { status: 400 })
 
-  const [{ data: lead }, { data: context }] = await Promise.all([
-    supabaseAdmin.from('leads').select('*').eq('id', leadId).single(),
+  const access = await requireLeadAccess(leadId)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  const { lead } = access
+
+  const supabaseAdmin = adminClient()
+
+  const [{ data: context }, { data: icp }] = await Promise.all([
     supabaseAdmin.from('prospect_context').select('*').eq('lead_id', leadId).maybeSingle(),
+    supabaseAdmin.from('icp_profiles').select('*').eq('client_id', lead.client_id).limit(1).maybeSingle(),
   ])
-
-  if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
-
-  const { data: icp } = await supabaseAdmin
-    .from('icp_profiles')
-    .select('*')
-    .eq('client_id', lead.client_id)
-    .limit(1)
-    .maybeSingle()
 
   const prompt = `Eres Finn, un experto en cold outreach B2B. Tu objetivo es escribir el primer mensaje de contacto perfecto para este prospect.
 
@@ -54,7 +47,7 @@ INSTRUCCIONES:
 
 Devuelve SOLO el mensaje de icebreaker, sin explicaciones.`
 
-  const message = await anthropic.messages.create({
+  const message = await createMessageForClient(lead.client_id, 'comercial/icebreaker', {
     model: 'claude-sonnet-4-6',
     max_tokens: 256,
     messages: [{ role: 'user', content: prompt }],

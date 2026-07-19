@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
@@ -11,6 +12,14 @@ export async function GET(request: NextRequest) {
       { error: 'Missing clientId or agentRole' },
       { status: 400 }
     )
+  }
+
+  const user = await getSessionUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!(await userCanAccessClient(user, clientId))) {
+    return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
   }
 
   try {
@@ -63,6 +72,14 @@ export async function PUT(request: NextRequest) {
       { error: 'toneLevel must be between 0 and 1' },
       { status: 400 }
     )
+  }
+
+  const user = await getSessionUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  if (!(await userCanAccessClient(user, clientId))) {
+    return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
   }
 
   try {

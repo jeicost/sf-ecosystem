@@ -1,23 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
-import Anthropic from '@anthropic-ai/sdk'
+import { adminClient } from '@/lib/supabase'
+import { createMessageForClient } from '@/lib/anthropic-client'
+import { requireLeadAccess } from '@/lib/comercial/lead-access'
 
 export async function POST(req: NextRequest) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-  const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY! })
+  const { leadId } = await req.json()
+  if (!leadId) return NextResponse.json({ error: 'leadId required' }, { status: 400 })
 
-  const { leadId, clientId } = await req.json()
-  if (!leadId || !clientId) return NextResponse.json({ error: 'leadId and clientId required' }, { status: 400 })
+  // Ownership: el ICP y el score se resuelven contra el client_id REAL del lead,
+  // nunca contra un clientId arbitrario del body.
+  const access = await requireLeadAccess(leadId)
+  if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+  const { lead } = access
 
-  const [{ data: lead }, { data: icp }] = await Promise.all([
-    supabase.from('leads').select('*').eq('id', leadId).single(),
-    supabase.from('icp_profiles').select('*').eq('client_id', clientId).limit(1).maybeSingle(),
-  ])
-
-  if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
+  const supabase = adminClient()
+  const { data: icp } = await supabase
+    .from('icp_profiles')
+    .select('*')
+    .eq('client_id', lead.client_id)
+    .limit(1)
+    .maybeSingle()
 
   const prompt = `Score this B2B lead 0-100 against the ICP.
 
@@ -45,7 +47,7 @@ Return JSON only (no markdown):
 
 hot>=75, warm=50-74, cold=20-49, disqualify<20`
 
-  const msg = await anthropic.messages.create({
+  const msg = await createMessageForClient(lead.client_id, 'comercial/score', {
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 256,
     messages: [{ role: 'user', content: prompt }],

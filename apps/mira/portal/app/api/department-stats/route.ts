@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDepartmentStats } from '@/lib/department-stats'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -9,6 +10,14 @@ export async function GET(request: NextRequest) {
 
     if (!clientId) {
       return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
     const allStats = await getDepartmentStats(clientId)

@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface SaveVersionRequest {
@@ -44,6 +45,18 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as SaveVersionRequest
     const { clientId, changeSummary, triggeredBy, triggeredByAgentId } = body
 
+    if (!clientId) {
+      return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
     const db = createServiceClient()
 
     // Get current version and increment
@@ -87,6 +100,18 @@ export async function PUT(request: NextRequest) {
   try {
     const body = (await request.json()) as RollbackRequest
     const { clientId, versionNumber } = body
+
+    if (!clientId) {
+      return NextResponse.json({ error: 'Missing clientId' }, { status: 400 })
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
 
     const db = createServiceClient()
 
