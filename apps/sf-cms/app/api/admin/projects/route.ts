@@ -43,7 +43,13 @@ export async function POST(request: Request) {
     }
 
     const token = authHeader.slice(7)
-    if (token !== adminSecret) {
+    const tokenBuf = Buffer.from(token)
+    const secretBuf = Buffer.from(adminSecret)
+    const isValid =
+      tokenBuf.length === secretBuf.length &&
+      crypto.timingSafeEqual(tokenBuf, secretBuf)
+
+    if (!isValid) {
       return Response.json({ error: 'Invalid authorization token' }, { status: 401 })
     }
 

@@ -7,7 +7,9 @@ export async function GET(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   try {
-    await requireSession()
+    if (!(await requireSession())) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
 
     const { pageId } = await params
     const supabase = createAdminClient()

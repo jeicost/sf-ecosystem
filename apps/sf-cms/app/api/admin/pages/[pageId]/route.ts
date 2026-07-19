@@ -67,14 +67,23 @@ export async function PATCH(
 
     // Create version snapshot if sections changed
     if (sections_json && JSON.stringify(sections_json) !== JSON.stringify(currentPage.sections_json)) {
-      await client
+      const { count } = await client
+        .from('page_versions')
+        .select('id', { count: 'exact', head: true })
+        .eq('page_id', pageId)
+
+      const { error: versionErr } = await client
         .from('page_versions')
         .insert({
           page_id: pageId,
+          version_number: (count ?? 0) + 1,
           sections_json: currentPage.sections_json,
+          created_by: 'admin',
           created_at: new Date().toISOString(),
         })
         .single()
+
+      if (versionErr) throw versionErr
     }
 
     // Update page
