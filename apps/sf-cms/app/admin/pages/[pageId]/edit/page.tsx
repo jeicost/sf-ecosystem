@@ -5,6 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { usePageChat } from '@/lib/hooks/usePageChat'
 import { Send, Undo2 } from 'lucide-react'
 import { ChatUploadWidget } from '@/components/media/ChatUploadWidget'
+import { SectionsPreviewPanel } from '@/components/preview/SectionsPreviewPanel'
 
 interface Section {
   id: string
@@ -33,7 +34,6 @@ export default function PageEditorPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
-  const [showAdvanced, setShowAdvanced] = useState(false)
   const [userInput, setUserInput] = useState('')
 
   const { messages, isLoading: chatLoading, sendMessage, currentSections } = usePageChat({
@@ -244,37 +244,9 @@ export default function PageEditorPage() {
         {/* Sections panel */}
         <div className="w-1/2 overflow-y-auto p-6 bg-slate-50">
           <h2 className="text-lg font-bold text-slate-900 mb-4">Sections</h2>
-
-          {currentSections && currentSections.length > 0 ? (
-            <div className="space-y-4">
-              {currentSections.map((section: any, i: number) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-lg border border-slate-200 p-4"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-bold text-slate-900">{section.type || 'Section'}</h3>
-                  </div>
-                  {showAdvanced && (
-                    <pre className="text-xs bg-slate-100 p-2 rounded mt-2 overflow-x-auto">
-                      {JSON.stringify(section, null, 2)}
-                    </pre>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12 text-slate-500">
-              No sections yet. Start editing with the chat panel.
-            </div>
-          )}
-
-          <button
-            onClick={() => setShowAdvanced(!showAdvanced)}
-            className="mt-6 text-sm text-slate-600 hover:text-slate-900 underline"
-          >
-            {showAdvanced ? 'Hide' : 'Show'} JSON
-          </button>
+          <SectionsPreviewPanel
+            sections={currentSections && currentSections.length > 0 ? currentSections : page.sections_json}
+          />
         </div>
       </div>
     </div>
