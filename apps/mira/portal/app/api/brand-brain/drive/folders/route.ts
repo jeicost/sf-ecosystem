@@ -94,7 +94,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
 
-    return NextResponse.json({ folders: folders || [] }, { status: 200 })
+    const { data: conn } = await admin
+      .from('drive_connections')
+      .select('is_authorized')
+      .eq('client_id', clientId)
+      .maybeSingle()
+
+    return NextResponse.json(
+      { folders: folders || [], connected: !!conn?.is_authorized },
+      { status: 200 }
+    )
   } catch (error) {
     console.error('Drive folders GET error:', error)
     return NextResponse.json(

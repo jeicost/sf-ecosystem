@@ -18,6 +18,66 @@ import { adminClient } from '@/lib/supabase'
  *   - clientId: Client ID for reference
  *   - authorized: Whether authorization succeeded
  */
+// Google redirects the browser here with GET after consent.
+// Exchange the code, store tokens, and send the user back to Brand Brain.
+export async function GET(req: NextRequest) {
+  const { searchParams } = req.nextUrl
+  const code = searchParams.get('code')
+  const state = searchParams.get('state')
+  const oauthError = searchParams.get('error')
+
+  const backTo = (status: string) =>
+    NextResponse.redirect(new URL(`/brand-brain?drive=${status}`, req.url))
+
+  if (oauthError) return backTo(`error&reason=${encodeURIComponent(oauthError)}`)
+  if (!code || !state) return backTo('error&reason=missing_code')
+
+  let clientId: string
+  try {
+    const decoded = JSON.parse(Buffer.from(state, 'base64').toString('utf-8'))
+    clientId = decoded.clientId
+    if (Date.now() - decoded.timestamp > 600000) return backTo('error&reason=state_expired')
+  } catch {
+    return backTo('error&reason=bad_state')
+  }
+  if (!clientId) return backTo('error&reason=no_client')
+
+  try {
+    const admin = adminClient()
+    const tokens = await exchangeCodeForTokens(code)
+    if (!tokens.success || !tokens.accessToken) return backTo('error&reason=token_exchange')
+
+    const tokenExpiresAt = new Date(Date.now() + (tokens.expiresIn || 3600) * 1000).toISOString()
+    const { data: existing } = await admin
+      .from('drive_connections')
+      .select('id')
+      .eq('client_id', clientId)
+      .maybeSingle()
+
+    const row = {
+      access_token: tokens.accessToken,
+      refresh_token: tokens.refreshToken || null,
+      token_expires_at: tokenExpiresAt,
+      is_authorized: true,
+      updated_at: new Date().toISOString(),
+    }
+
+    const result = existing
+      ? await admin.from('drive_connections').update(row).eq('id', existing.id)
+      : await admin.from('drive_connections').insert({ client_id: clientId, ...row })
+
+    if (result.error) {
+      console.error('drive callback store error:', result.error)
+      return backTo('error&reason=store_failed')
+    }
+
+    return backTo('connected')
+  } catch (e) {
+    console.error('drive callback error:', e)
+    return backTo('error&reason=unknown')
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { searchParams } = req.nextUrl

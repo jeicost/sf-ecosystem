@@ -23,6 +23,8 @@ interface FolderRow {
 
 export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
   const [folders, setFolders] = useState<FolderRow[]>([])
+  const [connected, setConnected] = useState<boolean | null>(null)
+  const [connecting, setConnecting] = useState(false)
   const [link, setLink] = useState('')
   const [purpose, setPurpose] = useState('references')
   const [adding, setAdding] = useState(false)
@@ -36,13 +38,45 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
       if (res.ok) {
         const json = await res.json()
         setFolders(json.folders || json.data || [])
+        if (typeof json.connected === 'boolean') setConnected(json.connected)
       }
     } catch { /* silencioso */ }
   }, [clientId])
 
   useEffect(() => {
     load()
+    // Mensaje al volver del OAuth de Google
+    const params = new URLSearchParams(window.location.search)
+    const drive = params.get('drive')
+    if (drive === 'connected') {
+      setMessage({ type: 'ok', text: '✅ Google Drive conectado. Ya puedes añadir carpetas por enlace.' })
+      window.history.replaceState({}, '', window.location.pathname)
+    } else if (drive === 'error') {
+      setMessage({ type: 'err', text: `Error conectando Drive: ${params.get('reason') || 'desconocido'}` })
+      window.history.replaceState({}, '', window.location.pathname)
+    }
   }, [load])
+
+  async function handleConnect() {
+    setConnecting(true)
+    setMessage(null)
+    try {
+      const res = await fetch('/api/brand-brain/drive/authorize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId,
+          redirectUrl: `${window.location.origin}/api/brand-brain/drive/callback`,
+        }),
+      })
+      const json = await res.json()
+      if (!res.ok || !json.authUrl) throw new Error(json.error || 'No se pudo iniciar la autorización')
+      window.location.href = json.authUrl
+    } catch (e) {
+      setMessage({ type: 'err', text: e instanceof Error ? e.message : 'Error iniciando OAuth' })
+      setConnecting(false)
+    }
+  }
 
   async function handleAdd() {
     if (!link.trim() || adding) return
@@ -94,11 +128,24 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
 
   return (
     <div className="space-y-4 p-5 rounded-xl border border-gray-800 bg-gray-900/60">
-      <div>
-        <p className="text-white font-semibold text-sm">📂 Carpetas de Google Drive</p>
-        <p className="text-gray-400 text-xs mt-1">
-          Pega el enlace de una carpeta de Drive y el Brain la leerá: documentos, referencias y dónde está cada cosa.
-        </p>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-white font-semibold text-sm">📂 Carpetas de Google Drive</p>
+          <p className="text-gray-400 text-xs mt-1">
+            Pega el enlace de una carpeta de Drive y el Brain la leerá: documentos, referencias y dónde está cada cosa.
+          </p>
+        </div>
+        <button
+          onClick={handleConnect}
+          disabled={connecting}
+          className={`shrink-0 px-3 py-2 rounded-lg text-xs font-semibold transition ${
+            connected
+              ? 'bg-white/5 text-emerald-400 border border-emerald-500/30'
+              : 'bg-blue-600 hover:bg-blue-500 text-white'
+          }`}
+        >
+          {connecting ? 'Abriendo Google…' : connected ? '✓ Drive conectado · Reautorizar' : '🔗 Conectar Google Drive'}
+        </button>
       </div>
 
       <div className="flex flex-col md:flex-row gap-2">
