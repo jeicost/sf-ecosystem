@@ -46,20 +46,25 @@ export async function GET(request: Request) {
       })
     }
 
-    // Fetch all pages for project
-    const { data: pages, error } = await client
+    // Fetch published pages, paginated (default generous enough that
+    // existing client scripts expecting "all pages" see zero change today)
+    const limit = Math.min(Number(searchParams.get('limit')) || 100, 200)
+    const offset = Math.max(Number(searchParams.get('offset')) || 0, 0)
+
+    const { data: pages, error, count } = await client
       .from('pages')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('project_id', project.id)
       .eq('status', 'published')
       .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
 
     if (error) {
       console.error('DB error:', error)
       return Response.json({ error: 'Database error' }, { status: 500 })
     }
 
-    return Response.json({ pages }, {
+    return Response.json({ pages, total: count ?? pages?.length ?? 0, limit, offset }, {
       headers: {
         'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
         'Content-Type': 'application/json',
