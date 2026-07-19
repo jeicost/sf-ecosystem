@@ -30,8 +30,18 @@ async function summarizeDocument(fileName: string, text: string): Promise<string
 
 export const runtime = 'nodejs'
 
-// pdf-parse is CommonJS, use dynamic import for ESM compatibility
-const pdfParse = require('pdf-parse')
+// pdf-parse v2: class-based API (PDFParse). The v1 default-function API no longer exists.
+const { PDFParse } = require('pdf-parse')
+
+async function extractPdfText(buffer: Buffer): Promise<string> {
+  const parser = new PDFParse({ data: new Uint8Array(buffer) })
+  try {
+    const result = await parser.getText()
+    return result?.text || ''
+  } finally {
+    await parser.destroy().catch(() => {})
+  }
+}
 
 /**
  * POST /api/brand-brain/drive/ingest
@@ -423,8 +433,7 @@ async function downloadAndExtractText(
     if (mimeType === 'application/pdf') {
       try {
         const buffer = Buffer.from(await response.arrayBuffer())
-        const pdfData = await pdfParse(buffer)
-        text = pdfData.text || ''
+        text = await extractPdfText(buffer)
       } catch (pdfError) {
         console.error('PDF parsing error:', pdfError)
         return {

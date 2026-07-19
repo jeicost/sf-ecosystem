@@ -14,8 +14,18 @@ import Anthropic from '@anthropic-ai/sdk'
 import * as mammoth from 'mammoth'
 import type { adminClient } from '@/lib/supabase'
 
-// pdf-parse is CommonJS, same pattern as the ingest route
-const pdfParse = require('pdf-parse')
+// pdf-parse v2: class-based API (PDFParse). The v1 default-function API no longer exists.
+const { PDFParse } = require('pdf-parse')
+
+async function extractPdfText(buffer: Buffer): Promise<string> {
+  const parser = new PDFParse({ data: new Uint8Array(buffer) })
+  try {
+    const result = await parser.getText()
+    return result?.text || ''
+  } finally {
+    await parser.destroy().catch(() => {})
+  }
+}
 
 type AdminClient = ReturnType<typeof adminClient>
 
@@ -316,8 +326,7 @@ async function downloadAndExtractText(
 
     if (mimeType === 'application/pdf') {
       const buffer = Buffer.from(await response.arrayBuffer())
-      const pdfData = await pdfParse(buffer)
-      text = pdfData.text || ''
+      text = await extractPdfText(buffer)
     } else if (
       mimeType === 'text/plain' ||
       mimeType === 'text/markdown' ||
