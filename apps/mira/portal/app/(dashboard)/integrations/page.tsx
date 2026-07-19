@@ -17,6 +17,8 @@ export default function IntegrationsPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
+  const [driveConnected, setDriveConnected] = useState(false)
+
   useEffect(() => {
     setMounted(true)
 
@@ -24,6 +26,7 @@ export default function IntegrationsPage() {
     const params = new URLSearchParams(window.location.search)
     const success = params.get('success')
     const error = params.get('error')
+    const drive = params.get('drive')
 
     if (success) {
       setSuccessMessage(`${success} connected successfully!`)
@@ -36,11 +39,50 @@ export default function IntegrationsPage() {
       window.history.replaceState({}, '', '/integrations')
       setTimeout(() => setErrorMessage(null), 5000)
     }
+    if (drive === 'connected') {
+      setSuccessMessage('Google Drive conectado. Ya puedes añadir carpetas en Brand Brain → Documents.')
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setSuccessMessage(null), 8000)
+    } else if (drive === 'error') {
+      setErrorMessage(`Google Drive: ${params.get('reason') || 'error de conexión'}`)
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setErrorMessage(null), 8000)
+    }
   }, [])
+
+  // Estado real de la conexión Drive del cliente activo
+  useEffect(() => {
+    if (!clientId) return
+    fetch(`/api/brand-brain/drive/folders?clientId=${clientId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setDriveConnected(!!j?.connected))
+      .catch(() => {})
+  }, [clientId])
 
   const selectedTool = MARKETPLACE_TOOLS.find((t) => t.id === selectedToolId)
 
   const handleToolConnect = async (toolId: string) => {
+    // Google Drive: OAuth propio por cliente (la conexión que consumen Brand Brain y agentes)
+    if (toolId === 'google-drive') {
+      if (!clientId) return
+      try {
+        const res = await fetch('/api/brand-brain/drive/authorize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            clientId,
+            redirectUrl: `${window.location.origin}/api/brand-brain/drive/callback`,
+            returnTo: '/integrations',
+          }),
+        })
+        const json = await res.json()
+        if (!res.ok || !json.authUrl) throw new Error(json.error || 'No se pudo iniciar OAuth')
+        window.location.href = json.authUrl
+      } catch (e) {
+        setErrorMessage(e instanceof Error ? e.message : 'Error iniciando Google Drive')
+      }
+      return
+    }
     const tool = MARKETPLACE_TOOLS.find((t) => t.id === toolId)
     if (tool) {
       setSelectedToolId(toolId)
@@ -121,7 +163,7 @@ export default function IntegrationsPage() {
         </div>
 
         <ToolsMarketplace
-          connectedTools={connectedTools}
+          connectedTools={driveConnected ? [...connectedTools, 'google-drive'] : connectedTools}
           userSubscriptionPlan={userSubscriptionPlan}
           onToolConnect={handleToolConnect}
           onToolDisconnect={handleToolDisconnect}

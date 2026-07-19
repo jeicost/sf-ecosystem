@@ -26,8 +26,9 @@ export async function GET(req: NextRequest) {
   const state = searchParams.get('state')
   const oauthError = searchParams.get('error')
 
+  let returnPath = '/integrations'
   const backTo = (status: string) =>
-    NextResponse.redirect(new URL(`/brand-brain?drive=${status}`, req.url))
+    NextResponse.redirect(new URL(`${returnPath}?drive=${status}`, req.url))
 
   if (oauthError) return backTo(`error&reason=${encodeURIComponent(oauthError)}`)
   if (!code || !state) return backTo('error&reason=missing_code')
@@ -36,6 +37,7 @@ export async function GET(req: NextRequest) {
   try {
     const decoded = JSON.parse(Buffer.from(state, 'base64').toString('utf-8'))
     clientId = decoded.clientId
+    if (typeof decoded.returnTo === 'string' && decoded.returnTo.startsWith('/')) returnPath = decoded.returnTo
     if (Date.now() - decoded.timestamp > 600000) return backTo('error&reason=state_expired')
   } catch {
     return backTo('error&reason=bad_state')

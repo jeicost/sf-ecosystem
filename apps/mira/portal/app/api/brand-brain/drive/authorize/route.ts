@@ -18,7 +18,7 @@ import type { AuthorizeRequest, AuthorizeResponse } from '@/lib/drive-connection
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Partial<AuthorizeRequest>
-    const { redirectUrl, clientId: explicitClientId } = body
+    const { redirectUrl, clientId: explicitClientId, returnTo } = body
 
     if (!redirectUrl) {
       return NextResponse.json({ error: 'Missing redirectUrl' }, { status: 400 })
@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
 
     // Build OAuth2 authorization URL
     const scopes = ['https://www.googleapis.com/auth/drive.readonly']
-    const state = Buffer.from(JSON.stringify({ clientId, timestamp: Date.now() })).toString('base64')
+    const state = Buffer.from(JSON.stringify({ clientId, timestamp: Date.now(), returnTo: typeof returnTo === 'string' ? returnTo : undefined })).toString('base64')
 
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth')
     authUrl.searchParams.set('client_id', googleClientId)

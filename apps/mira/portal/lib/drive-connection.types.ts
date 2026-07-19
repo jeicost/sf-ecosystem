@@ -114,6 +114,7 @@ export interface DriveSourceMetadata {
 export interface AuthorizeRequest {
   clientId: string
   redirectUrl: string
+  returnTo?: string
 }
 
 export interface AuthorizeResponse {

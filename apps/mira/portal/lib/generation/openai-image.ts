@@ -2,6 +2,7 @@
 // Generates an image from a prompt and stores it in the generated-assets bucket.
 
 import { createServiceClient } from '@/lib/supabase-admin'
+import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 
 const VISUAL_BUCKET = 'generated-assets'
 const SIGNED_URL_EXPIRATION = 3600 * 24 * 7 // 7 days
@@ -11,7 +12,8 @@ export async function generateAndStoreImage(
   clientId: string,
   actionId: string
 ): Promise<string | null> {
-  const apiKey = process.env.OPENAI_API_KEY
+  // Key del cliente (Integraciones → OpenAI) con fallback a la key de plataforma
+  const apiKey = await getClientApiKey(clientId, 'openai', process.env.OPENAI_API_KEY)
   if (!apiKey) return null
 
   try {

@@ -152,8 +152,8 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     agentsUnlocked: ['onboard', 'midas', 'quant', 'zoe'],
     departments: ['admin', 'finance', 'strategy', 'marketing'],
     isCritical: false,
-    status: 'connected',
-    authType: 'native',
+    status: 'disconnected',
+    authType: 'oauth',
   },
 
   // AI Integration Tools
