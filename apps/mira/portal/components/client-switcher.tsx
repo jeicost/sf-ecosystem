@@ -1,7 +1,6 @@
 'use client'
 import { useEffect, useState, useRef } from 'react'
 import { ChevronDown, Check } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
 import { clsx } from 'clsx'
 
@@ -65,14 +64,14 @@ export default function ClientSwitcher() {
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    createClient()
-      .from('clients')
-      .select('id,name,slug,logo_url,primary_color')
-      .order('name')
-      .then(({ data }) => {
-        if (!data?.length) return
-        setClients(data)
+    // Solo los clientes CON grant del usuario (o todos si super_admin).
+    // Nunca listar la tabla clients desde el navegador.
+    fetch('/api/me/clients')
+      .then((r) => r.json())
+      .then((json) => {
+        if (Array.isArray(json?.clients) && json.clients.length) setClients(json.clients)
       })
+      .catch(() => {})
   }, [])
 
   useEffect(() => {

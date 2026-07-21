@@ -1,45 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { adminClient } from '@/lib/supabase'
+import { getSessionUser, resolveRequestClient, userCanAccessClient } from '@/lib/resolve-client'
 
 // GET: List documents for client
+// Multi-empresa: honra ?clientId= validando grant; sin él, primer grant.
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const { searchParams } = new URL(req.url)
+    const access = await resolveRequestClient(searchParams.get('clientId'))
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const admin = adminClient()
-    const { data: accessData, error: accessError } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (accessError || !accessData) {
-      return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-    }
-
-    const clientId = accessData.project_id
-
     const { data, error } = await admin
       .from('client_documentation')
       .select('id, doc_type, title, description, file_size, uploaded_at, original_filename')
-      .eq('client_id', clientId)
+      .eq('client_id', access.clientId)
       .eq('is_archived', false)
       .order('uploaded_at', { ascending: false })
 
@@ -60,36 +37,12 @@ export async function GET(req: NextRequest) {
 // POST: Upload document (metadata only, file URL passed)
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const admin = adminClient()
-    const { data: accessData, error: accessError } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (accessError || !accessData) {
-      return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-    }
-
-    const clientId = accessData.project_id
     const body = await req.json()
+    const access = await resolveRequestClient(body.clientId ?? null)
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
+    }
+
     const { doc_type, title, description, file_url, file_size, file_mime_type, original_filename } = body
 
     if (!title || !file_url) {
@@ -99,10 +52,11 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const admin = adminClient()
     const { data, error } = await admin
       .from('client_documentation')
       .insert({
-        client_id: clientId,
+        client_id: access.clientId,
         doc_type: doc_type || 'general',
         title,
         description: description || null,
@@ -110,7 +64,7 @@ export async function POST(req: NextRequest) {
         file_size: file_size || 0,
         file_mime_type: file_mime_type || 'application/octet-stream',
         original_filename: original_filename || title,
-        uploaded_by: user.id,
+        uploaded_by: access.userId,
         is_indexed: false,
       })
       .select('*')
@@ -130,23 +84,11 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE: Archive document
+// DELETE: Archive document — ownership por el client_id de la fila
 export async function DELETE(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    const user = await getSessionUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -158,6 +100,19 @@ export async function DELETE(req: NextRequest) {
     }
 
     const admin = adminClient()
+    const { data: row } = await admin
+      .from('client_documentation')
+      .select('id, client_id')
+      .eq('id', documentId)
+      .maybeSingle()
+
+    if (!row) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    if (!(await userCanAccessClient(user, row.client_id))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
     const { error } = await admin
       .from('client_documentation')
       .update({ is_archived: true })

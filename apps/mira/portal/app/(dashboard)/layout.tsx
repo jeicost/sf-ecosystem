@@ -59,28 +59,27 @@ useEffect(() => {
   }, [router, path])
 
   useEffect(() => {
-    // Get client_id from user metadata (not hardcoded)
+    // Multi-empresa: el badge cuenta las aprobaciones del cliente ACTIVO
+    // (no del client_id de metadata, que asume un solo cliente por usuario).
+    const clientId = activeClient?.id
+    if (!clientId) { setPending(0); return }
+
     const db = createClient()
-    db.auth.getUser().then(({ data: { user } }) => {
-      const clientId = user?.user_metadata?.client_id as string | undefined
-      if (!clientId) return // Super admin has no single client
+    db.from('approval_queue').select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId).eq('status', 'pending_review')
+      .then(({ count }) => setPending(count ?? 0))
 
-      db.from('approval_queue').select('id', { count: 'exact', head: true })
-        .eq('client_id', clientId).eq('status', 'pending_review')
-        .then(({ count }) => setPending(count ?? 0))
-
-      const channel = db.channel('sidebar-approvals')
-        .on('postgres_changes',
-          { event: '*', schema: 'public', table: 'approvals', filter: `client_id=eq.${clientId}` },
-          () => {
-            db.from('approval_queue').select('id', { count: 'exact', head: true })
-              .eq('client_id', clientId).eq('status', 'pending_review')
-              .then(({ count }) => setPending(count ?? 0))
-          }
-        ).subscribe()
-      return () => { db.removeChannel(channel) }
-    })
-  }, [])
+    const channel = db.channel('sidebar-approvals')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'approvals', filter: `client_id=eq.${clientId}` },
+        () => {
+          db.from('approval_queue').select('id', { count: 'exact', head: true })
+            .eq('client_id', clientId).eq('status', 'pending_review')
+            .then(({ count }) => setPending(count ?? 0))
+        }
+      ).subscribe()
+    return () => { db.removeChannel(channel) }
+  }, [activeClient?.id])
 
   function toggleTheme() {
     const next: Theme = theme === 'dark' ? 'light' : 'dark'

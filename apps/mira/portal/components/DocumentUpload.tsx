@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useActiveClient } from '@/lib/client-context'
 import { Upload, Trash2, File, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
 
 interface Document {

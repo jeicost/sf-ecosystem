@@ -1,44 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { adminClient } from '@/lib/supabase'
-import { userCanAccessClient } from '@/lib/resolve-client'
+import { getSessionUser, resolveRequestClient, userCanAccessClient } from '@/lib/resolve-client'
 
 // GET: Fetch project memory for client
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const admin = adminClient()
-    const { data: accessData, error: accessError } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (accessError || !accessData) {
-      return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-    }
-
-    const clientId = accessData.project_id
-
-    // Get query params
+    // Multi-empresa: honra ?clientId= validando el grant; sin él, primer grant.
     const { searchParams } = new URL(req.url)
+    const access = await resolveRequestClient(searchParams.get('clientId'))
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
+    }
+    const clientId = access.clientId
+    const admin = adminClient()
     const category = searchParams.get('category')
     const projectId = searchParams.get('project_id')
     const limit = parseInt(searchParams.get('limit') || '20')
@@ -78,37 +52,16 @@ export async function GET(req: NextRequest) {
 // POST: Save action result to project memory
 export async function POST(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const admin = adminClient()
-    const { data: accessData, error: accessError } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .single()
-
-    if (accessError || !accessData) {
-      return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-    }
-
-    const clientId = accessData.project_id
     const body = await req.json()
     const { actionId, title, category, summary, tags, sourceDepartment, fullContent, projectId } = body
+
+    // Multi-empresa: clientId del body validado por grant; sin él, primer grant.
+    const access = await resolveRequestClient(body.clientId ?? null)
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
+    }
+    const clientId = access.clientId
+    const admin = adminClient()
 
     if (!actionId || !title || !category) {
       return NextResponse.json(
@@ -129,7 +82,7 @@ export async function POST(req: NextRequest) {
         tags: tags || [],
         source_department: sourceDepartment || null,
         full_content: fullContent || null,
-        created_by: user.id,
+        created_by: access.userId,
       })
       .select('*')
       .single()
@@ -151,20 +104,8 @@ export async function POST(req: NextRequest) {
 // PATCH: Toggle pin/archive
 export async function PATCH(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    const user = await getSessionUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 

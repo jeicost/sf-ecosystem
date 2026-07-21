@@ -44,36 +44,55 @@ export function ClientProvider({ children }: { children: ReactNode }) {
 
         if (!user) return
 
-        const clientId = user.user_metadata?.client_id as string | undefined
+        // Fuente de verdad: los grants del usuario (multi-empresa).
+        // Prioridad: cliente guardado si sigue con acceso → metadata.client_id
+        // si tiene grant → primer cliente con grant. Super admin: el guardado
+        // (puede moverse por todos) o ninguno (aterriza en /admin).
+        const res = await fetch('/api/me/clients')
+        const json = res.ok ? await res.json() : { clients: [], super_admin: false }
+        const granted: Array<{ id: string; name: string; slug: string; logo_url: string | null; primary_color: string | null }> =
+          Array.isArray(json?.clients) ? json.clients : []
+        const isSuperAdmin = Boolean(json?.super_admin)
 
-        if (clientId) {
-          // Fetch real client row (name, logo, brand color) — RLS scopes access
-          const { data: row } = await supabase
-            .from('clients')
-            .select('id, name, slug, logo_url, primary_color')
-            .eq('id', clientId)
-            .maybeSingle()
+        const toActive = (row: (typeof granted)[number]): ActiveClient => ({
+          id: row.id,
+          name: row.name || CLIENT_NAMES[row.id]?.name || 'Cliente',
+          slug: row.slug || CLIENT_NAMES[row.id]?.slug || row.id,
+          logoUrl: row.logo_url || null,
+          primaryColor: row.primary_color || null,
+        })
 
-          const fallback = CLIENT_NAMES[clientId]
-          if (row || fallback) {
-            const client: ActiveClient = {
-              id: clientId,
-              name: row?.name || fallback?.name || 'Cliente',
-              slug: row?.slug || fallback?.slug || clientId,
-              logoUrl: row?.logo_url || null,
-              primaryColor: row?.primary_color || null,
-            }
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(client))
-            setActiveClientState(client)
-            return
-          }
-        }
-
-        // Fallback to localStorage if no client_id
+        let stored: ActiveClient | null = null
         try {
           const raw = localStorage.getItem(STORAGE_KEY)
-          if (raw) setActiveClientState(JSON.parse(raw))
+          if (raw) stored = JSON.parse(raw)
         } catch {}
+
+        if (stored) {
+          const match = granted.find((c) => c.id === stored!.id)
+          if (match) {
+            setActiveClient(toActive(match))
+            return
+          }
+          if (isSuperAdmin) {
+            setActiveClientState(stored)
+            return
+          }
+          // Perdió el acceso al cliente guardado: límpialo y sigue.
+          localStorage.removeItem(STORAGE_KEY)
+        }
+
+        const metaClientId = user.user_metadata?.client_id as string | undefined
+        const metaMatch = metaClientId ? granted.find((c) => c.id === metaClientId) : undefined
+        if (metaMatch) {
+          setActiveClient(toActive(metaMatch))
+          return
+        }
+
+        if (!isSuperAdmin && granted.length > 0) {
+          setActiveClient(toActive(granted[0]))
+        }
+        // Super admin sin selección: sin cliente activo (verá /admin).
       } catch (error) {
         console.error('Client context error:', error)
       }

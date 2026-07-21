@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useActiveClient } from '@/lib/client-context'
 import { BookOpen, Pin, Archive, Loader2, AlertCircle } from 'lucide-react'
 
 interface MemoryItem {
@@ -23,6 +24,7 @@ const CATEGORY_CONFIG: Record<string, { icon: string; color: string; label: stri
 }
 
 export default function ProjectMemoryViewer() {
+  const { activeClient } = useActiveClient()
   const [memories, setMemories] = useState<MemoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -30,7 +32,7 @@ export default function ProjectMemoryViewer() {
 
   useEffect(() => {
     fetchMemories()
-  }, [selectedCategory])
+  }, [selectedCategory, activeClient?.id])
 
   const fetchMemories = async () => {
     setLoading(true)
@@ -38,6 +40,7 @@ export default function ProjectMemoryViewer() {
     try {
       const url = new URL('/api/project-memory', window.location.origin)
       if (selectedCategory) url.searchParams.set('category', selectedCategory)
+      if (activeClient?.id) url.searchParams.set('clientId', activeClient.id)
 
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to fetch project memory')
