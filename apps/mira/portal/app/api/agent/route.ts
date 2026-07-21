@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
 
     // Leer client_id del usuario autenticado si no viene en el body
     let resolvedClientId = clientId
+    let sessionUserId: string | null = null
     if (resolvedClientId) {
       // clientId explícito: validar contra la sesión antes de usarlo
       const user = await getSessionUser()
@@ -47,6 +48,7 @@ export async function POST(req: NextRequest) {
           status: 403, headers: { 'Content-Type': 'application/json' }
         })
       }
+      sessionUserId = user.id
     }
     if (!resolvedClientId) {
       try {
@@ -63,6 +65,7 @@ export async function POST(req: NextRequest) {
           )
         }
         resolvedClientId = user.user_metadata.client_id
+        sessionUserId = user.id
       } catch (err) {
         return new Response(
           JSON.stringify({ error: 'Error obtener client_id del usuario' }),
@@ -175,6 +178,25 @@ export async function POST(req: NextRequest) {
             status: 'completed',
             outputSummary: fullOutput.slice(0, 200),
           }).catch(() => {})
+
+          // Persistir en project_memory si el chat viene de un proyecto (fire-and-forget)
+          if (projectId && fullOutput) {
+            ;(async () => {
+              try {
+                const { adminClient } = await import('@/lib/supabase')
+                await adminClient().from('project_memory').insert({
+                  client_id: resolvedClientId,
+                  project_id: projectId,
+                  action_id: null,
+                  title: `Chat ${agentName}`,
+                  category: 'insight',
+                  summary: fullOutput.slice(0, 200),
+                  source_department: AGENT_METADATA[role]?.department ?? null,
+                  created_by: sessionUserId,
+                })
+              } catch { /* la persistencia nunca debe romper el stream */ }
+            })()
+          }
 
         } catch (err) {
           logAgentActivity({

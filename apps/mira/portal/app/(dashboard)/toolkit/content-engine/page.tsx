@@ -146,10 +146,10 @@ export default function ContentEnginePage() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-1">
           <span className="text-2xl">🏭</span>
-          <h1 className="text-2xl font-semibold text-white">Content Engine</h1>
+          <h1 className="text-2xl font-semibold text-ink">Content Engine</h1>
         </div>
-        <p className="text-sm text-[#555]">
-          {t('content-engine.subtitle-prefix', locale)} <span className="text-white">{activeClient?.name ?? t('content-engine.your-brand', locale)}</span>
+        <p className="text-sm text-ink-tertiary">
+          {t('content-engine.subtitle-prefix', locale)} <span className="text-ink">{activeClient?.name ?? t('content-engine.your-brand', locale)}</span>
           {t('content-engine.subtitle-suffix', locale)}
         </p>
       </div>
@@ -163,17 +163,17 @@ export default function ContentEnginePage() {
                 className={clsx(
                   'w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold border transition-colors',
                   step === s ? 'text-black border-transparent'
-                    : step > s ? 'text-white border-white/20 bg-white/10'
-                    : 'text-[#555] border-[#222]'
+                    : step > s ? 'text-ink border-line bg-surface-elevated'
+                    : 'text-ink-tertiary border-line'
                 )}
                 style={step === s ? { background: brandColor } : undefined}
               >
                 {step > s ? <Check size={13} /> : s}
               </div>
-              <span className={clsx('text-xs', step === s ? 'text-white font-medium' : 'text-[#555]')}>
+              <span className={clsx('text-xs', step === s ? 'text-ink font-medium' : 'text-ink-tertiary')}>
                 {s === 1 ? t('content-engine.step-pillars', locale) : s === 2 ? t('content-engine.step-config', locale) : t('content-engine.step-generate', locale)}
               </span>
-              {s < 3 && <div className="w-8 h-px bg-[#222]" />}
+              {s < 3 && <div className="w-8 h-px bg-line" />}
             </div>
           ))}
         </div>
@@ -188,19 +188,19 @@ export default function ContentEnginePage() {
           >
             ✅
           </div>
-          <h2 className="text-xl font-semibold text-white mb-2">
+          <h2 className="text-xl font-semibold text-ink mb-2">
             {result.generated} {t('content-engine.posts-generated', locale)}
           </h2>
-          <p className="text-sm text-[#888] mb-6">
+          <p className="text-sm text-ink-secondary mb-6">
             {t('content-engine.result-desc-prefix', locale)} <span className="text-amber-400">{t('content-engine.pending-review', locale)}</span>.
           </p>
 
           <div className="max-w-sm mx-auto mb-8 space-y-2 text-left">
             {Object.entries(result.by_pillar).map(([name, count]) => (
-              <div key={name} className="flex items-center justify-between bg-[#0A0A0A] border border-[#1A1A1A] rounded-lg px-4 py-2.5">
-                <span className="text-xs text-[#ccc] truncate mr-3">{name}</span>
+              <div key={name} className="flex items-center justify-between bg-card border border-line rounded-lg px-4 py-2.5">
+                <span className="text-xs text-ink-secondary truncate mr-3">{name}</span>
                 {count > 0 ? (
-                  <span className="text-xs font-semibold text-white shrink-0">{count} posts</span>
+                  <span className="text-xs font-semibold text-ink shrink-0">{count} posts</span>
                 ) : (
                   <span className="text-xs text-red-400 shrink-0">{t('content-engine.failed', locale)}</span>
                 )}
@@ -218,7 +218,7 @@ export default function ContentEnginePage() {
             </Link>
             <Link
               href="/calendar"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold bg-[#1A1A1A] text-white hover:bg-white/10 transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold bg-surface-elevated text-ink hover:bg-surface-hover transition-colors"
             >
               <CalendarDays size={14} /> {t('content-engine.view-calendar', locale)}
             </Link>
@@ -230,11 +230,11 @@ export default function ContentEnginePage() {
       {generating && !result && (
         <div className="card p-10 text-center">
           <Loader2 size={26} className="animate-spin mx-auto mb-4" style={{ color: brandColor }} />
-          <p className="text-sm text-white font-medium mb-1">
+          <p className="text-sm text-ink font-medium mb-1">
             {t('content-engine.generating-posts', locale).replace('{count}', String(totalPosts))}
           </p>
-          <p className="text-xs text-[#666] transition-all">{t(PROGRESS_KEYS[progressIdx], locale)}</p>
-          <p className="text-[10px] text-[#444] mt-4">
+          <p className="text-xs text-ink-tertiary transition-all">{t(PROGRESS_KEYS[progressIdx], locale)}</p>
+          <p className="text-[10px] text-ink-muted mt-4">
             {t('content-engine.generating-note', locale)}
           </p>
         </div>
@@ -246,7 +246,7 @@ export default function ContentEnginePage() {
           <AlertCircle size={16} className="text-red-400 mt-0.5 shrink-0" />
           <div>
             <p className="text-sm font-semibold text-red-400">{t('content-engine.error-title', locale)}</p>
-            <p className="text-xs text-[#888] mt-1">{error}</p>
+            <p className="text-xs text-ink-secondary mt-1">{error}</p>
           </div>
         </div>
       )}
@@ -254,19 +254,19 @@ export default function ContentEnginePage() {
       {/* ── Paso 1: pilares ────────────────────────────────── */}
       {!generating && !result && step === 1 && (
         <div>
-          <p className="text-xs text-[#666] mb-4 font-mono uppercase tracking-wider">
+          <p className="text-xs text-ink-tertiary mb-4 font-mono uppercase tracking-wider">
             {t('content-engine.select-pillars', locale)}
           </p>
           {loadingPillars ? (
             <div className="card p-10 flex items-center justify-center gap-3">
-              <Loader2 size={18} className="animate-spin text-[#444]" />
-              <p className="text-sm text-[#555]">{t('content-engine.loading-pillars', locale)}</p>
+              <Loader2 size={18} className="animate-spin text-ink-muted" />
+              <p className="text-sm text-ink-tertiary">{t('content-engine.loading-pillars', locale)}</p>
             </div>
           ) : pillars.length === 0 ? (
             <div className="card p-10 text-center">
               <p className="text-2xl mb-2">🧱</p>
-              <p className="text-sm text-[#888]">{t('content-engine.no-pillars', locale)}</p>
-              <p className="text-xs text-[#555] mt-1">{t('content-engine.no-pillars-hint', locale)}</p>
+              <p className="text-sm text-ink-secondary">{t('content-engine.no-pillars', locale)}</p>
+              <p className="text-xs text-ink-tertiary mt-1">{t('content-engine.no-pillars-hint', locale)}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -278,16 +278,16 @@ export default function ContentEnginePage() {
                     onClick={() => togglePillar(pillar.id)}
                     className={clsx(
                       'card p-5 text-left transition-all border',
-                      selected ? 'bg-white/[0.04]' : 'hover:bg-white/[0.03] border-transparent'
+                      selected ? 'bg-surface' : 'hover:bg-surface border-transparent'
                     )}
                     style={selected ? { borderColor: brandColor } : undefined}
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
-                      <p className="text-sm font-semibold text-white">{pillar.pillar_name}</p>
+                      <p className="text-sm font-semibold text-ink">{pillar.pillar_name}</p>
                       <div
                         className={clsx(
                           'w-5 h-5 rounded-md border flex items-center justify-center shrink-0 transition-colors',
-                          selected ? 'border-transparent' : 'border-[#333]'
+                          selected ? 'border-transparent' : 'border-line'
                         )}
                         style={selected ? { background: brandColor } : undefined}
                       >
@@ -295,15 +295,15 @@ export default function ContentEnginePage() {
                       </div>
                     </div>
                     {pillar.description && (
-                      <p className="text-xs text-[#777] leading-relaxed line-clamp-3 mb-3">{pillar.description}</p>
+                      <p className="text-xs text-ink-tertiary leading-relaxed line-clamp-3 mb-3">{pillar.description}</p>
                     )}
                     {pillar.themes.length > 0 && (
                       <div className="flex flex-wrap gap-1.5">
                         {pillar.themes.slice(0, 3).map(t => (
-                          <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-[#1A1A1A] text-[#888]">{t}</span>
+                          <span key={t} className="text-[10px] px-2 py-0.5 rounded-full bg-surface-elevated text-ink-secondary">{t}</span>
                         ))}
                         {pillar.themes.length > 3 && (
-                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#1A1A1A] text-[#555]">
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-elevated text-ink-tertiary">
                             +{pillar.themes.length - 3}
                           </span>
                         )}
@@ -321,7 +321,7 @@ export default function ContentEnginePage() {
       {!generating && !result && step === 2 && (
         <div className="space-y-6">
           <div className="card p-6">
-            <p className="text-xs text-[#666] mb-3 font-mono uppercase tracking-wider">{t('content-engine.posts-per-pillar', locale)}</p>
+            <p className="text-xs text-ink-tertiary mb-3 font-mono uppercase tracking-wider">{t('content-engine.posts-per-pillar', locale)}</p>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(n => (
                 <button
@@ -329,7 +329,7 @@ export default function ContentEnginePage() {
                   onClick={() => setPostsPerPillar(n)}
                   className={clsx(
                     'w-11 h-11 rounded-xl text-sm font-semibold transition-colors',
-                    postsPerPillar === n ? 'text-black' : 'bg-[#1A1A1A] text-[#888] hover:text-white'
+                    postsPerPillar === n ? 'text-black' : 'bg-surface-elevated text-ink-secondary hover:text-ink'
                   )}
                   style={postsPerPillar === n ? { background: brandColor } : undefined}
                 >
@@ -340,7 +340,7 @@ export default function ContentEnginePage() {
           </div>
 
           <div className="card p-6">
-            <p className="text-xs text-[#666] mb-3 font-mono uppercase tracking-wider">{t('content-engine.platforms', locale)}</p>
+            <p className="text-xs text-ink-tertiary mb-3 font-mono uppercase tracking-wider">{t('content-engine.platforms', locale)}</p>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => {
                 const on = selectedPlatforms.includes(p.id)
@@ -350,7 +350,7 @@ export default function ContentEnginePage() {
                     onClick={() => togglePlatform(p.id)}
                     className={clsx(
                       'inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium border transition-colors',
-                      on ? 'text-white bg-white/[0.06]' : 'text-[#666] border-[#222] hover:text-white'
+                      on ? 'text-ink bg-surface-elevated' : 'text-ink-tertiary border-line hover:text-ink'
                     )}
                     style={on ? { borderColor: brandColor } : undefined}
                   >
@@ -364,14 +364,14 @@ export default function ContentEnginePage() {
 
           <div className="card p-6 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">{t('content-engine.include-reels', locale)}</p>
-              <p className="text-xs text-[#666] mt-0.5">
+              <p className="text-sm font-medium text-ink">{t('content-engine.include-reels', locale)}</p>
+              <p className="text-xs text-ink-tertiary mt-0.5">
                 {t('content-engine.include-reels-desc', locale)}
               </p>
             </div>
             <button
               onClick={() => setIncludeReels(v => !v)}
-              className={clsx('w-11 h-6 rounded-full relative transition-colors shrink-0 ml-4', !includeReels && 'bg-[#222]')}
+              className={clsx('w-11 h-6 rounded-full relative transition-colors shrink-0 ml-4', !includeReels && 'bg-surface-elevated')}
               style={includeReels ? { background: brandColor } : undefined}
               aria-pressed={includeReels}
             >
@@ -389,31 +389,31 @@ export default function ContentEnginePage() {
       {/* ── Paso 3: resumen ────────────────────────────────── */}
       {!generating && !result && step === 3 && (
         <div className="card p-8">
-          <p className="text-xs text-[#666] mb-5 font-mono uppercase tracking-wider">{t('content-engine.summary', locale)}</p>
-          <h2 className="text-xl font-semibold text-white mb-6">
+          <p className="text-xs text-ink-tertiary mb-5 font-mono uppercase tracking-wider">{t('content-engine.summary', locale)}</p>
+          <h2 className="text-xl font-semibold text-ink mb-6">
             {t('content-engine.about-to-generate', locale)} <span style={{ color: brandColor }}>{totalPosts} posts</span>
           </h2>
           <div className="space-y-3 mb-2">
-            <div className="flex items-start justify-between gap-4 border-b border-[#1A1A1A] pb-3">
-              <span className="text-xs text-[#666]">{t('content-engine.pillars', locale)} ({selectedPillars.length})</span>
-              <span className="text-xs text-white text-right">{selectedPillarNames.join(' · ')}</span>
+            <div className="flex items-start justify-between gap-4 border-b border-line pb-3">
+              <span className="text-xs text-ink-tertiary">{t('content-engine.pillars', locale)} ({selectedPillars.length})</span>
+              <span className="text-xs text-ink text-right">{selectedPillarNames.join(' · ')}</span>
             </div>
-            <div className="flex items-center justify-between border-b border-[#1A1A1A] pb-3">
-              <span className="text-xs text-[#666]">{t('content-engine.posts-per-pillar-platform', locale)}</span>
-              <span className="text-xs text-white">{postsPerPillar}</span>
+            <div className="flex items-center justify-between border-b border-line pb-3">
+              <span className="text-xs text-ink-tertiary">{t('content-engine.posts-per-pillar-platform', locale)}</span>
+              <span className="text-xs text-ink">{postsPerPillar}</span>
             </div>
-            <div className="flex items-center justify-between border-b border-[#1A1A1A] pb-3">
-              <span className="text-xs text-[#666]">{t('content-engine.platforms', locale)}</span>
-              <span className="text-xs text-white">
+            <div className="flex items-center justify-between border-b border-line pb-3">
+              <span className="text-xs text-ink-tertiary">{t('content-engine.platforms', locale)}</span>
+              <span className="text-xs text-ink">
                 {PLATFORMS.filter(p => selectedPlatforms.includes(p.id)).map(p => p.label).join(', ')}
               </span>
             </div>
             <div className="flex items-center justify-between pb-1">
-              <span className="text-xs text-[#666]">{t('content-engine.reel-scripts', locale)}</span>
-              <span className="text-xs text-white">{includeReels ? t('content-engine.yes', locale) : t('content-engine.no', locale)}</span>
+              <span className="text-xs text-ink-tertiary">{t('content-engine.reel-scripts', locale)}</span>
+              <span className="text-xs text-ink">{includeReels ? t('content-engine.yes', locale) : t('content-engine.no', locale)}</span>
             </div>
           </div>
-          <p className="text-[11px] text-[#555] mt-4">
+          <p className="text-[11px] text-ink-tertiary mt-4">
             {t('content-engine.summary-note', locale)}
           </p>
         </div>
@@ -425,7 +425,7 @@ export default function ContentEnginePage() {
           {step > 1 ? (
             <button
               onClick={() => setStep((step - 1) as Step)}
-              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs bg-[#1A1A1A] text-[#888] hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs bg-surface-elevated text-ink-secondary hover:text-ink transition-colors"
             >
               <ChevronLeft size={14} /> {t('common.back', locale)}
             </button>
@@ -437,7 +437,7 @@ export default function ContentEnginePage() {
               disabled={!stepDone(step)}
               className={clsx(
                 'inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-xs font-semibold transition-opacity',
-                stepDone(step) ? 'text-black hover:opacity-90' : 'bg-[#1A1A1A] text-[#555] cursor-not-allowed'
+                stepDone(step) ? 'text-black hover:opacity-90' : 'bg-surface-elevated text-ink-tertiary cursor-not-allowed'
               )}
               style={stepDone(step) ? { background: brandColor } : undefined}
             >
@@ -449,7 +449,7 @@ export default function ContentEnginePage() {
               disabled={totalPosts === 0}
               className={clsx(
                 'inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-xs font-semibold transition-opacity',
-                totalPosts > 0 ? 'text-black hover:opacity-90' : 'bg-[#1A1A1A] text-[#555] cursor-not-allowed'
+                totalPosts > 0 ? 'text-black hover:opacity-90' : 'bg-surface-elevated text-ink-tertiary cursor-not-allowed'
               )}
               style={totalPosts > 0 ? { background: brandColor } : undefined}
             >

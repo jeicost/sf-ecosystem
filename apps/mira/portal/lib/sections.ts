@@ -99,8 +99,28 @@ export function getSectionBySlug(slug: string): MiraSection | undefined {
 }
 
 export function getActiveSectionFromPath(pathname: string): MiraSection | undefined {
-  // Only return a section if the path explicitly matches one of the 6 department routes
-  // For global pages (Toolkit, Brand Brain, Integrations, etc.), return undefined
-  // This puts the sidebar in a "neutral" state (no department navItems)
-  return SECTIONS.find(s => pathname.startsWith(`/${s.slug}`))
+  // Match the pathname against each section's navItem hrefs — the longest
+  // matching prefix across ALL sections wins. This is needed because some
+  // sections (e.g. 'marketing') have navItems outside /<slug> (/roster,
+  // /command, /approvals, ...) and there is no /marketing route.
+  // For global pages (Toolkit, Brand Brain, Integrations, etc.) nothing
+  // matches and we return undefined → sidebar in "neutral" state.
+  let best: MiraSection | undefined
+  let bestLen = -1
+
+  for (const section of SECTIONS) {
+    for (const { href } of section.navItems) {
+      const matches = pathname === href || pathname.startsWith(`${href}/`)
+      if (matches && href.length > bestLen) {
+        best = section
+        bestLen = href.length
+      }
+    }
+  }
+  if (best) return best
+
+  // Fallback: routes under /<slug> that are not listed as navItems
+  return SECTIONS.find(
+    s => pathname === `/${s.slug}` || pathname.startsWith(`/${s.slug}/`)
+  )
 }

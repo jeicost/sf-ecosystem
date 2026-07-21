@@ -8,6 +8,9 @@ import { useLocaleContext } from '@/app/locale-provider'
 
 export function MarketingQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  // Acción clicada, guardada en el momento del click (activeActionId es el UUID
+  // del servidor y nunca coincide con los ids locales de `actions`).
+  const [activeAction, setActiveAction] = useState<{ title: string; outputType: string } | null>(null)
   const { locale } = useLocaleContext()
 
   const actions = [
@@ -16,6 +19,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_post', locale),
       description: t('actions.marketing.crear_post.desc', locale),
       actionType: 'crear_post',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <input
@@ -51,6 +55,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_newsletter', locale),
       description: t('actions.marketing.crear_newsletter.desc', locale),
       actionType: 'crear_newsletter',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <input
@@ -82,6 +87,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_video_brief', locale),
       description: t('actions.marketing.crear_video_brief.desc', locale),
       actionType: 'crear_video_brief',
+      outputType: 'video',
       form: (
         <div className="space-y-3">
           <input
@@ -117,6 +123,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_carousel', locale),
       description: t('actions.marketing.crear_carousel.desc', locale),
       actionType: 'crear_carousel',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <textarea
@@ -146,6 +153,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_campaña_ads', locale),
       description: t('actions.marketing.crear_campaña_ads.desc', locale),
       actionType: 'crear_campaña_ads',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <select
@@ -179,6 +187,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_post_visual', locale),
       description: t('actions.marketing.crear_post_visual.desc', locale),
       actionType: 'crear_post_visual',
+      outputType: 'image',
       form: (
         <div className="space-y-3">
           <input
@@ -216,6 +225,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_carrusel_visual', locale),
       description: t('actions.marketing.crear_carrusel_visual.desc', locale),
       actionType: 'crear_carrusel_visual',
+      outputType: 'image',
       form: (
         <div className="space-y-3">
           <textarea
@@ -253,6 +263,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.editar_imagen_visual', locale),
       description: t('actions.marketing.editar_imagen_visual.desc', locale),
       actionType: 'editar_imagen_visual',
+      outputType: 'image',
       form: (
         <div className="space-y-3">
           <input
@@ -295,7 +306,10 @@ export function MarketingQuickActions() {
               actionType={action.actionType}
               department="marketing"
               inputForm={action.form}
-              onActionComplete={(actionId) => setActiveActionId(actionId)}
+              onActionComplete={(actionId) => {
+                setActiveAction({ title: action.title, outputType: action.outputType })
+                setActiveActionId(actionId)
+              }}
             />
           ))}
         </div>
@@ -304,7 +318,8 @@ export function MarketingQuickActions() {
       {activeActionId && (
         <QuickActionResult
           actionId={activeActionId}
-          resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
+          resourceName={activeAction?.title || 'Resource'}
+          outputType={activeAction?.outputType}
           department="marketing"
         />
       )}

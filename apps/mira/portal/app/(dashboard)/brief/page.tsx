@@ -192,8 +192,8 @@ export default function BriefPage() {
   return (
     <div className="px-8 py-8 max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">New Brief</h1>
-        <p className="text-[#555] mt-1 text-sm">
+        <h1 className="text-2xl font-semibold text-ink">New Brief</h1>
+        <p className="text-ink-tertiary mt-1 text-sm">
           Describe what you need and Marco coordinates the team automatically.
         </p>
       </div>
@@ -201,13 +201,13 @@ export default function BriefPage() {
       {/* ── STEP: TEMPLATES ── */}
       {step === 'templates' && (
         <>
-          <p className="text-xs text-[#555] uppercase tracking-wider mb-4">Start from a template</p>
+          <p className="text-xs text-ink-tertiary uppercase tracking-wider mb-4">Start from a template</p>
           <div className="grid grid-cols-2 gap-3 mb-6">
             {TEMPLATES.map(t => (
               <button
                 key={t.id}
                 onClick={() => pickTemplate(t)}
-                className="card p-4 text-left hover:border-white/10 transition-all group"
+                className="card p-4 text-left hover:border-line transition-all group"
               >
                 <div className="flex items-start gap-3">
                   <span
@@ -217,10 +217,10 @@ export default function BriefPage() {
                     {t.emoji}
                   </span>
                   <div>
-                    <p className="text-sm text-white font-medium group-hover:text-white transition-colors">
+                    <p className="text-sm text-ink font-medium group-hover:text-ink transition-colors">
                       {t.label}
                     </p>
-                    <p className="text-[11px] text-[#444] mt-0.5 leading-relaxed">{t.description}</p>
+                    <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">{t.description}</p>
                   </div>
                 </div>
               </button>
@@ -228,14 +228,14 @@ export default function BriefPage() {
           </div>
 
           <div className="flex items-center gap-3 mb-0">
-            <div className="flex-1 h-px bg-[#1A1A1A]" />
-            <span className="text-[11px] text-[#444]">o</span>
-            <div className="flex-1 h-px bg-[#1A1A1A]" />
+            <div className="flex-1 h-px bg-line" />
+            <span className="text-[11px] text-ink-muted">o</span>
+            <div className="flex-1 h-px bg-line" />
           </div>
 
           <button
             onClick={skipTemplates}
-            className="w-full mt-4 py-2.5 rounded-xl text-sm border border-[#1E1E1E] text-[#555] hover:text-white transition-colors flex items-center justify-center gap-2"
+            className="w-full mt-4 py-2.5 rounded-xl text-sm border border-line text-ink-tertiary hover:text-ink transition-colors flex items-center justify-center gap-2"
           >
             <Zap size={13} />
             Free brief from scratch
@@ -265,7 +265,7 @@ export default function BriefPage() {
 
           {/* Client */}
           <div className="card p-5">
-            <label className="block text-xs text-[#555] uppercase tracking-wider mb-3">Client</label>
+            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Client</label>
             <div className="flex gap-2">
               {CLIENTS.map(c => (
                 <button
@@ -274,8 +274,8 @@ export default function BriefPage() {
                   className={clsx(
                     'flex-1 py-2.5 rounded-lg text-sm transition-all border',
                     form.client === c
-                      ? 'bg-white/10 text-white border-white/20 font-medium'
-                      : 'border-[#1E1E1E] text-[#555] hover:text-white'
+                      ? 'bg-surface-elevated text-ink border-line font-medium'
+                      : 'border-line text-ink-tertiary hover:text-ink'
                   )}
                 >
                   {c}
@@ -287,38 +287,38 @@ export default function BriefPage() {
           {/* Platform + Format */}
           <div className="grid grid-cols-2 gap-4">
             <div className="card p-5">
-              <label className="block text-xs text-[#555] uppercase tracking-wider mb-3">Platform</label>
+              <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Platform</label>
               <div className="relative">
                 <select
                   value={form.platform}
                   onChange={e => setForm(f => ({ ...f, platform: e.target.value }))}
-                  className="w-full bg-transparent text-sm text-white outline-none appearance-none cursor-pointer"
+                  className="w-full bg-transparent text-sm text-ink outline-none appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-[#111]">Choose...</option>
-                  {PLATFORMS.map(p => <option key={p} value={p} className="bg-[#111]">{p}</option>)}
+                  <option value="" className="bg-page">Choose...</option>
+                  {PLATFORMS.map(p => <option key={p} value={p} className="bg-page">{p}</option>)}
                 </select>
-                <ChevronDown size={13} className="absolute right-0 top-0.5 text-[#555] pointer-events-none" />
+                <ChevronDown size={13} className="absolute right-0 top-0.5 text-ink-tertiary pointer-events-none" />
               </div>
             </div>
             <div className="card p-5">
-              <label className="block text-xs text-[#555] uppercase tracking-wider mb-3">Format</label>
+              <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Format</label>
               <div className="relative">
                 <select
                   value={form.format}
                   onChange={e => setForm(f => ({ ...f, format: e.target.value }))}
-                  className="w-full bg-transparent text-sm text-white outline-none appearance-none cursor-pointer"
+                  className="w-full bg-transparent text-sm text-ink outline-none appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-[#111]">Choose...</option>
-                  {FORMATS.map(f => <option key={f} value={f} className="bg-[#111]">{f}</option>)}
+                  <option value="" className="bg-page">Choose...</option>
+                  {FORMATS.map(f => <option key={f} value={f} className="bg-page">{f}</option>)}
                 </select>
-                <ChevronDown size={13} className="absolute right-0 top-0.5 text-[#555] pointer-events-none" />
+                <ChevronDown size={13} className="absolute right-0 top-0.5 text-ink-tertiary pointer-events-none" />
               </div>
             </div>
           </div>
 
           {/* Pilar */}
           <div className="card p-5">
-            <label className="block text-xs text-[#555] uppercase tracking-wider mb-3">Content pillar</label>
+            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Content pillar</label>
             <div className="flex flex-wrap gap-2">
               {PILLARS.map(p => (
                 <button
@@ -328,7 +328,7 @@ export default function BriefPage() {
                     'px-3 py-1.5 rounded-full text-xs transition-all border',
                     form.pillar === p
                       ? 'bg-violet-500/20 text-violet-300 border-violet-500/40'
-                      : 'border-[#1E1E1E] text-[#555] hover:text-white'
+                      : 'border-line text-ink-tertiary hover:text-ink'
                   )}
                 >
                   {p}
@@ -339,7 +339,7 @@ export default function BriefPage() {
 
           {/* Objetivo */}
           <div className="card p-5">
-            <label className="block text-xs text-[#555] uppercase tracking-wider mb-3">
+            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">
               Objective or main idea
             </label>
             <textarea
@@ -347,21 +347,21 @@ export default function BriefPage() {
               onChange={e => setForm(f => ({ ...f, objetivo: e.target.value }))}
               placeholder="Ej: Mostrar el proceso de selección del wagyu de forma visual y educativa..."
               rows={4}
-              className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none resize-none leading-relaxed"
+              className="w-full bg-transparent text-sm text-ink placeholder-ink-muted outline-none resize-none leading-relaxed"
             />
           </div>
 
           {/* Notas */}
           <div className="card p-5">
-            <label className="block text-xs text-[#555] uppercase tracking-wider mb-3">
-              Additional notes <span className="normal-case text-[#444]">(optional)</span>
+            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">
+              Additional notes <span className="normal-case text-ink-muted">(optional)</span>
             </label>
             <textarea
               value={form.notas}
               onChange={e => setForm(f => ({ ...f, notas: e.target.value }))}
               placeholder="Referencias, restricciones, tono especial..."
               rows={2}
-              className="w-full bg-transparent text-sm text-white placeholder-[#333] outline-none resize-none leading-relaxed"
+              className="w-full bg-transparent text-sm text-ink placeholder-ink-muted outline-none resize-none leading-relaxed"
             />
           </div>
 
@@ -369,7 +369,7 @@ export default function BriefPage() {
           <div className="flex gap-3">
             <button
               onClick={() => setStep('templates')}
-              className="px-4 py-3 rounded-xl text-sm border border-[#1E1E1E] text-[#555] hover:text-white transition-colors"
+              className="px-4 py-3 rounded-xl text-sm border border-line text-ink-tertiary hover:text-ink transition-colors"
             >
               ← Templates
             </button>
@@ -378,7 +378,7 @@ export default function BriefPage() {
               disabled={!isValid}
               className={clsx(
                 'flex-1 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2',
-                isValid ? 'bg-white text-black hover:bg-white/90' : 'bg-[#1A1A1A] text-[#444] cursor-not-allowed'
+                isValid ? 'bg-ink text-page hover:opacity-90' : 'bg-surface-elevated text-ink-muted cursor-not-allowed'
               )}
             >
               <Send size={14} />
@@ -386,7 +386,7 @@ export default function BriefPage() {
             </button>
           </div>
           {!isValid && (
-            <p className="text-center text-[11px] text-[#444]">
+            <p className="text-center text-[11px] text-ink-muted">
               Fill in platform, format, pillar and objective to continue.
             </p>
           )}
@@ -401,8 +401,8 @@ export default function BriefPage() {
               className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center text-2xl mx-auto mb-4"
               style={{ boxShadow: '0 12px 32px #8B5CF640' }}
             >🎬</div>
-            <h2 className="text-lg font-semibold text-white mb-1">Marco is coordinating your brief</h2>
-            <p className="text-xs text-[#555]">El equipo está procesando tu solicitud en tiempo real.</p>
+            <h2 className="text-lg font-semibold text-ink mb-1">Marco is coordinating your brief</h2>
+            <p className="text-xs text-ink-tertiary">El equipo está procesando tu solicitud en tiempo real.</p>
           </div>
           <div className="space-y-3">
             {PROCESSING_STEPS.map((s, i) => {
@@ -410,10 +410,10 @@ export default function BriefPage() {
               const active = processingStep === i
               return (
                 <div key={s.agent} className={clsx('flex items-center gap-3 p-3 rounded-xl transition-all', done || active ? 'opacity-100' : 'opacity-25')}>
-                  <div className={clsx('w-8 h-8 rounded-lg flex items-center justify-center text-base transition-all', done ? 'bg-emerald-500/20' : 'bg-[#1A1A1A]')}>
+                  <div className={clsx('w-8 h-8 rounded-lg flex items-center justify-center text-base transition-all', done ? 'bg-emerald-500/20' : 'bg-surface-elevated')}>
                     {s.emoji}
                   </div>
-                  <p className="flex-1 text-sm text-[#ccc]">{s.label}</p>
+                  <p className="flex-1 text-sm text-ink-secondary">{s.label}</p>
                   {done && <CheckCircle size={14} className="text-emerald-400 shrink-0" />}
                   {active && <Loader2 size={14} className="text-amber-400 animate-spin shrink-0" />}
                 </div>
@@ -428,12 +428,12 @@ export default function BriefPage() {
         <div className="space-y-4">
           <div className="card p-6 text-center border-emerald-500/20">
             <CheckCircle size={28} className="text-emerald-400 mx-auto mb-3" />
-            <h2 className="text-lg font-semibold text-white mb-1">Brief processed</h2>
-            <p className="text-xs text-[#555]">El contenido está en Cola de Aprobación listo para tu revisión.</p>
+            <h2 className="text-lg font-semibold text-ink mb-1">Brief processed</h2>
+            <p className="text-xs text-ink-tertiary">El contenido está en Cola de Aprobación listo para tu revisión.</p>
           </div>
 
           <div className="card p-5">
-            <h3 className="text-xs text-[#555] uppercase tracking-wider mb-4">What each agent did</h3>
+            <h3 className="text-xs text-ink-tertiary uppercase tracking-wider mb-4">What each agent did</h3>
             <div className="space-y-3">
               {RESULT_PLAN.map((s, i) => (
                 <div key={s.agent} className="flex items-start gap-3">
@@ -441,11 +441,11 @@ export default function BriefPage() {
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center text-sm" style={{ background: `${s.color}20` }}>
                       {s.emoji}
                     </div>
-                    {i < RESULT_PLAN.length - 1 && <div className="w-px h-4 bg-[#1E1E1E] mt-1" />}
+                    {i < RESULT_PLAN.length - 1 && <div className="w-px h-4 bg-line mt-1" />}
                   </div>
                   <div className="flex-1 pt-1">
-                    <p className="text-xs text-white font-medium mb-0.5">{s.agent}</p>
-                    <p className="text-xs text-[#555] leading-relaxed">{s.task}</p>
+                    <p className="text-xs text-ink font-medium mb-0.5">{s.agent}</p>
+                    <p className="text-xs text-ink-tertiary leading-relaxed">{s.task}</p>
                   </div>
                   <CheckCircle size={13} className="text-emerald-400 shrink-0 mt-1" />
                 </div>
@@ -453,20 +453,20 @@ export default function BriefPage() {
             </div>
           </div>
 
-          <div className="card p-4 bg-[#0A0A0A]">
-            <p className="text-xs text-[#555] mb-2">Brief enviado:</p>
+          <div className="card p-4 bg-surface">
+            <p className="text-xs text-ink-tertiary mb-2">Brief enviado:</p>
             <div className="flex flex-wrap gap-2">
               {[form.client, form.platform, form.format, form.pillar].filter(Boolean).map(tag => (
-                <span key={tag} className="text-[11px] bg-[#1A1A1A] text-[#666] px-2 py-0.5 rounded-full">{tag}</span>
+                <span key={tag} className="text-[11px] bg-surface-elevated text-ink-tertiary px-2 py-0.5 rounded-full">{tag}</span>
               ))}
             </div>
           </div>
 
           <div className="grid grid-cols-2 gap-3">
-            <button onClick={reset} className="py-2.5 rounded-xl text-sm border border-[#1E1E1E] text-[#666] hover:text-white transition-colors">
+            <button onClick={reset} className="py-2.5 rounded-xl text-sm border border-line text-ink-tertiary hover:text-ink transition-colors">
               New brief
             </button>
-            <a href="/approvals" className="py-2.5 rounded-xl text-sm bg-white text-black font-semibold flex items-center justify-center gap-1.5 hover:bg-white/90 transition-colors">
+            <a href="/approvals" className="py-2.5 rounded-xl text-sm bg-ink text-page font-semibold flex items-center justify-center gap-1.5 hover:opacity-90 transition-colors">
               View in approvals <ArrowRight size={13} />
             </a>
           </div>

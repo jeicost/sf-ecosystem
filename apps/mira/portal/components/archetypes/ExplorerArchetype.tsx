@@ -128,27 +128,27 @@ export default function ExplorerArchetype({
     const isExpanded = expandedTier === tier
 
     return (
-      <div key={tier} className="border border-[#1E1E1E] rounded-lg overflow-hidden">
+      <div key={tier} className="border border-line rounded-lg overflow-hidden">
         <button
           onClick={() => setExpandedTier(isExpanded ? null : tier)}
-          className="w-full px-4 py-3 bg-[#0D0D0D] hover:bg-[#1E1E1E] transition-colors flex items-center justify-between"
+          className="w-full px-4 py-3 bg-surface hover:bg-surface-hover transition-colors flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
             <span className="text-lg">{tierColor.emoji}</span>
             <div className="text-left">
-              <div className="text-sm font-semibold text-white">{tierColor.label}</div>
-              <div className="text-xs text-[#666]">{results.length} result{results.length !== 1 ? 's' : ''}</div>
+              <div className="text-sm font-semibold text-ink">{tierColor.label}</div>
+              <div className="text-xs text-ink-tertiary">{results.length} result{results.length !== 1 ? 's' : ''}</div>
             </div>
           </div>
           {isExpanded ? (
-            <ChevronUp size={16} className="text-[#666]" />
+            <ChevronUp size={16} className="text-ink-tertiary" />
           ) : (
-            <ChevronDown size={16} className="text-[#666]" />
+            <ChevronDown size={16} className="text-ink-tertiary" />
           )}
         </button>
 
         {isExpanded && (
-          <div className="space-y-2 p-3 bg-[#0D0D0D]/50">
+          <div className="space-y-2 p-3 bg-surface">
             {results.map(result => {
               const isSelected = selectedResult?.id === result.id
               return (
@@ -158,16 +158,16 @@ export default function ExplorerArchetype({
                   className={clsx(
                     'w-full p-3 rounded-lg text-left transition-all border text-sm',
                     isSelected
-                      ? 'border-[#1E1E1E] bg-[#1E1E1E]'
-                      : 'border-transparent hover:bg-[#1A1A1A]'
+                      ? 'border-line bg-surface-hover'
+                      : 'border-transparent hover:bg-surface-hover'
                   )}
                 >
                   <div className="flex items-start gap-2 justify-between">
                     <div className="flex-1 min-w-0">
-                      <div className="font-medium text-white text-sm mb-1">{result.name}</div>
-                      <div className="text-xs text-[#999] leading-relaxed">{result.signal}</div>
+                      <div className="font-medium text-ink text-sm mb-1">{result.name}</div>
+                      <div className="text-xs text-ink-secondary leading-relaxed">{result.signal}</div>
                       {result.jurisdiction && (
-                        <div className="text-xs text-[#666] mt-1">📍 {result.jurisdiction}</div>
+                        <div className="text-xs text-ink-tertiary mt-1">📍 {result.jurisdiction}</div>
                       )}
                     </div>
                     {isSelected && (
@@ -195,39 +195,39 @@ export default function ExplorerArchetype({
 
           <div className="space-y-3">
             <div className="relative">
-              <Search size={16} className="absolute left-3 top-3 text-[#666]" />
+              <Search size={16} className="absolute left-3 top-3 text-ink-tertiary" />
               <input
                 type="text"
                 placeholder="Keyword or company..."
                 value={filters.keyword}
                 onChange={e => setFilters({ ...filters, keyword: e.target.value })}
-                className="w-full pl-10 pr-3 py-2 rounded bg-[#0D0D0D] border border-[#1E1E1E] text-sm text-white focus:border-[#333] focus:outline-none"
+                className="w-full pl-10 pr-3 py-2 rounded bg-surface border border-line text-sm text-ink focus:border-ink-muted focus:outline-none"
               />
             </div>
 
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="flex items-center gap-2 text-xs text-[#666] hover:text-white transition-colors"
+              className="flex items-center gap-2 text-xs text-ink-tertiary hover:text-ink transition-colors"
             >
               <Filter size={14} />
               {showFilters ? 'Hide' : 'Show'} advanced filters
             </button>
 
             {showFilters && (
-              <div className="space-y-2 p-3 bg-[#0D0D0D] rounded border border-[#1E1E1E]">
+              <div className="space-y-2 p-3 bg-surface rounded border border-line">
                 <input
                   type="text"
                   placeholder="Industry (e.g. AI, SaaS)..."
                   value={filters.industry}
                   onChange={e => setFilters({ ...filters, industry: e.target.value })}
-                  className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-xs text-white focus:outline-none"
+                  className="w-full px-3 py-2 rounded bg-surface-hover border border-line text-xs text-ink focus:outline-none"
                 />
                 <input
                   type="text"
                   placeholder="Location (e.g. ES, EU)..."
                   value={filters.jurisdiction}
                   onChange={e => setFilters({ ...filters, jurisdiction: e.target.value })}
-                  className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-xs text-white focus:outline-none"
+                  className="w-full px-3 py-2 rounded bg-surface-hover border border-line text-xs text-ink focus:outline-none"
                 />
               </div>
             )}
@@ -248,24 +248,24 @@ export default function ExplorerArchetype({
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-3 gap-2 pt-4 border-t border-[#1E1E1E]">
-            <div className="text-center p-2 bg-[#0D0D0D] rounded">
+          <div className="grid grid-cols-3 gap-2 pt-4 border-t border-line">
+            <div className="text-center p-2 bg-surface rounded">
               <div className="text-lg font-bold" style={{ color: '#EF4444' }}>
                 {tierCounts.HOT}
               </div>
-              <div className="text-xs text-[#666] mt-1">Hot</div>
+              <div className="text-xs text-ink-tertiary mt-1">Hot</div>
             </div>
-            <div className="text-center p-2 bg-[#0D0D0D] rounded">
+            <div className="text-center p-2 bg-surface rounded">
               <div className="text-lg font-bold" style={{ color: '#F59E0B' }}>
                 {tierCounts.WARM}
               </div>
-              <div className="text-xs text-[#666] mt-1">Warm</div>
+              <div className="text-xs text-ink-tertiary mt-1">Warm</div>
             </div>
-            <div className="text-center p-2 bg-[#0D0D0D] rounded">
+            <div className="text-center p-2 bg-surface rounded">
               <div className="text-lg font-bold" style={{ color: '#3B82F6' }}>
                 {tierCounts.COLD}
               </div>
-              <div className="text-xs text-[#666] mt-1">Cold</div>
+              <div className="text-xs text-ink-tertiary mt-1">Cold</div>
             </div>
           </div>
         </div>
@@ -293,7 +293,7 @@ export default function ExplorerArchetype({
             </div>
 
             <div>
-              <div className="text-lg font-semibold text-white mb-2">{selectedResult.name}</div>
+              <div className="text-lg font-semibold text-ink mb-2">{selectedResult.name}</div>
               <div
                 className="inline-block px-2 py-1 rounded text-xs font-medium"
                 style={{
@@ -307,20 +307,20 @@ export default function ExplorerArchetype({
 
             {selectedResult.industry && (
               <div className="space-y-1">
-                <div className="text-xs font-semibold text-white uppercase">Industry</div>
-                <div className="text-sm text-[#999]">{selectedResult.industry}</div>
+                <div className="text-xs font-semibold text-ink uppercase">Industry</div>
+                <div className="text-sm text-ink-secondary">{selectedResult.industry}</div>
               </div>
             )}
 
             <div className="space-y-1">
-              <div className="text-xs font-semibold text-white uppercase">Key Signal</div>
-              <div className="text-sm text-[#999]">{selectedResult.signal}</div>
+              <div className="text-xs font-semibold text-ink uppercase">Key Signal</div>
+              <div className="text-sm text-ink-secondary">{selectedResult.signal}</div>
             </div>
 
             {selectedResult.insight && (
-              <div className="space-y-2 border-t border-[#1E1E1E] pt-4">
-                <div className="text-xs font-semibold text-white uppercase">Insight</div>
-                <div className="text-sm text-[#999]">{selectedResult.insight}</div>
+              <div className="space-y-2 border-t border-line pt-4">
+                <div className="text-xs font-semibold text-ink uppercase">Insight</div>
+                <div className="text-sm text-ink-secondary">{selectedResult.insight}</div>
               </div>
             )}
 

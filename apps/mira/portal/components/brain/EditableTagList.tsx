@@ -38,7 +38,7 @@ export function EditableTagList({ tags, onChange, placeholder = 'Add item...' }:
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder={placeholder}
-          className="flex-1 px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+          className="flex-1 px-3 py-2 rounded bg-surface border border-line text-sm text-ink placeholder-ink-tertiary focus:outline-none focus:border-[#EC4899]"
         />
         <button
           type="button"
@@ -54,13 +54,13 @@ export function EditableTagList({ tags, onChange, placeholder = 'Add item...' }:
           {tags.map((tag, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 px-2 py-1 rounded bg-[#EC4899]20 border border-[#EC4899]40 text-sm text-white"
+              className="flex items-center gap-2 px-2 py-1 rounded bg-[#EC4899]20 border border-[#EC4899]40 text-sm text-ink"
             >
               {tag}
               <button
                 type="button"
                 onClick={() => handleRemove(index)}
-                className="text-[#999] hover:text-[#FF6B6B]"
+                className="text-ink-secondary hover:text-[#FF6B6B]"
               >
                 <X size={14} />
               </button>

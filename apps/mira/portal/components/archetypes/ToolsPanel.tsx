@@ -35,19 +35,19 @@ export default function ToolsPanel({
   const availableTools = allTools.filter(t => !connectedTools.includes(t.id))
 
   return (
-    <div className="w-80 bg-[#0D0D0D] border-l border-[#1E1E1E] overflow-y-auto space-y-6 p-4">
+    <div className="w-80 bg-page border-l border-line overflow-y-auto space-y-6 p-4">
       {/* Header */}
-      <div className="sticky top-0 bg-[#0D0D0D] pb-4">
-        <h3 className="text-sm font-bold text-white mb-2">🔗 Integrations</h3>
+      <div className="sticky top-0 bg-page pb-4">
+        <h3 className="text-sm font-bold text-ink mb-2">🔗 Integrations</h3>
         <div className="space-y-2">
-          <div className="text-xs text-[#666]">Tool Adoption</div>
-          <div className="w-full bg-[#1E1E1E] rounded h-2 overflow-hidden">
+          <div className="text-xs text-ink-tertiary">Tool Adoption</div>
+          <div className="w-full bg-surface-hover rounded h-2 overflow-hidden">
             <div
               className="h-full transition-all duration-300"
               style={{ width: `${toolScore}%`, backgroundColor: accentColor }}
             />
           </div>
-          <div className="text-xs text-[#999]">
+          <div className="text-xs text-ink-secondary">
             {connectedTools.length} of {allTools.length} tools connected
           </div>
         </div>
@@ -56,12 +56,12 @@ export default function ToolsPanel({
       {/* Connected Tools */}
       {connectedToolsData.length > 0 && (
         <div className="space-y-2">
-          <div className="text-xs font-semibold text-[#666] uppercase">Active Tools</div>
+          <div className="text-xs font-semibold text-ink-tertiary uppercase">Active Tools</div>
           <div className="space-y-2">
             {connectedToolsData.map(tool => (
                 <div
                   key={tool.id}
-                  className="card p-3 border border-[#1E1E1E] space-y-2"
+                  className="card p-3 border border-line space-y-2"
                   style={{
                     borderColor: `${accentColor}40`,
                     backgroundColor: `${accentColor}10`,
@@ -72,8 +72,8 @@ export default function ToolsPanel({
                     <div className="flex items-center gap-2">
                       <span className="text-lg">{tool.emoji}</span>
                       <div className="min-w-0">
-                        <div className="text-xs font-medium text-white">{tool.name}</div>
-                        <div className="text-xs text-[#666]">{tool.category}</div>
+                        <div className="text-xs font-medium text-ink">{tool.name}</div>
+                        <div className="text-xs text-ink-tertiary">{tool.category}</div>
                       </div>
                     </div>
                     <span className="text-xs text-[#10B981] flex-shrink-0">✓</span>
@@ -81,8 +81,8 @@ export default function ToolsPanel({
 
                   {/* Agents Using Tool */}
                   {tool.agentsUnlocked.length > 0 && (
-                    <div className="pt-2 border-t border-[#1E1E1E]">
-                      <div className="text-xs text-[#999] mb-1">Agents Unlocked</div>
+                    <div className="pt-2 border-t border-line">
+                      <div className="text-xs text-ink-secondary mb-1">Agents Unlocked</div>
                       <div className="flex flex-wrap gap-1">
                         {tool.agentsUnlocked.map(agent => (
                           <span
@@ -108,7 +108,7 @@ export default function ToolsPanel({
       {/* Available Tools */}
       {availableTools.length > 0 && (
         <div className="space-y-2">
-          <div className="text-xs font-semibold text-[#666] uppercase">Available</div>
+          <div className="text-xs font-semibold text-ink-tertiary uppercase">Available</div>
           <div className="space-y-2">
             {availableTools.map(tool => (
               <button
@@ -118,7 +118,7 @@ export default function ToolsPanel({
                   'w-full card p-3 border transition-all text-left space-y-2',
                   tool.priority === 'critical' || tool === nextSuggestion
                     ? 'border-[#F59E0B] bg-[#F59E0B]10'
-                    : 'border-[#1E1E1E] hover:border-[#333]'
+                    : 'border-line hover:border-ink-muted'
                 )}
               >
                 {/* Tool Header */}
@@ -126,8 +126,8 @@ export default function ToolsPanel({
                   <div className="flex items-center gap-2">
                     <span className="text-lg">{tool.emoji}</span>
                     <div className="min-w-0">
-                      <div className="text-xs font-medium text-white">{tool.name}</div>
-                      <div className="text-xs text-[#666]">{tool.category}</div>
+                      <div className="text-xs font-medium text-ink">{tool.name}</div>
+                      <div className="text-xs text-ink-tertiary">{tool.category}</div>
                     </div>
                   </div>
                   {tool === nextSuggestion && (
@@ -136,18 +136,18 @@ export default function ToolsPanel({
                 </div>
 
                 {/* Description & Agents */}
-                <div className="space-y-2 pt-1 border-t border-[#1E1E1E]">
-                  <p className="text-xs text-[#999]">{tool.description}</p>
+                <div className="space-y-2 pt-1 border-t border-line">
+                  <p className="text-xs text-ink-secondary">{tool.description}</p>
                   {tool.agentsUnlocked.length > 0 && (
                     <div className="space-y-1">
-                      <div className="text-xs text-[#666]">
+                      <div className="text-xs text-ink-tertiary">
                         🔓 Unlocks {tool.agentsUnlocked.length} agent{tool.agentsUnlocked.length !== 1 ? 's' : ''}
                       </div>
                       <div className="flex flex-wrap gap-1">
                         {tool.agentsUnlocked.map(agent => (
                           <span
                             key={agent}
-                            className="px-2 py-0.5 text-xs rounded capitalize bg-[#1E1E1E] text-[#999]"
+                            className="px-2 py-0.5 text-xs rounded capitalize bg-surface-hover text-ink-secondary"
                           >
                             {agent}
                           </span>
@@ -175,8 +175,8 @@ export default function ToolsPanel({
             <Zap size={12} />
             Next Unlock
           </div>
-          <div className="text-xs text-white font-medium mb-1">{nextSuggestion.name}</div>
-          <div className="text-xs text-[#999] mb-2">{nextSuggestion.description}</div>
+          <div className="text-xs text-ink font-medium mb-1">{nextSuggestion.name}</div>
+          <div className="text-xs text-ink-secondary mb-2">{nextSuggestion.description}</div>
           <button
             onClick={() => onConnectTool?.(nextSuggestion.id)}
             className="w-full px-2 py-1.5 text-xs rounded font-medium"
@@ -194,8 +194,8 @@ export default function ToolsPanel({
       {availableTools.length === 0 && connectedToolsData.length > 0 && (
         <div className="p-3 rounded text-center space-y-2">
           <Lock size={20} className="mx-auto" style={{ color: accentColor }} />
-          <div className="text-sm font-semibold text-white">All Tools Connected! 🎉</div>
-          <div className="text-xs text-[#666]">Department is fully optimized</div>
+          <div className="text-sm font-semibold text-ink">All Tools Connected! 🎉</div>
+          <div className="text-xs text-ink-tertiary">Department is fully optimized</div>
         </div>
       )}
     </div>

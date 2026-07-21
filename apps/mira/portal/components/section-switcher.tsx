@@ -3,7 +3,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { clsx } from 'clsx'
 import { SECTIONS, MiraSection } from '@/lib/sections'
-import { canAccessSection, type UserPlan } from '@/lib/auth'
+import { canAccessSection, type UserPlan } from '@/lib/plans'
 
 interface SectionSwitcherProps {
   activeSlug: string
@@ -27,10 +27,16 @@ export default function SectionSwitcher({ activeSlug, userPlan = 'admin' }: Sect
     if (first) router.push(first.href)
   }
 
+  // 'operations' se oculta por completo sin acceso; el resto de secciones
+  // inaccesibles se muestran con candado (upsell de upgrade).
+  const visibleSections = SECTIONS.filter(
+    (s) => s.slug !== 'operations' || canAccessSection(userPlan, s.slug)
+  )
+
   return (
     <div className="px-2 py-2 border-b border-[#131313]">
       <div className="flex gap-0.5">
-        {SECTIONS.map((section) => {
+        {visibleSections.map((section) => {
           const isActive = section.slug === activeSlug
           const accessible = canAccessSection(userPlan, section.slug)
           const showTip = tooltip === section.slug

@@ -120,19 +120,19 @@ export default function AgentWorkspace({
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#0A0A0A] border border-[#1E1E1E] rounded-lg overflow-hidden">
+    <div className="flex flex-col h-full bg-card border border-line rounded-lg overflow-hidden">
       {/* Header */}
-      <div className="px-6 py-4 border-b border-[#1E1E1E]" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="px-6 py-4 border-b border-line bg-surface">
         <div className="flex items-center gap-3 mb-2">
           <span className="text-2xl">{agentEmoji}</span>
           <div>
-            <h3 className="font-semibold text-white">{agentName}</h3>
-            <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <h3 className="font-semibold text-ink">{agentName}</h3>
+            <p className="text-xs text-ink-tertiary">
               {title}
             </p>
           </div>
         </div>
-        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>
+        <p className="text-xs text-ink-muted">
           {description}
         </p>
       </div>
@@ -143,13 +143,13 @@ export default function AgentWorkspace({
           <div className="flex flex-col h-full items-center justify-center text-center space-y-4">
             <div className="text-4xl">{agentEmoji}</div>
             <div>
-              <p className="text-sm text-white font-medium mb-1">{title}</p>
-              <p className="text-xs text-[#999]">{placeholder}</p>
+              <p className="text-sm text-ink font-medium mb-1">{title}</p>
+              <p className="text-xs text-ink-secondary">{placeholder}</p>
             </div>
 
             {quickPrompts.length > 0 && (
               <div className="mt-6 grid gap-2 w-full max-w-sm">
-                <p className="text-[10px] uppercase tracking-widest font-semibold text-[#666] mb-2">
+                <p className="text-[10px] uppercase tracking-widest font-semibold text-ink-tertiary mb-2">
                   Sugerencias rápidas
                 </p>
                 {quickPrompts.map((qp, idx) => (
@@ -178,7 +178,7 @@ export default function AgentWorkspace({
               className={`max-w-xs px-4 py-2 rounded-lg text-sm ${
                 msg.role === 'user'
                   ? 'text-white'
-                  : 'bg-[#1E1E1E] text-[#CCC] border border-[#333]'
+                  : 'bg-surface-hover text-ink border border-line'
               }`}
               style={
                 msg.role === 'user'
@@ -193,11 +193,11 @@ export default function AgentWorkspace({
 
         {isLoading && messages[messages.length - 1]?.role === 'user' && (
           <div className="flex justify-start">
-            <div className="bg-[#1E1E1E] text-[#999] px-4 py-2 rounded-lg text-sm border border-[#333]">
+            <div className="bg-surface-hover text-ink-secondary px-4 py-2 rounded-lg text-sm border border-line">
               <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-[#666] animate-pulse" />
-                <div className="w-2 h-2 rounded-full bg-[#666] animate-pulse" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 rounded-full bg-[#666] animate-pulse" style={{ animationDelay: '0.4s' }} />
+                <div className="w-2 h-2 rounded-full bg-ink-tertiary animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-ink-tertiary animate-pulse" style={{ animationDelay: '0.2s' }} />
+                <div className="w-2 h-2 rounded-full bg-ink-tertiary animate-pulse" style={{ animationDelay: '0.4s' }} />
               </div>
             </div>
           </div>
@@ -208,20 +208,20 @@ export default function AgentWorkspace({
 
       {/* Documents Section */}
       {documents.length > 0 && (
-        <div className="px-4 py-3 border-t border-[#1E1E1E]" style={{ background: 'rgba(255,255,255,0.01)' }}>
+        <div className="px-4 py-3 border-t border-line bg-surface">
           <button
             onClick={() => setShowDocuments(!showDocuments)}
-            className="text-xs font-medium text-white flex items-center gap-2 mb-2 hover:text-[#CCC]"
+            className="text-xs font-medium text-ink flex items-center gap-2 mb-2 hover:text-ink-secondary"
           >
             📄 Documentos ({documents.length}) {showDocuments ? '▼' : '▶'}
           </button>
           {showDocuments && (
             <div className="space-y-2 max-h-40 overflow-y-auto">
               {documents.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-2 bg-[#1E1E1E] rounded text-xs">
+                <div key={doc.id} className="flex items-center justify-between p-2 bg-surface-hover rounded text-xs">
                   <div className="flex-1">
-                    <p className="text-white truncate">{doc.original_filename}</p>
-                    <p className="text-[#666]">{doc.document_type}</p>
+                    <p className="text-ink truncate">{doc.original_filename}</p>
+                    <p className="text-ink-tertiary">{doc.document_type}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     {doc.analysis_status === 'completed' && (
@@ -242,7 +242,7 @@ export default function AgentWorkspace({
       )}
 
       {/* Input + Upload */}
-      <div className="px-4 py-4 border-t border-[#1E1E1E] space-y-2" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <div className="px-4 py-4 border-t border-line space-y-2 bg-surface">
         {docError && (
           <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded">
             <AlertCircle size={14} />
@@ -256,13 +256,13 @@ export default function AgentWorkspace({
             onChange={(e) => setInput(e.target.value)}
             placeholder={`${placeholder} (Enter para enviar)`}
             disabled={isLoading}
-            className="flex-1 px-3 py-2 bg-[#1E1E1E] border border-[#333] rounded-lg text-sm text-white placeholder-[#666] focus:border-[#555] focus:outline-none transition-colors disabled:opacity-50"
+            className="flex-1 px-3 py-2 bg-surface-hover border border-line rounded-lg text-sm text-ink placeholder-ink-tertiary focus:border-ink-muted focus:outline-none transition-colors disabled:opacity-50"
           />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50 bg-[#1E1E1E] border border-[#333] hover:border-[#555]"
+            className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50 bg-surface-hover border border-line hover:border-ink-muted"
             title="Upload document (Max 50MB)"
           >
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}

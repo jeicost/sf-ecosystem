@@ -65,7 +65,7 @@ export default function EditableField({ label, value, onSave, placeholder, multi
   if (isEditing) {
     return (
       <div className="space-y-3">
-        <label className="block text-xs font-medium text-[#AAA]">{label}</label>
+        <label className="block text-xs font-medium text-ink-secondary">{label}</label>
         {multiline ? (
           <textarea
             ref={inputRef as React.Ref<HTMLTextAreaElement>}
@@ -74,7 +74,7 @@ export default function EditableField({ label, value, onSave, placeholder, multi
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={isLoading}
-            className="w-full bg-[#0F0F0F] border border-[#444] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 disabled:opacity-50 resize-none h-24"
+            className="w-full bg-surface border border-line rounded-lg px-3 py-2 text-ink text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 disabled:opacity-50 resize-none h-24"
           />
         ) : (
           <input
@@ -85,7 +85,7 @@ export default function EditableField({ label, value, onSave, placeholder, multi
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
             disabled={isLoading}
-            className="w-full bg-[#0F0F0F] border border-[#444] rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 disabled:opacity-50"
+            className="w-full bg-surface border border-line rounded-lg px-3 py-2 text-ink text-sm focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 disabled:opacity-50"
           />
         )}
 
@@ -100,7 +100,7 @@ export default function EditableField({ label, value, onSave, placeholder, multi
           <button
             onClick={handleCancel}
             disabled={isLoading}
-            className="px-3 py-1.5 rounded text-xs font-medium bg-[#1A1A1A] text-[#999] hover:bg-[#222] disabled:opacity-50 transition-colors"
+            className="px-3 py-1.5 rounded text-xs font-medium bg-surface text-ink-secondary hover:bg-surface-hover disabled:opacity-50 transition-colors"
           >
             <X size={14} />
           </button>
@@ -128,14 +128,14 @@ export default function EditableField({ label, value, onSave, placeholder, multi
 
   return (
     <div className="group">
-      <label className="block text-xs font-medium text-[#AAA] mb-2">{label}</label>
-      <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-[#0F0F0F] border border-[#222] hover:border-[#333] transition-colors">
-        <p className={clsx('text-sm flex-1 break-words', value ? 'text-white' : 'text-[#555] italic')}>
+      <label className="block text-xs font-medium text-ink-secondary mb-2">{label}</label>
+      <div className="flex items-start justify-between gap-3 p-3 rounded-lg bg-surface border border-line-subtle hover:border-line transition-colors">
+        <p className={clsx('text-sm flex-1 break-words', value ? 'text-ink' : 'text-ink-muted italic')}>
           {value || placeholder || '—'}
         </p>
         <button
           onClick={() => setIsEditing(true)}
-          className="shrink-0 p-1.5 rounded hover:bg-[#1A1A1A] text-[#666] hover:text-[#AAA] transition-colors opacity-0 group-hover:opacity-100"
+          className="shrink-0 p-1.5 rounded hover:bg-surface-hover text-ink-tertiary hover:text-ink-secondary transition-colors opacity-0 group-hover:opacity-100"
           title="Editar"
         >
           <Edit2 size={14} />

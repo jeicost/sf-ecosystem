@@ -1,8 +1,6 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
-import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
+import { getSessionUser, resolveRequestClient, userCanAccessClient } from '@/lib/resolve-client'
 import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { createMessageForClient } from '@/lib/anthropic-client'
@@ -12,7 +10,8 @@ const VISUAL_ACTIONS = ['crear_post_visual', 'crear_carrusel_visual', 'editar_im
 export async function POST(req: NextRequest) {
   const startTime = Date.now()
   try {
-    const { action_type, input_data, department } = await req.json()
+    const body = await req.json()
+    const { action_type, input_data, department, project_id } = body
 
     if (!action_type || !input_data || !department) {
       return NextResponse.json(
@@ -21,45 +20,27 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
+    // Multi-empresa: clientId del body validado por grant; sin él, primer grant.
+    // (Mismo patrón que project-memory — nunca el primer grant a ciegas.)
+    const access = await resolveRequestClient(body.clientId ?? null)
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    // Dev mode bypass for local testing
     let clientId: string
-    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
-      // Use hardcoded test client for dev mode
+    let userId: string
+    if (access.ok) {
+      clientId = access.clientId
+      userId = access.userId
+    } else if (
+      process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' &&
+      access.status === 401
+    ) {
+      // Dev mode bypass for local testing (no session only)
       clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
-    } else if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      userId = 'aa857626-5b89-4df5-8b0d-ed02803e9722'
     } else {
-      const admin = adminClient()
-      // NOTE: project_id in mira_project_access is the CLIENT id (FK to clients — legacy naming)
-      const { data: accessData, error: accessError } = await admin
-        .from('mira_project_access')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .limit(1)
-        .single()
-
-      if (accessError || !accessData) {
-        return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-      }
-      clientId = accessData.project_id
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const admin = adminClient()
-    const userId = user?.id || 'aa857626-5b89-4df5-8b0d-ed02803e9722'
 
     // Insert into quick_actions_results with 'processing' status
     const { data: actionData, error: actionError } = await admin
@@ -186,9 +167,12 @@ export async function POST(req: NextRequest) {
         spec.slides?.[0]?.image_generation_prompt ||
         spec.visual_direction
       if (imagePrompt) {
-        const imageUrl = await generateAndStoreImage(imagePrompt, clientId, actionId)
-        if (imageUrl) {
-          output_data = { ...spec, image_url: imageUrl }
+        const image = await generateAndStoreImage(imagePrompt, clientId, actionId)
+        if (image) {
+          output_data = { ...spec, image_url: image.signedUrl, image_path: image.path }
+        } else {
+          // La acción sigue siendo success (el copy/spec es válido); solo falló la imagen
+          output_data = { ...spec, image_error: true }
         }
       }
     }
@@ -223,16 +207,21 @@ export async function POST(req: NextRequest) {
       ? JSON.stringify(output_data).slice(0, 200)
       : String(output_data).slice(0, 200)
 
-    void admin
+    // OJO: el builder de supabase es lazy — sin then() no se dispara la petición.
+    admin
       .from('project_memory')
       .insert({
         client_id: clientId,
+        project_id: project_id || null,
         title: `Quick Action: ${action_type}`,
         category: 'action',
         summary: outputSummary,
         full_content: output_data,
         tags: [action_type, department],
         source_department: department,
+      })
+      .then(({ error }) => {
+        if (error) console.error('project_memory auto-log failed:', error)
       })
 
     return NextResponse.json({

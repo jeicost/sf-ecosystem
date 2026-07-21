@@ -8,9 +8,12 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Syne } from 'next/font/google'
-import { Loader2, ArrowRight, Plus, ChevronRight } from 'lucide-react'
+import { Loader2, ArrowRight, Plus, ChevronRight, Pin } from 'lucide-react'
 import { getUser, isSuperAdmin } from '@/lib/auth'
 import { useActiveClient } from '@/lib/client-context'
+import { useActiveProject } from '@/lib/project-context'
+import { useLocale } from '@/lib/use-locale'
+import { t } from '@/lib/i18n'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import OnboardingModal from '@/components/onboarding-modal'
@@ -43,7 +46,7 @@ interface Overview {
   }
   latest_reports: Card[]
   latest_documents: Card[]
-  projects: { id: string; name: string; slug: string; description: string | null; created_at: string }[]
+  projects: { id: string; name: string; slug: string; description: string | null; status: string; created_at: string }[]
 }
 
 const DOC_LABELS: Record<string, { icon: string; name: string }> = {
@@ -91,17 +94,17 @@ function Carousel({
   return (
     <div className="mb-10">
       <div className="mb-3 flex items-center justify-between">
-        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
           {title}
         </p>
-        <Link href={viewAllHref} className="flex items-center gap-1 text-[11px] font-medium transition-colors hover:text-white" style={{ color: brand }}>
+        <Link href={viewAllHref} className="flex items-center gap-1 text-[11px] font-medium transition-colors hover:text-ink" style={{ color: brand }}>
           Ver todos <ChevronRight size={12} />
         </Link>
       </div>
 
       {items.length === 0 ? (
-        <div className="rounded-2xl py-8 text-center" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.08)' }}>
-          <p className="mb-3 text-xs text-[#555]">{emptyText}</p>
+        <div className="rounded-2xl border border-dashed border-line-subtle bg-surface py-8 text-center">
+          <p className="mb-3 text-xs text-ink-tertiary">{emptyText}</p>
           <Link href={emptyCta.href} className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium"
             style={{ background: `${brand}20`, color: brand, border: `1px solid ${brand}30` }}>
             <Plus size={12} /> {emptyCta.label}
@@ -113,10 +116,9 @@ function Carousel({
             const meta = toolMeta(c.tool_slug)
             return (
               <Link key={c.id} href={hrefFor(c)}
-                className="group w-56 shrink-0 snap-start rounded-2xl p-4 transition-all duration-200 hover:-translate-y-0.5"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+                className="group w-56 shrink-0 snap-start rounded-2xl border border-line bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5"
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${brand}45` }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)' }}>
                 <div className="mb-3 flex items-start justify-between">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl text-lg"
                     style={{ background: `${brand}14`, border: `1px solid ${brand}22` }}>
@@ -129,12 +131,12 @@ function Carousel({
                     </span>
                   )}
                 </div>
-                <p className="mb-0.5 truncate text-[13px] font-semibold text-white">{meta.name}</p>
-                <p className="truncate text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                <p className="mb-0.5 truncate text-[13px] font-semibold text-ink">{meta.name}</p>
+                <p className="truncate text-[11px] text-ink-muted">
                   {c.topic || fmtDate(c.created_at)}
                 </p>
-                <div className="mt-3 flex items-center justify-between border-t pt-2" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
-                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.22)' }}>{fmtDate(c.created_at)}</span>
+                <div className="mt-3 flex items-center justify-between border-t border-line-subtle pt-2">
+                  <span className="text-[10px] text-ink-muted">{fmtDate(c.created_at)}</span>
                   <ArrowRight size={11} className="transition-transform group-hover:translate-x-1" style={{ color: brand }} />
                 </div>
               </Link>
@@ -150,13 +152,12 @@ function StatCard({ value, label, hint, href, brand, alert }: {
   value: string; label: string; hint?: string; href?: string; brand: string; alert?: boolean
 }) {
   const body = (
-    <div className="rounded-2xl p-5 transition-all duration-200"
+    <div className="rounded-2xl border bg-surface p-5 transition-all duration-200"
       style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: alert ? '1px solid rgba(245,158,11,0.35)' : '1px solid rgba(255,255,255,0.08)',
+        borderColor: alert ? 'rgba(245,158,11,0.35)' : 'var(--border)',
       }}>
-      <p className="text-3xl font-extrabold tracking-tight" style={{ color: alert ? '#fbbf24' : '#fff' }}>{value}</p>
-      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em]" style={{ color: 'rgba(255,255,255,0.35)' }}>{label}</p>
+      <p className="text-3xl font-extrabold tracking-tight" style={{ color: alert ? '#fbbf24' : 'var(--text-primary)' }}>{value}</p>
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-tertiary">{label}</p>
       {hint && <p className="mt-1 text-[10px]" style={{ color: alert ? 'rgba(251,191,36,0.7)' : brand }}>{hint}</p>}
     </div>
   )
@@ -166,6 +167,8 @@ function StatCard({ value, label, hint, href, brand, alert }: {
 export default function HomePage() {
   const router = useRouter()
   const { activeClient } = useActiveClient()
+  const { activeProject, setActiveProject } = useActiveProject()
+  const { locale } = useLocale()
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)
   const superAdmin = isSuperAdmin(getUser())
@@ -191,7 +194,7 @@ export default function HomePage() {
   if (!data) {
     return (
       <div className="flex items-center justify-center py-32">
-        <Loader2 size={18} className="animate-spin text-[#444]" />
+        <Loader2 size={18} className="animate-spin text-ink-muted" />
       </div>
     )
   }
@@ -205,10 +208,9 @@ export default function HomePage() {
       <OnboardingModal userName={data.client.name} />
 
       {/* Hero con la marca del cliente */}
-      <div className="relative mb-10 overflow-hidden rounded-3xl p-8"
+      <div className="relative mb-10 overflow-hidden rounded-3xl border border-line p-8"
         style={{
-          background: `linear-gradient(135deg, ${brand}10 0%, rgba(255,255,255,0.02) 55%)`,
-          border: '1px solid rgba(255,255,255,0.08)',
+          background: `linear-gradient(135deg, ${brand}10 0%, var(--bg-surface) 55%)`,
         }}>
         <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full opacity-25 blur-3xl" style={{ background: brand }} />
         <div className="relative flex flex-wrap items-end justify-between gap-6">
@@ -217,10 +219,10 @@ export default function HomePage() {
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: brand }} />
               Tu agencia de IA · {monthLabel}
             </p>
-            <h1 className={`${syne.className} text-4xl font-extrabold tracking-tight text-white`}>
+            <h1 className={`${syne.className} text-4xl font-extrabold tracking-tight text-ink`}>
               {data.client.name}
             </h1>
-            <p className="mt-2 max-w-md text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="mt-2 max-w-md text-sm text-ink-tertiary">
               Todo lo que tu equipo de IA ha producido, en un vistazo.
             </p>
           </div>
@@ -266,20 +268,20 @@ export default function HomePage() {
       {/* Proyectos */}
       <div className="mb-10">
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
             Proyectos
           </p>
           <Link href="/projects/new"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium transition-all hover:bg-white/5"
+            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium transition-all hover:bg-surface-hover"
             style={{ color: brand }}>
             <Plus size={12} /> Nuevo proyecto
           </Link>
         </div>
 
         {data.projects.length === 0 ? (
-          <div className="rounded-2xl py-8 text-center" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed rgba(255,255,255,0.08)' }}>
-            <p className="mb-1 text-xs text-[#555]">Organiza el trabajo en proyectos: campañas, lanzamientos, iniciativas.</p>
-            <p className="mb-3 text-[11px] text-[#3a3a3a]">Cada proyecto agrupa su memoria, sus entregables y su carpeta de Drive.</p>
+          <div className="rounded-2xl border border-dashed border-line-subtle bg-surface py-8 text-center">
+            <p className="mb-1 text-xs text-ink-tertiary">Organiza el trabajo en proyectos: campañas, lanzamientos, iniciativas.</p>
+            <p className="mb-3 text-[11px] text-ink-muted">Cada proyecto agrupa su memoria, sus entregables y su carpeta de Drive.</p>
             <Link href="/projects/new" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium"
               style={{ background: `${brand}20`, color: brand, border: `1px solid ${brand}30` }}>
               <Plus size={12} /> Crear el primero
@@ -287,51 +289,78 @@ export default function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {data.projects.map((p) => (
-              <Link key={p.id} href={`/projects/${p.slug}`}
-                className="group rounded-2xl p-4 transition-all hover:-translate-y-0.5"
-                style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${brand}45` }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
-                <div className="mb-2 flex items-start justify-between">
-                  <p className="text-sm font-semibold text-white">{p.name}</p>
-                  <span className="rounded-full px-2 py-0.5 text-[9px] font-medium"
-                    style={{ background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}>
-                    Activo
-                  </span>
+            {data.projects.map((p) => {
+              const isActive = activeProject?.id === p.id
+              const togglePin = () =>
+                setActiveProject(isActive ? null : { id: p.id, name: p.name, slug: p.slug, status: p.status })
+              return (
+                // El click en la card fija/desfija el proyecto activo; el link
+                // al detalle va aparte (abajo a la derecha) para no mezclar gestos.
+                <div key={p.id}
+                  role="button" tabIndex={0}
+                  onClick={togglePin}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePin() } }}
+                  title={isActive ? t('projects.unset-active', locale) : t('projects.set-active', locale)}
+                  className="group cursor-pointer rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
+                  style={{
+                    background: isActive ? `${brand}0d` : 'var(--bg-surface)',
+                    borderColor: isActive ? `${brand}66` : 'var(--border)',
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.borderColor = `${brand}45` }}
+                  onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)' }}>
+                  <div className="mb-2 flex items-start justify-between gap-2">
+                    <p className="text-sm font-semibold text-ink">{p.name}</p>
+                    {isActive ? (
+                      <span className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium"
+                        style={{ background: `${brand}22`, color: brand }}>
+                        <Pin size={9} /> {t('projects.active-badge', locale)}
+                      </span>
+                    ) : (
+                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-medium"
+                        style={p.status === 'paused'
+                          ? { background: 'rgba(245,158,11,0.12)', color: '#fbbf24' }
+                          : { background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}>
+                        {t(`projects.status.${p.status}`, locale)}
+                      </span>
+                    )}
+                  </div>
+                  {p.description && (
+                    <p className="mb-3 line-clamp-2 text-[11px] text-ink-muted">{p.description}</p>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] text-ink-muted">{fmtDate(p.created_at)}</span>
+                    <Link href={`/projects/${p.slug}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="flex items-center gap-1 text-[10px] font-medium transition-opacity hover:opacity-80"
+                      style={{ color: brand }}>
+                      {t('projects.view-detail', locale)} <ArrowRight size={11} />
+                    </Link>
+                  </div>
                 </div>
-                {p.description && (
-                  <p className="mb-3 line-clamp-2 text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{p.description}</p>
-                )}
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>{fmtDate(p.created_at)}</span>
-                  <ArrowRight size={11} className="opacity-0 transition-opacity group-hover:opacity-100" style={{ color: brand }} />
-                </div>
-              </Link>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
 
       {/* Equipos */}
       <div>
-        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
           Tus equipos
         </p>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {Object.values(DEPARTMENT_METADATA).map((dept) => (
             <Link key={dept.slug} href={dept.href}
-              className="group flex items-center gap-3 rounded-2xl p-4 transition-all duration-200"
-              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
+              className="group flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 transition-all duration-200"
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${dept.color}40` }}
-              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)' }}>
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)' }}>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
                 style={{ background: `${dept.color}15`, border: `1px solid ${dept.color}25` }}>
                 {dept.icon}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold text-white">{dept.name}</p>
-                <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.28)' }}>
+                <p className="truncate text-[13px] font-semibold text-ink">{dept.name}</p>
+                <p className="text-[10px] text-ink-muted">
                   {dept.count > 0 ? `${dept.count} agentes` : 'Herramientas'}
                 </p>
               </div>

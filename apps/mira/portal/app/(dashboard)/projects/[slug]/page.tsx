@@ -10,6 +10,7 @@ import { Syne } from 'next/font/google'
 import { ArrowLeft, Loader2, Pin } from 'lucide-react'
 import { useProjectManagement } from '@/lib/hooks/useProjectManagement'
 import { useActiveClient } from '@/lib/client-context'
+import { useActiveProject } from '@/lib/project-context'
 
 const syne = Syne({ subsets: ['latin'], weight: ['700', '800'] })
 const FALLBACK_BRAND = '#8B5CF6'
@@ -32,6 +33,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   const [error, setError] = useState<string | null>(null)
   const { archiveProject } = useProjectManagement()
   const { activeClient } = useActiveClient()
+  const { setActiveProject } = useActiveProject()
 
   const brand = activeClient?.primaryColor || FALLBACK_BRAND
 
@@ -74,6 +76,15 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
     }
     fetchProject()
   }, [params, supabase])
+
+  // Al entrar al detalle, este proyecto pasa a ser el activo: quick actions y
+  // chat escribirán en él. Solo si pertenece al cliente activo y no está archivado.
+  useEffect(() => {
+    if (!project || project.status === 'archived') return
+    if (activeClient?.id && project.client_id && project.client_id !== activeClient.id) return
+    setActiveProject({ id: project.id, name: project.name, slug: project.slug, status: project.status })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [project?.id, project?.status, activeClient?.id])
 
   const handleArchive = async () => {
     if (!project || !confirm('¿Archivar este proyecto? Podrás restaurarlo después.')) return

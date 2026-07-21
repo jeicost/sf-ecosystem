@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
-import { X, ExternalLink, ArrowRight } from 'lucide-react'
+import { X, ExternalLink, ArrowRight, Clock } from 'lucide-react'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface ToolConnectionModalProps {
   tool: {
@@ -10,6 +12,7 @@ interface ToolConnectionModalProps {
     setupUrl: string
     description: string
     authType: 'api-key' | 'oauth' | 'native'
+    status?: 'connected' | 'disconnected' | 'locked' | 'coming_soon'
   }
   isOpen: boolean
   isConnecting: boolean
@@ -28,6 +31,7 @@ export default function ToolConnectionModal({
   onClose,
   onConnect,
 }: ToolConnectionModalProps) {
+  const { locale } = useLocaleContext()
   const [accountEmail, setAccountEmail] = useState('')
   const [accountHandle, setAccountHandle] = useState('')
   const [authToken, setAuthToken] = useState('')
@@ -38,17 +42,26 @@ export default function ToolConnectionModal({
 
   if (!isOpen) return null
 
+  // t() con fallback: si la clave no existe, usa el texto del catálogo de tools
+  const tr = (key: string, fallback: string) => {
+    const value = t(key, locale)
+    return value === key ? fallback : value
+  }
+
+  const toolName = tr(`integrations.tool.${tool.id}.name`, tool.name)
+  const isComingSoon = tool.status === 'coming_soon'
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError(null)
 
     if (tool.authType === 'api-key') {
       if (!authToken.trim()) {
-        setError('API Key is required')
+        setError(t('integrations.modal.key-required', locale))
         return
       }
       if (validationStatus !== 'valid') {
-        setError('Please wait for validation to complete or provide a valid API key')
+        setError(t('integrations.modal.wait-validation', locale))
         return
       }
     }
@@ -65,18 +78,22 @@ export default function ToolConnectionModal({
       setValidationStatus(null)
       setAccountInfo(null)
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to connect tool'
+      const message =
+        err instanceof Error ? err.message : t('integrations.modal.connect-error', locale)
       setError(message)
     }
   }
 
   const handleOAuthStart = async () => {
+    // Coming soon: no llamamos al endpoint OAuth (responde 503)
+    if (isComingSoon) return
     setError(null)
     try {
       const redirectUrl = `/api/integrations/oauth/${tool.id}/start?clientId=${new URLSearchParams(window.location.search).get('clientId') || ''}`
       window.location.href = redirectUrl
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to start OAuth flow'
+      const message =
+        err instanceof Error ? err.message : t('integrations.modal.oauth-error', locale)
       setError(message)
     }
   }
@@ -103,12 +120,12 @@ export default function ToolConnectionModal({
         setError(null)
       } else if (!result.valid) {
         setAccountInfo(null)
-        setError(result.error || 'Invalid API key')
+        setError(result.error || t('integrations.modal.invalid-key', locale))
       }
     } catch (err) {
       setValidationStatus('invalid')
       setAccountInfo(null)
-      setError('Validation error')
+      setError(t('integrations.modal.validation-error', locale))
     } finally {
       setValidating(false)
     }
@@ -138,19 +155,21 @@ export default function ToolConnectionModal({
 
       {/* Modal */}
       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md z-50">
-        <div className="bg-[#0D0D0D] rounded-lg border border-[#1E1E1E] shadow-2xl">
+        <div className="bg-card rounded-lg border border-line shadow-2xl">
           {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-[#1E1E1E]">
+          <div className="flex items-center justify-between p-6 border-b border-line">
             <div className="flex items-center gap-3">
               <span className="text-3xl">{tool.emoji}</span>
               <div>
-                <h2 className="font-semibold text-white">{tool.name}</h2>
-                <p className="text-xs text-[#666]">Configure connection</p>
+                <h2 className="font-semibold text-ink">{toolName}</h2>
+                <p className="text-xs text-ink-tertiary">
+                  {t('integrations.modal.configure', locale)}
+                </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-1 text-[#666] hover:text-white transition-colors"
+              className="p-1 text-ink-tertiary hover:text-ink transition-colors"
             >
               <X size={20} />
             </button>
@@ -158,15 +177,39 @@ export default function ToolConnectionModal({
 
           {/* Content */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
-            {tool.authType === 'api-key' && (
+            {isComingSoon && (
+              <div className="p-3 rounded bg-[#8B5CF6]10 border border-[#8B5CF6]30 flex items-center gap-2">
+                <Clock size={16} className="text-[#8B5CF6] flex-shrink-0" />
+                <p className="text-sm text-ink">
+                  {t('integrations.coming-soon', locale)} — {t('integrations.coming-soon-desc', locale)}
+                </p>
+              </div>
+            )}
+
+            {!isComingSoon && tool.authType === 'api-key' && (
               <>
                 {/* Auth Token Input */}
                 <div>
-                  <label htmlFor="token" className="block text-xs font-semibold text-[#666] mb-2 flex items-center justify-between">
-                    <span>API Key / Token <span className="text-[#FF6B6B]">*</span></span>
-                    {validating && <span className="text-xs text-[#8B5CF6]">Validating...</span>}
-                    {validationStatus === 'valid' && <span className="text-xs text-[#10B981]">✓ Valid</span>}
-                    {validationStatus === 'invalid' && <span className="text-xs text-[#FF6B6B]">✗ Invalid</span>}
+                  <label htmlFor="token" className="block text-xs font-semibold text-ink-tertiary mb-2 flex items-center justify-between">
+                    <span>
+                      {t('integrations.modal.api-key-label', locale)}{' '}
+                      <span className="text-[#FF6B6B]">*</span>
+                    </span>
+                    {validating && (
+                      <span className="text-xs text-[#8B5CF6]">
+                        {t('integrations.modal.validating', locale)}
+                      </span>
+                    )}
+                    {validationStatus === 'valid' && (
+                      <span className="text-xs text-[#10B981]">
+                        {t('integrations.modal.valid', locale)}
+                      </span>
+                    )}
+                    {validationStatus === 'invalid' && (
+                      <span className="text-xs text-[#FF6B6B]">
+                        {t('integrations.modal.invalid', locale)}
+                      </span>
+                    )}
                   </label>
                   <input
                     id="token"
@@ -174,32 +217,40 @@ export default function ToolConnectionModal({
                     placeholder="sk-xxxxxxxxx or your-api-key"
                     value={authToken}
                     onChange={handleTokenChange}
-                    className={`w-full px-3 py-2 rounded bg-[#1E1E1E] border text-sm text-white placeholder-[#666] focus:outline-none transition-colors ${
+                    className={`w-full px-3 py-2 rounded bg-page border text-sm text-ink placeholder-ink-muted focus:outline-none transition-colors ${
                       validationStatus === 'valid'
                         ? 'border-[#10B981] focus:border-[#10B981]'
                         : validationStatus === 'invalid'
                           ? 'border-[#FF6B6B] focus:border-[#FF6B6B]'
-                          : 'border-[#333] focus:border-[#EC4899]'
+                          : 'border-line focus:border-[#EC4899]'
                     }`}
                     autoComplete="off"
                   />
-                  <p className="text-xs text-[#666] mt-1">
-                    Your credentials are encrypted and never shared
+                  <p className="text-xs text-ink-tertiary mt-1">
+                    {t('integrations.modal.privacy', locale)}
                   </p>
 
                   {/* Account Info Display */}
                   {accountInfo && (
                     <div className="mt-3 p-2 rounded bg-[#10B981]10 border border-[#10B981]30 text-xs text-[#10B981]">
-                      {accountInfo.email && <div>Account: {accountInfo.email}</div>}
-                      {accountInfo.name && <div>Name: {accountInfo.name}</div>}
+                      {accountInfo.email && (
+                        <div>
+                          {t('integrations.modal.account', locale)}: {accountInfo.email}
+                        </div>
+                      )}
+                      {accountInfo.name && (
+                        <div>
+                          {t('integrations.modal.name', locale)}: {accountInfo.name}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
 
                 {/* Optional Email Input */}
                 <div>
-                  <label htmlFor="email" className="block text-xs font-semibold text-[#666] mb-2">
-                    Email / Account (Optional)
+                  <label htmlFor="email" className="block text-xs font-semibold text-ink-tertiary mb-2">
+                    {t('integrations.modal.email-label', locale)}
                   </label>
                   <input
                     id="email"
@@ -207,30 +258,30 @@ export default function ToolConnectionModal({
                     placeholder="your@email.com"
                     value={accountEmail}
                     onChange={(e) => setAccountEmail(e.target.value)}
-                    className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+                    className="w-full px-3 py-2 rounded bg-page border border-line text-sm text-ink placeholder-ink-muted focus:outline-none focus:border-[#EC4899]"
                   />
                 </div>
               </>
             )}
 
-            {tool.authType === 'oauth' && (
+            {!isComingSoon && tool.authType === 'oauth' && (
               <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30">
-                <p className="text-sm text-white mb-3">
-                  Click below to connect via {tool.name}. You'll be redirected to authorize MIRA.
+                <p className="text-sm text-ink mb-3">
+                  {t('integrations.modal.oauth-info', locale).replace('{name}', toolName)}
                 </p>
-                <p className="text-xs text-[#999]">
-                  This is a secure OAuth connection. You can disconnect anytime from this page.
+                <p className="text-xs text-ink-secondary">
+                  {t('integrations.modal.oauth-secure', locale)}
                 </p>
               </div>
             )}
 
             {tool.authType === 'native' && (
               <div className="p-3 rounded bg-[#10B981]10 border border-[#10B981]30">
-                <p className="text-sm text-white">
-                  ✓ {tool.name} is natively integrated and ready to use.
+                <p className="text-sm text-ink">
+                  {t('integrations.modal.native-ready', locale).replace('{name}', toolName)}
                 </p>
-                <p className="text-xs text-[#999] mt-2">
-                  No additional configuration needed. Your agents can access {tool.name} immediately.
+                <p className="text-xs text-ink-secondary mt-2">
+                  {t('integrations.modal.native-desc', locale).replace('{name}', toolName)}
                 </p>
               </div>
             )}
@@ -244,16 +295,18 @@ export default function ToolConnectionModal({
 
             {/* Info Box */}
             {tool.authType !== 'native' && (
-              <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30 text-xs text-[#999]">
-                <p className="font-semibold text-[#EC4899] mb-1">Don't have an account yet?</p>
-                <p>{tool.description}</p>
+              <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30 text-xs text-ink-secondary">
+                <p className="font-semibold text-[#EC4899] mb-1">
+                  {t('integrations.modal.no-account', locale)}
+                </p>
+                <p>{tr(`integrations.tool.${tool.id}.desc`, tool.description)}</p>
                 <a
                   href={tool.setupUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 mt-2 text-[#EC4899] hover:text-[#FF1493]"
                 >
-                  Create account
+                  {t('integrations.modal.create-account', locale)}
                   <ExternalLink size={12} />
                 </a>
               </div>
@@ -265,35 +318,53 @@ export default function ToolConnectionModal({
                 type="button"
                 onClick={onClose}
                 disabled={isConnecting}
-                className="flex-1 px-4 py-2 rounded bg-[#1E1E1E] text-white text-sm font-medium hover:bg-[#333] disabled:opacity-50 transition-all"
+                className="flex-1 px-4 py-2 rounded bg-card border border-line text-ink text-sm font-medium hover:border-line-subtle disabled:opacity-50 transition-all"
               >
-                {tool.authType === 'native' ? 'Close' : 'Cancel'}
+                {tool.authType === 'native' || isComingSoon
+                  ? t('common.close', locale)
+                  : t('common.cancel', locale)}
               </button>
               {tool.authType === 'oauth' && (
                 <button
                   type="button"
                   onClick={handleOAuthStart}
-                  disabled={isConnecting}
-                  className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 flex items-center justify-center gap-2 transition-all"
+                  disabled={isConnecting || isComingSoon}
+                  className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
                 >
-                  Authorize with {tool.name.split('(')[0].trim()}
-                  <ArrowRight size={14} />
+                  {isComingSoon ? (
+                    <>
+                      <Clock size={14} />
+                      {t('integrations.coming-soon', locale)}
+                    </>
+                  ) : (
+                    <>
+                      {t('integrations.modal.authorize', locale).replace(
+                        '{name}',
+                        toolName.split('(')[0].trim()
+                      )}
+                      <ArrowRight size={14} />
+                    </>
+                  )}
                 </button>
               )}
-              {tool.authType === 'api-key' && (
+              {!isComingSoon && tool.authType === 'api-key' && (
                 <button
                   type="submit"
                   disabled={isConnecting || validating || validationStatus !== 'valid'}
                   className="flex-1 px-4 py-2 rounded bg-[#EC4899] text-white text-sm font-medium hover:bg-[#E00B7F] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 transition-all"
-                  title={validationStatus !== 'valid' ? 'Please validate the API key first' : ''}
+                  title={
+                    validationStatus !== 'valid'
+                      ? t('integrations.modal.wait-validation', locale)
+                      : ''
+                  }
                 >
                   {isConnecting ? (
                     <>
                       <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                      Connecting...
+                      {t('integrations.connecting', locale)}
                     </>
                   ) : (
-                    'Connect Account'
+                    t('integrations.connect-account', locale)
                   )}
                 </button>
               )}

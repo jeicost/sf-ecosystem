@@ -8,6 +8,9 @@ import { useLocaleContext } from '@/app/locale-provider'
 
 export function AdminQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  // Acción clicada, guardada en el momento del click (activeActionId es el UUID
+  // del servidor y nunca coincide con los ids locales de `actions`).
+  const [activeAction, setActiveAction] = useState<{ title: string; outputType: string } | null>(null)
   const { locale } = useLocaleContext()
 
   const actions = [
@@ -16,6 +19,7 @@ export function AdminQuickActions() {
       title: t('actions.admin.responder_ticket', locale),
       description: t('actions.admin.responder_ticket.desc', locale),
       actionType: 'responder_ticket',
+      outputType: 'text',
       form: (
         <div className="space-y-3">
           <textarea
@@ -41,6 +45,7 @@ export function AdminQuickActions() {
       title: t('actions.admin.crear_faq', locale),
       description: t('actions.admin.crear_faq.desc', locale),
       actionType: 'crear_faq',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <input
@@ -65,6 +70,7 @@ export function AdminQuickActions() {
       title: t('actions.admin.crear_tutorial', locale),
       description: t('actions.admin.crear_tutorial.desc', locale),
       actionType: 'crear_tutorial',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <input
@@ -101,7 +107,10 @@ export function AdminQuickActions() {
               actionType={action.actionType}
               department="admin"
               inputForm={action.form}
-              onActionComplete={(actionId) => setActiveActionId(actionId)}
+              onActionComplete={(actionId) => {
+                setActiveAction({ title: action.title, outputType: action.outputType })
+                setActiveActionId(actionId)
+              }}
             />
           ))}
         </div>
@@ -110,7 +119,8 @@ export function AdminQuickActions() {
       {activeActionId && (
         <QuickActionResult
           actionId={activeActionId}
-          resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
+          resourceName={activeAction?.title || 'Resource'}
+          outputType={activeAction?.outputType}
           department="admin"
         />
       )}

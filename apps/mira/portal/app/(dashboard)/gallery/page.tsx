@@ -46,10 +46,21 @@ export default function GalleryPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {generations.map((gen) => {
           const info = TOOLS_INFO[gen.tool_slug] || { icon: '⚡', color: '#9CA3AF', name: gen.tool_slug }
+          // Imagen del resultado: primero el asset persistido en Storage
+          // (image_path via /api/assets), con fallback a la URL efímera.
+          const imagePath = gen.result_data?.image_path as string | undefined
+          const imageUrl = gen.result_data?.image_url as string | undefined
+          const imageSrc = imagePath ? '/api/assets?path=' + encodeURIComponent(imagePath) : imageUrl
           return (
             <Link key={gen.id} href={`/toolkit/report/${gen.id}`}>
               <div className="card p-6 hover:bg-white/10 cursor-pointer h-full" style={{ borderLeft: `4px solid ${info.color}` }}>
-                <div className="text-4xl mb-3">{info.icon}</div>
+                {imageSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={imageSrc} alt={info.name} loading="lazy"
+                    className="mb-3 h-36 w-full rounded-lg object-cover" />
+                ) : (
+                  <div className="text-4xl mb-3">{info.icon}</div>
+                )}
                 <h3 className="font-semibold text-white mb-2">{info.name}</h3>
                 <p className="text-xs text-gray-400">{new Date(gen.created_at).toLocaleDateString()}</p>
                 <div className="mt-4 flex gap-2"><Eye size={16} className="text-blue-400" /> <span className="text-xs text-blue-400">View</span></div>

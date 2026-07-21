@@ -1,112 +1,118 @@
 # Quick Actions — Current State (MIRA Production)
 
+> Actualizado 2026-07-21 leyendo el código. Sustituye la versión anterior (18 acciones / 6 departamentos), que estaba obsoleta.
+
 ## Overview
 
-**Quick Actions** is MIRA's synchronous content generation system, deployed in production with 6 departments × 3 actions each (18 total). Each action triggers a single Claude Opus 4.1 call and writes results to Supabase for async polling by the UI.
+Quick Actions es el sistema síncrono de generación de contenido de MIRA: **5 componentes por departamento** en `components/quick-actions/` y **23 botones** en total. Cada botón dispara una única llamada a Claude (`claude-opus-4-8`) vía `POST /api/quick-actions`; el resultado se persiste en `quick_actions_results` y la UI hace polling con `GET /api/quick-actions?action_id=...`.
 
-### Request Flow
+## Componentes y botones (23)
+
+Cada departamento tiene su componente, montado en su página del dashboard:
+
+| Componente | Página | Botones |
+|---|---|---|
+| `MarketingQuickActions.tsx` | `app/(dashboard)/roster/page.tsx` | 8 |
+| `StrategyQuickActions.tsx` | `app/(dashboard)/strategy/page.tsx` | 5 |
+| `ComercialQuickActions.tsx` | `app/(dashboard)/comercial/page.tsx` | 4 |
+| `FinanzasQuickActions.tsx` | `app/(dashboard)/finanzas/page.tsx` | 3 |
+| `AdminQuickActions.tsx` | `app/(dashboard)/operations/page.tsx` | 3 |
+
+### Marketing (8)
+- `crear_post`
+- `crear_newsletter`
+- `crear_video_brief`
+- `crear_carousel`
+- `crear_campaña_ads`
+- `crear_post_visual` *(visual)*
+- `crear_carrusel_visual` *(visual)*
+- `editar_imagen_visual` *(visual)*
+
+### Strategy (5)
+- `generar_reporte`
+- `analizar_competencia`
+- `brainstorm_ideas`
+- `tendencias_analisis`
+- `plan_innovacion`
+
+### Comercial (4)
+- `crear_campaña`
+- `generar_icp`
+- `crear_propuesta`
+- `calificar_reply`
+
+### Finanzas (3)
+- `proyeccion_financiera`
+- `analisis_cash_flow`
+- `optimizacion_costos`
+
+### Admin / Operations (3)
+- `responder_ticket`
+- `crear_faq`
+- `crear_tutorial`
+
+Los títulos vienen de i18n (`t('actions.<dept>.<id>', locale)`). Los 5 componentes comparten `components/QuickActionButton.tsx` (formulario + submit) y `components/QuickActionResult.tsx` (polling + render).
+
+> Nota: existen prompts sin botón (`proyectar_revenue`, `auditar_innovacion` en `lib/generation/quick-action-prompts.ts:311,403`) y un componente muerto `components/DepartmentQuickActions.tsx`. Ver `docs/DEBT.md` (raíz del monorepo), sección (g).
+
+## Flujo de request (síncrono)
 
 ```
-QuickActionButton.tsx (user clicks action)
+QuickActionButton.tsx (click + formulario)
   ↓
-POST /api/quick-actions { action_type, clientId, ...formData }
+POST /api/quick-actions { action_type, input_data, department, clientId?, project_id? }
   ↓
 app/api/quick-actions/route.ts
-  ├─ INSERT quick_actions_results { action_type, status:'processing', ... }
-  ├─ Resolve prompt: getQuickActionPrompt(action_type, { clientId, inputData })
-  ├─ Call Claude Opus 4.1 synchronously
-  ├─ Extract JSON response
-  ├─ UPDATE quick_actions_results { status:'completed', result_data:json, ... }
-  └─ FIRE-AND-FORGET write to project_memory (same client_id)
+  ├─ resolveRequestClient(body.clientId) — multi-empresa: valida grant; sin clientId, primer grant
+  │    (bypass dev solo con NEXT_PUBLIC_DEV_MODE_BYPASS=true y status 401)
+  ├─ INSERT quick_actions_results { status:'processing', output_data:{} }
+  ├─ getQuickActionPrompt(action_type, { clientId, inputData })
+  ├─ createMessageForClient(clientId, 'quick-actions', { model:'claude-opus-4-8', max_tokens:4000 })
+  ├─ Extracción de JSON (code block ```json → fallback brace-matching)
+  ├─ [acciones visuales] generateAndStoreImage(prompt, clientId, actionId) → gpt-image-1
+  ├─ UPDATE quick_actions_results { status:'success', output_data, processing_time_ms }
+  └─ Fire-and-forget INSERT en project_memory
   ↓
-GET /api/quick-actions?action_id={id} (polling every 2s from UI)
-  ↓
-QuickActionResult.tsx displays status → result when ready
+Respuesta síncrona { success, action_id, output_data, processing_time_ms }
+  +
+GET /api/quick-actions?action_id={id}  (polling desde QuickActionResult.tsx)
 ```
 
-## Tables
+El POST es **bloqueante**: hace todo el trabajo (Claude + imagen) dentro de la request y devuelve el resultado; el GET de polling sirve para re-hidratar estado y como fallback de UI.
 
-### `quick_actions_results`
-- `id` (uuid, PK)
-- `client_id` (uuid, FK → clients)
-- `action_type` (text, **NO CHECK constraint** — new types don't need migration)
-- `status` (text: 'processing' | 'completed' | 'error')
-- `input_data` (jsonb)
-- `result_data` (jsonb)
-- `error_message` (text, nullable)
-- `created_at`, `updated_at` (timestamps)
-- RLS: users can only read their own actions (by `client_id`)
+## Tabla `quick_actions_results`
 
-### `project_memory`
-- Async sink for all generated results (Quick Actions, Toolkit reports, agent conversations)
-- Written via fire-and-forget `PUT /api/memory` after result is saved
-- Consumed by agents via `fetchBrandBrain()` and formatted into prompts
+Campos usados por la ruta (`app/api/quick-actions/route.ts`):
 
-## Current Action Types (by Department)
+- `id` (uuid, PK) · `client_id` · `user_id` · `department` · `action_type`
+- `status`: `'processing' | 'success' | 'failed'`
+- `input_data` (jsonb) · `output_data` (jsonb) — **no** `result_data`
+- `error_message` · `processing_time_ms`
 
-### Comercial (3 actions)
-- `crear_estrategia_descubrimiento` → Discovery strategy JSON
-- `generar_llamada_en_frio` → Cold call script
-- `crear_propuesta_customizada` → Proposal outline
+Estados de fallo escritos por la ruta: `Unknown action type`, `Output truncated at max_tokens`, `Empty result after JSON parse`.
 
-### Marketing (3 actions)
-- `crear_estrategia_social` → Social media plan JSON
-- `generar_post_twitter` → Tweet + hashtags
-- `crear_carousel` → Carousel JSON with text per slide (image URLs **expected to exist**, no generation)
+El GET valida ownership: `getSessionUser()` + `userCanAccessClient(user, data.client_id)` antes de devolver la fila.
 
-### Estrategia (3 actions)
-- `crear_roadmap_estrategico` → Strategic roadmap JSON
-- `analizar_competencia_rápida` → Competitive analysis
-- `generar_core_values` → Core values framework
+## Acciones visuales (Marketing)
 
-### Operaciones (3 actions)
-- `crear_checklist_onboarding` → Onboarding checklist
-- `optimizar_workflows` → Workflow optimization JSON
-- `crear_plan_escalabilidad` → Scalability plan
+`VISUAL_ACTIONS = ['crear_post_visual', 'crear_carrusel_visual', 'editar_imagen_visual']` (`route.ts:8`).
 
-### Finanzas (3 actions)
-- `proyectar_ingresos` → Revenue projection JSON
-- `optimizar_costos` → Cost optimization plan
-- `crear_pitch_deck` → Pitch deck structure
+1. Claude devuelve el spec JSON (copy + `image_generation_prompt` / `refinement_prompt` / `slides[0].image_generation_prompt` / `visual_direction`).
+2. `lib/generation/openai-image.ts` genera la imagen con **`gpt-image-1`** y la guarda en el bucket `generated-assets` bajo `clients/{clientId}/...`.
+3. `output_data` recibe `image_url` (signed URL efímera) e **`image_path`** (estable). El frontend guarda `image_path` y lo sirve vía **`GET /api/assets?path=...`**, que valida que el path pertenece al cliente y redirige 302 a una signed URL fresca.
+4. Si la imagen falla, la acción sigue siendo `success` con `image_error: true` (el copy/spec es válido).
 
-### Innovación (1 action)
-- `brainstorm_nuevos_productos` → Product ideas JSON
+## Auto-log a `project_memory`
 
-## Gaps (Not Blocking Production, Base for Track 4)
+Tras cada éxito, insert fire-and-forget (no bloquea la respuesta):
 
-1. **Synchronous only** — All generations block the Vercel serverless function. Timeout risk for slow generations.
-   - **Fix**: Track 4 adds async queue + webhook polling for new visual generation types.
+- `client_id`, `project_id` (**del proyecto activo**: el botón envía `getStoredProjectId()`, `QuickActionButton.tsx:51`; `null` si no hay)
+- `title: "Quick Action: {action_type}"`, `category: 'action'`
+- `summary` (output serializado, 200 chars), `full_content` (output completo)
+- `tags: [action_type, department]`, `source_department`
 
-2. **No retry logic** — If Claude fails mid-request, result row stays in `status:'processing'` forever.
-   - **Fix**: Track 4 adds `max_retries` + exponential backoff.
+## Modelo y coste
 
-3. **No image generation** — `crear_carousel` returns text-only JSON; image URLs in the response assume they already exist somewhere (no upstream generation).
-   - **Fix**: Track 4 integration with Visual Production Agent provides actual image generation.
-
-4. **No Storage for images** — No Supabase Storage bucket for generated assets yet.
-   - **Fix**: Track 4 creates `generated-assets` bucket.
-
-5. **No visual feedback/refinement** — Results cannot be refined or edited; new request = new generation.
-   - **Fix**: Track 4 adds `visual_feedback` table + refinement conversational flow.
-
-## Prompt Resolution
-
-`lib/generation/quick-action-prompts.ts` contains a single `if (actionType === ...)` chain (no registry pattern). Each branch returns a static prompt string or function. **No client-specific personalization yet** — all prompts are generic, though agents do inject Brand Brain context.
-
-**Decision point**: Should Quick Action prompts also reference Brand Brain before Claude? Currently only agents do (via `fetchBrandBrain()` in agent route). Recommend yes — add to Track 4 spec.
-
-## Deployment Checklist
-
-- ✅ 18 actions wired to UI
-- ✅ RLS on `quick_actions_results` verified
-- ✅ Polling UI (`QuickActionResult.tsx`) updates every 2s
-- ⏳ No image generation backend (visual agent pending)
-- ⏳ No async queue (Track 4)
-- ⏳ No Supabase Storage (Track 4)
-
-## Next Steps
-
-- **Track 1 (now)**: Deploy MIRA with this state (Quick Actions fully functional, text-only)
-- **Track 4.X-Z**: Add 3 new visual action types (`crear_post_visual`, `crear_carrusel_visual`, `editar_imagen_visual`) to department arrays
-- **Track 4.AA-EE**: Async job model + storage + UI states
-- **Track 4 Integration**: Swap mock provider for real Visual Production Agent when specification arrives (2-3 days)
+- Texto: `claude-opus-4-8` (pricing en `lib/anthropic-client.ts` `MODEL_PRICING`), `max_tokens: 4000`.
+- Imagen: `gpt-image-1` vía OpenAI (`lib/generation/openai-image.ts`).
+- Ojo: el pricing de `gpt-image-1` está duplicado e inconsistente entre `lib/anthropic-client.ts` y `app/api/usage/summary/route.ts` — ver `docs/DEBT.md` sección (h).

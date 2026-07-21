@@ -47,7 +47,7 @@ export default function UnifiedHistory() {
 
   if (loading) {
     return (
-      <div className="py-4 text-center text-[#666]">
+      <div className="py-4 text-center text-ink-tertiary">
         <p className="text-xs">Loading...</p>
       </div>
     )
@@ -55,7 +55,7 @@ export default function UnifiedHistory() {
 
   if (generations.length === 0 && !trends?.months?.length) {
     return (
-      <div className="py-8 text-center text-[#666]">
+      <div className="py-8 text-center text-ink-tertiary">
         <p className="text-sm">No generations yet. Start creating!</p>
       </div>
     )
@@ -75,11 +75,11 @@ export default function UnifiedHistory() {
             {generations.map((gen) => (
               <div
                 key={gen.id}
-                className="card px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-all"
+                className="card px-4 py-3 flex items-center justify-between hover:bg-surface-hover transition-all"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-white">{gen.name}</span>
+                    <span className="text-xs font-medium text-ink">{gen.name}</span>
                     <span
                       className="text-[9px] px-2 py-0.5 rounded-full"
                       style={{
@@ -90,7 +90,7 @@ export default function UnifiedHistory() {
                       {gen.type === 'toolkit' ? '🔧 Toolkit' : '⚡ Quick Action'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] text-[#666]">
+                  <div className="flex items-center gap-2 text-[10px] text-ink-tertiary">
                     {gen.department && <span>{gen.department}</span>}
                     <span>•</span>
                     <span>{new Date(gen.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</span>
@@ -111,7 +111,7 @@ export default function UnifiedHistory() {
                 {gen.resultUrl && (
                   <Link
                     href={gen.resultUrl}
-                    className="ml-4 text-[11px] font-medium px-2 py-1 rounded transition-all hover:bg-white/10"
+                    className="ml-4 text-[11px] font-medium px-2 py-1 rounded transition-all hover:bg-surface-hover"
                     style={{ color: '#a78bfa' }}
                   >
                     View →
@@ -124,7 +124,7 @@ export default function UnifiedHistory() {
           {/* Link to full list */}
           <Link
             href="/client-portal/entregas"
-            className="inline-flex items-center gap-2 text-[12px] font-medium px-3 py-2 rounded-lg transition-all hover:bg-white/8"
+            className="inline-flex items-center gap-2 text-[12px] font-medium px-3 py-2 rounded-lg transition-all hover:bg-surface-hover"
             style={{ color: '#a78bfa' }}
           >
             Ver todo
@@ -137,8 +137,8 @@ export default function UnifiedHistory() {
       {trends?.months && trends.months.length > 0 && (
         <div className="card px-6 py-5">
           <div className="mb-4">
-            <p className="text-sm font-semibold text-white mb-1">Tendencia Mensual</p>
-            <p className="text-[11px] text-[#666]">
+            <p className="text-sm font-semibold text-ink mb-1">Tendencia Mensual</p>
+            <p className="text-[11px] text-ink-tertiary">
               {trends.trend?.message || `Trend: ${trends.trend?.percentChange > 0 ? '↗' : '↘'} ${Math.abs(trends.trend?.percentChange ?? 0)}%`}
             </p>
           </div>
@@ -165,7 +165,7 @@ export default function UnifiedHistory() {
                     )}
                   </div>
                 </div>
-                <p className="text-[9px] text-[#666] text-center leading-tight">{month.label}</p>
+                <p className="text-[9px] text-ink-tertiary text-center leading-tight">{month.label}</p>
               </div>
             ))}
           </div>

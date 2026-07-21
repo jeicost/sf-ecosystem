@@ -109,7 +109,7 @@ export default function PerformancePage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 size={20} className="text-[#444] animate-spin" />
+      <Loader2 size={20} className="text-ink-muted animate-spin" />
     </div>
   )
 
@@ -118,17 +118,17 @@ export default function PerformancePage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Performance</h1>
-          <p className="text-[#555] mt-1 text-sm">Real MIRA team activity.</p>
+          <h1 className="text-2xl font-semibold text-ink">Performance</h1>
+          <p className="text-ink-tertiary mt-1 text-sm">Real MIRA team activity.</p>
         </div>
-        <div className="flex bg-[#111] border border-[#1E1E1E] rounded-lg p-0.5">
+        <div className="flex bg-card border border-line rounded-lg p-0.5">
           {PERIODS.map(p => (
             <button
               key={p.id}
               onClick={() => setPeriod(p.id)}
               className={clsx(
                 'px-3 py-1.5 rounded-md text-xs transition-all',
-                period === p.id ? 'bg-white/10 text-white font-medium' : 'text-[#555] hover:text-white'
+                period === p.id ? 'bg-surface-hover text-ink font-medium' : 'text-ink-tertiary hover:text-ink'
               )}
             >
               {p.label}
@@ -147,8 +147,8 @@ export default function PerformancePage() {
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="card px-5 py-4">
             <Icon size={16} className={clsx('mb-3', color)} />
-            <p className="text-2xl font-semibold text-white">{value}</p>
-            <p className="text-[11px] text-[#555] mt-0.5">{label}</p>
+            <p className="text-2xl font-semibold text-ink">{value}</p>
+            <p className="text-[11px] text-ink-tertiary mt-0.5">{label}</p>
           </div>
         ))}
       </div>
@@ -157,20 +157,20 @@ export default function PerformancePage() {
         {/* Posts by platform */}
         <div className="card p-5">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm font-medium text-white">Posts by platform</h2>
-            <span className="text-xs text-[#555]">{posts.length} total</span>
+            <h2 className="text-sm font-medium text-ink">Posts by platform</h2>
+            <span className="text-xs text-ink-tertiary">{posts.length} total</span>
           </div>
           {byPlatform.length === 0 ? (
-            <p className="text-xs text-[#444] text-center py-6">No posts in this period.</p>
+            <p className="text-xs text-ink-muted text-center py-6">No posts in this period.</p>
           ) : (
             <div className="space-y-4">
               {byPlatform.map(([platform, count]) => (
                 <div key={platform}>
                   <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-xs text-[#888]">{platform}</span>
-                    <span className="text-white font-medium text-sm">{count}</span>
+                    <span className="text-xs text-ink-secondary">{platform}</span>
+                    <span className="text-ink font-medium text-sm">{count}</span>
                   </div>
-                  <div className="h-1.5 bg-[#1A1A1A] rounded-full">
+                  <div className="h-1.5 bg-surface rounded-full">
                     <div
                       className="h-full rounded-full transition-all duration-500"
                       style={{
@@ -187,9 +187,9 @@ export default function PerformancePage() {
 
         {/* Recent posts */}
         <div className="card p-5">
-          <h2 className="text-sm font-medium text-white mb-4">Latest generated posts</h2>
+          <h2 className="text-sm font-medium text-ink mb-4">Latest generated posts</h2>
           {posts.length === 0 ? (
-            <p className="text-xs text-[#444] text-center py-6">No posts in this period.<br />Send a brief to get started.</p>
+            <p className="text-xs text-ink-muted text-center py-6">No posts in this period.<br />Send a brief to get started.</p>
           ) : (
             <div className="space-y-3">
               {posts.slice(0, 5).map(post => (
@@ -199,21 +199,21 @@ export default function PerformancePage() {
                     style={{ background: PLATFORM_COLORS[post.platform] ?? '#8B5CF6' }}
                   />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs text-[#ccc] leading-snug line-clamp-2">
+                    <p className="text-xs text-ink-secondary leading-snug line-clamp-2">
                       {post.content?.slice(0, 100) ?? '(no content)'}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
-                      <span className="text-[10px] text-[#555]">{post.platform}</span>
+                      <span className="text-[10px] text-ink-tertiary">{post.platform}</span>
                       <span className={clsx('text-[10px] ml-auto', {
                         'text-emerald-400': post.status === 'published',
                         'text-amber-400':   post.status === 'draft',
-                        'text-[#444]':      post.status === 'archived',
+                        'text-ink-muted':      post.status === 'archived',
                       })}>
                         {post.status}
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] text-[#444] shrink-0">{timeAgo(post.created_at)}</span>
+                  <span className="text-[10px] text-ink-muted shrink-0">{timeAgo(post.created_at)}</span>
                 </div>
               ))}
             </div>
@@ -224,30 +224,30 @@ export default function PerformancePage() {
       {/* Actividad de agentes */}
       <div className="card p-5 mb-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-medium text-white">Team activity</h2>
-          <span className="text-xs text-[#555]">{completed}/{totalTasks} tasks completed</span>
+          <h2 className="text-sm font-medium text-ink">Team activity</h2>
+          <span className="text-xs text-ink-tertiary">{completed}/{totalTasks} tasks completed</span>
         </div>
 
         {byAgent.length === 0 ? (
-          <p className="text-xs text-[#444] text-center py-6">No activity in this period. Chat with an agent to get started.</p>
+          <p className="text-xs text-ink-muted text-center py-6">No activity in this period. Chat with an agent to get started.</p>
         ) : (
           <div className="grid grid-cols-3 gap-3 mb-5">
             {byAgent.map(([role, count]) => {
               const meta = AGENT_META[role] ?? { emoji: '🤖', color: '#8B5CF6', role }
               const name = AGENT_NAMES[role] ?? role
               return (
-                <div key={role} className="bg-[#0A0A0A] rounded-xl p-4 border border-[#1A1A1A]">
+                <div key={role} className="bg-card rounded-xl p-4 border border-line">
                   <div className="flex items-center gap-2.5 mb-3">
                     <div className="w-8 h-8 rounded-xl flex items-center justify-center text-sm"
                       style={{ background: `${meta.color}20` }}>
                       {meta.emoji}
                     </div>
                     <div>
-                      <p className="text-xs text-white font-medium">{name}</p>
-                      <p className="text-[10px] text-[#444]">{count} tareas</p>
+                      <p className="text-xs text-ink font-medium">{name}</p>
+                      <p className="text-[10px] text-ink-muted">{count} tareas</p>
                     </div>
                   </div>
-                  <div className="h-1.5 bg-[#1A1A1A] rounded-full">
+                  <div className="h-1.5 bg-surface rounded-full">
                     <div className="h-full rounded-full"
                       style={{ width: `${Math.min((count / (byAgent[0]?.[1] ?? 1)) * 100, 100)}%`, background: meta.color }} />
                   </div>
@@ -259,17 +259,17 @@ export default function PerformancePage() {
 
         {/* Log de actividad reciente */}
         {activity.length > 0 && (
-          <div className="space-y-1.5 border-t border-[#111] pt-4">
+          <div className="space-y-1.5 border-t border-line-subtle pt-4">
             {activity.slice(0, 8).map(a => {
               const meta = AGENT_META[a.agent_role] ?? { emoji: '🤖', color: '#555', role: a.agent_role }
               return (
-                <div key={a.id} className="flex items-center gap-3 py-1.5 border-b border-[#0D0D0D] last:border-0">
+                <div key={a.id} className="flex items-center gap-3 py-1.5 border-b border-line-subtle last:border-0">
                   <div className="w-6 h-6 rounded-lg flex items-center justify-center text-xs shrink-0"
                     style={{ background: `${meta.color}20` }}>
                     {meta.emoji}
                   </div>
-                  <span className="text-xs text-[#888] w-10 shrink-0">{AGENT_NAMES[a.agent_role] ?? a.agent_role}</span>
-                  <p className="text-[11px] text-[#555] flex-1 truncate">
+                  <span className="text-xs text-ink-secondary w-10 shrink-0">{AGENT_NAMES[a.agent_role] ?? a.agent_role}</span>
+                  <p className="text-[11px] text-ink-tertiary flex-1 truncate">
                     {a.output_summary ?? a.task_type}
                   </p>
                   <span className={clsx('text-[10px] px-1.5 py-0.5 rounded-full shrink-0', {
@@ -279,7 +279,7 @@ export default function PerformancePage() {
                   })}>
                     {a.status}
                   </span>
-                  <span className="text-[10px] text-[#444] w-8 text-right shrink-0">{timeAgo(a.started_at)}</span>
+                  <span className="text-[10px] text-ink-muted w-8 text-right shrink-0">{timeAgo(a.started_at)}</span>
                 </div>
               )
             })}
@@ -288,23 +288,23 @@ export default function PerformancePage() {
       </div>
 
       {/* ROI card — siempre visible */}
-      <div className="card p-5 bg-[#0A0A0A]">
+      <div className="card p-5 bg-card">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">Agency equivalent value</p>
-            <p className="text-3xl font-semibold text-white">
+            <p className="text-[11px] text-ink-tertiary uppercase tracking-wider mb-1">Agency equivalent value</p>
+            <p className="text-3xl font-semibold text-ink">
               ${(posts.length * 80 + activity.filter(a => a.status === 'completed').length * 15).toLocaleString()}
             </p>
-            <p className="text-xs text-[#555] mt-1">{posts.length} pieces · freelance market rate</p>
+            <p className="text-xs text-ink-tertiary mt-1">{posts.length} pieces · freelance market rate</p>
           </div>
           <div className="text-right">
-            <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">Powered by MIRA</p>
+            <p className="text-[11px] text-ink-tertiary uppercase tracking-wider mb-1">Powered by MIRA</p>
             <p className="text-3xl font-semibold text-emerald-400">${(completed * 0.012).toFixed(2)}</p>
-            <p className="text-xs text-[#555] mt-1">in AI tokens this period</p>
+            <p className="text-xs text-ink-tertiary mt-1">in AI tokens this period</p>
           </div>
         </div>
-        <div className="mt-4 pt-4 border-t border-[#1E1E1E] flex items-center justify-between">
-          <p className="text-xs text-[#555]">Implied ROI</p>
+        <div className="mt-4 pt-4 border-t border-line flex items-center justify-between">
+          <p className="text-xs text-ink-tertiary">Implied ROI</p>
           <p className="text-sm font-semibold text-emerald-400">
             {completed > 0
               ? `${Math.round((posts.length * 80) / Math.max(completed * 0.012, 0.01)).toLocaleString()}x`

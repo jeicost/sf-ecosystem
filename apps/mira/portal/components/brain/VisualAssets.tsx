@@ -231,7 +231,7 @@ export default function VisualAssets({ clientId }: VisualAssetsProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-[#666]">Loading assets...</div>
+        <div className="text-ink-tertiary">Loading assets...</div>
       </div>
     )
   }
@@ -274,14 +274,14 @@ export default function VisualAssets({ clientId }: VisualAssetsProps) {
         className={`p-8 rounded-lg border-2 border-dashed transition-colors ${
           isDragging
             ? 'border-[#EC4899] bg-[#EC4899]10'
-            : 'border-[#333] bg-[#0D0D0D] hover:border-[#EC4899]'
+            : 'border-line bg-surface hover:border-[#EC4899]'
         }`}
       >
         <div className="flex flex-col items-center gap-3 text-center">
-          <Upload size={32} className="text-[#666]" />
+          <Upload size={32} className="text-ink-tertiary" />
           <div>
-            <div className="text-sm font-semibold text-white">Drop images here or click to select</div>
-            <div className="text-xs text-[#666] mt-1">
+            <div className="text-sm font-semibold text-ink">Drop images here or click to select</div>
+            <div className="text-xs text-ink-tertiary mt-1">
               Supported: JPG, PNG, WebP, SVG • Max 10MB
             </div>
           </div>
@@ -308,14 +308,14 @@ export default function VisualAssets({ clientId }: VisualAssetsProps) {
       {/* Assets Grid */}
       {assets.length > 0 ? (
         <div className="space-y-3">
-          <div className="text-xs font-semibold text-[#666] uppercase">
+          <div className="text-xs font-semibold text-ink-tertiary uppercase">
             Assets ({assets.length})
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {assets.map((asset) => (
               <div
                 key={asset.id}
-                className="group relative aspect-square rounded-lg overflow-hidden bg-[#1E1E1E] border border-[#333] hover:border-[#EC4899] transition-colors"
+                className="group relative aspect-square rounded-lg overflow-hidden bg-surface border border-line hover:border-[#EC4899] transition-colors"
               >
                 {/* Asset Preview */}
                 <img
@@ -352,23 +352,23 @@ export default function VisualAssets({ clientId }: VisualAssetsProps) {
 
           {/* Assets List Alternative View */}
           <div className="mt-8 space-y-2">
-            <div className="text-xs font-semibold text-[#666] uppercase">Details</div>
-            <div className="card divide-y divide-[#1E1E1E] border border-[#333]">
+            <div className="text-xs font-semibold text-ink-tertiary uppercase">Details</div>
+            <div className="card divide-y divide-line border border-line">
               {assets.map((asset) => (
                 <div
                   key={asset.id}
-                  className="p-3 flex items-center justify-between hover:bg-[#0D0D0D] transition-colors"
+                  className="p-3 flex items-center justify-between hover:bg-surface-hover transition-colors"
                 >
                   <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-white truncate">{asset.name}</div>
-                    <div className="text-xs text-[#666] mt-1">
+                    <div className="text-sm font-semibold text-ink truncate">{asset.name}</div>
+                    <div className="text-xs text-ink-tertiary mt-1">
                       {formatFileSize(asset.metadata?.size || 0)} •{' '}
                       {formatDate(asset.updated_at)}
                     </div>
                   </div>
                   <button
                     onClick={() => handleDelete(asset.name)}
-                    className="ml-2 p-1 text-[#666] hover:text-[#FF6B6B] transition-colors"
+                    className="ml-2 p-1 text-ink-tertiary hover:text-[#FF6B6B] transition-colors"
                     title="Delete asset"
                   >
                     <Trash2 size={16} />
@@ -381,7 +381,7 @@ export default function VisualAssets({ clientId }: VisualAssetsProps) {
       ) : (
         <div className="text-center py-12">
           <div className="text-4xl mb-2">🖼️</div>
-          <div className="text-sm text-[#999]">No assets yet. Upload your brand visuals to get started.</div>
+          <div className="text-sm text-ink-secondary">No assets yet. Upload your brand visuals to get started.</div>
         </div>
       )}
     </div>

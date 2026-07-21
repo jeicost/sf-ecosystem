@@ -53,7 +53,7 @@ export default function BrainVersionHistory({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-[#666]">Loading version history...</div>
+        <div className="text-ink-tertiary">Loading version history...</div>
       </div>
     )
   }
@@ -69,11 +69,11 @@ export default function BrainVersionHistory({
           Back to Timeline
         </button>
 
-        <div className="card p-6 border border-[#1E1E1E] space-y-4">
+        <div className="card p-6 border border-line space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-lg font-bold text-white">Version {selectedVersion.version_number}</div>
-              <div className="text-xs text-[#666]">
+              <div className="text-lg font-bold text-ink">Version {selectedVersion.version_number}</div>
+              <div className="text-xs text-ink-tertiary">
                 {new Date(selectedVersion.created_at).toLocaleString()}
               </div>
             </div>
@@ -95,26 +95,26 @@ export default function BrainVersionHistory({
           </div>
 
           <div className="space-y-2">
-            <div className="text-xs font-semibold text-[#666] uppercase">Change Summary</div>
-            <div className="text-sm text-white bg-[#0D0D0D] p-3 rounded">
+            <div className="text-xs font-semibold text-ink-tertiary uppercase">Change Summary</div>
+            <div className="text-sm text-ink bg-surface p-3 rounded">
               {selectedVersion.change_summary || 'No summary provided'}
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="text-xs font-semibold text-[#666] uppercase">Triggered By</div>
-            <div className="text-sm text-white">
+            <div className="text-xs font-semibold text-ink-tertiary uppercase">Triggered By</div>
+            <div className="text-sm text-ink">
               {selectedVersion.triggered_by === 'agent' ? (
                 <span>Agent: <span className="text-[#EC4899]">{selectedVersion.triggered_by_agent_id}</span></span>
               ) : (
-                <span className="capitalize text-[#999]">{selectedVersion.triggered_by}</span>
+                <span className="capitalize text-ink-secondary">{selectedVersion.triggered_by}</span>
               )}
             </div>
           </div>
 
           <div className="space-y-2">
-            <div className="text-xs font-semibold text-[#666] uppercase">Brain State (JSON)</div>
-            <pre className="text-xs bg-[#0D0D0D] p-3 rounded overflow-auto max-h-64 text-[#999]">
+            <div className="text-xs font-semibold text-ink-tertiary uppercase">Brain State (JSON)</div>
+            <pre className="text-xs bg-surface p-3 rounded overflow-auto max-h-64 text-ink-secondary">
               {JSON.stringify(selectedVersion.snapshot, null, 2)}
             </pre>
           </div>
@@ -125,11 +125,11 @@ export default function BrainVersionHistory({
 
   return (
     <div className="space-y-4">
-      <div className="text-sm text-[#999]">{versions.length} versions tracked</div>
+      <div className="text-sm text-ink-secondary">{versions.length} versions tracked</div>
 
       <div className="relative">
         {/* Timeline line */}
-        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-[#1E1E1E]" />
+        <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-line" />
 
         {/* Versions */}
         <div className="space-y-3">
@@ -142,7 +142,7 @@ export default function BrainVersionHistory({
                 className={`relative pl-16 py-3 text-left rounded transition-all border ${
                   isCurrent
                     ? 'border-[#10B981] bg-[#10B981]10'
-                    : 'border-[#1E1E1E] hover:border-[#333] hover:bg-[#0D0D0D]'
+                    : 'border-line hover:bg-surface-hover'
                 }`}
               >
                 {/* Timeline dot */}
@@ -151,22 +151,22 @@ export default function BrainVersionHistory({
                 >
                   <div
                     className={`w-3 h-3 rounded-full ${
-                      isCurrent ? 'bg-[#10B981]' : 'bg-[#1E1E1E]'
+                      isCurrent ? 'bg-[#10B981]' : 'bg-line'
                     }`}
                   />
                 </div>
 
                 <div className="space-y-1">
                   <div className="flex items-center justify-between">
-                    <div className="font-semibold text-white">
+                    <div className="font-semibold text-ink">
                       v{version.version_number}
                     </div>
-                    <div className="text-xs text-[#666] flex items-center gap-1">
+                    <div className="text-xs text-ink-tertiary flex items-center gap-1">
                       <Clock size={12} />
                       {new Date(version.created_at).toLocaleDateString()}
                     </div>
                   </div>
-                  <div className="text-xs text-[#999]">
+                  <div className="text-xs text-ink-secondary">
                     {version.change_summary || 'No summary'}
                   </div>
                   {version.triggered_by === 'agent' && (

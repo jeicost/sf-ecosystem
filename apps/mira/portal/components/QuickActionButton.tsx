@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { Loader2, Sparkles } from 'lucide-react'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
+import { getStoredClientId } from '@/lib/client-context'
+import { getStoredProjectId } from '@/lib/project-context'
 
 interface QuickActionButtonProps {
   title: string
@@ -26,11 +28,13 @@ export function QuickActionButton({
 }: QuickActionButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const { locale } = useLocaleContext()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
+    setSubmitError(null)
 
     try {
       const formData = new FormData(e.currentTarget)
@@ -43,6 +47,8 @@ export function QuickActionButton({
           department,
           action_type: actionType,
           input_data: inputData,
+          clientId: getStoredClientId(),
+          project_id: getStoredProjectId(),
         }),
       })
 
@@ -55,7 +61,7 @@ export function QuickActionButton({
       setIsOpen(false)
     } catch (error) {
       console.error('Error queuing action:', error)
-      alert('Error: ' + (error instanceof Error ? error.message : 'Unknown error'))
+      setSubmitError(t('quick-actions.network-error', locale))
     } finally {
       setIsLoading(false)
     }
@@ -64,7 +70,10 @@ export function QuickActionButton({
   return (
     <>
       <button
-        onClick={() => setIsOpen(true)}
+        onClick={() => {
+          setSubmitError(null)
+          setIsOpen(true)
+        }}
         className="card px-4 py-3 text-sm font-medium text-white hover:bg-white/5 transition-colors flex items-center gap-2 group"
       >
         <Sparkles size={16} className="text-purple-400 group-hover:text-purple-300" />
@@ -107,6 +116,12 @@ export function QuickActionButton({
                   )}
                 </button>
               </div>
+
+              {submitError && (
+                <p className="text-xs text-red-400 mt-2" role="alert">
+                  {submitError}
+                </p>
+              )}
             </form>
           </div>
         </div>

@@ -3,15 +3,23 @@
 
 import { createServiceClient } from '@/lib/supabase-admin'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
+import { logUsage } from '@/lib/anthropic-client'
 
 const VISUAL_BUCKET = 'generated-assets'
 const SIGNED_URL_EXPIRATION = 3600 * 24 * 7 // 7 days
+
+export interface StoredImage {
+  /** Storage path inside the generated-assets bucket (embeds the clientId). */
+  path: string
+  /** Signed URL (7 days) — kept for backwards compatibility with image_url. */
+  signedUrl: string
+}
 
 export async function generateAndStoreImage(
   prompt: string,
   clientId: string,
   actionId: string
-): Promise<string | null> {
+): Promise<StoredImage | null> {
   // Key del cliente (Integraciones → OpenAI) con fallback a la key de plataforma
   const apiKey = await getClientApiKey(clientId, 'openai', process.env.OPENAI_API_KEY)
   if (!apiKey) return null
@@ -38,6 +46,19 @@ export async function generateAndStoreImage(
     }
 
     const json = await res.json()
+
+    // Registrar consumo (fire-and-forget, nunca bloquea)
+    logUsage({
+      clientId,
+      route: 'quick-actions:image',
+      model: 'gpt-image-1',
+      usage: {
+        input_tokens: json?.usage?.input_tokens ?? 0,
+        output_tokens: json?.usage?.output_tokens ?? 0,
+      },
+      usedClientKey: apiKey !== process.env.OPENAI_API_KEY,
+    })
+
     const b64 = json?.data?.[0]?.b64_json
     if (!b64) {
       console.error('[openai-image] No b64_json in response')
@@ -67,7 +88,8 @@ export async function generateAndStoreImage(
       .from(VISUAL_BUCKET)
       .createSignedUrl(storagePath, SIGNED_URL_EXPIRATION)
 
-    return signed?.signedUrl ?? null
+    if (!signed?.signedUrl) return null
+    return { path: storagePath, signedUrl: signed.signedUrl }
   } catch (error) {
     console.error('[openai-image] Error:', error)
     return null

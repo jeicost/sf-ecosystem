@@ -162,10 +162,10 @@ export default function SentinelArchetype({
             style={{ backgroundColor: isMonitoring ? '#10B981' : '#EF4444' }}
           />
           <div>
-            <div className="text-sm font-semibold text-white">
+            <div className="text-sm font-semibold text-ink">
               {isMonitoring ? '🟢 Monitoring Active' : '🔴 Monitoring Paused'}
             </div>
-            <div className="text-xs text-[#666]">
+            <div className="text-xs text-ink-tertiary">
               {visibleAlerts.length} active alert{visibleAlerts.length !== 1 ? 's' : ''} •{' '}
               {criticalAlerts.length} critical
             </div>
@@ -186,17 +186,17 @@ export default function SentinelArchetype({
               key={idx}
               className={clsx(
                 'card p-4',
-                metric.alert ? 'border border-[#EF4444]' : 'border border-[#1E1E1E]'
+                metric.alert ? 'border border-[#EF4444]' : 'border border-line'
               )}
             >
               <div className="flex items-start justify-between mb-2">
-                <div className="text-xs font-semibold text-[#999] uppercase">{metric.label}</div>
+                <div className="text-xs font-semibold text-ink-secondary uppercase">{metric.label}</div>
                 {metric.alert && <AlertCircle size={14} className="text-[#EF4444]" />}
               </div>
               <div className="flex items-baseline gap-2">
-                <div className="text-2xl font-bold text-white">{metric.value}</div>
+                <div className="text-2xl font-bold text-ink">{metric.value}</div>
                 {metric.trend && (
-                  <div className="text-xs text-[#999]">
+                  <div className="text-xs text-ink-secondary">
                     {getTrendIcon(metric.trend)}
                     {metric.trendPercent && <span className="ml-1">{metric.trendPercent}%</span>}
                   </div>
@@ -217,8 +217,8 @@ export default function SentinelArchetype({
           {visibleAlerts.length === 0 ? (
             <div className="card p-6 text-center">
               <CheckCircle2 size={32} className="mx-auto text-[#10B981] mb-2" />
-              <div className="text-sm text-white font-medium">All Clear</div>
-              <div className="text-xs text-[#666] mt-1">No active alerts — everything is running smoothly</div>
+              <div className="text-sm text-ink font-medium">All Clear</div>
+              <div className="text-xs text-ink-tertiary mt-1">No active alerts — everything is running smoothly</div>
             </div>
           ) : (
             visibleAlerts.map(alert => {
@@ -233,8 +233,8 @@ export default function SentinelArchetype({
                   className={clsx(
                     'w-full card p-3 text-left transition-all border',
                     isSelected
-                      ? `border-[#1E1E1E] bg-[#1E1E1E]`
-                      : `border-transparent hover:bg-[#0D0D0D]`
+                      ? `border-line bg-surface-hover`
+                      : `border-transparent hover:bg-surface`
                   )}
                   style={{
                     ...(isSelected && { borderColor: color.border }),
@@ -250,10 +250,10 @@ export default function SentinelArchetype({
                         {color.emoji}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-white text-sm">{alert.title}</div>
-                        <div className="text-xs text-[#999] mt-0.5">{alert.message}</div>
+                        <div className="font-semibold text-ink text-sm">{alert.title}</div>
+                        <div className="text-xs text-ink-secondary mt-0.5">{alert.message}</div>
                       </div>
-                      <div className="text-xs text-[#666] flex-shrink-0 ml-2">
+                      <div className="text-xs text-ink-tertiary flex-shrink-0 ml-2">
                         <Clock size={12} className="inline mr-1" />
                         {alert.timestamp}
                       </div>
@@ -261,10 +261,10 @@ export default function SentinelArchetype({
 
                     {/* Expanded Details */}
                     {isSelected && (
-                      <div className="border-t border-[#1E1E1E] pt-3 space-y-3 mt-3">
+                      <div className="border-t border-line pt-3 space-y-3 mt-3">
                         {alert.context && (
-                          <div className="p-2 bg-[#0D0D0D] rounded text-xs text-[#999]">
-                            <span className="text-[#666]">📍 Context:</span> {alert.context}
+                          <div className="p-2 bg-surface rounded text-xs text-ink-secondary">
+                            <span className="text-ink-tertiary">📍 Context:</span> {alert.context}
                           </div>
                         )}
 
@@ -317,7 +317,7 @@ export default function SentinelArchetype({
                               e.stopPropagation()
                               handleDismiss(alert.id)
                             }}
-                            className="px-3 py-1.5 text-xs rounded text-[#666] hover:text-white transition-colors"
+                            className="px-3 py-1.5 text-xs rounded text-ink-tertiary hover:text-ink transition-colors"
                           >
                             Dismiss
                           </button>
@@ -333,12 +333,12 @@ export default function SentinelArchetype({
       </div>
 
       {/* Help */}
-      <div className="p-4 rounded bg-[#0D0D0D] border border-[#1E1E1E] space-y-2">
-        <div className="flex gap-2 items-start text-xs text-[#999]">
+      <div className="p-4 rounded bg-surface border border-line space-y-2">
+        <div className="flex gap-2 items-start text-xs text-ink-secondary">
           <Zap size={14} className="flex-shrink-0 mt-0.5" style={{ color: agentColor }} />
           <div>
-            <div className="font-medium text-white mb-1">How to use alerts</div>
-            <ul className="space-y-1 text-[#999]">
+            <div className="font-medium text-ink mb-1">How to use alerts</div>
+            <ul className="space-y-1 text-ink-secondary">
               <li>🔴 <strong>Critical:</strong> Requires immediate action</li>
               <li>🟠 <strong>Warning:</strong> Attention recommended</li>
               <li>🔵 <strong>Info:</strong> FYI updates</li>

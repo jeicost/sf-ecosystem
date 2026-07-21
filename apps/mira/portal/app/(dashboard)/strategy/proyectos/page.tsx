@@ -1,93 +1,95 @@
+'use client'
+
+// Proyectos reales del cliente activo (mira_projects) — sustituye el antiguo
+// mock estático de "Innovation Portfolio" con horizontes hardcodeados.
+
+import Link from 'next/link'
+import { Plus, ArrowRight, Loader2, FolderKanban, AlertCircle } from 'lucide-react'
 import AgentWorkspace from '@/components/agent-workspace'
+import { useProjects } from '@/lib/hooks/useProjects'
+import { useLocale } from '@/lib/use-locale'
+import { t } from '@/lib/i18n'
 
-const HORIZONS = [
-  {
-    id: 'H1', label: 'Core Business', desc: 'Optimize what works',
-    color: '#22C55E',
-    projects: [
-      { name: 'MIRA portal UX redesign', status: 'Active', phase: 'Scale' },
-      { name: 'Client onboarding automation', status: 'Active', phase: 'MVP' },
-    ],
-  },
-  {
-    id: 'H2', label: 'Adjacent Growth', desc: 'Expand to new markets',
-    color: '#F59E0B',
-    projects: [
-      { name: 'MIRA for agencies', status: 'Discovery', phase: 'Discovery' },
-    ],
-  },
-  {
-    id: 'H3', label: 'Future Bets', desc: 'Long-term transformation',
-    color: '#06B6D4',
-    projects: [
-      { name: 'AI voice agents for SMB', status: 'Watch', phase: 'Scouting' },
-    ],
-  },
-]
-
-const PHASE_COLOR: Record<string, string> = {
-  Scale:     '#22C55E',
-  MVP:       '#8B5CF6',
-  Discovery: '#F59E0B',
-  Scouting:  '#06B6D4',
+const STATUS_BADGE: Record<string, string> = {
+  active: 'bg-green-500/10 text-green-400',
+  paused: 'bg-yellow-500/10 text-yellow-400',
+  archived: 'bg-card text-ink-muted',
 }
 
 export default function Page() {
+  const { projects, loading, error } = useProjects()
+  const { locale } = useLocale()
+
+  const fmtDate = (iso: string) =>
+    new Date(iso).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    })
+
   return (
     <div className="px-8 py-8 max-w-4xl">
-      <div className="mb-6">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)' }}>
-          Innovation · Venture
-        </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Innovation Portfolio</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Ideas without execution are hallucinations. Venture keeps your innovation on track.
-        </p>
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)' }}>
+            Strategy · Venture
+          </p>
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">{t('projects.title', locale)}</h1>
+          <p className="text-sm mt-1 text-ink-secondary">{t('projects.subtitle', locale)}</p>
+        </div>
+        <Link href="/projects/new"
+          className="inline-flex items-center gap-1.5 rounded-lg bg-card border border-line px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-white/10">
+          <Plus size={13} /> {t('projects.new', locale)}
+        </Link>
       </div>
 
-      {/* Horizon portfolio */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {HORIZONS.map(horizon => (
-          <div key={horizon.id}
-            className="rounded-2xl p-5 flex flex-col"
-            style={{ background: `${horizon.color}08`, border: `1px solid ${horizon.color}22` }}>
-            <div className="mb-4">
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className="text-[10px] font-bold font-mono" style={{ color: horizon.color }}>{horizon.id}</span>
-                <span className="text-xs font-semibold text-white">{horizon.label}</span>
-              </div>
-              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{horizon.desc}</span>
-            </div>
-
-            <div className="space-y-2 flex-1">
-              {horizon.projects.map(p => (
-                <div key={p.name}
-                  className="rounded-lg p-3"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-                  <p className="text-[11px] font-medium text-white leading-snug mb-2">{p.name}</p>
-                  <span className="text-[9px] px-2 py-0.5 rounded-full font-semibold"
-                    style={{ background: `${PHASE_COLOR[p.phase]}15`, color: PHASE_COLOR[p.phase] }}>
-                    {p.phase}
-                  </span>
-                </div>
-              ))}
-              <div className="rounded-lg p-3 border border-dashed flex items-center justify-center"
-                style={{ borderColor: `${horizon.color}25` }}>
-                <span className="text-[10px]" style={{ color: `${horizon.color}60` }}>+ Add project</span>
-              </div>
-            </div>
-
-            <div className="mt-3 pt-3 flex items-center justify-between"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-              <span className="text-[9px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
-                {horizon.projects.length} project{horizon.projects.length !== 1 ? 's' : ''}
-              </span>
-              <span className="text-[9px] px-2 py-0.5 rounded-full"
-                style={{ background: `${horizon.color}15`, color: horizon.color }}>Active</span>
-            </div>
+      {/* Estado de carga / error / vacío / lista */}
+      {loading ? (
+        <div className="mb-8 flex items-center justify-center rounded-2xl bg-card border border-line py-14">
+          <Loader2 size={22} className="animate-spin text-ink-muted" />
+        </div>
+      ) : error ? (
+        <div className="mb-8 flex items-start gap-3 rounded-2xl border border-red-500/20 bg-card p-4">
+          <AlertCircle size={18} className="shrink-0 text-red-400" />
+          <div>
+            <p className="text-sm font-semibold text-red-400">{t('projects.loading-error', locale)}</p>
+            <p className="mt-0.5 text-xs text-ink-secondary">{error}</p>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : projects.length === 0 ? (
+        <div className="mb-8 rounded-2xl border border-dashed border-line bg-card py-10 text-center">
+          <FolderKanban size={28} className="mx-auto mb-3 text-ink-muted" />
+          <p className="mb-1 text-xs text-ink-secondary">{t('projects.empty', locale)}</p>
+          <p className="mb-4 text-[11px] text-ink-muted">{t('projects.empty-hint', locale)}</p>
+          <Link href="/projects/new"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-card border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-white/10">
+            <Plus size={12} /> {t('projects.empty-cta', locale)}
+          </Link>
+        </div>
+      ) : (
+        <div className="mb-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {projects.map((p) => (
+            <div key={p.id} className="flex flex-col gap-2 rounded-2xl bg-card border border-line p-5">
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm font-semibold text-ink">{p.name}</p>
+                <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide ${STATUS_BADGE[p.status] ?? STATUS_BADGE.active}`}>
+                  {t(`projects.status.${p.status}`, locale)}
+                </span>
+              </div>
+              {p.description && (
+                <p className="line-clamp-2 text-[11px] text-ink-secondary">{p.description}</p>
+              )}
+              <div className="mt-auto flex items-center justify-between border-t border-line-subtle pt-2.5">
+                <span className="text-[10px] text-ink-muted">{fmtDate(p.created_at)}</span>
+                <Link href={`/projects/${p.slug}`}
+                  className="flex items-center gap-1 text-[11px] font-medium text-ink-secondary transition-colors hover:text-ink">
+                  {t('projects.view-detail', locale)} <ArrowRight size={11} />
+                </Link>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
 
       <AgentWorkspace
         role="blueprint"

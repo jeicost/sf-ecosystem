@@ -8,6 +8,9 @@ import { useLocaleContext } from '@/app/locale-provider'
 
 export function StrategyQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  // Acción clicada, guardada en el momento del click (activeActionId es el UUID
+  // del servidor y nunca coincide con los ids locales de `actions`).
+  const [activeAction, setActiveAction] = useState<{ title: string; outputType: string } | null>(null)
   const { locale } = useLocaleContext()
 
   const actions = [
@@ -16,6 +19,7 @@ export function StrategyQuickActions() {
       title: t('actions.strategy.generar_reporte', locale),
       description: t('actions.strategy.generar_reporte.desc', locale),
       actionType: 'generar_reporte',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <select
@@ -50,6 +54,7 @@ export function StrategyQuickActions() {
       title: t('actions.strategy.analizar_competencia', locale),
       description: t('actions.strategy.analizar_competencia.desc', locale),
       actionType: 'analizar_competencia',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <textarea
@@ -75,6 +80,7 @@ export function StrategyQuickActions() {
       title: t('actions.strategy.brainstorm_ideas', locale),
       description: t('actions.strategy.brainstorm_ideas.desc', locale),
       actionType: 'brainstorm_ideas',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <input
@@ -98,6 +104,7 @@ export function StrategyQuickActions() {
       title: t('actions.strategy.tendencias_analisis', locale),
       description: t('actions.strategy.tendencias_analisis.desc', locale),
       actionType: 'analizar_tendencias',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <input
@@ -124,6 +131,7 @@ export function StrategyQuickActions() {
       title: t('actions.strategy.plan_innovacion', locale),
       description: t('actions.strategy.plan_innovacion.desc', locale),
       actionType: 'roadmap_innovacion',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <textarea
@@ -166,7 +174,10 @@ export function StrategyQuickActions() {
               actionType={action.actionType}
               department="strategy"
               inputForm={action.form}
-              onActionComplete={(actionId) => setActiveActionId(actionId)}
+              onActionComplete={(actionId) => {
+                setActiveAction({ title: action.title, outputType: action.outputType })
+                setActiveActionId(actionId)
+              }}
             />
           ))}
         </div>
@@ -175,7 +186,8 @@ export function StrategyQuickActions() {
       {activeActionId && (
         <QuickActionResult
           actionId={activeActionId}
-          resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
+          resourceName={activeAction?.title || 'Resource'}
+          outputType={activeAction?.outputType}
           department="strategy"
         />
       )}
