@@ -23,6 +23,7 @@ interface FolderRow {
 
 export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
   const [folders, setFolders] = useState<FolderRow[]>([])
+  const [loading, setLoading] = useState(true)
   const [connected, setConnected] = useState<boolean | null>(null)
   const [link, setLink] = useState('')
   const [purpose, setPurpose] = useState('references')
@@ -39,7 +40,9 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
         setFolders(json.folders || json.data || [])
         if (typeof json.connected === 'boolean') setConnected(json.connected)
       }
-    } catch { /* silencioso */ }
+    } catch { /* silencioso */ } finally {
+      setLoading(false)
+    }
   }, [clientId])
 
   useEffect(() => {
@@ -167,6 +170,22 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
         <p className={`text-xs ${message.type === 'ok' ? 'text-emerald-400' : 'text-red-400'}`}>
           {message.text}
         </p>
+      )}
+
+      {loading && folders.length === 0 && (
+        <div className="flex items-center gap-2 px-3 py-4 text-gray-500 text-xs">
+          <span className="w-3 h-3 border border-gray-600 border-t-gray-300 rounded-full animate-spin inline-block" />
+          Cargando carpetas…
+        </div>
+      )}
+
+      {!loading && connected && folders.length === 0 && (
+        <div className="px-3 py-5 rounded-lg bg-black/20 border border-dashed border-gray-800 text-center">
+          <p className="text-gray-400 text-xs font-medium">Aún no hay carpetas conectadas</p>
+          <p className="text-gray-600 text-[11px] mt-1">
+            Pega arriba el enlace de una carpeta de Drive y el Brain leerá su contenido en el primer sync.
+          </p>
+        </div>
       )}
 
       {folders.length > 0 && (

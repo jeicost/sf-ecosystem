@@ -1,17 +1,46 @@
 'use client'
 
-import { use, useState, useRef } from 'react'
+import { use, useEffect, useState, useRef } from 'react'
 import Link from 'next/link'
 
 export default function ToolkitReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const [mode, setMode] = useState<'report' | 'deck'>('report')
+  const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
+  const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [retryKey, setRetryKey] = useState(0)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
   const src =
     mode === 'deck'
       ? `/api/toolkit/export?queue_id=${id}&inline=1&template=deck`
       : `/api/toolkit/export?queue_id=${id}&inline=1`
+
+  // El iframe no expone errores HTTP: pre-chequeamos cabeceras y abortamos el
+  // body para no descargar el informe dos veces.
+  useEffect(() => {
+    setStatus('loading')
+    setErrorMsg(null)
+    const controller = new AbortController()
+    fetch(src, { cache: 'no-store', signal: controller.signal })
+      .then(async (res) => {
+        if (res.ok) {
+          setStatus('ready')
+        } else {
+          const body = await res.json().catch(() => null)
+          setErrorMsg(body?.error || `Error ${res.status}`)
+          setStatus('error')
+        }
+        controller.abort()
+      })
+      .catch((err) => {
+        if (err?.name !== 'AbortError') {
+          setErrorMsg('No se pudo conectar con el servidor')
+          setStatus('error')
+        }
+      })
+    return () => controller.abort()
+  }, [src, retryKey])
 
   return (
     <div className="flex flex-col h-screen bg-[#1A1A1A]">
@@ -47,13 +76,41 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           </a>
         </div>
       </div>
-      <iframe
-        ref={iframeRef}
-        src={src}
-        className="flex-1 w-full border-0"
-        title="Reporte"
-        allow="fullscreen"
-      />
+      {status === 'error' ? (
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-sm">
+            <div className="text-4xl mb-3">⚠️</div>
+            <p className="text-white font-medium mb-1">No se pudo cargar el informe</p>
+            <p className="text-sm text-white/50 mb-4">{errorMsg}</p>
+            <button
+              onClick={() => setRetryKey((k) => k + 1)}
+              className="text-sm px-4 py-2 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 relative">
+          {status === 'loading' && (
+            <div className="absolute inset-0 flex items-center justify-center bg-[#1A1A1A]">
+              <div className="text-center">
+                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-sm text-white/50">Cargando informe…</p>
+              </div>
+            </div>
+          )}
+          {status === 'ready' && (
+            <iframe
+              ref={iframeRef}
+              src={src}
+              className="absolute inset-0 w-full h-full border-0"
+              title="Reporte"
+              allow="fullscreen"
+            />
+          )}
+        </div>
+      )}
     </div>
   )
 }

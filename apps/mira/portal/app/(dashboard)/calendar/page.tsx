@@ -6,6 +6,8 @@ import { clsx } from 'clsx'
 import { ChevronLeft, ChevronRight, Loader2, X, Check, CheckSquare } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 type ItemStatus = 'pending_review' | 'approved' | 'rejected' | 'draft'
 
@@ -21,13 +23,11 @@ interface CalendarItem {
   hashtags: string[] | null
 }
 
-const WEEKDAYS = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
-
-const STATUS_STYLE: Record<ItemStatus, { dot: string; chip: string; label: string }> = {
-  pending_review: { dot: 'bg-amber-400', chip: 'bg-amber-500/15 text-amber-400', label: 'Pendiente' },
-  approved: { dot: 'bg-emerald-400', chip: 'bg-emerald-500/15 text-emerald-400', label: 'Aprobado' },
-  rejected: { dot: 'bg-red-400', chip: 'bg-red-500/15 text-red-400', label: 'Rechazado' },
-  draft: { dot: 'bg-[#555]', chip: 'bg-white/10 text-[#888]', label: 'Borrador' },
+const STATUS_STYLE: Record<ItemStatus, { dot: string; chip: string; labelKey: string }> = {
+  pending_review: { dot: 'bg-amber-400', chip: 'bg-amber-500/15 text-amber-400', labelKey: 'calendar.status.pending' },
+  approved: { dot: 'bg-emerald-400', chip: 'bg-emerald-500/15 text-emerald-400', labelKey: 'calendar.status.approved' },
+  rejected: { dot: 'bg-red-400', chip: 'bg-red-500/15 text-red-400', labelKey: 'calendar.status.rejected' },
+  draft: { dot: 'bg-[#555]', chip: 'bg-white/10 text-[#888]', labelKey: 'calendar.status.draft' },
 }
 
 function platformIcon(platform: string | null): string {
@@ -50,6 +50,8 @@ function dayKey(d: Date): string {
 
 export default function CalendarPage() {
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
+  const dateLocale = locale === 'es' ? 'es-ES' : 'en-US'
   const clientId = activeClient?.id
   const brandColor = activeClient?.primaryColor || '#8B5CF6'
 
@@ -154,10 +156,10 @@ export default function CalendarPage() {
     }
     while (list.length % 7 !== 0) list.push({ day: null, items: [], isToday: false })
 
-    const label = first.toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+    const label = first.toLocaleDateString(dateLocale, { month: 'long', year: 'numeric' })
     return { cells: list, monthLabel: label.charAt(0).toUpperCase() + label.slice(1) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [viewYear, viewMonth, items])
+  }, [viewYear, viewMonth, items, dateLocale])
 
   const changeMonth = (delta: number) => {
     const d = new Date(viewYear, viewMonth + delta, 1)
@@ -180,9 +182,11 @@ export default function CalendarPage() {
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">Calendario editorial</h1>
+          <h1 className="text-2xl font-semibold text-white">{t('calendar.title', locale)}</h1>
           <p className="text-[#555] mt-1 text-sm">
-            Contenido de {activeClient?.name ?? 'tu marca'} por fecha · {monthCount} items este mes
+            {t('calendar.subtitle', locale)
+              .replace('{name}', activeClient?.name ?? t('calendar.your-brand', locale))
+              .replace('{count}', String(monthCount))}
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -190,14 +194,14 @@ export default function CalendarPage() {
             href="/approvals"
             className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs bg-[#1A1A1A] text-[#888] hover:text-white transition-colors"
           >
-            <CheckSquare size={13} /> Cola de Aprobación
+            <CheckSquare size={13} /> {t('calendar.approval-queue', locale)}
           </Link>
           <div className="flex items-center gap-1 bg-[#1A1A1A] rounded-lg p-1">
-            <button onClick={() => changeMonth(-1)} className="p-1.5 rounded-md text-[#888] hover:text-white hover:bg-white/10 transition-colors" aria-label="Mes anterior">
+            <button onClick={() => changeMonth(-1)} className="p-1.5 rounded-md text-[#888] hover:text-white hover:bg-white/10 transition-colors" aria-label={t('calendar.prev-month', locale)}>
               <ChevronLeft size={15} />
             </button>
             <span className="text-xs text-white font-medium px-2 min-w-[130px] text-center">{monthLabel}</span>
-            <button onClick={() => changeMonth(1)} className="p-1.5 rounded-md text-[#888] hover:text-white hover:bg-white/10 transition-colors" aria-label="Mes siguiente">
+            <button onClick={() => changeMonth(1)} className="p-1.5 rounded-md text-[#888] hover:text-white hover:bg-white/10 transition-colors" aria-label={t('calendar.next-month', locale)}>
               <ChevronRight size={15} />
             </button>
           </div>
@@ -209,7 +213,7 @@ export default function CalendarPage() {
         {(Object.keys(STATUS_STYLE) as ItemStatus[]).map(s => (
           <span key={s} className="inline-flex items-center gap-1.5 text-[10px] text-[#666]">
             <span className={clsx('w-2 h-2 rounded-full', STATUS_STYLE[s].dot)} />
-            {STATUS_STYLE[s].label}
+            {t(STATUS_STYLE[s].labelKey, locale)}
           </span>
         ))}
       </div>
@@ -217,8 +221,8 @@ export default function CalendarPage() {
       {/* ── Grid mensual ───────────────────────────────────── */}
       <div className="card overflow-hidden">
         <div className="grid grid-cols-7 border-b border-[#1A1A1A]">
-          {WEEKDAYS.map(d => (
-            <div key={d} className="px-2 py-2 text-center text-[10px] font-mono uppercase tracking-wider text-[#555]">
+          {t('calendar.weekdays', locale).split(',').map((d, i) => (
+            <div key={i} className="px-2 py-2 text-center text-[10px] font-mono uppercase tracking-wider text-[#555]">
               {d}
             </div>
           ))}
@@ -268,7 +272,7 @@ export default function CalendarPage() {
                         onClick={() => setSelected(cell.items[3])}
                         className="w-full text-left px-1.5 text-[9px] text-[#555] hover:text-white transition-colors"
                       >
-                        +{cell.items.length - 3} más
+                        +{cell.items.length - 3} {t('calendar.more', locale)}
                       </button>
                     )}
                   </div>
@@ -290,20 +294,20 @@ export default function CalendarPage() {
                 <div>
                   <p className="text-sm text-white font-medium">{selected.platform ?? 'Post'}</p>
                   <p className="text-[10px] text-[#555]">
-                    {selected.date.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
+                    {selected.date.toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long' })}
                     {' · '}
-                    {selected.source === 'queue' ? 'Cola de aprobación' : 'Historial'}
+                    {selected.source === 'queue' ? t('calendar.source-queue', locale) : t('calendar.source-history', locale)}
                   </p>
                 </div>
               </div>
-              <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-white/10 transition-colors" aria-label="Cerrar">
+              <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-white/10 transition-colors" aria-label={t('common.close', locale)}>
                 <X size={15} />
               </button>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-5">
               <span className={clsx('inline-block text-[10px] px-2 py-0.5 rounded-full mb-4', STATUS_STYLE[selected.status].chip)}>
-                {STATUS_STYLE[selected.status].label}
+                {t(STATUS_STYLE[selected.status].labelKey, locale)}
               </span>
               {selected.copy && (
                 <div className="bg-[#0A0A0A] rounded-lg p-4 border border-[#1A1A1A] mb-4">
@@ -328,14 +332,14 @@ export default function CalendarPage() {
                   disabled={updating}
                   className="flex-1 py-2.5 text-xs rounded-lg bg-white text-black hover:bg-white/90 transition-colors font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
-                  <Check size={13} /> Aprobar
+                  <Check size={13} /> {t('calendar.approve', locale)}
                 </button>
                 <button
                   onClick={() => updateStatus(selected, 'rejected')}
                   disabled={updating}
                   className="px-5 py-2.5 text-xs rounded-lg bg-[#1A1A1A] text-[#666] hover:text-red-400 transition-colors disabled:opacity-50"
                 >
-                  <X size={13} /> Rechazar
+                  <X size={13} /> {t('calendar.reject', locale)}
                 </button>
               </div>
             )}

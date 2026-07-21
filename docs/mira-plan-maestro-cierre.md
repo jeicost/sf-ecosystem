@@ -1,6 +1,8 @@
 # MIRA — Plan Maestro de Cierre
 
 > Reconstruido el 2026-07-21 (la sesión que lo redactaba se cortó antes de guardarlo). Estado verificado contra git log y working tree, no contra memoria.
+>
+> **EJECUCIÓN 2026-07-21 tarde** — C0 ✅ (commit `4a5d746`, deploy en `mira-portal-nu.vercel.app`, raíz Vercel deslinkada de sf-cms, vercel.json revertido). C2 ✅ parcial (SALES_ENGINE_API_URL/KEY estaban **vacías** en Vercel — arregladas en mira y sf-crm con la URL real de Railway `https://api-production-37eb.up.railway.app`; motor responde 200 con auth; devuelve 0 leads porque `APOLLO_API_KEY` en Railway es placeholder → falta key real del usuario). C3 ✅ (commit `f484983`: ws-ncglobal + clientId Discoolver + mapeos client_workspaces SF/NC insertados en prod; los 160 leads históricos de SF siguen bajo el client_id placeholder — migrarlos es decisión del usuario). C4 ✅ (iframe con loading/error/retry, DriveFoldersPanel con loading/empty-state, i18n calendar+content-engine). C5 ✅ (iCloud: `.nosync` + symlink verificados, sin placeholders `.icloud`; migraciones documentadas en `portal/migrations/README.md`). **Pendiente del usuario**: C1 walkthrough, keys Apollo/Telegram/Instantly/WEBHOOK_SECRET, decisión migración leads SF.
 
 ## Estado de partida (verificado 2026-07-21 ~11:00)
 

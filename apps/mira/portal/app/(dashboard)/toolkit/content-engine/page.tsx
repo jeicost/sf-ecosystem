@@ -6,6 +6,8 @@ import { clsx } from 'clsx'
 import { Loader2, Check, ChevronLeft, ChevronRight, AlertCircle, CalendarDays, CheckSquare } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface Pillar {
   id: string
@@ -23,14 +25,14 @@ const PLATFORMS = [
   { id: 'tiktok', label: 'TikTok', icon: '🎵' },
 ] as const
 
-const PROGRESS_MESSAGES = [
-  'Cargando Brand Brain y pilares…',
-  'Analizando temas y ángulos por pilar…',
-  'Escribiendo hooks y copies por plataforma…',
-  'Generando captions y hashtags…',
-  'Preparando direcciones visuales…',
-  'Puliendo guiones de Reel…',
-  'Enviando posts a la Cola de Aprobación…',
+const PROGRESS_KEYS = [
+  'content-engine.progress-1',
+  'content-engine.progress-2',
+  'content-engine.progress-3',
+  'content-engine.progress-4',
+  'content-engine.progress-5',
+  'content-engine.progress-6',
+  'content-engine.progress-7',
 ]
 
 function asStringArray(v: unknown): string[] {
@@ -40,6 +42,7 @@ function asStringArray(v: unknown): string[] {
 
 export default function ContentEnginePage() {
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
   const clientId = activeClient?.id
   const brandColor = activeClient?.primaryColor || '#22D3EE'
 
@@ -108,7 +111,7 @@ export default function ContentEnginePage() {
     setResult(null)
     setProgressIdx(0)
     progressTimer.current = setInterval(() => {
-      setProgressIdx(i => Math.min(i + 1, PROGRESS_MESSAGES.length - 1))
+      setProgressIdx(i => Math.min(i + 1, PROGRESS_KEYS.length - 1))
     }, 9000)
 
     try {
@@ -124,10 +127,10 @@ export default function ContentEnginePage() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Error generando contenido')
+      if (!res.ok) throw new Error(data.error || t('content-engine.error-generating', locale))
       setResult(data)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error inesperado')
+      setError(err instanceof Error ? err.message : t('content-engine.error-unexpected', locale))
     } finally {
       if (progressTimer.current) clearInterval(progressTimer.current)
       setGenerating(false)
@@ -146,8 +149,8 @@ export default function ContentEnginePage() {
           <h1 className="text-2xl font-semibold text-white">Content Engine</h1>
         </div>
         <p className="text-sm text-[#555]">
-          Motor de contenido por pilares para <span className="text-white">{activeClient?.name ?? 'tu marca'}</span>.
-          Elige pilares, define el volumen y genera posts listos para aprobar.
+          {t('content-engine.subtitle-prefix', locale)} <span className="text-white">{activeClient?.name ?? t('content-engine.your-brand', locale)}</span>
+          {t('content-engine.subtitle-suffix', locale)}
         </p>
       </div>
 
@@ -168,7 +171,7 @@ export default function ContentEnginePage() {
                 {step > s ? <Check size={13} /> : s}
               </div>
               <span className={clsx('text-xs', step === s ? 'text-white font-medium' : 'text-[#555]')}>
-                {s === 1 ? 'Pilares' : s === 2 ? 'Configuración' : 'Generar'}
+                {s === 1 ? t('content-engine.step-pillars', locale) : s === 2 ? t('content-engine.step-config', locale) : t('content-engine.step-generate', locale)}
               </span>
               {s < 3 && <div className="w-8 h-px bg-[#222]" />}
             </div>
@@ -186,10 +189,10 @@ export default function ContentEnginePage() {
             ✅
           </div>
           <h2 className="text-xl font-semibold text-white mb-2">
-            {result.generated} posts generados
+            {result.generated} {t('content-engine.posts-generated', locale)}
           </h2>
           <p className="text-sm text-[#888] mb-6">
-            Todo está en la Cola de Aprobación como <span className="text-amber-400">pendiente de revisión</span>.
+            {t('content-engine.result-desc-prefix', locale)} <span className="text-amber-400">{t('content-engine.pending-review', locale)}</span>.
           </p>
 
           <div className="max-w-sm mx-auto mb-8 space-y-2 text-left">
@@ -199,7 +202,7 @@ export default function ContentEnginePage() {
                 {count > 0 ? (
                   <span className="text-xs font-semibold text-white shrink-0">{count} posts</span>
                 ) : (
-                  <span className="text-xs text-red-400 shrink-0">falló</span>
+                  <span className="text-xs text-red-400 shrink-0">{t('content-engine.failed', locale)}</span>
                 )}
               </div>
             ))}
@@ -211,13 +214,13 @@ export default function ContentEnginePage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold text-black transition-opacity hover:opacity-90"
               style={{ background: brandColor }}
             >
-              <CheckSquare size={14} /> Revisar en Aprobaciones →
+              <CheckSquare size={14} /> {t('content-engine.review-in-approvals', locale)}
             </Link>
             <Link
               href="/calendar"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold bg-[#1A1A1A] text-white hover:bg-white/10 transition-colors"
             >
-              <CalendarDays size={14} /> Ver calendario →
+              <CalendarDays size={14} /> {t('content-engine.view-calendar', locale)}
             </Link>
           </div>
         </div>
@@ -228,11 +231,11 @@ export default function ContentEnginePage() {
         <div className="card p-10 text-center">
           <Loader2 size={26} className="animate-spin mx-auto mb-4" style={{ color: brandColor }} />
           <p className="text-sm text-white font-medium mb-1">
-            Generando {totalPosts} posts…
+            {t('content-engine.generating-posts', locale).replace('{count}', String(totalPosts))}
           </p>
-          <p className="text-xs text-[#666] transition-all">{PROGRESS_MESSAGES[progressIdx]}</p>
+          <p className="text-xs text-[#666] transition-all">{t(PROGRESS_KEYS[progressIdx], locale)}</p>
           <p className="text-[10px] text-[#444] mt-4">
-            Una llamada por pilar · esto puede tardar unos minutos. No cierres esta pestaña.
+            {t('content-engine.generating-note', locale)}
           </p>
         </div>
       )}
@@ -242,7 +245,7 @@ export default function ContentEnginePage() {
         <div className="card border-red-500/20 p-4 mb-6 flex items-start gap-3">
           <AlertCircle size={16} className="text-red-400 mt-0.5 shrink-0" />
           <div>
-            <p className="text-sm font-semibold text-red-400">Error al generar</p>
+            <p className="text-sm font-semibold text-red-400">{t('content-engine.error-title', locale)}</p>
             <p className="text-xs text-[#888] mt-1">{error}</p>
           </div>
         </div>
@@ -252,18 +255,18 @@ export default function ContentEnginePage() {
       {!generating && !result && step === 1 && (
         <div>
           <p className="text-xs text-[#666] mb-4 font-mono uppercase tracking-wider">
-            Selecciona uno o varios pilares de contenido
+            {t('content-engine.select-pillars', locale)}
           </p>
           {loadingPillars ? (
             <div className="card p-10 flex items-center justify-center gap-3">
               <Loader2 size={18} className="animate-spin text-[#444]" />
-              <p className="text-sm text-[#555]">Cargando pilares…</p>
+              <p className="text-sm text-[#555]">{t('content-engine.loading-pillars', locale)}</p>
             </div>
           ) : pillars.length === 0 ? (
             <div className="card p-10 text-center">
               <p className="text-2xl mb-2">🧱</p>
-              <p className="text-sm text-[#888]">Este cliente aún no tiene pilares de contenido.</p>
-              <p className="text-xs text-[#555] mt-1">Genera primero el Brand Briefing para definirlos.</p>
+              <p className="text-sm text-[#888]">{t('content-engine.no-pillars', locale)}</p>
+              <p className="text-xs text-[#555] mt-1">{t('content-engine.no-pillars-hint', locale)}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -318,7 +321,7 @@ export default function ContentEnginePage() {
       {!generating && !result && step === 2 && (
         <div className="space-y-6">
           <div className="card p-6">
-            <p className="text-xs text-[#666] mb-3 font-mono uppercase tracking-wider">Posts por pilar</p>
+            <p className="text-xs text-[#666] mb-3 font-mono uppercase tracking-wider">{t('content-engine.posts-per-pillar', locale)}</p>
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map(n => (
                 <button
@@ -337,7 +340,7 @@ export default function ContentEnginePage() {
           </div>
 
           <div className="card p-6">
-            <p className="text-xs text-[#666] mb-3 font-mono uppercase tracking-wider">Plataformas</p>
+            <p className="text-xs text-[#666] mb-3 font-mono uppercase tracking-wider">{t('content-engine.platforms', locale)}</p>
             <div className="flex flex-wrap gap-2">
               {PLATFORMS.map(p => {
                 const on = selectedPlatforms.includes(p.id)
@@ -361,9 +364,9 @@ export default function ContentEnginePage() {
 
           <div className="card p-6 flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-white">Incluir scripts de Reel</p>
+              <p className="text-sm font-medium text-white">{t('content-engine.include-reels', locale)}</p>
               <p className="text-xs text-[#666] mt-0.5">
-                Guión escena a escena (tiempos, acción, texto en pantalla) para Instagram y TikTok.
+                {t('content-engine.include-reels-desc', locale)}
               </p>
             </div>
             <button
@@ -386,32 +389,32 @@ export default function ContentEnginePage() {
       {/* ── Paso 3: resumen ────────────────────────────────── */}
       {!generating && !result && step === 3 && (
         <div className="card p-8">
-          <p className="text-xs text-[#666] mb-5 font-mono uppercase tracking-wider">Resumen</p>
+          <p className="text-xs text-[#666] mb-5 font-mono uppercase tracking-wider">{t('content-engine.summary', locale)}</p>
           <h2 className="text-xl font-semibold text-white mb-6">
-            Vas a generar <span style={{ color: brandColor }}>{totalPosts} posts</span>
+            {t('content-engine.about-to-generate', locale)} <span style={{ color: brandColor }}>{totalPosts} posts</span>
           </h2>
           <div className="space-y-3 mb-2">
             <div className="flex items-start justify-between gap-4 border-b border-[#1A1A1A] pb-3">
-              <span className="text-xs text-[#666]">Pilares ({selectedPillars.length})</span>
+              <span className="text-xs text-[#666]">{t('content-engine.pillars', locale)} ({selectedPillars.length})</span>
               <span className="text-xs text-white text-right">{selectedPillarNames.join(' · ')}</span>
             </div>
             <div className="flex items-center justify-between border-b border-[#1A1A1A] pb-3">
-              <span className="text-xs text-[#666]">Posts por pilar y plataforma</span>
+              <span className="text-xs text-[#666]">{t('content-engine.posts-per-pillar-platform', locale)}</span>
               <span className="text-xs text-white">{postsPerPillar}</span>
             </div>
             <div className="flex items-center justify-between border-b border-[#1A1A1A] pb-3">
-              <span className="text-xs text-[#666]">Plataformas</span>
+              <span className="text-xs text-[#666]">{t('content-engine.platforms', locale)}</span>
               <span className="text-xs text-white">
                 {PLATFORMS.filter(p => selectedPlatforms.includes(p.id)).map(p => p.label).join(', ')}
               </span>
             </div>
             <div className="flex items-center justify-between pb-1">
-              <span className="text-xs text-[#666]">Scripts de Reel</span>
-              <span className="text-xs text-white">{includeReels ? 'Sí' : 'No'}</span>
+              <span className="text-xs text-[#666]">{t('content-engine.reel-scripts', locale)}</span>
+              <span className="text-xs text-white">{includeReels ? t('content-engine.yes', locale) : t('content-engine.no', locale)}</span>
             </div>
           </div>
           <p className="text-[11px] text-[#555] mt-4">
-            Cada post se enviará a la Cola de Aprobación como pendiente de revisión — nada se publica sin tu ok.
+            {t('content-engine.summary-note', locale)}
           </p>
         </div>
       )}
@@ -424,7 +427,7 @@ export default function ContentEnginePage() {
               onClick={() => setStep((step - 1) as Step)}
               className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs bg-[#1A1A1A] text-[#888] hover:text-white transition-colors"
             >
-              <ChevronLeft size={14} /> Atrás
+              <ChevronLeft size={14} /> {t('common.back', locale)}
             </button>
           ) : <span />}
 
@@ -438,7 +441,7 @@ export default function ContentEnginePage() {
               )}
               style={stepDone(step) ? { background: brandColor } : undefined}
             >
-              Continuar <ChevronRight size={14} />
+              {t('content-engine.continue', locale)} <ChevronRight size={14} />
             </button>
           ) : (
             <button
@@ -450,7 +453,7 @@ export default function ContentEnginePage() {
               )}
               style={totalPosts > 0 ? { background: brandColor } : undefined}
             >
-              🏭 Generar {totalPosts} posts
+              🏭 {t('content-engine.generate-btn', locale).replace('{count}', String(totalPosts))}
             </button>
           )}
         </div>
