@@ -208,15 +208,15 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // SECTION HEADERS & DESCRIPTIONS
     'header.sales': 'MIRA Sales',
-    'header.sales-desc': '7 especialistas ejecutando tu pipeline B2B completo — desde descubrimiento hasta cierre de deal',
+    'header.sales-desc': '6 especialistas ejecutando tu pipeline B2B completo — desde descubrimiento hasta cierre de deal',
     'header.marketing': 'My Team',
-    'header.marketing-desc': '8 especialistas de marketing trabajando para tu marca. Haz clic en cualquiera para conocerlos',
+    'header.marketing-desc': '7 especialistas de marketing trabajando para tu marca. Haz clic en cualquiera para conocerlos',
     'header.strategy': 'MIRA Strategy',
-    'header.strategy-desc': '8 especialistas —7 estrategas + 1 generador de tendencias— para que cualquier founder tenga control total de su negocio',
+    'header.strategy-desc': '4 especialistas —estrategia, planes, tendencias e innovación— para que cualquier founder tenga control total de su negocio',
     'header.finance': 'MIRA Finance',
     'header.finance-desc': '3 especialistas manejando ingresos de la agencia, análisis de datos, y cumplimiento de auditoría',
     'header.admin': 'MIRA Admin',
-    'header.admin-desc': '4 agentes manejando operaciones internas. Nada se pierde, nada se olvida',
+    'header.admin-desc': '3 agentes de operaciones: soporte de cliente, métricas y procesos',
 
     // STAT LABELS EXPANDED
     'stat.total-leads': 'Leads totales',
@@ -580,15 +580,15 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // SECTION HEADERS & DESCRIPTIONS
     'header.sales': 'MIRA Sales',
-    'header.sales-desc': '7 specialists running your entire B2B acquisition pipeline — from discovery to closed deal',
+    'header.sales-desc': '6 specialists running your entire B2B acquisition pipeline — from discovery to closed deal',
     'header.marketing': 'My Team',
-    'header.marketing-desc': '8 marketing specialists working for your brand. Click any to meet them',
+    'header.marketing-desc': '7 marketing specialists working for your brand. Click any to meet them',
     'header.strategy': 'MIRA Strategy',
-    'header.strategy-desc': '8 specialists —7 strategists + 1 trend scout— so any founder can take full control of their business and stay ahead of innovation',
+    'header.strategy-desc': '4 specialists —strategy, plans, trends and innovation— so any founder can take full control of their business and stay ahead of innovation',
     'header.finance': 'MIRA Finance',
     'header.finance-desc': '3 specialists managing agency revenue, data analytics, and audit compliance',
     'header.admin': 'MIRA Admin',
-    'header.admin-desc': '4 agents managing internal operations. Nothing is lost, nothing is forgotten',
+    'header.admin-desc': '3 operations agents: customer support, metrics and processes',
 
     // STAT LABELS EXPANDED
     'stat.total-leads': 'Total leads',
