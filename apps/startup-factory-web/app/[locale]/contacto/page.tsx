@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import ContactForm from "@/components/ContactForm";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const FORMSPREE_ID = "xnjwnydg";
 const CALENDLY_URL = "https://calendly.com/jacostech";
@@ -181,7 +182,7 @@ export function generateStaticParams() {
 export default async function ContactoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("contacto")["content"]?.data, l);
 
   return (
     <>

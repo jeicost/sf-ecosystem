@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 
@@ -87,7 +88,7 @@ export function generateStaticParams() {
 export default async function VenturePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("venture")["content"]?.data, l);
   const criteria = criteriaDict[l] ?? criteriaDict.es;
   const cards = cardsDict[l] ?? cardsDict.es;
 

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getDictionary } from "@/lib/i18n/getDictionary";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 
@@ -71,11 +72,17 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
     th: { eyebrow: "FAQ", h1: "คำถาม\n", h1Accent: "ที่พบบ่อย", desc: "ทุกสิ่งที่คุณต้องรู้ก่อนก้าวต่อไป ถ้าหาคำตอบไม่เจอ ส่งข้อความถึงเราโดยตรง" },
   };
 
-  const fh = faqHeroDict[l] ?? faqHeroDict.es;
-  const fc = faqCtaDict[l] ?? faqCtaDict.es;
-  const extraFaqs = extraFaqsDict[l] ?? extraFaqsDict.es;
+  const cms = loadCmsSections("faq");
+  const fh = mergeCms(faqHeroDict[l] ?? faqHeroDict.es, cms["hero"]?.data, l);
+  const fc = mergeCms(faqCtaDict[l] ?? faqCtaDict.es, cms["cta"]?.data, l);
+  const extraFaqs = (cms["extra-faqs"]?.data?.[`items_${l}`] ??
+    cms["extra-faqs"]?.data?.["items_en"] ??
+    (extraFaqsDict[l] ?? extraFaqsDict.es)) as Array<{ q: string; a: string }>;
+  const faqItems = (cms["faq"]?.data?.[`items_${l}`] ??
+    cms["faq"]?.data?.["items_en"] ??
+    t.faq.items) as typeof t.faq.items;
 
-  const allFaqs = [...t.faq.items, ...extraFaqs];
+  const allFaqs = [...faqItems, ...extraFaqs];
 
   const faqSchema = {
     "@context": "https://schema.org",

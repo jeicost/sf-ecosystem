@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 
@@ -144,7 +145,7 @@ export default async function TeamAsAServicePage({
 }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("team-as-a-service")["content"]?.data, l);
   const formats = formatsDict[l] ?? formatsDict.es;
   const deliverables = deliverablesDict[l] ?? deliverablesDict.es;
 

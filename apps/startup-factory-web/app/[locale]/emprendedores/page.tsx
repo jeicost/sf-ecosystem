@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 
@@ -180,7 +181,7 @@ const heroDict: Record<Locale, { eyebrow: string; h1: string; h1Accent: string; 
 export default async function EmprendedoresPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("emprendedores")["content"]?.data, l);
   const steps = stepsDict[l] ?? stepsDict.es;
   const h = heroDict[l] ?? heroDict.es;
   const painPoints = painPointsDict[l] ?? painPointsDict.es;

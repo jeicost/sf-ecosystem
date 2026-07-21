@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 
@@ -81,7 +82,7 @@ export function generateStaticParams() {
 export default async function EquipoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("equipo")["content"]?.data, l);
   const values = valuesDict[l] ?? valuesDict.es;
 
   return (
