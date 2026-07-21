@@ -4,8 +4,6 @@ import { requireAuth } from '@/lib/auth'
 import { createOutreachEmail, createActivity } from '@/lib/db'
 import { handleApiError } from '@/lib/api-errors'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export async function POST(request: NextRequest) {
   try {
     const session = await requireAuth()
@@ -31,6 +29,10 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Instanciar aquí y no a nivel de módulo: el constructor lanza sin key
+    // y rompía la build de Vercel al recolectar page data.
+    const resend = new Resend(process.env.RESEND_API_KEY)
 
     const results = {
       sent: 0,
