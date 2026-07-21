@@ -7,7 +7,8 @@ import type { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -41,7 +42,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -105,6 +107,8 @@ export async function POST(request: NextRequest) {
     if (error) throw error
 
     await logActivity({
+      userId: user.id,
+      userEmail: user.email ?? null,
       projectId: project_id,
       action: 'create',
       resourceType: 'page',

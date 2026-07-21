@@ -8,6 +8,34 @@ import type { NextRequest } from 'next/server'
  * GET /api/admin/media?project_id=<id> — List media for project
  */
 
+const MAX_UPLOAD_BYTES = 10 * 1024 * 1024
+
+// MIME → extension. The extension comes from the validated MIME, never from
+// the client filename; SVG is deliberately excluded (scriptable, public bucket).
+const ALLOWED_TYPES: Record<string, string> = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/avif': 'avif',
+  'image/gif': 'gif',
+  'application/pdf': 'pdf',
+}
+
+/** Magic-byte check so a renamed file can't lie about its declared MIME. */
+function matchesMagicBytes(mime: string, bytes: Uint8Array): boolean {
+  const ascii = (from: number, len: number) =>
+    String.fromCharCode(...bytes.slice(from, from + len))
+  switch (mime) {
+    case 'image/jpeg': return bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+    case 'image/png': return bytes[0] === 0x89 && ascii(1, 3) === 'PNG'
+    case 'image/webp': return ascii(0, 4) === 'RIFF' && ascii(8, 4) === 'WEBP'
+    case 'image/avif': return ascii(4, 4) === 'ftyp'
+    case 'image/gif': return ascii(0, 4) === 'GIF8'
+    case 'application/pdf': return ascii(0, 4) === '%PDF'
+    default: return false
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     if (!(await requireSession())) {
@@ -17,11 +45,27 @@ export async function POST(request: NextRequest) {
     const formData = await request.formData()
     const file = formData.get('file') as File
     const projectId = formData.get('project_id') as string
+    const altText = (formData.get('alt_text') as string | null) ?? ''
 
     if (!file || !projectId) {
       return Response.json(
         { error: 'Missing file or project_id' },
         { status: 400 }
+      )
+    }
+
+    if (file.size > MAX_UPLOAD_BYTES) {
+      return Response.json(
+        { error: `File too large (max ${MAX_UPLOAD_BYTES / 1024 / 1024}MB)` },
+        { status: 413 }
+      )
+    }
+
+    const allowedExt = ALLOWED_TYPES[file.type]
+    if (!allowedExt) {
+      return Response.json(
+        { error: `Unsupported file type '${file.type}'. Allowed: ${Object.keys(ALLOWED_TYPES).join(', ')}` },
+        { status: 415 }
       )
     }
 
@@ -39,17 +83,25 @@ export async function POST(request: NextRequest) {
     }
 
     // Upload to Supabase Storage
+    const buffer = await file.arrayBuffer()
+
+    if (!matchesMagicBytes(file.type, new Uint8Array(buffer.slice(0, 16)))) {
+      return Response.json(
+        { error: `File content does not match declared type '${file.type}'` },
+        { status: 415 }
+      )
+    }
+
     const timestamp = Date.now()
-    const ext = file.name.split('.').pop() || 'bin'
-    const filename = `${timestamp}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const filename = `${timestamp}-${Math.random().toString(36).slice(2, 8)}.${allowedExt}`
     const storagePath = `media/${project.slug}/${filename}`
 
-    const buffer = await file.arrayBuffer()
     const { error: uploadError, data: uploadData } = await client.storage
       .from('cms-media')
       .upload(storagePath, buffer, {
         cacheControl: '3600',
         upsert: false,
+        contentType: file.type,
       })
 
     if (uploadError) {
@@ -69,7 +121,7 @@ export async function POST(request: NextRequest) {
         url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/cms-media/${storagePath}`,
         mime_type: file.type,
         size_bytes: file.size,
-        alt_text: '',
+        alt_text: altText,
       })
       .select()
       .single()

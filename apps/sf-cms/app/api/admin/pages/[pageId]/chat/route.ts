@@ -1,5 +1,6 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { captureError } from '@/lib/capture-error'
 import Anthropic from '@anthropic-ai/sdk'
 import { PAGE_EDITOR_SYSTEM_PROMPT } from '@/lib/page-editor-system-prompt'
 
@@ -67,6 +68,7 @@ export async function POST(
     })
   } catch (error) {
     console.error('Chat error:', error)
+    await captureError(error, { route: 'POST /api/admin/pages/[pageId]/chat', pageId })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

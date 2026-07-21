@@ -10,7 +10,8 @@ export async function GET(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -44,7 +45,8 @@ export async function PATCH(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -80,7 +82,7 @@ export async function PATCH(
           page_id: pageId,
           version_number: (count ?? 0) + 1,
           sections_json: currentPage.sections_json,
-          created_by: 'admin',
+          created_by: user.email ?? user.id,
           created_at: new Date().toISOString(),
         })
         .single()
@@ -110,6 +112,8 @@ export async function PATCH(
     if (updateErr) throw updateErr
 
     await logActivity({
+      userId: user.id,
+      userEmail: user.email ?? null,
       projectId: page.project_id,
       action: status === 'published' && currentPage.status !== 'published' ? 'publish' : 'update',
       resourceType: 'page',
@@ -138,7 +142,8 @@ export async function DELETE(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -160,6 +165,8 @@ export async function DELETE(
 
     if (existing) {
       await logActivity({
+        userId: user.id,
+        userEmail: user.email ?? null,
         projectId: existing.project_id,
         action: 'delete',
         resourceType: 'page',

@@ -38,6 +38,7 @@ export async function GET(request: Request) {
         .select('*')
         .eq('project_id', project.id)
         .eq('slug', slug)
+        .eq('status', 'published')
         .single()
 
       if (error || !page) {
