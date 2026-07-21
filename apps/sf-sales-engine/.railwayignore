@@ -1,0 +1,13 @@
+# No subir al build context de Railway
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+portal/
+docs/
+data/
+.env
+.env.*
+!.env.example
