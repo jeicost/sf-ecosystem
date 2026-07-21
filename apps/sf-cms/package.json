@@ -8,7 +8,10 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "db:link": "supabase link --project-ref dmzecrlkclocqaywkjtc",
+    "db:push": "supabase db push",
+    "db:diff": "supabase db diff --linked"
   },
   "dependencies": {
     "next": "^16.0.0",
@@ -33,6 +36,7 @@
     "postcss": "^8.4.0",
     "autoprefixer": "^10.4.0",
     "eslint": "^8.54.0",
-    "eslint-config-next": "^16.0.0"
+    "eslint-config-next": "^16.0.0",
+    "supabase": "^2.0.0"
   }
 }
