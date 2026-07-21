@@ -12,6 +12,7 @@ export const WORKSPACES: Workspace[] = [
     id: 'ws-discoolver',
     name: 'Discoolver',
     type: 'discoolver',
+    clientId: '160d5a90-0da7-4db1-a1fb-9c29ea57a736',
     logo: '/logos/discoolver.png',
   },
   {
@@ -28,6 +29,13 @@ export const WORKSPACES: Workspace[] = [
     clientId: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
     logo: '/logos/salsa-burgers.png',
   },
+  {
+    id: 'ws-ncglobal',
+    name: 'NC Global Assets',
+    type: 'ncglobal',
+    clientId: 'a1c3e5f7-b9d1-4a2b-c3e5-f7a9b1d3e5f7',
+    logo: '/logos/nc-global.png',
+  },
 ]
 
 export const WORKSPACE_PASSWORDS: Record<string, string> = {
@@ -35,6 +43,7 @@ export const WORKSPACE_PASSWORDS: Record<string, string> = {
   discoolver: process.env.DISCOOLVER_WORKSPACE_PASSWORD || 'disc2026',
   dadybox: process.env.DADYBOX_WORKSPACE_PASSWORD || 'dadybox2026',
   salsaburgers: process.env.SALSA_WORKSPACE_PASSWORD || 'salsa2026',
+  ncglobal: process.env.NC_WORKSPACE_PASSWORD || 'nc2026',
 }
 
 export function getWorkspace(id: string): Workspace | undefined {

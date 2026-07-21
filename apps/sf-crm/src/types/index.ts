@@ -1,5 +1,5 @@
 // Workspace types
-export type WorkspaceType = 'sf' | 'discoolver' | 'dadybox' | 'salsaburgers'
+export type WorkspaceType = 'sf' | 'discoolver' | 'dadybox' | 'salsaburgers' | 'ncglobal'
 
 export interface Workspace {
   id: string
