@@ -92,38 +92,6 @@ export function StrategyQuickActions() {
         </div>
       ),
     },
-    {
-      id: 'proyectar_revenue',
-      title: t('actions.strategy.proyectar_revenue', locale),
-      description: t('actions.strategy.proyectar_revenue.desc', locale),
-      actionType: 'proyectar_revenue',
-      form: (
-        <div className="space-y-3">
-          <input
-            type="number"
-            name="current_mrr"
-            placeholder="Current MRR (USD)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
-            required
-          />
-          <input
-            type="number"
-            name="growth_rate"
-            placeholder="Monthly growth rate (%)"
-            step="0.1"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
-            required
-          />
-          <input
-            type="number"
-            name="months"
-            placeholder="Number of months"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
-            defaultValue="12"
-          />
-        </div>
-      ),
-    },
     // Innovation actions (merged from innovacion section)
     {
       id: 'tendencias_analisis',
@@ -152,10 +120,10 @@ export function StrategyQuickActions() {
       ),
     },
     {
-      id: 'innovation_audit',
-      title: t('actions.strategy.innovation_audit', locale),
-      description: t('actions.strategy.innovation_audit.desc', locale),
-      actionType: 'auditar_innovacion',
+      id: 'plan_innovacion',
+      title: t('actions.strategy.plan_innovacion', locale),
+      description: t('actions.strategy.plan_innovacion.desc', locale),
+      actionType: 'roadmap_innovacion',
       form: (
         <div className="space-y-3">
           <textarea
@@ -164,25 +132,6 @@ export function StrategyQuickActions() {
             className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm resize-none h-20"
             required
           />
-          <select
-            name="focus"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
-            required
-          >
-            <option value="product">Producto</option>
-            <option value="process">Proceso</option>
-            <option value="business">Modelo de Negocio</option>
-          </select>
-        </div>
-      ),
-    },
-    {
-      id: 'innovation_roadmap',
-      title: t('actions.strategy.innovation_roadmap', locale),
-      description: t('actions.strategy.innovation_roadmap.desc', locale),
-      actionType: 'roadmap_innovacion',
-      form: (
-        <div className="space-y-3">
           <input
             type="text"
             name="strategic_goal"
