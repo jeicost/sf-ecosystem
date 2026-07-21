@@ -21,13 +21,13 @@ Never run `vercel` or `vercel --prod` from the monorepo ROOT. Always `cd` into t
 | Local Folder | Vercel Project Name | Project ID | Org ID | Production Domain | Supabase Project | Notes |
 |---|---|---|---|---|---|---|
 | `apps/mira/portal` | mira-portal | `prj_75UXcFgDkNPjJWKtPMu9o2XijCjL` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none (vercel.app only) | `nnevhtfxuawexliwlbmh` | **ZERO INTERFERENCE** — do not modify config without explicit request. MIRA is off-limits. |
-| `apps/startup-factory-web` | startup-factory-web | `prj_XqOuowAPVwCIquJSGvtW1j7D1iiE` | `jeicosts-projects` | startupsfactory.es | `nnevhtfxuawexliwlbmh` (via shared tools) | SF main marketing site. Root Directory on Vercel = "." |
+| `apps/startup-factory-web` | startup-factory-web | `prj_XqOuowAPVwCIquJSGvtW1j7D1iiE` | `jeicosts-projects` | startupsfactory.es | `nnevhtfxuawexliwlbmh` (via shared tools) | SF main marketing site. Root Directory on Vercel = "." **2026-07-21:** SSO protection disabled (302'd previews); CMS_API_URL added to Preview env; live canonical is APEX (www→apex 307 — contradicts the www rule, pending decision, see audit NEW-3). |
 | `apps/sf-cms` | sf-cms | `prj_istn9Vc3c7zd17QkzakT9CUWmW3B` | `team_7QGpRqqi1FjrJugGLL0sDehf` | cms.startupsfactory.es, sf-cms.vercel.app | `dmzecrlkclocqaywkjtc` | **UPDATED 2026-07-19:** Domain was OURS all along (see resolved finding below). App is now self-contained (no workspace deps) — CLI deploy from `apps/sf-cms` works. Project has NO git integration; deploy via `cd apps/sf-cms && vercel --prod`. |
 | `apps/sf-crm` | sf-crm | `prj_TR1XsOLUpLcpQxsu5yFmYKGEvJfk` | `team_7QGpRqqi1FjrJugGLL0sDehf` | sf-crm-phi.vercel.app | `nnevhtfxuawexliwlbmh` | CRM platform (internal use). |
 | `packages/cms-client` | cms-client | `prj_KjoFaJi7fH4b2OC14wDEzH8lm74N` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none | — | Shared NPM package (not typically deployed standalone). |
 | `clients/salsa-burgers` | salsa-burgers-web | `prj_ermiutbVMzAyE8lRL3mrot8g5JRC` | `team_7QGpRqqi1FjrJugGLL0sDehf` | salsaburgers.com, www.salsaburgers.com | — | **FIXED 2026-07-16:** Was mislinked to orphan project (`prj_CE4lSOWL...`). Now points to real production project. |
 | `clients/nc-global-assets` | nc-global-assets | `prj_dglycSdtgX52oCSDNqAfq8JeME82` | `jeicosts-projects` | ncglobalassets.com, www.ncglobalassets.com | — | Legacy Vite SPA (being replaced by nc-global-assets-next). |
-| `clients/nc-global-assets-next` | nc-global-assets-next | `prj_GqKIJAxeq8ZgJ9VB6GYIr3O7qwlD` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none (WIP) | — | Next.js port of NC Global (mid-migration, low priority, zero production risk). |
+| `clients/nc-global-assets-next` | nc-global-assets-next | `prj_GqKIJAxeq8ZgJ9VB6GYIr3O7qwlD` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none (WIP) | — | Next.js port of NC Global. **UPDATED 2026-07-21:** UI port complete, locally linked, CLI deploy works (project `rootDirectory` cleared + SSO protection disabled via API), CMS envs set (SF_CMS_* prod+preview). Preview verified; domain cutover pending explicit decision. |
 | `apps/sf-links` | sf-links | (not yet inspected) | — | links.startupsfactory.es | — | Link shortener (currently unlinked locally, low priority). |
 | `clients/discoolver/creators-landing` | discoolver-creators-landing | `prj_No9UIOs54YPJW4iVQyeWnoNVpXG4` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-creators-landing-jeicosts-projects.vercel.app | — | Static HTML landing. Deployed 2026-07-19. |
 | `clients/discoolver/briefing` | discoolver-briefing | `prj_leUpb2tNZkSikGVeVHUt8JwJujQZ` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-briefing-jeicosts-projects.vercel.app | — | Static HTML briefing page. Deployed 2026-07-19. |
@@ -110,5 +110,5 @@ Every file in the codebase that references Supabase has been verified to use the
 
 ---
 
-**Last updated:** 2026-07-16  
+**Last updated:** 2026-07-21  
 **Next review:** Before any major deployment phase or when adding new projects.
