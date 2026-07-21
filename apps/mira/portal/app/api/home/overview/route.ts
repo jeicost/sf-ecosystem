@@ -35,9 +35,10 @@ export async function GET(req: NextRequest) {
     monthStart.setHours(0, 0, 0, 0)
 
     const [clientRes, queueRes, approvalsRes, usageRes, projectsRes] = await Promise.all([
+      // NB: sin 'settings' — la columna no existe aún en prod (migración 0035 pendiente)
       admin
         .from('clients')
-        .select('id, name, slug, logo_url, primary_color, settings')
+        .select('id, name, slug, logo_url, primary_color')
         .eq('id', clientId)
         .single(),
       admin
@@ -96,7 +97,6 @@ export async function GET(req: NextRequest) {
         slug: clientRes.data.slug,
         logo_url: clientRes.data.logo_url,
         primary_color: clientRes.data.primary_color,
-        landings: (clientRes.data.settings as Record<string, unknown> | null)?.landings ?? [],
       },
       stats: {
         reports_total: reports.length,
