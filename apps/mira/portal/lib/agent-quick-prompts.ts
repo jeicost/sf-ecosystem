@@ -52,20 +52,10 @@ export const AGENT_QUICK_PROMPTS: Record<string, string[]> = {
     'Diseña un pricing strategy basada en valor',
     'Analiza la salud financiera de este cliente',
   ],
-  ledger: [
-    'Revisa el estado de pagos pendientes',
-    'Genera un P&L completo del mes',
-    'Alerta: confirma si tenemos clientes morosos',
-  ],
   pulse: [
     'Health check: dime el estado del sistema',
     'Cómo vamos en token usage esta semana?',
     'Hay alerts o logs de error que deba revisar?',
-  ],
-  herald: [
-    'Genera un daily briefing con lo más urgente',
-    'Crea un weekly report ejecutivo',
-    'Dame un resumen de todo lo que sucedió esta semana',
   ],
   'video-editor': [
     'Edita este video con estas instrucciones',
@@ -95,27 +85,8 @@ export const AGENT_QUICK_PROMPTS: Record<string, string[]> = {
   atlas: [
     'Mapea tendencias emergentes en [sector]',
     'Analiza el landscape competitivo actual',
+    'Construye 3 escenarios futuros para nuestro negocio',
     'Identifica oportunidades de mercado no exploradas',
-  ],
-  kairos: [
-    'Cuándo es el mejor momento para [acción]?',
-    'Diseña un timing strategy para nuestro launch',
-    'Analiza ventanas de oportunidad en el mercado',
-  ],
-  radar: [
-    'Detecta señales débiles en el mercado',
-    'Monitorea a nuestros competidores',
-    'Identifica cambios en el comportamiento del cliente',
-  ],
-  venture: [
-    'Diseña un modelo de negocio escalable',
-    'Analiza viabilidad de este producto/servicio',
-    'Crea un business plan para pitch a inversores',
-  ],
-  oracle: [
-    'Construye 3 futuros posibles para nuestro negocio',
-    'Qué debería preparar para los próximos 12 meses?',
-    'Analiza este cambio usando STEEP framework',
   ],
   onboard: [
     'Diseña un programa de onboarding para el equipo',
@@ -138,19 +109,14 @@ export const AGENT_QUICK_PROMPTS: Record<string, string[]> = {
     'Genera reportes financieros consolidados',
   ],
   harbor: [
-    'Dime el estado actual de todas nuestras operaciones',
-    'Identifica riesgos operativos inmediatos',
-    'Crea un plan de contingencia para [escenario]',
+    'Redacta la respuesta a este ticket de cliente',
+    'Crea una FAQ con las dudas más frecuentes de nuestros clientes',
+    'Diseña una plantilla de respuesta para [tipo de incidencia]',
   ],
   spark: [
     'Brainstormea 10 ideas nuevas para [objetivo]',
     'Cómo podríamos innovar en [área]?',
     'Genera conceptos disruptivos para nuestro sector',
-  ],
-  scout: [
-    'Encuentra oportunidades de negocio en [sector]',
-    'Identifica leads en base a estos criterios',
-    'Mapea el mercado para descubrir nuevas cuentas',
   ],
 }
 

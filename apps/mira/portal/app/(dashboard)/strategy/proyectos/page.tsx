@@ -90,7 +90,7 @@ export default function Page() {
       </div>
 
       <AgentWorkspace
-        role="venture"
+        role="blueprint"
         agentName="Venture"
         agentEmoji="🚀"
         color="#22C55E"

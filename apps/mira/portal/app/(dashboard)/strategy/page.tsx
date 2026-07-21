@@ -18,14 +18,10 @@ import type { AgentStatus } from '@/lib/agent-meta'
 
 // Agent metadata combining strategy + innovation
 const STRATEGY_META: Record<string, { produces: string }> = {
-  'strategos': { produces: '90-day board' },
-  'blueprint': { produces: 'Business model' },
-  'atlas': { produces: 'Competitor landscape' },
-  'kairos': { produces: 'Growth playbook' },
-  'radar': { produces: 'KPI targets' },
-  'venture': { produces: 'Venture thesis' },
-  'oracle': { produces: 'Market forecast' },
-  'spark': { produces: 'Trend forecast & ideas' },
+  'strategos': { produces: '90-day board & timing' },
+  'blueprint': { produces: 'Business model & roadmap' },
+  'atlas': { produces: 'Trends & market forecast' },
+  'spark': { produces: 'Ideas & innovation' },
 }
 
 const PIPELINE_STEPS = STRATEGY_DEPT_AGENTS.map(a => ({

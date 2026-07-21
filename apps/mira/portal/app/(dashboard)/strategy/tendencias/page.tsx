@@ -79,7 +79,7 @@ export default function Page() {
       </div>
 
       <AgentWorkspace
-        role="radar"
+        role="atlas"
         agentName="Radar"
         agentEmoji="📡"
         color="#8B5CF6"

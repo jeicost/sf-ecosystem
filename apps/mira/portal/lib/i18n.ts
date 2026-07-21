@@ -144,10 +144,8 @@ const translations: Record<Locale, Record<string, string>> = {
     // QUICK ACTIONS - STRATEGY (INNOVATION ACTIONS)
     'actions.strategy.tendencias_analisis': 'Análisis de Tendencias',
     'actions.strategy.tendencias_analisis.desc': 'Identificar tendencias emergentes del mercado',
-    'actions.strategy.innovation_audit': 'Auditoría de Innovación',
-    'actions.strategy.innovation_audit.desc': 'Evaluar madurez de innovación',
-    'actions.strategy.innovation_roadmap': 'Roadmap de Innovación',
-    'actions.strategy.innovation_roadmap.desc': 'Generar plan de innovación de 12 meses',
+    'actions.strategy.plan_innovacion': 'Plan de Innovación',
+    'actions.strategy.plan_innovacion.desc': 'Diagnóstico de innovación + roadmap por horizontes',
 
     // QUICK ACTIONS - ADMIN
     'actions.admin.responder_ticket': 'Responder Ticket',
@@ -518,10 +516,8 @@ const translations: Record<Locale, Record<string, string>> = {
     // QUICK ACTIONS - STRATEGY (INNOVATION ACTIONS)
     'actions.strategy.tendencias_analisis': 'Trends Analysis',
     'actions.strategy.tendencias_analisis.desc': 'Identify emerging market trends',
-    'actions.strategy.innovation_audit': 'Innovation Audit',
-    'actions.strategy.innovation_audit.desc': 'Evaluate innovation maturity',
-    'actions.strategy.innovation_roadmap': 'Innovation Roadmap',
-    'actions.strategy.innovation_roadmap.desc': 'Generate 12-month innovation plan',
+    'actions.strategy.plan_innovacion': 'Innovation Plan',
+    'actions.strategy.plan_innovacion.desc': 'Innovation diagnosis + horizon roadmap',
 
     // QUICK ACTIONS - ADMIN
     'actions.admin.responder_ticket': 'Respond to Ticket',

@@ -7,20 +7,15 @@ export const AGENT_ARCHETYPE_MAP: Record<string, AgentArchetype> = {
   // ORACLE — Content & idea generators
   alex: 'ORACLE',
   kai: 'ORACLE',
-  herald: 'ORACLE',
 
   // ANALYST — Scoring & evaluation
   vera: 'ANALYST',
   atlas: 'ANALYST',
-  kairos: 'ANALYST',
   quant: 'ANALYST',
   fiscal: 'ANALYST',
 
   // EXPLORER — Discovery & research
   rex: 'EXPLORER',
-  scout: 'EXPLORER',
-  radar: 'EXPLORER',
-  venture: 'EXPLORER',
 
   // ARCHITECT — Planning & structuring
   marco: 'ARCHITECT',
@@ -31,8 +26,7 @@ export const AGENT_ARCHETYPE_MAP: Record<string, AgentArchetype> = {
 
   // SENTINEL — Monitoring & alerts
   pulse: 'SENTINEL',
-  ledger: 'SENTINEL',
-  compliance: 'SENTINEL',
+  harbor: 'SENTINEL', // Customer support
   sam: 'SENTINEL', // Community monitoring
   luna: 'SENTINEL', // Strategy monitoring
 
@@ -43,7 +37,6 @@ export const AGENT_ARCHETYPE_MAP: Record<string, AgentArchetype> = {
 
   // Strategy agents that can use both ORACLE and ARCHITECT
   strategos: 'ARCHITECT',
-  oracle: 'ORACLE', // Different oracle — foresight
 }
 
 export function getArchetype(agentId: string): AgentArchetype {

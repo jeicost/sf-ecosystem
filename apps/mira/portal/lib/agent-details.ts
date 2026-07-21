@@ -168,21 +168,6 @@ export const AGENT_DETAILS: Record<string, AgentDetail> = {
       { label: 'Business plans', value: '4', delta: 'investor-ready', positive: true },
     ],
   },
-  ledger: {
-    chatOpener: "Hi, I'm Ledger. I handle all the numbers. Ask me about invoices, payments, P&L or financial health of any client.",
-    toneLevel: 0.7,
-    recentTasks: [
-      { id: '1', task: 'Invoice #004 sent — Salsa Burgers $1,200', status: 'completed', timeAgo: '2d' },
-      { id: '2', task: 'Alert: Wagyu House payment day 7 overdue', status: 'working', platform: 'Alert', timeAgo: 'now' },
-      { id: '3', task: 'Monthly P&L — April: $4,800 revenue, $1,200 costs', status: 'completed', timeAgo: '3d' },
-    ],
-    metrics: [
-      { label: 'MRR', value: '$4,800', delta: '+$1,200 this month', positive: true },
-      { label: 'Overdue invoices', value: '1', delta: 'day 7', positive: false },
-      { label: 'Collections rate', value: '94%', delta: 'on time', positive: true },
-      { label: 'Profit margin', value: '75%', delta: 'after all costs', positive: true },
-    ],
-  },
   pulse: {
     chatOpener: "Hi, I'm Pulse. I can check the system health, show you token usage, error logs or workflow status. What do you need?",
     toneLevel: 0.6,
@@ -198,35 +183,14 @@ export const AGENT_DETAILS: Record<string, AgentDetail> = {
       { label: 'Weekly AI cost', value: '$47', delta: '$15 under budget', positive: true },
     ],
   },
-  herald: {
-    chatOpener: "Hi, I'm Herald. Ask me for today's briefing, last week's report, or any summary across all agents and clients.",
-    toneLevel: 0.5,
-    recentTasks: [
-      { id: '1', task: 'Daily Briefing 08:30 — 3 approvals pending, 1 payment alert', status: 'completed', timeAgo: '2h' },
-      { id: '2', task: 'Weekly Report Monday — 15 posts published, 2 new leads closed', status: 'completed', timeAgo: '2d' },
-      { id: '3', task: 'Critical alert: Salsa Burgers GMB review unanswered 4h', status: 'working', timeAgo: '30min' },
-    ],
-    metrics: [
-      { label: 'Briefings sent', value: '22', delta: 'this month', positive: true },
-      { label: 'Weekly reports', value: '4', delta: 'this month', positive: true },
-      { label: 'Critical alerts', value: '2', delta: 'this week', positive: false },
-      { label: 'Delivery rate', value: '100%', delta: 'zero missed', positive: true },
-    ],
-  },
-
-  // Stub entries for missing 18 agents (will use DEFAULT details)
+  // Stub entries for agents without curated details (use DEFAULT details)
   'video-editor': DEFAULT_AGENT_DETAILS,
   'ads-manager': DEFAULT_AGENT_DETAILS,
   'community-manager': DEFAULT_AGENT_DETAILS,
   'reply-qualifier': DEFAULT_AGENT_DETAILS,
   'proposal-writer': DEFAULT_AGENT_DETAILS,
   atlas: DEFAULT_AGENT_DETAILS,
-  kairos: DEFAULT_AGENT_DETAILS,
-  radar: DEFAULT_AGENT_DETAILS,
   spark: DEFAULT_AGENT_DETAILS,
-  scout: DEFAULT_AGENT_DETAILS,
-  venture: DEFAULT_AGENT_DETAILS,
-  oracle: DEFAULT_AGENT_DETAILS,
   onboard: DEFAULT_AGENT_DETAILS,
   midas: DEFAULT_AGENT_DETAILS,
   quant: DEFAULT_AGENT_DETAILS,

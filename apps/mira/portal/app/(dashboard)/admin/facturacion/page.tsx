@@ -109,7 +109,7 @@ export default function Page() {
       </Card>
 
       <AgentWorkspace
-        role="ledger"
+        role="fiscal"
         agentName="Ledger"
         agentEmoji="💳"
         color="#6366F1"

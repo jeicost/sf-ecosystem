@@ -48,7 +48,7 @@ export interface AgentMetadata {
 }
 
 export const AGENT_METADATA: Record<string, AgentMetadata> = {
-  // Comercial (7)
+  // Comercial (6)
   orchestrator: {
     id: 'orchestrator',
     name: 'Marco',
@@ -63,8 +63,8 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     id: 'lead-scout',
     name: 'Rex',
     emoji: '🔍',
-    description: 'Opportunity discoverer',
-    descriptionEs: 'Descubridor de oportunidades',
+    description: 'Lead, market & opportunity discoverer',
+    descriptionEs: 'Descubridor de leads, mercados y oportunidades',
     color: '#06B6D4',
     gradient: 'from-cyan-500 to-blue-500',
     department: 'comercial',
@@ -89,16 +89,6 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     gradient: 'from-pink-500 to-rose-500',
     department: 'comercial',
   },
-  scout: {
-    id: 'scout',
-    name: 'Scout',
-    emoji: '🔭',
-    description: 'Market explorer',
-    descriptionEs: 'Explorador de mercados',
-    color: '#06B6D4',
-    gradient: 'from-cyan-500 to-blue-500',
-    department: 'comercial',
-  },
   'reply-qualifier': {
     id: 'reply-qualifier',
     name: 'Quinn',
@@ -120,7 +110,7 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     department: 'comercial',
   },
 
-  // Marketing (8)
+  // Marketing (7)
   'content-strategist': {
     id: 'content-strategist',
     name: 'Luna',
@@ -135,20 +125,10 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     id: 'copywriter',
     name: 'Alex',
     emoji: '✍️',
-    description: 'Copy writer',
-    descriptionEs: 'Redactor de copy',
+    description: 'Copy & brand communications writer',
+    descriptionEs: 'Redactor de copy y comunicación de marca',
     color: '#EC4899',
     gradient: 'from-pink-500 to-rose-500',
-    department: 'marketing',
-  },
-  herald: {
-    id: 'herald',
-    name: 'Herald',
-    emoji: '📢',
-    description: 'Brand communicator',
-    descriptionEs: 'Comunicador de marcas',
-    color: '#6366F1',
-    gradient: 'from-indigo-500 to-violet-600',
     department: 'marketing',
   },
   'social-media-manager': {
@@ -202,13 +182,13 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     department: 'marketing',
   },
 
-  // Strategy (8 - 7 from old estrategia + 1 from old innovacion)
+  // Strategy (4 — síntesis 2026-07-21: Strategos absorbe Kairos, Blueprint absorbe Venture, Atlas absorbe Oracle y Radar)
   strategos: {
     id: 'strategos',
     name: 'Strategos',
     emoji: '♟️',
-    description: 'Master strategist',
-    descriptionEs: 'Estratega maestro',
+    description: 'Master strategist & strategic timing',
+    descriptionEs: 'Estratega maestro y timing estratégico',
     color: '#7C3AED',
     gradient: 'from-violet-600 to-purple-600',
     department: 'strategy',
@@ -217,8 +197,8 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     id: 'blueprint',
     name: 'Blueprint',
     emoji: '🏗️',
-    description: 'Plan architect',
-    descriptionEs: 'Arquitecto de planes',
+    description: 'Plan & business model architect',
+    descriptionEs: 'Arquitecto de planes y modelos de negocio',
     color: '#06B6D4',
     gradient: 'from-cyan-500 to-blue-500',
     department: 'strategy',
@@ -227,64 +207,14 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     id: 'atlas',
     name: 'Atlas',
     emoji: '🗺️',
-    description: 'Trend cartographer',
-    descriptionEs: 'Cartógrafo de tendencias',
+    description: 'Trends, foresight & opportunity mapping',
+    descriptionEs: 'Tendencias, escenarios futuros y oportunidades',
     color: '#3B82F6',
     gradient: 'from-blue-500 to-cyan-500',
     department: 'strategy',
   },
-  kairos: {
-    id: 'kairos',
-    name: 'Kairos',
-    emoji: '⏰',
-    description: 'Strategic timing expert',
-    descriptionEs: 'Experto en timing estratégico',
-    color: '#D946EF',
-    gradient: 'from-fuchsia-500 to-purple-600',
-    department: 'strategy',
-  },
-  radar: {
-    id: 'radar',
-    name: 'Radar',
-    emoji: '📡',
-    description: 'Opportunity detector',
-    descriptionEs: 'Detector de oportunidades',
-    color: '#06B6D4',
-    gradient: 'from-cyan-500 to-blue-600',
-    department: 'strategy',
-  },
-  venture: {
-    id: 'venture',
-    name: 'Venture',
-    emoji: '🚀',
-    description: 'Business architect',
-    descriptionEs: 'Arquitecto de negocios',
-    color: '#8B5CF6',
-    gradient: 'from-purple-500 to-indigo-600',
-    department: 'strategy',
-  },
-  oracle: {
-    id: 'oracle',
-    name: 'Oracle',
-    emoji: '🔮',
-    description: 'Future visionary',
-    descriptionEs: 'Visionario de futuros',
-    color: '#7C3AED',
-    gradient: 'from-violet-500 to-purple-600',
-    department: 'strategy',
-  },
 
-  // Operaciones (4)
-  ledger: {
-    id: 'ledger',
-    name: 'Ledger',
-    emoji: '💳',
-    description: 'Finance manager',
-    descriptionEs: 'Gestor de finanzas',
-    color: '#6366F1',
-    gradient: 'from-indigo-500 to-violet-700',
-    department: 'operaciones',
-  },
+  // Operaciones (3 — reperfilado 2026-07-21: soporte de cliente + métricas + procesos; Ledger eliminado, redundante con Finanzas)
   pulse: {
     id: 'pulse',
     name: 'Pulse',
@@ -299,8 +229,8 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     id: 'onboard',
     name: 'Onboard',
     emoji: '🎓',
-    description: 'Team trainer',
-    descriptionEs: 'Entrenador de equipos',
+    description: 'Processes, SOPs & team onboarding',
+    descriptionEs: 'Procesos, SOPs y formación de equipos',
     color: '#3B82F6',
     gradient: 'from-blue-500 to-indigo-600',
     department: 'operaciones',
@@ -308,9 +238,9 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
   harbor: {
     id: 'harbor',
     name: 'Harbor',
-    emoji: '⚓',
-    description: 'Stability anchor',
-    descriptionEs: 'Ancla de estabilidad',
+    emoji: '🛟',
+    description: 'Customer support — tickets, FAQs & replies',
+    descriptionEs: 'Soporte de cliente — tickets, FAQs y respuestas',
     color: '#10B981',
     gradient: 'from-green-500 to-teal-600',
     department: 'operaciones',
@@ -367,7 +297,6 @@ export const COMERCIAL_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['lead-scout'],
   AGENT_METADATA['icp-scorer'],
   AGENT_METADATA['icebreaker-writer'],
-  AGENT_METADATA['scout'],
   AGENT_METADATA['reply-qualifier'],
   AGENT_METADATA['proposal-writer'],
 ]
@@ -375,7 +304,6 @@ export const COMERCIAL_DEPT_AGENTS: AgentMetadata[] = [
 export const MARKETING_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['content-strategist'],
   AGENT_METADATA['copywriter'],
-  AGENT_METADATA['herald'],
   AGENT_METADATA['social-media-manager'],
   AGENT_METADATA['designer'],
   AGENT_METADATA['video-editor'],
@@ -387,10 +315,6 @@ export const STRATEGY_DEPT_AGENTS: AgentMetadata[] = [
   AGENT_METADATA['strategos'],
   AGENT_METADATA['blueprint'],
   AGENT_METADATA['atlas'],
-  AGENT_METADATA['kairos'],
-  AGENT_METADATA['radar'],
-  AGENT_METADATA['venture'],
-  AGENT_METADATA['oracle'],
   AGENT_METADATA['spark'],
 ]
 
@@ -399,10 +323,9 @@ export const ESTRATEGIA_DEPT_AGENTS = STRATEGY_DEPT_AGENTS
 export const INNOVACION_DEPT_AGENTS = [AGENT_METADATA['spark']]
 
 export const OPERACIONES_DEPT_AGENTS: AgentMetadata[] = [
-  AGENT_METADATA['ledger'],
+  AGENT_METADATA['harbor'],
   AGENT_METADATA['pulse'],
   AGENT_METADATA['onboard'],
-  AGENT_METADATA['harbor'],
 ]
 
 export const FINANZAS_DEPT_AGENTS: AgentMetadata[] = [

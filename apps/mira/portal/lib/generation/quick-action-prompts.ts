@@ -420,7 +420,7 @@ Generate audit JSON:
   }
 
   if (actionType === 'roadmap_innovacion') {
-    return `You are an innovation strategist. Build a 12-month innovation roadmap for this brand.
+    return `You are an innovation strategist. First diagnose this brand's current innovation capacity (from the current_state input), then build an innovation roadmap for the requested timeline.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -428,7 +428,8 @@ ${fullContext}
 
 Generate roadmap JSON:
 {
-  "vision": "Where innovation takes this brand in 12 months",
+  "diagnosis": {"innovation_score": 0, "summary": "2-3 sentence assessment of current innovation capacity", "strengths": [""], "gaps": [""]},
+  "vision": "Where innovation takes this brand in the requested timeline",
   "horizons": {
     "h1_core": {"focus": "Optimize the core business", "initiatives": [{"name": "", "quarter": "Q1|Q2|Q3|Q4", "outcome": ""}]},
     "h2_adjacent": {"focus": "Adjacent opportunities", "initiatives": [{"name": "", "quarter": "", "outcome": ""}]},
