@@ -8,11 +8,11 @@ import { Eye, EyeOff } from 'lucide-react'
 
 const AGENTS = [
   { name: 'Strategos', role: 'Chief Strategy Officer', color: '#6366F1', emoji: '🔭', x: 8,  y: 10 },
-  { name: 'Radar',     role: 'Trend Intelligence',     color: '#a78bfa', emoji: '📡', x: 60, y: 6  },
+  { name: 'Atlas',     role: 'Trend Intelligence',     color: '#a78bfa', emoji: '🗺️', x: 60, y: 6  },
   { name: 'Marco',     role: 'Creative Director',      color: '#8B5CF6', emoji: '🎬', x: 68, y: 54 },
   { name: 'Midas',     role: 'Wealth Planner',         color: '#F59E0B', emoji: '💎', x: 7,  y: 60 },
   { name: 'Rex',       role: 'Lead Scout',             color: '#EF4444', emoji: '🔍', x: 62, y: 80 },
-  { name: 'Oracle',    role: 'Strategic Foresight',    color: '#EC4899', emoji: '🔮', x: 12, y: 80 },
+  { name: 'Spark',     role: 'Innovation Catalyst',    color: '#EC4899', emoji: '⚡', x: 12, y: 80 },
   { name: 'Quant',     role: 'Investment Analyst',     color: '#6366F1', emoji: '📈', x: 33, y: 4  },
 ]
 
@@ -102,15 +102,15 @@ export default function LoginPage() {
           <p className="mt-3 text-center max-w-[280px] leading-relaxed"
             style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)' }}>
             Tu equipo de{' '}
-            <span style={{ color: '#ffffff', fontWeight: 600 }}>30 agentes IA</span>{' '}
+            <span style={{ color: '#ffffff', fontWeight: 600 }}>23 agentes IA</span>{' '}
             trabajando 24/7 para hacer crecer tu negocio.
           </p>
 
           {/* Stats */}
           <div className="mt-10 flex items-stretch">
             {[
-              { n: '30', l: 'Agentes' },
-              { n: '6',  l: 'Equipos' },
+              { n: '23', l: 'Agentes' },
+              { n: '5',  l: 'Equipos' },
               { n: '24/7', l: 'Disponibles' },
             ].map(({ n, l }, i) => (
               <div key={l} className="text-center flex flex-col items-center px-8"

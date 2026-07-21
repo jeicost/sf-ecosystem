@@ -185,10 +185,10 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
     <div className="fixed inset-0 z-50 flex items-center justify-center"
       style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(8px)' }}>
       <div className="relative w-full max-w-[560px] mx-4 rounded-3xl overflow-hidden shadow-2xl"
-        style={{ background: '#0f0f17', border: '1px solid rgba(255,255,255,0.1)' }}>
+        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
 
         {/* Progress bar */}
-        <div className="h-0.5 w-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+        <div className="h-0.5 w-full" style={{ background: 'var(--border-subtle)' }}>
           <div className="h-full transition-all duration-500"
             style={{ width: `${((step + 1) / STEPS.length) * 100}%`, background: c }} />
         </div>
@@ -202,12 +202,12 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 style={{
                   width: i === step ? '20px' : '6px',
                   height: '6px',
-                  background: i === step ? c : i < step ? `${c}60` : 'rgba(255,255,255,0.15)',
+                  background: i === step ? c : i < step ? `${c}60` : 'var(--text-muted)',
                 }} />
             ))}
           </div>
           <button onClick={complete}
-            className="text-[#444] hover:text-white transition-colors p-1">
+            className="text-ink-muted hover:text-ink transition-colors p-1">
             <X size={16} />
           </button>
         </div>
@@ -222,22 +222,22 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 style={{ background: `${c}15`, border: `1px solid ${c}30` }}>
                 ✦
               </div>
-              <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">
+              <h2 className="text-2xl font-bold text-ink mb-1 tracking-tight">
                 Welcome, {userName.split(' ')[0]}
               </h2>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
                 {current.subtitle}
               </p>
               <div className="space-y-3 text-left mb-6">
                 {current.highlights.map((h, i) => (
                   <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
                     <span className="text-xl">{h.icon}</span>
-                    <span className="text-sm text-white">{h.text}</span>
+                    <span className="text-sm text-ink">{h.text}</span>
                   </div>
                 ))}
               </div>
-              <p className="text-xs mb-2" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <p className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>
                 {current.quickWin}
               </p>
             </div>
@@ -254,11 +254,11 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 <div>
                   <p className="text-[10px] uppercase tracking-widest font-semibold mb-0.5"
                     style={{ color: `${c}99` }}>Department {step} of {STEPS.length - 2}</p>
-                  <h2 className="text-xl font-bold text-white tracking-tight">{current.title}</h2>
+                  <h2 className="text-xl font-bold text-ink tracking-tight">{current.title}</h2>
                 </div>
               </div>
 
-              <p className="text-sm mb-5" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
                 {current.subtitle}
               </p>
 
@@ -269,7 +269,7 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                       style={{ background: `${c}15` }}>
                       <Check size={10} style={{ color: c }} />
                     </div>
-                    <span className="text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>{h.text}</span>
+                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{h.text}</span>
                   </div>
                 ))}
               </div>
@@ -282,7 +282,7 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                     style={{ background: `${c}0d`, border: `1px solid ${c}22` }}>
                     <span className="text-sm leading-none">{a.emoji}</span>
                     <div>
-                      <p className="text-[11px] font-semibold leading-none text-white">{a.name}</p>
+                      <p className="text-[11px] font-semibold leading-none text-ink">{a.name}</p>
                       <p className="text-[9px] leading-tight" style={{ color: `${c}aa` }}>{a.role}</p>
                     </div>
                   </div>
@@ -295,7 +295,7 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 <p className="text-[10px] uppercase tracking-widest font-semibold mb-1" style={{ color: `${c}80` }}>
                   First step
                 </p>
-                <p className="text-sm" style={{ color: 'rgba(255,255,255,0.65)' }}>{current.quickWin}</p>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{current.quickWin}</p>
               </div>
             </div>
           )}
@@ -307,16 +307,16 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 style={{ background: `${c}15`, border: `1px solid ${c}30` }}>
                 <Check size={28} style={{ color: c }} />
               </div>
-              <h2 className="text-2xl font-bold text-white mb-1 tracking-tight">{current.title}</h2>
-              <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <h2 className="text-2xl font-bold text-ink mb-1 tracking-tight">{current.title}</h2>
+              <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
                 {current.subtitle}
               </p>
               <div className="space-y-2.5 text-left mb-6">
                 {current.highlights.map((h, i) => (
                   <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
                     <span className="text-xl">{h.icon}</span>
-                    <span className="text-sm text-white">{h.text}</span>
+                    <span className="text-sm text-ink">{h.text}</span>
                   </div>
                 ))}
               </div>
@@ -328,15 +328,15 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
         <div className="px-6 pb-6 flex items-center gap-3">
           {!isFirst && (
             <button onClick={goPrev}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:text-white"
-              style={{ color: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:text-ink"
+              style={{ color: 'var(--text-tertiary)', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
               <ArrowLeft size={14} />
               Back
             </button>
           )}
 
           <button onClick={goNext}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 hover:scale-[1.01]"
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-ink transition-all hover:opacity-90 hover:scale-[1.01]"
             style={{ background: isLast ? `linear-gradient(135deg, ${c}, ${c}cc)` : `${c}`, boxShadow: `0 0 20px ${c}30` }}>
             {isLast ? 'Start directing →' : (
               <>
@@ -356,8 +356,8 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
 
           {isFirst && (
             <button onClick={complete}
-              className="text-xs transition-colors hover:text-white"
-              style={{ color: 'rgba(255,255,255,0.3)' }}>
+              className="text-xs transition-colors hover:text-ink"
+              style={{ color: 'var(--text-tertiary)' }}>
               Skip tour
             </button>
           )}
