@@ -156,24 +156,24 @@ export default function StudioArchetype({
                 className={clsx(
                   'card p-3 text-left transition-all border',
                   isSelected
-                    ? 'border-[#1E1E1E] bg-[#1E1E1E]'
-                    : 'border-transparent hover:bg-[#0D0D0D]'
+                    ? 'border-line bg-surface-hover'
+                    : 'border-transparent hover:bg-surface'
                 )}
               >
                 {/* Project Preview */}
-                <div className="mb-2 w-full h-24 bg-gradient-to-br from-[#1E1E1E] to-[#0D0D0D] rounded border border-[#1E1E1E] flex items-center justify-center">
+                <div className="mb-2 w-full h-24 bg-gradient-to-br from-surface-hover to-surface rounded border border-line flex items-center justify-center">
                   <span className="text-4xl">{getProjectTypeIcon(project.type)}</span>
                 </div>
 
                 {/* Project Info */}
                 <div className="space-y-2">
                   <div className="flex items-start gap-1">
-                    <span className="text-sm font-medium text-white flex-1 line-clamp-2">{project.name}</span>
+                    <span className="text-sm font-medium text-ink flex-1 line-clamp-2">{project.name}</span>
                   </div>
 
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-[#666]">{getToolEmoji(project.tool)}</span>
-                    <span className="text-xs text-[#666]">{project.dimensions}</span>
+                    <span className="text-xs text-ink-tertiary">{getToolEmoji(project.tool)}</span>
+                    <span className="text-xs text-ink-tertiary">{project.dimensions}</span>
                   </div>
 
                   <div
@@ -196,14 +196,14 @@ export default function StudioArchetype({
             ✏️ Edit & Review
           </div>
 
-          <div className="card p-6 space-y-6 border border-[#1E1E1E]">
+          <div className="card p-6 space-y-6 border border-line">
             {/* Canvas Preview */}
             <div className="space-y-3">
-              <div className="text-sm font-semibold text-white">{selectedProject.name}</div>
-              <div className="w-full bg-gradient-to-br from-[#1E1E1E] to-[#0D0D0D] rounded border-2 border-dashed border-[#333] flex items-center justify-center p-12">
+              <div className="text-sm font-semibold text-ink">{selectedProject.name}</div>
+              <div className="w-full bg-gradient-to-br from-surface-hover to-surface rounded border-2 border-dashed border-line flex items-center justify-center p-12">
                 <div className="text-center space-y-3">
                   <div className="text-5xl">{getProjectTypeIcon(selectedProject.type)}</div>
-                  <div className="text-sm text-[#666]">{selectedProject.dimensions}</div>
+                  <div className="text-sm text-ink-tertiary">{selectedProject.dimensions}</div>
                   <button
                     onClick={() => onEditProject?.(selectedProject.id)}
                     className="mt-4 px-4 py-2 rounded font-medium text-sm transition-all flex items-center gap-2 mx-auto"
@@ -222,26 +222,26 @@ export default function StudioArchetype({
 
             {/* Project Details */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-3 bg-[#0D0D0D] rounded space-y-1">
-                <div className="text-xs text-[#666]">Type</div>
-                <div className="text-sm font-medium text-white capitalize">{selectedProject.type}</div>
+              <div className="p-3 bg-surface rounded space-y-1">
+                <div className="text-xs text-ink-tertiary">Type</div>
+                <div className="text-sm font-medium text-ink capitalize">{selectedProject.type}</div>
               </div>
-              <div className="p-3 bg-[#0D0D0D] rounded space-y-1">
-                <div className="text-xs text-[#666]">Tool</div>
-                <div className="text-sm font-medium text-white capitalize">{getToolEmoji(selectedProject.tool)} {selectedProject.tool}</div>
+              <div className="p-3 bg-surface rounded space-y-1">
+                <div className="text-xs text-ink-tertiary">Tool</div>
+                <div className="text-sm font-medium text-ink capitalize">{getToolEmoji(selectedProject.tool)} {selectedProject.tool}</div>
               </div>
-              <div className="p-3 bg-[#0D0D0D] rounded space-y-1">
-                <div className="text-xs text-[#666]">Status</div>
-                <div className="text-sm font-medium text-white capitalize">{selectedProject.status}</div>
+              <div className="p-3 bg-surface rounded space-y-1">
+                <div className="text-xs text-ink-tertiary">Status</div>
+                <div className="text-sm font-medium text-ink capitalize">{selectedProject.status}</div>
               </div>
-              <div className="p-3 bg-[#0D0D0D] rounded space-y-1">
-                <div className="text-xs text-[#666]">Updated</div>
-                <div className="text-sm font-medium text-white">{selectedProject.updatedAt}</div>
+              <div className="p-3 bg-surface rounded space-y-1">
+                <div className="text-xs text-ink-tertiary">Updated</div>
+                <div className="text-sm font-medium text-ink">{selectedProject.updatedAt}</div>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="border-t border-[#1E1E1E] pt-4 space-y-3">
+            <div className="border-t border-line pt-4 space-y-3">
               <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
                 Actions
               </div>
@@ -346,18 +346,18 @@ export default function StudioArchetype({
         <div className="space-y-2">
           {connectedTools.length === 0 ? (
             <div className="card p-4 text-center">
-              <Palette size={24} className="mx-auto text-[#666] mb-2" />
-              <div className="text-sm text-white font-medium">No Tools Connected</div>
-              <div className="text-xs text-[#666] mt-1">Connect Canva, Figma, or other design tools to unlock features</div>
+              <Palette size={24} className="mx-auto text-ink-tertiary mb-2" />
+              <div className="text-sm text-ink font-medium">No Tools Connected</div>
+              <div className="text-xs text-ink-tertiary mt-1">Connect Canva, Figma, or other design tools to unlock features</div>
             </div>
           ) : (
             connectedTools.map(tool => (
-              <div key={tool} className="card p-3 border border-[#1E1E1E] flex items-center justify-between">
+              <div key={tool} className="card p-3 border border-line flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-lg">{getToolEmoji(tool)}</span>
                   <div>
-                    <div className="text-sm font-medium text-white capitalize">{tool}</div>
-                    <div className="text-xs text-[#666]">Connected</div>
+                    <div className="text-sm font-medium text-ink capitalize">{tool}</div>
+                    <div className="text-xs text-ink-tertiary">Connected</div>
                   </div>
                 </div>
                 <span className="text-xs text-[#10B981]">✓ Active</span>
@@ -368,12 +368,12 @@ export default function StudioArchetype({
       </div>
 
       {/* Workflow Guide */}
-      <div className="p-4 rounded bg-[#0D0D0D] border border-[#1E1E1E] space-y-2">
-        <div className="flex gap-2 items-start text-xs text-[#999]">
+      <div className="p-4 rounded bg-surface border border-line space-y-2">
+        <div className="flex gap-2 items-start text-xs text-ink-secondary">
           <Zap size={14} className="flex-shrink-0 mt-0.5" style={{ color: agentColor }} />
           <div>
-            <div className="font-medium text-white mb-1">Studio Workflow</div>
-            <ul className="space-y-1 text-[#999]">
+            <div className="font-medium text-ink mb-1">Studio Workflow</div>
+            <ul className="space-y-1 text-ink-secondary">
               <li>✏️ <strong>Draft:</strong> Create & edit your design</li>
               <li>👁️ <strong>Review:</strong> Submit for approval</li>
               <li>✅ <strong>Approved:</strong> Ready to export</li>

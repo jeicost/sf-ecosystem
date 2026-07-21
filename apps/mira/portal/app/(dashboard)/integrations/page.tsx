@@ -5,10 +5,13 @@ import ToolsMarketplace from '@/components/integrations/ToolsMarketplace'
 import ToolConnectionModal from '@/components/integrations/ToolConnectionModal'
 import UsageCard from '@/components/UsageCard'
 import { MARKETPLACE_TOOLS } from '@/lib/integrations/marketplace-tools'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { useEffect, useState } from 'react'
 
 export default function IntegrationsPage() {
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
   const clientId = activeClient?.id
   const { connectedTools, userSubscriptionPlan, isLoading, connectTool, disconnectTool } =
     useToolConnections(clientId || '')
@@ -30,25 +33,28 @@ export default function IntegrationsPage() {
     const drive = params.get('drive')
 
     if (success) {
-      setSuccessMessage(`${success} connected successfully!`)
+      setSuccessMessage(t('integrations.connected-success', locale).replace('{name}', success))
       // Clear URL
       window.history.replaceState({}, '', '/integrations')
       setTimeout(() => setSuccessMessage(null), 5000)
     }
     if (error) {
-      setErrorMessage(`Connection failed: ${error}`)
+      setErrorMessage(t('integrations.connection-failed', locale).replace('{error}', error))
       window.history.replaceState({}, '', '/integrations')
       setTimeout(() => setErrorMessage(null), 5000)
     }
     if (drive === 'connected') {
-      setSuccessMessage('Google Drive conectado. Ya puedes añadir carpetas en Brand Brain → Documents.')
+      setSuccessMessage(t('integrations.drive-connected', locale))
       window.history.replaceState({}, '', '/integrations')
       setTimeout(() => setSuccessMessage(null), 8000)
     } else if (drive === 'error') {
-      setErrorMessage(`Google Drive: ${params.get('reason') || 'error de conexión'}`)
+      setErrorMessage(
+        `Google Drive: ${params.get('reason') || t('integrations.drive-error-reason', locale)}`
+      )
       window.history.replaceState({}, '', '/integrations')
       setTimeout(() => setErrorMessage(null), 8000)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Estado real de la conexión Drive del cliente activo
@@ -77,15 +83,19 @@ export default function IntegrationsPage() {
           }),
         })
         const json = await res.json()
-        if (!res.ok || !json.authUrl) throw new Error(json.error || 'No se pudo iniciar OAuth')
+        if (!res.ok || !json.authUrl)
+          throw new Error(json.error || t('integrations.oauth-start-error', locale))
         window.location.href = json.authUrl
       } catch (e) {
-        setErrorMessage(e instanceof Error ? e.message : 'Error iniciando Google Drive')
+        setErrorMessage(
+          e instanceof Error ? e.message : t('integrations.drive-start-error', locale)
+        )
       }
       return
     }
     const tool = MARKETPLACE_TOOLS.find((t) => t.id === toolId)
-    if (tool) {
+    // Coming soon: tarjeta visible pero sin flujo de conexión (el endpoint OAuth responde 503)
+    if (tool && tool.status !== 'coming_soon') {
       setSelectedToolId(toolId)
     }
   }
@@ -137,7 +147,7 @@ export default function IntegrationsPage() {
   if (!mounted || isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-[#666]">Loading integrations...</div>
+        <div className="text-ink-tertiary">{t('integrations.loading', locale)}</div>
       </div>
     )
   }
@@ -157,10 +167,8 @@ export default function IntegrationsPage() {
         )}
 
         <div>
-          <h1 className="text-4xl font-bold text-white mb-2">Integrations</h1>
-          <p className="text-[#999]">
-            Connect your favorite tools and services to power your MIRA agents.
-          </p>
+          <h1 className="text-4xl font-bold text-ink mb-2">{t('integrations.title', locale)}</h1>
+          <p className="text-ink-secondary">{t('integrations.subtitle', locale)}</p>
         </div>
 
         {clientId && <UsageCard clientId={clientId} />}
@@ -182,6 +190,7 @@ export default function IntegrationsPage() {
             setupUrl: selectedTool.setupUrl,
             description: selectedTool.description,
             authType: selectedTool.authType,
+            status: selectedTool.status,
           }}
           isOpen={selectedToolId !== null}
           isConnecting={isConnecting}

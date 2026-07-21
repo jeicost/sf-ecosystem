@@ -7,6 +7,7 @@ import SectionSwitcher from '@/components/section-switcher'
 import ClientSwitcher from '@/components/client-switcher'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider, useActiveClient } from '@/lib/client-context'
+import { ProjectProvider } from '@/lib/project-context'
 import { getActiveSectionFromPath } from '@/lib/sections'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
@@ -92,7 +93,7 @@ useEffect(() => {
   return (
     <>
       {/* Logo — white-label: el cliente ve SU marca; super_admin ve MIRA */}
-      <div className="px-4 py-4 border-b border-[#131313]">
+      <div className="px-4 py-4 border-b border-line-subtle">
         {!isSuperAdmin(user) && activeClient?.logoUrl ? (
           <Link href="/home" className="flex items-center gap-2.5 group">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -111,14 +112,14 @@ useEffect(() => {
                 style={{
                   fontSize: '13px',
                   fontWeight: 700,
-                  color: '#f0f0f8',
+                  color: 'var(--text-primary)',
                   letterSpacing: '-0.03em',
                 }}
                 className="block truncate"
               >
                 {activeClient.name}
               </span>
-              <p className="text-[9px] text-[#2a2a2a] leading-none mt-0.5">powered by MIRA</p>
+              <p className="text-[9px] text-ink-muted leading-none mt-0.5">powered by MIRA</p>
             </div>
           </Link>
         ) : (
@@ -128,15 +129,15 @@ useEffect(() => {
               <MiraLogo size={26} variant="icon" />
             </div>
             <div>
-              <span style={{ fontSize: '13px', fontWeight: 700, color: '#f0f0f8', letterSpacing: '-0.03em' }}>MIRA</span>
-              <p className="text-[9px] text-[#2a2a2a] leading-none mt-0.5">AI Agency Platform</p>
+              <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.03em' }}>MIRA</span>
+              <p className="text-[9px] text-ink-muted leading-none mt-0.5">AI Agency Platform</p>
             </div>
           </Link>
         )}
       </div>
 
       {/* Client switcher */}
-      <div className="border-b border-[#131313]">
+      <div className="border-b border-line-subtle">
         <ClientSwitcher />
       </div>
 
@@ -147,7 +148,7 @@ useEffect(() => {
             'mx-3 mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
             path === '/admin' || path.startsWith('/admin/')
               ? 'bg-red-500/15 text-red-400'
-              : 'text-[#555] hover:text-red-400 hover:bg-red-500/8'
+              : 'text-ink-tertiary hover:text-red-400 hover:bg-red-500/8'
           )}>
           <span className="text-sm">🔐</span>
           <span>Admin Panel</span>
@@ -164,8 +165,8 @@ useEffect(() => {
           'mx-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           isSuperAdmin(user) ? 'mt-2' : 'mt-3',
           path === '/home'
-            ? 'bg-white/8 text-white'
-            : 'text-[#555] hover:text-white hover:bg-white/5'
+            ? 'bg-surface-hover text-ink'
+            : 'text-ink-tertiary hover:text-ink hover:bg-surface'
         )}>
         <Home size={13} />
         Home
@@ -177,7 +178,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path === '/brand-brain'
             ? 'bg-violet-500/15 text-violet-400'
-            : 'text-[#555] hover:text-violet-400 hover:bg-violet-500/8'
+            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
         )}>
         <Brain size={13} />
         <span>Brand Brain</span>
@@ -193,7 +194,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path === '/toolkit'
             ? 'bg-violet-500/15 text-violet-400'
-            : 'text-[#555] hover:text-violet-400 hover:bg-violet-500/8'
+            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
         )}>
         <Layers size={13} />
         <span>Toolkit</span>
@@ -205,7 +206,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path.startsWith('/documents')
             ? 'bg-amber-500/15 text-amber-400'
-            : 'text-[#555] hover:text-amber-400 hover:bg-amber-500/8'
+            : 'text-ink-tertiary hover:text-amber-400 hover:bg-amber-500/8'
         )}>
         <span className="text-sm">📄</span>
         <span>Documentos</span>
@@ -221,7 +222,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path === '/integrations'
             ? 'bg-pink-500/15 text-pink-400'
-            : 'text-[#555] hover:text-pink-400 hover:bg-pink-500/8'
+            : 'text-ink-tertiary hover:text-pink-400 hover:bg-pink-500/8'
         )}>
         <Zap size={13} />
         <span>Integrations</span>
@@ -252,11 +253,11 @@ useEffect(() => {
               className={clsx(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
                 active
-                  ? 'bg-white/8 text-white font-medium'
-                  : 'text-[#555] hover:text-white hover:bg-white/5'
+                  ? 'bg-surface-hover text-ink font-medium'
+                  : 'text-ink-tertiary hover:text-ink hover:bg-surface'
               )}
             >
-              <Icon size={15} className={active ? 'text-white' : 'text-[#444]'} />
+              <Icon size={15} className={active ? 'text-ink' : 'text-ink-tertiary'} />
               {label}
               {showBadge && (
                 <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse"
@@ -275,8 +276,8 @@ useEffect(() => {
           className={clsx(
             'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium transition-all',
             path.startsWith('/resources')
-              ? 'bg-white/8 text-white'
-              : 'text-[#555] hover:text-white hover:bg-white/5'
+              ? 'bg-surface-hover text-ink'
+              : 'text-ink-tertiary hover:text-ink hover:bg-surface'
           )}>
           <BookOpen size={13} />
           <span>Resources</span>
@@ -287,8 +288,7 @@ useEffect(() => {
       <div className="px-3 pb-1">
         <button
           onClick={() => { localStorage.removeItem('mira_onboarding_v1'); window.location.href = '/home' }}
-          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] transition-all hover:text-white"
-          style={{ color: 'rgba(255,255,255,0.28)' }}>
+          className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] transition-all text-ink-muted hover:text-ink">
           <span>✦</span>
           <span>Portal tour</span>
         </button>
@@ -299,17 +299,17 @@ useEffect(() => {
         <button onClick={toggleTheme}
           className="w-full flex items-center justify-between px-3 py-2 rounded-xl transition-all duration-200 group"
           style={{
-            background: theme === 'light' ? 'rgba(99,102,241,0.08)' : 'rgba(255,255,255,0.04)',
-            border: theme === 'light' ? '1px solid rgba(99,102,241,0.2)' : '1px solid rgba(255,255,255,0.07)',
+            background: theme === 'light' ? 'rgba(99,102,241,0.08)' : 'var(--bg-surface)',
+            border: theme === 'light' ? '1px solid rgba(99,102,241,0.2)' : '1px solid var(--border-subtle)',
           }}>
           <div className="flex items-center gap-2">
             <span className="text-sm">{theme === 'dark' ? '☀️' : '🌙'}</span>
-            <span className="text-[11px] font-medium" style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.45)' : 'rgba(0,0,0,0.5)' }}>
+            <span className="text-[11px] font-medium text-ink-secondary">
               {theme === 'dark' ? 'Light mode' : 'Dark mode'}
             </span>
           </div>
           <div className="w-8 h-4 rounded-full relative transition-all duration-200 flex-shrink-0"
-            style={{ background: theme === 'light' ? '#6366f1' : 'rgba(255,255,255,0.15)' }}>
+            style={{ background: theme === 'light' ? '#6366f1' : 'var(--border)' }}>
             <div className="absolute top-0.5 w-3 h-3 rounded-full bg-white shadow-sm transition-all duration-200"
               style={{ left: theme === 'light' ? '17px' : '2px' }} />
           </div>
@@ -318,19 +318,18 @@ useEffect(() => {
       </div>
 
       {/* User */}
-      <div className="px-4 py-3 border-t" style={{ borderColor: 'rgba(255,255,255,0.07)' }}>
+      <div className="px-4 py-3 border-t border-line-subtle">
         <div className="flex items-center gap-2.5">
           <div className="w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-semibold shrink-0"
             style={{ background: 'rgba(99,102,241,0.2)', border: '1px solid rgba(99,102,241,0.3)', color: '#a5b4fc' }}>
             {user.avatar}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] truncate" style={{ color: 'rgba(255,255,255,0.6)' }}>{user.name}</p>
-            <p className="text-[9px]" style={{ color: 'rgba(255,255,255,0.3)' }}>{user.plan} plan</p>
+            <p className="text-[11px] truncate text-ink-secondary">{user.name}</p>
+            <p className="text-[9px] text-ink-tertiary">{user.plan} plan</p>
           </div>
           <button onClick={async () => { clearUser(); await createClient().auth.signOut(); router.push('/login') }}
-            className="text-[11px] transition-colors shrink-0 hover:text-white/60"
-            style={{ color: 'rgba(255,255,255,0.25)' }}>
+            className="text-[11px] transition-colors shrink-0 text-ink-muted hover:text-ink-secondary">
             ↩
           </button>
         </div>
@@ -342,19 +341,21 @@ useEffect(() => {
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <ClientProvider>
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <aside className="w-56 shrink-0 border-r border-[#131313] flex flex-col bg-[#080808]">
-          <SidebarContent />
-        </aside>
+      <ProjectProvider>
+        <div className="flex min-h-screen">
+          {/* Sidebar */}
+          <aside className="w-56 shrink-0 border-r border-line-subtle flex flex-col bg-[var(--bg-sidebar)]">
+            <SidebarContent />
+          </aside>
 
-        {/* Main */}
-        <main className="flex-1 overflow-y-auto bg-[#0a0a0a]">
-          <ErrorBoundary>
-            {children}
-          </ErrorBoundary>
-        </main>
-      </div>
+          {/* Main */}
+          <main className="flex-1 overflow-y-auto bg-page">
+            <ErrorBoundary>
+              {children}
+            </ErrorBoundary>
+          </main>
+        </div>
+      </ProjectProvider>
     </ClientProvider>
   )
 }

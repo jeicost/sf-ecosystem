@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from 'react'
 import { createBrowserClient } from '@supabase/ssr'
+import { useActiveClient, getStoredClientId } from '@/lib/client-context'
 
 interface MiraUser {
   id: string
@@ -21,7 +22,10 @@ interface Project {
   created_at: string
 }
 
+// Proyectos del cliente activo (mismo criterio que /api/home/overview):
+// mira_projects filtrado por client_id, sin archivados, más recientes primero.
 export function useProjects() {
+  const { activeClient } = useActiveClient()
   const [projects, setProjects] = useState<Project[]>([])
   const [user, setUser] = useState<MiraUser | null>(null)
   const [loading, setLoading] = useState(true)
@@ -35,6 +39,8 @@ export function useProjects() {
   )
 
   useEffect(() => {
+    let cancelled = false
+
     const fetchData = async () => {
       setLoading(true)
       setError(null)
@@ -42,49 +48,44 @@ export function useProjects() {
       try {
         const { data: { user: authUser } } = await supabase.auth.getUser()
         if (!authUser) {
-          setError('Not authenticated')
-          setLoading(false)
+          if (!cancelled) setError('Not authenticated')
           return
         }
 
-        const { data: userData, error: userError } = await supabase
+        // Perfil best-effort (lo muestra DashboardLayout); no bloquea los proyectos.
+        const { data: userData } = await supabase
           .from('mira_users')
           .select('id, company_name, email, subscription_tier, subscription_status')
           .eq('auth_id', authUser.id)
-          .single()
+          .maybeSingle()
+        if (!cancelled && userData) setUser(userData as MiraUser)
 
-        if (userError || !userData) {
-          setError('User not found in mira_users')
-          setLoading(false)
+        const clientId = activeClient?.id ?? getStoredClientId()
+        if (!clientId) {
+          if (!cancelled) setProjects([])
           return
         }
 
-        setUser(userData as MiraUser)
-
-        const isAdmin = authUser.user_metadata?.plan === 'admin'
-
-        let query = supabase
+        const { data: projectsData, error: projectsError } = await supabase
           .from('mira_projects')
           .select('id, name, slug, description, status, agents_count, created_at')
-
-        if (!isAdmin) {
-          query = query.eq('user_id', userData.id)
-        }
-
-        const { data: projectsData, error: projectsError } = await query
+          .eq('client_id', clientId)
+          .neq('status', 'archived')
+          .order('created_at', { ascending: false })
 
         if (projectsError) throw projectsError
-        setProjects(projectsData || [])
+        if (!cancelled) setProjects(projectsData || [])
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to fetch projects'
-        setError(message)
+        if (!cancelled) setError(message)
       } finally {
-        setLoading(false)
+        if (!cancelled) setLoading(false)
       }
     }
 
     fetchData()
-  }, [])
+    return () => { cancelled = true }
+  }, [supabase, activeClient?.id])
 
   return { projects, user, loading, error }
 }

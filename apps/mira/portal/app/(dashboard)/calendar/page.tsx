@@ -27,7 +27,7 @@ const STATUS_STYLE: Record<ItemStatus, { dot: string; chip: string; labelKey: st
   pending_review: { dot: 'bg-amber-400', chip: 'bg-amber-500/15 text-amber-400', labelKey: 'calendar.status.pending' },
   approved: { dot: 'bg-emerald-400', chip: 'bg-emerald-500/15 text-emerald-400', labelKey: 'calendar.status.approved' },
   rejected: { dot: 'bg-red-400', chip: 'bg-red-500/15 text-red-400', labelKey: 'calendar.status.rejected' },
-  draft: { dot: 'bg-[#555]', chip: 'bg-white/10 text-[#888]', labelKey: 'calendar.status.draft' },
+  draft: { dot: 'bg-ink-tertiary', chip: 'bg-surface-hover text-ink-secondary', labelKey: 'calendar.status.draft' },
 }
 
 function platformIcon(platform: string | null): string {
@@ -172,7 +172,7 @@ export default function CalendarPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <Loader2 size={20} className="text-[#444] animate-spin" />
+        <Loader2 size={20} className="text-ink-muted animate-spin" />
       </div>
     )
   }
@@ -182,8 +182,8 @@ export default function CalendarPage() {
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="flex items-end justify-between mb-6 flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-white">{t('calendar.title', locale)}</h1>
-          <p className="text-[#555] mt-1 text-sm">
+          <h1 className="text-2xl font-semibold text-ink">{t('calendar.title', locale)}</h1>
+          <p className="text-ink-tertiary mt-1 text-sm">
             {t('calendar.subtitle', locale)
               .replace('{name}', activeClient?.name ?? t('calendar.your-brand', locale))
               .replace('{count}', String(monthCount))}
@@ -192,16 +192,16 @@ export default function CalendarPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/approvals"
-            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs bg-[#1A1A1A] text-[#888] hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs bg-surface text-ink-secondary hover:text-ink transition-colors"
           >
             <CheckSquare size={13} /> {t('calendar.approval-queue', locale)}
           </Link>
-          <div className="flex items-center gap-1 bg-[#1A1A1A] rounded-lg p-1">
-            <button onClick={() => changeMonth(-1)} className="p-1.5 rounded-md text-[#888] hover:text-white hover:bg-white/10 transition-colors" aria-label={t('calendar.prev-month', locale)}>
+          <div className="flex items-center gap-1 bg-surface rounded-lg p-1">
+            <button onClick={() => changeMonth(-1)} className="p-1.5 rounded-md text-ink-secondary hover:text-ink hover:bg-surface-hover transition-colors" aria-label={t('calendar.prev-month', locale)}>
               <ChevronLeft size={15} />
             </button>
-            <span className="text-xs text-white font-medium px-2 min-w-[130px] text-center">{monthLabel}</span>
-            <button onClick={() => changeMonth(1)} className="p-1.5 rounded-md text-[#888] hover:text-white hover:bg-white/10 transition-colors" aria-label={t('calendar.next-month', locale)}>
+            <span className="text-xs text-ink font-medium px-2 min-w-[130px] text-center">{monthLabel}</span>
+            <button onClick={() => changeMonth(1)} className="p-1.5 rounded-md text-ink-secondary hover:text-ink hover:bg-surface-hover transition-colors" aria-label={t('calendar.next-month', locale)}>
               <ChevronRight size={15} />
             </button>
           </div>
@@ -211,7 +211,7 @@ export default function CalendarPage() {
       {/* ── Leyenda ────────────────────────────────────────── */}
       <div className="flex items-center gap-4 mb-4">
         {(Object.keys(STATUS_STYLE) as ItemStatus[]).map(s => (
-          <span key={s} className="inline-flex items-center gap-1.5 text-[10px] text-[#666]">
+          <span key={s} className="inline-flex items-center gap-1.5 text-[10px] text-ink-tertiary">
             <span className={clsx('w-2 h-2 rounded-full', STATUS_STYLE[s].dot)} />
             {t(STATUS_STYLE[s].labelKey, locale)}
           </span>
@@ -220,9 +220,9 @@ export default function CalendarPage() {
 
       {/* ── Grid mensual ───────────────────────────────────── */}
       <div className="card overflow-hidden">
-        <div className="grid grid-cols-7 border-b border-[#1A1A1A]">
+        <div className="grid grid-cols-7 border-b border-line">
           {t('calendar.weekdays', locale).split(',').map((d, i) => (
-            <div key={i} className="px-2 py-2 text-center text-[10px] font-mono uppercase tracking-wider text-[#555]">
+            <div key={i} className="px-2 py-2 text-center text-[10px] font-mono uppercase tracking-wider text-ink-tertiary">
               {d}
             </div>
           ))}
@@ -232,10 +232,10 @@ export default function CalendarPage() {
             <div
               key={idx}
               className={clsx(
-                'min-h-[96px] border-b border-r border-[#141414] p-1.5',
+                'min-h-[96px] border-b border-r border-line-subtle p-1.5',
                 (idx + 1) % 7 === 0 && 'border-r-0',
                 idx >= cells.length - 7 && 'border-b-0',
-                cell.day === null && 'bg-[#0A0A0A]/60'
+                cell.day === null && 'bg-surface'
               )}
             >
               {cell.day !== null && (
@@ -244,7 +244,7 @@ export default function CalendarPage() {
                     <span
                       className={clsx(
                         'text-[10px] w-5 h-5 flex items-center justify-center rounded-full',
-                        cell.isToday ? 'text-black font-semibold' : 'text-[#555]'
+                        cell.isToday ? 'text-black font-semibold' : 'text-ink-tertiary'
                       )}
                       style={cell.isToday ? { background: brandColor } : undefined}
                     >
@@ -270,7 +270,7 @@ export default function CalendarPage() {
                     {cell.items.length > 3 && (
                       <button
                         onClick={() => setSelected(cell.items[3])}
-                        className="w-full text-left px-1.5 text-[9px] text-[#555] hover:text-white transition-colors"
+                        className="w-full text-left px-1.5 text-[9px] text-ink-tertiary hover:text-ink transition-colors"
                       >
                         +{cell.items.length - 3} {t('calendar.more', locale)}
                       </button>
@@ -287,20 +287,20 @@ export default function CalendarPage() {
       {selected && (
         <>
           <div className="fixed inset-0 bg-black/50 z-40" onClick={() => setSelected(null)} />
-          <aside className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-[#0D0D0D] border-l border-[#1A1A1A] z-50 flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-[#1A1A1A]">
+          <aside className="fixed right-0 top-0 bottom-0 w-full max-w-md bg-page border-l border-line z-50 flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-line">
               <div className="flex items-center gap-3">
                 <span className="text-lg">{platformIcon(selected.platform)}</span>
                 <div>
-                  <p className="text-sm text-white font-medium">{selected.platform ?? 'Post'}</p>
-                  <p className="text-[10px] text-[#555]">
+                  <p className="text-sm text-ink font-medium">{selected.platform ?? 'Post'}</p>
+                  <p className="text-[10px] text-ink-tertiary">
                     {selected.date.toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long' })}
                     {' · '}
                     {selected.source === 'queue' ? t('calendar.source-queue', locale) : t('calendar.source-history', locale)}
                   </p>
                 </div>
               </div>
-              <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg text-[#666] hover:text-white hover:bg-white/10 transition-colors" aria-label={t('common.close', locale)}>
+              <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg text-ink-tertiary hover:text-ink hover:bg-surface-hover transition-colors" aria-label={t('common.close', locale)}>
                 <X size={15} />
               </button>
             </div>
@@ -310,34 +310,34 @@ export default function CalendarPage() {
                 {t(STATUS_STYLE[selected.status].labelKey, locale)}
               </span>
               {selected.copy && (
-                <div className="bg-[#0A0A0A] rounded-lg p-4 border border-[#1A1A1A] mb-4">
-                  <p className="text-sm text-[#ddd] leading-relaxed whitespace-pre-line">{selected.copy}</p>
+                <div className="bg-card rounded-lg p-4 border border-line mb-4">
+                  <p className="text-sm text-ink-secondary leading-relaxed whitespace-pre-line">{selected.copy}</p>
                 </div>
               )}
               {selected.caption && selected.caption !== selected.copy && (
                 <div className="mb-4">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-[#555] mb-1.5">Caption</p>
-                  <p className="text-xs text-[#999] leading-relaxed whitespace-pre-line">{selected.caption}</p>
+                  <p className="text-[10px] font-mono uppercase tracking-wider text-ink-tertiary mb-1.5">Caption</p>
+                  <p className="text-xs text-ink-secondary leading-relaxed whitespace-pre-line">{selected.caption}</p>
                 </div>
               )}
               {selected.hashtags && selected.hashtags.length > 0 && (
-                <p className="text-xs text-[#555]">{selected.hashtags.join(' ')}</p>
+                <p className="text-xs text-ink-tertiary">{selected.hashtags.join(' ')}</p>
               )}
             </div>
 
             {selected.source === 'queue' && selected.status === 'pending_review' && (
-              <div className="px-6 py-4 border-t border-[#1A1A1A] flex gap-2">
+              <div className="px-6 py-4 border-t border-line flex gap-2">
                 <button
                   onClick={() => updateStatus(selected, 'approved')}
                   disabled={updating}
-                  className="flex-1 py-2.5 text-xs rounded-lg bg-white text-black hover:bg-white/90 transition-colors font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  className="flex-1 py-2.5 text-xs rounded-lg bg-ink text-page hover:opacity-90 transition-colors font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
                 >
                   <Check size={13} /> {t('calendar.approve', locale)}
                 </button>
                 <button
                   onClick={() => updateStatus(selected, 'rejected')}
                   disabled={updating}
-                  className="px-5 py-2.5 text-xs rounded-lg bg-[#1A1A1A] text-[#666] hover:text-red-400 transition-colors disabled:opacity-50"
+                  className="px-5 py-2.5 text-xs rounded-lg bg-surface text-ink-tertiary hover:text-red-400 transition-colors disabled:opacity-50"
                 >
                   <X size={13} /> {t('calendar.reject', locale)}
                 </button>

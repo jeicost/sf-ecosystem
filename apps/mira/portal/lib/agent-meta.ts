@@ -3,39 +3,6 @@
 
 export type AgentStatus = 'active' | 'inactive' | 'pending' | 'idle' | 'processing' | 'complete'
 
-export const AGENT_DISPLAY_NAMES: Record<string, string> = {
-  orchestrator: 'Marco',
-  'content-strategist': 'Luna',
-  copywriter: 'Alex',
-  designer: 'Zoe',
-  'video-editor': 'Kai',
-  'social-media-manager': 'Noa',
-  'ads-manager': 'Riva',
-  'community-manager': 'Sam',
-  'lead-scout': 'Rex',
-  'icp-scorer': 'Vera',
-  'icebreaker-writer': 'Finn',
-  'reply-qualifier': 'Quinn',
-  'proposal-writer': 'Nova',
-  strategos: 'Strategos',
-  atlas: 'Atlas',
-  blueprint: 'Blueprint',
-  kairos: 'Kairos',
-  radar: 'Radar',
-  spark: 'Spark',
-  scout: 'Scout',
-  venture: 'Venture',
-  oracle: 'Oracle',
-  ledger: 'Ledger',
-  onboard: 'Onboard',
-  pulse: 'Pulse',
-  herald: 'Herald',
-  midas: 'Midas',
-  quant: 'Quant',
-  fiscal: 'Fiscal',
-  harbor: 'Harbor',
-}
-
 export interface AgentMetadata {
   id: string
   name: string
@@ -290,6 +257,12 @@ export const AGENT_METADATA: Record<string, AgentMetadata> = {
     department: 'finanzas',
   },
 }
+
+// Display names derived from AGENT_METADATA — single source of truth (23 agentes reales).
+// Shape: Record<agentId, displayName> — consumer: app/api/agent/route.ts (AGENT_DISPLAY_NAMES[role] ?? role)
+export const AGENT_DISPLAY_NAMES: Record<string, string> = Object.fromEntries(
+  Object.entries(AGENT_METADATA).map(([id, meta]) => [id, meta.name])
+)
 
 // Department filtering for sidebar cards
 export const COMERCIAL_DEPT_AGENTS: AgentMetadata[] = [

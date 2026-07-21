@@ -112,15 +112,15 @@ export default function CommandPage() {
 
   if (loading) return (
     <div className="flex items-center justify-center h-full">
-      <Loader2 size={20} className="text-[#444] animate-spin" />
+      <Loader2 size={20} className="text-ink-muted animate-spin" />
     </div>
   )
 
   return (
     <div className="px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">Command Center</h1>
-        <p className="text-[#555] mt-1 text-sm">Everything that needs your attention right now.</p>
+        <h1 className="text-2xl font-semibold text-ink">Command Center</h1>
+        <p className="text-ink-tertiary mt-1 text-sm">Everything that needs your attention right now.</p>
       </div>
 
       {/* Stats */}
@@ -133,8 +133,8 @@ export default function CommandPage() {
           <div key={label} className="card px-5 py-4 flex items-center gap-4">
             <Icon size={20} className={color} />
             <div>
-              <p className="text-2xl font-semibold text-white">{value}</p>
-              <p className="text-[11px] text-[#555]">{label}</p>
+              <p className="text-2xl font-semibold text-ink">{value}</p>
+              <p className="text-[11px] text-ink-tertiary">{label}</p>
             </div>
           </div>
         ))}
@@ -145,7 +145,7 @@ export default function CommandPage() {
         <section className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Bell size={14} className="text-red-400" />
-            <h2 className="text-sm font-medium text-white">Urgent alerts</h2>
+            <h2 className="text-sm font-medium text-ink">Urgent alerts</h2>
             <span className="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded-full">{alerts.length}</span>
           </div>
           {alerts.map(alert => (
@@ -155,21 +155,21 @@ export default function CommandPage() {
                   <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full uppercase tracking-wide">
                     {alert.canal} · {alert.tipo.replace('_', ' ')}
                   </span>
-                  <span className="text-[10px] text-[#444]">{timeAgo(alert.created_at)}</span>
+                  <span className="text-[10px] text-ink-muted">{timeAgo(alert.created_at)}</span>
                 </div>
                 <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full capitalize">
                   {alert.prioridad} prioridad
                 </span>
               </div>
               <div className="space-y-3">
-                <div className="bg-[#0A0A0A] rounded-lg p-3 border border-[#1A1A1A]">
-                  <p className="text-[11px] text-[#555] mb-1">Reseña recibida:</p>
-                  <p className="text-sm text-[#ccc] leading-relaxed">&ldquo;{alert.contenido}&rdquo;</p>
+                <div className="bg-card rounded-lg p-3 border border-line">
+                  <p className="text-[11px] text-ink-tertiary mb-1">Reseña recibida:</p>
+                  <p className="text-sm text-ink-secondary leading-relaxed">&ldquo;{alert.contenido}&rdquo;</p>
                 </div>
                 {alert.propuesta_respuesta && (
-                  <div className="bg-[#0D1117] rounded-lg p-3 border border-emerald-500/20">
+                  <div className="bg-card rounded-lg p-3 border border-emerald-500/20">
                     <p className="text-[11px] text-emerald-400/70 mb-1">Respuesta propuesta por Sam:</p>
-                    <p className="text-sm text-[#ccc] leading-relaxed">{alert.propuesta_respuesta}</p>
+                    <p className="text-sm text-ink-secondary leading-relaxed">{alert.propuesta_respuesta}</p>
                   </div>
                 )}
               </div>
@@ -180,12 +180,12 @@ export default function CommandPage() {
                 >
                   Approve & send
                 </button>
-                <button className="flex-1 py-2 text-xs rounded-lg bg-[#1A1A1A] text-[#888] hover:text-white transition-colors">
+                <button className="flex-1 py-2 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors">
                   Edit reply
                 </button>
                 <button
                   onClick={() => resolveAlert(alert.id)}
-                  className="px-4 py-2 text-xs rounded-lg bg-[#1A1A1A] text-[#666] hover:text-white transition-colors"
+                  className="px-4 py-2 text-xs rounded-lg bg-surface text-ink-tertiary hover:text-ink transition-colors"
                 >
                   Escalate
                 </button>
@@ -199,15 +199,15 @@ export default function CommandPage() {
       <section>
         <div className="flex items-center gap-2 mb-4">
           <CheckSquare size={14} className="text-amber-400" />
-          <h2 className="text-sm font-medium text-white">Approval queue</h2>
+          <h2 className="text-sm font-medium text-ink">Approval queue</h2>
           <span className="text-[10px] bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full">{approvals.length}</span>
         </div>
 
         <div className="space-y-3">
           {approvals.length === 0 && (
             <div className="card py-12 text-center">
-              <CheckSquare size={24} className="text-[#333] mx-auto mb-3" />
-              <p className="text-sm text-[#555]">All caught up. No content waiting for approval.</p>
+              <CheckSquare size={24} className="text-ink-muted mx-auto mb-3" />
+              <p className="text-sm text-ink-tertiary">All caught up. No content waiting for approval.</p>
             </div>
           )}
           {approvals.map(item => {
@@ -224,33 +224,33 @@ export default function CommandPage() {
                       {meta.emoji}
                     </div>
                     <div>
-                      <p className="text-sm text-white font-medium">{name}</p>
-                      <p className="text-[11px] text-[#555]">{item.platform} · {item.tipo}</p>
+                      <p className="text-sm text-ink font-medium">{name}</p>
+                      <p className="text-[11px] text-ink-tertiary">{item.platform} · {item.tipo}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
                     {item.tone_warning && (
                       <span className="text-[10px] bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full">⚠ Revisar tono</span>
                     )}
-                    <span className="text-[11px] text-[#444]">{timeAgo(item.submitted_at)}</span>
+                    <span className="text-[11px] text-ink-muted">{timeAgo(item.submitted_at)}</span>
                   </div>
                 </div>
-                <div className="bg-[#0A0A0A] rounded-lg p-4 border border-[#1A1A1A] mb-4">
-                  <p className="text-sm text-[#ddd] leading-relaxed">{item.copy ?? item.caption}</p>
+                <div className="bg-card rounded-lg p-4 border border-line mb-4">
+                  <p className="text-sm text-ink-secondary leading-relaxed">{item.copy ?? item.caption}</p>
                 </div>
                 <div className="flex gap-2">
                   <button
                     onClick={() => approveItem(item.id)}
-                    className="flex-1 py-2.5 text-xs rounded-lg bg-white text-black hover:bg-white/90 transition-colors font-semibold"
+                    className="flex-1 py-2.5 text-xs rounded-lg bg-ink text-page hover:opacity-90 transition-colors font-semibold"
                   >
                     Approve & schedule
                   </button>
-                  <button className="flex-1 py-2.5 text-xs rounded-lg bg-[#1A1A1A] text-[#888] hover:text-white transition-colors">
+                  <button className="flex-1 py-2.5 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors">
                     Editar
                   </button>
                   <button
                     onClick={() => rejectItem(item.id)}
-                    className="px-4 py-2.5 text-xs rounded-lg bg-[#1A1A1A] text-[#666] hover:text-red-400 transition-colors"
+                    className="px-4 py-2.5 text-xs rounded-lg bg-surface text-ink-tertiary hover:text-red-400 transition-colors"
                   >
                     Rechazar
                   </button>

@@ -10,7 +10,8 @@ export interface MarketplaceTool {
   departments: string[]
   isCritical: boolean
   affiliateUrl?: string
-  status: 'connected' | 'disconnected' | 'locked'
+  // 'coming_soon': tarjeta visible pero conexión deshabilitada (OAuth aún no implementado — el endpoint responde 503)
+  status: 'connected' | 'disconnected' | 'locked' | 'coming_soon'
   authType: 'api-key' | 'oauth' | 'native'
 }
 
@@ -48,7 +49,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     agentsUnlocked: ['zoe', 'spark'],
     departments: ['marketing', 'innovation'],
     isCritical: false,
-    status: 'disconnected',
+    status: 'coming_soon',
     authType: 'oauth',
   },
 
@@ -94,7 +95,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     agentsUnlocked: ['rex', 'vera', 'finn'],
     departments: ['sales', 'strategy'],
     isCritical: true,
-    status: 'disconnected',
+    status: 'coming_soon',
     authType: 'oauth',
   },
   {
@@ -108,7 +109,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     agentsUnlocked: ['quinn', 'nova', 'fiscal'],
     departments: ['sales', 'finance'],
     isCritical: true,
-    status: 'disconnected',
+    status: 'coming_soon',
     authType: 'oauth',
   },
 
@@ -124,7 +125,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     agentsUnlocked: ['alex', 'pulse', 'harbor'],
     departments: ['admin', 'marketing', 'sales'],
     isCritical: false,
-    status: 'disconnected',
+    status: 'coming_soon',
     authType: 'oauth',
   },
   {
@@ -138,7 +139,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     agentsUnlocked: ['onboard', 'midas', 'quant'],
     departments: ['admin', 'finance', 'strategy'],
     isCritical: false,
-    status: 'disconnected',
+    status: 'coming_soon',
     authType: 'oauth',
   },
   {
@@ -173,10 +174,10 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   },
   {
     id: 'openai',
-    name: 'OpenAI (GPT)',
+    name: 'OpenAI (Imágenes)',
     emoji: '⚡',
     category: 'AI',
-    description: 'Use GPT-4 for AI proposals',
+    description: 'Generación de imágenes con IA (gpt-image-1) para posts y decks',
     pricing: 'via_subscription',
     setupUrl: 'https://platform.openai.com',
     agentsUnlocked: ['zoe', 'nova', 'spark', 'midas'],

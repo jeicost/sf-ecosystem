@@ -8,6 +8,9 @@ import { useLocaleContext } from '@/app/locale-provider'
 
 export function ComercialQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  // Acción clicada, guardada en el momento del click (activeActionId es el UUID
+  // del servidor y nunca coincide con los ids locales de `actions`).
+  const [activeAction, setActiveAction] = useState<{ title: string; outputType: string } | null>(null)
   const { locale } = useLocaleContext()
 
   const actions = [
@@ -16,6 +19,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.crear_campaña', locale),
       description: t('actions.comercial.crear_campaña.desc', locale),
       actionType: 'crear_campaña',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <input
@@ -48,6 +52,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.generar_icp', locale),
       description: t('actions.comercial.generar_icp.desc', locale),
       actionType: 'generar_icp',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <textarea
@@ -70,6 +75,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.crear_propuesta', locale),
       description: t('actions.comercial.crear_propuesta.desc', locale),
       actionType: 'crear_propuesta',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <input
@@ -100,6 +106,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.calificar_reply', locale),
       description: t('actions.comercial.calificar_reply.desc', locale),
       actionType: 'calificar_reply',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <textarea
@@ -133,7 +140,10 @@ export function ComercialQuickActions() {
               actionType={action.actionType}
               department="comercial"
               inputForm={action.form}
-              onActionComplete={(actionId) => setActiveActionId(actionId)}
+              onActionComplete={(actionId) => {
+                setActiveAction({ title: action.title, outputType: action.outputType })
+                setActiveActionId(actionId)
+              }}
             />
           ))}
         </div>
@@ -142,7 +152,8 @@ export function ComercialQuickActions() {
       {activeActionId && (
         <QuickActionResult
           actionId={activeActionId}
-          resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
+          resourceName={activeAction?.title || 'Resource'}
+          outputType={activeAction?.outputType}
           department="comercial"
         />
       )}

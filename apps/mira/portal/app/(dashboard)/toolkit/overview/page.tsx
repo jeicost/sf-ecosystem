@@ -8,8 +8,8 @@ export default function ToolkitOverviewPage() {
 
   if (!activeClient?.id) {
     return (
-      <div className="flex items-center justify-center h-screen bg-[#1A1A1A]">
-        <p className="text-white/50 text-sm">Selecciona un cliente para ver su Toolkit completo.</p>
+      <div className="flex items-center justify-center h-screen bg-page">
+        <p className="text-ink-tertiary text-sm">Selecciona un cliente para ver su Toolkit completo.</p>
       </div>
     )
   }
@@ -17,18 +17,18 @@ export default function ToolkitOverviewPage() {
   const src = `/api/toolkit/export?overview=1&clientId=${activeClient.id}&inline=1`
 
   return (
-    <div className="flex flex-col h-screen bg-[#1A1A1A]">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 shrink-0">
-        <Link href="/toolkit" className="text-sm text-white/60 hover:text-white transition-colors">
+    <div className="flex flex-col h-screen bg-page">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-line shrink-0">
+        <Link href="/toolkit" className="text-sm text-ink-secondary hover:text-ink transition-colors">
           ← Volver al Toolkit
         </Link>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-white/40">
+          <span className="text-xs text-ink-tertiary">
             Toolkit completo · {activeClient.name}
           </span>
           <a
             href={`/api/toolkit/export?overview=1&clientId=${activeClient.id}`}
-            className="text-sm px-4 py-1.5 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="text-sm px-4 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors"
           >
             📥 Descargar HTML
           </a>

@@ -1,7 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useActiveClient } from '@/lib/client-context'
+import { useActiveProject } from '@/lib/project-context'
+import { useLocale } from '@/lib/use-locale'
+import { t } from '@/lib/i18n'
 import { BookOpen, Pin, Archive, Loader2, AlertCircle } from 'lucide-react'
 
 interface MemoryItem {
@@ -23,16 +27,48 @@ const CATEGORY_CONFIG: Record<string, { icon: string; color: string; label: stri
   content: { icon: '📝', color: '#F87171', label: 'Content' },
 }
 
+// useSearchParams exige un límite de Suspense en build: el wrapper lo aporta
+// aquí mismo para no tocar la página que lo monta.
 export default function ProjectMemoryViewer() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center py-32">
+          <Loader2 size={24} className="animate-spin text-purple-400" />
+        </div>
+      }
+    >
+      <ProjectMemoryViewerInner />
+    </Suspense>
+  )
+}
+
+function ProjectMemoryViewerInner() {
   const { activeClient } = useActiveClient()
+  const { activeProject, projects, setActiveProject } = useActiveProject()
+  const { locale } = useLocale()
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
   const [memories, setMemories] = useState<MemoryItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
+  // Prioridad: ?project= en la URL → proyecto activo del contexto → todos.
+  const urlProjectId = searchParams.get('project')
+  const selectedProjectId = urlProjectId ?? activeProject?.id ?? null
+
   useEffect(() => {
     fetchMemories()
-  }, [selectedCategory, activeClient?.id])
+  }, [selectedCategory, activeClient?.id, selectedProjectId])
+
+  const handleProjectChange = (projectId: string) => {
+    const project = projects.find((p) => p.id === projectId) ?? null
+    setActiveProject(project)
+    // Si la URL forzaba un proyecto, la limpiamos para que mande el contexto.
+    if (urlProjectId) router.replace(pathname)
+  }
 
   const fetchMemories = async () => {
     setLoading(true)
@@ -41,6 +77,7 @@ export default function ProjectMemoryViewer() {
       const url = new URL('/api/project-memory', window.location.origin)
       if (selectedCategory) url.searchParams.set('category', selectedCategory)
       if (activeClient?.id) url.searchParams.set('clientId', activeClient.id)
+      if (selectedProjectId) url.searchParams.set('project_id', selectedProjectId)
 
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to fetch project memory')
@@ -97,14 +134,36 @@ export default function ProjectMemoryViewer() {
 
   return (
     <div className="px-8 py-8">
-      <div className="mb-8">
-        <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)', letterSpacing: '0.12em' }}>
-          PROJECT INTELLIGENCE
-        </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Project Memory</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
-          Insights, decisions, and actions from your toolkit results. Build institutional knowledge.
-        </p>
+      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)', letterSpacing: '0.12em' }}>
+            PROJECT INTELLIGENCE
+          </p>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Project Memory</h1>
+          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            Insights, decisions, and actions from your toolkit results. Build institutional knowledge.
+          </p>
+        </div>
+
+        {/* Selector compacto de proyecto — filtra la memoria y fija el contexto */}
+        <label className="flex items-center gap-2 text-xs text-ink-secondary">
+          <span className="uppercase tracking-wide text-[10px] font-semibold">
+            {t('projects.selector-label', locale)}
+          </span>
+          <select
+            value={selectedProjectId ?? ''}
+            onChange={(e) => handleProjectChange(e.target.value)}
+            className="rounded-lg bg-card border border-line px-3 py-2 text-sm text-ink outline-none transition-colors hover:border-line focus:border-line"
+          >
+            <option value="">{t('projects.all', locale)}</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+            {urlProjectId && !projects.some((p) => p.id === urlProjectId) && (
+              <option value={urlProjectId}>{t('projects.linked', locale)}</option>
+            )}
+          </select>
+        </label>
       </div>
 
       {/* Category Filter */}

@@ -111,23 +111,23 @@ export default function AnalystArchetype({
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div className="bg-[#0D0D0D] p-3 rounded">
-              <div className="text-2xl font-bold text-white">{totalCount}</div>
-              <div className="text-xs text-[#666] mt-1">Total Leads</div>
+            <div className="bg-surface p-3 rounded">
+              <div className="text-2xl font-bold text-ink">{totalCount}</div>
+              <div className="text-xs text-ink-tertiary mt-1">Total Leads</div>
             </div>
-            <div className="bg-[#0D0D0D] p-3 rounded">
-              <div className="text-2xl font-bold text-white">{hotCount}</div>
-              <div className="text-xs text-[#666] mt-1">Hot ≥75</div>
+            <div className="bg-surface p-3 rounded">
+              <div className="text-2xl font-bold text-ink">{hotCount}</div>
+              <div className="text-xs text-ink-tertiary mt-1">Hot ≥75</div>
             </div>
-            <div className="bg-[#0D0D0D] p-3 rounded">
-              <div className="text-2xl font-bold text-white">{warmCount}</div>
-              <div className="text-xs text-[#666] mt-1">Warm 50-74</div>
+            <div className="bg-surface p-3 rounded">
+              <div className="text-2xl font-bold text-ink">{warmCount}</div>
+              <div className="text-xs text-ink-tertiary mt-1">Warm 50-74</div>
             </div>
           </div>
 
           {/* Distribution Bar */}
           <div className="space-y-2">
-            <div className="text-xs text-[#888]">Distribution</div>
+            <div className="text-xs text-ink-secondary">Distribution</div>
             <div className="flex gap-1 h-2 rounded overflow-hidden">
               <div
                 className="transition-all"
@@ -150,7 +150,7 @@ export default function AnalystArchetype({
                 }}
               />
             </div>
-            <div className="text-xs text-[#888]">
+            <div className="text-xs text-ink-secondary">
               {Math.round((hotCount / totalCount) * 100)}% hot is GOOD
             </div>
           </div>
@@ -174,14 +174,14 @@ export default function AnalystArchetype({
                   className={clsx(
                     'w-full p-4 rounded-lg text-left transition-all border',
                     isSelected
-                      ? 'border-[#1E1E1E] bg-[#1E1E1E]'
-                      : 'border-transparent hover:bg-[#0D0D0D]'
+                      ? 'border-line bg-surface-hover'
+                      : 'border-transparent hover:bg-surface'
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
-                        <div className="text-sm font-semibold text-white">
+                        <div className="text-sm font-semibold text-ink">
                           {result.rank}. {result.name}
                         </div>
                         <div
@@ -194,10 +194,10 @@ export default function AnalystArchetype({
                           {scoreBadge.emoji} {result.score}
                         </div>
                       </div>
-                      <div className="text-xs text-[#666] mb-2">{result.subtitle}</div>
+                      <div className="text-xs text-ink-tertiary mb-2">{result.subtitle}</div>
                       <div className="flex flex-wrap gap-1">
                         {result.metrics.map((metric, i) => (
-                          <span key={i} className="text-xs px-2 py-1 rounded bg-[#0D0D0D] text-[#888]">
+                          <span key={i} className="text-xs px-2 py-1 rounded bg-surface text-ink-secondary">
                             {metric}
                           </span>
                         ))}
@@ -223,16 +223,16 @@ export default function AnalystArchetype({
             </div>
 
             <div>
-              <div className="text-lg font-semibold text-white mb-1">{selectedResult.name}</div>
-              <div className="text-sm text-[#666]">Score {selectedResult.score}/100</div>
+              <div className="text-lg font-semibold text-ink mb-1">{selectedResult.name}</div>
+              <div className="text-sm text-ink-tertiary">Score {selectedResult.score}/100</div>
             </div>
 
             {selectedResult.triggers && (
               <div className="space-y-2">
-                <div className="text-xs font-semibold text-white uppercase">Buying Signals</div>
+                <div className="text-xs font-semibold text-ink uppercase">Buying Signals</div>
                 <div className="space-y-1">
                   {selectedResult.triggers.map((trigger, i) => (
-                    <div key={i} className="text-xs text-[#999] leading-relaxed">
+                    <div key={i} className="text-xs text-ink-secondary leading-relaxed">
                       <span className="mr-2">✓</span>
                       {trigger}
                     </div>
@@ -242,18 +242,18 @@ export default function AnalystArchetype({
             )}
 
             {selectedResult.details && (
-              <div className="space-y-3 border-t border-[#1E1E1E] pt-4">
-                <div className="text-xs font-semibold text-white uppercase">Recent Signals</div>
+              <div className="space-y-3 border-t border-line pt-4">
+                <div className="text-xs font-semibold text-ink uppercase">Recent Signals</div>
                 <div className="space-y-1">
                   {selectedResult.details.signals.map((signal, i) => (
-                    <div key={i} className="text-xs text-[#999]">
+                    <div key={i} className="text-xs text-ink-secondary">
                       {signal}
                     </div>
                   ))}
                 </div>
 
-                <div className="text-xs font-semibold text-white uppercase pt-3">Next Move</div>
-                <div className="text-xs text-[#999] leading-relaxed">
+                <div className="text-xs font-semibold text-ink uppercase pt-3">Next Move</div>
+                <div className="text-xs text-ink-secondary leading-relaxed">
                   {selectedResult.details.nextMove}
                 </div>
               </div>

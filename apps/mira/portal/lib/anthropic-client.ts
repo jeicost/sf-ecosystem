@@ -77,6 +77,7 @@ export const MODEL_PRICING: Record<string, { in: number; out: number }> = {
   'claude-opus-4-8': { in: 15, out: 75 },
   'claude-sonnet-4-6': { in: 3, out: 15 },
   'claude-haiku-4-5-20251001': { in: 0.8, out: 4 },
+  'gpt-image-1': { in: 5, out: 40 },
 }
 
 export function estimateCostUsd(model: string, inputTokens: number, outputTokens: number): number {

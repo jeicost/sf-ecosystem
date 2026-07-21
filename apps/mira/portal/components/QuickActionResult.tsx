@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react'
 import { Check, X, Loader2, Download, Heart, Save } from 'lucide-react'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
+import { getStoredClientId } from '@/lib/client-context'
+import { getStoredProjectId } from '@/lib/project-context'
 // import Image from 'next/image' // TODO: Image not yet used
 
 interface QuickActionResultProps {
@@ -26,11 +28,14 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
     const pollResult = async () => {
       try {
         const response = await fetch(`/api/quick-actions?action_id=${actionId}`)
-        if (!response.ok) throw new Error('Failed to fetch result')
+        const data = await response.json().catch(() => null)
 
-        const data = await response.json()
-        if (data.data.output_data && Object.keys(data.data.output_data).length > 0) {
-          setResult(data.data)
+        if (!response.ok || data?.error) {
+          throw new Error(data?.error || 'Failed to fetch result')
+        }
+
+        if (data?.output_data && Object.keys(data.output_data).length > 0) {
+          setResult(data)
           setIsLoading(false)
         } else {
           // Still processing
@@ -58,6 +63,8 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           actionId,
+          clientId: getStoredClientId(),
+          projectId: getStoredProjectId(),
           title: resourceName,
           category: determineCategoryFromDepartment(department),
           summary: summary || 'Resultado guardado del toolkit',
@@ -87,21 +94,16 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       const res = await fetch('/api/export/google-drive', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          actionId,
-          resourceName,
-          outputData: result.output_data,
-          outputType: displayOutputType,
-          department,
-        }),
+        body: JSON.stringify({ action_id: actionId }),
       })
 
-      if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to export to Google Drive')
+      const responseData = await res.json().catch(() => null)
+
+      if (!res.ok || responseData?.error) {
+        throw new Error(responseData?.error || 'Failed to export to Google Drive')
       }
 
-      const { driveUrl } = await res.json()
+      const driveUrl = responseData?.driveUrl || responseData?.url
 
       // Open Google Drive file in new tab
       if (driveUrl) {
@@ -246,11 +248,19 @@ function determineCategoryFromDepartment(department: string): string {
 
 function ContentPreview({ outputType, outputData, locale }: { outputType: string; outputData: any; locale: 'es' | 'en' }) {
   switch (outputType) {
-    case 'image':
+    case 'image': {
+      const imageSrc = outputData.image_path
+        ? '/api/assets?path=' + encodeURIComponent(outputData.image_path)
+        : outputData.image_url
       return (
         <div className="space-y-2">
-          {outputData.image_url && (
-            <img src={outputData.image_url} alt="Generated" className="w-full rounded-lg max-h-96 object-cover" />
+          {outputData.image_error && (
+            <div className="flex items-start gap-2 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2">
+              <span>{t('quick-result.image-error', locale)}</span>
+            </div>
+          )}
+          {imageSrc && (
+            <img src={imageSrc} alt="Generated" className="w-full rounded-lg max-h-96 object-cover" />
           )}
           {outputData.copy && <p className="text-sm text-gray-300">{outputData.copy}</p>}
           {outputData.hashtags && (
@@ -258,6 +268,7 @@ function ContentPreview({ outputType, outputData, locale }: { outputType: string
           )}
         </div>
       )
+    }
 
     case 'document':
       return (

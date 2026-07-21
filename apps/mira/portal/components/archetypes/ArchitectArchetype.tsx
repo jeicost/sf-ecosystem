@@ -172,18 +172,18 @@ export default function ArchitectArchetype({
               className={clsx(
                 'card p-4 text-left transition-all border',
                 selectedTemplateId === template.id
-                  ? 'border-[#1E1E1E] bg-[#1E1E1E]'
-                  : 'border-transparent hover:bg-[#0D0D0D]'
+                  ? 'border-line bg-surface-hover'
+                  : 'border-transparent hover:bg-surface'
               )}
             >
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="text-sm font-semibold text-white mb-1">
+                  <div className="text-sm font-semibold text-ink mb-1">
                     <span className="text-lg mr-2">{template.emoji}</span>
                     {template.name}
                   </div>
-                  <div className="text-xs text-[#999] mb-2">{template.description}</div>
-                  <div className="flex gap-2 text-xs text-[#666]">
+                  <div className="text-xs text-ink-secondary mb-2">{template.description}</div>
+                  <div className="flex gap-2 text-xs text-ink-tertiary">
                     <span>📌 {template.stepCount} steps</span>
                     <span>⏱️ {template.duration}</span>
                   </div>
@@ -204,11 +204,11 @@ export default function ArchitectArchetype({
             <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
               ⚡ Progress
             </div>
-            <div className="text-sm font-semibold text-white">
+            <div className="text-sm font-semibold text-ink">
               {completedCount} of {steps.length} complete
             </div>
           </div>
-          <div className="w-full bg-[#1E1E1E] rounded h-3 overflow-hidden">
+          <div className="w-full bg-surface-hover rounded h-3 overflow-hidden">
             <div
               className="h-full transition-all duration-300"
               style={{ width: `${progressPercent}%`, backgroundColor: agentColor }}
@@ -246,8 +246,8 @@ export default function ArchitectArchetype({
                         {step.isCompleted ? <Check size={16} /> : step.number}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="font-semibold text-white text-sm">{step.title}</div>
-                        <div className="text-xs text-[#999]">{step.description}</div>
+                        <div className="font-semibold text-ink text-sm">{step.title}</div>
+                        <div className="text-xs text-ink-secondary">{step.description}</div>
                       </div>
                     </div>
                     {isSelected && <ChevronRight size={16} style={{ color: agentColor }} className="flex-shrink-0 mt-1" />}
@@ -255,22 +255,22 @@ export default function ArchitectArchetype({
 
                   {/* Step Content - Expanded */}
                   {isSelected && (
-                    <div className="border-t border-[#1E1E1E] pt-3 mt-3 space-y-3">
+                    <div className="border-t border-line pt-3 mt-3 space-y-3">
                       {isEditing ? (
                         <textarea
                           value={stepContent[step.id] || ''}
                           onChange={e => setStepContent({ ...stepContent, [step.id]: e.target.value })}
-                          className="w-full bg-[#0D0D0D] text-white text-sm leading-relaxed p-3 rounded border border-[#1E1E1E] focus:border-[#333] focus:outline-none resize-none"
+                          className="w-full bg-surface text-ink text-sm leading-relaxed p-3 rounded border border-line focus:border-ink-muted focus:outline-none resize-none"
                           rows={4}
                           placeholder="Write your plan details here..."
                         />
                       ) : (
                         <div className="relative group cursor-text" onClick={() => setEditingStepId(step.id)}>
-                          <div className="text-sm text-white/90 leading-relaxed p-2 rounded hover:bg-[#0D0D0D]/50 transition-colors min-h-[60px]">
+                          <div className="text-sm text-ink leading-relaxed p-2 rounded hover:bg-surface transition-colors min-h-[60px]">
                             {stepContent[step.id] ? (
                               stepContent[step.id]
                             ) : (
-                              <span className="text-[#666]">Click to add details...</span>
+                              <span className="text-ink-tertiary">Click to add details...</span>
                             )}
                           </div>
                         </div>
@@ -280,7 +280,7 @@ export default function ArchitectArchetype({
                         {isEditing && (
                           <button
                             onClick={() => setEditingStepId(null)}
-                            className="px-3 py-1.5 text-xs rounded bg-[#1E1E1E] hover:bg-[#2E2E2E] text-[#999]"
+                            className="px-3 py-1.5 text-xs rounded bg-surface hover:bg-surface-hover text-ink-secondary"
                           >
                             Done
                           </button>
@@ -344,8 +344,8 @@ export default function ArchitectArchetype({
             {lockedId === 'blueprint' ? 'Blueprint Locked ✓' : 'Save & Lock Blueprint'}
           </button>
 
-          <div className="p-3 rounded bg-[#0D0D0D] border border-[#1E1E1E]">
-            <div className="flex gap-2 items-start text-xs text-[#999]">
+          <div className="p-3 rounded bg-surface border border-line">
+            <div className="flex gap-2 items-start text-xs text-ink-secondary">
               <Lightbulb size={14} className="flex-shrink-0 mt-0.5" />
               <div>
                 When locked, this blueprint becomes your strategic reference. You can still edit individual steps,

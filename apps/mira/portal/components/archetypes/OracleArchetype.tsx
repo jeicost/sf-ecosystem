@@ -120,7 +120,7 @@ export default function OracleArchetype({
           <div className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: agentColor }}>
             📝 Brief
           </div>
-          <div className="text-sm text-white/90 leading-relaxed">{briefContent}</div>
+          <div className="text-sm text-ink leading-relaxed">{briefContent}</div>
         </div>
       )}
 
@@ -151,7 +151,7 @@ export default function OracleArchetype({
           {/* Variant Display */}
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-semibold text-white">
+              <div className="text-sm font-semibold text-ink">
                 Variante {String.fromCharCode(65 + selectedIndex)}
                 {lockedId === selectedVariant.id && (
                   <span className="ml-2 text-xs px-2 py-1 rounded" style={{ backgroundColor: `${agentColor}30`, color: agentColor }}>
@@ -160,18 +160,18 @@ export default function OracleArchetype({
                 )}
               </div>
               {selectedVariant.engagementScore && (
-                <div className="flex items-center gap-1 text-xs text-[#888]">
+                <div className="flex items-center gap-1 text-xs text-ink-secondary">
                   <span className="text-lg">🔥</span>
                   <span>{selectedVariant.engagementScore}% engagement vs 64% avg</span>
                 </div>
               )}
             </div>
 
-            <p className="text-base text-white/90 leading-relaxed italic">"{selectedVariant.text}"</p>
+            <p className="text-base text-ink leading-relaxed italic">"{selectedVariant.text}"</p>
 
             {/* Engagement Bar */}
             {selectedVariant.engagementScore && (
-              <div className="w-full bg-[#1E1E1E] rounded h-2 overflow-hidden">
+              <div className="w-full bg-surface-hover rounded h-2 overflow-hidden">
                 <div
                   className="h-full transition-all duration-300"
                   style={{ width: `${selectedVariant.engagementScore}%`, backgroundColor: agentColor }}
@@ -181,12 +181,12 @@ export default function OracleArchetype({
           </div>
 
           {/* Carousel Controls */}
-          <div className="flex items-center justify-between pt-4 border-t border-[#1E1E1E]">
+          <div className="flex items-center justify-between pt-4 border-t border-line">
             <button
               onClick={handlePrevious}
-              className="p-2 hover:bg-[#1E1E1E] rounded-lg transition-colors"
+              className="p-2 hover:bg-surface-hover rounded-lg transition-colors"
             >
-              <ChevronLeft size={18} className="text-[#666]" />
+              <ChevronLeft size={18} className="text-ink-tertiary" />
             </button>
 
             <div className="flex items-center gap-2">
@@ -207,9 +207,9 @@ export default function OracleArchetype({
 
             <button
               onClick={handleNext}
-              className="p-2 hover:bg-[#1E1E1E] rounded-lg transition-colors"
+              className="p-2 hover:bg-surface-hover rounded-lg transition-colors"
             >
-              <ChevronRight size={18} className="text-[#666]" />
+              <ChevronRight size={18} className="text-ink-tertiary" />
             </button>
           </div>
         </div>
@@ -226,31 +226,31 @@ export default function OracleArchetype({
             <textarea
               value={editText}
               onChange={e => setEditText(e.target.value)}
-              className="w-full bg-[#0D0D0D] text-white text-sm leading-relaxed p-4 rounded border border-[#1E1E1E] focus:border-[#333] focus:outline-none resize-none"
+              className="w-full bg-surface text-ink text-sm leading-relaxed p-4 rounded border border-line focus:border-ink-muted focus:outline-none resize-none"
               rows={4}
             />
           ) : (
             <div className="relative group cursor-text" onClick={() => setIsEditing(true)}>
-              <p className="text-sm text-white/90 leading-relaxed">{editText}</p>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-[#1E1E1E]/50 to-transparent rounded pointer-events-none" />
-              <span className="text-xs text-[#555] absolute bottom-0 right-0 mt-2 group-hover:text-[#888] transition-colors">
+              <p className="text-sm text-ink leading-relaxed">{editText}</p>
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-surface-hover to-transparent rounded pointer-events-none" />
+              <span className="text-xs text-ink-tertiary absolute bottom-0 right-0 mt-2 group-hover:text-ink-secondary transition-colors">
                 Click to edit
               </span>
             </div>
           )}
 
-          <div className="flex gap-2 mt-4 pt-4 border-t border-[#1E1E1E]">
+          <div className="flex gap-2 mt-4 pt-4 border-t border-line">
             {isEditing && (
               <button
                 onClick={() => setIsEditing(false)}
-                className="px-3 py-1.5 text-xs rounded bg-[#1E1E1E] hover:bg-[#2E2E2E] text-[#999]"
+                className="px-3 py-1.5 text-xs rounded bg-surface hover:bg-surface-hover text-ink-secondary"
               >
                 Done
               </button>
             )}
             <button
               onClick={handleRegenerate}
-              className="px-3 py-1.5 text-xs rounded flex items-center gap-1 text-[#666] hover:text-white"
+              className="px-3 py-1.5 text-xs rounded flex items-center gap-1 text-ink-tertiary hover:text-ink"
             >
               <RotateCcw size={12} />
               Regenerate
@@ -268,7 +268,7 @@ export default function OracleArchetype({
         <div className="grid grid-cols-2 gap-3">
           <button
             onClick={handleCopy}
-            className="card p-4 flex items-center justify-center gap-2 hover:bg-[#1E1E1E] transition-colors relative group"
+            className="card p-4 flex items-center justify-center gap-2 hover:bg-surface-hover transition-colors relative group"
           >
             {copiedId === selectedVariant.id ? (
               <>
@@ -279,8 +279,8 @@ export default function OracleArchetype({
               </>
             ) : (
               <>
-                <Copy size={16} className="text-[#666] group-hover:text-white" />
-                <span className="text-xs font-medium text-[#666] group-hover:text-white">
+                <Copy size={16} className="text-ink-tertiary group-hover:text-ink" />
+                <span className="text-xs font-medium text-ink-tertiary group-hover:text-ink">
                   Copy
                 </span>
               </>
@@ -289,7 +289,7 @@ export default function OracleArchetype({
 
           <button
             onClick={handleSave}
-            className="card p-4 flex items-center justify-center gap-2 hover:bg-[#1E1E1E] transition-colors"
+            className="card p-4 flex items-center justify-center gap-2 hover:bg-surface-hover transition-colors"
           >
             {savedIds.has(selectedVariant.id) ? (
               <>
@@ -300,8 +300,8 @@ export default function OracleArchetype({
               </>
             ) : (
               <>
-                <Sparkles size={16} className="text-[#666]" />
-                <span className="text-xs font-medium text-[#666]">Save</span>
+                <Sparkles size={16} className="text-ink-tertiary" />
+                <span className="text-xs font-medium text-ink-tertiary">Save</span>
               </>
             )}
           </button>

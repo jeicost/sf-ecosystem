@@ -313,8 +313,8 @@ export default function BrandBrainEditor() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(168,85,247,0.8)', letterSpacing: '0.12em' }}>
           BRAND INTELLIGENCE
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Brand Brain</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Brand Brain</h1>
+        <p className="text-sm mt-1 text-ink-tertiary">
           Define your brand context. This guides all AI generation across the platform.
         </p>
       </div>
@@ -326,7 +326,7 @@ export default function BrandBrainEditor() {
             <AlertCircle size={20} style={{ color: '#EF4444' }} />
             <div>
               <p className="font-semibold text-red-400">Error</p>
-              <p className="text-sm text-gray-400 mt-1">{error}</p>
+              <p className="text-sm text-ink-secondary mt-1">{error}</p>
             </div>
           </div>
         </div>
@@ -338,7 +338,7 @@ export default function BrandBrainEditor() {
             <Check size={20} style={{ color: '#22C55E' }} />
             <div>
               <p className="font-semibold text-green-400">Saved successfully</p>
-              <p className="text-sm text-gray-400 mt-1">Your brand profile has been updated</p>
+              <p className="text-sm text-ink-secondary mt-1">Your brand profile has been updated</p>
             </div>
           </div>
         </div>
@@ -354,7 +354,7 @@ export default function BrandBrainEditor() {
       )}
 
       {/* Tabs - 6 Consolidated Fields */}
-      <div className="flex gap-1 mb-6 border-b border-white/10 overflow-x-auto pb-2">
+      <div className="flex gap-1 mb-6 border-b border-line overflow-x-auto pb-2">
         {[
           { id: 'brand_identity', label: '🎯 Brand Identity' },
           { id: 'audience_market', label: '👥 Audience & Market' },
@@ -368,8 +368,8 @@ export default function BrandBrainEditor() {
             onClick={() => setActiveTab(tab.id as TabType)}
             className={`px-3 py-3 text-xs font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
-                ? 'text-white border-b-2'
-                : 'text-gray-400 border-b-2 border-transparent hover:text-white'
+                ? 'text-ink border-b-2'
+                : 'text-ink-secondary border-b-2 border-transparent hover:text-ink'
             }`}
             style={{
               borderBottomColor: activeTab === tab.id ? '#A855F7' : 'transparent',
@@ -384,31 +384,31 @@ export default function BrandBrainEditor() {
       <div className="card p-6 mb-6 space-y-4">
         {activeTab === 'brand_identity' && (
           <div className="space-y-6">
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Core Identity</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Core Identity</h3>
               <TextInput label="Brand Name" value={profile.brand_data?.identity?.name || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, name: v } } })} placeholder="e.g., Discoolver" />
               <TextInput label="Tagline" value={profile.brand_data?.identity?.tagline || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, tagline: v } } })} placeholder="Short, memorable phrase" />
               <TextInput label="One-Liner" value={profile.brand_data?.identity?.one_liner || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, one_liner: v } } })} placeholder="What does your brand do?" />
             </div>
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Mission & Vision</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Mission & Vision</h3>
               <TextareaInput label="Mission" value={profile.brand_data?.identity?.mission || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, mission: v } } })} placeholder="Your mission and purpose" />
               <TextareaInput label="Vision" value={profile.brand_data?.identity?.vision || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, vision: v } } })} placeholder="Your long-term vision" />
             </div>
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">What Your Brand Is</h3>
-              <label className="block text-xs text-gray-400 mb-2">(5-7 simultaneous things)</label>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">What Your Brand Is</h3>
+              <label className="block text-xs text-ink-secondary mb-2">(5-7 simultaneous things)</label>
               <TextareaInput value={profile.brand_data?.what_it_is || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, what_it_is: v } })} placeholder="1. Curated discovery platform&#10;2. Influencer-powered marketplace&#10;3. AI-assisted city explorer&#10;..." />
-              <p className="text-xs text-gray-500 mt-2">Separate each item with a line break</p>
+              <p className="text-xs text-ink-tertiary mt-2">Separate each item with a line break</p>
             </div>
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Value & Positioning</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Value & Positioning</h3>
               <TextareaInput label="Value Proposition" value={profile.brand_data?.value_proposition || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, value_proposition: v } })} placeholder="Problems you solve + emotional promise + time/money saved" />
               <TextInput label="Enemy" value={profile.brand_data?.identity?.enemy || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, enemy: v } } })} placeholder="What do you compete against? (mindset, competitor, problem)" />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-white mb-4">Hero Features</h3>
-              <p className="text-xs text-gray-400 mb-4">Three differentiators that lead your narrative</p>
+              <h3 className="text-sm font-medium text-ink mb-4">Hero Features</h3>
+              <p className="text-xs text-ink-secondary mb-4">Three differentiators that lead your narrative</p>
               <TextInput label="Feature 1" value={profile.brand_data?.hero_features?.feature_1 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_1: v } } })} />
               <TextInput label="Feature 2" value={profile.brand_data?.hero_features?.feature_2 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_2: v } } })} />
               <TextInput label="Feature 3" value={profile.brand_data?.hero_features?.feature_3 || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, hero_features: { ...profile.brand_data?.hero_features, feature_3: v } } })} />
@@ -419,8 +419,8 @@ export default function BrandBrainEditor() {
         {activeTab === 'audience_market' && (
           <div className="space-y-6">
             <div>
-              <h3 className="text-sm font-medium text-white mb-3">Primary Audiences (6 Segments)</h3>
-              <p className="text-xs text-gray-400 mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
+              <h3 className="text-sm font-medium text-ink mb-3">Primary Audiences (6 Segments)</h3>
+              <p className="text-xs text-ink-secondary mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
               <TextareaInput
                 value={(profile.brand_data?.audiences || []).map((a: any) =>
                   typeof a === 'string' ? a : `${a.segment || ''} 🔹 ${a.need || ''} 🔹 ${a.message || ''}`
@@ -437,13 +437,13 @@ export default function BrandBrainEditor() {
                 })}
                 placeholder="E-commerce emergente 🔹 Ordenar operaciones 🔹 Valida y crece sin complicarte&#10;E-commerce en crecimiento 🔹 Soportar volumen 🔹 Campañas sin caos&#10;..."
               />
-              <div className="border-t border-white/10 pt-4 mt-4">
-                <h4 className="text-xs font-semibold text-gray-300 mb-3">Preview:</h4>
+              <div className="border-t border-line pt-4 mt-4">
+                <h4 className="text-xs font-semibold text-ink-secondary mb-3">Preview:</h4>
                 <div className="space-y-2 text-xs">
                   {(profile.brand_data?.audiences || []).map((a: any, i: number) => (
-                    <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
-                      <div className="font-medium text-white">{a.segment || a}</div>
-                      <div className="text-gray-400 text-xs mt-1">{a.need || a}</div>
+                    <div key={i} className="bg-surface p-3 rounded border border-line">
+                      <div className="font-medium text-ink">{a.segment || a}</div>
+                      <div className="text-ink-secondary text-xs mt-1">{a.need || a}</div>
                       <div className="text-purple-300 text-xs mt-1">{a.message || a}</div>
                     </div>
                   ))}
@@ -451,8 +451,8 @@ export default function BrandBrainEditor() {
               </div>
             </div>
 
-            <div className="border-t border-white/10 pt-6">
-              <h3 className="text-sm font-medium text-white mb-3">Competitive Positioning</h3>
+            <div className="border-t border-line pt-6">
+              <h3 className="text-sm font-medium text-ink mb-3">Competitive Positioning</h3>
               <TextareaInput value={profile.brand_data?.competitive_positioning || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, competitive_positioning: v } })} placeholder="Who are competitors, what makes you unique, market opportunities" />
             </div>
           </div>
@@ -467,8 +467,8 @@ export default function BrandBrainEditor() {
         {activeTab === 'voice_visual' && (
           <div className="space-y-6">
             {/* Archetypes */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Brand Archetypes</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Brand Archetypes</h3>
               <TextInput
                 label="Primary Archetype"
                 value={profile.brand_data?.voice_archetypes?.[0] || ''}
@@ -496,9 +496,9 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Voice Principles */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">5 Voice Principles</h3>
-              <p className="text-xs text-gray-400 mb-3">Format: Principle 🔹 Example (one per line)</p>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">5 Voice Principles</h3>
+              <p className="text-xs text-ink-secondary mb-3">Format: Principle 🔹 Example (one per line)</p>
               <TextareaInput
                 value={(profile.brand_data?.voice_principles || []).map((p: any) => `${p.name} 🔹 ${p.example}`).join('\n')}
                 onChange={(v) => setProfile({
@@ -516,9 +516,9 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Vocabulary */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Vocabulary Rules</h3>
-              <label className="block text-xs font-medium text-gray-400 mb-2">✅ Words to Use (comma-separated)</label>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Vocabulary Rules</h3>
+              <label className="block text-xs font-medium text-ink-secondary mb-2">✅ Words to Use (comma-separated)</label>
               <TextareaInput
                 value={(profile.brand_data?.voice_vocabulary?.do || []).join(', ')}
                 onChange={(v) => setProfile({
@@ -533,7 +533,7 @@ export default function BrandBrainEditor() {
                 })}
                 placeholder="stock bajo control, pedidos sin fricción, logística conectada, margen..."
               />
-              <label className="block text-xs font-medium text-gray-400 mb-2 mt-4">❌ Words to Avoid (comma-separated)</label>
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-4">❌ Words to Avoid (comma-separated)</label>
               <TextareaInput
                 value={(profile.brand_data?.voice_vocabulary?.dont || []).join(', ')}
                 onChange={(v) => setProfile({
@@ -551,9 +551,9 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Status Badge */}
-            <div className="border-b border-white/10 pb-4">
+            <div className="border-b border-line pb-4">
               <div className="flex items-center gap-3">
-                <label className="block text-sm font-medium text-white">Visual Status:</label>
+                <label className="block text-sm font-medium text-ink">Visual Status:</label>
                 <select
                   value={(profile.brand_data?.visual_identity as any)?.status || 'missing'}
                   onChange={(e) => setProfile({
@@ -566,7 +566,7 @@ export default function BrandBrainEditor() {
                       },
                     },
                   })}
-                  className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm focus:border-purple-500 focus:outline-none"
+                  className="px-4 py-2 bg-surface border border-line rounded-lg text-ink text-sm focus:border-purple-500 focus:outline-none"
                 >
                   <option value="confirmed">✅ Confirmed (Client approved)</option>
                   <option value="proposed">⏳ Proposed (Pending decision)</option>
@@ -576,12 +576,12 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Colors Section */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Colors</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Colors</h3>
               <div className="grid grid-cols-2 gap-4">
                 {['primary', 'secondary', 'accent', 'neutral'].map((colorRole) => (
                   <div key={colorRole}>
-                    <label className="block text-xs font-medium text-gray-400 mb-2 capitalize">{colorRole}</label>
+                    <label className="block text-xs font-medium text-ink-secondary mb-2 capitalize">{colorRole}</label>
                     <div className="flex gap-2">
                       <div className="flex-1">
                         <input
@@ -601,7 +601,7 @@ export default function BrandBrainEditor() {
                             },
                           })}
                           placeholder="#000000"
-                          className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none text-xs"
+                          className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none text-xs"
                         />
                       </div>
                       <input
@@ -620,7 +620,7 @@ export default function BrandBrainEditor() {
                             },
                           },
                         })}
-                        className="w-12 h-10 rounded cursor-pointer border border-white/10"
+                        className="w-12 h-10 rounded cursor-pointer border border-line"
                       />
                     </div>
                   </div>
@@ -647,8 +647,8 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Typography Section */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Typography</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Typography</h3>
               <div className="space-y-3">
                 <TextInput
                   label="Heading Font"
@@ -726,8 +726,8 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Logo Section */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Logo</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Logo</h3>
               <TextInput
                 label="Logo URL"
                 value={(profile.brand_data?.visual_identity as any)?.logo?.primary_url || ''}
@@ -767,8 +767,8 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Imagery Style */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-4">Imagery & Aesthetic</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Imagery & Aesthetic</h3>
               <TextareaInput
                 value={(profile.brand_data?.visual_identity as any)?.imagery_style || ''}
                 onChange={(v) => setProfile({
@@ -787,7 +787,7 @@ export default function BrandBrainEditor() {
 
             {/* Mascot / Character */}
             <div>
-              <h3 className="text-sm font-medium text-white mb-4">Brand Mascot / Character</h3>
+              <h3 className="text-sm font-medium text-ink mb-4">Brand Mascot / Character</h3>
               <TextInput
                 label="Mascot Name"
                 value={(profile.brand_data?.visual_identity as any)?.mascot_dady?.specs?.split('|')[0] || ''}
@@ -880,8 +880,8 @@ export default function BrandBrainEditor() {
         {activeTab === 'content_strategy' && (
           <div className="space-y-6">
             {/* Strategy & Roadmap */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Strategy & Roadmap</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Strategy & Roadmap</h3>
               <TextareaInput
                 value={profile.brand_data?.strategy_roadmap || ''}
                 onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, strategy_roadmap: v } })}
@@ -890,8 +890,8 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Go-to-Market Channels */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Go-to-Market & Channels</h3>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Go-to-Market & Channels</h3>
               <TextareaInput
                 value={profile.brand_data?.go_to_market || ''}
                 onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, go_to_market: v } })}
@@ -900,9 +900,9 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Content Pillars */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">4 Content Pillars</h3>
-              <p className="text-xs text-gray-400 mb-3">Format: Pillar Name 🔹 Description 🔹 Claim (one per line)</p>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">4 Content Pillars</h3>
+              <p className="text-xs text-ink-secondary mb-3">Format: Pillar Name 🔹 Description 🔹 Claim (one per line)</p>
               <TextareaInput
                 value={(pillars || []).map((p: any) =>
                   `${p.pillar_name} 🔹 ${p.description} 🔹 ${p.claim || ''}`
@@ -917,12 +917,12 @@ export default function BrandBrainEditor() {
               />
               {(pillars || []).length > 0 && (
                 <div className="mt-4 space-y-2 text-xs">
-                  <p className="text-gray-300 font-medium">Pillars Summary:</p>
+                  <p className="text-ink-secondary font-medium">Pillars Summary:</p>
                   {(pillars || []).map((p: any, i: number) => (
-                    <div key={i} className="bg-white/5 p-3 rounded border border-white/10">
+                    <div key={i} className="bg-surface p-3 rounded border border-line">
                       <div className="font-medium text-purple-300">{p.pillar_name}</div>
-                      <div className="text-gray-400 mt-1">{p.description}</div>
-                      <div className="text-gray-500 text-xs mt-1 italic">"{p.claim}"</div>
+                      <div className="text-ink-secondary mt-1">{p.description}</div>
+                      <div className="text-ink-tertiary text-xs mt-1 italic">"{p.claim}"</div>
                     </div>
                   ))}
                 </div>
@@ -930,9 +930,9 @@ export default function BrandBrainEditor() {
             </div>
 
             {/* Editorial Rhythm */}
-            <div className="border-b border-white/10 pb-4">
-              <h3 className="text-sm font-medium text-white mb-3">Editorial Rhythm & Calendar</h3>
-              <p className="text-xs text-gray-400 mb-3">Weekly publishing rhythm, formats, and which pillar content for each day</p>
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Editorial Rhythm & Calendar</h3>
+              <p className="text-xs text-ink-secondary mb-3">Weekly publishing rhythm, formats, and which pillar content for each day</p>
               <TextareaInput
                 value={profile.brand_data?.editorial_rhythm || ''}
                 onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, editorial_rhythm: v } })}
@@ -942,11 +942,11 @@ export default function BrandBrainEditor() {
 
             {/* QA Rules & Operations */}
             <div>
-              <h3 className="text-sm font-medium text-white mb-3">QA Rules & Content Operations</h3>
+              <h3 className="text-sm font-medium text-ink mb-3">QA Rules & Content Operations</h3>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-2">Base Formula (Problem → Solution → Benefit → Result → CTA)</label>
+                  <label className="block text-xs font-medium text-ink-secondary mb-2">Base Formula (Problem → Solution → Benefit → Result → CTA)</label>
                   <TextareaInput
                     value={profile.brand_data?.qa_rules?.formula || ''}
                     onChange={(v) => setProfile({
@@ -961,7 +961,7 @@ export default function BrandBrainEditor() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-2">7-Point QA Checklist (one per line)</label>
+                  <label className="block text-xs font-medium text-ink-secondary mb-2">7-Point QA Checklist (one per line)</label>
                   <TextareaInput
                     value={(profile.brand_data?.qa_rules?.checklist || []).join('\n')}
                     onChange={(v) => setProfile({
@@ -979,7 +979,7 @@ export default function BrandBrainEditor() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-400 mb-2">What to AVOID (comma-separated)</label>
+                  <label className="block text-xs font-medium text-ink-secondary mb-2">What to AVOID (comma-separated)</label>
                   <TextareaInput
                     value={(profile.brand_data?.qa_rules?.what_to_avoid || []).join(', ')}
                     onChange={(v) => setProfile({
@@ -1004,10 +1004,10 @@ export default function BrandBrainEditor() {
           <div className="space-y-4">
             {activeClient?.id && <DriveFoldersPanel clientId={activeClient.id} />}
 
-            <label className="block text-sm font-medium text-white">Upload Brand Documents</label>
-            <p className="text-xs text-gray-400">Upload brand books, handbooks, pitch decks, or strategy docs. Our AI will analyze and suggest updates to your Brand Brain fields.</p>
+            <label className="block text-sm font-medium text-ink">Upload Brand Documents</label>
+            <p className="text-xs text-ink-secondary">Upload brand books, handbooks, pitch decks, or strategy docs. Our AI will analyze and suggest updates to your Brand Brain fields.</p>
 
-            <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center hover:border-purple-500/50 transition-colors">
+            <div className="border-2 border-dashed border-line rounded-lg p-6 text-center hover:border-purple-500/50 transition-colors">
               <input
                 type="file"
                 id="doc-upload"
@@ -1017,20 +1017,20 @@ export default function BrandBrainEditor() {
                 accept=".pdf,.doc,.docx,.txt"
               />
               <label htmlFor="doc-upload" className="cursor-pointer flex flex-col items-center gap-2">
-                <Upload size={24} className="text-gray-400" />
-                <span className="text-sm text-gray-400">{uploading ? 'Uploading...' : 'Click to upload or drag files'}</span>
-                <span className="text-xs text-gray-500">PDF, DOC, DOCX, or TXT</span>
+                <Upload size={24} className="text-ink-secondary" />
+                <span className="text-sm text-ink-secondary">{uploading ? 'Uploading...' : 'Click to upload or drag files'}</span>
+                <span className="text-xs text-ink-tertiary">PDF, DOC, DOCX, or TXT</span>
               </label>
             </div>
 
             {documents.length > 0 && (
               <div className="mt-6 space-y-2">
-                <p className="text-sm font-medium text-white">Uploaded Documents</p>
+                <p className="text-sm font-medium text-ink">Uploaded Documents</p>
                 {documents.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded text-sm">
+                  <div key={doc.id} className="flex items-center justify-between p-3 bg-surface border border-line rounded text-sm">
                     <div className="flex-1">
-                      <p className="text-gray-300">{doc.original_filename}</p>
-                      <p className="text-xs text-gray-500 mt-1">{doc.document_type.replace(/_/g, ' ')}</p>
+                      <p className="text-ink-secondary">{doc.original_filename}</p>
+                      <p className="text-xs text-ink-tertiary mt-1">{doc.document_type.replace(/_/g, ' ')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {analyzing === doc.id ? (
@@ -1098,13 +1098,13 @@ export default function BrandBrainEditor() {
 function TextInput({ label, value, onChange, placeholder }: { label?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      {label && <label className="block text-sm font-medium text-white mb-2">{label}</label>}
+      {label && <label className="block text-sm font-medium text-ink mb-2">{label}</label>}
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none transition-colors text-sm"
+        className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors text-sm"
       />
     </div>
   )
@@ -1113,12 +1113,12 @@ function TextInput({ label, value, onChange, placeholder }: { label?: string; va
 function TextareaInput({ label, value, onChange, placeholder }: { label?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
   return (
     <div>
-      {label && <label className="block text-sm font-medium text-white mb-2">{label}</label>}
+      {label && <label className="block text-sm font-medium text-ink mb-2">{label}</label>}
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none transition-colors h-32 resize-none text-sm"
+        className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors h-32 resize-none text-sm"
       />
     </div>
   )

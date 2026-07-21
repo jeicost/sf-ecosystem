@@ -36,8 +36,8 @@ export default function AgentCard({
       href={href ?? `/agent/${agent.id}`}
       className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
       style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.09)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
         boxShadow: '0 2px 12px rgba(0,0,0,0.2)',
       }}
       onMouseEnter={e => {
@@ -47,7 +47,7 @@ export default function AgentCard({
       }}
       onMouseLeave={e => {
         const el = e.currentTarget as HTMLElement
-        el.style.borderColor = 'rgba(255,255,255,0.09)'
+        el.style.borderColor = 'var(--border)'
         el.style.boxShadow = '0 2px 12px rgba(0,0,0,0.2)'
       }}
     >
@@ -94,15 +94,14 @@ export default function AgentCard({
             {agent.emoji}
           </div>
           <div className="min-w-0">
-            <h3 className="font-semibold text-white text-[15px] leading-tight">{agent.name}</h3>
+            <h3 className="font-semibold text-ink text-[15px] leading-tight">{agent.name}</h3>
             <p className="text-[11px] mt-0.5 font-medium" style={{ color: c }}>{agent.description}</p>
           </div>
         </div>
 
         {/* Tagline */}
         <p
-          className="text-[11px] leading-relaxed italic flex-1 mb-4"
-          style={{ color: 'rgba(255,255,255,0.38)' }}
+          className="text-[11px] leading-relaxed italic flex-1 mb-4 text-ink-tertiary"
         >
           &ldquo;{agent.description}&rdquo;
         </p>
@@ -117,8 +116,7 @@ export default function AgentCard({
             }}
           >
             <span
-              className="text-[9px] uppercase tracking-widest font-semibold"
-              style={{ color: 'rgba(255,255,255,0.28)' }}
+              className="text-[9px] uppercase tracking-widest font-semibold text-ink-muted"
             >
               Produces
             </span>
@@ -134,17 +132,16 @@ export default function AgentCard({
         {/* Bottom: last task + CTA */}
         <div
           className="flex items-center justify-between pt-3"
-          style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+          style={{ borderTop: '1px solid var(--border-subtle)' }}
         >
           {lastTask ? (
             <span
-              className="text-[10px] truncate max-w-[60%]"
-              style={{ color: 'rgba(255,255,255,0.28)' }}
+              className="text-[10px] truncate max-w-[60%] text-ink-muted"
             >
               {lastTask}
             </span>
           ) : (
-            <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <span className="text-[10px] text-ink-muted">
               Ready to start
             </span>
           )}

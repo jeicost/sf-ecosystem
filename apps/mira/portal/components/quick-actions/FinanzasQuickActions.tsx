@@ -8,6 +8,9 @@ import { useLocaleContext } from '@/app/locale-provider'
 
 export function FinanzasQuickActions() {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
+  // Acción clicada, guardada en el momento del click (activeActionId es el UUID
+  // del servidor y nunca coincide con los ids locales de `actions`).
+  const [activeAction, setActiveAction] = useState<{ title: string; outputType: string } | null>(null)
   const { locale } = useLocaleContext()
 
   const actions = [
@@ -16,6 +19,7 @@ export function FinanzasQuickActions() {
       title: t('actions.finanzas.proyeccion_financiera', locale),
       description: t('actions.finanzas.proyeccion_financiera.desc', locale),
       actionType: 'proyeccion_financiera',
+      outputType: 'json',
       form: (
         <div className="space-y-3">
           <input
@@ -49,6 +53,7 @@ export function FinanzasQuickActions() {
       title: t('actions.finanzas.analisis_cash_flow', locale),
       description: t('actions.finanzas.analisis_cash_flow.desc', locale),
       actionType: 'analisis_cashflow',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <input
@@ -72,6 +77,7 @@ export function FinanzasQuickActions() {
       title: t('actions.finanzas.optimizacion_costos', locale),
       description: t('actions.finanzas.optimizacion_costos.desc', locale),
       actionType: 'optimizar_costos',
+      outputType: 'document',
       form: (
         <div className="space-y-3">
           <textarea
@@ -105,7 +111,10 @@ export function FinanzasQuickActions() {
               actionType={action.actionType}
               department="finanzas"
               inputForm={action.form}
-              onActionComplete={(actionId) => setActiveActionId(actionId)}
+              onActionComplete={(actionId) => {
+                setActiveAction({ title: action.title, outputType: action.outputType })
+                setActiveActionId(actionId)
+              }}
             />
           ))}
         </div>
@@ -114,7 +123,8 @@ export function FinanzasQuickActions() {
       {activeActionId && (
         <QuickActionResult
           actionId={activeActionId}
-          resourceName={actions.find((a) => a.id === activeActionId)?.title || 'Resource'}
+          resourceName={activeAction?.title || 'Resource'}
+          outputType={activeAction?.outputType}
           department="finanzas"
         />
       )}

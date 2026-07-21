@@ -1,7 +1,9 @@
 'use client'
 import { useState } from 'react'
-import { ExternalLink, LogIn, CheckCircle, Lock } from 'lucide-react'
+import { ExternalLink, LogIn, CheckCircle, Lock, Clock } from 'lucide-react'
 import { MARKETPLACE_TOOLS, MarketplaceTool } from '@/lib/integrations/marketplace-tools'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface ToolsMarketplaceProps {
   connectedTools: string[]
@@ -16,21 +18,36 @@ export default function ToolsMarketplace({
   onToolConnect,
   onToolDisconnect,
 }: ToolsMarketplaceProps) {
+  const { locale } = useLocaleContext()
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [connectingTools, setConnectingTools] = useState<Set<string>>(new Set())
 
-  const categories = Array.from(new Set(MARKETPLACE_TOOLS.map((t) => t.category)))
+  // t() con fallback: si la clave no existe, usa el texto del catálogo de tools
+  const tr = (key: string, fallback: string) => {
+    const value = t(key, locale)
+    return value === key ? fallback : value
+  }
+
+  const categories = Array.from(new Set(MARKETPLACE_TOOLS.map((tool) => tool.category)))
 
   const filteredTools = selectedCategory
-    ? MARKETPLACE_TOOLS.filter((t) => t.category === selectedCategory)
+    ? MARKETPLACE_TOOLS.filter((tool) => tool.category === selectedCategory)
     : MARKETPLACE_TOOLS
 
-  const criticalTools = MARKETPLACE_TOOLS.filter((t) => t.isCritical)
-  const connectedCritical = criticalTools.filter((t) => connectedTools.includes(t.id)).length
+  // Las tools "coming soon" no cuentan en el denominador de operatividad:
+  // aún no se pueden conectar, así que no penalizan la métrica.
+  const criticalTools = MARKETPLACE_TOOLS.filter(
+    (tool) => tool.isCritical && tool.status !== 'coming_soon'
+  )
+  const connectedCritical = criticalTools.filter((tool) => connectedTools.includes(tool.id)).length
+  const criticalPct =
+    criticalTools.length > 0 ? Math.round((connectedCritical / criticalTools.length) * 100) : 100
 
   const canAccessViaSubscription = userSubscriptionPlan !== 'free'
 
   const handleToolClick = async (tool: MarketplaceTool) => {
+    if (tool.status === 'coming_soon') return
+
     if (!onToolConnect && !onToolDisconnect) {
       // No handlers, open setup URL
       window.open(tool.setupUrl, '_blank')
@@ -63,33 +80,30 @@ export default function ToolsMarketplace({
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-white">Tools Marketplace</h1>
-        <p className="text-[#999]">
-          Connect your favorite tools to unlock agent capabilities. Critical tools must be connected
-          for full system functionality.
-        </p>
+        <h2 className="text-3xl font-bold text-ink">{t('integrations.marketplace.title', locale)}</h2>
+        <p className="text-ink-secondary">{t('integrations.marketplace.subtitle', locale)}</p>
       </div>
 
       {/* Critical Tools Status */}
       <div className="card p-6 border border-[#F59E0B]40 bg-[#F59E0B]10 space-y-3">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-semibold text-white mb-1">Critical Tools</h3>
-            <p className="text-sm text-[#999]">
-              {connectedCritical} of {criticalTools.length} connected
+            <h3 className="font-semibold text-ink mb-1">{t('integrations.critical-tools', locale)}</h3>
+            <p className="text-sm text-ink-secondary">
+              {t('integrations.critical-connected', locale)
+                .replace('{connected}', String(connectedCritical))
+                .replace('{total}', String(criticalTools.length))}
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-[#F59E0B]">
-              {Math.round((connectedCritical / criticalTools.length) * 100)}%
-            </div>
-            <div className="text-xs text-[#999]">Operational</div>
+            <div className="text-3xl font-bold text-[#F59E0B]">{criticalPct}%</div>
+            <div className="text-xs text-ink-secondary">{t('integrations.operational', locale)}</div>
           </div>
         </div>
-        <div className="w-full bg-[#1E1E1E] rounded h-2 overflow-hidden">
+        <div className="w-full bg-line rounded h-2 overflow-hidden">
           <div
             className="h-full bg-[#F59E0B] transition-all"
-            style={{ width: `${(connectedCritical / criticalTools.length) * 100}%` }}
+            style={{ width: `${criticalPct}%` }}
           />
         </div>
       </div>
@@ -101,10 +115,10 @@ export default function ToolsMarketplace({
           className={`px-4 py-2 rounded text-sm font-medium transition-all ${
             selectedCategory === null
               ? 'bg-[#EC4899] text-white'
-              : 'bg-[#1E1E1E] text-[#999] hover:text-white'
+              : 'bg-card border border-line text-ink-secondary hover:text-ink'
           }`}
         >
-          All Tools
+          {t('integrations.all-tools', locale)}
         </button>
         {categories.map((cat) => (
           <button
@@ -113,10 +127,10 @@ export default function ToolsMarketplace({
             className={`px-4 py-2 rounded text-sm font-medium transition-all ${
               selectedCategory === cat
                 ? 'bg-[#EC4899] text-white'
-                : 'bg-[#1E1E1E] text-[#999] hover:text-white'
+                : 'bg-card border border-line text-ink-secondary hover:text-ink'
             }`}
           >
-            {cat}
+            {tr(`integrations.category.${cat}`, cat)}
           </button>
         ))}
       </div>
@@ -125,6 +139,7 @@ export default function ToolsMarketplace({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredTools.map((tool) => {
           const isConnected = connectedTools.includes(tool.id)
+          const isComingSoon = tool.status === 'coming_soon'
           const isAccessible =
             tool.pricing === 'free' ||
             (tool.pricing === 'via_subscription' && canAccessViaSubscription) ||
@@ -136,9 +151,11 @@ export default function ToolsMarketplace({
               className={`card p-5 border transition-all ${
                 isConnected
                   ? 'border-[#10B981] bg-[#10B981]10'
-                  : tool.isCritical
-                    ? 'border-[#F59E0B] hover:bg-[#1E1E1E]'
-                    : 'border-[#1E1E1E] hover:border-[#333]'
+                  : isComingSoon
+                    ? 'border-line opacity-80'
+                    : tool.isCritical
+                      ? 'border-[#F59E0B]'
+                      : 'border-line'
               }`}
             >
               {/* Header */}
@@ -146,22 +163,35 @@ export default function ToolsMarketplace({
                 <div className="flex items-center gap-3">
                   <span className="text-3xl">{tool.emoji}</span>
                   <div>
-                    <h3 className="font-semibold text-white">{tool.name}</h3>
-                    <p className="text-xs text-[#666]">{tool.category}</p>
+                    <h3 className="font-semibold text-ink">
+                      {tr(`integrations.tool.${tool.id}.name`, tool.name)}
+                    </h3>
+                    <p className="text-xs text-ink-tertiary">
+                      {tr(`integrations.category.${tool.category}`, tool.category)}
+                    </p>
                   </div>
                 </div>
                 {isConnected && (
                   <CheckCircle size={20} className="text-[#10B981] flex-shrink-0" />
                 )}
+                {isComingSoon && (
+                  <span className="px-2 py-0.5 text-xs rounded font-semibold bg-[#8B5CF6]20 text-[#8B5CF6] flex-shrink-0">
+                    {t('integrations.coming-soon', locale)}
+                  </span>
+                )}
               </div>
 
               {/* Description */}
-              <p className="text-sm text-[#999] mb-4">{tool.description}</p>
+              <p className="text-sm text-ink-secondary mb-4">
+                {tr(`integrations.tool.${tool.id}.desc`, tool.description)}
+              </p>
 
               {/* Agents & Status */}
-              <div className="space-y-3 mb-4 pb-4 border-t border-[#1E1E1E]">
+              <div className="space-y-3 mb-4 pb-4 border-t border-line">
                 <div>
-                  <div className="text-xs font-semibold text-[#666] mb-2">Unlocks Agents</div>
+                  <div className="text-xs font-semibold text-ink-tertiary mb-2">
+                    {t('integrations.unlocks-agents', locale)}
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {tool.agentsUnlocked.map((agent) => (
                       <span
@@ -175,10 +205,15 @@ export default function ToolsMarketplace({
                 </div>
 
                 <div>
-                  <div className="text-xs font-semibold text-[#666] mb-2">Departments</div>
+                  <div className="text-xs font-semibold text-ink-tertiary mb-2">
+                    {t('integrations.departments', locale)}
+                  </div>
                   <div className="flex flex-wrap gap-1">
                     {tool.departments.map((dept) => (
-                      <span key={dept} className="px-2 py-0.5 text-xs rounded bg-[#333] text-[#999]">
+                      <span
+                        key={dept}
+                        className="px-2 py-0.5 text-xs rounded bg-card border border-line text-ink-secondary"
+                      >
                         {dept}
                       </span>
                     ))}
@@ -191,53 +226,62 @@ export default function ToolsMarketplace({
                 <div className="flex items-center gap-2">
                   {tool.isCritical && (
                     <span className="px-2 py-0.5 text-xs rounded font-semibold bg-[#FF6B6B]20 text-[#FF6B6B]">
-                      Critical
+                      {t('integrations.critical-badge', locale)}
                     </span>
                   )}
-                  <span className="text-xs text-[#666]">
+                  <span className="text-xs text-ink-tertiary">
                     {tool.pricing === 'via_subscription'
-                      ? 'Via Subscription'
+                      ? t('integrations.pricing.via-subscription', locale)
                       : tool.pricing === 'free'
-                        ? 'Free'
-                        : 'Paid'}
+                        ? t('integrations.pricing.free', locale)
+                        : t('integrations.pricing.paid', locale)}
                   </span>
                 </div>
               </div>
 
               {/* Action Button */}
               <button
-                disabled={(!isAccessible && !isConnected) || connectingTools.has(tool.id)}
+                disabled={
+                  isComingSoon || (!isAccessible && !isConnected) || connectingTools.has(tool.id)
+                }
                 onClick={() => handleToolClick(tool)}
                 className={`w-full mt-4 px-4 py-2 rounded font-medium text-sm flex items-center justify-center gap-2 transition-all ${
-                  isConnected
-                    ? 'bg-[#10B981] text-white hover:bg-[#059669]'
-                    : isAccessible
-                      ? 'bg-[#EC4899] text-white hover:bg-[#E00B7F]'
-                      : 'bg-[#333] text-[#666] cursor-not-allowed'
+                  isComingSoon
+                    ? 'bg-card border border-line text-ink-muted cursor-not-allowed'
+                    : isConnected
+                      ? 'bg-[#10B981] text-white hover:bg-[#059669]'
+                      : isAccessible
+                        ? 'bg-[#EC4899] text-white hover:bg-[#E00B7F]'
+                        : 'bg-card border border-line text-ink-muted cursor-not-allowed'
                 }`}
               >
-                {connectingTools.has(tool.id) ? (
+                {isComingSoon ? (
+                  <>
+                    <Clock size={16} />
+                    {t('integrations.coming-soon', locale)}
+                  </>
+                ) : connectingTools.has(tool.id) ? (
                   <>
                     <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                    Connecting...
+                    {t('integrations.connecting', locale)}
                   </>
                 ) : isConnected ? (
                   <>
                     <CheckCircle size={16} />
-                    Connected
+                    {t('integrations.connected', locale)}
                   </>
                 ) : isAccessible ? (
                   <>
                     <LogIn size={16} />
-                    Connect Account
+                    {t('integrations.connect-account', locale)}
                   </>
                 ) : (
                   <>
                     <Lock size={16} />
-                    Upgrade Plan
+                    {t('integrations.upgrade-plan', locale)}
                   </>
                 )}
-                {!connectingTools.has(tool.id) && <ExternalLink size={14} />}
+                {!isComingSoon && !connectingTools.has(tool.id) && <ExternalLink size={14} />}
               </button>
             </div>
           )
@@ -245,13 +289,13 @@ export default function ToolsMarketplace({
       </div>
 
       {/* Info Box */}
-      <div className="p-4 rounded border border-[#1E1E1E] bg-[#0D0D0D] space-y-2">
-        <div className="text-sm font-semibold text-white">Why connect tools?</div>
-        <ul className="text-xs text-[#999] space-y-1">
-          <li>✓ Unlock specialized agents for each tool</li>
-          <li>✓ Automate content creation, scheduling, and analytics</li>
-          <li>✓ All critical tools must be connected for 100% operational status</li>
-          <li>✓ Subscriptions include tool access — no extra costs with MIRA Premium</li>
+      <div className="p-4 rounded border border-line bg-card space-y-2">
+        <div className="text-sm font-semibold text-ink">{t('integrations.why-connect', locale)}</div>
+        <ul className="text-xs text-ink-secondary space-y-1">
+          <li>✓ {t('integrations.why-1', locale)}</li>
+          <li>✓ {t('integrations.why-2', locale)}</li>
+          <li>✓ {t('integrations.why-3', locale)}</li>
+          <li>✓ {t('integrations.why-4', locale)}</li>
         </ul>
       </div>
     </div>

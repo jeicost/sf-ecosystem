@@ -9,12 +9,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Alias semánticos de los tokens de globals.css — theme-aware vía data-theme.
+        // Nota: no admiten modificador de opacidad (text-ink/60); usar ink-secondary etc.
+        page: 'var(--bg-page)',
+        card: 'var(--bg-card)',
+        ink: {
+          DEFAULT: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          tertiary: 'var(--text-tertiary)',
+          muted: 'var(--text-muted)',
+        },
+        line: {
+          DEFAULT: 'var(--border)',
+          subtle: 'var(--border-subtle)',
+        },
         surface: {
-          DEFAULT: '#0A0A0A',
-          card: '#111111',
-          elevated: '#181818',
-          border: '#242424',
-          hover: '#1E1E1E',
+          DEFAULT: 'var(--bg-surface)',
+          card: 'var(--bg-card)',
+          elevated: 'var(--bg-surface-hover)',
+          border: 'var(--border)',
+          hover: 'var(--bg-surface-hover)',
         },
         muted: '#6B7280',
       },

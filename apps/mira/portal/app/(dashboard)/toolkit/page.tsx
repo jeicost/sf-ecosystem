@@ -187,10 +187,10 @@ export default function ToolkitHub() {
       {/* ─── Hero ─────────────────────────────────────────── */}
       <div className="relative z-10 flex flex-col items-center pb-12 pt-6 text-center">
         {/* Client badge */}
-        <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] py-1.5 pl-2.5 pr-4">
+        <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-2.5 pr-4">
           <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-          <span className="font-mono text-[11px] text-gray-400">
-            Cliente · <strong className="text-xs font-semibold text-white">{clientName}</strong>
+          <span className="font-mono text-[11px] text-ink-secondary">
+            Cliente · <strong className="text-xs font-semibold text-ink">{clientName}</strong>
           </span>
         </div>
 
@@ -200,18 +200,18 @@ export default function ToolkitHub() {
           <img
             src={activeClient.logoUrl}
             alt={clientName}
-            className="mb-5 h-14 w-14 rounded-2xl border border-white/10 bg-white/5 object-contain p-1.5"
+            className="mb-5 h-14 w-14 rounded-2xl border border-line bg-surface object-contain p-1.5"
           />
         ) : (
           <div
-            className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-white/10 text-2xl font-bold text-white ${syne.className}`}
+            className={`mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-line text-2xl font-bold text-ink ${syne.className}`}
             style={{ background: hexToRgba(brandColor, 0.2) }}
           >
             {clientInitial}
           </div>
         )}
 
-        <h1 className={`mb-3 text-4xl font-extrabold leading-[1.15] text-white md:text-5xl ${syne.className}`}>
+        <h1 className={`mb-3 text-4xl font-extrabold leading-[1.15] text-ink md:text-5xl ${syne.className}`}>
           Entregables{' '}
           <span
             className="bg-clip-text text-transparent"
@@ -221,7 +221,7 @@ export default function ToolkitHub() {
           </span>
         </h1>
 
-        <p className="max-w-xl text-[15px] leading-relaxed text-gray-400">
+        <p className="max-w-xl text-[15px] leading-relaxed text-ink-secondary">
           Centro de entregables · {completed.length} {completed.length === 1 ? 'informe generado' : 'informes generados'}
         </p>
       </div>
@@ -233,7 +233,7 @@ export default function ToolkitHub() {
             <AlertCircle size={18} className="mt-0.5 text-red-400" />
             <div>
               <p className="text-sm font-semibold text-red-400">Error</p>
-              <p className="mt-1 text-xs text-gray-400">{error}</p>
+              <p className="mt-1 text-xs text-ink-secondary">{error}</p>
             </div>
           </div>
         </div>
@@ -263,8 +263,8 @@ export default function ToolkitHub() {
       <div className="relative z-10">
         {loading ? (
           <div className="card flex items-center justify-center gap-3 p-10">
-            <Loader2 size={20} className="animate-spin text-gray-400" />
-            <p className="text-gray-400">Cargando entregables...</p>
+            <Loader2 size={20} className="animate-spin text-ink-secondary" />
+            <p className="text-ink-secondary">Cargando entregables...</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -286,14 +286,14 @@ export default function ToolkitHub() {
                   Vista general
                 </p>
                 <p className="mb-3 text-[26px] leading-none">📊</p>
-                <h3 className={`mb-2 text-[17px] font-bold text-white ${syne.className}`}>
+                <h3 className={`mb-2 text-[17px] font-bold text-ink ${syne.className}`}>
                   Ver Toolkit completo
                 </h3>
-                <p className="text-[13px] leading-relaxed text-gray-400">
+                <p className="text-[13px] leading-relaxed text-ink-secondary">
                   Panorámica de todos los entregables, métricas y evolución del cliente en una sola vista.
                 </p>
               </div>
-              <div className="mt-5 flex items-center justify-end border-t border-white/5 pt-4">
+              <div className="mt-5 flex items-center justify-end border-t border-line-subtle pt-4">
                 <span
                   className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5"
                   style={{ color: brandColor }}
@@ -323,8 +323,8 @@ export default function ToolkitHub() {
             {deliverables.length === 0 && (
               <div className="card flex flex-col items-center justify-center p-10 text-center md:col-span-1">
                 <p className="mb-2 text-2xl">✨</p>
-                <p className="text-sm text-gray-400">Aún no hay entregables completados</p>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="text-sm text-ink-secondary">Aún no hay entregables completados</p>
+                <p className="mt-1 text-xs text-ink-tertiary">
                   Genera tu primer informe desde &quot;Generar Nuevo&quot;
                 </p>
               </div>
@@ -336,7 +336,7 @@ export default function ToolkitHub() {
       {/* ─── Failed generations ───────────────────────────── */}
       {failed.length > 0 && (
         <div className="relative z-10 mt-8 space-y-2">
-          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500">
+          <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-tertiary">
             Generaciones fallidas
           </p>
           {failed.map((gen) => {
@@ -345,12 +345,12 @@ export default function ToolkitHub() {
               <div key={gen.id} className="card flex items-center gap-3 border-red-500/15 p-4">
                 <AlertCircle size={16} className="flex-shrink-0 text-red-400" />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-white">{meta.name}</p>
+                  <p className="text-sm font-semibold text-ink">{meta.name}</p>
                   <p className="truncate text-xs text-red-400/80">
                     {gen.error_message || 'Unknown error'}
                   </p>
                 </div>
-                <p className="flex-shrink-0 font-mono text-[10px] text-gray-500">
+                <p className="flex-shrink-0 font-mono text-[10px] text-ink-tertiary">
                   {formatDate(gen.created_at)}
                 </p>
               </div>
@@ -368,19 +368,19 @@ export default function ToolkitHub() {
       <div className="relative z-10 mt-12">
         <button
           onClick={() => setShowGenerate((v) => !v)}
-          className="flex w-full items-center justify-between rounded-xl border border-white/8 bg-white/[0.03] px-5 py-4 transition-colors hover:bg-white/[0.06]"
+          className="flex w-full items-center justify-between rounded-xl border border-line bg-surface px-5 py-4 transition-colors hover:bg-surface-hover"
         >
           <span className="flex items-center gap-3">
             <span className="text-lg">⚡</span>
-            <span className={`text-sm font-bold text-white ${syne.className}`}>Generar Nuevo</span>
-            <span className="font-mono text-[10px] text-gray-500">
+            <span className={`text-sm font-bold text-ink ${syne.className}`}>Generar Nuevo</span>
+            <span className="font-mono text-[10px] text-ink-tertiary">
               {TOOLKIT_TOOLS.length} tools disponibles
             </span>
           </span>
           {showGenerate ? (
-            <ChevronUp size={16} className="text-gray-400" />
+            <ChevronUp size={16} className="text-ink-secondary" />
           ) : (
-            <ChevronDown size={16} className="text-gray-400" />
+            <ChevronDown size={16} className="text-ink-secondary" />
           )}
         </button>
 
@@ -390,12 +390,12 @@ export default function ToolkitHub() {
               <Link
                 key={tool.slug}
                 href={tool.href}
-                className="card cursor-pointer border-l-4 p-3.5 transition-all hover:bg-white/8"
+                className="card cursor-pointer border-l-4 p-3.5 transition-all hover:bg-surface-hover"
                 style={{ borderLeftColor: tool.color }}
               >
                 <p className="mb-1.5 text-xl">{tool.icon}</p>
-                <p className="text-xs font-semibold leading-snug text-white">{tool.name}</p>
-                <p className="mt-1 font-mono text-[9px] text-gray-500">{tool.time}</p>
+                <p className="text-xs font-semibold leading-snug text-ink">{tool.name}</p>
+                <p className="mt-1 font-mono text-[9px] text-ink-tertiary">{tool.time}</p>
               </Link>
             ))}
           </div>
@@ -403,7 +403,7 @@ export default function ToolkitHub() {
       </div>
 
       {/* ─── Footer meta ──────────────────────────────────── */}
-      <p className="relative z-10 mt-12 text-center font-mono text-[11px] text-gray-600">
+      <p className="relative z-10 mt-12 text-center font-mono text-[11px] text-ink-tertiary">
         Preparado por Startup Factory · Confidencial · Solo para uso del cliente
       </p>
     </div>

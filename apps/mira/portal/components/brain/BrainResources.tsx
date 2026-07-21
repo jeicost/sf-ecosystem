@@ -94,7 +94,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="text-[#666]">Loading resources...</div>
+        <div className="text-ink-tertiary">Loading resources...</div>
       </div>
     )
   }
@@ -125,7 +125,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
                 channel: newType === 'social_profile' ? 'linkedin' : null,
               })
             }}
-            className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white focus:outline-none focus:border-[#EC4899]"
+            className="w-full px-3 py-2 rounded bg-surface border border-line text-sm text-ink focus:outline-none focus:border-[#EC4899]"
           >
             {RESOURCE_TYPES.map((type) => (
               <option key={type.value} value={type.value}>
@@ -138,7 +138,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
             <select
               value={formData.channel || ''}
               onChange={(e) => setFormData({ ...formData, channel: e.target.value as SocialChannel })}
-              className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white focus:outline-none focus:border-[#EC4899]"
+              className="w-full px-3 py-2 rounded bg-surface border border-line text-sm text-ink focus:outline-none focus:border-[#EC4899]"
             >
               {SOCIAL_CHANNELS.map((ch) => (
                 <option key={ch} value={ch} className="capitalize">
@@ -154,7 +154,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
-            className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+            className="w-full px-3 py-2 rounded bg-surface border border-line text-sm text-ink placeholder-ink-tertiary focus:outline-none focus:border-[#EC4899]"
           />
 
           <input
@@ -162,7 +162,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
             placeholder="URL"
             value={formData.url}
             onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-            className="w-full px-3 py-2 rounded bg-[#1E1E1E] border border-[#333] text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899]"
+            className="w-full px-3 py-2 rounded bg-surface border border-line text-sm text-ink placeholder-ink-tertiary focus:outline-none focus:border-[#EC4899]"
           />
 
           <div className="flex gap-2">
@@ -175,7 +175,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="flex-1 px-3 py-2 rounded bg-[#333] text-[#999] text-sm font-medium hover:bg-[#444]"
+              className="flex-1 px-3 py-2 rounded bg-surface text-ink-secondary text-sm font-medium hover:bg-surface-hover"
             >
               Cancel
             </button>
@@ -188,19 +188,19 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
         <div key={group.value}>
           {group.items.length > 0 && (
             <div className="space-y-2">
-              <div className="text-xs font-semibold text-[#666] uppercase">
+              <div className="text-xs font-semibold text-ink-tertiary uppercase">
                 {group.emoji} {group.label}
               </div>
               <div className="space-y-2">
                 {group.items.map((resource) => (
                   <div
                     key={resource.id}
-                    className="card p-3 border border-[#1E1E1E] flex items-center justify-between hover:border-[#333]"
+                    className="card p-3 border border-line-subtle flex items-center justify-between hover:border-line"
                   >
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm text-white truncate">
+                      <div className="font-semibold text-sm text-ink truncate">
                         {resource.channel && (
-                          <span className="text-[#999]">[{resource.channel}] </span>
+                          <span className="text-ink-secondary">[{resource.channel}] </span>
                         )}
                         {resource.name}
                       </div>
@@ -218,7 +218,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
                     </div>
                     <button
                       onClick={() => handleDeleteResource(resource.id)}
-                      className="ml-2 p-1 text-[#666] hover:text-[#FF6B6B] transition-colors"
+                      className="ml-2 p-1 text-ink-tertiary hover:text-[#FF6B6B] transition-colors"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -233,7 +233,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
       {resources.length === 0 && !showForm && (
         <div className="text-center py-12">
           <div className="text-4xl mb-2">📦</div>
-          <div className="text-sm text-[#999]">No resources connected yet</div>
+          <div className="text-sm text-ink-secondary">No resources connected yet</div>
         </div>
       )}
     </div>
