@@ -21,12 +21,20 @@ export const WORKSPACES: Workspace[] = [
     clientId: 'e664873b-034d-48cd-9a45-8631672ef375',
     logo: '/logos/dadybox.png',
   },
+  {
+    id: 'ws-salsaburgers',
+    name: 'Salsa Burgers',
+    type: 'salsaburgers',
+    clientId: 'c375bb80-b0d1-4923-a73a-ac96a3ce7799',
+    logo: '/logos/salsa-burgers.png',
+  },
 ]
 
 export const WORKSPACE_PASSWORDS: Record<string, string> = {
   sf: process.env.SF_WORKSPACE_PASSWORD || 'sf2026',
   discoolver: process.env.DISCOOLVER_WORKSPACE_PASSWORD || 'disc2026',
   dadybox: process.env.DADYBOX_WORKSPACE_PASSWORD || 'dadybox2026',
+  salsaburgers: process.env.SALSA_WORKSPACE_PASSWORD || 'salsa2026',
 }
 
 export function getWorkspace(id: string): Workspace | undefined {
