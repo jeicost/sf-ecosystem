@@ -3,6 +3,9 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { ScrollReveal } from '@/components/ScrollReveal'
+import { ChatWithUsModal, FloatingChat } from '@/components/ChatWidget'
+import { openChat } from '@/lib/constants'
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', exact: true },
@@ -92,7 +95,7 @@ export function Nav() {
             <a href={CONFIG.calendlyUrl} target="_blank" rel="noopener" className="btn btn--primary" onClick={close}>
               📅 Book a Call →
             </a>
-            <button type="button" onClick={close} className="btn btn--ghost">
+            <button type="button" onClick={() => { close(); openChat() }} className="btn btn--ghost">
               💬 Chat with Us
             </button>
           </div>
@@ -136,9 +139,12 @@ export function Footer() {
 export function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <>
+      <ScrollReveal />
       <Nav />
       <main>{children}</main>
       <Footer />
+      <FloatingChat />
+      <ChatWithUsModal />
     </>
   )
 }

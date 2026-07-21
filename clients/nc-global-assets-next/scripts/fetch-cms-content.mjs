@@ -16,11 +16,11 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
-const HEADERS = { 'x-api-key': process.env.CMS_API_KEY }
 
 const CMS_API_URL = process.env.SF_CMS_API_URL || process.env.CMS_API_URL
 const CMS_API_KEY = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY
 const PROJECT_ID = process.env.SF_CMS_PROJECT_SLUG || process.env.PROJECT_ID || 'ncglobalassets'
+const HEADERS = { 'x-api-key': CMS_API_KEY }
 
 if (!CMS_API_URL || !CMS_API_KEY) {
   console.log('⚠️   CMS_API_URL or CMS_API_KEY not set — skipping content fetch')
@@ -41,7 +41,7 @@ async function main() {
     const [{ posts }, { pages }, settings] = await Promise.all([
       fetchJson(`${CMS_API_URL}/posts?status=published&project=${PROJECT_ID}`),
       fetchJson(`${CMS_API_URL}/pages?project=${PROJECT_ID}`),
-      fetchJson(`${CMS_API_URL}/settings`).catch(() => ({})),
+      fetchJson(`${CMS_API_URL}/settings?project=${PROJECT_ID}`).catch(() => ({})),
     ])
 
     console.log(`✅  Posts: ${posts.length} · Pages: ${pages.length}`)

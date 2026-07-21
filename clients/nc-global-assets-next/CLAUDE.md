@@ -10,9 +10,9 @@ This version pre-renders all pages and blog posts as static HTML at build time, 
 
 - **Framework:** Next.js 16 (app router)
 - **Language:** TypeScript
-- **Rendering:** Static Generation (SSG) with `output: 'export'`
+- **Rendering:** ISR (NO `output: 'export'` — next.config.ts keeps API routes + on-demand revalidation via `/api/revalidate`)
 - **Deployment:** Vercel
-- **CMS:** SF-CMS (fetch-cms-content.mjs build script)
+- **CMS:** SF-CMS (fetch-cms-content.mjs build script → `src/content/*.json`, build-time bake with hardcoded fallbacks)
 
 ## Build & Deploy
 
@@ -68,10 +68,9 @@ src/content/
 ## Workflow
 
 ### Build Process
-1. `npm run build` → `fetch-cms-content.mjs` syncs posts/pages from SF-CMS to `src/content/`
-2. Next.js builds → `generateStaticParams()` pre-renders `/blog/[slug]` for all posts
-3. Output: `out/` directory with static HTML files (no JS execution needed for initial load)
-4. Vercel deploys `out/` to production CDN
+1. `npm run build` → `fetch-cms-content.mjs` syncs posts/pages from SF-CMS to `src/content/` (exits 0 if env vars missing or CMS down — a CMS outage must never fail a deploy)
+2. Next.js builds → `generateStaticParams()` pre-renders `/blog/[slug]` for all posts; the rest is ISR
+3. Vercel serves the ISR output; `POST /api/revalidate` (x-revalidate-secret) busts caches on demand
 
 ### Adding a Blog Post
 1. Publish post in SF-CMS
@@ -87,11 +86,13 @@ src/content/
 - ✅ lib/posts.ts data layer
 - ⚠️ app/page.tsx is placeholder (needs visual migration from SPA)
 
-**Phase 2 (next session):** UI migration
-- [ ] Migrate Home page component from App.jsx → app/page.tsx
-- [ ] Migrate About, Services, Contact pages
-- [ ] Port CSS/styling (Montserrat, JetBrains Mono fonts)
-- [ ] Copy public/assets images to public/
+**Phase 2 (DONE 2026-07-21):** UI migration
+- [x] Migrate Home page component from App.jsx → app/page.tsx
+- [x] Migrate About, Services, Contact pages (AboutSections, ContactForm, CtaBanner, ChatWidget)
+- [x] Port CSS/styling (Montserrat, JetBrains Mono fonts)
+- [x] Copy public/assets images to public/assets/
+- [x] ScrollReveal client component (without it, `[data-reveal]` sections stay at opacity 0)
+- [x] CMS override wiring on About/Services/Contact heroes via lib/cms-pages.ts (fallback = hardcoded)
 
 **Phase 3 (following session):** Cutover
 - [ ] Test full build locally
