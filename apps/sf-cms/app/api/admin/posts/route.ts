@@ -71,11 +71,26 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // posts.client_slug is a NOT NULL column not present in the tracked
+    // schema migrations (drift from earlier ad-hoc scripts, confirmed
+    // 2026-07-21 — same class of bug as pages.client_slug/section_id found
+    // 2026-07-19). Mirrors the parent project's.
+    const { data: project, error: projectError } = await client
+      .from('projects')
+      .select('client_slug')
+      .eq('id', project_id)
+      .single()
+
+    if (projectError || !project) {
+      return Response.json({ error: 'Project not found' }, { status: 404 })
+    }
+
     // Create post
     const { data: post, error } = await client
       .from('posts')
       .insert({
         project_id,
+        client_slug: project.client_slug,
         title,
         slug,
         status: 'draft',
