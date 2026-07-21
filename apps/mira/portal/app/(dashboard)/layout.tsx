@@ -141,11 +141,35 @@ useEffect(() => {
         <ClientSwitcher />
       </div>
 
-      {/* Back to home */}
+      {/* Admin Panel — primera entrada para el super_admin */}
+      {isSuperAdmin(user) && (
+        <Link href="/admin"
+          className={clsx(
+            'mx-3 mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+            path === '/admin' || path.startsWith('/admin/')
+              ? 'bg-red-500/15 text-red-400'
+              : 'text-[#555] hover:text-red-400 hover:bg-red-500/8'
+          )}>
+          <span className="text-sm">🔐</span>
+          <span>Admin Panel</span>
+          <span className="ml-auto text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+            style={{ background: 'rgba(248,113,113,0.15)', color: 'rgba(248,113,113,0.7)' }}>
+            AGENCY
+          </span>
+        </Link>
+      )}
+
+      {/* Home */}
       <Link href="/home"
-        className="mx-3 mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-[#444] hover:text-[#888] hover:bg-white/3 transition-all text-xs">
+        className={clsx(
+          'mx-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+          isSuperAdmin(user) ? 'mt-2' : 'mt-3',
+          path === '/home'
+            ? 'bg-white/8 text-white'
+            : 'text-[#555] hover:text-white hover:bg-white/5'
+        )}>
         <Home size={13} />
-        My Teams
+        Home
       </Link>
 
       {/* Brand Brain — global link */}
@@ -203,20 +227,6 @@ useEffect(() => {
         <Zap size={13} />
         <span>Integrations</span>
       </Link>
-
-      {/* Admin Panel — super_admin only */}
-      {isSuperAdmin(user) && (
-        <Link href="/operations/users"
-          className={clsx(
-            'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-            path.startsWith('/operations')
-              ? 'bg-red-500/15 text-red-400'
-              : 'text-[#555] hover:text-red-400 hover:bg-red-500/8'
-          )}>
-          <span className="text-sm">🔐</span>
-          <span>Admin Panel</span>
-        </Link>
-      )}
 
       {/* Section switcher */}
       <div className="mt-2">

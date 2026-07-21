@@ -27,7 +27,7 @@ export const DEPARTMENT_METADATA: Record<DepartmentMetadata['slug'], DepartmentM
     nameEs: 'Marketing',
     description: 'Content · Copy · Ads · Community',
     descriptionEs: 'Contenido · Copy · Anuncios · Comunidad',
-    count: 8,
+    count: 7,
     color: '#8B5CF6',
   },
   comercial: {
@@ -39,7 +39,7 @@ export const DEPARTMENT_METADATA: Record<DepartmentMetadata['slug'], DepartmentM
     nameEs: 'Ventas',
     description: 'Discovery · Scoring · Proposals',
     descriptionEs: 'Descubrimiento · Puntuación · Propuestas',
-    count: 7,
+    count: 6,
     color: '#EF4444',
   },
   strategy: {
@@ -51,7 +51,7 @@ export const DEPARTMENT_METADATA: Record<DepartmentMetadata['slug'], DepartmentM
     nameEs: 'Estrategia',
     description: 'Plans · Audits · Trends · Design Thinking',
     descriptionEs: 'Planes · Auditorías · Tendencias · Innovación',
-    count: 8,
+    count: 4,
     color: '#6366F1',
   },
   operations: {
@@ -61,9 +61,9 @@ export const DEPARTMENT_METADATA: Record<DepartmentMetadata['slug'], DepartmentM
     icon: '⚙️',
     name: 'Operations',
     nameEs: 'Operaciones',
-    description: 'Billing · Onboarding · Observability',
-    descriptionEs: 'Facturación · Incorporación · Observabilidad',
-    count: 4,
+    description: 'Support · Metrics · Onboarding',
+    descriptionEs: 'Soporte · Métricas · Procesos',
+    count: 3,
     color: '#10B981',
   },
   finanzas: {

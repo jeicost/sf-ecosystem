@@ -68,7 +68,8 @@ export default function SuperAdminPage() {
       logoUrl: c.logo_url,
       primaryColor: c.primary_color,
     })
-    router.push('/toolkit')
+    // Entra a la home del cliente tal y como él la ve
+    router.push('/home')
   }
 
   if (error) {
@@ -80,15 +81,20 @@ export default function SuperAdminPage() {
 
   return (
     <div className="mx-auto max-w-6xl space-y-10 px-6 py-8">
-      <div className="flex items-end justify-between">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-red-400">
-            Super Admin · Internal
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-violet-400">
+            Buenos días, equipo 👋
           </p>
-          <h1 className="mt-1 text-3xl font-bold text-white">Visión de agencia 👋</h1>
+          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-white">Clientes y Operaciones</h1>
+          <p className="mt-2 text-sm text-gray-500">Gestión unificada de todos los clientes y su progreso en MIRA</p>
         </div>
-        <div className="flex gap-2 text-xs">
-          <Link href="/admin/users" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-300 hover:bg-white/5">
+        <div className="flex items-center gap-2 text-xs">
+          <Link href="/toolkit"
+            className="rounded-xl bg-violet-600 px-4 py-2.5 font-semibold text-white transition hover:bg-violet-500">
+            + Generar entregable
+          </Link>
+          <Link href="/admin/users" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-400 hover:bg-white/5">
             👥 Usuarios
           </Link>
           <Link href="/admin/facturacion" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-500 hover:bg-white/5">

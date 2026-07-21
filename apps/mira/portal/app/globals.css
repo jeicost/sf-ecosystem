@@ -132,6 +132,38 @@
 [data-theme="light"] .bg-\[\#111111\],
 [data-theme="light"] .bg-\[\#161616\] { background: #ffffff !important; }
 
+/* ─── LIGHT MODE — TAILWIND TEXT/BG REMAPS (2026-07-21) ──── */
+/* Las vistas se diseñaron dark-first con blancos hardcodeados; en claro
+   se remapean a los tokens para que todo sea legible. */
+
+[data-theme="light"] .text-white { color: var(--text-primary) !important; }
+[data-theme="light"] .text-gray-300,
+[data-theme="light"] .text-gray-400 { color: var(--text-secondary) !important; }
+[data-theme="light"] .text-gray-500,
+[data-theme="light"] .text-gray-600 { color: var(--text-tertiary) !important; }
+
+[data-theme="light"] .bg-gray-900,
+[data-theme="light"] .bg-gray-900\/70,
+[data-theme="light"] .bg-gray-800 { background: var(--bg-card) !important; }
+[data-theme="light"] .border-gray-800,
+[data-theme="light"] .border-gray-700,
+[data-theme="light"] .border-white\/10 { border-color: var(--border) !important; }
+
+[data-theme="light"] .bg-white\/3,
+[data-theme="light"] .bg-white\/5,
+[data-theme="light"] .bg-white\/8 { background: var(--bg-surface) !important; }
+[data-theme="light"] .hover\:bg-white\/5:hover { background: var(--bg-surface-hover) !important; }
+
+/* Inline styles con blanco-alfa (texto) — el !important del stylesheet
+   gana a un style="" sin !important */
+[data-theme="light"] [style*="color: rgba(255,255,255"],
+[data-theme="light"] [style*="color:rgba(255,255,255"] { color: var(--text-secondary) !important; }
+[data-theme="light"] [style*="background: rgba(255,255,255,0.02"],
+[data-theme="light"] [style*="background: rgba(255,255,255,0.03"],
+[data-theme="light"] [style*="background: rgba(255,255,255,0.04"] { background: var(--bg-card) !important; }
+[data-theme="light"] [style*="border: 1px solid rgba(255,255,255"],
+[data-theme="light"] [style*="border: 1px dashed rgba(255,255,255"] { border-color: var(--border) !important; }
+
 /* ─── UTILITIES ──────────────────────────────────────────── */
 
 @layer utilities {
