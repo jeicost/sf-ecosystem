@@ -1,4 +1,5 @@
 import {
+  Briefcase,
   Users, LayoutDashboard, CheckSquare, BarChart3, MessageSquarePlus,
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
   Search, MessageSquare, FileText,
@@ -49,6 +50,7 @@ export const SECTIONS: MiraSection[] = [
       { href: '/comercial/icebreaker', label: 'Icebreaker',    icon: Zap },
       { href: '/comercial/qualify',    label: 'Qualify',       icon: MessageSquare },
       { href: '/comercial/proposals',  label: 'Proposals',     icon: FileText },
+      { href: '/comercial/crm',        label: 'CRM',           icon: Briefcase },
       { href: '/comercial/icp',        label: 'ICP Profile',   icon: Target },
     ],
   },
