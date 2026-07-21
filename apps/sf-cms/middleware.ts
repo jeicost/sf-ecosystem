@@ -26,7 +26,9 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    if (!user) {
+    // app_metadata.is_admin is only settable server-side; a bare session
+    // (any signed-up Supabase user) must NOT grant admin access.
+    if (!user || user.app_metadata?.is_admin !== true) {
       if (path.startsWith('/api/admin')) {
         return new Response('Unauthorized', { status: 401 })
       }

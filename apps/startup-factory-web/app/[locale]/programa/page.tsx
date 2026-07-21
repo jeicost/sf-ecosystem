@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 const CALENDLY_URL = "https://calendly.com/jacostech";
@@ -308,7 +309,7 @@ const contentDict: Record<Locale, {
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const l = locale as Locale;
-  const c = contentDict[l] ?? contentDict.es;
+  const c = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("programa")["content"]?.data, l);
   return {
     title: c.title,
     description: c.description,
@@ -326,7 +327,7 @@ export function generateStaticParams() {
 export default async function ProgramaPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("programa")["content"]?.data, l);
 
   return (
     <>

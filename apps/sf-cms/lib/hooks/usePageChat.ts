@@ -48,7 +48,7 @@ export function usePageChat({ pageId, isNew }: { pageId: string; isNew: boolean 
           ...prev,
           {
             role: 'assistant',
-            content: `Updated ${data.sections_json.length} section(s) ✓`,
+            content: `Updated ${data.sections_json.length} section(s) — review the preview and click Save to persist ✓`,
           },
         ])
       } catch (error) {

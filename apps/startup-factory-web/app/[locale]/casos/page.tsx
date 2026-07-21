@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
+import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 
 const site = "https://www.startupsfactory.es";
 
@@ -73,7 +74,7 @@ export function generateStaticParams() {
 export default async function CasosPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const l = locale as Locale;
-  const t = contentDict[l] ?? contentDict.es;
+  const t = mergeCms(contentDict[l] ?? contentDict.es, loadCmsSections("casos")["content"]?.data, l);
   const cases = casesDict[l] ?? casesDict.es;
 
   const casesLabelsDict: Record<Locale, { reto: string; hicimos: string; impacto: string; ctaH2: string; ctaDesc: string; ctaCta: string; portfolioEyebrow: string; }> = {
