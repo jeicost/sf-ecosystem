@@ -3,6 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
+import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
 const site = "https://www.startupsfactory.es";
 const CALENDLY_URL = "https://calendly.com/jacostech";
@@ -331,6 +332,7 @@ export default async function ProgramaPage({ params }: { params: Promise<{ local
 
   return (
     <>
+      <PagePixels pixels={loadPagePixels("programa")} />
       {/* ─── HERO ──────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-black min-h-[90vh] flex items-center">
         <div className="orb-purple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[55%] w-[800px] h-[600px] rounded-full opacity-35" />

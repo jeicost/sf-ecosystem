@@ -52,7 +52,7 @@ export async function PATCH(
 
     const { pageId } = await params
     const body = await request.json()
-    const { title, slug, status, sections_json, seo_title, seo_description, og_image_url, canonical_url } = body
+    const { title, slug, status, sections_json, seo_title, seo_description, og_image_url, canonical_url, pixels } = body
 
     const client = createAdminClient()
 
@@ -100,6 +100,7 @@ export async function PATCH(
     if (seo_description !== undefined) updateData.seo_description = seo_description
     if (og_image_url !== undefined) updateData.og_image_url = og_image_url
     if (canonical_url !== undefined) updateData.canonical_url = canonical_url
+    if (pixels !== undefined) updateData.pixels = pixels
     updateData.updated_at = new Date().toISOString()
 
     const { data: page, error: updateErr } = await client

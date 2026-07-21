@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { sortProjects, pickInitialProject, rememberProject } from '@/lib/project-selection'
 
 interface Post {
   id: string
@@ -45,18 +46,8 @@ function PostsContent() {
       const { projects } = await response.json() as { projects: Project[] }
       setProjects(projects)
 
-      if (projectId && projects.length > 0) {
-        const project = projects.find((p) => p.id === projectId)
-        if (project) {
-          setSelectedProject(project)
-          return
-        }
-      }
-
-      if (projects.length > 0) {
-        setSelectedProject(projects[0])
-      }
-
+      const initial = pickInitialProject(projects, projectId)
+      if (initial) setSelectedProject(initial)
       setLoading(false)
     } catch (err) {
       console.error('Error:', err)
@@ -130,11 +121,11 @@ function PostsContent() {
                 value={selectedProject?.id || ''}
                 onChange={(e) => {
                   const project = projects.find((p) => p.id === e.target.value)
-                  if (project) setSelectedProject(project)
+                  if (project) { setSelectedProject(project); rememberProject(project.id) }
                 }}
                 className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
               >
-                {projects.map((p) => (
+                {sortProjects(projects).map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name}
                   </option>

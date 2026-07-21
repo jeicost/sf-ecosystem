@@ -4,6 +4,7 @@ import { getDictionary } from "@/lib/i18n/getDictionary";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
+import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
 const site = "https://www.startupsfactory.es";
 
@@ -102,6 +103,7 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
 
   return (
     <>
+      <PagePixels pixels={loadPagePixels("faq")} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

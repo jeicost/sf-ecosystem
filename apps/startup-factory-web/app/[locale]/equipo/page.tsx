@@ -4,6 +4,7 @@ import Image from "next/image";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
+import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
 const site = "https://www.startupsfactory.es";
 
@@ -87,6 +88,7 @@ export default async function EquipoPage({ params }: { params: Promise<{ locale:
 
   return (
     <>
+      <PagePixels pixels={loadPagePixels("equipo")} />
       {/* Hero */}
       <section className="relative overflow-hidden bg-black min-h-[50vh] flex items-center">
         <div className="orb-purple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[600px] h-[400px] rounded-full opacity-30" />

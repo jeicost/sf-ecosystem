@@ -3,6 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
+import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
 const site = "https://www.startupsfactory.es";
 
@@ -214,6 +215,7 @@ export default async function CorporatesPage({ params }: { params: Promise<{ loc
 
   return (
     <>
+      <PagePixels pixels={loadPagePixels("corporates")} />
       {/* ─── HERO ─────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-black min-h-[65vh] flex items-center">
         <div className="orb-purple absolute top-1/2 left-1/4 -translate-y-1/2 w-[800px] h-[600px] rounded-full opacity-25" />

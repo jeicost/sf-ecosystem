@@ -3,6 +3,7 @@ import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import ContactForm from "@/components/ContactForm";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
+import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
 const FORMSPREE_ID = "xnjwnydg";
 const CALENDLY_URL = "https://calendly.com/jacostech";
@@ -186,6 +187,7 @@ export default async function ContactoPage({ params }: { params: Promise<{ local
 
   return (
     <>
+      <PagePixels pixels={loadPagePixels("contacto")} />
       {/* ─── HERO ──────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-black pt-24 pb-14">
         <div className="orb-purple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[600px] h-[400px] rounded-full opacity-30" />

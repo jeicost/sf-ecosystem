@@ -6,6 +6,7 @@ import { usePageChat } from '@/lib/hooks/usePageChat'
 import { Send, History } from 'lucide-react'
 import { ChatUploadWidget } from '@/components/media/ChatUploadWidget'
 import { SectionsPreviewPanel } from '@/components/preview/SectionsPreviewPanel'
+import { PIXEL_FIELDS, cleanPixels, type PagePixels } from '@/lib/pixels'
 
 interface Section {
   id: string
@@ -22,6 +23,7 @@ interface Page {
   canonical_url?: string
   sections_json: Section[]
   status: string
+  pixels?: PagePixels
 }
 
 interface PageVersion {
@@ -44,7 +46,7 @@ export default function PageEditorPage() {
   const [error, setError] = useState('')
   const [userInput, setUserInput] = useState('')
   const [versions, setVersions] = useState<PageVersion[]>([])
-  const [sidebarTab, setSidebarTab] = useState<'settings' | 'history'>('settings')
+  const [sidebarTab, setSidebarTab] = useState<'settings' | 'pixels' | 'history'>('settings')
   const [restoringId, setRestoringId] = useState<string | null>(null)
 
   const { messages, isLoading: chatLoading, sendMessage, currentSections } = usePageChat({
@@ -115,6 +117,7 @@ export default function PageEditorPage() {
           canonical_url: page.canonical_url,
           sections_json: page.sections_json,
           status: page.status,
+          pixels: cleanPixels(page.pixels ?? {}),
         }),
       })
 
@@ -291,7 +294,7 @@ export default function PageEditorPage() {
           <div className="flex border-b border-slate-200">
             <button
               onClick={() => setSidebarTab('settings')}
-              className={`flex-1 px-4 py-3 text-sm font-semibold transition ${
+              className={`flex-1 px-3 py-3 text-sm font-semibold transition ${
                 sidebarTab === 'settings'
                   ? 'text-slate-900 border-b-2 border-slate-900'
                   : 'text-slate-500 hover:text-slate-700'
@@ -300,8 +303,18 @@ export default function PageEditorPage() {
               Settings
             </button>
             <button
+              onClick={() => setSidebarTab('pixels')}
+              className={`flex-1 px-3 py-3 text-sm font-semibold transition ${
+                sidebarTab === 'pixels'
+                  ? 'text-slate-900 border-b-2 border-slate-900'
+                  : 'text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              Pixels
+            </button>
+            <button
               onClick={() => setSidebarTab('history')}
-              className={`flex-1 px-4 py-3 text-sm font-semibold transition flex items-center justify-center gap-1.5 ${
+              className={`flex-1 px-3 py-3 text-sm font-semibold transition flex items-center justify-center gap-1 ${
                 sidebarTab === 'history'
                   ? 'text-slate-900 border-b-2 border-slate-900'
                   : 'text-slate-500 hover:text-slate-700'
@@ -413,6 +426,50 @@ export default function PageEditorPage() {
 
               <p className="text-xs text-slate-400">
                 Changes here are applied when you click Save.
+              </p>
+            </div>
+          ) : sidebarTab === 'pixels' ? (
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Tracking tags for <span className="font-semibold">this page only</span>, layered on
+                top of the site-wide GA/GTM. Leave blank to inherit just the site defaults.
+              </p>
+              {PIXEL_FIELDS.map((field) => (
+                <div key={field.key}>
+                  <label
+                    htmlFor={`px-${field.key}`}
+                    className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1"
+                  >
+                    {field.label}
+                  </label>
+                  {field.multiline ? (
+                    <textarea
+                      id={`px-${field.key}`}
+                      value={page.pixels?.[field.key] ?? ''}
+                      onChange={(e) =>
+                        setPage({ ...page, pixels: { ...page.pixels, [field.key]: e.target.value } })
+                      }
+                      placeholder={field.placeholder}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    />
+                  ) : (
+                    <input
+                      id={`px-${field.key}`}
+                      type="text"
+                      value={page.pixels?.[field.key] ?? ''}
+                      onChange={(e) =>
+                        setPage({ ...page, pixels: { ...page.pixels, [field.key]: e.target.value } })
+                      }
+                      placeholder={field.placeholder}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-500"
+                    />
+                  )}
+                  {field.help && <p className="mt-1 text-xs text-slate-400">{field.help}</p>}
+                </div>
+              ))}
+              <p className="text-xs text-amber-600">
+                Pixels take effect on the next deploy of the site (build-time bake), not instantly.
               </p>
             </div>
           ) : (

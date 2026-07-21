@@ -111,6 +111,7 @@ async function main() {
           logo:         seoData.schema_logo        || '',
         },
         sections,
+        pixels:         page.pixels || {},
         updatedAt: page.updated_at,
       }
     }
