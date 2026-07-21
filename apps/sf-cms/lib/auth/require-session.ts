@@ -9,7 +9,9 @@ export async function requireSession() {
       return false
     }
 
-    return true
+    // app_metadata is only writable server-side (service role) — unlike
+    // user_metadata, which any authenticated user can edit on themselves.
+    return user.app_metadata?.is_admin === true
   } catch (err) {
     return false
   }

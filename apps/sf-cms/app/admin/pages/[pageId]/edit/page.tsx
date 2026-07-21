@@ -47,6 +47,14 @@ export default function PageEditorPage() {
     }
   }, [pageId, projectId])
 
+  // Chat edits are a working draft (the chat endpoint no longer persists);
+  // sync them into page state so Save persists exactly what's previewed.
+  useEffect(() => {
+    if (currentSections && currentSections.length > 0) {
+      setPage((p) => (p ? { ...p, sections_json: currentSections } : p))
+    }
+  }, [currentSections])
+
   async function fetchPage() {
     try {
       const response = await fetch(`/api/admin/pages/${pageId}`)
