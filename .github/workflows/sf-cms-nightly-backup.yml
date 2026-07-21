@@ -1,0 +1,40 @@
+name: sf-cms nightly backup
+
+# Application-level CMS backup (audit finding OPS-06). Dumps every content
+# table to a timestamped JSON and keeps it as a downloadable artifact — a
+# restore-anywhere copy that doesn't depend on the Supabase dashboard.
+#
+# Requires two repo secrets:
+#   SF_CMS_SUPABASE_URL              (https://dmzecrlkclocqaywkjtc.supabase.co)
+#   SF_CMS_SUPABASE_SERVICE_ROLE_KEY (service_role key for that project)
+
+on:
+  schedule:
+    - cron: '0 3 * * *'   # 3am UTC daily
+  workflow_dispatch: {}    # manual run from the Actions tab
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/sf-cms
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Dump CMS content to JSON
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SF_CMS_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SF_CMS_SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/backup-cms.mjs backups/sf-cms-latest.json
+
+      - name: Upload backup artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sf-cms-backup-${{ github.run_id }}
+          path: apps/sf-cms/backups/sf-cms-latest.json
+          retention-days: 90
