@@ -4,6 +4,7 @@
 // Server-side only: returns a Buffer ready to stream as a download.
 
 import PptxGenJS from 'pptxgenjs'
+import { adminClient } from '@/lib/supabase'
 import type { PlaybookBrand } from './playbook-template'
 import {
   buildDeckTheme,
@@ -52,6 +53,34 @@ async function fetchImageData(url: string): Promise<string | null> {
   } catch {
     return null
   }
+}
+
+const ASSETS_BUCKET = 'generated-assets'
+
+/**
+ * Resolve a slide's image to a pptxgenjs data URI. Runs server-side, so the
+ * relative '/api/assets' proxy is unusable — instead, prefer image_path with a
+ * fresh signed URL from storage; fall back to a string imageUrl (historical
+ * rows where imageUrl is an object are treated as no image). Null on failure.
+ */
+async function resolveSlideImageData(s: DeckSlide): Promise<string | null> {
+  if (typeof s.image_path === 'string' && s.image_path.trim()) {
+    try {
+      const { data } = await adminClient()
+        .storage.from(ASSETS_BUCKET)
+        .createSignedUrl(s.image_path, 600)
+      if (data?.signedUrl) {
+        const img = await fetchImageData(data.signedUrl)
+        if (img) return img
+      }
+    } catch {
+      /* fall through to imageUrl */
+    }
+  }
+  if (typeof s.imageUrl === 'string' && s.imageUrl.trim()) {
+    return fetchImageData(s.imageUrl)
+  }
+  return null
 }
 
 function normalizeTimeline(items: DeckSlide['items']): DeckTimelineItem[] {
@@ -577,9 +606,13 @@ export async function generateDeckPptx(options: DeckOptions): Promise<Buffer> {
   const imageDataBySlide = new Map<DeckSlide, string | null>()
   await Promise.all(
     options.slides
-      .filter((s) => typeof s.imageUrl === 'string' && s.imageUrl)
+      .filter(
+        (s) =>
+          (typeof s.image_path === 'string' && s.image_path.trim()) ||
+          (typeof s.imageUrl === 'string' && s.imageUrl.trim())
+      )
       .map(async (s) => {
-        imageDataBySlide.set(s, await fetchImageData(s.imageUrl as string))
+        imageDataBySlide.set(s, await resolveSlideImageData(s))
       })
   )
 

@@ -200,7 +200,7 @@ export async function GET(req: NextRequest) {
 
     const { data: clientRow } = await admin
       .from('clients')
-      .select('name')
+      .select('name, primary_color, logo_url')
       .eq('id', queueData.client_id)
       .single()
 
@@ -209,6 +209,7 @@ export async function GET(req: NextRequest) {
     const brandColor =
       result.brandColor ||
       brandData?.brand_data?.visual_identity?.colors?.primary ||
+      clientRow?.primary_color ||
       '#8B5CF6'
     const toolSlug: string = queueData.tool_slug
     const tool = TOOLKIT_TOOLS.find((t) => t.slug === toolSlug)
@@ -216,7 +217,7 @@ export async function GET(req: NextRequest) {
     const template = searchParams.get('template')
     const format = searchParams.get('format')
 
-    const brand = { clientName, primaryColor: brandColor, logoUrl: null }
+    const brand = { clientName, primaryColor: brandColor, logoUrl: clientRow?.logo_url || null }
 
     // ── PPTX real (pptxgenjs) — decks de documentos y toolkit con template=deck ──
     if (format === 'pptx') {

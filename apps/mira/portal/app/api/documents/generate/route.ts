@@ -44,8 +44,11 @@ async function attachDeckImages(
 
     for (const target of targets.slice(0, 3)) {
       try {
-        const url = await generateAndStoreImage(target.prompt + styleSuffix, clientId, queueId)
-        if (url) target.slide.imageUrl = url
+        const img = await generateAndStoreImage(target.prompt + styleSuffix, clientId, queueId)
+        if (img) {
+          target.slide.imageUrl = img.signedUrl
+          target.slide.image_path = img.path
+        }
       } catch (err) {
         console.error('[documents/generate] Deck image failed (continuing):', err)
       }
@@ -88,7 +91,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { doc_type, client_id, input_data = {} } = await req.json()
+    const { doc_type, client_id, project_id, input_data = {} } = await req.json()
 
     if (!doc_type || !DOC_TYPES.includes(doc_type)) {
       return NextResponse.json({ error: 'Invalid doc_type' }, { status: 400 })
@@ -117,11 +120,32 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No client context' }, { status: 403 })
     }
 
+    // Optional project scoping: the project must exist and belong to the resolved client
+    let projectId: string | null = null
+    if (typeof project_id === 'string' && project_id.trim()) {
+      const { data: projectRow } = await admin
+        .from('mira_projects')
+        .select('id, client_id')
+        .eq('id', project_id)
+        .maybeSingle()
+      if (!projectRow) {
+        return NextResponse.json({ error: 'Project not found' }, { status: 404 })
+      }
+      if (projectRow.client_id !== clientId) {
+        return NextResponse.json(
+          { error: 'Project does not belong to this client' },
+          { status: 403 }
+        )
+      }
+      projectId = projectRow.id
+    }
+
     const { data: queueData, error: queueError } = await admin
       .from('generation_queue')
       .insert({
         client_id: clientId,
         user_id: user.id,
+        project_id: projectId,
         tool_slug: doc_type,
         input_data,
         status: 'processing',

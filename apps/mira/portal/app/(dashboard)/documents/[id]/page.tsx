@@ -2,10 +2,17 @@
 
 import { use, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import { createClient } from '@/lib/supabase'
 
 interface ChatMsg {
   role: 'user' | 'assistant'
   content: string
+}
+
+interface SlideOption {
+  index: number // 0-based
+  title: string
+  layout: string
 }
 
 export default function DocumentViewPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,12 +23,43 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   const [slideTarget, setSlideTarget] = useState('') // 1-based; empty = todo el documento
   const [refining, setRefining] = useState(false)
   const [iframeKey, setIframeKey] = useState(0)
+  const [toolSlug, setToolSlug] = useState<string | null>(null)
+  const [slides, setSlides] = useState<SlideOption[]>([])
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
+
+  // Carga tool_slug + lista de slides del result_data (se refresca tras cada refine)
+  useEffect(() => {
+    let cancelled = false
+    async function loadDoc() {
+      const { data } = await createClient()
+        .from('generation_queue')
+        .select('tool_slug, result_data')
+        .eq('id', id)
+        .single()
+      if (cancelled || !data) return
+      setToolSlug(data.tool_slug as string)
+      const result = (data.result_data || {}) as Record<string, unknown>
+      const rawSlides = Array.isArray(result.slides) ? (result.slides as Record<string, unknown>[]) : []
+      setSlides(
+        rawSlides.map((s, i) => ({
+          index: i,
+          title: typeof s?.title === 'string' ? s.title : '',
+          layout: typeof s?.layout === 'string' ? s.layout : '',
+        }))
+      )
+    }
+    loadDoc()
+    return () => {
+      cancelled = true
+    }
+  }, [id, iframeKey])
+
+  const isDeck = toolSlug === 'doc-deck'
 
   async function handleRefine() {
     const instruction = input.trim()
@@ -99,12 +137,14 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
           >
             📥 HTML
           </a>
-          <a
-            href={`/api/toolkit/export?queue_id=${id}&format=pptx`}
-            className="text-sm px-3 py-1.5 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
-          >
-            📥 PPTX
-          </a>
+          {isDeck && (
+            <a
+              href={`/api/toolkit/export?queue_id=${id}&format=pptx`}
+              className="text-sm px-3 py-1.5 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              📥 PPTX
+            </a>
+          )}
         </div>
       </div>
 
@@ -150,27 +190,25 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
               <div ref={chatEndRef} />
             </div>
             <div className="p-3 border-t border-white/10 space-y-2">
-              <div className="flex items-center gap-2">
-                <label className="text-white/40 text-[11px] shrink-0">Slide a editar</label>
-                <input
-                  type="number"
-                  min={1}
-                  value={slideTarget}
-                  onChange={(e) => setSlideTarget(e.target.value)}
-                  placeholder="Todo el documento"
-                  disabled={refining}
-                  className="flex-1 px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-white text-xs focus:border-amber-500 outline-none placeholder:text-white/25"
-                />
-                {slideTarget && (
-                  <button
-                    onClick={() => setSlideTarget('')}
-                    className="text-white/40 hover:text-white text-xs px-1"
-                    title="Editar todo el documento"
+              {slides.length > 0 && (
+                <div className="flex items-center gap-2">
+                  <label className="text-white/40 text-[11px] shrink-0">Slide a editar</label>
+                  <select
+                    value={slideTarget}
+                    onChange={(e) => setSlideTarget(e.target.value)}
+                    disabled={refining}
+                    className="flex-1 min-w-0 px-3 py-1.5 rounded-lg bg-black/40 border border-white/10 text-white text-xs focus:border-amber-500 outline-none"
                   >
-                    ✕
-                  </button>
-                )}
-              </div>
+                    <option value="">Documento completo</option>
+                    {slides.map((s) => (
+                      <option key={s.index} value={String(s.index + 1)}>
+                        {s.index + 1}. {s.title || s.layout || 'Slide'}
+                        {s.layout ? ` · ${s.layout}` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="flex gap-2">
                 <input
                   value={input}

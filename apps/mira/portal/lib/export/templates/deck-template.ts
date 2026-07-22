@@ -51,7 +51,8 @@ export interface DeckSlide {
   right?: DeckComparisonSide // comparison
   quote?: string // quote
   author?: string // quote
-  imageUrl?: string // image layout · cover background
+  imageUrl?: string // image layout · cover background (signed URL — may be expired or, in broken historical rows, a non-string)
+  image_path?: string // storage path in generated-assets — preferred over imageUrl (never expires)
   chart?: DeckChart // chart layout (Chart.js, loaded only when present)
   // AI-image generation hints (set by the model, consumed at generation time)
   wants_image?: boolean
@@ -68,6 +69,21 @@ export interface DeckOptions {
 // ─────────────────────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────────────────────
+
+/**
+ * Resolve the image URL for a slide. Prefers image_path (served via the
+ * authenticated /api/assets proxy — never expires) over the stored signed URL.
+ * Historical rows where imageUrl was written as an object are treated as no image.
+ */
+function slideImageUrl(s: DeckSlide): string | undefined {
+  if (typeof s.image_path === 'string' && s.image_path.trim()) {
+    return '/api/assets?path=' + encodeURIComponent(s.image_path)
+  }
+  if (typeof s.imageUrl === 'string' && s.imageUrl.trim()) {
+    return s.imageUrl
+  }
+  return undefined
+}
 
 function esc(text: string): string {
   return text
@@ -445,14 +461,15 @@ body {
 
 function renderCoverSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
   const strip = s.subtitle ?? o.subtitle ?? o.title
-  const imageBg = s.imageUrl
-    ? `<div class="cover-image-bg deco" style="background-image:url('${esc(s.imageUrl)}')"></div><div class="cover-image-overlay deco"></div>`
+  const coverImage = slideImageUrl(s)
+  const imageBg = coverImage
+    ? `<div class="cover-image-bg deco" style="background-image:url('${esc(coverImage)}')"></div><div class="cover-image-overlay deco"></div>`
     : ''
   return `
 <section class="slide slide-gradient on-dark">
   ${imageBg}
   ${glowOverlay(t)}
-  ${s.imageUrl ? '' : accentCircle(t, 12)}
+  ${coverImage ? '' : accentCircle(t, 12)}
   <div class="logo-bar">${brandMark(o.brand, 2.4, '#FFFFFF')}</div>
   <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4em 8em 1.5em;position:relative;z-index:2">
     <div class="eyebrow" style="justify-content:center">${esc(o.brand.clientName)}</div>
@@ -639,7 +656,8 @@ function renderQuoteSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
 
 function renderImageSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
   // Without an image URL, degrade gracefully to a content slide
-  if (!s.imageUrl) return renderContentSlide(s, o, t)
+  const imageSrc = slideImageUrl(s)
+  if (!imageSrc) return renderContentSlide(s, o, t)
   const bullets =
     s.bullets && s.bullets.length > 0
       ? `<ul class="bullet-list">${s.bullets.map((b) => `<li>${esc(b)}</li>`).join('')}</ul>`
@@ -648,7 +666,7 @@ function renderImageSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
 <section class="slide slide-light">
   ${accentStripeTop(t)}
   <div class="image-split">
-    <div class="image-half" style="background-image:url('${esc(s.imageUrl)}')"></div>
+    <div class="image-half" style="background-image:url('${esc(imageSrc)}')"></div>
     <div class="image-content">
       <div style="margin-bottom:1.6em">${brandMark(o.brand, 2.2, t.ink)}</div>
       <div class="slide-title" style="font-size:3.8em">${esc(s.title)}</div>

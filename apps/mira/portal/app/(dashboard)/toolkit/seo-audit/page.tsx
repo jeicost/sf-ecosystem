@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { SeoAuditResult } from './seo-audit-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -72,6 +73,7 @@ export default function SeoAuditPage() {
       body: JSON.stringify({
         tool_slug: 'seo-audit',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

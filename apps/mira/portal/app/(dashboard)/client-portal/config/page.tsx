@@ -72,45 +72,45 @@ export default function ConfigPage() {
 
       {loading ? (
         <div className="flex items-center justify-center py-8">
-          <Loader2 size={16} className="animate-spin text-[#444]" />
+          <Loader2 size={16} className="animate-spin text-ink-muted" />
         </div>
       ) : (
         <>
           {/* Profile Section */}
           <div className="mb-10">
-            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
               Perfil
             </p>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Nombre de la Empresa</label>
+                <label className="block text-sm font-medium text-ink mb-2">Nombre de la Empresa</label>
                 <input
                   type="text"
                   value={formData.companyName}
                   onChange={e => setFormData({ ...formData, companyName: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg"
-                  style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Email Principal</label>
+                <label className="block text-sm font-medium text-ink mb-2">Email Principal</label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={e => setFormData({ ...formData, email: e.target.value })}
                   className="w-full px-4 py-2 rounded-lg"
-                  style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-white mb-2">Teléfono (Opcional)</label>
+                <label className="block text-sm font-medium text-ink mb-2">Teléfono (Opcional)</label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={e => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+34 600 123 456"
                   className="w-full px-4 py-2 rounded-lg"
-                  style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
               </div>
             </div>
@@ -118,7 +118,7 @@ export default function ConfigPage() {
 
           {/* Notifications */}
           <div className="mb-10">
-            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
               Preferencias de Notificaciones
             </p>
             <div className="space-y-3">
@@ -129,8 +129,8 @@ export default function ConfigPage() {
               ].map(pref => (
                 <div key={pref.key} className="card px-4 py-3 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white">{pref.label}</p>
-                    <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>{pref.desc}</p>
+                    <p className="text-sm font-medium text-ink">{pref.label}</p>
+                    <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{pref.desc}</p>
                   </div>
                   <input
                     type="checkbox"
@@ -146,7 +146,7 @@ export default function ConfigPage() {
           {/* Team Members */}
           <div className="mb-10">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'rgba(255,255,255,0.2)' }}>
+              <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-muted)' }}>
                 Miembros del Equipo
               </p>
               <button className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
@@ -158,17 +158,17 @@ export default function ConfigPage() {
                 teamMembers.map(member => (
                   <div key={member.id} className="card px-4 py-3 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-white">{member.email.split('@')[0]}</p>
-                      <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>{member.email}</p>
+                      <p className="text-sm font-medium text-ink">{member.email.split('@')[0]}</p>
+                      <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{member.email}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-medium text-white capitalize">{member.role}</p>
+                      <p className="text-xs font-medium text-ink capitalize">{member.role}</p>
                       <p className="text-xs" style={{ color: '#4ade80' }}>● {member.status}</p>
                     </div>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-4" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                <div className="text-center py-4" style={{ color: 'var(--text-muted)' }}>
                   <p className="text-sm">Solo tú tienes acceso a este proyecto</p>
                 </div>
               )}
@@ -177,7 +177,7 @@ export default function ConfigPage() {
 
           {/* Billing */}
           <div className="mb-10">
-            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'rgba(255,255,255,0.2)' }}>
+            <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
               Facturación
             </p>
 
@@ -186,7 +186,7 @@ export default function ConfigPage() {
               <p className="text-sm font-medium" style={{ color: '#FBBF24' }}>
                 ⚠️ Sample Data Only — Stripe integration not configured
               </p>
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+              <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
                 All MRR, clients, and payment data shown are examples. Connect Stripe to see real billing. Contact admin to set up STRIPE_API_KEY.
               </p>
             </div>
@@ -194,19 +194,19 @@ export default function ConfigPage() {
             <div className="card px-5 py-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-semibold text-white">Plan Premium</p>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.3)' }}>$499/mes • Renovación: 2026-08-10</p>
+                  <p className="text-sm font-semibold text-ink">Plan Premium</p>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>$499/mes • Renovación: 2026-08-10</p>
                 </div>
                 <span className="text-xl">💳</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <p style={{ color: 'rgba(255,255,255,0.3)' }}>Próximo pago</p>
-                  <p className="font-medium text-white">$499.00</p>
+                  <p style={{ color: 'var(--text-muted)' }}>Próximo pago</p>
+                  <p className="font-medium text-ink">$499.00</p>
                 </div>
                 <div>
-                  <p style={{ color: 'rgba(255,255,255,0.3)' }}>Método de pago</p>
-                  <p className="font-medium text-white">Visa ••••4242</p>
+                  <p style={{ color: 'var(--text-muted)' }}>Método de pago</p>
+                  <p className="font-medium text-ink">Visa ••••4242</p>
                 </div>
               </div>
               <button className="mt-3 text-xs px-4 py-2 rounded-lg font-medium" style={{ background: 'rgba(139,92,246,0.1)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
@@ -221,7 +221,7 @@ export default function ConfigPage() {
               <Save size={16} />
               Guardar Cambios
             </button>
-            <button className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <button className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)', border: '1px solid var(--border)' }}>
               Cancelar
             </button>
           </div>

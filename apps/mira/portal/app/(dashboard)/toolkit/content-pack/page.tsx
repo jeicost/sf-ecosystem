@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { ContentPackResult } from './content-pack-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -89,6 +90,7 @@ export default function ContentPackPage() {
       body: JSON.stringify({
         tool_slug: 'content-pack',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

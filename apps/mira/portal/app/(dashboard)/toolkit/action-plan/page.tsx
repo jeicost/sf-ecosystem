@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { ActionPlanResult } from './action-plan-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -52,6 +53,7 @@ export default function ActionPlanPage() {
       body: JSON.stringify({
         tool_slug: 'action-plan',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

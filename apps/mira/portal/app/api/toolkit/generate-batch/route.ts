@@ -2,43 +2,26 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { TOOLKIT_TOOLS as TOOLKIT_TOOL_DEFS } from '@/lib/toolkit-tools'
+import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 
 // Long-running generation: allow up to 800s on Vercel (fluid compute)
 export const maxDuration = 800
 
-const TOOLKIT_TOOLS = [
-  'seo-audit',
-  'marketing-audit',
-  'brand-briefing',
-  'competitive-analysis',
-  'investor-deck',
-  'content-pack',
-  'action-plan',
-  'brandbook-content-system',
-  'marketing-campaign-generator',
-  'community-growth-blueprint',
-]
+// Batch-generatable tools: everything except tools with their own dedicated route
+const TOOLKIT_TOOLS: string[] = TOOLKIT_TOOL_DEFS.filter((t) => !t.hasDedicatedRoute).map(
+  (t) => t.slug
+)
 
 const MAX_ATTEMPTS = 3
 
-function extractJson(text: string): Record<string, unknown> {
-  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-  if (fenced) {
-    try {
-      return JSON.parse(fenced[1])
-    } catch {
-      // fall through to brace match
-    }
+/** extractJson wrapper that guarantees a plain object (batch results are objects). */
+function extractJsonObject(text: string): Record<string, unknown> {
+  const parsed = extractJson(text)
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new ExtractJsonError('Model output is not a JSON object', text)
   }
-  const braces = text.match(/\{[\s\S]*\}/)
-  if (braces) {
-    try {
-      return JSON.parse(braces[0])
-    } catch {
-      // fall through
-    }
-  }
-  return {}
+  return parsed as Record<string, unknown>
 }
 
 async function generateToolReport(
@@ -91,16 +74,22 @@ async function generateToolReport(
           .map((b) => ('text' in b ? b.text : ''))
           .filter(Boolean)
           .join('\n')
-        result = extractJson(text)
+        // Throws ExtractJsonError (with text preview) when no JSON can be extracted
+        result = extractJsonObject(text)
 
         if (Object.keys(result).length === 0) {
           throw new Error(
-            `Empty parse. stop=${message.stop_reason} blocks=[${message.content.map((b) => b.type).join(',')}] text[0:300]=${text.slice(0, 300)}`
+            `Empty JSON object. stop=${message.stop_reason} blocks=[${message.content.map((b) => b.type).join(',')}]`
           )
         }
         break
       } catch (err) {
-        lastError = err instanceof Error ? err.message : 'Unknown error'
+        lastError =
+          err instanceof ExtractJsonError
+            ? `JSON extraction failed: ${err.message}`
+            : err instanceof Error
+              ? err.message
+              : 'Unknown error'
         result = {}
         if (attempt < MAX_ATTEMPTS) {
           await new Promise((r) => setTimeout(r, 5000))

@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { CompetitiveAnalysisResult } from './competitive-analysis-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -85,6 +86,7 @@ export default function CompetitiveAnalysisPage() {
       body: JSON.stringify({
         tool_slug: 'competitive-analysis',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

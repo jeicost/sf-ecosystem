@@ -63,6 +63,14 @@ export default function DocumentsPage() {
     loadDocs()
   }, [loadDocs])
 
+  // Polling cada 5s mientras haya documentos en proceso; se detiene al no quedar ninguno
+  useEffect(() => {
+    const hasProcessing = docs.some((d) => d.status !== 'completed' && d.status !== 'failed')
+    if (!hasProcessing) return
+    const interval = setInterval(loadDocs, 5000)
+    return () => clearInterval(interval)
+  }, [docs, loadDocs])
+
   async function handleGenerate() {
     if (!creating || !activeClient?.id) return
     setGenerating(true)

@@ -146,8 +146,8 @@ export default function DocumentationPage() {
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(139,92,246,0.8)' }}>
               Client Portal
             </p>
-            <h1 className="text-3xl font-semibold text-white tracking-tight mb-2">Documentación</h1>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <h1 className="text-3xl font-semibold text-ink tracking-tight mb-2">Documentación</h1>
+            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
               Sube documentación de marca, productos y estrategia. Los agentes usarán esta información para generar contenido personalizado.
             </p>
           </div>
@@ -160,7 +160,7 @@ export default function DocumentationPage() {
           {/* Warnings */}
           <div className="p-4 rounded-lg flex gap-3" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
             <AlertCircle size={16} className="mt-0.5" style={{ color: '#3B82F6' }} />
-            <div className="text-xs" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
               <p className="font-medium mb-1">💡 Documentación habilitará:</p>
               <ul className="list-disc list-inside space-y-0.5">
                 <li>Marketing Campaign Generator usa tu brand book</li>

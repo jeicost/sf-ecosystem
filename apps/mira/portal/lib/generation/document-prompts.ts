@@ -4,6 +4,7 @@
 import { fetchBrandBrain } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { retrieveAgentContext } from '@/lib/agent-context'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 // tone_of_voice may be a plain string or an object — never spread a string into chars
 function formatTone(tone: unknown): string {
@@ -53,7 +54,8 @@ BRAND CONTEXT (source of truth — usa esto en todo el documento):
   const allContext = [docText, brandContext, memoryContext].filter(Boolean).join('\n\n')
   const fullContext = allContext ? `\n\nCONTEXTO DEL CLIENTE:\n${allContext}` : ''
 
-  const input = `\nBRIEF DEL USUARIO:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}`
+  // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contrato anti-alucinación.
+  const input = `\nBRIEF DEL USUARIO:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}\n\n${GROUNDING_CONTRACT}`
 
   switch (docType) {
     case 'doc-playbook':

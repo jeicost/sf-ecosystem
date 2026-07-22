@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { InvestorDeckResult } from './investor-deck-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -78,6 +79,7 @@ export default function InvestorDeckPage() {
       body: JSON.stringify({
         tool_slug: 'investor-deck',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

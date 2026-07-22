@@ -2,6 +2,7 @@ import { fetchBrandBrain } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 // tone_of_voice may be a plain string or an object — never spread a string into chars
 function formatTone(tone: unknown): string {
@@ -19,6 +20,10 @@ function formatTone(tone: unknown): string {
 export interface ToolPromptParams {
   clientId: string
   inputData: Record<string, any>
+  /** Pre-formatted VERIFIED SITE FACTS block (built by the route with formatSnapshotForPrompt). */
+  siteFactsBlock?: string
+  /** Pre-formatted SOURCES block (built by the route with formatSourcesForPrompt). */
+  sourcesBlock?: string
 }
 
 // Toolkit-specific memory queries: which tags to load from project_memory
@@ -72,7 +77,7 @@ export async function getToolkitPrompt(
   toolSlug: string,
   params: ToolPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData } = params
+  const { clientId, inputData, siteFactsBlock, sourcesBlock } = params
 
   const [brandBrain, memoryContext, docContext, toolkitDeps] = await Promise.all([
     fetchBrandBrain(clientId),
@@ -105,10 +110,17 @@ BRAND CONTEXT (Source of Truth):
     ?.map((d: any) => d.excerpt)
     .join('\n') || ''
 
-  // Build dependency context for toolkits that reference previous outputs
+  // Build dependency context for toolkits that reference previous outputs.
+  // The 2 most relevant dependencies for this tool (first tags in TOOLKIT_MEMORY_QUERIES,
+  // which are ordered by relevance) get a larger excerpt; the rest stay short so the
+  // context does not explode.
+  const priorityTags = (TOOLKIT_MEMORY_QUERIES[toolSlug] || []).slice(0, 2)
   const dependencyContext = Object.entries(toolkitDeps)
     .map(([tag, dep]: [string, any]) => {
-      return `\n[DEPENDENCY: ${tag}] (${dep.title})\nID: ${dep.id}\nData: ${JSON.stringify(dep.data).slice(0, 500)}...`
+      const charLimit = priorityTags.includes(tag) ? 2000 : 500
+      const json = JSON.stringify(dep.data)
+      const excerpt = json.length > charLimit ? `${json.slice(0, charLimit)}...` : json
+      return `\n[DEPENDENCY: ${tag}] (${dep.title})\nID: ${dep.id}\nData: ${excerpt}`
     })
     .join('\n')
 
@@ -116,7 +128,19 @@ BRAND CONTEXT (Source of Truth):
     .filter(Boolean)
     .join('\n\n')
 
-  const fullContext = allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : ''
+  // Grounded tools receive pre-formatted VERIFIED SITE FACTS / SOURCES blocks from the route.
+  const GROUNDED_TOOLS = ['seo-audit', 'marketing-audit', 'competitive-analysis', 'investor-deck']
+  const groundingBlocks = GROUNDED_TOOLS.includes(toolSlug)
+    ? [siteFactsBlock, sourcesBlock].filter(Boolean).join('\n\n')
+    : ''
+
+  // Shared context for ALL tool prompts: client docs/dependencies, injected grounding
+  // blocks (when available for this tool), and the anti-hallucination contract.
+  const fullContext = [
+    allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : '',
+    groundingBlocks ? `\n\n${groundingBlocks}` : '',
+    `\n\n${GROUNDING_CONTRACT}`,
+  ].join('')
 
   // Prompts específicos por herramienta
   switch (toolSlug) {
@@ -152,249 +176,139 @@ Generate a COMPREHENSIVE brand briefing JSON with ALL these sections:
 }`
 
     case 'seo-audit':
-      return `You are an SEO expert validating technical execution of brand strategy through organic search.
+      return `You are an SEO expert analyzing a website's organic search execution based on VERIFIED SITE FACTS.
 
 ⚠️ TIER 5: TECHNICAL VALIDATION TOOLKIT
-- CRITICAL: Load Content Pack topics and keywords, Competitive Analysis keyword rankings
-- VALIDATE that target keywords align with Content Pack content pillars/topics
-- FLAG if keyword strategy contradicts content strategy (e.g., "targeting 'cheap' when brand says premium")
-- Include keyword_alignment field with status: aligned|misaligned
-- Competitive benchmark should show if we're winning, losing, or missing keywords vs top competitors
+- If Content Pack topics/keywords appear in dependencies, VALIDATE that target keywords align with content pillars/topics
+- FLAG if keyword strategy contradicts content strategy (e.g., targeting bargain terms when the brand positioning is premium)
+- Include keyword_alignment field with status: aligned|misaligned|unknown
 
-CRITICAL REQUIREMENTS:
-- Score: 0-100 scale (typical range 60-80 for food brands) with trend (+X points in 90 days)
-- 4 stat cards MUST be: Style Chars (vs ideal <60), Images Alt Text (X/Y), Schema Types Active (count), Hreflang Tags (count/language)
-- Sections MUST follow this structure:
-  * On-Page SEO (10 elements table: Title tag, Meta description, H1, H2/Structure, Images/Alt, URL structure, Canonical, Current ranking, Technical status, etc.)
-  * SEO Técnico (10+ checks: HTTPS/SSL, Sitemap.xml, Robots.txt, Mobile/Viewport, GTM+GA4, Hreflang EN/TH, Schema Restaurant, Page Speed, Core Web Vitals, Preload críticos)
-  * Schema Markup (6 schemas: Restaurant, AggregateRating, OpeningHours, Geo+PostalAddress, FAQPage, Article/BlogPosting with status active/missing)
-  * Keywords Target (6 keywords with volume, intent, priority)
-  * Blog & Contenido (4 assessment rows: Blog active, Frecuencia, Article schema, Internal linking)
-- Each finding MUST have: title, status (OK/LARGO/FALTA/DESACTUALIZADO), current value, recommendation, analysis
-- Action plan: 6 prioritized actions with severity tags, specific impact, exact effort estimate
+GROUNDING RULES FOR THIS AUDIT:
+- Every observation about the site MUST come from the VERIFIED SITE FACTS block above. If a fact is not there, treat it as "unknown" — never guess.
+- Technical checks (HTTPS, sitemap, robots.txt, analytics, schema markup, viewport, canonical, hreflang...) are computed programmatically by the system from the site snapshot. Do NOT fabricate check results or measured values — your job is to ANALYZE the verified facts and RECOMMEND improvements.
+- overall_score and statCard values will be computed programmatically; output null for overall_score and an empty statCards array.
+- NEVER invent page-speed metrics, Core Web Vitals, rankings, search volumes, traffic numbers, publication dates, or counts. Missing data → "unknown" + entry in data_gaps.
+- If the VERIFIED SITE FACTS block is absent or marked SITE UNREACHABLE, mark every site-dependent field "unknown" and say so in data_gaps.
+
+YOUR JOB:
+- ANALYZE the verified site facts (title, meta description, headings, images/alt coverage, internal/external links, analytics and schema detected) and produce concrete, client-specific recommendations.
+- Propose a keyword strategy grounded in the brand context and user input. Search volumes and rankings are "unknown" unless real data appears in the context.
+- Recommend schema markup types relevant to THIS business (choose based on its industry, never assume a default vertical).
+- Each on-page finding MUST have: element, status, current value (verbatim from site facts, or "unknown"), recommendation, analysis.
+- Action plan: 6 prioritized actions with severity tags, qualitative expected impact prefixed '[RECOMENDACIÓN]' (no invented percentages), effort estimate, owner.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate SEO audit JSON (EXACT STRUCTURE):
+Generate SEO audit JSON (EXACT STRUCTURE — field examples below are generic placeholders, replace them with analysis specific to this client):
 {
-  "overall_score": number (60-80),
-  "overall_trend": "string like '+8 points in 90 days'",
+  "overall_score": null,
+  "overall_trend": null,
   "scoreLabel": "SEO Health Score",
-  "statCards": [
-    {"label": "Style Chars (Ideal <60)", "value": "69", "status": "warning", "description": "Title tag truncates in SERPs..."},
-    {"label": "Imágenes con Alt Text", "value": "20/20", "status": "perfect", "description": "All images properly described..."},
-    {"label": "Schema Types Activos", "value": "5", "status": "good", "description": "Restaurant, AggregateRating, etc..."},
-    {"label": "Hreflang Tags EN/TH", "value": "0", "status": "critical", "description": "No hreflang declarations..."}
-  ],
+  "statCards": [],
+  "keyword_alignment": {"status": "aligned|misaligned|unknown", "notes": "how target keywords relate to content pillars"},
   "sections": [
     {
       "title": "On-Page SEO",
-      "description": "On-page elements, meta tags, heading structure",
+      "description": "On-page elements, meta tags, heading structure — derived from VERIFIED SITE FACTS",
       "type": "table",
       "elements": [
         {
           "element": "Title tag",
-          "status": "warning|ok|critical|falta",
-          "current": "actual title text",
-          "recommendation": "suggested title",
-          "analysis": "Detailed explanation: X chars, truncates at Y, loses Z keywords. FIX: recommendation."
+          "status": "ok|warning|critical|falta|unknown",
+          "current": "exact title from site facts, or 'unknown'",
+          "recommendation": "suggested improved title",
+          "analysis": "Why it matters and how to fix it, referencing the verified fact you analyzed."
         },
         {
           "element": "Meta description",
-          "status": "ok",
-          "current": "current meta",
+          "status": "ok|warning|falta|unknown",
+          "current": "exact meta from site facts, or 'unknown'",
           "recommendation": "improved meta",
           "analysis": "..."
         },
         {
           "element": "H1",
-          "status": "critical",
-          "current": "current H1",
-          "recommendation": "new H1",
-          "analysis": "Zero keywords, no relevance signal. FIX: merge brand + keyword..."
+          "status": "ok|warning|critical|unknown",
+          "current": "exact H1 from site facts, or 'unknown'",
+          "recommendation": "improved H1",
+          "analysis": "..."
         },
         {
           "element": "H2 / Estructura",
-          "status": "aceptable|ok",
-          "analysis": "..."
+          "status": "ok|aceptable|warning|unknown",
+          "analysis": "Heading hierarchy assessment based on site facts..."
         },
         {
           "element": "Imágenes / Alt text",
-          "status": "perfect|ok",
+          "status": "ok|warning|falta|unknown",
+          "current": "alt coverage from site facts, or 'unknown'",
           "analysis": "..."
         },
         {
-          "element": "URL estructura",
-          "status": "ok",
-          "analysis": "..."
+          "element": "Enlazado interno",
+          "status": "ok|mejorable|unknown",
+          "analysis": "Based on internal/external link counts in site facts..."
         },
         {
           "element": "Canonical",
-          "status": "ok",
+          "status": "ok|falta|unknown",
           "analysis": "..."
         },
         {
-          "element": "Hreflang EN/TH",
-          "status": "falta|ok",
-          "analysis": "..."
-        },
-        {
-          "element": "Visually hidden H1",
-          "status": "aceptable|falta",
-          "analysis": "Option: CSS-only H1 with SEO keywords..."
-        },
-        {
-          "element": "Content freshness",
-          "status": "ok|warning",
-          "analysis": "..."
-        }
-      ]
-    },
-    {
-      "title": "SEO Técnico",
-      "description": "Technical infrastructure, crawlability, performance",
-      "type": "table",
-      "checks": [
-        {
-          "check": "HTTPS / SSL",
-          "status": "ok|critical",
-          "description": "Active certificate, automatic redirect to HTTPS, Vercel CDN global..."
-        },
-        {
-          "check": "Sitemap.xml",
-          "status": "ok|missing",
-          "count": 7,
-          "description": "7 indexed URLs with changefreq, priority, lastmod. Referenced in robots.txt..."
-        },
-        {
-          "check": "Robots.txt",
-          "status": "ok|warning",
-          "description": "Allow: /*, no critical resources blocked. Sitemap declared correctly..."
-        },
-        {
-          "check": "Mobile / Viewport",
-          "status": "ok|critical",
-          "description": "Viewport meta present, fully responsive, FCP mobile ~900ms with video optimization..."
-        },
-        {
-          "check": "GTM + GA4",
-          "status": "ok|missing",
-          "description": "Google Tag Manager active, GA4 configured, conversion tracking available..."
-        },
-        {
-          "check": "Hreflang EN/TH",
-          "status": "falta|ok",
-          "description": "CRÍTICO: Multilingual site but no hreflang declarations. FIX: Add hreflang-en, hreflang-th in head..."
-        },
-        {
-          "check": "Schema Restaurant",
-          "status": "ok|missing",
-          "description": "Restaurant + AggregateRating + OpeningHours + Geo + PostalAddress implemented..."
-        },
-        {
-          "check": "Page Speed",
-          "status": "mejorable|ok",
-          "description": "Desktop FCP 900ms ok, mobile FCP 1.8s (CDN cold). Hero 3.6MB total..."
-        },
-        {
-          "check": "Core Web Vitals",
-          "status": "needs_work|ok",
-          "description": "LCP, FID, CLS - mobile metrics need optimization..."
-        },
-        {
-          "check": "Preload críticos",
-          "status": "missing|ok",
-          "description": "Fonts, hero images should use preload/prefetch directives..."
+          "element": "Contenido / Frescura",
+          "status": "ok|warning|unknown",
+          "analysis": "Only what the site facts show; otherwise 'unknown'..."
         }
       ]
     },
     {
       "title": "Schema Markup",
-      "description": "Structured data for rich snippets",
+      "description": "Structured data recommendations (detected schema types come from VERIFIED SITE FACTS)",
       "type": "schema_cards",
       "schemas": [
-        {"name": "Restaurant", "status": "active", "color": "green", "impact": "Rich snippets en SERPs locales"},
-        {"name": "AggregateRating", "status": "active", "color": "green", "impact": "Star ratings en search results"},
-        {"name": "OpeningHoursSpecification", "status": "active", "color": "green", "impact": "Store hours en SERPs"},
-        {"name": "GeoCoordinates + PostalAddress", "status": "active", "color": "green", "impact": "Location rich snippets"},
-        {"name": "FAQPage", "status": "missing", "color": "red", "opportunity": "If 6 common Q&A: FAQ rich snippets high CTR..."},
-        {"name": "Article / BlogPosting", "status": "missing", "color": "red", "opportunity": "Blog posts without schema: no editorial rich snippets..."}
+        {"name": "schema type relevant to THIS business", "status": "active|missing|unknown", "color": "green|red|gray", "impact": "which rich snippet it enables", "opportunity": "why it helps this specific client"}
       ]
     },
     {
       "title": "Keywords Target",
-      "description": "Keyword landscape y opportunities",
+      "description": "Keyword opportunities grounded in brand context and user input",
       "type": "table",
       "keywords": [
         {
-          "keyword": "burger delivery bangkok",
-          "volume": "Alto",
-          "intent": "Transaccional",
-          "priority": "#1",
-          "current_rank": "not ranking|position X"
-        },
-        {
-          "keyword": "wagyu burger bangkok",
-          "volume": "Medio",
-          "intent": "Comercial",
-          "priority": "#1"
-        },
-        {
-          "keyword": "best burger bangkok",
-          "volume": "Alto",
-          "intent": "Comercial",
-          "priority": "#2"
-        },
-        {
-          "keyword": "grab food burger bangkok",
-          "volume": "Medio",
-          "intent": "Transaccional",
-          "priority": "Quick win"
-        },
-        {
-          "keyword": "artisan burger sauce bangkok",
-          "volume": "Long-tail",
-          "intent": "Informacional",
-          "priority": "Blog topic"
-        },
-        {
-          "keyword": "salsa burgers",
-          "volume": "Branded",
-          "intent": "Branded",
-          "priority": "Already ranking"
+          "keyword": "keyword phrase relevant to this business and audience",
+          "volume": "unknown unless real data provided",
+          "intent": "Transaccional|Comercial|Informacional|Branded",
+          "priority": "#1|#2|Quick win|Blog topic",
+          "current_rank": "unknown unless real data provided"
         }
       ]
     },
     {
-      "title": "Blog & Contenido",
-      "description": "Blog content strategy y opportunities",
+      "title": "Contenido & Blog",
+      "description": "Editorial content assessment based on verified site facts and dependencies",
       "type": "table",
       "assessment": [
         {
-          "element": "Blog activo",
-          "status": "ok|missing",
-          "count": 4,
-          "description": "4 posts published with relevant topics: delivery, Grab, sauces, Wagyu. Basic SEO structure present..."
-        },
-        {
-          "element": "Frecuencia",
-          "status": "desactualizado|ok",
-          "last_post": "Marzo 2025",
-          "days_ago": 65,
-          "description": "~2 months without activity. Google interprets as negative freshness signal for food sites..."
+          "element": "Blog / contenido editorial",
+          "status": "ok|missing|unknown",
+          "description": "Only what site facts show; otherwise 'unknown'"
         },
         {
           "element": "Article schema",
-          "status": "falta|ok",
-          "impact": "No BlogPosting/Article schema = no editorial rich snippets in SERPs. Missing CTR opportunity...",
-          "recommendation": "Add BlogPosting schema to all blog posts with datePublished, author, headline..."
+          "status": "ok|falta|unknown",
+          "recommendation": "[RECOMENDACIÓN] add BlogPosting schema if editorial content exists..."
         },
         {
           "element": "Internal linking",
-          "status": "mejorable|ok",
-          "description": "Posts don't link to each other or menu/delivery pages. Missing link equity opportunities..."
+          "status": "ok|mejorable|unknown",
+          "description": "Based on link data in site facts..."
+        },
+        {
+          "element": "Alineación con content pillars",
+          "status": "aligned|misaligned|unknown",
+          "description": "Compare against Content Pack dependency if available..."
         }
       ]
     }
@@ -406,13 +320,14 @@ Generate SEO audit JSON (EXACT STRUCTURE):
       "title": "Specific action title",
       "description": "Detailed description",
       "priority": "CRÍTICO|ALTO|MEDIO",
-      "severity_tag": "warning|critical|info",
-      "impact": "+X% traffic (e.g., '+20-35% impressions')",
-      "effort": "X hours or Y days exact estimate",
+      "severity_tag": "critical|warning|info",
+      "impact": "[RECOMENDACIÓN] qualitative expected impact — no invented percentages",
+      "effort": "estimate in hours or days",
       "owner": "team role",
-      "expected_roi": "number/10"
+      "expected_roi": "alto|medio|bajo"
     }
   ],
+  "data_gaps": ["every data point you needed but could not find in the context"],
   "generatedAt": "just now"
 }`
 
@@ -426,33 +341,40 @@ Generate SEO audit JSON (EXACT STRUCTURE):
 - Include "coherence_check" in output with status: aligned|misaligned|conflicts
 - If Brand Briefing exists, compare pillars/voice/positioning against current marketing strategy
 
+GROUNDING RULES:
+- Observations about the website MUST come from the VERIFIED SITE FACTS block above. Anything not present there is "unknown" — never guess.
+- Do NOT invent follower counts, engagement rates, review counts, traffic numbers, or dates. Missing data → "unknown" + entry in data_gaps.
+- Scores must be justified by evidence found in the context. If there is not enough evidence to score a category, output null for that value. NEVER target a predetermined score range.
+- Recommendations and hypotheses MUST be prefixed '[RECOMENDACIÓN]' or '[SUPUESTO]'.
+- If the VERIFIED SITE FACTS block is absent or marked SITE UNREACHABLE, mark site-dependent cards "unknown".
+
 CRITICAL REQUIREMENTS:
-- Overall score: 0-100 (typical range 50-80) with trend (+X points in 90 days)
-- 6 category scores: Brand Identity, Conversion Funnel, Social Media, Content Marketing, Lead Capture, Local Marketing
-- Sections MUST follow this structure (4 color-coded cards per section):
-  * Brand & Posicionamiento (4 cards: USP clarity, Visual Identity, Hero Product, Google Business Link)
-  * Conversion Funnel (4 cards: ORDER NOW visibility, GRAB/LINE MAN integration, WhatsApp Business, Email Capture gaps)
-  * Social Media & Contenido (4 cards: Social proof, Instagram feed, Blog frequency, Reviews section)
+- Overall score: 0-100 only when justified by evidence; otherwise null. No trend unless historical data exists in the context (otherwise null).
+- 6 category scores: Brand Identity, Conversion Funnel, Social Media, Content Marketing, Lead Capture, Local Marketing (null when no evidence)
+- Sections MUST follow this structure (4 color-coded cards per section, titles adapted to THIS business — never assume a default industry):
+  * Brand & Posicionamiento (4 cards: USP clarity, Visual Identity, Hero product/service, Business listings/profiles)
+  * Conversion Funnel (4 cards: primary CTA visibility, purchase/booking channels, direct contact channels, email capture)
+  * Social Media & Contenido (4 cards: social proof on site, social presence/links, content freshness, reviews/testimonials)
   * Trust & Autoridad (E-E-A-T matrix with 4 dimensions: Experience, Expertise, Authority, Trust)
-- Quick Wins: 5 actions with effort_tag (Fácil/Medio), ROI estimate, specific hours/timeframe
-- Each card MUST have: title, status (strong/present/missing/warning), color_border (teal/red/orange/green), detailed content
+- Quick Wins: 5 actions with effort_tag (Fácil/Medio), qualitative ROI, specific hours/timeframe
+- Each card MUST have: title, status (strong/present/missing/warning/unknown), color_border (teal/red/orange/green), content grounded in site facts or client context
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate marketing audit JSON (EXACT STRUCTURE):
+Generate marketing audit JSON (EXACT STRUCTURE — card titles below are generic placeholders, adapt them to this client):
 {
-  "overall_score": number (50-80),
-  "overall_trend": "string like '+8 points in 90 days'",
+  "overall_score": number or null,
+  "overall_trend": null,
   "scoreLabel": "Marketing Health Score",
   "statCards": [
-    {"label": "Brand Identity", "value": "number/100", "description": "short desc"},
-    {"label": "Conversion Funnel", "value": "number/100", "description": "short desc"},
-    {"label": "Social Media", "value": "number/100", "description": "short desc", "status": "critical"},
-    {"label": "Content Marketing", "value": "number/100", "description": "short desc", "status": "critical"},
-    {"label": "Lead Capture", "value": "number/100", "description": "short desc", "status": "warning"},
-    {"label": "Local Marketing", "value": "number/100", "description": "short desc"}
+    {"label": "Brand Identity", "value": "number/100 or null", "description": "short evidence-based desc"},
+    {"label": "Conversion Funnel", "value": "number/100 or null", "description": "short desc"},
+    {"label": "Social Media", "value": "number/100 or null", "description": "short desc", "status": "critical|warning|good"},
+    {"label": "Content Marketing", "value": "number/100 or null", "description": "short desc"},
+    {"label": "Lead Capture", "value": "number/100 or null", "description": "short desc"},
+    {"label": "Local Marketing", "value": "number/100 or null", "description": "short desc"}
   ],
   "sections": [
     {
@@ -461,41 +383,41 @@ Generate marketing audit JSON (EXACT STRUCTURE):
       "type": "cards",
       "cards": [
         {
-          "title": "USP Muy Claro",
-          "status": "strong",
-          "color_border": "teal",
-          "content": "Brief content explaining brand's unique selling proposition..."
+          "title": "Claridad del USP",
+          "status": "strong|present|missing|warning|unknown",
+          "color_border": "teal|red|orange|green",
+          "content": "Evidence-based assessment of the unique selling proposition..."
         },
         {
-          "title": "Identidad Visual Fuerte",
-          "status": "strong|present|missing",
-          "color_border": "red|teal|orange",
+          "title": "Identidad Visual",
+          "status": "strong|present|missing|unknown",
+          "color_border": "teal|red|orange",
           "content": "..."
         },
         {
-          "title": "Producto Hero Bien Destacado",
-          "status": "strong|present|missing",
-          "color_border": "teal",
+          "title": "Producto/Servicio Hero",
+          "status": "strong|present|missing|unknown",
+          "color_border": "teal|orange",
           "content": "..."
         },
         {
-          "title": "Google My Business Link",
-          "status": "strong|missing",
-          "color_border": "orange",
+          "title": "Perfiles de Negocio (listings)",
+          "status": "strong|missing|unknown",
+          "color_border": "orange|teal",
           "content": "..."
         }
       ]
     },
     {
       "title": "Conversion Funnel",
-      "description": "CTA clarity, order flow y friction points",
+      "description": "CTA clarity, purchase/booking flow y friction points",
       "type": "cards",
       "icon": "funnel",
       "cards": [
-        {"title": "ORDER NOW Siempre Visible", "status": "strong", "color_border": "teal", "content": "..."},
-        {"title": "GRAB + LINE MAN Integrados", "status": "strong", "color_border": "teal", "content": "..."},
-        {"title": "WhatsApp Business Activo", "status": "strong|present", "color_border": "teal", "content": "..."},
-        {"title": "Sin Captación de Email", "status": "missing", "color_border": "orange", "content": "..."}
+        {"title": "Visibilidad del CTA Principal", "status": "strong|present|missing|unknown", "color_border": "teal|orange", "content": "..."},
+        {"title": "Canales de Compra/Contratación", "status": "strong|present|missing|unknown", "color_border": "teal|orange", "content": "..."},
+        {"title": "Canales de Contacto Directo", "status": "strong|present|missing|unknown", "color_border": "teal|orange", "content": "..."},
+        {"title": "Captación de Email", "status": "strong|present|missing|unknown", "color_border": "teal|orange", "content": "..."}
       ]
     },
     {
@@ -503,10 +425,10 @@ Generate marketing audit JSON (EXACT STRUCTURE):
       "description": "Presencia, engagement y estrategia de contenido",
       "type": "cards",
       "cards": [
-        {"title": "Redes Sociales: Links sin Proof", "status": "warning", "color_border": "orange", "content": "..."},
-        {"title": "Sin Feed de Instagram en Web", "status": "missing", "color_border": "orange", "content": "..."},
-        {"title": "Blog sin Actualizar", "status": "warning", "color_border": "orange", "content": "..."},
-        {"title": "Sección de Reviews Activa", "status": "strong", "color_border": "teal", "content": "..."}
+        {"title": "Social Proof en la Web", "status": "strong|warning|missing|unknown", "color_border": "teal|orange", "content": "..."},
+        {"title": "Presencia Social Enlazada", "status": "strong|warning|missing|unknown", "color_border": "teal|orange", "content": "..."},
+        {"title": "Frescura del Contenido", "status": "strong|warning|unknown", "color_border": "teal|orange", "content": "Only if site facts show it; otherwise 'unknown'..."},
+        {"title": "Reviews / Testimonios", "status": "strong|missing|unknown", "color_border": "teal|orange", "content": "..."}
       ]
     },
     {
@@ -530,8 +452,8 @@ Generate marketing audit JSON (EXACT STRUCTURE):
       "description": "Detailed description of what to do",
       "effort_tag": "Fácil - Alto ROI",
       "effort_hours": "number of hours (e.g., 15 min = 0.25)",
-      "impact": "+X% metric (e.g., '+20-35% GMB impressions')",
-      "roi_score": "8/10"
+      "impact": "[RECOMENDACIÓN] qualitative expected improvement — no invented percentages",
+      "roi_score": "alto|medio|bajo"
     }
   ],
   "coherence_check": {
@@ -541,6 +463,7 @@ Generate marketing audit JSON (EXACT STRUCTURE):
     "positioning_aligned": true,
     "conflicts": []
   },
+  "data_gaps": ["every data point you needed but could not find in the context"],
   "generatedAt": "just now"
 }`
 
@@ -630,6 +553,13 @@ Generate a COMPREHENSIVE action plan JSON:
 - Cite all claims back to source (verifiable to original toolkit)
 - Narrative coherence is paramount: investors will spot inconsistencies
 
+FINANCIAL DATA RULES (STRICT — investors verify every number):
+- Financial and traction metrics (CAC, LTV, MRR, ARR, revenue, customer counts, growth rates, burn, margins) may ONLY be stated if they appear verbatim in the INPUT data or CLIENT CONTEXT below. NEVER estimate or invent them.
+- If a metric is missing, put the literal placeholder '[COMPLETAR: dato real]' in its field AND add the metric name to the 'data_gaps' array.
+- Market size / growth figures must come from the context or SOURCES (cite the URL); otherwise use '[COMPLETAR: dato real]' or prefix the estimate with '[SUPUESTO]'.
+- Testimonials: NEVER invent names, companies, or quotes. Only include testimonials that appear in the context; otherwise return an empty customer_testimonials array and add "customer testimonials" to data_gaps.
+- Team, board, and advisor entries only from the context — never fabricate people.
+
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
@@ -659,7 +589,8 @@ Generate COMPREHENSIVE investor deck JSON:
   "risks_and_mitigation": [{"risk": "", "probability": "", "mitigation": ""}],
   "product_roadmap": {"next_12_months": [{"q": "", "milestone": ""}], "how_funding_accelerates": ""},
   "the_ask": {"amount": "", "valuation": "", "post_money": "", "use_of_funds_breakdown": [{"category": "", "percentage": ""}], "expected_milestones": []},
-  "contact_and_next_steps": {"contact_email": "", "process_timeline": "", "links": []}
+  "contact_and_next_steps": {"contact_email": "", "process_timeline": "", "links": []},
+  "data_gaps": ["every metric that required '[COMPLETAR: dato real]' plus any other missing data"]
 }`
 
     case 'competitive-analysis':
@@ -667,6 +598,12 @@ Generate COMPREHENSIVE investor deck JSON:
 
 MARKET INTELLIGENCE TOOLKIT
 Analyze competitive landscape based on user input and generate actionable competitive intelligence.
+
+GROUNDING RULES:
+- Market size, growth rates, and competitor pricing may ONLY come from the SOURCES block above. When you use a source, cite its URL inside the same field (e.g. "€X B (fuente: https://...)").
+- If no source supports a figure, either prefix the whole claim with '[SUPUESTO]' or output "unknown" — never present an unsourced number as fact.
+- Do not attribute positioning, features, or pricing to a named competitor unless supported by SOURCES or user input; otherwise prefix '[SUPUESTO]'.
+- List every missing market/competitor data point in 'data_gaps'.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -678,23 +615,23 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
   "recommended_adjustments": ["adjustment 1", "adjustment 2"],
   "executive_summary": "2-3 paragraph overview of competitive landscape and positioning",
   "market_landscape": {
-    "size": "market size estimate",
-    "growth_rate": "growth percentage and trends",
+    "size": "figure with source URL, or '[SUPUESTO] ...', or 'unknown'",
+    "growth_rate": "figure with source URL, or '[SUPUESTO] ...', or 'unknown'",
     "segments": ["segment 1", "segment 2"],
     "trends": ["trend 1", "trend 2"]
   },
   "competitive_matrix": [
     {
       "name": "competitor name",
-      "positioning": "how they position themselves",
+      "positioning": "how they position themselves (from SOURCES/input, else '[SUPUESTO] ...')",
       "strengths": ["strength 1", "strength 2"],
       "weaknesses": ["weakness 1", "weakness 2"],
-      "pricing_model": "their pricing approach",
+      "pricing_model": "from SOURCES with URL, or '[SUPUESTO] ...', or 'unknown'",
       "target_customer": "their target segment"
     }
   ],
   "pricing_comparison": [
-    {"company": "company name", "price_range": "$X-Y", "value_prop": "their value proposition"}
+    {"company": "company name", "price_range": "from SOURCES with URL, or 'unknown'", "value_prop": "their value proposition"}
   ],
   "swot_vs_competitors": {
     "strengths": ["your strength 1", "your strength 2"],
@@ -711,7 +648,8 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
     "top_3_competitors": ["competitor 1", "competitor 2", "competitor 3"],
     "top_3_differentiation": ["diff 1", "diff 2", "diff 3"],
     "top_3_opportunities": ["opp 1", "opp 2", "opp 3"]
-  }
+  },
+  "data_gaps": ["every market/competitor data point you needed but could not source"]
 }`
 
     case 'brandbook-content-system':

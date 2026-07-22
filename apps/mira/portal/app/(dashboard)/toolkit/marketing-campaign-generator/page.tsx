@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'marketing-campaign-generator',
@@ -51,6 +52,7 @@ export default function MarketingCampaignGeneratorPage() {
       body: JSON.stringify({
         tool_slug: 'marketing-campaign-generator',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

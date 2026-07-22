@@ -7,6 +7,8 @@ export interface ToolkitTool {
   color: string
   href: string
   departments?: string[] // e.g., ['marketing', 'strategy']
+  /** True when the tool has its own generation route (not served by /api/toolkit/generate[-batch]) */
+  hasDedicatedRoute?: boolean
 }
 
 export const TOOLKIT_TOOLS: ToolkitTool[] = [
@@ -58,7 +60,8 @@ export const TOOLKIT_TOOLS: ToolkitTool[] = [
     time: '~5 min',
     color: '#22D3EE',
     href: '/toolkit/content-engine',
-    departments: ['marketing', 'comercial']
+    departments: ['marketing', 'comercial'],
+    hasDedicatedRoute: true
   },
   {
     slug: 'marketing-audit',

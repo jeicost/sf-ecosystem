@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 
 const TOOL_CONFIG: ToolConfig = {
   slug: 'brand-briefing',
@@ -44,6 +45,7 @@ export default function BrandBriefingPage() {
       body: JSON.stringify({
         tool_slug: 'brand-briefing',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

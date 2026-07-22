@@ -7,10 +7,13 @@ import { createBrowserClient } from '@supabase/ssr'
 import type { Database } from '@/types/database'
 import Link from 'next/link'
 import { Syne } from 'next/font/google'
-import { ArrowLeft, Loader2, Pin } from 'lucide-react'
+import { ArrowLeft, Loader2, Pin, AlertCircle, FolderOpen } from 'lucide-react'
 import { useProjectManagement } from '@/lib/hooks/useProjectManagement'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
+import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { t } from '@/lib/i18n'
+import { useLocale } from '@/lib/use-locale'
 
 const syne = Syne({ subsets: ['latin'], weight: ['700', '800'] })
 const FALLBACK_BRAND = '#8B5CF6'
@@ -26,6 +29,34 @@ interface MemoryEntry {
   is_pinned: boolean
 }
 
+interface ProjectDeliverable {
+  id: string
+  tool_slug: string
+  status: 'queued' | 'processing' | 'completed' | 'failed' | string
+  created_at: string
+}
+
+interface DriveFolderRow {
+  id: string
+  folder_id: string
+  folder_name: string | null
+  purpose: string
+  sync_status: string
+  last_synced_at: string | null
+  files_synced: number
+  project_id?: string | null
+}
+
+function deliverableToolMeta(slug: string) {
+  const tool = TOOLKIT_TOOLS.find((tl) => tl.slug === slug)
+  return {
+    icon: tool?.icon || (slug.startsWith('doc-') ? '📄' : '⚡'),
+    name:
+      tool?.name ||
+      slug.replace(/^doc-/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
+  }
+}
+
 export default function ProjectPage({ params }: { params: Promise<{ slug: string }> }) {
   const [project, setProject] = useState<Project | null>(null)
   const [memory, setMemory] = useState<MemoryEntry[]>([])
@@ -34,6 +65,20 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   const { archiveProject } = useProjectManagement()
   const { activeClient } = useActiveClient()
   const { setActiveProject } = useActiveProject()
+  const { locale } = useLocale()
+
+  // Entregables del proyecto
+  const [deliverables, setDeliverables] = useState<ProjectDeliverable[]>([])
+  const [deliverablesLoading, setDeliverablesLoading] = useState(true)
+
+  // Carpeta Drive vinculada al proyecto
+  const [projectFolders, setProjectFolders] = useState<DriveFolderRow[]>([])
+  const [driveConnected, setDriveConnected] = useState<boolean | null>(null)
+  const [driveLoading, setDriveLoading] = useState(true)
+  const [showLinkForm, setShowLinkForm] = useState(false)
+  const [folderLink, setFolderLink] = useState('')
+  const [linking, setLinking] = useState(false)
+  const [driveMessage, setDriveMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
   const brand = activeClient?.primaryColor || FALLBACK_BRAND
 
@@ -76,6 +121,93 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
     }
     fetchProject()
   }, [params, supabase])
+
+  // Entregables del proyecto. La ruta puede no existir aún en dev (404) —
+  // en ese caso se muestra el empty state sin error.
+  useEffect(() => {
+    if (!project?.id) return
+    let cancelled = false
+    const fetchDeliverables = async () => {
+      setDeliverablesLoading(true)
+      try {
+        const res = await fetch(`/api/projects/${project.id}/deliverables`)
+        if (cancelled) return
+        if (!res.ok) {
+          setDeliverables([])
+          return
+        }
+        const json = await res.json().catch(() => null)
+        if (cancelled) return
+        setDeliverables(Array.isArray(json?.deliverables) ? json.deliverables : [])
+      } catch {
+        if (!cancelled) setDeliverables([])
+      } finally {
+        if (!cancelled) setDeliverablesLoading(false)
+      }
+    }
+    fetchDeliverables()
+    return () => { cancelled = true }
+  }, [project?.id])
+
+  // Carpetas Drive del cliente → nos quedamos con las vinculadas a este proyecto
+  const loadDriveFolders = useMemo(() => {
+    return async (clientId: string, projectId: string) => {
+      try {
+        const res = await fetch(
+          `/api/brand-brain/drive/folders?clientId=${clientId}&projectId=${projectId}`
+        )
+        if (!res.ok) return
+        const json = await res.json()
+        const rows: DriveFolderRow[] = Array.isArray(json?.folders) ? json.folders : []
+        // La API devuelve todas las carpetas del cliente; filtramos por proyecto.
+        setProjectFolders(rows.filter((f) => f.project_id === projectId))
+        if (typeof json?.connected === 'boolean') setDriveConnected(json.connected)
+      } catch { /* silencioso */ }
+    }
+  }, [])
+
+  useEffect(() => {
+    const clientId = activeClient?.id || project?.client_id
+    if (!project?.id || !clientId) return
+    let cancelled = false
+    setDriveLoading(true)
+    loadDriveFolders(clientId, project.id).finally(() => {
+      if (!cancelled) setDriveLoading(false)
+    })
+    return () => { cancelled = true }
+  }, [project?.id, project?.client_id, activeClient?.id, loadDriveFolders])
+
+  const handleLinkFolder = async () => {
+    const clientId = activeClient?.id || project?.client_id
+    if (!project?.id || !clientId || !folderLink.trim() || linking) return
+    setLinking(true)
+    setDriveMessage(null)
+    try {
+      const res = await fetch('/api/brand-brain/drive/folders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId,
+          link: folderLink.trim(),
+          purpose: 'deliverables',
+          projectId: project.id,
+        }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(json?.error || t('projects.drive-link-error', locale))
+      setFolderLink('')
+      setShowLinkForm(false)
+      setDriveMessage({ type: 'ok', text: t('projects.drive-link-success', locale) })
+      await loadDriveFolders(clientId, project.id)
+    } catch (e) {
+      setDriveMessage({
+        type: 'err',
+        text: e instanceof Error ? e.message : t('projects.drive-link-error', locale),
+      })
+    } finally {
+      setLinking(false)
+    }
+  }
 
   // Al entrar al detalle, este proyecto pasa a ser el activo: quick actions y
   // chat escribirán en él. Solo si pertenece al cliente activo y no está archivado.
@@ -165,6 +297,159 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             Conecta o sincroniza las carpetas del cliente desde Integraciones.
           </p>
         </Link>
+      </div>
+
+      {/* Entregables del proyecto */}
+      <div>
+        <div className="mb-3 flex items-center justify-between">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+            {t('projects.deliverables', locale)}
+          </p>
+          <Link href="/toolkit" className="text-[11px] font-medium transition-opacity hover:opacity-80"
+            style={{ color: brand }}>
+            {t('projects.deliverables-empty-cta', locale)} →
+          </Link>
+        </div>
+
+        {deliverablesLoading ? (
+          <div className="flex items-center justify-center rounded-2xl border border-white/8 bg-white/2 py-8">
+            <Loader2 size={16} className="animate-spin text-[#444]" />
+          </div>
+        ) : deliverables.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 py-8 text-center">
+            <p className="text-xs text-gray-500">{t('projects.deliverables-empty', locale)}</p>
+            <p className="mt-1 text-[11px] text-gray-600">{t('projects.deliverables-empty-hint', locale)}</p>
+            <Link href="/toolkit"
+              className="mt-4 inline-block rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
+              style={{ background: brand }}>
+              ⚡ {t('projects.deliverables-empty-cta', locale)}
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
+            {deliverables.map((d) => {
+              const meta = deliverableToolMeta(d.tool_slug)
+              const statusKey = ['queued', 'processing', 'completed', 'failed'].includes(d.status)
+                ? d.status
+                : 'queued'
+              const card = (
+                <div className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/3 p-4 transition hover:bg-white/5">
+                  <span className="text-xl leading-none">{meta.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13px] font-medium text-white">{meta.name}</p>
+                    <p className="mt-0.5 text-[10px] text-gray-600">
+                      {new Date(d.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', {
+                        day: 'numeric', month: 'short', year: 'numeric',
+                      })}
+                    </p>
+                  </div>
+                  <span className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-medium ${
+                    d.status === 'completed' ? 'bg-green-500/15 text-green-400'
+                      : d.status === 'failed' ? 'bg-red-500/15 text-red-400'
+                      : 'bg-blue-500/15 text-blue-300'
+                  }`}>
+                    {(d.status === 'processing' || d.status === 'queued') && (
+                      <Loader2 size={10} className="animate-spin" />
+                    )}
+                    {d.status === 'failed' && <AlertCircle size={10} />}
+                    {d.status === 'completed'
+                      ? t('projects.deliverable-view', locale)
+                      : t(`projects.deliverable-status.${statusKey}`, locale)}
+                  </span>
+                </div>
+              )
+              return d.status === 'completed' ? (
+                <Link key={d.id} href={`/toolkit/report/${d.id}`}>{card}</Link>
+              ) : (
+                <div key={d.id}>{card}</div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Carpeta Drive */}
+      <div>
+        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+          {t('projects.drive-title', locale)}
+        </p>
+
+        {driveLoading ? (
+          <div className="flex items-center justify-center rounded-2xl border border-white/8 bg-white/2 py-6">
+            <Loader2 size={16} className="animate-spin text-[#444]" />
+          </div>
+        ) : projectFolders.length > 0 ? (
+          <div className="space-y-2">
+            {projectFolders.map((f) => (
+              <div key={f.id} className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/3 p-4">
+                <FolderOpen size={16} className="shrink-0" style={{ color: brand }} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-medium text-white">
+                    {f.folder_name || f.folder_id}
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-gray-600">
+                    {t('projects.drive-linked', locale)}
+                    {f.last_synced_at
+                      ? ` · ${f.files_synced} docs`
+                      : ` · ${t('projects.drive-unsynced', locale)}`}
+                  </p>
+                </div>
+                <a
+                  href={`https://drive.google.com/drive/folders/${f.folder_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-[10px] font-medium text-white transition hover:bg-white/20"
+                >
+                  Drive ↗
+                </a>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 p-5">
+            <p className="text-xs text-gray-500">{t('projects.drive-none', locale)}</p>
+            {driveConnected === false && (
+              <p className="mt-2 text-[11px] text-amber-400/80">
+                {t('projects.drive-not-connected', locale)}{' '}
+                <Link href="/integrations" className="underline">Integraciones</Link>
+              </p>
+            )}
+            {!showLinkForm ? (
+              <button
+                onClick={() => setShowLinkForm(true)}
+                disabled={driveConnected === false}
+                className="mt-4 rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ background: brand }}
+              >
+                📂 {t('projects.drive-link-cta', locale)}
+              </button>
+            ) : (
+              <div className="mt-4 flex flex-col gap-2 md:flex-row">
+                <input
+                  value={folderLink}
+                  onChange={(e) => setFolderLink(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleLinkFolder()}
+                  placeholder={t('projects.drive-link-placeholder', locale)}
+                  className="flex-1 rounded-lg border border-gray-700 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-white/30"
+                />
+                <button
+                  onClick={handleLinkFolder}
+                  disabled={linking || !folderLink.trim()}
+                  className="rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
+                  style={{ background: brand }}
+                >
+                  {linking ? t('projects.drive-linking', locale) : t('projects.drive-link-cta', locale)}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {driveMessage && (
+          <p className={`mt-2 text-xs ${driveMessage.type === 'ok' ? 'text-emerald-400' : 'text-red-400'}`}>
+            {driveMessage.text}
+          </p>
+        )}
       </div>
 
       {/* Memoria del proyecto */}

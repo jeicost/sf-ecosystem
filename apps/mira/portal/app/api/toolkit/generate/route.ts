@@ -1,61 +1,224 @@
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
-import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
+import { getToolkitPrompt, type ToolPromptParams } from '@/lib/generation/toolkit-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { resolveRequestClient } from '@/lib/resolve-client'
+import {
+  fetchSiteSnapshot,
+  formatSnapshotForPrompt,
+  type SiteSnapshot,
+} from '@/lib/grounding/site-snapshot'
+import { computeSeoChecks, deriveScore, type SeoCheck } from '@/lib/grounding/seo-checks'
+import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
+import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 
 // Single-tool generation with opus can take minutes
 export const maxDuration = 300
 
+// Tools grounded with a live site snapshot (deterministic SEO checks apply)
+const SNAPSHOT_GROUNDED_TOOLS = ['seo-audit', 'marketing-audit']
+// Tools grounded with web research sources
+const RESEARCH_GROUNDED_TOOLS = ['competitive-analysis', 'investor-deck']
+
+const CHECK_STATUS_TO_CARD_STATUS: Record<SeoCheck['status'], string> = {
+  pass: 'good',
+  warn: 'warning',
+  fail: 'critical',
+  unknown: 'unknown',
+}
+
+/** Maps a statCard label (model-generated) to a deterministic check, by keyword. */
+function findCheckForLabel(label: string, checks: SeoCheck[]): SeoCheck | null {
+  const l = label.toLowerCase()
+  // No deterministic hreflang check exists — never map hreflang cards to the lang check
+  if (/hreflang/.test(l)) return null
+  const rules: Array<[string, RegExp]> = [
+    ['img-alt', /\balt\b/],
+    ['meta-description', /meta\s*desc/],
+    ['title', /title|t[íi]tulo|style\s*chars/],
+    ['schema', /schema/],
+    ['https', /https|\bssl\b/],
+    ['robots', /robots/],
+    ['sitemap', /sitemap/],
+    ['canonical', /canonical/],
+    ['viewport', /viewport|mobile|m[óo]vil/],
+    ['h1', /\bh1\b/],
+    ['analytics', /analytics|ga4|gtm/],
+    ['og-tags', /\bog\b|open\s*graph/],
+    ['lang', /\blang\b|idioma/],
+  ]
+  for (const [id, re] of rules) {
+    if (re.test(l)) return checks.find((c) => c.id === id) ?? null
+  }
+  return null
+}
+
+/** Short measured value for a statCard, derived from the snapshot. */
+function measuredValueForCheck(check: SeoCheck, s: SiteSnapshot): string {
+  switch (check.id) {
+    case 'title':
+      return String(s.titleLength)
+    case 'meta-description':
+      return String(s.metaDescriptionLength)
+    case 'img-alt':
+      return `${s.imgWithAlt}/${s.imgTotal}`
+    case 'schema':
+      return String(s.schemaTypes.length)
+    case 'h1':
+      return String(s.h1Count)
+    case 'https':
+      return s.https ? 'Sí' : 'No'
+    case 'robots':
+      return s.robotsTxtExists ? 'Sí' : 'No'
+    case 'sitemap':
+      return s.sitemapExists ? 'Sí' : 'No'
+    case 'canonical':
+      return s.canonical ? 'Sí' : 'No'
+    case 'viewport':
+      return s.viewport ? 'Sí' : 'No'
+    case 'analytics':
+      return s.analyticsDetected ? 'Sí' : 'No'
+    case 'lang':
+      return s.lang ?? 'No'
+    case 'og-tags':
+      return `${(s.ogTitlePresent ? 1 : 0) + (s.ogImagePresent ? 1 : 0)}/2`
+    default:
+      return check.evidence
+  }
+}
+
+/** True when the value is a bare number / ratio / percentage (unverifiable if no check). */
+function isNumericValue(v: unknown): boolean {
+  if (typeof v === 'number') return true
+  if (typeof v !== 'string') return false
+  return /^\s*\d+([.,]\d+)?\s*(\/\s*\d+)?\s*%?\s*$/.test(v)
+}
+
+/**
+ * Overwrites statCard values that correspond to measurable checks with the
+ * measured evidence. Cards with no matching check keep model text, but numeric
+ * unverifiable values are nulled (never present fabricated figures as measured).
+ */
+function overrideStatCards(
+  result: Record<string, unknown>,
+  checks: SeoCheck[],
+  snapshot: SiteSnapshot
+): void {
+  const cards = result.statCards
+  if (!Array.isArray(cards)) return
+  for (const card of cards) {
+    if (!card || typeof card !== 'object') continue
+    const c = card as Record<string, unknown>
+    const label = typeof c.label === 'string' ? c.label : ''
+    const check = label ? findCheckForLabel(label, checks) : null
+    if (check && check.status !== 'unknown') {
+      c.value = measuredValueForCheck(check, snapshot)
+      c.status = CHECK_STATUS_TO_CARD_STATUS[check.status]
+      c.description = check.evidence
+    } else if (isNumericValue(c.value)) {
+      c.value = null
+    }
+  }
+}
+
 export async function POST(req: NextRequest) {
   const startTime = Date.now()
   try {
-    const { tool_slug, input_data } = await req.json()
+    const body = await req.json()
+    const { tool_slug, input_data } = body
 
     if (!tool_slug || !input_data) {
       return NextResponse.json({ error: 'Missing tool_slug or input_data' }, { status: 400 })
     }
 
-    const cookieStore = await cookies()
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
-    )
+    // Multi-empresa: clientId del body validado por grant; sin él, primer grant.
+    // (Mismo patrón que quick-actions / project-memory — nunca el primer grant a ciegas.)
+    const access = await resolveRequestClient(body.clientId ?? null)
 
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    // Dev mode bypass for local testing
     let clientId: string
-    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
-      // Use hardcoded test client for dev mode
+    let userId: string
+    if (access.ok) {
+      clientId = access.clientId
+      userId = access.userId
+    } else if (
+      process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' &&
+      access.status === 401
+    ) {
+      // Dev mode bypass for local testing (no session only)
       clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
-    } else if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      userId = 'aa857626-5b89-4df5-8b0d-ed02803e9722'
     } else {
-      const admin = adminClient()
-      // NOTE: project_id in mira_project_access is the CLIENT id (FK to clients — legacy naming)
-      const { data: accessData, error: accessError } = await admin
-        .from('mira_project_access')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .limit(1)
-        .single()
-
-      if (accessError || !accessData) {
-        return NextResponse.json({ error: 'No client access found' }, { status: 403 })
-      }
-      clientId = accessData.project_id
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const admin = adminClient()
-    const userId = user?.id || 'aa857626-5b89-4df5-8b0d-ed02803e9722'
+
+    // Optional project scoping: validate the project belongs to this client
+    const requestedProjectId =
+      typeof body.project_id === 'string' && body.project_id ? body.project_id : null
+    let projectId: string | null = null
+    if (requestedProjectId) {
+      const { data: project } = await admin
+        .from('mira_projects')
+        .select('id, client_id')
+        .eq('id', requestedProjectId)
+        .maybeSingle()
+      if (!project || project.client_id !== clientId) {
+        return NextResponse.json(
+          { error: 'Project not found for this client' },
+          { status: 403 }
+        )
+      }
+      projectId = project.id
+    }
+
+    // ---- Grounding: gather verified facts BEFORE prompting ----
+    let snapshot: SiteSnapshot | null = null
+    let siteFactsBlock: string | undefined
+    let sourcesBlock: string | undefined
+    let sourcesCount = 0
+
+    const inputUrl =
+      typeof input_data.url_sitio === 'string' ? input_data.url_sitio.trim() : ''
+
+    if (SNAPSHOT_GROUNDED_TOOLS.includes(tool_slug) && inputUrl) {
+      snapshot = await fetchSiteSnapshot(inputUrl)
+      siteFactsBlock = formatSnapshotForPrompt(snapshot)
+    } else if (tool_slug === 'competitive-analysis') {
+      const competitors = [
+        input_data.competidor_1,
+        input_data.competidor_2,
+        input_data.competidor_3,
+      ]
+        .filter((c): c is string => typeof c === 'string' && c.trim().length > 0)
+        .map((c) => c.trim())
+        .slice(0, 3)
+      const marketQuery = `análisis de mercado tendencias sector ${competitors.join(' vs ')}`
+      const searches = await Promise.all([
+        ...competitors.map((c) =>
+          searchWeb(`${c} empresa productos precios posicionamiento reseñas`, 3)
+        ),
+        searchWeb(marketQuery, 3),
+      ])
+      const allSources = searches.flat()
+      sourcesCount = allSources.length
+      sourcesBlock = formatSourcesForPrompt(allSources, 'competitive research')
+    } else if (tool_slug === 'investor-deck') {
+      const sectorHint = [
+        typeof input_data.company_name === 'string' ? input_data.company_name : '',
+        typeof input_data.problem_market_size === 'string'
+          ? input_data.problem_market_size.slice(0, 120)
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' — ')
+      const marketResults = await searchWeb(
+        `market size TAM SAM SOM growth ${sectorHint}`,
+        5
+      )
+      sourcesCount = marketResults.length
+      sourcesBlock = formatSourcesForPrompt(marketResults, 'market size research')
+    }
 
     // Insert generation request into queue with 'processing' status
     const { data: queueData, error: queueError } = await admin
@@ -63,6 +226,7 @@ export async function POST(req: NextRequest) {
       .insert({
         client_id: clientId,
         user_id: userId,
+        project_id: projectId,
         tool_slug,
         input_data,
         status: 'processing',
@@ -77,11 +241,18 @@ export async function POST(req: NextRequest) {
 
     const queueId = queueData.id
 
-    // Generate prompt for this tool
-    const prompt = await getToolkitPrompt(tool_slug, {
+    // Generate prompt for this tool (grounding blocks are optional params —
+    // toolkit-prompts consumes them once its signature is extended)
+    const promptParams: ToolPromptParams & {
+      siteFactsBlock?: string
+      sourcesBlock?: string
+    } = {
       clientId,
       inputData: input_data,
-    })
+      ...(siteFactsBlock ? { siteFactsBlock } : {}),
+      ...(sourcesBlock ? { sourcesBlock } : {}),
+    }
+    const prompt = await getToolkitPrompt(tool_slug, promptParams)
 
     if (!prompt) {
       await admin
@@ -112,31 +283,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Response truncated' }, { status: 500 })
     }
 
-    // Extract JSON from Claude's response
-    let result = {}
-    const textContent = message.content[0]
-    if (textContent && 'text' in textContent) {
-      const text = textContent.text
+    // Extract JSON from Claude's response (concatenate all text blocks)
+    const text = message.content
+      .map((b) => ('text' in b ? b.text : ''))
+      .filter(Boolean)
+      .join('\n')
 
-      // Try to extract JSON from markdown code blocks first
-      let jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)```/)
-      if (jsonMatch) {
-        try {
-          result = JSON.parse(jsonMatch[1])
-        } catch (e) {
-          console.error('Failed to parse JSON from markdown block:', e)
-        }
-      } else {
-        // Fall back to finding JSON object directly
-        jsonMatch = text.match(/\{[\s\S]*\}/)
-        if (jsonMatch) {
-          try {
-            result = JSON.parse(jsonMatch[0])
-          } catch (e) {
-            console.error('Failed to parse JSON from text:', e)
-          }
-        }
+    let result: Record<string, unknown>
+    try {
+      const parsed = extractJson(text)
+      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        throw new ExtractJsonError('Model output is not a JSON object', text)
       }
+      result = parsed as Record<string, unknown>
+    } catch (err) {
+      const errorMessage =
+        err instanceof ExtractJsonError
+          ? `No se pudo extraer JSON de la respuesta del modelo: ${err.message}`
+          : `JSON extraction failed: ${err instanceof Error ? err.message : String(err)}`
+      await admin
+        .from('generation_queue')
+        .update({ status: 'failed', error_message: errorMessage })
+        .eq('id', queueId)
+      return NextResponse.json({ error: errorMessage }, { status: 500 })
     }
 
     // Never save an empty report as completed
@@ -146,6 +315,26 @@ export async function POST(req: NextRequest) {
         .update({ status: 'failed', error_message: 'Empty result after JSON parse' })
         .eq('id', queueId)
       return NextResponse.json({ error: 'Empty result after JSON parse' }, { status: 500 })
+    }
+
+    // ---- Deterministic post-parse override (measured facts beat model output) ----
+    let checks: SeoCheck[] = []
+    if (snapshot && SNAPSHOT_GROUNDED_TOOLS.includes(tool_slug)) {
+      checks = computeSeoChecks(snapshot)
+      result.overall_score = deriveScore(checks)
+      overrideStatCards(result, checks, snapshot)
+    }
+
+    if (
+      SNAPSHOT_GROUNDED_TOOLS.includes(tool_slug) ||
+      RESEARCH_GROUNDED_TOOLS.includes(tool_slug)
+    ) {
+      result.grounding = {
+        snapshot_fetched: snapshot ? !snapshot.fetchError : false,
+        sources_count: sourcesCount,
+        contract_version: 1,
+        checks,
+      }
     }
 
     const generationTime = Date.now() - startTime
@@ -195,14 +384,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Auto-log to project memory (fire and forget, non-blocking)
-    const resultSummary = typeof result === 'object'
-      ? JSON.stringify(result).slice(0, 200)
-      : String(result).slice(0, 200)
+    const resultSummary = JSON.stringify(result).slice(0, 200)
 
     void admin
       .from('project_memory')
       .insert({
         client_id: clientId,
+        project_id: projectId,
         title: `Toolkit: ${tool_slug}`,
         category: 'generation',
         summary: resultSummary,

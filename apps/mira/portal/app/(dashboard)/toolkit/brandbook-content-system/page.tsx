@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { BrandbookContentSystemResult } from './brandbook-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -80,6 +81,7 @@ export default function BrandBookPage() {
       body: JSON.stringify({
         tool_slug: 'brandbook-content-system',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

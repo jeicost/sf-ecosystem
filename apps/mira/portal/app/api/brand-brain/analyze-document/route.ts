@@ -2,11 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
-import Anthropic from '@anthropic-ai/sdk'
-
-const claude = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 export async function POST(req: NextRequest) {
   try {
@@ -104,7 +100,7 @@ Analyze the document and return ONLY valid JSON (no markdown, no text before/aft
 
 Only include fields where you found relevant information. Leave empty/null for fields with no clear data.`
 
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(clientId, 'brand-brain/analyze-document', {
       model: 'claude-opus-4-8',
       max_tokens: 2000,
       messages: [

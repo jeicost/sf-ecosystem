@@ -32,14 +32,14 @@ interface Overview {
 
 function StatCard({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
-    <div className="rounded-xl border border-gray-800 bg-gray-900/70 p-5">
+    <div className="rounded-xl border border-line bg-card p-5">
       <p
         className="text-3xl font-extrabold tracking-tight"
-        style={{ color: accent ? 'var(--client-primary, #8B5CF6)' : '#fff' }}
+        style={{ color: accent ? 'var(--client-primary, #8B5CF6)' : 'var(--text-primary)' }}
       >
         {value}
       </p>
-      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-gray-500">{label}</p>
+      <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-tertiary">{label}</p>
     </div>
   )
 }
@@ -76,7 +76,7 @@ export default function SuperAdminPage() {
     return <div className="p-8 text-red-400 text-sm">{error}</div>
   }
   if (!data) {
-    return <div className="p-8 text-gray-500 text-sm">Cargando visión de agencia…</div>
+    return <div className="p-8 text-ink-tertiary text-sm">Cargando visión de agencia…</div>
   }
 
   return (
@@ -87,7 +87,7 @@ export default function SuperAdminPage() {
             Buenos días, equipo 👋
           </p>
           <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-white">Clientes y Operaciones</h1>
-          <p className="mt-2 text-sm text-gray-500">Gestión unificada de todos los clientes y su progreso en MIRA</p>
+          <p className="mt-2 text-sm text-ink-tertiary">Gestión unificada de todos los clientes y su progreso en MIRA</p>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <Link href="/toolkit"
@@ -97,10 +97,10 @@ export default function SuperAdminPage() {
           <Link href="/admin/users" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-400 hover:bg-white/5">
             👥 Usuarios
           </Link>
-          <Link href="/admin/facturacion" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-500 hover:bg-white/5">
+          <Link href="/admin/facturacion" className="rounded-lg border border-gray-800 px-3 py-2 text-ink-tertiary hover:bg-white/5">
             💶 Facturación
           </Link>
-          <Link href="/admin/sistema" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-500 hover:bg-white/5">
+          <Link href="/admin/sistema" className="rounded-lg border border-gray-800 px-3 py-2 text-ink-tertiary hover:bg-white/5">
             ⚙️ Sistema
           </Link>
         </div>
@@ -116,7 +116,7 @@ export default function SuperAdminPage() {
 
       {/* Client grid */}
       <div>
-        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
+        <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-tertiary">
           Espacios activos · Clientes
         </p>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -126,7 +126,7 @@ export default function SuperAdminPage() {
               <button
                 key={c.id}
                 onClick={() => openClient(c)}
-                className="group rounded-xl border border-gray-800 bg-gray-900/70 p-5 text-left transition hover:-translate-y-0.5 hover:border-gray-700 hover:shadow-lg"
+                className="group rounded-xl border border-line bg-card p-5 text-left transition hover:-translate-y-0.5 hover:border-gray-700 hover:shadow-lg"
                 style={{ boxShadow: `inset 0 3px 0 0 ${color}` }}
               >
                 <div className="flex items-center gap-3">
@@ -143,7 +143,7 @@ export default function SuperAdminPage() {
                   )}
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold text-white group-hover:text-white">{c.name}</p>
-                    <p className="flex items-center gap-1.5 text-[10px] text-gray-500">
+                    <p className="flex items-center gap-1.5 text-[10px] text-ink-tertiary">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                       Activo
                       {c.own_key && <span className="ml-1 rounded bg-emerald-500/15 px-1.5 text-emerald-400">BYO key</span>}
@@ -154,19 +154,19 @@ export default function SuperAdminPage() {
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                   <div>
                     <p className="text-lg font-bold text-white">{c.reports}</p>
-                    <p className="font-mono text-[9px] uppercase text-gray-500">Informes</p>
+                    <p className="font-mono text-[9px] uppercase text-ink-tertiary">Informes</p>
                   </div>
                   <div>
                     <p className="text-lg font-bold text-white">{c.documents}</p>
-                    <p className="font-mono text-[9px] uppercase text-gray-500">Docs</p>
+                    <p className="font-mono text-[9px] uppercase text-ink-tertiary">Docs</p>
                   </div>
                   <div>
                     <p className="text-lg font-bold text-white">{c.drive_docs}</p>
-                    <p className="font-mono text-[9px] uppercase text-gray-500">Drive</p>
+                    <p className="font-mono text-[9px] uppercase text-ink-tertiary">Drive</p>
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-gray-800 pt-3 text-[10px] text-gray-500">
+                <div className="mt-4 flex items-center justify-between border-t border-gray-800 pt-3 text-[10px] text-ink-tertiary">
                   <span>
                     {c.last_deliverable
                       ? `Último: ${new Date(c.last_deliverable).toLocaleDateString('es-ES')}`

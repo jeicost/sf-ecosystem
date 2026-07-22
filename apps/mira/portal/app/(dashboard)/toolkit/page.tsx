@@ -7,6 +7,9 @@ import { Syne } from 'next/font/google'
 import { Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { useActiveClient } from '@/lib/client-context'
+import { useActiveProject } from '@/lib/project-context'
+import { t } from '@/lib/i18n'
+import { useLocale } from '@/lib/use-locale'
 import DeliverableCard, { DeliverableGeneration } from '@/components/toolkit/DeliverableCard'
 import LandingsSection, { ClientLanding } from '@/components/toolkit/LandingsSection'
 
@@ -69,6 +72,8 @@ function hexToRgba(hex: string, alpha: number): string {
 
 export default function ToolkitHub() {
   const { activeClient } = useActiveClient()
+  const { activeProject } = useActiveProject()
+  const { locale } = useLocale()
   const clientId = activeClient?.id
   const brandColor = activeClient?.primaryColor || FALLBACK_BRAND
 
@@ -224,6 +229,17 @@ export default function ToolkitHub() {
         <p className="max-w-xl text-[15px] leading-relaxed text-ink-secondary">
           Centro de entregables · {completed.length} {completed.length === 1 ? 'informe generado' : 'informes generados'}
         </p>
+
+        {/* Proyecto activo — las generaciones se asociarán a él */}
+        {activeProject && (
+          <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5">
+            <span className="h-1.5 w-1.5 rounded-full" style={{ background: brandColor }} />
+            <span className="font-mono text-[10px] text-ink-tertiary">
+              {t('projects.generating-for', locale)}:{' '}
+              <strong className="font-semibold text-ink-secondary">{activeProject.name}</strong>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* ─── Error banner ─────────────────────────────────── */}

@@ -1,6 +1,7 @@
 'use client'
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
+import { getStoredProjectId } from '@/lib/project-context'
 import { MarketingAuditResult } from './marketing-audit-result'
 
 const TOOL_CONFIG: ToolConfig = {
@@ -75,6 +76,7 @@ export default function MarketingAuditPage() {
       body: JSON.stringify({
         tool_slug: 'marketing-audit',
         input_data: formData,
+        project_id: getStoredProjectId(),
       }),
     })
 

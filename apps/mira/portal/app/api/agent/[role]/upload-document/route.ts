@@ -5,11 +5,7 @@ import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { uploadFileToStorage, initializeStorageBucket } from '@/lib/supabase-storage'
 import { AGENT_METADATA } from '@/lib/agent-meta'
-import Anthropic from '@anthropic-ai/sdk'
-
-const claude = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
@@ -168,7 +164,7 @@ export async function POST(
     if (text) {
       (async () => {
         try {
-          const analysis = await claude.messages.create({
+          const analysis = await createMessageForClient(clientId, 'agent/upload-document', {
             model: 'claude-opus-4-8',
             max_tokens: 1000,
             messages: [

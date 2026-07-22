@@ -4,14 +4,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import * as mammoth from 'mammoth'
-import Anthropic from '@anthropic-ai/sdk'
+import { createMessageForClient } from '@/lib/anthropic-client'
 import type { SyncResponse, SyncedDocument, DriveSourceMetadata } from '@/lib/drive-connection.types'
 
 // AI summary of an ingested document — falls back to an excerpt if the call fails
-async function summarizeDocument(fileName: string, text: string): Promise<string> {
+async function summarizeDocument(clientId: string, fileName: string, text: string): Promise<string> {
   try {
-    const claude = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-    const message = await claude.messages.create({
+    const message = await createMessageForClient(clientId, 'brand-brain/drive-ingest', {
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 512,
       messages: [
@@ -237,7 +236,7 @@ export async function POST(req: NextRequest) {
           continue
         }
 
-        const summary = await summarizeDocument(file.name, downloadResult.text)
+        const summary = await summarizeDocument(clientId, file.name, downloadResult.text)
 
         // Create metadata for Drive source
         const sourceMetadata: DriveSourceMetadata = {

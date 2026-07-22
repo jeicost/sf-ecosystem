@@ -84,11 +84,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'No client access' }, { status: 403 })
     }
 
-    const { data: folders, error } = await admin
+    let query = admin
       .from('drive_folders')
       .select('*')
       .eq('client_id', clientId)
-      .order('created_at', { ascending: false })
+
+    const projectIdFilter = new URL(req.url).searchParams.get('projectId')
+    if (projectIdFilter) {
+      query = query.eq('project_id', projectIdFilter)
+    }
+
+    const { data: folders, error } = await query.order('created_at', { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -142,6 +148,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Falta el enlace de la carpeta de Drive' }, { status: 400 })
     }
 
+    // Optional project scoping: the project must exist and belong to the resolved client
+    let safeProjectId: string | null = null
+    if (typeof projectId === 'string' && projectId.trim()) {
+      const { data: projectRow } = await admin
+        .from('mira_projects')
+        .select('id, client_id')
+        .eq('id', projectId)
+        .maybeSingle()
+      if (!projectRow) {
+        return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+      }
+      if (projectRow.client_id !== clientId) {
+        return NextResponse.json(
+          { error: 'El proyecto no pertenece a este cliente' },
+          { status: 403 }
+        )
+      }
+      safeProjectId = projectRow.id
+    }
+
     const folderId = extractDriveFolderId(link)
     if (!folderId) {
       return NextResponse.json(
@@ -167,7 +193,7 @@ export async function POST(req: NextRequest) {
       .from('drive_folders')
       .insert({
         client_id: clientId,
-        project_id: typeof projectId === 'string' && projectId ? projectId : null,
+        project_id: safeProjectId,
         folder_id: folderId,
         folder_name: metadata.name,
         purpose: safePurpose,
