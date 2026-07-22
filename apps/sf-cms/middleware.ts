@@ -26,9 +26,10 @@ export async function middleware(request: NextRequest) {
 
     const { data: { user } } = await supabase.auth.getUser()
 
-    // app_metadata.is_admin is only settable server-side; a bare session
-    // (any signed-up Supabase user) must NOT grant admin access.
-    if (!user || user.app_metadata?.is_admin !== true) {
+    // Middleware enforces authentication only (it can't query roles at the
+    // edge). Authorization — global admin vs per-project editor — is enforced
+    // in every /api/admin route via requireSession() + canAccessProject().
+    if (!user) {
       if (path.startsWith('/api/admin')) {
         return new Response('Unauthorized', { status: 401 })
       }

@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
 import type { NextRequest } from 'next/server'
@@ -12,7 +13,8 @@ export async function POST(
   { params }: { params: Promise<{ postId: string }> }
 ) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -27,6 +29,10 @@ export async function POST(
 
     if (fetchErr || !source) {
       return Response.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (!(await canAccessProject(user, source.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     let newSlug = `${source.slug}-copy`

@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logActivity } from '@/lib/audit-log'
 import { captureError } from '@/lib/capture-error'
@@ -18,6 +19,10 @@ export async function GET(request: NextRequest) {
         { error: 'Missing project_id query parameter' },
         { status: 400 }
       )
+    }
+
+    if (!(await canAccessProject(user, projectId))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const client = createAdminClient()
@@ -54,6 +59,10 @@ export async function POST(request: NextRequest) {
         { error: 'Missing required fields: project_id, title, slug' },
         { status: 400 }
       )
+    }
+
+    if (!(await canAccessProject(user, project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const client = createAdminClient()

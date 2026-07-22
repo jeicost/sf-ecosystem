@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { triggerDeployHook } from '@/lib/deploy-hook'
 import { logActivity } from '@/lib/audit-log'
@@ -28,6 +29,10 @@ export async function GET(
 
     if (!post) {
       return Response.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (!(await canAccessProject(user, post.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     return Response.json({ post }, { status: 200 })
@@ -67,6 +72,10 @@ export async function PATCH(
 
     if (!currentPost) {
       return Response.json({ error: 'Post not found' }, { status: 404 })
+    }
+
+    if (!(await canAccessProject(user, currentPost.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Create version snapshot if content changed
@@ -151,6 +160,10 @@ export async function DELETE(
       .select('project_id, title, slug, status')
       .eq('id', postId)
       .single()
+
+    if (existing && !(await canAccessProject(user, existing.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const { error } = await client
       .from('posts')

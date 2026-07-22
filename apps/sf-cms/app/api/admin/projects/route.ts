@@ -1,21 +1,31 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { requireSession } from '@/lib/auth/require-session'
+import { resolveAccess } from '@/lib/auth/access'
 import { captureError } from '@/lib/capture-error'
 import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
+    const access = await resolveAccess(user)
     const client = createAdminClient()
-    const { data, error } = await client
+    let query = client
       .from('projects')
       .select('id, name, slug, domain, api_key, vercel_hook_url, created_at')
       .order('created_at', { ascending: false })
 
+    // Editors only see the projects they're assigned to.
+    if (!access.isGlobalAdmin) {
+      if (access.projectIds.length === 0) return Response.json({ projects: [] }, { status: 200 })
+      query = query.in('id', access.projectIds)
+    }
+
+    const { data, error } = await query
     if (error) throw error
 
     return Response.json({ projects: data || [] }, { status: 200 })

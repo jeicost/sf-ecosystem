@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
 import Anthropic from '@anthropic-ai/sdk'
@@ -14,7 +15,8 @@ export async function POST(
 ) {
   const { pageId } = await params
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -33,6 +35,10 @@ export async function POST(
 
     if (pageError || !page) {
       return Response.json({ error: 'Page not found' }, { status: 404 })
+    }
+
+    if (!(await canAccessProject(user, page.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const currentSections = page.sections_json || []

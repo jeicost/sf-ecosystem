@@ -1,12 +1,13 @@
 import { createClient as createServerClient } from '@/lib/supabase/server'
+import { canEnterAdmin } from '@/lib/auth/access'
 import type { User } from '@supabase/supabase-js'
 
 /**
- * Returns the authenticated admin user, or false. Truthy/falsy compatible
- * with the old boolean form, but callers can now attribute actions:
- *   const user = await requireSession()
- *   if (!user) return 401
- *   logActivity({ ..., userId: user.id, userEmail: user.email })
+ * Returns the authenticated user allowed into the admin (a global admin OR
+ * an editor with at least one project role), or false. Truthy/falsy
+ * compatible with the old boolean form; callers can attribute actions and,
+ * for anything project-scoped, MUST additionally check canAccessProject —
+ * an editor passing this gate is NOT allowed on every project.
  */
 export async function requireSession(): Promise<User | false> {
   try {
@@ -17,9 +18,7 @@ export async function requireSession(): Promise<User | false> {
       return false
     }
 
-    // app_metadata is only writable server-side (service role) — unlike
-    // user_metadata, which any authenticated user can edit on themselves.
-    return user.app_metadata?.is_admin === true ? user : false
+    return (await canEnterAdmin(user)) ? user : false
   } catch (err) {
     return false
   }

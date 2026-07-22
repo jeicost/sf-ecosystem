@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -7,12 +8,22 @@ export async function GET(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const { pageId } = await params
     const supabase = createAdminClient()
+
+    const { data: parentPage } = await supabase
+      .from('pages')
+      .select('project_id')
+      .eq('id', pageId)
+      .single()
+    if (!parentPage || !(await canAccessProject(user, parentPage.project_id))) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
     const { data: versions, error } = await supabase
       .from('page_versions')

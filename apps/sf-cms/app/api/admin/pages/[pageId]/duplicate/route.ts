@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
@@ -13,7 +14,8 @@ export async function POST(
   { params }: { params: Promise<{ pageId: string }> }
 ) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -28,6 +30,10 @@ export async function POST(
 
     if (fetchErr || !source) {
       return Response.json({ error: 'Page not found' }, { status: 404 })
+    }
+
+    if (!(await canAccessProject(user, source.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     // Find a free slug within the same project

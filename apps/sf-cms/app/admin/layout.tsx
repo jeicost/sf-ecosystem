@@ -1,10 +1,15 @@
 import Link from 'next/link'
+import { requireSession } from '@/lib/auth/require-session'
+import { resolveAccess } from '@/lib/auth/access'
 
 export const metadata = {
   title: 'Admin — SF-CMS',
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default async function AdminLayout({ children }: { children: React.ReactNode }) {
+  const user = await requireSession()
+  const isGlobalAdmin = user ? (await resolveAccess(user)).isGlobalAdmin : false
+
   return (
     <div className="flex h-screen bg-slate-50">
       {/* Sidebar */}
@@ -45,6 +50,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           >
             Media
           </Link>
+          {isGlobalAdmin && (
+            <Link
+              href="/admin/access"
+              className="block px-4 py-2 rounded-lg hover:bg-slate-800 transition"
+            >
+              Access
+            </Link>
+          )}
         </nav>
 
         <div className="mt-auto pt-8 border-t border-slate-700">

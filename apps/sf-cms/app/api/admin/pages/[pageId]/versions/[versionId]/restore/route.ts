@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logActivity } from '@/lib/audit-log'
 import { captureError } from '@/lib/capture-error'
@@ -31,6 +32,10 @@ export async function POST(
 
     if (pageErr || !page) {
       return Response.json({ error: 'Page not found' }, { status: 404 })
+    }
+
+    if (!(await canAccessProject(user, page.project_id))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const { data: version, error: versionErr } = await client

@@ -1,4 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
+import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { NextRequest } from 'next/server'
 
@@ -38,7 +39,8 @@ function matchesMagicBytes(mime: string, bytes: Uint8Array): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -52,6 +54,10 @@ export async function POST(request: NextRequest) {
         { error: 'Missing file or project_id' },
         { status: 400 }
       )
+    }
+
+    if (!(await canAccessProject(user, projectId))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     if (file.size > MAX_UPLOAD_BYTES) {
@@ -148,7 +154,8 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
-    if (!(await requireSession())) {
+    const user = await requireSession()
+    if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -160,6 +167,10 @@ export async function GET(request: NextRequest) {
         { error: 'Missing project_id query parameter' },
         { status: 400 }
       )
+    }
+
+    if (!(await canAccessProject(user, projectId))) {
+      return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     const client = createAdminClient()
