@@ -1,18 +1,6 @@
-import { fetchBrandBrain } from '@/lib/brand-brain'
+import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
-
-// tone_of_voice may be a plain string or an object — never spread a string into chars
-function formatTone(tone: unknown): string {
-  if (!tone) return 'Not defined'
-  if (typeof tone === 'string') return tone
-  if (typeof tone === 'object') {
-    return Object.entries(tone as Record<string, unknown>)
-      .map(([k, v]) => `${k}: ${v}`)
-      .join(', ')
-  }
-  return String(tone)
-}
 
 
 export interface QuickActionPromptParams {
@@ -36,14 +24,7 @@ export async function getQuickActionPrompt(
     }),
   ])
 
-  const brandContext = brandBrain
-    ? `
-BRAND CONTEXT:
-- Name: ${brandBrain.brandName}
-- Mission: ${brandBrain.mission}
-- Tone: ${formatTone(brandBrain.toneOfVoice)}
-`
-    : ''
+  const brandContext = brandBrain ? formatBrandBrainForPrompt(brandBrain) : ''
 
   const docText = docContext?.documents
     ?.map((d: any) => d.excerpt)
@@ -53,7 +34,14 @@ BRAND CONTEXT:
     .filter(Boolean)
     .join('\n\n')
 
-  const fullContext = allContext ? `\n\nCONTEXT:\n${allContext}` : ''
+  const languageRule =
+    "\n\nLANGUAGE: Write all prose fields in the same language as the user's input. Keep enum/status values exactly as specified in the schema."
+
+  const fullContext = (allContext ? `\n\nCONTEXT:\n${allContext}` : '') + languageRule
+
+  // Anti-hallucination guard for numeric/financial actions
+  const numericDataGuard =
+    "\nDATA RULES: Use ONLY figures present in the input or context. If a figure is not available, write '—' and list it in an 'assumptions' array. NEVER invent metrics, competitor names or dates.\n"
 
   // Prompts específicos por acción
   // ADMIN
@@ -113,6 +101,7 @@ Generate tutorial JSON:
     return `Task: Create a marketing campaign strategy based on provided input.
 
 Input: ${JSON.stringify(inputData, null, 2)}
+${fullContext}
 
 Output ONLY valid JSON (no markdown, no text before/after):
 {"campaign_name":"Campaign Name","target_segment":"Audience description","messaging":["Message 1","Message 2"],"channels":["Channel 1","Channel 2"],"timeline":["Period 1: Action","Period 2: Action"],"success_metrics":["Metric 1","Metric 2"]}`
@@ -122,6 +111,7 @@ Output ONLY valid JSON (no markdown, no text before/after):
     return `Task: Generate an Ideal Customer Profile (ICP) analysis.
 
 Input: ${JSON.stringify(inputData, null, 2)}
+${fullContext}
 
 Output ONLY valid JSON (no markdown, no text):
 {"company_profile":{"size":"Size range","revenue":"Revenue range","industry":"Industry"},"decision_makers":[{"role":"Title","priorities":["Priority"],"pain_points":["Pain"]}],"buying_process":{"timeline":"Timeline","budget":"Budget","stakeholders":["Stakeholder"]},"fit_indicators":["Fit1","Fit2"]}`
@@ -152,9 +142,11 @@ Reply to analyze:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
+qualification_score must be an integer on a 1-10 scale (1 = very poor fit, 10 = excellent fit). Assess it from the reply content — do not default to any particular value.
+
 Return ONLY valid JSON (no markdown):
 {
-  "qualification_score": 7,
+  "qualification_score": 0,
   "sentiment": "positive/neutral/negative",
   "interest_level": "high/medium/low",
   "next_action": "Suggested next step",
@@ -303,7 +295,6 @@ Generate ideas JSON:
   "ideas": [
     {"title": "", "description": "", "potential": "", "implementation": ""}
   ],
-  "voting_results": {},
   "next_steps": []
 }`
   }
@@ -314,7 +305,7 @@ Generate ideas JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-
+${numericDataGuard}
 Generate projection JSON:
 {
   "current_state": {},
@@ -332,7 +323,7 @@ Generate projection JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-
+${numericDataGuard}
 Generate projection JSON:
 {
   "executive_summary": "2-3 sentence summary of the financial outlook",
@@ -351,7 +342,7 @@ Generate projection JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-
+${numericDataGuard}
 Generate cashflow JSON:
 {
   "summary": "Current cash position assessment in 2-3 sentences",
@@ -360,7 +351,8 @@ Generate cashflow JSON:
   "runway_months": "",
   "cash_gaps": [{"period": "", "gap": "", "mitigation": ""}],
   "improvement_actions": [{"action": "", "impact": "", "effort": "bajo|medio|alto"}],
-  "alerts": ["alert 1"]
+  "alerts": ["alert 1"],
+  "assumptions": []
 }`
   }
 
@@ -370,7 +362,7 @@ Generate cashflow JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-
+${numericDataGuard}
 Generate optimization JSON:
 {
   "summary": "2-3 sentence overview of savings potential",
@@ -378,7 +370,8 @@ Generate optimization JSON:
   "quick_wins": [{"action": "", "monthly_savings": "", "implementation_time": ""}],
   "structural_changes": [{"change": "", "annual_impact": "", "risk": ""}],
   "do_not_cut": ["Investment that must be protected and why"],
-  "total_potential_savings": {"monthly": "", "annual": ""}
+  "total_potential_savings": {"monthly": "", "annual": ""},
+  "assumptions": []
 }`
   }
 
@@ -407,6 +400,8 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
+All scores ("innovation_score" and each dimension "score") must be numbers on an explicit 0-100 scale (0 = no capacity, 100 = world-class). Derive each score from the evidence in the input and context.
+
 Generate audit JSON:
 {
   "innovation_score": 0,
@@ -425,6 +420,8 @@ Generate audit JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+"innovation_score" must be a number on an explicit 0-100 scale (0 = no capacity, 100 = world-class), derived from the current_state input.
 
 Generate roadmap JSON:
 {
@@ -489,13 +486,14 @@ Generate carousel spec JSON:
   if (actionType === 'editar_imagen_visual') {
     return `You are a visual refinement specialist. Generate detailed refinement directives for editing an existing AI-generated image.
 
+You cannot see the original image; rely ONLY on the description provided in the input. Do not invent details about the current image that are not described.
+
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
 Generate refinement spec JSON:
 {
-  "original_image_analysis": "What the current image shows",
   "refinement_request": "What the user wants changed",
   "specific_changes": [
     {"element": "Name of element to change", "current_state": "How it looks now", "desired_state": "How it should look"}

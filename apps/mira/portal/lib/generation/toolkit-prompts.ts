@@ -705,6 +705,8 @@ ${fullContext}
 
 Use the brand context above (pillars, tone of voice, audiences) to make every activity brand-specific — no generic filler.
 
+Choose the channels in channel_distribution based on this brand's actual audience and industry (do not default to any fixed channel mix), and derive the percentages from the input/context; they must sum to 100. Derive every KPI target from figures present in the input or context (current audience size, budget, historical performance). If no data supports a target, set its value to null — NEVER invent a number.
+
 Provide the campaign in this exact JSON format:
 {
   "campaign_overview": "1-2 sentence summary",
@@ -713,17 +715,15 @@ Provide the campaign in this exact JSON format:
   "week_3": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
   "week_4": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
   "channel_distribution": {
-    "LinkedIn": {"percentage": 35, "focus": "..."},
-    "Email": {"percentage": 25, "focus": "..."},
-    "Content+SEO": {"percentage": 20, "focus": "..."},
-    "Events+Community": {"percentage": 20, "focus": "..."}
+    "<channel name>": {"percentage": null, "focus": "..."},
+    "<channel name>": {"percentage": null, "focus": "..."}
   },
   "kpis": {
-    "reach_target": 50000,
-    "engagement_rate": 0.05,
-    "ctr_target": 0.02,
-    "conversion_rate": 0.005,
-    "cac_target": 60
+    "reach_target": null,
+    "engagement_rate": null,
+    "ctr_target": null,
+    "conversion_rate": null,
+    "cac_target": null
   },
   "success_metrics": ["...", "...", "..."]
 }`
@@ -736,6 +736,8 @@ ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
 Use the brand context above (pillars, tone of voice, audiences) so initiatives fit this specific community — no generic filler.
+
+Derive every metric target (target_members, engagement_rate, retention_rate, referral_rate, monthly_active) from figures present in the input or context (current community size, historical engagement, budget). If no data supports a target, set its value to null — NEVER invent a number.
 
 Provide the blueprint in this exact JSON format:
 {
@@ -771,9 +773,9 @@ Provide the blueprint in this exact JSON format:
   },
   "metrics": {
     "target_members": "...",
-    "engagement_rate": 0.50,
-    "retention_rate": 0.80,
-    "referral_rate": 0.30,
+    "engagement_rate": null,
+    "retention_rate": null,
+    "referral_rate": null,
     "monthly_active": "..."
   },
   "risks_and_mitigations": ["Risk: ...", "Mitigation: ..."]
