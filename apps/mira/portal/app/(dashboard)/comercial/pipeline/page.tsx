@@ -95,7 +95,7 @@ export default function PipelinePage() {
   return (
     <div className="px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-white">Pipeline Comercial</h1>
+        <h1 className="text-2xl font-semibold text-ink">Pipeline Comercial</h1>
         <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Leads activos y su estado en el ciclo de ventas.</p>
       </div>
 
@@ -109,7 +109,7 @@ export default function PipelinePage() {
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
-            <p className="text-xl font-semibold text-white">{value}</p>
+            <p className="text-xl font-semibold text-ink">{value}</p>
           </div>
         ))}
       </div>
@@ -224,10 +224,10 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
         {/* Header */}
         <div className="px-6 py-5 flex items-start justify-between" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
           <div>
-            <p className="text-lg font-semibold text-white leading-tight">{lead.company_name ?? '—'}</p>
+            <p className="text-lg font-semibold text-ink leading-tight">{lead.company_name ?? '—'}</p>
             <p className="text-[12px] mt-0.5" style={{ color: 'var(--text-secondary)' }}>{displayName} · {lead.title ?? '—'}</p>
           </div>
-          <button onClick={onClose} className="hover:text-white transition-colors mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+          <button onClick={onClose} className="hover:text-ink transition-colors mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
             <X size={18} />
           </button>
         </div>
@@ -259,7 +259,7 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
           {lead.trigger_event && (
             <div>
               <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Trigger event</p>
-              <p className="text-[12px] text-[#888] italic">{lead.trigger_event}</p>
+              <p className="text-[12px] text-ink-secondary italic">{lead.trigger_event}</p>
             </div>
           )}
 
@@ -284,19 +284,19 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
         <div className="px-6 py-4 flex gap-2 flex-wrap" style={{ borderTopColor: 'var(--border-subtle)', borderTopWidth: '1px' }}>
           {lead.email && (
             <a href={`mailto:${lead.email}`}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <Mail size={11} /> {lead.email}
             </a>
           )}
           {lead.linkedin_url && (
             <a href={lead.linkedin_url} target="_blank" rel="noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <LinkedinIcon size={11} /> LinkedIn
             </a>
           )}
           {lead.company_website && (
             <a href={lead.company_website} target="_blank" rel="noreferrer"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <ExternalLink size={11} /> Web
             </a>
           )}
@@ -343,7 +343,7 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
                   })
                   onStageChange(lead.id, s.key)
                 }}
-                className="px-2.5 py-1 rounded-lg text-[10px] transition-all hover:text-white"
+                className="px-2.5 py-1 rounded-lg text-[10px] transition-all hover:text-ink"
                 style={{ background: `${s.color}12`, border: `1px solid ${s.color}25`, color: s.color + '99' }}
               >
                 {getStageLabel(s.key, locale)}

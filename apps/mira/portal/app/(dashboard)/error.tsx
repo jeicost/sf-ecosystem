@@ -18,8 +18,8 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
         <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-xl mx-auto mb-4">
           ⚠️
         </div>
-        <p className="text-white font-semibold text-sm mb-1">{t('error.page-load-error', locale)}</p>
-        <p className="text-[#444] text-xs leading-relaxed mb-5">
+        <p className="text-ink font-semibold text-sm mb-1">{t('error.page-load-error', locale)}</p>
+        <p className="text-ink-muted text-xs leading-relaxed mb-5">
           {error.message ?? t('error.something-wrong', locale)}
         </p>
         <button onClick={reset}

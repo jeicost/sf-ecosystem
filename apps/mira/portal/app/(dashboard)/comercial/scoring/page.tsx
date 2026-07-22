@@ -27,7 +27,7 @@ function ScoreBar({ value, max, color }: { value: number; max: number; color: st
       <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-surface)' }}>
         <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
       </div>
-      <span className="text-sm font-semibold text-white w-8 text-right">{value}</span>
+      <span className="text-sm font-semibold text-ink w-8 text-right">{value}</span>
     </div>
   )
 }
@@ -140,7 +140,7 @@ export default function ScoringPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xl">🎯</span>
-            <h1 className="text-2xl font-semibold text-white">Vera — Score Distribution</h1>
+            <h1 className="text-2xl font-semibold text-ink">Vera — Score Distribution</h1>
           </div>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('comercial.scoring.distribution-desc', locale)}</p>
         </div>
@@ -152,7 +152,7 @@ export default function ScoringPage() {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
-              { label: 'Total',        value: total,       color: '#888' },
+              { label: 'Total',        value: total,       color: 'var(--text-secondary)' },
               { label: 'Hot (≥75)',    value: hot.length,  color: '#EF4444' },
               { label: 'Warm (50-74)', value: warm.length, color: '#F59E0B' },
               { label: 'Cold (<50)',   value: cold.length, color: '#3B82F6' },
@@ -166,7 +166,7 @@ export default function ScoringPage() {
 
           {/* Distribution */}
           <div className="card p-6">
-            <h2 className="text-sm font-medium text-white mb-5">{t('comercial.scoring.distribution', locale)}</h2>
+            <h2 className="text-sm font-medium text-ink mb-5">{t('comercial.scoring.distribution', locale)}</h2>
             <div className="space-y-4">
               {[
                 { label: '🔥 Hot (≥75)', value: hot.length, pct: hotPct, color: '#EF4444' },
@@ -186,7 +186,7 @@ export default function ScoringPage() {
           {/* Table */}
           <div className="card overflow-hidden">
             <div className="px-5 py-4" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
-              <h2 className="text-sm font-medium text-white">Top {topLeads.length} por score</h2>
+              <h2 className="text-sm font-medium text-ink">Top {topLeads.length} por score</h2>
             </div>
             {topLeads.length === 0 ? (
               <div className="py-12 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -203,14 +203,14 @@ export default function ScoringPage() {
                 </thead>
                 <tbody>
                   {topLeads.map(lead => (
-                    <tr key={lead.id} className="hover:bg-white/2 transition-colors group" style={{ borderBottomColor: 'var(--bg-page)', borderBottomWidth: '1px' }}>
-                      <td className="px-5 py-3 text-sm text-white font-medium">{lead.company_name ?? '—'}</td>
+                    <tr key={lead.id} className="hover:bg-surface transition-colors group" style={{ borderBottomColor: 'var(--bg-page)', borderBottomWidth: '1px' }}>
+                      <td className="px-5 py-3 text-sm text-ink font-medium">{lead.company_name ?? '—'}</td>
                       <td className="px-5 py-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{lead.title ?? '—'}</td>
                       <td className="px-5 py-3 text-sm" style={{ color: 'var(--text-secondary)' }}>{lead.industry ?? '—'}</td>
                       <td className="px-5 py-3"><ScoreBadge score={lead.hot_score} /></td>
                       <td className="px-5 py-3">
                         <button onClick={() => rescoreLead(lead)} disabled={rescoring === lead.id}
-                          className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] hover:text-white transition-all" style={{ color: 'var(--text-tertiary)' }}>
+                          className="opacity-0 group-hover:opacity-100 flex items-center gap-1 text-[10px] hover:text-ink transition-all" style={{ color: 'var(--text-tertiary)' }}>
                           {rescoring === lead.id
                             ? <Loader2 size={10} className="animate-spin" />
                             : <RefreshCw size={10} />}
@@ -231,7 +231,7 @@ export default function ScoringPage() {
             <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
               <span className="text-base">🎯</span>
               <div>
-                <p className="text-[12px] font-semibold text-white">Vera</p>
+                <p className="text-[12px] font-semibold text-ink">Vera</p>
                 <p className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.scoring.scorer-live', locale)}</p>
               </div>
             </div>
@@ -243,7 +243,7 @@ export default function ScoringPage() {
                   <p className="text-[11px] mb-4" style={{ color: 'var(--text-tertiary)' }}>Pregúntame sobre el pipeline</p>
                   {['¿Cuáles son nuestros leads más prometedores?', '¿Qué industrias tienen mejor score?', '¿Cómo mejorar la calidad del pipeline?'].map(q => (
                     <button key={q} onClick={() => { setChatInput(q); }}
-                      className="block w-full text-left px-3 py-2 mb-1.5 rounded-lg text-[11px] hover:text-white hover:bg-white/5 transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                      className="block w-full text-left px-3 py-2 mb-1.5 rounded-lg text-[11px] hover:text-ink hover:bg-surface-hover transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                       {q}
                     </button>
                   ))}
@@ -254,10 +254,10 @@ export default function ScoringPage() {
                   <div className={clsx(
                     'max-w-[90%] px-3 py-2 rounded-xl text-[12px] leading-relaxed',
                     msg.role === 'user'
-                      ? 'text-white'
-                      : 'text-white'
+                      ? 'text-ink'
+                      : 'text-ink'
                   )}>
-                    {msg.content || <Loader2 size={10} className="animate-spin text-[#444]" />}
+                    {msg.content || <Loader2 size={10} className="animate-spin text-ink-muted" />}
                   </div>
                 </div>
               ))}
@@ -271,7 +271,7 @@ export default function ScoringPage() {
                   onChange={e => setChatInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendChat()}
                   placeholder="Pregunta a Vera..."
-                  className="flex-1 rounded-lg px-3 py-2 text-[12px] text-white focus:outline-none transition-colors" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
+                  className="flex-1 rounded-lg px-3 py-2 text-[12px] text-ink focus:outline-none transition-colors" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
                 />
                 <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
                   className="p-2 rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 disabled:opacity-30 transition-all">

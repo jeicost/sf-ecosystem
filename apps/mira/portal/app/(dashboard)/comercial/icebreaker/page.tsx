@@ -161,7 +161,7 @@ Genera las 3 variantes ahora.`
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xl">✍️</span>
-            <h1 className="text-2xl font-semibold text-white">Finn — Icebreaker</h1>
+            <h1 className="text-2xl font-semibold text-ink">Finn — Icebreaker</h1>
           </div>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera 3 variantes de primer mensaje ultra-personalizado.</p>
         </div>
@@ -171,13 +171,13 @@ Genera las 3 variantes ahora.`
       <div className="flex gap-1 mb-6 p-1 rounded-xl w-fit" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
         <button onClick={() => setMode('manual')}
           className={clsx('flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-all',
-            mode === 'manual' ? 'bg-white/10 text-white font-medium' : 'hover:text-white')}
+            mode === 'manual' ? 'bg-surface-hover text-ink font-medium' : 'hover:text-ink')}
           style={mode !== 'manual' ? { color: 'var(--text-secondary)' } : undefined}>
           <Zap size={12} /> Entrada manual
         </button>
         <button onClick={() => setMode('from-lead')}
           className={clsx('flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-all',
-            mode === 'from-lead' ? 'bg-white/10 text-white font-medium' : 'hover:text-white')}
+            mode === 'from-lead' ? 'bg-surface-hover text-ink font-medium' : 'hover:text-ink')}
           style={mode !== 'from-lead' ? { color: 'var(--text-secondary)' } : undefined}>
           <Users size={12} /> Desde pipeline
           {hotLeads.length > 0 && (
@@ -201,7 +201,7 @@ Genera las 3 variantes ahora.`
               <div key={field} className="card p-3">
                 <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>{label}</label>
                 <input value={manualForm[field]} onChange={e => f(field, e.target.value)} placeholder={placeholder}
-                  className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
+                  className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
               </div>
             ))}
           </div>
@@ -209,19 +209,19 @@ Genera las 3 variantes ahora.`
             <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>Evento trigger (opcional)</label>
             <input value={manualForm.triggerEvent} onChange={e => f('triggerEvent', e.target.value)}
               placeholder="Ej: Acaban de levantar una ronda Serie A de $5M"
-              className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
+              className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
             <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>Notas LinkedIn</label>
             <textarea value={manualForm.linkedinNote} onChange={e => f('linkedinNote', e.target.value)}
               placeholder="Ej: Publicó sobre IA la semana pasada..."
-              rows={3} className="w-full bg-transparent text-sm text-white outline-none resize-none leading-relaxed" style={{ color: 'var(--text-primary)' }} />
+              rows={3} className="w-full bg-transparent text-sm text-ink outline-none resize-none leading-relaxed" style={{ color: 'var(--text-primary)' }} />
           </div>
           <button onClick={generateManual} disabled={!manualValid || generating}
             className="w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            style={{ background: generating ? '#1A1A1A' : '#EAB308', color: '#000' }}>
+            style={{ background: generating ? 'var(--bg-surface-hover)' : '#EAB308', color: '#000' }}>
             {generating
-              ? <><Loader2 size={16} className="animate-spin text-white" /><span className="text-white">Finn escribiendo…</span></>
+              ? <><Loader2 size={16} className="animate-spin text-ink" /><span className="text-ink">Finn escribiendo…</span></>
               : <><Zap size={16} /> Generar 3 variantes con Finn</>}
           </button>
         </div>
@@ -232,15 +232,15 @@ Genera las 3 variantes ahora.`
         <div className="space-y-5">
           {hotLeads.length === 0 ? (
             <div className="card py-16 text-center">
-              <p className="text-[#555] text-sm mb-2">No hay leads hot (≥75) en el pipeline.</p>
-              <p className="text-[#444] text-xs">Usa Rex para descubrir leads o la entrada manual.</p>
+              <p className="text-ink-muted text-sm mb-2">No hay leads hot (≥75) en el pipeline.</p>
+              <p className="text-ink-muted text-xs">Usa Rex para descubrir leads o la entrada manual.</p>
             </div>
           ) : (
             <>
               <div className="card p-5">
                 <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Selecciona un lead hot</label>
                 <select value={selectedId} onChange={e => { setSelectedId(e.target.value); setRawText(''); setVariants([]) }}
-                  className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                  className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                   <option value="">— Elige un lead —</option>
                   {hotLeads.map(l => (
                     <option key={l.id} value={l.id}>
@@ -252,7 +252,7 @@ Genera las 3 variantes ahora.`
 
               {selected && (
                 <div className="card p-5 space-y-3">
-                  <p className="text-[11px] text-[#555] uppercase tracking-wider">Contexto del lead</p>
+                  <p className="text-[11px] text-ink-muted uppercase tracking-wider">Contexto del lead</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     {[
                       { label: 'Empresa', val: selected.company_name },
@@ -262,20 +262,20 @@ Genera las 3 variantes ahora.`
                     ].map(({ label, val }) => (
                       <div key={label}>
                         <p className="text-[11px] mb-0.5" style={{ color: 'var(--text-tertiary)' }}>{label}</p>
-                        <p className="text-[#ccc]">{val ?? '—'}</p>
+                        <p className="text-ink-secondary">{val ?? '—'}</p>
                       </div>
                     ))}
                   </div>
                   {selected.trigger_event && (
                     <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                       <p className="text-[11px] mb-1" style={{ color: 'rgba(180, 83, 9, 0.7)' }}>Trigger event</p>
-                      <p className="text-sm text-[#ccc]">{selected.trigger_event}</p>
+                      <p className="text-sm text-ink-secondary">{selected.trigger_event}</p>
                     </div>
                   )}
                   {selected.icebreaker_used && (
                     <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'rgba(34, 197, 94, 0.15)', borderWidth: '1px' }}>
                       <p className="text-[11px] mb-1" style={{ color: 'rgba(134, 239, 172, 0.6)' }}>Icebreaker guardado</p>
-                      <p className="text-sm text-[#ccc] italic">{selected.icebreaker_used}</p>
+                      <p className="text-sm text-ink-secondary italic">{selected.icebreaker_used}</p>
                     </div>
                   )}
                 </div>
@@ -308,7 +308,7 @@ Genera las 3 variantes ahora.`
                   <button key={i} onClick={() => setActiveTab(i)}
                     className={clsx(
                       'flex-1 py-1.5 text-[11px] rounded-md transition-all font-medium border',
-                      activeTab === i ? 'bg-[#EAB308]/15 text-[#EAB308] border-[#EAB308]/25' : 'hover:text-white border-transparent'
+                      activeTab === i ? 'bg-[#EAB308]/15 text-[#EAB308] border-[#EAB308]/25' : 'hover:text-ink border-transparent'
                     )}
                     style={activeTab !== i ? { color: 'var(--text-secondary)' } : undefined}>
                     {VARIANT_LABELS[i] ?? `Variante ${i + 1}`}
@@ -326,7 +326,7 @@ Genera las 3 variantes ahora.`
               {/* Actions */}
               <div className="flex gap-2">
                 <button onClick={() => copy(displayVariants[activeTab])}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border transition-all hover:text-white" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border transition-all hover:text-ink" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
                   {copied ? <><Check size={11} className="text-emerald-400" /> Copiado</> : <><Copy size={11} /> Copiar</>}
                 </button>
                 {selected && (
@@ -341,13 +341,13 @@ Genera las 3 variantes ahora.`
                   </button>
                 )}
                 <button onClick={mode === 'from-lead' ? generateFromLead : generateManual}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)' }}>
+                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)' }}>
                   <RefreshCw size={11} /> Regenerar
                 </button>
               </div>
             </>
           ) : (
-            <pre className="text-sm text-[#ddd] leading-relaxed whitespace-pre-wrap font-sans">{rawText}</pre>
+            <pre className="text-sm text-ink-secondary leading-relaxed whitespace-pre-wrap font-sans">{rawText}</pre>
           )}
         </div>
       )}

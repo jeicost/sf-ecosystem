@@ -68,8 +68,8 @@ export default function ArchetypesDemoPage() {
     <div className="space-y-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-white">Agent Archetype System</h1>
-        <p className="text-[#999]">
+        <h1 className="text-3xl font-bold text-ink">Agent Archetype System</h1>
+        <p className="text-ink-secondary">
           5 interactive workflow patterns powering all 30 agents. Each archetype provides a tailored interface
           optimized for different types of agent work.
         </p>
@@ -77,7 +77,7 @@ export default function ArchetypesDemoPage() {
 
       {/* Agent Selector */}
       <div className="space-y-3">
-        <div className="text-xs font-semibold uppercase tracking-wider text-[#666]">
+        <div className="text-xs font-semibold uppercase tracking-wider text-ink-tertiary">
           Select Agent to Preview
         </div>
         <div className="grid grid-cols-5 gap-2">
@@ -87,13 +87,13 @@ export default function ArchetypesDemoPage() {
               onClick={() => setSelectedAgentId(agent.id)}
               className={`card p-4 text-left transition-all border ${
                 selectedAgentId === agent.id
-                  ? 'border-[#1E1E1E] bg-[#1E1E1E]'
-                  : 'border-transparent hover:bg-[#0D0D0D]'
+                  ? 'border-line bg-surface-hover'
+                  : 'border-transparent hover:bg-surface-hover'
               }`}
             >
               <div className="text-2xl mb-2">{agent.emoji}</div>
-              <div className="font-semibold text-sm text-white">{agent.name}</div>
-              <div className="text-xs text-[#666] mt-1">{agent.archetype}</div>
+              <div className="font-semibold text-sm text-ink">{agent.name}</div>
+              <div className="text-xs text-ink-tertiary mt-1">{agent.archetype}</div>
             </button>
           ))}
         </div>
@@ -105,12 +105,12 @@ export default function ArchetypesDemoPage() {
           <div className="flex items-center gap-3 mb-2">
             <span className="text-3xl">{selectedAgent.emoji}</span>
             <div>
-              <h2 className="text-xl font-bold text-white">{selectedAgent.name}</h2>
-              <p className="text-sm text-[#999]">{selectedAgent.description}</p>
+              <h2 className="text-xl font-bold text-ink">{selectedAgent.name}</h2>
+              <p className="text-sm text-ink-secondary">{selectedAgent.description}</p>
             </div>
           </div>
-          <div className="mt-4 pt-4 border-t border-[#1E1E1E]">
-            <div className="inline-block px-3 py-1 rounded text-xs font-medium text-white" style={{ backgroundColor: `${selectedAgent.color}30` }}>
+          <div className="mt-4 pt-4 border-t border-line">
+            <div className="inline-block px-3 py-1 rounded text-xs font-medium text-ink" style={{ backgroundColor: `${selectedAgent.color}30` }}>
               {selectedAgent.archetype} Archetype
             </div>
           </div>
@@ -148,16 +148,16 @@ export default function ArchetypesDemoPage() {
       )}
 
       {/* System Overview */}
-      <div className="space-y-4 border-t border-[#1E1E1E] pt-8">
-        <h2 className="text-lg font-bold text-white">System Architecture</h2>
+      <div className="space-y-4 border-t border-line pt-8">
+        <h2 className="text-lg font-bold text-ink">System Architecture</h2>
 
         <div className="grid grid-cols-6 gap-3">
           {DEMO_AGENTS.map(agent => (
             <div key={agent.id} className="card p-4 text-center">
               <div className="text-2xl mb-2">{agent.emoji}</div>
-              <div className="font-semibold text-sm text-white">{agent.name}</div>
-              <div className="text-xs text-[#666] mt-2">{agent.archetype}</div>
-              <div className="text-xs text-[#555] mt-2 leading-tight">
+              <div className="font-semibold text-sm text-ink">{agent.name}</div>
+              <div className="text-xs text-ink-tertiary mt-2">{agent.archetype}</div>
+              <div className="text-xs text-ink-muted mt-2 leading-tight">
                 {agent.archetype === 'ORACLE' && 'Carousel\nVariants'}
                 {agent.archetype === 'ANALYST' && 'Dashboard\nResults'}
                 {agent.archetype === 'EXPLORER' && 'Filter\nDiscovery'}
@@ -170,9 +170,9 @@ export default function ArchetypesDemoPage() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mt-6">
-          <div className="p-4 rounded bg-[#0D0D0D] border border-[#1E1E1E]">
-            <h3 className="font-semibold text-white mb-2 text-sm">Coverage</h3>
-            <ul className="text-xs text-[#999] space-y-1">
+          <div className="p-4 rounded bg-card border border-line">
+            <h3 className="font-semibold text-ink mb-2 text-sm">Coverage</h3>
+            <ul className="text-xs text-ink-secondary space-y-1">
               <li>✓ 30+ agents mapped to 6 archetypes</li>
               <li>✓ Per-agent customizations via ARCHETYPE_CUSTOMIZATIONS</li>
               <li>✓ AgentArchetypeWrapper routes automatically</li>
@@ -181,9 +181,9 @@ export default function ArchetypesDemoPage() {
             </ul>
           </div>
 
-          <div className="p-4 rounded bg-[#0D0D0D] border border-[#1E1E1E]">
-            <h3 className="font-semibold text-white mb-2 text-sm">Next Steps</h3>
-            <ul className="text-xs text-[#999] space-y-1">
+          <div className="p-4 rounded bg-card border border-line">
+            <h3 className="font-semibold text-ink mb-2 text-sm">Next Steps</h3>
+            <ul className="text-xs text-ink-secondary space-y-1">
               <li>→ Integrate into /agent/[role] page</li>
               <li>→ Create agent_configs table schema</li>
               <li>→ Build POST /api/setup endpoint</li>

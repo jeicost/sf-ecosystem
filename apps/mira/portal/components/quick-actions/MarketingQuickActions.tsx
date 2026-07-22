@@ -26,12 +26,12 @@ export function MarketingQuickActions() {
             type="text"
             name="topic"
             placeholder="Post topic"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <select
             name="platform"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="instagram">Instagram</option>
@@ -40,7 +40,7 @@ export function MarketingQuickActions() {
           </select>
           <select
             name="tone"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="professional">Professional</option>
@@ -62,21 +62,21 @@ export function MarketingQuickActions() {
             type="text"
             name="theme"
             placeholder="Newsletter theme"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="text"
             name="tone"
             placeholder="Tone (e.g., informative, entertaining)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="number"
             name="article_count"
             placeholder="Number of articles"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             defaultValue="5"
           />
         </div>
@@ -94,12 +94,12 @@ export function MarketingQuickActions() {
             type="text"
             name="product"
             placeholder="Product/feature to showcase"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <select
             name="duration"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="15s">15 seconds</option>
@@ -108,7 +108,7 @@ export function MarketingQuickActions() {
           </select>
           <select
             name="style"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="educational">Educational</option>
@@ -129,20 +129,20 @@ export function MarketingQuickActions() {
           <textarea
             name="idea"
             placeholder="Carousel idea or concept"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
             required
           />
           <input
             type="text"
             name="brand_colors"
             placeholder="Brand colors (e.g., #FF5733, #00FF00)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
           />
           <input
             type="number"
             name="slide_count"
             placeholder="Number of slides"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             defaultValue="5"
           />
         </div>
@@ -158,7 +158,7 @@ export function MarketingQuickActions() {
         <div className="space-y-3">
           <select
             name="goal"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="awareness">Awareness</option>
@@ -169,14 +169,14 @@ export function MarketingQuickActions() {
             type="number"
             name="budget"
             placeholder="Budget (USD)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="text"
             name="audience"
             placeholder="Target audience description"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
         </div>
@@ -194,17 +194,17 @@ export function MarketingQuickActions() {
             type="text"
             name="topic"
             placeholder="Post topic"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <textarea
             name="copy"
             placeholder="Post copy/description"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
           />
           <select
             name="platform"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="instagram">Instagram</option>
@@ -215,7 +215,7 @@ export function MarketingQuickActions() {
             type="text"
             name="style"
             placeholder="Image style (e.g., minimalist, vibrant, professional)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
           />
         </div>
       ),
@@ -231,14 +231,14 @@ export function MarketingQuickActions() {
           <textarea
             name="concept"
             placeholder="Carousel concept or story"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
             required
           />
           <input
             type="number"
             name="numberOfSlides"
             placeholder="Number of slides"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             defaultValue="5"
             min="2"
             max="10"
@@ -247,13 +247,13 @@ export function MarketingQuickActions() {
             type="text"
             name="style"
             placeholder="Visual style (e.g., minimal, bold, gradient)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
           />
           <input
             type="text"
             name="cta"
             placeholder="Call-to-action text (optional)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
           />
         </div>
       ),
@@ -270,18 +270,18 @@ export function MarketingQuickActions() {
             type="text"
             name="imageUrl"
             placeholder="Image URL (paste link to existing image)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <textarea
             name="refinement"
             placeholder="What to change? (e.g., 'make background darker', 'fix the text')"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
             required
           />
           <select
             name="preserveElements"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
           >
             <option value="">No protected elements</option>
             <option value="text">Keep text as is</option>
@@ -296,7 +296,7 @@ export function MarketingQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
+        <h3 className="text-lg font-semibold text-ink mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

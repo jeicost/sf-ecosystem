@@ -139,8 +139,8 @@ function ProjectMemoryViewerInner() {
           <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)', letterSpacing: '0.12em' }}>
             PROJECT INTELLIGENCE
           </p>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">Project Memory</h1>
-          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">Project Memory</h1>
+          <p className="text-sm mt-1 text-ink-tertiary">
             Insights, decisions, and actions from your toolkit results. Build institutional knowledge.
           </p>
         </div>
@@ -172,8 +172,8 @@ function ProjectMemoryViewerInner() {
           onClick={() => setSelectedCategory(null)}
           className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
             selectedCategory === null
-              ? 'bg-white text-black'
-              : 'bg-white/10 text-white hover:bg-white/20'
+              ? 'bg-ink text-page'
+              : 'bg-surface text-ink hover:bg-surface-hover'
           }`}
         >
           All
@@ -185,7 +185,7 @@ function ProjectMemoryViewerInner() {
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               selectedCategory === key
                 ? 'text-black'
-                : 'bg-white/10 text-white hover:bg-white/20'
+                : 'bg-surface text-ink hover:bg-surface-hover'
             }`}
             style={{
               background: selectedCategory === key ? config.color : undefined,
@@ -203,7 +203,7 @@ function ProjectMemoryViewerInner() {
             <AlertCircle size={20} style={{ color: '#EF4444' }} />
             <div>
               <p className="font-semibold text-red-400">Error</p>
-              <p className="text-sm text-gray-400 mt-1">{error}</p>
+              <p className="text-sm text-ink-secondary mt-1">{error}</p>
             </div>
           </div>
         </div>
@@ -216,32 +216,32 @@ function ProjectMemoryViewerInner() {
         </div>
       ) : memories.length === 0 ? (
         <div className="card p-8 text-center">
-          <BookOpen size={40} className="text-gray-600 mx-auto mb-3" />
-          <p className="text-gray-400">No memories yet. Save quick action results to build your project knowledge base.</p>
+          <BookOpen size={40} className="text-ink-tertiary mx-auto mb-3" />
+          <p className="text-ink-secondary">No memories yet. Save quick action results to build your project knowledge base.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {memories.map((memory) => {
             const config = CATEGORY_CONFIG[memory.category]
             return (
-              <div key={memory.id} className="card p-4 hover:bg-white/5 transition-colors group">
+              <div key={memory.id} className="card p-4 hover:bg-surface-hover transition-colors group">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     {/* Header with category and pin */}
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-lg">{config.icon}</span>
-                      <h3 className="text-sm font-semibold text-white">{memory.title}</h3>
+                      <h3 className="text-sm font-semibold text-ink">{memory.title}</h3>
                       {memory.is_pinned && (
                         <Pin size={14} className="text-yellow-400 fill-yellow-400" />
                       )}
                     </div>
 
                     {/* Summary */}
-                    <p className="text-xs text-gray-400 mb-2 line-clamp-2">{memory.summary}</p>
+                    <p className="text-xs text-ink-secondary mb-2 line-clamp-2">{memory.summary}</p>
 
                     {/* Meta info */}
-                    <div className="flex flex-wrap gap-2 items-center text-xs text-gray-500">
-                      <span className="px-2 py-1 rounded bg-white/5">{memory.source_department}</span>
+                    <div className="flex flex-wrap gap-2 items-center text-xs text-ink-tertiary">
+                      <span className="px-2 py-1 rounded bg-surface">{memory.source_department}</span>
                       <span>•</span>
                       <span>{formatDate(memory.created_at)}</span>
                       {memory.tags && memory.tags.length > 0 && (
@@ -249,7 +249,7 @@ function ProjectMemoryViewerInner() {
                           <span>•</span>
                           <div className="flex gap-1">
                             {memory.tags.slice(0, 2).map((tag) => (
-                              <span key={tag} className="px-2 py-0.5 rounded-full bg-white/5 text-gray-400">
+                              <span key={tag} className="px-2 py-0.5 rounded-full bg-surface text-ink-secondary">
                                 #{tag}
                               </span>
                             ))}
@@ -263,14 +263,14 @@ function ProjectMemoryViewerInner() {
                   <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => handleTogglePin(memory.id, memory.is_pinned)}
-                      className="p-2 rounded-lg text-gray-400 hover:text-yellow-400 hover:bg-yellow-500/10 transition-colors"
+                      className="p-2 rounded-lg text-ink-secondary hover:text-yellow-400 hover:bg-yellow-500/10 transition-colors"
                       title={memory.is_pinned ? 'Unpin' : 'Pin'}
                     >
                       <Pin size={16} fill={memory.is_pinned ? 'currentColor' : 'none'} />
                     </button>
                     <button
                       onClick={() => handleArchive(memory.id)}
-                      className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                      className="p-2 rounded-lg text-ink-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
                       title="Archive"
                     >
                       <Archive size={16} />

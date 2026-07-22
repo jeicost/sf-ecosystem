@@ -14,7 +14,7 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={handleToggle}
-      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-slate-700 hover:border-slate-600 transition-colors text-sm text-slate-400 hover:text-white"
+      className="flex items-center gap-2 px-3 py-2 rounded-lg border border-line transition-colors text-sm text-ink-secondary hover:text-ink"
       title="Toggle language"
     >
       <Globe size={16} />

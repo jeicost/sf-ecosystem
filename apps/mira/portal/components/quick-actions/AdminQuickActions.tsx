@@ -25,12 +25,12 @@ export function AdminQuickActions() {
           <textarea
             name="issue"
             placeholder="Customer issue or question"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
             required
           />
           <select
             name="customer_type"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="enterprise">Enterprise</option>
@@ -52,14 +52,14 @@ export function AdminQuickActions() {
             type="text"
             name="topic"
             placeholder="FAQ topic"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="text"
             name="product_area"
             placeholder="Product area or feature"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
         </div>
@@ -77,12 +77,12 @@ export function AdminQuickActions() {
             type="text"
             name="feature"
             placeholder="Feature to explain"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <select
             name="skill_level"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="beginner">Beginner</option>
@@ -97,7 +97,7 @@ export function AdminQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
+        <h3 className="text-lg font-semibold text-ink mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

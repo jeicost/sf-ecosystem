@@ -37,15 +37,15 @@ export default function StorageLimitModal({
       <div
         className="rounded-2xl p-6 w-96 shadow-xl"
         style={{
-          background: 'rgba(255,255,255,0.04)',
-          border: '1px solid rgba(255,255,255,0.09)',
+          background: 'var(--bg-card)',
+          border: '1px solid var(--border)',
         }}
       >
-        <h2 className="text-xl font-semibold mb-4 text-white">{t('admin.users.edit-limit-title', locale)}</h2>
+        <h2 className="text-xl font-semibold mb-4 text-ink">{t('admin.users.edit-limit-title', locale)}</h2>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-2" style={{ color: 'rgba(255,255,255,0.7)' }}>
+            <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
               {t('admin.users.current-limit', locale).replace('{limit}', currentLimit.toString())}
             </label>
             <input
@@ -57,15 +57,15 @@ export default function StorageLimitModal({
               onChange={(e) => setNewLimit(Number(e.target.value))}
               className="w-full px-3 py-2 rounded-lg font-medium focus:outline-none transition-all"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                color: '#ffffff',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-primary)',
               }}
               onFocus={(e) => (e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)')}
-              onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)')}
+              onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
               placeholder={t('admin.users.new-limit-placeholder', locale)}
             />
-            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
               {t('admin.users.range', locale)}
             </p>
           </div>
@@ -76,9 +76,9 @@ export default function StorageLimitModal({
               disabled={saving}
               className="flex-1 px-4 py-2 rounded-lg font-semibold transition-all disabled:opacity-50"
               style={{
-                background: 'rgba(255,255,255,0.06)',
-                border: '1px solid rgba(255,255,255,0.12)',
-                color: '#ffffff',
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                color: 'var(--text-primary)',
               }}
             >
               {t('common.cancel', locale)}

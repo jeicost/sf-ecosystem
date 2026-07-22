@@ -100,8 +100,8 @@ export default function DocumentsPage() {
   return (
     <div className="max-w-6xl mx-auto py-8 px-6 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-white">Documentos</h1>
-        <p className="text-gray-400 mt-2">
+        <h1 className="text-3xl font-bold text-ink">Documentos</h1>
+        <p className="text-ink-secondary mt-2">
           Genera playbooks, presentaciones e informes con la identidad de {activeClient?.name || 'tu marca'}.
           Todos tus entregables en un solo lugar.
         </p>
@@ -109,7 +109,7 @@ export default function DocumentsPage() {
 
       {/* Crear documento */}
       <div className="space-y-4">
-        <h2 className="text-xl font-semibold text-white">Crear documento</h2>
+        <h2 className="text-xl font-semibold text-ink">Crear documento</h2>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {Object.entries(DOC_TYPE_META).map(([slug, meta]) => (
             <button
@@ -118,43 +118,43 @@ export default function DocumentsPage() {
               className={`p-5 rounded-xl border text-left transition ${
                 creating === slug
                   ? 'border-amber-500/60 bg-amber-500/10'
-                  : 'border-gray-800 bg-gray-900 hover:border-amber-500/30'
+                  : 'border-line bg-card hover:border-amber-500/30'
               }`}
             >
               <div className="text-2xl mb-2">{meta.icon}</div>
-              <p className="font-semibold text-white text-sm">{meta.name}</p>
-              <p className="text-gray-400 text-xs mt-1 leading-relaxed">{meta.desc}</p>
+              <p className="font-semibold text-ink text-sm">{meta.name}</p>
+              <p className="text-ink-secondary text-xs mt-1 leading-relaxed">{meta.desc}</p>
             </button>
           ))}
         </div>
 
         {creating && (
-          <div className="p-6 rounded-xl border border-amber-500/30 bg-gray-900 space-y-4">
-            <p className="text-white font-semibold">
+          <div className="p-6 rounded-xl border border-amber-500/30 bg-card space-y-4">
+            <p className="text-ink font-semibold">
               {DOC_TYPE_META[creating].icon} Nuevo {DOC_TYPE_META[creating].name}
             </p>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="text-xs text-gray-400 uppercase tracking-wide">Tema *</label>
+                <label className="text-xs text-ink-secondary uppercase tracking-wide">Tema *</label>
                 <input
                   value={form.topic}
                   onChange={(e) => setForm({ ...form, topic: e.target.value })}
                   placeholder="Ej: Incrementar ventas en Q4"
-                  className="mt-1 w-full px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-white text-sm focus:border-amber-500 outline-none"
+                  className="mt-1 w-full px-3 py-2 rounded-lg bg-surface border border-line text-ink text-sm focus:border-amber-500 outline-none"
                 />
               </div>
               <div>
-                <label className="text-xs text-gray-400 uppercase tracking-wide">Objetivo</label>
+                <label className="text-xs text-ink-secondary uppercase tracking-wide">Objetivo</label>
                 <input
                   value={form.objective}
                   onChange={(e) => setForm({ ...form, objective: e.target.value })}
                   placeholder="Ej: Plan accionable para el equipo comercial"
-                  className="mt-1 w-full px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-white text-sm focus:border-amber-500 outline-none"
+                  className="mt-1 w-full px-3 py-2 rounded-lg bg-surface border border-line text-ink text-sm focus:border-amber-500 outline-none"
                 />
               </div>
             </div>
             <div>
-              <label className="text-xs text-gray-400 uppercase tracking-wide">
+              <label className="text-xs text-ink-secondary uppercase tracking-wide">
                 Datos clave (opcional — cifras, contexto, requisitos)
               </label>
               <textarea
@@ -162,7 +162,7 @@ export default function DocumentsPage() {
                 onChange={(e) => setForm({ ...form, key_data: e.target.value })}
                 rows={3}
                 placeholder="Cualquier dato real que deba aparecer en el documento"
-                className="mt-1 w-full px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-white text-sm focus:border-amber-500 outline-none"
+                className="mt-1 w-full px-3 py-2 rounded-lg bg-surface border border-line text-ink text-sm focus:border-amber-500 outline-none"
               />
             </div>
             {error && <p className="text-red-400 text-sm">{error}</p>}
@@ -170,13 +170,13 @@ export default function DocumentsPage() {
               <button
                 onClick={handleGenerate}
                 disabled={generating || !form.topic.trim()}
-                className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:bg-gray-700 disabled:text-gray-400 text-black font-semibold text-sm transition"
+                className="px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:bg-surface-hover disabled:text-ink-tertiary text-black font-semibold text-sm transition"
               >
                 {generating ? 'Generando… (~1-2 min)' : 'Generar documento'}
               </button>
               <button
                 onClick={() => setCreating(null)}
-                className="px-5 py-2 rounded-lg border border-gray-700 text-gray-300 text-sm hover:bg-white/5 transition"
+                className="px-5 py-2 rounded-lg border border-line text-ink-secondary text-sm hover:bg-surface-hover transition"
               >
                 Cancelar
               </button>
@@ -187,13 +187,13 @@ export default function DocumentsPage() {
 
       {/* Biblioteca */}
       <div className="space-y-4">
-        <div className="flex gap-2 border-b border-gray-800">
+        <div className="flex gap-2 border-b border-line">
           <button
             onClick={() => setTab('generated')}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition ${
               tab === 'generated'
-                ? 'border-amber-500 text-white'
-                : 'border-transparent text-gray-500 hover:text-gray-300'
+                ? 'border-amber-500 text-ink'
+                : 'border-transparent text-ink-tertiary hover:text-ink-secondary'
             }`}
           >
             Generados ({docs.length})
@@ -202,8 +202,8 @@ export default function DocumentsPage() {
             onClick={() => setTab('files')}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition ${
               tab === 'files'
-                ? 'border-amber-500 text-white'
-                : 'border-transparent text-gray-500 hover:text-gray-300'
+                ? 'border-amber-500 text-ink'
+                : 'border-transparent text-ink-tertiary hover:text-ink-secondary'
             }`}
           >
             Archivos subidos
@@ -212,9 +212,9 @@ export default function DocumentsPage() {
 
         {tab === 'generated' ? (
           docs.length === 0 ? (
-            <div className="p-10 rounded-xl border-2 border-dashed border-gray-800 text-center">
-              <p className="text-gray-400">Aún no hay documentos generados.</p>
-              <p className="text-gray-500 text-sm mt-1">Elige un tipo arriba para crear el primero.</p>
+            <div className="p-10 rounded-xl border-2 border-dashed border-line text-center">
+              <p className="text-ink-secondary">Aún no hay documentos generados.</p>
+              <p className="text-ink-tertiary text-sm mt-1">Elige un tipo arriba para crear el primero.</p>
             </div>
           ) : (
             <div className="grid gap-3">
@@ -224,19 +224,19 @@ export default function DocumentsPage() {
                 return (
                   <div
                     key={d.id}
-                    className="flex items-center gap-4 p-4 rounded-xl border border-gray-800 bg-gray-900"
+                    className="flex items-center gap-4 p-4 rounded-xl border border-line bg-card"
                   >
                     <span className="text-xl">{meta?.icon || '📄'}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate">{topic}</p>
-                      <p className="text-gray-500 text-xs mt-0.5">
+                      <p className="text-ink text-sm font-medium truncate">{topic}</p>
+                      <p className="text-ink-tertiary text-xs mt-0.5">
                         {meta?.name} · {new Date(d.created_at).toLocaleString('es-ES')}
                       </p>
                     </div>
                     {d.status === 'completed' ? (
                       <Link
                         href={`/documents/${d.id}`}
-                        className="px-4 py-1.5 rounded-lg text-xs font-medium bg-white/10 hover:bg-white/20 text-white transition"
+                        className="px-4 py-1.5 rounded-lg text-xs font-medium bg-surface hover:bg-surface-hover text-ink transition"
                       >
                         Abrir →
                       </Link>

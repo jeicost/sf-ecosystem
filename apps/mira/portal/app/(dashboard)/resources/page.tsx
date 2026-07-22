@@ -84,11 +84,11 @@ function VideoCard({ video, color, locked, onPlay }: {
   return (
     <div
       className="group relative rounded-2xl overflow-hidden cursor-pointer transition-all duration-200"
-      style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.09)' }}
+      style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}
       onClick={locked ? undefined : onPlay}
     >
       {/* Thumbnail */}
-      <div className="relative" style={{ paddingBottom: '56.25%', background: locked ? 'rgba(255,255,255,0.03)' : `${color}10` }}>
+      <div className="relative" style={{ paddingBottom: '56.25%', background: locked ? 'var(--bg-surface)' : `${color}10` }}>
         {!isPlaceholder && !locked ? (
           <img
             src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
@@ -139,13 +139,13 @@ function VideoCard({ video, color, locked, onPlay }: {
           <span className="text-sm leading-none">{video.emoji}</span>
           <span className="text-[10px] font-semibold" style={{ color: `${color}99` }}>{video.agent}</span>
         </div>
-        <p className="text-[12px] font-medium leading-snug" style={{ color: locked ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.85)' }}>
+        <p className="text-[12px] font-medium leading-snug" style={{ color: locked ? 'var(--text-muted)' : 'var(--text-primary)' }}>
           {video.title}
         </p>
         {locked && (
           <div className="flex items-center gap-1 mt-2">
-            <Lock size={9} style={{ color: 'rgba(255,255,255,0.2)' }} />
-            <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>Upgrade to unlock</span>
+            <Lock size={9} style={{ color: 'var(--text-muted)' }} />
+            <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Upgrade to unlock</span>
           </div>
         )}
       </div>
@@ -239,20 +239,20 @@ export default function ResourcesPage() {
         <div>
           <p className="text-[10px] uppercase tracking-widest font-semibold mb-2"
             style={{ color: 'rgba(99,102,241,0.7)' }}>Training center</p>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">Resources</h1>
-          <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">Resources</h1>
+          <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
             Video tutorials for every agent in your team.
           </p>
         </div>
         <div className="flex items-center gap-3">
           {/* Filter */}
-          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+          <div className="flex items-center gap-1 p-1 rounded-xl" style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
             {(['all', 'intro'] as const).map(f => (
               <button key={f} onClick={() => setFilter(f)}
                 className="px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
                 style={{
-                  background: filter === f ? 'rgba(255,255,255,0.1)' : 'transparent',
-                  color: filter === f ? '#fff' : 'rgba(255,255,255,0.4)',
+                  background: filter === f ? 'var(--bg-surface-hover)' : 'transparent',
+                  color: filter === f ? 'var(--text-primary)' : 'var(--text-tertiary)',
                 }}>
                 {f === 'all' ? 'All videos' : 'Intro only'}
               </button>
@@ -265,12 +265,12 @@ export default function ResourcesPage() {
       <div className="grid grid-cols-4 gap-3 mb-8">
         {[
           { label: 'Unlocked videos', value: String(totalUnlocked), color: '#4ade80' },
-          { label: 'Total library', value: String(totalVideos), color: '#fff' },
-          { label: 'Departments', value: `${DEPT_ORDER.filter(s => canAccessSection(user.plan, s)).length}/6`, color: '#fff' },
+          { label: 'Total library', value: String(totalVideos), color: 'var(--text-primary)' },
+          { label: 'Departments', value: `${DEPT_ORDER.filter(s => canAccessSection(user.plan, s)).length}/6`, color: 'var(--text-primary)' },
           { label: 'Format', value: 'YouTube', color: '#EF4444' },
         ].map(({ label, value, color }) => (
           <div key={label} className="card px-4 py-3">
-            <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">{label}</p>
+            <p className="text-[11px] text-ink-muted uppercase tracking-wider mb-1">{label}</p>
             <p className="text-xl font-semibold" style={{ color }}>{value}</p>
           </div>
         ))}
@@ -298,14 +298,14 @@ export default function ResourcesPage() {
                 </div>
                 {locked && (
                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                    <Lock size={10} style={{ color: 'rgba(255,255,255,0.3)' }} />
-                    <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
+                    <Lock size={10} style={{ color: 'var(--text-muted)' }} />
+                    <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>
                       Upgrade to unlock this department
                     </span>
                   </div>
                 )}
-                <div className="flex-1" style={{ height: '1px', background: 'rgba(255,255,255,0.07)' }} />
+                <div className="flex-1" style={{ height: '1px', background: 'var(--border-subtle)' }} />
               </div>
 
               {/* Video grid */}

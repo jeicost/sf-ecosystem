@@ -1,68 +1,43 @@
 # DEBT.md — Deuda técnica de MIRA
 
-Registro honesto de deuda técnica conocida a **2026-07-21**. Todas las rutas son relativas a `apps/mira/portal/` salvo que se indique lo contrario. Cada entrada verificada contra el código con grep en la fecha indicada.
+Registro honesto de deuda técnica conocida. Última verificación completa: **2026-07-22** (post fase 2). Todas las rutas son relativas a `apps/mira/portal/` salvo que se indique lo contrario. Cada entrada verificada contra el código con grep en la fecha indicada.
+
+---
+
+## ✅ Resuelto (fase 2 — verificado 2026-07-22)
+
+| Deuda | Resolución verificada |
+|---|---|
+| Fugas BYO Claude (rutas llamando a Anthropic con la key de la plataforma) | 17/17 rutas de `app/api/` usan `createMessageForClient`/`getClaudeForClient`; grep de `new Anthropic`/`anthropic.messages.create` en `app/api/` devuelve 0 resultados |
+| **(d)** Mismatch de `redirect_uri` en OAuth Drive | `app/api/brand-brain/drive/authorize/route.ts:26` usa `process.env.GOOGLE_REDIRECT_URI` (fallback al valor del navegador solo si la env no existe), igual que el callback (`callback/route.ts:116,133`) |
+| **(b)** Export a Drive solo por Service Account | `app/api/export/google-drive/route.ts:67-98` intenta primero el Drive del cliente (`getClientDriveAccessToken` + `uploadHtmlToClientDrive`, `destination: 'client_drive'`) con fallback al Service Account (L103). Residual: ver deuda nueva **(k)** |
+| **(e)** Light mode dependiente del parche `!important` | ~95 ficheros migrados el 2026-07-21/22 — 116 ficheros usan ya clases semánticas (`text-ink`/`bg-card`/`border-line`), quedan 33 con clases dark hardcodeadas. El parche `!important` de `globals.css` **sigue activo como red de seguridad** — su retirada es deuda nueva **(j)** |
+| Toolkit sin grounding (generaciones sin datos reales del sitio) | `lib/grounding/` (`site-snapshot`, `seo-checks`, `web-research`, `grounding-contract`) cableado en `app/api/toolkit/generate/route.ts:10-12`; el resultado lleva `result.grounding` (L332). Residual: ver deuda nueva **(m)** |
+| Tarjeta Canva con flujo api-key incorrecto | Ahora OAuth 2.0 + PKCE (S256) real: `lib/integrations/oauth-config.ts:61-68` (`pkce: true`), `app/api/integrations/oauth/[tool]/start/route.ts:55-70` genera `code_verifier`/`code_challenge`, el callback lo envía en el exchange. Residual: ver deuda nueva **(l)** |
 
 ---
 
 ## a) `visual_jobs`: subsistema fantasma
 
-La migración `supabase/migrations/0028_visual_jobs.sql` crea 4 tablas (`visual_jobs` L6, `visual_assets` L33, `visual_feedback` L59, `visual_approvals` L85) con RLS completo — y **ninguna ruta de la app las usa**. Grep de `visual_jobs` sobre `app/`, `lib/` y `components/` solo devuelve la propia migración.
+*(Verificado de nuevo 2026-07-22: sigue igual.)* La migración `supabase/migrations/0028_visual_jobs.sql` crea 4 tablas (`visual_jobs` L6, `visual_assets` L33, `visual_feedback` L59, `visual_approvals` L85) con RLS completo — y **ninguna ruta de la app las usa**. Grep de `visual_jobs`/`visual-provider`/`visual-storage`/`visual-refinement` sobre `app/` y `components/` devuelve 0 resultados.
 
-Ficheros huérfanos en `lib/generation/`:
-
-| Fichero | Estado |
-|---|---|
-| `lib/generation/visual-provider.ts` | Sin imports fuera de la carpeta |
-| `lib/generation/mock-visual-provider.ts` | Único consumidor de `visual-provider` (mock de sí mismo) |
-| `lib/generation/visual-storage.ts` | Sin imports |
-| `lib/generation/visual-refinement.ts` | Sin imports |
-| `lib/generation/feature-flags.ts` | Sin imports |
-
-Los únicos módulos de `lib/generation/` que sí se usan desde rutas: `document-prompts`, `openai-image`, `quick-action-prompts`, `toolkit-prompts` (verificado: `app/api/documents/generate/route.ts:6,8`, `app/api/quick-actions/route.ts:4-5`, `app/api/toolkit/generate*/route.ts`).
+Ficheros huérfanos en `lib/generation/`: `visual-provider.ts`, `mock-visual-provider.ts`, `visual-storage.ts`, `visual-refinement.ts`, `feature-flags.ts`.
 
 **Qué haría falta:** decidir si el pipeline de jobs visuales asíncronos se retoma o se elimina. Si se elimina: borrar los 5 ficheros + migración de drop de las 4 tablas. Si se retoma: cablear rutas `/api/visual-jobs` que hoy no existen.
 
 ---
 
-## b) Dos integraciones de Google Drive desacopladas
-
-1. **Lectura (Brand Brain)** — OAuth **por cliente**: `app/api/brand-brain/drive/{authorize,callback,folders,ingest}/route.ts`. Tokens del cliente, lee su Drive.
-2. **Export** — **Service Account global**: `lib/google-drive.ts:16-46` (`GOOGLE_SERVICE_ACCOUNT_KEY` + `GOOGLE_DRIVE_FOLDER_ID`), usada por `app/api/export/google-drive/route.ts`. El export va a una **carpeta de la plataforma** (`parents: [GOOGLE_DRIVE_FOLDER_ID]`, `lib/google-drive.ts:46`), no al Drive del cliente.
-
-**Qué haría falta:** decisión de producto pendiente — migrar el export para que use el token OAuth del cliente (integración 1) y escriba en su propio Drive, o documentar la carpeta compartida como comportamiento intencional.
-
----
-
 ## c) API keys de clientes en claro
 
-`lib/integrations/getClientApiKey.ts:52-55` lee la key desde `tool_connections.metadata.api_key` / `metadata.apiKey` **en texto plano**; `lib/integrations/getClientApiKey.ts:65` deja el TODO explícito: *"If lib/crypto.ts exists, decrypt the key here"* — `lib/crypto.ts` no existe.
+*(Verificado de nuevo 2026-07-22: sigue igual.)* `lib/integrations/getClientApiKey.ts:53-55` lee la key desde `tool_connections.metadata.api_key` / `metadata.apiKey` **en texto plano**; L65 deja el TODO explícito: *"If lib/crypto.ts exists, decrypt the key here"* — `lib/crypto.ts` sigue sin existir.
 
 **Qué haría falta:** cifrado at-rest (AES-GCM con key en env, o Supabase Vault), migración de las filas existentes y descifrado en `getClientApiKey`.
 
 ---
 
-## d) Mismatch potencial de `redirect_uri` en OAuth de Drive (Brand Brain)
-
-- **Authorize:** el frontend envía el origin del navegador — `app/(dashboard)/integrations/page.tsx:81`: `redirectUrl: \`${window.location.origin}/api/brand-brain/drive/callback\`` — y `app/api/brand-brain/drive/authorize/route.ts:80` lo pasa tal cual como `redirect_uri`.
-- **Callback (token exchange):** `app/api/brand-brain/drive/callback/route.ts:116,133` usa `process.env.GOOGLE_REDIRECT_URI`.
-
-Si el usuario entra por un dominio distinto al configurado en la env (preview deploys, `www` vs apex), Google rechaza el exchange con `redirect_uri_mismatch`.
-
-**Qué haría falta:** derivar ambos del mismo sitio — construir `redirect_uri` en servidor en los dos puntos (env o `req.nextUrl.origin` canónico), nunca del navegador.
-
----
-
-## e) Light mode: dependencia del parche `!important` de globals.css
-
-`app/globals.css` contiene ~45 reglas `[data-theme="light"] ... !important` (a partir de L62) que sobrescriben clases dark hardcodeadas. Los ~40 ficheros prioritarios ya migraron hoy (2026-07-21) a clases semánticas (`text-ink` / `bg-card` / `border-line`; 34 ficheros las usan ya), pero **~100-110 ficheros** de `app/` + `components/` siguen usando `text-white`/`text-gray-*`/`bg-gray-*`/`bg-white` y dependen del parche.
-
-**Qué haría falta:** migración incremental del resto a las clases semánticas y, al terminar, borrar el bloque `!important` de `globals.css`.
-
----
-
 ## f) `StudioArchetype` con proyectos decorativos mock
 
-`components/archetypes/StudioArchetype.tsx:29` define `DEFAULT_PROJECTS` (hardcoded: "May Campaign Social Post", "Product Launch Teaser", "YouTube Thumbnail Draft"…) y `:100` lo usa como default de la prop `projects`. Ningún caller pasa proyectos reales — la UI muestra datos falsos.
+*(Verificado de nuevo 2026-07-22: sigue igual.)* `components/archetypes/StudioArchetype.tsx:29` define `DEFAULT_PROJECTS` (hardcoded) y `:100` lo usa como default de la prop `projects`. Único caller: `components/archetypes/AgentArchetypeWrapper.tsx:56` — no alimenta proyectos reales.
 
 **Qué haría falta:** alimentar `projects` desde datos reales (p. ej. `quick_actions_results` visuales o `project_memory`) o vaciar el default y mostrar empty state.
 
@@ -70,20 +45,64 @@ Si el usuario entra por un dominio distinto al configurado en la env (preview de
 
 ## g) Prompts de quick actions sin botón + componente muerto
 
-- `lib/generation/quick-action-prompts.ts:311` (`proyectar_revenue`) y `:403` (`auditar_innovacion`) tienen prompt completo pero **ningún botón** en `components/quick-actions/*.tsx` los dispara.
-- `components/DepartmentQuickActions.tsx` no está importado por ningún fichero — código muerto (los 5 componentes por departamento en `components/quick-actions/` lo reemplazaron).
+*(Verificado de nuevo 2026-07-22: sigue igual.)*
+
+- `lib/generation/quick-action-prompts.ts:311` (`proyectar_revenue`) y `:403` (`auditar_innovacion`) tienen prompt completo pero **ningún botón** en `components/` ni `app/` los dispara.
+- `components/DepartmentQuickActions.tsx` sigue sin importarse desde ningún fichero — código muerto.
 
 **Qué haría falta:** añadir los 2 botones (Finanzas y Strategy respectivamente) o borrar los prompts; borrar `DepartmentQuickActions.tsx`.
 
 ---
 
-## h) Pricing de `gpt-image-1` duplicado (e inconsistente)
+## h) Pricing de `gpt-image-1` duplicado (ya consistente)
+
+*(Re-verificado 2026-07-22: la **inconsistencia** se corrigió — ambos sitios dicen ahora `in: 5` — pero la **duplicación** sigue.)*
 
 | Sitio | Valor |
 |---|---|
-| `lib/anthropic-client.ts:76-80` (`MODEL_PRICING`) | `'gpt-image-1': { in: 10, out: 40 }` |
-| `app/api/usage/summary/route.ts:8-9` (`IMAGE_MODEL_PRICING`) | `'gpt-image-1': { in: 5, out: 40, perImage: 0.04 }` |
+| `lib/anthropic-client.ts:80` (`MODEL_PRICING`) | `'gpt-image-1': { in: 5, out: 40 }` |
+| `app/api/usage/summary/route.ts:9` (`IMAGE_MODEL_PRICING`) | `'gpt-image-1': { in: 5, out: 40, perImage: 0.04 }` |
 
-Dos fuentes de verdad con precio de input distinto (10 vs 5 $/Mtok): el coste registrado y el mostrado en el summary pueden divergir.
+Dos fuentes de verdad: cualquier cambio futuro de precio puede volver a divergir.
 
-**Qué haría falta:** un único mapa de pricing exportado (p. ej. en `lib/pricing.ts`) consumido por ambos; verificar contra el pricing real de OpenAI cuál es el correcto.
+**Qué haría falta:** un único mapa de pricing exportado (p. ej. `lib/pricing.ts`) consumido por ambos.
+
+---
+
+## j) Retirada del parche `!important` de light mode (nueva 2026-07-22)
+
+`app/globals.css` mantiene ~45 reglas `[data-theme="light"] ... !important` (a partir de L60) como red de seguridad tras la migración masiva a clases semánticas. Quedan **33 ficheros** en `app/`+`components/` con `text-white`/`text-gray-*`/`bg-gray-*` que aún dependen del parche.
+
+**Qué haría falta:** migrar los 33 ficheros restantes, hacer verificación visual completa de todas las pantallas en light mode y, solo entonces, borrar el bloque `!important` de `globals.css`.
+
+---
+
+## k) Conexiones Drive antiguas requieren re-autorización (nueva 2026-07-22)
+
+El authorize de Brand Brain pide ahora `drive.readonly` + `drive.file` (`app/api/brand-brain/drive/authorize/route.ts:82-84`), pero las conexiones creadas **antes** del cambio solo tienen `drive.readonly`: para esos clientes el export al Drive del cliente falla y `app/api/export/google-drive/route.ts:103` cae al fallback de Service Account (carpeta de la plataforma).
+
+**Qué haría falta:** forzar/solicitar re-autorización de las conexiones Drive existentes (o detectar el scope insuficiente y mostrar CTA de reconexión en la UI de integraciones).
+
+---
+
+## l) App de Canva sin registrar para usuarios externos (nueva 2026-07-22)
+
+El flujo OAuth+PKCE está implementado, pero requiere una app registrada en **Canva Developers** y pasar su **review** para que funcione con usuarios externos. Envs necesarias: `NEXT_PUBLIC_CANVA_CLIENT_ID` y `CANVA_CLIENT_SECRET` (`lib/integrations/oauth-config.ts:61-62`; `app/api/export/canva/route.ts:44` falla con mensaje si faltan). El redirect registrado en Canva debe ser **exactamente** `<APP_URL>/api/integrations/oauth/callback`.
+
+**Qué haría falta:** registrar la app en Canva Developers, configurar el redirect exacto, superar la review y poblar las envs en Vercel.
+
+---
+
+## m) Generaciones históricas del toolkit sin grounding (nueva 2026-07-22)
+
+Las generaciones del toolkit anteriores al cableado de `lib/grounding/` siguen en `project_memory` **sin marcar**: no hay forma de distinguirlas de las nuevas salvo por la ausencia de `result_data.grounding` (las nuevas lo llevan siempre — `app/api/toolkit/generate/route.ts:332`).
+
+**Qué haría falta:** decidir si se marcan retroactivamente (backfill con flag `pre_grounding`), se regeneran o simplemente se documenta que ausencia de `result_data.grounding` = generación legacy sin datos reales.
+
+---
+
+## n) Batch de cambios de prompts pendiente de aprobación (nueva 2026-07-22)
+
+El informe `docs/PROMPTS_AUDIT_2026_07.md` (relativo a la raíz del monorepo) contiene un batch de cambios propuestos a los prompts de generación. **Pendiente de aprobación del usuario** antes de aplicar — no tocar los prompts hasta entonces.
+
+**Qué haría falta:** revisión y aprobación del usuario; después, aplicar el batch y re-verificar salidas.

@@ -70,58 +70,51 @@ export default function UserManagementTable({
     <div
       className="rounded-2xl overflow-hidden"
       style={{
-        background: 'rgba(255,255,255,0.03)',
-        border: '1px solid rgba(255,255,255,0.08)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
       }}
     >
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead
             style={{
-              background: 'rgba(255,255,255,0.02)',
-              borderBottom: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--bg-surface)',
+              borderBottom: '1px solid var(--border-subtle)',
             }}
           >
             <tr>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.email', locale)}
               </th>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.company', locale)}
               </th>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.plan', locale)}
               </th>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.status', locale)}
               </th>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.projects', locale)}
               </th>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.created', locale)}
               </th>
               <th
-                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider"
-                style={{ color: 'rgba(255,255,255,0.35)' }}
+                className="px-6 py-3 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-tertiary"
               >
                 {t('admin.users.table.actions', locale)}
               </th>
@@ -132,12 +125,12 @@ export default function UserManagementTable({
               <tr
                 key={user.id}
                 style={{
-                  background: idx % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
-                  borderBottom: '1px solid rgba(255,255,255,0.05)',
+                  background: idx % 2 === 0 ? 'transparent' : 'var(--bg-surface)',
+                  borderBottom: '1px solid var(--border-subtle)',
                 }}
               >
-                <td className="px-6 py-4 text-sm text-white">{user.email}</td>
-                <td className="px-6 py-4 text-sm text-white">{user.company_name}</td>
+                <td className="px-6 py-4 text-sm text-ink">{user.email}</td>
+                <td className="px-6 py-4 text-sm text-ink">{user.company_name}</td>
                 <td className="px-6 py-4 text-sm">
                   <span
                     className="px-3 py-1 rounded-full text-xs font-semibold"
@@ -170,12 +163,12 @@ export default function UserManagementTable({
                     <span> {expandedUserId === user.id ? <ChevronUp className="inline w-4 h-4 ml-1" /> : <ChevronDown className="inline w-4 h-4 ml-1" />}</span>
                   </button>
                 </td>
-                <td className="px-6 py-4 text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <td className="px-6 py-4 text-sm text-ink-tertiary">
                   {new Date(user.created_at).toLocaleDateString()}
                 </td>
                 <td className="px-6 py-4 text-sm">
                   {expandedUserId === user.id && (
-                    <ChevronUp className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.3)' }} />
+                    <ChevronUp className="w-4 h-4 text-ink-muted" />
                   )}
                 </td>
               </tr>
@@ -191,16 +184,16 @@ export default function UserManagementTable({
           <div
             key={`projects-${user.id}`}
             style={{
-              background: 'rgba(255,255,255,0.02)',
-              borderTop: '1px solid rgba(255,255,255,0.06)',
+              background: 'var(--bg-surface)',
+              borderTop: '1px solid var(--border-subtle)',
             }}
           >
             <div className="p-6 space-y-4">
-              <h3 className="font-semibold text-lg text-white">
+              <h3 className="font-semibold text-lg text-ink">
                 {t('admin.users.projects-header', locale)} {user.email}
               </h3>
               {user.projects.length === 0 ? (
-                <p style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <p className="text-ink-tertiary">
                   {t('admin.users.no-projects', locale)}
                 </p>
               ) : (
@@ -211,8 +204,8 @@ export default function UserManagementTable({
                       <Card key={project.id} radius="card" padding="md">
                         <div className="flex items-start justify-between mb-3">
                           <div>
-                            <h4 className="font-semibold text-white">{project.name}</h4>
-                            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                            <h4 className="font-semibold text-ink">{project.name}</h4>
+                            <p className="text-sm text-ink-tertiary">
                               {project.slug}
                             </p>
                           </div>
@@ -252,26 +245,26 @@ export default function UserManagementTable({
 
                         <div className="grid grid-cols-3 gap-4 text-sm">
                           <div>
-                            <p className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                            <p className="text-[11px] uppercase tracking-wider text-ink-tertiary">
                               {t('admin.users.last-access', locale)}
                             </p>
-                            <p className="font-medium text-white mt-1">
+                            <p className="font-medium text-ink mt-1">
                               {new Date(project.last_access).toLocaleDateString()}
                             </p>
                           </div>
                           <div>
-                            <p className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                            <p className="text-[11px] uppercase tracking-wider text-ink-tertiary">
                               {t('admin.users.storage', locale)}
                             </p>
-                            <p className="font-medium text-white mt-1">
+                            <p className="font-medium text-ink mt-1">
                               {project.storage_used_gb.toFixed(2)} / {project.storage_limit_gb} GB
                             </p>
                           </div>
                           <div>
-                            <p className="text-[11px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+                            <p className="text-[11px] uppercase tracking-wider text-ink-tertiary">
                               {t('admin.users.usage', locale)}
                             </p>
-                            <div className="w-full rounded-full h-2 mt-2" style={{ background: 'rgba(255,255,255,0.1)' }}>
+                            <div className="w-full rounded-full h-2 mt-2" style={{ background: 'var(--bg-surface-hover)' }}>
                               <div
                                 className="h-2 rounded-full transition-all"
                                 style={{
@@ -281,7 +274,7 @@ export default function UserManagementTable({
                                 }}
                               />
                             </div>
-                            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                            <p className="text-xs mt-1 text-ink-muted">
                               {storagePercent}%
                             </p>
                           </div>

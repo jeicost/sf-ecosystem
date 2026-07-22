@@ -88,7 +88,7 @@ export default function ProposalsPage() {
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xl">📄</span>
-          <h1 className="text-2xl font-semibold text-white">Nova — Proposals</h1>
+          <h1 className="text-2xl font-semibold text-ink">Nova — Proposals</h1>
         </div>
         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera propuestas comerciales completas desde el brief de una llamada.</p>
       </div>
@@ -109,7 +109,7 @@ export default function ProposalsPage() {
                     onChange={e => set(field, e.target.value)}
                     placeholder={placeholder}
                     rows={3}
-                    className="w-full bg-transparent text-sm text-white outline-none resize-none leading-relaxed"
+                    className="w-full bg-transparent text-sm text-ink outline-none resize-none leading-relaxed"
                     style={{ color: 'var(--text-primary)' }}
                   />
                 ) : (
@@ -117,7 +117,7 @@ export default function ProposalsPage() {
                     value={brief[field]}
                     onChange={e => set(field, e.target.value)}
                     placeholder={placeholder}
-                    className="w-full bg-transparent text-sm text-white outline-none"
+                    className="w-full bg-transparent text-sm text-ink outline-none"
                     style={{ color: 'var(--text-primary)' }}
                   />
                 )}
@@ -130,7 +130,7 @@ export default function ProposalsPage() {
               'w-full mt-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-all',
               valid && !generating
                 ? 'bg-[#3B82F6]/15 text-[#60a5fa] hover:bg-[#3B82F6]/25 border border-[#3B82F6]/25'
-                : 'bg-[#111] text-[#444] border border-[#1a1a1a] cursor-not-allowed'
+                : 'bg-surface text-ink-muted border border-line-subtle cursor-not-allowed'
             )}>
             {generating
               ? <><Loader2 size={15} className="animate-spin" /> Nova escribiendo...</>
@@ -146,7 +146,7 @@ export default function ProposalsPage() {
                 <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>📄 Nova — Propuesta generada</p>
                 <div className="flex gap-2">
                   <button onClick={copy}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                     {copied ? <><Check size={11} className="text-emerald-400" /> Copiado</> : <><Copy size={11} /> Copiar</>}
                   </button>
                   {saved && (
@@ -162,7 +162,7 @@ export default function ProposalsPage() {
               </div>
 
               {generating && (
-                <div className="flex items-center gap-2 mt-3 text-[11px] text-[#444]">
+                <div className="flex items-center gap-2 mt-3 text-[11px] text-ink-muted">
                   <Loader2 size={11} className="animate-spin" /> Generando...
                 </div>
               )}
@@ -189,30 +189,30 @@ function ProposalPreview({ markdown }: { markdown: string }) {
     <div className="prose prose-invert max-w-none">
       {lines.map((line, i) => {
         if (line.startsWith('# ')) return (
-          <h1 key={i} className="text-xl font-bold text-white mb-3 mt-0">{line.slice(2)}</h1>
+          <h1 key={i} className="text-xl font-bold text-ink mb-3 mt-0">{line.slice(2)}</h1>
         )
         if (line.startsWith('## ')) return (
-          <h2 key={i} className="text-base font-semibold text-white mb-2 mt-5 pb-1" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>{line.slice(3)}</h2>
+          <h2 key={i} className="text-base font-semibold text-ink mb-2 mt-5 pb-1" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>{line.slice(3)}</h2>
         )
         if (line.startsWith('### ')) return (
-          <h3 key={i} className="text-sm font-semibold mb-1.5 mt-4" style={{ color: 'rgba(204, 204, 204, 1)' }}>{line.slice(4)}</h3>
+          <h3 key={i} className="text-sm font-semibold mb-1.5 mt-4 text-ink-secondary">{line.slice(4)}</h3>
         )
         if (line.startsWith('| ')) return (
           <div key={i} className="text-[12px] font-mono px-3 py-1 rounded" style={{ color: 'var(--text-secondary)', background: 'var(--bg-page)', borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>{line}</div>
         )
         if (line.startsWith('- ') || line.startsWith('* ')) return (
-          <p key={i} className="text-[13px] leading-relaxed flex gap-2 mb-1" style={{ color: 'rgba(170, 170, 170, 1)' }}>
+          <p key={i} className="text-[13px] leading-relaxed flex gap-2 mb-1 text-ink-secondary">
             <span style={{ color: 'var(--text-secondary)' }}>·</span>{line.slice(2)}
           </p>
         )
         if (line.match(/^\d+\. /)) return (
-          <p key={i} className="text-[13px] leading-relaxed mb-1" style={{ color: 'rgba(170, 170, 170, 1)' }}>{line}</p>
+          <p key={i} className="text-[13px] leading-relaxed mb-1 text-ink-secondary">{line}</p>
         )
         if (line.startsWith('---')) return (
           <hr key={i} className="my-4" style={{ borderColor: 'var(--border-subtle)' }} />
         )
         if (line.trim() === '') return <div key={i} className="h-2" />
-        return <p key={i} className="text-[13px] leading-relaxed mb-1" style={{ color: 'rgba(170, 170, 170, 1)' }}>{line}</p>
+        return <p key={i} className="text-[13px] leading-relaxed mb-1 text-ink-secondary">{line}</p>
       })}
     </div>
   )

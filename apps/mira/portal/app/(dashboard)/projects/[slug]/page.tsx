@@ -227,7 +227,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Loader2 size={18} className="animate-spin text-[#444]" />
+        <Loader2 size={18} className="animate-spin text-ink-muted" />
       </div>
     )
   }
@@ -253,20 +253,20 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       </Link>
 
       {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 p-7"
+      <div className="relative overflow-hidden rounded-3xl border border-line p-7"
         style={{ background: `linear-gradient(135deg, ${brand}0e 0%, rgba(255,255,255,0.02) 60%)` }}>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: brand }}>
               Proyecto{activeClient?.name ? ` · ${activeClient.name}` : ''}
             </p>
-            <h1 className={`${syne.className} text-3xl font-extrabold tracking-tight text-white`}>{project.name}</h1>
-            {project.description && <p className="mt-2 max-w-xl text-sm text-gray-400">{project.description}</p>}
+            <h1 className={`${syne.className} text-3xl font-extrabold tracking-tight text-ink`}>{project.name}</h1>
+            {project.description && <p className="mt-2 max-w-xl text-sm text-ink-secondary">{project.description}</p>}
           </div>
           <span className={`rounded-full px-3 py-1.5 text-xs font-medium ${
             project.status === 'active' ? 'bg-green-500/20 text-green-400'
               : project.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400'
-              : 'bg-gray-500/20 text-gray-400'
+              : 'bg-surface-hover text-ink-secondary'
           }`}>
             {project.status === 'active' ? 'Activo' : project.status === 'paused' ? 'Pausado' : 'Archivado'}
           </span>
@@ -276,24 +276,24 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       {/* Trabajar en este proyecto */}
       <div className="grid gap-3 md:grid-cols-3">
         <Link href={`/agent/orchestrator?project=${project.id}`}
-          className="group rounded-2xl border border-white/10 bg-white/3 p-5 transition hover:-translate-y-0.5"
+          className="group rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5"
           style={{ boxShadow: `inset 0 3px 0 0 ${brand}` }}>
-          <p className="text-sm font-semibold text-white">💬 Chatear con contexto</p>
-          <p className="mt-1.5 text-[11px] text-gray-500">
+          <p className="text-sm font-semibold text-ink">💬 Chatear con contexto</p>
+          <p className="mt-1.5 text-[11px] text-ink-tertiary">
             Lo que se decida aquí se guarda en la memoria de este proyecto.
           </p>
         </Link>
         <Link href="/toolkit"
-          className="group rounded-2xl border border-white/10 bg-white/3 p-5 transition hover:-translate-y-0.5">
-          <p className="text-sm font-semibold text-white">⚡ Generar entregable</p>
-          <p className="mt-1.5 text-[11px] text-gray-500">
+          className="group rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5">
+          <p className="text-sm font-semibold text-ink">⚡ Generar entregable</p>
+          <p className="mt-1.5 text-[11px] text-ink-tertiary">
             Reportes, documentos y presentaciones con el conocimiento de marca.
           </p>
         </Link>
         <Link href="/integrations"
-          className="group rounded-2xl border border-white/10 bg-white/3 p-5 transition hover:-translate-y-0.5">
-          <p className="text-sm font-semibold text-white">📂 Carpeta de Drive</p>
-          <p className="mt-1.5 text-[11px] text-gray-500">
+          className="group rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5">
+          <p className="text-sm font-semibold text-ink">📂 Carpeta de Drive</p>
+          <p className="mt-1.5 text-[11px] text-ink-tertiary">
             Conecta o sincroniza las carpetas del cliente desde Integraciones.
           </p>
         </Link>
@@ -302,7 +302,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       {/* Entregables del proyecto */}
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
             {t('projects.deliverables', locale)}
           </p>
           <Link href="/toolkit" className="text-[11px] font-medium transition-opacity hover:opacity-80"
@@ -312,13 +312,13 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         </div>
 
         {deliverablesLoading ? (
-          <div className="flex items-center justify-center rounded-2xl border border-white/8 bg-white/2 py-8">
-            <Loader2 size={16} className="animate-spin text-[#444]" />
+          <div className="flex items-center justify-center rounded-2xl border border-line bg-surface py-8">
+            <Loader2 size={16} className="animate-spin text-ink-muted" />
           </div>
         ) : deliverables.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 py-8 text-center">
-            <p className="text-xs text-gray-500">{t('projects.deliverables-empty', locale)}</p>
-            <p className="mt-1 text-[11px] text-gray-600">{t('projects.deliverables-empty-hint', locale)}</p>
+          <div className="rounded-2xl border border-dashed border-line bg-surface py-8 text-center">
+            <p className="text-xs text-ink-tertiary">{t('projects.deliverables-empty', locale)}</p>
+            <p className="mt-1 text-[11px] text-ink-tertiary">{t('projects.deliverables-empty-hint', locale)}</p>
             <Link href="/toolkit"
               className="mt-4 inline-block rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90"
               style={{ background: brand }}>
@@ -333,11 +333,11 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                 ? d.status
                 : 'queued'
               const card = (
-                <div className="flex items-start gap-3 rounded-2xl border border-white/8 bg-white/3 p-4 transition hover:bg-white/5">
+                <div className="flex items-start gap-3 rounded-2xl border border-line bg-surface p-4 transition hover:bg-surface-hover">
                   <span className="text-xl leading-none">{meta.icon}</span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium text-white">{meta.name}</p>
-                    <p className="mt-0.5 text-[10px] text-gray-600">
+                    <p className="truncate text-[13px] font-medium text-ink">{meta.name}</p>
+                    <p className="mt-0.5 text-[10px] text-ink-tertiary">
                       {new Date(d.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', {
                         day: 'numeric', month: 'short', year: 'numeric',
                       })}
@@ -370,24 +370,24 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
 
       {/* Carpeta Drive */}
       <div>
-        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+        <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
           {t('projects.drive-title', locale)}
         </p>
 
         {driveLoading ? (
-          <div className="flex items-center justify-center rounded-2xl border border-white/8 bg-white/2 py-6">
-            <Loader2 size={16} className="animate-spin text-[#444]" />
+          <div className="flex items-center justify-center rounded-2xl border border-line bg-surface py-6">
+            <Loader2 size={16} className="animate-spin text-ink-muted" />
           </div>
         ) : projectFolders.length > 0 ? (
           <div className="space-y-2">
             {projectFolders.map((f) => (
-              <div key={f.id} className="flex items-center gap-3 rounded-2xl border border-white/8 bg-white/3 p-4">
+              <div key={f.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
                 <FolderOpen size={16} className="shrink-0" style={{ color: brand }} />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-medium text-white">
+                  <p className="truncate text-[13px] font-medium text-ink">
                     {f.folder_name || f.folder_id}
                   </p>
-                  <p className="mt-0.5 text-[10px] text-gray-600">
+                  <p className="mt-0.5 text-[10px] text-ink-tertiary">
                     {t('projects.drive-linked', locale)}
                     {f.last_synced_at
                       ? ` · ${f.files_synced} docs`
@@ -398,7 +398,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                   href={`https://drive.google.com/drive/folders/${f.folder_id}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 rounded-lg bg-white/10 px-3 py-1.5 text-[10px] font-medium text-white transition hover:bg-white/20"
+                  className="shrink-0 rounded-lg bg-surface-hover px-3 py-1.5 text-[10px] font-medium text-ink transition hover:opacity-80"
                 >
                   Drive ↗
                 </a>
@@ -406,8 +406,8 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             ))}
           </div>
         ) : (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 p-5">
-            <p className="text-xs text-gray-500">{t('projects.drive-none', locale)}</p>
+          <div className="rounded-2xl border border-dashed border-line bg-surface p-5">
+            <p className="text-xs text-ink-tertiary">{t('projects.drive-none', locale)}</p>
             {driveConnected === false && (
               <p className="mt-2 text-[11px] text-amber-400/80">
                 {t('projects.drive-not-connected', locale)}{' '}
@@ -430,7 +430,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                   onChange={(e) => setFolderLink(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleLinkFolder()}
                   placeholder={t('projects.drive-link-placeholder', locale)}
-                  className="flex-1 rounded-lg border border-gray-700 bg-black/40 px-3 py-2 text-xs text-white outline-none focus:border-white/30"
+                  className="flex-1 rounded-lg border border-line bg-page px-3 py-2 text-xs text-ink outline-none focus:border-ink-muted"
                 />
                 <button
                   onClick={handleLinkFolder}
@@ -455,7 +455,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       {/* Memoria del proyecto */}
       <div>
         <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
             Memoria del proyecto
           </p>
           <Link href={`/project-memory?project=${project.id}`}
@@ -465,8 +465,8 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         </div>
 
         {memory.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 py-8 text-center">
-            <p className="text-xs text-gray-500">
+          <div className="rounded-2xl border border-dashed border-line bg-surface py-8 text-center">
+            <p className="text-xs text-ink-tertiary">
               Aún no hay memoria. Chatea con los agentes con este proyecto activo y las
               decisiones importantes se guardarán aquí.
             </p>
@@ -474,19 +474,19 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         ) : (
           <div className="space-y-2">
             {memory.map((m) => (
-              <div key={m.id} className="flex items-start gap-3 rounded-xl border border-white/8 bg-white/3 p-4">
+              <div key={m.id} className="flex items-start gap-3 rounded-xl border border-line bg-surface p-4">
                 {m.is_pinned && <Pin size={12} className="mt-0.5 shrink-0" style={{ color: brand }} />}
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-[13px] font-medium text-white">{m.title}</p>
+                    <p className="truncate text-[13px] font-medium text-ink">{m.title}</p>
                     <span className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-medium uppercase tracking-wide"
                       style={{ background: `${brand}15`, color: brand }}>
                       {m.category}
                     </span>
                   </div>
-                  {m.summary && <p className="mt-1 line-clamp-2 text-[11px] text-gray-500">{m.summary}</p>}
+                  {m.summary && <p className="mt-1 line-clamp-2 text-[11px] text-ink-tertiary">{m.summary}</p>}
                 </div>
-                <span className="shrink-0 text-[10px] text-gray-600">
+                <span className="shrink-0 text-[10px] text-ink-tertiary">
                   {new Date(m.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                 </span>
               </div>
@@ -501,7 +501,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
           <p className="text-sm font-semibold text-red-400">
             {project.status === 'archived' ? 'Proyecto archivado' : 'Archivar proyecto'}
           </p>
-          <p className="mt-0.5 text-[11px] text-gray-500">
+          <p className="mt-0.5 text-[11px] text-ink-tertiary">
             {project.status === 'archived'
               ? 'Este proyecto está archivado.'
               : 'Lo retira de tu lista activa; podrás restaurarlo.'}

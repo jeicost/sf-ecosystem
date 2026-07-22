@@ -74,7 +74,7 @@ export function QuickActionButton({
           setSubmitError(null)
           setIsOpen(true)
         }}
-        className="card px-4 py-3 text-sm font-medium text-white hover:bg-white/5 transition-colors flex items-center gap-2 group"
+        className="card px-4 py-3 text-sm font-medium text-ink hover:bg-surface-hover transition-colors flex items-center gap-2 group"
       >
         <Sparkles size={16} className="text-purple-400 group-hover:text-purple-300" />
         {title}
@@ -83,8 +83,8 @@ export function QuickActionButton({
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="card p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-            <p className="text-sm text-gray-400 mb-4">{description}</p>
+            <h3 className="text-lg font-semibold text-ink mb-2">{title}</h3>
+            <p className="text-sm text-ink-secondary mb-4">{description}</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {inputForm}
@@ -93,7 +93,7 @@ export function QuickActionButton({
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-gray-300 bg-white/5 hover:bg-white/10 transition-colors"
+                  className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-ink-secondary bg-surface hover:bg-surface-hover transition-colors"
                   disabled={isLoading}
                 >
                   {t('actions.cancel', locale)}

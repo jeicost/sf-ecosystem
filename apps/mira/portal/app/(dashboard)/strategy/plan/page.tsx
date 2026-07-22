@@ -25,8 +25,8 @@ export default function Page() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(99,102,241,0.7)' }}>
           Strategy · Strategos
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">90-Day Plan</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">90-Day Plan</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           Three phases, three rocks each. Strategos builds you a plan you can actually execute.
         </p>
       </div>
@@ -42,7 +42,7 @@ export default function Page() {
                 {phase.num}
               </span>
               <div>
-                <p className="text-xs font-semibold text-white">{phase.label}</p>
+                <p className="text-xs font-semibold text-ink">{phase.label}</p>
                 <p className="text-[10px] font-medium" style={{ color: phase.color }}>{phase.theme}</p>
               </div>
             </div>
@@ -50,16 +50,16 @@ export default function Page() {
               {phase.rocks.map((rock, i) => (
                 <div key={i}
                   className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
-                  style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)' }}>
+                  style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
                   <div className="w-1 h-1 rounded-full shrink-0" style={{ background: `${phase.color}60` }} />
-                  <span className="text-[11px]" style={{ color: 'rgba(255,255,255,0.45)' }}>{rock}</span>
+                  <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{rock}</span>
                 </div>
               ))}
             </div>
             <div className="mt-4 pt-3 flex items-center justify-between"
-              style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+              style={{ borderTop: '1px solid var(--border-subtle)' }}>
               <span className="text-[9px] uppercase tracking-widest font-semibold"
-                style={{ color: 'rgba(255,255,255,0.2)' }}>0 / 3 rocks</span>
+                style={{ color: 'var(--text-muted)' }}>0 / 3 rocks</span>
               <span className="text-[9px] px-2 py-0.5 rounded-full"
                 style={{ background: `${phase.color}15`, color: phase.color }}>Pending</span>
             </div>

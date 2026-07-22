@@ -29,19 +29,19 @@ export default function Page() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(139,92,246,0.8)' }}>
           Innovation · Radar
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Trend Intelligence</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Trend Intelligence</h1>
+        <p className="text-sm mt-1 text-ink-tertiary">
           What appears in TechCrunch is already late. Radar detects signals before they're mainstream.
         </p>
       </div>
 
       {/* Legend */}
       <div className="flex items-center gap-4 mb-5">
-        <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.3)' }}>Horizon:</span>
+        <span className="text-[10px] text-ink-muted">Horizon:</span>
         {Object.entries(HORIZON_COLORS).map(([h, c]) => (
           <div key={h} className="flex items-center gap-1.5">
             <div className="w-2 h-2 rounded-full" style={{ background: c }} />
-            <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.5)' }}>{h}-term</span>
+            <span className="text-[10px] text-ink-tertiary">{h}-term</span>
           </div>
         ))}
       </div>
@@ -50,10 +50,9 @@ export default function Page() {
       <div className="grid grid-cols-2 gap-3 mb-8">
         {TRENDS.map(trend => (
           <div key={trend.title}
-            className="rounded-xl p-4"
-            style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+            className="rounded-xl p-4 bg-card border border-line">
             <div className="flex items-start justify-between gap-2 mb-3">
-              <span className="text-[12px] font-medium text-white leading-snug">{trend.title}</span>
+              <span className="text-[12px] font-medium text-ink leading-snug">{trend.title}</span>
               <span className="text-[9px] px-2 py-0.5 rounded-full shrink-0 font-semibold"
                 style={{ background: `${HORIZON_COLORS[trend.horizon]}15`, color: HORIZON_COLORS[trend.horizon] }}>
                 {trend.horizon}
@@ -66,7 +65,7 @@ export default function Page() {
               </span>
             </div>
             <div className="flex items-center gap-2 mt-3">
-              <div className="flex-1 h-1 rounded-full" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <div className="flex-1 h-1 rounded-full" style={{ background: 'var(--bg-surface-hover)' }}>
                 <div className="h-full rounded-full transition-all"
                   style={{ width: `${trend.strength}%`, background: HORIZON_COLORS[trend.horizon] }} />
               </div>

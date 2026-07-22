@@ -137,8 +137,8 @@ export default function DocumentUpload() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(59,130,246,0.8)', letterSpacing: '0.12em' }}>
           DOCUMENTATION
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Document Library</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Document Library</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           Upload brand documents, handbooks, and reference materials. These guide AI generation.
         </p>
       </div>
@@ -150,7 +150,7 @@ export default function DocumentUpload() {
             <AlertCircle size={20} style={{ color: '#EF4444' }} />
             <div>
               <p className="font-semibold text-red-400">Error</p>
-              <p className="text-sm text-gray-400 mt-1">{error}</p>
+              <p className="text-sm text-ink-secondary mt-1">{error}</p>
             </div>
           </div>
         </div>
@@ -162,7 +162,7 @@ export default function DocumentUpload() {
             <CheckCircle size={20} style={{ color: '#22C55E' }} />
             <div>
               <p className="font-semibold text-green-400">Upload successful</p>
-              <p className="text-sm text-gray-400 mt-1">Document added to your library</p>
+              <p className="text-sm text-ink-secondary mt-1">Document added to your library</p>
             </div>
           </div>
         </div>
@@ -182,14 +182,14 @@ export default function DocumentUpload() {
       >
         <div className="text-center">
           <Upload size={40} className="text-purple-400 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-white mb-1">Upload Document</h3>
-          <p className="text-sm text-gray-400 mb-4">Drag and drop or click to browse</p>
+          <h3 className="text-lg font-semibold text-ink mb-1">Upload Document</h3>
+          <p className="text-sm text-ink-secondary mb-4">Drag and drop or click to browse</p>
 
           <div className="flex gap-3 mb-4">
             <select
               value={docType}
               onChange={(e) => setDocType(e.target.value)}
-              className="px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+              className="px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             >
               <option value="brand-book">Brand Book</option>
               <option value="handbook">Handbook</option>
@@ -220,7 +220,7 @@ export default function DocumentUpload() {
 
       {/* Documents List */}
       <div>
-        <h2 className="text-lg font-semibold text-white mb-4">Library ({documents.length} documents)</h2>
+        <h2 className="text-lg font-semibold text-ink mb-4">Library ({documents.length} documents)</h2>
 
         {loading ? (
           <div className="card p-8 text-center">
@@ -228,18 +228,18 @@ export default function DocumentUpload() {
           </div>
         ) : documents.length === 0 ? (
           <div className="card p-8 text-center">
-            <File size={40} className="text-gray-600 mx-auto mb-3" />
-            <p className="text-gray-400">No documents yet. Upload your first document to get started.</p>
+            <File size={40} className="text-ink-tertiary mx-auto mb-3" />
+            <p className="text-ink-secondary">No documents yet. Upload your first document to get started.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {documents.map((doc) => (
-              <div key={doc.id} className="card px-4 py-3 flex items-center justify-between hover:bg-white/5 transition-colors group">
+              <div key={doc.id} className="card px-4 py-3 flex items-center justify-between hover:bg-surface-hover transition-colors group">
                 <div className="flex items-center gap-3 flex-1">
                   <File size={20} className="text-purple-400" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{doc.title}</p>
-                    <div className="flex gap-2 text-xs text-gray-500">
+                    <p className="text-sm font-medium text-ink truncate">{doc.title}</p>
+                    <div className="flex gap-2 text-xs text-ink-tertiary">
                       <span>{doc.doc_type}</span>
                       <span>•</span>
                       <span>{formatFileSize(doc.file_size)}</span>
@@ -251,7 +251,7 @@ export default function DocumentUpload() {
 
                 <button
                   onClick={() => handleDelete(doc.id)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                  className="p-2 rounded-lg text-ink-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
                 >
                   <Trash2 size={18} />
                 </button>

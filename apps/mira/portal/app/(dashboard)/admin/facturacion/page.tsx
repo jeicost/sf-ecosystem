@@ -45,8 +45,8 @@ export default function Page() {
         <div className="flex gap-3">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" style={{ color: '#F59E0B' }} />
           <div>
-            <p className="font-semibold text-white mb-1">{t('admin.billing.sample-warning', locale)}</p>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.5)' }}>
+            <p className="font-semibold text-ink mb-1">{t('admin.billing.sample-warning', locale)}</p>
+            <p className="text-sm text-ink-tertiary">
               {t('admin.billing.sample-desc', locale)}
             </p>
           </div>
@@ -66,15 +66,14 @@ export default function Page() {
       <Card radius="hero" padding="lg">
         <div
           className="px-1 py-3 flex items-center justify-between mb-4"
-          style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}
+          style={{ borderBottom: '1px solid var(--border-subtle)' }}
         >
           <span
-            className="text-[10px] uppercase tracking-widest font-semibold"
-            style={{ color: 'rgba(255,255,255,0.3)' }}
+            className="text-[10px] uppercase tracking-widest font-semibold text-ink-muted"
           >
             {t('admin.billing.client-billing', locale)}
           </span>
-          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <span className="text-[10px] text-ink-muted">
             {t('admin.billing.current-month', locale)}
           </span>
         </div>
@@ -85,12 +84,12 @@ export default function Page() {
               key={client.name}
               className="px-1 py-4 flex items-center justify-between"
               style={{
-                background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
-                borderBottom: i < CLIENTS.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                background: i % 2 === 0 ? 'transparent' : 'var(--bg-surface)',
+                borderBottom: i < CLIENTS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               }}
             >
               <div>
-                <p className="text-sm font-medium text-white">{client.name}</p>
+                <p className="text-sm font-medium text-ink">{client.name}</p>
                 {client.status === 'overdue' && (
                   <p className="text-[10px]" style={{ color: '#EF4444' }}>
                     Day {client.daysAgo} overdue — follow up
@@ -98,7 +97,7 @@ export default function Page() {
                 )}
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-white">{client.mrr}</span>
+                <span className="text-sm font-semibold text-ink">{client.mrr}</span>
                 <span className="text-[10px] px-2.5 py-0.5 rounded-full font-semibold" style={{ background: s.bg, color: s.text }}>
                   {t(s.label, locale)}
                 </span>

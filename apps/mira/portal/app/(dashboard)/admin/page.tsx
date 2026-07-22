@@ -86,7 +86,7 @@ export default function SuperAdminPage() {
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-violet-400">
             Buenos días, equipo 👋
           </p>
-          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-white">Clientes y Operaciones</h1>
+          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-ink">Clientes y Operaciones</h1>
           <p className="mt-2 text-sm text-ink-tertiary">Gestión unificada de todos los clientes y su progreso en MIRA</p>
         </div>
         <div className="flex items-center gap-2 text-xs">
@@ -94,13 +94,13 @@ export default function SuperAdminPage() {
             className="rounded-xl bg-violet-600 px-4 py-2.5 font-semibold text-white transition hover:bg-violet-500">
             + Generar entregable
           </Link>
-          <Link href="/admin/users" className="rounded-lg border border-gray-800 px-3 py-2 text-gray-400 hover:bg-white/5">
+          <Link href="/admin/users" className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
             👥 Usuarios
           </Link>
-          <Link href="/admin/facturacion" className="rounded-lg border border-gray-800 px-3 py-2 text-ink-tertiary hover:bg-white/5">
+          <Link href="/admin/facturacion" className="rounded-lg border border-line px-3 py-2 text-ink-tertiary hover:bg-surface-hover">
             💶 Facturación
           </Link>
-          <Link href="/admin/sistema" className="rounded-lg border border-gray-800 px-3 py-2 text-ink-tertiary hover:bg-white/5">
+          <Link href="/admin/sistema" className="rounded-lg border border-line px-3 py-2 text-ink-tertiary hover:bg-surface-hover">
             ⚙️ Sistema
           </Link>
         </div>
@@ -126,13 +126,13 @@ export default function SuperAdminPage() {
               <button
                 key={c.id}
                 onClick={() => openClient(c)}
-                className="group rounded-xl border border-line bg-card p-5 text-left transition hover:-translate-y-0.5 hover:border-gray-700 hover:shadow-lg"
+                className="group rounded-xl border border-line bg-card p-5 text-left transition hover:-translate-y-0.5 hover:shadow-lg"
                 style={{ boxShadow: `inset 0 3px 0 0 ${color}` }}
               >
                 <div className="flex items-center gap-3">
                   {c.logo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={c.logo_url} alt={c.name} className="h-9 w-9 rounded-lg bg-white/5 object-contain p-1" />
+                    <img src={c.logo_url} alt={c.name} className="h-9 w-9 rounded-lg bg-surface object-contain p-1" />
                   ) : (
                     <div
                       className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold"
@@ -142,7 +142,7 @@ export default function SuperAdminPage() {
                     </div>
                   )}
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-semibold text-white group-hover:text-white">{c.name}</p>
+                    <p className="truncate font-semibold text-ink group-hover:text-ink">{c.name}</p>
                     <p className="flex items-center gap-1.5 text-[10px] text-ink-tertiary">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                       Activo
@@ -153,20 +153,20 @@ export default function SuperAdminPage() {
 
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <p className="text-lg font-bold text-white">{c.reports}</p>
+                    <p className="text-lg font-bold text-ink">{c.reports}</p>
                     <p className="font-mono text-[9px] uppercase text-ink-tertiary">Informes</p>
                   </div>
                   <div>
-                    <p className="text-lg font-bold text-white">{c.documents}</p>
+                    <p className="text-lg font-bold text-ink">{c.documents}</p>
                     <p className="font-mono text-[9px] uppercase text-ink-tertiary">Docs</p>
                   </div>
                   <div>
-                    <p className="text-lg font-bold text-white">{c.drive_docs}</p>
+                    <p className="text-lg font-bold text-ink">{c.drive_docs}</p>
                     <p className="font-mono text-[9px] uppercase text-ink-tertiary">Drive</p>
                   </div>
                 </div>
 
-                <div className="mt-4 flex items-center justify-between border-t border-gray-800 pt-3 text-[10px] text-ink-tertiary">
+                <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-[10px] text-ink-tertiary">
                   <span>
                     {c.last_deliverable
                       ? `Último: ${new Date(c.last_deliverable).toLocaleDateString('es-ES')}`

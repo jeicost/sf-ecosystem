@@ -36,7 +36,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     isCritical: true,
     affiliateUrl: 'https://canva.com/affiliate',
     status: 'disconnected',
-    authType: 'api-key',
+    authType: 'oauth',
   },
   {
     id: 'figma',

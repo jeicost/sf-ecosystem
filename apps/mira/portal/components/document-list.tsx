@@ -50,7 +50,7 @@ export default function DocumentList({
     return (
       <div className="space-y-3">
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-24 bg-white/3 rounded-lg animate-pulse" />
+          <div key={i} className="h-24 bg-surface rounded-lg animate-pulse" />
         ))}
       </div>
     )
@@ -59,8 +59,8 @@ export default function DocumentList({
   if (documents.length === 0) {
     return (
       <div className="text-center py-12">
-        <FileText size={32} className="mx-auto mb-3" style={{ color: 'rgba(255,255,255,0.2)' }} />
-        <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <FileText size={32} className="mx-auto mb-3 text-ink-muted" />
+        <p className="text-sm text-ink-tertiary">
           No hay documentos subidos aún
         </p>
       </div>
@@ -76,15 +76,15 @@ export default function DocumentList({
         return (
           <div
             key={doc.id}
-            className="card px-4 py-3 flex items-start justify-between group hover:bg-white/6 transition-all"
+            className="card px-4 py-3 flex items-start justify-between group hover:bg-surface-hover transition-all"
           >
             <div className="flex-1 min-w-0">
               {/* Header */}
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-lg">{docTypeInfo.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-white truncate">{doc.title}</p>
-                  <p className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                  <p className="text-sm font-medium text-ink truncate">{doc.title}</p>
+                  <p className="text-xs text-ink-tertiary">
                     {docTypeInfo.label} • {formatFileSize(doc.file_size)}
                   </p>
                 </div>
@@ -104,14 +104,14 @@ export default function DocumentList({
                     </span>
                   ))}
                   {doc.tags.length > 3 && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ color: 'rgba(255,255,255,0.3)' }}>
+                    <span className="text-[9px] px-1.5 py-0.5 rounded text-ink-muted">
                       +{doc.tags.length - 3}
                     </span>
                   )}
                 </div>
               )}
 
-              <div className="flex items-center gap-1 text-[11px]" style={{ color: 'rgba(255,255,255,0.3)' }}>
+              <div className="flex items-center gap-1 text-[11px] text-ink-muted">
                 <Calendar size={12} />
                 <span>{relativeTime}</span>
               </div>
@@ -121,7 +121,7 @@ export default function DocumentList({
             <div className="ml-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={() => onPreview(doc.id)}
-                className="p-2 rounded-lg hover:bg-white/5 transition-all"
+                className="p-2 rounded-lg hover:bg-surface-hover transition-all"
                 title="Vista previa"
               >
                 <Eye size={14} style={{ color: '#8B5CF6' }} />
@@ -134,7 +134,7 @@ export default function DocumentList({
                 className="p-2 rounded-lg hover:bg-red-500/10 transition-all"
                 title="Eliminar"
               >
-                <Trash2 size={14} style={{ color: deletingId === doc.id ? '#EF4444' : 'rgba(255,255,255,0.3)' }} />
+                <Trash2 size={14} style={{ color: deletingId === doc.id ? '#EF4444' : 'var(--text-muted)' }} />
               </button>
             </div>
           </div>

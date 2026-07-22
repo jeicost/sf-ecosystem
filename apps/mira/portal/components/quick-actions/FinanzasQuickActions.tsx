@@ -26,19 +26,19 @@ export function FinanzasQuickActions() {
             type="number"
             name="current_revenue"
             placeholder="Current monthly revenue (€)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="number"
             name="growth_rate"
             placeholder="Expected growth rate (%)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <select
             name="scenario"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="conservative">Conservative</option>
@@ -60,13 +60,13 @@ export function FinanzasQuickActions() {
             type="text"
             name="period"
             placeholder="Analysis period (e.g., Q3 2026)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <textarea
             name="expenses"
             placeholder="List main expenses categories"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm resize-none h-20"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm resize-none h-20"
             required
           />
         </div>
@@ -83,14 +83,14 @@ export function FinanzasQuickActions() {
           <textarea
             name="current_expenses"
             placeholder="Describe current spending structure"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm resize-none h-20"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm resize-none h-20"
             required
           />
           <input
             type="number"
             name="target_savings"
             placeholder="Target savings goal (%)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
         </div>
@@ -101,7 +101,7 @@ export function FinanzasQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
+        <h3 className="text-lg font-semibold text-ink mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

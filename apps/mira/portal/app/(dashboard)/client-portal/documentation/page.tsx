@@ -172,17 +172,17 @@ export default function DocumentationPage() {
 
           {/* Upload Form */}
           <div className="card px-6 py-5">
-            <p className="text-sm font-semibold text-white mb-4">Subir Nuevo Documento</p>
+            <p className="text-sm font-semibold text-ink mb-4">Subir Nuevo Documento</p>
 
             <div className="space-y-4">
               {/* Document Type */}
               <div>
-                <label className="block text-xs font-medium text-white mb-2">Tipo de Documento</label>
+                <label className="block text-xs font-medium text-ink mb-2">Tipo de Documento</label>
                 <select
                   value={docType}
                   onChange={(e) => setDocType(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 >
                   <option value="brand_book">📕 Brand Book</option>
                   <option value="product_docs">📗 Product Docs</option>
@@ -195,27 +195,27 @@ export default function DocumentationPage() {
 
               {/* Title */}
               <div>
-                <label className="block text-xs font-medium text-white mb-2">Título del Documento</label>
+                <label className="block text-xs font-medium text-ink mb-2">Título del Documento</label>
                 <input
                   type="text"
                   value={docTitle}
                   onChange={(e) => setDocTitle(e.target.value)}
                   placeholder="Ej: Brand Book 2026, Product Features v2.0"
                   className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
               </div>
 
               {/* Tags */}
               <div>
-                <label className="block text-xs font-medium text-white mb-2">Tags (separados por comas, opcional)</label>
+                <label className="block text-xs font-medium text-ink mb-2">Tags (separados por comas, opcional)</label>
                 <input
                   type="text"
                   value={docTags}
                   onChange={(e) => setDocTags(e.target.value)}
                   placeholder="Ej: brand, visual, tone, logo"
                   className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ background: 'rgba(30,41,59,0.5)', color: 'white', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
               </div>
 
@@ -225,7 +225,7 @@ export default function DocumentationPage() {
               {error && (
                 <div className="p-3 rounded-lg flex items-start gap-2" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
                   <AlertCircle size={14} className="mt-0.5" style={{ color: '#EF4444' }} />
-                  <p className="text-xs text-white">{error}</p>
+                  <p className="text-xs text-ink">{error}</p>
                 </div>
               )}
             </div>
@@ -238,21 +238,21 @@ export default function DocumentationPage() {
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
               Sobre Documentación
             </p>
-            <div className="space-y-3 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <div className="space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
               <div>
-                <p className="font-medium text-white mb-1">Formatos soportados</p>
+                <p className="font-medium text-ink mb-1">Formatos soportados</p>
                 <p>PDF, Word (.docx), Texto (.txt)</p>
               </div>
               <div>
-                <p className="font-medium text-white mb-1">Tamaño máximo</p>
+                <p className="font-medium text-ink mb-1">Tamaño máximo</p>
                 <p>50 MB por archivo</p>
               </div>
               <div>
-                <p className="font-medium text-white mb-1">Indexación automática</p>
+                <p className="font-medium text-ink mb-1">Indexación automática</p>
                 <p>Los docs se indexan para búsqueda semántica al subir</p>
               </div>
               <div>
-                <p className="font-medium text-white mb-1">Privacidad</p>
+                <p className="font-medium text-ink mb-1">Privacidad</p>
                 <p>Solo tú y tus agentes pueden acceder estos docs</p>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function DocumentationPage() {
 
       {/* Documents List */}
       <div className="mt-10">
-        <h2 className="text-lg font-semibold text-white mb-4">Documentos Actuales</h2>
+        <h2 className="text-lg font-semibold text-ink mb-4">Documentos Actuales</h2>
         <DocumentList
           documents={documents}
           onDelete={handleDelete}

@@ -22,8 +22,8 @@ export default function Page() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(245,158,11,0.8)' }}>
           Finance · Midas
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Personal Wealth Plan</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Personal Wealth Plan</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           Wealth isn't built by earning more — it's built with systems.
         </p>
       </div>
@@ -33,22 +33,22 @@ export default function Page() {
         {WEALTH_METRICS.map(m => (
           <div key={m.label} className="card px-4 py-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 {m.label}
               </span>
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: m.color }} />
             </div>
-            <p className="text-xl font-bold text-white">{m.value}</p>
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{m.delta}</p>
+            <p className="text-xl font-bold text-ink">{m.value}</p>
+            <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>{m.delta}</p>
           </div>
         ))}
       </div>
 
       {/* Cash allocation visual */}
       <div className="rounded-2xl p-5 mb-8"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        style={{ background: 'var(--bg-card)', border: '1px solid var(--border)' }}>
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-4"
-          style={{ color: 'rgba(255,255,255,0.3)' }}>Income allocation</p>
+          style={{ color: 'var(--text-muted)' }}>Income allocation</p>
 
         {/* Bar */}
         <div className="flex rounded-full overflow-hidden h-4 mb-4">
@@ -62,7 +62,7 @@ export default function Page() {
           {ALLOCATION.map(a => (
             <div key={a.label} className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full" style={{ background: a.color }} />
-              <span className="text-[11px] text-white">{a.label}</span>
+              <span className="text-[11px] text-ink">{a.label}</span>
               <span className="text-[10px] font-bold" style={{ color: a.color }}>{a.pct}%</span>
             </div>
           ))}

@@ -56,8 +56,8 @@ export default function CrmPage() {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-red-400">MIRA Sales</p>
-          <h1 className="mt-1 text-3xl font-bold text-white">CRM</h1>
-          <p className="mt-2 max-w-xl text-sm text-gray-500">
+          <h1 className="mt-1 text-3xl font-bold text-ink">CRM</h1>
+          <p className="mt-2 max-w-xl text-sm text-ink-tertiary">
             Contactos promovidos desde tu pipeline. Cada lead que envías a CRM desde{' '}
             <Link href="/comercial/pipeline" className="text-red-400 hover:underline">Pipeline</Link>{' '}
             aparece aquí y en el SF CRM completo.
@@ -77,19 +77,19 @@ export default function CrmPage() {
         <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
       ) : !data ? (
         <div className="flex items-center justify-center py-24">
-          <Loader2 size={18} className="animate-spin text-[#444]" />
+          <Loader2 size={18} className="animate-spin text-ink-muted" />
         </div>
       ) : !data.workspace ? (
-        <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 py-12 text-center">
-          <p className="mb-1 text-sm text-gray-400">Este cliente aún no tiene workspace en el CRM.</p>
-          <p className="text-xs text-gray-600">
+        <div className="rounded-2xl border border-dashed border-line bg-surface py-12 text-center">
+          <p className="mb-1 text-sm text-ink-secondary">Este cliente aún no tiene workspace en el CRM.</p>
+          <p className="text-xs text-ink-tertiary">
             Pide a tu contacto de Startup Factory que active el puente para poder promover leads.
           </p>
         </div>
       ) : data.contacts.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-white/10 bg-white/2 py-12 text-center">
-          <p className="mb-1 text-sm text-gray-400">Aún no hay contactos promovidos.</p>
-          <p className="mb-4 text-xs text-gray-600">
+        <div className="rounded-2xl border border-dashed border-line bg-surface py-12 text-center">
+          <p className="mb-1 text-sm text-ink-secondary">Aún no hay contactos promovidos.</p>
+          <p className="mb-4 text-xs text-ink-tertiary">
             Ve a tu pipeline y usa «Enviar a CRM» en un lead cualificado — aparecerá aquí al momento.
           </p>
           <Link
@@ -102,14 +102,14 @@ export default function CrmPage() {
       ) : (
         <>
           <div className="mb-4 flex items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-gray-500">
+            <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-tertiary">
               {data.contacts.length} contactos · workspace {data.workspace}
             </p>
           </div>
-          <div className="overflow-x-auto rounded-2xl border border-white/8">
+          <div className="overflow-x-auto rounded-2xl border border-line">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-white/10 bg-white/3 font-mono text-[9px] uppercase tracking-[0.15em] text-gray-500">
+                <tr className="border-b border-line bg-surface font-mono text-[9px] uppercase tracking-[0.15em] text-ink-tertiary">
                   <th className="px-4 py-3">Contacto</th>
                   <th className="px-4 py-3">Empresa</th>
                   <th className="px-4 py-3">Email</th>
@@ -121,15 +121,15 @@ export default function CrmPage() {
               </thead>
               <tbody>
                 {data.contacts.map((c) => (
-                  <tr key={c.id} className="border-b border-white/5 transition hover:bg-white/3">
+                  <tr key={c.id} className="border-b border-line-subtle transition hover:bg-surface-hover">
                     <td className="px-4 py-3">
-                      <p className="font-medium text-white">
+                      <p className="font-medium text-ink">
                         {[c.first_name, c.last_name].filter(Boolean).join(' ') || '—'}
                       </p>
-                      {c.title && <p className="text-[11px] text-gray-500">{c.title}</p>}
+                      {c.title && <p className="text-[11px] text-ink-tertiary">{c.title}</p>}
                     </td>
-                    <td className="px-4 py-3 text-gray-300">{c.company_name || '—'}</td>
-                    <td className="px-4 py-3 text-gray-400">{c.email || '—'}</td>
+                    <td className="px-4 py-3 text-ink-secondary">{c.company_name || '—'}</td>
+                    <td className="px-4 py-3 text-ink-secondary">{c.email || '—'}</td>
                     <td className="px-4 py-3">
                       <span
                         className="rounded-full px-2 py-0.5 font-mono text-[10px] font-bold"
@@ -138,9 +138,9 @@ export default function CrmPage() {
                         {c.hot_score ?? '—'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-gray-400">{c.stage || '—'}</td>
-                    <td className="px-4 py-3 text-gray-500">{c.source || '—'}</td>
-                    <td className="px-4 py-3 text-gray-500">
+                    <td className="px-4 py-3 text-ink-secondary">{c.stage || '—'}</td>
+                    <td className="px-4 py-3 text-ink-tertiary">{c.source || '—'}</td>
+                    <td className="px-4 py-3 text-ink-tertiary">
                       {new Date(c.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
                     </td>
                   </tr>

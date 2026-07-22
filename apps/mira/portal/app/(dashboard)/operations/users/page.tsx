@@ -141,7 +141,7 @@ export default function AdminUsersPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">🔐 Super Admin — Gestión de Usuarios</h1>
-        <p className="text-gray-500 mt-2">
+        <p className="text-ink-tertiary mt-2">
           Total de usuarios: {users.length} | Proyectos activos: {users.reduce((sum, u) => sum + u.projects.length, 0)}
         </p>
       </div>

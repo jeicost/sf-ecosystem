@@ -23,20 +23,20 @@ export default function EmptyState({
     <div
       className={`card rounded-2xl p-12 flex flex-col items-center justify-center text-center ${className}`}
       style={{
-        background: 'rgba(255,255,255,0.04)',
-        border: '1px solid rgba(255,255,255,0.09)',
+        background: 'var(--bg-card)',
+        border: '1px solid var(--border)',
       }}
     >
       {icon && (
-        <div className="mb-4 text-[rgba(255,255,255,0.35)]">
+        <div className="mb-4 text-ink-tertiary">
           {icon}
         </div>
       )}
 
-      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+      <h3 className="text-lg font-semibold text-ink mb-2">{title}</h3>
 
       {description && (
-        <p className="text-sm mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <p className="text-sm mb-6" style={{ color: 'var(--text-tertiary)' }}>
           {description}
         </p>
       )}

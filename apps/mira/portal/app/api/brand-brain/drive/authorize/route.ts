@@ -20,8 +20,15 @@ export async function POST(req: NextRequest) {
     const body = (await req.json()) as Partial<AuthorizeRequest>
     const { redirectUrl, clientId: explicitClientId, returnTo } = body
 
-    if (!redirectUrl) {
-      return NextResponse.json({ error: 'Missing redirectUrl' }, { status: 400 })
+    // The redirect_uri sent to Google MUST match the one the callback uses for
+    // the code exchange, and el callback exige GOOGLE_REDIRECT_URI — sin él, el
+    // flujo arrancaría pero el exchange fallaría siempre. Fallamos temprano.
+    const redirectUri = process.env.GOOGLE_REDIRECT_URI
+    if (!redirectUri) {
+      return NextResponse.json(
+        { error: 'GOOGLE_REDIRECT_URI no configurado — el flujo de Drive no puede completarse' },
+        { status: 503 }
+      )
     }
 
     const cookieStore = await cookies()
@@ -72,12 +79,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Build OAuth2 authorization URL
-    const scopes = ['https://www.googleapis.com/auth/drive.readonly']
+    // drive.file permite crear/escribir SOLO ficheros creados por la app
+    // (necesario para exportar entregables al Drive del cliente). Conexiones
+    // antiguas solo-readonly caen al fallback de Service Account hasta re-autorizar.
+    const scopes = [
+      'https://www.googleapis.com/auth/drive.readonly',
+      'https://www.googleapis.com/auth/drive.file',
+    ]
     const state = Buffer.from(JSON.stringify({ clientId, timestamp: Date.now(), returnTo: typeof returnTo === 'string' ? returnTo : undefined })).toString('base64')
 
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth')
     authUrl.searchParams.set('client_id', googleClientId)
-    authUrl.searchParams.set('redirect_uri', redirectUrl)
+    authUrl.searchParams.set('redirect_uri', redirectUri)
     authUrl.searchParams.set('response_type', 'code')
     authUrl.searchParams.set('scope', scopes.join(' '))
     authUrl.searchParams.set('state', state)

@@ -67,27 +67,27 @@ export default function DeliverableCard({
 
       <p className="mb-3 text-[26px] leading-none">{icon}</p>
 
-      <h3 className={`mb-2 text-[17px] font-bold text-white ${titleFontClass}`}>{title}</h3>
+      <h3 className={`mb-2 text-[17px] font-bold text-ink ${titleFontClass}`}>{title}</h3>
 
-      <p className="flex-1 text-[13px] leading-relaxed text-gray-400 line-clamp-3">{description}</p>
+      <p className="flex-1 text-[13px] leading-relaxed text-ink-secondary line-clamp-3">{description}</p>
 
       {/* Version history toggle */}
       {history.length > 0 && (
         <button
           onClick={() => setShowHistory((v) => !v)}
-          className="mt-3 self-start font-mono text-[10px] text-gray-500 underline decoration-dotted underline-offset-4 transition-colors hover:text-gray-300"
+          className="mt-3 self-start font-mono text-[10px] text-ink-tertiary underline decoration-dotted underline-offset-4 transition-colors hover:text-ink-secondary"
         >
           {showHistory ? '− ocultar historial' : `+ ${history.length} ${history.length === 1 ? 'versión anterior' : 'versiones anteriores'}`}
         </button>
       )}
 
       {showHistory && history.length > 0 && (
-        <div className="mt-2 space-y-1 rounded-lg border border-white/5 bg-black/20 p-2">
+        <div className="mt-2 space-y-1 rounded-lg border border-line-subtle bg-surface p-2">
           {history.map((gen) => (
             <Link
               key={gen.id}
               href={`/toolkit/report/${gen.id}`}
-              className="flex items-center justify-between rounded-md px-2 py-1.5 text-[11px] text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+              className="flex items-center justify-between rounded-md px-2 py-1.5 text-[11px] text-ink-secondary transition-colors hover:bg-surface-hover hover:text-ink"
             >
               <span className="font-mono">{formatDateTime(gen.completed_at || gen.created_at)}</span>
               <span style={{ color: brandColor }}>abrir →</span>
@@ -97,19 +97,19 @@ export default function DeliverableCard({
       )}
 
       {/* Footer: score or date + CTA */}
-      <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4">
+      <div className="mt-5 flex items-center justify-between border-t border-line-subtle pt-4">
         {score !== null ? (
           <div>
-            <p className="mb-0.5 text-[10px] text-gray-500">Score</p>
+            <p className="mb-0.5 text-[10px] text-ink-tertiary">Score</p>
             <p className="leading-none">
               <span className={`text-[22px] font-bold ${titleFontClass}`} style={{ color: brandColor }}>
                 {score}
               </span>
-              <span className="ml-0.5 text-[11px] text-gray-500">/100</span>
+              <span className="ml-0.5 text-[11px] text-ink-tertiary">/100</span>
             </p>
           </div>
         ) : (
-          <p className="font-mono text-[10px] text-gray-500">
+          <p className="font-mono text-[10px] text-ink-tertiary">
             {formatDateTime(latest.completed_at || latest.created_at)}
           </p>
         )}

@@ -90,7 +90,15 @@ export default function ToolConnectionModal({
     setError(null)
     try {
       const redirectUrl = `/api/integrations/oauth/${tool.id}/start?clientId=${new URLSearchParams(window.location.search).get('clientId') || ''}`
-      window.location.href = redirectUrl
+      // Pre-flight: si el endpoint responde JSON de error (503 sin envs, 500),
+      // lo mostramos en el modal en vez de navegar a una página de JSON crudo.
+      const probe = await fetch(redirectUrl, { redirect: 'manual' })
+      if (probe.type === 'opaqueredirect' || probe.ok) {
+        window.location.href = redirectUrl
+        return
+      }
+      const body = await probe.json().catch(() => null)
+      setError(body?.error || t('integrations.modal.oauth-error', locale))
     } catch (err) {
       const message =
         err instanceof Error ? err.message : t('integrations.modal.oauth-error', locale)

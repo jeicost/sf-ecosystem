@@ -176,14 +176,14 @@ export default function ToolRunnerPage({
     <div className="px-8 py-8 max-w-4xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <p className="text-xs uppercase tracking-widest font-semibold mb-2 text-gray-500">
+        <p className="text-xs uppercase tracking-widest font-semibold mb-2 text-ink-tertiary">
           Toolkit
         </p>
         <div className="flex items-start gap-4">
           <span className="text-4xl">{config.icon}</span>
           <div>
-            <h1 className="text-3xl font-semibold text-white">{config.title}</h1>
-            <p className="text-sm text-gray-400 mt-1">
+            <h1 className="text-3xl font-semibold text-ink">{config.title}</h1>
+            <p className="text-sm text-ink-secondary mt-1">
               {config.timing} • {config.subtitle}
             </p>
           </div>
@@ -206,7 +206,7 @@ export default function ToolRunnerPage({
             <AlertCircle size={20} style={{ color: '#EF4444' }} />
             <div>
               <p className="font-semibold text-red-400">Error</p>
-              <p className="text-sm text-gray-400 mt-1">{error}</p>
+              <p className="text-sm text-ink-secondary mt-1">{error}</p>
             </div>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function ToolRunnerPage({
             <Loader2 size={20} className="animate-spin" style={{ color: '#3B82F6' }} />
             <div>
               <p className="font-semibold text-blue-400">Generando...</p>
-              <p className="text-sm text-gray-400 mt-1">Claude está analizando tu solicitud (puede tomar 30-60 segundos)</p>
+              <p className="text-sm text-ink-secondary mt-1">Claude está analizando tu solicitud (puede tomar 30-60 segundos)</p>
             </div>
           </div>
         </div>
@@ -232,7 +232,7 @@ export default function ToolRunnerPage({
             <CheckCircle size={20} style={{ color: '#22C55E' }} />
             <div>
               <p className="font-semibold text-green-400">Generated successfully</p>
-              <p className="text-sm text-gray-400 mt-1">Your {config.title} is ready below</p>
+              <p className="text-sm text-ink-secondary mt-1">Your {config.title} is ready below</p>
             </div>
           </div>
         </div>
@@ -243,13 +243,13 @@ export default function ToolRunnerPage({
         <form onSubmit={handleSubmit} className="space-y-6 mb-8">
           {config.fields.map((field) => (
             <div key={field.name}>
-              <label className="block text-sm font-semibold text-white mb-2">
+              <label className="block text-sm font-semibold text-ink mb-2">
                 {field.label}
                 {field.required && <span className="text-red-400"> *</span>}
               </label>
 
               {field.hint && (
-                <p className="text-xs text-gray-500 mb-2">{field.hint}</p>
+                <p className="text-xs text-ink-tertiary mb-2">{field.hint}</p>
               )}
 
               {field.type === 'text' && (
@@ -259,7 +259,7 @@ export default function ToolRunnerPage({
                   value={formData[field.name] || ''}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   placeholder={field.placeholder}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors"
                   required={field.required}
                 />
               )}
@@ -270,7 +270,7 @@ export default function ToolRunnerPage({
                   value={formData[field.name] || ''}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   placeholder={field.placeholder}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 focus:border-purple-500 focus:outline-none transition-colors resize-none h-24"
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-none h-24"
                   required={field.required}
                 />
               )}
@@ -280,7 +280,7 @@ export default function ToolRunnerPage({
                   name={field.name}
                   value={formData[field.name] || ''}
                   onChange={(e) => handleChange(field.name, e.target.value)}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white focus:border-purple-500 focus:outline-none transition-colors"
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink focus:border-purple-500 focus:outline-none transition-colors"
                   required={field.required}
                 >
                   <option value="">Selecciona...</option>
@@ -307,14 +307,14 @@ export default function ToolRunnerPage({
                     value={formData[field.name] || ''}
                     onChange={(e) => handleChange(field.name, e.target.value)}
                     placeholder="#FF4500"
-                    className="flex-1 px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+                    className="flex-1 px-4 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
                     required={field.required}
                   />
                 </div>
               )}
 
               {field.example && (
-                <p className="text-xs text-gray-600 mt-1">Ej: {field.example}</p>
+                <p className="text-xs text-ink-tertiary mt-1">Ej: {field.example}</p>
               )}
             </div>
           ))}
@@ -344,7 +344,7 @@ export default function ToolRunnerPage({
         <div className="space-y-6">
           <ResultComponent data={resultData} />
           {pollingQueueId && (
-            <div className="flex gap-3 pt-6 border-t border-white/5">
+            <div className="flex gap-3 pt-6 border-t border-line-subtle">
               <button
                 onClick={() => {
                   if (pollingQueueId) {
@@ -357,7 +357,7 @@ export default function ToolRunnerPage({
               </button>
               <button
                 onClick={() => setResultData(null)}
-                className="px-6 py-3 rounded-lg font-semibold text-white bg-white/10 hover:bg-white/20 transition-colors text-sm"
+                className="px-6 py-3 rounded-lg font-semibold text-ink bg-surface hover:bg-surface-hover transition-colors text-sm"
               >
                 ↻ Nuevamente
               </button>

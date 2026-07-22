@@ -34,7 +34,7 @@ export default function SectionSwitcher({ activeSlug, userPlan = 'admin' }: Sect
   )
 
   return (
-    <div className="px-2 py-2 border-b border-[#131313]">
+    <div className="px-2 py-2 border-b border-line-subtle">
       <div className="flex gap-0.5">
         {visibleSections.map((section) => {
           const isActive = section.slug === activeSlug
@@ -49,10 +49,10 @@ export default function SectionSwitcher({ activeSlug, userPlan = 'admin' }: Sect
                 className={clsx(
                   'w-full py-2 rounded-lg text-[9px] font-medium flex flex-col items-center gap-0.5 transition-all duration-200',
                   isActive
-                    ? 'text-white'
+                    ? 'text-ink'
                     : accessible
-                      ? 'text-[#444] hover:text-[#888] hover:bg-white/4'
-                      : 'text-[#252525] cursor-not-allowed'
+                      ? 'text-ink-muted hover:text-ink-secondary hover:bg-surface-hover'
+                      : 'text-ink-muted cursor-not-allowed'
                 )}
                 style={isActive ? {
                   background: `${section.color}18`,
@@ -78,8 +78,8 @@ export default function SectionSwitcher({ activeSlug, userPlan = 'admin' }: Sect
 
               {/* Lock tooltip */}
               {showTip && (
-                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-[#111] border border-[#222] rounded-lg text-[10px] text-[#777] whitespace-nowrap z-50 shadow-xl">
-                  <span className="block text-white text-[10px] font-medium mb-0.5">Locked</span>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2.5 py-1.5 bg-card border border-line-subtle rounded-lg text-[10px] text-ink-tertiary whitespace-nowrap z-50 shadow-xl">
+                  <span className="block text-ink text-[10px] font-medium mb-0.5">Locked</span>
                   Upgrade your plan to unlock
                 </div>
               )}

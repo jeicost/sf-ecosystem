@@ -56,7 +56,7 @@ export default function ClientPageQuickAccess() {
 
   if (loading || !client) {
     return (
-      <div className="card px-6 py-4 animate-pulse bg-white/3 h-24" />
+      <div className="card px-6 py-4 animate-pulse bg-surface h-24" />
     )
   }
 
@@ -64,7 +64,7 @@ export default function ClientPageQuickAccess() {
 
   return (
     <Link href={clientPageUrl}>
-      <div className="card px-6 py-4 hover:bg-white/8 transition-all cursor-pointer group">
+      <div className="card px-6 py-4 hover:bg-surface-hover transition-all cursor-pointer group">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-4 flex-1">
             <div className="flex-shrink-0">
@@ -81,18 +81,18 @@ export default function ClientPageQuickAccess() {
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-[#888] uppercase tracking-wider mb-1">
+              <p className="text-xs font-medium text-ink-tertiary uppercase tracking-wider mb-1">
                 Client Page
               </p>
-              <h3 className="text-sm font-semibold text-white">{client.name}</h3>
-              <p className="text-xs text-[#666] mt-1">
+              <h3 className="text-sm font-semibold text-ink">{client.name}</h3>
+              <p className="text-xs text-ink-tertiary mt-1">
                 {reportCount} deliverable{reportCount !== 1 ? 's' : ''} created
               </p>
             </div>
           </div>
           <ArrowRight
             size={16}
-            className="text-[#555] group-hover:text-blue-400 transition-colors flex-shrink-0 mt-1"
+            className="text-ink-muted group-hover:text-blue-400 transition-colors flex-shrink-0 mt-1"
           />
         </div>
       </div>

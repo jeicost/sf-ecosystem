@@ -12,7 +12,7 @@
 
 import { createMessageForClient } from '@/lib/anthropic-client'
 import * as mammoth from 'mammoth'
-import type { adminClient } from '@/lib/supabase'
+import { adminClient } from '@/lib/supabase'
 
 // pdf-parse v2: class-based API (PDFParse). The v1 default-function API no longer exists.
 const { PDFParse } = require('pdf-parse')
@@ -187,6 +187,23 @@ export async function getClientAccessToken(
   }
 
   return { token: accessToken }
+}
+
+/**
+ * Convenience wrapper: returns a valid access token for the client's Drive
+ * connection (refreshing it if needed via getClientAccessToken), or null if
+ * the client has no authorized Drive connection.
+ */
+export async function getClientDriveAccessToken(
+  clientId: string,
+  admin: AdminClient = adminClient()
+): Promise<string | null> {
+  const result = await getClientAccessToken(admin, clientId)
+  if ('error' in result) {
+    console.warn(`Client Drive token unavailable for client ${clientId}: ${result.error}`)
+    return null
+  }
+  return result.token
 }
 
 // ─── Drive API helpers ───────────────────────────────────────────

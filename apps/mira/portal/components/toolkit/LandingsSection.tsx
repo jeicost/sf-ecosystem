@@ -18,18 +18,18 @@ export default function LandingsSection({ landings, brandColor, titleFontClass =
   return (
     <div className="mt-12">
       {/* Folder header */}
-      <div className="flex items-center gap-2.5 rounded-t-xl border border-b-0 border-white/8 bg-white/[0.03] px-4 py-3">
+      <div className="flex items-center gap-2.5 rounded-t-xl border border-b-0 border-line bg-card px-4 py-3">
         <span className="text-sm opacity-70">📁</span>
-        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-gray-500">
+        <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-tertiary">
           Landings activas
         </span>
-        <span className="rounded-full bg-white/8 px-2 py-0.5 font-mono text-[9px] text-gray-500">
+        <span className="rounded-full bg-surface-hover px-2 py-0.5 font-mono text-[9px] text-ink-tertiary">
           {landings.length}
         </span>
       </div>
 
       {/* Folder body */}
-      <div className="grid gap-3 rounded-b-xl border border-white/8 bg-white/[0.03] p-4 sm:grid-cols-1">
+      <div className="grid gap-3 rounded-b-xl border border-line bg-card p-4 sm:grid-cols-1">
         {landings.map((landing) => (
           <a
             key={landing.url}
@@ -39,15 +39,15 @@ export default function LandingsSection({ landings, brandColor, titleFontClass =
             className="card group flex items-center gap-4 rounded-xl p-4 transition-all duration-200 hover:translate-x-1"
             style={{ ['--card-color' as any]: brandColor }}
           >
-            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-white/8 bg-white/[0.03] text-xl">
+            <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg border border-line bg-surface text-xl">
               🌐
             </div>
             <div className="min-w-0 flex-1">
-              <p className={`mb-0.5 truncate text-sm font-bold text-white ${titleFontClass}`}>
+              <p className={`mb-0.5 truncate text-sm font-bold text-ink ${titleFontClass}`}>
                 {landing.title}
               </p>
               {landing.meta && (
-                <p className="truncate font-mono text-[10px] text-gray-500">{landing.meta}</p>
+                <p className="truncate font-mono text-[10px] text-ink-tertiary">{landing.meta}</p>
               )}
             </div>
             <span

@@ -32,7 +32,7 @@ export function ClientCard({
   const statusColor = {
     active: 'bg-green-100 text-green-800',
     onboarding: 'bg-yellow-100 text-yellow-800',
-    archived: 'bg-gray-100 text-gray-800',
+    archived: 'bg-surface text-ink-secondary',
   }[status]
 
   const statusLabel = {
@@ -42,12 +42,12 @@ export function ClientCard({
   }[status]
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow">
+    <div className="bg-card border border-line rounded-lg p-6 hover:shadow-lg transition-shadow">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{name}</h3>
-          <p className="text-sm text-gray-500 mt-1">
+          <h3 className="text-lg font-semibold text-ink">{name}</h3>
+          <p className="text-sm text-ink-tertiary mt-1">
             {daysActive} days active
           </p>
         </div>
@@ -62,28 +62,28 @@ export function ClientCard({
         <div className="bg-blue-50 p-3 rounded-lg">
           <div className="flex items-center gap-2 mb-1">
             <Zap size={14} className="text-blue-600" />
-            <span className="text-xs text-gray-600">Agents Ready</span>
+            <span className="text-xs text-ink-tertiary">Agents Ready</span>
           </div>
           <p className="text-xl font-bold text-blue-900">{agentsReady}</p>
-          <p className="text-xs text-gray-500">of 30</p>
+          <p className="text-xs text-ink-tertiary">of 30</p>
         </div>
 
         {/* Storage */}
         <div className="bg-purple-50 p-3 rounded-lg">
           <div className="flex items-center gap-2 mb-1">
             <HardDrive size={14} className="text-purple-600" />
-            <span className="text-xs text-gray-600">Storage</span>
+            <span className="text-xs text-ink-tertiary">Storage</span>
           </div>
           <p className="text-xl font-bold text-purple-900">
             {(storageUsed / 1024).toFixed(1)}GB
           </p>
-          <p className="text-xs text-gray-500">of {(storageLimit / 1024).toFixed(0)}GB</p>
+          <p className="text-xs text-ink-tertiary">of {(storageLimit / 1024).toFixed(0)}GB</p>
         </div>
       </div>
 
       {/* Storage Bar */}
       <div className="mb-6">
-        <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="w-full bg-surface-hover rounded-full h-2">
           <div
             className={`h-2 rounded-full transition-all ${
               storagePercent > 80 ? 'bg-red-500' : 'bg-green-500'
@@ -91,7 +91,7 @@ export function ClientCard({
             style={{ width: `${Math.min(storagePercent, 100)}%` }}
           />
         </div>
-        <p className="text-xs text-gray-500 mt-1">
+        <p className="text-xs text-ink-tertiary mt-1">
           {storagePercent.toFixed(0)}% used
         </p>
       </div>
@@ -107,7 +107,7 @@ export function ClientCard({
         </Link>
         <Link
           href={`/brand-brain?client=${id}`}
-          className="flex-1 px-4 py-2 bg-gray-100 text-gray-900 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors"
+          className="flex-1 px-4 py-2 bg-surface text-ink rounded-lg text-sm font-medium hover:bg-surface-hover transition-colors"
         >
           Brand Brain
         </Link>

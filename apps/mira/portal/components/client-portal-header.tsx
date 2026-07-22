@@ -19,9 +19,9 @@ export default function ClientPortalHeader({
           Mi Portal
         </p>
       </div>
-      <h1 className="text-2xl font-semibold text-white tracking-tight">{title}</h1>
+      <h1 className="text-2xl font-semibold text-ink tracking-tight">{title}</h1>
       {subtitle && (
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           {subtitle}
         </p>
       )}

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { uploadToDrive } from '@/lib/google-drive'
+import { getClientDriveAccessToken } from '@/lib/drive-sync'
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,6 +19,8 @@ export async function POST(req: NextRequest) {
 
     let htmlContent: string
     let fileName: string
+    let rowClientId: string
+    let rowProjectId: string | null = null
     const dateStamp = new Date().toISOString().split('T')[0]
 
     if (action_id) {
@@ -37,6 +40,8 @@ export async function POST(req: NextRequest) {
 
       htmlContent = generateHTML(action.action_type, action.output_data)
       fileName = `${action.action_type}-${dateStamp}.html`
+      rowClientId = action.client_id
+      rowProjectId = action.project_id || null
     } else {
       // Camino existente: generation_queue
       const { data: generation, error: fetchError } = await admin
@@ -54,9 +59,48 @@ export async function POST(req: NextRequest) {
 
       htmlContent = generateHTML(generation.tool_slug, generation.result_data)
       fileName = `${generation.tool_slug}-${dateStamp}.html`
+      rowClientId = generation.client_id
+      rowProjectId = generation.project_id || null
     }
 
-    // Upload to Google Drive
+    // 1st choice: the CLIENT's own Google Drive (drive_connections OAuth)
+    const clientToken = await getClientDriveAccessToken(rowClientId, admin)
+    if (clientToken) {
+      try {
+        const folderId = await resolveClientDeliverablesFolder(
+          admin,
+          clientToken,
+          rowClientId,
+          rowProjectId
+        )
+        const clientUpload = await uploadHtmlToClientDrive(
+          clientToken,
+          folderId,
+          fileName,
+          htmlContent
+        )
+        if (clientUpload.success) {
+          return NextResponse.json({
+            success: true,
+            driveUrl: clientUpload.webViewLink,
+            fileId: clientUpload.fileId,
+            filename: fileName,
+            destination: 'client_drive',
+            message: 'Successfully uploaded to client Google Drive',
+          })
+        }
+        console.warn(
+          `Client Drive export failed for client ${rowClientId}, falling back to platform Drive: ${clientUpload.error}`
+        )
+      } catch (clientDriveError) {
+        console.warn(
+          `Client Drive export threw for client ${rowClientId}, falling back to platform Drive:`,
+          clientDriveError
+        )
+      }
+    }
+
+    // Fallback: platform Drive via Service Account (existing path)
     const uploadResult = await uploadToDrive(fileName, 'text/html', htmlContent)
 
     if (!uploadResult.success) {
@@ -80,6 +124,7 @@ export async function POST(req: NextRequest) {
       driveUrl: uploadResult.webViewLink,
       fileId: uploadResult.fileId,
       filename: fileName,
+      destination: 'platform_drive',
       message: 'Successfully uploaded to Google Drive',
     })
   } catch (error) {
@@ -88,6 +133,139 @@ export async function POST(req: NextRequest) {
       { error: error instanceof Error ? error.message : 'Export failed' },
       { status: 500 }
     )
+  }
+}
+
+/**
+ * Resolves the destination folder in the CLIENT's Drive:
+ * 1. drive_folders row matching the exported row's project_id
+ * 2. drive_folders row of the client with purpose='deliverables'
+ * 3. Creates a 'MIRA Deliverables' folder in the client's Drive root and
+ *    registers it in drive_folders.
+ * Returns null if no folder could be resolved/created (caller uploads to root).
+ */
+async function resolveClientDeliverablesFolder(
+  admin: ReturnType<typeof adminClient>,
+  token: string,
+  clientId: string,
+  projectId: string | null
+): Promise<string | null> {
+  // 1. Project-specific folder
+  if (projectId) {
+    const { data: projectFolder } = await admin
+      .from('drive_folders')
+      .select('folder_id')
+      .eq('client_id', clientId)
+      .eq('project_id', projectId)
+      .limit(1)
+    if (projectFolder?.length) return projectFolder[0].folder_id
+  }
+
+  // 2. Client deliverables folder
+  const { data: deliverablesFolder } = await admin
+    .from('drive_folders')
+    .select('folder_id')
+    .eq('client_id', clientId)
+    .eq('purpose', 'deliverables')
+    .limit(1)
+  if (deliverablesFolder?.length) return deliverablesFolder[0].folder_id
+
+  // 3. Create 'MIRA Deliverables' in the client's Drive root and register it
+  const createResponse = await fetch(
+    'https://www.googleapis.com/drive/v3/files?fields=id&supportsAllDrives=true',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'MIRA Deliverables',
+        mimeType: 'application/vnd.google-apps.folder',
+      }),
+    }
+  )
+  if (!createResponse.ok) {
+    const errorData = await createResponse.json().catch(() => ({}))
+    console.warn('Could not create MIRA Deliverables folder in client Drive:', errorData)
+    return null
+  }
+  const created = await createResponse.json()
+  if (!created.id) return null
+
+  const { error: registerError } = await admin.from('drive_folders').insert({
+    client_id: clientId,
+    folder_id: created.id,
+    folder_name: 'MIRA Deliverables',
+    purpose: 'deliverables',
+    sync_status: 'completed',
+    files_synced: 0,
+  })
+  if (registerError) {
+    console.warn('Could not register MIRA Deliverables folder in drive_folders:', registerError)
+  }
+
+  return created.id
+}
+
+/**
+ * Uploads an HTML file to the client's Drive via Drive API v3 multipart upload.
+ * If folderId is null, the file lands in the Drive root.
+ */
+async function uploadHtmlToClientDrive(
+  token: string,
+  folderId: string | null,
+  fileName: string,
+  htmlContent: string
+): Promise<{ success: boolean; fileId?: string; webViewLink?: string; error?: string }> {
+  try {
+    const boundary = `mira_export_${Date.now().toString(36)}`
+    const metadata: { name: string; mimeType: string; parents?: string[] } = {
+      name: fileName,
+      mimeType: 'text/html',
+    }
+    if (folderId) metadata.parents = [folderId]
+
+    const body =
+      `--${boundary}\r\n` +
+      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+      `${JSON.stringify(metadata)}\r\n` +
+      `--${boundary}\r\n` +
+      'Content-Type: text/html; charset=UTF-8\r\n\r\n' +
+      `${htmlContent}\r\n` +
+      `--${boundary}--`
+
+    const response = await fetch(
+      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink&supportsAllDrives=true',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': `multipart/related; boundary=${boundary}`,
+        },
+        body,
+      }
+    )
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      return {
+        success: false,
+        error: errorData.error?.message || `Client Drive upload failed (HTTP ${response.status})`,
+      }
+    }
+
+    const data = await response.json()
+    return {
+      success: true,
+      fileId: data.id || undefined,
+      webViewLink: data.webViewLink || undefined,
+    }
+  } catch (error) {
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Client Drive upload failed',
+    }
   }
 }
 

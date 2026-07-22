@@ -92,8 +92,8 @@ export default function AdminClientsOverview() {
         </p>
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-3xl font-semibold text-white tracking-tight mb-1">{t('admin.section-label', defaultLocale)}</h1>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <h1 className="text-3xl font-semibold text-ink tracking-tight mb-1">{t('admin.section-label', defaultLocale)}</h1>
+            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
               Gestión unificada de todos los clientes y su progreso en MIRA
             </p>
           </div>
@@ -114,13 +114,13 @@ export default function AdminClientsOverview() {
       </div>
 
       {loading ? (
-        <div className="text-center py-8 text-slate-400">Cargando clientes...</div>
+        <div className="text-center py-8 text-ink-secondary">Cargando clientes...</div>
       ) : clients.length === 0 ? (
-        <div className="text-center py-8 text-slate-400">No hay clientes configurados aún</div>
+        <div className="text-center py-8 text-ink-secondary">No hay clientes configurados aún</div>
       ) : (
         <>
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-white">Clientes Activos</h2>
+            <h2 className="text-lg font-semibold text-ink">Clientes Activos</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {clients.map(client => {

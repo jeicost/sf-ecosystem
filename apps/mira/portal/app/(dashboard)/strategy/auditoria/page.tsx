@@ -22,8 +22,8 @@ export default function Page() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(16,185,129,0.8)' }}>
           Strategy · Blueprint
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Business Audit</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Business Audit</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           Most problems aren't execution failures — they're design failures. Blueprint finds them.
         </p>
       </div>
@@ -37,13 +37,13 @@ export default function Page() {
               className="rounded-xl p-4 flex flex-col gap-2"
               style={{ background: cfg.bg, border: `1px solid ${cfg.border}` }}>
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-white">{area.label}</span>
+                <span className="text-[11px] font-semibold text-ink">{area.label}</span>
                 <div className="flex items-center gap-1.5">
                   <div className="w-2 h-2 rounded-full" style={{ background: cfg.dot }} />
                   <span className="text-[9px] font-semibold" style={{ color: cfg.dot }}>{cfg.label}</span>
                 </div>
               </div>
-              <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{area.desc}</span>
+              <span className="text-[10px]" style={{ color: 'var(--text-tertiary)' }}>{area.desc}</span>
             </div>
           )
         })}

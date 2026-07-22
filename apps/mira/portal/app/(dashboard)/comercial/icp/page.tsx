@@ -42,8 +42,8 @@ function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
           <input value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             placeholder="Añadir..."
-            className="rounded-full px-2.5 py-1 text-[11px] text-white focus:outline-none w-28" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }} />
-          <button onClick={handleAdd} className="text-[#555] hover:text-white transition-colors">
+            className="rounded-full px-2.5 py-1 text-[11px] text-ink focus:outline-none w-28" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }} />
+          <button onClick={handleAdd} className="text-ink-muted hover:text-ink transition-colors">
             <Plus size={11} />
           </button>
         </div>
@@ -149,7 +149,7 @@ export default function IcpPage() {
     <div className="px-8 py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-white">ICP Profile</h1>
+          <h1 className="text-2xl font-semibold text-ink">ICP Profile</h1>
           <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>
             {(view as IcpProfile | null)?.icp_name ?? 'Ideal Customer Profile'} — criterios de scoring para Rex y Vera.
           </p>
@@ -158,7 +158,7 @@ export default function IcpPage() {
           {editing ? (
             <>
               <button onClick={() => setEditing(false)}
-                className="px-4 py-2 text-xs rounded-lg hover:text-white transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                className="px-4 py-2 text-xs rounded-lg hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                 Cancelar
               </button>
               <button onClick={save} disabled={saving}
@@ -169,7 +169,7 @@ export default function IcpPage() {
             </>
           ) : (
             <button onClick={startEdit}
-              className="flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg hover:text-white transition-all" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+              className="flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg hover:text-ink transition-all" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
               <Edit2 size={12} /> Editar ICP
             </button>
           )}
@@ -183,13 +183,13 @@ export default function IcpPage() {
             <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Nombre del ICP</label>
             <input value={draft.icp_name ?? ''} onChange={e => setDraft(d => d ? { ...d, icp_name: e.target.value } : d)}
               placeholder="Ej: Venture Builder LATAM"
-              className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
+              className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
             <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.icp.min-budget-usd', locale)}</label>
             <input type="number" value={draft.min_budget_usd ?? ''} onChange={e => setDraft(d => d ? { ...d, min_budget_usd: Number(e.target.value) || null } : d)}
               placeholder="Ej: 5000"
-              className="w-full bg-transparent text-sm text-white outline-none" style={{ color: 'var(--text-primary)' }} />
+              className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
         </div>
       )}
@@ -219,7 +219,7 @@ export default function IcpPage() {
           {!editing && icp?.min_budget_usd !== null && icp?.min_budget_usd !== undefined && (
             <div className="col-span-2 card p-5">
               <h3 className="text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icp.min-budget', locale)}</h3>
-              <p className="text-2xl font-semibold text-white">
+              <p className="text-2xl font-semibold text-ink">
                 ${icp.min_budget_usd.toLocaleString()} <span className="text-sm font-normal" style={{ color: 'var(--text-secondary)' }}>USD</span>
               </p>
             </div>

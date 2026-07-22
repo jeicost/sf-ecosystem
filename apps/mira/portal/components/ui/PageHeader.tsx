@@ -20,15 +20,15 @@ export default function PageHeader({
       <p
         className="text-[10px] uppercase tracking-widest font-semibold mb-2"
         style={{
-          color: eyebrowColor ? `${eyebrowColor}cc` : 'rgba(255,255,255,0.6)',
+          color: eyebrowColor ? `${eyebrowColor}cc` : 'var(--text-secondary)',
           letterSpacing: '0.12em',
         }}
       >
         {eyebrow}
       </p>
-      <h1 className="text-3xl font-semibold text-white tracking-tight">{title}</h1>
+      <h1 className="text-3xl font-semibold text-ink tracking-tight">{title}</h1>
       {subtitle && (
-        <p className="text-sm mt-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <p className="text-sm mt-1.5" style={{ color: 'var(--text-tertiary)' }}>
           {subtitle}
         </p>
       )}

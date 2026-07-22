@@ -22,7 +22,7 @@ const AGENT_STATUS = [
 ]
 
 const STATUS_DOT: Record<string, string> = {
-  idle:    'rgba(255,255,255,0.2)',
+  idle:    'var(--text-muted)',
   working: '#22C55E',
   waiting: '#F59E0B',
 }
@@ -34,8 +34,8 @@ export default function Page() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(245,158,11,0.8)' }}>
           Admin · Pulse
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">System Health</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">System Health</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           I see everything before it becomes a problem. Zero blind spots.
         </p>
       </div>
@@ -45,29 +45,29 @@ export default function Page() {
         {SYSTEM_METRICS.map(m => (
           <div key={m.label} className="card px-4 py-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 {m.label}
               </span>
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: m.color }} />
             </div>
-            <p className="text-xl font-bold text-white">{m.value}</p>
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{m.delta}</p>
+            <p className="text-xl font-bold text-ink">{m.value}</p>
+            <p className="text-[10px] mt-1" style={{ color: 'var(--text-tertiary)' }}>{m.delta}</p>
           </div>
         ))}
       </div>
 
       {/* Agent status grid */}
       <div className="rounded-2xl p-5 mb-8"
-        style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
+        style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)' }}>
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-4"
-          style={{ color: 'rgba(255,255,255,0.3)' }}>Agent status</p>
+          style={{ color: 'var(--text-tertiary)' }}>Agent status</p>
         <div className="flex flex-wrap gap-2">
           {AGENT_STATUS.map(a => (
             <div key={a.name}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
               <span className="text-sm leading-none">{a.emoji}</span>
-              <span className="text-[11px] text-white">{a.name}</span>
+              <span className="text-[11px] text-ink">{a.name}</span>
               <div className={`w-1.5 h-1.5 rounded-full ${a.status === 'working' ? 'animate-pulse' : ''}`}
                 style={{ background: STATUS_DOT[a.status] }} />
             </div>

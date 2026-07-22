@@ -17,12 +17,12 @@ export default function StatRow({ items }: StatRowProps) {
     >
       {items.map((item, idx) => (
         <div key={idx} className="card px-4 py-3">
-          <p className="text-[11px] text-[#555] uppercase tracking-wider mb-1">
+          <p className="text-[11px] text-ink-muted uppercase tracking-wider mb-1">
             {item.label}
           </p>
-          <p className="text-xl font-semibold text-white">{item.value}</p>
+          <p className="text-xl font-semibold text-ink">{item.value}</p>
           {item.hint && (
-            <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
               {item.hint}
             </p>
           )}

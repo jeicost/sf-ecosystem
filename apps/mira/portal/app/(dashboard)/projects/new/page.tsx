@@ -40,16 +40,16 @@ export default function NewProjectPage() {
         <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: brand }}>
           {activeClient?.name ? `Proyecto para ${activeClient.name}` : 'Nuevo proyecto'}
         </p>
-        <h1 className={`${syne.className} text-3xl font-extrabold tracking-tight text-white`}>Crear proyecto</h1>
-        <p className="mt-2 text-sm text-gray-400">
+        <h1 className={`${syne.className} text-3xl font-extrabold tracking-tight text-ink`}>Crear proyecto</h1>
+        <p className="mt-2 text-sm text-ink-secondary">
           Una campaña, un lanzamiento, una iniciativa. El proyecto agrupa su memoria,
           sus entregables y su documentación para que los agentes trabajen con contexto.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-white/10 bg-white/3 p-8">
+      <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-line bg-surface p-8">
         <div>
-          <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-300">
+          <label htmlFor="name" className="mb-2 block text-sm font-medium text-ink-secondary">
             Nombre del proyecto *
           </label>
           <input
@@ -58,14 +58,14 @@ export default function NewProjectPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             placeholder="ej. Lanzamiento web, Campaña de verano"
-            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none"
+            className="w-full rounded-xl border border-line bg-surface px-4 py-2.5 text-ink placeholder-ink-tertiary focus:outline-none"
             style={{ borderColor: name ? `${brand}50` : undefined }}
             required
           />
         </div>
 
         <div>
-          <label htmlFor="description" className="mb-2 block text-sm font-medium text-gray-300">
+          <label htmlFor="description" className="mb-2 block text-sm font-medium text-ink-secondary">
             Descripción
           </label>
           <textarea
@@ -73,7 +73,7 @@ export default function NewProjectPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Objetivo del proyecto, alcance, fechas clave…"
-            className="w-full resize-none rounded-xl border border-white/10 bg-white/5 px-4 py-2.5 text-white placeholder-gray-500 focus:outline-none"
+            className="w-full resize-none rounded-xl border border-line bg-surface px-4 py-2.5 text-ink placeholder-ink-tertiary focus:outline-none"
             rows={4}
           />
         </div>

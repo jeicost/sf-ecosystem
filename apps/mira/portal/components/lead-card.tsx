@@ -54,13 +54,13 @@ export default function LeadCard({ lead, onStageChange, onClick }: LeadCardProps
       onClick={() => onClick?.(lead)}
       className={clsx(
         'card p-3 transition-all cursor-pointer group',
-        onClick && 'hover:border-[#2A2A2A]',
+        onClick && 'hover:border-line',
       )}
     >
       <div className="flex items-start justify-between mb-2">
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-white font-medium truncate">{lead.company_name ?? '—'}</p>
-          <p className="text-[11px] text-[#555] truncate mt-0.5">{displayName}</p>
+          <p className="text-sm text-ink font-medium truncate">{lead.company_name ?? '—'}</p>
+          <p className="text-[11px] text-ink-muted truncate mt-0.5">{displayName}</p>
         </div>
         <div
           className="ml-2 flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-semibold shrink-0"
@@ -73,36 +73,36 @@ export default function LeadCard({ lead, onStageChange, onClick }: LeadCardProps
 
       <div className="flex flex-wrap gap-1">
         {lead.title && (
-          <span className="text-[10px] text-[#555] bg-[#111] px-1.5 py-0.5 rounded truncate max-w-full">
+          <span className="text-[10px] text-ink-muted bg-surface px-1.5 py-0.5 rounded truncate max-w-full">
             {lead.title}
           </span>
         )}
         {lead.industry && (
-          <span className="text-[10px] text-[#555] bg-[#111] px-1.5 py-0.5 rounded truncate">
+          <span className="text-[10px] text-ink-muted bg-surface px-1.5 py-0.5 rounded truncate">
             {lead.industry}
           </span>
         )}
         {lead.geography && (
-          <span className="text-[10px] text-[#444] px-1 py-0.5 rounded">
+          <span className="text-[10px] text-ink-muted px-1 py-0.5 rounded">
             📍 {lead.geography}
           </span>
         )}
       </div>
 
       {lead.trigger_event && (
-        <p className="text-[10px] text-[#444] mt-2 line-clamp-1 italic">
+        <p className="text-[10px] text-ink-muted mt-2 line-clamp-1 italic">
           {lead.trigger_event}
         </p>
       )}
 
       {/* Actions row */}
       {(nextStage || lead.icebreaker_used) && (
-        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-[#151515] opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-line-subtle opacity-0 group-hover:opacity-100 transition-opacity">
           {lead.icebreaker_used && (
             <button
               onClick={copyIcebreaker}
               title="Copiar icebreaker"
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-[#555] hover:text-white hover:bg-[#1A1A1A] transition-all"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-ink-muted hover:text-ink hover:bg-surface-hover transition-all"
             >
               {copied ? <Check size={9} className="text-green-400" /> : <Copy size={9} />}
               {copied ? 'Copiado' : 'Icebreaker'}
@@ -113,7 +113,7 @@ export default function LeadCard({ lead, onStageChange, onClick }: LeadCardProps
               onClick={advanceStage}
               disabled={advancing}
               title={`Mover a ${nextStage}`}
-              className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] text-[#444] hover:text-white hover:bg-[#1A1A1A] transition-all"
+              className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] text-ink-muted hover:text-ink hover:bg-surface-hover transition-all"
             >
               {advancing ? '...' : <><ChevronRight size={9} /><span className="capitalize">{nextStage}</span></>}
             </button>

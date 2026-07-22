@@ -53,7 +53,7 @@ export default function GalleryPage() {
           const imageSrc = imagePath ? '/api/assets?path=' + encodeURIComponent(imagePath) : imageUrl
           return (
             <Link key={gen.id} href={`/toolkit/report/${gen.id}`}>
-              <div className="card p-6 hover:bg-white/10 cursor-pointer h-full" style={{ borderLeft: `4px solid ${info.color}` }}>
+              <div className="card p-6 hover:bg-surface-hover cursor-pointer h-full" style={{ borderLeft: `4px solid ${info.color}` }}>
                 {imageSrc ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={imageSrc} alt={info.name} loading="lazy"
@@ -61,15 +61,15 @@ export default function GalleryPage() {
                 ) : (
                   <div className="text-4xl mb-3">{info.icon}</div>
                 )}
-                <h3 className="font-semibold text-white mb-2">{info.name}</h3>
-                <p className="text-xs text-gray-400">{new Date(gen.created_at).toLocaleDateString()}</p>
+                <h3 className="font-semibold text-ink mb-2">{info.name}</h3>
+                <p className="text-xs text-ink-secondary">{new Date(gen.created_at).toLocaleDateString()}</p>
                 <div className="mt-4 flex gap-2"><Eye size={16} className="text-blue-400" /> <span className="text-xs text-blue-400">View</span></div>
               </div>
             </Link>
           )
         })}
       </div>
-      {generations.length === 0 && <p className="text-center text-gray-400 py-12">No generations yet</p>}
+      {generations.length === 0 && <p className="text-center text-ink-secondary py-12">No generations yet</p>}
     </div>
   )
 }

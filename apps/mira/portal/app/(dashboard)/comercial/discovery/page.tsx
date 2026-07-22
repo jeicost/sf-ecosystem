@@ -113,7 +113,7 @@ export default function DiscoveryPage() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-[22px]">🔍</span>
-            <h1 className="text-2xl font-semibold text-white">Rex — Lead Discovery</h1>
+            <h1 className="text-2xl font-semibold text-ink">Rex — Lead Discovery</h1>
           </div>
           <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('comercial.discovery.find-companies', locale)}</p>
         </div>
@@ -131,7 +131,7 @@ export default function DiscoveryPage() {
               onChange={e => setKeywords(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && runDiscovery()}
               placeholder='Ej: "venture builder España" o "startup studio LATAM"'
-              className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none transition-colors"
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{
                 background: 'var(--bg-page)',
                 borderColor: 'var(--border-subtle)',
@@ -146,7 +146,7 @@ export default function DiscoveryPage() {
               value={industry}
               onChange={e => setIndustry(e.target.value)}
               placeholder='Ej: "Venture Capital" o "SaaS B2B"'
-              className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none transition-colors"
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{
                 background: 'var(--bg-page)',
                 borderColor: 'var(--border-subtle)',
@@ -161,7 +161,7 @@ export default function DiscoveryPage() {
               value={geography}
               onChange={e => setGeography(e.target.value)}
               placeholder='Ej: "España" o "LATAM"'
-              className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none transition-colors"
+              className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{
                 background: 'var(--bg-page)',
                 borderColor: 'var(--border-subtle)',
@@ -181,7 +181,7 @@ export default function DiscoveryPage() {
                   'px-2.5 py-1 rounded text-[11px] transition-all border',
                   limit === n
                     ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#f87171]'
-                    : 'hover:text-white border-transparent'
+                    : 'hover:text-ink border-transparent'
                 )}
                 style={limit !== n ? { color: 'var(--text-tertiary)' } : undefined}>
                 {n}
@@ -195,7 +195,7 @@ export default function DiscoveryPage() {
               'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all',
               keywords.trim() && !running
                 ? 'bg-[#EF4444] text-white hover:bg-[#dc2626]'
-                : 'bg-[#1a1a1a] text-[#444] cursor-not-allowed'
+                : 'bg-surface text-ink-muted cursor-not-allowed'
             )}
           >
             {running ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}
@@ -215,7 +215,7 @@ export default function DiscoveryPage() {
       {leads.length > 0 && (
         <div>
           <div className="flex items-center gap-3 mb-5">
-            <p className="text-sm text-white font-medium">{leads.length} empresas encontradas</p>
+            <p className="text-sm text-ink font-medium">{leads.length} empresas encontradas</p>
             {savedCount !== null && (
               <span className="flex items-center gap-1 text-[11px] text-green-400">
                 <CheckCircle2 size={11} /> {savedCount} {t('comercial.discovery.added-to-pipeline', locale)}
@@ -230,7 +230,7 @@ export default function DiscoveryPage() {
             <LeadGroup title="WARM" color="#F97316" leads={warmLeads} added={added} onAdd={addToPipeline} />
           )}
           {rest.length > 0 && (
-            <LeadGroup title="COLD / DESCARTADOS" color="#555" leads={rest} added={added} onAdd={addToPipeline} collapsed />
+            <LeadGroup title="COLD / DESCARTADOS" color="var(--text-muted)" leads={rest} added={added} onAdd={addToPipeline} collapsed />
           )}
         </div>
       )}
@@ -289,7 +289,7 @@ function DiscoveryLeadRow({ lead, added, onAdd }: {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">
-          <p className="text-sm font-medium text-white">{lead.company_name}</p>
+          <p className="text-sm font-medium text-ink">{lead.company_name}</p>
           {lead.company_website && (
             <a href={lead.company_website} target="_blank" rel="noreferrer"
               className="text-[10px] transition-colors" style={{ color: 'var(--text-tertiary)' }}>↗</a>

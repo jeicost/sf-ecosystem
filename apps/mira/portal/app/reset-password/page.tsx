@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex overflow-hidden" style={{ background: '#0a0a0f' }}>
+    <div className="min-h-screen flex overflow-hidden" style={{ background: 'var(--bg-page)' }}>
       {/* ── LEFT PANEL ── */}
       <div className="hidden lg:flex flex-col flex-1 relative overflow-hidden select-none">
         {/* Radial ambients */}
@@ -100,23 +100,23 @@ export default function ResetPasswordPage() {
               style={{ boxShadow: '0 0 0 16px rgba(99,102,241,0.1)', animation: 'ringPulse 3s ease-in-out infinite' }} />
           </div>
 
-          <h1 style={{ fontSize: '48px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.05em', lineHeight: 1 }}>MIRA</h1>
+          <h1 style={{ fontSize: '48px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.05em', lineHeight: 1 }}>MIRA</h1>
           <p className="mt-3 text-center max-w-[280px] leading-relaxed"
-            style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)' }}>
+            style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
             Tu equipo de{' '}
-            <span style={{ color: '#ffffff', fontWeight: 600 }}>30 agentes IA</span>{' '}
+            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>30 agentes IA</span>{' '}
             trabajando 24/7 para hacer crecer tu negocio.
           </p>
         </div>
 
         <div className="pb-6 text-center">
-          <p className="text-[10px]" style={{ color: 'rgba(255,255,255,0.2)' }}>Startup Factory · Bangkok 2026</p>
+          <p className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Startup Factory · Bangkok 2026</p>
         </div>
       </div>
 
       {/* ── RIGHT PANEL ── */}
       <div className="w-full lg:w-[440px] shrink-0 flex flex-col justify-center relative"
-        style={{ background: '#101018', borderLeft: '1px solid rgba(255,255,255,0.08)' }}>
+        style={{ background: 'var(--bg-card)', borderLeft: '1px solid var(--border)' }}>
 
         <div className="absolute top-0 left-0 right-0 h-px"
           style={{ background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.35) 50%, transparent)' }} />
@@ -127,15 +127,15 @@ export default function ResetPasswordPage() {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
             <div className="flex justify-center mb-2"><MiraLogo size={48} variant="icon" /></div>
-            <h1 className="text-xl font-bold text-white" style={{ letterSpacing: '-0.03em' }}>MIRA</h1>
+            <h1 className="text-xl font-bold text-ink" style={{ letterSpacing: '-0.03em' }}>MIRA</h1>
           </div>
 
           {/* Heading */}
           <div className="mb-8">
-            <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
+            <h2 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
               Restablecer contraseña
             </h2>
-            <p className="mt-1.5 text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
+            <p className="mt-1.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>
               Ingresa tu nueva contraseña para acceder a tu cuenta
             </p>
           </div>
@@ -145,8 +145,8 @@ export default function ResetPasswordPage() {
             {/* New Password */}
             <div className="rounded-xl transition-all duration-200 flex items-center"
               style={{
-                background: focused === 'password' ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${focused === 'password' ? 'rgba(99,102,241,0.55)' : 'rgba(255,255,255,0.12)'}`,
+                background: focused === 'password' ? 'var(--bg-surface-hover)' : 'var(--bg-surface)',
+                border: `1px solid ${focused === 'password' ? 'rgba(99,102,241,0.55)' : 'var(--border)'}`,
                 boxShadow: focused === 'password' ? '0 0 0 3px rgba(99,102,241,0.1)' : 'none',
               }}>
               <input
@@ -158,14 +158,14 @@ export default function ResetPasswordPage() {
                 onBlur={() => setFocused(null)}
                 required
                 className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none bg-transparent"
-                style={{ color: '#ffffff' }}
+                style={{ color: 'var(--text-primary)' }}
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowPwd(v => !v)}
                 className="pr-4 transition-colors"
-                style={{ color: showPwd ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.3)' }}
+                style={{ color: showPwd ? 'rgba(99,102,241,0.8)' : 'var(--text-muted)' }}
                 tabIndex={-1}
               >
                 {showPwd ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -175,8 +175,8 @@ export default function ResetPasswordPage() {
             {/* Confirm Password */}
             <div className="rounded-xl transition-all duration-200 flex items-center"
               style={{
-                background: focused === 'confirm' ? 'rgba(255,255,255,0.07)' : 'rgba(255,255,255,0.05)',
-                border: `1px solid ${focused === 'confirm' ? 'rgba(99,102,241,0.55)' : 'rgba(255,255,255,0.12)'}`,
+                background: focused === 'confirm' ? 'var(--bg-surface-hover)' : 'var(--bg-surface)',
+                border: `1px solid ${focused === 'confirm' ? 'rgba(99,102,241,0.55)' : 'var(--border)'}`,
                 boxShadow: focused === 'confirm' ? '0 0 0 3px rgba(99,102,241,0.1)' : 'none',
               }}>
               <input
@@ -188,14 +188,14 @@ export default function ResetPasswordPage() {
                 onBlur={() => setFocused(null)}
                 required
                 className="flex-1 px-4 py-3.5 rounded-xl text-sm outline-none bg-transparent"
-                style={{ color: '#ffffff' }}
+                style={{ color: 'var(--text-primary)' }}
                 autoComplete="new-password"
               />
               <button
                 type="button"
                 onClick={() => setShowConfirm(v => !v)}
                 className="pr-4 transition-colors"
-                style={{ color: showConfirm ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.3)' }}
+                style={{ color: showConfirm ? 'rgba(99,102,241,0.8)' : 'var(--text-muted)' }}
                 tabIndex={-1}
               >
                 {showConfirm ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -212,7 +212,7 @@ export default function ResetPasswordPage() {
             <button type="submit" disabled={loading}
               className="w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 relative overflow-hidden hover:opacity-92 mt-1"
               style={{
-                background: loading ? 'rgba(255,255,255,0.08)' : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+                background: loading ? 'linear-gradient(135deg, #6366f199 0%, #4f46e599 100%)' : 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
                 boxShadow: loading ? 'none' : '0 0 28px rgba(99,102,241,0.4), inset 0 1px 0 rgba(255,255,255,0.15)',
                 letterSpacing: '0.01em',
               }}>
@@ -227,16 +227,16 @@ export default function ResetPasswordPage() {
           </form>
 
           {/* Back to login */}
-          <p className="text-center text-[11px] mt-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-center text-[11px] mt-4" style={{ color: 'var(--text-muted)' }}>
             ¿Recordaste tu contraseña?{' '}
-            <a href="/login" className="underline hover:text-white/50 transition-colors">
+            <a href="/login" className="underline hover:text-ink-tertiary transition-colors">
               Vuelve a iniciar sesión
             </a>
           </p>
         </div>
 
         <p className="absolute bottom-5 left-0 right-0 text-center text-[11px]"
-          style={{ color: 'rgba(255,255,255,0.18)' }}>
+          style={{ color: 'var(--text-muted)' }}>
           MIRA v3.0 · Startup Factory
         </p>
       </div>
@@ -246,7 +246,7 @@ export default function ResetPasswordPage() {
           0%,100% { opacity: 0.3; transform: scale(1); }
           50% { opacity: 0.05; transform: scale(1.4); }
         }
-        input::placeholder { color: rgba(255,255,255,0.3) !important; }
+        input::placeholder { color: var(--text-muted) !important; }
       `}</style>
     </div>
   )

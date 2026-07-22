@@ -72,21 +72,21 @@ export default function ReportTemplate({
   const scoreColor = score >= 75 ? '#22c55e' : score >= 50 ? '#f59e0b' : '#ef4444'
 
   return (
-    <div className="bg-gradient-to-br from-slate-950 to-slate-900 text-white p-8 rounded-2xl space-y-8 max-w-4xl">
+    <div className="bg-card border border-line text-ink p-8 rounded-2xl space-y-8 max-w-4xl">
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">{title}</h1>
-        <p className="text-slate-400">{subtitle}</p>
-        {generatedAt && <p className="text-xs text-slate-500">Generated {generatedAt}</p>}
+        <p className="text-ink-secondary">{subtitle}</p>
+        {generatedAt && <p className="text-xs text-ink-tertiary">Generated {generatedAt}</p>}
       </div>
 
       {/* Score Circle + Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Score Circle */}
-        <div className="flex flex-col items-center justify-center p-8 bg-slate-800/50 border border-slate-700 rounded-2xl">
+        <div className="flex flex-col items-center justify-center p-8 bg-surface border border-line rounded-2xl">
           <div className="relative w-32 h-32 mb-4">
             <svg className="absolute inset-0 transform -rotate-90" viewBox="0 0 140 140">
-              <circle cx="70" cy="70" r="65" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+              <circle cx="70" cy="70" r="65" fill="none" stroke="var(--border)" strokeWidth="4" />
               <circle
                 cx="70"
                 cy="70"
@@ -100,10 +100,10 @@ export default function ReportTemplate({
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className="text-3xl font-bold">{score}</span>
-              <span className="text-xs text-slate-400">{scoreLabel}</span>
+              <span className="text-xs text-ink-secondary">{scoreLabel}</span>
             </div>
           </div>
-          <div className="w-full h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="w-full h-1 bg-surface-hover rounded-full overflow-hidden">
             <div
               className="h-full transition-all"
               style={{ width: `${scorePercentage}%`, backgroundColor: scoreColor }}
@@ -114,8 +114,8 @@ export default function ReportTemplate({
         {/* Stat Cards */}
         <div className="md:col-span-2 grid grid-cols-2 gap-3">
           {statCards.map((stat, i) => (
-            <div key={i} className="bg-slate-800/50 border border-slate-700 rounded-lg p-4">
-              <p className="text-xs text-slate-400 mb-1">{stat.label}</p>
+            <div key={i} className="bg-surface border border-line rounded-lg p-4">
+              <p className="text-xs text-ink-secondary mb-1">{stat.label}</p>
               <p className="text-2xl font-bold" style={{ color: stat.color }}>
                 {stat.value}
               </p>
@@ -145,12 +145,12 @@ export default function ReportTemplate({
                       <Icon size={18} className={`mt-0.5 flex-shrink-0 ${config.textColor}`} />
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <p className="font-semibold text-white">{finding.title}</p>
+                          <p className="font-semibold text-ink">{finding.title}</p>
                           <span className={`text-xs font-medium ${config.textColor}`}>{config.label}</span>
                         </div>
-                        <p className="text-sm text-slate-300">{finding.description}</p>
+                        <p className="text-sm text-ink-secondary">{finding.description}</p>
                         {finding.impact && (
-                          <p className="text-xs text-slate-400 mt-2">
+                          <p className="text-xs text-ink-secondary mt-2">
                             <strong>Impact:</strong> {finding.impact}
                           </p>
                         )}
@@ -163,7 +163,7 @@ export default function ReportTemplate({
           )}
 
           {section.content && (
-            <div className="bg-slate-800/50 border border-slate-700 rounded-lg p-4 text-sm text-slate-300 whitespace-pre-wrap">
+            <div className="bg-surface border border-line rounded-lg p-4 text-sm text-ink-secondary whitespace-pre-wrap">
               {section.content}
             </div>
           )}
@@ -182,14 +182,14 @@ export default function ReportTemplate({
             {actions.map((action) => {
               const priorityStyle = priorityConfig[action.priority]
               return (
-                <div key={action.id} className={`border border-slate-700 rounded-lg p-4 ${priorityStyle.bgColor}`}>
+                <div key={action.id} className={`border border-line rounded-lg p-4 ${priorityStyle.bgColor}`}>
                   <div className="flex items-start justify-between mb-2">
-                    <p className="font-semibold text-white">{action.title}</p>
+                    <p className="font-semibold text-ink">{action.title}</p>
                     <span className={`text-xs font-bold px-2 py-1 rounded ${priorityStyle.color}`}>
                       {action.priority.toUpperCase()}
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-2 text-xs text-slate-400">
+                  <div className="grid grid-cols-2 gap-2 text-xs text-ink-secondary">
                     <div>
                       <p className="font-medium">Impact</p>
                       <p>{action.impact}</p>
@@ -200,7 +200,7 @@ export default function ReportTemplate({
                     </div>
                   </div>
                   {action.owner && (
-                    <p className="text-xs text-slate-400 mt-2">
+                    <p className="text-xs text-ink-secondary mt-2">
                       <strong>Owner:</strong> {action.owner}
                     </p>
                   )}
@@ -212,7 +212,7 @@ export default function ReportTemplate({
       )}
 
       {/* Footer */}
-      <div className="border-t border-slate-700 pt-4 text-center text-xs text-slate-500">
+      <div className="border-t border-line pt-4 text-center text-xs text-ink-tertiary">
         <p>This report was generated by MIRA AI Agency System</p>
       </div>
     </div>

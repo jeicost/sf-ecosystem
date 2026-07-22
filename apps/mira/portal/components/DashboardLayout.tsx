@@ -15,11 +15,11 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
   const isProjects = pathname.startsWith('/projects')
 
   return (
-    <div className="flex h-screen bg-black text-white">
+    <div className="flex h-screen bg-page text-ink">
       {/* Sidebar */}
-      <aside className="hidden md:flex w-64 bg-gray-900 border-r border-gray-800 flex-col">
+      <aside className="hidden md:flex w-64 bg-card border-r border-line flex-col">
         {/* Logo */}
-        <div className="p-6 border-b border-gray-800">
+        <div className="p-6 border-b border-line">
           <Link href="/home" className="flex items-center gap-2 font-bold text-xl">
             <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
               M
@@ -35,15 +35,15 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition ${
               isHome
                 ? 'bg-purple-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                : 'text-ink-secondary hover:text-ink hover:bg-surface-hover'
             }`}
           >
             <Grid3X3 className="w-5 h-5" />
             Dashboard
           </Link>
 
-          <div className="py-4 border-t border-gray-800">
-            <p className="text-xs font-semibold text-gray-500 uppercase px-4 mb-3">
+          <div className="py-4 border-t border-line">
+            <p className="text-xs font-semibold text-ink-tertiary uppercase px-4 mb-3">
               Projects ({projects.length})
             </p>
             <div className="space-y-1 max-h-64 overflow-y-auto">
@@ -54,7 +54,7 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
                   className={`block px-4 py-2 rounded-lg text-sm transition truncate ${
                     isProjects && pathname.includes(project.slug)
                       ? 'bg-purple-600/30 text-purple-400'
-                      : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                      : 'text-ink-secondary hover:text-ink hover:bg-surface-hover'
                   }`}
                 >
                   {project.name}
@@ -65,16 +65,16 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* User Profile */}
-        <div className="p-6 border-t border-gray-800 space-y-3">
+        <div className="p-6 border-t border-line space-y-3">
           {user && (
             <>
               <div className="text-sm">
-                <p className="text-gray-400">Logged in as</p>
+                <p className="text-ink-secondary">Logged in as</p>
                 <p className="font-medium truncate">{user.company_name}</p>
-                <p className="text-xs text-gray-500">{user.email}</p>
+                <p className="text-xs text-ink-tertiary">{user.email}</p>
               </div>
-              <div className="pt-3 border-t border-gray-800">
-                <p className="text-xs font-semibold text-gray-500 uppercase mb-2">
+              <div className="pt-3 border-t border-line">
+                <p className="text-xs font-semibold text-ink-tertiary uppercase mb-2">
                   Plan
                 </p>
                 <p className="text-sm font-medium capitalize">{user.subscription_tier}</p>
@@ -87,10 +87,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Main Content */}
       <main className="flex-1 overflow-auto flex flex-col">
         {/* Top Bar */}
-        <div className="border-b border-gray-800 bg-gray-950 px-6 py-4 flex items-center justify-between sticky top-0">
+        <div className="border-b border-line bg-page px-6 py-4 flex items-center justify-between sticky top-0">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 hover:bg-gray-800 rounded-lg"
+            className="md:hidden p-2 hover:bg-surface-hover rounded-lg"
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -98,17 +98,17 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
           <div className="flex items-center gap-4 ml-auto">
             <Link
               href="/admin/settings"
-              className="p-2 hover:bg-gray-800 rounded-lg transition"
+              className="p-2 hover:bg-surface-hover rounded-lg transition"
             >
-              <Settings className="w-5 h-5 text-gray-400" />
+              <Settings className="w-5 h-5 text-ink-secondary" />
             </Link>
             <button
               onClick={() => {
                 // Implement logout
               }}
-              className="p-2 hover:bg-gray-800 rounded-lg transition"
+              className="p-2 hover:bg-surface-hover rounded-lg transition"
             >
-              <LogOut className="w-5 h-5 text-gray-400" />
+              <LogOut className="w-5 h-5 text-ink-secondary" />
             </button>
           </div>
         </div>
@@ -122,10 +122,10 @@ export function DashboardLayout({ children }: { children: React.ReactNode }) {
       {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-40 md:hidden bg-black/50 backdrop-blur-sm">
-          <aside className="w-64 h-full bg-gray-900 border-r border-gray-800 flex flex-col p-6">
+          <aside className="w-64 h-full bg-card border-r border-line flex flex-col p-6">
             <button
               onClick={() => setMobileMenuOpen(false)}
-              className="mb-4 text-gray-400 hover:text-white"
+              className="mb-4 text-ink-secondary hover:text-ink"
             >
               ✕
             </button>

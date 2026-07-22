@@ -21,8 +21,8 @@ export default function OtherTeamsFooter({ currentDept }: OtherTeamsFooterProps)
 
   return (
     <div className="mt-10">
-      <p className="text-[11px] uppercase tracking-wider mb-3" style={{ color: 'rgba(255,255,255,0.25)' }}>
-        Other available teams — <span className="text-white normal-case">{totalAgents} agents total</span>
+      <p className="text-[11px] uppercase tracking-wider mb-3 text-ink-muted">
+        Other available teams — <span className="text-ink normal-case">{totalAgents} agents total</span>
       </p>
       <div className="grid grid-cols-5 gap-3">
         {otherDepts.map((dept) => (
@@ -31,20 +31,20 @@ export default function OtherTeamsFooter({ currentDept }: OtherTeamsFooterProps)
             href={dept.href}
             className="card px-4 py-3 transition-all group hover:scale-[1.02]"
             style={{
-              borderColor: 'rgba(255,255,255,0.09)',
+              borderColor: 'var(--border)',
             }}
             onMouseEnter={(e) => {
               ;(e.currentTarget as HTMLElement).style.borderColor = `${dept.color}40`
             }}
             onMouseLeave={(e) => {
-              ;(e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.09)'
+              ;(e.currentTarget as HTMLElement).style.borderColor = 'var(--border)'
             }}
           >
             <div className="flex items-center gap-2 mb-1">
               <span className="text-base">{dept.icon}</span>
-              <p className="text-xs text-white font-medium">{dept.name}</p>
+              <p className="text-xs text-ink font-medium">{dept.name}</p>
             </div>
-            <p className="text-[10px] text-[#555] mt-0.5">{dept.description}</p>
+            <p className="text-[10px] text-ink-muted mt-0.5">{dept.description}</p>
             <p className="text-[10px] mt-1.5 font-medium" style={{ color: `${dept.color}90` }}>
               {dept.count} agents · Active →
             </p>

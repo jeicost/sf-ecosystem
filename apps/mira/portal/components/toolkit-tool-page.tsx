@@ -42,8 +42,8 @@ export default function ToolkitToolPage({
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color }}>
               Herramienta IA
             </p>
-            <h1 className="text-3xl font-semibold text-white tracking-tight mb-2">{name}</h1>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <h1 className="text-3xl font-semibold text-ink tracking-tight mb-2">{name}</h1>
+            <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
               {description}
             </p>
           </div>
@@ -62,18 +62,18 @@ export default function ToolkitToolPage({
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color }}>
               Sobre esta Herramienta
             </p>
-            <div className="space-y-3 text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            <div className="space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
               <div>
-                <p className="font-medium text-white mb-1">Tiempo estimado</p>
+                <p className="font-medium text-ink mb-1">Tiempo estimado</p>
                 <p>{estimatedTime}</p>
               </div>
               <div>
-                <p className="font-medium text-white mb-1">Salida</p>
+                <p className="font-medium text-ink mb-1">Salida</p>
                 <p>{outputFormat}</p>
               </div>
               {guideUrl && (
                 <div>
-                  <p className="font-medium text-white mb-1">Recursos</p>
+                  <p className="font-medium text-ink mb-1">Recursos</p>
                   <Link href={guideUrl} style={{ color }} className="hover:underline">
                     Ver Guía →
                   </Link>
@@ -87,7 +87,7 @@ export default function ToolkitToolPage({
                   <Download size={12} />
                   Descargar PDF
                 </button>
-                <button className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)' }}>
+                <button className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}>
                   <Share2 size={12} />
                   Compartir
                 </button>

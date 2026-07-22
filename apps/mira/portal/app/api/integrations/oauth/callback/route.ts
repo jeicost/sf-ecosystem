@@ -3,6 +3,8 @@ import { getOAuthConfig, getOAuthRedirectUri } from '@/lib/integrations/oauth-co
 import { createServiceClient } from '@/lib/supabase-admin'
 
 export async function GET(request: NextRequest) {
+  // Next 15 exige URLs absolutas en redirect(); relativas lanzan TypeError.
+  const redirectTo = (path: string) => NextResponse.redirect(new URL(path, request.url))
   try {
     const { searchParams } = new URL(request.url)
     const code = searchParams.get('code')
@@ -12,13 +14,13 @@ export async function GET(request: NextRequest) {
     if (error) {
       const errorDescription = searchParams.get('error_description') || 'Unknown error'
       console.error('OAuth error from provider:', error, errorDescription)
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent(errorDescription)}`
       )
     }
 
     if (!code || !state) {
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('Missing authorization code or state')}`
       )
     }
@@ -34,7 +36,7 @@ export async function GET(request: NextRequest) {
 
     if (sessionError || !session) {
       console.error('Invalid state token')
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('Invalid state token')}`
       )
     }
@@ -42,7 +44,7 @@ export async function GET(request: NextRequest) {
     // Check if session expired
     if (new Date(session.expires_at) < new Date()) {
       await db.from('oauth_sessions').delete().eq('state', state)
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('Authorization expired')}`
       )
     }
@@ -51,7 +53,7 @@ export async function GET(request: NextRequest) {
 
     const oauthConfig = getOAuthConfig(tool)
     if (!oauthConfig) {
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('Invalid tool')}`
       )
     }
@@ -61,7 +63,7 @@ export async function GET(request: NextRequest) {
     const clientSecretEnv = process.env[oauthConfig.clientSecretEnvVar]
 
     if (!clientIdEnv || !clientSecretEnv) {
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('OAuth not configured')}`
       )
     }
@@ -69,32 +71,61 @@ export async function GET(request: NextRequest) {
     const redirectUri = getOAuthRedirectUri(tool)
 
     if (!oauthConfig.tokenUrl) {
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('OAuth token URL not configured')}`
       )
     }
 
+    const tokenParams = new URLSearchParams({
+      grant_type: 'authorization_code',
+      code,
+      redirect_uri: redirectUri,
+    })
+    // PKCE: send the code_verifier stored by the /start route for this session
+    if (session.code_verifier) {
+      tokenParams.set('code_verifier', session.code_verifier)
+    }
+    const tokenHeaders: Record<string, string> = {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    }
+    if (oauthConfig.tokenAuthMethod === 'basic') {
+      // e.g. Canva requires HTTP Basic client authentication
+      tokenHeaders['Authorization'] =
+        'Basic ' + Buffer.from(`${clientIdEnv}:${clientSecretEnv}`).toString('base64')
+    } else {
+      tokenParams.set('client_id', clientIdEnv)
+      tokenParams.set('client_secret', clientSecretEnv)
+    }
+
     const tokenResponse = await fetch(oauthConfig.tokenUrl, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        grant_type: 'authorization_code',
-        code,
-        client_id: clientIdEnv,
-        client_secret: clientSecretEnv,
-        redirect_uri: redirectUri,
-      }).toString(),
+      headers: tokenHeaders,
+      body: tokenParams.toString(),
     })
 
     if (!tokenResponse.ok) {
       console.error('Token exchange failed:', await tokenResponse.text())
-      return NextResponse.redirect(
+      return redirectTo(
         `/integrations?error=${encodeURIComponent('Failed to exchange authorization code')}`
       )
     }
 
     const tokenData = await tokenResponse.json()
     const accessToken = tokenData.access_token
+    const refreshToken = tokenData.refresh_token || null
+    const expiresAt = tokenData.expires_in
+      ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
+      : null
+
+    const metadata = {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_at: expiresAt,
+      // legacy keys kept for older consumers of this metadata shape
+      oauth_refresh_token: refreshToken,
+      oauth_expires_at: expiresAt,
+      oauth_provider: oauthConfig.name,
+    }
 
     // Store connection
     const { data: existing } = await db
@@ -110,13 +141,7 @@ export async function GET(request: NextRequest) {
         .update({
           status: 'connected',
           auth_token: accessToken,
-          metadata: {
-            oauth_refresh_token: tokenData.refresh_token || null,
-            oauth_expires_at: tokenData.expires_in
-              ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
-              : null,
-            oauth_provider: oauthConfig.name,
-          },
+          metadata,
           connected_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -128,13 +153,7 @@ export async function GET(request: NextRequest) {
         tool_id: tool,
         status: 'connected',
         auth_token: accessToken,
-        metadata: {
-          oauth_refresh_token: tokenData.refresh_token || null,
-          oauth_expires_at: tokenData.expires_in
-            ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
-            : null,
-          oauth_provider: oauthConfig.name,
-        },
+        metadata,
         connected_at: new Date().toISOString(),
       })
     }
@@ -143,10 +162,10 @@ export async function GET(request: NextRequest) {
     await db.from('oauth_sessions').delete().eq('state', state)
 
     // Redirect back with success
-    return NextResponse.redirect(`/integrations?success=${tool}`)
+    return redirectTo(`/integrations?success=${tool}`)
   } catch (error) {
     console.error('OAuth callback error:', error)
-    return NextResponse.redirect(
+    return redirectTo(
       `/integrations?error=${encodeURIComponent('OAuth callback failed')}`
     )
   }

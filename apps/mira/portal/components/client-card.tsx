@@ -66,7 +66,7 @@ export default function ClientCard({
     <div
       onClick={handleClick}
       className="card px-5 py-4 cursor-pointer transition hover:border-opacity-100 hover:scale-[1.01]"
-      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+      style={{ borderColor: 'var(--border)' }}
     >
       {/* Header: Logo + Name + Status Badge */}
       <div className="flex items-start gap-4 mb-3">
@@ -90,7 +90,7 @@ export default function ClientCard({
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-white text-sm truncate">{name}</h3>
+            <h3 className="font-semibold text-ink text-sm truncate">{name}</h3>
             {isActive && (
               <span className="px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 flex-shrink-0">
                 Activo
@@ -98,7 +98,7 @@ export default function ClientCard({
             )}
           </div>
           {icp && (
-            <p className="text-xs text-gray-400 truncate mb-1">{icp}</p>
+            <p className="text-xs text-ink-secondary truncate mb-1">{icp}</p>
           )}
         </div>
       </div>
@@ -115,8 +115,8 @@ export default function ClientCard({
       )}
 
       {/* Divider + Footer: Deliverables count + CTA */}
-      <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        <div className="text-xs" style={{ color: 'rgba(255,255,255,0.4)' }}>
+      <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+        <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
           {deliverableCount} {deliverableCount === 1 ? 'entregable' : 'entregables'}
         </div>
         <div className="flex items-center gap-1 text-xs text-blue-400">

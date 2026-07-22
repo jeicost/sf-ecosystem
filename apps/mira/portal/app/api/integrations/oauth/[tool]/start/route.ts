@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHash, randomBytes } from 'node:crypto'
 import { buildOAuthUrl, getOAuthConfig } from '@/lib/integrations/oauth-config'
 import { createServiceClient } from '@/lib/supabase-admin'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
@@ -47,22 +48,39 @@ export async function GET(
         clientId,
         tool,
         timestamp: Date.now(),
-        nonce: Math.random().toString(36).slice(2),
+        nonce: randomBytes(32).toString('base64url'),
       })
     ).toString('base64')
 
+    // PKCE (S256) — only for tools that opt in via config.pkce (e.g. Canva)
+    let codeVerifier: string | null = null
+    let codeChallenge: string | undefined
+    if (oauthConfig.pkce) {
+      // 48 random bytes → 64 base64url chars (spec allows 43-128)
+      codeVerifier = randomBytes(48).toString('base64url')
+      codeChallenge = createHash('sha256').update(codeVerifier).digest('base64url')
+    }
+
     // Store state in a temporary session or cookie (simple approach: store in Supabase)
     const db = createServiceClient()
-    await db.from('oauth_sessions').insert({
+    const { error: sessionInsertError } = await db.from('oauth_sessions').insert({
       state,
       tool,
       client_id: clientId,
+      code_verifier: codeVerifier,
       created_at: new Date().toISOString(),
       expires_at: new Date(Date.now() + 15 * 60000).toISOString(), // 15 min
     })
+    if (sessionInsertError) {
+      console.error('oauth_sessions insert failed:', sessionInsertError)
+      return NextResponse.json(
+        { error: 'OAuth session could not be created (¿migración 0036 aplicada?)' },
+        { status: 500 }
+      )
+    }
 
     // Build OAuth URL
-    const oauthUrl = buildOAuthUrl(tool, clientIdEnv, state)
+    const oauthUrl = buildOAuthUrl(tool, clientIdEnv, state, codeChallenge)
     if (!oauthUrl) {
       return NextResponse.json({ error: 'Failed to build OAuth URL' }, { status: 500 })
     }

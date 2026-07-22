@@ -39,7 +39,7 @@ const AGENT_STATUS = [
 ]
 
 const STATUS_COLORS: Record<string, string> = {
-  idle: 'rgba(255,255,255,0.2)',
+  idle: 'var(--text-muted)',
   working: '#22C55E',
   waiting: '#F59E0B',
 }
@@ -75,21 +75,17 @@ export default function Page() {
 
       {/* Agent status grid */}
       <Card radius="hero" padding="lg">
-        <p
-          className="text-[10px] uppercase tracking-widest font-semibold mb-4"
-          style={{ color: 'rgba(255,255,255,0.3)' }}
-        >
+        <p className="text-[10px] uppercase tracking-widest font-semibold mb-4 text-ink-muted">
           {t('admin.system.agent-status', locale)}
         </p>
         <div className="flex flex-wrap gap-2">
           {AGENT_STATUS.map((a) => (
             <div
               key={a.name}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-line"
             >
               <span className="text-sm leading-none">{a.emoji}</span>
-              <span className="text-[11px] text-white">{a.name}</span>
+              <span className="text-[11px] text-ink">{a.name}</span>
               <div
                 className={`w-1.5 h-1.5 rounded-full ${a.status === 'working' ? 'animate-pulse' : ''}`}
                 style={{ background: STATUS_COLORS[a.status] }}

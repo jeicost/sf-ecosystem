@@ -24,7 +24,7 @@ export function StrategyQuickActions() {
         <div className="space-y-3">
           <select
             name="period"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="weekly">Weekly</option>
@@ -32,16 +32,16 @@ export function StrategyQuickActions() {
             <option value="quarterly">Quarterly</option>
           </select>
           <div className="space-y-2">
-            <p className="text-xs text-gray-400">Metrics to include:</p>
-            <label className="flex items-center gap-2 text-sm text-gray-300">
+            <p className="text-xs text-ink-secondary">Metrics to include:</p>
+            <label className="flex items-center gap-2 text-sm text-ink-secondary">
               <input type="checkbox" name="metrics" value="revenue" defaultChecked />
               Revenue
             </label>
-            <label className="flex items-center gap-2 text-sm text-gray-300">
+            <label className="flex items-center gap-2 text-sm text-ink-secondary">
               <input type="checkbox" name="metrics" value="mrr" defaultChecked />
               MRR
             </label>
-            <label className="flex items-center gap-2 text-sm text-gray-300">
+            <label className="flex items-center gap-2 text-sm text-ink-secondary">
               <input type="checkbox" name="metrics" value="churn" defaultChecked />
               Churn
             </label>
@@ -60,12 +60,12 @@ export function StrategyQuickActions() {
           <textarea
             name="competitors"
             placeholder="Competitors (comma-separated)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
             required
           />
           <select
             name="focus"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="pricing">Pricing</option>
@@ -87,13 +87,13 @@ export function StrategyQuickActions() {
             type="text"
             name="topic"
             placeholder="Topic to brainstorm"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <textarea
             name="constraints"
             placeholder="Constraints or requirements"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
           />
         </div>
       ),
@@ -111,12 +111,12 @@ export function StrategyQuickActions() {
             type="text"
             name="sector"
             placeholder="Industry sector"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <select
             name="region"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="españa">España</option>
@@ -137,19 +137,19 @@ export function StrategyQuickActions() {
           <textarea
             name="current_state"
             placeholder="Describe current innovation efforts"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm resize-none h-20"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm resize-none h-20"
             required
           />
           <input
             type="text"
             name="strategic_goal"
             placeholder="Main innovation goal"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <select
             name="timeline"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
             required
           >
             <option value="3">3 meses</option>
@@ -164,7 +164,7 @@ export function StrategyQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
+        <h3 className="text-lg font-semibold text-ink mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

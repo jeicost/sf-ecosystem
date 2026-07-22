@@ -82,7 +82,7 @@ export default function DocumentUploader({
         onDrop={handleDrop}
         className="relative rounded-lg border-2 border-dashed transition-all p-8"
         style={{
-          borderColor: isDragging ? '#8B5CF6' : 'rgba(255,255,255,0.1)',
+          borderColor: isDragging ? '#8B5CF6' : 'var(--border)',
           backgroundColor: isDragging ? 'rgba(139,92,246,0.05)' : 'transparent',
         }}
       >
@@ -96,10 +96,10 @@ export default function DocumentUploader({
 
         <div className="text-center pointer-events-none">
           <Upload size={32} className="mx-auto mb-3" style={{ color: '#8B5CF6' }} />
-          <p className="text-sm font-medium text-white mb-1">
+          <p className="text-sm font-medium text-ink mb-1">
             {isUploading ? 'Subiendo...' : 'Arrastra archivo aquí o clickea para seleccionar'}
           </p>
-          <p className="text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+          <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
             {acceptedTypes.join(', ')} • Máx {maxSizeMB}MB
           </p>
         </div>
@@ -108,14 +108,14 @@ export default function DocumentUploader({
       {error && (
         <div className="mt-3 p-3 rounded-lg flex items-start gap-2" style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)' }}>
           <AlertCircle size={16} className="mt-0.5" style={{ color: '#EF4444' }} />
-          <p className="text-xs text-white">{error}</p>
+          <p className="text-xs text-ink">{error}</p>
         </div>
       )}
 
       {success && (
         <div className="mt-3 p-3 rounded-lg flex items-start gap-2" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)' }}>
           <CheckCircle2 size={16} className="mt-0.5" style={{ color: '#22C55E' }} />
-          <p className="text-xs text-white">Archivo subido exitosamente</p>
+          <p className="text-xs text-ink">Archivo subido exitosamente</p>
         </div>
       )}
     </div>

@@ -94,7 +94,7 @@ export default function QualifyPage() {
       <div className="mb-8">
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xl">💬</span>
-          <h1 className="text-2xl font-semibold text-white">Quinn — Qualify</h1>
+          <h1 className="text-2xl font-semibold text-ink">Quinn — Qualify</h1>
         </div>
         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Analiza respuestas de outreach con BANT y genera el follow-up perfecto.</p>
       </div>
@@ -110,7 +110,7 @@ export default function QualifyPage() {
           </div>
         ) : (
           <select value={selectedId} onChange={e => setSelectedId(e.target.value)}
-            className="w-full rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+            className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
             <option value="">— Sin lead específico —</option>
             {leads.map(l => (
               <option key={l.id} value={l.id}>
@@ -132,7 +132,7 @@ export default function QualifyPage() {
           onChange={e => setReplyText(e.target.value)}
           placeholder="Pega aquí el mensaje que recibiste del prospect..."
           rows={5}
-          className="w-full bg-transparent text-sm text-white outline-none resize-none leading-relaxed"
+          className="w-full bg-transparent text-sm text-ink outline-none resize-none leading-relaxed"
           style={{ color: 'var(--text-primary)' }}
         />
       </div>
@@ -142,7 +142,7 @@ export default function QualifyPage() {
           'w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-all mb-6',
           replyText.trim() && !analyzing
             ? 'bg-[#22C55E]/15 text-[#4ade80] hover:bg-[#22C55E]/25 border border-[#22C55E]/25'
-            : 'bg-[#111] text-[#444] border border-[#1a1a1a] cursor-not-allowed'
+            : 'bg-surface text-ink-muted border border-line-subtle cursor-not-allowed'
         )}>
         {analyzing
           ? <><Loader2 size={15} className="animate-spin" /> Quinn analizando...</>
@@ -181,7 +181,7 @@ export default function QualifyPage() {
                           <p className="text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{k}</p>
                           <div className={clsx(
                             'text-[11px] font-semibold px-2 py-1 rounded',
-                            val === 'yes' ? 'text-green-400 bg-green-400/10' : val === 'no' ? 'text-red-400 bg-red-400/10' : 'text-[#555] bg-[#111]'
+                            val === 'yes' ? 'text-green-400 bg-green-400/10' : val === 'no' ? 'text-red-400 bg-red-400/10' : 'text-ink-muted bg-surface'
                           )}>
                             {val === 'yes' ? '✓' : val === 'no' ? '✗' : '?'}
                           </div>
@@ -196,7 +196,7 @@ export default function QualifyPage() {
               {parsed.next_move && (
                 <div className="card p-4">
                   <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Siguiente movimiento</p>
-                  <p className="text-sm text-white">{parsed.next_move}</p>
+                  <p className="text-sm text-ink">{parsed.next_move}</p>
                 </div>
               )}
 
@@ -206,7 +206,7 @@ export default function QualifyPage() {
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Mensaje sugerido</p>
                     <button onClick={() => copy(parsed.suggested_reply)}
-                      className="flex items-center gap-1 text-[10px] hover:text-white transition-all" style={{ color: 'var(--text-secondary)' }}>
+                      className="flex items-center gap-1 text-[10px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)' }}>
                       {copied ? <><Check size={10} className="text-green-400" /> Copiado</> : <><Copy size={10} /> Copiar</>}
                     </button>
                   </div>

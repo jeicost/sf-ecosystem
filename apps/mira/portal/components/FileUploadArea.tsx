@@ -59,7 +59,7 @@ export default function FileUploadArea({ onFilesSelected, maxFiles = 5 }: FileUp
         className={`relative card px-6 py-8 cursor-pointer transition-all ${
           isDragging
             ? 'bg-blue-500/15 border-blue-400 scale-105'
-            : 'hover:bg-white/5 border-dashed'
+            : 'hover:bg-surface-hover border-dashed'
         }`}
       >
         <input
@@ -73,8 +73,8 @@ export default function FileUploadArea({ onFilesSelected, maxFiles = 5 }: FileUp
         <div className="flex flex-col items-center gap-3 text-center">
           <Upload size={28} className="text-blue-400" />
           <div>
-            <p className="text-sm font-medium text-white">Drag files here or click to browse</p>
-            <p className="text-xs text-[#666] mt-1">
+            <p className="text-sm font-medium text-ink">Drag files here or click to browse</p>
+            <p className="text-xs text-ink-tertiary mt-1">
               PDF, Word, Excel, Images, SVG • Max {maxFiles} files
             </p>
           </div>
@@ -84,18 +84,18 @@ export default function FileUploadArea({ onFilesSelected, maxFiles = 5 }: FileUp
       {/* Files preview */}
       {files.length > 0 && (
         <div className="mt-4 space-y-2">
-          <p className="text-xs font-medium text-[#888] uppercase">
+          <p className="text-xs font-medium text-ink-tertiary uppercase">
             {files.length} file{files.length !== 1 ? 's' : ''} selected
           </p>
           {files.map((file, idx) => (
             <div
               key={idx}
-              className="card px-3 py-2 flex items-center justify-between hover:bg-white/8 transition-all"
+              className="card px-3 py-2 flex items-center justify-between hover:bg-surface-hover transition-all"
             >
               <div className="flex items-center gap-2 min-w-0">
                 <File size={14} className="text-blue-400 flex-shrink-0" />
-                <span className="text-xs text-white truncate">{file.name}</span>
-                <span className="text-[10px] text-[#666] flex-shrink-0">
+                <span className="text-xs text-ink truncate">{file.name}</span>
+                <span className="text-[10px] text-ink-tertiary flex-shrink-0">
                   ({(file.size / 1024 / 1024).toFixed(2)} MB)
                 </span>
               </div>
@@ -104,7 +104,7 @@ export default function FileUploadArea({ onFilesSelected, maxFiles = 5 }: FileUp
                   e.stopPropagation()
                   removeFile(idx)
                 }}
-                className="text-[#666] hover:text-red-400 transition-colors flex-shrink-0"
+                className="text-ink-tertiary hover:text-red-400 transition-colors flex-shrink-0"
               >
                 <X size={14} />
               </button>

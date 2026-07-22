@@ -9,6 +9,12 @@ export interface OAuthConfig {
   tokenUrl?: string
   scopes?: string[]
   userInfoUrl?: string
+  /** PKCE (S256). When true, /start generates a code_verifier + code_challenge
+   *  and the callback sends the verifier in the token exchange. */
+  pkce?: boolean
+  /** How to authenticate the token exchange: HTTP Basic header vs credentials
+   *  in the form body (default). Canva requires Basic. */
+  tokenAuthMethod?: 'basic' | 'body'
 }
 
 export const OAUTH_TOOLS: Record<string, OAuthConfig> = {
@@ -51,6 +57,17 @@ export const OAUTH_TOOLS: Record<string, OAuthConfig> = {
     scopes: ['r_liteprofile', 'r_emailaddress'],
     userInfoUrl: 'https://api.linkedin.com/v2/me',
   },
+  canva: {
+    clientIdEnvVar: 'NEXT_PUBLIC_CANVA_CLIENT_ID',
+    clientSecretEnvVar: 'CANVA_CLIENT_SECRET',
+    name: 'Canva',
+    authorizationUrl: 'https://www.canva.com/api/oauth/authorize',
+    tokenUrl: 'https://api.canva.com/rest/v1/oauth/token',
+    scopes: ['design:content:write', 'design:meta:read', 'profile:read'],
+    userInfoUrl: 'https://api.canva.com/rest/v1/users/me',
+    pkce: true, // Canva Connect requires PKCE (S256)
+    tokenAuthMethod: 'basic',
+  },
   figma: {
     clientIdEnvVar: 'NEXT_PUBLIC_FIGMA_CLIENT_ID',
     clientSecretEnvVar: 'FIGMA_CLIENT_SECRET',
@@ -69,7 +86,8 @@ export function getOAuthConfig(toolId: string): OAuthConfig | null {
 export function buildOAuthUrl(
   toolId: string,
   clientIdEnv: string,
-  state: string
+  state: string,
+  codeChallenge?: string
 ): string | null {
   const config = OAUTH_TOOLS[toolId]
   if (!config || !config.authorizationUrl) return null
@@ -82,10 +100,18 @@ export function buildOAuthUrl(
   url.searchParams.set('state', state)
   url.searchParams.set('response_type', 'code')
 
+  // PKCE params only for tools that opt in (config.pkce) — others unchanged
+  if (config.pkce && codeChallenge) {
+    url.searchParams.set('code_challenge', codeChallenge)
+    url.searchParams.set('code_challenge_method', 'S256')
+  }
+
   return url.toString()
 }
 
-export function getOAuthRedirectUri(toolId: string): string {
+export function getOAuthRedirectUri(_toolId: string): string {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
-  return `${baseUrl}/api/integrations/oauth/callback/${toolId}`
+  // Single shared callback route — the tool is recovered from the `state` token
+  // (app/api/integrations/oauth/callback/route.ts has no [tool] segment).
+  return `${baseUrl}/api/integrations/oauth/callback`
 }

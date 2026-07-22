@@ -55,7 +55,7 @@ export default function RecentReports() {
     return (
       <div className="space-y-2">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="card px-4 py-3 animate-pulse bg-white/3 h-12" />
+          <div key={i} className="card px-4 py-3 animate-pulse bg-surface h-12" />
         ))}
       </div>
     )
@@ -64,9 +64,9 @@ export default function RecentReports() {
   if (reports.length === 0) {
     return (
       <div className="card px-4 py-6 text-center">
-        <FileText size={24} className="mx-auto mb-2 text-[#555]" />
-        <p className="text-xs text-[#666]">No reports yet</p>
-        <p className="text-[10px] text-[#444] mt-1">Generate your first report from a department</p>
+        <FileText size={24} className="mx-auto mb-2 text-ink-muted" />
+        <p className="text-xs text-ink-tertiary">No reports yet</p>
+        <p className="text-[10px] text-ink-muted mt-1">Generate your first report from a department</p>
       </div>
     )
   }
@@ -76,15 +76,15 @@ export default function RecentReports() {
       {reports.map((report) => (
         <div
           key={report.id}
-          className="card px-4 py-3 flex items-center justify-between hover:bg-white/8 transition-all group"
+          className="card px-4 py-3 flex items-center justify-between hover:bg-surface-hover transition-all group"
         >
           <div className="flex items-center gap-3 min-w-0">
             <FileText size={14} className="text-blue-400 flex-shrink-0" />
             <div className="min-w-0">
-              <p className="text-xs font-medium text-white truncate">{report.name}</p>
+              <p className="text-xs font-medium text-ink truncate">{report.name}</p>
               <div className="flex items-center gap-2 mt-0.5">
-                <Calendar size={10} className="text-[#666]" />
-                <p className="text-[10px] text-[#666]">
+                <Calendar size={10} className="text-ink-tertiary" />
+                <p className="text-[10px] text-ink-tertiary">
                   {new Date(report.created_at).toLocaleDateString('es-ES', {
                     month: 'short',
                     day: 'numeric',
@@ -94,11 +94,11 @@ export default function RecentReports() {
             </div>
           </div>
           <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-            <button className="p-1 hover:bg-white/10 rounded transition-colors">
-              <Eye size={12} className="text-[#888]" />
+            <button className="p-1 hover:bg-surface-hover rounded transition-colors">
+              <Eye size={12} className="text-ink-secondary" />
             </button>
-            <button className="p-1 hover:bg-white/10 rounded transition-colors">
-              <Download size={12} className="text-[#888]" />
+            <button className="p-1 hover:bg-surface-hover rounded transition-colors">
+              <Download size={12} className="text-ink-secondary" />
             </button>
           </div>
         </div>

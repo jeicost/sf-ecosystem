@@ -63,7 +63,7 @@ export default function EntregasPage() {
 
       {/* Filters */}
       <div className="flex items-center gap-2 mb-6">
-        <Filter size={14} style={{ color: 'rgba(255,255,255,0.4)' }} />
+        <Filter size={14} style={{ color: 'var(--text-tertiary)' }} />
         <div className="flex gap-2">
           {['all', 'delivered', 'in-review'].map(f => (
             <button
@@ -71,9 +71,9 @@ export default function EntregasPage() {
               onClick={() => setFilter(f as any)}
               className="text-xs px-3 py-1.5 rounded-lg font-medium transition-all"
               style={{
-                background: filter === f ? 'rgba(139,92,246,0.2)' : 'rgba(255,255,255,0.05)',
-                color: filter === f ? '#a78bfa' : 'rgba(255,255,255,0.5)',
-                border: filter === f ? '1px solid rgba(139,92,246,0.3)' : '1px solid rgba(255,255,255,0.1)',
+                background: filter === f ? 'rgba(139,92,246,0.2)' : 'var(--bg-surface)',
+                color: filter === f ? '#a78bfa' : 'var(--text-tertiary)',
+                border: filter === f ? '1px solid rgba(139,92,246,0.3)' : '1px solid var(--border)',
               }}
             >
               {f === 'all' ? 'Todas' : f === 'delivered' ? 'Entregadas' : 'En Revisión'}
@@ -86,25 +86,25 @@ export default function EntregasPage() {
       <div className="overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center py-8">
-            <Loader2 size={16} className="animate-spin text-[#444]" />
+            <Loader2 size={16} className="animate-spin text-ink-muted" />
           </div>
         ) : filtered.length > 0 ? (
           <table className="w-full text-sm">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
-                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-left" style={{ color: 'rgba(255,255,255,0.4)' }}>
+              <tr style={{ borderBottom: '1px solid var(--border)' }}>
+                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-left text-ink-tertiary">
                   Fecha
                 </th>
-                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
                   Herramienta
                 </th>
-                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
                   Estado
                 </th>
-                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
                   Tamaño
                 </th>
-                <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-semibold" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
                   Acción
                 </th>
               </tr>
@@ -113,17 +113,17 @@ export default function EntregasPage() {
               {filtered.map(entrega => {
                 const statusConfig = STATUS_COLORS[entrega.status]
                 return (
-                  <tr key={entrega.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                    <td className="py-3 px-4 text-[13px] text-white">
+                  <tr key={entrega.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
+                    <td className="py-3 px-4 text-[13px] text-ink">
                       {new Date(entrega.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
-                    <td className="py-3 px-4 text-[13px] text-white font-medium">{entrega.tool}</td>
+                    <td className="py-3 px-4 text-[13px] text-ink font-medium">{entrega.tool}</td>
                     <td className="py-3 px-4">
                       <span className="text-xs px-2 py-1 rounded-full" style={{ background: statusConfig.bg, color: statusConfig.text }}>
                         {statusConfig.label}
                       </span>
                     </td>
-                    <td className="py-3 px-4 text-[13px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                    <td className="py-3 px-4 text-[13px] text-ink-tertiary">
                       {entrega.size}
                     </td>
                     <td className="py-3 px-4 text-right">
@@ -140,7 +140,7 @@ export default function EntregasPage() {
             </tbody>
           </table>
         ) : (
-          <div className="text-center py-8" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <div className="text-center py-8 text-ink-muted">
             <p className="text-sm">No hay entregas disponibles</p>
           </div>
         )}

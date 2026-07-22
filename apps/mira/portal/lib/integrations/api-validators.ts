@@ -10,22 +10,8 @@ export interface ApiValidationResult {
   }
 }
 
-// Canva API Key Validator
-export async function validateCanvaApiKey(apiKey: string): Promise<ApiValidationResult> {
-  try {
-    const res = await fetch('https://api.canva.com/v1/user/info', {
-      headers: { 'Authorization': `Bearer ${apiKey}` },
-    })
-    if (!res.ok) return { valid: false, error: 'Invalid API key' }
-    const data = (await res.json()) as any
-    return {
-      valid: true,
-      accountInfo: { email: data.user?.email, name: data.user?.name },
-    }
-  } catch {
-    return { valid: false, error: 'Unable to validate key' }
-  }
-}
+// Canva: no api-key validator. Canva moved to OAuth (Canva Connect) —
+// see lib/integrations/oauth-config.ts ('canva' entry) and lib/integrations/canva.ts.
 
 // Buffer API Key Validator
 export async function validateBufferApiKey(apiKey: string): Promise<ApiValidationResult> {
@@ -132,7 +118,7 @@ export async function validateMagnificApiKey(apiKey: string): Promise<ApiValidat
 // Factory function to get the right validator
 export function getApiValidator(toolId: string) {
   const validators: Record<string, (key: string) => Promise<ApiValidationResult>> = {
-    canva: validateCanvaApiKey,
+    // canva: removed — auth is OAuth now (falls through to 'No validator for this tool')
     buffer: validateBufferApiKey,
     hootsuite: validateHootsuiteApiKey,
     freepik: validateFreepikApiKey,

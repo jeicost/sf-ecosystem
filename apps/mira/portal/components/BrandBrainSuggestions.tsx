@@ -58,7 +58,7 @@ export default function BrandBrainSuggestions({
     <div className="card p-6 border-blue-500/20 bg-blue-500/5 mb-6">
       <div className="mb-4">
         <p className="text-sm font-medium text-blue-400">💡 Suggested Updates from Document</p>
-        <p className="text-xs text-gray-400 mt-1">Claude analyzed your document and found these insights</p>
+        <p className="text-xs text-ink-secondary mt-1">Claude analyzed your document and found these insights</p>
       </div>
 
       {error && (
@@ -70,7 +70,7 @@ export default function BrandBrainSuggestions({
 
       <div className="space-y-3 mb-6">
         {Object.entries(suggestions).map(([field, value]) => (
-          <div key={field} className="flex items-start gap-3 p-3 bg-white/5 border border-white/10 rounded">
+          <div key={field} className="flex items-start gap-3 p-3 bg-surface border border-line rounded">
             <input
               type="checkbox"
               checked={selectedFields.has(field)}
@@ -78,8 +78,8 @@ export default function BrandBrainSuggestions({
               className="mt-1 w-4 h-4 cursor-pointer"
             />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-white capitalize">{field.replace(/_/g, ' ')}</p>
-              <p className="text-xs text-gray-400 mt-1 break-words">
+              <p className="text-sm font-medium text-ink capitalize">{field.replace(/_/g, ' ')}</p>
+              <p className="text-xs text-ink-secondary mt-1 break-words">
                 {typeof value === 'object' ? JSON.stringify(value) : String(value).substring(0, 200)}
                 {typeof value === 'string' && value.length > 200 ? '...' : ''}
               </p>
@@ -108,7 +108,7 @@ export default function BrandBrainSuggestions({
         </button>
         <button
           onClick={onDismiss}
-          className="px-4 py-2 rounded text-sm font-medium text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+          className="px-4 py-2 rounded text-sm font-medium text-ink-secondary hover:text-ink transition-colors flex items-center gap-2"
         >
           <X size={14} />
           Dismiss

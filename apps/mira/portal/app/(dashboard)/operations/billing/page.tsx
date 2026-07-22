@@ -28,7 +28,7 @@ export default function Page() {
         <p className="text-sm font-medium" style={{ color: '#FBBF24' }}>
           ⚠️ Sample Data Only — Stripe integration not configured
         </p>
-        <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.5)' }}>
+        <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
           All MRR, clients, and payment data shown are examples. Connect Stripe to see real billing. Contact admin to set up STRIPE_API_KEY.
         </p>
       </div>
@@ -37,8 +37,8 @@ export default function Page() {
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(99,102,241,0.8)' }}>
           Admin · Ledger
         </p>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Billing & P&L</h1>
-        <p className="text-sm mt-1" style={{ color: 'rgba(255,255,255,0.4)' }}>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight">Billing & P&L</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           Not a single dollar is lost to disorganization when Ledger is active.
         </p>
       </div>
@@ -48,25 +48,25 @@ export default function Page() {
         {PNL.map(item => (
           <div key={item.label} className="card px-4 py-3">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+              <span className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
                 {item.label}
               </span>
               <div className="w-1.5 h-1.5 rounded-full" style={{ background: item.color }} />
             </div>
-            <p className="text-xl font-bold" style={{ color: item.positive ? '#fff' : item.color }}>{item.value}</p>
-            <p className="text-[10px] mt-1" style={{ color: 'rgba(255,255,255,0.3)' }}>{item.delta}</p>
+            <p className="text-xl font-bold" style={{ color: item.positive ? 'var(--text-primary)' : item.color }}>{item.value}</p>
+            <p className="text-[10px] mt-1" style={{ color: 'var(--text-muted)' }}>{item.delta}</p>
           </div>
         ))}
       </div>
 
       {/* Client billing table */}
       <div className="rounded-2xl overflow-hidden mb-8"
-        style={{ border: '1px solid rgba(255,255,255,0.08)' }}>
+        style={{ border: '1px solid var(--border)' }}>
         <div className="px-5 py-3 flex items-center justify-between"
-          style={{ background: 'rgba(255,255,255,0.03)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
+          style={{ background: 'var(--bg-surface)', borderBottom: '1px solid var(--border-subtle)' }}>
           <span className="text-[10px] uppercase tracking-widest font-semibold"
-            style={{ color: 'rgba(255,255,255,0.3)' }}>Client billing</span>
-          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.25)' }}>Current month</span>
+            style={{ color: 'var(--text-muted)' }}>Client billing</span>
+          <span className="text-[10px]" style={{ color: 'var(--text-muted)' }}>Current month</span>
         </div>
         {CLIENTS.map((client, i) => {
           const s = STATUS_CONFIG[client.status as keyof typeof STATUS_CONFIG]
@@ -74,17 +74,17 @@ export default function Page() {
             <div key={client.name}
               className="px-5 py-4 flex items-center justify-between"
               style={{
-                background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.015)',
-                borderBottom: i < CLIENTS.length - 1 ? '1px solid rgba(255,255,255,0.05)' : 'none',
+                background: i % 2 === 0 ? 'transparent' : 'var(--bg-surface)',
+                borderBottom: i < CLIENTS.length - 1 ? '1px solid var(--border-subtle)' : 'none',
               }}>
               <div>
-                <p className="text-sm font-medium text-white">{client.name}</p>
+                <p className="text-sm font-medium text-ink">{client.name}</p>
                 {client.status === 'overdue' && (
                   <p className="text-[10px]" style={{ color: '#EF4444' }}>Day {client.daysAgo} overdue — follow up</p>
                 )}
               </div>
               <div className="flex items-center gap-4">
-                <span className="text-sm font-semibold text-white">{client.mrr}</span>
+                <span className="text-sm font-semibold text-ink">{client.mrr}</span>
                 <span className="text-[10px] px-2.5 py-0.5 rounded-full font-semibold"
                   style={{ background: s.bg, color: s.color }}>{s.label}</span>
               </div>

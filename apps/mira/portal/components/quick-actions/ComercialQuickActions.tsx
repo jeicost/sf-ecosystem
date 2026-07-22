@@ -26,21 +26,21 @@ export function ComercialQuickActions() {
             type="text"
             name="client_name"
             placeholder="Company name"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="text"
             name="industry"
             placeholder="Industry"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <input
             type="number"
             name="target_count"
             placeholder="Number of leads"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             defaultValue="10"
             required
           />
@@ -58,13 +58,13 @@ export function ComercialQuickActions() {
           <textarea
             name="lead_data"
             placeholder="Lead information (JSON or text)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-20"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-20"
             required
           />
           <textarea
             name="company_info"
             placeholder="Your company info"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
         </div>
@@ -82,20 +82,20 @@ export function ComercialQuickActions() {
             type="text"
             name="prospect_name"
             placeholder="Prospect name"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
           <textarea
             name="call_brief"
             placeholder="Call notes or discovery brief"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-16"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
             required
           />
           <input
             type="number"
             name="budget_estimate"
             placeholder="Budget estimate"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
         </div>
@@ -112,14 +112,14 @@ export function ComercialQuickActions() {
           <textarea
             name="prospect_reply"
             placeholder="Prospect's email reply"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm h-20"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-20"
             required
           />
           <input
             type="text"
             name="context"
             placeholder="Context (what you sent)"
-            className="w-full px-3 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-500 text-sm"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
             required
           />
         </div>
@@ -130,7 +130,7 @@ export function ComercialQuickActions() {
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="text-lg font-semibold text-white mb-3">{t('actions.quick-actions', locale)}</h3>
+        <h3 className="text-lg font-semibold text-ink mb-3">{t('actions.quick-actions', locale)}</h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {actions.map((action) => (
             <QuickActionButton

@@ -109,16 +109,16 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
   }
 
   return (
-    <div className="space-y-4 p-5 rounded-xl border border-gray-800 bg-gray-900/60">
+    <div className="space-y-4 p-5 rounded-xl border border-line bg-card">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-white font-semibold text-sm">📂 Carpetas de Google Drive</p>
-          <p className="text-gray-400 text-xs mt-1">
+          <p className="text-ink font-semibold text-sm">📂 Carpetas de Google Drive</p>
+          <p className="text-ink-secondary text-xs mt-1">
             Pega el enlace de una carpeta de Drive y el Brain la leerá: documentos, referencias y dónde está cada cosa.
           </p>
         </div>
         {connected ? (
-          <span className="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-white/5 text-emerald-400 border border-emerald-500/30">
+          <span className="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-surface text-emerald-400 border border-emerald-500/30">
             ✓ Drive conectado
           </span>
         ) : (
@@ -144,12 +144,12 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
           onChange={(e) => setLink(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
           placeholder="https://drive.google.com/drive/folders/..."
-          className="flex-1 px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-white text-xs focus:border-emerald-500 outline-none"
+          className="flex-1 px-3 py-2 rounded-lg bg-surface border border-line text-ink text-xs focus:border-emerald-500 outline-none"
         />
         <select
           value={purpose}
           onChange={(e) => setPurpose(e.target.value)}
-          className="px-3 py-2 rounded-lg bg-black/40 border border-gray-700 text-white text-xs outline-none"
+          className="px-3 py-2 rounded-lg bg-surface border border-line text-ink text-xs outline-none"
         >
           {Object.entries(PURPOSES).map(([value, p]) => (
             <option key={value} value={value}>
@@ -160,7 +160,7 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
         <button
           onClick={handleAdd}
           disabled={adding || !link.trim()}
-          className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-gray-700 disabled:text-gray-400 text-white text-xs font-semibold transition"
+          className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-surface-hover disabled:text-ink-secondary text-white text-xs font-semibold transition"
         >
           {adding ? 'Verificando…' : '+ Conectar carpeta'}
         </button>
@@ -173,16 +173,16 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
       )}
 
       {loading && folders.length === 0 && (
-        <div className="flex items-center gap-2 px-3 py-4 text-gray-500 text-xs">
-          <span className="w-3 h-3 border border-gray-600 border-t-gray-300 rounded-full animate-spin inline-block" />
+        <div className="flex items-center gap-2 px-3 py-4 text-ink-tertiary text-xs">
+          <span className="w-3 h-3 border border-line border-t-ink-secondary rounded-full animate-spin inline-block" />
           Cargando carpetas…
         </div>
       )}
 
       {!loading && connected && folders.length === 0 && (
-        <div className="px-3 py-5 rounded-lg bg-black/20 border border-dashed border-gray-800 text-center">
-          <p className="text-gray-400 text-xs font-medium">Aún no hay carpetas conectadas</p>
-          <p className="text-gray-600 text-[11px] mt-1">
+        <div className="px-3 py-5 rounded-lg bg-surface border border-dashed border-line text-center">
+          <p className="text-ink-secondary text-xs font-medium">Aún no hay carpetas conectadas</p>
+          <p className="text-ink-tertiary text-[11px] mt-1">
             Pega arriba el enlace de una carpeta de Drive y el Brain leerá su contenido en el primer sync.
           </p>
         </div>
@@ -195,14 +195,14 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
             return (
               <div
                 key={f.id}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-black/30 border border-gray-800"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-surface border border-line"
               >
                 <span>{p.icon}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white text-xs font-medium truncate">
+                  <p className="text-ink text-xs font-medium truncate">
                     {f.folder_name || f.folder_id}
                   </p>
-                  <p className="text-gray-500 text-[10px]">
+                  <p className="text-ink-tertiary text-[10px]">
                     {p.label}
                     {f.last_synced_at
                       ? ` · ${f.files_synced} docs · sync ${new Date(f.last_synced_at).toLocaleString('es-ES')}`
@@ -213,13 +213,13 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
                 <button
                   onClick={() => handleSync(f.id)}
                   disabled={syncing !== null}
-                  className="px-3 py-1.5 rounded text-[10px] font-medium bg-white/10 hover:bg-white/20 disabled:opacity-40 text-white transition"
+                  className="px-3 py-1.5 rounded text-[10px] font-medium bg-surface hover:bg-surface-hover disabled:opacity-40 text-ink transition"
                 >
                   {syncing === f.id ? 'Sincronizando…' : '↻ Sincronizar'}
                 </button>
                 <button
                   onClick={() => handleDelete(f.id)}
-                  className="px-2 py-1.5 rounded text-[10px] text-gray-500 hover:text-red-400 transition"
+                  className="px-2 py-1.5 rounded text-[10px] text-ink-tertiary hover:text-red-400 transition"
                 >
                   ✕
                 </button>

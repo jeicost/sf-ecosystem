@@ -43,11 +43,11 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   }, [src, retryKey])
 
   return (
-    <div className="flex flex-col h-screen bg-[#1A1A1A]">
-      <div className="flex items-center justify-between px-4 py-2 border-b border-white/10 bg-[#1A1A1A] shrink-0 gap-2">
+    <div className="flex flex-col h-screen bg-page">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-line bg-page shrink-0 gap-2">
         <Link
           href="/toolkit"
-          className="text-sm text-white/60 hover:text-white transition-colors shrink-0"
+          className="text-sm text-ink-secondary hover:text-ink transition-colors shrink-0"
         >
           ← Volver al Toolkit
         </Link>
@@ -55,7 +55,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           <button
             onClick={() => setMode(mode === 'deck' ? 'report' : 'deck')}
             className={`text-sm px-3 py-1.5 rounded transition-colors ${
-              mode === 'deck' ? 'bg-white text-black font-medium' : 'bg-white/10 text-white hover:bg-white/20'
+              mode === 'deck' ? 'bg-ink text-page font-medium' : 'bg-surface-hover text-ink hover:opacity-80'
             }`}
           >
             🎬 {mode === 'deck' ? 'Ver informe' : 'Modo presentación'}
@@ -63,14 +63,14 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           {mode === 'deck' && (
             <button
               onClick={() => iframeRef.current?.requestFullscreen?.()}
-              className="text-sm px-3 py-1.5 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="text-sm px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
             >
               ⛶ Pantalla completa
             </button>
           )}
           <a
             href={`/api/toolkit/export?queue_id=${id}${mode === 'deck' ? '&template=deck' : ''}`}
-            className="text-sm px-4 py-1.5 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+            className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
           >
             📥 Descargar HTML
           </a>
@@ -80,11 +80,11 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-sm">
             <div className="text-4xl mb-3">⚠️</div>
-            <p className="text-white font-medium mb-1">No se pudo cargar el informe</p>
-            <p className="text-sm text-white/50 mb-4">{errorMsg}</p>
+            <p className="text-ink font-medium mb-1">No se pudo cargar el informe</p>
+            <p className="text-sm text-ink-tertiary mb-4">{errorMsg}</p>
             <button
               onClick={() => setRetryKey((k) => k + 1)}
-              className="text-sm px-4 py-2 rounded bg-white/10 text-white hover:bg-white/20 transition-colors"
+              className="text-sm px-4 py-2 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
             >
               Reintentar
             </button>
@@ -93,10 +93,10 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       ) : (
         <div className="flex-1 relative">
           {status === 'loading' && (
-            <div className="absolute inset-0 flex items-center justify-center bg-[#1A1A1A]">
+            <div className="absolute inset-0 flex items-center justify-center bg-page">
               <div className="text-center">
-                <div className="w-8 h-8 border-2 border-white/20 border-t-white rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-sm text-white/50">Cargando informe…</p>
+                <div className="w-8 h-8 border-2 border-line border-t-ink rounded-full animate-spin mx-auto mb-3" />
+                <p className="text-sm text-ink-tertiary">Cargando informe…</p>
               </div>
             </div>
           )}

@@ -16,7 +16,7 @@ export default function ToolResultComponent({ slug, data }: ToolResultProps) {
 
   if (!template) {
     return (
-      <div className="p-8 text-center text-gray-400">
+      <div className="p-8 text-center text-ink-secondary">
         <p>No report template found for {slug}</p>
       </div>
     )
