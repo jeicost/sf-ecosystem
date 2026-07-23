@@ -167,21 +167,21 @@ Tras aplicar `GROUNDING_CONTRACT` + `EDITORIAL_CONTRACT` a los 11 tools de Toolk
 
 ---
 
-## u) Código muerto/huérfano detectado en la auditoría cruzada de Agentes (nueva 2026-07-23)
+## u) Código muerto/huérfano detectado en la auditoría cruzada de Agentes (2026-07-23)
 
-Lista condensada, cada uno verificado por grep sin callers salvo donde se indica lo contrario:
-- `components/quick-actions/DepartmentQuickActions.tsx` — huérfano, y con un bug propio (`activeActionId` nunca coincide con `actionType`) que los 5 componentes reales ya corrigieron.
-- `lib/generation/quick-action-prompts.ts:302-317,396-415` — `proyectar_revenue` y `auditar_innovacion`, prompt completo sin botón.
-- `app/api/agent-interactions/route.ts` — tabla real (`agent_interactions`), pero el chat real de agentes nunca la llama; el *"Brand Brain refinement"* que promete el comentario no ocurre.
-- `app/api/agent/context/retrieve/route.ts` — sin callers.
-- `lib/department-tools.ts` + `lib/agent-archetypes.ts` — taxonomía de nombres/departamentos incompatible con `AGENT_METADATA`/`DEPARTMENT_METADATA` real; solo los usa la isla desconectada `app/(dashboard)/archetypes-demo/`.
-- `app/api/agent/route.ts:13-17` — claves `MAX_TOKENS` para `oracle`/`radar`/`kairos`, agentes retirados en la consolidación del 2026-07-21.
-- `AgentMetadata.department` (`'operaciones'`) vs `DepartmentMetadata.slug` (`'operations'`) — inconsistencia ES/EN, sin impacto hoy porque nada filtra por ese campo.
-- `AdminQuickActions.tsx:22` declara `outputType:'text'` pero `QuickActionResult.tsx`'s `ContentPreview` no tiene caso para `'text'` — se renderiza como JSON crudo.
-- `app/api/quick-actions/demo/route.ts`, `.../test/route.ts` — vestigios de una arquitectura de cola n8n ya reemplazada; gateados a no-producción, sin riesgo.
-- `agent_documents` (chat de agentes) vs `client_documentation` (Quick Actions) — dos almacenes de "documentos de contexto para IA" que no se comunican entre sí.
+**Resuelto (commit `f82f1a5`):**
+- `components/quick-actions/DepartmentQuickActions.tsx` (huérfano + bug propio) — eliminado.
+- `app/api/agent/context/retrieve/route.ts` — eliminado, sin callers.
+- `app/api/quick-actions/demo/route.ts`, `.../test/route.ts`, `app/webhook/test/route.ts`, `app/webhook/claude/route.ts` — eliminados, los 4 vestigios de la arquitectura de cola n8n ya reemplazada (el segundo par, en `app/webhook/`, se encontró de rebote al buscar referencias a `proyectar_revenue`; ninguno tenía caller real).
+- `lib/generation/quick-action-prompts.ts` — `auditar_innovacion` cableada como 6ª quick action de Strategy (prompt ya existía, solo faltaba el botón); `proyectar_revenue` eliminada en vez de cablearse (duplica `proyeccion_financiera` de Finanzas con un esquema de salida peor — no aporta cablearla también).
+- `AdminQuickActions.tsx` `outputType:'text'` — `QuickActionResult.tsx`'s `ContentPreview` ya tiene caso para `'text'`.
+- `app/api/agent/route.ts:13-17` — claves `MAX_TOKENS` de `oracle`/`radar`/`kairos` eliminadas.
 
-**Qué haría falta:** limpieza cuando toque — ninguno es urgente, pero `archetypes-demo`/`department-tools.ts` es el que más riesgo tiene de reactivarse por error con nombres que ya no resuelven.
+**Pendiente, sin urgencia (decisión de producto, no bug):**
+- `agent_documents` (chat de agentes) vs `client_documentation` (Quick Actions) — dos almacenes de "documentos de contexto para IA" que no se comunican entre sí. Decidir si se unifican o se documenta la separación.
+- `app/api/agent-interactions/route.ts` — tabla real, pero el chat de agentes nunca la llama; el *"Brand Brain refinement"* que promete el comentario no está construido. Es una feature a medio construir, no limpieza — decidir si se completa o se retira.
+- `lib/department-tools.ts` + `lib/agent-archetypes.ts` + `app/(dashboard)/archetypes-demo/` — isla de gamificación desconectada con taxonomía de nombres incompatible con `AGENT_METADATA`/`DEPARTMENT_METADATA` real. No se ha tocado — podría ser trabajo aspiracional sin terminar, no basura confirmada; requiere decidir si se retoma o se retira antes de tocarlo.
+- `AgentMetadata.department` (`'operaciones'`) vs `DepartmentMetadata.slug` (`'operations'`) — inconsistencia ES/EN, sin impacto hoy porque nada filtra por ese campo. Bajo riesgo, no se ha tocado.
 
 ---
 
