@@ -59,6 +59,24 @@ const MAX_FILES_TOTAL = 40
 const MAX_DOCS_PER_SYNC = 15
 const HAIKU_MODEL = 'claude-haiku-4-5-20251001'
 
+// Scope required to write to the client's own Drive (exports). Connections
+// authorized before this scope was added to app/api/brand-brain/drive/authorize
+// only have drive.readonly and fall back silently to the platform Service
+// Account in app/api/export/google-drive -- see DEBT.md (k).
+export const DRIVE_WRITE_SCOPE = 'https://www.googleapis.com/auth/drive.file'
+
+/**
+ * Whether a client's Drive connection carries the scope needed to write to
+ * their own Drive. `granted_scopes` is NULL for connections created before
+ * migration 0044 started recording it -- those are treated as insufficient
+ * (conservative default) until the client reconnects.
+ */
+export function hasDriveWriteScope(
+  connection: { granted_scopes?: string[] | null } | null | undefined
+): boolean {
+  return !!connection?.granted_scopes?.includes(DRIVE_WRITE_SCOPE)
+}
+
 const EXTRACTABLE_MIME_TYPES = [
   'application/pdf',
   'text/plain',

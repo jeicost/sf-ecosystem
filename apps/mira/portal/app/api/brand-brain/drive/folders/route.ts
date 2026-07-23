@@ -6,6 +6,7 @@ import {
   extractDriveFolderId,
   getClientAccessToken,
   getDriveFolderMetadata,
+  hasDriveWriteScope,
 } from '@/lib/drive-sync'
 
 export const runtime = 'nodejs'
@@ -102,12 +103,17 @@ export async function GET(req: NextRequest) {
 
     const { data: conn } = await admin
       .from('drive_connections')
-      .select('is_authorized')
+      .select('is_authorized, granted_scopes')
       .eq('client_id', clientId)
       .maybeSingle()
 
+    // needsReauth: connected, but the stored connection lacks the drive.file
+    // scope required to export to the client's own Drive (old connections,
+    // or ones that predate granted_scopes being recorded -- see DEBT.md (k)).
+    const needsReauth = !!conn?.is_authorized && !hasDriveWriteScope(conn)
+
     return NextResponse.json(
-      { folders: folders || [], connected: !!conn?.is_authorized },
+      { folders: folders || [], connected: !!conn?.is_authorized, needsReauth },
       { status: 200 }
     )
   } catch (error) {

@@ -74,6 +74,10 @@ export async function GET(req: NextRequest) {
       refresh_token: tokens.refreshToken || null,
       token_expires_at: tokenExpiresAt,
       is_authorized: true,
+      // Google returns the space-delimited scopes it actually granted (may be
+      // narrower than what was requested). Recorded so we can detect old
+      // connections that predate the drive.file scope -- see DEBT.md (k).
+      granted_scopes: tokens.scope ? tokens.scope.split(' ').filter(Boolean) : null,
       updated_at: new Date().toISOString(),
     }
 
@@ -108,6 +112,7 @@ async function exchangeCodeForTokens(
   accessToken?: string
   refreshToken?: string
   expiresIn?: number
+  scope?: string
   error?: string
 }> {
   try {
@@ -149,6 +154,7 @@ async function exchangeCodeForTokens(
       accessToken: tokens.access_token,
       refreshToken: tokens.refresh_token,
       expiresIn: tokens.expires_in,
+      scope: tokens.scope,
     }
   } catch (error) {
     console.error('Error exchanging code for tokens:', error)

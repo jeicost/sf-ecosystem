@@ -92,6 +92,8 @@ export interface DriveConnectionRecord {
   is_authorized: boolean
   auto_sync_enabled: boolean
   last_sync_at: string | null
+  /** Scopes Google actually granted at the last (re)authorization. NULL for connections created before this was tracked (0044) -- treated as insufficient until reconnect. */
+  granted_scopes: string[] | null
   created_at: string
   updated_at: string
 }

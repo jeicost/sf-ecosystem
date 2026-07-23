@@ -22,6 +22,7 @@ export default function IntegrationsPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const [driveConnected, setDriveConnected] = useState(false)
+  const [driveNeedsReauth, setDriveNeedsReauth] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -62,7 +63,10 @@ export default function IntegrationsPage() {
     if (!clientId) return
     fetch(`/api/brand-brain/drive/folders?clientId=${clientId}`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((j) => setDriveConnected(!!j?.connected))
+      .then((j) => {
+        setDriveConnected(!!j?.connected)
+        setDriveNeedsReauth(!!j?.needsReauth)
+      })
       .catch(() => {})
   }, [clientId])
 
@@ -170,6 +174,25 @@ export default function IntegrationsPage() {
           <h1 className="text-4xl font-bold text-ink mb-2">{t('integrations.title', locale)}</h1>
           <p className="text-ink-secondary">{t('integrations.subtitle', locale)}</p>
         </div>
+
+        {driveConnected && driveNeedsReauth && (
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-5 py-4">
+            <div>
+              <p className="text-sm font-semibold text-amber-400">
+                {t('integrations.drive-reauth-title', locale)}
+              </p>
+              <p className="text-sm text-ink-secondary mt-1">
+                {t('integrations.drive-reauth-desc', locale)}
+              </p>
+            </div>
+            <button
+              onClick={() => handleToolConnect('google-drive')}
+              className="shrink-0 px-4 py-2 rounded-lg bg-amber-500 text-black text-sm font-semibold hover:bg-amber-400 transition-colors"
+            >
+              {t('integrations.drive-reauth-cta', locale)}
+            </button>
+          </div>
+        )}
 
         {clientId && <UsageCard clientId={clientId} />}
 
