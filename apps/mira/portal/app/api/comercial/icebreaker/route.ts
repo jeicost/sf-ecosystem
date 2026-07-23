@@ -3,9 +3,12 @@ import { adminClient } from '@/lib/supabase'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { requireLeadAccess } from '@/lib/comercial/lead-access'
 
-// Icebreaker CANÓNICO del ecosistema (decisión 2026-07-19, docs/crm-architecture.md):
-// esta ruta es la única que MIRA usa para icebreakers. El /icebreaker/generate del
-// motor Python queda solo para el camino automático (webhook hot-lead).
+// NOTA (corregida 2026-07-23, ver docs/DEBT.md): esta ruta NO es la que usa la UI real —
+// app/(dashboard)/comercial/icebreaker/page.tsx llama a /api/agent (role: 'icebreaker-writer')
+// para tener Brand Brain + memoria del cliente. Esta ruta funciona correctamente end-to-end
+// (verificado en vivo) y tiene la ventaja de auto-guardar en leads.icebreaker_used sin paso
+// manual — pero hoy solo se llama directamente (no desde ningún botón de la UI). El
+// /icebreaker/generate del motor Python queda para el camino automático (webhook hot-lead).
 export async function POST(req: NextRequest) {
   const { leadId } = await req.json()
 

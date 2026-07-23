@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState, useMemo, useCallback } from 'react'
-import { Loader2, X, ExternalLink, Mail, LinkedinIcon, Send, Check } from 'lucide-react'
+import { Loader2, X, ExternalLink, Mail, LinkedinIcon, Send, Check, RefreshCw } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
@@ -162,10 +162,36 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
   onStageChange: (id: string, stage: LeadStage) => void
   locale: Locale
 }) {
-  const score = scoreLabel(lead.hot_score)
+  // Score local: el discovery inicial fija hot_score una vez y nadie lo
+  // recalculaba desde el Pipeline (solo desde la página aparte de Scoring,
+  // fila a fila) — se puede quedar desactualizado indefinidamente. Estado
+  // local para reflejar el resultado del recálculo sin esperar a la
+  // suscripción realtime de la lista.
+  const [liveScore, setLiveScore] = useState<{ score: number; reason: string } | null>(null)
+  const [isRescoring, setIsRescoring] = useState(false)
+  const currentHotScore = liveScore?.score ?? lead.hot_score
+  const score = scoreLabel(currentHotScore)
   const displayName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Sin nombre'
   const stageInfo = STAGES.find(s => s.key === lead.stage)
   const stageLabel = getStageLabel(lead.stage, locale)
+
+  const handleRescore = async () => {
+    setIsRescoring(true)
+    try {
+      const res = await fetch('/api/comercial/score', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ leadId: lead.id }),
+      })
+      const data = await res.json()
+      if (res.ok && typeof data.score === 'number') {
+        setLiveScore({ score: data.score, reason: data.reason ?? '' })
+      }
+    } catch { /* re-score failures should never block the rest of the modal */ }
+    finally {
+      setIsRescoring(false)
+    }
+  }
 
   // Puente leads → crm_contacts (Fase B): estado del envío a CRM
   const [crmStatus, setCrmStatus] = useState<'idle' | 'checking' | 'sending' | 'sent' | 'error'>('checking')
@@ -233,19 +259,34 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
         </div>
 
         {/* Score + Stage */}
-        <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-semibold"
-            style={{ background: `${score.color}15`, border: `1px solid ${score.color}30`, color: score.color }}>
-            {score.emoji} {lead.hot_score ?? '—'}
-          </div>
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs"
-            style={{ background: `${stageInfo?.color ?? '#555'}15`, border: `1px solid ${stageInfo?.color ?? '#555'}30`, color: stageInfo?.color ?? '#888' }}>
-            {stageLabel ?? lead.stage}
-          </div>
-          {lead.bant_score !== null && (
-            <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px]" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-              BANT {lead.bant_score}/4
+        <div className="px-6 py-4" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-semibold"
+              style={{ background: `${score.color}15`, border: `1px solid ${score.color}30`, color: score.color }}>
+              {score.emoji} {currentHotScore ?? '—'}
             </div>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs"
+              style={{ background: `${stageInfo?.color ?? '#555'}15`, border: `1px solid ${stageInfo?.color ?? '#555'}30`, color: stageInfo?.color ?? '#888' }}>
+              {stageLabel ?? lead.stage}
+            </div>
+            {lead.bant_score !== null && (
+              <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px]" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
+                BANT {lead.bant_score}/4
+              </div>
+            )}
+            <button
+              onClick={handleRescore}
+              disabled={isRescoring}
+              title="Recalcular score contra tu ICP actual"
+              className="ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] transition-all hover:text-ink disabled:opacity-50"
+              style={{ color: 'var(--text-tertiary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}
+            >
+              <RefreshCw size={11} className={isRescoring ? 'animate-spin' : ''} />
+              {isRescoring ? 'Recalculando...' : 'Recalcular'}
+            </button>
+          </div>
+          {liveScore?.reason && (
+            <p className="mt-2 text-[11px] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>{liveScore.reason}</p>
           )}
         </div>
 

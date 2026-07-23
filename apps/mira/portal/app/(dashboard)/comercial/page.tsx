@@ -54,7 +54,7 @@ export default function ComercialPage() {
         items={[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
           { label: t('stat.total-leads', locale), value: String(stats.leads ?? 0) },
-          { label: t('stat.hot-leads', locale), value: Math.ceil((stats.leads ?? 0) * 0.3).toString() },
+          { label: t('stat.hot-leads', locale), value: String(stats.hotLeads ?? 0) },
           { label: t('stat.proposals', locale), value: String(stats.proposals ?? 0) },
         ]}
       />

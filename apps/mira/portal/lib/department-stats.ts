@@ -1,10 +1,12 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
+import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
 
 const STRATEGY_AGENT_IDS = STRATEGY_DEPT_AGENTS.map((a) => a.id)
 
 export interface DepartmentStats {
   leads?: number
+  hotLeads?: number
   proposals?: number
   posts?: number
   plans?: number
@@ -18,7 +20,7 @@ export interface DepartmentStats {
 export async function getDepartmentStats(clientId: string): Promise<Record<string, DepartmentStats>> {
   const db = createServiceClient()
 
-  let leads = 0, proposals = 0, posts = 0, contacts = 0, plans = 0, ideas = 0
+  let leads = 0, hotLeads = 0, proposals = 0, posts = 0, contacts = 0, plans = 0, ideas = 0
 
   try {
     const { count: leadsCount } = await db
@@ -28,6 +30,17 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
     leads = leadsCount || 0
   } catch (e) {
     console.error('Error fetching leads:', e)
+  }
+
+  try {
+    const { count: hotCount } = await db
+      .from('leads')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .gte('hot_score', HOT_SCORE_THRESHOLD)
+    hotLeads = hotCount || 0
+  } catch (e) {
+    console.error('Error fetching hot leads:', e)
   }
 
   try {
@@ -51,11 +64,22 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
   }
 
   try {
-    const { count: contactsCount } = await db
-      .from('crm_contacts')
-      .select('id', { count: 'exact', head: true })
+    // crm_contacts no tiene columna client_id — se escribe con workspace_id
+    // (ver lib/comercial/promote-lead.ts). Sin este mapeo, este count llevaba
+    // fijo en 0 desde siempre (la query fallaba en silencio contra una
+    // columna inexistente, atrapada por este mismo try/catch).
+    const { data: mapping } = await db
+      .from('client_workspaces')
+      .select('workspace')
       .eq('client_id', clientId)
-    contacts = contactsCount || 0
+      .maybeSingle()
+    if (mapping?.workspace) {
+      const { count: contactsCount } = await db
+        .from('crm_contacts')
+        .select('id', { count: 'exact', head: true })
+        .eq('workspace_id', mapping.workspace)
+      contacts = contactsCount || 0
+    }
   } catch (e) {
     console.error('Error fetching contacts:', e)
   }
@@ -88,7 +112,7 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
   }
 
   return {
-    comercial: { leads, proposals },
+    comercial: { leads, hotLeads, proposals },
     marketing: { posts, contacts },
     strategy: { plans, ideas },
     operaciones: { contacts },

@@ -122,8 +122,8 @@ const translations: Record<Locale, Record<string, string>> = {
     // QUICK ACTIONS - COMERCIAL
     'actions.comercial.crear_campaña': 'Crear Campaña',
     'actions.comercial.crear_campaña.desc': 'Generar campaña de outreach con icebreakers personalizados',
-    'actions.comercial.generar_icp': 'Generar ICP',
-    'actions.comercial.generar_icp.desc': 'Calificar leads contra tu perfil de cliente ideal',
+    'actions.comercial.generar_icp': 'Analizar Cuenta',
+    'actions.comercial.generar_icp.desc': 'Perfil de la empresa objetivo: decisores, proceso de compra y encaje (no define tu ICP — eso vive en Comercial → ICP)',
     'actions.comercial.crear_propuesta': 'Crear Propuesta',
     'actions.comercial.crear_propuesta.desc': 'Generar propuesta de ventas profesional en PDF',
     'actions.comercial.calificar_reply': 'Calificar Reply',
@@ -693,8 +693,8 @@ const translations: Record<Locale, Record<string, string>> = {
     // QUICK ACTIONS - COMERCIAL
     'actions.comercial.crear_campaña': 'Create Campaign',
     'actions.comercial.crear_campaña.desc': 'Generate outreach campaign with personalized icebreakers',
-    'actions.comercial.generar_icp': 'Generate ICP',
-    'actions.comercial.generar_icp.desc': 'Score leads against your ideal customer profile',
+    'actions.comercial.generar_icp': 'Analyze Account',
+    'actions.comercial.generar_icp.desc': 'Target company profile: decision makers, buying process and fit (does not define your ICP — that lives in Comercial → ICP)',
     'actions.comercial.crear_propuesta': 'Create Proposal',
     'actions.comercial.crear_propuesta.desc': 'Generate a professional sales proposal PDF',
     'actions.comercial.calificar_reply': 'Qualify Reply',
