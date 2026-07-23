@@ -79,6 +79,12 @@ const TOOL_CONFIG: ToolConfig = {
       type: 'textarea',
       placeholder: 'Una por línea. Términos SEO y temáticos.',
     },
+    {
+      name: 'activos_ugc_comunidad',
+      label: 'CONTENIDO DE COMUNIDAD / UGC EXISTENTE',
+      type: 'textarea',
+      placeholder: 'Hashtags reales que ya uses, programas de testimonios, contenido de clientes que ya tengas. Déjalo en blanco si no aplica todavía.',
+    },
   ],
 }
 

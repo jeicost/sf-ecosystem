@@ -5,6 +5,7 @@ import { fetchBrandBrain } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 
 // tone_of_voice may be a plain string or an object — never spread a string into chars
 function formatTone(tone: unknown): string {
@@ -54,8 +55,8 @@ BRAND CONTEXT (source of truth — usa esto en todo el documento):
   const allContext = [docText, brandContext, memoryContext].filter(Boolean).join('\n\n')
   const fullContext = allContext ? `\n\nCONTEXTO DEL CLIENTE:\n${allContext}` : ''
 
-  // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contrato anti-alucinación.
-  const input = `\nBRIEF DEL USUARIO:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}\n\n${GROUNDING_CONTRACT}`
+  // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contratos de calidad (veracidad + redacción).
+  const input = `\nBRIEF DEL USUARIO:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}\n\n${GROUNDING_CONTRACT}\n\n${EDITORIAL_CONTRACT}`
 
   switch (docType) {
     case 'doc-playbook':
@@ -73,11 +74,21 @@ Devuelve SOLO este JSON:
       "stats": [{"value": "", "label": ""}],
       "tips": ["Consejo accionable 1", "Consejo 2"],
       "steps": [{"title": "Paso 1: ...", "body": "Cómo ejecutarlo"}],
-      "table": {"headers": [], "rows": []}
+      "table": {"headers": [], "rows": []},
+      "tiers": [{"name": "Plan/tramo", "price": "€X/mes", "includes": ["Qué incluye 1", "Qué incluye 2"]}],
+      "funnel": [{"stage": "Nombre de la etapa", "description": "Qué pasa en esta etapa"}],
+      "timeline": [{"period": "Semana 1 / Mes 1 / Q1", "items": ["Qué ocurre en este periodo"]}],
+      "checklist": [{"item": "Tarea a verificar", "note": "Detalle opcional"}],
+      "statusTable": {"headers": ["Columna 1", "Columna 2"], "rows": [{"cells": ["valor 1", "valor 2"], "status": "good"}]}
     }
   ]
 }
-Incluye 6-9 secciones: contexto/diagnóstico, estrategia, 3-5 secciones de ejecución con steps y tips, métricas de éxito con stats, y cierre con próximos pasos. Usa stats/tips/steps/table solo donde aporten (omite las keys que no uses en cada sección).`
+Incluye 6-9 secciones: contexto/diagnóstico, estrategia, 3-5 secciones de ejecución con steps y tips, métricas de éxito con stats, y cierre con próximos pasos. Usa cada bloque SOLO donde el contenido encaje de forma natural (omite las keys que no uses en cada sección):
+- "tiers" para presupuesto o planes por tramo (nunca inventes precios que no estén en el brief/contexto — usa '[COMPLETAR: dato real]' si falta el precio).
+- "funnel" para un proceso de conversión con etapas secuenciales (awareness → consideración → conversión, o similar).
+- "timeline" para un cronograma/calendario de ejecución con periodos.
+- "checklist" para requisitos o tareas que se marcan como hechas/pendientes (distinto de "tips", que son consejos, no tareas).
+- "statusTable" en vez de "table" cuando cada fila tiene un estado claro (bien/en riesgo/mal) — status debe ser "good", "warning" o "critical".`
 
     case 'doc-deck':
       return `Eres un consultor de presentaciones ejecutivas. Genera un dossier/presentación 16:9 para esta marca, listo para presentar a clientes o inversores. Todo en ESPAÑOL.
@@ -125,14 +136,14 @@ Devuelve SOLO este JSON:
   "subtitle": "Periodo cubierto",
   "sections": [
     {"title": "Resumen Ejecutivo", "body": "<p>...</p>", "stats": [{"value": "", "label": ""}]},
-    {"title": "Resultados por Área", "table": {"headers": ["Área", "Objetivo", "Resultado", "Estado"], "rows": []}},
+    {"title": "Resultados por Área", "statusTable": {"headers": ["Área", "Objetivo", "Resultado"], "rows": [{"cells": ["", "", ""], "status": "good"}]}},
     {"title": "Lo que funcionó", "tips": []},
     {"title": "Lo que no funcionó", "tips": []},
     {"title": "Aprendizajes", "body": ""},
-    {"title": "Plan del próximo periodo", "steps": [{"title": "", "body": ""}]}
+    {"title": "Plan del próximo periodo", "timeline": [{"period": "", "items": []}]}
   ]
 }
-Ajusta secciones al contenido real disponible; añade stats donde haya cifras.`
+Ajusta secciones al contenido real disponible; añade stats donde haya cifras. Usa "status": "good" cuando el área alcanzó o superó el objetivo, "warning" si quedó cerca, "critical" si quedó lejos — nunca lo dejes en blanco si hay un resultado y un objetivo con los que compararlo.`
 
     case 'doc-onepager':
       return `Eres un estratega comercial. Genera un one-pager de ventas de UNA sola página para esta marca: denso en valor, cero relleno. Todo en ESPAÑOL.
@@ -146,11 +157,11 @@ Devuelve SOLO este JSON:
     {"title": "El problema", "body": "<p>2-3 frases</p>"},
     {"title": "La solución", "body": "<p>2-3 frases</p>", "tips": ["Beneficio 1", "Beneficio 2", "Beneficio 3"]},
     {"title": "Cifras clave", "stats": [{"value": "", "label": ""}]},
-    {"title": "Servicios / Planes", "table": {"headers": [], "rows": []}},
+    {"title": "Servicios / Planes", "tiers": [{"name": "", "price": "", "includes": []}]},
     {"title": "Siguiente paso", "body": "<p>CTA claro con contacto</p>"}
   ]
 }
-Máximo 5 secciones, textos cortos: todo debe caber en una página impresa.`
+Máximo 5 secciones, textos cortos: todo debe caber en una página impresa. Usa "tiers" para Servicios/Planes cuando haya precios o paquetes diferenciados; si no los hay, usa "table" en su lugar. Nunca inventes un precio que no esté en el brief — usa '[COMPLETAR: dato real]'.`
 
     default:
       return null

@@ -129,7 +129,7 @@ BRAND CONTEXT (Source of Truth):
     .join('\n\n')
 
   // Grounded tools receive pre-formatted VERIFIED SITE FACTS / SOURCES blocks from the route.
-  const GROUNDED_TOOLS = ['seo-audit', 'marketing-audit', 'competitive-analysis', 'investor-deck']
+  const GROUNDED_TOOLS = ['seo-audit', 'marketing-audit', 'competitive-analysis', 'investor-deck', 'brand-briefing']
   const groundingBlocks = GROUNDED_TOOLS.includes(toolSlug)
     ? [siteFactsBlock, sourcesBlock].filter(Boolean).join('\n\n')
     : ''
@@ -152,6 +152,14 @@ BRAND CONTEXT (Source of Truth):
 - Brand voice you define here will be the standard for all content.
 - Do NOT generate duplicate or conflicting data. Ensure internal consistency.
 - Include warnings if any data seems contradictory (e.g., "premium brand but budget messaging").
+
+⚠️ INPUT-GROUNDED FIELDS (do not invent these — the user provided them):
+- \`mision_valores\` → base directly for brand_identity.mission/vision/values. Do not replace with a generic mission.
+- \`audiencia_objetivo\` → base directly for target_audience.description/personas. Expand into personas, but keep the described audience as the anchor — do not invent a different one.
+- \`personalidad_tono\` → base directly for brand_voice.tone/traits/do_examples/dont_examples.
+- \`colores_marca\` (hex) → use as visual_identity.colors[0] (primary) verbatim. Propose complementary/secondary colors from it, but never invent the primary hex.
+- If VERIFIED SITE FACTS are present above, ground visual_identity.imagery_style and any competitive_positioning claim in what was actually observed on the site — do not describe a site you have not seen.
+- If any of these fields is missing or too thin to use, follow the GROUNDING_CONTRACT below: mark the derived field with '[SUPUESTO]' instead of inventing it silently.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -478,6 +486,8 @@ Generate marketing audit JSON (EXACT STRUCTURE — card titles below are generic
 - Map content to Brand Briefing target audience personas
 - Include "dependencies" section with brand_briefing_id and pillar_alignment status
 
+⚠️ NEVER INVENT: \`ugc_strategy\` (hashtags, testimonial_program, community_content) must come from \`activos_ugc_comunidad\` in INPUT. If that field is empty, return \`ugc_strategy\` with empty arrays/strings and add "UGC/community assets" to a \`data_gaps\` array — do not invent hashtags or a testimonial program that doesn't exist. Likewise, \`seasonal_campaigns\` and \`content_governance.sla\` should only contain specifics that are inferable from INPUT/context (e.g. \`frecuencia\`); anything not supported stays as a generic placeholder note, not a fabricated cadence or SLA number.
+
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
@@ -503,7 +513,8 @@ Generate a COMPREHENSIVE content pack JSON with ALL sections:
   "analytics_measurement": {"kpis_per_type": {}, "dashboards": "", "cadence": ""},
   "brand_aligned_checklist": {"voice_check": "", "visual_check": "", "messaging_check": ""},
   "ugc_strategy": {"hashtags": [], "testimonial_program": "", "community_content": ""},
-  "content_calendar": {"12_month_rolling": []}
+  "content_calendar": {"12_month_rolling": []},
+  "data_gaps": ["UGC/community assets if activos_ugc_comunidad was empty, plus any other unsupported specifics"]
 }`
 
     case 'action-plan':
@@ -515,6 +526,8 @@ Generate a COMPREHENSIVE content pack JSON with ALL sections:
 - Actions MUST address Marketing Audit gaps and Content Pack deliverables
 - If OKRs contradict brand mission (e.g., "scale cheaply" vs "premium positioning"), FAIL
 - Include dependencies section with all toolkit IDs and alignment status
+
+⚠️ NEVER INVENT NUMBERS: \`budget_breakdown\` and \`team_capacity.fte\`/\`hiring_plan\` must be derived from \`presupuesto_disponible\` and \`equipo_roles\` in INPUT. If a figure or split is not stated or clearly inferable from those fields, set that value to null (or an empty array) instead of guessing a number — do NOT distribute an invented percentage across engineering/marketing/ops/contingency. Add any missing figure to a \`data_gaps\` array.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -540,7 +553,8 @@ Generate a COMPREHENSIVE action plan JSON:
   "learning_loops": {"weekly_reviews": "", "monthly_retros": "", "iteration_cadence": ""},
   "stakeholder_communication": {"audience": [], "cadence": "", "format": ""},
   "risk_mitigation": [{"risk": "", "probability": "", "impact": "", "mitigation": ""}],
-  "escalation_procedures": {"decision_framework": "", "approval_levels": []}
+  "escalation_procedures": {"decision_framework": "", "approval_levels": []},
+  "data_gaps": ["every budget or headcount figure that was null because it was not provided in presupuesto_disponible/equipo_roles"]
 }`
 
     case 'investor-deck':
@@ -559,6 +573,8 @@ FINANCIAL DATA RULES (STRICT — investors verify every number):
 - Market size / growth figures must come from the context or SOURCES (cite the URL); otherwise use '[COMPLETAR: dato real]' or prefix the estimate with '[SUPUESTO]'.
 - Testimonials: NEVER invent names, companies, or quotes. Only include testimonials that appear in the context; otherwise return an empty customer_testimonials array and add "customer testimonials" to data_gaps.
 - Team, board, and advisor entries only from the context — never fabricate people.
+- \`the_ask.valuation\`/\`post_money\` come from \`valuation_terms\` in INPUT if provided; if not, use '[COMPLETAR: dato real]', never estimate a valuation.
+- \`board_and_advisors\` comes from \`board_advisors\` in INPUT if provided; if empty, return an empty array — never invent board members.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -664,6 +680,10 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
 - Include full reconciliation summary and conflict log
 - This is the living document that evolves as toolkits are re-run
 
+⚠️ FORM vs. DEPENDENCY PRECEDENCE: if the \`brand_briefing\` dependency is loaded, it is the source of truth for target_audience/brand_mission/tone_personality — use it, not the form fields, so downstream toolkits stay consistent. But if what the user just typed in \`target_audience\`/\`brand_mission\`/\`tone_personality\` meaningfully conflicts with the dependency (not just phrased differently — an actual contradiction), do NOT silently discard the form input: add an entry to \`reconciliation.conflicts\` describing the discrepancy, and default to the dependency. If \`brand_briefing\` is NOT loaded, the form fields ARE the source — mark {"source": "form_input"} instead of "brand_briefing" in that case.
+
+⚠️ NO ORPHAN SECTIONS: \`crisis_communication\` must be built from \`crisis_comms_guidelines\` in INPUT. If that field is empty, do not invent a protocol — return \`crisis_communication\` with a single field \`status: "not_defined"\` and add "crisis communication protocol" to a \`data_gaps\` array instead of fabricating approval chains. Likewise, \`employee_brand\` and \`packaging_collateral\` have no input field or dependency backing them — only fill them in if the brand_briefing/content_pack dependencies contain material that clearly supports them; otherwise return them with \`status: "not_defined"\` and list them in \`data_gaps\` rather than inventing an advocacy program or template list.
+
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
@@ -693,7 +713,8 @@ Generate COMPREHENSIVE brandbook JSON that REFERENCES (not re-defines) all sourc
   "employee_brand": {"internal_mission": "", "advocacy_program": "", "guidelines": ""},
   "brand_evolution": {"source": "brand_briefing", "2_year_roadmap": "", "potential_expansions": []},
   "guidelines_dos_donts": {"do": [], "dont": []},
-  "living_document_notes": {"review_cadence": "quarterly", "last_audit": "", "next_scheduled_review": ""}
+  "living_document_notes": {"review_cadence": "quarterly", "last_audit": "", "next_scheduled_review": ""},
+  "data_gaps": ["sections marked status: not_defined because there was no input or dependency to back them"]
 }`
 
     case 'marketing-campaign-generator':

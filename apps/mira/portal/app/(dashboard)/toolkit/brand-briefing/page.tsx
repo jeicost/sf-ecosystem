@@ -21,7 +21,7 @@ const TOOL_CONFIG: ToolConfig = {
       required: true,
     },
     {
-      name: 'website_url',
+      name: 'url_sitio',
       label: 'URL SITIO WEB',
       type: 'text',
       placeholder: 'https://www.salsaburgers.com',
@@ -33,6 +33,33 @@ const TOOL_CONFIG: ToolConfig = {
       type: 'text',
       placeholder: 'Ej: F&B Delivery, Premium Burgers',
       required: true,
+    },
+    {
+      name: 'mision_valores',
+      label: 'MISIÓN Y VALORES',
+      type: 'textarea',
+      placeholder: 'Por qué existe la marca, qué problema resuelve, en qué cree. Si no lo tienes definido, escribe lo que sepas — mejor un borrador real que nada.',
+      required: true,
+    },
+    {
+      name: 'audiencia_objetivo',
+      label: 'AUDIENCIA OBJETIVO',
+      type: 'textarea',
+      placeholder: 'Quién compra/usa la marca hoy. Edad, contexto, comportamiento, qué le frustra.',
+      required: true,
+    },
+    {
+      name: 'personalidad_tono',
+      label: 'PERSONALIDAD Y TONO DE VOZ',
+      type: 'textarea',
+      placeholder: 'Cómo debería sonar la marca. Adjetivos, referencias, qué evitar.',
+      required: true,
+    },
+    {
+      name: 'colores_marca',
+      label: 'COLOR PRINCIPAL DE MARCA',
+      type: 'color',
+      hint: 'Color de referencia; el resto de la paleta se propondrá a partir de este.',
     },
   ],
 }
@@ -306,7 +333,18 @@ function BrandBriefingResult({ data }: { data?: any }) {
             {data.visual_identity.typography && (
               <div className="border border-line bg-surface p-4 rounded">
                 <div className="text-xs text-ink-secondary font-bold mb-2">TYPOGRAPHY</div>
-                <p className="text-sm text-ink-secondary">{data.visual_identity.typography}</p>
+                {typeof data.visual_identity.typography === 'string' ? (
+                  <p className="text-sm text-ink-secondary">{data.visual_identity.typography}</p>
+                ) : (
+                  <div className="space-y-1">
+                    {data.visual_identity.typography.heading && (
+                      <p className="text-sm text-ink-secondary"><span className="font-bold">Heading:</span> {data.visual_identity.typography.heading}</p>
+                    )}
+                    {data.visual_identity.typography.body && (
+                      <p className="text-sm text-ink-secondary"><span className="font-bold">Body:</span> {data.visual_identity.typography.body}</p>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </section>

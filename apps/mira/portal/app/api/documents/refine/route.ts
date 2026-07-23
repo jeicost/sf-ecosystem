@@ -4,6 +4,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 
 export const maxDuration = 300
 
@@ -83,7 +85,11 @@ ${JSON.stringify(slides![slide_index as number], null, 2)}
 
 Instrucción del usuario: "${instruction}"
 
-Aplica SOLO los cambios pedidos a ESTA slide, conservando su layout y estructura de keys salvo que la instrucción pida cambiarlos (layouts válidos: cover, section, content, stats, closing, timeline, comparison, quote, image, chart, agenda). Mismo idioma. Devuelve SOLO el JSON de esta slide revisada (un único objeto), nada más.`
+Aplica SOLO los cambios pedidos a ESTA slide, conservando su layout y estructura de keys salvo que la instrucción pida cambiarlos (layouts válidos: cover, section, content, stats, closing, timeline, comparison, quote, image, chart, agenda). Mismo idioma. Devuelve SOLO el JSON de esta slide revisada (un único objeto), nada más.
+
+${GROUNDING_CONTRACT}
+
+${EDITORIAL_CONTRACT}`
       : `Eres un editor de documentos. Aquí está el JSON actual de un documento generado (tipo: ${row.tool_slug}):
 
 \`\`\`json
@@ -92,7 +98,11 @@ ${JSON.stringify(currentDoc, null, 2)}
 
 Instrucción del usuario: "${instruction}"
 
-Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estructura de keys, mismo idioma). Devuelve el JSON completo revisado, nada más.`
+Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estructura de keys, mismo idioma). Devuelve el JSON completo revisado, nada más.
+
+${GROUNDING_CONTRACT}
+
+${EDITORIAL_CONTRACT}`
 
     const message = await createMessageForClient(row.client_id, 'documents/refine', {
       model: 'claude-opus-4-8',

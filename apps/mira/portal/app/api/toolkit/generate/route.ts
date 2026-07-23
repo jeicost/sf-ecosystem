@@ -16,7 +16,7 @@ import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 export const maxDuration = 300
 
 // Tools grounded with a live site snapshot (deterministic SEO checks apply)
-const SNAPSHOT_GROUNDED_TOOLS = ['seo-audit', 'marketing-audit']
+const SNAPSHOT_GROUNDED_TOOLS = ['seo-audit', 'marketing-audit', 'brand-briefing']
 // Tools grounded with web research sources
 const RESEARCH_GROUNDED_TOOLS = ['competitive-analysis', 'investor-deck']
 

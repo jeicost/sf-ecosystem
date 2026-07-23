@@ -70,6 +70,12 @@ const TOOL_CONFIG: ToolConfig = {
       type: 'textarea',
       placeholder: 'Marcas cuyo estilo te inspira (para tone, visual, contenido).',
     },
+    {
+      name: 'crisis_comms_guidelines',
+      label: 'PAUTAS DE COMUNICACIÓN EN CRISIS',
+      type: 'textarea',
+      placeholder: 'Si ya tienes un protocolo (quién aprueba, tono a mantener, qué no decir nunca), descríbelo. Si no existe todavía, déjalo en blanco.',
+    },
   ],
 }
 

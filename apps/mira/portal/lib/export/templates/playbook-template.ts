@@ -19,6 +19,16 @@ export interface PlaybookSection {
   tips?: string[]
   steps?: { title: string; body: string }[] // step body is HTML — inserted as-is
   table?: { headers: string[]; rows: string[][] }
+  /** Presupuesto o planes por tramo — pricing cards. */
+  tiers?: { name: string; price: string; includes?: string[] }[]
+  /** Embudo de conversión — etapas con ancho visual decreciente. */
+  funnel?: { stage: string; description?: string }[]
+  /** Calendario/cronograma — columnas por periodo. */
+  timeline?: { period: string; items: string[] }[]
+  /** Lista marcable — distinta de "tips" (tareas, no consejos). */
+  checklist?: { item: string; note?: string }[]
+  /** Tabla con estado por fila (bien/en riesgo/mal). */
+  statusTable?: { headers: string[]; rows: { cells: string[]; status?: 'good' | 'warning' | 'critical' }[] }
 }
 
 export interface PlaybookOptions {
@@ -404,6 +414,56 @@ body {
 }
 .data-table tr:nth-child(even) td { background: ${rgba(t.primary, 0.03)}; }
 .data-table tr:last-child td { border-bottom: none; }
+.status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 7px; vertical-align: middle; }
+
+/* ── TIERS (pricing cards) ─────────────────────────────────── */
+.tiers-row { display: flex; gap: 10px; margin: 5mm 0; flex-wrap: wrap; }
+.tier-card {
+  flex: 1; min-width: 42mm;
+  background: ${t.cream}; border: 1px solid ${rgba(t.primary, 0.15)};
+  border-radius: 10px; padding: 14px 16px;
+  page-break-inside: avoid; break-inside: avoid;
+}
+.tier-name { font-size: 8.5pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: ${t.accentDark}; margin-bottom: 6px; }
+.tier-price { font-size: 20pt; font-weight: 900; color: ${t.ink}; letter-spacing: -1px; margin-bottom: 8px; }
+.tier-includes { list-style: none; margin: 0; padding: 0; }
+.tier-includes li { font-size: 8.5pt; color: ${rgba(t.ink, 0.8)}; padding: 3px 0 3px 14px; position: relative; line-height: 1.45; }
+.tier-includes li::before { content: '\\2713'; position: absolute; left: 0; color: ${t.accent}; font-weight: 700; }
+
+/* ── FUNNEL (conversion funnel, decreasing width) ─────────────── */
+.funnel { margin: 5mm 0; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.funnel-stage {
+  background: ${t.primary}; color: ${t.primaryInk};
+  border-radius: 8px; padding: 10px 16px; text-align: center;
+  page-break-inside: avoid; break-inside: avoid;
+}
+.funnel-stage-title { font-size: 9.5pt; font-weight: 800; letter-spacing: 0.3px; }
+.funnel-stage-desc { font-size: 8pt; opacity: 0.75; margin-top: 3px; line-height: 1.45; }
+
+/* ── TIMELINE (cronograma en columnas por periodo) ────────────── */
+.timeline-row { display: flex; gap: 8px; margin: 5mm 0; flex-wrap: wrap; }
+.timeline-col {
+  flex: 1; min-width: 34mm;
+  border-top: 3px solid ${t.accent};
+  padding-top: 8px;
+  page-break-inside: avoid; break-inside: avoid;
+}
+.timeline-period { font-size: 8pt; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: ${t.accentDark}; margin-bottom: 6px; }
+.timeline-items { list-style: none; margin: 0; padding: 0; }
+.timeline-items li { font-size: 8.5pt; color: ${rgba(t.ink, 0.85)}; padding: 3px 0; line-height: 1.4; border-bottom: 1px solid ${rgba(t.primary, 0.06)}; }
+.timeline-items li:last-child { border-bottom: none; }
+
+/* ── CHECKLIST (tareas marcables, distinto de tips) ───────────── */
+.checklist { margin: 4mm 0; }
+.checklist-item {
+  display: flex; align-items: flex-start; gap: 10px; padding: 6px 0;
+  border-bottom: 1px solid ${rgba(t.primary, 0.06)};
+  page-break-inside: avoid; break-inside: avoid;
+}
+.checklist-item:last-child { border-bottom: none; }
+.checklist-box { width: 13px; height: 13px; border: 2px solid ${t.accent}; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+.checklist-text { font-size: 9.5pt; color: ${t.ink}; line-height: 1.5; }
+.checklist-note { font-size: 8pt; color: ${rgba(t.ink, 0.6)}; margin-top: 2px; }
 
 /* ── BACK COVER ────────────────────────────────────────────── */
 .back-cover-strip { position: absolute; left: 0; right: 0; height: 5px; background: ${t.accent}; }
@@ -456,6 +516,24 @@ body {
 .compact-section .data-table { margin: 2.5mm 0; }
 .compact-section .data-table th { padding: 5px 8px; font-size: 7pt; }
 .compact-section .data-table td { padding: 5px 8px; font-size: 7.5pt; }
+.compact-section .tiers-row { gap: 6px; margin: 2.5mm 0; }
+.compact-section .tier-card { min-width: 34mm; padding: 8px 10px; border-radius: 8px; }
+.compact-section .tier-name { font-size: 6.5pt; margin-bottom: 3px; }
+.compact-section .tier-price { font-size: 13pt; margin-bottom: 4px; }
+.compact-section .tier-includes li { font-size: 7pt; padding: 2px 0 2px 12px; }
+.compact-section .funnel { gap: 3px; margin: 2.5mm 0; }
+.compact-section .funnel-stage { padding: 6px 10px; border-radius: 6px; }
+.compact-section .funnel-stage-title { font-size: 7.5pt; }
+.compact-section .funnel-stage-desc { font-size: 6.5pt; margin-top: 2px; }
+.compact-section .timeline-row { gap: 5px; margin: 2.5mm 0; }
+.compact-section .timeline-col { min-width: 26mm; padding-top: 5px; }
+.compact-section .timeline-period { font-size: 6.5pt; margin-bottom: 3px; }
+.compact-section .timeline-items li { font-size: 7pt; padding: 2px 0; }
+.compact-section .checklist { margin: 2mm 0; }
+.compact-section .checklist-item { gap: 7px; padding: 4px 0; }
+.compact-section .checklist-box { width: 10px; height: 10px; }
+.compact-section .checklist-text { font-size: 7.5pt; }
+.compact-section .checklist-note { font-size: 6.5pt; }
 .compact-footer-strip {
   background: ${t.accent};
   padding: 6px 12mm;
@@ -593,6 +671,100 @@ function renderTable(table: { headers: string[]; rows: string[][] }): string {
   return `<table class="data-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`
 }
 
+function renderTiers(tiers: { name: string; price: string; includes?: string[] }[]): string {
+  if (tiers.length === 0) return ''
+  const cards = tiers
+    .map(
+      (tier) => `
+    <div class="tier-card">
+      <div class="tier-name">${esc(tier.name)}</div>
+      <div class="tier-price">${esc(tier.price)}</div>
+      ${
+        tier.includes && tier.includes.length > 0
+          ? `<ul class="tier-includes">${tier.includes.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`
+          : ''
+      }
+    </div>`
+    )
+    .join('')
+  return `<div class="tiers-row">${cards}</div>`
+}
+
+function renderFunnel(stages: { stage: string; description?: string }[]): string {
+  if (stages.length === 0) return ''
+  const n = stages.length
+  const minWidth = 42
+  const items = stages
+    .map((s, i) => {
+      const width = n <= 1 ? 100 : Math.round(100 - (i * (100 - minWidth)) / (n - 1))
+      return `
+    <div class="funnel-stage" style="width:${width}%">
+      <div class="funnel-stage-title">${esc(s.stage)}</div>
+      ${s.description ? `<div class="funnel-stage-desc">${esc(s.description)}</div>` : ''}
+    </div>`
+    })
+    .join('')
+  return `<div class="funnel">${items}</div>`
+}
+
+function renderTimeline(periods: { period: string; items: string[] }[]): string {
+  if (periods.length === 0) return ''
+  const cols = periods
+    .map(
+      (p) => `
+    <div class="timeline-col">
+      <div class="timeline-period">${esc(p.period)}</div>
+      <ul class="timeline-items">${(p.items || []).map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+    </div>`
+    )
+    .join('')
+  return `<div class="timeline-row">${cols}</div>`
+}
+
+function renderChecklist(items: { item: string; note?: string }[]): string {
+  if (items.length === 0) return ''
+  const rows = items
+    .map(
+      (it) => `
+    <div class="checklist-item">
+      <div class="checklist-box"></div>
+      <div>
+        <div class="checklist-text">${esc(it.item)}</div>
+        ${it.note ? `<div class="checklist-note">${esc(it.note)}</div>` : ''}
+      </div>
+    </div>`
+    )
+    .join('')
+  return `<div class="checklist">${rows}</div>`
+}
+
+const STATUS_DOT_COLOR: Record<string, string> = {
+  good: '#22C55E',
+  warning: '#F59E0B',
+  critical: '#EF4444',
+}
+
+function renderStatusTable(table: {
+  headers: string[]
+  rows: { cells: string[]; status?: 'good' | 'warning' | 'critical' }[]
+}): string {
+  const head = table.headers.map((h) => `<th>${esc(h)}</th>`).join('')
+  const body = table.rows
+    .map((row) => {
+      const color = STATUS_DOT_COLOR[row.status ?? ''] ?? '#9CA3AF'
+      const cells = row.cells
+        .map((cell, i) =>
+          i === 0
+            ? `<td><span class="status-dot" style="background:${color}"></span>${esc(cell)}</td>`
+            : `<td>${esc(cell)}</td>`
+        )
+        .join('')
+      return `<tr>${cells}</tr>`
+    })
+    .join('')
+  return `<table class="data-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`
+}
+
 function renderSection(sec: PlaybookSection, num: number, o: PlaybookOptions, t: PlaybookTheme): string {
   const label = `Secci&oacute;n ${String(num).padStart(2, '0')}`
   return `
@@ -611,8 +783,13 @@ function renderSection(sec: PlaybookSection, num: number, o: PlaybookOptions, t:
   <div class="page-body">
     ${sec.body ? `<div class="body-text">${sec.body}</div>` : ''}
     ${sec.stats ? renderStats(sec.stats) : ''}
+    ${sec.tiers && sec.tiers.length > 0 ? renderTiers(sec.tiers) : ''}
+    ${sec.funnel && sec.funnel.length > 0 ? renderFunnel(sec.funnel) : ''}
+    ${sec.timeline && sec.timeline.length > 0 ? renderTimeline(sec.timeline) : ''}
     ${sec.steps && sec.steps.length > 0 ? renderSteps(sec.steps) : ''}
+    ${sec.checklist && sec.checklist.length > 0 ? renderChecklist(sec.checklist) : ''}
     ${sec.table ? renderTable(sec.table) : ''}
+    ${sec.statusTable ? renderStatusTable(sec.statusTable) : ''}
     ${sec.tips ? renderTips(sec.tips, o.brand.clientName) : ''}
   </div>
   <div class="page-footer">
@@ -647,8 +824,13 @@ function renderCompactPage(o: PlaybookOptions, t: PlaybookTheme): string {
       <div class="compact-section-title">${esc(sec.title)}</div>
       ${sec.body ? `<div class="body-text">${sec.body}</div>` : ''}
       ${sec.stats ? renderStats(sec.stats) : ''}
+      ${sec.tiers && sec.tiers.length > 0 ? renderTiers(sec.tiers) : ''}
+      ${sec.funnel && sec.funnel.length > 0 ? renderFunnel(sec.funnel) : ''}
+      ${sec.timeline && sec.timeline.length > 0 ? renderTimeline(sec.timeline) : ''}
       ${sec.steps && sec.steps.length > 0 ? renderSteps(sec.steps) : ''}
+      ${sec.checklist && sec.checklist.length > 0 ? renderChecklist(sec.checklist) : ''}
       ${sec.table ? renderTable(sec.table) : ''}
+      ${sec.statusTable ? renderStatusTable(sec.statusTable) : ''}
       ${sec.tips ? renderTips(sec.tips, o.brand.clientName) : ''}
     </div>`
     )

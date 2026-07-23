@@ -42,6 +42,20 @@ const TOOL_CONFIG: ToolConfig = {
       placeholder: 'Cómo mediremos si tuvimos éxito. Una por línea.',
       required: true,
     },
+    {
+      name: 'presupuesto_disponible',
+      label: 'PRESUPUESTO DISPONIBLE',
+      type: 'textarea',
+      placeholder: 'Cifra total y, si lo sabes, cómo se reparte hoy (equipo, herramientas, medios, contingencia). Si no hay presupuesto asignado aún, dilo.',
+      required: true,
+    },
+    {
+      name: 'equipo_roles',
+      label: 'EQUIPO Y ROLES DISPONIBLES',
+      type: 'textarea',
+      placeholder: 'Quién ejecuta el plan hoy: roles, dedicación (FTE) y si hay contrataciones previstas.',
+      required: true,
+    },
   ],
 }
 

@@ -68,6 +68,18 @@ const TOOL_CONFIG: ToolConfig = {
       placeholder: 'En qué gastarás el dinero (% a cada área)',
       required: true,
     },
+    {
+      name: 'valuation_terms',
+      label: 'VALORACIÓN / TÉRMINOS',
+      type: 'text',
+      placeholder: 'Ej: $5M pre-money, o "aún por definir"',
+    },
+    {
+      name: 'board_advisors',
+      label: 'BOARD / ADVISORS',
+      type: 'textarea',
+      placeholder: 'Nombres y background de board members o advisors, si ya los tienes. Déjalo en blanco si no aplica.',
+    },
   ],
 }
 
