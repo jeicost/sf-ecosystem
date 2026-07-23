@@ -115,6 +115,38 @@ export async function validateMagnificApiKey(apiKey: string): Promise<ApiValidat
   }
 }
 
+// Apollo.io API Key Validator
+export async function validateApolloApiKey(apiKey: string): Promise<ApiValidationResult> {
+  try {
+    const res = await fetch('https://api.apollo.io/v1/auth/health', {
+      headers: { 'x-api-key': apiKey, 'Content-Type': 'application/json' },
+    })
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
+    return {
+      valid: true,
+      accountInfo: { email: data?.email, name: data?.name, id: data?.id },
+    }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
+  }
+}
+
+// Hunter.io API Key Validator
+export async function validateHunterApiKey(apiKey: string): Promise<ApiValidationResult> {
+  try {
+    const res = await fetch(`https://api.hunter.io/v2/account?api_key=${encodeURIComponent(apiKey)}`)
+    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    const data = (await res.json()) as any
+    return {
+      valid: true,
+      accountInfo: { email: data?.data?.email, name: data?.data?.first_name, id: data?.data?.plan_name },
+    }
+  } catch {
+    return { valid: false, error: 'Unable to validate key' }
+  }
+}
+
 // Factory function to get the right validator
 export function getApiValidator(toolId: string) {
   const validators: Record<string, (key: string) => Promise<ApiValidationResult>> = {
@@ -125,6 +157,8 @@ export function getApiValidator(toolId: string) {
     anthropic: validateAnthropicApiKey,
     openai: validateOpenAiApiKey,
     magnific: validateMagnificApiKey,
+    apollo: validateApolloApiKey,
+    hunter: validateHunterApiKey,
   }
 
   return validators[toolId] || (async () => ({ valid: false, error: 'No validator for this tool' }))

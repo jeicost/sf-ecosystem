@@ -1,5 +1,4 @@
 """Lead search via Apollo with enrichment, caching, and cost tracking."""
-from pathlib import Path
 from uuid import UUID
 
 import structlog
@@ -12,34 +11,22 @@ from scrapers.apollo import ApolloScraper
 from scrapers.hunter import HunterScraper
 from scrapers.models import RawLead
 
-from api.deps import get_settings, get_supabase
+from api.client_registry import CLIENTS_ROOT, resolve_client_slug
+from api.deps import get_supabase
 from supabase import AsyncClient
 
 log = structlog.get_logger()
 router = APIRouter()
 
 
-def get_client_root() -> Path:
-    """Get root path to clients directory."""
-    return Path(__file__).resolve().parent.parent.parent.parent / "clients"
-
-
 def load_client_sources(client_slug: str) -> dict:
     """Load sources.yaml for a client to get API limits and settings."""
-    root = get_client_root()
-    sources_path = root / client_slug / "sources.yaml"
+    sources_path = CLIENTS_ROOT / client_slug / "sources.yaml"
     if not sources_path.exists():
         log.warning("sources_yaml_not_found", client_slug=client_slug)
         return {}
     with open(sources_path) as f:
         return yaml.safe_load(f) or {}
-
-
-def get_client_slug_from_db(client_id: UUID, db: AsyncClient) -> str:
-    """Fetch client_slug from Supabase by client_id (for later enhancement)."""
-    # For now, assuming client_id is known or passed separately
-    # TODO: query Supabase to map client_id → client_slug
-    return "sf-internal"  # hardcoded for MVP
 
 
 class LeadSearchRequest(BaseModel):
@@ -51,6 +38,12 @@ class LeadSearchRequest(BaseModel):
     geographies: list[str] | None = None
     company_domain: str | None = None
     limit: int = 25
+    # Apollo/Hunter keys are per-client (each client connects and pays for
+    # their own account, see tool_connections in MIRA) -- callers that omit
+    # these (e.g. sf-internal's own scripts) fall back to APOLLO_API_KEY /
+    # HUNTER_API_KEY env vars.
+    apollo_api_key: str | None = None
+    hunter_api_key: str | None = None
 
 
 class LeadSearchResult(BaseModel):
@@ -78,28 +71,28 @@ class LeadSearchResponse(BaseModel):
     hits_limit: bool
 
 
-async def get_apollo_scraper(settings=Depends(get_settings)) -> ApolloScraper:
-    """Get configured Apollo scraper."""
-    api_key = os.getenv("APOLLO_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="Apollo API key not configured")
-    return ApolloScraper(api_key)
+def get_apollo_scraper(api_key: str | None) -> ApolloScraper:
+    """Get an Apollo scraper for the given key, preferring the client's own key
+    (passed per-request) over the shared APOLLO_API_KEY env var (sf-internal only)."""
+    resolved_key = api_key or os.getenv("APOLLO_API_KEY")
+    if not resolved_key:
+        raise HTTPException(status_code=400, detail="apollo_key_missing")
+    return ApolloScraper(resolved_key)
 
 
-async def get_hunter_scraper(settings=Depends(get_settings)) -> HunterScraper:
-    """Get configured Hunter scraper."""
-    api_key = os.getenv("HUNTER_API_KEY")
-    if not api_key:
-        raise HTTPException(status_code=500, detail="Hunter API key not configured")
-    return HunterScraper(api_key)
+def get_hunter_scraper(api_key: str | None) -> HunterScraper:
+    """Get a Hunter scraper for the given key, preferring the client's own key
+    (passed per-request) over the shared HUNTER_API_KEY env var (sf-internal only)."""
+    resolved_key = api_key or os.getenv("HUNTER_API_KEY")
+    if not resolved_key:
+        raise HTTPException(status_code=400, detail="hunter_key_missing")
+    return HunterScraper(resolved_key)
 
 
 @router.post("/search", response_model=LeadSearchResponse)
 async def search_leads(
     payload: LeadSearchRequest,
     db: AsyncClient = Depends(get_supabase),
-    apollo: ApolloScraper = Depends(get_apollo_scraper),
-    hunter: HunterScraper = Depends(get_hunter_scraper),
 ) -> LeadSearchResponse:
     """
     Search for leads matching ICP criteria via Apollo, enrich with Hunter, apply caching.
@@ -112,6 +105,8 @@ async def search_leads(
     - company_sizes: override ICP company sizes
     - company_domain: if provided, search specific company instead of ICP criteria
     - limit: max results (default 25, max 100)
+    - apollo_api_key / hunter_api_key: the client's own connected keys; falls
+      back to the shared env vars only when omitted (sf-internal's scripts)
 
     Response includes:
     - leads: enriched lead records
@@ -122,6 +117,9 @@ async def search_leads(
 
     Rate limit: check monthly_limit_usd before calling this endpoint.
     """
+    apollo = get_apollo_scraper(payload.apollo_api_key)
+    hunter = get_hunter_scraper(payload.hunter_api_key)
+
     if payload.limit > 100:
         payload.limit = 100
 
@@ -129,9 +127,11 @@ async def search_leads(
     log.info("leads_search.start", client_id=str(client_id), limit=payload.limit)
 
     try:
-        # Load client configuration
-        client_slug = get_client_slug_from_db(client_id, db)
-        sources = load_client_sources(client_slug)
+        # Load client configuration -- client_slug is None for clients that only
+        # exist in Supabase (MIRA/sf-crm), which is normal; they always send
+        # explicit industries/geographies/company_sizes in the payload instead.
+        client_slug = resolve_client_slug(client_id)
+        sources = load_client_sources(client_slug) if client_slug else {}
         apollo_config = sources.get("apollo", {})
         monthly_limit = apollo_config.get("monthly_lead_limit", 500) * 0.015  # convert lead count to USD
 

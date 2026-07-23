@@ -2,7 +2,6 @@ import asyncio
 import json
 import os
 from datetime import datetime
-from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -13,6 +12,7 @@ import yaml
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
+from api.client_registry import CLIENTS_ROOT, resolve_client_slug
 from api.deps import get_settings, get_supabase
 from supabase import AsyncClient
 
@@ -110,15 +110,9 @@ class DiscoveryRunSummary(BaseModel):
     finished_at: str | None
 
 
-def get_client_root() -> Path:
-    """Get root directory of sf-sales-engine app."""
-    return Path(__file__).parent.parent.parent.parent
-
-
 def load_client_icp(client_slug: str) -> dict:
     """Load ICP profile from client config."""
-    root = get_client_root()
-    icp_path = root / "clients" / client_slug / "icp-profile.yaml"
+    icp_path = CLIENTS_ROOT / client_slug / "icp-profile.yaml"
     if not icp_path.exists():
         log.error("icp_not_found", client_slug=client_slug, path=str(icp_path))
         raise FileNotFoundError(f"ICP not found for client {client_slug}")
@@ -454,9 +448,14 @@ async def run_discovery(
             log.error("missing_env", var="TAVILY_API_KEY")
             raise ValueError("TAVILY_API_KEY not configured")
 
-        # Fetch client slug from Supabase (for loading ICP)
-        # For now, hardcode to sf-internal; later query icp_profiles table
-        client_slug = "sf-internal"
+        # Resolve the local clients/<slug>/ folder for this client_id -- this
+        # endpoint's only real caller today is sf-internal's own tooling (MIRA
+        # and sf-crm use their own Tavily-based light discovery instead), but
+        # it used to silently run every client's discovery against
+        # sf-internal's ICP if ever called with a different client_id.
+        client_slug = resolve_client_slug(client_id)
+        if not client_slug:
+            raise ValueError(f"No local client config found for client_id={client_id}")
 
         # Load ICP
         icp = load_client_icp(client_slug)

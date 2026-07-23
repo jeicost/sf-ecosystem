@@ -4,13 +4,13 @@ import { createServiceClient } from '@/lib/supabase-admin'
  * Resolve API key for a client-specific tool integration.
  *
  * @param clientId - The client UUID
- * @param toolId - The tool identifier ('anthropic', 'openai', 'freepik', 'magnific')
+ * @param toolId - The tool identifier ('anthropic', 'openai', 'freepik', 'magnific', 'apollo', 'hunter')
  * @param defaultKey - Fallback API key (e.g., platform default from process.env)
  * @returns The resolved API key, or null if not found and no default provided
  */
 export async function getClientApiKey(
   clientId: string,
-  toolId: 'anthropic' | 'openai' | 'freepik' | 'magnific',
+  toolId: 'anthropic' | 'openai' | 'freepik' | 'magnific' | 'apollo' | 'hunter',
   defaultKey?: string
 ): Promise<string | null> {
   try {

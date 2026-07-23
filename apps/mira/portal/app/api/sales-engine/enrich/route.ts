@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
+import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 
 interface EnrichmentRequest {
   client_id: string
@@ -51,6 +52,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
     }
 
+    const [apolloKey, hunterKey] = await Promise.all([
+      getClientApiKey(clientId, 'apollo'),
+      getClientApiKey(clientId, 'hunter'),
+    ])
+    if (!apolloKey || !hunterKey) {
+      return NextResponse.json({ error: 'apollo_hunter_not_connected' }, { status: 400 })
+    }
+
     const db = adminClient()
 
     // Fetch discovery results — scoped al cliente validado
@@ -89,6 +98,8 @@ export async function POST(req: NextRequest) {
             client_id: clientId,
             company_domain: domain ?? companyName,
             limit: 5,
+            apollo_api_key: apolloKey,
+            hunter_api_key: hunterKey,
           }),
         })
         if (engineRes.status === 402) {

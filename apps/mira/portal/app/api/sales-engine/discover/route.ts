@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
+import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 
 interface DiscoveryRequest {
   client_id: string
@@ -16,6 +17,10 @@ interface DiscoveryRequest {
  * motor real sf-sales-engine (`POST {SALES_ENGINE_API_URL}/leads/search`,
  * Apollo + Hunter + cache + cost tracking) — el mismo endpoint que ya consume
  * sf-crm Prospection (auth por header X-API-Key).
+ *
+ * Apollo/Hunter son claves por cliente (cada cliente paga su propia cuenta,
+ * conectada en /integrations vía tool_connections), no una clave compartida
+ * de SF — se resuelven aquí con getClientApiKey() y se pasan en el body.
  *
  * El discovery "ligero" (Tavily) sigue siendo /api/comercial/discovery.
  * Si el motor no responde → 503 claro, NUNCA volver al mock.
@@ -43,6 +48,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
     }
 
+    const [apolloKey, hunterKey] = await Promise.all([
+      getClientApiKey(clientId, 'apollo'),
+      getClientApiKey(clientId, 'hunter'),
+    ])
+    if (!apolloKey || !hunterKey) {
+      return NextResponse.json({ error: 'apollo_hunter_not_connected' }, { status: 400 })
+    }
+
     const startedAt = Date.now()
     let engineData: {
       leads?: unknown[]
@@ -64,6 +77,8 @@ export async function POST(req: NextRequest) {
           industries: [sector],
           geographies: geo ? [geo] : undefined,
           limit: Math.min(limit, 100),
+          apollo_api_key: apolloKey,
+          hunter_api_key: hunterKey,
         }),
       })
 
