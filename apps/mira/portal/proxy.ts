@@ -2,6 +2,22 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 import { PLAN_SECTIONS } from '@/lib/plans'
 import type { UserPlan } from '@/lib/plans'
+import { getActiveSectionFromPath } from '@/lib/sections'
+import { checkRateLimit } from '@/lib/rate-limit'
+
+// Path prefixes for the ~20 routes that call Claude/OpenAI/Tavily/Apollo —
+// the only ones rate-limited (cheap reads/writes are left alone).
+const EXPENSIVE_API_PREFIXES = [
+  '/api/agent',
+  '/api/comercial/',
+  '/api/toolkit/',
+  '/api/documents/',
+  '/api/quick-actions',
+  '/api/content-engine/',
+  '/api/brief',
+  '/api/brand-brain/',
+  '/api/sales-engine/',
+]
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -13,6 +29,7 @@ export async function proxy(request: NextRequest) {
   if (
     pathname.startsWith('/login') ||
     pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/api/health') || // uptime monitors hit this unauthenticated
     pathname.startsWith('/api/webhook') || // Webhooks verify x-webhook-secret header, not user auth
     pathname.startsWith('/api/toolkit/generate-batch') // Batch generation — protected by x-batch-secret in the route
   ) {
@@ -54,14 +71,31 @@ export async function proxy(request: NextRequest) {
     return response
   }
 
-  // Enforce section-level plan access
-  const plan = (user.user_metadata?.plan ?? 'starter') as UserPlan
-  const sectionMatch = pathname.match(/^\/(marketing|comercial|estrategia|innovacion|finanzas)(\/|$)/)
-  if (sectionMatch) {
-    const section = sectionMatch[1]
-    const allowed = PLAN_SECTIONS[plan] ?? PLAN_SECTIONS.starter
-    if (!allowed.includes(section)) {
-      return NextResponse.redirect(new URL('/home', request.url))
+  // Rate limit the expensive AI-calling routes (best-effort, see lib/rate-limit.ts).
+  // Keyed by user id — cheap reads/writes elsewhere are never limited.
+  if (EXPENSIVE_API_PREFIXES.some(p => pathname.startsWith(p))) {
+    if (!checkRateLimit(user.id)) {
+      return NextResponse.json({ error: 'rate_limited' }, { status: 429 })
+    }
+  }
+
+  // Enforce section-level plan access. DISABLED by default (ENFORCE_PLAN_LIMITS
+  // unset) so this is a no-op for every existing beta client until explicitly
+  // turned on in Vercel — before doing that, check each real client's plan
+  // against what they actually use today (see docs/MIRA-LANZAMIENTO-FASE2.md).
+  // getActiveSectionFromPath (lib/sections.ts) is the single source of truth
+  // for section routing, including Marketing's routes (/roster, /command, ...)
+  // which have no common /marketing prefix — the previous regex here only
+  // ever matched /comercial and /finanzas, and used slugs (estrategia,
+  // innovacion) that don't exist as routes at all.
+  if (process.env.ENFORCE_PLAN_LIMITS === 'true') {
+    const section = getActiveSectionFromPath(pathname)
+    if (section) {
+      const plan = (user.user_metadata?.plan ?? 'starter') as UserPlan
+      const allowed = PLAN_SECTIONS[plan] ?? PLAN_SECTIONS.starter
+      if (!allowed.includes(section.slug)) {
+        return NextResponse.redirect(new URL('/home', request.url))
+      }
     }
   }
 
