@@ -204,3 +204,15 @@ Tras explicar el mapa de solapes y las piezas a medio construir, el usuario pidi
 Auditoría completa en el artefacto publicado durante la sesión (Toolkit ↔ Documents ↔ Quick Actions ↔ Agentes). Resumen: no se encontró ningún agente con función exclusiva — casi todos tienen una quick action de departamento equivalente generando el mismo tipo de output, y varios (contenido, campañas, análisis competitivo, propuestas, informes) tienen además un tool de Toolkit o tipo de Documento haciendo la misma función con distinto nivel de rigor. El caso más claro: `analizar_competencia` (Quick Action) vs `competitive-analysis` (Toolkit, grounded + cita fuente) — mismo nombre de trabajo, fiabilidad muy distinta según el camino de entrada.
 
 **Decisión del usuario (2026-07-23)**: no consolidar los 3 caminos por ahora — Quick Actions y Toolkit ya le parecen bien tal como están. En su lugar, cerrar la brecha real: dar a los agentes de chat acceso a búsqueda web (ver arriba, ya implementado) para que no sean el eslabón débil del trío.
+
+---
+
+## v) ✅ Resuelto — RLS bloqueaba en silencio a todos los usuarios reales no-admin (2026-07-23)
+
+Durante la auditoría de Ventas/Pipeline se detectó que las lecturas RLS desde el navegador devolvían vacío para clientes reales. La política propia de `mira_project_access` (`"mira_project_access: users see own"`, editada en algún momento directamente en el Dashboard — no coincidía con ningún archivo de migración) resolvía `user_id` vía `SELECT mira_users.id FROM mira_users WHERE mira_users.auth_id = auth.uid()`, un patrón puente que la migración `0016_unify_auth_users.sql` dejó obsoleto al pasar `mira_project_access.user_id` a referenciar `auth.users(id)` directamente — pero la política nunca se actualizó para reflejarlo.
+
+Confirmado en vivo: `mira_users` tiene 0 filas. De las 7 cuentas reales, solo la única con `user_metadata.plan = 'admin'` (`carlos@startupsfactory.es`) pasaba esta política alguna vez. Las otras 4 cuentas de cliente reales llevaban bloqueadas desde que la política existe — y por cascada (subconsultas de otras tablas contra `mira_project_access` se evalúan bajo el RLS del propio usuario), esto arrastraba a cualquier otra tabla cuya política dependiera de `mira_project_access`.
+
+**Resuelto (migración `0040_fix_mira_project_access_rls.sql`, aplicada en vivo vía SQL Editor):** sustituida la subconsulta muerta por `user_id = auth.uid()` directo, sin tocar la rama de `plan = 'admin'`. Verificado con un barrido de las 22 tablas cuyas políticas dependen de `mira_project_access`: 12 con datos reales dieron paridad exacta entre lectura con service role y lectura RLS-scoped con un usuario de prueba real (no-admin); el resto sin datos para probar. No se encontró el mismo patrón de `mira_users` en ninguna otra política del proyecto.
+
+**Hallazgo colateral, sin relación con RLS, sin resolver:** 160 de las 161 filas de `leads` tienen `client_id = '00000000-0000-0000-0000-000000000001'`, un placeholder que no corresponde a ningún cliente real — datos huérfanos de pruebas/seed antiguas. No bloquean nada (ningún cliente real puede ni debería verlos), pero conviene una limpieza en algún momento.
