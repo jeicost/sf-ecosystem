@@ -14,7 +14,7 @@ import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
-import { Home, BookOpen, Brain, Zap, Layers } from 'lucide-react'
+import { Home, BookOpen, Brain, Zap, Layers, Menu, X } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
 
@@ -32,15 +32,8 @@ useEffect(() => {
     const stored = getUser()
     if (stored) { setUser(stored); setThemeState(initTheme()); return }
 
-    const devBypass = process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true'
-    
     createClient().auth.getUser().then(({ data }) => {
       if (!data.user) {
-        // Allow dev mode bypass for toolkit testing
-        if (devBypass && (path.startsWith('/toolkit') || path.startsWith('/brand-brain') || path.startsWith('/documents') || path.startsWith('/project-memory'))) {
-          setThemeState(initTheme())
-          return
-        }
         router.replace('/login')
         return
       }
@@ -339,17 +332,58 @@ useEffect(() => {
 }
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const [mobileOpen, setMobileOpen] = useState(false)
+  const pathname = usePathname()
+
+  // Cierra el drawer al navegar (cualquier Link del sidebar cambia la ruta).
+  useEffect(() => { setMobileOpen(false) }, [pathname])
+
   return (
     <ClientProvider>
       <ProjectProvider>
         <div className="flex min-h-screen">
-          {/* Sidebar */}
-          <aside className="w-56 shrink-0 border-r border-line-subtle flex flex-col bg-[var(--bg-sidebar)]">
+          {/* Overlay móvil */}
+          {mobileOpen && (
+            <div
+              className="fixed inset-0 z-40 bg-black/50 md:hidden"
+              onClick={() => setMobileOpen(false)}
+              aria-hidden="true"
+            />
+          )}
+
+          {/* Sidebar — drawer fijo en móvil, estático en desktop */}
+          <aside
+            className={clsx(
+              'w-56 shrink-0 border-r border-line-subtle flex flex-col bg-[var(--bg-sidebar)]',
+              'fixed inset-y-0 left-0 z-50 overflow-y-auto transition-transform duration-200',
+              'md:relative md:inset-auto md:translate-x-0',
+              mobileOpen ? 'translate-x-0' : '-translate-x-full'
+            )}
+          >
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="md:hidden self-end m-2 p-1.5 rounded-lg text-ink-tertiary hover:text-ink hover:bg-surface-hover"
+              aria-label="Cerrar menú"
+            >
+              <X size={18} />
+            </button>
             <SidebarContent />
           </aside>
 
           {/* Main */}
-          <main className="flex-1 overflow-y-auto bg-page">
+          <main className="flex-1 overflow-y-auto bg-page min-w-0">
+            {/* Barra superior — solo móvil */}
+            <div className="md:hidden sticky top-0 z-30 flex items-center gap-3 px-4 py-3 border-b border-line-subtle bg-page">
+              <button
+                onClick={() => setMobileOpen(true)}
+                className="p-2 -ml-2 rounded-lg text-ink-tertiary hover:text-ink hover:bg-surface-hover"
+                aria-label="Abrir menú"
+              >
+                <Menu size={20} />
+              </button>
+              <MiraLogo size={18} variant="icon" />
+              <span className="text-sm font-semibold text-ink">MIRA</span>
+            </div>
             <ErrorBoundary>
               {children}
             </ErrorBoundary>

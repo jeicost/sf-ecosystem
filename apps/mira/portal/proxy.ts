@@ -5,7 +5,6 @@ import type { UserPlan } from '@/lib/plans'
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const devBypass = process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true'
 
   // Public routes — skip auth checks
   // NOTE: API routes are NOT in this list. They must be protected at middleware or route level.
@@ -15,15 +14,7 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/login') ||
     pathname.startsWith('/reset-password') ||
     pathname.startsWith('/api/webhook') || // Webhooks verify x-webhook-secret header, not user auth
-    pathname.startsWith('/api/toolkit/generate-batch') || // Batch generation — protected by x-batch-secret in the route
-    // Development bypass: allow toolkit pages without auth for local testing
-    (devBypass && (
-      pathname.startsWith('/toolkit') ||
-      pathname.startsWith('/brand-brain') ||
-      pathname.startsWith('/documents') ||
-      pathname.startsWith('/project-memory') ||
-      pathname.startsWith('/home')
-    ))
+    pathname.startsWith('/api/toolkit/generate-batch') // Batch generation — protected by x-batch-secret in the route
   ) {
     return NextResponse.next()
   }

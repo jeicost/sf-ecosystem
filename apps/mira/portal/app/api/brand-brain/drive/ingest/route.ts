@@ -83,9 +83,7 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     let clientId: string
-    if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' && (!user || authError)) {
-      clientId = explicitClientId || 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
-    } else if (authError || !user) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized', success: false }, { status: 401 })
     } else if (explicitClientId) {
       // clientId explícito: validar el grant antes de usarlo

@@ -101,8 +101,18 @@ Las generaciones del toolkit anteriores al cableado de `lib/grounding/` siguen e
 
 ---
 
-## n) Batch de cambios de prompts pendiente de aprobación (nueva 2026-07-22)
+## n) ✅ Resuelto — Batch de cambios de prompts aplicado (fase 3, commit `6cc3232`, 2026-07-22)
 
-El informe `docs/PROMPTS_AUDIT_2026_07.md` (relativo a la raíz del monorepo) contiene un batch de cambios propuestos a los prompts de generación. **Pendiente de aprobación del usuario** antes de aplicar — no tocar los prompts hasta entonces.
+*(Corregido 2026-07-23: este punto quedó desactualizado — el batch de `docs/PROMPTS_AUDIT_2026_07.md` sección 4 (quick wins Q1-Q5 + medios M1-M5) se aprobó y aplicó en la fase 3. Ver `lib/generation/quick-action-prompts.ts` y `lib/agent-prompts-i18n.ts` en ese commit.)*
 
-**Qué haría falta:** revisión y aprobación del usuario; después, aplicar el batch y re-verificar salidas.
+Pendiente real: los cambios **grandes** del informe (G4 — i18n completo de los 39 prompts de quick actions/toolkit/documents, G5 — migrar a structured outputs/tool use) siguen sin decisión ni ejecutar.
+
+---
+
+## o) Enforcement de plan roto en dos capas (nueva 2026-07-23)
+
+Verificado durante la auditoría de lanzamiento SaaS: el gating por plan (`lib/plans.ts`) es **cosmético en el frontend Y código muerto en el middleware**.
+- `components/section-switcher.tsx` solo pinta un candado visual — ninguna página de `app/(dashboard)/comercial|finanzas|strategy|operations/*` comprueba el plan del usuario; accesibles por URL directa.
+- `proxy.ts` SÍ intenta enforcement server-side con un regex (`/^\/(marketing|comercial|estrategia|innovacion|finanzas)(\/|$)/`), pero usa slugs **en español que no existen como rutas reales** — la app usa `strategy`/`operations` en inglés (ver `lib/sections.ts`), y Marketing no tiene un prefijo de ruta común (vive en `/roster`, `/command`, `/approvals`, `/performance`, `/brief`). El regex nunca matchea nada — es enforcement fantasma.
+
+**Qué haría falta:** corregir el regex a los slugs reales (o mejor, un `guardSection(pathname, plan)` compartido usado tanto en `proxy.ts` como en cada `page.tsx` de departamento) — ver Fase 2 del roadmap de lanzamiento (`docs/MIRA-LANZAMIENTO-FASE2.md`), sección "Enforcement real de plan".

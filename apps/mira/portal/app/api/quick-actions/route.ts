@@ -29,13 +29,6 @@ export async function POST(req: NextRequest) {
     if (access.ok) {
       clientId = access.clientId
       userId = access.userId
-    } else if (
-      process.env.NEXT_PUBLIC_DEV_MODE_BYPASS === 'true' &&
-      access.status === 401
-    ) {
-      // Dev mode bypass for local testing (no session only)
-      clientId = 'c375bb80-b0d1-4923-a73a-ac96a3ce7799'
-      userId = 'aa857626-5b89-4df5-8b0d-ed02803e9722'
     } else {
       return NextResponse.json({ error: access.error }, { status: access.status })
     }
@@ -262,9 +255,7 @@ export async function GET(req: NextRequest) {
     // Ownership: la fila pertenece a un cliente — validar el grant antes de devolverla
     const user = await getSessionUser()
     if (!user) {
-      if (process.env.NEXT_PUBLIC_DEV_MODE_BYPASS !== 'true') {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-      }
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     } else if (!(await userCanAccessClient(user, data.client_id))) {
       return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
