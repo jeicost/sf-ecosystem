@@ -131,11 +131,11 @@ Al aplicar la migración `0037_rls_hardening.sql` (RLS de `tool_connections`), S
 
 ---
 
-## q) ✅ Resuelto (código) / ⏳ pendiente aplicar — Quick actions de Finanzas Y Admin rotas en producción (2026-07-23)
+## q) ✅ Resuelto — Quick actions de Finanzas Y Admin rotas en producción (2026-07-23)
 
-Verificado con `INSERT`s reales contra Supabase producción, en dos pasadas: `department='finanzas'` viola `quick_actions_results_department_check` (primer hallazgo). Al verificar el fix con una generación real de `responder_ticket` (Admin), salió el mismo error — **`department='admin'` también viola el CHECK en producción**. El constraint real en prod hoy solo permite `('comercial','marketing','strategy','community')`; ni `'finanzas'` ni `'admin'` están, pese a que el comentario de `supabase/migrations/0015_fase1_recovery_schema.sql:68` dice *"16 quick actions across 4 departments"* incluyendo admin — el esquema vivo diverge del que describen las migraciones (mismo patrón que el hallazgo de `tool_connections`, punto p). Las 3 quick actions de Finanzas Y las 3 de Admin (`responder_ticket`, `crear_faq`, `crear_tutorial`) devuelven 500 siempre.
+Verificado con `INSERT`s reales contra Supabase producción, en dos pasadas: `department='finanzas'` viola `quick_actions_results_department_check` (primer hallazgo). Al verificar el fix con una generación real de `responder_ticket` (Admin), salió el mismo error — **`department='admin'` también viola el CHECK en producción**. El constraint real en prod solo permitía `('comercial','marketing','strategy','community')`; ni `'finanzas'` ni `'admin'` estaban, pese a que el comentario de `supabase/migrations/0015_fase1_recovery_schema.sql:68` dice *"16 quick actions across 4 departments"* incluyendo admin — el esquema vivo divergía del que describen las migraciones (mismo patrón que el hallazgo de `tool_connections`, punto p). Las 3 quick actions de Finanzas Y las 3 de Admin (`responder_ticket`, `crear_faq`, `crear_tutorial`) devolvían 500 siempre.
 
-**Resuelto en código:** `supabase/migrations/0039_quick_actions_finanzas_dept.sql` (commit `982675c`, actualizada tras el segundo hallazgo) recrea el CHECK incluyendo tanto `'finanzas'` como `'admin'` (y mantiene `'community'` por si hay datos históricos con ese valor). **Pendiente:** aplicar la migración en el SQL editor de Supabase (no hay runner automático) — sin eso ambos bugs siguen vivos en prod.
+**Resuelto:** `supabase/migrations/0039_quick_actions_finanzas_dept.sql` (commit `982675c`) recrea el CHECK incluyendo tanto `'finanzas'` como `'admin'` (y mantiene `'community'` por si hay datos históricos con ese valor). Aplicada en producción por el usuario el 2026-07-23 y **verificada con un segundo `INSERT` real**: `admin`/`finanzas` ya pasan el CHECK (solo fallan por la FK de un `client_id` de prueba, esperado); un departamento inventado sigue correctamente bloqueado.
 
 ---
 
