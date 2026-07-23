@@ -94,6 +94,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.raw-output': 'Salida Bruta',
     'actions.open-in-drive': 'Abrir en Google Drive →',
     'actions.scenes': 'Escenas',
+    'actions.follow-ups': 'Próximos pasos sugeridos',
 
     // QUICK ACTION RESULT
     'quick-result.image-error': 'No se pudo generar la imagen — el contenido de texto sí está listo',
@@ -133,8 +134,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.strategy.analizar_competencia.desc': 'Matriz de análisis competitivo y oportunidades',
     'actions.strategy.brainstorm_ideas': 'Brainstorm Ideas',
     'actions.strategy.brainstorm_ideas.desc': 'Generar 100 ideas con top 5 recomendaciones',
-    'actions.strategy.proyectar_revenue': 'Proyectar Revenue',
-    'actions.strategy.proyectar_revenue.desc': 'Generar proyecciones de ingresos con escenarios',
+    'actions.strategy.auditar_innovacion': 'Auditar Innovación',
+    'actions.strategy.auditar_innovacion.desc': 'Evaluar capacidad de innovación actual (cultura, procesos, portfolio, tecnología, talento)',
 
     // QUICK ACTIONS - FINANZAS
     'actions.finanzas.proyeccion_financiera': 'Proyección Financiera',
@@ -662,6 +663,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.raw-output': 'Raw Output',
     'actions.open-in-drive': 'Open in Google Drive →',
     'actions.scenes': 'Scenes',
+    'actions.follow-ups': 'Suggested follow-ups',
 
     // QUICK ACTION RESULT
     'quick-result.image-error': 'Image generation failed — the text content is still ready',
@@ -701,8 +703,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.strategy.analizar_competencia.desc': 'Competitive analysis matrix & opportunities',
     'actions.strategy.brainstorm_ideas': 'Brainstorm Ideas',
     'actions.strategy.brainstorm_ideas.desc': 'Generate 100 ideas with top 5 recommendations',
-    'actions.strategy.proyectar_revenue': 'Project Revenue',
-    'actions.strategy.proyectar_revenue.desc': 'Generate revenue projections with scenarios',
+    'actions.strategy.auditar_innovacion': 'Audit Innovation',
+    'actions.strategy.auditar_innovacion.desc': 'Assess current innovation capacity (culture, process, portfolio, tech, talent)',
 
     // QUICK ACTIONS - FINANZAS
     'actions.finanzas.proyeccion_financiera': 'Financial Projection',

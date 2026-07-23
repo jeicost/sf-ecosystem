@@ -315,22 +315,6 @@ Generate ideas JSON:
 }`
   }
 
-  if (actionType === 'proyectar_revenue') {
-    return `You are a financial planner. Project revenue.
-
-INPUT:
-${JSON.stringify(inputData, null, 2)}
-${fullContext}
-Generate projection JSON:
-{
-  "current_state": {},
-  "assumptions": [],
-  "monthly_forecast": [{"month": "", "revenue": "", "growth": ""}],
-  "drivers": [],
-  "risks": []
-}`
-  }
-
   // FINANZAS
   if (actionType === 'proyeccion_financiera') {
     return `You are a financial analyst. Build a 12-month financial projection for this business.

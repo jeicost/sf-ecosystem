@@ -132,6 +132,29 @@ export function StrategyQuickActions() {
       ),
     },
     {
+      id: 'auditar_innovacion',
+      title: t('actions.strategy.auditar_innovacion', locale),
+      description: t('actions.strategy.auditar_innovacion.desc', locale),
+      actionType: 'auditar_innovacion',
+      outputType: 'document',
+      form: (
+        <div className="space-y-3">
+          <textarea
+            name="current_state"
+            placeholder="Describe current innovation efforts, team, and recent initiatives"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm resize-none h-20"
+            required
+          />
+          <input
+            type="text"
+            name="focus_areas"
+            placeholder="Specific area to focus the audit on (optional)"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
+          />
+        </div>
+      ),
+    },
+    {
       id: 'plan_innovacion',
       title: t('actions.strategy.plan_innovacion', locale),
       description: t('actions.strategy.plan_innovacion.desc', locale),

@@ -309,6 +309,24 @@ function ContentPreview({ outputType, outputData, locale }: { outputType: string
         </div>
       )
 
+    case 'text':
+      return (
+        <div className="space-y-2">
+          {outputData.subject && <p className="text-sm font-semibold text-ink">{outputData.subject}</p>}
+          {(outputData.body || outputData.text) && (
+            <p className="text-sm text-ink-secondary whitespace-pre-wrap">{outputData.body || outputData.text}</p>
+          )}
+          {outputData.suggested_follow_ups?.length > 0 && (
+            <div className="text-xs bg-surface p-2 rounded">
+              <p className="font-semibold text-ink mb-1">{t('actions.follow-ups', locale)}</p>
+              <ul className="list-disc list-inside text-ink-secondary">
+                {outputData.suggested_follow_ups.map((f: string, i: number) => <li key={i}>{f}</li>)}
+              </ul>
+            </div>
+          )}
+        </div>
+      )
+
     case 'json':
     default:
       return (
