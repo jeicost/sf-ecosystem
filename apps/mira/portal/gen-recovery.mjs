@@ -16,7 +16,7 @@ async function generateLink(email) {
       type: 'recovery',
       email,
       options: {
-        redirectTo: 'https://portal-six-kappa-22.vercel.app/reset-password'
+        redirectTo: 'https://mira-portal-nu.vercel.app/reset-password'
       }
     })
 

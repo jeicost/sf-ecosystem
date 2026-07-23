@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const SUPABASE_URL = 'https://nnevhtfxuawexliwlbmh.supabase.co';
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const REDIRECT_TO = 'https://portal-six-kappa-22.vercel.app/reset-password';
+const REDIRECT_TO = 'https://mira-portal-nu.vercel.app/reset-password';
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
 
