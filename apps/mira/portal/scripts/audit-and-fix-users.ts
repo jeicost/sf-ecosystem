@@ -11,6 +11,9 @@
  *
  * Usage:
  * SUPABASE_SERVICE_ROLE_KEY=xxx npx ts-node scripts/audit-and-fix-users.ts
+ *
+ * For the common case (client + brand profile + auth user + access grant in one go),
+ * use scripts/onboard-full-client.mjs instead — this script stays for bulk audits/fixes.
  */
 
 import { createClient } from '@supabase/supabase-js'

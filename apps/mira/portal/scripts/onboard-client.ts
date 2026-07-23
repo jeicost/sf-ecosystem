@@ -1,6 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 import { randomUUID } from 'crypto'
 
+// For the common case (client + brand profile + auth user + access grant in one go),
+// use scripts/onboard-full-client.mjs instead — this script stays for db-only/standalone use.
+
 // ===================================================================
 // CLIENT ONBOARDING SCRIPT
 // Requires SUPABASE_SERVICE_ROLE_KEY from environment (never hardcoded)

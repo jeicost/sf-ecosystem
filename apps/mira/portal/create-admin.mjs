@@ -1,5 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
+// For the common case (client + brand profile + auth user + access grant in one go),
+// use scripts/onboard-full-client.mjs instead — this script stays for the single hardcoded
+// super-admin account use case.
+
 const SUPABASE_URL = 'https://nnevhtfxuawexliwlbmh.supabase.co'
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
 
