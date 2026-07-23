@@ -32,9 +32,8 @@ export function ComercialQuickActions() {
           <input
             type="text"
             name="industry"
-            placeholder="Industry"
+            placeholder="Industry (optional)"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
           <input
             type="number"
@@ -63,9 +62,8 @@ export function ComercialQuickActions() {
           />
           <textarea
             name="company_info"
-            placeholder="Your company info"
+            placeholder="Your company info (optional — uses Brand Brain if left blank)"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
         </div>
       ),
@@ -94,9 +92,8 @@ export function ComercialQuickActions() {
           <input
             type="number"
             name="budget_estimate"
-            placeholder="Budget estimate"
+            placeholder="Budget estimate (optional)"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
         </div>
       ),
@@ -118,9 +115,8 @@ export function ComercialQuickActions() {
           <input
             type="text"
             name="context"
-            placeholder="Context (what you sent)"
+            placeholder="Context — what you sent (optional)"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
         </div>
       ),

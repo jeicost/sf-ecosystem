@@ -68,9 +68,8 @@ export function MarketingQuickActions() {
           <input
             type="text"
             name="tone"
-            placeholder="Tone (e.g., informative, entertaining)"
+            placeholder="Tone — optional, uses Brand Brain's tone of voice if left blank"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
           <input
             type="number"
@@ -175,9 +174,8 @@ export function MarketingQuickActions() {
           <input
             type="text"
             name="audience"
-            placeholder="Target audience description"
+            placeholder="Target audience — optional, uses Brand Brain's audience if left blank"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
         </div>
       ),

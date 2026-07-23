@@ -46,6 +46,11 @@ export function StrategyQuickActions() {
               Churn
             </label>
           </div>
+          <textarea
+            name="datos_reales"
+            placeholder="Real figures for the selected metrics, if you have them (optional — without this the report stays qualitative instead of guessing numbers)"
+            className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm h-16"
+          />
         </div>
       ),
     },

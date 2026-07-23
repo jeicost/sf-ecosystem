@@ -31,8 +31,8 @@ export function AdminQuickActions() {
           <select
             name="customer_type"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink text-sm"
-            required
           >
+            <option value="">Infer from the issue (optional)</option>
             <option value="enterprise">Enterprise</option>
             <option value="startup">Startup</option>
             <option value="individual">Individual</option>
@@ -58,9 +58,8 @@ export function AdminQuickActions() {
           <input
             type="text"
             name="product_area"
-            placeholder="Product area or feature"
+            placeholder="Product area or feature (optional)"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
         </div>
       ),

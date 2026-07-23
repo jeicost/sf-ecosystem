@@ -32,9 +32,8 @@ export function FinanzasQuickActions() {
           <input
             type="number"
             name="growth_rate"
-            placeholder="Expected growth rate (%)"
+            placeholder="Expected growth rate (%) — optional"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
           <select
             name="scenario"
@@ -89,9 +88,8 @@ export function FinanzasQuickActions() {
           <input
             type="number"
             name="target_savings"
-            placeholder="Target savings goal (%)"
+            placeholder="Target savings goal (%) — optional"
             className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm"
-            required
           />
         </div>
       ),

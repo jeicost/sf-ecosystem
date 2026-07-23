@@ -1,6 +1,7 @@
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 
 export interface QuickActionPromptParams {
@@ -37,11 +38,15 @@ export async function getQuickActionPrompt(
   const languageRule =
     "\n\nLANGUAGE: Write all prose fields in the same language as the user's input. Keep enum/status values exactly as specified in the schema."
 
-  const fullContext = (allContext ? `\n\nCONTEXT:\n${allContext}` : '') + languageRule
+  // Optional form fields left blank must not become gaps or refusals — but the
+  // line between "use good judgment" and "invent a fact" has to be explicit,
+  // or the model defaults to fabricating numbers with the same confidence as
+  // real ones. See docs/DEBT.md punto (t).
+  const optionalFieldsRule = `
 
-  // Anti-hallucination guard for numeric/financial actions
-  const numericDataGuard =
-    "\nDATA RULES: Use ONLY figures present in the input or context. If a figure is not available, write '—' and list it in an 'assumptions' array. NEVER invent metrics, competitor names or dates.\n"
+OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not leave a gap or refuse to generate — use your professional judgment (and the brand/client context above) to fill it in, and prefix that part with '[RECOMENDACIÓN]' so the reader knows it's your call, not the user's input. This applies to creative/strategic choices (tone, angle, channel emphasis, scope). It does NOT apply to concrete figures or facts (prices, budgets, rates, specific business numbers, named competitors) — those, if missing from the input, stay null/'—' per the grounding contract below. Never invent a number to avoid leaving a field empty.`
+
+  const fullContext = (allContext ? `\n\nCONTEXT:\n${allContext}` : '') + languageRule + optionalFieldsRule + `\n\n${GROUNDING_CONTRACT}`
 
   // Prompts específicos por acción
   // ADMIN
@@ -113,6 +118,8 @@ Output ONLY valid JSON (no markdown, no text before/after):
 Input: ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
+If \`company_info\` is empty, use the brand context above (your own company) instead of inventing one. Derive company_profile.size/revenue and buying_process.budget from lead_data/company_info/context; if none of them support a figure, use "unknown" rather than a plausible-sounding range.
+
 Output ONLY valid JSON (no markdown, no text):
 {"company_profile":{"size":"Size range","revenue":"Revenue range","industry":"Industry"},"decision_makers":[{"role":"Title","priorities":["Priority"],"pain_points":["Pain"]}],"buying_process":{"timeline":"Timeline","budget":"Budget","stakeholders":["Stakeholder"]},"fit_indicators":["Fit1","Fit2"]}`
   }
@@ -123,6 +130,8 @@ Output ONLY valid JSON (no markdown, no text):
 Input:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+pricing.tiers[].price must come from \`budget_estimate\` in the input or from real pricing in the brand/client context. If neither is available, use the literal placeholder '[COMPLETAR: dato real]' instead of inventing a number.
 
 Return ONLY valid JSON (no markdown):
 {
@@ -233,6 +242,8 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
+If \`audience\` is empty, derive targeting.audience from the brand context's target audiences instead of leaving it blank or inventing a new one — label it '[RECOMENDACIÓN]'. budget_allocation must split the \`budget\` figure from the input across channels/platforms (percentages or amounts that sum to it) — never invent a total budget that wasn't provided. kpis targets must be null unless derivable from input/context.
+
 Generate campaign JSON:
 {
   "campaign_name": "",
@@ -254,6 +265,8 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
+The \`metrics\` field only lists WHICH topics to cover — it carries no figures. Use real numbers ONLY if they appear in \`datos_reales\` or the context above. If no real figures are available for a selected metric, keep \`findings\`/\`analysis\` qualitative and structural (what to track, how, and why) instead of inventing revenue/MRR/churn numbers to sound complete — and add that metric to a \`data_gaps\` array.
+
 Generate report JSON:
 {
   "title": "",
@@ -261,7 +274,8 @@ Generate report JSON:
   "findings": [],
   "analysis": "",
   "recommendations": [],
-  "implementation_roadmap": []
+  "implementation_roadmap": [],
+  "data_gaps": []
 }`
   }
 
@@ -271,6 +285,8 @@ Generate report JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+You have no live research on these competitors — only their names and the focus area from the input. Do not present specific claims about their pricing, features, or market share as verified fact; frame strengths/weaknesses/positioning as informed analysis and prefix genuinely speculative claims with '[SUPUESTO]'. Never invent numbers (market share %, pricing, revenue) for a competitor.
 
 Generate analysis JSON:
 {
@@ -305,7 +321,6 @@ Generate ideas JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-${numericDataGuard}
 Generate projection JSON:
 {
   "current_state": {},
@@ -323,7 +338,9 @@ Generate projection JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-${numericDataGuard}
+
+If \`growth_rate\` is empty, do not invent a specific rate — use a conservative, clearly-labeled '[SUPUESTO]' range instead, and say so in \`assumptions\`.
+
 Generate projection JSON:
 {
   "executive_summary": "2-3 sentence summary of the financial outlook",
@@ -342,7 +359,6 @@ Generate projection JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-${numericDataGuard}
 Generate cashflow JSON:
 {
   "summary": "Current cash position assessment in 2-3 sentences",
@@ -362,7 +378,9 @@ Generate cashflow JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-${numericDataGuard}
+
+If \`target_savings\` is empty, propose a reasonable target yourself from the described spending structure, prefixed '[RECOMENDACIÓN]', instead of leaving it unaddressed — but never invent specific euro amounts for \`current_monthly\`/\`optimized_monthly\` that aren't derivable from \`current_expenses\`.
+
 Generate optimization JSON:
 {
   "summary": "2-3 sentence overview of savings potential",
@@ -382,6 +400,8 @@ Generate optimization JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+You have no live research — this is expert-informed analysis based on general knowledge of the sector, not verified current data. Treat every trend/threat as a professional judgment call: no invented statistics, dates, or named sources. If a claim needs a specific number to land (market size, growth %), omit the number rather than inventing one.
 
 Generate trends JSON:
 {
