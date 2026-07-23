@@ -9,11 +9,10 @@ import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
 import OtherTeamsFooter from '@/components/ui/OtherTeamsFooter'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
-import { getAgentStatuses } from '@/lib/get-agent-status'
+import { useAgentStatuses } from '@/lib/use-agent-statuses'
 import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import { useEffect, useState } from 'react'
 import type { AgentStatus } from '@/lib/agent-meta'
 
 const FINANZAS_META: Record<string, { produces: string }> = {
@@ -32,16 +31,7 @@ export default function FinanzasPage() {
   const { locale } = useLocaleContext()
   const agentCount = FINANZAS_DEPT_AGENTS.length
   const { stats } = useDepartmentStats('finanzas')
-  const [agentStatuses, setAgentStatuses] = useState<Record<string, AgentStatus>>({})
-
-  useEffect(() => {
-    const fetchAgentStatuses = async () => {
-      const agentIds = FINANZAS_DEPT_AGENTS.map(a => a.id)
-      const statuses = await getAgentStatuses(agentIds)
-      setAgentStatuses(statuses)
-    }
-    fetchAgentStatuses()
-  }, [])
+  const agentStatuses = useAgentStatuses(FINANZAS_DEPT_AGENTS.map(a => a.id))
 
   const deptMeta = DEPARTMENT_METADATA.finanzas
 

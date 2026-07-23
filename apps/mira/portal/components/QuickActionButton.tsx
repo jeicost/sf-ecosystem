@@ -38,7 +38,14 @@ export function QuickActionButton({
 
     try {
       const formData = new FormData(e.currentTarget)
-      const inputData = Object.fromEntries(formData)
+      // Object.fromEntries silently keeps only the last value for repeated
+      // field names (e.g. multiple checkboxes sharing name="metrics") — collect
+      // those as arrays instead of dropping every value but the last one.
+      const inputData: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {}
+      for (const key of new Set(formData.keys())) {
+        const values = formData.getAll(key)
+        inputData[key] = values.length > 1 ? values : values[0]
+      }
 
       const response = await fetch('/api/quick-actions', {
         method: 'POST',

@@ -1,4 +1,7 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
+
+const STRATEGY_AGENT_IDS = STRATEGY_DEPT_AGENTS.map((a) => a.id)
 
 export interface DepartmentStats {
   leads?: number
@@ -57,12 +60,16 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
     console.error('Error fetching contacts:', e)
   }
 
+  // generation_queue nunca tuvo columnas agent_type/agent_role (ver docs/DEBT.md
+  // punto r) — planes/ideas se cuentan sobre agent_activity, la tabla real que
+  // sí registra cada tarea completada por agente.
   try {
     const { count: plansCount } = await db
-      .from('generation_queue')
+      .from('agent_activity')
       .select('id', { count: 'exact', head: true })
       .eq('client_id', clientId)
-      .eq('agent_type', 'strategy')
+      .in('agent_role', STRATEGY_AGENT_IDS)
+      .eq('status', 'completed')
     plans = plansCount || 0
   } catch (e) {
     console.error('Error fetching strategy plans:', e)
@@ -70,11 +77,11 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
 
   try {
     const { count: ideasCount } = await db
-      .from('generation_queue')
+      .from('agent_activity')
       .select('id', { count: 'exact', head: true })
       .eq('client_id', clientId)
-      .eq('agent_type', 'strategy')
       .eq('agent_role', 'spark')
+      .eq('status', 'completed')
     ideas = ideasCount || 0
   } catch (e) {
     console.error('Error fetching ideas:', e)
