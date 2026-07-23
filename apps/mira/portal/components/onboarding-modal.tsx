@@ -2,6 +2,8 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { X, ArrowRight, ArrowLeft, Check } from 'lucide-react'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 const ONBOARDING_KEY = 'mira_onboarding_v1'
 
@@ -12,36 +14,36 @@ interface Step {
   type: 'welcome' | 'dept' | 'done'
   color: string
   icon: string
-  title: string
-  subtitle: string
-  highlights: { icon: string; text: string }[]
+  titleKey: string
+  subtitleKey: string
+  highlights: { icon: string; textKey: string }[]
   agents: Agent[]
-  quickWin: string
-  cta: { label: string; href: string }
+  quickWinKey: string
+  cta: { labelKey: string; href: string }
 }
 
 const STEPS: Step[] = [
   {
     id: 'welcome', type: 'welcome', color: '#6366F1', icon: '✦',
-    title: 'Welcome to MIRA',
-    subtitle: 'Your AI team that knows your brand, runs your departments and gets smarter every week.',
+    titleKey: 'onboarding.welcome.title',
+    subtitleKey: 'onboarding.welcome.subtitle',
     highlights: [
-      { icon: '🤖', text: '23 specialized AI agents across 5 departments' },
-      { icon: '🧠', text: 'Brand Brain learns your voice, style and goals' },
-      { icon: '⚡', text: 'Available 24/7 — you direct, they execute' },
+      { icon: '🤖', textKey: 'onboarding.welcome.highlight.1' },
+      { icon: '🧠', textKey: 'onboarding.welcome.highlight.2' },
+      { icon: '⚡', textKey: 'onboarding.welcome.highlight.3' },
     ],
     agents: [],
-    quickWin: 'Let\'s meet your team — one department at a time.',
-    cta: { label: 'Meet my team →', href: '' },
+    quickWinKey: 'onboarding.welcome.quickwin',
+    cta: { labelKey: 'onboarding.welcome.cta', href: '' },
   },
   {
     id: 'marketing', type: 'dept', color: '#8B5CF6', icon: '🎯',
-    title: 'Marketing Team',
-    subtitle: 'Content strategy, copywriting, design, video, ads and community — all coordinated in your brand voice.',
+    titleKey: 'onboarding.dept.marketing.title',
+    subtitleKey: 'onboarding.dept.marketing.subtitle',
     highlights: [
-      { icon: '📋', text: 'Luna plans your content pillars and editorial strategy' },
-      { icon: '✍️', text: 'Alex writes posts, captions and scripts in your exact tone' },
-      { icon: '🎨', text: 'Zoe designs visuals; Kai edits videos; Riva runs your ad strategy' },
+      { icon: '📋', textKey: 'onboarding.dept.marketing.highlight.1' },
+      { icon: '✍️', textKey: 'onboarding.dept.marketing.highlight.2' },
+      { icon: '🎨', textKey: 'onboarding.dept.marketing.highlight.3' },
     ],
     agents: [
       { emoji: '📋', name: 'Luna',  role: 'Content Strategist' },
@@ -52,17 +54,17 @@ const STEPS: Step[] = [
       { emoji: '📣', name: 'Riva',  role: 'Ads Manager' },
       { emoji: '👥', name: 'Sam',   role: 'Community Manager' },
     ],
-    quickWin: "Start with Luna's content strategy → entire team executes in parallel.",
-    cta: { label: 'Plan content →', href: '/roster' },
+    quickWinKey: 'onboarding.dept.marketing.quickwin',
+    cta: { labelKey: 'onboarding.dept.marketing.cta', href: '/roster' },
   },
   {
     id: 'comercial', type: 'dept', color: '#EF4444', icon: '🚀',
-    title: 'Sales Team',
-    subtitle: 'B2B pipeline automation — from prospecting to closed deals with AI precision.',
+    titleKey: 'onboarding.dept.comercial.title',
+    subtitleKey: 'onboarding.dept.comercial.subtitle',
     highlights: [
-      { icon: '🔍', text: 'Rex finds qualified leads matching your ICP automatically' },
-      { icon: '🎯', text: 'Vera scores each lead 0-100 so you focus on what matters' },
-      { icon: '📄', text: 'Nova generates personalized proposals in 18 minutes' },
+      { icon: '🔍', textKey: 'onboarding.dept.comercial.highlight.1' },
+      { icon: '🎯', textKey: 'onboarding.dept.comercial.highlight.2' },
+      { icon: '📄', textKey: 'onboarding.dept.comercial.highlight.3' },
     ],
     agents: [
       { emoji: '🔍', name: 'Rex',   role: 'Lead Scout' },
@@ -71,17 +73,17 @@ const STEPS: Step[] = [
       { emoji: '💬', name: 'Quinn', role: 'Reply Qualifier' },
       { emoji: '📄', name: 'Nova',  role: 'Proposal Writer' },
     ],
-    quickWin: 'Define your ICP → Rex builds your first qualified lead list.',
-    cta: { label: 'Find leads →', href: '/comercial/discovery' },
+    quickWinKey: 'onboarding.dept.comercial.quickwin',
+    cta: { labelKey: 'onboarding.dept.comercial.cta', href: '/comercial/discovery' },
   },
   {
     id: 'strategy', type: 'dept', color: '#6366F1', icon: '🔭',
-    title: 'Strategy Team',
-    subtitle: 'Business clarity in hours, not weeks. Strategic planning + trend forecasting + innovation.',
+    titleKey: 'onboarding.dept.strategy.title',
+    subtitleKey: 'onboarding.dept.strategy.subtitle',
     highlights: [
-      { icon: '🎯', text: 'Strategos builds your 90-day strategic plan with clear OKRs' },
-      { icon: '🗺️', text: 'Atlas maps competitors, trends and future scenarios' },
-      { icon: '⚡', text: 'Blueprint turns it into business models; Spark scouts new ideas' },
+      { icon: '🎯', textKey: 'onboarding.dept.strategy.highlight.1' },
+      { icon: '🗺️', textKey: 'onboarding.dept.strategy.highlight.2' },
+      { icon: '⚡', textKey: 'onboarding.dept.strategy.highlight.3' },
     ],
     agents: [
       { emoji: '♟️', name: 'Strategos', role: 'Strategy & Timing' },
@@ -89,57 +91,65 @@ const STEPS: Step[] = [
       { emoji: '🗺️', name: 'Atlas',     role: 'Trends & Foresight' },
       { emoji: '⚡', name: 'Spark',     role: 'Innovation Scout' },
     ],
-    quickWin: 'Tell Strategos where you are and where you want to be. Atlas will map the road.',
-    cta: { label: 'Build 90-day plan →', href: '/strategy/plan' },
+    quickWinKey: 'onboarding.dept.strategy.quickwin',
+    cta: { labelKey: 'onboarding.dept.strategy.cta', href: '/strategy/plan' },
   },
   {
     id: 'admin', type: 'dept', color: '#10B981', icon: '⚙️',
-    title: 'Operations Team',
-    subtitle: 'Customer support, metrics and processes for a small team — connectable to tools like Zoho.',
+    titleKey: 'onboarding.dept.admin.title',
+    subtitleKey: 'onboarding.dept.admin.subtitle',
     highlights: [
-      { icon: '🛟', text: 'Harbor resolves tickets, drafts replies and builds your FAQ' },
-      { icon: '💓', text: 'Pulse monitors metrics and alerts you before issues happen' },
-      { icon: '🎓', text: 'Onboard documents processes, SOPs and team training' },
+      { icon: '🛟', textKey: 'onboarding.dept.admin.highlight.1' },
+      { icon: '💓', textKey: 'onboarding.dept.admin.highlight.2' },
+      { icon: '🎓', textKey: 'onboarding.dept.admin.highlight.3' },
     ],
     agents: [
       { emoji: '🛟', name: 'Harbor',  role: 'Customer Support' },
       { emoji: '💓', name: 'Pulse',   role: 'Metrics & Observability' },
       { emoji: '🎓', name: 'Onboard', role: 'Processes & Training' },
     ],
-    quickWin: 'Paste a customer ticket — Harbor drafts the reply in your brand voice.',
-    cta: { label: 'Check system →', href: '/operations/system' },
+    quickWinKey: 'onboarding.dept.admin.quickwin',
+    cta: { labelKey: 'onboarding.dept.admin.cta', href: '/operations/system' },
   },
   {
     id: 'finanzas', type: 'dept', color: '#F59E0B', icon: '💰',
-    title: 'Finance Team',
-    subtitle: 'Make work a choice, not a necessity. Wealth plans, portfolios and FI planning.',
+    titleKey: 'onboarding.dept.finanzas.title',
+    subtitleKey: 'onboarding.dept.finanzas.subtitle',
     highlights: [
-      { icon: '💎', text: 'Midas builds your personal wealth plan and savings system' },
-      { icon: '📈', text: 'Quant designs your low-cost ETF portfolio by risk tolerance' },
-      { icon: '📊', text: 'Fiscal audits your numbers and keeps you compliant' },
+      { icon: '💎', textKey: 'onboarding.dept.finanzas.highlight.1' },
+      { icon: '📈', textKey: 'onboarding.dept.finanzas.highlight.2' },
+      { icon: '📊', textKey: 'onboarding.dept.finanzas.highlight.3' },
     ],
     agents: [
       { emoji: '💰', name: 'Midas',  role: 'Revenue Optimizer' },
       { emoji: '🧮', name: 'Quant',  role: 'Data Analyst' },
       { emoji: '📊', name: 'Fiscal', role: 'Financial Auditor' },
     ],
-    quickWin: 'Tell Midas your monthly income and expenses. Get your wealth plan in 5 minutes.',
-    cta: { label: 'Start wealth plan →', href: '/finanzas/plan' },
+    quickWinKey: 'onboarding.dept.finanzas.quickwin',
+    cta: { labelKey: 'onboarding.dept.finanzas.cta', href: '/finanzas/plan' },
   },
   {
     id: 'done', type: 'done', color: '#22C55E', icon: '✓',
-    title: 'Your team is ready.',
-    subtitle: 'You\'ve met all 23 agents across 5 departments. They\'re standing by — you direct, they execute.',
+    titleKey: 'onboarding.done.title',
+    subtitleKey: 'onboarding.done.subtitle',
     highlights: [
-      { icon: '🧠', text: 'Complete your Brand Brain so agents learn your exact style' },
-      { icon: '✍️', text: 'Write your first brief and watch the marketing team work' },
-      { icon: '🔍', text: 'Run a lead discovery to fill your B2B pipeline' },
+      { icon: '🧠', textKey: 'onboarding.done.highlight.1' },
+      { icon: '✍️', textKey: 'onboarding.done.highlight.2' },
+      { icon: '🔍', textKey: 'onboarding.done.highlight.3' },
     ],
     agents: [],
-    quickWin: 'Start anywhere — every agent is ready from day one.',
-    cta: { label: 'Go to home', href: '/home' },
+    quickWinKey: 'onboarding.done.quickwin',
+    cta: { labelKey: 'onboarding.done.cta', href: '/home' },
   },
 ]
+
+const DEPT_SHORT_KEYS: Record<string, string> = {
+  marketing: 'onboarding.dept.marketing.short',
+  comercial: 'onboarding.dept.comercial.short',
+  strategy: 'onboarding.dept.strategy.short',
+  admin: 'onboarding.dept.admin.short',
+  finanzas: 'onboarding.dept.finanzas.short',
+}
 
 interface OnboardingModalProps {
   userName: string
@@ -147,6 +157,7 @@ interface OnboardingModalProps {
 
 export default function OnboardingModal({ userName }: OnboardingModalProps) {
   const router = useRouter()
+  const { locale } = useLocaleContext()
   const [visible, setVisible] = useState(false)
   const [step, setStep] = useState(0)
 
@@ -223,22 +234,22 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 ✦
               </div>
               <h2 className="text-2xl font-bold text-ink mb-1 tracking-tight">
-                Welcome, {userName.split(' ')[0]}
+                {t('onboarding.greeting', locale).replace('{name}', userName.split(' ')[0])}
               </h2>
               <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
-                {current.subtitle}
+                {t(current.subtitleKey, locale)}
               </p>
               <div className="space-y-3 text-left mb-6">
                 {current.highlights.map((h, i) => (
                   <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
                     style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
                     <span className="text-xl">{h.icon}</span>
-                    <span className="text-sm text-ink">{h.text}</span>
+                    <span className="text-sm text-ink">{t(h.textKey, locale)}</span>
                   </div>
                 ))}
               </div>
               <p className="text-xs mb-2" style={{ color: 'var(--text-tertiary)' }}>
-                {current.quickWin}
+                {t(current.quickWinKey, locale)}
               </p>
             </div>
           )}
@@ -253,13 +264,13 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 </div>
                 <div>
                   <p className="text-[10px] uppercase tracking-widest font-semibold mb-0.5"
-                    style={{ color: `${c}99` }}>Department {step} of {STEPS.length - 2}</p>
-                  <h2 className="text-xl font-bold text-ink tracking-tight">{current.title}</h2>
+                    style={{ color: `${c}99` }}>{t('onboarding.progress', locale).replace('{step}', String(step)).replace('{total}', String(STEPS.length - 2))}</p>
+                  <h2 className="text-xl font-bold text-ink tracking-tight">{t(current.titleKey, locale)}</h2>
                 </div>
               </div>
 
               <p className="text-sm mb-5" style={{ color: 'var(--text-secondary)' }}>
-                {current.subtitle}
+                {t(current.subtitleKey, locale)}
               </p>
 
               <div className="space-y-2.5 mb-5">
@@ -269,7 +280,7 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                       style={{ background: `${c}15` }}>
                       <Check size={10} style={{ color: c }} />
                     </div>
-                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{h.text}</span>
+                    <span className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t(h.textKey, locale)}</span>
                   </div>
                 ))}
               </div>
@@ -293,9 +304,9 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
               <div className="px-4 py-3 rounded-xl"
                 style={{ background: `${c}08`, border: `1px solid ${c}20` }}>
                 <p className="text-[10px] uppercase tracking-widest font-semibold mb-1" style={{ color: `${c}80` }}>
-                  First step
+                  {t('onboarding.first-step-label', locale)}
                 </p>
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{current.quickWin}</p>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t(current.quickWinKey, locale)}</p>
               </div>
             </div>
           )}
@@ -307,16 +318,16 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
                 style={{ background: `${c}15`, border: `1px solid ${c}30` }}>
                 <Check size={28} style={{ color: c }} />
               </div>
-              <h2 className="text-2xl font-bold text-ink mb-1 tracking-tight">{current.title}</h2>
+              <h2 className="text-2xl font-bold text-ink mb-1 tracking-tight">{t(current.titleKey, locale)}</h2>
               <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
-                {current.subtitle}
+                {t(current.subtitleKey, locale)}
               </p>
               <div className="space-y-2.5 text-left mb-6">
                 {current.highlights.map((h, i) => (
                   <div key={i} className="flex items-center gap-3 px-4 py-3 rounded-xl"
                     style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
                     <span className="text-xl">{h.icon}</span>
-                    <span className="text-sm text-ink">{h.text}</span>
+                    <span className="text-sm text-ink">{t(h.textKey, locale)}</span>
                   </div>
                 ))}
               </div>
@@ -331,16 +342,20 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
               className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-all hover:text-ink"
               style={{ color: 'var(--text-tertiary)', background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
               <ArrowLeft size={14} />
-              Back
+              {t('onboarding.cta.back', locale)}
             </button>
           )}
 
           <button onClick={goNext}
             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold text-ink transition-all hover:opacity-90 hover:scale-[1.01]"
             style={{ background: isLast ? `linear-gradient(135deg, ${c}, ${c}cc)` : `${c}`, boxShadow: `0 0 20px ${c}30` }}>
-            {isLast ? 'Start directing →' : (
+            {isLast ? t('onboarding.cta.start', locale) : (
               <>
-                {STEPS[step + 1]?.title.includes('Team') ? `Next: ${STEPS[step + 1]?.icon} ${STEPS[step + 1]?.id.charAt(0).toUpperCase() + STEPS[step + 1]?.id.slice(1)}` : 'Next'}
+                {STEPS[step + 1]?.type === 'dept'
+                  ? t('onboarding.cta.next-dept', locale)
+                      .replace('{icon}', STEPS[step + 1]!.icon)
+                      .replace('{name}', t(DEPT_SHORT_KEYS[STEPS[step + 1]!.id], locale))
+                  : t('onboarding.cta.next', locale)}
                 <ArrowRight size={14} />
               </>
             )}
@@ -350,7 +365,7 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
             <button onClick={() => navigateCta(current.cta.href)}
               className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold transition-all"
               style={{ color: c, background: `${c}12`, border: `1px solid ${c}28` }}>
-              {current.cta.label}
+              {t(current.cta.labelKey, locale)}
             </button>
           )}
 
@@ -358,7 +373,7 @@ export default function OnboardingModal({ userName }: OnboardingModalProps) {
             <button onClick={complete}
               className="text-xs transition-colors hover:text-ink"
               style={{ color: 'var(--text-tertiary)' }}>
-              Skip tour
+              {t('onboarding.cta.skip', locale)}
             </button>
           )}
         </div>
