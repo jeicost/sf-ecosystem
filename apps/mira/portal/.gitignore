@@ -1,4 +1,5 @@
 .vercel
 .env*.local
-.env.local.bak-anon
+.env.local.bak-*
 check_gen.js
+check_gen*.js
