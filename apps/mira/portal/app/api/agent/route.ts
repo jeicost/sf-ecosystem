@@ -6,14 +6,14 @@ import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentD
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
+import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
 // Removed hardcoded CLIENT_ID import - now reads from user_metadata or requires explicit clientId
 // import { CLIENT_ID } from '@/lib/constants'
 
 // Agentes que generan documentos largos necesitan más tokens
 const MAX_TOKENS: Record<string, number> = {
   strategos: 4096, 'proposal-writer': 4096, atlas: 4096, blueprint: 4096,
-  harbor: 4096, oracle: 3500, radar: 3000, spark: 3000,
-  kairos: 3000, quant: 3000, fiscal: 3000, midas: 3000,
+  harbor: 4096, spark: 3000, quant: 3000, fiscal: 3000, midas: 3000,
 }
 
 export async function POST(req: NextRequest) {
@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
 
     // Enriquecer con Brand Brain + project_memory + agent documents si aplica
     const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + projectCtx
-    let fullSystem = systemPrompt + dateCtx
+    let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE
 
     const memoryContext = await getClientMemoryContext(resolvedClientId)
     const docContext = await getAgentDocumentContext(resolvedClientId, role)

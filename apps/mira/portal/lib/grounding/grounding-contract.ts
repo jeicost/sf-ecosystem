@@ -13,3 +13,10 @@ export const GROUNDING_CONTRACT: string = `GROUNDING CONTRACT — STRICT RULES O
 8. If the site was unreachable (SITE UNREACHABLE), do not describe the site's content, design, or SEO state as if you had seen it — mark all site-dependent fields as unknown.
 9. Add to your JSON output an array field 'data_gaps' listing every piece of data you needed but could not find in the context (e.g. "monthly traffic", "CAC", "competitor pricing").
 10. It is always better to output null, "unknown", '[COMPLETAR: dato real]', or a '[SUPUESTO]'-prefixed estimate than a fabricated fact. Fabricated data is a critical failure.`
+
+// Lighter, conversational variant for the Agent chat (streamed prose, no JSON
+// schema to constrain, no SITE FACTS/SOURCES blocks) — same principle as
+// GROUNDING_CONTRACT, phrased so it doesn't read like a legal disclaimer
+// dropped into a live conversation. See docs/DEBT.md punto (t).
+export const AGENT_CHAT_GROUNDING_NOTE: string =
+  '\n\nPrecisión: no presentes cifras, fechas, nombres de clientes o competidores, ni datos de negocio como verificados a menos que aparezcan en el contexto de marca, la memoria del proyecto o los documentos cargados de esta conversación. Cuando hagas una recomendación, estimación o supuesto, dilo explícitamente ("mi recomendación sería...", "asumiendo que...") en vez de presentarlo como un hecho. Si no tienes el dato, dilo — no lo inventes para sonar más completo.'

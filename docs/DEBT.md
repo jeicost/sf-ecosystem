@@ -157,11 +157,13 @@ Dos bugs de la misma familia, ambos verificados contra el esquema real:
 
 ---
 
-## t) Sin contrato anti-invención en Quick Actions ni en el chat de Agentes (nueva 2026-07-23)
+## t) ✅ Resuelto (Quick Actions) / ⏳ pendiente (chat de Agentes) — Sin contrato anti-invención (2026-07-23)
 
-Tras aplicar `GROUNDING_CONTRACT` + `EDITORIAL_CONTRACT` a los 11 tools de Toolkit y los 4 tipos de Documents (ver commit `748ca0f`), queda confirmado que **ninguna de las 25 quick actions ni de los 23 agentes** importa `GROUNDING_CONTRACT` (`lib/grounding/grounding-contract.ts`). Quick Actions tiene solo un guard ad hoc de una línea, repetido en 4/25 prompts (el clúster financiero) — las 21 restantes, incluida `analizar_competencia` (un análisis de mercado con nombres de competidores), no tienen ninguna instrucción anti-invención. El chat de agentes depende solo de frases sueltas de estilo dentro de cada system prompt (`lib/agent-prompts-i18n.ts`).
+Tras aplicar `GROUNDING_CONTRACT` + `EDITORIAL_CONTRACT` a los 11 tools de Toolkit y los 4 tipos de Documents (ver commit `748ca0f`), quedó confirmado que **ninguna de las 25 quick actions ni de los 23 agentes** importaba `GROUNDING_CONTRACT` (`lib/grounding/grounding-contract.ts`). Quick Actions tenía solo un guard ad hoc de una línea, repetido en 4/25 prompts (el clúster financiero) — las 21 restantes, incluida `analizar_competencia`, no tenían ninguna instrucción anti-invención. El chat de agentes depende solo de frases sueltas de estilo dentro de cada system prompt (`lib/agent-prompts-i18n.ts`).
 
-**Qué haría falta:** decidir si se extiende el contrato a Quick Actions (encaja bien, ya son prompts de un solo turno con JSON de salida) y evaluar una versión ligera para el chat de agentes (más difícil por ser conversacional y sin el mismo control de esquema de salida).
+**Resuelto para Quick Actions (commit `06a5e26`):** `GROUNDING_CONTRACT` cableado en el contexto compartido de `lib/generation/quick-action-prompts.ts`, más una regla nueva de "campo opcional en blanco → criterio profesional etiquetado `[RECOMENDACIÓN]`, nunca una cifra inventada" — y guardas específicas en los 6 casos con riesgo concreto (`crear_propuesta`, `generar_icp`, `crear_campaña_ads`, `generar_reporte` — que además ganó un campo `datos_reales` opcional porque antes no había forma de darle cifras reales —, `analizar_competencia`, `analizar_tendencias`). De paso, se revisaron los ~60 campos de formulario de las 5 quick actions departamentales: ~12 pasaron de obligatorios a opcionales donde el dato era secundario/de criterio (tono, contexto adicional, presupuesto aún no decidido), dejando obligatorios solo los campos sin los que la acción no tiene sobre qué generar. Verificado con generaciones reales dejando campos opcionales en blanco: presupuestos pendientes se marcan `[COMPLETAR: dato real]` en vez de inventarse, el análisis competitivo etiqueta cada afirmación con `[SUPUESTO]`, y un reporte sin `datos_reales` se queda cualitativo con huecos marcados en vez de cifras fabricadas.
+
+**Pendiente:** el chat de Agentes (23 agentes, conversacional, sin el mismo control de esquema de salida que Quick Actions) sigue sin contrato — deliberadamente fuera de esta ronda, es un caso más difícil (no hay un JSON de salida que forzar, y el contrato tal como está escrito asume bloques de contexto tipo documento).
 
 ---
 
