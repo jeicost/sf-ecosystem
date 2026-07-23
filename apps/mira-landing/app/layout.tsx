@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
+import CookieConsent from './cookie-consent'
 
 const GTM_ID = 'GTM-5QZTPDX5'
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.miralanding.com'
@@ -71,6 +72,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             height="0" width="0" style={{ display: 'none', visibility: 'hidden' }} />
         </noscript>
         {children}
+        <CookieConsent />
         <Analytics />
       </body>
     </html>

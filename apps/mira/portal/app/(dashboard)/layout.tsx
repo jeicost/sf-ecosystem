@@ -12,6 +12,8 @@ import { getActiveSectionFromPath } from '@/lib/sections'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
 import { Home, BookOpen, Brain, Zap, Layers, Menu, X } from 'lucide-react'
@@ -22,6 +24,7 @@ function SidebarContent() {
   const path = usePathname()
   const router = useRouter()
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
   const [user, setUser]         = useState<MiraUser | null>(null)
   const [theme, setThemeState]  = useState<Theme>('dark')
   const [pendingCount, setPending] = useState(0)
@@ -283,7 +286,7 @@ useEffect(() => {
           onClick={() => { localStorage.removeItem('mira_onboarding_v1'); window.location.href = '/home' }}
           className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] transition-all text-ink-muted hover:text-ink">
           <span>✦</span>
-          <span>Portal tour</span>
+          <span>{t('onboarding.sidebar-trigger', locale)}</span>
         </button>
       </div>
 
@@ -308,6 +311,15 @@ useEffect(() => {
           </div>
         </button>
         <LanguageSwitcher />
+      </div>
+
+      {/* Legal links */}
+      <div className="px-4 pb-1 flex items-center gap-2 text-[9px] text-ink-muted">
+        <Link href="/terms" className="hover:text-ink-tertiary">Términos</Link>
+        <span>·</span>
+        <Link href="/privacy" className="hover:text-ink-tertiary">Privacidad</Link>
+        <span>·</span>
+        <Link href="/cookies" className="hover:text-ink-tertiary">Cookies</Link>
       </div>
 
       {/* User */}

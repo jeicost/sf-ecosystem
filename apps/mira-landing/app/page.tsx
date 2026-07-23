@@ -1171,7 +1171,12 @@ export default function Page() {
             <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: 13 }}>·</span>
             <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)' }}>© MIRA 2026</span>
           </div>
-          <a href={PORTAL_URL} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>Sign in →</a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+            <a href="/terms" style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>Terms</a>
+            <a href="/privacy" style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>Privacy</a>
+            <a href="/cookies" style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>Cookies</a>
+            <a href={PORTAL_URL} style={{ fontSize: 12, color: 'rgba(255,255,255,0.25)', textDecoration: 'none' }}>Sign in →</a>
+          </div>
         </div>
       </footer>
 

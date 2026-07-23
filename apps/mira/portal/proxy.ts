@@ -29,6 +29,9 @@ export async function proxy(request: NextRequest) {
   if (
     pathname.startsWith('/login') ||
     pathname.startsWith('/reset-password') ||
+    pathname.startsWith('/terms') ||
+    pathname.startsWith('/privacy') ||
+    pathname.startsWith('/cookies') ||
     pathname.startsWith('/api/health') || // uptime monitors hit this unauthenticated
     pathname.startsWith('/api/webhook') || // Webhooks verify x-webhook-secret header, not user auth
     pathname.startsWith('/api/toolkit/generate-batch') // Batch generation — protected by x-batch-secret in the route
