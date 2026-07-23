@@ -116,3 +116,15 @@ Verificado durante la auditoría de lanzamiento SaaS: el gating por plan (`lib/p
 - `proxy.ts` SÍ intenta enforcement server-side con un regex (`/^\/(marketing|comercial|estrategia|innovacion|finanzas)(\/|$)/`), pero usa slugs **en español que no existen como rutas reales** — la app usa `strategy`/`operations` en inglés (ver `lib/sections.ts`), y Marketing no tiene un prefijo de ruta común (vive en `/roster`, `/command`, `/approvals`, `/performance`, `/brief`). El regex nunca matchea nada — es enforcement fantasma.
 
 **Qué haría falta:** corregir el regex a los slugs reales (o mejor, un `guardSection(pathname, plan)` compartido usado tanto en `proxy.ts` como en cada `page.tsx` de departamento) — ver Fase 2 del roadmap de lanzamiento (`docs/MIRA-LANZAMIENTO-FASE2.md`), sección "Enforcement real de plan".
+
+---
+
+## p) ✅ Resuelto — `tool_connections`/`affiliate_tracking`/`tool_setup_progress` no existían en producción (descubierto y arreglado 2026-07-23)
+
+Al aplicar la migración `0037_rls_hardening.sql` (RLS de `tool_connections`), Supabase devolvió `relation "tool_connections" does not exist`. Verificado con `information_schema.tables`: las 3 tablas de `supabase/migrations/0010_tool_integrations.sql` **nunca se aplicaron a producción**, pese a estar en el repo desde hace tiempo y ser usadas por código activo (`lib/integrations/getClientApiKey.ts`, `app/api/integrations/tools/route.ts`, `app/api/integrations/affiliate/route.ts`, `lib/integrations/canva.ts`, `app/api/integrations/oauth/callback/route.ts`).
+
+**Impacto real durante todo ese tiempo:** `getClientApiKey.ts:35-46` trata cualquier error de la query (incluido "tabla no existe") igual que "sin clave conectada" — nunca lanza el error, solo `console.error` (invisible sin Sentry) y devuelve `defaultKey`. Resultado: **todas las generaciones con Claude/OpenAI han usado siempre la key de plataforma**, nunca la BYO del cliente, sin ningún error visible. Intentar *conectar* una key desde `/integrations` sí debía fallar de forma visible (el `INSERT` a una tabla inexistente no puede tener éxito silencioso).
+
+**Resuelto:** `supabase/migrations/0038_tool_connections_backfill.sql` (idempotente, `CREATE TABLE/INDEX IF NOT EXISTS`) crea las 3 tablas + activa RLS. Aplicada en prod el 2026-07-23. Verificado con REST que las 3 tablas responden 200.
+
+**Qué haría falta ahora:** probar en vivo que conectar una key BYO (Claude, OpenAI o Canva) desde `/integrations` funciona de principio a fin — nunca se ha podido verificar porque la tabla no existía.
