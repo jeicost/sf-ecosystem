@@ -1,10 +1,12 @@
 'use client'
 
 import { useCallback, useRef, useState } from 'react'
+import { AGENT_DISPLAY_NAMES } from '@/lib/agent-meta'
 
 export interface AgentMessage {
   role: 'user' | 'assistant'
   content: string
+  feedback?: 'helpful' | 'not_helpful'
 }
 
 export interface UseAgentChatOptions {
@@ -94,5 +96,43 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
     setIsLoading(false)
   }, [])
 
-  return { messages, isLoading, error, sendMessage, cancel }
+  // Feedback (👍/👎) on a completed assistant message — needs the preceding
+  // user message as the "query" half of the pair. Optimistic: marks the
+  // message locally right away, logs server-side, never blocks the UI on
+  // failure (it's feedback, not a critical action).
+  const sendFeedback = useCallback(
+    async (messageIndex: number, outcome: 'helpful' | 'not_helpful', note?: string) => {
+      setMessages((prev) => {
+        const updated = [...prev]
+        const msg = updated[messageIndex]
+        if (msg && msg.role === 'assistant') updated[messageIndex] = { ...msg, feedback: outcome }
+        return updated
+      })
+
+      const userMsg = messages
+        .slice(0, messageIndex)
+        .reverse()
+        .find((m) => m.role === 'user')
+      const assistantMsg = messages[messageIndex]
+      if (!userMsg || !assistantMsg) return
+
+      try {
+        await fetch('/api/agent-interactions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id: clientId,
+            agent_name: AGENT_DISPLAY_NAMES[role] ?? role,
+            user_query: userMsg.content,
+            agent_response: assistantMsg.content,
+            outcome,
+            user_feedback: note,
+          }),
+        })
+      } catch { /* feedback failures should never disrupt the chat */ }
+    },
+    [messages, clientId, role]
+  )
+
+  return { messages, isLoading, error, sendMessage, cancel, sendFeedback }
 }

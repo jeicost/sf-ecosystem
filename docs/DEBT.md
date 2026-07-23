@@ -177,16 +177,30 @@ Tras aplicar `GROUNDING_CONTRACT` + `EDITORIAL_CONTRACT` a los 11 tools de Toolk
 - `AdminQuickActions.tsx` `outputType:'text'` — `QuickActionResult.tsx`'s `ContentPreview` ya tiene caso para `'text'`.
 - `app/api/agent/route.ts:13-17` — claves `MAX_TOKENS` de `oracle`/`radar`/`kairos` eliminadas.
 
-**Pendiente, sin urgencia (decisión de producto, no bug):**
-- `agent_documents` (chat de agentes) vs `client_documentation` (Quick Actions) — dos almacenes de "documentos de contexto para IA" que no se comunican entre sí. Decidir si se unifican o se documenta la separación.
-- `app/api/agent-interactions/route.ts` — tabla real, pero el chat de agentes nunca la llama; el *"Brand Brain refinement"* que promete el comentario no está construido. Es una feature a medio construir, no limpieza — decidir si se completa o se retira.
-- `lib/department-tools.ts` + `lib/agent-archetypes.ts` + `app/(dashboard)/archetypes-demo/` — isla de gamificación desconectada con taxonomía de nombres incompatible con `AGENT_METADATA`/`DEPARTMENT_METADATA` real. No se ha tocado — podría ser trabajo aspiracional sin terminar, no basura confirmada; requiere decidir si se retoma o se retira antes de tocarlo.
+**Pendiente, sin urgencia:**
 - `AgentMetadata.department` (`'operaciones'`) vs `DepartmentMetadata.slug` (`'operations'`) — inconsistencia ES/EN, sin impacto hoy porque nada filtra por ese campo. Bajo riesgo, no se ha tocado.
+- `agent_documents` (chat de agentes) vs `client_documentation` (Quick Actions) — dos almacenes de "documentos de contexto para IA" que no se comunican entre sí. Decisión del usuario (2026-07-23): dejarlo documentado, no unificar por ahora.
+
+**Decididas por el usuario (2026-07-23) — no se ejecutan en esta ronda pero SÍ se retoman:**
+- **`archetypes-demo` + `lib/agent-archetypes.ts` + `lib/department-tools.ts`**: el usuario confirmó que el sistema de 5 "arquetipos" (interfaces de chat distintas según el tipo de trabajo del agente — Explorador, Analista, Arquitecto, Centinela, Estudio) le parece una idea válida y trabajada, y quiere integrarla al producto real más adelante ("habría que pensarla un poco más para integrarla, pero yo la haría"). **No se toca ahora** — sigue siendo código aislado con taxonomía de nombres incompatible con `AGENT_METADATA` real, pero ya no es "código huérfano a limpiar", es una idea de roadmap pendiente de diseñar antes de conectarla.
+- **`app/api/agent-interactions/route.ts`** (feedback 👍/👎): el usuario confirmó que quiere esto — **implementado el mismo día** (ver más abajo), no queda pendiente.
 
 ---
 
-## Mapa de solapes funcionales — Toolkit / Documents / Quick Actions / Agentes (nueva 2026-07-23)
+## Feedback del usuario implementado el mismo día (2026-07-23)
 
-Auditoría completa en el artefacto publicado durante la sesión (Toolkit ↔ Documents ↔ Quick Actions ↔ Agentes). Resumen: no se encontró ningún agente con función exclusiva — casi todos tienen una quick action de departamento equivalente generando el mismo tipo de output, y varios (contenido, campañas, análisis competitivo, propuestas, informes) tienen además un tool de Toolkit o tipo de Documento haciendo la misma función con distinto nivel de rigor. El caso más claro: `analizar_competencia` (Quick Action, sin grounding) vs `competitive-analysis` (Toolkit, grounded + cita fuente) — mismo nombre de trabajo, fiabilidad muy distinta según el camino de entrada.
+Tras explicar el mapa de solapes y las piezas a medio construir, el usuario pidió 3 cosas concretas — las 3 implementadas y verificadas:
 
-**Qué haría falta:** decisión de producto sobre si consolidar (un único motor de "análisis competitivo" reutilizado por los 3 puntos de entrada) o mantener los 3 caminos pero igualar el nivel de rigor.
+**1. Los agentes de chat ahora pueden buscar en internet.** Antes, el chat de los 23 agentes no tenía ningún acceso a información real (a diferencia de 5 herramientas grounded de Toolkit) — o inventaba con cautela ("no tengo ese dato") o simplemente no podía saber nada actual. Ahora usan tool-use real de Claude: `app/api/agent/route.ts` define una tool `web_search` (reutiliza `lib/grounding/web-research.ts`, mismo Tavily que usa Toolkit), con un loop de hasta 3 búsquedas por turno antes de responder. `AGENT_CHAT_GROUNDING_NOTE` actualizada para decir "busca antes de decir que no lo sabes". Verificado en vivo.
+
+**2. Feedback 👍/👎 en el chat de agentes, con memoria real.** Cada respuesta del asistente en `/agent/[role]` tiene ahora botones de "útil"/"no útil" (`lib/hooks/useAgentChat.ts:sendFeedback`, UI en `app/(dashboard)/agent/[role]/page.tsx`). Se guarda en `agent_interactions` — tabla que ya existía pero cuya ruta (`app/api/agent-interactions/route.ts`) usaba el cliente de navegador sin sesión (nunca habría podido escribir de forma fiable); reescrita con `adminClient()` + auth real. Cierre del loop: `app/api/agent/route.ts` ahora lee las últimas 3 interacciones marcadas `not_helpful` para ese agente/cliente y las inyecta en el system prompt para que no repita el mismo error — la idea original del comentario *"triggers Brand Brain refinement"* (que nunca se construyó) queda resuelta de forma más simple y sí funcional.
+
+**3. El botón de "me gusta" de Quick Actions, que ya existía visualmente pero era puro estado local (`setLiked`, sin persistir nunca), ahora escribe de verdad en `quick_actions_results.liked_by_user`** (columna que existía en el esquema desde el principio, sin ninguna ruta que la usara). Nuevo `PATCH /api/quick-actions` + carga el estado inicial al abrir un resultado ya generado.
+
+---
+
+## Mapa de solapes funcionales — Toolkit / Documents / Quick Actions / Agentes (2026-07-23)
+
+Auditoría completa en el artefacto publicado durante la sesión (Toolkit ↔ Documents ↔ Quick Actions ↔ Agentes). Resumen: no se encontró ningún agente con función exclusiva — casi todos tienen una quick action de departamento equivalente generando el mismo tipo de output, y varios (contenido, campañas, análisis competitivo, propuestas, informes) tienen además un tool de Toolkit o tipo de Documento haciendo la misma función con distinto nivel de rigor. El caso más claro: `analizar_competencia` (Quick Action) vs `competitive-analysis` (Toolkit, grounded + cita fuente) — mismo nombre de trabajo, fiabilidad muy distinta según el camino de entrada.
+
+**Decisión del usuario (2026-07-23)**: no consolidar los 3 caminos por ahora — Quick Actions y Toolkit ya le parecen bien tal como están. En su lugar, cerrar la brecha real: dar a los agentes de chat acceso a búsqueda web (ver arriba, ya implementado) para que no sean el eslabón débil del trío.

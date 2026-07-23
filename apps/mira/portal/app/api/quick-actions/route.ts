@@ -269,3 +269,51 @@ export async function GET(req: NextRequest) {
     )
   }
 }
+
+// PATCH: mark a result as liked/unliked. The column existed since the
+// original schema but no route ever wrote to it — the heart button in
+// QuickActionResult.tsx was purely local state until now.
+export async function PATCH(req: NextRequest) {
+  try {
+    const { action_id, liked } = await req.json()
+    if (!action_id || typeof liked !== 'boolean') {
+      return NextResponse.json({ error: 'Missing action_id or liked' }, { status: 400 })
+    }
+
+    const admin = adminClient()
+    const { data: existing, error: fetchError } = await admin
+      .from('quick_actions_results')
+      .select('client_id')
+      .eq('id', action_id)
+      .single()
+
+    if (fetchError || !existing) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, existing.client_id))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
+    const { error: updateError } = await admin
+      .from('quick_actions_results')
+      .update({ liked_by_user: liked })
+      .eq('id', action_id)
+
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, action_id, liked })
+  } catch (error) {
+    console.error('Quick action PATCH error:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Update failed' },
+      { status: 500 }
+    )
+  }
+}

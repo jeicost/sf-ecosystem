@@ -36,6 +36,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
 
         if (data?.output_data && Object.keys(data.output_data).length > 0) {
           setResult(data)
+          setLiked(!!data.liked_by_user)
           setIsLoading(false)
         } else {
           // Still processing
@@ -50,7 +51,21 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
     pollResult()
   }, [actionId])
 
-  const handleLike = () => setLiked(!liked)
+  const handleLike = async () => {
+    const next = !liked
+    setLiked(next) // optimistic — a like shouldn't feel like it needs a network round-trip
+    try {
+      const res = await fetch('/api/quick-actions', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action_id: actionId, liked: next }),
+      })
+      if (!res.ok) throw new Error('Failed to save like')
+    } catch (err) {
+      console.error('Error saving like:', err)
+      setLiked(!next) // revert on failure
+    }
+  }
 
   const handleSaveToMemory = async () => {
     setIsSaving(true)

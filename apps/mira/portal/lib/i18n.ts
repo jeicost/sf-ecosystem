@@ -95,6 +95,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.open-in-drive': 'Abrir en Google Drive →',
     'actions.scenes': 'Escenas',
     'actions.follow-ups': 'Próximos pasos sugeridos',
+    'agent-chat.feedback-helpful': 'Respuesta útil',
+    'agent-chat.feedback-not-helpful': 'Respuesta no útil',
 
     // QUICK ACTION RESULT
     'quick-result.image-error': 'No se pudo generar la imagen — el contenido de texto sí está listo',
@@ -664,6 +666,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.open-in-drive': 'Open in Google Drive →',
     'actions.scenes': 'Scenes',
     'actions.follow-ups': 'Suggested follow-ups',
+    'agent-chat.feedback-helpful': 'Helpful response',
+    'agent-chat.feedback-not-helpful': 'Not helpful response',
 
     // QUICK ACTION RESULT
     'quick-result.image-error': 'Image generation failed — the text content is still ready',

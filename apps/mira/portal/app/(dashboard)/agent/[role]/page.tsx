@@ -7,6 +7,7 @@ import { clsx } from 'clsx'
 import {
   ArrowLeft, CheckCircle, Clock, AlertCircle, Zap, Hand, Shield,
   Copy, Check, Eye, EyeOff, TrendingUp, MessageSquare, Send, Sparkles,
+  ThumbsUp, ThumbsDown,
 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { getAgentPrompt } from '@/lib/agent-prompts'
@@ -142,7 +143,7 @@ export default function AgentPage() {
     )
   }
 
-  const { messages, isLoading, sendMessage } = useAgentChat({ role, clientId, projectId, autonomy, locale })
+  const { messages, isLoading, sendMessage, sendFeedback } = useAgentChat({ role, clientId, projectId, autonomy, locale })
   const systemPrompt = getAgentPrompt(role, locale)
 
   const handleCopyPrompt = () => {
@@ -376,21 +377,46 @@ export default function AgentPage() {
                   </div>
                 </div>
               ) : (
-                messages.map((msg, idx) => (
-                  <div key={idx} className={clsx('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
-                    <div
-                      className="max-w-xs px-4 py-2 rounded-lg text-sm"
-                      style={{
-                        background: msg.role === 'user' ? `${agent.color}20` : `${agent.color}15`,
-                        color: 'var(--text-primary)',
-                        borderBottomRightRadius: msg.role === 'user' ? 0 : undefined,
-                        borderBottomLeftRadius: msg.role === 'user' ? undefined : 0,
-                      }}
-                    >
-                      {msg.content}
+                messages.map((msg, idx) => {
+                  const isStreamingThisMessage = isLoading && idx === messages.length - 1 && msg.role === 'assistant'
+                  return (
+                    <div key={idx} className={clsx('flex flex-col', msg.role === 'user' ? 'items-end' : 'items-start')}>
+                      <div
+                        className="max-w-xs px-4 py-2 rounded-lg text-sm"
+                        style={{
+                          background: msg.role === 'user' ? `${agent.color}20` : `${agent.color}15`,
+                          color: 'var(--text-primary)',
+                          borderBottomRightRadius: msg.role === 'user' ? 0 : undefined,
+                          borderBottomLeftRadius: msg.role === 'user' ? undefined : 0,
+                        }}
+                      >
+                        {msg.content}
+                      </div>
+                      {msg.role === 'assistant' && msg.content && !isStreamingThisMessage && (
+                        <div className="flex items-center gap-1 mt-1 px-1">
+                          <button
+                            type="button"
+                            aria-label={t('agent-chat.feedback-helpful', locale)}
+                            onClick={() => sendFeedback(idx, 'helpful')}
+                            className="p-1 rounded hover:opacity-100"
+                            style={{ opacity: msg.feedback === 'helpful' ? 1 : 0.35, color: msg.feedback === 'helpful' ? '#22C55E' : 'var(--text-secondary)' }}
+                          >
+                            <ThumbsUp size={13} />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label={t('agent-chat.feedback-not-helpful', locale)}
+                            onClick={() => sendFeedback(idx, 'not_helpful')}
+                            className="p-1 rounded hover:opacity-100"
+                            style={{ opacity: msg.feedback === 'not_helpful' ? 1 : 0.35, color: msg.feedback === 'not_helpful' ? '#EF4444' : 'var(--text-secondary)' }}
+                          >
+                            <ThumbsDown size={13} />
+                          </button>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                ))
+                  )
+                })
               )}
               {isLoading && (
                 <div className="flex justify-start">
