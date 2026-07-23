@@ -128,3 +128,65 @@ Al aplicar la migración `0037_rls_hardening.sql` (RLS de `tool_connections`), S
 **Resuelto:** `supabase/migrations/0038_tool_connections_backfill.sql` (idempotente, `CREATE TABLE/INDEX IF NOT EXISTS`) crea las 3 tablas + activa RLS. Aplicada en prod el 2026-07-23. Verificado con REST que las 3 tablas responden 200.
 
 **Qué haría falta ahora:** probar en vivo que conectar una key BYO (Claude, OpenAI o Canva) desde `/integrations` funciona de principio a fin — nunca se ha podido verificar porque la tabla no existía.
+
+---
+
+## q) Quick actions de Finanzas rotas en producción — CHECK constraint desactualizado (nueva 2026-07-23)
+
+Verificado con un `INSERT` real contra Supabase producción: `department='finanzas'` viola `quick_actions_results_department_check`. La tabla se creó con `('comercial','marketing','strategy','community','admin')` (`supabase/migrations/0015_fase1_recovery_schema.sql:73`) — sin `'finanzas'` — y ninguna migración posterior la amplió, pese a que `components/quick-actions/FinanzasQuickActions.tsx:112,128` lleva tiempo enviando ese departamento. Las 3 quick actions de Finanzas (Proyección Financiera, Cash Flow, Optimización de Costos) devuelven 500 siempre.
+
+**Qué haría falta:** `ALTER TABLE quick_actions_results DROP CONSTRAINT quick_actions_results_department_check` + recrearlo incluyendo `'finanzas'` (y revisar si `'community'` sigue haciendo falta o es el nombre legacy de `'admin'` — ver dato en el comentario de la propia migración, línea 68: *"16 quick actions across 4 departments"*).
+
+---
+
+## r) Estado de agentes y contadores de Strategy siempre falsos — tablas/columnas que no existen en producción (nueva 2026-07-23)
+
+Dos bugs de la misma familia, ambos verificados contra el esquema real:
+- `lib/get-agent-status.ts:13-18` consulta `agent_sessions`, que **no existe en producción** (confirmado, `0031_baseline_missing_tables.sql:18-20` ya la marcaba como *"INEXISTENTE"*). El error se traga y siempre devuelve `'idle'` — las tarjetas de agente de los 5 departamentos nunca muestran actividad real.
+- `lib/department-stats.ts:60-69,71-81` filtra `generation_queue` por `agent_type`/`agent_role`, columnas que **nunca existieron** en ninguna migración (0013→0038) — los contadores de "planes"/"ideas" de la página Strategy están fijos en 0.
+
+Existe ya una implementación correcta y sin usar: `lib/department-stats.ts:95` consulta `agent_activity` (la tabla real) pero no tiene ningún caller en el repo.
+
+**Qué haría falta:** sustituir el import de `get-agent-status.ts` por la función de `department-stats.ts:95` en las 5 páginas de departamento; para los contadores de Strategy, o se añade backfill de `agent_type`/`agent_role`/`agent_id` a `generation_queue`, o se rediseña la métrica sobre `agent_activity`.
+
+---
+
+## s) "Generar Reporte" (Quick Action Strategy) pierde 2 de 3 métricas seleccionadas en silencio (nueva 2026-07-23)
+
+`StrategyQuickActions.tsx:37,41,45` tiene 3 checkboxes (`revenue`, `mrr`, `churn`) con el mismo `name="metrics"`, los 3 marcados por defecto. `QuickActionButton.tsx:41` construye el input con `Object.fromEntries(new FormData(...))`, que con claves duplicadas solo conserva la última — el backend recibe solo `"churn"` aunque el usuario vea los 3 marcados.
+
+**Qué haría falta:** `name="metrics[]"` + leer todos los valores con `formData.getAll('metrics')` en vez de `Object.fromEntries`.
+
+---
+
+## t) Sin contrato anti-invención en Quick Actions ni en el chat de Agentes (nueva 2026-07-23)
+
+Tras aplicar `GROUNDING_CONTRACT` + `EDITORIAL_CONTRACT` a los 11 tools de Toolkit y los 4 tipos de Documents (ver commit `748ca0f`), queda confirmado que **ninguna de las 25 quick actions ni de los 23 agentes** importa `GROUNDING_CONTRACT` (`lib/grounding/grounding-contract.ts`). Quick Actions tiene solo un guard ad hoc de una línea, repetido en 4/25 prompts (el clúster financiero) — las 21 restantes, incluida `analizar_competencia` (un análisis de mercado con nombres de competidores), no tienen ninguna instrucción anti-invención. El chat de agentes depende solo de frases sueltas de estilo dentro de cada system prompt (`lib/agent-prompts-i18n.ts`).
+
+**Qué haría falta:** decidir si se extiende el contrato a Quick Actions (encaja bien, ya son prompts de un solo turno con JSON de salida) y evaluar una versión ligera para el chat de agentes (más difícil por ser conversacional y sin el mismo control de esquema de salida).
+
+---
+
+## u) Código muerto/huérfano detectado en la auditoría cruzada de Agentes (nueva 2026-07-23)
+
+Lista condensada, cada uno verificado por grep sin callers salvo donde se indica lo contrario:
+- `components/quick-actions/DepartmentQuickActions.tsx` — huérfano, y con un bug propio (`activeActionId` nunca coincide con `actionType`) que los 5 componentes reales ya corrigieron.
+- `lib/generation/quick-action-prompts.ts:302-317,396-415` — `proyectar_revenue` y `auditar_innovacion`, prompt completo sin botón.
+- `app/api/agent-interactions/route.ts` — tabla real (`agent_interactions`), pero el chat real de agentes nunca la llama; el *"Brand Brain refinement"* que promete el comentario no ocurre.
+- `app/api/agent/context/retrieve/route.ts` — sin callers.
+- `lib/department-tools.ts` + `lib/agent-archetypes.ts` — taxonomía de nombres/departamentos incompatible con `AGENT_METADATA`/`DEPARTMENT_METADATA` real; solo los usa la isla desconectada `app/(dashboard)/archetypes-demo/`.
+- `app/api/agent/route.ts:13-17` — claves `MAX_TOKENS` para `oracle`/`radar`/`kairos`, agentes retirados en la consolidación del 2026-07-21.
+- `AgentMetadata.department` (`'operaciones'`) vs `DepartmentMetadata.slug` (`'operations'`) — inconsistencia ES/EN, sin impacto hoy porque nada filtra por ese campo.
+- `AdminQuickActions.tsx:22` declara `outputType:'text'` pero `QuickActionResult.tsx`'s `ContentPreview` no tiene caso para `'text'` — se renderiza como JSON crudo.
+- `app/api/quick-actions/demo/route.ts`, `.../test/route.ts` — vestigios de una arquitectura de cola n8n ya reemplazada; gateados a no-producción, sin riesgo.
+- `agent_documents` (chat de agentes) vs `client_documentation` (Quick Actions) — dos almacenes de "documentos de contexto para IA" que no se comunican entre sí.
+
+**Qué haría falta:** limpieza cuando toque — ninguno es urgente, pero `archetypes-demo`/`department-tools.ts` es el que más riesgo tiene de reactivarse por error con nombres que ya no resuelven.
+
+---
+
+## Mapa de solapes funcionales — Toolkit / Documents / Quick Actions / Agentes (nueva 2026-07-23)
+
+Auditoría completa en el artefacto publicado durante la sesión (Toolkit ↔ Documents ↔ Quick Actions ↔ Agentes). Resumen: no se encontró ningún agente con función exclusiva — casi todos tienen una quick action de departamento equivalente generando el mismo tipo de output, y varios (contenido, campañas, análisis competitivo, propuestas, informes) tienen además un tool de Toolkit o tipo de Documento haciendo la misma función con distinto nivel de rigor. El caso más claro: `analizar_competencia` (Quick Action, sin grounding) vs `competitive-analysis` (Toolkit, grounded + cita fuente) — mismo nombre de trabajo, fiabilidad muy distinta según el camino de entrada.
+
+**Qué haría falta:** decisión de producto sobre si consolidar (un único motor de "análisis competitivo" reutilizado por los 3 puntos de entrada) o mantener los 3 caminos pero igualar el nivel de rigor.
