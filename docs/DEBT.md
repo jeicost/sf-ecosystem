@@ -131,31 +131,29 @@ Al aplicar la migración `0037_rls_hardening.sql` (RLS de `tool_connections`), S
 
 ---
 
-## q) Quick actions de Finanzas rotas en producción — CHECK constraint desactualizado (nueva 2026-07-23)
+## q) ✅ Resuelto (código) / ⏳ pendiente aplicar — Quick actions de Finanzas rotas en producción (2026-07-23)
 
 Verificado con un `INSERT` real contra Supabase producción: `department='finanzas'` viola `quick_actions_results_department_check`. La tabla se creó con `('comercial','marketing','strategy','community','admin')` (`supabase/migrations/0015_fase1_recovery_schema.sql:73`) — sin `'finanzas'` — y ninguna migración posterior la amplió, pese a que `components/quick-actions/FinanzasQuickActions.tsx:112,128` lleva tiempo enviando ese departamento. Las 3 quick actions de Finanzas (Proyección Financiera, Cash Flow, Optimización de Costos) devuelven 500 siempre.
 
-**Qué haría falta:** `ALTER TABLE quick_actions_results DROP CONSTRAINT quick_actions_results_department_check` + recrearlo incluyendo `'finanzas'` (y revisar si `'community'` sigue haciendo falta o es el nombre legacy de `'admin'` — ver dato en el comentario de la propia migración, línea 68: *"16 quick actions across 4 departments"*).
+**Resuelto:** `supabase/migrations/0039_quick_actions_finanzas_dept.sql` (commit `982675c`) recrea el CHECK incluyendo `'finanzas'`. **Pendiente:** aplicar la migración en el SQL editor de Supabase (no hay runner automático) — sin eso el bug sigue vivo en prod.
 
 ---
 
-## r) Estado de agentes y contadores de Strategy siempre falsos — tablas/columnas que no existen en producción (nueva 2026-07-23)
+## r) ✅ Resuelto — Estado de agentes y contadores de Strategy siempre falsos (2026-07-23)
 
 Dos bugs de la misma familia, ambos verificados contra el esquema real:
-- `lib/get-agent-status.ts:13-18` consulta `agent_sessions`, que **no existe en producción** (confirmado, `0031_baseline_missing_tables.sql:18-20` ya la marcaba como *"INEXISTENTE"*). El error se traga y siempre devuelve `'idle'` — las tarjetas de agente de los 5 departamentos nunca muestran actividad real.
-- `lib/department-stats.ts:60-69,71-81` filtra `generation_queue` por `agent_type`/`agent_role`, columnas que **nunca existieron** en ninguna migración (0013→0038) — los contadores de "planes"/"ideas" de la página Strategy están fijos en 0.
+- `lib/get-agent-status.ts:13-18` consultaba `agent_sessions`, que **no existe en producción**, y además se llamaba con el cliente admin de service-role directamente desde componentes `'use client'` — esa key nunca está presente en el bundle del navegador, así que habría fallado igualmente aunque la tabla existiera. El error se tragaba y siempre devolvía `'idle'`.
+- `lib/department-stats.ts:60-69,71-81` filtraba `generation_queue` por `agent_type`/`agent_role`, columnas que **nunca existieron** en ninguna migración (0013→0038) — los contadores de "planes"/"ideas" de Strategy estaban fijos en 0.
 
-Existe ya una implementación correcta y sin usar: `lib/department-stats.ts:95` consulta `agent_activity` (la tabla real) pero no tiene ningún caller en el repo.
-
-**Qué haría falta:** sustituir el import de `get-agent-status.ts` por la función de `department-stats.ts:95` en las 5 páginas de departamento; para los contadores de Strategy, o se añade backfill de `agent_type`/`agent_role`/`agent_id` a `generation_queue`, o se rediseña la métrica sobre `agent_activity`.
+**Resuelto (commit `982675c`):** nueva ruta servidor `app/api/agent-status/route.ts` + `lib/agent-status.ts` (consulta `agent_activity`, la tabla real) + hook `lib/use-agent-statuses.ts`, cableado en las 5 páginas de departamento — mismo patrón ya usado por `/api/department-stats`/`useDepartmentStats`. `lib/get-agent-status.ts` eliminado (sin otros callers). Contadores de Strategy redefinidos sobre `agent_activity` (completados por agente de Strategy; ideas = solo `spark`). Verificado end-to-end con filas de `agent_activity` sembradas: `/api/agent-status` y `/api/department-stats` devuelven datos reales, no `idle`/`0` fijos.
 
 ---
 
-## s) "Generar Reporte" (Quick Action Strategy) pierde 2 de 3 métricas seleccionadas en silencio (nueva 2026-07-23)
+## s) ✅ Resuelto — "Generar Reporte" perdía 2 de 3 métricas seleccionadas en silencio (2026-07-23)
 
-`StrategyQuickActions.tsx:37,41,45` tiene 3 checkboxes (`revenue`, `mrr`, `churn`) con el mismo `name="metrics"`, los 3 marcados por defecto. `QuickActionButton.tsx:41` construye el input con `Object.fromEntries(new FormData(...))`, que con claves duplicadas solo conserva la última — el backend recibe solo `"churn"` aunque el usuario vea los 3 marcados.
+`StrategyQuickActions.tsx:37,41,45` tiene 3 checkboxes (`revenue`, `mrr`, `churn`) con el mismo `name="metrics"`, los 3 marcados por defecto. `QuickActionButton.tsx:41` construía el input con `Object.fromEntries(new FormData(...))`, que con claves duplicadas solo conservaba la última — el backend recibía solo `"churn"` aunque el usuario viera los 3 marcados.
 
-**Qué haría falta:** `name="metrics[]"` + leer todos los valores con `formData.getAll('metrics')` en vez de `Object.fromEntries`.
+**Resuelto (commit `982675c`):** `QuickActionButton.tsx` ahora usa `formData.getAll(key)` por cada clave y colapsa a array solo cuando hay más de un valor — arregla la clase de bug para cualquier futuro formulario de quick action con campos repetidos, no solo este. Verificado con Playwright: el payload real enviado a `/api/quick-actions` ahora lleva `"metrics":["revenue","mrr","churn"]`.
 
 ---
 
