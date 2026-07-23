@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/*/interno/", "/interno/"],
       },
     ],
-    sitemap: "https://www.startupsfactory.es/sitemap.xml",
+    sitemap: "https://startupsfactory.es/sitemap.xml",
   };
 }
 

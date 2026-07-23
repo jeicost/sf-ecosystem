@@ -3,7 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const dicts: Record<Locale, {
   metaTitle: string; metaDesc: string;

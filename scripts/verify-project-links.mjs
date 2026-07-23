@@ -41,6 +41,11 @@ const REGISTRY = [
     projectId: 'prj_TR1XsOLUpLcpQxsu5yFmYKGEvJfk',
   },
   {
+    folder: 'apps/sf-reports',
+    projectName: 'sf-reports',
+    projectId: 'prj_CKehhayVoAOeStxtyyyTV6g3Xl3t',
+  },
+  {
     folder: 'packages/cms-client',
     projectName: 'cms-client',
     projectId: 'prj_KjoFaJi7fH4b2OC14wDEzH8lm74N',

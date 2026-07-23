@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "El equipo | Quiénes somos — Startup Factory", description: "Conoce al equipo de Startup Factory. Perfiles senior con experiencia real en ejecución, growth, producto, tecnología y venture." },

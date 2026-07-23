@@ -3,7 +3,7 @@ import { Space_Grotesk, DM_Sans } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
 
-const DOMAIN = "https://www.startupsfactory.es";
+const DOMAIN = "https://startupsfactory.es";
 
 export const revalidate = 3600;
 

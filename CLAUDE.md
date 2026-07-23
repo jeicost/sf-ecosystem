@@ -131,12 +131,15 @@ Aplica a todas las webs y landings. Verificar antes de cualquier `vercel --prod`
 - [ ] **Canonical tag** — self-canonical en TODAS las páginas
 - [ ] **OG tags** — og:title, og:description, og:image (1200×630px), og:url
 - [ ] **Blog posts** — BlogPosting schema JSON-LD (datePublished + author obligatorio)
-- [ ] **Dominio www** — sitemap.xml, robots.txt, canonical, redirects todos apuntan a `www`
+- [ ] **Dominio canónico consistente** — sitemap.xml, robots.txt, canonical, OG, redirects **todos apuntan al mismo host** (apex o www, ver regla abajo)
 - [ ] **Sitemap** — referenciado en robots.txt
 
-### Dominio — regla absoluta
+### Dominio — regla
 
-Siempre `https://www.domain.com`. Redirect 308 de `domain.com` → `www.domain.com`. Aplica en: robots.txt, sitemap.xml, canonical tags, metadata.
+Elige **un** host canónico por sitio y aplícalo en TODO (robots.txt, sitemap.xml, canonical, OG:url, metadataBase) + redirect 308 del otro host hacia él. Lo que rompe el SEO es la **inconsistencia** (canonical en un host y sitemap/redirect en otro), no cuál elijas.
+
+- **Por defecto en sitios nuevos:** `https://www.domain.com` (redirect 308 apex → www).
+- **Excepción documentada — startupsfactory.es = APEX** (decisión 2026-07-23): la web ya sirve en apex (`www` → apex 307). Canónico = `https://startupsfactory.es`; todo el código de `apps/startup-factory-web` apunta a apex. No revertir a www sin una migración deliberada y verificada.
 
 ### Next.js — patrón de metadata
 

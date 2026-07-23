@@ -3,7 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 const FORMSPREE_ID = "xnjwnydg";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
@@ -243,7 +243,7 @@ export default async function ComunidadPage({ params }: { params: Promise<{ loca
             <form action={`https://formspree.io/f/${FORMSPREE_ID}`} method="POST" className="space-y-4">
               <input type="hidden" name="_subject" value="SF Community — Nueva solicitud de acceso" />
               <input type="hidden" name="tipo" value="comunidad" />
-              <input type="hidden" name="_next" value={`https://www.startupsfactory.es/${locale}/bienvenido`} />
+              <input type="hidden" name="_next" value={`https://startupsfactory.es/${locale}/bienvenido`} />
               <div className="grid sm:grid-cols-2 gap-4">
                 <input type="text" name="nombre" required placeholder="Tu nombre"
                   className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3.5 text-white placeholder-white/25 focus:outline-none focus:border-[#A855F7]/50 transition-colors" />

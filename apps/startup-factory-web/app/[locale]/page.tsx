@@ -6,7 +6,7 @@ import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms, cmsVal } from "@/lib/cms-pages";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 // ─── Page-level content dict (sections not covered by global dictionaries) ────
 const pc: Record<Locale, {

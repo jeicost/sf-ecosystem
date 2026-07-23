@@ -24,9 +24,10 @@ import { fileURLToPath } from 'url'
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
 
-const CMS_API_URL = process.env.CMS_API_URL
-const CMS_API_KEY = process.env.CMS_API_KEY
-const PROJECT_SLUG = process.env.CMS_PROJECT || process.env.PROJECT_SLUG || 'startupsfactory' // client slug for SF-CMS authentication
+// Accept both the canonical SF_CMS_* names and the legacy CMS_* names.
+const CMS_API_URL = process.env.SF_CMS_API_URL || process.env.CMS_API_URL
+const CMS_API_KEY = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY
+const PROJECT_SLUG = process.env.SF_CMS_PROJECT_SLUG || process.env.CMS_PROJECT || process.env.PROJECT_SLUG || 'startupsfactory' // client slug for SF-CMS authentication
 
 if (!CMS_API_URL || !CMS_API_KEY) {
   console.warn('⚠️  CMS_API_URL or CMS_API_KEY not set — skipping CMS fetch')

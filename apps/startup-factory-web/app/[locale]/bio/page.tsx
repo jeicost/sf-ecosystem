@@ -4,7 +4,7 @@ import Image from "next/image";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Startup Factory | Links", description: "Todo lo de Startup Factory en un solo lugar." },

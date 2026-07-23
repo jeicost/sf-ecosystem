@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Para Emprendedores | Lanzar startup, MVP, diagnóstico 1:1 — Startup Factory", description: "Si estás lanzando algo y te faltan piezas, montamos el equipo mínimo viable para avanzar rápido. Diagnóstico 1:1, plan 30/60/90 y ejecución real." },

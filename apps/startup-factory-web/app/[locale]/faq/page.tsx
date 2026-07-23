@@ -6,7 +6,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 export async function generateMetadata({
   params,

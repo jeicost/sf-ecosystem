@@ -3,7 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 const CALENDLY_URL = "https://calendly.com/jacostech";
 const FORMSPREE_ID = "xnjwnydg";
 
@@ -221,7 +221,7 @@ export default async function AplicaPage({ params }: { params: Promise<{ locale:
                   className="space-y-4"
                 >
                   <input type="hidden" name="_subject" value="Nueva aplicación SF — Aplica" />
-                  <input type="hidden" name="_next" value={`https://www.startupsfactory.es/${locale}/bienvenido`} />
+                  <input type="hidden" name="_next" value={`https://startupsfactory.es/${locale}/bienvenido`} />
 
                   <div className="grid grid-cols-2 gap-3">
                     <div>

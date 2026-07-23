@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getPosts } from "@/lib/cms-posts";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://www.startupsfactory.es";
+  const baseUrl = "https://startupsfactory.es";
   const locales = ['es', 'en', 'th'];
 
   const routes = [

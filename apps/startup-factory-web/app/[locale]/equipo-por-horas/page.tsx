@@ -3,7 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Equipo Fractional y por Horas | Roles senior sin contratar fijo — Startup Factory", description: "Accede a talento C-level — CEO, CMO, CTO, PM — solo cuando lo necesitas. Sin contratos largos, sin costes fijos, con accountability real en cada sprint." },

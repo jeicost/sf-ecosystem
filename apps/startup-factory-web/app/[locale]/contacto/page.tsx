@@ -8,7 +8,7 @@ import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 const FORMSPREE_ID = "xnjwnydg";
 const CALENDLY_URL = "https://calendly.com/jacostech";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Hablemos | Primera sesión de diagnóstico — Startup Factory", description: "En 60 minutos analizamos tu situación real y te presentamos la fórmula exacta: el plan y el squad diseñados para tu caso específico. Sin compromiso." },

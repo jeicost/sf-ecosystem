@@ -16,15 +16,31 @@ import { fileURLToPath } from 'url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
-const HEADERS = { 'x-api-key': process.env.CMS_API_KEY }
 
-const CMS_API_URL = process.env.CMS_API_URL
-const CMS_API_KEY = process.env.CMS_API_KEY
-const PROJECT_SLUG = process.env.PROJECT_SLUG || 'ncglobalassets'
+// Accept both the canonical SF_CMS_* names and the legacy CMS_* names.
+const CMS_API_URL = process.env.SF_CMS_API_URL || process.env.CMS_API_URL
+const CMS_API_KEY = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY
+const PROJECT_SLUG = process.env.SF_CMS_PROJECT_SLUG || process.env.PROJECT_SLUG || 'ncglobalassets'
+const HEADERS = { 'x-api-key': CMS_API_KEY }
+
+// Ensure the content files the app imports always exist, so `vite build`
+// never fails on a missing import when the CMS was unreachable/unset.
+function ensureContentFiles() {
+  const contentDir = path.join(ROOT, 'src', 'content')
+  fs.mkdirSync(contentDir, { recursive: true })
+  const files = { 'posts.json': '[]', 'pages.json': '{}', 'settings.json': '{"ga_measurement_id":null}' }
+  for (const [name, empty] of Object.entries(files)) {
+    const p = path.join(contentDir, name)
+    if (!fs.existsSync(p)) fs.writeFileSync(p, empty)
+  }
+}
 
 if (!CMS_API_URL || !CMS_API_KEY) {
-  console.error('❌  Missing CMS_API_URL or CMS_API_KEY')
-  process.exit(1)
+  // Never exit(1): a missing env var must not hard-fail the deploy — fall
+  // back to cached/empty content like the other SF sites do.
+  console.warn('⚠️  CMS_API_URL/CMS_API_KEY not set — skipping fetch, using cached/local content')
+  ensureContentFiles()
+  process.exit(0)
 }
 
 async function fetchJson(url) {

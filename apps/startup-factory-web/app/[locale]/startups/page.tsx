@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Equipo para Startups | Squad de growth, IA y tech — Startup Factory", description: "Squad modular de growth, IA y tech que entra en tu startup y ejecuta desde el primer sprint. Sin contratar fijo, sin agencias, con entregables reales cada semana." },

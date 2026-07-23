@@ -7,6 +7,7 @@ import { FaqPreview } from './sections/FaqPreview'
 import { CtaBannerPreview } from './sections/CtaBannerPreview'
 import { TestimonialsPreview } from './sections/TestimonialsPreview'
 import { TeamPreview } from './sections/TeamPreview'
+import { ContentPreview } from './sections/ContentPreview'
 
 type PreviewComponent = ComponentType<{ data: Record<string, unknown> }>
 
@@ -24,5 +25,6 @@ export const PREVIEW_REGISTRY: Record<string, PreviewComponent | null> = {
   'cta-banner': CtaBannerPreview,
   testimonials: TestimonialsPreview,
   team: TeamPreview,
+  content: ContentPreview, // generic per-field overrides (merge-override pages)
   seo: null, // metadata section, not rendered visually
 }

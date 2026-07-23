@@ -3,7 +3,7 @@ import Link from "next/link";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Innovación Abierta Colaborativa | Para Corporates — Startup Factory", description: "De reto corporativo a piloto ejecutado. Diseñamos y ejecutamos innovación abierta colaborativa: diagnóstico, diseño del reto, selección de startups y validación." },

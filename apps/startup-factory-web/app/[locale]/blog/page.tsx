@@ -4,7 +4,7 @@ import { getPosts } from "@/lib/cms-posts";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const meta: Record<Locale, { title: string; description: string }> = {
   es: { title: "Blog — Startup Factory", description: "Artículos, casos y aprendizajes del equipo de Startup Factory." },

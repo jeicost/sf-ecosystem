@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Growth & Marketing Partner | Tu agencia de growth + IA — Startup Factory", description: "Squad senior de growth y marketing en retainer: paid media, SEO, automatización con IA y conversión. Sin agencias. Con ownership real de tu crecimiento." },

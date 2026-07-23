@@ -5,7 +5,7 @@ import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
 import { notFound } from "next/navigation";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string; slug: string }> }): Promise<Metadata> {
   const { locale, slug } = await params;

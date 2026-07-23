@@ -28,7 +28,7 @@ const sarabun = Sarabun({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.startupsfactory.es"),
+  metadataBase: new URL("https://startupsfactory.es"),
   openGraph: {
     siteName: "Startup Factory",
     type: "website",
@@ -44,8 +44,8 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Startup Factory",
-  url: "https://www.startupsfactory.es",
-  logo: "https://www.startupsfactory.es/logo-white.svg",
+  url: "https://startupsfactory.es",
+  logo: "https://startupsfactory.es/logo-white.svg",
   description:
     "El venture builder hispanohablante que evalúa proyectos de forma individual, trabaja con el <10% con potencial real y ofrece equipo, estrategia e IA a medida.",
   foundingLocation: {
@@ -61,7 +61,7 @@ const jsonLd = {
   contactPoint: {
     "@type": "ContactPoint",
     contactType: "customer service",
-    url: "https://www.startupsfactory.es/es/aplica",
+    url: "https://startupsfactory.es/es/aplica",
   },
   sameAs: [
     "https://www.instagram.com/_startupsfactory",

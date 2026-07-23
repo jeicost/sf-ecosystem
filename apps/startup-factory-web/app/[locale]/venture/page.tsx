@@ -5,7 +5,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { loadCmsSections, mergeCms } from "@/lib/cms-pages";
 import { PagePixels, loadPagePixels } from "@/components/PagePixels";
 
-const site = "https://www.startupsfactory.es";
+const site = "https://startupsfactory.es";
 
 const metaDict: Record<Locale, { title: string; description: string }> = {
   es: { title: "Venture | Cash + Equity — Startup Factory Venture Studio", description: "Cuando hay fit claro, entramos como partners: aportamos equipo, ejecución y capital. Venture builder y venture studio con implicación real." },
