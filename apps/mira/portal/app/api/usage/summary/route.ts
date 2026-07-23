@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
     const admin = adminClient()
     const { data: rows } = await admin
-      .from('usage_log')
+      .from('mira_usage_log')
       .select('model, input_tokens, output_tokens, used_client_key')
       .eq('client_id', clientId)
       .gte('created_at', monthStart.toISOString())

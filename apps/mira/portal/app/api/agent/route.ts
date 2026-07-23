@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
 
             const finalMessage = await anthropicStream.finalMessage()
             try {
-              logUsage({
+              await logUsage({
                 clientId: resolvedClientId,
                 route: 'agent',
                 model: 'claude-sonnet-4-6',

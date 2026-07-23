@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
         .eq('client_id', clientId)
         .eq('status', 'pending_review'),
       admin
-        .from('usage_log')
+        .from('mira_usage_log')
         .select('model, input_tokens, output_tokens')
         .eq('client_id', clientId)
         .gte('created_at', monthStart.toISOString()),

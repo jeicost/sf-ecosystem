@@ -98,7 +98,7 @@ Genera la propuesta completa.`
 
       try {
         const finalMessage = await anthropicStream.finalMessage()
-        logUsage({
+        await logUsage({
           clientId,
           route: 'comercial/proposal',
           model: 'claude-sonnet-4-6',

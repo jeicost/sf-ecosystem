@@ -47,8 +47,8 @@ export async function generateAndStoreImage(
 
     const json = await res.json()
 
-    // Registrar consumo (fire-and-forget, nunca bloquea)
-    logUsage({
+    // Registrar consumo (nunca rompe la generación, ver logUsage)
+    await logUsage({
       clientId,
       route: 'quick-actions:image',
       model: 'gpt-image-1',

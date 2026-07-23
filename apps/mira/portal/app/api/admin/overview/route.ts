@@ -24,7 +24,7 @@ export async function GET() {
         .eq('status', 'completed'),
       admin.from('drive_folders').select('client_id, sync_status, files_synced'),
       admin
-        .from('usage_log')
+        .from('mira_usage_log')
         .select('client_id, model, input_tokens, output_tokens, used_client_key')
         .gte('created_at', monthStart.toISOString()),
     ])

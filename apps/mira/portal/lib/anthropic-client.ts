@@ -3,8 +3,10 @@
  *
  * Cada cliente puede guardar su propia ANTHROPIC key en Integraciones
  * (tool_connections vía getClientApiKey). Si no tiene, se usa la key de
- * plataforma (fallback). Todas las llamadas registran consumo en usage_log
+ * plataforma (fallback). Todas las llamadas registran consumo en mira_usage_log
  * para visibilidad en Super Admin (global) y en el portal del cliente (propio).
+ * (No confundir con `usage_log`, tabla distinta de apps/sf-sales-engine en el
+ * mismo proyecto Supabase compartido -- ver migración 0042 para el porqué.)
  */
 
 import Anthropic from '@anthropic-ai/sdk'
@@ -16,6 +18,48 @@ export interface ClientClaude {
   usedClientKey: boolean
 }
 
+export class GenerationCapExceededError extends Error {
+  constructor(public limit: number) {
+    super(`Monthly generation cap reached (${limit}) with the platform key. Connect your own Anthropic key in Integraciones for unlimited use, or contact support.`)
+    this.name = 'GenerationCapExceededError'
+  }
+}
+
+/**
+ * Monthly generation cap on the PLATFORM key only (BYO clients are never capped
+ * -- decided in the Fase 2 pricing model). Disabled by default: with
+ * MAX_MONTHLY_GENERATIONS unset, this is a no-op and today's behavior is
+ * unchanged for every existing client. Set the env var in Vercel only after
+ * checking real usage_log volume per client -- see docs/MIRA-LANZAMIENTO-FASE2.md.
+ */
+async function checkGenerationCap(clientId: string, usedClientKey: boolean): Promise<void> {
+  if (usedClientKey) return
+  const maxRaw = process.env.MAX_MONTHLY_GENERATIONS
+  if (!maxRaw) return
+  const max = Number(maxRaw)
+  if (!Number.isFinite(max) || max <= 0) return
+
+  const startOfMonth = new Date()
+  startOfMonth.setUTCDate(1)
+  startOfMonth.setUTCHours(0, 0, 0, 0)
+
+  try {
+    const db = createServiceClient()
+    const { count, error } = await db
+      .from('mira_usage_log')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('used_client_key', false)
+      .gte('created_at', startOfMonth.toISOString())
+
+    if (error) return // never block a generation because telemetry failed to read
+    if ((count ?? 0) >= max) throw new GenerationCapExceededError(max)
+  } catch (e) {
+    if (e instanceof GenerationCapExceededError) throw e
+    /* telemetry read failed unexpectedly -- fail open, never block on our own bug */
+  }
+}
+
 /** Resolve the Anthropic client for a MIRA client (their key or platform fallback). */
 export async function getClaudeForClient(clientId: string | null | undefined): Promise<ClientClaude> {
   const platformKey = process.env.ANTHROPIC_API_KEY || ''
@@ -24,34 +68,37 @@ export async function getClaudeForClient(clientId: string | null | undefined): P
   }
   const key = await getClientApiKey(clientId, 'anthropic', platformKey)
   const usedClientKey = !!key && key !== platformKey
+  await checkGenerationCap(clientId, usedClientKey)
   return { client: new Anthropic({ apiKey: key || platformKey }), usedClientKey }
 }
 
-/** Fire-and-forget usage logging. Never throws, never blocks the response. */
-export function logUsage(params: {
+/**
+ * Usage logging. Never throws, never breaks the caller's generation -- but IS
+ * awaited by every call site. A prior fire-and-forget version (insert started
+ * but never awaited) meant the Vercel serverless function could freeze right
+ * after the response/stream flushed, before the insert ever reached Supabase --
+ * usage_log had 0 rows, ever, for any client as a result. Callers must `await` this.
+ */
+export async function logUsage(params: {
   clientId: string | null | undefined
   route: string
   model: string
   usage?: { input_tokens?: number; output_tokens?: number } | null
   usedClientKey: boolean
-}): void {
+}): Promise<void> {
   const { clientId, route, model, usage, usedClientKey } = params
   if (!clientId || !usage) return
   try {
     const db = createServiceClient()
-    void db
-      .from('usage_log')
-      .insert({
-        client_id: clientId,
-        route,
-        model,
-        input_tokens: usage.input_tokens ?? 0,
-        output_tokens: usage.output_tokens ?? 0,
-        used_client_key: usedClientKey,
-      })
-      .then(({ error }) => {
-        if (error) console.warn('usage_log insert failed:', error.message)
-      })
+    const { error } = await db.from('mira_usage_log').insert({
+      client_id: clientId,
+      route,
+      model,
+      input_tokens: usage.input_tokens ?? 0,
+      output_tokens: usage.output_tokens ?? 0,
+      used_client_key: usedClientKey,
+    })
+    if (error) console.warn('usage_log insert failed:', error.message)
   } catch {
     /* nunca romper la generación por telemetría */
   }
@@ -68,7 +115,7 @@ export async function createMessageForClient(
 ): Promise<Anthropic.Message> {
   const { client, usedClientKey } = await getClaudeForClient(clientId)
   const message = await client.messages.create(params)
-  logUsage({ clientId, route, model: params.model, usage: message.usage, usedClientKey })
+  await logUsage({ clientId, route, model: params.model, usage: message.usage, usedClientKey })
   return message
 }
 

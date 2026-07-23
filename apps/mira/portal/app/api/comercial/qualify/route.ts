@@ -69,7 +69,7 @@ Classification: interested=muestra interés real, not_now=sin interés ahora per
 
       try {
         const finalMessage = await anthropicStream.finalMessage()
-        logUsage({
+        await logUsage({
           clientId: lead.client_id,
           route: 'comercial/qualify',
           model: 'claude-haiku-4-5-20251001',
