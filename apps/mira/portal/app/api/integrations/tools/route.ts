@@ -30,6 +30,7 @@ export async function GET(request: NextRequest) {
     if (authResult instanceof NextResponse) {
       return authResult
     }
+    const { user } = authResult
 
     const db = createServiceClient()
 
@@ -42,23 +43,10 @@ export async function GET(request: NextRequest) {
 
     if (connectError) throw connectError
 
-    // Get user subscription plan from brand_profiles
-    const { data: profile, error: profileError } = await db
-      .from('brand_profiles')
-      .select('user_id')
-      .eq('id', clientId)
-      .single()
-
-    if (profileError) throw profileError
-
-    // Get subscription from auth.users user_metadata
-    const { data: authUser, error: authError } = await db
-      .from('auth.users')
-      .select('user_metadata')
-      .eq('id', profile.user_id)
-      .single()
-
-    const userSubscriptionPlan = authUser?.user_metadata?.plan || 'free'
+    // Plan lives on the authenticated session user's metadata, not on brand_profiles
+    // (brand_profiles has no user_id column — see docs/DEBT.md (bb)), same pattern
+    // as requireClientAccess/proxy.ts/resolve-client.ts.
+    const userSubscriptionPlan = (user.user_metadata?.plan as string | undefined) || 'free'
 
     return NextResponse.json({
       connectedTools: (connections || []).map((c) => c.tool_id),
