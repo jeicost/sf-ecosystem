@@ -21,13 +21,61 @@ jobs:
       - name: Run type check
         run: pnpm typecheck
 
+  # Every app used to deploy unconditionally on any push to main -- a change
+  # to one app rebuilt and redeployed all 7. `packages/**` is treated as
+  # affecting every app since any of them may depend on a shared package;
+  # each app otherwise deploys only when its own folder changed.
+  changes:
+    runs-on: ubuntu-latest
+    outputs:
+      startup_factory: ${{ steps.filter.outputs.startup_factory }}
+      ai_agency: ${{ steps.filter.outputs.ai_agency }}
+      mira: ${{ steps.filter.outputs.mira }}
+      sf_cms: ${{ steps.filter.outputs.sf_cms }}
+      mira_landing: ${{ steps.filter.outputs.mira_landing }}
+      sf_crm: ${{ steps.filter.outputs.sf_crm }}
+      sf_links: ${{ steps.filter.outputs.sf_links }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Full history: dorny/paths-filter diffs against the push event's
+          # `before` SHA, which a shallow checkout may not contain --
+          # especially for a multi-commit push.
+          fetch-depth: 0
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          filters: |
+            startup_factory:
+              - &shared 'packages/**'
+              - 'apps/startup-factory-web/**'
+            ai_agency:
+              - *shared
+              - 'apps/ai-agency-sf-next/**'
+            mira:
+              - *shared
+              - 'apps/mira/portal/**'
+            sf_cms:
+              - *shared
+              - 'apps/sf-cms/**'
+            mira_landing:
+              - *shared
+              - 'apps/mira-landing/**'
+            sf_crm:
+              - *shared
+              - 'apps/sf-crm/**'
+            sf_links:
+              - *shared
+              - 'apps/sf-links/**'
+
   deploy:
-    needs: typecheck
+    needs: [typecheck, changes]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Deploy startup-factory-web to Vercel
+        if: needs.changes.outputs.startup_factory == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
@@ -39,6 +87,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy ai-agency-sf-next to Vercel
+        if: needs.changes.outputs.ai_agency == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
@@ -50,6 +99,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy mira portal to Vercel
+        if: needs.changes.outputs.mira == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
@@ -61,6 +111,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-cms to Vercel
+        if: needs.changes.outputs.sf_cms == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CMS }}
@@ -72,6 +123,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy mira-landing to Vercel
+        if: needs.changes.outputs.mira_landing == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA_LANDING }}
@@ -83,6 +135,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-crm to Vercel
+        if: needs.changes.outputs.sf_crm == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CRM }}
@@ -94,6 +147,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-links to Vercel
+        if: needs.changes.outputs.sf_links == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_LINKS }}
