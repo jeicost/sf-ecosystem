@@ -116,6 +116,23 @@ export async function PATCH(
 
     if (updateErr) throw updateErr
 
+    // Slug changed on a published post → record a redirect. Posts live under
+    // /blog/, so store the path-qualified slug so the site maps it directly.
+    if (slug !== undefined && slug !== currentPost.slug && currentPost.status === 'published') {
+      const fromSlug = `blog/${currentPost.slug}`
+      const toSlug = `blog/${slug}`
+      try {
+        await client.from('redirects').update({ to_slug: toSlug }).eq('project_id', post.project_id).eq('to_slug', fromSlug)
+        await client.from('redirects').upsert(
+          { project_id: post.project_id, from_slug: fromSlug, to_slug: toSlug, code: 301 },
+          { onConflict: 'project_id,from_slug' },
+        )
+        await client.from('redirects').delete().eq('project_id', post.project_id).eq('from_slug', toSlug)
+      } catch (e) {
+        console.warn('[redirects] failed to record post slug change (non-fatal):', (e as Error).message)
+      }
+    }
+
     await logActivity({
       userId: user.id,
       userEmail: user.email ?? null,

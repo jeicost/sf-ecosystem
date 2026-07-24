@@ -25,7 +25,7 @@ const HEADERS = { 'x-api-key': CMS_API_KEY }
 
 function ensureContentFiles() {
   fs.mkdirSync(CONTENT, { recursive: true })
-  const files = { 'pages.json': '{}', 'settings.json': '{"ga_measurement_id":null,"gtm_container_id":null}' }
+  const files = { 'pages.json': '{}', 'settings.json': '{"ga_measurement_id":null,"gtm_container_id":null}', 'redirects.json': '[]' }
   for (const [name, empty] of Object.entries(files)) {
     const p = path.join(CONTENT, name)
     if (!fs.existsSync(p)) fs.writeFileSync(p, empty)
@@ -47,9 +47,10 @@ async function fetchJson(url) {
 async function main() {
   try {
     console.log(`📡  Fetching CMS content (project: ${PROJECT_SLUG})…`)
-    const [{ pages }, settings] = await Promise.all([
+    const [{ pages }, settings, redirectsRes] = await Promise.all([
       fetchJson(`${CMS_API_URL}/pages?project=${PROJECT_SLUG}`),
       fetchJson(`${CMS_API_URL}/settings?project=${PROJECT_SLUG}`).catch(() => ({})),
+      fetchJson(`${CMS_API_URL}/redirects?project=${PROJECT_SLUG}`).catch(() => ({ redirects: [] })),
     ])
 
     // Normalize pages: keyed by slug → { sections keyed by section.id, pixels }
@@ -71,6 +72,7 @@ async function main() {
     }
 
     fs.mkdirSync(CONTENT, { recursive: true })
+    fs.writeFileSync(path.join(CONTENT, 'redirects.json'), JSON.stringify(redirectsRes?.redirects ?? [], null, 2))
     fs.writeFileSync(path.join(CONTENT, 'pages.json'), JSON.stringify(normalizedPages, null, 2))
     fs.writeFileSync(
       path.join(CONTENT, 'settings.json'),

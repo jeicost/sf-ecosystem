@@ -121,6 +121,25 @@ export async function PATCH(
 
     if (updateErr) throw updateErr
 
+    // Slug changed on a page that was already published → record a redirect
+    // (old → new) so the old URL 301s instead of 404ing. Fire-and-forget:
+    // never block or fail the save.
+    if (slug !== undefined && slug !== currentPage.slug && currentPage.status === 'published') {
+      try {
+        // Point any existing redirect that led to the old slug at the new one
+        // (avoid chains), then upsert old → new.
+        await client.from('redirects').update({ to_slug: slug }).eq('project_id', page.project_id).eq('to_slug', currentPage.slug)
+        await client.from('redirects').upsert(
+          { project_id: page.project_id, from_slug: currentPage.slug, to_slug: slug, code: 301 },
+          { onConflict: 'project_id,from_slug' },
+        )
+        // A page can't redirect to itself (if the new slug had a stale redirect).
+        await client.from('redirects').delete().eq('project_id', page.project_id).eq('from_slug', slug)
+      } catch (e) {
+        console.warn('[redirects] failed to record slug change (non-fatal):', (e as Error).message)
+      }
+    }
+
     await logActivity({
       userId: user.id,
       userEmail: user.email ?? null,

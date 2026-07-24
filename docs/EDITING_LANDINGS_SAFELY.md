@@ -69,6 +69,17 @@ curl -s -o /dev/null -w '%{http_code}\n' -X POST "$BASE/api/revalidate" -H 'cont
 - **Deploy**: Vercel dashboard → Instant Rollback / promover el deployment anterior (cada build es autocontenido gracias al bake).
 - **Código**: `git revert` de los commits (scoped por sitio).
 
+## Redirects al cambiar un slug (NEW-4)
+
+Renombrar el slug de una **página o post publicado** en el CMS ya no deja la URL vieja en 404: el CMS registra un redirect (slug viejo → nuevo, 301) en la tabla `redirects`, lo expone en `GET /api/public/redirects?project=<slug>`, y el sitio lo hornea + aplica.
+
+**Para que un sitio aplique los redirects** (referencia implementada en `clients/adrian-grooves`):
+1. El fetch script escribe `content/redirects.json` (además de pages/settings).
+2. `next.config.ts` lee ese JSON en `async redirects()` y mapea `{from,to}` a la estructura de URL del sitio:
+   - Single-locale (adrian-grooves): `source: '/'+from` → `destination: '/'+to`.
+   - Sitios con prefijo de locale (sf-web): mapear a `'/:locale/'+from` → `'/:locale/'+to` (Next soporta el param `:locale`). Los redirects de posts vienen con prefijo `blog/` (p.ej. `blog/old`→`blog/new`).
+3. Verificar en preview antes de prod. **sf-web/salsa/nc: bake + wiring locale-aware pendiente** (se aplica solo a los deploys, sin riesgo hasta que se cablee).
+
 ## Pendiente de limpieza (no urgente)
 - sf-web tiene dos fuentes de sitemap (`public/sitemap.xml` del fetch script y `app/sitemap.ts`); ambas ya en **apex** (sin conflicto de dominio), pero conviene consolidar en una sola en una sesión futura, verificando en preview cuál sirve.
 - `clients/nc-global-assets` legacy: su `src/content/*.json` está trackeado (no gitignored) — cuidado de no commitear cambios de bake.
