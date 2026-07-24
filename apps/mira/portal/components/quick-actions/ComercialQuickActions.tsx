@@ -19,7 +19,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.crear_campaña', locale),
       description: t('actions.comercial.crear_campaña.desc', locale),
       actionType: 'crear_campaña',
-      outputType: 'json',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <input
@@ -51,7 +51,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.generar_icp', locale),
       description: t('actions.comercial.generar_icp.desc', locale),
       actionType: 'generar_icp',
-      outputType: 'json',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <textarea
@@ -73,7 +73,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.crear_propuesta', locale),
       description: t('actions.comercial.crear_propuesta.desc', locale),
       actionType: 'crear_propuesta',
-      outputType: 'document',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <input
@@ -103,7 +103,7 @@ export function ComercialQuickActions() {
       title: t('actions.comercial.calificar_reply', locale),
       description: t('actions.comercial.calificar_reply.desc', locale),
       actionType: 'calificar_reply',
-      outputType: 'json',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <textarea

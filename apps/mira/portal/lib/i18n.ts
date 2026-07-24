@@ -7,6 +7,7 @@ const translations: Record<Locale, Record<string, string>> = {
   es: {
     // SIDEBAR NAVIGATION
     'nav.home': 'Inicio',
+    'nav.project-memory': 'Memoria',
     'nav.my-team': 'Mi Equipo',
     'nav.command': 'Command',
     'nav.approvals': 'Aprobaciones',
@@ -91,6 +92,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.save-options': 'Opciones de Guardado',
     'actions.saved-to-memory': 'Guardado en Memoria',
     'actions.save-to-drive': 'Guardar en Google Drive',
+    'actions.saved-to-drive': 'Guardado en Google Drive',
+    'actions.view-in-memory': 'Ver en Memoria',
     'actions.raw-output': 'Salida Bruta',
     'actions.open-in-drive': 'Abrir en Google Drive →',
     'actions.scenes': 'Escenas',
@@ -100,6 +103,8 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // QUICK ACTION RESULT
     'quick-result.image-error': 'No se pudo generar la imagen — el contenido de texto sí está listo',
+    'quick-result.cta': 'Llamada a la acción',
+    'quick-result.media-brief': 'Sugerencia visual',
 
     // QUICK ACTIONS - MARKETING
     'actions.marketing.crear_post': 'Crear Post',
@@ -660,6 +665,7 @@ const translations: Record<Locale, Record<string, string>> = {
   en: {
     // SIDEBAR NAVIGATION
     'nav.home': 'Home',
+    'nav.project-memory': 'Memory',
     'nav.my-team': 'My Team',
     'nav.command': 'Command',
     'nav.approvals': 'Approvals',
@@ -744,6 +750,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'actions.save-options': 'Save Options',
     'actions.saved-to-memory': 'Saved to Memory',
     'actions.save-to-drive': 'Save to Google Drive',
+    'actions.saved-to-drive': 'Saved to Google Drive',
+    'actions.view-in-memory': 'View in Memory',
     'actions.raw-output': 'Raw Output',
     'actions.open-in-drive': 'Open in Google Drive →',
     'actions.scenes': 'Scenes',
@@ -753,6 +761,8 @@ const translations: Record<Locale, Record<string, string>> = {
 
     // QUICK ACTION RESULT
     'quick-result.image-error': 'Image generation failed — the text content is still ready',
+    'quick-result.cta': 'Call to action',
+    'quick-result.media-brief': 'Visual suggestion',
 
     // QUICK ACTIONS - MARKETING
     'actions.marketing.crear_post': 'Create Post',

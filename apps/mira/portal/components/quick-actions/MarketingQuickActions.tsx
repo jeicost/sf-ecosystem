@@ -19,7 +19,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_post', locale),
       description: t('actions.marketing.crear_post.desc', locale),
       actionType: 'crear_post',
-      outputType: 'json',
+      outputType: 'social_post',
       form: (
         <div className="space-y-3">
           <input
@@ -55,7 +55,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_newsletter', locale),
       description: t('actions.marketing.crear_newsletter.desc', locale),
       actionType: 'crear_newsletter',
-      outputType: 'document',
+      outputType: 'newsletter',
       form: (
         <div className="space-y-3">
           <input
@@ -122,7 +122,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_carousel', locale),
       description: t('actions.marketing.crear_carousel.desc', locale),
       actionType: 'crear_carousel',
-      outputType: 'json',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <textarea
@@ -152,7 +152,7 @@ export function MarketingQuickActions() {
       title: t('actions.marketing.crear_campaña_ads', locale),
       description: t('actions.marketing.crear_campaña_ads.desc', locale),
       actionType: 'crear_campaña_ads',
-      outputType: 'json',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <select

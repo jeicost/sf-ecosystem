@@ -55,6 +55,7 @@ export async function uploadToDrive(
       requestBody: fileMetadata,
       media,
       fields: 'id, webViewLink',
+      supportsAllDrives: true,
     })
 
     return {

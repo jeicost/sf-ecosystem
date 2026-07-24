@@ -45,7 +45,7 @@ export function AdminQuickActions() {
       title: t('actions.admin.crear_faq', locale),
       description: t('actions.admin.crear_faq.desc', locale),
       actionType: 'crear_faq',
-      outputType: 'document',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <input
@@ -69,7 +69,7 @@ export function AdminQuickActions() {
       title: t('actions.admin.crear_tutorial', locale),
       description: t('actions.admin.crear_tutorial.desc', locale),
       actionType: 'crear_tutorial',
-      outputType: 'document',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <input

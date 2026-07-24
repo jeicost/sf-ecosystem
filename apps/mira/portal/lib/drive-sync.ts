@@ -207,21 +207,42 @@ export async function getClientAccessToken(
   return { token: accessToken }
 }
 
+export type ClientDriveTokenResult =
+  | { token: string }
+  | { error: 'not_connected' | 'needs_reauth'; detail: string }
+
 /**
  * Convenience wrapper: returns a valid access token for the client's Drive
- * connection (refreshing it if needed via getClientAccessToken), or null if
- * the client has no authorized Drive connection.
+ * connection (refreshing it if needed via getClientAccessToken), or a typed
+ * reason when it can't -- distinguishing "never connected" from "connected
+ * but missing the drive.file write scope" (old connections predating 0044)
+ * so callers can show the client something actionable instead of a silent
+ * fallback or a generic error.
  */
 export async function getClientDriveAccessToken(
   clientId: string,
   admin: AdminClient = adminClient()
-): Promise<string | null> {
+): Promise<ClientDriveTokenResult> {
+  const { data: connection } = await admin
+    .from('drive_connections')
+    .select('*')
+    .eq('client_id', clientId)
+    .maybeSingle()
+
+  if (!connection || !connection.is_authorized) {
+    return { error: 'not_connected', detail: 'No Google Drive connection for this client.' }
+  }
+
+  if (!hasDriveWriteScope(connection)) {
+    return { error: 'needs_reauth', detail: 'Drive connection lacks the write scope (drive.file) -- reconnect required.' }
+  }
+
   const result = await getClientAccessToken(admin, clientId)
   if ('error' in result) {
     console.warn(`Client Drive token unavailable for client ${clientId}: ${result.error}`)
-    return null
+    return { error: 'needs_reauth', detail: result.error }
   }
-  return result.token
+  return { token: result.token }
 }
 
 // ─── Drive API helpers ───────────────────────────────────────────

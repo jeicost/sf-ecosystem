@@ -16,7 +16,7 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
-import { Home, BookOpen, Brain, Zap, Layers, Menu, X } from 'lucide-react'
+import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
 
@@ -265,6 +265,20 @@ useEffect(() => {
           )
         })}
       </nav>
+
+      {/* Project Memory — insights/decisions saved from Quick Actions results */}
+      <div className="px-3 pb-1">
+        <Link href="/project-memory"
+          className={clsx(
+            'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium transition-all',
+            path.startsWith('/project-memory')
+              ? 'bg-surface-hover text-ink'
+              : 'text-ink-tertiary hover:text-ink hover:bg-surface'
+          )}>
+          <Archive size={13} />
+          <span>{t('nav.project-memory', locale)}</span>
+        </Link>
+      </div>
 
       {/* Resources */}
       <div className="px-3 pb-1">

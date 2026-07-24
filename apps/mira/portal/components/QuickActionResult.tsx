@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Check, X, Loader2, Download, Heart, Save } from 'lucide-react'
+import { Check, X, Loader2, Download, Heart, Save, ArrowRight, AlertTriangle } from 'lucide-react'
+import Link from 'next/link'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 import { getStoredClientId } from '@/lib/client-context'
@@ -18,10 +19,18 @@ interface QuickActionResultProps {
 export function QuickActionResult({ actionId, resourceName, department, outputType: propOutputType }: QuickActionResultProps) {
   const [result, setResult] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
+  // `error` is for generation/poll failures only -- there's no result to show,
+  // so replacing the whole view with an error card is correct here.
   const [error, setError] = useState<string | null>(null)
+  // `saveError`/`saveNote` are for the save buttons only -- shown inline next
+  // to them, never replace the already-generated result (that was the actual
+  // bug behind "no funciona nada": a save failure used to hide everything).
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [saveNote, setSaveNote] = useState<string | null>(null)
   const [isSaving, setIsSaving] = useState(false)
   const [liked, setLiked] = useState(false)
   const [isMemorySaved, setIsMemorySaved] = useState(false)
+  const [isDriveSaved, setIsDriveSaved] = useState(false)
   const { locale } = useLocaleContext()
 
   useEffect(() => {
@@ -69,6 +78,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
 
   const handleSaveToMemory = async () => {
     setIsSaving(true)
+    setSaveError(null)
     try {
       // Extract key insight for summary
       const summary = extractSummary(result.output_data, displayOutputType)
@@ -98,13 +108,15 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       setTimeout(() => setIsSaving(false), 1500)
     } catch (err) {
       console.error('Error saving to memory:', err)
-      setError(err instanceof Error ? err.message : 'Failed to save to memory')
+      setSaveError(err instanceof Error ? err.message : 'Failed to save to memory')
       setIsSaving(false)
     }
   }
 
   const handleSaveToGoogleDrive = async () => {
     setIsSaving(true)
+    setSaveError(null)
+    setSaveNote(null)
     try {
       const res = await fetch('/api/export/google-drive', {
         method: 'POST',
@@ -125,11 +137,17 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
         window.open(driveUrl, '_blank')
       }
 
-      setIsMemorySaved(true)
+      // Uploaded successfully, but maybe to the shared platform folder
+      // instead of the client's own Drive -- tell them why, don't stay silent.
+      if (responseData?.reason && responseData?.message) {
+        setSaveNote(responseData.message)
+      }
+
+      setIsDriveSaved(true)
       setTimeout(() => setIsSaving(false), 1500)
     } catch (err) {
       console.error('Error saving to Google Drive:', err)
-      setError(err instanceof Error ? err.message : 'Failed to export to Google Drive')
+      setSaveError(err instanceof Error ? err.message : 'Failed to export to Google Drive')
       setIsSaving(false)
     }
   }
@@ -164,7 +182,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   if (!result) return null
 
   const { output_data, output_type } = result
-  const displayOutputType = propOutputType || output_type || 'json'
+  const displayOutputType = propOutputType || output_type || 'structured'
 
   return (
     <div className="space-y-4">
@@ -218,16 +236,45 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           )}
         </button>
 
-        {['image', 'document', 'video'].includes(displayOutputType) && (
-          <button
-            onClick={handleSaveToGoogleDrive}
-            disabled={isSaving}
-            className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-blue-600/20 hover:bg-blue-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        {isMemorySaved && (
+          <Link
+            href="/project-memory"
+            className="flex items-center justify-center gap-1.5 text-xs text-purple-400 hover:text-purple-300 transition-colors pb-1"
           >
-            {isSaving && <Loader2 size={16} className="animate-spin" />}
-            <Download size={16} />
-            {t('actions.save-to-drive', locale)}
-          </button>
+            {t('actions.view-in-memory', locale)} <ArrowRight size={12} />
+          </Link>
+        )}
+
+        <button
+          onClick={handleSaveToGoogleDrive}
+          disabled={isSaving}
+          className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-blue-600/20 hover:bg-blue-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isSaving && <Loader2 size={16} className="animate-spin" />}
+          {isDriveSaved ? (
+            <>
+              <Check size={16} />
+              {t('actions.saved-to-drive', locale)}
+            </>
+          ) : (
+            <>
+              <Download size={16} />
+              {t('actions.save-to-drive', locale)}
+            </>
+          )}
+        </button>
+
+        {saveError && (
+          <div className="flex items-start gap-2 text-xs text-red-400 bg-red-500/10 border border-red-500/25 rounded-lg px-3 py-2 mt-2">
+            <AlertTriangle size={13} className="mt-0.5 shrink-0" />
+            <span>{saveError}</span>
+          </div>
+        )}
+        {saveNote && !saveError && (
+          <div className="flex items-start gap-2 text-xs text-amber-400 bg-amber-500/10 border border-amber-500/25 rounded-lg px-3 py-2 mt-2">
+            <AlertTriangle size={13} className="mt-0.5 shrink-0" />
+            <span>{saveNote}</span>
+          </div>
         )}
       </div>
 
@@ -244,7 +291,9 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
 
 function extractSummary(outputData: any, _outputType: string): string {
   if (outputData.summary) return outputData.summary.substring(0, 200)
+  if (outputData.executive_summary) return outputData.executive_summary.substring(0, 200)
   if (outputData.title) return outputData.title
+  if (outputData.subject) return outputData.subject
   if (outputData.copy) return outputData.copy.substring(0, 200)
   if (outputData.script) return outputData.script.substring(0, 200)
   return t('actions.complete', 'es')
@@ -259,6 +308,110 @@ function determineCategoryFromDepartment(department: string): string {
     admin: 'metric',
   }
   return categoryMap[department] || 'insight'
+}
+
+// ─── Content Preview ─────────────────────────────────────────────────────
+
+/** snake_case / camelCase key -> readable label, e.g. "implementation_roadmap" -> "Implementation Roadmap". */
+function labelFromKey(key: string): string {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/** Fields already shown as the "headline" of a structured result -- skipped when rendering the rest. */
+const STRUCTURED_HEADLINE_KEYS = ['title', 'subject', 'campaign_name', 'summary', 'executive_summary']
+
+function StructuredValue({ value }: { value: any }) {
+  if (value === null || value === undefined || value === '') return null
+
+  if (Array.isArray(value)) {
+    if (value.length === 0) return null
+    // Array of primitives -> bullet list
+    if (typeof value[0] !== 'object') {
+      return (
+        <ul className="list-disc list-inside space-y-0.5">
+          {value.map((v, i) => (
+            <li key={i} className="text-sm text-ink-secondary">{String(v)}</li>
+          ))}
+        </ul>
+      )
+    }
+    // Array of objects -> a card per item, its own fields as label: value
+    return (
+      <div className="space-y-2">
+        {value.map((item, i) => (
+          <div key={i} className="bg-surface rounded-lg p-3 space-y-1">
+            {Object.entries(item).map(([k, v]) => {
+              if (v === null || v === undefined || v === '') return null
+              return (
+                <div key={k} className="text-xs">
+                  <span className="text-ink-tertiary">{labelFromKey(k)}: </span>
+                  <span className="text-ink-secondary">
+                    {Array.isArray(v) ? v.join(', ') : typeof v === 'object' ? JSON.stringify(v) : String(v)}
+                  </span>
+                </div>
+              )
+            })}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (typeof value === 'object') {
+    return (
+      <div className="bg-surface rounded-lg p-3 space-y-1">
+        {Object.entries(value).map(([k, v]) => {
+          if (v === null || v === undefined || v === '') return null
+          return (
+            <div key={k} className="text-xs">
+              <span className="text-ink-tertiary">{labelFromKey(k)}: </span>
+              <span className="text-ink-secondary">{Array.isArray(v) ? v.join(', ') : String(v)}</span>
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  if (typeof value === 'number') {
+    return <span className="inline-block text-sm font-semibold text-ink bg-surface rounded px-2 py-0.5">{value}</span>
+  }
+
+  return <p className="text-sm text-ink-secondary whitespace-pre-wrap">{String(value)}</p>
+}
+
+/**
+ * Generic renderer for any well-formed quick-action JSON payload that isn't
+ * one of the bespoke types below. Replaces a raw JSON.stringify dump with a
+ * headline (title/subject/summary/executive_summary, whichever exists) plus
+ * every remaining field formatted by its own shape -- covers every quick
+ * action whose outputType used to be mistagged 'json' or a non-matching
+ * 'document' (see docs/DEBT.md and this session's Quick Actions bug fixes).
+ */
+function StructuredResult({ outputData }: { outputData: any }) {
+  const headlineTitle = outputData.title || outputData.subject || outputData.campaign_name
+  const headlineSummary = outputData.summary || outputData.executive_summary
+  const restKeys = Object.keys(outputData).filter((k) => !STRUCTURED_HEADLINE_KEYS.includes(k))
+
+  return (
+    <div className="space-y-3">
+      {headlineTitle && <p className="text-base font-semibold text-ink">{headlineTitle}</p>}
+      {headlineSummary && <p className="text-sm text-ink-secondary">{headlineSummary}</p>}
+      {restKeys.map((key) => {
+        const value = outputData[key]
+        if (value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)) return null
+        return (
+          <div key={key}>
+            <p className="text-[10px] uppercase tracking-wide font-semibold text-ink-tertiary mb-1">{labelFromKey(key)}</p>
+            <StructuredValue value={value} />
+          </div>
+        )
+      })}
+    </div>
+  )
 }
 
 function ContentPreview({ outputType, outputData, locale }: { outputType: string; outputData: any; locale: 'es' | 'en' }) {
@@ -284,6 +437,60 @@ function ContentPreview({ outputType, outputData, locale }: { outputType: string
         </div>
       )
     }
+
+    case 'social_post':
+      return (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            {outputData.platform && (
+              <span className="text-[10px] uppercase tracking-wide font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/25 rounded-full px-2.5 py-1">
+                {outputData.platform}
+              </span>
+            )}
+          </div>
+          {outputData.copy && (
+            <p className="text-sm text-ink whitespace-pre-wrap leading-relaxed">{outputData.copy}</p>
+          )}
+          {outputData.hashtags?.length > 0 && (
+            <p className="text-xs text-purple-400">
+              {outputData.hashtags.map((h: string) => (h.startsWith('#') ? h : `#${h}`)).join(' ')}
+            </p>
+          )}
+          {outputData.call_to_action && (
+            <div className="bg-surface rounded-lg px-3 py-2">
+              <p className="text-[10px] uppercase tracking-wide font-semibold text-ink-tertiary mb-0.5">
+                {t('quick-result.cta', locale)}
+              </p>
+              <p className="text-sm text-ink-secondary">{outputData.call_to_action}</p>
+            </div>
+          )}
+          {outputData.media_brief && (
+            <p className="text-xs text-ink-tertiary italic">{t('quick-result.media-brief', locale)}: {outputData.media_brief}</p>
+          )}
+        </div>
+      )
+
+    case 'newsletter':
+      return (
+        <div className="space-y-3">
+          {outputData.subject && <p className="text-base font-semibold text-ink">{outputData.subject}</p>}
+          {outputData.preview_text && (
+            <p className="text-xs text-ink-tertiary italic">{outputData.preview_text}</p>
+          )}
+          {outputData.sections?.length > 0 && (
+            <div className="space-y-2">
+              {outputData.sections.map((section: any, i: number) => (
+                <div key={i} className="bg-surface rounded-lg p-3 space-y-1">
+                  {section.title && <p className="text-sm font-semibold text-ink">{section.title}</p>}
+                  {section.content && <p className="text-sm text-ink-secondary whitespace-pre-wrap">{section.content}</p>}
+                  {section.cta && <p className="text-xs text-purple-400 font-medium">{section.cta}</p>}
+                </div>
+              ))}
+            </div>
+          )}
+          {outputData.footer && <p className="text-xs text-ink-tertiary border-t border-line-subtle pt-2">{outputData.footer}</p>}
+        </div>
+      )
 
     case 'document':
       return (
@@ -342,12 +549,8 @@ function ContentPreview({ outputType, outputData, locale }: { outputType: string
         </div>
       )
 
-    case 'json':
+    case 'structured':
     default:
-      return (
-        <pre className="text-xs text-ink-secondary bg-surface p-3 rounded overflow-x-auto max-h-64">
-          {JSON.stringify(outputData, null, 2)}
-        </pre>
-      )
+      return <StructuredResult outputData={outputData} />
   }
 }

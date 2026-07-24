@@ -64,17 +64,19 @@ export async function POST(req: NextRequest) {
     }
 
     // 1st choice: the CLIENT's own Google Drive (drive_connections OAuth)
-    const clientToken = await getClientDriveAccessToken(rowClientId, admin)
-    if (clientToken) {
+    const tokenResult = await getClientDriveAccessToken(rowClientId, admin)
+    let clientDriveReason: 'not_connected' | 'needs_reauth' | null = null
+
+    if ('token' in tokenResult) {
       try {
         const folderId = await resolveClientDeliverablesFolder(
           admin,
-          clientToken,
+          tokenResult.token,
           rowClientId,
           rowProjectId
         )
         const clientUpload = await uploadHtmlToClientDrive(
-          clientToken,
+          tokenResult.token,
           folderId,
           fileName,
           htmlContent
@@ -98,16 +100,23 @@ export async function POST(req: NextRequest) {
           clientDriveError
         )
       }
+    } else {
+      clientDriveReason = tokenResult.error
     }
 
     // Fallback: platform Drive via Service Account (existing path)
     const uploadResult = await uploadToDrive(fileName, 'text/html', htmlContent)
 
     if (!uploadResult.success) {
+      console.error(
+        `Platform Drive fallback also failed for client ${rowClientId}: ${uploadResult.error}`
+      )
       return NextResponse.json(
         {
           success: false,
-          error: uploadResult.error || 'Failed to upload to Google Drive',
+          error:
+            'No se pudo guardar en Google Drive. El equipo de MIRA ya tiene aviso del problema -- mientras tanto, tu resultado sigue disponible arriba y puedes guardarlo en Memoria.',
+          reason: clientDriveReason,
           fallback: {
             filename: fileName,
             html_content: htmlContent,
@@ -118,14 +127,23 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    // Success: return Drive link
+    // Success via platform fallback -- still tell the client WHY it didn't
+    // go to their own Drive (silence here is exactly what made this
+    // confusing before: a client sees "success" but their file isn't where
+    // they expected).
     return NextResponse.json({
       success: true,
       driveUrl: uploadResult.webViewLink,
       fileId: uploadResult.fileId,
       filename: fileName,
       destination: 'platform_drive',
-      message: 'Successfully uploaded to Google Drive',
+      reason: clientDriveReason,
+      message:
+        clientDriveReason === 'not_connected'
+          ? 'Uploaded to a shared MIRA folder -- connect your own Google Drive in Integraciones to export here directly.'
+          : clientDriveReason === 'needs_reauth'
+            ? 'Uploaded to a shared MIRA folder -- your Google Drive connection needs to be reconnected (missing write permission).'
+            : 'Successfully uploaded to Google Drive',
     })
   } catch (error) {
     console.error('Export error:', error)
@@ -269,10 +287,65 @@ async function uploadHtmlToClientDrive(
   }
 }
 
+/** snake_case/camelCase key -> readable label, mirrors the same helper in QuickActionResult.tsx. */
+function labelFromKey(key: string): string {
+  return key
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/\b\w/g, (c) => c.toUpperCase())
+}
+
+/** Renders a single field's value as HTML, recursing one level into arrays/objects. */
+function renderFieldHTML(value: any): string {
+  if (value === null || value === undefined || value === '') return ''
+  if (Array.isArray(value)) {
+    if (value.length === 0) return ''
+    if (typeof value[0] !== 'object') {
+      return `<ul>${value.map((v) => `<li>${escapeHTML(String(v))}</li>`).join('')}</ul>`
+    }
+    return value
+      .map((item) => {
+        const rows = Object.entries(item)
+          .filter(([, v]) => v !== null && v !== undefined && v !== '')
+          .map(([k, v]) => `<p><strong>${escapeHTML(labelFromKey(k))}:</strong> ${escapeHTML(Array.isArray(v) ? v.join(', ') : String(v))}</p>`)
+          .join('')
+        return `<div class="item-card">${rows}</div>`
+      })
+      .join('')
+  }
+  if (typeof value === 'object') {
+    return Object.entries(value)
+      .filter(([, v]) => v !== null && v !== undefined && v !== '')
+      .map(([k, v]) => `<p><strong>${escapeHTML(labelFromKey(k))}:</strong> ${escapeHTML(Array.isArray(v) ? v.join(', ') : String(v))}</p>`)
+      .join('')
+  }
+  return `<p>${escapeHTML(String(value)).replace(/\n/g, '<br>')}</p>`
+}
+
+const HEADLINE_KEYS = ['title', 'subject', 'campaign_name', 'summary', 'executive_summary']
+
+/** Formats a Quick Action / Toolkit result as readable HTML instead of a raw JSON dump. */
+function formatResultHTML(data: any): string {
+  if (typeof data === 'string') return `<p>${escapeHTML(data).replace(/\n/g, '<br>')}</p>`
+  if (!data || typeof data !== 'object') return `<pre><code>${escapeHTML(JSON.stringify(data, null, 2))}</code></pre>`
+
+  const headlineTitle = data.title || data.subject || data.campaign_name
+  const headlineSummary = data.summary || data.executive_summary
+  const restKeys = Object.keys(data).filter((k) => !HEADLINE_KEYS.includes(k))
+
+  let html = ''
+  if (headlineTitle) html += `<h2>${escapeHTML(headlineTitle)}</h2>`
+  if (headlineSummary) html += `<p class="lead">${escapeHTML(headlineSummary)}</p>`
+  for (const key of restKeys) {
+    const value = data[key]
+    if (value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)) continue
+    html += `<h3>${escapeHTML(labelFromKey(key))}</h3>${renderFieldHTML(value)}`
+  }
+  return html || `<pre><code>${escapeHTML(JSON.stringify(data, null, 2))}</code></pre>`
+}
+
 function generateHTML(title: string, data: any) {
-  const safeData = data ?? {}
-  const formattedData =
-    typeof safeData === 'string' ? safeData : JSON.stringify(safeData, null, 2)
+  const bodyHTML = formatResultHTML(data ?? {})
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -281,9 +354,14 @@ function generateHTML(title: string, data: any) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>${escapeHTML(title)}</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; color: #1a1a1a; }
     h1 { color: #333; border-bottom: 2px solid #7c3aed; padding-bottom: 0.5rem; }
+    h2 { color: #1a1a1a; margin-top: 1.5rem; }
+    h3 { color: #4a4a4a; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1.5rem; margin-bottom: 0.5rem; }
     .metadata { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
+    .lead { color: #4a4a4a; font-size: 1.05rem; }
+    .item-card { background: #f7f7f8; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
+    .item-card p { margin: 0.25rem 0; }
     pre { background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
     code { font-family: 'Monaco', 'Courier New', monospace; }
   </style>
@@ -294,7 +372,7 @@ function generateHTML(title: string, data: any) {
     <p><strong>Generated:</strong> ${new Date().toLocaleString('es-ES')}</p>
     <p><strong>Tool:</strong> ${escapeHTML(title)}</p>
   </div>
-  <pre><code>${escapeHTML(formattedData)}</code></pre>
+  ${bodyHTML}
 </body>
 </html>`
 }

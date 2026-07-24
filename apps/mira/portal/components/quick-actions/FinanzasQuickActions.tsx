@@ -19,7 +19,7 @@ export function FinanzasQuickActions() {
       title: t('actions.finanzas.proyeccion_financiera', locale),
       description: t('actions.finanzas.proyeccion_financiera.desc', locale),
       actionType: 'proyeccion_financiera',
-      outputType: 'json',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <input
@@ -52,7 +52,7 @@ export function FinanzasQuickActions() {
       title: t('actions.finanzas.analisis_cash_flow', locale),
       description: t('actions.finanzas.analisis_cash_flow.desc', locale),
       actionType: 'analisis_cashflow',
-      outputType: 'document',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <input
@@ -76,7 +76,7 @@ export function FinanzasQuickActions() {
       title: t('actions.finanzas.optimizacion_costos', locale),
       description: t('actions.finanzas.optimizacion_costos.desc', locale),
       actionType: 'optimizar_costos',
-      outputType: 'document',
+      outputType: 'structured',
       form: (
         <div className="space-y-3">
           <textarea
