@@ -5,7 +5,7 @@ import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { usePageChat } from '@/lib/hooks/usePageChat'
 import { Send, History } from 'lucide-react'
 import { ChatUploadWidget } from '@/components/media/ChatUploadWidget'
-import { SectionsPreviewPanel } from '@/components/preview/SectionsPreviewPanel'
+import { SectionsEditor } from '@/components/editor/SectionsEditor'
 import { PIXEL_FIELDS, cleanPixels, type PagePixels } from '@/lib/pixels'
 
 interface Section {
@@ -281,11 +281,11 @@ export default function PageEditorPage() {
           </div>
         </div>
 
-        {/* Sections panel */}
+        {/* Sections panel — editable by field */}
         <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Sections</h2>
-          <SectionsPreviewPanel
-            sections={currentSections && currentSections.length > 0 ? currentSections : page.sections_json}
+          <SectionsEditor
+            sections={page.sections_json ?? []}
+            onChange={(next) => setPage({ ...page, sections_json: next as Section[] })}
           />
         </div>
 
