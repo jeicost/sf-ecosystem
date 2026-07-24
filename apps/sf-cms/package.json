@@ -12,7 +12,8 @@
     "db:link": "supabase link --project-ref dmzecrlkclocqaywkjtc",
     "db:push": "supabase db push",
     "db:diff": "supabase db diff --linked",
-    "db:backup": "node scripts/backup-cms.mjs"
+    "db:backup": "node scripts/backup-cms.mjs",
+    "db:drift": "node scripts/check-schema-drift.mjs"
   },
   "dependencies": {
     "next": "^16.0.0",
