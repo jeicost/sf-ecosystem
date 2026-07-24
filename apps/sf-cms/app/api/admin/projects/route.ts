@@ -28,7 +28,25 @@ export async function GET(request: NextRequest) {
     const { data, error } = await query
     if (error) throw error
 
-    return Response.json({ projects: data || [] }, { status: 200 })
+    // Attach each project's latest deploy-hook outcome (OPS-07 visibility).
+    const projects = data || []
+    if (projects.length > 0) {
+      const { data: recent } = await client
+        .from('deploy_events')
+        .select('project_id, status, created_at')
+        .in('project_id', projects.map((p) => p.id))
+        .order('created_at', { ascending: false })
+        .limit(200)
+      const latest = new Map<string, { status: string; created_at: string }>()
+      for (const e of recent ?? []) {
+        if (!latest.has(e.project_id)) latest.set(e.project_id, { status: e.status, created_at: e.created_at })
+      }
+      for (const p of projects as Array<Record<string, unknown>>) {
+        p.last_deploy = latest.get(p.id as string) ?? null
+      }
+    }
+
+    return Response.json({ projects }, { status: 200 })
   } catch (err) {
     await captureError(err, { route: 'GET /api/admin/projects' })
     return Response.json(

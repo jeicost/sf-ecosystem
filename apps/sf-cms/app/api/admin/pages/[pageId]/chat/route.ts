@@ -1,6 +1,7 @@
 import { requireSession } from '@/lib/auth/require-session'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { checkRateLimit } from '@/lib/rate-limit'
 import { captureError } from '@/lib/capture-error'
 import Anthropic from '@anthropic-ai/sdk'
 import { PAGE_EDITOR_SYSTEM_PROMPT } from '@/lib/page-editor-system-prompt'
@@ -39,6 +40,11 @@ export async function POST(
 
     if (!(await canAccessProject(user, page.project_id))) {
       return Response.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Cap the Anthropic-backed chat per user (cost protection): 20 / 5 min.
+    if (!checkRateLimit(`chat:${user.id}`, 20, 5 * 60_000)) {
+      return Response.json({ error: 'Demasiadas peticiones al editor por chat. Espera unos minutos.' }, { status: 429 })
     }
 
     const currentSections = page.sections_json || []

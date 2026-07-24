@@ -154,8 +154,14 @@ export default function PostEditorPage() {
               className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
             >
               <option value="draft">Draft</option>
+              <option value="scheduled">Scheduled</option>
               <option value="published">Published</option>
             </select>
+            {post.status === 'scheduled' && (
+              <p className="mt-1.5 text-xs text-amber-600">
+                Se publicará automáticamente cuando llegue la fecha de &ldquo;Published date&rdquo; (revisado cada 15 min).
+              </p>
+            )}
           </div>
         </div>
 

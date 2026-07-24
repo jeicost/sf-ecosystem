@@ -22,17 +22,22 @@ const buckets = new Map<string, Bucket>()
 const WINDOW_MS = 60_000 // 1 minute
 const MAX_REQUESTS = 60 // per key per window
 
-/** Returns true if the request should be allowed, false if rate-limited. */
-export function checkRateLimit(key: string): boolean {
+/**
+ * Returns true if the request should be allowed, false if rate-limited.
+ * Defaults to the public-API limit (60/min); pass max/windowMs for tighter
+ * limits (e.g. the Anthropic-backed chat endpoint). Prefix keys per limiter
+ * so buckets don't collide.
+ */
+export function checkRateLimit(key: string, max = MAX_REQUESTS, windowMs = WINDOW_MS): boolean {
   const now = Date.now()
   const bucket = buckets.get(key)
 
   if (!bucket || now > bucket.resetAt) {
-    buckets.set(key, { count: 1, resetAt: now + WINDOW_MS })
+    buckets.set(key, { count: 1, resetAt: now + windowMs })
     return true
   }
 
-  if (bucket.count >= MAX_REQUESTS) {
+  if (bucket.count >= max) {
     return false
   }
 

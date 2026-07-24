@@ -11,6 +11,7 @@ interface Project {
   api_key: string
   vercel_hook_url?: string | null
   created_at: string
+  last_deploy?: { status: string; created_at: string } | null
 }
 
 export default function ProjectsPage() {
@@ -94,7 +95,23 @@ export default function ProjectsPage() {
             >
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold text-slate-900">{project.name}</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-bold text-slate-900">{project.name}</h3>
+                    {project.last_deploy && (
+                      <span
+                        title={`Último deploy: ${new Date(project.last_deploy.created_at).toLocaleString()}`}
+                        className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ${
+                          project.last_deploy.status === 'ok'
+                            ? 'bg-green-100 text-green-700'
+                            : project.last_deploy.status === 'failed'
+                              ? 'bg-red-100 text-red-700'
+                              : 'bg-slate-100 text-slate-500'
+                        }`}
+                      >
+                        deploy {project.last_deploy.status}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-sm text-slate-600 mt-1">
                     Slug: <code className="bg-slate-100 px-2 py-1 rounded">{project.slug}</code>
                   </p>
