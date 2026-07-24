@@ -90,9 +90,13 @@ export default function SuperAdminPage() {
           <p className="mt-2 text-sm text-ink-tertiary">Gestión unificada de todos los clientes y su progreso en MIRA</p>
         </div>
         <div className="flex items-center gap-2 text-xs">
-          <Link href="/toolkit"
+          <Link href="/admin/onboarding"
             className="rounded-xl bg-violet-600 px-4 py-2.5 font-semibold text-white transition hover:bg-violet-500">
-            + Generar entregable
+            + Nuevo cliente (chat)
+          </Link>
+          <Link href="/toolkit"
+            className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
+            Generar entregable
           </Link>
           <Link href="/admin/users" className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
             👥 Usuarios
