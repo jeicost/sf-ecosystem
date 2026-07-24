@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Syne } from 'next/font/google'
-import { Loader2, ArrowRight, Plus, ChevronRight, Pin } from 'lucide-react'
+import { Loader2, ArrowRight, Plus, ChevronRight, Pin, Lock, X } from 'lucide-react'
 import { getUser, isSuperAdmin } from '@/lib/auth'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
@@ -16,6 +16,7 @@ import { useLocale } from '@/lib/use-locale'
 import { t } from '@/lib/i18n'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
+import { minPlanForSection } from '@/lib/plans'
 import OnboardingModal from '@/components/onboarding-modal'
 
 const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'] })
@@ -148,6 +149,59 @@ function Carousel({
   )
 }
 
+// Shown when proxy.ts redirected here because the user's plan doesn't include
+// a section they tried to open (ENFORCE_PLAN_LIMITS) — reads plain
+// window.location.search instead of useSearchParams() to avoid needing a
+// Suspense boundary on this page, then strips the query params so a refresh
+// doesn't keep re-showing it.
+function PlanBlockedBanner({ locale }: { locale: 'es' | 'en' }) {
+  const router = useRouter()
+  const [blocked, setBlocked] = useState<{ slug: string; plan: string } | null>(null)
+  const [dismissed, setDismissed] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const slug = params.get('blocked')
+    if (slug) {
+      setBlocked({ slug, plan: params.get('plan') ?? '' })
+      router.replace('/home', { scroll: false })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  if (!blocked || dismissed) return null
+
+  const dept = DEPARTMENT_METADATA[blocked.slug as keyof typeof DEPARTMENT_METADATA]
+  const sectionName = dept ? (locale === 'es' ? dept.nameEs : dept.name) : blocked.slug
+  const requiredPlan = minPlanForSection(blocked.slug) ?? 'scale'
+
+  const message = t('plan.blocked-banner', locale)
+    .replace('{section}', sectionName)
+    .replace('{plan}', requiredPlan)
+
+  return (
+    <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-4"
+      style={{ borderColor: 'rgba(245,158,11,0.35)', background: 'rgba(245,158,11,0.06)' }}>
+      <div className="flex items-center gap-3">
+        <Lock size={16} style={{ color: '#fbbf24' }} className="shrink-0" />
+        <p className="text-sm text-ink">{message}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2">
+        <a href="mailto:hola@startupsfactory.es?subject=Actualizar%20mi%20plan%20MIRA"
+          className="rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90"
+          style={{ background: '#fbbf24' }}>
+          {t('plan.blocked-cta', locale)}
+        </a>
+        <button onClick={() => setDismissed(true)}
+          className="rounded-lg p-1.5 text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink"
+          aria-label={t('plan.blocked-dismiss', locale)}>
+          <X size={14} />
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function StatCard({ value, label, hint, href, brand, alert }: {
   value: string; label: string; hint?: string; href?: string; brand: string; alert?: boolean
 }) {
@@ -206,6 +260,8 @@ export default function HomePage() {
     <div className="mx-auto max-w-6xl px-8 py-10" style={{ ['--client-primary' as string]: brand }}>
       {/* Tour del portal — se abre solo la primera vez (o al relanzarlo desde el sidebar) */}
       <OnboardingModal userName={data.client.name} />
+
+      <PlanBlockedBanner locale={locale} />
 
       {/* Hero con la marca del cliente */}
       <div className="relative mb-10 overflow-hidden rounded-3xl border border-line p-8"

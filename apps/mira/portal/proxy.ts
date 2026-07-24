@@ -97,7 +97,10 @@ export async function proxy(request: NextRequest) {
       const plan = (user.user_metadata?.plan ?? 'starter') as UserPlan
       const allowed = PLAN_SECTIONS[plan] ?? PLAN_SECTIONS.starter
       if (!allowed.includes(section.slug)) {
-        return NextResponse.redirect(new URL('/home', request.url))
+        const homeUrl = new URL('/home', request.url)
+        homeUrl.searchParams.set('blocked', section.slug)
+        homeUrl.searchParams.set('plan', plan)
+        return NextResponse.redirect(homeUrl)
       }
     }
   }

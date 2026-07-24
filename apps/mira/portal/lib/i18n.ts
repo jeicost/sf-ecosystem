@@ -8,6 +8,9 @@ const translations: Record<Locale, Record<string, string>> = {
     // SIDEBAR NAVIGATION
     'nav.home': 'Inicio',
     'nav.project-memory': 'Memoria',
+    'plan.blocked-banner': 'Tu plan actual no incluye {section}. Necesitas el plan {plan} o superior para acceder.',
+    'plan.blocked-cta': 'Hablar sobre mi plan',
+    'plan.blocked-dismiss': 'Entendido',
     'nav.my-team': 'Mi Equipo',
     'nav.command': 'Command',
     'nav.approvals': 'Aprobaciones',
@@ -666,6 +669,9 @@ const translations: Record<Locale, Record<string, string>> = {
     // SIDEBAR NAVIGATION
     'nav.home': 'Home',
     'nav.project-memory': 'Memory',
+    'plan.blocked-banner': "Your current plan doesn't include {section}. You need the {plan} plan or higher to access it.",
+    'plan.blocked-cta': 'Talk about my plan',
+    'plan.blocked-dismiss': 'Got it',
     'nav.my-team': 'My Team',
     'nav.command': 'Command',
     'nav.approvals': 'Approvals',
