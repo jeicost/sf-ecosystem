@@ -59,10 +59,11 @@ MIRA lleva semanas de trabajo intensivo (multi-empresa, motor comercial, revisi�
 - Light mode ~95% migrado a tokens semánticos.
 - Manual de usuario en PDF (`docs/MIRA-Manual-de-Usuario.pdf`) — no enlazado desde la app.
 
-## Decisiones de producto (confirmadas por el usuario, 2026-07-23)
+## Decisiones de producto (confirmadas por el usuario, 2026-07-23/24)
 1. **Lanzamiento**: beta cerrada/waitlist en 30 días desde la activación; self-serve 100% automático en 60-90 días.
-2. **Proveedor de pago**: abierto — Stripe directo vs Merchant-of-Record (Paddle/LemonSqueezy), decisión pendiente con trade-offs más abajo.
+2. **Proveedor de pago**: **Stripe directo** (decidido 2026-07-24, no Merchant-of-Record).
 3. **Modelo de negocio**: setup fee (pago único, "puesta en marcha y entrenamiento inicial") + cuota mensual, con dos precios según origen de la IA.
+4. **Actualizar el copy/pricing del landing al nuevo modelo**: pospuesto explícitamente por el usuario (2026-07-24) — queda anotado en "Corto plazo → GTM/Landing", no se toca todavía.
 
 ## Diseño del modelo de precios (propuesta a validar)
 
@@ -132,3 +133,18 @@ Antes de activar este roadmap se cerraron, en una sesión aparte, los siguientes
 Pendiente aún de purgar: el historial de git de la key expuesta (requiere `git filter-repo`/BFG + force-push — operación de alto impacto en un monorepo compartido, a coordinar aparte).
 
 **Para activar esta fase**: revisar si algo cambió desde el 2026-07-23, confirmar el proveedor de pago (Stripe vs MoR) y arrancar por "Enforcement real de plan" + "Cap de generaciones/mes", que son prerrequisito técnico de todo lo demás.
+
+## Actualización 2026-07-24 — las 7 piezas de "base técnica" ya están construidas
+
+Verificado contra código y Vercel prod (no solo contra este documento, que había quedado desactualizado): healthcheck, rate limiting (activo, sin flag), cap de generaciones/mes y enforcement real de plan (ambos **construidos pero gateados — `MAX_MONTHLY_GENERATIONS`/`ENFORCE_PLAN_LIMITS` sin definir en Vercel prod, cero cambio de comportamiento hoy**), gate de CI (`deploy.yml` ya no despliega si falla el typecheck), `usage_log` arreglado, y el `redirectTo` de recovery corregido. También se unificó el onboarding de admin en un solo comando idempotente (bonus, no estaba en el plan original de 7 piezas). Ver `docs/DEBT.md` y commits `4b423de`, `c887657`, `3f6629d`, `f972180`.
+
+### Chequeo de seguridad de "Enforcement real de plan" contra uso real — **NO activar todavía**
+
+Antes de poner `ENFORCE_PLAN_LIMITS=true` se cruzó el plan de cada usuario real (`user_metadata.plan`) contra su uso real registrado (`quick_actions_results` por `client_id`+`action_type`, clasificado por departamento vía `lib/sections.ts`):
+
+- **Natalia/Noel (Dadybox, plan `growth`)** — sin actividad histórica registrada hoy (la que había se perdió en el incidente de borrado de esta misma sesión, ver DEBT.md (aa)). Growth permite marketing+comercial+strategy — sin riesgo conocido.
+- **Alessandro (Discoolver + Startup Factory, plan `growth`)** — sin actividad registrada en `quick_actions_results` para ninguno de los dos. Sin riesgo conocido con los datos disponibles.
+- **Carlos (Startup Factory, plan `admin`)** — cuenta interna, sin riesgo.
+- **Nirada (Salsa Burgers + NC Global Assets, plan `starter` → solo `marketing` permitido) — ⚠️ RIESGO REAL CONFIRMADO.** Salsa Burgers tiene 42 filas reales en `quick_actions_results` (todas del 2026-07-11, sesión real de una sola vez, ~9h de uso): solo 8 son `marketing`; el resto — 28 en `comercial` (crear_campaña, generar_icp, crear_propuesta, calificar_reply) + 3 en `strategy` (analizar_competencia, generar_reporte, brainstorm_ideas) + acciones con nombres antiguos ya renombrados (`propuesta_personalizada`, `definir_estrategia`, `proyectar_revenue` — este último sugiere uso también de `finanzas`) — están **fuera de lo que su plan `starter` permitiría**. Activar el enforcement hoy la bloquearía de inmediato en Comercial/Strategy/Finanzas para Salsa Burgers, secciones que ya ha usado activamente. NC Global Assets no tiene actividad registrada.
+
+**Resuelto (2026-07-24)**: `user_metadata.plan` de Nirada (`nirada@ncglobalassets.com`) subido de `starter` a `scale` — cubre exactamente marketing+comercial+strategy+finanzas, su uso real confirmado en Salsa Burgers. Verificado en vivo tras el cambio. Con esto, activar `ENFORCE_PLAN_LIMITS` ya no bloquearía a ningún usuario real conocido — sigue pendiente decidir cuándo activarlo (recomendado: no en caliente sin avisar, y confirmar que no hay actividad de otros usuarios/clientes sin auditar antes de encenderlo en prod).
