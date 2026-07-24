@@ -128,12 +128,15 @@ async function ensureClient() {
   } else if (dryRun) {
     console.log(`   [DRY RUN] would create brand profile for client_id ${clientId}`)
   } else {
+    // brand_profiles has no primary_color/secondary_color columns (those
+    // live under brand_data.visual_identity.colors instead) -- inserting
+    // them threw silently before, always leaving the client without a
+    // brand profile row. Only real columns here.
     const { data: brandProfile, error: brandError } = await supabase
       .from('brand_profiles')
       .insert({
         client_id: clientId,
-        primary_color: '#6366F1',
-        secondary_color: '#4F46E5',
+        name,
         created_at: new Date().toISOString(),
       })
       .select()

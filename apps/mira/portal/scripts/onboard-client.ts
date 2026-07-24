@@ -70,13 +70,16 @@ async function onboardClient(
     }
 
     // ── STEP 2: Create brand profile ──
+    // brand_profiles has no primary_color/secondary_color columns (those
+    // live under brand_data.visual_identity.colors instead) -- this insert
+    // was throwing on every real call, silently leaving clients without a
+    // brand profile row. See scripts/onboard-full-client.mjs for the same fix.
     console.log('\n🎨 Creating brand profile...')
     const { data: brandProfile, error: brandError } = await supabase
       .from('brand_profiles')
       .insert({
         client_id: clientId,
-        primary_color: '#6366F1',
-        secondary_color: '#4F46E5',
+        name,
         created_at: new Date().toISOString(),
       })
       .select()
