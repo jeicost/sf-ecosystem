@@ -67,6 +67,11 @@ const REGISTRY = [
     optional: true, // not yet linked; WIP — don't fail the whole run if unlinked
   },
   {
+    folder: 'clients/adrian-grooves',
+    projectName: 'adrian-grooves',
+    projectId: 'prj_TZgrFmJKtGEqINtmwUcHqwm0LIBd',
+  },
+  {
     folder: 'clients/discoolver/creators-landing',
     projectName: 'discoolver-creators-landing',
     projectId: 'prj_No9UIOs54YPJW4iVQyeWnoNVpXG4',

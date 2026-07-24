@@ -35,6 +35,7 @@ Never run `vercel` or `vercel --prod` from the monorepo ROOT. Always `cd` into t
 | `clients/discoolver/briefing` | discoolver-briefing | `prj_leUpb2tNZkSikGVeVHUt8JwJujQZ` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-briefing-jeicosts-projects.vercel.app | — | Static HTML briefing page. Deployed 2026-07-19. |
 | `clients/discoolver/deliverables/investor-deck-site` | discoolver-investor-deck | `prj_clu0ci7Z7FuvEsPq6GkHzvXliP48` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-investor-deck-jeicosts-projects.vercel.app | — | Static HTML + investor deck PDF. Deployed 2026-07-19. |
 | `clients/discoolver/design-studio` | discoolver-design-studio | `prj_SoMU6F5A7bvp85cfPIFimYo5B2jP` | `team_7QGpRqqi1FjrJugGLL0sDehf` | discoolver-design-studio-jeicosts-projects.vercel.app | — | Vite + React design template studio. Deployed 2026-07-19. |
+| `clients/adrian-grooves` | adrian-grooves | `prj_TZgrFmJKtGEqINtmwUcHqwm0LIBd` | `team_7QGpRqqi1FjrJugGLL0sDehf` | none (preview) | via SF-CMS (`adrian-grooves`) | Landing de venta del curso de Adrian Grooves (Next 16, build-time bake). Creado 2026-07-24. Preview `*.vercel.app`, sin dominio custom aún. SSO off. |
 
 ---
 
