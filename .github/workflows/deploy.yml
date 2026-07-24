@@ -74,8 +74,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Each step below runs independently of the others' outcome --
+      # `if:` conditions imply `&& success()` by default, so one app
+      # failing to deploy used to skip every step listed after it in this
+      # same job (found live: a mira-portal deploy failure silently
+      # skipped mira-landing, sf-crm and sf-links even though mira-landing
+      # had real, ready-to-ship changes). `success() || failure()` runs a
+      # step regardless of an earlier step's result, while still skipping
+      # on job cancellation; the job's overall conclusion still reports
+      # failure if any step fails.
       - name: Deploy startup-factory-web to Vercel
-        if: needs.changes.outputs.startup_factory == 'true'
+        if: (success() || failure()) && needs.changes.outputs.startup_factory == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STARTUP_FACTORY }}
@@ -87,7 +96,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy ai-agency-sf-next to Vercel
-        if: needs.changes.outputs.ai_agency == 'true'
+        if: (success() || failure()) && needs.changes.outputs.ai_agency == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_AI_AGENCY }}
@@ -99,7 +108,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy mira portal to Vercel
-        if: needs.changes.outputs.mira == 'true'
+        if: (success() || failure()) && needs.changes.outputs.mira == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA }}
@@ -111,7 +120,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-cms to Vercel
-        if: needs.changes.outputs.sf_cms == 'true'
+        if: (success() || failure()) && needs.changes.outputs.sf_cms == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CMS }}
@@ -123,7 +132,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy mira-landing to Vercel
-        if: needs.changes.outputs.mira_landing == 'true'
+        if: (success() || failure()) && needs.changes.outputs.mira_landing == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_MIRA_LANDING }}
@@ -135,7 +144,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-crm to Vercel
-        if: needs.changes.outputs.sf_crm == 'true'
+        if: (success() || failure()) && needs.changes.outputs.sf_crm == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_CRM }}
@@ -147,7 +156,7 @@ jobs:
           npx vercel deploy --prod --yes --token=$VERCEL_TOKEN
 
       - name: Deploy sf-links to Vercel
-        if: needs.changes.outputs.sf_links == 'true'
+        if: (success() || failure()) && needs.changes.outputs.sf_links == 'true'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_SF_LINKS }}
