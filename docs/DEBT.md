@@ -109,13 +109,13 @@ Pendiente real: los cambios **grandes** del informe (G4 — i18n completo de los
 
 ---
 
-## o) Enforcement de plan roto en dos capas (nueva 2026-07-23)
+## o) ✅ Resuelto (mecanismo), gateado sin activar — Enforcement de plan roto en dos capas (nueva 2026-07-23, corregido en "base técnica" antes de esta entrada quedar marcada, aviso de obsolescencia añadido 2026-07-24)
 
-Verificado durante la auditoría de lanzamiento SaaS: el gating por plan (`lib/plans.ts`) es **cosmético en el frontend Y código muerto en el middleware**.
-- `components/section-switcher.tsx` solo pinta un candado visual — ninguna página de `app/(dashboard)/comercial|finanzas|strategy|operations/*` comprueba el plan del usuario; accesibles por URL directa.
-- `proxy.ts` SÍ intenta enforcement server-side con un regex (`/^\/(marketing|comercial|estrategia|innovacion|finanzas)(\/|$)/`), pero usa slugs **en español que no existen como rutas reales** — la app usa `strategy`/`operations` en inglés (ver `lib/sections.ts`), y Marketing no tiene un prefijo de ruta común (vive en `/roster`, `/command`, `/approvals`, `/performance`, `/brief`). El regex nunca matchea nada — es enforcement fantasma.
+*(Esta entrada describía el regex fantasma original — quedó desactualizada sin marcarlo; corregido ahora para que la próxima sesión no parta de un estado que ya no es real.)*
 
-**Qué haría falta:** corregir el regex a los slugs reales (o mejor, un `guardSection(pathname, plan)` compartido usado tanto en `proxy.ts` como en cada `page.tsx` de departamento) — ver Fase 2 del roadmap de lanzamiento (`docs/MIRA-LANZAMIENTO-FASE2.md`), sección "Enforcement real de plan".
+`proxy.ts` usaba un regex con slugs en español que no existen como rutas reales — nunca bloqueaba nada. Corregido en la pieza "base técnica" de Fase 2 (commit `c887657`): ahora usa `getActiveSectionFromPath` (`lib/sections.ts`), la misma fuente de verdad que el resto de la app, cubriendo Marketing correctamente pese a no tener prefijo de ruta común. Como el middleware corre en toda petición (incluida navegación directa por URL), este fix también cierra el acceso directo por URL que antes eludía el candado visual del frontend — no hizo falta añadir guards por página aparte.
+
+Sigue **gateado y apagado** (`ENFORCE_PLAN_LIMITS` sin definir en Vercel prod) — construido a propósito así para no afectar a la beta activa. El 2026-07-24 se verificó contra uso real de cada cliente (ver [[mira-fase2-decisiones-2026-07-24]]) y se arregló el único bloqueante encontrado (`PLAN_SECTIONS` no incluía `'operations'` en ningún plan de cliente, ver (cc)). **No queda ningún motivo técnico para no activarlo** — solo falta que el usuario decida el momento.
 
 ---
 
