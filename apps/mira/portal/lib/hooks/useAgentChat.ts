@@ -27,6 +27,13 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
     setError(null)
     setIsLoading(true)
 
+    // Historial multi-turno: los últimos 20 mensajes ANTERIORES a este viajan
+    // al servidor — sin esto cada mensaje iba solo y el agente no recordaba
+    // nada de la propia conversación.
+    const history = messages
+      .slice(-20)
+      .map(({ role: r, content }) => ({ role: r, content }))
+
     setMessages((prev) => [...prev, { role: 'user', content: message }])
 
     abortControllerRef.current = new AbortController()
@@ -38,6 +45,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
         body: JSON.stringify({
           role,
           message,
+          history,
           clientId,
           projectId: projectId || undefined,
           includeBrandBrain: true,
@@ -89,7 +97,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
     } finally {
       setIsLoading(false)
     }
-  }, [role, clientId, autonomy])
+  }, [role, clientId, autonomy, projectId, locale, messages])
 
   const cancel = useCallback(() => {
     abortControllerRef.current?.abort()

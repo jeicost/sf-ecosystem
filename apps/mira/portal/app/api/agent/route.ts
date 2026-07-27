@@ -37,7 +37,7 @@ const MAX_TOKENS: Record<string, number> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { role, message, clientId, projectId, includeBrandBrain = true, autonomy, locale = 'es' } = await req.json()
+    const { role, message, history, clientId, projectId, includeBrandBrain = true, autonomy, locale = 'es' } = await req.json()
 
     if (!role || !message) {
       return new Response(JSON.stringify({ error: 'role y message son requeridos' }), {
@@ -183,7 +183,35 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         let fullOutput = ''
         try {
-          const conversation: Anthropic.MessageParam[] = [{ role: 'user', content: message }]
+          // Memoria multi-turno: sanear el historial del cliente (roles válidos,
+          // contenido string truncado, cap 20, fusionar consecutivos del mismo
+          // rol, empezar en 'user') y anteponerlo al mensaje nuevo. Antes cada
+          // mensaje viajaba solo — el agente no recordaba ni el turno anterior.
+          const sanitized: Anthropic.MessageParam[] = []
+          if (Array.isArray(history)) {
+            for (const m of history.slice(-20)) {
+              if (!m || (m.role !== 'user' && m.role !== 'assistant')) continue
+              if (typeof m.content !== 'string' || !m.content.trim()) continue
+              const content = m.content.slice(0, 8000)
+              const last = sanitized[sanitized.length - 1]
+              if (last && last.role === m.role) {
+                last.content = `${last.content}\n\n${content}`
+              } else {
+                sanitized.push({ role: m.role, content })
+              }
+            }
+            while (sanitized.length && sanitized[0].role !== 'user') sanitized.shift()
+          }
+          // La API exige alternancia: si el historial acaba en 'user' (p.ej. un
+          // envío previo que falló sin respuesta), fusionar ese contenido con el
+          // mensaje nuevo en vez de descartarlo.
+          let userText = message
+          if (sanitized.length && sanitized[sanitized.length - 1].role === 'user') {
+            const dangling = sanitized.pop()!
+            userText = `${dangling.content}\n\n${message}`
+          }
+
+          const conversation: Anthropic.MessageParam[] = [...sanitized, { role: 'user', content: userText }]
           let toolLoops = 0
 
           // Tool-use loop: the model may call web_search one or more times before

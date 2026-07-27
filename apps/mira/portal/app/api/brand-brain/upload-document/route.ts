@@ -72,20 +72,28 @@ export async function POST(req: NextRequest) {
 
     const admin = adminClient()
 
-    // Read file content for text extraction
+    // Extracción de texto: PDF con pdf-parse v2 (antes se hacía
+    // Buffer.toString('utf-8') sobre el binario = texto corrupto en
+    // brand_documents); texto plano en utf-8.
     let text = ''
     try {
-      const buffer = await file.arrayBuffer()
-      text = Buffer.from(buffer).toString('utf-8')
-
-      // Validate UTF-8 decoding (check for null bytes which indicate corruption)
-      if (text.includes('\x00')) {
-        console.warn('Possible non-UTF8 file detected, text may be corrupted')
+      const buffer = Buffer.from(await file.arrayBuffer())
+      if (file.type === 'application/pdf') {
+        const { PDFParse } = await import('pdf-parse')
+        const parser = new PDFParse({ data: buffer })
+        const parsed = await parser.getText()
+        await parser.destroy()
+        text = parsed.text
+      } else {
+        text = buffer.toString('utf-8')
+        if (text.includes('\x00')) {
+          console.warn('Possible non-UTF8 file detected, text may be corrupted')
+        }
       }
     } catch (decodeError) {
-      console.error('Failed to decode file as UTF-8:', decodeError)
+      console.error('Failed to extract file text:', decodeError)
       return NextResponse.json(
-        { error: 'Failed to read file. Ensure it is a valid text file.' },
+        { error: 'Failed to read file. Ensure it is a valid PDF or text file.' },
         { status: 400 }
       )
     }

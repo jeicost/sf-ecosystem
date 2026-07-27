@@ -113,16 +113,27 @@ export async function POST(
       )
     }
 
-    // Read file content for analysis (best effort for text files)
+    // Extracción de texto: PDF con pdf-parse v2 (antes se hacía
+    // Buffer.toString('utf-8') sobre el binario = contexto corrupto para el
+    // agente); texto plano en utf-8 con guard de binarios.
     let text = ''
     try {
-      const buffer = await file.arrayBuffer()
-      text = Buffer.from(buffer).toString('utf-8')
-      if (text.includes('\x00')) {
-        console.warn('Possible non-UTF8 file detected, skipping analysis')
+      const buffer = Buffer.from(await file.arrayBuffer())
+      if (file.type === 'application/pdf') {
+        const { PDFParse } = await import('pdf-parse')
+        const parser = new PDFParse({ data: buffer })
+        const parsed = await parser.getText()
+        await parser.destroy()
+        text = parsed.text
+      } else {
+        text = buffer.toString('utf-8')
+        if (text.includes('\x00')) {
+          console.warn('Possible non-UTF8 file detected, skipping analysis')
+          text = ''
+        }
       }
     } catch (decodeError) {
-      console.warn('Could not decode file as text, analysis will be skipped')
+      console.warn('Could not extract file text, analysis will be skipped:', decodeError)
     }
 
     // Detect document type from filename
