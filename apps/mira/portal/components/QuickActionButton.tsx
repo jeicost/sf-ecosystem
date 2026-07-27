@@ -6,6 +6,8 @@ import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 import { getStoredClientId } from '@/lib/client-context'
 import { getStoredProjectId } from '@/lib/project-context'
+import { AttachmentDropzone } from '@/components/AttachmentDropzone'
+import type { Attachment } from '@/lib/attachments'
 
 interface QuickActionButtonProps {
   title: string
@@ -29,6 +31,7 @@ export function QuickActionButton({
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
   const { locale } = useLocaleContext()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,6 +57,7 @@ export function QuickActionButton({
           department,
           action_type: actionType,
           input_data: inputData,
+          attachments: attachments.length ? attachments : undefined,
           clientId: getStoredClientId(),
           project_id: getStoredProjectId(),
         }),
@@ -95,6 +99,13 @@ export function QuickActionButton({
 
             <form onSubmit={handleSubmit} className="space-y-4">
               {inputForm}
+
+              <AttachmentDropzone
+                clientId={getStoredClientId()}
+                attachments={attachments}
+                onChange={setAttachments}
+                disabled={isLoading}
+              />
 
               <div className="flex gap-2 pt-4">
                 <button

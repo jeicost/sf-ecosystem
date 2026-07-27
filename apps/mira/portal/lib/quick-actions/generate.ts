@@ -2,6 +2,7 @@ import { adminClient } from '@/lib/supabase'
 import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 
 const VISUAL_ACTIONS = ['crear_post_visual', 'crear_carrusel_visual', 'editar_imagen_visual']
 
@@ -33,6 +34,8 @@ export interface GenerateQuickActionParams {
   department: string
   actionType: string
   inputData: Record<string, unknown>
+  /** Adjuntos del usuario; en retry se recuperan de input_data.attachments */
+  attachments?: Attachment[]
   projectId?: string | null
   /** Retry: reutiliza una fila failed existente en vez de insertar una nueva */
   existingActionId?: string
@@ -102,9 +105,18 @@ function extractJson(text: string): Record<string, unknown> {
 export async function generateQuickAction(
   params: GenerateQuickActionParams
 ): Promise<GenerateQuickActionResult> {
-  const { clientId, userId, department, actionType, inputData, projectId, existingActionId } = params
+  const { clientId, userId, department, actionType, projectId, existingActionId } = params
   const startTime = Date.now()
   const admin = adminClient()
+
+  // Adjuntos: los pasados explícitamente o, en retry, los persistidos en input_data
+  const attachments: Attachment[] =
+    params.attachments ??
+    ((params.inputData.attachments as Attachment[] | undefined) ?? [])
+  // input_data persiste los adjuntos (metadatos, no contenido) para trazabilidad y retry
+  const inputData: Record<string, unknown> = attachments.length
+    ? { ...params.inputData, attachments }
+    : params.inputData
 
   let actionId: string
   if (existingActionId) {
@@ -169,9 +181,41 @@ export async function generateQuickAction(
   }
 
   try {
+    // Adjuntos → texto extraído (PDF/txt) al prompt + imágenes como visión
+    let attachmentText = ''
+    let imageBlocks: Awaited<ReturnType<typeof buildAttachmentBlocks>>['contentBlocks'] = []
+    if (attachments.length > 0) {
+      const built = await buildAttachmentBlocks(attachments)
+      attachmentText = built.textContext
+      imageBlocks = built.contentBlocks
+    }
+
+    // Lead seleccionado (acciones comerciales): contexto real del pipeline
+    let leadContext = ''
+    if (typeof inputData.lead_id === 'string' && inputData.lead_id) {
+      const { data: lead } = await admin
+        .from('leads')
+        .select('company_name, first_name, last_name, title, industry, hot_score, stage, notes, icebreaker_used, trigger_event')
+        .eq('id', inputData.lead_id)
+        .eq('client_id', clientId)
+        .single()
+      if (lead) {
+        leadContext = [
+          `Empresa: ${lead.company_name ?? '—'}`,
+          `Contacto: ${[lead.first_name, lead.last_name].filter(Boolean).join(' ') || '—'}${lead.title ? ` (${lead.title})` : ''}`,
+          `Industria: ${lead.industry ?? '—'} · Score: ${lead.hot_score ?? '—'} · Etapa: ${lead.stage ?? '—'}`,
+          lead.trigger_event ? `Trigger: ${lead.trigger_event}` : '',
+          lead.icebreaker_used ? `Icebreaker ya enviado: ${lead.icebreaker_used}` : '',
+          lead.notes ? `Notas: ${String(lead.notes).slice(0, 800)}` : '',
+        ].filter(Boolean).join('\n')
+      }
+    }
+
     const prompt = await getQuickActionPrompt(actionType, {
       clientId,
       inputData,
+      attachmentText: attachmentText || undefined,
+      leadContext: leadContext || undefined,
     })
 
     if (!prompt) {
@@ -182,7 +226,14 @@ export async function generateQuickAction(
     const message = await createMessageForClient(clientId, 'quick-actions', {
       model: 'claude-opus-4-8',
       max_tokens: 4000,
-      messages: [{ role: 'user', content: prompt }],
+      messages: [
+        {
+          role: 'user',
+          content: imageBlocks.length
+            ? [{ type: 'text' as const, text: prompt }, ...imageBlocks]
+            : prompt,
+        },
+      ],
     })
 
     if (message.stop_reason === 'max_tokens') {

@@ -4,6 +4,7 @@ import { adminClient } from '@/lib/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { ONBOARDING_TOOLS, executeOnboardingTool } from '@/lib/onboarding/tools'
+import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 
 export const maxDuration = 300
 
@@ -37,57 +38,8 @@ async function requireSuperAdmin() {
   return user
 }
 
-interface Attachment {
-  type: 'image' | 'pdf' | 'text'
-  name: string
-  url: string
-  mimeType?: string
-}
-
-async function buildAttachmentBlocks(attachments: Attachment[]): Promise<{
-  contentBlocks: Anthropic.ImageBlockParam[]
-  textContext: string
-}> {
-  const contentBlocks: Anthropic.ImageBlockParam[] = []
-  const textParts: string[] = []
-
-  for (const att of attachments) {
-    try {
-      const res = await fetch(att.url)
-      if (!res.ok) continue
-      const buf = Buffer.from(await res.arrayBuffer())
-
-      if (att.type === 'image') {
-        const mediaType = (att.mimeType || 'image/png') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'
-        contentBlocks.push({
-          type: 'image',
-          source: { type: 'base64', media_type: mediaType, data: buf.toString('base64') },
-        })
-        // The model can't see this URL from the image block alone -- give it
-        // as text so it can reference it in brand_data.visual_identity.logo
-        // (or elsewhere) if this attachment turns out to be the logo.
-        textParts.push(`--- Imagen adjunta "${att.name}", disponible en: ${att.url} ---`)
-      } else if (att.type === 'pdf') {
-        // pdf-parse v2 dropped the old default-export function API for a
-        // PDFParse class -- new PDFParse({ data }).getText() returns the
-        // real extracted text (the app's other "PDF extraction" routes
-        // still do Buffer.toString('utf-8') on the raw binary, which is
-        // garbage — see docs/DEBT.md (ee), not fixed there, fixed here).
-        const { PDFParse } = await import('pdf-parse')
-        const parser = new PDFParse({ data: buf })
-        const parsed = await parser.getText()
-        await parser.destroy()
-        textParts.push(`--- Documento adjunto: ${att.name} ---\n${parsed.text}`)
-      } else {
-        textParts.push(`--- Documento adjunto: ${att.name} ---\n${buf.toString('utf-8')}`)
-      }
-    } catch (err) {
-      console.warn(`Failed to process attachment ${att.name}:`, err)
-    }
-  }
-
-  return { contentBlocks, textContext: textParts.join('\n\n') }
-}
+// Attachment + buildAttachmentBlocks vivían aquí; extraídos a lib/attachments.ts
+// para que quick actions (form + chat guiado) reutilicen el mismo pipeline.
 
 export async function POST(request: NextRequest) {
   try {

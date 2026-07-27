@@ -35,6 +35,7 @@ export async function POST(req: NextRequest) {
       department,
       actionType: action_type,
       inputData: input_data,
+      attachments: Array.isArray(body.attachments) ? body.attachments : undefined,
       projectId: project_id ?? null,
     })
 

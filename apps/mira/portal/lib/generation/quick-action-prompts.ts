@@ -7,13 +7,17 @@ import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 export interface QuickActionPromptParams {
   clientId: string
   inputData: Record<string, any>
+  /** Texto extraído de los adjuntos del usuario (PDF/texto) — ver lib/attachments.ts */
+  attachmentText?: string
+  /** Contexto del lead seleccionado (acciones comerciales con lead_picker) */
+  leadContext?: string
 }
 
 export async function getQuickActionPrompt(
   actionType: string,
   params: QuickActionPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData } = params
+  const { clientId, inputData, attachmentText, leadContext } = params
 
   const [brandBrain, memoryContext, docContext] = await Promise.all([
     fetchBrandBrain(clientId),
@@ -46,7 +50,22 @@ export async function getQuickActionPrompt(
 
 OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not leave a gap or refuse to generate — use your professional judgment (and the brand/client context above) to fill it in, and prefix that part with '[RECOMENDACIÓN]' so the reader knows it's your call, not the user's input. This applies to creative/strategic choices (tone, angle, channel emphasis, scope). It does NOT apply to concrete figures or facts (prices, budgets, rates, specific business numbers, named competitors) — those, if missing from the input, stay null/'—' per the grounding contract below. Never invent a number to avoid leaving a field empty.`
 
-  const fullContext = (allContext ? `\n\nCONTEXT:\n${allContext}` : '') + languageRule + optionalFieldsRule + `\n\n${GROUNDING_CONTRACT}`
+  // Adjuntos del usuario y lead seleccionado: datos de PRIMERA MANO — van antes
+  // que el contexto general y el modelo debe preferirlos sobre cualquier supuesto.
+  const attachmentBlock = attachmentText
+    ? `\n\nARCHIVOS ADJUNTOS DEL USUARIO (fuente primaria — usa su contenido real):\n${attachmentText}`
+    : ''
+  const leadBlock = leadContext
+    ? `\n\nLEAD SELECCIONADO (datos reales del pipeline — el output debe ser específico para este lead):\n${leadContext}`
+    : ''
+
+  const fullContext =
+    attachmentBlock +
+    leadBlock +
+    (allContext ? `\n\nCONTEXT:\n${allContext}` : '') +
+    languageRule +
+    optionalFieldsRule +
+    `\n\n${GROUNDING_CONTRACT}`
 
   // Prompts específicos por acción
   // ADMIN
