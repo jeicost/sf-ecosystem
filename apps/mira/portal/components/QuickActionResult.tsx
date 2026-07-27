@@ -55,8 +55,17 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
     }
   }
 
+  // `canRetry` distingue "la generación falló en el servidor" (reintentable,
+  // la fila existe con status failed) de un error de red del propio poll.
+  const [canRetry, setCanRetry] = useState(false)
+  const [retryNonce, setRetryNonce] = useState(0)
+
   useEffect(() => {
+    let cancelled = false
+    const startedAt = Date.now()
+
     const pollResult = async () => {
+      if (cancelled) return
       try {
         const response = await fetch(`/api/quick-actions?action_id=${actionId}`)
         const data = await response.json().catch(() => null)
@@ -65,22 +74,62 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           throw new Error(data?.error || 'Failed to fetch result')
         }
 
-        if (data?.output_data && Object.keys(data.output_data).length > 0) {
+        if (data?.status === 'failed') {
+          // La generación murió en el servidor — parar el polling, no esperar para siempre
+          setError(data.error_message || null)
+          setCanRetry(true)
+          setIsLoading(false)
+        } else if (data?.output_data && Object.keys(data.output_data).length > 0) {
           setResult(data)
           setLiked(!!data.liked_by_user)
           setIsLoading(false)
+        } else if (Date.now() - startedAt > 3 * 60 * 1000) {
+          // Deadline blando: 3 min sin success ni failed — dejar de esperar y ofrecer reintento
+          setError(null)
+          setCanRetry(true)
+          setIsLoading(false)
         } else {
-          // Still processing
           setTimeout(pollResult, 2000)
         }
       } catch (err) {
+        if (cancelled) return
         setError(err instanceof Error ? err.message : 'Unknown error')
         setIsLoading(false)
       }
     }
 
+    setError(null)
+    setCanRetry(false)
+    setIsLoading(true)
     pollResult()
-  }, [actionId])
+    return () => {
+      cancelled = true
+    }
+  }, [actionId, retryNonce])
+
+  const handleRetry = async () => {
+    setIsLoading(true)
+    setError(null)
+    setCanRetry(false)
+    try {
+      const res = await fetch('/api/quick-actions/retry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action_id: actionId }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Retry failed')
+      }
+      // El retry es síncrono: al volver, la fila ya está en success — reiniciar
+      // el polling para hidratar el resultado completo.
+      setRetryNonce((n) => n + 1)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Retry failed')
+      setCanRetry(true)
+      setIsLoading(false)
+    }
+  }
 
   const handleLike = async () => {
     const next = !liked
@@ -185,18 +234,28 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
     )
   }
 
-  if (error) {
+  if (error || canRetry) {
     return (
       <div className="card px-6 py-4 border-red-500/20" style={{ borderColor: 'rgba(239, 68, 68, 0.2)' }}>
         <div className="flex items-start gap-3">
           <X size={20} style={{ color: '#EF4444' }} />
-          <div>
+          <div className="flex-1">
             <p className="font-semibold text-red-400">
               {t('actions.error-generating', locale).replace('{item}', resourceName)}
             </p>
-            <p className="text-sm text-ink-secondary mt-1">{error}</p>
+            <p className="text-sm text-ink-secondary mt-1">
+              {error ?? t('actions.generation-failed', locale)}
+            </p>
           </div>
         </div>
+        {canRetry && (
+          <button
+            onClick={handleRetry}
+            className="mt-3 w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-surface hover:opacity-80 transition-opacity flex items-center justify-center gap-2"
+          >
+            {t('actions.retry', locale)}
+          </button>
+        )}
       </div>
     )
   }
@@ -571,22 +630,28 @@ function ContentPreview({ outputType, outputData, locale }: { outputType: string
         </div>
       )
 
-    case 'video':
+    case 'video': {
+      // El prompt de crear_video_brief devuelve scene_breakdown[{scene, description}];
+      // el shape viejo scenes[{time, action}] se mantiene como fallback.
+      const scenes = outputData.scene_breakdown || outputData.scenes
       return (
         <div className="space-y-2">
           {outputData.script && <p className="text-sm text-ink-secondary">{outputData.script.substring(0, 200)}...</p>}
-          {outputData.scenes && (
+          {scenes?.length > 0 && (
             <div className="text-xs bg-surface p-2 rounded">
               <p className="font-semibold text-ink mb-1">
-                {outputData.scenes.length} {t('actions.scenes', locale)}
+                {scenes.length} {t('actions.scenes', locale)}
               </p>
-              {outputData.scenes.slice(0, 2).map((scene: any, i: number) => (
-                <p key={i} className="text-ink-secondary text-xs">{scene.time}: {scene.action}</p>
+              {scenes.slice(0, 2).map((scene: any, i: number) => (
+                <p key={i} className="text-ink-secondary text-xs">
+                  {scene.scene ?? scene.time}: {scene.description ?? scene.action}
+                </p>
               ))}
             </div>
           )}
         </div>
       )
+    }
 
     case 'text':
       return (
