@@ -2,7 +2,7 @@
 
 import { FINANZAS_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import { FinanzasQuickActions } from '@/components/quick-actions/FinanzasQuickActions'
+import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
@@ -60,7 +60,7 @@ export default function FinanzasPage() {
 
       <div className="mb-8">
         <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('section.quick-actions', locale)}</p>
-        <FinanzasQuickActions />
+        <DepartmentQuickActions department="finanzas" />
       </div>
 
       <AgentGrid

@@ -7,35 +7,36 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { getStoredClientId } from '@/lib/client-context'
 import { getStoredProjectId } from '@/lib/project-context'
 import { AttachmentDropzone } from '@/components/AttachmentDropzone'
+import { QuickActionForm } from '@/components/quick-actions/QuickActionForm'
 import type { Attachment } from '@/lib/attachments'
+import type { QuickActionDef } from '@/lib/quick-actions/registry'
+import type { AutofillBundle } from '@/lib/quick-actions/autofill-types'
 
 interface QuickActionButtonProps {
-  title: string
-  description: string
-  icon?: React.ReactNode
-  actionType: string
-  department: string
-  inputForm: React.ReactNode
-  onActionComplete?: (actionId: string) => void
+  action: QuickActionDef
+  autofill?: AutofillBundle | null
+  onActionComplete?: (actionId: string, inputData?: Record<string, unknown>) => void
 }
 
-export function QuickActionButton({
-  title,
-  description,
-  // icon is not used yet
-  actionType,
-  department,
-  inputForm,
-  onActionComplete,
-}: QuickActionButtonProps) {
+export function QuickActionButton({ action, autofill, onActionComplete }: QuickActionButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [attachments, setAttachments] = useState<Attachment[]>([])
   const { locale } = useLocaleContext()
 
+  const title = t(action.titleKey, locale)
+  const description = t(action.descriptionKey, locale)
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    // Acciones cuyo insumo ES el adjunto (editar_imagen_visual): exigirlo
+    if (action.requiredAttachment === 'image' && !attachments.some((a) => a.type === 'image')) {
+      setSubmitError(t('qa.attachment-required', locale))
+      return
+    }
+
     setIsLoading(true)
     setSubmitError(null)
 
@@ -44,18 +45,25 @@ export function QuickActionButton({
       // Object.fromEntries silently keeps only the last value for repeated
       // field names (e.g. multiple checkboxes sharing name="metrics") — collect
       // those as arrays instead of dropping every value but the last one.
-      const inputData: Record<string, FormDataEntryValue | FormDataEntryValue[]> = {}
+      const inputData: Record<string, FormDataEntryValue | FormDataEntryValue[] | boolean> = {}
       for (const key of new Set(formData.keys())) {
         const values = formData.getAll(key)
         inputData[key] = values.length > 1 ? values : values[0]
+      }
+      // Toggles: un checkbox sin marcar no aparece en FormData — normalizar a
+      // boolean explícito para que resolveOutputType y el prompt lo vean.
+      for (const field of action.fields) {
+        if (field.type === 'toggle') {
+          inputData[field.name] = formData.get(field.name) === 'true'
+        }
       }
 
       const response = await fetch('/api/quick-actions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          department,
-          action_type: actionType,
+          department: action.department,
+          action_type: action.id,
           input_data: inputData,
           attachments: attachments.length ? attachments : undefined,
           clientId: getStoredClientId(),
@@ -68,8 +76,9 @@ export function QuickActionButton({
       }
 
       const result = await response.json()
-      onActionComplete?.(result.action_id)
+      onActionComplete?.(result.action_id, inputData as Record<string, unknown>)
       setIsOpen(false)
+      setAttachments([])
     } catch (error) {
       console.error('Error queuing action:', error)
       setSubmitError(t('quick-actions.network-error', locale))
@@ -93,19 +102,26 @@ export function QuickActionButton({
 
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="card p-6 max-w-md w-full mx-4">
+          <div className="card p-6 max-w-md w-full mx-4 max-h-[85vh] overflow-y-auto">
             <h3 className="text-lg font-semibold text-ink mb-2">{title}</h3>
             <p className="text-sm text-ink-secondary mb-4">{description}</p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {inputForm}
-
-              <AttachmentDropzone
+              <QuickActionForm
+                fields={action.fields}
+                autofill={autofill}
                 clientId={getStoredClientId()}
-                attachments={attachments}
-                onChange={setAttachments}
-                disabled={isLoading}
               />
+
+              {action.acceptsAttachments !== false && (
+                <AttachmentDropzone
+                  clientId={getStoredClientId()}
+                  attachments={attachments}
+                  onChange={setAttachments}
+                  imagesOnly={action.requiredAttachment === 'image'}
+                  disabled={isLoading}
+                />
+              )}
 
               <div className="flex gap-2 pt-4">
                 <button

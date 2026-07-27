@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Search, Loader2, Plus, CheckCircle2, ChevronDown, Lock, ArrowRight, Mail, ShieldCheck } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
@@ -60,10 +61,16 @@ export default function DiscoveryPage() {
 
   const [mode, setMode] = useState<'light' | 'deep' | 'criteria'>('light')
 
-  const [keywords, setKeywords]   = useState('')
-  const [industry, setIndustry]   = useState('')
-  const [geography, setGeography] = useState('')
-  const [limit, setLimit]         = useState(20)
+  // Semillas por URL: el CTA "Abrir en Prospección" de la quick action
+  // crear_campaña precarga aquí la búsqueda del discovery_search generado.
+  const searchParams = useSearchParams()
+  const [keywords, setKeywords]   = useState(searchParams.get('keywords') ?? '')
+  const [industry, setIndustry]   = useState(searchParams.get('industry') ?? '')
+  const [geography, setGeography] = useState(searchParams.get('geography') ?? '')
+  const [limit, setLimit]         = useState(() => {
+    const l = Number(searchParams.get('limit'))
+    return Number.isFinite(l) && l > 0 ? Math.min(l, 50) : 20
+  })
 
   const [running, setRunning]     = useState(false)
   const [status, setStatus]       = useState('')

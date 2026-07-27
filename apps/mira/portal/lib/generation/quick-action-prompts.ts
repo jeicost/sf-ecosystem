@@ -121,74 +121,92 @@ Generate tutorial JSON:
   }
 
   // COMERCIAL/SALES
+  // (generar_icp / crear_propuesta / calificar_reply eliminados 2026-07-27:
+  //  eran prompts huérfanos sin botón — las funciones reales viven en las
+  //  páginas Comercial con sus APIs dedicadas /api/comercial/*.)
   if (actionType === 'crear_campaña') {
-    return `Task: Create a marketing campaign strategy based on provided input.
+    return `Task: Create an outbound acquisition campaign strategy for the brand below, ready to execute in MIRA's Prospección (lead discovery) tool.
 
 Input: ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+The "discovery_search" object is what MIRA's Prospección tool will use to actually find the leads for this campaign — fill it with the concrete search that best matches the strategy: industry (target industry of the LEADS to find, not the brand's own), geography (city/country scope), keywords (2-5 search terms describing the target companies), limit (target_count from input, default 10).
 
 Output ONLY valid JSON (no markdown, no text before/after):
-{"campaign_name":"Campaign Name","target_segment":"Audience description","messaging":["Message 1","Message 2"],"channels":["Channel 1","Channel 2"],"timeline":["Period 1: Action","Period 2: Action"],"success_metrics":["Metric 1","Metric 2"]}`
+{"campaign_name":"Campaign Name","target_segment":"Audience description","messaging":["Message 1","Message 2"],"channels":["Channel 1","Channel 2"],"timeline":["Period 1: Action","Period 2: Action"],"success_metrics":["Metric 1","Metric 2"],"discovery_search":{"industry":"","geography":"","keywords":"","limit":10}}`
   }
 
-  if (actionType === 'generar_icp') {
-    return `Task: Generate an Ideal Customer Profile (ICP) analysis.
+  if (actionType === 'responder_objecion') {
+    return `You are a senior sales closer writing on behalf of the brand below. The prospect raised an objection — craft the response that keeps the deal alive.
 
-Input: ${JSON.stringify(inputData, null, 2)}
-${fullContext}
-
-If \`company_info\` is empty, use the brand context above (your own company) instead of inventing one. Derive company_profile.size/revenue and buying_process.budget from lead_data/company_info/context; if none of them support a figure, use "unknown" rather than a plausible-sounding range.
-
-Output ONLY valid JSON (no markdown, no text):
-{"company_profile":{"size":"Size range","revenue":"Revenue range","industry":"Industry"},"decision_makers":[{"role":"Title","priorities":["Priority"],"pain_points":["Pain"]}],"buying_process":{"timeline":"Timeline","budget":"Budget","stakeholders":["Stakeholder"]},"fit_indicators":["Fit1","Fit2"]}`
-  }
-
-  if (actionType === 'crear_propuesta') {
-    return `You are a professional proposal writer. Create a business proposal outline for a potential client.
-
-Input:
+Objection and context:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-pricing.tiers[].price must come from \`budget_estimate\` in the input or from real pricing in the brand/client context. If neither is available, use the literal placeholder '[COMPLETAR: dato real]' instead of inventing a number.
+Rules: address the SPECIFIC objection (price, timing, competitor, trust...) — never a generic template. Use the brand's tone of voice. If a lead is provided, make it personal to them. Acknowledge → reframe with value → concrete next step. Short enough to actually send (under 150 words for the main response).
 
 Return ONLY valid JSON (no markdown):
 {
-  "executive_summary": "Brief overview of proposal",
-  "problem_statement": "Client's main challenges",
-  "proposed_solution": "How you solve their problems",
-  "pricing": {"tiers": [{"name": "Tier name", "price": "$X", "features": ["Feature 1"]}]},
-  "timeline": "Implementation timeline",
-  "next_steps": ["Step 1", "Step 2"]
+  "objection_type": "price/timing/competitor/authority/need/trust/other",
+  "subject": "Reply subject line if email",
+  "body": "The main response, ready to send",
+  "variant_softer": "A softer, lower-pressure variant",
+  "variant_direct": "A more direct, assumptive variant",
+  "next_step": "What to do after sending (wait X days, call, send case study...)"
 }`
   }
 
-  if (actionType === 'calificar_reply') {
-    return `You are a sales qualification analyst. Analyze a prospect's reply and provide insights.
+  if (actionType === 'email_seguimiento') {
+    return `You are a sales follow-up specialist writing on behalf of the brand below. Write a follow-up email that gets a reply without sounding like spam or desperation.
 
-Reply to analyze:
+Context (what was sent, how long ago, previous replies):
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-qualification_score must be an integer on a 1-10 scale (1 = very poor fit, 10 = excellent fit). Assess it from the reply content — do not default to any particular value.
+Rules: NO "just checking in" / "por si no viste mi último email". Add NEW value in every follow-up (an insight, a resource, a relevant hook). Use the brand's tone. If a lead is provided, personalize to their company and situation. Keep it under 120 words.
 
 Return ONLY valid JSON (no markdown):
 {
-  "qualification_score": 0,
-  "sentiment": "positive/neutral/negative",
-  "interest_level": "high/medium/low",
-  "next_action": "Suggested next step",
-  "suggested_response": "Professional response suggestion"
+  "subject": "Subject line that gets opened",
+  "body": "The follow-up email, ready to send",
+  "timing_advice": "When to send it and why (e.g. 'espera al martes por la mañana')",
+  "variant_breakup": "A polite 'last attempt' variant for when this is the final follow-up",
+  "next_step": "What to do if there's still no reply"
+}`
+  }
+
+  if (actionType === 'preparar_llamada') {
+    return `You are a sales coach preparing the user for a call. Build a pre-call brief they can scan in 2 minutes.
+
+Call goal and lead:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Rules: everything must be specific to this lead (if provided) and this brand — no generic sales advice. Discovery questions must be open-ended and ordered from context-building to commitment. Objections must be the ones THIS lead is most likely to raise, each with a ready answer in the brand's tone.
+
+Return ONLY valid JSON (no markdown):
+{
+  "lead_summary": "Who they are, why they matter, current pipeline state (3-4 lines)",
+  "call_objective": "The single outcome to walk away with",
+  "discovery_questions": ["Question 1", "Question 2", "Question 3", "Question 4", "Question 5"],
+  "likely_objections": [{"objection": "", "answer": ""}],
+  "talking_points": ["Point 1", "Point 2"],
+  "proposed_next_step": "The concrete commitment to ask for at the end"
 }`
   }
 
   // MARKETING
   if (actionType === 'crear_post') {
+    // with_image (toggle del formulario): añade el prompt de generación de
+    // imagen al schema — generate.ts lo convierte en imagen real vía OpenAI.
+    const withImage = Boolean(inputData.with_image)
     return `You are a social media strategist. Generate social media content.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+${withImage ? `
+The user wants an AI-generated image for this post. "image_generation_prompt" must be a detailed, self-contained English prompt for an image model: subject, composition, style (respect the brand's visual identity${inputData.style ? ` and the user's requested style: ${JSON.stringify(inputData.style)}` : ''}), lighting, no text overlays unless essential.` : ''}
 
 Generate content JSON:
 {
@@ -196,7 +214,8 @@ Generate content JSON:
   "copy": "",
   "hashtags": [],
   "call_to_action": "",
-  "media_brief": ""
+  "media_brief": ""${withImage ? `,
+  "image_generation_prompt": ""` : ''}
 }`
   }
 
@@ -237,17 +256,20 @@ Generate brief JSON:
   }
 
   if (actionType === 'crear_carousel') {
+    const withImage = Boolean(inputData.with_image)
     return `You are a social content designer. Generate a carousel concept.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+${withImage ? `
+The user wants an AI-generated cover image. Each slide gets an "image_generation_prompt": a detailed, self-contained English prompt (subject, composition, brand visual identity${inputData.style ? `, user's requested style: ${JSON.stringify(inputData.style)}` : ''}). Only the first slide's image is generated for now — make it the strongest.` : ''}
 
 Generate carousel JSON:
 {
   "title": "",
   "slides": [
-    {"number": 1, "copy": "", "visual_direction": ""}
+    {"number": 1, "copy": "", "visual_direction": ""${withImage ? `, "image_generation_prompt": ""` : ''}}
   ],
   "cta_slide": "",
   "hashtags": []
@@ -317,22 +339,8 @@ Generate analysis JSON:
 }`
   }
 
-  if (actionType === 'brainstorm_ideas') {
-    return `You are an innovation strategist. Generate strategic ideas.
-
-INPUT:
-${JSON.stringify(inputData, null, 2)}
-${fullContext}
-
-Generate ideas JSON:
-{
-  "theme": "",
-  "ideas": [
-    {"title": "", "description": "", "potential": "", "implementation": ""}
-  ],
-  "next_steps": []
-}`
-  }
+  // (brainstorm_ideas eliminado 2026-07-27: era un prompt de chat con forma
+  //  de quick action — el agente Blueprint lo cubre mejor conversacionalmente.)
 
   // FINANZAS
   if (actionType === 'proyeccion_financiera') {
@@ -416,39 +424,22 @@ Generate trends JSON:
 }`
   }
 
-  if (actionType === 'auditar_innovacion') {
-    return `You are an innovation consultant. Audit this company's innovation capacity and portfolio.
-
-INPUT:
-${JSON.stringify(inputData, null, 2)}
-${fullContext}
-
-All scores ("innovation_score" and each dimension "score") must be numbers on an explicit 0-100 scale (0 = no capacity, 100 = world-class). Derive each score from the evidence in the input and context.
-
-Generate audit JSON:
-{
-  "innovation_score": 0,
-  "summary": "2-3 sentence assessment",
-  "dimensions": [{"dimension": "Cultura|Procesos|Portfolio|Tecnología|Talento", "score": 0, "findings": "", "gap": ""}],
-  "strengths": ["strength 1"],
-  "weaknesses": ["weakness 1"],
-  "benchmarks": [{"competitor_or_leader": "", "what_they_do": "", "lesson": ""}],
-  "priority_initiatives": [{"initiative": "", "impact": "", "effort": "bajo|medio|alto", "timeline": ""}]
-}`
-  }
+  // (auditar_innovacion eliminado 2026-07-27: fusionado en roadmap_innovacion —
+  //  ambos pedían current_state y el roadmap ya diagnostica; sus 5 dimensiones
+  //  puntuadas viven ahora en diagnosis.dimensions.)
 
   if (actionType === 'roadmap_innovacion') {
-    return `You are an innovation strategist. First diagnose this brand's current innovation capacity (from the current_state input), then build an innovation roadmap for the requested timeline.
+    return `You are an innovation strategist. First AUDIT this brand's current innovation capacity (from the current_state input) across five dimensions, then build an innovation roadmap for the requested timeline.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-"innovation_score" must be a number on an explicit 0-100 scale (0 = no capacity, 100 = world-class), derived from the current_state input.
+All scores ("innovation_score" and each dimension "score") must be numbers on an explicit 0-100 scale (0 = no capacity, 100 = world-class), derived from the evidence in current_state and context — never a default.
 
 Generate roadmap JSON:
 {
-  "diagnosis": {"innovation_score": 0, "summary": "2-3 sentence assessment of current innovation capacity", "strengths": [""], "gaps": [""]},
+  "diagnosis": {"innovation_score": 0, "summary": "2-3 sentence assessment of current innovation capacity", "dimensions": [{"dimension": "Cultura|Procesos|Portfolio|Tecnología|Talento", "score": 0, "findings": "", "gap": ""}], "strengths": [""], "gaps": [""]},
   "vision": "Where innovation takes this brand in the requested timeline",
   "horizons": {
     "h1_core": {"focus": "Optimize the core business", "initiatives": [{"name": "", "quarter": "Q1|Q2|Q3|Q4", "outcome": ""}]},
@@ -461,55 +452,16 @@ Generate roadmap JSON:
 }`
   }
 
-  // VISUAL GENERATION (NEW — async flow via Visual Production Agent)
-  if (actionType === 'crear_post_visual') {
-    return `You are a visual content strategist. Generate directives for an AI image generator to create a social media post with integrated visual design.
-
-INPUT:
-${JSON.stringify(inputData, null, 2)}
-${fullContext}
-
-Generate visual post spec JSON:
-{
-  "post_copy": "The exact text/copy that will appear on the post",
-  "visual_direction": "Detailed visual direction for AI image generator (color palette, composition, mood, style)",
-  "hashtags": ["hashtag1", "hashtag2"],
-  "call_to_action": "Main CTA for the post",
-  "platform_optimized_for": "instagram|linkedin|twitter",
-  "brand_guidelines_applied": "Specific brand elements/colors/fonts to emphasize",
-  "image_generation_prompt": "Detailed prompt for image generator (background, subjects, lighting, style, mood)"
-}`
-  }
-
-  if (actionType === 'crear_carrusel_visual') {
-    return `You are a visual storyteller. Generate directives for an AI image generator to create a multi-slide carousel with integrated visuals.
-
-INPUT:
-${JSON.stringify(inputData, null, 2)}
-${fullContext}
-
-Generate carousel spec JSON:
-{
-  "carousel_title": "Overall carousel title/theme",
-  "slides": [
-    {
-      "slide_number": 1,
-      "copy": "Text/copy for this slide",
-      "visual_direction": "Visual style/composition for this slide",
-      "image_generation_prompt": "Specific prompt for image generator for this slide"
-    }
-  ],
-  "overall_visual_theme": "Cohesive visual direction across all slides",
-  "brand_guidelines": "Brand colors/fonts/elements to weave throughout",
-  "final_cta_slide": "Call-to-action text for last slide",
-  "hashtags": ["hashtag1"]
-}`
-  }
+  // (crear_post_visual y crear_carrusel_visual eliminados 2026-07-27:
+  //  fusionados en crear_post / crear_carousel vía el toggle with_image —
+  //  tener "Post" y "Post Visual" como cards separadas confundía.)
 
   if (actionType === 'editar_imagen_visual') {
-    return `You are a visual refinement specialist. Generate detailed refinement directives for editing an existing AI-generated image.
+    // Desde 2026-07-27 la imagen origen llega ADJUNTA (bloque de visión en el
+    // mensaje) — el modelo la VE de verdad; ya no describe a ciegas.
+    return `You are a visual refinement specialist. The user attached the original image — it is included in this message, look at it carefully. Generate refinement directives for an image generator to recreate it with the requested changes.
 
-You cannot see the original image; rely ONLY on the description provided in the input. Do not invent details about the current image that are not described.
+Describe the original faithfully from what you SEE (composition, subjects, colors, text, style) — the refinement_prompt must reconstruct everything that should stay the same, then apply the requested changes. Note: the image will be REGENERATED from your prompt, not edited pixel by pixel — the closer your description of the original, the more faithful the result.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -518,13 +470,12 @@ ${fullContext}
 Generate refinement spec JSON:
 {
   "refinement_request": "What the user wants changed",
+  "original_description": "Faithful description of the attached image as you see it",
   "specific_changes": [
-    {"element": "Name of element to change", "current_state": "How it looks now", "desired_state": "How it should look"}
+    {"element": "Name of element to change", "current_state": "How it looks now (from the image)", "desired_state": "How it should look"}
   ],
-  "protected_elements": ["Elements that must NOT be regenerated (e.g., text, logo)"],
-  "color_adjustments": "Any specific color changes needed",
-  "composition_notes": "Notes on layout/framing adjustments",
-  "refinement_prompt": "Detailed prompt for image generator to apply refinements while preserving protected elements"
+  "protected_elements": ["Elements that must NOT change (e.g., text, logo)"],
+  "refinement_prompt": "Complete self-contained prompt for the image generator: reconstructs the original (from original_description) with the changes applied and protected elements preserved"
 }`
   }
 

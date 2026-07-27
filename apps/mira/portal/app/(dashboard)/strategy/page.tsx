@@ -2,7 +2,7 @@
 
 import { STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import { StrategyQuickActions } from '@/components/quick-actions/StrategyQuickActions'
+import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
@@ -61,7 +61,7 @@ export default function StrategyPage() {
       />
 
       <div className="mb-8">
-        <StrategyQuickActions />
+        <DepartmentQuickActions department="strategy" />
       </div>
 
       <AgentGrid

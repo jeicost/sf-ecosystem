@@ -2,7 +2,7 @@
 
 import { COMERCIAL_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import { ComercialQuickActions } from '@/components/quick-actions/ComercialQuickActions'
+import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
@@ -64,7 +64,7 @@ export default function ComercialPage() {
         accentColor="#EF4444"
       />
 
-      <ComercialQuickActions />
+      <DepartmentQuickActions department="comercial" />
 
       <AgentGrid
         agents={COMERCIAL_DEPT_AGENTS}

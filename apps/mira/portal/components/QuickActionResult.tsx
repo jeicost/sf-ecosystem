@@ -14,9 +14,11 @@ interface QuickActionResultProps {
   resourceName: string
   department: string
   outputType?: string
+  /** Acciones extra del resultado declaradas en el registry (CTA Prospección, guardar en lead) */
+  resultActions?: { openInDiscovery?: boolean; saveToLead?: boolean }
 }
 
-export function QuickActionResult({ actionId, resourceName, department, outputType: propOutputType }: QuickActionResultProps) {
+export function QuickActionResult({ actionId, resourceName, department, outputType: propOutputType, resultActions }: QuickActionResultProps) {
   const [result, setResult] = useState<any>(null)
   const [isLoading, setIsLoading] = useState(true)
   // `error` is for generation/poll failures only -- there's no result to show,
@@ -128,6 +130,40 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       setError(err instanceof Error ? err.message : 'Retry failed')
       setCanRetry(true)
       setIsLoading(false)
+    }
+  }
+
+  const [isLeadSaved, setIsLeadSaved] = useState(false)
+
+  // "Guardar en el lead": añade el resultado como nota fechada al lead elegido
+  // en el formulario (acciones comerciales con lead_picker).
+  const handleSaveToLead = async () => {
+    const leadId = result?.input_data?.lead_id
+    if (!leadId) return
+    setIsSaving(true)
+    setSaveError(null)
+    try {
+      const summary = extractSummary(result.output_data, displayOutputType)
+      const body = result.output_data?.body || result.output_data?.suggested_response || ''
+      const note = `[${resourceName} · ${new Date().toISOString().slice(0, 10)}]\n${summary}${body ? `\n${body}` : ''}`
+
+      const current = await fetch(`/api/comercial/leads/${leadId}`).then((r) => (r.ok ? r.json() : null))
+      const existingNotes = current?.lead?.notes ?? current?.notes ?? ''
+
+      const res = await fetch(`/api/comercial/leads/${leadId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: existingNotes ? `${existingNotes}\n\n${note}` : note }),
+      })
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null)
+        throw new Error(errorData?.error || 'Failed to save to lead')
+      }
+      setIsLeadSaved(true)
+      setTimeout(() => setIsSaving(false), 1500)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save to lead')
+      setIsSaving(false)
     }
   }
 
@@ -297,6 +333,30 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       {/* Action Buttons */}
       <div className="card px-6 py-4 space-y-2">
         <h3 className="font-semibold text-ink mb-3">{t('actions.save-options', locale)}</h3>
+
+        {/* CTA de crear_campaña: lanza la búsqueda real en Prospección con
+            el discovery_search que generó la campaña */}
+        {resultActions?.openInDiscovery && output_data?.discovery_search && (
+          <Link
+            href={`/comercial/discovery?industry=${encodeURIComponent(output_data.discovery_search.industry ?? '')}&geography=${encodeURIComponent(output_data.discovery_search.geography ?? '')}&keywords=${encodeURIComponent(output_data.discovery_search.keywords ?? '')}&limit=${encodeURIComponent(output_data.discovery_search.limit ?? 10)}`}
+            className="w-full px-4 py-2 rounded-lg text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 transition-colors flex items-center justify-center gap-2"
+          >
+            <ArrowRight size={16} />
+            {t('actions.open-in-discovery', locale)}
+          </Link>
+        )}
+
+        {resultActions?.saveToLead && result?.input_data?.lead_id && (
+          <button
+            onClick={handleSaveToLead}
+            disabled={isSaving || isLeadSaved}
+            className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-emerald-600/20 hover:bg-emerald-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isSaving && !isLeadSaved && <Loader2 size={16} className="animate-spin" />}
+            <Check size={16} />
+            {isLeadSaved ? t('actions.saved-to-lead', locale) : t('actions.save-to-lead', locale)}
+          </button>
+        )}
 
         {/* Marketing content can go straight into the approval pipeline --
             the same approval_queue New Brief feeds. Without this, quick-action

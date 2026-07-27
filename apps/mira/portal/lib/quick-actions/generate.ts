@@ -3,22 +3,13 @@ import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
+import { getQuickAction } from '@/lib/quick-actions/registry'
 
-const VISUAL_ACTIONS = ['crear_post_visual', 'crear_carrusel_visual', 'editar_imagen_visual']
-
-// Tipos reales que la UI renderiza. La columna de BD tenía un CHECK que no los
-// admitía (migración 0048 lo ensancha); hasta que esa migración esté aplicada
-// el update de output_type falla en silencio y todo lo demás sigue funcionando.
-const OUTPUT_TYPES: Record<string, string> = {
-  crear_post: 'social_post',
-  crear_newsletter: 'newsletter',
-  crear_video_brief: 'video',
-  crear_carousel: 'structured',
-  crear_campaña_ads: 'structured',
-  crear_post_visual: 'image',
-  crear_carrusel_visual: 'image',
-  editar_imagen_visual: 'image',
-  responder_ticket: 'text',
+// Una acción produce imagen si lo declara el registry (editar_imagen_visual)
+// o si el usuario activó el toggle with_image (crear_post / crear_carousel).
+function isVisualResult(actionType: string, inputData: Record<string, unknown>): boolean {
+  if (actionType === 'editar_imagen_visual') return true
+  return Boolean(inputData.with_image)
 }
 
 export class QuickActionError extends Error {
@@ -155,7 +146,8 @@ export async function generateQuickAction(
 
   // output_type real, en update separado no-fatal: el CHECK viejo de la columna
   // lo rechaza hasta que se aplique la migración 0048 — no debe romper nada.
-  const outputType = OUTPUT_TYPES[actionType] ?? 'structured'
+  const def = getQuickAction(actionType)
+  const outputType = def?.resolveOutputType?.(inputData) ?? def?.outputType ?? 'structured'
   admin
     .from('quick_actions_results')
     .update({ output_type: outputType })
@@ -248,7 +240,7 @@ export async function generateQuickAction(
     }
 
     // Acciones visuales: generar la imagen real desde el spec vía OpenAI
-    if (VISUAL_ACTIONS.includes(actionType) && Object.keys(output_data).length > 0) {
+    if (isVisualResult(actionType, inputData) && Object.keys(output_data).length > 0) {
       const spec = output_data as Record<string, any>
       const imagePrompt: string | undefined =
         spec.image_generation_prompt ||

@@ -1,7 +1,7 @@
 'use client'
 import { MARKETING_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import { MarketingQuickActions } from '@/components/quick-actions/MarketingQuickActions'
+import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
@@ -63,7 +63,7 @@ export default function RosterPage() {
         accentColor="#8B5CF6"
       />
 
-      <MarketingQuickActions />
+      <DepartmentQuickActions department="marketing" />
 
       <AgentGrid
         agents={MARKETING_DEPT_AGENTS}
