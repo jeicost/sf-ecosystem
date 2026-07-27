@@ -6,6 +6,13 @@
 ALTER TABLE quick_actions_results
   ADD COLUMN IF NOT EXISTS error_message text;
 
+-- client_documentation.extracted_text también estaba en el esquema (0015) pero
+-- no en la BD real: agent-context.ts la selecciona en cada generación (el
+-- grounding por documentos de quick actions fallaba en silencio) y el nuevo
+-- "Guardar en Documentos" la escribe para que esos docs sirvan de grounding.
+ALTER TABLE client_documentation
+  ADD COLUMN IF NOT EXISTS extracted_text text;
+
 -- La columna output_type existía desde 0013 pero NUNCA se escribió: su CHECK
 -- original ('image','document','video','json') rechazaba los tipos reales que
 -- la UI usa ('social_post','newsletter','text','structured'), así que el route

@@ -278,6 +278,14 @@ export default function ApprovalsPage() {
                 {isExpanded && (
                   <div className="px-5 pb-5">
                     <div className="bg-card rounded-lg p-4 border border-line mb-4">
+                      {item.asset_url && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.asset_url}
+                          alt=""
+                          className="max-h-64 rounded-lg mb-3 border border-line object-contain"
+                        />
+                      )}
                       {item.copy && <p className="text-sm text-ink-secondary leading-relaxed whitespace-pre-line">{item.copy}</p>}
                       {item.caption && item.caption !== item.copy && (
                         <p className="text-xs text-ink-tertiary mt-2 leading-relaxed">{item.caption}</p>

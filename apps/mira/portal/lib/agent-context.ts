@@ -10,7 +10,6 @@ export interface RetrievedDocument {
   excerpt: string
   relevance_score: number
   tags?: string[]
-  is_indexed: boolean
 }
 
 export interface RetrieveContextResponse {
@@ -39,18 +38,24 @@ export async function retrieveAgentContext(params: {
 
     const db = adminClient()
 
+    // Columnas del esquema REAL de client_documentation (verificado en BD
+    // 2026-07-27): filename/storage_url/file_size_bytes/created_at. El select
+    // anterior pedía columnas de la migración 0015 que nunca se aplicó
+    // (extracted_text/topics/is_indexed/uploaded_at) — fallaba en silencio y
+    // el grounding por documentos no funcionó NUNCA. extracted_text existe
+    // desde la migración 0048.
     let q = db
       .from('client_documentation')
-      .select('id, title, doc_type, description, extracted_text, tags, topics, is_indexed, uploaded_at')
+      .select('id, title, doc_type, description, extracted_text, tags, created_at')
       .eq('client_id', client_id)
       .eq('is_archived', false)
 
     if (context_type !== 'all') {
       const typeMap: Record<string, string[]> = {
-        brand: ['brand_book', 'guidelines'],
-        product: ['product_docs', 'handbook'],
-        community: ['case_studies', 'handbook'],
-        company: ['handbook', 'guidelines'],
+        brand: ['brand-book', 'marketing'],
+        product: ['product-doc', 'handbook'],
+        community: ['handbook'],
+        company: ['handbook', 'brand-book'],
       }
 
       const docTypes = typeMap[context_type] || []
@@ -59,7 +64,17 @@ export async function retrieveAgentContext(params: {
       }
     }
 
-    const { data, error } = await q.order('uploaded_at', { ascending: false })
+    let { data, error } = await q.order('created_at', { ascending: false })
+
+    // Fallback pre-0048: sin la columna extracted_text, repetir el select sin ella
+    if (error?.message.includes('extracted_text')) {
+      ;({ data, error } = (await db
+        .from('client_documentation')
+        .select('id, title, doc_type, description, tags, created_at')
+        .eq('client_id', client_id)
+        .eq('is_archived', false)
+        .order('created_at', { ascending: false })) as { data: any[] | null; error: any })
+    }
 
     if (error) {
       console.error('Database error:', error)
@@ -74,16 +89,15 @@ export async function retrieveAgentContext(params: {
       }
     }
 
-    const relevantDocs = data.slice(0, limit).map(doc => ({
+    const relevantDocs = data.slice(0, limit).map((doc: any) => ({
       id: doc.id,
       title: doc.title,
       doc_type: doc.doc_type,
       excerpt: doc.extracted_text
         ? doc.extracted_text.substring(0, 500) + '...'
         : doc.description || '',
-      relevance_score: computeRelevanceScore(doc.extracted_text, query),
+      relevance_score: computeRelevanceScore(doc.extracted_text ?? null, query),
       tags: doc.tags,
-      is_indexed: doc.is_indexed,
     }))
 
     const totalText = relevantDocs.map(d => d.excerpt).join('\n').length

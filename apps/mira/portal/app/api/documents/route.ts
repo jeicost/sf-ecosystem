@@ -12,13 +12,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
+    // Columnas reales aliaseadas a los nombres que el front ya consume
+    // (el select anterior pedía columnas de la 0015 nunca aplicada — el
+    // listado de la biblioteca fallaba con error de columna).
     const admin = adminClient()
     const { data, error } = await admin
       .from('client_documentation')
-      .select('id, doc_type, title, description, file_size, uploaded_at, original_filename')
+      .select('id, doc_type, title, description, file_size:file_size_bytes, uploaded_at:created_at, original_filename:filename, storage_url')
       .eq('client_id', access.clientId)
       .eq('is_archived', false)
-      .order('uploaded_at', { ascending: false })
+      .order('created_at', { ascending: false })
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 })
@@ -52,20 +55,25 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    // Columnas del esquema REAL (verificado 2026-07-27): storage_url/filename/
+    // file_size_bytes; doc_type con CHECK ('brand-book','handbook','product-doc',
+    // 'marketing','other'). El insert anterior usaba los nombres de la migración
+    // 0015 nunca aplicada (file_url/file_size/original_filename/is_indexed) —
+    // TODA subida a la biblioteca fallaba con error de columna.
+    const VALID_DOC_TYPES = ['brand-book', 'handbook', 'product-doc', 'marketing', 'other']
     const admin = adminClient()
     const { data, error } = await admin
       .from('client_documentation')
       .insert({
         client_id: access.clientId,
-        doc_type: doc_type || 'general',
+        doc_type: VALID_DOC_TYPES.includes(doc_type) ? doc_type : 'other',
         title,
         description: description || null,
-        file_url,
-        file_size: file_size || 0,
+        storage_url: file_url,
+        file_size_bytes: file_size || 0,
         file_mime_type: file_mime_type || 'application/octet-stream',
-        original_filename: original_filename || title,
+        filename: original_filename || title,
         uploaded_by: access.userId,
-        is_indexed: false,
       })
       .select('*')
       .single()

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
+import { buildCopyText } from '@/lib/quick-actions/copy-text'
+import { getQuickAction } from '@/lib/quick-actions/registry'
 
 // Sends a Marketing quick-action result into the approval pipeline — the same
 // approval_queue that New Brief writes to and that /approvals reads. Before
@@ -18,7 +20,7 @@ export async function POST(request: NextRequest) {
     const admin = adminClient()
     const { data: action, error: fetchError } = await admin
       .from('quick_actions_results')
-      .select('id, client_id, action_type, output_data')
+      .select('id, client_id, action_type, input_data, output_data')
       .eq('id', action_id)
       .single()
 
@@ -30,18 +32,21 @@ export async function POST(request: NextRequest) {
     }
 
     const out = (action.output_data ?? {}) as Record<string, any>
-    // Best-effort copy extraction across the real quick-action output shapes
-    // (social_post: copy/hashtags/platform; newsletter: subject+sections; text: plain).
-    const copy: string =
-      typeof out.copy === 'string' ? out.copy
-      : typeof out.content === 'string' ? out.content
-      : typeof out.subject === 'string'
-        ? [out.subject, ...(Array.isArray(out.sections) ? out.sections.map((s: any) => [s?.title, s?.content].filter(Boolean).join('\n')) : [])].join('\n\n')
-      : typeof out === 'string' ? out
-      : JSON.stringify(out)
+    // Copy legible para CUALQUIER tipo de output (antes solo social_post/
+    // newsletter/text llegaban aquí; structured/image/video morían sin destino).
+    const def = getQuickAction(action.action_type)
+    const outputType =
+      def?.resolveOutputType?.((action.input_data ?? {}) as Record<string, unknown>) ??
+      def?.outputType ??
+      'structured'
+    const copy = buildCopyText(outputType, out) || JSON.stringify(out)
 
     const hashtags: string[] | null = Array.isArray(out.hashtags) ? out.hashtags : null
-    const platform: string = typeof out.platform === 'string' && out.platform ? out.platform : 'Content'
+    const platform: string =
+      typeof out.platform === 'string' && out.platform ? out.platform : outputType
+
+    // Imagen generada → asset_url para que /approvals muestre la preview
+    const assetUrl: string | null = typeof out.image_url === 'string' ? out.image_url : null
 
     const { data: queueItem, error: insertError } = await admin
       .from('approval_queue')
@@ -52,6 +57,7 @@ export async function POST(request: NextRequest) {
         copy,
         caption: copy.slice(0, 300),
         hashtags,
+        asset_url: assetUrl,
         status: 'pending_review',
         submitted_at: new Date().toISOString(),
         tone_warning: false,

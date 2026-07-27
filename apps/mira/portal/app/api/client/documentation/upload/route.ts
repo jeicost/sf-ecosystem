@@ -42,22 +42,23 @@ export async function POST(req: NextRequest) {
 
     const user = userData.user
 
-    // Insert into Supabase
+    // Insert con las columnas del esquema REAL de client_documentation
+    // (storage_url/filename/file_size_bytes — el anterior usaba los nombres de
+    // la migración 0015 nunca aplicada y fallaba con error de columna).
+    const VALID_DOC_TYPES = ['brand-book', 'handbook', 'product-doc', 'marketing', 'other']
     const { data, error } = await db
       .from('client_documentation')
       .insert({
         client_id: clientId,
-        doc_type: docType,
+        doc_type: VALID_DOC_TYPES.includes(docType) ? docType : 'other',
         title,
         description: '',
-        file_url: fileUrl,
-        file_size: file.size,
+        storage_url: fileUrl,
+        file_size_bytes: file.size,
         file_mime_type: file.type,
-        original_filename: file.name,
-        extracted_text: '',
+        filename: file.name,
         tags,
         uploaded_by: user.id,
-        is_indexed: false,
       })
       .select()
       .single()

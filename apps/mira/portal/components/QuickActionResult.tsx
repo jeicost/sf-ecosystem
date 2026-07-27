@@ -1,12 +1,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Check, X, Loader2, Download, Heart, Save, ArrowRight, AlertTriangle } from 'lucide-react'
+import { Check, X, Loader2, Download, Heart, Save, ArrowRight, AlertTriangle, Copy } from 'lucide-react'
 import Link from 'next/link'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 import { getStoredClientId } from '@/lib/client-context'
 import { getStoredProjectId } from '@/lib/project-context'
+import { buildCopyText } from '@/lib/quick-actions/copy-text'
 // import Image from 'next/image' // TODO: Image not yet used
 
 interface QuickActionResultProps {
@@ -134,6 +135,38 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   }
 
   const [isLeadSaved, setIsLeadSaved] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
+  const [isDocsSaved, setIsDocsSaved] = useState(false)
+
+  const handleCopy = async () => {
+    try {
+      const text = buildCopyText(displayOutputType, result?.output_data ?? {})
+      await navigator.clipboard.writeText(text)
+      setIsCopied(true)
+      setTimeout(() => setIsCopied(false), 2000)
+    } catch (err) {
+      setSaveError('Clipboard unavailable')
+    }
+  }
+
+  const handleSaveToDocs = async () => {
+    setIsSaving(true)
+    setSaveError(null)
+    try {
+      const res = await fetch('/api/quick-actions/save-to-docs', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action_id: actionId }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || data?.error) throw new Error(data?.error || 'Failed to save document')
+      setIsDocsSaved(true)
+      setTimeout(() => setIsSaving(false), 1500)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to save document')
+      setIsSaving(false)
+    }
+  }
 
   // "Guardar en el lead": añade el resultado como nota fechada al lead elegido
   // en el formulario (acciones comerciales con lead_picker).
@@ -358,40 +391,64 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           </button>
         )}
 
-        {/* Marketing content can go straight into the approval pipeline --
-            the same approval_queue New Brief feeds. Without this, quick-action
-            content lived only in quick_actions_results and never reached the
-            review flow the client actually works in. */}
-        {['social_post', 'newsletter', 'text'].includes(displayOutputType) && (
-          <>
-            <button
-              onClick={handleSendToApprovals}
-              disabled={isSaving || isSentToApprovals}
-              className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-emerald-600/20 hover:bg-emerald-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              {isSaving && <Loader2 size={16} className="animate-spin" />}
-              {isSentToApprovals ? (
-                <>
-                  <Check size={16} />
-                  {t('actions.sent-to-approvals', locale)}
-                </>
-              ) : (
-                <>
-                  <Check size={16} />
-                  {t('actions.send-to-approvals', locale)}
-                </>
-              )}
-            </button>
-            {isSentToApprovals && (
-              <Link
-                href="/approvals"
-                className="flex items-center justify-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors pb-1"
-              >
-                {t('actions.view-in-approvals', locale)} <ArrowRight size={12} />
-              </Link>
-            )}
-          </>
+        {/* Copiar al portapapeles — para TODOS los tipos de output */}
+        <button
+          onClick={handleCopy}
+          className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-surface hover:opacity-80 transition-opacity flex items-center justify-center gap-2"
+        >
+          {isCopied ? <Check size={16} /> : <Copy size={16} />}
+          {isCopied ? t('actions.copied', locale) : t('actions.copy', locale)}
+        </button>
+
+        {/* Todo output puede ir a la cola de aprobación (antes solo
+            social_post/newsletter/text — structured/image/video morían aquí). */}
+        <button
+          onClick={handleSendToApprovals}
+          disabled={isSaving || isSentToApprovals}
+          className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-emerald-600/20 hover:bg-emerald-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isSaving && <Loader2 size={16} className="animate-spin" />}
+          {isSentToApprovals ? (
+            <>
+              <Check size={16} />
+              {t('actions.sent-to-approvals', locale)}
+            </>
+          ) : (
+            <>
+              <Check size={16} />
+              {t('actions.send-to-approvals', locale)}
+            </>
+          )}
+        </button>
+        {isSentToApprovals && (
+          <Link
+            href="/approvals"
+            className="flex items-center justify-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors pb-1"
+          >
+            {t('actions.view-in-approvals', locale)} <ArrowRight size={12} />
+          </Link>
         )}
+
+        {/* Guardar en Documentos — el output pasa a la biblioteca del cliente
+            y sirve de grounding en generaciones futuras */}
+        <button
+          onClick={handleSaveToDocs}
+          disabled={isSaving || isDocsSaved}
+          className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-amber-600/20 hover:bg-amber-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          {isSaving && !isDocsSaved && <Loader2 size={16} className="animate-spin" />}
+          {isDocsSaved ? (
+            <>
+              <Check size={16} />
+              {t('actions.saved-to-docs', locale)}
+            </>
+          ) : (
+            <>
+              <Save size={16} />
+              {t('actions.save-to-docs', locale)}
+            </>
+          )}
+        </button>
 
         <button
           onClick={handleSaveToMemory}
