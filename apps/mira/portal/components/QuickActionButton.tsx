@@ -8,6 +8,7 @@ import { getStoredClientId } from '@/lib/client-context'
 import { getStoredProjectId } from '@/lib/project-context'
 import { AttachmentDropzone } from '@/components/AttachmentDropzone'
 import { QuickActionForm } from '@/components/quick-actions/QuickActionForm'
+import { GuidedQuickActionChat } from '@/components/quick-actions/GuidedQuickActionChat'
 import type { Attachment } from '@/lib/attachments'
 import type { QuickActionDef } from '@/lib/quick-actions/registry'
 import type { AutofillBundle } from '@/lib/quick-actions/autofill-types'
@@ -23,6 +24,7 @@ export function QuickActionButton({ action, autofill, onActionComplete }: QuickA
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [mode, setMode] = useState<'form' | 'chat'>('form')
   const { locale } = useLocaleContext()
 
   const title = t(action.titleKey, locale)
@@ -106,6 +108,40 @@ export function QuickActionButton({ action, autofill, onActionComplete }: QuickA
             <h3 className="text-lg font-semibold text-ink mb-2">{title}</h3>
             <p className="text-sm text-ink-secondary mb-4">{description}</p>
 
+            {/* Toggle Formulario | Cuéntamelo */}
+            <div className="flex rounded-lg bg-surface p-1 mb-4 text-sm font-medium">
+              <button
+                type="button"
+                onClick={() => setMode('form')}
+                className={`flex-1 py-1.5 rounded-md transition-colors ${
+                  mode === 'form' ? 'bg-purple-600 text-white' : 'text-ink-secondary hover:text-ink'
+                }`}
+              >
+                {t('qa.mode.form', locale)}
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode('chat')}
+                className={`flex-1 py-1.5 rounded-md transition-colors ${
+                  mode === 'chat' ? 'bg-purple-600 text-white' : 'text-ink-secondary hover:text-ink'
+                }`}
+              >
+                {t('qa.mode.chat', locale)}
+              </button>
+            </div>
+
+            {mode === 'chat' ? (
+              <GuidedQuickActionChat
+                action={action}
+                clientId={getStoredClientId()}
+                projectId={getStoredProjectId()}
+                onSubmitted={(actionId, fields) => {
+                  onActionComplete?.(actionId, fields)
+                  setIsOpen(false)
+                  setMode('form')
+                }}
+              />
+            ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <QuickActionForm
                 fields={action.fields}
@@ -157,6 +193,7 @@ export function QuickActionButton({ action, autofill, onActionComplete }: QuickA
                 </p>
               )}
             </form>
+            )}
           </div>
         </div>
       )}
