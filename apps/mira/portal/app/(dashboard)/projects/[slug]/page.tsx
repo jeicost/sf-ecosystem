@@ -114,7 +114,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
           .limit(6)
         setMemory((mem as MemoryEntry[]) ?? [])
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load project')
+        setError(err instanceof Error ? err.message : t('projects.load-failed', locale))
       } finally {
         setLoading(false)
       }
@@ -219,7 +219,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   }, [project?.id, project?.status, activeClient?.id])
 
   const handleArchive = async () => {
-    if (!project || !confirm('¿Archivar este proyecto? Podrás restaurarlo después.')) return
+    if (!project || !confirm(t('projects.archive-confirm', locale))) return
     await archiveProject(project.id)
     setProject({ ...project, status: 'archived' })
   }
@@ -236,10 +236,10 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
     return (
       <div className="p-6">
         <Link href="/home" className="mb-4 inline-block text-sm" style={{ color: brand }}>
-          ← Volver a Home
+          ← {t('projects.back-home', locale)}
         </Link>
         <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-red-400">
-          {error || 'Proyecto no encontrado'}
+          {error || t('projects.not-found', locale)}
         </div>
       </div>
     )
@@ -249,7 +249,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
     <div className="mx-auto max-w-4xl space-y-8 px-6 py-10">
       <Link href="/home" className="inline-flex items-center gap-1.5 text-sm transition-opacity hover:opacity-80"
         style={{ color: brand }}>
-        <ArrowLeft size={14} /> Volver a Home
+        <ArrowLeft size={14} /> {t('projects.back-home', locale)}
       </Link>
 
       {/* Header */}
@@ -258,7 +258,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: brand }}>
-              Proyecto{activeClient?.name ? ` · ${activeClient.name}` : ''}
+              {t('projects.selector-label', locale)}{activeClient?.name ? ` · ${activeClient.name}` : ''}
             </p>
             <h1 className={`${syne.className} text-3xl font-extrabold tracking-tight text-ink`}>{project.name}</h1>
             {project.description && <p className="mt-2 max-w-xl text-sm text-ink-secondary">{project.description}</p>}
@@ -268,7 +268,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
               : project.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400'
               : 'bg-surface-hover text-ink-secondary'
           }`}>
-            {project.status === 'active' ? 'Activo' : project.status === 'paused' ? 'Pausado' : 'Archivado'}
+            {project.status === 'active' ? t('projects.status.active', locale) : project.status === 'paused' ? t('projects.status.paused', locale) : t('projects.status.archived', locale)}
           </span>
         </div>
       </div>
@@ -278,23 +278,23 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         <Link href={`/agent/orchestrator?project=${project.id}`}
           className="group rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5"
           style={{ boxShadow: `inset 0 3px 0 0 ${brand}` }}>
-          <p className="text-sm font-semibold text-ink">💬 Chatear con contexto</p>
+          <p className="text-sm font-semibold text-ink">💬 {t('projects.work-chat', locale)}</p>
           <p className="mt-1.5 text-[11px] text-ink-tertiary">
-            Lo que se decida aquí se guarda en la memoria de este proyecto.
+            {t('projects.work-chat-desc', locale)}
           </p>
         </Link>
         <Link href="/toolkit"
           className="group rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5">
-          <p className="text-sm font-semibold text-ink">⚡ Generar entregable</p>
+          <p className="text-sm font-semibold text-ink">⚡ {t('projects.work-deliverable', locale)}</p>
           <p className="mt-1.5 text-[11px] text-ink-tertiary">
-            Reportes, documentos y presentaciones con el conocimiento de marca.
+            {t('projects.work-deliverable-desc', locale)}
           </p>
         </Link>
         <Link href="/integrations"
           className="group rounded-2xl border border-line bg-surface p-5 transition hover:-translate-y-0.5">
-          <p className="text-sm font-semibold text-ink">📂 Carpeta de Drive</p>
+          <p className="text-sm font-semibold text-ink">📂 {t('projects.work-drive', locale)}</p>
           <p className="mt-1.5 text-[11px] text-ink-tertiary">
-            Conecta o sincroniza las carpetas del cliente desde Integraciones.
+            {t('projects.work-drive-desc', locale)}
           </p>
         </Link>
       </div>
@@ -390,7 +390,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                   <p className="mt-0.5 text-[10px] text-ink-tertiary">
                     {t('projects.drive-linked', locale)}
                     {f.last_synced_at
-                      ? ` · ${f.files_synced} docs`
+                      ? ` · ${t('projects.drive-docs-count', locale).replace('{count}', String(f.files_synced))}`
                       : ` · ${t('projects.drive-unsynced', locale)}`}
                   </p>
                 </div>
@@ -411,7 +411,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             {driveConnected === false && (
               <p className="mt-2 text-[11px] text-amber-400/80">
                 {t('projects.drive-not-connected', locale)}{' '}
-                <Link href="/integrations" className="underline">Integraciones</Link>
+                <Link href="/integrations" className="underline">{t('nav.integrations', locale)}</Link>
               </p>
             )}
             {!showLinkForm ? (

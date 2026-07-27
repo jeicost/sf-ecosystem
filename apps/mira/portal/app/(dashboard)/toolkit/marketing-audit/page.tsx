@@ -2,73 +2,78 @@
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { t, type Locale } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 import { MarketingAuditResult } from './marketing-audit-result'
 
-const TOOL_CONFIG: ToolConfig = {
+const getToolConfig = (locale: Locale): ToolConfig => ({
   slug: 'marketing-audit',
   icon: '📊',
-  title: 'Marketing Audit',
+  title: t('toolkit.marketing-audit.title', locale),
   subtitle: 'Salsa Burgers',
-  timing: '25-35 min',
-  brandBrainNote: 'Brand Brain cargado — estrategia anual compilada',
+  timing: t('toolkit.marketing-audit.timing', locale),
+  brandBrainNote: t('toolkit.marketing-audit.brand-brain-note', locale),
   submitButtonColor: '#60A5FA',
-  submitButtonText: 'Generar Marketing Audit',
+  submitButtonText: t('toolkit.marketing-audit.submit', locale),
   fields: [
     {
       name: 'url_sitio',
-      label: 'URL DEL SITIO WEB',
+      label: t('toolkit.marketing-audit.field-url-label', locale),
       type: 'text',
-      placeholder: 'https://www.tusitio.com',
+      placeholder: t('toolkit.marketing-audit.field-url-placeholder', locale),
       required: true,
     },
     {
       name: 'canales_actuales',
-      label: 'CANALES DE MARKETING ACTUALES',
+      label: t('toolkit.marketing-audit.field-channels-label', locale),
       type: 'textarea',
-      placeholder: 'Uno por línea. Ej:\n- Instagram\n- Email marketing\n- Google Ads\n- SEO orgánico',
-      hint: 'Canales que estás usando ahora',
+      placeholder: t('toolkit.marketing-audit.field-channels-placeholder', locale),
+      hint: t('toolkit.marketing-audit.field-channels-hint', locale),
       required: true,
     },
     {
       name: 'presupuesto_anual',
-      label: 'PRESUPUESTO ANUAL DE MARKETING',
+      label: t('toolkit.marketing-audit.field-budget-label', locale),
       type: 'text',
-      placeholder: 'Ej: €25.000 o $30.000',
-      hint: 'Presupuesto total anual',
+      placeholder: t('toolkit.marketing-audit.field-budget-placeholder', locale),
+      hint: t('toolkit.marketing-audit.field-budget-hint', locale),
       required: true,
     },
     {
       name: 'metricas_clave',
-      label: 'MÉTRICAS CLAVE QUE MIDES',
+      label: t('toolkit.marketing-audit.field-metrics-label', locale),
       type: 'textarea',
-      placeholder: 'Ej:\n- Tráfico web\n- Tasa de conversión\n- Costo por adquisición\n- ROI',
+      placeholder: t('toolkit.marketing-audit.field-metrics-placeholder', locale),
       required: true,
     },
     {
       name: 'objetivos_trim',
-      label: 'OBJETIVOS DEL TRIMESTRE',
+      label: t('toolkit.marketing-audit.field-goals-label', locale),
       type: 'textarea',
-      placeholder: 'Metas específicas para los próximos 3 meses.',
+      placeholder: t('toolkit.marketing-audit.field-goals-placeholder', locale),
       required: true,
     },
     {
       name: 'competencia_directa',
-      label: 'COMPETENCIA DIRECTA',
+      label: t('toolkit.marketing-audit.field-competitors-label', locale),
       type: 'textarea',
-      placeholder: 'Nombres o URLs de competidores directos. Uno por línea.',
+      placeholder: t('toolkit.marketing-audit.field-competitors-placeholder', locale),
       required: true,
     },
     {
       name: 'recursos_team',
-      label: 'RECURSOS Y EQUIPO',
+      label: t('toolkit.marketing-audit.field-resources-label', locale),
       type: 'textarea',
-      placeholder: 'Ej: 1 social manager, 1 SEO specialist, herramientas disponibles...',
+      placeholder: t('toolkit.marketing-audit.field-resources-placeholder', locale),
       required: true,
     },
   ],
-}
+})
 
 export default function MarketingAuditPage() {
+  const { locale } = useLocaleContext()
+  const toolConfig = getToolConfig(locale)
+
   const handleGenerate = async (formData: Record<string, any>) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
@@ -90,7 +95,7 @@ export default function MarketingAuditPage() {
 
   return (
     <ToolRunnerPage
-      config={TOOL_CONFIG}
+      config={toolConfig}
       onGenerate={handleGenerate}
       resultComponent={MarketingAuditResult}
     />

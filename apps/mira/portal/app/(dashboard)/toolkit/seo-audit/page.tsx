@@ -2,70 +2,75 @@
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { t, type Locale } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 import { SeoAuditResult } from './seo-audit-result'
 
-const TOOL_CONFIG: ToolConfig = {
+const getToolConfig = (locale: Locale): ToolConfig => ({
   slug: 'seo-audit',
   icon: '🔍',
-  title: 'SEO Audit',
+  title: t('toolkit.seo.title', locale),
   subtitle: 'Salsa Burgers',
-  timing: '30-40 min',
-  brandBrainNote: 'Brand Brain cargado — análisis previo completado',
+  timing: t('toolkit.seo.timing', locale),
+  brandBrainNote: t('toolkit.seo.brand-brain-note', locale),
   submitButtonColor: '#F87171',
-  submitButtonText: 'Generar SEO Audit',
+  submitButtonText: t('toolkit.seo.submit', locale),
   fields: [
     {
       name: 'url_sitio',
-      label: 'URL DEL SITIO A AUDITAR',
+      label: t('toolkit.seo.field-url-label', locale),
       type: 'text',
-      placeholder: 'https://www.tusitio.com',
+      placeholder: t('toolkit.seo.field-url-placeholder', locale),
       required: true,
     },
     {
       name: 'palabras_clave_objetivo',
-      label: 'PALABRAS CLAVE OBJETIVO',
+      label: t('toolkit.seo.field-keywords-label', locale),
       type: 'textarea',
-      placeholder: 'Una por línea. Ej:\n- recetas fáciles\n- cocina casera\n- comida rápida saludable',
-      hint: 'Las palabras que quieres rankear',
+      placeholder: t('toolkit.seo.field-keywords-placeholder', locale),
+      hint: t('toolkit.seo.field-keywords-hint', locale),
       required: true,
     },
     {
       name: 'competidores_top_3',
-      label: 'COMPETIDORES TOP 3',
+      label: t('toolkit.seo.field-competitors-label', locale),
       type: 'textarea',
-      placeholder: 'Sitios de competencia a analizar. Uno por línea.',
-      hint: 'URLs o nombres de competidores',
+      placeholder: t('toolkit.seo.field-competitors-placeholder', locale),
+      hint: t('toolkit.seo.field-competitors-hint', locale),
       required: true,
     },
     {
       name: 'ubicacion_objetivo',
-      label: 'UBICACIÓN OBJETIVO',
+      label: t('toolkit.seo.field-location-label', locale),
       type: 'text',
-      placeholder: 'Ej: España, Madrid, América Latina',
-      hint: 'Geografía del SEO local',
+      placeholder: t('toolkit.seo.field-location-placeholder', locale),
+      hint: t('toolkit.seo.field-location-hint', locale),
       required: true,
     },
     {
       name: 'audito_tipo',
-      label: 'TIPO DE AUDITORÍA',
+      label: t('toolkit.seo.field-audit-type-label', locale),
       type: 'select',
       options: [
-        { value: 'full', label: 'Auditoría Completa' },
-        { value: 'competitive', label: 'Análisis Competitivo' },
-        { value: 'technical', label: 'Solo Técnico' },
+        { value: 'full', label: t('toolkit.seo.field-audit-type-full', locale) },
+        { value: 'competitive', label: t('toolkit.seo.field-audit-type-competitive', locale) },
+        { value: 'technical', label: t('toolkit.seo.field-audit-type-technical', locale) },
       ],
       required: true,
     },
     {
       name: 'historial_trafico',
-      label: 'HISTORIAL DE TRÁFICO / METAS',
+      label: t('toolkit.seo.field-traffic-label', locale),
       type: 'textarea',
-      placeholder: 'Tráfico actual, caídas recientes, objetivos de crecimiento...',
+      placeholder: t('toolkit.seo.field-traffic-placeholder', locale),
     },
   ],
-}
+})
 
 export default function SeoAuditPage() {
+  const { locale } = useLocaleContext()
+  const toolConfig = getToolConfig(locale)
+
   const handleGenerate = async (formData: Record<string, any>) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
@@ -87,7 +92,7 @@ export default function SeoAuditPage() {
 
   return (
     <ToolRunnerPage
-      config={TOOL_CONFIG}
+      config={toolConfig}
       onGenerate={handleGenerate}
       resultComponent={SeoAuditResult}
     />

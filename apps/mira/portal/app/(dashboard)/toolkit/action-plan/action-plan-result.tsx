@@ -1,14 +1,18 @@
 'use client'
 
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
+
 export function ActionPlanResult({ data }: { data?: any }) {
-  if (!data) return <div className="text-ink-secondary">No data</div>
+  const { locale } = useLocaleContext()
+  if (!data) return <div className="text-ink-secondary">{t('toolkit.results.no-data', locale)}</div>
 
   return (
     <div className="w-full">
       {/* Header */}
       <div className="bg-page border-b border-line p-6 md:p-8">
-        <h1 className="text-5xl font-black text-ink mb-2">ACTION PLAN</h1>
-        <p className="text-ink-secondary max-w-2xl">90-day execution strategy: 30/60/90 sprints, OKRs, resources, KPIs, and risk mitigation</p>
+        <h1 className="text-5xl font-black text-ink mb-2">{t('toolkit.action-plan.result-title', locale)}</h1>
+        <p className="text-ink-secondary max-w-2xl">{t('toolkit.action-plan.result-desc', locale)}</p>
       </div>
 
       {/* Main Content */}
@@ -17,7 +21,7 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* EXECUTIVE SUMMARY */}
         {data.executive_summary && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">Executive Summary</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.results.executive-summary', locale)}</h2>
             <div className="border border-line bg-surface p-4 rounded">
               <p className="text-ink-secondary text-sm">{data.executive_summary}</p>
             </div>
@@ -27,7 +31,7 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* QUARTERLY OKRS */}
         {data.quarterly_okrs && data.quarterly_okrs.length > 0 && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">Quarterly OKRs</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.quarterly-okrs', locale)}</h2>
             <div className="space-y-4">
               {data.quarterly_okrs.map((q: any, qidx: number) => (
                 <div key={qidx} className="border p-4 rounded" style={{borderColor: 'rgba(77,124,255,0.3)', backgroundColor: 'rgba(77,124,255,0.05)'}}>
@@ -48,19 +52,19 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* 30-DAY SPRINT */}
         {data['30_day_sprint'] && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">30-Day Sprint</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.sprint-30', locale)}</h2>
             <div className="space-y-4">
               {data['30_day_sprint'].focus && (
                 <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#00e676', backgroundColor: 'rgba(0,230,118,0.05)'}}>
-                  <div className="text-xs font-bold mb-1" style={{color: '#00e676'}}>FOCUS</div>
+                  <div className="text-xs font-bold mb-1" style={{color: '#00e676'}}>{t('toolkit.action-plan.focus', locale)}</div>
                   <p className="text-sm text-ink-secondary">{data['30_day_sprint'].focus}</p>
                 </div>
               )}
               {data['30_day_sprint'].weekly_milestones && data['30_day_sprint'].weekly_milestones.length > 0 && (
                 <div className="border border-line bg-surface p-4 rounded">
-                  <div className="text-xs text-ink-secondary font-bold mb-2">WEEKLY MILESTONES</div>
+                  <div className="text-xs text-ink-secondary font-bold mb-2">{t('toolkit.action-plan.weekly-milestones', locale)}</div>
                   {data['30_day_sprint'].weekly_milestones.map((m: string, idx: number) => (
-                    <div key={idx} className="text-xs text-ink-secondary mb-1">Week {idx + 1}: {m}</div>
+                    <div key={idx} className="text-xs text-ink-secondary mb-1">{t('toolkit.action-plan.week', locale)} {idx + 1}: {m}</div>
                   ))}
                 </div>
               )}
@@ -70,8 +74,8 @@ export function ActionPlanResult({ data }: { data?: any }) {
                     <div key={idx} className="border border-line bg-surface p-3 rounded">
                       <div className="font-bold text-ink text-sm mb-1">{idx + 1}. {action.title}</div>
                       <div className="flex gap-2 text-xs text-ink-secondary">
-                        {action.owner && <div>Owner: {action.owner}</div>}
-                        {action.effort && <div>Effort: {action.effort}</div>}
+                        {action.owner && <div>{t('toolkit.action-plan.owner', locale)}: {action.owner}</div>}
+                        {action.effort && <div>{t('toolkit.action-plan.effort', locale)}: {action.effort}</div>}
                       </div>
                     </div>
                   ))}
@@ -84,11 +88,11 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* 60-DAY PUSH */}
         {data['60_day_push'] && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">60-Day Push</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.push-60', locale)}</h2>
             <div className="space-y-4">
               {data['60_day_push'].focus && (
                 <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#ffd740', backgroundColor: 'rgba(255,215,64,0.05)'}}>
-                  <div className="text-xs font-bold mb-1" style={{color: '#ffd740'}}>FOCUS</div>
+                  <div className="text-xs font-bold mb-1" style={{color: '#ffd740'}}>{t('toolkit.action-plan.focus', locale)}</div>
                   <p className="text-sm text-ink-secondary">{data['60_day_push'].focus}</p>
                 </div>
               )}
@@ -109,7 +113,7 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* 90-DAY VISION */}
         {data['90_day_vision'] && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">90-Day Vision</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.vision-90', locale)}</h2>
             <div className="border-l-4 p-4 rounded-r" style={{borderColor: '#4d7cff', backgroundColor: 'rgba(77,124,255,0.05)'}}>
               <p className="text-ink-secondary text-sm">{data['90_day_vision'].focus}</p>
               {data['90_day_vision'].actions && data['90_day_vision'].actions.length > 0 && (
@@ -126,11 +130,11 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* RESOURCE REQUIREMENTS */}
         {data.resource_requirements && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">Resource Requirements</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.resource-requirements', locale)}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.resource_requirements.team && (
                 <div className="border border-line bg-surface p-4 rounded">
-                  <div className="text-xs text-ink-secondary font-bold mb-2">TEAM</div>
+                  <div className="text-xs text-ink-secondary font-bold mb-2">{t('toolkit.action-plan.team', locale)}</div>
                   {Array.isArray(data.resource_requirements.team) ? (
                     <ul className="text-xs text-ink-secondary space-y-1">
                       {data.resource_requirements.team.map((t: string, idx: number) => (
@@ -144,7 +148,7 @@ export function ActionPlanResult({ data }: { data?: any }) {
               )}
               {data.resource_requirements.budget && (
                 <div className="border border-line bg-surface p-4 rounded">
-                  <div className="text-xs text-ink-secondary font-bold mb-2">BUDGET</div>
+                  <div className="text-xs text-ink-secondary font-bold mb-2">{t('toolkit.action-plan.budget', locale)}</div>
                   <p className="text-sm font-bold" style={{color: '#00e676'}}>{data.resource_requirements.budget}</p>
                 </div>
               )}
@@ -155,13 +159,13 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* KPIS & TRACKING */}
         {data.kpis && data.kpis.length > 0 && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">KPIs & Tracking</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.kpis-tracking', locale)}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {data.kpis.map((kpi: any, idx: number) => (
                 <div key={idx} className="border border-line bg-surface p-4 rounded">
                   <div className="font-bold text-ink text-sm mb-1">{kpi.metric}</div>
-                  <div className="text-xs" style={{color: '#00e676'}}>Target: {kpi.target}</div>
-                  <div className="text-xs text-ink-secondary mt-1">Tracking: {kpi.tracking}</div>
+                  <div className="text-xs" style={{color: '#00e676'}}>{t('toolkit.results.target', locale)}: {kpi.target}</div>
+                  <div className="text-xs text-ink-secondary mt-1">{t('toolkit.results.tracking', locale)}: {kpi.tracking}</div>
                 </div>
               ))}
             </div>

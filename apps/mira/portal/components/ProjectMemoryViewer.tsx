@@ -19,12 +19,12 @@ interface MemoryItem {
   is_pinned: boolean
 }
 
-const CATEGORY_CONFIG: Record<string, { icon: string; color: string; label: string }> = {
-  insight: { icon: '💡', color: '#FCD34D', label: 'Insight' },
-  decision: { icon: '📌', color: '#A78BFA', label: 'Decision' },
-  action: { icon: '✅', color: '#4ADE80', label: 'Action' },
-  metric: { icon: '📊', color: '#60A5FA', label: 'Metric' },
-  content: { icon: '📝', color: '#F87171', label: 'Content' },
+const CATEGORY_CONFIG: Record<string, { icon: string; color: string; labelKey: string }> = {
+  insight: { icon: '💡', color: '#FCD34D', labelKey: 'memory.category.insight' },
+  decision: { icon: '📌', color: '#A78BFA', labelKey: 'memory.category.decision' },
+  action: { icon: '✅', color: '#4ADE80', labelKey: 'memory.category.action' },
+  metric: { icon: '📊', color: '#60A5FA', labelKey: 'memory.category.metric' },
+  content: { icon: '📝', color: '#F87171', labelKey: 'memory.category.content' },
 }
 
 // useSearchParams exige un límite de Suspense en build: el wrapper lo aporta
@@ -80,11 +80,11 @@ function ProjectMemoryViewerInner() {
       if (selectedProjectId) url.searchParams.set('project_id', selectedProjectId)
 
       const res = await fetch(url)
-      if (!res.ok) throw new Error('Failed to fetch project memory')
+      if (!res.ok) throw new Error(t('memory.error-fetch', locale))
       const { data } = await res.json()
       setMemories(data || [])
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(err instanceof Error ? err.message : t('memory.error-unknown', locale))
     } finally {
       setLoading(false)
     }
@@ -106,7 +106,7 @@ function ProjectMemoryViewerInner() {
   }
 
   const handleArchive = async (memoryId: string) => {
-    if (!confirm('Archive this memory?')) return
+    if (!confirm(t('memory.confirm-archive', locale))) return
 
     try {
       const res = await fetch('/api/project-memory', {
@@ -123,7 +123,7 @@ function ProjectMemoryViewerInner() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
+    return new Date(dateString).toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -137,11 +137,11 @@ function ProjectMemoryViewerInner() {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)', letterSpacing: '0.12em' }}>
-            PROJECT INTELLIGENCE
+            {t('memory.kicker', locale)}
           </p>
-          <h1 className="text-2xl font-semibold text-ink tracking-tight">Project Memory</h1>
+          <h1 className="text-2xl font-semibold text-ink tracking-tight">{t('memory.title', locale)}</h1>
           <p className="text-sm mt-1 text-ink-tertiary">
-            Insights, decisions, and actions from your toolkit results. Build institutional knowledge.
+            {t('memory.subtitle', locale)}
           </p>
         </div>
 
@@ -176,7 +176,7 @@ function ProjectMemoryViewerInner() {
               : 'bg-surface text-ink hover:bg-surface-hover'
           }`}
         >
-          All
+          {t('memory.filter-all', locale)}
         </button>
         {Object.entries(CATEGORY_CONFIG).map(([key, config]) => (
           <button
@@ -191,7 +191,7 @@ function ProjectMemoryViewerInner() {
               background: selectedCategory === key ? config.color : undefined,
             }}
           >
-            {config.icon} {config.label}
+            {config.icon} {t(config.labelKey, locale)}
           </button>
         ))}
       </div>
@@ -202,7 +202,7 @@ function ProjectMemoryViewerInner() {
           <div className="flex items-start gap-3">
             <AlertCircle size={20} style={{ color: '#EF4444' }} />
             <div>
-              <p className="font-semibold text-red-400">Error</p>
+              <p className="font-semibold text-red-400">{t('memory.error-title', locale)}</p>
               <p className="text-sm text-ink-secondary mt-1">{error}</p>
             </div>
           </div>
@@ -217,7 +217,7 @@ function ProjectMemoryViewerInner() {
       ) : memories.length === 0 ? (
         <div className="card p-8 text-center">
           <BookOpen size={40} className="text-ink-tertiary mx-auto mb-3" />
-          <p className="text-ink-secondary">No memories yet. Save quick action results to build your project knowledge base.</p>
+          <p className="text-ink-secondary">{t('memory.empty', locale)}</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -264,14 +264,14 @@ function ProjectMemoryViewerInner() {
                     <button
                       onClick={() => handleTogglePin(memory.id, memory.is_pinned)}
                       className="p-2 rounded-lg text-ink-secondary hover:text-yellow-400 hover:bg-yellow-500/10 transition-colors"
-                      title={memory.is_pinned ? 'Unpin' : 'Pin'}
+                      title={memory.is_pinned ? t('memory.unpin', locale) : t('memory.pin', locale)}
                     >
                       <Pin size={16} fill={memory.is_pinned ? 'currentColor' : 'none'} />
                     </button>
                     <button
                       onClick={() => handleArchive(memory.id)}
                       className="p-2 rounded-lg text-ink-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                      title="Archive"
+                      title={t('memory.archive', locale)}
                     >
                       <Archive size={16} />
                     </button>

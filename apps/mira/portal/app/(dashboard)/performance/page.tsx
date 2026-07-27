@@ -4,13 +4,16 @@ import { TrendingUp, TrendingDown, Users, Heart, Eye, Share2, Activity, Loader2 
 import { clsx } from 'clsx'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
+import { t, type Locale } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 type Period = '7d' | '30d' | '90d'
 
+// label holds an i18n key, resolved with t() at render time
 const PERIODS: { id: Period; label: string }[] = [
-  { id: '7d',  label: 'Last 7 days' },
-  { id: '30d', label: 'Last 30 days' },
-  { id: '90d', label: 'Last 90 days' },
+  { id: '7d',  label: 'perf.period-7d' },
+  { id: '30d', label: 'perf.period-30d' },
+  { id: '90d', label: 'perf.period-90d' },
 ]
 
 const PLATFORM_COLORS: Record<string, string> = {
@@ -44,16 +47,17 @@ interface ActivityRow {
   status: string; output_summary: string | null; started_at: string
 }
 
-function timeAgo(ts: string) {
+function timeAgo(ts: string, locale: Locale) {
   const diff = Date.now() - new Date(ts).getTime()
   const m = Math.floor(diff / 60000)
-  if (m < 1) return 'ahora'
+  if (m < 1) return t('perf.time-now', locale)
   if (m < 60) return `${m}m`
   if (m < 1440) return `${Math.floor(m / 60)}h`
   return `${Math.floor(m / 1440)}d`
 }
 
 export default function PerformancePage() {
+  const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
 
@@ -118,8 +122,8 @@ export default function PerformancePage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold text-ink">Performance</h1>
-          <p className="text-ink-tertiary mt-1 text-sm">Real MIRA team activity.</p>
+          <h1 className="text-2xl font-semibold text-ink">{t('perf.title', locale)}</h1>
+          <p className="text-ink-tertiary mt-1 text-sm">{t('perf.subtitle', locale)}</p>
         </div>
         <div className="flex bg-card border border-line rounded-lg p-0.5">
           {PERIODS.map(p => (
@@ -131,7 +135,7 @@ export default function PerformancePage() {
                 period === p.id ? 'bg-surface-hover text-ink font-medium' : 'text-ink-tertiary hover:text-ink'
               )}
             >
-              {p.label}
+              {t(p.label, locale)}
             </button>
           ))}
         </div>
@@ -140,10 +144,10 @@ export default function PerformancePage() {
       {/* KPI Cards */}
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
-          { label: 'Posts generated', value: posts.length, icon: Share2, color: 'text-violet-400' },
-          { label: 'Published', value: published, icon: TrendingUp, color: 'text-emerald-400' },
-          { label: 'Agent tasks', value: totalTasks, icon: Activity, color: 'text-amber-400' },
-          { label: 'Completed', value: completed, icon: Heart, color: 'text-blue-400' },
+          { label: t('perf.posts-generated', locale), value: posts.length, icon: Share2, color: 'text-violet-400' },
+          { label: t('perf.published', locale), value: published, icon: TrendingUp, color: 'text-emerald-400' },
+          { label: t('perf.agent-tasks', locale), value: totalTasks, icon: Activity, color: 'text-amber-400' },
+          { label: t('perf.completed', locale), value: completed, icon: Heart, color: 'text-blue-400' },
         ].map(({ label, value, icon: Icon, color }) => (
           <div key={label} className="card px-5 py-4">
             <Icon size={16} className={clsx('mb-3', color)} />
@@ -157,11 +161,11 @@ export default function PerformancePage() {
         {/* Posts by platform */}
         <div className="card p-5">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm font-medium text-ink">Posts by platform</h2>
-            <span className="text-xs text-ink-tertiary">{posts.length} total</span>
+            <h2 className="text-sm font-medium text-ink">{t('perf.posts-by-platform', locale)}</h2>
+            <span className="text-xs text-ink-tertiary">{posts.length} {t('perf.total', locale)}</span>
           </div>
           {byPlatform.length === 0 ? (
-            <p className="text-xs text-ink-muted text-center py-6">No posts in this period.</p>
+            <p className="text-xs text-ink-muted text-center py-6">{t('perf.no-posts', locale)}</p>
           ) : (
             <div className="space-y-4">
               {byPlatform.map(([platform, count]) => (
@@ -187,9 +191,9 @@ export default function PerformancePage() {
 
         {/* Recent posts */}
         <div className="card p-5">
-          <h2 className="text-sm font-medium text-ink mb-4">Latest generated posts</h2>
+          <h2 className="text-sm font-medium text-ink mb-4">{t('perf.latest-posts', locale)}</h2>
           {posts.length === 0 ? (
-            <p className="text-xs text-ink-muted text-center py-6">No posts in this period.<br />Send a brief to get started.</p>
+            <p className="text-xs text-ink-muted text-center py-6">{t('perf.no-posts', locale)}<br />{t('perf.send-brief-start', locale)}</p>
           ) : (
             <div className="space-y-3">
               {posts.slice(0, 5).map(post => (
@@ -200,7 +204,7 @@ export default function PerformancePage() {
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-xs text-ink-secondary leading-snug line-clamp-2">
-                      {post.content?.slice(0, 100) ?? '(no content)'}
+                      {post.content?.slice(0, 100) ?? t('perf.no-content', locale)}
                     </p>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] text-ink-tertiary">{post.platform}</span>
@@ -213,7 +217,7 @@ export default function PerformancePage() {
                       </span>
                     </div>
                   </div>
-                  <span className="text-[10px] text-ink-muted shrink-0">{timeAgo(post.created_at)}</span>
+                  <span className="text-[10px] text-ink-muted shrink-0">{timeAgo(post.created_at, locale)}</span>
                 </div>
               ))}
             </div>
@@ -224,12 +228,12 @@ export default function PerformancePage() {
       {/* Actividad de agentes */}
       <div className="card p-5 mb-6">
         <div className="flex items-center justify-between mb-5">
-          <h2 className="text-sm font-medium text-ink">Team activity</h2>
-          <span className="text-xs text-ink-tertiary">{completed}/{totalTasks} tasks completed</span>
+          <h2 className="text-sm font-medium text-ink">{t('perf.team-activity', locale)}</h2>
+          <span className="text-xs text-ink-tertiary">{completed}/{totalTasks} {t('perf.tasks-completed', locale)}</span>
         </div>
 
         {byAgent.length === 0 ? (
-          <p className="text-xs text-ink-muted text-center py-6">No activity in this period. Chat with an agent to get started.</p>
+          <p className="text-xs text-ink-muted text-center py-6">{t('perf.no-activity', locale)}</p>
         ) : (
           <div className="grid grid-cols-3 gap-3 mb-5">
             {byAgent.map(([role, count]) => {
@@ -244,7 +248,7 @@ export default function PerformancePage() {
                     </div>
                     <div>
                       <p className="text-xs text-ink font-medium">{name}</p>
-                      <p className="text-[10px] text-ink-muted">{count} tareas</p>
+                      <p className="text-[10px] text-ink-muted">{count} {t('perf.tasks', locale)}</p>
                     </div>
                   </div>
                   <div className="h-1.5 bg-surface rounded-full">
@@ -279,7 +283,7 @@ export default function PerformancePage() {
                   })}>
                     {a.status}
                   </span>
-                  <span className="text-[10px] text-ink-muted w-8 text-right shrink-0">{timeAgo(a.started_at)}</span>
+                  <span className="text-[10px] text-ink-muted w-8 text-right shrink-0">{timeAgo(a.started_at, locale)}</span>
                 </div>
               )
             })}

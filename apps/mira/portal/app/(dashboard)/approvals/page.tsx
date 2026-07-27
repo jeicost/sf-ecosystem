@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase'
 import { clsx } from 'clsx'
 import type { Alert, ApprovalItem } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
+import { t, type Locale } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 // Única bandeja de revisión de Marketing: cola de aprobación (pendientes +
 // historial) y alertas de reputación. Antes esto vivía repartido entre esta
@@ -14,22 +16,24 @@ import { useActiveClient } from '@/lib/client-context'
 
 type FilterTab = 'pending' | 'approved' | 'rejected' | 'alerts'
 
+// label holds an i18n key, resolved with t() at render time
 const FILTER_TABS: { id: FilterTab; label: string }[] = [
-  { id: 'pending',  label: 'Pending' },
-  { id: 'approved', label: 'Approved' },
-  { id: 'rejected', label: 'Rejected' },
-  { id: 'alerts',   label: 'Alerts' },
+  { id: 'pending',  label: 'approvals.tab-pending' },
+  { id: 'approved', label: 'approvals.tab-approved' },
+  { id: 'rejected', label: 'approvals.tab-rejected' },
+  { id: 'alerts',   label: 'approvals.tab-alerts' },
 ]
 
-function timeAgo(ts: string) {
+function timeAgo(ts: string, locale: Locale) {
   const diff = Date.now() - new Date(ts).getTime()
   const m = Math.floor(diff / 60000)
-  if (m < 1) return 'ahora'
+  if (m < 1) return t('approvals.time-now', locale)
   if (m < 60) return `${m} min`
   return `${Math.floor(m / 60)}h`
 }
 
 export default function ApprovalsPage() {
+  const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
 
@@ -113,23 +117,23 @@ export default function ApprovalsPage() {
     <div className="px-8 py-8">
       <div className="mb-6 flex items-end justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-semibold text-ink">Approval Queue</h1>
-          <p className="text-ink-tertiary mt-1 text-sm">Review and approve content before it goes live.</p>
+          <h1 className="text-2xl font-semibold text-ink">{t('approvals.title', locale)}</h1>
+          <p className="text-ink-tertiary mt-1 text-sm">{t('approvals.subtitle', locale)}</p>
         </div>
         <Link
           href="/calendar"
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs bg-surface text-ink-secondary hover:text-ink transition-colors"
         >
-          📅 Ver calendario
+          📅 {t('approvals.view-calendar', locale)}
         </Link>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: 'Waiting for your ok', value: pending,       icon: Clock,         color: 'text-amber-400',   bg: 'bg-amber-500/10' },
-          { label: 'Approved',            value: approved,      icon: Check,         color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: 'Open alerts',         value: alerts.length, icon: AlertTriangle, color: 'text-red-400',     bg: 'bg-red-500/10' },
+          { label: t('approvals.stat-waiting', locale),     value: pending,       icon: Clock,         color: 'text-amber-400',   bg: 'bg-amber-500/10' },
+          { label: t('approvals.stat-approved', locale),    value: approved,      icon: Check,         color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { label: t('approvals.stat-open-alerts', locale), value: alerts.length, icon: AlertTriangle, color: 'text-red-400',     bg: 'bg-red-500/10' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="card px-5 py-4 flex items-center gap-4">
             <div className={clsx('w-9 h-9 rounded-lg flex items-center justify-center', bg)}>
@@ -159,7 +163,7 @@ export default function ApprovalsPage() {
               )}
             >
               {tab.id === 'alerts' && <Bell size={11} className={alerts.length > 0 ? 'text-red-400' : undefined} />}
-              {tab.label}
+              {t(tab.label, locale)}
               <span className={clsx('text-[10px] px-1.5 py-0.5 rounded-full',
                 filter === tab.id ? 'bg-surface-hover text-ink' : 'bg-surface text-ink-tertiary'
               )}>{count}</span>
@@ -174,7 +178,7 @@ export default function ApprovalsPage() {
           {alerts.length === 0 && (
             <div className="card py-14 text-center">
               <Bell size={24} className="text-ink-muted mx-auto mb-3" />
-              <p className="text-sm text-ink-tertiary">No open alerts. All quiet.</p>
+              <p className="text-sm text-ink-tertiary">{t('approvals.no-open-alerts', locale)}</p>
             </div>
           )}
           {alerts.map(alert => (
@@ -184,20 +188,20 @@ export default function ApprovalsPage() {
                   <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full uppercase tracking-wide">
                     {alert.canal} · {alert.tipo.replace('_', ' ')}
                   </span>
-                  <span className="text-[10px] text-ink-muted">{timeAgo(alert.created_at)}</span>
+                  <span className="text-[10px] text-ink-muted">{timeAgo(alert.created_at, locale)}</span>
                 </div>
                 <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full capitalize">
-                  {alert.prioridad} prioridad
+                  {alert.prioridad} {t('approvals.priority', locale)}
                 </span>
               </div>
               <div className="space-y-3">
                 <div className="bg-card rounded-lg p-3 border border-line">
-                  <p className="text-[11px] text-ink-tertiary mb-1">Reseña recibida:</p>
+                  <p className="text-[11px] text-ink-tertiary mb-1">{t('approvals.review-received', locale)}</p>
                   <p className="text-sm text-ink-secondary leading-relaxed">&ldquo;{alert.contenido}&rdquo;</p>
                 </div>
                 {alert.propuesta_respuesta && (
                   <div className="bg-card rounded-lg p-3 border border-emerald-500/20">
-                    <p className="text-[11px] text-emerald-400/70 mb-1">Respuesta propuesta por Sam:</p>
+                    <p className="text-[11px] text-emerald-400/70 mb-1">{t('approvals.sam-proposed-reply', locale)}</p>
                     <p className="text-sm text-ink-secondary leading-relaxed">{alert.propuesta_respuesta}</p>
                   </div>
                 )}
@@ -207,13 +211,13 @@ export default function ApprovalsPage() {
                   onClick={() => resolveAlert(alert.id)}
                   className="flex-1 py-2 text-xs rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors font-medium"
                 >
-                  Approve & send
+                  {t('approvals.approve-send', locale)}
                 </button>
                 <button
                   onClick={() => resolveAlert(alert.id)}
                   className="px-4 py-2 text-xs rounded-lg bg-surface text-ink-tertiary hover:text-ink transition-colors"
                 >
-                  Resolve
+                  {t('approvals.resolve', locale)}
                 </button>
               </div>
             </div>
@@ -228,7 +232,7 @@ export default function ApprovalsPage() {
             <div className="card py-14 text-center">
               <CheckSquare size={24} className="text-ink-muted mx-auto mb-3" />
               <p className="text-sm text-ink-tertiary">
-                {filter === 'pending' ? 'Nothing pending. All up to date.' : 'No items in this category.'}
+                {filter === 'pending' ? t('approvals.empty-pending', locale) : t('approvals.empty-category', locale)}
               </p>
             </div>
           )}
@@ -259,15 +263,15 @@ export default function ApprovalsPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {item.tone_warning && isPending && (
-                      <span className="text-[10px] bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full">⚠ Review tone</span>
+                      <span className="text-[10px] bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full">⚠ {t('approvals.review-tone', locale)}</span>
                     )}
                     {isApproved && (
-                      <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full">✓ Approved</span>
+                      <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full">✓ {t('approvals.approved-badge', locale)}</span>
                     )}
                     {item.status === 'rejected' && (
-                      <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full">Rejected</span>
+                      <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full">{t('approvals.rejected-badge', locale)}</span>
                     )}
-                    <span className="text-[11px] text-ink-muted">{timeAgo(item.submitted_at)}</span>
+                    <span className="text-[11px] text-ink-muted">{timeAgo(item.submitted_at, locale)}</span>
                   </div>
                 </button>
 
@@ -288,10 +292,10 @@ export default function ApprovalsPage() {
                           onClick={() => updateStatus(item.id, 'approved')}
                           className="flex-1 py-2.5 text-xs rounded-lg bg-ink text-page hover:opacity-90 transition-colors font-semibold flex items-center justify-center gap-1.5"
                         >
-                          <Check size={13} /> Approve & schedule
+                          <Check size={13} /> {t('approvals.approve-schedule', locale)}
                         </button>
                         <button className="flex-1 py-2.5 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors flex items-center justify-center gap-1.5">
-                          <Edit3 size={13} /> Edit
+                          <Edit3 size={13} /> {t('approvals.edit', locale)}
                         </button>
                         <button
                           onClick={() => updateStatus(item.id, 'rejected')}
@@ -303,7 +307,7 @@ export default function ApprovalsPage() {
                     )}
                     {isApproved && (
                       <p className="text-xs text-emerald-400 flex items-center gap-1.5 py-1">
-                        <Check size={12} /> Approved — in publishing queue
+                        <Check size={12} /> {t('approvals.approved-in-queue', locale)}
                       </p>
                     )}
                   </div>

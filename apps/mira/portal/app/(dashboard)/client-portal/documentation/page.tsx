@@ -5,6 +5,8 @@ import { FileText, AlertCircle } from 'lucide-react'
 import DocumentUploader from '@/components/document-uploader'
 import DocumentList from '@/components/document-list'
 import { createClient } from '@/lib/supabase'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 interface Document {
   id: string
@@ -18,6 +20,7 @@ interface Document {
 }
 
 export default function DocumentationPage() {
+  const { locale } = useLocaleContext()
   const [documents, setDocuments] = useState<Document[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [docType, setDocType] = useState('brand_book')
@@ -68,7 +71,7 @@ export default function DocumentationPage() {
       }
     } catch (err) {
       console.error('Error loading documents:', err)
-      setError('No se pudieron cargar los documentos')
+      setError(t('portal.docs.load-error', locale))
     } finally {
       setIsLoading(false)
     }
@@ -76,12 +79,12 @@ export default function DocumentationPage() {
 
   const handleUploadComplete = async (file: File) => {
     if (!docTitle.trim()) {
-      setError('Por favor ingresa un título para el documento')
+      setError(t('portal.docs.title-required', locale))
       return
     }
 
     if (!clientId) {
-      setError('Cliente no identificado')
+      setError(t('portal.docs.client-not-identified', locale))
       return
     }
 
@@ -100,7 +103,7 @@ export default function DocumentationPage() {
 
       if (!res.ok) {
         const data = await res.json()
-        throw new Error(data.error || 'Error en upload')
+        throw new Error(data.error || t('portal.docs.upload-error', locale))
       }
 
       setDocTitle('')
@@ -112,7 +115,7 @@ export default function DocumentationPage() {
         await loadDocuments(clientId)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido')
+      setError(err instanceof Error ? err.message : t('portal.docs.unknown-error', locale))
     }
   }
 
@@ -144,11 +147,11 @@ export default function DocumentationPage() {
           <div className="text-4xl">📁</div>
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(139,92,246,0.8)' }}>
-              Client Portal
+              {t('portal.docs.eyebrow', locale)}
             </p>
-            <h1 className="text-3xl font-semibold text-ink tracking-tight mb-2">Documentación</h1>
+            <h1 className="text-3xl font-semibold text-ink tracking-tight mb-2">{t('portal.docs.title', locale)}</h1>
             <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
-              Sube documentación de marca, productos y estrategia. Los agentes usarán esta información para generar contenido personalizado.
+              {t('portal.docs.subtitle', locale)}
             </p>
           </div>
         </div>
@@ -161,46 +164,46 @@ export default function DocumentationPage() {
           <div className="p-4 rounded-lg flex gap-3" style={{ background: 'rgba(59,130,246,0.08)', border: '1px solid rgba(59,130,246,0.2)' }}>
             <AlertCircle size={16} className="mt-0.5" style={{ color: '#3B82F6' }} />
             <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>
-              <p className="font-medium mb-1">💡 Documentación habilitará:</p>
+              <p className="font-medium mb-1">💡 {t('portal.docs.enables-title', locale)}</p>
               <ul className="list-disc list-inside space-y-0.5">
-                <li>Marketing Campaign Generator usa tu brand book</li>
-                <li>Community Blueprint personalizado con tu estrategia</li>
-                <li>Agentes generan contenido en tu tono y estilo</li>
+                <li>{t('portal.docs.enables-1', locale)}</li>
+                <li>{t('portal.docs.enables-2', locale)}</li>
+                <li>{t('portal.docs.enables-3', locale)}</li>
               </ul>
             </div>
           </div>
 
           {/* Upload Form */}
           <div className="card px-6 py-5">
-            <p className="text-sm font-semibold text-ink mb-4">Subir Nuevo Documento</p>
+            <p className="text-sm font-semibold text-ink mb-4">{t('portal.docs.upload-new', locale)}</p>
 
             <div className="space-y-4">
               {/* Document Type */}
               <div>
-                <label className="block text-xs font-medium text-ink mb-2">Tipo de Documento</label>
+                <label className="block text-xs font-medium text-ink mb-2">{t('portal.docs.doc-type', locale)}</label>
                 <select
                   value={docType}
                   onChange={(e) => setDocType(e.target.value)}
                   className="w-full px-3 py-2 rounded-lg text-sm"
                   style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 >
-                  <option value="brand_book">📕 Brand Book</option>
-                  <option value="product_docs">📗 Product Docs</option>
-                  <option value="handbook">📙 Company Handbook</option>
-                  <option value="guidelines">📋 Guidelines</option>
-                  <option value="case_studies">📊 Case Studies</option>
-                  <option value="other">📄 Otro</option>
+                  <option value="brand_book">📕 {t('portal.docs.type-brand-book', locale)}</option>
+                  <option value="product_docs">📗 {t('portal.docs.type-product-docs', locale)}</option>
+                  <option value="handbook">📙 {t('portal.docs.type-handbook', locale)}</option>
+                  <option value="guidelines">📋 {t('portal.docs.type-guidelines', locale)}</option>
+                  <option value="case_studies">📊 {t('portal.docs.type-case-studies', locale)}</option>
+                  <option value="other">📄 {t('portal.docs.type-other', locale)}</option>
                 </select>
               </div>
 
               {/* Title */}
               <div>
-                <label className="block text-xs font-medium text-ink mb-2">Título del Documento</label>
+                <label className="block text-xs font-medium text-ink mb-2">{t('portal.docs.doc-title', locale)}</label>
                 <input
                   type="text"
                   value={docTitle}
                   onChange={(e) => setDocTitle(e.target.value)}
-                  placeholder="Ej: Brand Book 2026, Product Features v2.0"
+                  placeholder={t('portal.docs.doc-title-placeholder', locale)}
                   className="w-full px-3 py-2 rounded-lg text-sm"
                   style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
@@ -208,12 +211,12 @@ export default function DocumentationPage() {
 
               {/* Tags */}
               <div>
-                <label className="block text-xs font-medium text-ink mb-2">Tags (separados por comas, opcional)</label>
+                <label className="block text-xs font-medium text-ink mb-2">{t('portal.docs.tags-label', locale)}</label>
                 <input
                   type="text"
                   value={docTags}
                   onChange={(e) => setDocTags(e.target.value)}
-                  placeholder="Ej: brand, visual, tone, logo"
+                  placeholder={t('portal.docs.tags-placeholder', locale)}
                   className="w-full px-3 py-2 rounded-lg text-sm"
                   style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
@@ -236,24 +239,24 @@ export default function DocumentationPage() {
         <div>
           <div className="card px-5 py-4 sticky top-8">
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color: '#8B5CF6' }}>
-              Sobre Documentación
+              {t('portal.docs.about', locale)}
             </p>
             <div className="space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
               <div>
-                <p className="font-medium text-ink mb-1">Formatos soportados</p>
-                <p>PDF, Word (.docx), Texto (.txt)</p>
+                <p className="font-medium text-ink mb-1">{t('portal.docs.formats', locale)}</p>
+                <p>{t('portal.docs.formats-value', locale)}</p>
               </div>
               <div>
-                <p className="font-medium text-ink mb-1">Tamaño máximo</p>
-                <p>50 MB por archivo</p>
+                <p className="font-medium text-ink mb-1">{t('portal.docs.max-size', locale)}</p>
+                <p>{t('portal.docs.max-size-value', locale)}</p>
               </div>
               <div>
-                <p className="font-medium text-ink mb-1">Indexación automática</p>
-                <p>Los docs se indexan para búsqueda semántica al subir</p>
+                <p className="font-medium text-ink mb-1">{t('portal.docs.indexing', locale)}</p>
+                <p>{t('portal.docs.indexing-value', locale)}</p>
               </div>
               <div>
-                <p className="font-medium text-ink mb-1">Privacidad</p>
-                <p>Solo tú y tus agentes pueden acceder estos docs</p>
+                <p className="font-medium text-ink mb-1">{t('portal.docs.privacy', locale)}</p>
+                <p>{t('portal.docs.privacy-value', locale)}</p>
               </div>
             </div>
           </div>
@@ -262,7 +265,7 @@ export default function DocumentationPage() {
 
       {/* Documents List */}
       <div className="mt-10">
-        <h2 className="text-lg font-semibold text-ink mb-4">Documentos Actuales</h2>
+        <h2 className="text-lg font-semibold text-ink mb-4">{t('portal.docs.current', locale)}</h2>
         <DocumentList
           documents={documents}
           onDelete={handleDelete}

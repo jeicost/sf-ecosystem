@@ -2,64 +2,69 @@
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { t, type Locale } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 import { ActionPlanResult } from './action-plan-result'
 
-const TOOL_CONFIG: ToolConfig = {
+const getToolConfig = (locale: Locale): ToolConfig => ({
   slug: 'action-plan',
   icon: '📅',
-  title: 'Action Plan',
+  title: t('toolkit.action-plan.title', locale),
   subtitle: 'Salsa Burgers',
-  timing: '30-45 min',
-  brandBrainNote: 'Brand Brain cargado — objetivos y recursos identificados',
+  timing: t('toolkit.action-plan.timing', locale),
+  brandBrainNote: t('toolkit.action-plan.brand-brain-note', locale),
   submitButtonColor: '#34D399',
-  submitButtonText: 'Generar Action Plan',
+  submitButtonText: t('toolkit.action-plan.submit', locale),
   fields: [
     {
       name: 'objetivo_trimestral',
-      label: 'OBJETIVO PRINCIPAL TRIMESTRE',
+      label: t('toolkit.action-plan.field-goal-label', locale),
       type: 'text',
-      placeholder: 'Ej: Crecer 50% en leads cualificados',
+      placeholder: t('toolkit.action-plan.field-goal-placeholder', locale),
       required: true,
     },
     {
       name: 'recursos_actuales',
-      label: 'RECURSOS DISPONIBLES',
+      label: t('toolkit.action-plan.field-resources-label', locale),
       type: 'textarea',
-      placeholder: 'Equipo, presupuesto, herramientas disponibles...',
+      placeholder: t('toolkit.action-plan.field-resources-placeholder', locale),
       required: true,
     },
     {
       name: 'desafios_criticos',
-      label: 'DESAFÍOS / BLOQUEADORES',
+      label: t('toolkit.action-plan.field-challenges-label', locale),
       type: 'textarea',
-      placeholder: 'Qué puede impedirnos lograr los objetivos',
+      placeholder: t('toolkit.action-plan.field-challenges-placeholder', locale),
       required: true,
     },
     {
       name: 'metricas_exito',
-      label: 'MÉTRICAS DE ÉXITO',
+      label: t('toolkit.action-plan.field-metrics-label', locale),
       type: 'textarea',
-      placeholder: 'Cómo mediremos si tuvimos éxito. Una por línea.',
+      placeholder: t('toolkit.action-plan.field-metrics-placeholder', locale),
       required: true,
     },
     {
       name: 'presupuesto_disponible',
-      label: 'PRESUPUESTO DISPONIBLE',
+      label: t('toolkit.action-plan.field-budget-label', locale),
       type: 'textarea',
-      placeholder: 'Cifra total y, si lo sabes, cómo se reparte hoy (equipo, herramientas, medios, contingencia). Si no hay presupuesto asignado aún, dilo.',
+      placeholder: t('toolkit.action-plan.field-budget-placeholder', locale),
       required: true,
     },
     {
       name: 'equipo_roles',
-      label: 'EQUIPO Y ROLES DISPONIBLES',
+      label: t('toolkit.action-plan.field-team-label', locale),
       type: 'textarea',
-      placeholder: 'Quién ejecuta el plan hoy: roles, dedicación (FTE) y si hay contrataciones previstas.',
+      placeholder: t('toolkit.action-plan.field-team-placeholder', locale),
       required: true,
     },
   ],
-}
+})
 
 export default function ActionPlanPage() {
+  const { locale } = useLocaleContext()
+  const toolConfig = getToolConfig(locale)
+
   const handleGenerate = async (formData: Record<string, any>) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
@@ -81,7 +86,7 @@ export default function ActionPlanPage() {
 
   return (
     <ToolRunnerPage
-      config={TOOL_CONFIG}
+      config={toolConfig}
       onGenerate={handleGenerate}
       resultComponent={ActionPlanResult}
     />

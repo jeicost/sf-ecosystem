@@ -1,7 +1,11 @@
 'use client'
 
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
+
 export function MarketingAuditResult({ data }: { data?: any }) {
-  if (!data) return <div className="text-ink-secondary">No data</div>
+  const { locale } = useLocaleContext()
+  if (!data) return <div className="text-ink-secondary">{t('toolkit.results.no-data', locale)}</div>
 
   const brandColor = data?.brandColor || '#8B5CF6'
 
@@ -9,11 +13,11 @@ export function MarketingAuditResult({ data }: { data?: any }) {
     <div className="w-full bg-page">
       {/* Header */}
       <div className="border-b border-line-subtle p-6 md:p-8 md:pb-12">
-        <h1 className="text-5xl md:text-6xl font-black text-ink mb-3 tracking-tight">MARKETING AUDIT</h1>
-        <p className="text-ink-secondary max-w-2xl text-sm leading-relaxed mb-6">Comprehensive marketing health check: brand, funnel, social, content, retention, budget allocation, and attribution</p>
+        <h1 className="text-5xl md:text-6xl font-black text-ink mb-3 tracking-tight">{t('toolkit.marketing-audit.result-title', locale)}</h1>
+        <p className="text-ink-secondary max-w-2xl text-sm leading-relaxed mb-6">{t('toolkit.marketing-audit.result-desc', locale)}</p>
         {data.coherence_check && (
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold" style={{backgroundColor: 'rgba(0,230,118,0.1)', borderColor: 'rgba(0,230,118,0.3)', borderWidth: '1px', color: '#00e676'}}>
-            <span>✓</span> Brand Briefing alignment verified
+            <span>✓</span> {t('toolkit.marketing-audit.alignment-verified', locale)}
           </div>
         )}
       </div>
@@ -85,7 +89,7 @@ export function MarketingAuditResult({ data }: { data?: any }) {
         {/* Quick Wins */}
         {data.quickWins && data.quickWins.length > 0 && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-6">⚡ Quick Wins</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-6">⚡ {t('toolkit.marketing-audit.quick-wins', locale)}</h2>
             <div className="space-y-3">
               {data.quickWins.map((action: any, idx: number) => (
                 <div key={idx} className="border-l-2 bg-surface p-4 rounded-lg" style={{borderColor: '#ffd740'}}>
@@ -99,7 +103,7 @@ export function MarketingAuditResult({ data }: { data?: any }) {
                   <div className="flex flex-wrap gap-4 text-xs text-ink-secondary">
                     {action.impact && <div>💰 {action.impact}</div>}
                     {action.effort_hours && <div>⏱️ {action.effort_hours}h</div>}
-                    {action.roi_score && <div>ROI: {action.roi_score}/10</div>}
+                    {action.roi_score && <div>{t('toolkit.results.roi', locale)}: {action.roi_score}/10</div>}
                   </div>
                 </div>
               ))}
@@ -110,7 +114,7 @@ export function MarketingAuditResult({ data }: { data?: any }) {
 
       {/* Footer */}
       <div className="border-t border-line-subtle p-6 md:p-8 text-center text-xs text-ink-tertiary">
-        {data?.generatedAt && <div>Generated {data.generatedAt}</div>}
+        {data?.generatedAt && <div>{t('toolkit.results.generated', locale).replace('{date}', data.generatedAt)}</div>}
       </div>
     </div>
   )

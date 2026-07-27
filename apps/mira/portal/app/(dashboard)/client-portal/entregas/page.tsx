@@ -5,14 +5,17 @@ import { Download, Filter, Loader2 } from 'lucide-react'
 import ClientPortalHeader from '@/components/client-portal-header'
 import { getClientDeliveries } from '@/lib/client-portal-service'
 import { createClient } from '@/lib/supabase'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
-  delivered: { bg: 'rgba(16,185,129,0.1)', text: '#4ade80', label: 'Entregado' },
-  'in-review': { bg: 'rgba(249,115,22,0.1)', text: '#fb923c', label: 'En Revisión' },
-  generated: { bg: 'rgba(59,130,246,0.1)', text: '#60a5fa', label: 'Generado' },
+  delivered: { bg: 'rgba(16,185,129,0.1)', text: '#4ade80', label: 'portal.entregas.status-delivered' },
+  'in-review': { bg: 'rgba(249,115,22,0.1)', text: '#fb923c', label: 'portal.entregas.status-in-review' },
+  generated: { bg: 'rgba(59,130,246,0.1)', text: '#60a5fa', label: 'portal.entregas.status-generated' },
 }
 
 export default function EntregasPage() {
+  const { locale } = useLocaleContext()
   const [filter, setFilter] = useState<'all' | 'delivered' | 'in-review'>('all')
   const [entregas, setEntregas] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -56,8 +59,8 @@ export default function EntregasPage() {
   return (
     <div className="px-8 py-8 max-w-6xl">
       <ClientPortalHeader
-        title="Mis Entregas"
-        subtitle="Historial completo de deliverables generados"
+        title={t('portal.entregas.title', locale)}
+        subtitle={t('portal.entregas.subtitle', locale)}
         icon="📦"
       />
 
@@ -76,7 +79,7 @@ export default function EntregasPage() {
                 border: filter === f ? '1px solid rgba(139,92,246,0.3)' : '1px solid var(--border)',
               }}
             >
-              {f === 'all' ? 'Todas' : f === 'delivered' ? 'Entregadas' : 'En Revisión'}
+              {f === 'all' ? t('portal.entregas.filter-all', locale) : f === 'delivered' ? t('portal.entregas.filter-delivered', locale) : t('portal.entregas.filter-in-review', locale)}
             </button>
           ))}
         </div>
@@ -93,19 +96,19 @@ export default function EntregasPage() {
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-left text-ink-tertiary">
-                  Fecha
+                  {t('portal.entregas.col-date', locale)}
                 </th>
                 <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
-                  Herramienta
+                  {t('portal.entregas.col-tool', locale)}
                 </th>
                 <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
-                  Estado
+                  {t('portal.entregas.col-status', locale)}
                 </th>
                 <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
-                  Tamaño
+                  {t('portal.entregas.col-size', locale)}
                 </th>
                 <th className="text-right py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-ink-tertiary">
-                  Acción
+                  {t('portal.entregas.col-action', locale)}
                 </th>
               </tr>
             </thead>
@@ -120,7 +123,7 @@ export default function EntregasPage() {
                     <td className="py-3 px-4 text-[13px] text-ink font-medium">{entrega.tool}</td>
                     <td className="py-3 px-4">
                       <span className="text-xs px-2 py-1 rounded-full" style={{ background: statusConfig.bg, color: statusConfig.text }}>
-                        {statusConfig.label}
+                        {t(statusConfig.label, locale)}
                       </span>
                     </td>
                     <td className="py-3 px-4 text-[13px] text-ink-tertiary">
@@ -130,7 +133,7 @@ export default function EntregasPage() {
                       {entrega.status === 'delivered' && (
                         <button className="inline-flex items-center gap-1 text-[12px] px-3 py-1 rounded-lg" style={{ background: 'rgba(139,92,246,0.1)', color: '#a78bfa' }}>
                           <Download size={12} />
-                          Descargar
+                          {t('portal.entregas.download', locale)}
                         </button>
                       )}
                     </td>
@@ -141,7 +144,7 @@ export default function EntregasPage() {
           </table>
         ) : (
           <div className="text-center py-8 text-ink-muted">
-            <p className="text-sm">No hay entregas disponibles</p>
+            <p className="text-sm">{t('portal.entregas.empty', locale)}</p>
           </div>
         )}
       </div>

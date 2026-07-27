@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { Send, Loader2, CheckCircle, ArrowRight, ChevronDown, Zap, X } from 'lucide-react'
 import { clsx } from 'clsx'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 type Step = 'templates' | 'form' | 'processing' | 'done'
 
@@ -23,80 +25,82 @@ interface Template {
   prefill: Partial<BriefForm>
 }
 
+// label / description / prefill.objetivo hold i18n keys, resolved with t() at render time.
+// platform / format / pillar prefills are API values and must match the option lists below.
 const TEMPLATES: Template[] = [
   {
     id: 'weekly',
     emoji: '📅',
-    label: 'Weekly content',
-    description: 'Post plan for the next 7 days across all platforms.',
+    label: 'brief.template-weekly-label',
+    description: 'brief.template-weekly-desc',
     color: '#06B6D4',
     prefill: {
       platform: 'All',
       format: 'Static post (IG)',
       pillar: 'No pillar (free)',
-      objetivo: 'Generate 3 organic content pieces this week that keep the brand active and reinforce current audience engagement.',
+      objetivo: 'brief.template-weekly-objective',
     },
   },
   {
     id: 'launch',
     emoji: '🚀',
-    label: 'Product launch',
-    description: 'Awareness campaign for a new product or service.',
+    label: 'brief.template-launch-label',
+    description: 'brief.template-launch-desc',
     color: '#8B5CF6',
     prefill: {
       platform: 'Instagram',
       format: 'Carousel (IG)',
-      objetivo: 'Announce a new product launch generating anticipation and desire. Content must explain the main benefit and end with a clear CTA.',
+      objetivo: 'brief.template-launch-objective',
     },
   },
   {
     id: 'crisis',
     emoji: '🔥',
-    label: 'Reputation management',
-    description: 'Respond to a negative review or manage an online crisis.',
+    label: 'brief.template-crisis-label',
+    description: 'brief.template-crisis-desc',
     color: '#EF4444',
     prefill: {
       platform: 'All',
       format: 'Community reply',
       pillar: 'Community First',
-      objetivo: 'Handle a negative review with empathy, without sounding defensive. Propose a concrete solution and redirect the conversation to a private channel.',
+      objetivo: 'brief.template-crisis-objective',
     },
   },
   {
     id: 'ads',
     emoji: '💰',
-    label: 'Paid ads campaign',
-    description: 'Creative brief for a Meta Ads or TikTok Ads campaign.',
+    label: 'brief.template-ads-label',
+    description: 'brief.template-ads-desc',
     color: '#F59E0B',
     prefill: {
       platform: 'Meta Ads',
       format: 'Ad creative',
-      objetivo: 'Create a creative brief for a conversion campaign on Meta Ads. The ad must have a strong hook in the first 3 seconds, demonstrate the product and close with a direct CTA.',
+      objetivo: 'brief.template-ads-objective',
     },
   },
   {
     id: 'awareness',
     emoji: '🎯',
-    label: 'Awareness campaign',
-    description: 'Content to grow brand recognition with cold audiences.',
+    label: 'brief.template-awareness-label',
+    description: 'brief.template-awareness-desc',
     color: '#10B981',
     prefill: {
       platform: 'Instagram',
       format: 'Reel / Short (vertical)',
-      objetivo: 'Create brand awareness content that reaches cold audiences. The format must be entertaining before selling, and communicate the brand\'s differential value without pressure.',
+      objetivo: 'brief.template-awareness-objective',
     },
   },
   {
     id: 'founders',
     emoji: '🤝',
-    label: 'Founder story',
-    description: 'Storytelling and behind-the-scenes brand content.',
+    label: 'brief.template-founders-label',
+    description: 'brief.template-founders-desc',
     color: '#EC4899',
     prefill: {
       platform: 'LinkedIn',
       format: 'LinkedIn post',
       pillar: 'Behind the Brand',
-      objetivo: 'Tell a real moment behind the brand that creates human connection with the audience. The tone must be authentic, vulnerable at the right moment, and end with a lesson or reflection.',
+      objetivo: 'brief.template-founders-objective',
     },
   },
 ]
@@ -114,18 +118,19 @@ const FORMATS = [
   'Community reply', 'Other',
 ]
 
+// label / task hold i18n keys, resolved with t() at render time
 const PROCESSING_STEPS = [
-  { agent: 'Marco', emoji: '🎬', label: 'Analyzing brief and assigning team...', delay: 800 },
-  { agent: 'Luna', emoji: '🔍', label: 'Luna researching angles and trends...', delay: 1800 },
-  { agent: 'Alex', emoji: '✍️', label: 'Alex generating copy with Brand Brain...', delay: 2900 },
-  { agent: 'Noa', emoji: '📅', label: 'Noa preparing for approval...', delay: 3800 },
+  { agent: 'Marco', emoji: '🎬', label: 'brief.processing-step-marco', delay: 800 },
+  { agent: 'Luna', emoji: '🔍', label: 'brief.processing-step-luna', delay: 1800 },
+  { agent: 'Alex', emoji: '✍️', label: 'brief.processing-step-alex', delay: 2900 },
+  { agent: 'Noa', emoji: '📅', label: 'brief.processing-step-noa', delay: 3800 },
 ]
 
 const RESULT_PLAN = [
-  { agent: 'Marco', emoji: '🎬', color: '#8B5CF6', task: 'Brief coordinated and assigned to the team' },
-  { agent: 'Luna', emoji: '🔍', color: '#06B6D4', task: '3 angles detected · main hook selected' },
-  { agent: 'Alex', emoji: '✍️', color: '#F59E0B', task: 'Copy generated with brand voice · ready for review' },
-  { agent: 'Noa', emoji: '📅', color: '#3B82F6', task: 'Sent to Approval Queue · conditionally scheduled' },
+  { agent: 'Marco', emoji: '🎬', color: '#8B5CF6', task: 'brief.result-marco' },
+  { agent: 'Luna', emoji: '🔍', color: '#06B6D4', task: 'brief.result-luna' },
+  { agent: 'Alex', emoji: '✍️', color: '#F59E0B', task: 'brief.result-alex' },
+  { agent: 'Noa', emoji: '📅', color: '#3B82F6', task: 'brief.result-noa' },
 ]
 
 const EMPTY_FORM: BriefForm = {
@@ -138,6 +143,7 @@ const EMPTY_FORM: BriefForm = {
 }
 
 export default function BriefPage() {
+  const { locale } = useLocaleContext()
   const [step, setStep] = useState<Step>('templates')
   const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null)
   const [processingStep, setProcessingStep] = useState(0)
@@ -145,9 +151,13 @@ export default function BriefPage() {
 
   const isValid = form.platform && form.pillar && form.format && form.objetivo
 
-  const pickTemplate = (t: Template) => {
-    setSelectedTemplate(t)
-    setForm(prev => ({ ...prev, ...t.prefill }))
+  const pickTemplate = (tpl: Template) => {
+    setSelectedTemplate(tpl)
+    setForm(prev => ({
+      ...prev,
+      ...tpl.prefill,
+      ...(tpl.prefill.objetivo ? { objetivo: t(tpl.prefill.objetivo, locale) } : {}),
+    }))
     setStep('form')
   }
 
@@ -192,35 +202,35 @@ export default function BriefPage() {
   return (
     <div className="px-8 py-8 max-w-2xl">
       <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-ink">New Brief</h1>
+        <h1 className="text-2xl font-semibold text-ink">{t('brief.title', locale)}</h1>
         <p className="text-ink-tertiary mt-1 text-sm">
-          Describe what you need and Marco coordinates the team automatically.
+          {t('brief.subtitle', locale)}
         </p>
       </div>
 
       {/* ── STEP: TEMPLATES ── */}
       {step === 'templates' && (
         <>
-          <p className="text-xs text-ink-tertiary uppercase tracking-wider mb-4">Start from a template</p>
+          <p className="text-xs text-ink-tertiary uppercase tracking-wider mb-4">{t('brief.start-from-template', locale)}</p>
           <div className="grid grid-cols-2 gap-3 mb-6">
-            {TEMPLATES.map(t => (
+            {TEMPLATES.map(tpl => (
               <button
-                key={t.id}
-                onClick={() => pickTemplate(t)}
+                key={tpl.id}
+                onClick={() => pickTemplate(tpl)}
                 className="card p-4 text-left hover:border-line transition-all group"
               >
                 <div className="flex items-start gap-3">
                   <span
                     className="w-9 h-9 rounded-xl flex items-center justify-center text-lg shrink-0"
-                    style={{ background: `${t.color}20` }}
+                    style={{ background: `${tpl.color}20` }}
                   >
-                    {t.emoji}
+                    {tpl.emoji}
                   </span>
                   <div>
                     <p className="text-sm text-ink font-medium group-hover:text-ink transition-colors">
-                      {t.label}
+                      {t(tpl.label, locale)}
                     </p>
-                    <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">{t.description}</p>
+                    <p className="text-[11px] text-ink-muted mt-0.5 leading-relaxed">{t(tpl.description, locale)}</p>
                   </div>
                 </div>
               </button>
@@ -229,7 +239,7 @@ export default function BriefPage() {
 
           <div className="flex items-center gap-3 mb-0">
             <div className="flex-1 h-px bg-line" />
-            <span className="text-[11px] text-ink-muted">o</span>
+            <span className="text-[11px] text-ink-muted">{t('brief.or', locale)}</span>
             <div className="flex-1 h-px bg-line" />
           </div>
 
@@ -238,7 +248,7 @@ export default function BriefPage() {
             className="w-full mt-4 py-2.5 rounded-xl text-sm border border-line text-ink-tertiary hover:text-ink transition-colors flex items-center justify-center gap-2"
           >
             <Zap size={13} />
-            Free brief from scratch
+            {t('brief.free-brief', locale)}
           </button>
         </>
       )}
@@ -253,7 +263,7 @@ export default function BriefPage() {
               style={{ background: `${selectedTemplate.color}15`, color: selectedTemplate.color }}
             >
               <span>{selectedTemplate.emoji}</span>
-              <span>{selectedTemplate.label}</span>
+              <span>{t(selectedTemplate.label, locale)}</span>
               <button
                 onClick={() => { setSelectedTemplate(null); setForm({ ...EMPTY_FORM }) }}
                 className="ml-1 opacity-60 hover:opacity-100 transition-opacity"
@@ -265,7 +275,7 @@ export default function BriefPage() {
 
           {/* Client */}
           <div className="card p-5">
-            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Client</label>
+            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">{t('brief.client', locale)}</label>
             <div className="flex gap-2">
               {CLIENTS.map(c => (
                 <button
@@ -287,28 +297,28 @@ export default function BriefPage() {
           {/* Platform + Format */}
           <div className="grid grid-cols-2 gap-4">
             <div className="card p-5">
-              <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Platform</label>
+              <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">{t('brief.platform', locale)}</label>
               <div className="relative">
                 <select
                   value={form.platform}
                   onChange={e => setForm(f => ({ ...f, platform: e.target.value }))}
                   className="w-full bg-transparent text-sm text-ink outline-none appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-page">Choose...</option>
+                  <option value="" className="bg-page">{t('brief.choose', locale)}</option>
                   {PLATFORMS.map(p => <option key={p} value={p} className="bg-page">{p}</option>)}
                 </select>
                 <ChevronDown size={13} className="absolute right-0 top-0.5 text-ink-tertiary pointer-events-none" />
               </div>
             </div>
             <div className="card p-5">
-              <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Format</label>
+              <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">{t('brief.format', locale)}</label>
               <div className="relative">
                 <select
                   value={form.format}
                   onChange={e => setForm(f => ({ ...f, format: e.target.value }))}
                   className="w-full bg-transparent text-sm text-ink outline-none appearance-none cursor-pointer"
                 >
-                  <option value="" className="bg-page">Choose...</option>
+                  <option value="" className="bg-page">{t('brief.choose', locale)}</option>
                   {FORMATS.map(f => <option key={f} value={f} className="bg-page">{f}</option>)}
                 </select>
                 <ChevronDown size={13} className="absolute right-0 top-0.5 text-ink-tertiary pointer-events-none" />
@@ -318,7 +328,7 @@ export default function BriefPage() {
 
           {/* Pilar */}
           <div className="card p-5">
-            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">Content pillar</label>
+            <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">{t('brief.content-pillar', locale)}</label>
             <div className="flex flex-wrap gap-2">
               {PILLARS.map(p => (
                 <button
@@ -340,12 +350,12 @@ export default function BriefPage() {
           {/* Objetivo */}
           <div className="card p-5">
             <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">
-              Objective or main idea
+              {t('brief.objective-label', locale)}
             </label>
             <textarea
               value={form.objetivo}
               onChange={e => setForm(f => ({ ...f, objetivo: e.target.value }))}
-              placeholder="Ej: Mostrar el proceso de selección del wagyu de forma visual y educativa..."
+              placeholder={t('brief.objective-placeholder', locale)}
               rows={4}
               className="w-full bg-transparent text-sm text-ink placeholder-ink-muted outline-none resize-none leading-relaxed"
             />
@@ -354,12 +364,12 @@ export default function BriefPage() {
           {/* Notas */}
           <div className="card p-5">
             <label className="block text-xs text-ink-tertiary uppercase tracking-wider mb-3">
-              Additional notes <span className="normal-case text-ink-muted">(optional)</span>
+              {t('brief.notes-label', locale)} <span className="normal-case text-ink-muted">{t('brief.optional', locale)}</span>
             </label>
             <textarea
               value={form.notas}
               onChange={e => setForm(f => ({ ...f, notas: e.target.value }))}
-              placeholder="Referencias, restricciones, tono especial..."
+              placeholder={t('brief.notes-placeholder', locale)}
               rows={2}
               className="w-full bg-transparent text-sm text-ink placeholder-ink-muted outline-none resize-none leading-relaxed"
             />
@@ -371,7 +381,7 @@ export default function BriefPage() {
               onClick={() => setStep('templates')}
               className="px-4 py-3 rounded-xl text-sm border border-line text-ink-tertiary hover:text-ink transition-colors"
             >
-              ← Templates
+              {t('brief.back-to-templates', locale)}
             </button>
             <button
               onClick={submit}
@@ -382,12 +392,12 @@ export default function BriefPage() {
               )}
             >
               <Send size={14} />
-              Send to Marco
+              {t('brief.send-to-marco', locale)}
             </button>
           </div>
           {!isValid && (
             <p className="text-center text-[11px] text-ink-muted">
-              Fill in platform, format, pillar and objective to continue.
+              {t('brief.fill-required', locale)}
             </p>
           )}
         </div>
@@ -401,8 +411,8 @@ export default function BriefPage() {
               className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-800 flex items-center justify-center text-2xl mx-auto mb-4"
               style={{ boxShadow: '0 12px 32px #8B5CF640' }}
             >🎬</div>
-            <h2 className="text-lg font-semibold text-ink mb-1">Marco is coordinating your brief</h2>
-            <p className="text-xs text-ink-tertiary">El equipo está procesando tu solicitud en tiempo real.</p>
+            <h2 className="text-lg font-semibold text-ink mb-1">{t('brief.processing-title', locale)}</h2>
+            <p className="text-xs text-ink-tertiary">{t('brief.processing-subtitle', locale)}</p>
           </div>
           <div className="space-y-3">
             {PROCESSING_STEPS.map((s, i) => {
@@ -413,7 +423,7 @@ export default function BriefPage() {
                   <div className={clsx('w-8 h-8 rounded-lg flex items-center justify-center text-base transition-all', done ? 'bg-emerald-500/20' : 'bg-surface-elevated')}>
                     {s.emoji}
                   </div>
-                  <p className="flex-1 text-sm text-ink-secondary">{s.label}</p>
+                  <p className="flex-1 text-sm text-ink-secondary">{t(s.label, locale)}</p>
                   {done && <CheckCircle size={14} className="text-emerald-400 shrink-0" />}
                   {active && <Loader2 size={14} className="text-amber-400 animate-spin shrink-0" />}
                 </div>
@@ -428,12 +438,12 @@ export default function BriefPage() {
         <div className="space-y-4">
           <div className="card p-6 text-center border-emerald-500/20">
             <CheckCircle size={28} className="text-emerald-400 mx-auto mb-3" />
-            <h2 className="text-lg font-semibold text-ink mb-1">Brief processed</h2>
-            <p className="text-xs text-ink-tertiary">El contenido está en Cola de Aprobación listo para tu revisión.</p>
+            <h2 className="text-lg font-semibold text-ink mb-1">{t('brief.done-title', locale)}</h2>
+            <p className="text-xs text-ink-tertiary">{t('brief.done-subtitle', locale)}</p>
           </div>
 
           <div className="card p-5">
-            <h3 className="text-xs text-ink-tertiary uppercase tracking-wider mb-4">What each agent did</h3>
+            <h3 className="text-xs text-ink-tertiary uppercase tracking-wider mb-4">{t('brief.what-agents-did', locale)}</h3>
             <div className="space-y-3">
               {RESULT_PLAN.map((s, i) => (
                 <div key={s.agent} className="flex items-start gap-3">
@@ -445,7 +455,7 @@ export default function BriefPage() {
                   </div>
                   <div className="flex-1 pt-1">
                     <p className="text-xs text-ink font-medium mb-0.5">{s.agent}</p>
-                    <p className="text-xs text-ink-tertiary leading-relaxed">{s.task}</p>
+                    <p className="text-xs text-ink-tertiary leading-relaxed">{t(s.task, locale)}</p>
                   </div>
                   <CheckCircle size={13} className="text-emerald-400 shrink-0 mt-1" />
                 </div>
@@ -454,7 +464,7 @@ export default function BriefPage() {
           </div>
 
           <div className="card p-4 bg-surface">
-            <p className="text-xs text-ink-tertiary mb-2">Brief enviado:</p>
+            <p className="text-xs text-ink-tertiary mb-2">{t('brief.brief-sent', locale)}</p>
             <div className="flex flex-wrap gap-2">
               {[form.client, form.platform, form.format, form.pillar].filter(Boolean).map(tag => (
                 <span key={tag} className="text-[11px] bg-surface-elevated text-ink-tertiary px-2 py-0.5 rounded-full">{tag}</span>
@@ -464,10 +474,10 @@ export default function BriefPage() {
 
           <div className="grid grid-cols-2 gap-3">
             <button onClick={reset} className="py-2.5 rounded-xl text-sm border border-line text-ink-tertiary hover:text-ink transition-colors">
-              New brief
+              {t('brief.new-brief', locale)}
             </button>
             <a href="/approvals" className="py-2.5 rounded-xl text-sm bg-ink text-page font-semibold flex items-center justify-center gap-1.5 hover:opacity-90 transition-colors">
-              View in approvals <ArrowRight size={13} />
+              {t('brief.view-in-approvals', locale)} <ArrowRight size={13} />
             </a>
           </div>
         </div>

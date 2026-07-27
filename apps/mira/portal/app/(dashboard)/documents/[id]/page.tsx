@@ -3,6 +3,8 @@
 import { use, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 interface ChatMsg {
   role: 'user' | 'assistant'
@@ -17,6 +19,7 @@ interface SlideOption {
 
 export default function DocumentViewPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const { locale } = useLocaleContext()
   const [chatOpen, setChatOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [input, setInput] = useState('')
@@ -74,16 +77,16 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
       })
       const json = await res.json().catch(() => ({}))
       if (res.status === 409 || json?.error === 'canva_not_connected') {
-        setCanvaError('Conecta tu cuenta de Canva en Integraciones para abrir el deck allí.')
+        setCanvaError(t('docs.canva-not-connected', locale))
       } else if (res.status === 503) {
-        setCanvaError('La integración con Canva estará disponible próximamente.')
+        setCanvaError(t('docs.canva-coming-soon', locale))
       } else if (!res.ok || !json?.editUrl) {
-        setCanvaError(json?.error || 'No se pudo enviar el deck a Canva.')
+        setCanvaError(json?.error || t('docs.canva-send-failed', locale))
       } else {
         window.open(json.editUrl, '_blank', 'noopener')
       }
     } catch {
-      setCanvaError('No se pudo conectar con el servidor.')
+      setCanvaError(t('docs.server-error', locale))
     } finally {
       setCanvaState('idle')
     }
@@ -112,12 +115,12 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Error')
-      setMessages((m) => [...m, { role: 'assistant', content: '✅ Cambio aplicado. Recargando documento…' }])
+      setMessages((m) => [...m, { role: 'assistant', content: `✅ ${t('docs.change-applied', locale)}` }])
       setIframeKey((k) => k + 1)
     } catch (e) {
       setMessages((m) => [
         ...m,
-        { role: 'assistant', content: `❌ ${e instanceof Error ? e.message : 'No se pudo aplicar el cambio'}` },
+        { role: 'assistant', content: `❌ ${e instanceof Error ? e.message : t('docs.change-failed', locale)}` },
       ])
     } finally {
       setRefining(false)
@@ -136,7 +139,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
     <div className="flex flex-col h-screen bg-page">
       <div className="flex items-center justify-between px-4 py-2 border-b border-line shrink-0 gap-2">
         <Link href="/documents" className="text-sm text-ink-secondary hover:text-ink transition-colors shrink-0">
-          ← Documentos
+          {t('docs.back-to-documents', locale)}
         </Link>
         <div className="flex items-center gap-2 flex-wrap justify-end">
           <button
@@ -145,19 +148,19 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
               chatOpen ? 'bg-amber-500 text-black font-medium' : 'bg-surface text-ink hover:bg-surface-hover'
             }`}
           >
-            ✨ Refinar
+            ✨ {t('docs.refine', locale)}
           </button>
           <button
             onClick={handlePresent}
             className="text-sm px-3 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors"
           >
-            🎬 Presentar
+            🎬 {t('docs.present', locale)}
           </button>
           <button
             onClick={handlePrint}
             className="text-sm px-3 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors"
           >
-            🖨️ Imprimir / PDF
+            🖨️ {t('docs.print-pdf', locale)}
           </button>
           <a
             href={`/api/toolkit/export?queue_id=${id}`}
@@ -179,7 +182,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
               disabled={canvaState === 'loading'}
               className="text-sm px-3 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors disabled:opacity-50"
             >
-              {canvaState === 'loading' ? '⏳ Enviando a Canva…' : '🎨 Abrir en Canva'}
+              {canvaState === 'loading' ? `⏳ ${t('docs.sending-to-canva', locale)}` : `🎨 ${t('docs.open-in-canva', locale)}`}
             </button>
           )}
         </div>
@@ -196,22 +199,22 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
           ref={iframeRef}
           src={`/api/toolkit/export?queue_id=${id}&inline=1`}
           className="flex-1 w-full border-0"
-          title="Documento"
+          title={t('docs.document', locale)}
           allow="fullscreen"
         />
 
         {chatOpen && (
           <div className="w-80 border-l border-line flex flex-col bg-card">
             <div className="px-4 py-3 border-b border-line">
-              <p className="text-ink text-sm font-semibold">Refinar documento</p>
+              <p className="text-ink text-sm font-semibold">{t('docs.refine-document', locale)}</p>
               <p className="text-ink-tertiary text-xs mt-0.5">
-                Pide cambios: &quot;añade una sección de precios&quot;, &quot;acorta el resumen&quot;…
+                {t('docs.refine-hint', locale)}
               </p>
             </div>
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
               {messages.length === 0 && (
                 <p className="text-ink-muted text-xs text-center mt-8">
-                  Escribe una instrucción y el documento se actualizará conservando el diseño.
+                  {t('docs.refine-empty', locale)}
                 </p>
               )}
               {messages.map((m, i) => (
@@ -226,7 +229,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
               ))}
               {refining && (
                 <div className="text-xs rounded-lg px-3 py-2 bg-surface text-ink-tertiary mr-6 animate-pulse">
-                  Aplicando cambios…
+                  {t('docs.applying-changes', locale)}
                 </div>
               )}
               <div ref={chatEndRef} />
@@ -234,17 +237,17 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
             <div className="p-3 border-t border-line space-y-2">
               {slides.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <label className="text-ink-tertiary text-[11px] shrink-0">Slide a editar</label>
+                  <label className="text-ink-tertiary text-[11px] shrink-0">{t('docs.slide-to-edit', locale)}</label>
                   <select
                     value={slideTarget}
                     onChange={(e) => setSlideTarget(e.target.value)}
                     disabled={refining}
                     className="flex-1 min-w-0 px-3 py-1.5 rounded-lg bg-page border border-line text-ink text-xs focus:border-amber-500 outline-none"
                   >
-                    <option value="">Documento completo</option>
+                    <option value="">{t('docs.whole-document', locale)}</option>
                     {slides.map((s) => (
                       <option key={s.index} value={String(s.index + 1)}>
-                        {s.index + 1}. {s.title || s.layout || 'Slide'}
+                        {s.index + 1}. {s.title || s.layout || t('docs.slide', locale)}
                         {s.layout ? ` · ${s.layout}` : ''}
                       </option>
                     ))}
@@ -256,7 +259,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
-                  placeholder="Tu instrucción…"
+                  placeholder={t('docs.instruction-placeholder', locale)}
                   disabled={refining}
                   className="flex-1 px-3 py-2 rounded-lg bg-page border border-line text-ink text-xs focus:border-amber-500 outline-none"
                 />

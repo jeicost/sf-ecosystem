@@ -5,8 +5,11 @@ import ClientPortalHeader from '@/components/client-portal-header'
 import { Save, Loader2 } from 'lucide-react'
 import { getClientInfo, getClientTeamMembers } from '@/lib/client-portal-service'
 import { createClient } from '@/lib/supabase'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export default function ConfigPage() {
+  const { locale } = useLocaleContext()
   const [clientInfo, setClientInfo] = useState<any>(null)
   const [teamMembers, setTeamMembers] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -65,8 +68,8 @@ export default function ConfigPage() {
   return (
     <div className="px-8 py-8 max-w-3xl">
       <ClientPortalHeader
-        title="Mi Configuración"
-        subtitle="Perfil, preferencias, equipo y facturación"
+        title={t('portal.config.title', locale)}
+        subtitle={t('portal.config.subtitle', locale)}
         icon="⚙️"
       />
 
@@ -79,11 +82,11 @@ export default function ConfigPage() {
           {/* Profile Section */}
           <div className="mb-10">
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
-              Perfil
+              {t('portal.config.profile', locale)}
             </p>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-ink mb-2">Nombre de la Empresa</label>
+                <label className="block text-sm font-medium text-ink mb-2">{t('portal.config.company-name', locale)}</label>
                 <input
                   type="text"
                   value={formData.companyName}
@@ -93,7 +96,7 @@ export default function ConfigPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-ink mb-2">Email Principal</label>
+                <label className="block text-sm font-medium text-ink mb-2">{t('portal.config.primary-email', locale)}</label>
                 <input
                   type="email"
                   value={formData.email}
@@ -103,12 +106,12 @@ export default function ConfigPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-ink mb-2">Teléfono (Opcional)</label>
+                <label className="block text-sm font-medium text-ink mb-2">{t('portal.config.phone', locale)}</label>
                 <input
                   type="tel"
                   value={formData.phone}
                   onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="+34 600 123 456"
+                  placeholder={t('portal.config.phone-placeholder', locale)}
                   className="w-full px-4 py-2 rounded-lg"
                   style={{ background: 'var(--bg-surface)', color: 'var(--text-primary)', border: '1px solid var(--border)' }}
                 />
@@ -119,13 +122,13 @@ export default function ConfigPage() {
           {/* Notifications */}
           <div className="mb-10">
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
-              Preferencias de Notificaciones
+              {t('portal.config.notifications', locale)}
             </p>
             <div className="space-y-3">
               {[
-                { key: 'deliverables', label: 'Nuevos Deliverables', desc: 'Recibe alertas cuando se generen nuevos deliverables' },
-                { key: 'reports', label: 'Reportes Mensuales', desc: 'Resumen mensual de métricas y usage' },
-                { key: 'updates', label: 'Actualizaciones de MIRA', desc: 'Nuevas features, mejoras y webinars' },
+                { key: 'deliverables', label: t('portal.config.notif-deliverables', locale), desc: t('portal.config.notif-deliverables-desc', locale) },
+                { key: 'reports', label: t('portal.config.notif-reports', locale), desc: t('portal.config.notif-reports-desc', locale) },
+                { key: 'updates', label: t('portal.config.notif-updates', locale), desc: t('portal.config.notif-updates-desc', locale) },
               ].map(pref => (
                 <div key={pref.key} className="card px-4 py-3 flex items-center justify-between">
                   <div>
@@ -147,10 +150,10 @@ export default function ConfigPage() {
           <div className="mb-10">
             <div className="flex items-center justify-between mb-4">
               <p className="text-[11px] uppercase tracking-widest font-semibold" style={{ color: 'var(--text-muted)' }}>
-                Miembros del Equipo
+                {t('portal.config.team', locale)}
               </p>
               <button className="text-xs px-3 py-1.5 rounded-lg font-medium" style={{ background: 'rgba(139,92,246,0.15)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
-                + Invitar
+                + {t('portal.config.invite', locale)}
               </button>
             </div>
             <div className="space-y-2">
@@ -169,7 +172,7 @@ export default function ConfigPage() {
                 ))
               ) : (
                 <div className="text-center py-4" style={{ color: 'var(--text-muted)' }}>
-                  <p className="text-sm">Solo tú tienes acceso a este proyecto</p>
+                  <p className="text-sm">{t('portal.config.only-you', locale)}</p>
                 </div>
               )}
             </div>
@@ -178,39 +181,39 @@ export default function ConfigPage() {
           {/* Billing */}
           <div className="mb-10">
             <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
-              Facturación
+              {t('nav.billing', locale)}
             </p>
 
             {/* Stripe Not Configured Warning */}
             <div className="mb-4 p-4 rounded-lg" style={{ background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)' }}>
               <p className="text-sm font-medium" style={{ color: '#FBBF24' }}>
-                ⚠️ Sample Data Only — Stripe integration not configured
+                ⚠️ {t('portal.config.stripe-warning', locale)}
               </p>
               <p className="text-xs mt-1" style={{ color: 'var(--text-tertiary)' }}>
-                All MRR, clients, and payment data shown are examples. Connect Stripe to see real billing. Contact admin to set up STRIPE_API_KEY.
+                {t('portal.config.stripe-warning-desc', locale)}
               </p>
             </div>
 
             <div className="card px-5 py-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
-                  <p className="text-sm font-semibold text-ink">Plan Premium</p>
-                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>$499/mes • Renovación: 2026-08-10</p>
+                  <p className="text-sm font-semibold text-ink">{t('portal.config.plan-premium', locale)}</p>
+                  <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{t('portal.config.plan-renewal', locale)}</p>
                 </div>
                 <span className="text-xl">💳</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <p style={{ color: 'var(--text-muted)' }}>Próximo pago</p>
+                  <p style={{ color: 'var(--text-muted)' }}>{t('portal.config.next-payment', locale)}</p>
                   <p className="font-medium text-ink">$499.00</p>
                 </div>
                 <div>
-                  <p style={{ color: 'var(--text-muted)' }}>Método de pago</p>
+                  <p style={{ color: 'var(--text-muted)' }}>{t('portal.config.payment-method', locale)}</p>
                   <p className="font-medium text-ink">Visa ••••4242</p>
                 </div>
               </div>
               <button className="mt-3 text-xs px-4 py-2 rounded-lg font-medium" style={{ background: 'rgba(139,92,246,0.1)', color: '#a78bfa', border: '1px solid rgba(139,92,246,0.2)' }}>
-                Cambiar Plan
+                {t('portal.config.change-plan', locale)}
               </button>
             </div>
           </div>
@@ -219,10 +222,10 @@ export default function ConfigPage() {
           <div className="flex items-center gap-2">
             <button className="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold" style={{ background: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)', color: 'white' }}>
               <Save size={16} />
-              Guardar Cambios
+              {t('portal.config.save-changes', locale)}
             </button>
             <button className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)', border: '1px solid var(--border)' }}>
-              Cancelar
+              {t('common.cancel', locale)}
             </button>
           </div>
         </>

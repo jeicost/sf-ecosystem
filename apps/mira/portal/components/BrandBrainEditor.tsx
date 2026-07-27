@@ -5,6 +5,8 @@ import { Save, Loader2, Check, AlertCircle, Upload } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import BrandBrainSuggestions from './BrandBrainSuggestions'
 import DriveFoldersPanel from './DriveFoldersPanel'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 interface BrandData {
   identity?: Record<string, string>
@@ -75,6 +77,7 @@ function audienceFallback(a: any): string {
 
 export default function BrandBrainEditor() {
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
   const [profile, setProfile] = useState<BrandProfile | null>(null)
   const [pillars, setPillars] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -93,7 +96,7 @@ export default function BrandBrainEditor() {
         const url = new URL('/api/brand-brain', window.location.origin)
         if (activeClient?.id) url.searchParams.set('clientId', activeClient.id)
         const res = await fetch(url)
-        if (!res.ok) throw new Error('Failed to fetch brand profile')
+        if (!res.ok) throw new Error(t('bb.fetch-failed', locale))
         const { data, pillars: fetchedPillars } = await res.json()
         setPillars(fetchedPillars || [])
         setProfile(data || {
@@ -136,7 +139,7 @@ export default function BrandBrainEditor() {
           setDocuments(docs || [])
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error')
+        setError(err instanceof Error ? err.message : t('bb.unknown-error', locale))
       } finally {
         setLoading(false)
       }
@@ -163,13 +166,13 @@ export default function BrandBrainEditor() {
 
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to save brand profile')
+        throw new Error(errorData.error || t('bb.save-failed', locale))
       }
 
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(err instanceof Error ? err.message : t('bb.unknown-error', locale))
     } finally {
       setSaving(false)
     }
@@ -195,7 +198,7 @@ export default function BrandBrainEditor() {
 
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to upload document')
+        throw new Error(errorData.error || t('bb.upload-failed', locale))
       }
 
       const { data: newDoc } = await res.json()
@@ -208,7 +211,7 @@ export default function BrandBrainEditor() {
         analyzeDocument(newDoc.id)
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(err instanceof Error ? err.message : t('bb.unknown-error', locale))
     } finally {
       setUploading(false)
     }
@@ -225,7 +228,7 @@ export default function BrandBrainEditor() {
 
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Analysis failed')
+        throw new Error(errorData.error || t('bb.analysis-failed', locale))
       }
 
       const { suggestedUpdates } = await res.json()
@@ -238,7 +241,7 @@ export default function BrandBrainEditor() {
         )
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Analysis failed')
+      setError(err instanceof Error ? err.message : t('bb.analysis-failed', locale))
       // Update status to failed using functional updater
       setDocuments(prev =>
         prev.map((doc) =>
@@ -299,13 +302,13 @@ export default function BrandBrainEditor() {
 
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to save')
+        throw new Error(errorData.error || t('bb.save-failed', locale))
       }
 
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error')
+      setError(err instanceof Error ? err.message : t('bb.unknown-error', locale))
       // Revert UI to previous state on error
       setSuggestions(null)
     } finally {
@@ -327,7 +330,7 @@ export default function BrandBrainEditor() {
     return (
       <div className="px-8 py-8">
         <div className="card p-6 border-red-500/20">
-          <p className="text-red-400">Failed to load brand profile</p>
+          <p className="text-red-400">{t('bb.load-failed', locale)}</p>
         </div>
       </div>
     )
@@ -337,11 +340,11 @@ export default function BrandBrainEditor() {
     <div className="px-8 py-8">
       <div className="mb-8">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(168,85,247,0.8)', letterSpacing: '0.12em' }}>
-          BRAND INTELLIGENCE
+          {t('bb.eyebrow', locale)}
         </p>
         <h1 className="text-2xl font-semibold text-ink tracking-tight">Brand Brain</h1>
         <p className="text-sm mt-1 text-ink-tertiary">
-          Define your brand context. This guides all AI generation across the platform.
+          {t('bb.subtitle', locale)}
         </p>
       </div>
 
@@ -351,7 +354,7 @@ export default function BrandBrainEditor() {
           <div className="flex items-start gap-3">
             <AlertCircle size={20} style={{ color: '#EF4444' }} />
             <div>
-              <p className="font-semibold text-red-400">Error</p>
+              <p className="font-semibold text-red-400">{t('bb.error', locale)}</p>
               <p className="text-sm text-ink-secondary mt-1">{error}</p>
             </div>
           </div>
@@ -363,8 +366,8 @@ export default function BrandBrainEditor() {
           <div className="flex items-start gap-3">
             <Check size={20} style={{ color: '#22C55E' }} />
             <div>
-              <p className="font-semibold text-green-400">Saved successfully</p>
-              <p className="text-sm text-ink-secondary mt-1">Your brand profile has been updated</p>
+              <p className="font-semibold text-green-400">{t('bb.saved', locale)}</p>
+              <p className="text-sm text-ink-secondary mt-1">{t('bb.saved-desc', locale)}</p>
             </div>
           </div>
         </div>
@@ -382,12 +385,12 @@ export default function BrandBrainEditor() {
       {/* Tabs - 6 Consolidated Fields */}
       <div className="flex gap-1 mb-6 border-b border-line overflow-x-auto pb-2">
         {[
-          { id: 'brand_identity', label: '🎯 Brand Identity' },
-          { id: 'audience_market', label: '👥 Audience & Market' },
-          { id: 'voice_visual', label: '💬 Voice & Visual' },
-          { id: 'content_strategy', label: '📚 Content Strategy' },
-          { id: 'business_ops', label: '💼 Business & Ops' },
-          { id: 'documents', label: '📄 Documents' },
+          { id: 'brand_identity', label: `🎯 ${t('bb.tab-identity', locale)}` },
+          { id: 'audience_market', label: `👥 ${t('bb.tab-audience', locale)}` },
+          { id: 'voice_visual', label: `💬 ${t('bb.tab-voice', locale)}` },
+          { id: 'content_strategy', label: `📚 ${t('bb.tab-content', locale)}` },
+          { id: 'business_ops', label: `💼 ${t('bb.tab-business', locale)}` },
+          { id: 'documents', label: `📄 ${t('bb.tab-documents', locale)}` },
         ].map((tab) => (
           <button
             key={tab.id}

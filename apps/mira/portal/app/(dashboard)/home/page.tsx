@@ -50,18 +50,18 @@ interface Overview {
   projects: { id: string; name: string; slug: string; description: string | null; status: string; created_at: string }[]
 }
 
-const DOC_LABELS: Record<string, { icon: string; name: string }> = {
-  'doc-deck': { icon: '📊', name: 'Presentación' },
-  'doc-playbook': { icon: '📘', name: 'Playbook' },
-  'doc-onepager': { icon: '📄', name: 'One-pager' },
-  'doc-proposal': { icon: '📝', name: 'Propuesta' },
-  'doc-report': { icon: '📈', name: 'Informe' },
+const DOC_LABELS: Record<string, { icon: string; nameKey: string }> = {
+  'doc-deck': { icon: '📊', nameKey: 'home.doc-deck' },
+  'doc-playbook': { icon: '📘', nameKey: 'home.doc-playbook' },
+  'doc-onepager': { icon: '📄', nameKey: 'home.doc-onepager' },
+  'doc-proposal': { icon: '📝', nameKey: 'home.doc-proposal' },
+  'doc-report': { icon: '📈', nameKey: 'home.doc-report' },
 }
 
-function toolMeta(slug: string) {
+function toolMeta(slug: string, locale: 'es' | 'en') {
   if (slug.startsWith('doc-')) {
     const doc = DOC_LABELS[slug]
-    return { icon: doc?.icon ?? '📄', name: doc?.name ?? 'Documento' }
+    return { icon: doc?.icon ?? '📄', name: t(doc?.nameKey ?? 'home.doc-fallback', locale) }
   }
   const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
   return {
@@ -70,8 +70,8 @@ function toolMeta(slug: string) {
   }
 }
 
-function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+function fmtDate(iso: string, locale: 'es' | 'en') {
+  return new Date(iso).toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', { day: 'numeric', month: 'short' })
 }
 
 // ─── Carrusel horizontal de entregables ──────────────────────
@@ -92,6 +92,7 @@ function Carousel({
   emptyCta: { label: string; href: string }
   brand: string
 }) {
+  const { locale } = useLocaleContext()
   return (
     <div className="mb-10">
       <div className="mb-3 flex items-center justify-between">
@@ -99,7 +100,7 @@ function Carousel({
           {title}
         </p>
         <Link href={viewAllHref} className="flex items-center gap-1 text-[11px] font-medium transition-colors hover:text-ink" style={{ color: brand }}>
-          Ver todos <ChevronRight size={12} />
+          {t('home.view-all', locale)} <ChevronRight size={12} />
         </Link>
       </div>
 
@@ -114,7 +115,7 @@ function Carousel({
       ) : (
         <div className="flex snap-x gap-3 overflow-x-auto pb-2" style={{ scrollbarWidth: 'thin' }}>
           {items.map((c) => {
-            const meta = toolMeta(c.tool_slug)
+            const meta = toolMeta(c.tool_slug, locale)
             return (
               <Link key={c.id} href={hrefFor(c)}
                 className="group w-56 shrink-0 snap-start rounded-2xl border border-line bg-surface p-4 transition-all duration-200 hover:-translate-y-0.5"
@@ -134,10 +135,10 @@ function Carousel({
                 </div>
                 <p className="mb-0.5 truncate text-[13px] font-semibold text-ink">{meta.name}</p>
                 <p className="truncate text-[11px] text-ink-muted">
-                  {c.topic || fmtDate(c.created_at)}
+                  {c.topic || fmtDate(c.created_at, locale)}
                 </p>
                 <div className="mt-3 flex items-center justify-between border-t border-line-subtle pt-2">
-                  <span className="text-[10px] text-ink-muted">{fmtDate(c.created_at)}</span>
+                  <span className="text-[10px] text-ink-muted">{fmtDate(c.created_at, locale)}</span>
                   <ArrowRight size={11} className="transition-transform group-hover:translate-x-1" style={{ color: brand }} />
                 </div>
               </Link>
@@ -237,11 +238,11 @@ export default function HomePage() {
     fetch(`/api/home/overview${qs}`)
       .then(async (r) => {
         const json = await r.json()
-        if (!r.ok) throw new Error(json.error || 'Error cargando tu portada')
+        if (!r.ok) throw new Error(json.error || t('home.error-loading', locale))
         setData(json)
       })
-      .catch((e) => setError(e instanceof Error ? e.message : 'Error'))
-  }, [superAdmin, activeClient?.id, router])
+      .catch((e) => setError(e instanceof Error ? e.message : t('home.error-generic', locale)))
+  }, [superAdmin, activeClient?.id, router, locale])
 
   if (superAdmin && !activeClient?.id) return null
   if (error) return <div className="p-8 text-sm text-red-400">{error}</div>
@@ -254,7 +255,7 @@ export default function HomePage() {
   }
 
   const brand = data.client.primary_color || FALLBACK_BRAND
-  const monthLabel = new Date().toLocaleDateString('es-ES', { month: 'long', year: 'numeric' })
+  const monthLabel = new Date().toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', { month: 'long', year: 'numeric' })
 
   return (
     <div className="mx-auto max-w-6xl px-8 py-10" style={{ ['--client-primary' as string]: brand }}>
@@ -273,13 +274,13 @@ export default function HomePage() {
           <div>
             <p className="mb-2 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.25em]" style={{ color: brand }}>
               <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: brand }} />
-              Tu agencia de IA · {monthLabel}
+              {t('home.hero-kicker', locale)} · {monthLabel}
             </p>
             <h1 className={`${syne.className} text-4xl font-extrabold tracking-tight text-ink`}>
               {data.client.name}
             </h1>
             <p className="mt-2 max-w-md text-sm text-ink-tertiary">
-              Todo lo que tu equipo de IA ha producido, en un vistazo.
+              {t('home.hero-subtitle', locale)}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -292,7 +293,7 @@ export default function HomePage() {
             <Link href="/toolkit"
               className="rounded-xl px-5 py-3 text-sm font-semibold text-white transition-all hover:opacity-90"
               style={{ background: brand, boxShadow: `0 8px 24px ${brand}40` }}>
-              + Generar entregable
+              + {t('home.generate-deliverable', locale)}
             </Link>
           </div>
         </div>
@@ -300,47 +301,47 @@ export default function HomePage() {
 
       {/* Analíticas clave */}
       <div className="mb-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard value={String(data.stats.reports_total)} label="Entregables"
-          hint={data.stats.reports_month > 0 ? `+${data.stats.reports_month} este mes` : undefined}
+        <StatCard value={String(data.stats.reports_total)} label={t('home.stat-deliverables', locale)}
+          hint={data.stats.reports_month > 0 ? t('home.stat-month-hint', locale).replace('{count}', String(data.stats.reports_month)) : undefined}
           href="/toolkit" brand={brand} />
-        <StatCard value={String(data.stats.documents_total)} label="Documentos" href="/documents" brand={brand} />
-        <StatCard value={String(data.stats.pending_approvals)} label="Por aprobar"
-          hint={data.stats.pending_approvals > 0 ? 'Requiere tu revisión' : 'Todo al día'}
+        <StatCard value={String(data.stats.documents_total)} label={t('home.stat-documents', locale)} href="/documents" brand={brand} />
+        <StatCard value={String(data.stats.pending_approvals)} label={t('home.stat-pending', locale)}
+          hint={data.stats.pending_approvals > 0 ? t('home.stat-needs-review', locale) : t('home.stat-all-clear', locale)}
           href="/approvals" brand={brand} alert={data.stats.pending_approvals > 0} />
-        <StatCard value={`$${data.stats.usage_cost_usd.toFixed(2)}`} label="Consumo IA · mes" href="/integrations" brand={brand} />
+        <StatCard value={`$${data.stats.usage_cost_usd.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand} />
       </div>
 
       {/* Carruseles */}
-      <Carousel title="Últimos reportes" items={data.latest_reports}
+      <Carousel title={t('home.latest-reports', locale)} items={data.latest_reports}
         hrefFor={(c) => `/toolkit/report/${c.id}`} viewAllHref="/toolkit"
-        emptyText="Aún no hay reportes generados" emptyCta={{ label: 'Generar el primero', href: '/toolkit' }}
+        emptyText={t('home.empty-reports', locale)} emptyCta={{ label: t('home.empty-reports-cta', locale), href: '/toolkit' }}
         brand={brand} />
 
-      <Carousel title="Últimos documentos" items={data.latest_documents}
+      <Carousel title={t('home.latest-documents', locale)} items={data.latest_documents}
         hrefFor={(c) => `/documents/${c.id}`} viewAllHref="/documents"
-        emptyText="Aún no hay documentos ni presentaciones" emptyCta={{ label: 'Crear documento', href: '/documents' }}
+        emptyText={t('home.empty-documents', locale)} emptyCta={{ label: t('home.empty-documents-cta', locale), href: '/documents' }}
         brand={brand} />
 
       {/* Proyectos */}
       <div className="mb-10">
         <div className="mb-3 flex items-center justify-between">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
-            Proyectos
+            {t('home.projects-title', locale)}
           </p>
           <Link href="/projects/new"
             className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium transition-all hover:bg-surface-hover"
             style={{ color: brand }}>
-            <Plus size={12} /> Nuevo proyecto
+            <Plus size={12} /> {t('home.new-project', locale)}
           </Link>
         </div>
 
         {data.projects.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line-subtle bg-surface py-8 text-center">
-            <p className="mb-1 text-xs text-ink-tertiary">Organiza el trabajo en proyectos: campañas, lanzamientos, iniciativas.</p>
-            <p className="mb-3 text-[11px] text-ink-muted">Cada proyecto agrupa su memoria, sus entregables y su carpeta de Drive.</p>
+            <p className="mb-1 text-xs text-ink-tertiary">{t('home.projects-empty-title', locale)}</p>
+            <p className="mb-3 text-[11px] text-ink-muted">{t('home.projects-empty-desc', locale)}</p>
             <Link href="/projects/new" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium"
               style={{ background: `${brand}20`, color: brand, border: `1px solid ${brand}30` }}>
-              <Plus size={12} /> Crear el primero
+              <Plus size={12} /> {t('home.projects-empty-cta', locale)}
             </Link>
           </div>
         ) : (
@@ -384,7 +385,7 @@ export default function HomePage() {
                     <p className="mb-3 line-clamp-2 text-[11px] text-ink-muted">{p.description}</p>
                   )}
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-ink-muted">{fmtDate(p.created_at)}</span>
+                    <span className="text-[10px] text-ink-muted">{fmtDate(p.created_at, locale)}</span>
                     <Link href={`/projects/${p.slug}`}
                       onClick={(e) => e.stopPropagation()}
                       className="flex items-center gap-1 text-[10px] font-medium transition-opacity hover:opacity-80"
@@ -402,7 +403,7 @@ export default function HomePage() {
       {/* Equipos */}
       <div>
         <p className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
-          Tus equipos
+          {t('home.your-teams', locale)}
         </p>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
           {Object.values(DEPARTMENT_METADATA).map((dept) => (
@@ -415,9 +416,9 @@ export default function HomePage() {
                 {dept.icon}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-[13px] font-semibold text-ink">{dept.name}</p>
+                <p className="truncate text-[13px] font-semibold text-ink">{locale === 'es' ? dept.nameEs : dept.name}</p>
                 <p className="text-[10px] text-ink-muted">
-                  {dept.count > 0 ? `${dept.count} agentes` : 'Herramientas'}
+                  {dept.count > 0 ? t('home.agents-count', locale).replace('{count}', String(dept.count)) : t('home.tools', locale)}
                 </p>
               </div>
               <ArrowRight size={12} className="shrink-0 transition-transform group-hover:translate-x-1" style={{ color: dept.color }} />

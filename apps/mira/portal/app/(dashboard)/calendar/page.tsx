@@ -292,7 +292,7 @@ export default function CalendarPage() {
               <div className="flex items-center gap-3">
                 <span className="text-lg">{platformIcon(selected.platform)}</span>
                 <div>
-                  <p className="text-sm text-ink font-medium">{selected.platform ?? 'Post'}</p>
+                  <p className="text-sm text-ink font-medium">{selected.platform ?? t('calendar.post-fallback', locale)}</p>
                   <p className="text-[10px] text-ink-tertiary">
                     {selected.date.toLocaleDateString(dateLocale, { weekday: 'long', day: 'numeric', month: 'long' })}
                     {' · '}
@@ -316,7 +316,7 @@ export default function CalendarPage() {
               )}
               {selected.caption && selected.caption !== selected.copy && (
                 <div className="mb-4">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-ink-tertiary mb-1.5">Caption</p>
+                  <p className="text-[10px] font-mono uppercase tracking-wider text-ink-tertiary mb-1.5">{t('calendar.caption-label', locale)}</p>
                   <p className="text-xs text-ink-secondary leading-relaxed whitespace-pre-line">{selected.caption}</p>
                 </div>
               )}
