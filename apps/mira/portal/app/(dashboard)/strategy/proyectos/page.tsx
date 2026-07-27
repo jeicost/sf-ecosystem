@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { Plus, ArrowRight, Loader2, FolderKanban, AlertCircle } from 'lucide-react'
 import AgentWorkspace from '@/components/agent-workspace'
 import { useProjects } from '@/lib/hooks/useProjects'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 
 const STATUS_BADGE: Record<string, string> = {
@@ -18,7 +18,7 @@ const STATUS_BADGE: Record<string, string> = {
 
 export default function Page() {
   const { projects, loading, error } = useProjects()
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
 
   const fmtDate = (iso: string) =>
     new Date(iso).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', {

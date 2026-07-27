@@ -12,7 +12,7 @@ import { Loader2, ArrowRight, Plus, ChevronRight, Pin, Lock, X } from 'lucide-re
 import { getUser, isSuperAdmin } from '@/lib/auth'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
@@ -222,7 +222,7 @@ export default function HomePage() {
   const router = useRouter()
   const { activeClient } = useActiveClient()
   const { activeProject, setActiveProject } = useActiveProject()
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)
   const superAdmin = isSuperAdmin(getUser())

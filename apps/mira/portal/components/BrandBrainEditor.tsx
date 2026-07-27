@@ -47,6 +47,32 @@ interface BrandProfile {
 
 type TabType = 'brand_identity' | 'audience_market' | 'voice_visual' | 'content_strategy' | 'business_ops' | 'documents'
 
+// Audience items arrive in several real shapes depending on who wrote them:
+// this editor's own textarea ({segment, need, message}), the seed data
+// ({name, segment, pain_point, percent...}), or AI write paths (e.g.
+// {age, segment} from document analysis / onboarding chat). Rendering must
+// never hand React a raw object -- a `{a.need || a}` fallback here crashed
+// the whole /brand-brain page (React #31) for every client whose audiences
+// lacked that key, i.e. all of them.
+function audienceField(a: any, keys: string[]): string {
+  if (typeof a === 'string') return a
+  if (!a || typeof a !== 'object') return a == null ? '' : String(a)
+  for (const k of keys) {
+    if (typeof a[k] === 'string' && a[k]) return a[k]
+    if (typeof a[k] === 'number') return String(a[k])
+  }
+  return ''
+}
+
+function audienceFallback(a: any): string {
+  if (typeof a === 'string') return a
+  if (!a || typeof a !== 'object') return a == null ? '' : String(a)
+  return Object.values(a)
+    .filter((v): v is string | number => typeof v === 'string' || typeof v === 'number')
+    .map(String)
+    .join(' · ')
+}
+
 export default function BrandBrainEditor() {
   const { activeClient } = useActiveClient()
   const [profile, setProfile] = useState<BrandProfile | null>(null)
@@ -423,7 +449,9 @@ export default function BrandBrainEditor() {
               <p className="text-xs text-ink-secondary mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
               <TextareaInput
                 value={(profile.brand_data?.audiences || []).map((a: any) =>
-                  typeof a === 'string' ? a : `${a.segment || ''} 🔹 ${a.need || ''} 🔹 ${a.message || ''}`
+                  typeof a === 'string'
+                    ? a
+                    : `${audienceField(a, ['segment', 'name'])} 🔹 ${audienceField(a, ['need', 'pain_point'])} 🔹 ${audienceField(a, ['message'])}`
                 ).join('\n')}
                 onChange={(v) => setProfile({
                   ...profile,
@@ -440,13 +468,18 @@ export default function BrandBrainEditor() {
               <div className="border-t border-line pt-4 mt-4">
                 <h4 className="text-xs font-semibold text-ink-secondary mb-3">Preview:</h4>
                 <div className="space-y-2 text-xs">
-                  {(profile.brand_data?.audiences || []).map((a: any, i: number) => (
-                    <div key={i} className="bg-surface p-3 rounded border border-line">
-                      <div className="font-medium text-ink">{a.segment || a}</div>
-                      <div className="text-ink-secondary text-xs mt-1">{a.need || a}</div>
-                      <div className="text-purple-300 text-xs mt-1">{a.message || a}</div>
-                    </div>
-                  ))}
+                  {(profile.brand_data?.audiences || []).map((a: any, i: number) => {
+                    const title = audienceField(a, ['name', 'segment']) || audienceFallback(a)
+                    const need = audienceField(a, ['need', 'pain_point'])
+                    const message = audienceField(a, ['message'])
+                    return (
+                      <div key={i} className="bg-surface p-3 rounded border border-line">
+                        <div className="font-medium text-ink">{title}</div>
+                        {need && <div className="text-ink-secondary text-xs mt-1">{need}</div>}
+                        {message && <div className="text-purple-300 text-xs mt-1">{message}</div>}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>

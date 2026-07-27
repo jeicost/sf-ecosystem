@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { BookOpen, Pin, Archive, Loader2, AlertCircle } from 'lucide-react'
 
@@ -46,7 +46,7 @@ export default function ProjectMemoryViewer() {
 function ProjectMemoryViewerInner() {
   const { activeClient } = useActiveClient()
   const { activeProject, projects, setActiveProject } = useActiveProject()
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()

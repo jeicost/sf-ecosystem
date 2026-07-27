@@ -85,7 +85,7 @@ Analyze the document and return ONLY valid JSON (no markdown, no text before/aft
 {
   "identity": { "name": "", "tagline": "", "one_liner": "", "mission": "", "vision": "", "enemy": "" },
   "what_it_is": "",
-  "audiences": ["..."],
+  "audiences": [{ "name": "", "segment": "", "pain_point": "" }],
   "value_proposition": "",
   "hero_features": { "feature_1": "", "feature_2": "", "feature_3": "" },
   "business_model": "",

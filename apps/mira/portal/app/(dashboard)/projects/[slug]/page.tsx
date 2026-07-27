@@ -13,7 +13,7 @@ import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { t } from '@/lib/i18n'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
 
 const syne = Syne({ subsets: ['latin'], weight: ['700', '800'] })
 const FALLBACK_BRAND = '#8B5CF6'
@@ -65,7 +65,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   const { archiveProject } = useProjectManagement()
   const { activeClient } = useActiveClient()
   const { setActiveProject } = useActiveProject()
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
 
   // Entregables del proyecto
   const [deliverables, setDeliverables] = useState<ProjectDeliverable[]>([])

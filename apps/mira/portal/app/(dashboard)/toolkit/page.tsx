@@ -9,7 +9,7 @@ import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
 import { t } from '@/lib/i18n'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
 import DeliverableCard, { DeliverableGeneration } from '@/components/toolkit/DeliverableCard'
 import LandingsSection, { ClientLanding } from '@/components/toolkit/LandingsSection'
 
@@ -73,7 +73,7 @@ function hexToRgba(hex: string, alpha: number): string {
 export default function ToolkitHub() {
   const { activeClient } = useActiveClient()
   const { activeProject } = useActiveProject()
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
   const clientId = activeClient?.id
   const brandColor = activeClient?.primaryColor || FALLBACK_BRAND
 

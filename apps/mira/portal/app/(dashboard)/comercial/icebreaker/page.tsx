@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase'
 import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
-import { useLocale } from '@/lib/use-locale'
+import { useLocaleContext } from '@/app/locale-provider'
 import { clsx } from 'clsx'
 
 const ICEBREAKER_COLS = 'id,hot_score,company_name,first_name,last_name,title,industry,geography,trigger_event,linkedin_summary,icebreaker_used'
@@ -23,7 +23,7 @@ function parseVariants(text: string): string[] {
 export default function IcebreakerPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
-  const { locale } = useLocale()
+  const { locale } = useLocaleContext()
 
   const [mode, setMode]           = useState<Mode>('manual')
   const [hotLeads, setHotLeads]   = useState<Lead[]>([])
