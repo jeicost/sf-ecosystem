@@ -30,7 +30,6 @@ export const SECTIONS: MiraSection[] = [
     icon: '🎯',
     navItems: [
       { href: '/roster',      label: 'My Team',      icon: Users },
-      { href: '/command',     label: 'Command',      icon: LayoutDashboard },
       { href: '/approvals',   label: 'Approvals',    icon: CheckSquare },
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
       { href: '/brief',       label: 'New Brief',    icon: MessageSquarePlus },
@@ -50,8 +49,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/comercial/icebreaker', label: 'Icebreaker',    icon: Zap },
       { href: '/comercial/qualify',    label: 'Qualify',       icon: MessageSquare },
       { href: '/comercial/proposals',  label: 'Proposals',     icon: FileText },
-      { href: '/comercial/crm',        label: 'CRM',           icon: Briefcase },
-      { href: '/comercial/icp',        label: 'ICP Profile',   icon: Target },
     ],
   },
   {
@@ -63,9 +60,7 @@ export const SECTIONS: MiraSection[] = [
     navItems: [
       { href: '/strategy',           label: 'My Team',       icon: Users },
       { href: '/strategy/plan',      label: '90-Day Plan',   icon: Map },
-      { href: '/strategy/auditoria', label: 'Audit',         icon: CheckSquare },
-      { href: '/strategy/tendencias', label: 'Trends',       icon: TrendingUp },
-      { href: '/strategy/proyectos',  label: 'Innovation',   icon: Lightbulb },
+      { href: '/strategy/proyectos', label: 'Innovation',    icon: Lightbulb },
     ],
   },
   {
@@ -74,10 +69,10 @@ export const SECTIONS: MiraSection[] = [
     shortName: 'Operations',
     color: '#10B981',
     icon: '⚙️',
+    // Billing/System are internal-agency tools (super_admin only, guarded at
+    // the page level) -- clients only get the support/FAQ/tutorials hub.
     navItems: [
-      { href: '/operations',             label: 'My Team',   icon: Users },
-      { href: '/operations/billing',     label: 'Billing',   icon: BarChart3 },
-      { href: '/operations/system',      label: 'System',    icon: Settings },
+      { href: '/operations', label: 'My Team', icon: Users },
     ],
   },
   {

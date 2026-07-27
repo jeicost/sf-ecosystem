@@ -9,6 +9,8 @@ import { t, type Locale } from '@/lib/i18n'
 import type { Lead, LeadStage } from '@/lib/types'
 import LeadCard from '@/components/lead-card'
 import { scoreLabel } from '@/lib/score-utils'
+import { clsx } from 'clsx'
+import CrmContactsPanel from '@/components/comercial/CrmContactsPanel'
 
 const TERMINAL_STAGES: LeadStage[] = ['won', 'lost']
 
@@ -38,6 +40,7 @@ export default function PipelinePage() {
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
+  const [view, setView] = useState<'pipeline' | 'crm'>('pipeline')
 
   useEffect(() => {
     setLoading(true)
@@ -94,11 +97,30 @@ export default function PipelinePage() {
 
   return (
     <div className="px-8 py-8">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-2xl font-semibold text-ink">Pipeline Comercial</h1>
         <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Leads activos y su estado en el ciclo de ventas.</p>
       </div>
 
+      {/* View tabs: kanban vs. contacts already promoted to the external CRM */}
+      <div className="flex gap-1 mb-6">
+        {([['pipeline', 'Pipeline'], ['crm', 'Enviados a CRM']] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setView(id)}
+            className={clsx('px-3 py-1.5 rounded-lg text-xs transition-all',
+              view === id ? 'bg-surface-hover text-ink font-medium' : 'text-ink-tertiary hover:text-ink'
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {view === 'crm' ? (
+        <CrmContactsPanel onGoToPipeline={() => setView('pipeline')} />
+      ) : (
+      <>
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
         {[
@@ -151,6 +173,8 @@ export default function PipelinePage() {
       {/* Lead detail modal */}
       {selectedLead && (
         <LeadModal lead={selectedLead} onClose={() => setSelectedLead(null)} onStageChange={handleStageChange} locale={locale} />
+      )}
+      </>
       )}
     </div>
   )

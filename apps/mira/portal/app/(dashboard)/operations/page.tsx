@@ -7,7 +7,6 @@ import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
-import OtherTeamsFooter from '@/components/ui/OtherTeamsFooter'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { useAgentStatuses } from '@/lib/use-agent-statuses'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -15,11 +14,13 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import type { AgentStatus } from '@/lib/agent-meta'
 
+// Keys must match the real OPERACIONES_DEPT_AGENTS ids (harbor/pulse/onboard) --
+// a previous version referenced agents from an older roster that no longer
+// exists, so no card ever showed its "produces" label.
 const ADMIN_META: Record<string, { produces: string }> = {
-  'invoice-bot': { produces: 'P&L & invoices' },
-  'onboarding-bot': { produces: 'Client checklist' },
-  'sentry-bot': { produces: 'System health' },
-  'briefing-daily': { produces: 'Daily briefing' },
+  harbor: { produces: 'Ticket replies & FAQs' },
+  pulse: { produces: 'Metrics reports' },
+  onboard: { produces: 'SOPs & checklists' },
 }
 
 const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
@@ -73,7 +74,6 @@ export default function AdminPage() {
 
       <RelevantToolsSection department="operations" limit={3} />
 
-      <OtherTeamsFooter currentDept="operations" />
     </div>
   )
 }

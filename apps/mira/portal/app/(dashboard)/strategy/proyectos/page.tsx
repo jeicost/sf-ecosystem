@@ -32,7 +32,7 @@ export default function Page() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(34,197,94,0.8)' }}>
-            Strategy · Venture
+            Strategy · Innovation
           </p>
           <h1 className="text-2xl font-semibold text-ink tracking-tight">{t('projects.title', locale)}</h1>
           <p className="text-sm mt-1 text-ink-secondary">{t('projects.subtitle', locale)}</p>
@@ -91,19 +91,24 @@ export default function Page() {
         </div>
       )}
 
+      {/* Blueprint is the real backend agent here -- the old "Venture" label
+          referenced an agent absorbed into Blueprint in the 2026-07-21 roster
+          consolidation. This chat also covers what the retired /strategy/auditoria
+          page did (same agent, same brain): business-model & innovation audits. */}
       <AgentWorkspace
         role="blueprint"
-        agentName="Venture"
+        agentName="Blueprint"
         agentEmoji="🚀"
         color="#22C55E"
         gradient="from-green-500 to-emerald-700"
         title="Manage your innovation projects"
-        description="Describe your idea or initiative. Venture scopes the MVP, sets OKRs and builds the roadmap."
+        description="Describe your idea or initiative. Blueprint scopes the MVP, sets OKRs, builds the roadmap and audits your business model."
         placeholder="E.g.: I want to build an AI voice agent for restaurant reservations. We have the technology but no roadmap. Help me scope the MVP and define success metrics."
         quickPrompts={[
           { label: '🚀 Scope my MVP', prompt: 'Help me scope an MVP for my idea. What are the minimum features to validate the hypothesis? Give me a 2-week sprint plan.' },
           { label: '📊 OKRs for innovation', prompt: 'Help me define OKRs for an innovation project. I need objectives that distinguish between learning (H3) and execution (H1).' },
           { label: '🗺️ Innovation roadmap', prompt: 'Build me a 6-month innovation roadmap with 3 horizons. Include: key milestones, go/no-go decision points and resource allocation.' },
+          { label: '🩺 Business model audit', prompt: 'Audit my business model: revenue model, unit economics, pricing, market fit and growth engines. Point out the weakest area and what to fix first.' },
           { label: '❌ Kill criteria', prompt: 'What criteria should I use to decide when to kill an innovation project? Give me a kill/continue decision framework.' },
         ]}
       />

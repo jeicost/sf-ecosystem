@@ -12,6 +12,8 @@ export interface DepartmentStats {
   plans?: number
   ideas?: number
   contacts?: number
+  pendingApprovals?: number
+  openAlerts?: number
 }
 
 /**
@@ -21,6 +23,31 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
   const db = createServiceClient()
 
   let leads = 0, hotLeads = 0, proposals = 0, posts = 0, contacts = 0, plans = 0, ideas = 0
+  let pendingApprovals = 0, openAlerts = 0
+
+  // Marketing's real "needs attention" numbers -- the roster used to label
+  // the CRM contacts count as "In approval" and hardcode alerts to 0.
+  try {
+    const { count } = await db
+      .from('approval_queue')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('status', 'pending_review')
+    pendingApprovals = count || 0
+  } catch (e) {
+    console.error('Error fetching pending approvals:', e)
+  }
+
+  try {
+    const { count } = await db
+      .from('alerts')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', clientId)
+      .eq('status', 'open')
+    openAlerts = count || 0
+  } catch (e) {
+    console.error('Error fetching open alerts:', e)
+  }
 
   try {
     const { count: leadsCount } = await db
@@ -113,7 +140,7 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
 
   return {
     comercial: { leads, hotLeads, proposals },
-    marketing: { posts, contacts },
+    marketing: { posts, pendingApprovals, openAlerts },
     strategy: { plans, ideas },
     operaciones: { contacts },
     finanzas: { leads },

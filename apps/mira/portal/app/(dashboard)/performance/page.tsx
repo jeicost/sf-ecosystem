@@ -287,31 +287,10 @@ export default function PerformancePage() {
         )}
       </div>
 
-      {/* ROI card — siempre visible */}
-      <div className="card p-5 bg-card">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[11px] text-ink-tertiary uppercase tracking-wider mb-1">Agency equivalent value</p>
-            <p className="text-3xl font-semibold text-ink">
-              ${(posts.length * 80 + activity.filter(a => a.status === 'completed').length * 15).toLocaleString()}
-            </p>
-            <p className="text-xs text-ink-tertiary mt-1">{posts.length} pieces · freelance market rate</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[11px] text-ink-tertiary uppercase tracking-wider mb-1">Powered by MIRA</p>
-            <p className="text-3xl font-semibold text-emerald-400">${(completed * 0.012).toFixed(2)}</p>
-            <p className="text-xs text-ink-tertiary mt-1">in AI tokens this period</p>
-          </div>
-        </div>
-        <div className="mt-4 pt-4 border-t border-line flex items-center justify-between">
-          <p className="text-xs text-ink-tertiary">Implied ROI</p>
-          <p className="text-sm font-semibold text-emerald-400">
-            {completed > 0
-              ? `${Math.round((posts.length * 80) / Math.max(completed * 0.012, 0.01)).toLocaleString()}x`
-              : '∞'}
-          </p>
-        </div>
-      </div>
+      {/* The old "Agency equivalent value"/ROI card was removed here: its
+          dollar figures came from arbitrary hardcoded multipliers (posts*80,
+          completed*0.012), not real cost or market data -- fabricated numbers
+          presented as if they were measurements. */}
     </div>
   )
 }

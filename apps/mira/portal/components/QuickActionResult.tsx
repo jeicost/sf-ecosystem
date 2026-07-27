@@ -31,7 +31,29 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
   const [liked, setLiked] = useState(false)
   const [isMemorySaved, setIsMemorySaved] = useState(false)
   const [isDriveSaved, setIsDriveSaved] = useState(false)
+  const [isSentToApprovals, setIsSentToApprovals] = useState(false)
   const { locale } = useLocaleContext()
+
+  const handleSendToApprovals = async () => {
+    setIsSaving(true)
+    setSaveError(null)
+    try {
+      const res = await fetch('/api/approvals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action_id: actionId }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || data?.error) {
+        throw new Error(data?.error || 'Failed to send to approvals')
+      }
+      setIsSentToApprovals(true)
+      setTimeout(() => setIsSaving(false), 1500)
+    } catch (err) {
+      setSaveError(err instanceof Error ? err.message : 'Failed to send to approvals')
+      setIsSaving(false)
+    }
+  }
 
   useEffect(() => {
     const pollResult = async () => {
@@ -216,6 +238,41 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
       {/* Action Buttons */}
       <div className="card px-6 py-4 space-y-2">
         <h3 className="font-semibold text-ink mb-3">{t('actions.save-options', locale)}</h3>
+
+        {/* Marketing content can go straight into the approval pipeline --
+            the same approval_queue New Brief feeds. Without this, quick-action
+            content lived only in quick_actions_results and never reached the
+            review flow the client actually works in. */}
+        {['social_post', 'newsletter', 'text'].includes(displayOutputType) && (
+          <>
+            <button
+              onClick={handleSendToApprovals}
+              disabled={isSaving || isSentToApprovals}
+              className="w-full px-4 py-2 rounded-lg text-sm font-medium text-ink bg-emerald-600/20 hover:bg-emerald-600/30 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              {isSaving && <Loader2 size={16} className="animate-spin" />}
+              {isSentToApprovals ? (
+                <>
+                  <Check size={16} />
+                  {t('actions.sent-to-approvals', locale)}
+                </>
+              ) : (
+                <>
+                  <Check size={16} />
+                  {t('actions.send-to-approvals', locale)}
+                </>
+              )}
+            </button>
+            {isSentToApprovals && (
+              <Link
+                href="/approvals"
+                className="flex items-center justify-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors pb-1"
+              >
+                {t('actions.view-in-approvals', locale)} <ArrowRight size={12} />
+              </Link>
+            )}
+          </>
+        )}
 
         <button
           onClick={handleSaveToMemory}

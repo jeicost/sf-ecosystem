@@ -6,7 +6,6 @@ import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
-import OtherTeamsFooter from '@/components/ui/OtherTeamsFooter'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { useAgentStatuses } from '@/lib/use-agent-statuses'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -53,8 +52,8 @@ export default function RosterPage() {
         items={[
           { label: t('stat.active-agents', locale), value: String(agentCount) },
           { label: t('stat.posts-week', locale), value: String(stats.posts ?? 0) },
-          { label: t('stat.in-approval', locale), value: String(stats.contacts ?? 0) },
-          { label: t('stat.open-alerts', locale), value: String(stats.alerts ?? 0) },
+          { label: t('stat.in-approval', locale), value: String(stats.pendingApprovals ?? 0) },
+          { label: t('stat.open-alerts', locale), value: String(stats.openAlerts ?? 0) },
         ]}
       />
 
@@ -76,7 +75,6 @@ export default function RosterPage() {
 
       <RelevantToolsSection department="marketing" limit={3} />
 
-      <OtherTeamsFooter currentDept="marketing" />
     </div>
   )
 }

@@ -7,6 +7,7 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { useToolConnections } from '@/lib/hooks/useToolConnections'
 import { t, type Locale } from '@/lib/i18n'
 import { clsx } from 'clsx'
+import IcpCriteriaPanel from '@/components/comercial/IcpCriteriaPanel'
 
 interface DiscoveredLead {
   company_name: string
@@ -57,7 +58,7 @@ export default function DiscoveryPage() {
   const clientId = activeClient?.id
   const { locale } = useLocaleContext()
 
-  const [mode, setMode] = useState<'light' | 'deep'>('light')
+  const [mode, setMode] = useState<'light' | 'deep' | 'criteria'>('light')
 
   const [keywords, setKeywords]   = useState('')
   const [industry, setIndustry]   = useState('')
@@ -238,9 +239,9 @@ export default function DiscoveryPage() {
         </div>
       </div>
 
-      {/* Mode toggle */}
+      {/* Mode toggle — search modes + the ICP criteria that drive their scoring */}
       <div className="flex items-center gap-2 mb-6">
-        {(['light', 'deep'] as const).map(m => (
+        {(['light', 'deep', 'criteria'] as const).map(m => (
           <button
             key={m}
             onClick={() => setMode(m)}
@@ -252,10 +253,14 @@ export default function DiscoveryPage() {
             )}
             style={mode !== m ? { color: 'var(--text-tertiary)' } : undefined}
           >
-            {m === 'light' ? t('comercial.discovery.mode-light', locale) : t('comercial.discovery.mode-deep', locale)}
+            {m === 'light' ? t('comercial.discovery.mode-light', locale)
+              : m === 'deep' ? t('comercial.discovery.mode-deep', locale)
+              : 'Criterios ICP'}
           </button>
         ))}
       </div>
+
+      {mode === 'criteria' && <IcpCriteriaPanel />}
 
       {mode === 'light' && (
       <>

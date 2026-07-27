@@ -1,23 +1,5 @@
 import AgentWorkspace from '@/components/agent-workspace'
 
-const PHASES = [
-  {
-    num: '01', label: 'Month 1', theme: 'Foundation',
-    color: '#6366F1',
-    rocks: ['Diagnosis & priorities', 'Quick win identified', 'KPIs baseline set'],
-  },
-  {
-    num: '02', label: 'Month 2', theme: 'Execution',
-    color: '#8B5CF6',
-    rocks: ['Rock 1 in progress', 'First milestone hit', 'Team aligned'],
-  },
-  {
-    num: '03', label: 'Month 3', theme: 'Scale',
-    color: '#a78bfa',
-    rocks: ['Results review', 'Double down on winners', 'Next 90-day set'],
-  },
-]
-
 export default function Page() {
   return (
     <div className="px-8 py-8 max-w-4xl">
@@ -29,42 +11,6 @@ export default function Page() {
         <p className="text-sm mt-1" style={{ color: 'var(--text-tertiary)' }}>
           Three phases, three rocks each. Strategos builds you a plan you can actually execute.
         </p>
-      </div>
-
-      {/* 3-phase board */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {PHASES.map(phase => (
-          <div key={phase.num}
-            className="rounded-2xl p-5 flex flex-col"
-            style={{ background: `${phase.color}08`, border: `1px solid ${phase.color}22` }}>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="text-[10px] font-bold font-mono" style={{ color: `${phase.color}80` }}>
-                {phase.num}
-              </span>
-              <div>
-                <p className="text-xs font-semibold text-ink">{phase.label}</p>
-                <p className="text-[10px] font-medium" style={{ color: phase.color }}>{phase.theme}</p>
-              </div>
-            </div>
-            <div className="space-y-2 flex-1">
-              {phase.rocks.map((rock, i) => (
-                <div key={i}
-                  className="flex items-center gap-2.5 px-3 py-2 rounded-lg"
-                  style={{ background: 'var(--bg-surface)', border: '1px solid var(--border-subtle)' }}>
-                  <div className="w-1 h-1 rounded-full shrink-0" style={{ background: `${phase.color}60` }} />
-                  <span className="text-[11px]" style={{ color: 'var(--text-tertiary)' }}>{rock}</span>
-                </div>
-              ))}
-            </div>
-            <div className="mt-4 pt-3 flex items-center justify-between"
-              style={{ borderTop: '1px solid var(--border-subtle)' }}>
-              <span className="text-[9px] uppercase tracking-widest font-semibold"
-                style={{ color: 'var(--text-muted)' }}>0 / 3 rocks</span>
-              <span className="text-[9px] px-2 py-0.5 rounded-full"
-                style={{ background: `${phase.color}15`, color: phase.color }}>Pending</span>
-            </div>
-          </div>
-        ))}
       </div>
 
       <AgentWorkspace

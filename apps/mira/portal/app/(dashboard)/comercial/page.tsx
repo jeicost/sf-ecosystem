@@ -7,7 +7,6 @@ import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
-import OtherTeamsFooter from '@/components/ui/OtherTeamsFooter'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { useActiveClient } from '@/lib/client-context'
 import { useAgentStatuses } from '@/lib/use-agent-statuses'
@@ -81,7 +80,6 @@ export default function ComercialPage() {
 
       <RelevantToolsSection department="comercial" limit={3} />
 
-      <OtherTeamsFooter currentDept="comercial" />
     </div>
   )
 }

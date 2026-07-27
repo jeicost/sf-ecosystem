@@ -7,7 +7,6 @@ import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
-import OtherTeamsFooter from '@/components/ui/OtherTeamsFooter'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { useAgentStatuses } from '@/lib/use-agent-statuses'
 import { useDepartmentStats } from '@/lib/use-department-stats'
@@ -72,7 +71,6 @@ export default function FinanzasPage() {
 
       <RelevantToolsSection department="finanzas" limit={3} />
 
-      <OtherTeamsFooter currentDept="finanzas" />
     </div>
   )
 }
