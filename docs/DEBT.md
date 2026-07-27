@@ -355,3 +355,39 @@ Sesión de simplificación decidida ítem a ítem con el CEO tras auditar las ~2
 2. **Pero ese mismo guard era un bug real**: tras añadir `operations` a los planes de cliente, el icono aparecía en el sidebar y el guard rebotaba a `/home` en silencio — el "operations manda a los usuarios a home" reportado por el CEO con Nirada en producción. Resuelto moviendo el guard a las 3 sub-páginas internas (billing/system/users, vía `lib/require-super-admin.ts`) y dejando `/operations` (My Team: soporte/FAQ/tutoriales) abierto a clientes.
 
 **Deuda residual nueva**: los prompts de `generar_icp`/`crear_propuesta`/`calificar_reply` en `lib/generation/quick-action-prompts.ts` quedan huérfanos (sin botón que los dispare) — mismo patrón que la entrada (g); limpiar o reutilizar en una ronda futura. Los ficheros de Billing/System siguen en el árbol como herramientas internas super_admin, con contenido mock — decidir su futuro (rehacer como facturación real del cliente cuando llegue Stripe, o mover a /admin).
+
+---
+
+## hh) ✅ Fase C i18n — 20 páginas cliente traducidas; queda un lote pendiente documentado (2026-07-27)
+
+Continuación de (gg): el CEO eligió cobertura completa de inglés para las ~43 páginas cliente. Se lanzó un workflow de 5 agentes en paralelo; 4 murieron a mitad de edición por límite de sesión, dejando ficheros con claves `t()` sin diccionario. Recuperado inline: se extrajeron las 416 claves realmente usadas (filtrando falsos positivos del grep como `access_type`), se recuperaron los textos originales del `git diff`, y se autoró el diccionario completo ES/EN inyectado centralmente en `lib/i18n.ts` (ahora **978/978 claves simétricas**, antes 288/288). Commit `590b496`.
+
+**Verificado con Playwright (usuario QA, ambos idiomas)**: home, approvals, performance, brief, documents, brand-brain, project-memory — 7/7 con marcadores correctos en ES y EN, cero claves crudas visibles. Dos falsos negativos del test resueltos por el camino: el selector `button:has-text('ES')` matchea substrings (usar `localStorage.setItem('locale')`+reload determinista), y los marcadores con CSS `uppercase` requieren comparación case-insensitive (Playwright devuelve el texto renderizado).
+
+**Cobertura conseguida** (los ficheros que los agentes sí tocaron, todos con diccionario completo): home, brief, approvals, calendar, performance, documents + documents/[id], projects/[slug] + projects/new, client-portal config/documentation/entregas, toolkit action-plan/marketing-audit/seo-audit (página + resultado), BrandBrainEditor, ProjectMemoryViewer.
+
+**⚠️ Scope restante SIN traducir** (los lotes que los 4 agentes muertos no llegaron a tocar — siguen con literales hardcodeados; próxima ronda):
+- Toolkit: landing, overview, report/[id] y los ~8 sub-tools restantes (content-calendar, competitor-analysis, etc.)
+- Comercial: interiores de scoring/icebreaker/qualify/proposals + literales de los paneles `components/comercial/*` (CrmContactsPanel, IcpCriteriaPanel incluidos)
+- Componentes compartidos: `components/agent-workspace.tsx`, `components/document-uploader.tsx`
+- Props de AgentWorkspace (títulos/placeholders) en páginas de Strategy y Finanzas
+- Community y páginas menores restantes
+
+El mecanismo (contexto reactivo + diccionario simétrico) ya está probado — la ronda pendiente es solo trabajo mecánico de claves. Mantener SIEMPRE la simetría ES/EN de `lib/i18n.ts` (typecheck no la valida; un desbalance deja claves crudas en un idioma).
+
+---
+
+## ii) ✅ Quick Actions 2.0 — poda, chat guiado, adjuntos, destinos; y 3 sistemas rotos de raíz descubiertos (2026-07-27)
+
+Sesión de auditoría + rediseño completo de quick actions (plan aprobado por el CEO; datos previos: 43 ejecuciones históricas, todas de un día de pruebas, 0 likes). Commits `6354a2d`→`a49f1a3` (F0-F5), todo desplegado vía integración nativa.
+
+**Lo construido**: registry declarativo único (`lib/quick-actions/registry.ts`, 20 acciones — poda 21→20 con fusiones Post/Post Visual y Carousel/Carrusel Visual vía toggle `with_image`, brainstorm_ideas y auditar_innovacion eliminados/fusionados, 3 prompts huérfanos borrados); Comercial reconstruido 1→4 acciones conectadas al pipeline (responder_objecion, email_seguimiento, preparar_llamada con `lead_picker` + "Guardar en el lead"; crear_campaña rehecha con `discovery_search` + CTA que precarga Prospección); **modo chat guiado "Cuéntamelo" en las 20** (`/api/quick-actions/guided`, molde del onboarding chat, historial client-side, adjuntos con visión/PDF); adjuntos también en modo formulario; autofill desde Brand Brain/ICP; destinos universales (aprobar TODO tipo con `asset_url` de imágenes, Copiar, Guardar en Documentos con grounding futuro); robustez (failed+error_message+Reintentar+reaper — adiós filas zombis); agentes con memoria multi-turno real y PDFs legibles.
+
+**Tres sistemas que estaban rotos DE RAÍZ en producción (deriva de esquema — migraciones escritas pero nunca aplicadas, patrón (ff) otra vez):**
+1. `quick_actions_results.error_message` no existía → TODOS los `markFailed` del código fallaban en silencio → filas zombis en processing para siempre (6 saneadas por ID exacto).
+2. `client_documentation` tiene un esquema REAL distinto al de la migración 0015 (`storage_url`/`filename`/`file_size_bytes` + CHECK de doc_type 'brand-book|handbook|product-doc|marketing|other') → **el grounding por documentos de todas las generaciones Y la biblioteca de Documentos entera (listar/subir) fallaban con error de columna desde siempre**. Arreglado contra el esquema real (alias PostgREST en GET para no tocar el front).
+3. `pdf-parse` v2 no sobrevive el bundling de webpack (falta `serverExternalPackages`) → el path de PDF del onboarding también estaba roto en runtime. Arreglado en next.config.
+
+**⚠️ PENDIENTE MANUAL (único paso que requiere al CEO)**: ejecutar `apps/mira/portal/supabase/migrations/0048_quick_actions_output_type.sql` en el SQL editor del dashboard (proyecto nnevhtfxuawexliwlbmh). Añade `error_message`, ensancha el CHECK de `output_type` y añade `client_documentation.extracted_text`. **El código ya desplegado es resiliente a que no esté aplicada** (fallbacks y updates no-fatales), pero hasta entonces: los fallos se marcan sin mensaje de error detallado, `output_type` no se persiste, y los docs guardados no llevan texto para grounding.
+
+**Deuda nueva anotada**: (a) bucket `brand-assets` es público y ahora recibe adjuntos de negocio (P&L, hilos de email) — migrar a bucket privado + signed URLs; (b) `editar_imagen_visual` regenera desde prompt con visión del original (no es edición pixel-perfect; `images.edit` de OpenAI sería el upgrade); (c) carousel con imágenes solo genera la cover (limitación documentada en el prompt); (d) el coste del chat guiado es opus por turno — vigilar `mira_usage_log` (ruta `quick-actions-guided`) y decidir si el entrevistador baja a un modelo menor; (e) `MODEL_PRICING` de opus corregido {15,75}→{5,25} — los consumos históricos del panel estaban sobreestimados ×3.
