@@ -160,12 +160,12 @@ export default function IntegrationsPage() {
     <>
       <div className="space-y-8">
         {successMessage && (
-          <div className="p-4 rounded bg-[#10B981]20 border border-[#10B981] text-[#10B981]">
+          <div className="p-4 rounded bg-emerald-400/10 border border-emerald-400/30 text-emerald-400">
             ✓ {successMessage}
           </div>
         )}
         {errorMessage && (
-          <div className="p-4 rounded bg-[#FF6B6B]20 border border-[#FF6B6B] text-[#FF6B6B]">
+          <div className="p-4 rounded bg-red-400/10 border border-red-400/30 text-red-400">
             ✕ {errorMessage}
           </div>
         )}

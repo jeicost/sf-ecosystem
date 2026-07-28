@@ -220,6 +220,8 @@ export default function CalendarPage() {
 
       {/* ── Grid mensual ───────────────────────────────────── */}
       <div className="card overflow-hidden">
+        <div className="overflow-x-auto">
+        <div className="min-w-[700px]">
         <div className="grid grid-cols-7 border-b border-line">
           {t('calendar.weekdays', locale).split(',').map((d, i) => (
             <div key={i} className="px-2 py-2 text-center text-[10px] font-mono uppercase tracking-wider text-ink-tertiary">
@@ -280,6 +282,8 @@ export default function CalendarPage() {
               )}
             </div>
           ))}
+        </div>
+        </div>
         </div>
       </div>
 

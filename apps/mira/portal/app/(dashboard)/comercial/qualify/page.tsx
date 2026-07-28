@@ -7,12 +7,14 @@ import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { clsx } from 'clsx'
+import PageHeader from '@/components/ui/PageHeader'
+import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 
-const CLASS_LABEL: Record<string, { label: string; color: string; bg: string }> = {
-  interested:     { label: 'Interesado',       color: '#22C55E', bg: 'rgba(34,197,94,0.12)' },
-  not_now:        { label: 'No ahora',          color: '#F59E0B', bg: 'rgba(245,158,11,0.12)' },
-  not_interested: { label: 'No interesado',     color: '#EF4444', bg: 'rgba(239,68,68,0.12)' },
-  referral:       { label: 'Deriva a otro',     color: '#8B5CF6', bg: 'rgba(139,92,246,0.12)' },
+const CLASS_LABEL: Record<string, { label: string; cls: string }> = {
+  interested:     { label: 'Interesado',       cls: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/25' },
+  not_now:        { label: 'No ahora',          cls: 'text-amber-400 bg-amber-400/10 border-amber-400/25' },
+  not_interested: { label: 'No interesado',     cls: 'text-red-400 bg-red-400/10 border-red-400/25' },
+  referral:       { label: 'Deriva a otro',     cls: 'text-violet-400 bg-violet-400/10 border-violet-400/25' },
 }
 
 export default function QualifyPage() {
@@ -91,13 +93,12 @@ export default function QualifyPage() {
 
   return (
     <div className="px-8 py-8 max-w-2xl">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl">💬</span>
-          <h1 className="text-2xl font-semibold text-ink">Quinn — Qualify</h1>
-        </div>
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Analiza respuestas de outreach con BANT y genera el follow-up perfecto.</p>
-      </div>
+      <PageHeader
+        eyebrow={t('section.comercial', locale)}
+        title="💬 Quinn — Qualify"
+        subtitle="Analiza respuestas de outreach con BANT y genera el follow-up perfecto."
+        eyebrowColor={DEPARTMENT_METADATA.comercial.color}
+      />
 
       {/* Lead selector */}
       <div className="card p-5 mb-4">
@@ -125,7 +126,7 @@ export default function QualifyPage() {
       {/* Reply input */}
       <div className="card p-5 mb-4">
         <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
-          Respuesta recibida <span className="text-[#EF4444]">*</span>
+          Respuesta recibida <span className="text-red-400">*</span>
         </label>
         <textarea
           value={replyText}
@@ -141,7 +142,7 @@ export default function QualifyPage() {
         className={clsx(
           'w-full py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-all mb-6',
           replyText.trim() && !analyzing
-            ? 'bg-[#22C55E]/15 text-[#4ade80] hover:bg-[#22C55E]/25 border border-[#22C55E]/25'
+            ? 'bg-emerald-400/15 text-emerald-400 hover:bg-emerald-400/25 border border-emerald-400/25'
             : 'bg-surface text-ink-muted border border-line-subtle cursor-not-allowed'
         )}>
         {analyzing
@@ -158,8 +159,7 @@ export default function QualifyPage() {
               <div className="card p-5">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="px-3 py-1.5 rounded-lg text-sm font-semibold"
-                      style={{ background: cls.bg, color: cls.color, border: `1px solid ${cls.color}25` }}>
+                    <div className={clsx('px-3 py-1.5 rounded-lg text-sm font-semibold border', cls.cls)}>
                       {cls.label}
                     </div>
                     {parsed.bant_score !== undefined && (

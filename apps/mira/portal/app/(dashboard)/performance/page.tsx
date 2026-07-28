@@ -153,7 +153,7 @@ export default function PerformancePage() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         {[
           { label: t('perf.posts-generated', locale), value: posts.length, icon: Share2, color: 'text-violet-400' },
           { label: t('perf.approval-rate', locale), value: approvalRate != null ? `${approvalRate}%` : '—', icon: TrendingUp, color: 'text-emerald-400' },
@@ -168,7 +168,7 @@ export default function PerformancePage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         {/* Posts by platform */}
         <div className="card p-5">
           <div className="flex items-center justify-between mb-5">
@@ -246,7 +246,7 @@ export default function PerformancePage() {
         {byAgent.length === 0 ? (
           <p className="text-xs text-ink-muted text-center py-6">{t('perf.no-activity', locale)}</p>
         ) : (
-          <div className="grid grid-cols-3 gap-3 mb-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-5">
             {byAgent.map(([role, count]) => {
               const meta = AGENT_META[role] ?? { emoji: '🤖', color: '#8B5CF6', role }
               const name = AGENT_NAMES[role] ?? role

@@ -92,7 +92,7 @@ export default function EntregasPage() {
             <Loader2 size={16} className="animate-spin text-ink-muted" />
           </div>
         ) : filtered.length > 0 ? (
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[560px] text-sm">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border)' }}>
                 <th className="text-left py-3 px-4 text-[11px] uppercase tracking-wider font-semibold text-left text-ink-tertiary">

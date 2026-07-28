@@ -9,6 +9,8 @@ import { useToolConnections } from '@/lib/hooks/useToolConnections'
 import { t, type Locale } from '@/lib/i18n'
 import { clsx } from 'clsx'
 import IcpCriteriaPanel from '@/components/comercial/IcpCriteriaPanel'
+import PageHeader from '@/components/ui/PageHeader'
+import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 
 interface DiscoveredLead {
   company_name: string
@@ -47,11 +49,11 @@ interface DeepEnrichedResult {
 type DeepStep = 'idle' | 'searching' | 'results' | 'enriching' | 'enriched' | 'syncing' | 'synced'
 type DeepErrorKind = 'not_connected' | 'limit' | 'other' | null
 
-const CLASS_STYLE: Record<string, { color: string; bg: string; label: string }> = {
-  hot:        { color: '#EF4444', bg: 'rgba(239,68,68,0.12)',  label: 'HOT' },
-  warm:       { color: '#F97316', bg: 'rgba(249,115,22,0.12)', label: 'WARM' },
-  cold:       { color: '#6B7280', bg: 'rgba(107,114,128,0.12)',label: 'COLD' },
-  disqualify: { color: '#374151', bg: 'rgba(55,65,81,0.12)',   label: 'DESC' },
+const CLASS_STYLE: Record<string, { text: string; label: string }> = {
+  hot:        { text: 'text-red-400',    label: 'HOT' },
+  warm:       { text: 'text-amber-400',  label: 'WARM' },
+  cold:       { text: 'text-blue-400',   label: 'COLD' },
+  disqualify: { text: 'text-ink-muted',  label: 'DESC' },
 }
 
 export default function DiscoveryPage() {
@@ -234,17 +236,12 @@ export default function DiscoveryPage() {
   return (
     <div className="px-8 py-8 max-w-5xl">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-[22px]">🔍</span>
-            <h1 className="text-2xl font-semibold text-ink">Rex — Lead Discovery</h1>
-          </div>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-            {mode === 'light' ? t('comercial.discovery.find-companies', locale) : t('comercial.discovery.deep-desc', locale)}
-          </p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={t('section.comercial', locale)}
+        title="🔍 Rex — Lead Discovery"
+        subtitle={mode === 'light' ? t('comercial.discovery.find-companies', locale) : t('comercial.discovery.deep-desc', locale)}
+        eyebrowColor={DEPARTMENT_METADATA.comercial.color}
+      />
 
       {/* Mode toggle — search modes + the ICP criteria that drive their scoring */}
       <div className="flex items-center gap-2 mb-6">
@@ -255,7 +252,7 @@ export default function DiscoveryPage() {
             className={clsx(
               'px-3.5 py-2 rounded-lg text-[12px] font-medium transition-all border',
               mode === m
-                ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#f87171]'
+                ? 'bg-red-400/15 border-red-400/30 text-red-400'
                 : 'border-transparent hover:text-ink'
             )}
             style={mode !== m ? { color: 'var(--text-tertiary)' } : undefined}
@@ -276,7 +273,7 @@ export default function DiscoveryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="col-span-2">
             <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
-              Palabras clave <span className="text-[#EF4444]">*</span>
+              Palabras clave <span className="text-red-400">*</span>
             </label>
             <input
               value={keywords}
@@ -332,7 +329,7 @@ export default function DiscoveryPage() {
                 className={clsx(
                   'px-2.5 py-1 rounded text-[11px] transition-all border',
                   limit === n
-                    ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#f87171]'
+                    ? 'bg-red-400/15 border-red-400/30 text-red-400'
                     : 'hover:text-ink border-transparent'
                 )}
                 style={limit !== n ? { color: 'var(--text-tertiary)' } : undefined}>
@@ -346,7 +343,7 @@ export default function DiscoveryPage() {
             className={clsx(
               'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all',
               keywords.trim() && !running
-                ? 'bg-[#EF4444] text-white hover:bg-[#dc2626]'
+                ? 'bg-red-500 text-white hover:bg-red-600'
                 : 'bg-surface text-ink-muted cursor-not-allowed'
             )}
           >
@@ -356,7 +353,7 @@ export default function DiscoveryPage() {
         </div>
 
         {status && (
-          <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: 'rgba(239,68,68,0.7)' }}>
+          <div className="mt-4 flex items-center gap-2 text-[12px] text-red-400/70">
             <Loader2 size={12} className="animate-spin" />
             {status}
           </div>
@@ -376,13 +373,13 @@ export default function DiscoveryPage() {
           </div>
 
           {hotLeads.length > 0 && (
-            <LeadGroup title="HOT" color="#EF4444" leads={hotLeads} added={added} onAdd={addToPipeline} />
+            <LeadGroup title="HOT" colorClass="text-red-400" leads={hotLeads} added={added} onAdd={addToPipeline} />
           )}
           {warmLeads.length > 0 && (
-            <LeadGroup title="WARM" color="#F97316" leads={warmLeads} added={added} onAdd={addToPipeline} />
+            <LeadGroup title="WARM" colorClass="text-amber-400" leads={warmLeads} added={added} onAdd={addToPipeline} />
           )}
           {rest.length > 0 && (
-            <LeadGroup title="COLD / DESCARTADOS" color="var(--text-muted)" leads={rest} added={added} onAdd={addToPipeline} collapsed />
+            <LeadGroup title="COLD / DESCARTADOS" colorClass="text-ink-muted" leads={rest} added={added} onAdd={addToPipeline} collapsed />
           )}
         </div>
       )}
@@ -453,7 +450,7 @@ function DeepDiscovery({
         </p>
         <Link
           href="/integrations"
-          className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-[#EF4444] text-white hover:bg-[#dc2626] transition-all"
+          className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-semibold bg-red-500 text-white hover:bg-red-600 transition-all"
         >
           {t('comercial.discovery.deep-connect-cta', locale)} <ArrowRight size={14} />
         </Link>
@@ -467,7 +464,7 @@ function DeepDiscovery({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
-              Industria / sector <span className="text-[#EF4444]">*</span>
+              Industria / sector <span className="text-red-400">*</span>
             </label>
             <input
               value={industry}
@@ -497,7 +494,7 @@ function DeepDiscovery({
               <button key={n} onClick={() => setLimit(n)}
                 className={clsx(
                   'px-2.5 py-1 rounded text-[11px] transition-all border',
-                  limit === n ? 'bg-[#EF4444]/15 border-[#EF4444]/30 text-[#f87171]' : 'hover:text-ink border-transparent'
+                  limit === n ? 'bg-red-400/15 border-red-400/30 text-red-400' : 'hover:text-ink border-transparent'
                 )}
                 style={limit !== n ? { color: 'var(--text-tertiary)' } : undefined}>
                 {n}
@@ -509,7 +506,7 @@ function DeepDiscovery({
             disabled={!industry.trim() || deepRunning}
             className={clsx(
               'flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all',
-              industry.trim() && !deepRunning ? 'bg-[#EF4444] text-white hover:bg-[#dc2626]' : 'bg-surface text-ink-muted cursor-not-allowed'
+              industry.trim() && !deepRunning ? 'bg-red-500 text-white hover:bg-red-600' : 'bg-surface text-ink-muted cursor-not-allowed'
             )}
           >
             {deepStep === 'searching' ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}
@@ -518,12 +515,12 @@ function DeepDiscovery({
         </div>
 
         {deepStep === 'searching' && (
-          <div className="mt-4 flex items-center gap-2 text-[12px]" style={{ color: 'rgba(239,68,68,0.7)' }}>
+          <div className="mt-4 flex items-center gap-2 text-[12px] text-red-400/70">
             <Loader2 size={12} className="animate-spin" /> {t('comercial.discovery.deep-searching', locale)}
           </div>
         )}
         {deepError && (
-          <div className="mt-4 text-[12px] text-[#FF6B6B]">
+          <div className="mt-4 text-[12px] text-red-400">
             {deepError === 'not_connected' && t('comercial.discovery.deep-not-connected', locale)}
             {deepError === 'limit' && t('comercial.discovery.deep-limit-hit', locale)}
             {deepError === 'other' && 'Error — inténtalo de nuevo.'}
@@ -539,7 +536,7 @@ function DeepDiscovery({
               <button
                 onClick={onEnrich}
                 disabled={deepRunning}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-semibold bg-[#EF4444]/10 border border-[#EF4444]/25 text-[#f87171] hover:bg-[#EF4444]/15 transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-[12px] font-semibold bg-red-400/10 border border-red-400/25 text-red-400 hover:bg-red-400/15 transition-all disabled:opacity-50"
               >
                 {deepStep === 'enriching' ? <Loader2 size={13} className="animate-spin" /> : <ShieldCheck size={13} />}
                 {t('comercial.discovery.deep-enrich-btn', locale)}
@@ -547,7 +544,7 @@ function DeepDiscovery({
             )}
           </div>
           {deepStep === 'enriching' && (
-            <div className="mb-3 flex items-center gap-2 text-[12px]" style={{ color: 'rgba(239,68,68,0.7)' }}>
+            <div className="mb-3 flex items-center gap-2 text-[12px] text-red-400/70">
               <Loader2 size={12} className="animate-spin" /> {t('comercial.discovery.deep-enriching', locale)}
             </div>
           )}
@@ -567,7 +564,7 @@ function DeepDiscovery({
                     {lead.email && (
                       <span className={clsx(
                         'text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1',
-                        lead.email_verified ? 'bg-green-400/10 text-green-400 border border-green-400/20' : 'bg-[#EF4444]/10 text-[#f87171] border border-[#EF4444]/20'
+                        lead.email_verified ? 'bg-green-400/10 text-green-400 border border-green-400/20' : 'bg-red-400/10 text-red-400 border border-red-400/20'
                       )}>
                         <Mail size={9} /> {lead.email} {lead.email_verified && `· ${t('comercial.discovery.deep-verified-email', locale)}`}
                       </span>
@@ -588,7 +585,7 @@ function DeepDiscovery({
               <button
                 onClick={onSync}
                 disabled={deepRunning}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-[#EF4444] text-white hover:bg-[#dc2626] transition-all disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-red-500 text-white hover:bg-red-600 transition-all disabled:opacity-50"
               >
                 {deepStep === 'syncing' ? <Loader2 size={15} className="animate-spin" /> : <Plus size={15} />}
                 {t('comercial.discovery.deep-sync-btn', locale)}
@@ -601,7 +598,7 @@ function DeepDiscovery({
             )}
           </div>
           {deepStep === 'syncing' && (
-            <div className="mb-3 flex items-center gap-2 text-[12px]" style={{ color: 'rgba(239,68,68,0.7)' }}>
+            <div className="mb-3 flex items-center gap-2 text-[12px] text-red-400/70">
               <Loader2 size={12} className="animate-spin" /> {t('comercial.discovery.deep-syncing', locale)}
             </div>
           )}
@@ -637,9 +634,9 @@ function DeepDiscovery({
   )
 }
 
-function LeadGroup({ title, color, leads, added, onAdd, collapsed = false }: {
+function LeadGroup({ title, colorClass, leads, added, onAdd, collapsed = false }: {
   title: string
-  color: string
+  colorClass: string
   leads: DiscoveredLead[]
   added: Set<string>
   onAdd: (l: DiscoveredLead) => void
@@ -651,10 +648,10 @@ function LeadGroup({ title, color, leads, added, onAdd, collapsed = false }: {
     <div className="mb-6">
       <button
         onClick={() => setOpen(o => !o)}
-        className="flex items-center gap-2 mb-3 group"
+        className={clsx('flex items-center gap-2 mb-3 group', colorClass)}
       >
-        <div className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />
-        <span className="text-[11px] font-semibold uppercase tracking-widest" style={{ color }}>{title}</span>
+        <div className="w-1.5 h-1.5 rounded-full bg-current" />
+        <span className="text-[11px] font-semibold uppercase tracking-widest">{title}</span>
         <span className="text-[10px] ml-1" style={{ color: 'var(--text-tertiary)' }}>({leads.length})</span>
         <ChevronDown size={12} className={clsx('transition-transform ml-1', !open && '-rotate-90')} style={{ color: 'var(--text-tertiary)' }} />
       </button>
@@ -681,8 +678,8 @@ function DiscoveryLeadRow({ lead, added, onAdd }: {
     <div className="card p-4 flex items-start gap-4">
       {/* Score */}
       <div className="shrink-0 text-center w-12">
-        <div className="text-lg font-bold" style={{ color: cls.color }}>{lead.score}</div>
-        <div className="text-[9px] font-semibold uppercase" style={{ color: cls.color }}>{cls.label}</div>
+        <div className={clsx('text-lg font-bold', cls.text)}>{lead.score}</div>
+        <div className={clsx('text-[9px] font-semibold uppercase', cls.text)}>{cls.label}</div>
       </div>
 
       {/* Info */}
@@ -704,7 +701,7 @@ function DiscoveryLeadRow({ lead, added, onAdd }: {
           <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)' }}>{lead.industry}</span>
           <span className="text-[10px] px-1.5 py-0.5 rounded" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}>📍 {lead.geography}</span>
           {lead.trigger_signals.slice(0, 2).map(s => (
-            <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-[#EF4444]/10 text-[#f87171] border border-[#EF4444]/20">
+            <span key={s} className="text-[10px] px-1.5 py-0.5 rounded bg-red-400/10 text-red-400 border border-red-400/20">
               ⚡ {s}
             </span>
           ))}
@@ -720,7 +717,7 @@ function DiscoveryLeadRow({ lead, added, onAdd }: {
           'shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all',
           added
             ? 'text-green-400 border border-green-400/20 bg-green-400/8 cursor-default'
-            : 'text-[#EF4444] border border-[#EF4444]/25 bg-[#EF4444]/8 hover:bg-[#EF4444]/15'
+            : 'text-red-400 border border-red-400/25 bg-red-400/10 hover:bg-red-400/15'
         )}
       >
         {added ? <><CheckCircle2 size={11} /> En pipeline</> : <><Plus size={11} /> Añadir</>}

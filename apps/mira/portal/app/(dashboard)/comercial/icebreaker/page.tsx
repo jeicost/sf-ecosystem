@@ -6,7 +6,10 @@ import type { Lead } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
 import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { clsx } from 'clsx'
+import PageHeader from '@/components/ui/PageHeader'
+import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 
 const ICEBREAKER_COLS = 'id,hot_score,company_name,first_name,last_name,title,industry,geography,trigger_event,linkedin_summary,icebreaker_used'
 
@@ -157,15 +160,12 @@ Genera las 3 variantes ahora.`
 
   return (
     <div className="px-8 py-8 max-w-2xl">
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xl">✍️</span>
-            <h1 className="text-2xl font-semibold text-ink">Finn — Icebreaker</h1>
-          </div>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera 3 variantes de primer mensaje ultra-personalizado.</p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={t('section.comercial', locale)}
+        title="✍️ Finn — Icebreaker"
+        subtitle="Genera 3 variantes de primer mensaje ultra-personalizado."
+        eyebrowColor={DEPARTMENT_METADATA.comercial.color}
+      />
 
       {/* Mode tabs */}
       <div className="flex gap-1 mb-6 p-1 rounded-xl w-fit" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
@@ -218,8 +218,10 @@ Genera las 3 variantes ahora.`
               rows={3} className="w-full bg-transparent text-sm text-ink outline-none resize-none leading-relaxed" style={{ color: 'var(--text-primary)' }} />
           </div>
           <button onClick={generateManual} disabled={!manualValid || generating}
-            className="w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-            style={{ background: generating ? 'var(--bg-surface-hover)' : '#EAB308', color: '#000' }}>
+            className={clsx(
+              'w-full py-3 rounded-lg font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed transition-all',
+              generating ? 'bg-surface-hover' : 'bg-amber-400 text-black'
+            )}>
             {generating
               ? <><Loader2 size={16} className="animate-spin text-ink" /><span className="text-ink">Finn escribiendo…</span></>
               : <><Zap size={16} /> Generar 3 variantes con Finn</>}
@@ -268,13 +270,13 @@ Genera las 3 variantes ahora.`
                   </div>
                   {selected.trigger_event && (
                     <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                      <p className="text-[11px] mb-1" style={{ color: 'rgba(180, 83, 9, 0.7)' }}>Trigger event</p>
+                      <p className="text-[11px] mb-1 text-amber-400/70">Trigger event</p>
                       <p className="text-sm text-ink-secondary">{selected.trigger_event}</p>
                     </div>
                   )}
                   {selected.icebreaker_used && (
-                    <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'rgba(34, 197, 94, 0.15)', borderWidth: '1px' }}>
-                      <p className="text-[11px] mb-1" style={{ color: 'rgba(134, 239, 172, 0.6)' }}>Icebreaker guardado</p>
+                    <div className="rounded-lg p-3 border border-emerald-400/15" style={{ background: 'var(--bg-page)' }}>
+                      <p className="text-[11px] mb-1 text-emerald-400/60">Icebreaker guardado</p>
                       <p className="text-sm text-ink-secondary italic">{selected.icebreaker_used}</p>
                     </div>
                   )}
@@ -308,7 +310,7 @@ Genera las 3 variantes ahora.`
                   <button key={i} onClick={() => setActiveTab(i)}
                     className={clsx(
                       'flex-1 py-1.5 text-[11px] rounded-md transition-all font-medium border',
-                      activeTab === i ? 'bg-[#EAB308]/15 text-[#EAB308] border-[#EAB308]/25' : 'hover:text-ink border-transparent'
+                      activeTab === i ? 'bg-amber-400/15 text-amber-400 border-amber-400/25' : 'hover:text-ink border-transparent'
                     )}
                     style={activeTab !== i ? { color: 'var(--text-secondary)' } : undefined}>
                     {VARIANT_LABELS[i] ?? `Variante ${i + 1}`}
@@ -335,7 +337,7 @@ Genera las 3 variantes ahora.`
                       'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] transition-all',
                       saved
                         ? 'text-green-400 border border-green-400/20 bg-green-400/8 cursor-default'
-                        : 'text-[#EAB308] border border-[#EAB308]/25 bg-[#EAB308]/8 hover:bg-[#EAB308]/15'
+                        : 'text-amber-400 border border-amber-400/25 bg-amber-400/10 hover:bg-amber-400/15'
                     )}>
                     {saved ? <><Check size={11} /> Guardado en lead</> : 'Usar esta variante →'}
                   </button>

@@ -9,6 +9,8 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { scoreLabel } from '@/lib/score-utils'
 import { clsx } from 'clsx'
+import PageHeader from '@/components/ui/PageHeader'
+import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 
 function ScoreBadge({ score }: { score: number | null }) {
   if (score === null) return <span className="text-xs" style={{ color: 'var(--text-tertiary)' }}>—</span>
@@ -20,12 +22,12 @@ function ScoreBadge({ score }: { score: number | null }) {
   )
 }
 
-function ScoreBar({ value, max, color }: { value: number; max: number; color: string }) {
+function ScoreBar({ value, max, barClass }: { value: number; max: number; barClass: string }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0
   return (
     <div className="flex items-center gap-3">
       <div className="flex-1 h-1.5 rounded-full overflow-hidden" style={{ background: 'var(--bg-surface)' }}>
-        <div className="h-full rounded-full transition-all duration-700" style={{ width: `${pct}%`, background: color }} />
+        <div className={clsx('h-full rounded-full transition-all duration-700', barClass)} style={{ width: `${pct}%` }} />
       </div>
       <span className="text-sm font-semibold text-ink w-8 text-right">{value}</span>
     </div>
@@ -136,30 +138,27 @@ export default function ScoringPage() {
 
   return (
     <div className="px-8 py-8">
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-xl">🎯</span>
-            <h1 className="text-2xl font-semibold text-ink">Vera — Score Distribution</h1>
-          </div>
-          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('comercial.scoring.distribution-desc', locale)}</p>
-        </div>
-      </div>
+      <PageHeader
+        eyebrow={t('section.comercial', locale)}
+        title="🎯 Vera — Score Distribution"
+        subtitle={t('comercial.scoring.distribution-desc', locale)}
+        eyebrowColor={DEPARTMENT_METADATA.comercial.color}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {/* LEFT — Stats + Table */}
-        <div className="col-span-2 space-y-6">
+        <div className="sm:col-span-2 space-y-6">
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
-              { label: 'Total',        value: total,       color: 'var(--text-secondary)' },
-              { label: 'Hot (≥75)',    value: hot.length,  color: '#EF4444' },
-              { label: 'Warm (50-74)', value: warm.length, color: '#F59E0B' },
-              { label: 'Cold (<50)',   value: cold.length, color: '#3B82F6' },
-            ].map(({ label, value, color }) => (
+              { label: 'Total',        value: total,       cls: 'text-ink-secondary' },
+              { label: 'Hot (≥75)',    value: hot.length,  cls: 'text-red-400' },
+              { label: 'Warm (50-74)', value: warm.length, cls: 'text-amber-400' },
+              { label: 'Cold (<50)',   value: cold.length, cls: 'text-blue-400' },
+            ].map(({ label, value, cls }) => (
               <div key={label} className="card px-4 py-3">
                 <p className="text-[11px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
-                <p className="text-2xl font-semibold" style={{ color }}>{value}</p>
+                <p className={clsx('text-2xl font-semibold', cls)}>{value}</p>
               </div>
             ))}
           </div>
@@ -169,15 +168,15 @@ export default function ScoringPage() {
             <h2 className="text-sm font-medium text-ink mb-5">{t('comercial.scoring.distribution', locale)}</h2>
             <div className="space-y-4">
               {[
-                { label: '🔥 Hot (≥75)', value: hot.length, pct: hotPct, color: '#EF4444' },
-                { label: '🟡 Warm (50-74)', value: warm.length, pct: warmPct, color: '#F59E0B' },
-                { label: '🔵 Cold (<50)', value: cold.length, pct: coldPct, color: '#3B82F6' },
-              ].map(({ label, value, pct, color }) => (
+                { label: '🔥 Hot (≥75)', value: hot.length, pct: hotPct, barClass: 'bg-red-400' },
+                { label: '🟡 Warm (50-74)', value: warm.length, pct: warmPct, barClass: 'bg-amber-400' },
+                { label: '🔵 Cold (<50)', value: cold.length, pct: coldPct, barClass: 'bg-blue-400' },
+              ].map(({ label, value, pct, barClass }) => (
                 <div key={label}>
                   <div className="flex justify-between text-[11px] mb-1.5" style={{ color: 'var(--text-secondary)' }}>
                     <span>{label}</span><span>{pct}%</span>
                   </div>
-                  <ScoreBar value={value} max={total} color={color} />
+                  <ScoreBar value={value} max={total} barClass={barClass} />
                 </div>
               ))}
             </div>
@@ -193,7 +192,8 @@ export default function ScoringPage() {
                 No hay leads aún. Usa Rex para descubrir leads.
               </div>
             ) : (
-              <table className="w-full">
+              <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px]">
                 <thead>
                   <tr style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
                     {['Empresa', 'Cargo', 'Industria', 'Score', ''].map(h => (
@@ -221,6 +221,7 @@ export default function ScoringPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             )}
           </div>
         </div>
@@ -274,7 +275,7 @@ export default function ScoringPage() {
                   className="flex-1 rounded-lg px-3 py-2 text-[12px] text-ink focus:outline-none transition-colors" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
                 />
                 <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}
-                  className="p-2 rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 disabled:opacity-30 transition-all">
+                  className="p-2 rounded-lg bg-red-400/15 text-red-400 hover:bg-red-400/25 disabled:opacity-30 transition-all">
                   <Send size={13} />
                 </button>
               </div>

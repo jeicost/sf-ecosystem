@@ -2,7 +2,11 @@
 import { useState } from 'react'
 import { Loader2, FileText, Copy, Check, Save } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 import { clsx } from 'clsx'
+import PageHeader from '@/components/ui/PageHeader'
+import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 
 interface CallBrief {
   company: string
@@ -23,6 +27,7 @@ const EMPTY: CallBrief = {
 export default function ProposalsPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
+  const { locale } = useLocaleContext()
 
   const [brief, setBrief]         = useState<CallBrief>(EMPTY)
   const [output, setOutput]       = useState('')
@@ -85,13 +90,12 @@ export default function ProposalsPage() {
 
   return (
     <div className="px-8 py-8">
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xl">📄</span>
-          <h1 className="text-2xl font-semibold text-ink">Nova — Proposals</h1>
-        </div>
-        <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Genera propuestas comerciales completas desde el brief de una llamada.</p>
-      </div>
+      <PageHeader
+        eyebrow={t('section.comercial', locale)}
+        title="📄 Nova — Proposals"
+        subtitle="Genera propuestas comerciales completas desde el brief de una llamada."
+        eyebrowColor={DEPARTMENT_METADATA.comercial.color}
+      />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* LEFT — Brief form */}
@@ -101,7 +105,7 @@ export default function ProposalsPage() {
             {FIELDS.map(({ field, label, placeholder, required, textarea }) => (
               <div key={field} className="card p-4">
                 <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>
-                  {label} {required && <span className="text-[#EF4444]">*</span>}
+                  {label} {required && <span className="text-red-400">*</span>}
                 </label>
                 {textarea ? (
                   <textarea
@@ -129,7 +133,7 @@ export default function ProposalsPage() {
             className={clsx(
               'w-full mt-4 py-3 rounded-xl flex items-center justify-center gap-2 text-sm font-semibold transition-all',
               valid && !generating
-                ? 'bg-[#3B82F6]/15 text-[#60a5fa] hover:bg-[#3B82F6]/25 border border-[#3B82F6]/25'
+                ? 'bg-blue-400/15 text-blue-400 hover:bg-blue-400/25 border border-blue-400/25'
                 : 'bg-surface text-ink-muted border border-line-subtle cursor-not-allowed'
             )}>
             {generating

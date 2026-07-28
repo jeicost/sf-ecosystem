@@ -137,12 +137,12 @@ export default function PipelinePage() {
       </div>
 
       {/* Kanban */}
-      <div className="flex gap-4 overflow-x-auto pb-4">
+      <div className="flex gap-4 overflow-x-auto snap-x pb-4">
         {STAGES.map(({ key, color }) => {
           const cols = stageGroups.get(key) ?? []
           const label = getStageLabel(key, locale)
           return (
-            <div key={key} className="flex-shrink-0 w-52">
+            <div key={key} className="flex-shrink-0 w-52 snap-start">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-2 h-2 rounded-full" style={{ background: color }} />
                 <span className="text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>{label}</span>
