@@ -1,4 +1,3 @@
-import { createClient } from '@/lib/supabase'
 import type { Attachment } from '@/lib/attachments'
 
 // Lado cliente del pipeline de adjuntos: sube ficheros al bucket brand-assets
@@ -16,19 +15,18 @@ export async function uploadFilesToBucket(
   files: File[],
   prefix = 'assets'
 ): Promise<Attachment[]> {
-  const supabase = createClient()
-  const uploaded: Attachment[] = []
-  for (const file of files) {
-    const path = `${clientId}/${prefix}/${Date.now()}-${file.name}`
-    const { error } = await supabase.storage.from('brand-assets').upload(path, file, { upsert: true })
-    if (error) throw error
-    const { data } = supabase.storage.from('brand-assets').getPublicUrl(path)
-    uploaded.push({
-      type: attachmentTypeFromFile(file),
-      name: file.name,
-      url: data.publicUrl,
-      mimeType: file.type,
-    })
+  // La subida va por API route (server-side, admin client): el bucket
+  // brand-assets no permite INSERT desde el navegador — la subida directa
+  // fallaba con RLS para TODOS los usuarios (2026-07-28).
+  const form = new FormData()
+  form.append('clientId', clientId)
+  form.append('prefix', prefix)
+  for (const file of files) form.append('files', file)
+
+  const res = await fetch('/api/attachments/upload', { method: 'POST', body: form })
+  const data = await res.json().catch(() => null)
+  if (!res.ok || !data?.attachments) {
+    throw new Error(data?.error || `Error subiendo archivos (${res.status})`)
   }
-  return uploaded
+  return data.attachments as Attachment[]
 }

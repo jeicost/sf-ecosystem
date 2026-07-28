@@ -84,13 +84,14 @@ const TOOL_CONFIG: ToolConfig = {
 }
 
 export default function InvestorDeckPage() {
-  const handleGenerate = async (formData: Record<string, any>) => {
+  const handleGenerate = async (formData: Record<string, any>, attachments?: any[]) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         tool_slug: 'investor-deck',
         input_data: formData,
+        attachments,
         project_id: getStoredProjectId(),
       }),
     })

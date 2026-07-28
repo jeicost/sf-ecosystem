@@ -87,7 +87,7 @@ export default function UnifiedHistory() {
                         color: gen.type === 'toolkit' ? '#a78bfa' : '#818cf8',
                       }}
                     >
-                      {gen.type === 'toolkit' ? '🔧 Toolkit' : '⚡ Quick Action'}
+                      {gen.type === 'toolkit' ? '📊 Business Report' : '⚡ Quick Action'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-[10px] text-ink-tertiary">

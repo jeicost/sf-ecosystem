@@ -10,6 +10,7 @@ import {
 } from '@/lib/grounding/site-snapshot'
 import { computeSeoChecks, deriveScore, type SeoCheck } from '@/lib/grounding/seo-checks'
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
+import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 
 // Single-tool generation with opus can take minutes
@@ -131,6 +132,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing tool_slug or input_data' }, { status: 400 })
     }
 
+    // Adjuntos del usuario (F1 Business Reports): texto extraído como fuente
+    // primaria del prompt + imágenes como bloques de visión (patrón QA).
+    const attachments: Attachment[] = Array.isArray(body.attachments) ? body.attachments : []
+    const { contentBlocks: attachmentImageBlocks, textContext: attachmentText } =
+      await buildAttachmentBlocks(attachments)
+    if (attachments.length) {
+      // Metadatos (no blobs) para trazabilidad del informe
+      input_data._attachments = attachments.map((a: Attachment) => ({ name: a.name, type: a.type, url: a.url }))
+    }
+
     // Multi-empresa: clientId del body validado por grant; sin él, primer grant.
     // (Mismo patrón que quick-actions / project-memory — nunca el primer grant a ciegas.)
     const access = await resolveRequestClient(body.clientId ?? null)
@@ -245,6 +256,7 @@ export async function POST(req: NextRequest) {
       projectId,
       ...(siteFactsBlock ? { siteFactsBlock } : {}),
       ...(sourcesBlock ? { sourcesBlock } : {}),
+      ...(attachmentText ? { attachmentText } : {}),
     }
     const prompt = await getToolkitPrompt(tool_slug, promptParams)
 
@@ -264,7 +276,9 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: 'user',
-          content: prompt,
+          content: attachmentImageBlocks.length
+            ? [...attachmentImageBlocks, { type: 'text' as const, text: prompt }]
+            : prompt,
         },
       ],
     })

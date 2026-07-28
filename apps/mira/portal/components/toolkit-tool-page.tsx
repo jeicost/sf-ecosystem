@@ -32,7 +32,7 @@ export default function ToolkitToolPage({
       {/* Header */}
       <Link href="/toolkit" className="inline-flex items-center gap-1 text-xs font-medium mb-6" style={{ color }}>
         <ArrowLeft size={12} />
-        Volver al Toolkit
+        Volver a Business Reports
       </Link>
 
       <div className="mb-10">

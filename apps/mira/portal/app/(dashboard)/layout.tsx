@@ -193,7 +193,7 @@ useEffect(() => {
             : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
         )}>
         <Layers size={13} />
-        <span>Toolkit</span>
+        <span>Business Reports</span>
       </Link>
 
       {/* Documentos — global link */}

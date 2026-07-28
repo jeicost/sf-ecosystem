@@ -145,7 +145,7 @@ export async function GET(req: NextRequest) {
       const html = generateEditorialHTML({
         clientName: clientRow2?.name || 'Cliente',
         brandColor: clientRow2?.primary_color || '#8B5CF6',
-        toolTitle: 'Toolkit Completo',
+        toolTitle: 'Business Reports — Informe completo',
         subtitle: clientRow2?.name || '',
         tagline: `${latestByTool.size} informes · generado con MIRA`,
         sections: overviewSections,

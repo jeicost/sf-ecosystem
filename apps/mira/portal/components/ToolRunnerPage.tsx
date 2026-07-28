@@ -3,18 +3,20 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
-import { fetchBrandBrainData } from '@/lib/brand-brain-loader'
 import { useActiveClient } from '@/lib/client-context'
+import { AttachmentDropzone } from '@/components/AttachmentDropzone'
+import ReportReadiness from '@/components/ReportReadiness'
+import type { Attachment } from '@/lib/attachments'
 
 export interface ToolField {
   name: string
   label: string
-  type: 'text' | 'textarea' | 'select' | 'color'
+  type: 'text' | 'textarea' | 'select' | 'color' | 'month' | 'multicheck'
   placeholder?: string
   hint?: string
   options?: Array<{ value: string; label: string }>
   required?: boolean
-  defaultValue?: string
+  defaultValue?: string | string[]
   example?: string
 }
 
@@ -28,11 +30,13 @@ export interface ToolConfig {
   fields: ToolField[]
   submitButtonText: string
   submitButtonColor?: string
+  /** Oculta contexto adicional + adjuntos (raro; por defecto todos los reportes los tienen) */
+  hideExtras?: boolean
 }
 
 interface ToolRunnerPageProps {
   config: ToolConfig
-  onGenerate: (formData: Record<string, any>) => Promise<any>
+  onGenerate: (formData: Record<string, any>, attachments?: Attachment[]) => Promise<any>
   resultComponent?: React.ComponentType<{ data?: any }>
   isLoading?: boolean
 }
@@ -61,18 +65,12 @@ export default function ToolRunnerPage({
   const [success, setSuccess] = useState(false)
   const [resultData, setResultData] = useState<any>(null)
   const [pollingQueueId, setPollingQueueId] = useState<string | null>(null)
+  const [attachments, setAttachments] = useState<Attachment[]>([])
 
-  // Load Brand Brain data on mount
-  useEffect(() => {
-    const loadBrandData = async () => {
-      if (!clientId) return
-      const brandData = await fetchBrandBrainData(clientId)
-      if (Object.keys(brandData).length > 0) {
-        setFormData((prev) => ({ ...prev, ...brandData }))
-      }
-    }
-    loadBrandData()
-  }, [clientId])
+  // El prefill del Brand Brain se eliminó (F1 Business Reports): sus claves
+  // nunca coincidieron con los names de los forms, y el brain entra completo
+  // server-side en cada prompt — los formularios ya solo piden lo que el
+  // brain NO puede saber.
 
   // Load saved result if ?result=id is in URL
   useEffect(() => {
@@ -151,7 +149,7 @@ export default function ToolRunnerPage({
     setPollingQueueId(null)
 
     try {
-      const data = await onGenerate(formData)
+      const data = await onGenerate(formData, attachments)
       if (data?.queue_id) {
         // Start polling for result
         setPollingQueueId(data.queue_id)
@@ -177,7 +175,7 @@ export default function ToolRunnerPage({
       {/* Header */}
       <div className="mb-8">
         <p className="text-xs uppercase tracking-widest font-semibold mb-2 text-ink-tertiary">
-          Toolkit
+          Business Reports
         </p>
         <div className="flex items-start gap-4">
           <span className="text-4xl">{config.icon}</span>
@@ -237,6 +235,9 @@ export default function ToolRunnerPage({
           </div>
         </div>
       )}
+
+      {/* Semáforo de completitud del Brand Brain — informa, NUNCA bloquea */}
+      {!success && <ReportReadiness toolSlug={config.slug} />}
 
       {/* Form or Result */}
       {!success || isLoading ? (
@@ -313,11 +314,68 @@ export default function ToolRunnerPage({
                 </div>
               )}
 
+              {field.type === 'month' && (
+                <input
+                  type="month"
+                  name={field.name}
+                  value={formData[field.name] || ''}
+                  onChange={(e) => handleChange(field.name, e.target.value)}
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink focus:border-purple-500 focus:outline-none transition-colors"
+                  required={field.required}
+                />
+              )}
+
+              {field.type === 'multicheck' && (
+                <div className="flex flex-wrap gap-3">
+                  {field.options?.map((opt) => {
+                    const selected: string[] = Array.isArray(formData[field.name]) ? formData[field.name] : []
+                    const checked = selected.includes(opt.value)
+                    return (
+                      <label key={opt.value} className="flex items-center gap-1.5 text-sm text-ink cursor-pointer bg-surface border border-line rounded-lg px-3 py-2">
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={() =>
+                            handleChange(
+                              field.name,
+                              checked ? selected.filter((v) => v !== opt.value) : [...selected, opt.value]
+                            )
+                          }
+                          className="accent-purple-500"
+                        />
+                        {opt.label}
+                      </label>
+                    )
+                  })}
+                </div>
+              )}
+
               {field.example && (
                 <p className="text-xs text-ink-tertiary mt-1">Ej: {field.example}</p>
               )}
             </div>
           ))}
+
+          {!config.hideExtras && (
+            <>
+              <div>
+                <label className="block text-sm font-semibold text-ink mb-2">Contexto adicional (opcional)</label>
+                <p className="text-xs text-ink-tertiary mb-2">Pega aquí cualquier información extra que el informe deba tener en cuenta.</p>
+                <textarea
+                  value={formData.contexto_adicional || ''}
+                  onChange={(e) => handleChange('contexto_adicional', e.target.value)}
+                  placeholder="Notas, datos, contexto del momento..."
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-none h-24"
+                />
+              </div>
+              <AttachmentDropzone
+                clientId={clientId ?? null}
+                attachments={attachments}
+                onChange={setAttachments}
+                disabled={isLoading}
+              />
+            </>
+          )}
 
           {/* Submit Button */}
           <button

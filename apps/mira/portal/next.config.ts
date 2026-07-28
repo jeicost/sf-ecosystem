@@ -12,6 +12,14 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Business Reports (2026-07-28): vanity + herramientas absorbidas
+      { source: '/business-reports', destination: '/toolkit', permanent: false },
+      { source: '/business-reports/:path*', destination: '/toolkit/:path*', permanent: false },
+      { source: '/toolkit/content-pack', destination: '/toolkit/monthly-content-system', permanent: true },
+      { source: '/toolkit/content-engine', destination: '/toolkit/monthly-content-system', permanent: true },
+      { source: '/toolkit/marketing-campaign-generator', destination: '/toolkit/monthly-content-system', permanent: true },
+      { source: '/toolkit/community-growth-blueprint', destination: '/toolkit/monthly-content-system', permanent: true },
+      { source: '/toolkit/brandbook-content-system', destination: '/toolkit/brand-book', permanent: true },
       // Rutas legacy de departamentos — consolidadas
       { source: '/estrategia', destination: '/strategy', permanent: true },
       { source: '/estrategia/:path*', destination: '/strategy/:path*', permanent: true },

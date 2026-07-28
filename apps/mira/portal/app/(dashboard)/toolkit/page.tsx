@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { Syne } from 'next/font/google'
 import { Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
-import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { TOOLKIT_TOOLS, getVisibleTools } from '@/lib/toolkit-tools'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
 import { t } from '@/lib/i18n'
@@ -22,25 +22,12 @@ interface Generation extends DeliverableGeneration {
   error_message?: string
 }
 
-// ─── Category map ────────────────────────────────────────────
-const CATEGORY_MAP: Record<string, string> = {
-  'seo-audit': 'Digital Audit',
-  'marketing-audit': 'Digital Audit',
-  'brand-briefing': 'Brand Intelligence',
-  'brandbook-content-system': 'Brand Intelligence',
-  'content-pack': 'Content',
-  'content-engine': 'Content',
-  'marketing-campaign-generator': 'Content',
-  'community-growth-blueprint': 'Content',
-  'action-plan': 'Strategy',
-  'investor-deck': 'Strategy',
-  'competitive-analysis': 'Strategy',
-}
-
+// La categoría vive en el catálogo (lib/toolkit-tools.ts) — sin mapa paralelo.
 function getCategory(slug: string): string {
-  if (CATEGORY_MAP[slug]) return CATEGORY_MAP[slug]
+  const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
+  if (tool?.category) return tool.category
   if (slug.startsWith('doc-')) return 'Documents'
-  return 'Toolkit'
+  return 'Business Reports'
 }
 
 const FALLBACK_DESCRIPTIONS: Record<string, string> = {
@@ -49,7 +36,7 @@ const FALLBACK_DESCRIPTIONS: Record<string, string> = {
   Content: 'Contenido listo para publicar, adaptado a la voz y canales de la marca.',
   Strategy: 'Análisis estratégico con recomendaciones accionables para el negocio.',
   Documents: 'Documento generado a partir del conocimiento de marca del cliente.',
-  Toolkit: 'Entregable generado con el toolkit de IA de MIRA.',
+  'Business Reports': 'Entregable generado con los Business Reports de MIRA.',
 }
 
 function getToolMeta(slug: string) {
@@ -175,7 +162,7 @@ export default function ToolkitHub() {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
   }
 
-  const clientName = activeClient?.name || 'Toolkit'
+  const clientName = activeClient?.name || 'Business Reports'
   const clientInitial = clientName.charAt(0).toUpperCase()
 
   return (
@@ -303,7 +290,7 @@ export default function ToolkitHub() {
                 </p>
                 <p className="mb-3 text-[26px] leading-none">📊</p>
                 <h3 className={`mb-2 text-[17px] font-bold text-ink ${syne.className}`}>
-                  Ver Toolkit completo
+                  Ver informe completo
                 </h3>
                 <p className="text-[13px] leading-relaxed text-ink-secondary">
                   Panorámica de todos los entregables, métricas y evolución del cliente en una sola vista.
@@ -314,7 +301,7 @@ export default function ToolkitHub() {
                   className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5"
                   style={{ color: brandColor }}
                 >
-                  Ver Toolkit completo →
+                  Ver informe completo →
                 </span>
               </div>
             </Link>
@@ -390,7 +377,7 @@ export default function ToolkitHub() {
             <span className="text-lg">⚡</span>
             <span className={`text-sm font-bold text-ink ${syne.className}`}>Generar Nuevo</span>
             <span className="font-mono text-[10px] text-ink-tertiary">
-              {TOOLKIT_TOOLS.length} tools disponibles
+              {getVisibleTools().length} reports disponibles
             </span>
           </span>
           {showGenerate ? (
@@ -402,7 +389,7 @@ export default function ToolkitHub() {
 
         {showGenerate && (
           <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {TOOLKIT_TOOLS.map((tool) => (
+            {getVisibleTools().map((tool) => (
               <Link
                 key={tool.slug}
                 href={tool.href}

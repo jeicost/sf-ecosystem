@@ -52,6 +52,8 @@ export interface ToolPromptParams {
   sourcesBlock?: string
   /** Proyecto activo — la memoria inyectada prioriza este proyecto */
   projectId?: string | null
+  /** Texto extraído de los adjuntos del usuario (PDF/texto) — fuente primaria */
+  attachmentText?: string
 }
 
 // Toolkit-specific memory queries: which tags to load from project_memory
@@ -105,7 +107,7 @@ export async function getToolkitPrompt(
   toolSlug: string,
   params: ToolPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData, siteFactsBlock, sourcesBlock, projectId } = params
+  const { clientId, inputData, siteFactsBlock, sourcesBlock, projectId, attachmentText } = params
 
   const [brandBrain, memoryContext, docContext, toolkitDeps, feedbackBlock] = await Promise.all([
     fetchBrandBrain(clientId),
@@ -167,6 +169,9 @@ BRAND CONTEXT (Source of Truth):
   // blocks (when available for this tool), client feedback on previous reports,
   // and the anti-hallucination contract.
   const fullContext = [
+    attachmentText
+      ? `\n\nARCHIVOS ADJUNTOS DEL USUARIO (fuente primaria — usa su contenido real):\n${attachmentText}`
+      : '',
     allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : '',
     groundingBlocks ? `\n\n${groundingBlocks}` : '',
     feedbackBlock,

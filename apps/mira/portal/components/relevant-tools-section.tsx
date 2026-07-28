@@ -14,7 +14,7 @@ export default function RelevantToolsSection({ department, limit = 3 }: Relevant
   return (
     <div className="mt-8 pt-8 border-t border-line-subtle">
       <p className="text-[11px] uppercase tracking-widest font-semibold mb-4" style={{ color: 'var(--text-muted)' }}>
-        Relevant Toolkit Tools
+        Relevant Business Reports
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
         {tools.map((tool) => (

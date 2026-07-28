@@ -110,7 +110,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           href="/toolkit"
           className="text-sm text-ink-secondary hover:text-ink transition-colors shrink-0"
         >
-          ← Volver al Toolkit
+          ← Volver a Business Reports
         </Link>
         <div className="flex items-center gap-2">
           <button
