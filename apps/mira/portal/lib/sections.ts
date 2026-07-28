@@ -58,7 +58,7 @@ export const SECTIONS: MiraSection[] = [
     icon: '🔭',
     navItems: [
       { href: '/strategy',           label: 'My Team',       icon: Users },
-      { href: '/strategy/plan',      label: '90-Day Plan',   icon: Map },
+      { href: '/strategy/plan',      label: 'Plan & Competitive', icon: Map },
       { href: '/strategy/proyectos', label: 'Innovation',    icon: Lightbulb },
     ],
   },

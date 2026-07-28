@@ -24,7 +24,7 @@ export interface ToolConfig {
   slug: string
   icon: string
   title: string
-  subtitle: string
+  subtitle?: string
   timing: string
   brandBrainNote?: string
   fields: ToolField[]
@@ -182,7 +182,7 @@ export default function ToolRunnerPage({
           <div>
             <h1 className="text-3xl font-semibold text-ink">{config.title}</h1>
             <p className="text-sm text-ink-secondary mt-1">
-              {config.timing} • {config.subtitle}
+              {config.timing} • {config.subtitle || activeClient?.name || ''}
             </p>
           </div>
         </div>

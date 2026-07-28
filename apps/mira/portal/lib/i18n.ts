@@ -242,8 +242,6 @@ const translations: Record<Locale, Record<string, string>> = {
     // QUICK ACTIONS - STRATEGY
     'actions.strategy.generar_reporte': 'Generar Reporte',
     'actions.strategy.generar_reporte.desc': 'Generar reporte de rendimiento con KPIs',
-    'actions.strategy.analizar_competencia': 'Analizar Competencia',
-    'actions.strategy.analizar_competencia.desc': 'Matriz de análisis competitivo y oportunidades',
 
     // QUICK ACTIONS - FINANZAS
     'actions.finanzas.proyeccion_financiera': 'Proyección Financiera',
@@ -1113,6 +1111,11 @@ const translations: Record<Locale, Record<string, string>> = {
     'toolkit.action-plan.field-resources-placeholder': 'Equipo, presupuesto, herramientas disponibles...',
     'toolkit.action-plan.field-team-label': 'EQUIPO Y ROLES DISPONIBLES',
     'toolkit.action-plan.field-team-placeholder': 'Quién ejecuta el plan hoy: roles, dedicación (FTE) y si hay contrataciones previstas.',
+    'toolkit.action-plan.field-horizon-label': 'HORIZONTE DEL PLAN',
+    'toolkit.action-plan.field-horizon-hint': 'El plan detalla semana a semana solo hasta aquí; lo posterior queda como esbozo. Empieza corto si el equipo es pequeño.',
+    'toolkit.action-plan.field-horizon-30': '30 días — sprint de choque',
+    'toolkit.action-plan.field-horizon-60': '60 días — construir tracción',
+    'toolkit.action-plan.field-horizon-90': '90 días — plan trimestral completo',
     'toolkit.action-plan.focus': 'FOCO',
     'toolkit.action-plan.kpis-tracking': 'KPIs y Seguimiento',
     'toolkit.action-plan.owner': 'Responsable',
@@ -1434,8 +1437,6 @@ const translations: Record<Locale, Record<string, string>> = {
     // QUICK ACTIONS - STRATEGY
     'actions.strategy.generar_reporte': 'Generate Report',
     'actions.strategy.generar_reporte.desc': 'Generate performance report with KPIs',
-    'actions.strategy.analizar_competencia': 'Analyze Competition',
-    'actions.strategy.analizar_competencia.desc': 'Competitive analysis matrix & opportunities',
 
     // QUICK ACTIONS - FINANZAS
     'actions.finanzas.proyeccion_financiera': 'Financial Projection',
@@ -2305,6 +2306,11 @@ const translations: Record<Locale, Record<string, string>> = {
     'toolkit.action-plan.field-resources-placeholder': 'Team, budget, available tools...',
     'toolkit.action-plan.field-team-label': 'AVAILABLE TEAM & ROLES',
     'toolkit.action-plan.field-team-placeholder': 'Who executes the plan today: roles, dedication (FTE) and any planned hires.',
+    'toolkit.action-plan.field-horizon-label': 'PLAN HORIZON',
+    'toolkit.action-plan.field-horizon-hint': 'The plan gets week-by-week detail only up to here; later phases stay as an outline. Start short if the team is small.',
+    'toolkit.action-plan.field-horizon-30': '30 days — shock sprint',
+    'toolkit.action-plan.field-horizon-60': '60 days — build traction',
+    'toolkit.action-plan.field-horizon-90': '90 days — full quarterly plan',
     'toolkit.action-plan.focus': 'FOCUS',
     'toolkit.action-plan.kpis-tracking': 'KPIs & Tracking',
     'toolkit.action-plan.owner': 'Owner',

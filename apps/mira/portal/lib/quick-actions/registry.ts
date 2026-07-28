@@ -206,24 +206,9 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       },
     ],
   },
-  {
-    id: 'analizar_competencia',
-    department: 'strategy',
-    titleKey: 'actions.strategy.analizar_competencia',
-    descriptionKey: 'actions.strategy.analizar_competencia.desc',
-    outputType: 'structured',
-    fields: [
-      { name: 'competitors', type: 'textarea', labelKey: 'qa.field.competitors', required: true },
-      {
-        name: 'focus', type: 'select', labelKey: 'qa.field.focus', required: true,
-        options: [
-          { value: 'pricing', labelKey: 'qa.opt.pricing' },
-          { value: 'features', labelKey: 'qa.opt.features' },
-          { value: 'positioning', labelKey: 'qa.opt.positioning' },
-        ],
-      },
-    ],
-  },
+  // (analizar_competencia eliminada 2026-07-28: fusionada en el report
+  //  competitive-analysis — /strategy/plan tab Competencia, modo 'Radar rápido'.
+  //  Históricos: unified-history renderiza action_type crudo, sin registry.)
   {
     id: 'analizar_tendencias',
     department: 'strategy',

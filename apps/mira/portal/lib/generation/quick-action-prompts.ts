@@ -359,24 +359,9 @@ Generate report JSON:
 }`
   }
 
-  if (actionType === 'analizar_competencia') {
-    return `You are a competitive analyst. Analyze competitors.
-
-INPUT:
-${JSON.stringify(inputData, null, 2)}
-${fullContext}
-
-You have no live research on these competitors — only their names and the focus area from the input. Do not present specific claims about their pricing, features, or market share as verified fact; frame strengths/weaknesses/positioning as informed analysis and prefix genuinely speculative claims with '[SUPUESTO]'. Never invent numbers (market share %, pricing, revenue) for a competitor.
-
-Generate analysis JSON:
-{
-  "competitors": [
-    {"name": "", "strengths": [], "weaknesses": [], "positioning": ""}
-  ],
-  "market_gaps": [],
-  "strategic_opportunities": []
-}`
-  }
+  // (analizar_competencia eliminada 2026-07-28: fusionada en el report
+  //  competitive-analysis con grounding Tavily real — este prompt ciego ya no
+  //  se usa; el radar rápido vive en toolkit-prompts con profundidad='quick'.)
 
   // (brainstorm_ideas eliminado 2026-07-27: era un prompt de chat con forma
   //  de quick action — el agente Blueprint lo cubre mejor conversacionalmente.)

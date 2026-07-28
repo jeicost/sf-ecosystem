@@ -1,4 +1,4 @@
-import { fetchBrandBrain } from '@/lib/brand-brain'
+import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
@@ -121,20 +121,11 @@ export async function getToolkitPrompt(
     getDocumentFeedbackBlock(clientId, toolSlug),
   ])
 
-  // Expanded Brand Brain Context with all essential data
+  // Brand Brain completo (formato F0: golden rule, vocabulario con porqués,
+  // oferta, canales, restricciones, what-flopped, open questions...). Antes se
+  // emitía aquí un resumen manual de 9 líneas que dejaba fuera todo lo nuevo.
   const brandContext = brandBrain
-    ? `
-BRAND CONTEXT (Source of Truth):
-- Name: ${brandBrain.brandName}
-- Mission: ${brandBrain.mission}
-- Tagline: ${brandBrain.tagline || 'Not defined'}
-- Personality: ${brandBrain.brandPersonality?.join(', ') || 'Not defined'}
-- Pillars: ${brandBrain.pillars.map(p => `${p.name} (${p.description})`).join('; ')}
-- Tone of Voice: ${formatTone(brandBrain.toneOfVoice)}
-- Visual Identity Summary: ${brandBrain.visualIdentitySummary || 'Not defined'}
-- Target Audiences: ${brandBrain.audiences ? JSON.stringify(brandBrain.audiences) : 'Not defined'}
-- Banned Phrases: ${brandBrain.bannedPhrases?.join(', ') || 'None'}
-`
+    ? `BRAND CONTEXT (Source of Truth):\n${formatBrandBrainForPrompt(brandBrain)}`
     : ''
 
   const docText = docContext?.documents
@@ -189,13 +180,13 @@ BRAND CONTEXT (Source of Truth):
 - Do NOT generate duplicate or conflicting data. Ensure internal consistency.
 - Include warnings if any data seems contradictory (e.g., "premium brand but budget messaging").
 
-⚠️ INPUT-GROUNDED FIELDS (do not invent these — the user provided them):
-- \`mision_valores\` → base directly for brand_identity.mission/vision/values. Do not replace with a generic mission.
-- \`audiencia_objetivo\` → base directly for target_audience.description/personas. Expand into personas, but keep the described audience as the anchor — do not invent a different one.
-- \`personalidad_tono\` → base directly for brand_voice.tone/traits/do_examples/dont_examples.
-- \`colores_marca\` (hex) → use as visual_identity.colors[0] (primary) verbatim. Propose complementary/secondary colors from it, but never invent the primary hex.
+⚠️ GROUNDING (Business Reports 2026-07: el formulario ya solo pide la URL — todo lo demás sale del Brand Brain):
+- BRAND BRAIN below is the PRIMARY SOURCE for mission/vision/values, audiences, personality, tone, vocabulary and pillars. Base those sections directly on it — do not replace brain data with generic alternatives, do not invent a different audience.
+- Brand voice do_examples/dont_examples: reuse the brain's vocabulary (Decimos/Nunca decimos) with their stated reasons; only extend with examples consistent with the golden rule.
+- visual_identity.colors[0] (primary): take it from the brain's visual identity if a color is stated there; NEVER invent a primary hex. If no color exists anywhere, leave hex empty and add "primary brand color" to data_coherence.warnings.
 - If VERIFIED SITE FACTS are present above, ground visual_identity.imagery_style and any competitive_positioning claim in what was actually observed on the site — do not describe a site you have not seen.
-- If any of these fields is missing or too thin to use, follow the GROUNDING_CONTRACT below: mark the derived field with '[SUPUESTO]' instead of inventing it silently.
+- ARCHIVOS ADJUNTOS / contexto_adicional (if present) override or complement the brain for this run.
+- If any needed data is missing or too thin, follow the GROUNDING_CONTRACT below: mark the derived field with '[SUPUESTO]' instead of inventing it silently, and list it in data_coherence.warnings.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -565,6 +556,8 @@ Generate a COMPREHENSIVE content pack JSON with ALL sections:
 
 ⚠️ NEVER INVENT NUMBERS: \`budget_breakdown\` and \`team_capacity.fte\`/\`hiring_plan\` must be derived from \`presupuesto_disponible\` and \`equipo_roles\` in INPUT. If a figure or split is not stated or clearly inferable from those fields, set that value to null (or an empty array) instead of guessing a number — do NOT distribute an invented percentage across engineering/marketing/ops/contingency. Add any missing figure to a \`data_gaps\` array.
 
+⚠️ HORIZON: \`horizonte\` in INPUT is 30, 60 or 90 (days). Detail ONLY up to that horizon with weekly milestones, owners and metrics. Later phases must still appear in the JSON but as a light outlook (2-3 bullets in \`focus\` + empty arrays) — clearly less detailed, never padded to look complete. With horizonte=90 all three phases get full detail.
+
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
@@ -645,17 +638,58 @@ Generate COMPREHENSIVE investor deck JSON:
   "data_gaps": ["every metric that required '[COMPLETAR: dato real]' plus any other missing data"]
 }`
 
-    case 'competitive-analysis':
+    case 'competitive-analysis': {
+      // Fusión con la quick action analizar_competencia (2026-07-28): el input
+      // trae focus (pricing|features|positioning|todo), vulnerabilidades del
+      // usuario y profundidad (deep|quick). El modo quick usa un schema corto
+      // y lo ejecuta sonnet (ver route) — un radar de ~1 min, no un informe.
+      const isQuick = inputData.profundidad === 'quick'
+      const focusMap: Record<string, string> = {
+        pricing: 'PRECIOS: tarifas, modelos de cobro, promociones y cómo comunican el valor.',
+        features: 'PRODUCTO: funcionalidades, gama, calidad percibida y gaps de producto.',
+        positioning: 'POSICIONAMIENTO: mensaje, promesa, tono, a quién le hablan y qué territorio ocupan.',
+      }
+      const focusLine = focusMap[inputData.focus as string]
+        ? `\nFOCUS DEL ANÁLISIS — dedica la mayor profundidad a ${focusMap[inputData.focus as string]}`
+        : ''
+      const vulnLine = inputData.vulnerabilidades
+        ? `\nVULNERABILIDADES QUE EL CLIENTE YA CONOCE (verifícalas contra SOURCES y construye sobre ellas — conocimiento de primera mano del negocio):\n${inputData.vulnerabilidades}`
+        : ''
+
+      const sharedRules = `GROUNDING RULES:
+- Market size, growth rates, and competitor pricing may ONLY come from the SOURCES block above. When you use a source, cite its URL inside the same field (e.g. "€X B (fuente: https://...)").
+- If no source supports a figure, either prefix the whole claim with '[SUPUESTO]' or output "unknown" — never present an unsourced number as fact.
+- Do not attribute positioning, features, or pricing to a named competitor unless supported by SOURCES or user input; otherwise prefix '[SUPUESTO]'.
+- List every missing market/competitor data point in 'data_gaps'.${focusLine}${vulnLine}`
+
+      if (isQuick) {
+        return `You are a competitive strategist producing a RAPID competitive radar (not a full report).
+
+${sharedRules}
+
+INPUT:
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+Generate a COMPACT competitive radar JSON — every list capped, no filler:
+{
+  "executive_summary": "3-4 frases: el estado del campo competitivo y la implicación nº1 para esta marca",
+  "competitors": [
+    {"name": "", "positioning": "1 frase (de SOURCES/input, si no '[SUPUESTO] ...')", "biggest_strength": "", "exploitable_weakness": "cruzada con las vulnerabilidades del cliente si las dio", "recent_moves": "de SOURCES con URL, o 'unknown'"}
+  ],
+  "market_gaps": ["máx 3 huecos de mercado que nadie está cubriendo"],
+  "strategic_opportunities": ["máx 3 movimientos concretos y accionables esta semana/mes"],
+  "watch_next": ["máx 2 señales a vigilar (con qué fuente seguirlas)"],
+  "data_gaps": ["todo dato que faltó"]
+}`
+      }
+
       return `You are a competitive strategist analyzing market landscape and competitive positioning.
 
 MARKET INTELLIGENCE TOOLKIT
 Analyze competitive landscape based on user input and generate actionable competitive intelligence.
 
-GROUNDING RULES:
-- Market size, growth rates, and competitor pricing may ONLY come from the SOURCES block above. When you use a source, cite its URL inside the same field (e.g. "€X B (fuente: https://...)").
-- If no source supports a figure, either prefix the whole claim with '[SUPUESTO]' or output "unknown" — never present an unsourced number as fact.
-- Do not attribute positioning, features, or pricing to a named competitor unless supported by SOURCES or user input; otherwise prefix '[SUPUESTO]'.
-- List every missing market/competitor data point in 'data_gaps'.
+${sharedRules}
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -703,6 +737,7 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
   },
   "data_gaps": ["every market/competitor data point you needed but could not source"]
 }`
+    }
 
     case 'brandbook-content-system':
       return `You are a brand strategist creating the LIVING OPERATIONAL MANUAL for this brand.

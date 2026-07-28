@@ -197,11 +197,17 @@ export async function POST(req: NextRequest) {
         .filter((c): c is string => typeof c === 'string' && c.trim().length > 0)
         .map((c) => c.trim())
         .slice(0, 3)
+      // El focus del formulario orienta las queries (fusión quick action 2026-07-28)
+      const focusTerms: Record<string, string> = {
+        pricing: 'precios tarifas promociones modelo de cobro',
+        features: 'productos funcionalidades características gama',
+        positioning: 'posicionamiento marca propuesta de valor mensaje',
+      }
+      const focusQuery =
+        focusTerms[input_data.focus as string] || 'productos precios posicionamiento reseñas'
       const marketQuery = `análisis de mercado tendencias sector ${competitors.join(' vs ')}`
       const searches = await Promise.all([
-        ...competitors.map((c) =>
-          searchWeb(`${c} empresa productos precios posicionamiento reseñas`, 3)
-        ),
+        ...competitors.map((c) => searchWeb(`${c} empresa ${focusQuery}`, 3)),
         searchWeb(marketQuery, 3),
       ])
       const allSources = searches.flat()
@@ -269,10 +275,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unknown tool' }, { status: 400 })
     }
 
-    // Call Claude
+    // Call Claude — el radar competitivo rápido va en sonnet con schema corto
+    // (fusión de la quick action analizar_competencia, 2026-07-28)
+    const isQuickCompetitive =
+      tool_slug === 'competitive-analysis' && input_data.profundidad === 'quick'
     const message = await createMessageForClient(clientId, 'toolkit/generate', {
-      model: 'claude-opus-4-8',
-      max_tokens: 16000,
+      model: isQuickCompetitive ? 'claude-sonnet-4-6' : 'claude-opus-4-8',
+      max_tokens: isQuickCompetitive ? 8000 : 16000,
       messages: [
         {
           role: 'user',
