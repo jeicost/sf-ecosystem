@@ -33,6 +33,12 @@ export async function getQuickActionPrompt(
 
   const brandContext = brandBrain ? formatBrandBrainForPrompt(brandBrain) : ''
 
+  // Identidad visual DURA para generación de imágenes: los hex y tipografía
+  // exactos como requisito, no como prosa blanda que el modelo puede ignorar.
+  const visualIdentityHard = brandBrain?.visualIdentitySummary
+    ? `\nBRAND VISUAL IDENTITY — MANDATORY: the image_generation_prompt MUST explicitly include these exact values (hex colors as the palette, typography style if text appears): ${brandBrain.visualIdentitySummary}`
+    : ''
+
   const docText = docContext?.documents
     ?.map((d: any) => d.excerpt)
     .join('\n') || ''
@@ -208,7 +214,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 ${withImage ? `
-The user wants an AI-generated image for this post. "image_generation_prompt" must be a detailed, self-contained English prompt for an image model: subject, composition, style (respect the brand's visual identity${inputData.style ? ` and the user's requested style: ${JSON.stringify(inputData.style)}` : ''}), lighting, no text overlays unless essential.` : ''}
+The user wants an AI-generated image for this post. "image_generation_prompt" must be a detailed, self-contained English prompt for an image model: subject, composition, style${inputData.style ? ` (user's requested style: ${JSON.stringify(inputData.style)})` : ''}, lighting, no text overlays unless essential.${visualIdentityHard}` : ''}
 
 Generate content JSON:
 {
@@ -265,7 +271,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 ${withImage ? `
-The user wants an AI-generated cover image. Each slide gets an "image_generation_prompt": a detailed, self-contained English prompt (subject, composition, brand visual identity${inputData.style ? `, user's requested style: ${JSON.stringify(inputData.style)}` : ''}). Only the first slide's image is generated for now — make it the strongest.` : ''}
+The user wants an AI-generated cover image. Each slide gets an "image_generation_prompt": a detailed, self-contained English prompt (subject, composition${inputData.style ? `, user's requested style: ${JSON.stringify(inputData.style)}` : ''}). Only the first slide's image is generated for now — make it the strongest.${visualIdentityHard}` : ''}
 
 Generate carousel JSON:
 {
@@ -464,6 +470,7 @@ Generate roadmap JSON:
     return `You are a visual refinement specialist. The user attached the original image — it is included in this message, look at it carefully. Generate refinement directives for an image generator to recreate it with the requested changes.
 
 Describe the original faithfully from what you SEE (composition, subjects, colors, text, style) — the refinement_prompt must reconstruct everything that should stay the same, then apply the requested changes. Note: the image will be REGENERATED from your prompt, not edited pixel by pixel — the closer your description of the original, the more faithful the result.
+${visualIdentityHard}
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}

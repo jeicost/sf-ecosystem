@@ -1,6 +1,6 @@
 import {
   Briefcase,
-  Users, LayoutDashboard, CheckSquare, BarChart3, MessageSquarePlus,
+  Users, LayoutDashboard, CheckSquare, BarChart3,
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
   Search, MessageSquare, FileText,
 } from 'lucide-react'
@@ -32,7 +32,6 @@ export const SECTIONS: MiraSection[] = [
       { href: '/roster',      label: 'My Team',      icon: Users },
       { href: '/approvals',   label: 'Approvals',    icon: CheckSquare },
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
-      { href: '/brief',       label: 'New Brief',    icon: MessageSquarePlus },
     ],
   },
   {

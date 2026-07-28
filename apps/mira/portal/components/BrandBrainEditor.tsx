@@ -90,6 +90,48 @@ export default function BrandBrainEditor() {
   const [documents, setDocuments] = useState<any[]>([])
   const [suggestions, setSuggestions] = useState<Record<string, any> | null>(null)
   const [analyzing, setAnalyzing] = useState<string | null>(null)
+  const [logoUploading, setLogoUploading] = useState(false)
+
+  // Sube el logo al bucket brand-assets (misma convención logos/{clientId}
+  // que el onboarding), lo fija en brand_data y espeja clients.logo_url.
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !activeClient?.id || !profile) return
+    setLogoUploading(true)
+    setError(null)
+    try {
+      const { createClient } = await import('@/lib/supabase')
+      const supabase = createClient()
+      const ext = file.name.split('.').pop() || 'png'
+      const path = `logos/${activeClient.id}.${ext}`
+      const { error: upErr } = await supabase.storage.from('brand-assets').upload(path, file, { upsert: true })
+      if (upErr) throw upErr
+      const { data: urlData } = supabase.storage.from('brand-assets').getPublicUrl(path)
+      const url = `${urlData.publicUrl}?v=${Date.now()}`
+
+      setProfile({
+        ...profile,
+        brand_data: {
+          ...profile.brand_data,
+          visual_identity: {
+            ...(profile.brand_data?.visual_identity as any),
+            logo: { ...(profile.brand_data?.visual_identity as any)?.logo, primary_url: url },
+          },
+        },
+      })
+      // Espejo a clients.logo_url (server-side, service role)
+      await fetch('/api/brand-brain/logo-mirror', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: activeClient.id, url }),
+      })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Logo upload failed')
+    } finally {
+      setLogoUploading(false)
+      e.target.value = ''
+    }
+  }
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -626,6 +668,38 @@ export default function BrandBrainEditor() {
                   <option value="proposed">⏳ Proposed (Pending decision)</option>
                   <option value="missing">❌ Missing (Not documented)</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Logo — alimenta la generación de imágenes y los documentos.
+                Antes no existía forma de subirlo: logo.primary_url estaba
+                vacío en TODOS los clientes. */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">{t('bb.logo', locale)}</h3>
+              <div className="flex items-center gap-4">
+                {(profile.brand_data?.visual_identity as any)?.logo?.primary_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={(profile.brand_data?.visual_identity as any).logo.primary_url}
+                    alt="logo"
+                    className="w-16 h-16 rounded-lg object-contain bg-surface border border-line p-1"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-surface border border-dashed border-line flex items-center justify-center text-ink-tertiary text-[10px] text-center px-1">
+                    {t('bb.logo-empty', locale)}
+                  </div>
+                )}
+                <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-ink bg-surface hover:bg-surface-hover transition-colors cursor-pointer">
+                  {logoUploading ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                  {t('bb.logo-upload', locale)}
+                  <input
+                    type="file"
+                    hidden
+                    accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                    onChange={handleLogoUpload}
+                    disabled={logoUploading}
+                  />
+                </label>
               </div>
             </div>
 

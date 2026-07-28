@@ -64,6 +64,7 @@ export default function PerformancePage() {
   const [period, setPeriod] = useState<Period>('7d')
   const [posts, setPosts] = useState<PostRow[]>([])
   const [activity, setActivity] = useState<ActivityRow[]>([])
+  const [approvals, setApprovals] = useState<{ status: string }[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -83,17 +84,27 @@ export default function PerformancePage() {
         .gte('started_at', since)
         .order('started_at', { ascending: false })
         .limit(50),
-    ]).then(([p, a]) => {
+      db.from('approval_queue')
+        .select('status')
+        .eq('client_id', clientId)
+        .gte('submitted_at', since),
+    ]).then(([p, a, q]) => {
       if (p.data) setPosts(p.data as PostRow[])
       if (a.data) setActivity(a.data as ActivityRow[])
+      if (q.data) setApprovals(q.data as { status: string }[])
       setLoading(false)
     })
   }, [period, clientId])
 
-  const published  = posts.filter(p => p.status === 'published').length
+  // "Publicados" eliminado en B2: nada publica en redes desde MIRA, el KPI
+  // era un 0 perpetuo que prometía una integración inexistente. El ratio de
+  // aprobación sí es real (lo alimenta la cola de revisión).
   const draft      = posts.filter(p => p.status === 'draft').length
   const totalTasks = activity.length
   const completed  = activity.filter(a => a.status === 'completed').length
+  const reviewed   = approvals.filter(a => a.status !== 'pending_review').length
+  const approvedCt = approvals.filter(a => a.status === 'approved' || a.status === 'approved_with_edits').length
+  const approvalRate = reviewed > 0 ? Math.round((approvedCt / reviewed) * 100) : null
 
   const byPlatform = Object.entries(
     posts.reduce<Record<string, number>>((acc, p) => {
@@ -145,7 +156,7 @@ export default function PerformancePage() {
       <div className="grid grid-cols-4 gap-4 mb-8">
         {[
           { label: t('perf.posts-generated', locale), value: posts.length, icon: Share2, color: 'text-violet-400' },
-          { label: t('perf.published', locale), value: published, icon: TrendingUp, color: 'text-emerald-400' },
+          { label: t('perf.approval-rate', locale), value: approvalRate != null ? `${approvalRate}%` : '—', icon: TrendingUp, color: 'text-emerald-400' },
           { label: t('perf.agent-tasks', locale), value: totalTasks, icon: Activity, color: 'text-amber-400' },
           { label: t('perf.completed', locale), value: completed, icon: Heart, color: 'text-blue-400' },
         ].map(({ label, value, icon: Icon, color }) => (

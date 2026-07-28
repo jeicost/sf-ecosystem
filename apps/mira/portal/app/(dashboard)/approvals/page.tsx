@@ -1,27 +1,26 @@
 'use client'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { CheckSquare, Clock, AlertTriangle, Check, Edit3, X, Loader2, Bell } from 'lucide-react'
+import { CheckSquare, Clock, Check, Edit3, X, Loader2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { clsx } from 'clsx'
-import type { Alert, ApprovalItem } from '@/lib/types'
+import type { ApprovalItem } from '@/lib/types'
 import { useActiveClient } from '@/lib/client-context'
 import { t, type Locale } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
 // Única bandeja de revisión de Marketing: cola de aprobación (pendientes +
-// historial) y alertas de reputación. Antes esto vivía repartido entre esta
-// página y /command, que duplicaba la cola con los mismos botones — Command
-// se retiró (redirige aquí) y su sección de alertas se absorbió como pestaña.
+// historial). La pestaña Alertas se retiró en B2 (2026-07-28): su única
+// fuente era un webhook externo jamás conectado, así que siempre estaba
+// vacía — la tabla y el webhook quedan dormidos por si algún día hay fuente.
 
-type FilterTab = 'pending' | 'approved' | 'rejected' | 'alerts'
+type FilterTab = 'pending' | 'approved' | 'rejected'
 
 // label holds an i18n key, resolved with t() at render time
 const FILTER_TABS: { id: FilterTab; label: string }[] = [
   { id: 'pending',  label: 'approvals.tab-pending' },
   { id: 'approved', label: 'approvals.tab-approved' },
   { id: 'rejected', label: 'approvals.tab-rejected' },
-  { id: 'alerts',   label: 'approvals.tab-alerts' },
 ]
 
 function timeAgo(ts: string, locale: Locale) {
@@ -38,7 +37,6 @@ export default function ApprovalsPage() {
   const clientId = activeClient?.id
 
   const [items, setItems] = useState<ApprovalItem[]>([])
-  const [alerts, setAlerts] = useState<Alert[]>([])
   const [filter, setFilter] = useState<FilterTab>('pending')
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -47,14 +45,14 @@ export default function ApprovalsPage() {
     setLoading(true)
     const db = createClient()
 
-    Promise.all([
-      db.from('approval_queue').select('*').eq('client_id', clientId).order('submitted_at', { ascending: false }),
-      db.from('alerts').select('*').eq('client_id', clientId).eq('status', 'open').order('created_at', { ascending: false }),
-    ]).then(([q, a]) => {
-      if (q.data) setItems(q.data as ApprovalItem[])
-      if (a.data) setAlerts(a.data as Alert[])
-      setLoading(false)
-    })
+    db.from('approval_queue')
+      .select('*')
+      .eq('client_id', clientId)
+      .order('submitted_at', { ascending: false })
+      .then(({ data }) => {
+        if (data) setItems(data as ApprovalItem[])
+        setLoading(false)
+      })
 
     const channel = db
       .channel(`approvals-realtime-${clientId}`)
@@ -62,20 +60,6 @@ export default function ApprovalsPage() {
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'approval_queue', filter: `client_id=eq.${clientId}` },
         (payload) => setItems(prev => [payload.new as ApprovalItem, ...prev])
-      )
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'alerts', filter: `client_id=eq.${clientId}` },
-        (payload) => setAlerts(prev => [payload.new as Alert, ...prev])
-      )
-      .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'alerts', filter: `client_id=eq.${clientId}` },
-        (payload) => {
-          if ((payload.new as Alert).status !== 'open') {
-            setAlerts(prev => prev.filter(a => a.id !== payload.new.id))
-          }
-        }
       )
       .subscribe()
 
@@ -88,12 +72,6 @@ export default function ApprovalsPage() {
       .update({ status, reviewed_at: new Date().toISOString() })
       .eq('id', id)
     setItems(prev => prev.map(i => i.id === id ? { ...i, status } : i))
-  }
-
-  const resolveAlert = async (id: string) => {
-    const db = createClient()
-    await db.from('alerts').update({ status: 'resolved', resolved_at: new Date().toISOString() }).eq('id', id)
-    setAlerts(prev => prev.filter(a => a.id !== id))
   }
 
   const filtered = items.filter(i => {
@@ -131,9 +109,9 @@ export default function ApprovalsPage() {
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: t('approvals.stat-waiting', locale),     value: pending,       icon: Clock,         color: 'text-amber-400',   bg: 'bg-amber-500/10' },
-          { label: t('approvals.stat-approved', locale),    value: approved,      icon: Check,         color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
-          { label: t('approvals.stat-open-alerts', locale), value: alerts.length, icon: AlertTriangle, color: 'text-red-400',     bg: 'bg-red-500/10' },
+          { label: t('approvals.stat-waiting', locale),  value: pending,  icon: Clock, color: 'text-amber-400',   bg: 'bg-amber-500/10' },
+          { label: t('approvals.stat-approved', locale), value: approved, icon: Check, color: 'text-emerald-400', bg: 'bg-emerald-500/10' },
+          { label: t('approvals.tab-rejected', locale),  value: rejected, icon: X,     color: 'text-red-400',     bg: 'bg-red-500/10' },
         ].map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="card px-5 py-4 flex items-center gap-4">
             <div className={clsx('w-9 h-9 rounded-lg flex items-center justify-center', bg)}>
@@ -152,8 +130,7 @@ export default function ApprovalsPage() {
         {FILTER_TABS.map(tab => {
           const count = tab.id === 'pending' ? pending
             : tab.id === 'approved' ? approved
-            : tab.id === 'rejected' ? rejected
-            : alerts.length
+            : rejected
           return (
             <button
               key={tab.id}
@@ -162,7 +139,6 @@ export default function ApprovalsPage() {
                 filter === tab.id ? 'bg-surface-hover text-ink font-medium' : 'text-ink-tertiary hover:text-ink'
               )}
             >
-              {tab.id === 'alerts' && <Bell size={11} className={alerts.length > 0 ? 'text-red-400' : undefined} />}
               {t(tab.label, locale)}
               <span className={clsx('text-[10px] px-1.5 py-0.5 rounded-full',
                 filter === tab.id ? 'bg-surface-hover text-ink' : 'bg-surface text-ink-tertiary'
@@ -172,62 +148,8 @@ export default function ApprovalsPage() {
         })}
       </div>
 
-      {/* Alerts tab */}
-      {filter === 'alerts' && (
-        <div className="space-y-3">
-          {alerts.length === 0 && (
-            <div className="card py-14 text-center">
-              <Bell size={24} className="text-ink-muted mx-auto mb-3" />
-              <p className="text-sm text-ink-tertiary">{t('approvals.no-open-alerts', locale)}</p>
-            </div>
-          )}
-          {alerts.map(alert => (
-            <div key={alert.id} className="card border-red-500/20 p-5">
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full uppercase tracking-wide">
-                    {alert.canal} · {alert.tipo.replace('_', ' ')}
-                  </span>
-                  <span className="text-[10px] text-ink-muted">{timeAgo(alert.created_at, locale)}</span>
-                </div>
-                <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full capitalize">
-                  {alert.prioridad} {t('approvals.priority', locale)}
-                </span>
-              </div>
-              <div className="space-y-3">
-                <div className="bg-card rounded-lg p-3 border border-line">
-                  <p className="text-[11px] text-ink-tertiary mb-1">{t('approvals.review-received', locale)}</p>
-                  <p className="text-sm text-ink-secondary leading-relaxed">&ldquo;{alert.contenido}&rdquo;</p>
-                </div>
-                {alert.propuesta_respuesta && (
-                  <div className="bg-card rounded-lg p-3 border border-emerald-500/20">
-                    <p className="text-[11px] text-emerald-400/70 mb-1">{t('approvals.sam-proposed-reply', locale)}</p>
-                    <p className="text-sm text-ink-secondary leading-relaxed">{alert.propuesta_respuesta}</p>
-                  </div>
-                )}
-              </div>
-              <div className="flex gap-2 mt-4">
-                <button
-                  onClick={() => resolveAlert(alert.id)}
-                  className="flex-1 py-2 text-xs rounded-lg bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25 transition-colors font-medium"
-                >
-                  {t('approvals.approve-send', locale)}
-                </button>
-                <button
-                  onClick={() => resolveAlert(alert.id)}
-                  className="px-4 py-2 text-xs rounded-lg bg-surface text-ink-tertiary hover:text-ink transition-colors"
-                >
-                  {t('approvals.resolve', locale)}
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
       {/* Approval items */}
-      {filter !== 'alerts' && (
-        <div className="space-y-3">
+      <div className="space-y-3">
           {filtered.length === 0 && (
             <div className="card py-14 text-center">
               <CheckSquare size={24} className="text-ink-muted mx-auto mb-3" />
@@ -324,7 +246,6 @@ export default function ApprovalsPage() {
             )
           })}
         </div>
-      )}
     </div>
   )
 }
