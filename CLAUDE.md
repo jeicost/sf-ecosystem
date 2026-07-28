@@ -28,7 +28,7 @@ Desktop/Claude.nosync/
 │
 ├── clients/                   # Per-client projects (non-SF tools)
 │   ├── discoolver/            # Landings + deliverables + discoolver-cms (dg-editor vive FUERA, ver abajo)
-│   ├── salsa-burgers/         # App (Flask+PG Railway) + web (Next, contenido desde sf-cms)
+│   ├── salsa-burgers/         # Web pública (Next, contenido desde sf-cms). La app de personal vive FUERA, ver abajo
 │   ├── nc-global-assets-next/ # Web Next (port en curso, contenido desde sf-cms)
 │   ├── adrian-grooves/        # Landing curso (Next, contenido desde sf-cms)
 │   ├── dadybox/               # Playwright playbooks + deliverables
@@ -40,7 +40,9 @@ Desktop/Claude.nosync/
 └── scripts/                   # Root automation scripts (migrations, seeding)
 ```
 
-**Fuera del monorepo:** `~/Desktop/discoolver-dg-editor` — editor de guías de Discoolver. Repo git independiente del cliente (remote `discoolver-group/discoolver-dg-editor`); NO copiarlo dentro del monorepo. La skill `repaso-dg` y el lanzador `🚀 Abrir Guías Discoolver.command` apuntan ahí.
+**Fuera del monorepo (repos independientes):**
+- `~/Desktop/discoolver-dg-editor` — editor de guías de Discoolver. Repo git del cliente (remote `discoolver-group/discoolver-dg-editor`); NO copiarlo dentro del monorepo. La skill `repaso-dg` y el lanzador `🚀 Abrir Guías Discoolver.command` apuntan ahí.
+- `jeicost/salsa-staff` (solo GitHub, **sin copia local**) — app de personal de Salsa Burgers (Flask + PostgreSQL: turnos `/admin/schedule`, fichajes, cocina, informes). Deploy: Railway auto-deploy desde GitHub (`capable-luck-production-374c.up.railway.app`). Para trabajar en ella: clonarla primero (en una ruta sin iCloud).
 
 Bitácoras de sesiones antiguas: `docs/archive/sessions/`. Reorganización completa: `docs/REORG_2026-07-28.md`.
 
@@ -122,7 +124,7 @@ Client projects under `clients/` are not part of the Turborepo workspace. Each d
 
 | Client | Stack | Deploy |
 |---|---|---|
-| Salsa Burgers app | Flask + PostgreSQL (Railway) | Railway auto-deploy |
+| Salsa Burgers app (staff) | Flask + PostgreSQL (Railway) — repo `jeicost/salsa-staff`, SIN copia local | Railway auto-deploy desde GitHub |
 | Salsa Burgers web | Next.js | `vercel --prod` from `clients/salsa-burgers/web/` |
 | Discoolver dg-editor | FastAPI + React | Railway / manual |
 | NC Global Assets | Vite + React | `vercel --prod` |
