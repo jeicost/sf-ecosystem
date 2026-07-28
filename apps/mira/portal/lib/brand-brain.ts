@@ -1,4 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
+import {
+  normalizeVocab,
+  normalizeFlopped,
+  type BrandData,
+  type VocabEntry,
+  type BrandDataOffer,
+  type BrandDataChannel,
+} from '@/lib/brand-data'
 
 function getAdminClient() {
   return createClient(
@@ -17,6 +25,17 @@ export interface BrandBrainContext {
   tagline?: string
   audiences?: any[]
   visualIdentitySummary?: string
+  // Ampliación 2026-07-28 (BRAND_MEMORY_TEMPLATE del método del CEO)
+  goldenRule?: string
+  voiceVocabulary?: { do: VocabEntry[]; dont: VocabEntry[] }
+  signatureRitual?: string
+  offer?: BrandDataOffer
+  languages?: { manual?: string; captions?: string; per_channel?: Record<string, string> }
+  channels?: BrandDataChannel[]
+  channelsToAvoid?: Array<{ channel: string; why: string }>
+  constraints?: { legal_ip?: string; category_rules?: string; self_imposed?: string; sequencing_rule?: string }
+  whatFlopped?: Array<{ format: string; theory?: string }>
+  openQuestions?: string[]
 }
 
 export async function fetchBrandBrain(clientId: string): Promise<BrandBrainContext | null> {
@@ -77,6 +96,34 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
     tagline: brandData.identity?.tagline ?? undefined,
     audiences: brandData.audiences ?? undefined,
     visualIdentitySummary: visualIdentitySummary || undefined,
+    // Campos ampliados (todos opcionales, tolerantes a legacy)
+    goldenRule: typeof brandData.tone_and_voice?.golden_rule === 'string' && brandData.tone_and_voice.golden_rule.trim()
+      ? brandData.tone_and_voice.golden_rule.trim()
+      : undefined,
+    voiceVocabulary: brandData.voice_vocabulary
+      ? { do: normalizeVocab(brandData.voice_vocabulary.do), dont: normalizeVocab(brandData.voice_vocabulary.dont) }
+      : undefined,
+    signatureRitual: brandData.identity?.signature_ritual || undefined,
+    offer: brandData.offer && typeof brandData.offer === 'object' ? (brandData.offer as BrandData['offer']) : undefined,
+    languages: brandData.languages && typeof brandData.languages === 'object' ? brandData.languages : undefined,
+    channels: Array.isArray(brandData.channels) ? brandData.channels : undefined,
+    channelsToAvoid: Array.isArray(brandData.channels_to_avoid) ? brandData.channels_to_avoid : undefined,
+    constraints: brandData.constraints && typeof brandData.constraints === 'object' ? brandData.constraints : undefined,
+    whatFlopped: (() => { const f = normalizeFlopped(brandData.what_flopped); return f.length ? f : undefined })(),
+    openQuestions: (() => {
+      const oq = brandData.open_questions
+      if (!oq || typeof oq !== 'object') return undefined
+      const clean = (arr: unknown, tag: string) =>
+        Array.isArray(arr)
+          ? arr.filter((c): c is string => typeof c === 'string' && c.trim().length > 0).map((c) => `[${tag}] ${c.trim()}`)
+          : []
+      const all = [
+        ...clean(oq.contradictions, 'contradicción'),
+        ...clean(oq.undecided, 'sin decidir'),
+        ...clean(oq.suspected_broken, 'posible fallo'),
+      ]
+      return all.length ? all : undefined
+    })(),
   }
 }
 
@@ -112,11 +159,73 @@ ${pillarsStr}
     const audiencesStr = brain.audiences
       .map((a: any) => {
         if (typeof a === 'string') return a
-        if (typeof a === 'object' && a.name) return `${a.name}${a.description ? ': ' + a.description : ''}`
+        if (typeof a === 'object' && a.name) {
+          const extras = [
+            a.description,
+            a.incentive ? `incentivo: ${a.incentive}` : null,
+            a.language_behaviour ? `idioma: ${a.language_behaviour}` : null,
+          ].filter(Boolean).join(' · ')
+          return `${a.name}${extras ? ` (${extras})` : ''}`
+        }
         return JSON.stringify(a)
       })
       .join(', ')
     result += `\n\n**Audiencias:** ${audiencesStr}`
+  }
+
+  // ── Bloques ampliados (solo si presentes; el porqué junto a cada frase —
+  // "a rule without a reason gets ignored") ──
+  if (brain.goldenRule) {
+    result += `\n\n**Regla de oro de la voz:** ${brain.goldenRule}`
+  }
+  const vocabLine = (e: VocabEntry) => `- "${e.phrase}"${e.why ? ` — ${e.why}` : ''}`
+  if (brain.voiceVocabulary?.do.length) {
+    result += `\n\n**Decimos (y por qué):**\n${brain.voiceVocabulary.do.map(vocabLine).join('\n')}`
+  }
+  if (brain.voiceVocabulary?.dont.length) {
+    result += `\n\n**Nunca decimos (y por qué):**\n${brain.voiceVocabulary.dont.map(vocabLine).join('\n')}`
+  }
+  if (brain.signatureRitual) {
+    result += `\n\n**Ritual firma:** ${brain.signatureRitual}`
+  }
+  if (brain.offer) {
+    const parts: string[] = []
+    if (brain.offer.hero_items?.length) {
+      parts.push(`Hero items (máx 3): ${brain.offer.hero_items.slice(0, 3).map((h) => `${h.name}${h.price ? ` — ${h.price}` : ''}`).join(' · ')}`)
+    }
+    if (brain.offer.full_list_note) parts.push(`Oferta completa: ${brain.offer.full_list_note}`)
+    if (brain.offer.promo_mechanics) parts.push(`Mecánicas de promo: ${brain.offer.promo_mechanics}`)
+    if (brain.offer.purchase_channels?.length) parts.push(`Dónde se compra: ${brain.offer.purchase_channels.join(', ')}`)
+    if (parts.length) result += `\n\n**Oferta:**\n${parts.map((p) => `- ${p}`).join('\n')}`
+  }
+  if (brain.languages && (brain.languages.manual || brain.languages.captions || brain.languages.per_channel)) {
+    const langs: string[] = []
+    if (brain.languages.manual) langs.push(`manual: ${brain.languages.manual}`)
+    if (brain.languages.captions) langs.push(`captions: ${brain.languages.captions}`)
+    if (brain.languages.per_channel) {
+      langs.push(...Object.entries(brain.languages.per_channel).map(([c, l]) => `${c}: ${l}`))
+    }
+    result += `\n\n**Idiomas:** ${langs.join(' · ')}`
+  }
+  if (brain.channels?.length) {
+    result += `\n\n**Canales (y su trabajo):**\n${brain.channels.map((c) => `- ${c.channel}${c.job ? ` — ${c.job}` : ''}${c.owner ? ` (${c.owner})` : ''}`).join('\n')}`
+  }
+  if (brain.channelsToAvoid?.length) {
+    result += `\n\n**Canales a evitar:**\n${brain.channelsToAvoid.map((c) => `- ${c.channel} — ${c.why}`).join('\n')}`
+  }
+  if (brain.constraints) {
+    const cons: string[] = []
+    if (brain.constraints.legal_ip) cons.push(`Legal/IP: ${brain.constraints.legal_ip}`)
+    if (brain.constraints.category_rules) cons.push(`Reglas de categoría: ${brain.constraints.category_rules}`)
+    if (brain.constraints.self_imposed) cons.push(`Autoimpuestas: ${brain.constraints.self_imposed}`)
+    if (brain.constraints.sequencing_rule) cons.push(`Regla de secuenciación: ${brain.constraints.sequencing_rule}`)
+    if (cons.length) result += `\n\n**Restricciones:**\n${cons.map((c) => `- ${c}`).join('\n')}`
+  }
+  if (brain.whatFlopped?.length) {
+    result += `\n\n**Lo que NO funcionó (no repetir):**\n${brain.whatFlopped.map((f) => `- ${f.format}${f.theory ? ` — teoría: ${f.theory}` : ''}`).join('\n')}`
+  }
+  if (brain.openQuestions?.length) {
+    result += `\n\n**Preguntas abiertas / contradicciones conocidas (aflorar, nunca resolver en silencio):**\n${brain.openQuestions.map((q) => `- ${q}`).join('\n')}`
   }
 
   return result

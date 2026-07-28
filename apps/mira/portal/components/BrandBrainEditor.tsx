@@ -8,31 +8,18 @@ import DriveFoldersPanel from './DriveFoldersPanel'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
-interface BrandData {
-  identity?: Record<string, string>
-  what_it_is?: string
-  audiences?: any[]
-  value_proposition?: string
-  hero_features?: Record<string, string>
-  business_model?: string
-  tone_and_voice?: Record<string, string>
-  voice_archetypes?: string[]
-  voice_principles?: Array<{ name: string; example: string }>
-  voice_vocabulary?: { do?: string[]; dont?: string[] }
-  banned_phrases?: string[]
-  visual_identity?: {
-    status?: string
-    colors?: Record<string, string>
-    typography?: Record<string, string>
-    logo?: Record<string, string>
-    imagery_style?: string
-    mascot_dady?: { specs: string; model_sheet_status: string; approved_anchors: string }
-  }
-  competitive_positioning?: string
-  go_to_market?: string
-  editorial_rhythm?: string
-  strategy_roadmap?: string
-  qa_rules?: { formula?: string; checklist?: string[]; what_to_avoid?: string[] }
+// Tipo canónico compartido (lib/brand-data.ts) — antes vivía duplicado aquí.
+import { normalizeVocab, normalizeFlopped, type BrandData, type VocabEntry } from '@/lib/brand-data'
+
+// Parsers línea-a-estructura con el separador 🔹 (mismo UX que voice_principles)
+function parseVocabLines(v: string): VocabEntry[] {
+  return v.split('\n').filter((l) => l.trim()).map((line) => {
+    const [phrase, why] = line.split('🔹').map((s) => s.trim())
+    return why ? { phrase, why } : { phrase }
+  })
+}
+function vocabToLines(list?: Array<string | VocabEntry>): string {
+  return normalizeVocab(list).map((e) => (e.why ? `${e.phrase} 🔹 ${e.why}` : e.phrase)).join('\n')
 }
 
 interface BrandProfile {
@@ -87,6 +74,15 @@ export default function BrandBrainEditor() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('brand_identity')
+
+  // Deep-link ?tab= (lo usan los links "Completar en Brand Brain" del semáforo
+  // de Business Reports). window.location en efecto — sin exigir Suspense.
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab') as TabType | null
+    if (tab && ['brand_identity', 'audience_market', 'voice_visual', 'content_strategy', 'business_ops', 'documents'].includes(tab)) {
+      setActiveTab(tab)
+    }
+  }, [])
   const [documents, setDocuments] = useState<any[]>([])
   const [suggestions, setSuggestions] = useState<Record<string, any> | null>(null)
   const [analyzing, setAnalyzing] = useState<string | null>(null)
@@ -477,6 +473,7 @@ export default function BrandBrainEditor() {
               <h3 className="text-sm font-medium text-ink mb-4">Value & Positioning</h3>
               <TextareaInput label="Value Proposition" value={profile.brand_data?.value_proposition || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, value_proposition: v } })} placeholder="Problems you solve + emotional promise + time/money saved" />
               <TextInput label="Enemy" value={profile.brand_data?.identity?.enemy || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, enemy: v } } })} placeholder="What do you compete against? (mindset, competitor, problem)" />
+              <TextInput label="Signature Ritual" value={profile.brand_data?.identity?.signature_ritual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, signature_ritual: v } } })} placeholder="El ritual o experiencia firma — a menudo el activo más ownable (ej.: ponerse el guante)" />
             </div>
             <div>
               <h3 className="text-sm font-medium text-ink mb-4">Hero Features</h3>
@@ -534,12 +531,123 @@ export default function BrandBrainEditor() {
               <h3 className="text-sm font-medium text-ink mb-3">Competitive Positioning</h3>
               <TextareaInput value={profile.brand_data?.competitive_positioning || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, competitive_positioning: v } })} placeholder="Who are competitors, what makes you unique, market opportunities" />
             </div>
+
+            {/* Open questions — las contradicciones afloran en el informe,
+                nunca se resuelven en silencio. Ahí está el valor. */}
+            <div className="border-t border-line pt-6">
+              <h3 className="text-sm font-medium text-ink mb-1">Open Questions</h3>
+              <p className="text-xs text-ink-secondary mb-2">Contradicciones conocidas, decisiones sin tomar, cosas que sospechas rotas (una por línea). Los reportes las sacarán a la luz con recomendación.</p>
+              <TextareaInput
+                value={[
+                  ...(profile.brand_data?.open_questions?.contradictions || []),
+                  ...(profile.brand_data?.open_questions?.undecided || []),
+                  ...(profile.brand_data?.open_questions?.suspected_broken || []),
+                ].join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    open_questions: { contradictions: v.split('\n').map((s) => s.trim()).filter(Boolean) }
+                  }
+                })}
+                placeholder={'El deck dice lanzamiento en junio y el resumen operativo dice marzo\nNadie ha decidido si el handle es @marca.city o @marca_city'}
+              />
+            </div>
           </div>
         )}
 
         {activeTab === 'business_ops' && (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <TextareaInput label="Business Model" value={profile.brand_data?.business_model || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, business_model: v } })} placeholder="Revenue streams, pricing tiers, customer types (B2C/B2B/B2B2C)" />
+
+            {/* Offer — copy anclado a un SKU real vence a copy anclado a un adjetivo */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-1">Offer</h3>
+              <p className="text-xs text-ink-secondary mb-3">Hero items: máximo 3 — nunca se venden más de tres cosas a la vez. Con precio real.</p>
+              {[0, 1, 2].map((i) => {
+                const item = profile.brand_data?.offer?.hero_items?.[i]
+                const update = (patch: Partial<{ name: string; price: string; note: string }>) => {
+                  const items = [...(profile.brand_data?.offer?.hero_items || [])]
+                  while (items.length <= i) items.push({ name: '' })
+                  items[i] = { ...items[i], ...patch }
+                  setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, hero_items: items.filter((h) => h.name || h.price || h.note) } } })
+                }
+                return (
+                  <div key={i} className="grid grid-cols-[2fr_1fr_2fr] gap-2 mb-2">
+                    <input type="text" value={item?.name || ''} onChange={(e) => update({ name: e.target.value })} placeholder={`Hero item ${i + 1}`} className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
+                    <input type="text" value={item?.price || ''} onChange={(e) => update({ price: e.target.value })} placeholder="Precio" className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
+                    <input type="text" value={item?.note || ''} onChange={(e) => update({ note: e.target.value })} placeholder="Nota (ingrediente estrella, ángulo...)" className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
+                  </div>
+                )
+              })}
+              <TextareaInput label="Oferta completa (nota)" value={profile.brand_data?.offer?.full_list_note || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, full_list_note: v } } })} placeholder="Dónde vive la carta/catálogo completo, rangos de precio..." />
+              <TextInput label="Mecánicas de promo" value={profile.brand_data?.offer?.promo_mechanics || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, promo_mechanics: v } } })} placeholder="Código, descuento, canales, si es time-boxed" />
+              <TextInput label="Dónde se compra" value={(profile.brand_data?.offer?.purchase_channels || []).join(', ')} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, purchase_channels: v.split(',').map((s) => s.trim()).filter(Boolean) } } })} placeholder="web, Grab, marketplace, local... (separado por comas)" />
+            </div>
+
+            {/* Channels — un canal sin trabajo asignado es un canal que se abandona */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-1">Channels</h3>
+              <p className="text-xs text-ink-secondary mb-2">Formato: canal 🔹 trabajo 🔹 owner (uno por línea)</p>
+              <TextareaInput
+                value={(profile.brand_data?.channels || []).map((c) => [c.channel, c.job, c.owner].filter(Boolean).join(' 🔹 ')).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    channels: v.split('\n').filter((l) => l.trim()).map((line) => {
+                      const [channel, job, owner] = line.split('🔹').map((s) => s.trim())
+                      return { channel, job: job || undefined, owner: owner || undefined }
+                    })
+                  }
+                })}
+                placeholder={'Instagram 🔹 craving y marca 🔹 Natalia\nLinkedIn 🔹 B2B y autoridad 🔹 Carlos'}
+              />
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Canales a EVITAR (canal 🔹 porqué)</label>
+              <TextareaInput
+                value={(profile.brand_data?.channels_to_avoid || []).map((c) => `${c.channel} 🔹 ${c.why}`).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    channels_to_avoid: v.split('\n').filter((l) => l.trim()).map((line) => {
+                      const [channel, why] = line.split('🔹').map((s) => s.trim())
+                      return { channel, why: why || '' }
+                    })
+                  }
+                })}
+                placeholder={'X/Twitter 🔹 la audiencia no está ahí y roba foco'}
+              />
+            </div>
+
+            {/* Constraints — lo que salva de un cease-and-desist */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Constraints & Rules</h3>
+              <TextareaInput label="Legal / IP" value={profile.brand_data?.constraints?.legal_ip || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, legal_ip: v } } })} placeholder="Likeness, copyright, publicidad comparativa..." />
+              <TextareaInput label="Reglas de categoría" value={profile.brand_data?.constraints?.category_rules || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, category_rules: v } } })} placeholder="Claims de salud, alcohol, financiero..." />
+              <TextareaInput label="Autoimpuestas" value={profile.brand_data?.constraints?.self_imposed || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, self_imposed: v } } })} placeholder="Sin descuentos permanentes, sin stock imagery..." />
+              <TextInput label="Regla de secuenciación" value={profile.brand_data?.constraints?.sequencing_rule || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, sequencing_rule: v } } })} placeholder="ej.: comunidad → contenido → monetización → B2B" />
+            </div>
+
+            {/* What flopped — la teoría del fracaso vale más que el fracaso */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-1">What Flopped</h3>
+              <p className="text-xs text-ink-secondary mb-2">Formato: formato/serie 🔹 teoría de por qué no funcionó</p>
+              <TextareaInput
+                value={normalizeFlopped(profile.brand_data?.what_flopped).map((f) => (f.theory ? `${f.format} 🔹 ${f.theory}` : f.format)).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    what_flopped: v.split('\n').filter((l) => l.trim()).map((line) => {
+                      const [format, theory] = line.split('🔹').map((s) => s.trim())
+                      return { format, theory: theory || undefined }
+                    })
+                  }
+                })}
+                placeholder={'Memes genéricos 🔹 sin conexión con el producto, engagement vacío'}
+              />
+            </div>
           </div>
         )}
 
@@ -614,35 +722,74 @@ export default function BrandBrainEditor() {
             {/* Vocabulary */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">Vocabulary Rules</h3>
-              <label className="block text-xs font-medium text-ink-secondary mb-2">✅ Words to Use (comma-separated)</label>
+              <p className="text-xs text-ink-secondary mb-2">Formato: frase 🔹 porqué (una por línea). El porqué es la enseñanza — una regla sin razón se ignora.</p>
+              <label className="block text-xs font-medium text-ink-secondary mb-2">✅ Decimos (y por qué)</label>
               <TextareaInput
-                value={(profile.brand_data?.voice_vocabulary?.do || []).join(', ')}
+                value={vocabToLines(profile.brand_data?.voice_vocabulary?.do)}
                 onChange={(v) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
                     voice_vocabulary: {
                       ...profile.brand_data?.voice_vocabulary,
-                      do: v.split(',').map(s => s.trim()).filter(s => s)
+                      do: parseVocabLines(v)
                     }
                   }
                 })}
-                placeholder="stock bajo control, pedidos sin fricción, logística conectada, margen..."
+                placeholder={'stock bajo control 🔹 concreto y operativo, es lo que el cliente compra\npedidos sin fricción 🔹 promete el resultado, no la tecnología'}
               />
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-4">❌ Words to Avoid (comma-separated)</label>
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-4">❌ Nunca decimos (y por qué)</label>
               <TextareaInput
-                value={(profile.brand_data?.voice_vocabulary?.dont || []).join(', ')}
+                value={vocabToLines(profile.brand_data?.voice_vocabulary?.dont)}
                 onChange={(v) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
                     voice_vocabulary: {
                       ...profile.brand_data?.voice_vocabulary,
-                      dont: v.split(',').map(s => s.trim()).filter(s => s)
+                      dont: parseVocabLines(v)
                     }
                   }
                 })}
-                placeholder="barato, rápido porque sí, líder del mercado, revolucionario..."
+                placeholder={'revolucionario 🔹 lo dice todo el mundo, no diferencia\nel mejor del mercado 🔹 afirmación sin prueba, resta credibilidad'}
+              />
+            </div>
+
+            {/* Golden rule — la frase que permite a cualquiera autoevaluarse */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Golden Rule</h3>
+              <TextInput
+                value={profile.brand_data?.tone_and_voice?.golden_rule || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    tone_and_voice: { ...profile.brand_data?.tone_and_voice, golden_rule: v }
+                  }
+                })}
+                placeholder={'"Si {competidor genérico} pudiera publicarlo, no es {marca} suficiente."'}
+              />
+            </div>
+
+            {/* Languages — el manual y las captions suelen ir en idiomas distintos */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Languages</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <TextInput label="Manual / documentos" value={profile.brand_data?.languages?.manual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, manual: v } } })} placeholder="ES / EN" />
+                <TextInput label="Captions / contenido" value={profile.brand_data?.languages?.captions || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, captions: v } } })} placeholder="idioma del mercado (ej. TH, ES)" />
+              </div>
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Por canal (canal: idioma, uno por línea)</label>
+              <TextareaInput
+                value={Object.entries(profile.brand_data?.languages?.per_channel || {}).map(([c, l]) => `${c}: ${l}`).join('\n')}
+                onChange={(v) => {
+                  const per_channel: Record<string, string> = {}
+                  v.split('\n').forEach((line) => {
+                    const idx = line.indexOf(':')
+                    if (idx > 0) per_channel[line.slice(0, idx).trim()] = line.slice(idx + 1).trim()
+                  })
+                  setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, per_channel } } })
+                }}
+                placeholder={'Instagram: TH + EN\nLinkedIn: EN'}
               />
             </div>
 
