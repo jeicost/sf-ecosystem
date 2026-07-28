@@ -17,7 +17,7 @@ Startup studio con tres patas:
 | Empresa | Tipo | Stack |
 |---|---|---|
 | Salsa Burgers | Venture (marca propia) | Flask+PG Railway · Next.js web · SF-CMS |
-| Discoolver | Venture (co-fundada) | FastAPI+React dg-editor · creators landing |
+| Discoolver | Venture (co-fundada) | dg-editor (repo externo del cliente) · creators landing |
 | NC Global Assets | Empresa propia en TH | Vite+React · SF-CMS |
 | Dadybox | Cliente externo | Playwright playbooks · próximo: MIRA |
 | 0 Agency | En pipeline | — |
@@ -94,13 +94,12 @@ Desktop/Claude/
 │   ├── sf-reports/         ← portal auditorías para clientes
 │   ├── sf-sales-engine/    ← motor comercial (git · Supabase · sin n8n)
 │   ├── sf-crm/             ← CRM (git)
-│   ├── sf-links/           ← linktree SF
 │   └── mira-landing/       ← landing venta MIRA (Vercel)
 │
 ├── clients/
 │   ├── salsa-burgers/      ← app (Flask) + web (Next.js) + deliverables/
-│   ├── discoolver/         ← dg-editor (FastAPI) + creators + deliverables/
-│   ├── nc-global-assets/   ← web (Vite) + deliverables/
+│   ├── discoolver/         ← creators landing + deliverables/ (dg-editor: repo externo ~/Desktop/discoolver-dg-editor)
+│   ├── nc-global-assets-next/ ← web (Next, WIP cutover; la Vite legacy está en clients/_archive/)
 │   ├── dadybox/            ← playbooks (Playwright) + deliverables/
 │   └── startup-factory/    ← content/ + deliverables/
 │

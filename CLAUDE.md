@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Turborepo + pnpm workspace. **Package manager: pnpm** (never npm/yarn at root level).
 
 ```
-Desktop/Claude/
+Desktop/Claude.nosync/
 ├── apps/                      # Products and internal tools (each deploys independently)
 │   ├── mira/                  # MIRA SaaS portal — 30 AI agents for clients
 │   ├── mira-landing/          # MIRA marketing site
@@ -16,24 +16,33 @@ Desktop/Claude/
 │   ├── sf-sales-engine/       # B2B discovery engine (Python + Next.js portal)
 │   ├── ai-agency-sf-next/     # Internal ops portal — briefings, audits, content
 │   ├── sf-reports/            # Client deliverables hub (sf-reports.vercel.app)
-│   ├── sf-links/              # SF link/QR tool
+│   ├── cms-qa-harness/        # Local QA harness for sf-cms (never deployed)
 │   └── startup-factory-web/   # Main SF website (startupsfactory.es)
 │
 ├── packages/                  # Shared code (not deployed independently)
 │   ├── auth/      (@sf/auth)       # Supabase SSR helpers
 │   ├── supabase/  (@sf/supabase)   # Supabase client + generated types
 │   ├── ui/        (@sf/ui)         # Shared React components
-│   └── config/    (@sf/config)     # Shared ESLint + TypeScript configs
+│   ├── config/    (@sf/config)     # Shared ESLint + TypeScript configs
+│   └── cms-client/ (@sf/cms-client) # SF-CMS API client
 │
 ├── clients/                   # Per-client projects (non-SF tools)
-│   ├── discoolver/            # dg-editor (FastAPI+React) + landing + deliverables
-│   ├── salsa-burgers/         # App (Flask+PG Railway) + web + deliverables
-│   ├── nc-global-assets/      # Web (Vite+React) + deliverables
-│   └── dadybox/               # Playwright playbooks + deliverables
+│   ├── discoolver/            # Landings + deliverables + discoolver-cms (dg-editor vive FUERA, ver abajo)
+│   ├── salsa-burgers/         # App (Flask+PG Railway) + web (Next, contenido desde sf-cms)
+│   ├── nc-global-assets-next/ # Web Next (port en curso, contenido desde sf-cms)
+│   ├── adrian-grooves/        # Landing curso (Next, contenido desde sf-cms)
+│   ├── dadybox/               # Playwright playbooks + deliverables
+│   ├── lidar-home/            # Solo deliverables (sin app; alta futura en MIRA/CMS)
+│   ├── startup-factory/       # Solo contenidos/deliverables (la web real es apps/startup-factory-web)
+│   └── _archive/              # Proyectos archivados (p.ej. nc-global-assets-vite, la SPA legacy)
 │
-├── tools/                     # Local MCPs (apple-mail, freepik, google-slides)
+├── tools/                     # Local MCPs (apple-mail, freepik, google-slides) + content-pillars
 └── scripts/                   # Root automation scripts (migrations, seeding)
 ```
+
+**Fuera del monorepo:** `~/Desktop/discoolver-dg-editor` — editor de guías de Discoolver. Repo git independiente del cliente (remote `discoolver-group/discoolver-dg-editor`); NO copiarlo dentro del monorepo. La skill `repaso-dg` y el lanzador `🚀 Abrir Guías Discoolver.command` apuntan ahí.
+
+Bitácoras de sesiones antiguas: `docs/archive/sessions/`. Reorganización completa: `docs/REORG_2026-07-28.md`.
 
 Read `ARCHITECTURE.md` for the full system design and client/product map.
 

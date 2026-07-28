@@ -1,0 +1,37 @@
+{
+  "name": "Salsa Burgers",
+  "tagline": "DIP IT LIKE YOU MEAN IT",
+  "handle": "@salsaburgers.bkk",
+  "location": "Sathorn, Bangkok",
+  "voice": "Bold, imperative, sauce-first. Every sentence is a command. Never 'delicious' or 'best'. Bilingual EN/ES flavor. If Shake Shack could post it, it isn't Salsa enough.",
+  "colors": {
+    "ink": "141414",
+    "bg_dark": "1A1A1A",
+    "cream": "F5F0E8",
+    "red": "E30613",
+    "white": "FFFFFF",
+    "muted": "9A9A9A"
+  },
+  "fonts": {
+    "display": "Anton",
+    "sub": "League Spartan",
+    "body": "Lato",
+    "safe_display": "Arial",
+    "safe_body": "Arial"
+  },
+  "post_size": { "w": 1080, "h": 1350 },
+  "rules": [
+    "Dark background as the default hero look; the sauce is always the brightest object.",
+    "Inspired-by, not exact: no real public figures' likenesses, no copyrighted works/marks.",
+    "No permanent discounts; promos are time-boxed.",
+    "The black glove and the sauce pour are recurring ownable motifs."
+  ],
+  "menu": {
+    "deluxe": [["Lobster Burger", 2800], ["Dry-Aged Ribeye Steak Burger", 1400], ["Premium Foie Burger", 950]],
+    "classics": [["OG Cheeseburger", 420], ["BBQ Beats", 480], ["Crunchy Chicken", 460], ["Yellow Jacket", 480], ["Truffle Flow", 500]],
+    "local": [["Khao Soi", 500], ["Tom Yum", 500], ["The Holy Basil", 500]],
+    "fusion": [["K-Spice Burger", 520], ["Miso Onsen", 520], ["Mala Burger", 520]],
+    "combos": ["Salsa Duo", "Hero", "Full Craving", "Full Indulgence"],
+    "promo": { "first_order": "20% OFF", "code": "SALSA1", "channels": ["Grab", "LINE MAN"] }
+  }
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1, "name": "Drive Craving", "emoji": "🍔", "format": "Video 80% / Image 20%", "objective": "Conversion",
+    "definition": "Food-porn engineered to make people hungry and order now. Motion, sizzle, cheese pulls and sauce drizzles beat any photo — the sauce is always the hero.",
+    "collections": [
+      { "name": "Burger Recipes", "desc": "every menu item, one by one — full build or final-result breakdown" },
+      { "name": "First Bite Reactions", "desc": "real people, the bite, the eyes — unscripted" },
+      { "name": "Delivery Arrival Satisfaction", "desc": "people receiving & craving the food across situations" },
+      { "name": "Combo Meals", "desc": "combos styled to drive craving — more reasons to dip" }
+    ]
+  },
+  {
+    "id": 2, "name": "Ritual & Packaging", "emoji": "📦", "format": "Video 70% / Image 30%", "objective": "Differentiation",
+    "definition": "The #1 differentiator on camera: glove-up, unboxing, dipping technique, plus hero packaging stills that become iconic on sight.",
+    "collections": [
+      { "name": "The 5 Steps", "desc": "glove up → open → sauce → first bite → share" },
+      { "name": "Dip Techniques", "desc": "the right sauce for the right burger" },
+      { "name": "Unboxing POV", "desc": "hands-only first-person reveal of the box" },
+      { "name": "Hero Packaging Stills", "desc": "box, gloves & sauces styled dark — iconic branding" }
+    ]
+  },
+  {
+    "id": 3, "name": "Brand Cult", "emoji": "🔥", "format": "Video 70% / Image 30%", "objective": "Awareness · Community",
+    "definition": "People consuming the brand in brand spaces — the kitchen, the streets — fuelling #SalsaMoments with real users, creators and AI-generated characters.",
+    "collections": [
+      { "name": "#SalsaMoments", "desc": "real users tagged & reposted — the movement" },
+      { "name": "Streets of Sathorn", "desc": "the brand out in the wild, day & night" },
+      { "name": "The Salsa Universe", "desc": "our own cinematic world (inspired-by, not exact)" },
+      { "name": "Salsa Characters", "desc": "recurring brand & AI-generated personalities" }
+    ]
+  },
+  {
+    "id": 4, "name": "Trust & Authenticity", "emoji": "✅", "format": "Video 60% / Image 40%", "objective": "Loyalty · Social proof",
+    "definition": "Proof the hype is real: the real kitchen, fresh-daily sauces, the team, the riders and real reviews.",
+    "collections": [
+      { "name": "Fresh Daily", "desc": "sauces made from scratch — no premixes, timestamped" },
+      { "name": "Meet the Crew", "desc": "team personalities & behind-the-scenes" },
+      { "name": "Trust Your Driver", "desc": "the riders, the hand-off, the mission" },
+      { "name": "Real Reviews", "desc": "testimonials + platform ratings as proof" }
+    ]
+  },
+  {
+    "id": 5, "name": "Salsa Phrases", "emoji": "🌶️", "format": "Image 60% / Video 40%", "objective": "Brand recall",
+    "definition": "The imperative brand voice as ownable graphic assets — bold typography recognizable on sight. The copy is the creative.",
+    "collections": [
+      { "name": "Command Series", "desc": "one imperative per post: DIP NOW · GLOVE UP · ORDER NOW" },
+      { "name": "Dip It Like You Mean It", "desc": "the flagship phrase, remixed" },
+      { "name": "Sauce Truths", "desc": "bold one-liner rules of the brand world" },
+      { "name": "Wallpaper Drops", "desc": "shareable = free distribution" }
+    ]
+  },
+  {
+    "id": 6, "name": "Salsa People", "emoji": "✨", "format": "Image 60% / Video 40%", "objective": "Awareness · Culture",
+    "definition": "The 'people with salsa' universe — the energy and soundtrack of a music culture wrapped around the brand. Built on vibe & sound, not celebrity likeness.",
+    "collections": [
+      { "name": "The Salsa Soundtrack", "desc": "the music that scores the brand — social-licensed audio" },
+      { "name": "People With Salsa", "desc": "a monthly cultural energy / theme" },
+      { "name": "Latino x Local", "desc": "the culture clash the brand embodies" },
+      { "name": "Salsa Sundays", "desc": "a recurring music-led content day" }
+    ]
+  },
+  {
+    "id": 7, "name": "News, Updates & Promotions", "emoji": "📢", "format": "Image 70% / Video 30%", "objective": "Conversion · Retention",
+    "definition": "Clear, shareable announcements — promos, discounts, launches, milestones and customer reactions. Static for readability; short video for major launches.",
+    "collections": [
+      { "name": "The Drop", "desc": "new sauce / burger / combo reveals" },
+      { "name": "20% Off · Code", "desc": "promo mechanics, clean and scannable" },
+      { "name": "Milestones", "desc": "order counts, anniversaries, review counts" },
+      { "name": "Openings & Events", "desc": "grand openings & activations" }
+    ]
+  },
+  {
+    "id": 8, "name": "Salsa Iconic Moments", "emoji": "🎬", "format": "Video 90% / Image 10%", "objective": "Awareness · Virality",
+    "definition": "Hijacking culture — mixing the brand into iconic/trending moments to build its OWN universe of icons and memes. Inspired-by, not exact.",
+    "collections": [
+      { "name": "Salsa Hijacks", "desc": "the brand inserted into iconic cultural moments" },
+      { "name": "Meme Velocity", "desc": "same-day reactive content on trends" },
+      { "name": "Mixing Universes", "desc": "pop-culture crossovers (own world-building)" },
+      { "name": "The Hand of Sauce", "desc": "our own signature iconic-moment motif" }
+    ]
+  }
+]

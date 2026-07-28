@@ -66,3 +66,12 @@ secrets.json
 # Claude personal settings with tokens
 .claude/settings.local.json
 .vercel
+
+# TypeScript incremental build info (ruido de build, nunca versionar)
+*.tsbuildinfo
+
+# macOS
+.DS_Store
+
+# Outputs generados de entregables (los finales elegidos ya están versionados)
+clients/dadybox/output/

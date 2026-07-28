@@ -12,7 +12,6 @@ Desktop/Claude/
 │   ├── mira-landing/        # MIRA marketing website
 │   ├── sf-cms/              # CMS for client landings
 │   ├── sf-crm/              # CRM + Sales Engine (merged)
-│   ├── sf-links/            # QR/link generation tool
 │   ├── sf-reports/          # Deliverables hub
 │   ├── sf-sales-engine/     # B2B discovery & lead intel (merges into sf-crm)
 │   ├── startup-factory-web/ # SF landing + main website
@@ -27,7 +26,7 @@ Desktop/Claude/
 ├── clients/                 # Per-client projects (non-SF tools)
 │   ├── discoolver/
 │   ├── salsa-burgers/
-│   ├── nc-global-assets/
+│   ├── nc-global-assets-next/
 │   └── ...
 │
 ├── tools/                   # MCPs & local utilities

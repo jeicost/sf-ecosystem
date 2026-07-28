@@ -1,0 +1,54 @@
+{
+  "name": "content-pillar-system",
+  "version": "1.0.0",
+  "description": "Open, embeddable engine to run a brand's social content operation: pillars, collections, fully-worked post proposals, and own-brand visual references (mockup + brief). Usable as a Node library, a CLI, or an AI-agent skill.",
+  "license": "MIT",
+  "type": "commonjs",
+  "main": "index.js",
+  "bin": {
+    "cps-validate": "scripts/validate.js",
+    "cps-reference": "scripts/post_reference.js",
+    "cps-deck": "scripts/build_deck.js"
+  },
+  "files": [
+    "index.js",
+    "scripts/",
+    "config/",
+    "prompts/",
+    "SKILL.md",
+    "README.md",
+    "LICENSE",
+    "examples/"
+  ],
+  "scripts": {
+    "example": "bash scripts/run_all.sh config/brand.json config/pillars.json examples/posts.example.json output"
+  },
+  "keywords": [
+    "content-strategy",
+    "social-media",
+    "marketing-automation",
+    "content-pillars",
+    "ai-agents",
+    "agent-skill",
+    "pptx",
+    "svg-mockup",
+    "brand",
+    "embeddable",
+    "open-source"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "pptxgenjs": "^3.12.0"
+  },
+  "peerDependenciesMeta": {
+    "cairosvg": {
+      "optional": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/<your-org>/content-pillar-system"
+  }
+}

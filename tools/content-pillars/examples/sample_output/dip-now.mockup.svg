@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" font-family="Lato, Arial, sans-serif">
+  <rect width="1080" height="1350" fill="#E30613"/>
+  <!-- top row: logo + pillar/collection tag -->
+  <text x="70" y="120" font-family="Anton, Arial, sans-serif" font-size="46" fill="#FFFFFF" font-weight="700">SALSA BURGERS</text>
+  <text x="1010" y="118" text-anchor="end" font-size="24" letter-spacing="2" fill="#F5F0E8" font-weight="700">SALSA PHRASES  ·  COMMAND SERIES</text>
+  <text x="70" y="190" font-family="Anton, Arial, sans-serif" font-size="116" fill="#F5F0E8" font-weight="700">DIP NOW.</text>
+  <text x="70" y="312.72" font-size="34" fill="#F5F0E8" font-style="italic">That's the whole post.</text>
+  <rect x="70" y="336.72" width="940" height="713.28" rx="18" fill="none" stroke="#FFFFFF" stroke-width="3" stroke-dasharray="14 10" opacity="0.8"/>
+  <text x="540" y="653.36" text-anchor="middle" font-family="Anton, Arial, sans-serif" font-size="40" fill="#FFFFFF" font-weight="700" opacity="0.9">PHOTO ZONE</text>
+  <text x="540" y="713.36" text-anchor="middle" font-size="26" fill="#FFFFFF" opacity="0.85">PHOTO: Type does 100% of the work</text>
+  <text x="540" y="747.36" text-anchor="middle" font-size="26" fill="#FFFFFF" opacity="0.85">· brand red + black · zero clutter</text>
+  <rect x="70" y="1120" width="350" height="70" rx="35" fill="#FFFFFF"/>
+  <text x="245" y="1165" text-anchor="middle" font-family="Anton, Arial, sans-serif" font-size="34" fill="#E30613" font-weight="700">ORDER ON GRAB</text>
+  <text x="70" y="1240" font-size="26" fill="#F5F0E8">#SalsaBurgers #DipNow #GloveUp</text>
+  <text x="70" y="1290" font-family="Anton, Arial, sans-serif" font-size="30" fill="#FFFFFF" font-weight="700">DIP IT LIKE YOU MEAN IT</text>
+  <text x="1010" y="1290" text-anchor="end" font-size="24" fill="#F5F0E8">@salsaburgers.bkk</text>
+</svg>

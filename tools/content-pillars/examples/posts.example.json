@@ -1,0 +1,36 @@
+[
+  {
+    "pillar": "Drive Craving", "collection": "Burger Recipes", "title": "Anatomy of the Truffle Flow",
+    "hero": "Truffle Flow ฿500", "headline": "Built layer by layer.", "sub": "Wagyu. Mozzarella melt. Black truffle.",
+    "concept": "Exploded slow-build reel — each layer drops in, reassembles into the hero, then the cut-in-half money shot with steam. Every ingredient labelled.",
+    "shotFlow": ["0–2s bun lands on black","2–6s layers stack in slow-mo, labels appear","6–10s truffle paste + mozzarella pull","10–15s cut-in-half + hero + price"],
+    "caption": "Some burgers are assembled. This one is engineered. You'll taste every layer.",
+    "cta": "Order on Grab", "hashtags": "#SalsaBurgers #TruffleFlow #NotABoringBurger",
+    "artDirection": "Exploded build on black · ingredient labels · mozzarella pull as hero frame", "look": "dark"
+  },
+  {
+    "pillar": "Ritual & Packaging", "collection": "The 5 Steps", "title": "Glove Up",
+    "hero": "OG Cheeseburger ฿420 + house sauces", "headline": "You've been eating burgers wrong.", "sub": "Glove up. Open. Sauce. Bite. Share.",
+    "concept": "Hands-only POV of the full ritual, each step numbered on screen. Turns delivery into theatre.",
+    "shotFlow": ["01 glove up","02 open the box","03 add the sauce","04 first bite","05 share it"],
+    "caption": "Not just a burger. A ritual. Welcome to the Salsa Club.",
+    "cta": "Follow for launch", "hashtags": "#SalsaBurgers #SalsaRitual #GloveUp",
+    "artDirection": "Hands-only POV · dark surface · numbered step titles · brand box in frame", "look": "dark"
+  },
+  {
+    "pillar": "Salsa Phrases", "collection": "Command Series", "title": "Dip Now",
+    "headline": "Dip now.", "sub": "That's the whole post.",
+    "concept": "Full-bleed single-imperative typographic drop. The copy is the creative.",
+    "caption": "No caption needed. Dip now.",
+    "cta": "Order on Grab", "hashtags": "#SalsaBurgers #DipNow #GloveUp",
+    "artDirection": "Type does 100% of the work · brand red + black · zero clutter", "look": "red"
+  },
+  {
+    "pillar": "News, Updates & Promotions", "collection": "20% Off · Code", "title": "First Order 20 Off",
+    "hero": "First-order promo", "headline": "First order = 20% off.", "sub": "Code: SALSA1. One tap. Done.",
+    "concept": "A clean, scannable promo card — one offer, one code, one CTA.",
+    "caption": "New here? Your first dip is 20% off. Code SALSA1 on Grab & LINE MAN.",
+    "cta": "Order on Grab", "hashtags": "#SalsaBurgers #FirstOrder #SathornEats",
+    "artDirection": "One message, one code, one CTA · big legible type · no competing elements", "look": "white"
+  }
+]

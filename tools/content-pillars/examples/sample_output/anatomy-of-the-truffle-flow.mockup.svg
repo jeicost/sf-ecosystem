@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" font-family="Lato, Arial, sans-serif">
+  <rect width="1080" height="1350" fill="#1A1A1A"/>
+  <!-- top row: logo + pillar/collection tag -->
+  <text x="70" y="120" font-family="Anton, Arial, sans-serif" font-size="46" fill="#E30613" font-weight="700">SALSA BURGERS</text>
+  <text x="1010" y="118" text-anchor="end" font-size="24" letter-spacing="2" fill="#9A9A9A" font-weight="700">DRIVE CRAVING  ·  BURGER RECIPES</text>
+  <text x="70" y="190" font-family="Anton, Arial, sans-serif" font-size="116" fill="#F5F0E8" font-weight="700">BUILT LAYER BY</text>
+  <text x="70" y="296.72" font-family="Anton, Arial, sans-serif" font-size="116" fill="#F5F0E8" font-weight="700">LAYER.</text>
+  <text x="70" y="419.44" font-size="34" fill="#9A9A9A" font-style="italic">Wagyu. Mozzarella melt. Black truffle.</text>
+  <rect x="70" y="443.44" width="940" height="606.56" rx="18" fill="none" stroke="#F5F0E8" stroke-width="3" stroke-dasharray="14 10" opacity="0.8"/>
+  <text x="540" y="666.72" text-anchor="middle" font-family="Anton, Arial, sans-serif" font-size="40" fill="#E30613" font-weight="700" opacity="0.9">PHOTO ZONE</text>
+  <text x="540" y="766.72" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">PHOTO: Truffle Flow ฿500 ·</text>
+  <text x="540" y="800.72" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">Exploded build on black ·</text>
+  <text x="540" y="834.72" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">ingredient labels · mozzarella</text>
+  <text x="540" y="868.72" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">pull as hero frame</text>
+  <rect x="70" y="1120" width="350" height="70" rx="35" fill="#E30613"/>
+  <text x="245" y="1165" text-anchor="middle" font-family="Anton, Arial, sans-serif" font-size="34" fill="#FFFFFF" font-weight="700">ORDER ON GRAB</text>
+  <text x="70" y="1240" font-size="26" fill="#9A9A9A">#SalsaBurgers #TruffleFlow #NotABoringBurger</text>
+  <text x="70" y="1290" font-family="Anton, Arial, sans-serif" font-size="30" fill="#E30613" font-weight="700">DIP IT LIKE YOU MEAN IT</text>
+  <text x="1010" y="1290" text-anchor="end" font-size="24" fill="#9A9A9A">@salsaburgers.bkk</text>
+</svg>

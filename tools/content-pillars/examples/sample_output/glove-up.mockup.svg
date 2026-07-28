@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" font-family="Lato, Arial, sans-serif">
+  <rect width="1080" height="1350" fill="#1A1A1A"/>
+  <!-- top row: logo + pillar/collection tag -->
+  <text x="70" y="120" font-family="Anton, Arial, sans-serif" font-size="46" fill="#E30613" font-weight="700">SALSA BURGERS</text>
+  <text x="1010" y="118" text-anchor="end" font-size="24" letter-spacing="2" fill="#9A9A9A" font-weight="700">RITUAL &amp; PACKAGING  ·  THE 5 STEPS</text>
+  <text x="70" y="190" font-family="Anton, Arial, sans-serif" font-size="96" fill="#F5F0E8" font-weight="700">YOU'VE BEEN</text>
+  <text x="70" y="278.32" font-family="Anton, Arial, sans-serif" font-size="96" fill="#F5F0E8" font-weight="700">EATING BURGERS</text>
+  <text x="70" y="366.64" font-family="Anton, Arial, sans-serif" font-size="96" fill="#F5F0E8" font-weight="700">WRONG.</text>
+  <text x="70" y="470.96000000000004" font-size="34" fill="#9A9A9A" font-style="italic">Glove up. Open. Sauce. Bite. Share.</text>
+  <rect x="70" y="494.96000000000004" width="940" height="555.04" rx="18" fill="none" stroke="#F5F0E8" stroke-width="3" stroke-dasharray="14 10" opacity="0.8"/>
+  <text x="540" y="692.48" text-anchor="middle" font-family="Anton, Arial, sans-serif" font-size="40" fill="#E30613" font-weight="700" opacity="0.9">PHOTO ZONE</text>
+  <text x="540" y="792.48" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">PHOTO: OG Cheeseburger ฿420 +</text>
+  <text x="540" y="826.48" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">house sauces · Hands-only POV ·</text>
+  <text x="540" y="860.48" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">dark surface · numbered step</text>
+  <text x="540" y="894.48" text-anchor="middle" font-size="26" fill="#F5F0E8" opacity="0.85">titles · brand box in frame</text>
+  <rect x="70" y="1120" width="430" height="70" rx="35" fill="#E30613"/>
+  <text x="285" y="1165" text-anchor="middle" font-family="Anton, Arial, sans-serif" font-size="34" fill="#FFFFFF" font-weight="700">FOLLOW FOR LAUNCH</text>
+  <text x="70" y="1240" font-size="26" fill="#9A9A9A">#SalsaBurgers #SalsaRitual #GloveUp</text>
+  <text x="70" y="1290" font-family="Anton, Arial, sans-serif" font-size="30" fill="#E30613" font-weight="700">DIP IT LIKE YOU MEAN IT</text>
+  <text x="1010" y="1290" text-anchor="end" font-size="24" fill="#9A9A9A">@salsaburgers.bkk</text>
+</svg>
