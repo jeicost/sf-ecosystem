@@ -4,6 +4,35 @@ import { getClientMemoryContext } from '@/lib/client-memory'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 
+// B4: los ❤ del cliente por fin se usan — los últimos outputs que marcó como
+// favoritos entran al prompt como señal de estilo ("más como esto").
+async function getLikedOutputsBlock(clientId: string): Promise<string> {
+  try {
+    const { adminClient } = await import('@/lib/supabase')
+    const admin = adminClient()
+    const { data, error } = await admin
+      .from('quick_actions_results')
+      .select('action_type, output_data')
+      .eq('client_id', clientId)
+      .eq('liked_by_user', true)
+      .eq('status', 'success')
+      .order('created_at', { ascending: false })
+      .limit(3)
+    if (error || !data?.length) return ''
+    const samples = data
+      .map((r) => {
+        const out = (r.output_data ?? {}) as Record<string, any>
+        const snippet = String(out.copy ?? out.subject ?? out.body ?? '').slice(0, 150)
+        return snippet ? `- [${r.action_type}] "${snippet}"` : null
+      })
+      .filter(Boolean)
+    if (!samples.length) return ''
+    return `\n\nOUTPUTS QUE EL CLIENTE MARCÓ COMO FAVORITOS (imita este estilo y nivel):\n${samples.join('\n')}`
+  } catch {
+    return ''
+  }
+}
+
 export interface QuickActionPromptParams {
   clientId: string
   inputData: Record<string, any>
@@ -21,7 +50,7 @@ export async function getQuickActionPrompt(
 ): Promise<string | null> {
   const { clientId, inputData, attachmentText, leadContext, projectId } = params
 
-  const [brandBrain, memoryContext, docContext] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, likedBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
@@ -29,6 +58,7 @@ export async function getQuickActionPrompt(
       context_type: 'all',
       limit: 2,
     }),
+    getLikedOutputsBlock(clientId),
   ])
 
   const brandContext = brandBrain ? formatBrandBrainForPrompt(brandBrain) : ''
@@ -71,6 +101,7 @@ OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not l
     attachmentBlock +
     leadBlock +
     (allContext ? `\n\nCONTEXT:\n${allContext}` : '') +
+    likedBlock +
     languageRule +
     optionalFieldsRule +
     `\n\n${GROUNDING_CONTRACT}`

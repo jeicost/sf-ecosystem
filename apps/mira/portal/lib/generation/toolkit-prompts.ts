@@ -4,6 +4,32 @@ import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
+/**
+ * Feedback del cliente sobre informes anteriores de ESTE tool (B4): las
+ * últimas 3 notas negativas se reinyectan para que la siguiente generación
+ * las corrija — mismo patrón que agent_interactions en el chat de agentes.
+ * Tolerante a que la tabla no exista aún (pre-migración 0050).
+ */
+async function getDocumentFeedbackBlock(clientId: string, toolSlug: string): Promise<string> {
+  try {
+    const admin = adminClient()
+    const { data, error } = await admin
+      .from('document_feedback')
+      .select('note, created_at')
+      .eq('client_id', clientId)
+      .eq('tool_slug', toolSlug)
+      .eq('outcome', 'not_helpful')
+      .not('note', 'is', null)
+      .order('created_at', { ascending: false })
+      .limit(3)
+    if (error || !data?.length) return ''
+    const notes = data.map((f) => `- ${f.note}`).join('\n')
+    return `\n\nCLIENT FEEDBACK ON PREVIOUS ${toolSlug} REPORTS (address these — do NOT repeat them):\n${notes}`
+  } catch {
+    return ''
+  }
+}
+
 // tone_of_voice may be a plain string or an object — never spread a string into chars
 function formatTone(tone: unknown): string {
   if (!tone) return 'Not defined'
@@ -81,7 +107,7 @@ export async function getToolkitPrompt(
 ): Promise<string | null> {
   const { clientId, inputData, siteFactsBlock, sourcesBlock, projectId } = params
 
-  const [brandBrain, memoryContext, docContext, toolkitDeps] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, toolkitDeps, feedbackBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
@@ -90,6 +116,7 @@ export async function getToolkitPrompt(
       limit: 3,
     }),
     getToolkitDependencies(clientId, toolSlug),
+    getDocumentFeedbackBlock(clientId, toolSlug),
   ])
 
   // Expanded Brand Brain Context with all essential data
@@ -137,10 +164,12 @@ BRAND CONTEXT (Source of Truth):
     : ''
 
   // Shared context for ALL tool prompts: client docs/dependencies, injected grounding
-  // blocks (when available for this tool), and the anti-hallucination contract.
+  // blocks (when available for this tool), client feedback on previous reports,
+  // and the anti-hallucination contract.
   const fullContext = [
     allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : '',
     groundingBlocks ? `\n\n${groundingBlocks}` : '',
+    feedbackBlock,
     `\n\n${GROUNDING_CONTRACT}`,
   ].join('')
 

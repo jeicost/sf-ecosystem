@@ -2,6 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { getClientDriveAccessToken } from '@/lib/drive-sync'
+import { generateEditorialHTML } from '@/lib/export/editorial-template'
+import { getAdapter } from '@/lib/export/adapters'
+import { buildCopyText } from '@/lib/quick-actions/copy-text'
+import { getQuickAction } from '@/lib/quick-actions/registry'
+
+// B4: TODO lo que sale hacia Drive usa la plantilla EDITORIAL (el lenguaje
+// visual de sf-reports con color y logo del cliente). Antes las quick actions
+// exportaban con una plantilla simple morada distinta de la del Toolkit —
+// dos estéticas saliendo de la misma casa.
+async function resolveBrand(admin: ReturnType<typeof adminClient>, clientId: string) {
+  const [{ data: clientRow }, { data: brandData }] = await Promise.all([
+    admin.from('clients').select('name, primary_color, logo_url').eq('id', clientId).maybeSingle(),
+    admin.from('brand_profiles').select('name, brand_data').eq('client_id', clientId).maybeSingle(),
+  ])
+  const clientName = brandData?.name || clientRow?.name || 'Cliente'
+  const brandColor =
+    (brandData?.brand_data as any)?.visual_identity?.colors?.primary ||
+    clientRow?.primary_color ||
+    '#8B5CF6'
+  return { clientName, brandColor }
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -37,7 +58,28 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'No access to this action' }, { status: 403 })
       }
 
-      htmlContent = generateHTML(action.action_type, action.output_data)
+      const { clientName, brandColor } = await resolveBrand(admin, action.client_id)
+      const def = getQuickAction(action.action_type)
+      const outputType =
+        def?.resolveOutputType?.((action.input_data ?? {}) as Record<string, unknown>) ??
+        def?.outputType ?? 'structured'
+      const out = (action.output_data ?? {}) as Record<string, any>
+      // Sections editoriales: el adapter genérico estructura el JSON; si el
+      // output tiene copy legible, va como sección principal + imagen si existe
+      const sections = getAdapter(action.action_type)(out)
+      const copyText = buildCopyText(outputType, out)
+      if (copyText && !sections.length) {
+        sections.push({ title: action.resource_name || action.action_type, content: copyText.replace(/\n/g, '<br/>') })
+      }
+      if (out.image_url) {
+        sections.unshift({ title: 'Visual', content: `<img src="${out.image_url}" alt="" style="max-width:100%;border-radius:12px;"/>` })
+      }
+      htmlContent = generateEditorialHTML({
+        clientName,
+        brandColor,
+        toolTitle: action.resource_name || action.action_type.replace(/_/g, ' '),
+        sections,
+      })
       fileName = `${action.action_type}-${dateStamp}.html`
       rowClientId = action.client_id
       rowProjectId = action.project_id || null
@@ -56,7 +98,16 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'No access to this generation' }, { status: 403 })
       }
 
-      htmlContent = generateHTML(generation.tool_slug, generation.result_data)
+      const { clientName, brandColor } = await resolveBrand(admin, generation.client_id)
+      const sections = getAdapter(generation.tool_slug)(
+        (generation.result_data ?? {}) as Record<string, unknown>
+      )
+      htmlContent = generateEditorialHTML({
+        clientName,
+        brandColor,
+        toolTitle: generation.tool_slug.replace(/-/g, ' '),
+        sections,
+      })
       fileName = `${generation.tool_slug}-${dateStamp}.html`
       rowClientId = generation.client_id
       rowProjectId = generation.project_id || null
@@ -331,57 +382,6 @@ function renderFieldHTML(value: any): string {
 const HEADLINE_KEYS = ['title', 'subject', 'campaign_name', 'summary', 'executive_summary']
 
 /** Formats a Quick Action / Toolkit result as readable HTML instead of a raw JSON dump. */
-function formatResultHTML(data: any): string {
-  if (typeof data === 'string') return `<p>${escapeHTML(data).replace(/\n/g, '<br>')}</p>`
-  if (!data || typeof data !== 'object') return `<pre><code>${escapeHTML(JSON.stringify(data, null, 2))}</code></pre>`
-
-  const headlineTitle = data.title || data.subject || data.campaign_name
-  const headlineSummary = data.summary || data.executive_summary
-  const restKeys = Object.keys(data).filter((k) => !HEADLINE_KEYS.includes(k))
-
-  let html = ''
-  if (headlineTitle) html += `<h2>${escapeHTML(headlineTitle)}</h2>`
-  if (headlineSummary) html += `<p class="lead">${escapeHTML(headlineSummary)}</p>`
-  for (const key of restKeys) {
-    const value = data[key]
-    if (value === null || value === undefined || value === '' || (Array.isArray(value) && value.length === 0)) continue
-    html += `<h3>${escapeHTML(labelFromKey(key))}</h3>${renderFieldHTML(value)}`
-  }
-  return html || `<pre><code>${escapeHTML(JSON.stringify(data, null, 2))}</code></pre>`
-}
-
-function generateHTML(title: string, data: any) {
-  const bodyHTML = formatResultHTML(data ?? {})
-
-  return `<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${escapeHTML(title)}</title>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; line-height: 1.6; padding: 2rem; max-width: 900px; margin: 0 auto; color: #1a1a1a; }
-    h1 { color: #333; border-bottom: 2px solid #7c3aed; padding-bottom: 0.5rem; }
-    h2 { color: #1a1a1a; margin-top: 1.5rem; }
-    h3 { color: #4a4a4a; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; margin-top: 1.5rem; margin-bottom: 0.5rem; }
-    .metadata { color: #666; font-size: 0.9rem; margin-bottom: 2rem; }
-    .lead { color: #4a4a4a; font-size: 1.05rem; }
-    .item-card { background: #f7f7f8; border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; }
-    .item-card p { margin: 0.25rem 0; }
-    pre { background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
-    code { font-family: 'Monaco', 'Courier New', monospace; }
-  </style>
-</head>
-<body>
-  <h1>${escapeHTML(title)}</h1>
-  <div class="metadata">
-    <p><strong>Generated:</strong> ${new Date().toLocaleString('es-ES')}</p>
-    <p><strong>Tool:</strong> ${escapeHTML(title)}</p>
-  </div>
-  ${bodyHTML}
-</body>
-</html>`
-}
 
 function escapeHTML(text: string): string {
   const map: Record<string, string> = {

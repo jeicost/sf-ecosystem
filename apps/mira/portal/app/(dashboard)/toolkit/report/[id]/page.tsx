@@ -11,7 +11,41 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   const [retryKey, setRetryKey] = useState(0)
   const [driveState, setDriveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [driveMsg, setDriveMsg] = useState<string | null>(null)
+  const [fbOutcome, setFbOutcome] = useState<'helpful' | 'not_helpful' | null>(null)
+  const [fbNote, setFbNote] = useState('')
+  const [fbState, setFbState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [fbMsg, setFbMsg] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // B4: feedback al "diseñador de documentos" — la nota se reinyecta en la
+  // siguiente generación de este mismo tool para este cliente.
+  const sendFeedback = async (outcome: 'helpful' | 'not_helpful') => {
+    setFbOutcome(outcome)
+    if (outcome === 'helpful') {
+      setFbState('sending')
+      const res = await fetch('/api/document-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queue_id: id, outcome }),
+      }).catch(() => null)
+      setFbState(res?.ok ? 'sent' : 'error')
+      if (res && !res.ok) setFbMsg((await res.json().catch(() => null))?.error || 'Error')
+    }
+  }
+
+  const sendNote = async () => {
+    setFbState('sending')
+    const res = await fetch('/api/document-feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue_id: id, outcome: 'not_helpful', note: fbNote }),
+    }).catch(() => null)
+    if (res?.ok) setFbState('sent')
+    else {
+      setFbState('error')
+      setFbMsg((await res?.json().catch(() => null))?.error || 'Error')
+    }
+  }
 
   // B3: los informes del Toolkit ganan export directo al Drive del cliente
   // (antes solo Descargar HTML; la ruta ya soportaba queue_id).
@@ -113,6 +147,44 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       {driveState === 'error' && driveMsg && (
         <div className="px-4 py-2 text-xs text-amber-400 bg-amber-500/10 border-b border-amber-500/20 shrink-0">
           {driveMsg}
+        </div>
+      )}
+      {/* Feedback al diseñador de documentos */}
+      {status === 'ready' && fbState !== 'sent' && (
+        <div className="px-4 py-2 border-b border-line bg-page shrink-0 flex items-center gap-3 flex-wrap">
+          <span className="text-xs text-ink-tertiary">¿Cómo mejorarías este documento?</span>
+          <button
+            onClick={() => sendFeedback('helpful')}
+            className={`text-sm px-2 py-1 rounded transition-colors ${fbOutcome === 'helpful' ? 'bg-emerald-500/20' : 'hover:bg-surface-hover'}`}
+          >👍</button>
+          <button
+            onClick={() => sendFeedback('not_helpful')}
+            className={`text-sm px-2 py-1 rounded transition-colors ${fbOutcome === 'not_helpful' ? 'bg-red-500/20' : 'hover:bg-surface-hover'}`}
+          >👎</button>
+          {fbOutcome === 'not_helpful' && (
+            <>
+              <input
+                type="text"
+                value={fbNote}
+                onChange={(e) => setFbNote(e.target.value)}
+                placeholder="¿Qué cambiarías? (se usará en la próxima generación)"
+                className="flex-1 min-w-[220px] px-3 py-1.5 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs"
+              />
+              <button
+                onClick={sendNote}
+                disabled={fbState === 'sending'}
+                className="text-xs px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-50"
+              >
+                {fbState === 'sending' ? 'Enviando…' : 'Enviar'}
+              </button>
+            </>
+          )}
+          {fbState === 'error' && fbMsg && <span className="text-xs text-amber-400">{fbMsg}</span>}
+        </div>
+      )}
+      {fbState === 'sent' && (
+        <div className="px-4 py-2 border-b border-line bg-page shrink-0 text-xs text-emerald-400">
+          ✓ Gracias — tu feedback se usará en la próxima generación.
         </div>
       )}
       {status === 'error' ? (
