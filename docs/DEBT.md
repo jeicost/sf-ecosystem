@@ -407,3 +407,21 @@ Primer bloque del Plan Maestro (auditoría de 3 agentes sobre 8 áreas; decision
 **Prompts**: GROUNDING_CONTRACT añadido a comercial/{proposal,qualify,score,icebreaker,discovery}, onboarding, analyze-document y content-engine; comercial lee `fetchBrandBrain` canónico + memoria (muerta la lectura paralela de Nova por columnas propias); los 23 prompts de agente profundizados (MÉTODO/FORMATO/EJEMPLO DE ESTILO, ES-EN); guided recibe memoria. **Fixes**: ui/Card por tokens (invisible en modo claro), borrados DashboardLayout.tsx y drive/ingest muertos.
 
 **Bloques pendientes del Plan Maestro**: B2 Marketing sin teatro (eliminar Brief y concepto publicado, Alertas fuera de UI, identidad visual dura en imágenes + upload de logo), B3 Drive completo (matar SA, carpetas por proyecto, auto-sync cron, export desde Toolkit, reconexión 5 clientes), B4 Documentos (renderizador único editorial + document_feedback con reinyección), B5 UI (Comercial primero, PageHeader, móvil, modo claro). El plan completo con verificaciones vive en el fichero de plan de la sesión 2026-07-28.
+
+---
+
+## kk) ✅ Plan Maestro B2-B5 EJECUTADO COMPLETO (2026-07-28)
+
+Los 4 bloques restantes del Plan Maestro en un solo día, cada uno verificado y desplegado: `742cf83` (B2), `f454e1a` (B3), `6a0e3d4` (B4), `c977a0c` (B5).
+
+**B2 Marketing sin teatro**: Brief ELIMINADO (relay hardcodeado a 2 clientes; /brief→/roster); fuera el concepto publicado/programado ("Aprobar y programar"→"Aprobar", KPI Publicados→Ratio de aprobación real); pestaña Alertas retirada (tabla+webhook dormidos); identidad visual DURA (hex+tipografía exactos) en prompts de imagen; upload de LOGO en Brand Brain (logos/{clientId} + espejo clients.logo_url vía /api/brand-brain/logo-mirror) — antes vacío en todos los clientes.
+
+**B3 Drive completo**: modelo de UNA carpeta de conocimiento por cliente (recursiva, purpose default brand, límites 100 ficheros/20 docs); auto-sync diario (cron Vercel 05:00 UTC → /api/cron/drive-sync con CRON_SECRET en prod; /api/cron en allowlist del proxy); entregables "MIRA — Entregables/{Proyecto}" auto-creados; FALLBACK SERVICE ACCOUNT ELIMINADO (lib/google-drive.ts y test-google-drive borrados) — sin Drive el export da 409 con mensaje accionable. **Protocolo de alta documentado**: cliente conecta OAuth 1 vez → pega el enlace de su carpeta de conocimiento → sync inmediato + diario; la carpeta de Entregables nace en su raíz (limitación scope drive.file) y el cliente puede arrastrarla dentro de la suya. Migración **0049** (auto_sync_enabled — la 0030 nunca llegó a la BD real) con código resiliente pre-aplicación.
+
+**B4 Documentos**: renderizador ÚNICO editorial para todo el export a Drive (adapters + generateEditorialHTML; muerta la plantilla morada paralela); feedback de documentos (barra 👍/👎+nota en informes → tabla document_feedback, migración **0050**) con REINYECCIÓN de las últimas 3 notas negativas en la siguiente generación del mismo tool (toolkit-prompts) y en refine; los ❤ de quick actions por fin se usan (outputs favoritos como señal de estilo en prompts). Resiliente pre-0050.
+
+**B5 UI**: Comercial migrada al sistema de diseño (45 hex→0; discovery era la peor con 34), PageHeader en las 5 páginas, móvil contenido (kanban snap-x, tablas con scroll propio, grids responsive), barrido global de clases hex en páginas cliente 23→0 (bonus: banners de Integraciones tenían clases inválidas `bg-[#10B981]20`).
+
+**⚠️ PENDIENTES MANUALES CEO**: aplicar migraciones **0049 + 0050** en el SQL editor (el código funciona sin ellas con degradación clara); avisar a los 5 clientes seed de RECONECTAR su Drive (banner needsReauth ya visible en Integraciones); definir CRON_SECRET ya está hecho (añadido a Vercel production en la sesión).
+
+**Deuda que queda del plan maestro** (anotada, no bloqueante): i18n de toolkit/comercial interiores (ronda pendiente desde (hh)); modo claro del resto de páginas no-Comercial sin auditar exhaustivamente; bucket brand-assets público (adjuntos de negocio — mover a privado+signed URLs); Canva sin credenciales (l); pptx solo decks.
