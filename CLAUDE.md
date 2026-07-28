@@ -42,7 +42,7 @@ Desktop/Claude.nosync/
 
 **Fuera del monorepo (repos independientes):**
 - `~/Desktop/discoolver-dg-editor` — editor de guías de Discoolver. Repo git del cliente (remote `discoolver-group/discoolver-dg-editor`); NO copiarlo dentro del monorepo. La skill `repaso-dg` y el lanzador `🚀 Abrir Guías Discoolver.command` apuntan ahí.
-- `jeicost/salsa-staff` (solo GitHub, **sin copia local**) — app de personal de Salsa Burgers (Flask + PostgreSQL: turnos `/admin/schedule`, fichajes, cocina, informes). Deploy: Railway auto-deploy desde GitHub (`capable-luck-production-374c.up.railway.app`). Para trabajar en ella: clonarla primero (en una ruta sin iCloud).
+- `~/Desktop/salsa-staff.nosync` — app de personal de Salsa Burgers (Flask + PostgreSQL: turnos `/admin/schedule`, fichajes, cocina, informes). Remote `jeicost/salsa-staff`. Deploy: Railway auto-deploy desde GitHub (`capable-luck-production-374c.up.railway.app`) — hacer push activa el deploy. Sufijo `.nosync` a propósito (iCloud corrompe repos git).
 
 Bitácoras de sesiones antiguas: `docs/archive/sessions/`. Reorganización completa: `docs/REORG_2026-07-28.md`.
 
