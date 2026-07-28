@@ -422,6 +422,6 @@ Los 4 bloques restantes del Plan Maestro en un solo día, cada uno verificado y 
 
 **B5 UI**: Comercial migrada al sistema de diseño (45 hex→0; discovery era la peor con 34), PageHeader en las 5 páginas, móvil contenido (kanban snap-x, tablas con scroll propio, grids responsive), barrido global de clases hex en páginas cliente 23→0 (bonus: banners de Integraciones tenían clases inválidas `bg-[#10B981]20`).
 
-**⚠️ PENDIENTES MANUALES CEO**: aplicar migraciones **0049 + 0050** en el SQL editor (el código funciona sin ellas con degradación clara); avisar a los 5 clientes seed de RECONECTAR su Drive (banner needsReauth ya visible en Integraciones); definir CRON_SECRET ya está hecho (añadido a Vercel production en la sesión).
+**✅ Migraciones 0049 + 0050 APLICADAS por el CEO el 2026-07-28** y verificadas en vivo: auto_sync_enabled=true en las 5 carpetas existentes ✓; document_feedback con insert y CHECK de outcome funcionando ✓ (probe borrada). **Pendiente CEO restante**: avisar a los 5 clientes seed de RECONECTAR su Drive (banner needsReauth visible en Integraciones). CRON_SECRET ya en Vercel production.
 
 **Deuda que queda del plan maestro** (anotada, no bloqueante): i18n de toolkit/comercial interiores (ronda pendiente desde (hh)); modo claro del resto de páginas no-Comercial sin auditar exhaustivamente; bucket brand-assets público (adjuntos de negocio — mover a privado+signed URLs); Canva sin credenciales (l); pptx solo decks.
