@@ -150,7 +150,7 @@ export async function POST(req: NextRequest) {
     const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + projectCtx + feedbackCtx
     let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE
 
-    const memoryContext = await getClientMemoryContext(resolvedClientId)
+    const memoryContext = await getClientMemoryContext(resolvedClientId, projectId ?? null)
     const docContext = await getAgentDocumentContext(resolvedClientId, role)
 
     if (includeBrandBrain) {

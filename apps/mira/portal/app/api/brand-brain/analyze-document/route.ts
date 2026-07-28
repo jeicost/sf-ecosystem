@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 export async function POST(req: NextRequest) {
   try {
@@ -96,7 +97,9 @@ Analyze the document and return ONLY valid JSON (no markdown, no text before/aft
   "strategy_roadmap": ""
 }
 
-Only include fields where you found relevant information. Leave empty/null for fields with no clear data.`
+Only include fields where you found relevant information. Leave empty/null for fields with no clear data.
+
+${GROUNDING_CONTRACT}`
 
     const message = await createMessageForClient(clientId, 'brand-brain/analyze-document', {
       model: 'claude-opus-4-8',

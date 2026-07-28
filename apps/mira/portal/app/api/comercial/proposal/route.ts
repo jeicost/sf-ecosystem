@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
+import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
+import { getClientMemoryContext } from '@/lib/client-memory'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 // Propuesta CANÓNICA del ecosistema (decisión 2026-07-19, docs/crm-architecture.md):
 // esta ruta (streaming + brand_profiles) es la que usa MIRA. La del motor Python
@@ -22,18 +25,20 @@ export async function POST(req: NextRequest) {
   const { company, contact_title, problem, services, budget, timeline, notes } = callBrief
 
   // Load Commercial Brain
-  const [{ data: icp }, { data: brandProfile }] = await Promise.all([
+  // Brand desde el lector canónico (antes se leían columnas paralelas
+  // brand_name/unique_value_props — dos fuentes de verdad del brand) +
+  // memoria del cliente + ICP.
+  const [{ data: icp }, brain, memoryContext] = await Promise.all([
     supabase.from('icp_profiles').select('pain_points,industries').eq('client_id', clientId).limit(1).maybeSingle(),
-    supabase.from('brand_profiles').select('brand_name,mission,unique_value_props').eq('client_id', clientId).single(),
+    fetchBrandBrain(clientId),
+    getClientMemoryContext(clientId),
   ])
 
   const systemPrompt = `Eres Nova, Proposal Writer de MIRA. Generas propuestas comerciales que cierran tratos.
 
-${brandProfile ? `AGENCIA:
-- Nombre: ${brandProfile.brand_name}
-- Misión: ${brandProfile.mission ?? '—'}
-- Propuestas de valor: ${(brandProfile.unique_value_props as string[])?.join(', ') ?? '—'}` : ''}
+${brain ? `SOBRE LA EMPRESA QUE PROPONE (tu cliente):\n${formatBrandBrainForPrompt(brain)}` : ''}
 
+${memoryContext ? `${memoryContext}\n` : ''}
 ${icp ? `PAIN POINTS QUE RESOLVEMOS: ${(icp.pain_points as string[])?.join(', ') ?? '—'}` : ''}
 
 ESTRUCTURA DE PROPUESTA (usa este formato exacto en markdown):
@@ -62,7 +67,9 @@ ESTRUCTURA DE PROPUESTA (usa este formato exacto en markdown):
 3. [CTA claro para cerrar]
 
 ---
-Tono: profesional pero directo, español de España. El valor debe ser obvio ANTES del precio.`
+Tono: profesional pero directo, español de España. El valor debe ser obvio ANTES del precio.
+
+${GROUNDING_CONTRACT}`
 
   const userMessage = `BRIEF DE LLAMADA:
 - Empresa prospect: ${company ?? 'sin especificar'}

@@ -19,6 +19,7 @@ interface BrandData {
   voice_archetypes?: string[]
   voice_principles?: Array<{ name: string; example: string }>
   voice_vocabulary?: { do?: string[]; dont?: string[] }
+  banned_phrases?: string[]
   visual_identity?: {
     status?: string
     colors?: Record<string, string>
@@ -528,6 +529,23 @@ export default function BrandBrainEditor() {
                   }
                 })}
                 placeholder="e.g., El Mago Operativo"
+              />
+            </div>
+
+            {/* Banned Phrases — alimentan la línea "Frases prohibidas" de TODOS los prompts */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">{t('bb.banned-phrases', locale)}</h3>
+              <p className="text-xs text-ink-secondary mb-3">{t('bb.banned-phrases-hint', locale)}</p>
+              <TextareaInput
+                value={(profile.brand_data?.banned_phrases || []).join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    banned_phrases: v.split('\n').map(s => s.trim()).filter(Boolean)
+                  }
+                })}
+                placeholder={'"revolucionario"\n"el mejor del mercado"\n"sinergia"'}
               />
             </div>
 

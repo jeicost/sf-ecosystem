@@ -63,7 +63,11 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
     mission: p.mission ?? '',
     toneOfVoice: p.tone_of_voice ?? '',
     brandPersonality: (p.values as string[]) ?? [],
-    bannedPhrases: [],
+    // Antes hardcodeado a [] — la línea "Frases prohibidas" de todos los
+    // prompts iba siempre vacía aunque el cliente las tuviera definidas.
+    bannedPhrases: Array.isArray(brandData.banned_phrases)
+      ? (brandData.banned_phrases as string[]).filter((s) => typeof s === 'string' && s.trim())
+      : [],
     pillars: (pillarsRes.data ?? []).map((pi: any) => ({
       name: pi.pillar_name ?? pi.name,
       description: pi.description ?? '',
@@ -90,7 +94,7 @@ export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
 
 **Personalidad de marca:** ${brain.brandPersonality.join(', ')}
 
-**Frases prohibidas:** ${brain.bannedPhrases.join(', ')}
+${brain.bannedPhrases.length ? `**Frases prohibidas (NUNCA usarlas):** ${brain.bannedPhrases.join(', ')}` : ''}
 
 **Pilares de contenido:**
 ${pillarsStr}

@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { requireLeadAccess } from '@/lib/comercial/lead-access'
+import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
+import { getClientMemoryContext } from '@/lib/client-memory'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 // NOTA (corregida 2026-07-23, ver docs/DEBT.md): esta ruta NO es la que usa la UI real —
 // app/(dashboard)/comercial/icebreaker/page.tsx llama a /api/agent (role: 'icebreaker-writer')
@@ -18,12 +21,23 @@ export async function POST(req: NextRequest) {
 
   const supabaseAdmin = adminClient()
 
-  const [{ data: context }, { data: icp }] = await Promise.all([
+  // Brand Brain + memoria del cliente: el icebreaker habla EN NOMBRE del
+  // cliente — sin su tono de voz el mensaje sonaba a plantilla de agencia,
+  // no a la persona que firma (mismo patrón que comercial/proposal).
+  const [{ data: context }, { data: icp }, brain, memoryContext] = await Promise.all([
     supabaseAdmin.from('prospect_context').select('*').eq('lead_id', leadId).maybeSingle(),
     supabaseAdmin.from('icp_profiles').select('*').eq('client_id', lead.client_id).limit(1).maybeSingle(),
+    fetchBrandBrain(lead.client_id),
+    getClientMemoryContext(lead.client_id),
   ])
 
-  const prompt = `Eres Finn, un experto en cold outreach B2B. Tu objetivo es escribir el primer mensaje de contacto perfecto para este prospect.
+  const systemPrompt = `Eres Finn, un experto en cold outreach B2B. Tu objetivo es escribir el primer mensaje de contacto perfecto en nombre de tu cliente.
+
+${brain ? `SOBRE LA EMPRESA QUE ESCRIBE (tu cliente — usa SU tono de voz, no uno genérico):\n${formatBrandBrainForPrompt(brain)}\n` : ''}
+${memoryContext ? `${memoryContext}\n` : ''}
+${GROUNDING_CONTRACT}`
+
+  const prompt = `Escribe el primer mensaje de contacto para este prospect.
 
 PROSPECT:
 - Nombre: ${[lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'No disponible'}
@@ -53,6 +67,7 @@ Devuelve SOLO el mensaje de icebreaker, sin explicaciones.`
   const message = await createMessageForClient(lead.client_id, 'comercial/icebreaker', {
     model: 'claude-sonnet-4-6',
     max_tokens: 256,
+    system: systemPrompt,
     messages: [{ role: 'user', content: prompt }],
   })
 

@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
       .from('project_memory')
       .insert({
         client_id: generation.client_id,
+        // Antes esta ruta no propagaba el proyecto y sus memorias quedaban
+        // huérfanas (invisibles en el timeline del proyecto).
+        project_id: generation.project_id ?? null,
         title: generation.tool_slug ? `${generation.tool_slug} output` : 'Generation',
         category: category,
         summary: summary,

@@ -30,41 +30,28 @@ export function useProjectManagement() {
       const { data: { user: authUser } } = await supabase.auth.getUser()
       if (!authUser) throw new Error('Not authenticated')
 
-      const { data: userData, error: userError } = await supabase
-        .from('mira_users')
-        .select('id')
-        .eq('auth_id', authUser.id)
-        .single()
-
-      if (userError || !userData) throw new Error('User not found')
-
-      const slug = input.slug || input.name
-        .toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/\s+/g, '-')
-        .replace(/-+/g, '-')
-
-      // Sub-proyecto del cliente activo: client_id viene del contexto (o metadata)
+      // Creación SERVER-SIDE (POST /api/projects): el insert directo desde el
+      // navegador nunca funcionó — mira_users vacía rompía el FK de user_id y
+      // la RLS de mira_projects bloquea el insert con anon key. La ruta
+      // auto-provisiona mira_users y resuelve colisiones de slug.
       const clientId =
         getStoredClientId() || (authUser.user_metadata?.client_id as string | undefined) || null
 
-      const { data: projectData, error: projectError } = await supabase
-        .from('mira_projects')
-        .insert([
-          {
-            user_id: userData.id,
-            client_id: clientId,
-            name: input.name,
-            slug,
-            description: input.description,
-            status: 'active',
-            agents_count: 0,
-          },
-        ])
-        .select('*')
-        .single()
-
-      if (projectError) throw projectError
+      const res = await fetch('/api/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: input.name,
+          slug: input.slug,
+          description: input.description,
+          clientId,
+        }),
+      })
+      const payload = await res.json().catch(() => null)
+      if (!res.ok || !payload?.project) {
+        throw new Error(payload?.error || 'Failed to create project')
+      }
+      const projectData = payload.project as Project
 
       // NOTE: no insert into mira_project_access — that table maps users→clients
       // (its project_id FK points to clients.id) and is managed at the client level.

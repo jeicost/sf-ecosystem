@@ -242,6 +242,7 @@ export async function POST(req: NextRequest) {
     } = {
       clientId,
       inputData: input_data,
+      projectId,
       ...(siteFactsBlock ? { siteFactsBlock } : {}),
       ...(sourcesBlock ? { sourcesBlock } : {}),
     }
@@ -376,21 +377,44 @@ export async function POST(req: NextRequest) {
       console.error('Update error:', updateError)
     }
 
-    // Auto-log to project memory (fire and forget, non-blocking)
+    // Auto-log to project memory (fire and forget, non-blocking). Dedup: la
+    // misma tool en <24h para el mismo cliente/proyecto actualiza en vez de
+    // duplicar (evita que regeneraciones desplacen memorias valiosas).
     const resultSummary = JSON.stringify(result).slice(0, 200)
 
-    void admin
-      .from('project_memory')
-      .insert({
-        client_id: clientId,
-        project_id: projectId,
-        title: `Toolkit: ${tool_slug}`,
-        category: 'generation',
-        summary: resultSummary,
-        full_content: result,
-        tags: [tool_slug, 'toolkit'],
-        source_department: 'toolkit',
-      })
+    ;(async () => {
+      const title = `Toolkit: ${tool_slug}`
+      const dayAgo = new Date(Date.now() - 24 * 3600_000).toISOString()
+      let dupQuery = admin
+        .from('project_memory')
+        .select('id')
+        .eq('client_id', clientId)
+        .eq('title', title)
+        .gte('created_at', dayAgo)
+        .limit(1)
+      dupQuery = projectId ? dupQuery.eq('project_id', projectId) : dupQuery.is('project_id', null)
+      const { data: dup } = await dupQuery
+      if (dup?.length) {
+        await admin
+          .from('project_memory')
+          .update({ summary: resultSummary, full_content: result })
+          .eq('id', dup[0].id)
+      } else {
+        // category 'content' — el CHECK real de project_memory rechaza
+        // 'generation' (el auto-log del toolkit llevaba fallando en silencio
+        // a nivel de BD desde siempre por esto).
+        await admin.from('project_memory').insert({
+          client_id: clientId,
+          project_id: projectId,
+          title,
+          category: 'content',
+          summary: resultSummary,
+          full_content: result,
+          tags: [tool_slug, 'toolkit'],
+          source_department: 'toolkit',
+        })
+      }
+    })().catch((e) => console.error('project_memory auto-log failed:', e))
 
     return NextResponse.json({
       success: true,

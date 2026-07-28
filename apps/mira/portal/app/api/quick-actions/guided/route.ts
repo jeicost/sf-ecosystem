@@ -5,6 +5,7 @@ import { resolveRequestClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
+import { getClientMemoryContext } from '@/lib/client-memory'
 import { getQuickAction } from '@/lib/quick-actions/registry'
 import { generateQuickAction } from '@/lib/quick-actions/generate'
 import {
@@ -81,8 +82,11 @@ export async function POST(req: NextRequest) {
 
     const admin = adminClient()
 
-    // Contexto: Brand Brain + autofill + leads calientes (si aplica)
-    const brand = await fetchBrandBrain(access.clientId)
+    // Contexto: Brand Brain + memoria del cliente/proyecto + leads calientes (si aplica)
+    const [brand, memoryBlock] = await Promise.all([
+      fetchBrandBrain(access.clientId),
+      getClientMemoryContext(access.clientId, project_id ?? null),
+    ])
     const brandBlock = brand ? formatBrandBrainForPrompt(brand) : '(sin Brand Brain configurado)'
 
     let leadsBlock = ''
@@ -127,7 +131,7 @@ REGLAS:
 8. Responde SIEMPRE en el idioma del usuario (locale actual: ${locale}).
 
 CONTEXTO DE MARCA DEL CLIENTE:
-${brandBlock}${leadsBlock}${capturedBlock}`
+${brandBlock}${memoryBlock ? `\n\n${memoryBlock}` : ''}${leadsBlock}${capturedBlock}`
 
     // Mensaje del turno + adjuntos (texto extraído + imágenes por visión)
     const { contentBlocks, textContext } = await buildAttachmentBlocks(attachments)

@@ -63,9 +63,11 @@ export async function POST(req: NextRequest) {
     const clientId = access.clientId
     const admin = adminClient()
 
-    if (!actionId || !title || !category) {
+    // actionId es opcional desde 2026-07-28: permite añadir memorias MANUALES
+    // desde el viewer (antes solo se podía guardar desde un resultado de acción).
+    if (!title || !category) {
       return NextResponse.json(
-        { error: 'Missing required fields: actionId, title, category' },
+        { error: 'Missing required fields: title, category' },
         { status: 400 }
       )
     }
@@ -75,7 +77,7 @@ export async function POST(req: NextRequest) {
       .insert({
         client_id: clientId,
         project_id: projectId || null,
-        action_id: actionId,
+        action_id: actionId || null,
         title,
         category,
         summary: summary || title,
@@ -110,7 +112,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json()
-    const { memoryId, isPinned, isArchived } = body
+    const { memoryId, isPinned, isArchived, title, summary } = body
 
     if (!memoryId) {
       return NextResponse.json({ error: 'Missing memoryId' }, { status: 400 })
@@ -135,6 +137,8 @@ export async function PATCH(req: NextRequest) {
     const updates: Record<string, any> = {}
     if (isPinned !== undefined) updates.is_pinned = isPinned
     if (isArchived !== undefined) updates.is_archived = isArchived
+    if (typeof title === 'string' && title.trim()) updates.title = title.trim()
+    if (typeof summary === 'string') updates.summary = summary
 
     const { data, error } = await admin
       .from('project_memory')
@@ -150,6 +154,49 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ data, success: true })
   } catch (error) {
     console.error('Project memory update error:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 }
+    )
+  }
+}
+
+// DELETE: borrado real de una memoria (antes solo existía archivar)
+export async function DELETE(req: NextRequest) {
+  try {
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(req.url)
+    const memoryId = searchParams.get('id')
+    if (!memoryId) {
+      return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+    }
+
+    const admin = adminClient()
+    const { data: memoryRow } = await admin
+      .from('project_memory')
+      .select('id, client_id')
+      .eq('id', memoryId)
+      .maybeSingle()
+
+    if (!memoryRow) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    if (!(await userCanAccessClient(user, memoryRow.client_id))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
+    const { error } = await admin.from('project_memory').delete().eq('id', memoryId)
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Project memory delete error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }

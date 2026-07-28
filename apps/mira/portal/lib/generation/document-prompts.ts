@@ -26,17 +26,19 @@ export type DocType = (typeof DOC_TYPES)[number]
 export interface DocPromptParams {
   clientId: string
   inputData: Record<string, unknown>
+  /** Proyecto activo — la memoria inyectada prioriza este proyecto */
+  projectId?: string | null
 }
 
 export async function getDocumentPrompt(
   docType: string,
   params: DocPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData } = params
+  const { clientId, inputData, projectId } = params
 
   const [brandBrain, memoryContext, docContext] = await Promise.all([
     fetchBrandBrain(clientId),
-    getClientMemoryContext(clientId),
+    getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({ client_id: clientId, context_type: 'all', limit: 3 }),
   ])
 

@@ -29,6 +29,9 @@ const RADIUS_MAP: Record<CardRadius, string> = {
   hero: 'rounded-2xl',
 }
 
+// Fondo/borde por tokens del tema (bg-card/border-line), NO estilo inline:
+// el rgba(255,255,255,...) hardcodeado anterior ganaba a las clases y dejaba
+// estos cards prácticamente invisibles en modo claro (blanco sobre blanco).
 export default function Card({
   as = 'div',
   href,
@@ -43,12 +46,6 @@ export default function Card({
   const paddingClass = PADDING_MAP[padding]
   const radiusClass = RADIUS_MAP[radius]
 
-  const baseStyle: React.CSSProperties = {
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.09)',
-    boxShadow: 'none',
-  }
-
   const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
     if (interactive && accentColor) {
       const el = e.currentTarget as HTMLElement
@@ -60,12 +57,12 @@ export default function Card({
   const handleMouseLeave = (e: React.MouseEvent<HTMLElement>) => {
     if (interactive) {
       const el = e.currentTarget as HTMLElement
-      el.style.borderColor = 'rgba(255,255,255,0.09)'
-      el.style.boxShadow = 'none'
+      el.style.borderColor = ''
+      el.style.boxShadow = ''
     }
   }
 
-  const combinedClassName = `${radiusClass} ${paddingClass} ${interactive ? 'transition-all duration-200 cursor-pointer' : ''} ${className}`
+  const combinedClassName = `bg-card border border-line ${radiusClass} ${paddingClass} ${interactive ? 'transition-all duration-200 cursor-pointer' : ''} ${className}`
 
   if (as === 'a' && href) {
     return (
@@ -73,7 +70,6 @@ export default function Card({
         href={href}
         ref={ref as any}
         className={combinedClassName}
-        style={baseStyle}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
@@ -85,7 +81,6 @@ export default function Card({
   return (
     <div
       className={combinedClassName}
-      style={baseStyle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

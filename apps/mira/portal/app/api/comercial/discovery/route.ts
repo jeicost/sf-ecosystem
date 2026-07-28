@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 interface TavilyResult { title: string; url: string; content: string }
 
@@ -53,7 +54,8 @@ ${content}
 Return a JSON array (no markdown) of up to 10 companies with this exact structure:
 [{"company_name":"...","company_website":"url or null","linkedin_url":"url or null","industry":"...","geography":"country or city","key_person_name":"name or null","key_person_title":"title or null","description":"1-2 sentences","trigger_signals":["signal1"]}]
 
-Only include companies clearly identifiable from the results. Skip vague mentions.`
+Only include companies clearly identifiable from the results. Skip vague mentions.
+Never invent companies, URLs or people — only extract what the sources actually contain.`
     }],
   })
 
@@ -85,7 +87,9 @@ Titles: ${(icp.job_titles as string[])?.join(', ')}
 Disqualifiers: ${(icp.disqualifiers as string[])?.join(', ')}
 
 Return JSON only: {"score":75,"classification":"hot","reason":"fits industry and geography, CEO contact detected"}
-hot>=75, warm=50-74, cold=20-49, disqualify<20`
+hot>=75, warm=50-74, cold=20-49, disqualify<20
+
+${GROUNDING_CONTRACT}`
     }],
   })
 

@@ -11,17 +11,19 @@ export interface QuickActionPromptParams {
   attachmentText?: string
   /** Contexto del lead seleccionado (acciones comerciales con lead_picker) */
   leadContext?: string
+  /** Proyecto activo — la memoria inyectada prioriza este proyecto */
+  projectId?: string | null
 }
 
 export async function getQuickActionPrompt(
   actionType: string,
   params: QuickActionPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData, attachmentText, leadContext } = params
+  const { clientId, inputData, attachmentText, leadContext, projectId } = params
 
   const [brandBrain, memoryContext, docContext] = await Promise.all([
     fetchBrandBrain(clientId),
-    getClientMemoryContext(clientId),
+    getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
       client_id: clientId,
       context_type: 'all',

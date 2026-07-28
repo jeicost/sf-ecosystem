@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
 import { requireLeadAccess } from '@/lib/comercial/lead-access'
+import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
+import { getClientMemoryContext } from '@/lib/client-memory'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 const STAGE_MAP: Record<string, string> = {
   interested: 'qualified',
@@ -22,7 +25,21 @@ export async function POST(req: NextRequest) {
 
   const supabase = adminClient()
 
-  const prompt = `Eres Quinn, Reply Qualifier de MIRA. Analiza esta respuesta de cold outreach.
+  // Brand Brain + memoria del cliente: sin saber qué vende el cliente ni qué
+  // pasó antes con sus prospects, Quinn clasificaba bien pero next_move y
+  // suggested_reply salían genéricos (mismo patrón que comercial/proposal).
+  const [brain, memoryContext] = await Promise.all([
+    fetchBrandBrain(lead.client_id),
+    getClientMemoryContext(lead.client_id),
+  ])
+
+  const systemPrompt = `Eres Quinn, Reply Qualifier de MIRA. Analizas respuestas de cold outreach para clasificar intención y proponer el siguiente paso.
+
+${brain ? `SOBRE LA EMPRESA QUE HACE EL OUTREACH (tu cliente):\n${formatBrandBrainForPrompt(brain)}\n` : ''}
+${memoryContext ? `${memoryContext}\n` : ''}
+${GROUNDING_CONTRACT}`
+
+  const prompt = `Analiza esta respuesta de cold outreach.
 
 PROSPECT: ${[lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Desconocido'} — ${lead.title ?? ''} en ${lead.company_name ?? 'empresa desconocida'}
 
@@ -56,6 +73,7 @@ Classification: interested=muestra interés real, not_now=sin interés ahora per
       const anthropicStream = anthropic.messages.stream({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 512,
+        system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
       })
 

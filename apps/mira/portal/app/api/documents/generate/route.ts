@@ -162,7 +162,7 @@ export async function POST(req: NextRequest) {
     const queueId = queueData.id
 
     try {
-      const prompt = await getDocumentPrompt(doc_type, { clientId, inputData: input_data })
+      const prompt = await getDocumentPrompt(doc_type, { clientId, inputData: input_data, projectId })
       if (!prompt) throw new Error('Unknown doc type')
 
       const message = await createMessageForClient(clientId, 'documents/generate', {

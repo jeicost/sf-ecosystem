@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { requireLeadAccess } from '@/lib/comercial/lead-access'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 export async function POST(req: NextRequest) {
   const { leadId } = await req.json()
@@ -45,7 +46,9 @@ ${icp ? `ICP:
 Return JSON only (no markdown):
 {"score":75,"classification":"hot","reason":"Fits target industry and geography; CEO contact with buying signals","confidence":0.85}
 
-hot>=75, warm=50-74, cold=20-49, disqualify<20`
+hot>=75, warm=50-74, cold=20-49, disqualify<20
+
+${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(lead.client_id, 'comercial/score', {
     model: 'claude-haiku-4-5-20251001',

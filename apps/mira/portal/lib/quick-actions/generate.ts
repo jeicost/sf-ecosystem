@@ -208,6 +208,7 @@ export async function generateQuickAction(
       inputData,
       attachmentText: attachmentText || undefined,
       leadContext: leadContext || undefined,
+      projectId: projectId ?? null,
     })
 
     if (!prompt) {
@@ -277,24 +278,41 @@ export async function generateQuickAction(
       console.error('Update error:', updateError)
     }
 
-    // Auto-log a project memory (fire and forget, no bloquea)
+    // Auto-log a project memory (fire and forget, no bloquea). Dedup ligero:
+    // misma acción para el mismo cliente/proyecto en <24h actualiza la entrada
+    // en vez de crear otra — sin esto la memoria crecía sin límite con filas
+    // casi idénticas que desplazaban a las valiosas del límite de 10.
     const outputSummary = JSON.stringify(output_data).slice(0, 200)
-    // OJO: el builder de supabase es lazy — sin then() no se dispara la petición.
-    admin
-      .from('project_memory')
-      .insert({
-        client_id: clientId,
-        project_id: projectId || null,
-        title: `Quick Action: ${actionType}`,
-        category: 'action',
-        summary: outputSummary,
-        full_content: output_data,
-        tags: [actionType, department],
-        source_department: department,
-      })
-      .then(({ error }) => {
-        if (error) console.error('project_memory auto-log failed:', error)
-      })
+    ;(async () => {
+      const title = `Quick Action: ${actionType}`
+      const dayAgo = new Date(Date.now() - 24 * 3600_000).toISOString()
+      let dupQuery = admin
+        .from('project_memory')
+        .select('id')
+        .eq('client_id', clientId)
+        .eq('title', title)
+        .gte('created_at', dayAgo)
+        .limit(1)
+      dupQuery = projectId ? dupQuery.eq('project_id', projectId) : dupQuery.is('project_id', null)
+      const { data: dup } = await dupQuery
+      if (dup?.length) {
+        await admin
+          .from('project_memory')
+          .update({ summary: outputSummary, full_content: output_data })
+          .eq('id', dup[0].id)
+      } else {
+        await admin.from('project_memory').insert({
+          client_id: clientId,
+          project_id: projectId || null,
+          title,
+          category: 'action',
+          summary: outputSummary,
+          full_content: output_data,
+          tags: [actionType, department],
+          source_department: department,
+        })
+      }
+    })().catch((e) => console.error('project_memory auto-log failed:', e))
 
     return { actionId, outputData: output_data, processingTimeMs: processingTime }
   } catch (error) {

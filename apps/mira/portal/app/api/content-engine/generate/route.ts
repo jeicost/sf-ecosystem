@@ -3,6 +3,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 export const maxDuration = 800
 
@@ -215,6 +216,9 @@ export async function POST(req: NextRequest) {
     const system = [
       `Eres el motor de contenido por pilares de MIRA. Generas contenido de redes sociales listo para publicar, fiel a la identidad de la marca. Respondes EXCLUSIVAMENTE con JSON válido.`,
       brainContext,
+      // Contrato anti-invención compartido: sin él los posts colaban cifras y
+      // "logros" de la marca que no están en el Brand Brain.
+      GROUNDING_CONTRACT,
     ].filter(Boolean).join('\n\n---\n\n')
 
     // ── Una llamada Claude por pilar ─────────────────────────────────────

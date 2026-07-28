@@ -24,6 +24,8 @@ export interface ToolPromptParams {
   siteFactsBlock?: string
   /** Pre-formatted SOURCES block (built by the route with formatSourcesForPrompt). */
   sourcesBlock?: string
+  /** Proyecto activo — la memoria inyectada prioriza este proyecto */
+  projectId?: string | null
 }
 
 // Toolkit-specific memory queries: which tags to load from project_memory
@@ -77,11 +79,11 @@ export async function getToolkitPrompt(
   toolSlug: string,
   params: ToolPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData, siteFactsBlock, sourcesBlock } = params
+  const { clientId, inputData, siteFactsBlock, sourcesBlock, projectId } = params
 
   const [brandBrain, memoryContext, docContext, toolkitDeps] = await Promise.all([
     fetchBrandBrain(clientId),
-    getClientMemoryContext(clientId),
+    getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
       client_id: clientId,
       context_type: 'all',

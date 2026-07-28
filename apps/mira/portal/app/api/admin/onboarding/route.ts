@@ -5,11 +5,14 @@ import { getSessionUser } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { ONBOARDING_TOOLS, executeOnboardingTool } from '@/lib/onboarding/tools'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
+import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 export const maxDuration = 300
 
 const MAX_TOOL_LOOPS = 10
 
+// La regla anti-invención inline que cerraba este prompt se sustituyó por el
+// contrato de grounding compartido — misma política en todas las rutas de generación.
 const SYSTEM_PROMPT = `Eres un analista de negocio senior especializado en startups, ayudando a dar de alta un cliente nuevo en MIRA a partir de la información que te pasa un administrador interno (no el cliente).
 
 Tu trabajo:
@@ -20,7 +23,7 @@ Tu trabajo:
 5. Cerca del final, usa save_project_memory una vez para dejar un resumen real de lo capturado en esta conversación (category: "insight"), pensado para que alguien revise después qué se hizo.
 6. Sé conversacional pero directo — nada de relleno. Si el admin adjunta una imagen (logo, paleta de colores), analízala de verdad y extrae lo que veas (colores, estilo) usando las herramientas.
 
-No inventes información que no esté en lo que te ha pasado el admin — si algo no está, pregúntalo, no lo rellenes con suposiciones.`
+${GROUNDING_CONTRACT}`
 
 function slugify(name: string): string {
   return name
