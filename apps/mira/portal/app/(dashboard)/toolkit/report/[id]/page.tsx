@@ -9,7 +9,34 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [retryKey, setRetryKey] = useState(0)
+  const [driveState, setDriveState] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
+  const [driveMsg, setDriveMsg] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // B3: los informes del Toolkit ganan export directo al Drive del cliente
+  // (antes solo Descargar HTML; la ruta ya soportaba queue_id).
+  const saveToDrive = async () => {
+    setDriveState('saving')
+    setDriveMsg(null)
+    try {
+      const res = await fetch('/api/export/google-drive', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ queue_id: id }),
+      })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.success) {
+        setDriveState('error')
+        setDriveMsg(data?.error || 'No se pudo guardar en Drive')
+        return
+      }
+      setDriveState('saved')
+      if (data.driveUrl) window.open(data.driveUrl, '_blank', 'noopener')
+    } catch {
+      setDriveState('error')
+      setDriveMsg('No se pudo conectar con el servidor')
+    }
+  }
 
   const src =
     mode === 'deck'
@@ -74,8 +101,20 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           >
             📥 Descargar HTML
           </a>
+          <button
+            onClick={saveToDrive}
+            disabled={driveState === 'saving' || driveState === 'saved'}
+            className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
+          >
+            {driveState === 'saving' ? '⏳ Guardando…' : driveState === 'saved' ? '✓ En tu Drive' : '📂 Guardar en Drive'}
+          </button>
         </div>
       </div>
+      {driveState === 'error' && driveMsg && (
+        <div className="px-4 py-2 text-xs text-amber-400 bg-amber-500/10 border-b border-amber-500/20 shrink-0">
+          {driveMsg}
+        </div>
+      )}
       {status === 'error' ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-sm">

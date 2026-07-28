@@ -55,8 +55,8 @@ interface DriveFileEntry {
 
 const FOLDER_MIME = 'application/vnd.google-apps.folder'
 const MAX_DEPTH = 3
-const MAX_FILES_TOTAL = 40
-const MAX_DOCS_PER_SYNC = 15
+const MAX_FILES_TOTAL = 100
+const MAX_DOCS_PER_SYNC = 20
 const HAIKU_MODEL = 'claude-haiku-4-5-20251001'
 
 // Scope required to write to the client's own Drive (exports). Connections

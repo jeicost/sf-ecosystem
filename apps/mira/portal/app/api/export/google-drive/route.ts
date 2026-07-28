@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
-import { uploadToDrive } from '@/lib/google-drive'
 import { getClientDriveAccessToken } from '@/lib/drive-sync'
 
 export async function POST(req: NextRequest) {
@@ -63,87 +62,57 @@ export async function POST(req: NextRequest) {
       rowProjectId = generation.project_id || null
     }
 
-    // 1st choice: the CLIENT's own Google Drive (drive_connections OAuth)
+    // Único camino: el Drive del PROPIO cliente (OAuth por cliente). El
+    // fallback de Service Account se eliminó en B3 — estaba roto de raíz
+    // (las service accounts no tienen cuota de almacenamiento en Google).
     const tokenResult = await getClientDriveAccessToken(rowClientId, admin)
-    let clientDriveReason: 'not_connected' | 'needs_reauth' | null = null
 
-    if ('token' in tokenResult) {
-      try {
-        const folderId = await resolveClientDeliverablesFolder(
-          admin,
-          tokenResult.token,
-          rowClientId,
-          rowProjectId
-        )
-        const clientUpload = await uploadHtmlToClientDrive(
-          tokenResult.token,
-          folderId,
-          fileName,
-          htmlContent
-        )
-        if (clientUpload.success) {
-          return NextResponse.json({
-            success: true,
-            driveUrl: clientUpload.webViewLink,
-            fileId: clientUpload.fileId,
-            filename: fileName,
-            destination: 'client_drive',
-            message: 'Successfully uploaded to client Google Drive',
-          })
-        }
-        console.warn(
-          `Client Drive export failed for client ${rowClientId}, falling back to platform Drive: ${clientUpload.error}`
-        )
-      } catch (clientDriveError) {
-        console.warn(
-          `Client Drive export threw for client ${rowClientId}, falling back to platform Drive:`,
-          clientDriveError
-        )
-      }
-    } else {
-      clientDriveReason = tokenResult.error
+    if (!('token' in tokenResult)) {
+      const reason = tokenResult.error
+      return NextResponse.json(
+        {
+          success: false,
+          reason,
+          error:
+            reason === 'not_connected'
+              ? 'Tu Google Drive no está conectado. Ve a Integraciones → Conectar Google Drive y vuelve a intentarlo.'
+              : 'Tu conexión con Google Drive necesita renovarse. Ve a Integraciones y reconecta tu Drive (falta el permiso de escritura).',
+        },
+        { status: 409 }
+      )
     }
 
-    // Fallback: platform Drive via Service Account (existing path)
-    const uploadResult = await uploadToDrive(fileName, 'text/html', htmlContent)
-
-    if (!uploadResult.success) {
-      console.error(
-        `Platform Drive fallback also failed for client ${rowClientId}: ${uploadResult.error}`
-      )
+    const folderId = await resolveClientDeliverablesFolder(
+      admin,
+      tokenResult.token,
+      rowClientId,
+      rowProjectId
+    )
+    const clientUpload = await uploadHtmlToClientDrive(
+      tokenResult.token,
+      folderId,
+      fileName,
+      htmlContent
+    )
+    if (!clientUpload.success) {
+      console.error(`Client Drive export failed for client ${rowClientId}: ${clientUpload.error}`)
       return NextResponse.json(
         {
           success: false,
           error:
-            'No se pudo guardar en Google Drive. El equipo de MIRA ya tiene aviso del problema -- mientras tanto, tu resultado sigue disponible arriba y puedes guardarlo en Memoria.',
-          reason: clientDriveReason,
-          fallback: {
-            filename: fileName,
-            html_content: htmlContent,
-            note: 'Could not upload to Drive. Save this file manually or contact admin.',
-          },
+            'No se pudo guardar en tu Google Drive. Tu resultado sigue disponible arriba — inténtalo de nuevo o guárdalo en Memoria.',
         },
         { status: 500 }
       )
     }
 
-    // Success via platform fallback -- still tell the client WHY it didn't
-    // go to their own Drive (silence here is exactly what made this
-    // confusing before: a client sees "success" but their file isn't where
-    // they expected).
     return NextResponse.json({
       success: true,
-      driveUrl: uploadResult.webViewLink,
-      fileId: uploadResult.fileId,
+      driveUrl: clientUpload.webViewLink,
+      fileId: clientUpload.fileId,
       filename: fileName,
-      destination: 'platform_drive',
-      reason: clientDriveReason,
-      message:
-        clientDriveReason === 'not_connected'
-          ? 'Uploaded to a shared MIRA folder -- connect your own Google Drive in Integraciones to export here directly.'
-          : clientDriveReason === 'needs_reauth'
-            ? 'Uploaded to a shared MIRA folder -- your Google Drive connection needs to be reconnected (missing write permission).'
-            : 'Successfully uploaded to Google Drive',
+      destination: 'client_drive',
+      message: 'Successfully uploaded to client Google Drive',
     })
   } catch (error) {
     console.error('Export error:', error)
@@ -162,68 +131,105 @@ export async function POST(req: NextRequest) {
  *    registers it in drive_folders.
  * Returns null if no folder could be resolved/created (caller uploads to root).
  */
+async function createDriveFolder(
+  token: string,
+  name: string,
+  parentId?: string | null
+): Promise<string | null> {
+  const body: { name: string; mimeType: string; parents?: string[] } = {
+    name,
+    mimeType: 'application/vnd.google-apps.folder',
+  }
+  if (parentId) body.parents = [parentId]
+  const res = await fetch(
+    'https://www.googleapis.com/drive/v3/files?fields=id&supportsAllDrives=true',
+    {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }
+  )
+  if (!res.ok) {
+    console.warn(`Could not create Drive folder "${name}":`, await res.json().catch(() => ({})))
+    return null
+  }
+  const created = await res.json()
+  return created.id ?? null
+}
+
+async function registerFolder(
+  admin: ReturnType<typeof adminClient>,
+  row: Record<string, unknown>
+) {
+  const { error } = await admin.from('drive_folders').insert({
+    sync_status: 'completed',
+    files_synced: 0,
+    ...row,
+  })
+  if (error) console.warn('Could not register folder in drive_folders:', error)
+}
+
 async function resolveClientDeliverablesFolder(
   admin: ReturnType<typeof adminClient>,
   token: string,
   clientId: string,
   projectId: string | null
 ): Promise<string | null> {
-  // 1. Project-specific folder
+  // 1. Carpeta ya registrada del proyecto
   if (projectId) {
     const { data: projectFolder } = await admin
       .from('drive_folders')
       .select('folder_id')
       .eq('client_id', clientId)
       .eq('project_id', projectId)
+      .eq('purpose', 'deliverables')
       .limit(1)
     if (projectFolder?.length) return projectFolder[0].folder_id
   }
 
-  // 2. Client deliverables folder
+  // 2. Raíz de entregables del cliente (o crearla)
   const { data: deliverablesFolder } = await admin
     .from('drive_folders')
     .select('folder_id')
     .eq('client_id', clientId)
     .eq('purpose', 'deliverables')
+    .is('project_id', null)
     .limit(1)
-  if (deliverablesFolder?.length) return deliverablesFolder[0].folder_id
 
-  // 3. Create 'MIRA Deliverables' in the client's Drive root and register it
-  const createResponse = await fetch(
-    'https://www.googleapis.com/drive/v3/files?fields=id&supportsAllDrives=true',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: 'MIRA Deliverables',
-        mimeType: 'application/vnd.google-apps.folder',
-      }),
+  let rootId = deliverablesFolder?.[0]?.folder_id ?? null
+  if (!rootId) {
+    rootId = await createDriveFolder(token, 'MIRA — Entregables')
+    if (!rootId) return null
+    await registerFolder(admin, {
+      client_id: clientId,
+      folder_id: rootId,
+      folder_name: 'MIRA — Entregables',
+      purpose: 'deliverables',
+    })
+  }
+
+  // 3. Con proyecto: subcarpeta "MIRA — Entregables/{Proyecto}" (esquema B3)
+  if (projectId) {
+    const { data: project } = await admin
+      .from('mira_projects')
+      .select('name')
+      .eq('id', projectId)
+      .maybeSingle()
+    const projectName = project?.name?.slice(0, 80) || 'Proyecto'
+    const subId = await createDriveFolder(token, projectName, rootId)
+    if (subId) {
+      await registerFolder(admin, {
+        client_id: clientId,
+        project_id: projectId,
+        folder_id: subId,
+        folder_name: projectName,
+        purpose: 'deliverables',
+      })
+      return subId
     }
-  )
-  if (!createResponse.ok) {
-    const errorData = await createResponse.json().catch(() => ({}))
-    console.warn('Could not create MIRA Deliverables folder in client Drive:', errorData)
-    return null
-  }
-  const created = await createResponse.json()
-  if (!created.id) return null
-
-  const { error: registerError } = await admin.from('drive_folders').insert({
-    client_id: clientId,
-    folder_id: created.id,
-    folder_name: 'MIRA Deliverables',
-    purpose: 'deliverables',
-    sync_status: 'completed',
-    files_synced: 0,
-  })
-  if (registerError) {
-    console.warn('Could not register MIRA Deliverables folder in drive_folders:', registerError)
   }
 
-  return created.id
+  return rootId
 }
 
 /**

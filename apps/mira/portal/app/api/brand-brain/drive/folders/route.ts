@@ -193,21 +193,34 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: metadata.error }, { status: 400 })
     }
 
-    const safePurpose = VALID_PURPOSES.includes(purpose) ? purpose : 'references'
+    // Default 'brand': el modelo B3 es UNA carpeta de conocimiento por cliente
+    // (con sus subcarpetas dentro) — se lee recursivamente hacia el cerebro.
+    const safePurpose = VALID_PURPOSES.includes(purpose) ? purpose : 'brand'
 
-    const { data: created, error: insertError } = await admin
+    // Auto-sync diario activado por defecto (cron /api/cron/drive-sync);
+    // retry sin la columna hasta que se aplique la migración 0049.
+    const baseFolderRow = {
+      client_id: clientId,
+      project_id: safeProjectId,
+      folder_id: folderId,
+      folder_name: metadata.name,
+      purpose: safePurpose,
+      sync_status: 'pending',
+      files_synced: 0,
+    }
+    let { data: created, error: insertError } = await admin
       .from('drive_folders')
-      .insert({
-        client_id: clientId,
-        project_id: safeProjectId,
-        folder_id: folderId,
-        folder_name: metadata.name,
-        purpose: safePurpose,
-        sync_status: 'pending',
-        files_synced: 0,
-      })
+      .insert({ ...baseFolderRow, auto_sync_enabled: true })
       .select()
       .single()
+
+    if (insertError?.message.includes('auto_sync_enabled')) {
+      ;({ data: created, error: insertError } = await admin
+        .from('drive_folders')
+        .insert(baseFolderRow)
+        .select()
+        .single())
+    }
 
     if (insertError) {
       // Unique violation on (client_id, folder_id) → return the existing row

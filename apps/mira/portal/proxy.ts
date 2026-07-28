@@ -34,7 +34,8 @@ export async function proxy(request: NextRequest) {
     pathname.startsWith('/cookies') ||
     pathname.startsWith('/api/health') || // uptime monitors hit this unauthenticated
     pathname.startsWith('/api/webhook') || // Webhooks verify x-webhook-secret header, not user auth
-    pathname.startsWith('/api/toolkit/generate-batch') // Batch generation — protected by x-batch-secret in the route
+    pathname.startsWith('/api/toolkit/generate-batch') || // Batch generation — protected by x-batch-secret in the route
+    pathname.startsWith('/api/cron') // Crons de Vercel — protegidos por Bearer CRON_SECRET en la propia ruta
   ) {
     return NextResponse.next()
   }
