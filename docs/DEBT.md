@@ -391,3 +391,19 @@ Sesión de auditoría + rediseño completo de quick actions (plan aprobado por e
 **✅ Migración 0048 APLICADA por el CEO el 2026-07-27** (SQL editor del dashboard) y verificada en vivo: `error_message` ✓, `client_documentation.extracted_text` ✓, CHECK de `output_type` acepta los tipos reales ✓ (probe insert+delete). Los fallbacks de resiliencia del código quedan como red de seguridad sin coste.
 
 **Deuda nueva anotada**: (a) bucket `brand-assets` es público y ahora recibe adjuntos de negocio (P&L, hilos de email) — migrar a bucket privado + signed URLs; (b) `editar_imagen_visual` regenera desde prompt con visión del original (no es edición pixel-perfect; `images.edit` de OpenAI sería el upgrade); (c) carousel con imágenes solo genera la cover (limitación documentada en el prompt); (d) el coste del chat guiado es opus por turno — vigilar `mira_usage_log` (ruta `quick-actions-guided`) y decidir si el entrevistador baja a un modelo menor; (e) `MODEL_PRICING` de opus corregido {15,75}→{5,25} — los consumos históricos del panel estaban sobreestimados ×3.
+
+---
+
+## jj) ✅ Plan Maestro B1 (Cimientos) — memoria por proyecto, prompts con contrato, y DOS sistemas más rotos de raíz (2026-07-28)
+
+Primer bloque del Plan Maestro (auditoría de 3 agentes sobre 8 áreas; decisiones CEO: eliminar concepto publicado/programado, eliminar Brief, Drive OAuth-cliente único, orden cimientos-primero). Commit `de8e217`. Escritorio limpiado (basura `Claude 2` y prototipo `mira-local` — pusheado su snapshot final a jeicost/mira-portal antes de borrar).
+
+**Memoria**: `getClientMemoryContext(clientId, projectId?)` prioriza la memoria del proyecto activo (+globales) — antes era ciega a proyectos y todo se mezclaba; cableado en agent/quick-actions/guided/toolkit/documents. Dedup 24h en auto-logs. Viewer con editar/borrar/añadir manual y fallback de categorías. `bannedPhrases` reales desde `brand_data.banned_phrases` (+campo en editor; antes hardcodeado a `[]`).
+
+**Dos sistemas más rotos de raíz** (misma familia que (ii) — deriva de esquema/tabla vacía):
+1. **Crear proyectos NUNCA funcionó para nadie**: `mira_users` estaba VACÍA (ningún flujo la poblaba — el alta de clientes crea auth.users + grants pero no mira_users), su FK bloqueaba `mira_projects.user_id`, y aun provisionando, la RLS de mira_projects bloquea inserts client-side. Fix: `POST /api/projects` server-side (auto-provisiona mira_users, slugs con reintento) + `useProjectManagement` la consume + `POST /api/me/ensure-mira-user` reutilizable. Verificado E2E por UI → fila real.
+2. **El auto-log del toolkit a project_memory fallaba en silencio desde siempre**: escribía category `generation`, que el CHECK real de la tabla rechaza (fire-and-forget → nadie lo vio). Ahora escribe `content`. (El "bug del viewer con generation" que documentó la auditoría era teórico: esas filas nunca pudieron existir.)
+
+**Prompts**: GROUNDING_CONTRACT añadido a comercial/{proposal,qualify,score,icebreaker,discovery}, onboarding, analyze-document y content-engine; comercial lee `fetchBrandBrain` canónico + memoria (muerta la lectura paralela de Nova por columnas propias); los 23 prompts de agente profundizados (MÉTODO/FORMATO/EJEMPLO DE ESTILO, ES-EN); guided recibe memoria. **Fixes**: ui/Card por tokens (invisible en modo claro), borrados DashboardLayout.tsx y drive/ingest muertos.
+
+**Bloques pendientes del Plan Maestro**: B2 Marketing sin teatro (eliminar Brief y concepto publicado, Alertas fuera de UI, identidad visual dura en imágenes + upload de logo), B3 Drive completo (matar SA, carpetas por proyecto, auto-sync cron, export desde Toolkit, reconexión 5 clientes), B4 Documentos (renderizador único editorial + document_feedback con reinyección), B5 UI (Comercial primero, PageHeader, móvil, modo claro). El plan completo con verificaciones vive en el fichero de plan de la sesión 2026-07-28.
