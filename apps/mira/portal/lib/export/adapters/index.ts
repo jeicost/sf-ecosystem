@@ -10,6 +10,7 @@ import { adapter as investorDeck } from './investor-deck'
 import { adapter as contentPack } from './content-pack'
 import { adapter as actionPlan } from './action-plan'
 import { adapter as brandbookContentSystem } from './brandbook-content-system'
+import { adapter as brandBook } from './brand-book'
 import { adapter as marketingCampaignGenerator } from './marketing-campaign-generator'
 import { adapter as communityGrowthBlueprint } from './community-growth-blueprint'
 
@@ -22,6 +23,7 @@ const ADAPTERS: Record<string, ToolAdapter> = {
   'content-pack': contentPack,
   'action-plan': actionPlan,
   'brandbook-content-system': brandbookContentSystem,
+  'brand-book': brandBook,
   'marketing-campaign-generator': marketingCampaignGenerator,
   'community-growth-blueprint': communityGrowthBlueprint,
 }

@@ -12,6 +12,7 @@ import { computeSeoChecks, deriveScore, type SeoCheck } from '@/lib/grounding/se
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
+import { enrichPaletteCmyk } from '@/lib/export/color-utils'
 
 // Single-tool generation with opus can take minutes
 export const maxDuration = 300
@@ -279,9 +280,11 @@ export async function POST(req: NextRequest) {
     // (fusión de la quick action analizar_competencia, 2026-07-28)
     const isQuickCompetitive =
       tool_slug === 'competitive-analysis' && input_data.profundidad === 'quick'
+    // brand-book en modo audit: solo findings — mucho más corto y barato
+    const isBrandBookAudit = tool_slug === 'brand-book' && input_data.mode === 'audit'
     const message = await createMessageForClient(clientId, 'toolkit/generate', {
       model: isQuickCompetitive ? 'claude-sonnet-4-6' : 'claude-opus-4-8',
-      max_tokens: isQuickCompetitive ? 8000 : 16000,
+      max_tokens: isQuickCompetitive ? 8000 : isBrandBookAudit ? 8000 : 16000,
       messages: [
         {
           role: 'user',
@@ -332,6 +335,14 @@ export async function POST(req: NextRequest) {
         .update({ status: 'failed', error_message: 'Empty result after JSON parse' })
         .eq('id', queueId)
       return NextResponse.json({ error: 'Empty result after JSON parse' }, { status: 500 })
+    }
+
+    // Brand book: rgb/cmyk NUNCA vienen del modelo — se calculan aquí (C.1)
+    if (tool_slug === 'brand-book') {
+      const rd = result as Record<string, any>
+      if (Array.isArray(rd?.colors?.palette)) {
+        rd.colors.palette = enrichPaletteCmyk(rd.colors.palette)
+      }
     }
 
     // ---- Deterministic post-parse override (measured facts beat model output) ----
@@ -403,7 +414,12 @@ export async function POST(req: NextRequest) {
     // Auto-log to project memory (fire and forget, non-blocking). Dedup: la
     // misma tool en <24h para el mismo cliente/proyecto actualiza en vez de
     // duplicar (evita que regeneraciones desplacen memorias valiosas).
-    const resultSummary = JSON.stringify(result).slice(0, 200)
+    // brand-book guarda su resumen ejecutivo real (written_summary_md) — es lo
+    // que futuros reports leen como dependencia, no un JSON truncado.
+    const resultSummary =
+      typeof (result as any)?.written_summary_md === 'string' && (result as any).written_summary_md.trim()
+        ? (result as any).written_summary_md.slice(0, 900)
+        : JSON.stringify(result).slice(0, 200)
 
     ;(async () => {
       const title = `Toolkit: ${tool_slug}`
@@ -433,7 +449,7 @@ export async function POST(req: NextRequest) {
           category: 'content',
           summary: resultSummary,
           full_content: result,
-          tags: [tool_slug, 'toolkit'],
+          tags: [tool_slug, 'toolkit', ...(tool_slug === 'brand-book' ? ['brand_book'] : [])],
           source_department: 'toolkit',
         })
       }

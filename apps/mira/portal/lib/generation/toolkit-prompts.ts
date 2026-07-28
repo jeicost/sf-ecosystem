@@ -3,6 +3,7 @@ import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
 
 /**
  * Feedback del cliente sobre informes anteriores de ESTE tool (B4): las
@@ -65,6 +66,7 @@ const TOOLKIT_MEMORY_QUERIES: Record<string, string[]> = {
   'competitive-analysis': [],  // Made independent - doesn't require prior dependencies
   'seo-audit': ['content_pack', 'keyword_tracking', 'seo_history'],
   'brandbook': ['brand_briefing', 'content_pack', 'marketing_audit', 'competitive_analysis', 'seo_audit'],
+  'brand-book': ['brand_briefing', 'marketing_audit', 'competitive_analysis'],
   'investor-deck': ['brand_briefing', 'action_plan', 'traction_data'],
 }
 
@@ -736,6 +738,83 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
     "top_3_opportunities": ["opp 1", "opp 2", "opp 3"]
   },
   "data_gaps": ["every market/competitor data point you needed but could not source"]
+}`
+    }
+
+    case 'brand-book': {
+      // Brand Book de nivel consultora (F3 Business Reports, ref. estructura
+      // Dadybox + método Brand_Content_System del CEO). Dos modos:
+      //   full  → manual completo + auditoría de consistencia + Voice Guide A4
+      //   audit → SOLO la auditoría de consistencia (barato, para revisiones)
+      // rgb/cmyk NUNCA los escribe el modelo — se calculan en TS post-parse.
+      const isAudit = inputData.mode === 'audit'
+      const auditInstructions = `CONSISTENCY AUDIT (el corazón del documento — nunca silencies una contradicción):
+Compara TODAS las fuentes disponibles (Brand Brain, VERIFIED SITE FACTS, adjuntos, informes previos en dependencies, notas del usuario) buscando:
+- Contradicciones de tono (el brain dice X, el site suena Y)
+- Colores/tipografías que el site usa pero el brain no recoge (o al revés)
+- Promesas de marca que la ejecución rompe (ej. "premium" con fotos de stock genéricas)
+- Nombres/claims escritos de formas distintas en sitios distintos
+- Audiencias declaradas vs a quién le habla el contenido real
+Cada finding: qué es, la EVIDENCIA literal (cita la fuente concreta), la resolución que propones, y severidad alta|media|baja. Si no encuentras contradicciones reales, di explícitamente que el sistema está consistente — no inventes findings de relleno.`
+
+      if (isAudit) {
+        return `You are a senior brand consultant running a CONSISTENCY AUDIT of this brand's identity system. You are NOT writing a brand book — only the audit.
+
+${auditInstructions}
+
+INPUT (notas del usuario):
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+${REPORT_VOICE_CONTRACT}
+
+Generate the audit JSON:
+{
+  "meta": {"brand": "", "mode": "audit", "one_line_essence": "la esencia de la marca en una frase"},
+  "written_summary_md": "resumen ejecutivo en markdown, 150-250 palabras: estado de consistencia del sistema de marca y las 3 acciones más urgentes",
+  "consistency_findings": [{"finding": "", "evidence": "cita literal + fuente (brain/site/doc)", "resolution": "", "severity": "alta|media|baja"}],
+  "open_items": [{"n": 1, "item": "", "owner": "cliente|agencia", "needed_for": ""}],
+  "data_gaps": ["fuentes que faltaron para auditar del todo"]
+}`
+      }
+
+      return `You are a senior brand consultant writing the OPERATIONAL BRAND BOOK for this brand — the manual the team actually uses, not a decorative PDF. Reference structure: a professional agency brand manual (story → identity → voice → visual system → applications → governance).
+
+RULES OF CONSTRUCTION:
+- The Brand Brain below is the PRIMARY SOURCE. Site facts, attachments and previous reports complete it. User notes (notas_diseno) override style decisions.
+- COLORS: only give a hex when you have evidence for it (brain visual identity, site facts, attachments). Mark each palette entry status: "ALREADY_RUNNING" (evidenced) or "PROPOSED" (your proposal derived from the evidenced ones). NEVER write rgb or cmyk values — they are computed deterministically after you.
+- TYPOGRAPHY: same evidence rule. qa_safe_fallback is always a universally available font.
+- Every rule in logo/colors/typography/imagery carries "prevents": the concrete failure it avoids.
+- applications: only surfaces relevant to THIS business (check the brain's channels/offer — a restaurant gets menu/packaging/delivery, a SaaS gets product UI/deck/social).
+- voice_series_governance.series: what the brand already runs (status ALREADY_RUNNING, from brain channels/editorial rhythm) vs what you propose (PROPOSED).
+
+${auditInstructions}
+
+VOICE GUIDE ONE-PAGER: a distilled A4 the whole team can pin on the wall. Golden rule, 5-7 dos with why, 5-7 don'ts with why, sound_like/never_sound_like in one line each, and ONE example rewrite (before → after → why). It becomes a printable PPTX — keep every phrase short enough to fit a poster.
+
+INPUT (notas del usuario):
+${JSON.stringify(inputData, null, 2)}
+${fullContext}
+
+${REPORT_VOICE_CONTRACT}
+
+Generate the COMPLETE brand book JSON:
+{
+  "meta": {"brand": "", "version": "1.0", "mode": "full", "one_line_essence": ""},
+  "written_summary_md": "resumen ejecutivo en markdown, 200-300 palabras: qué define a esta marca y las 5 decisiones clave de este manual",
+  "story": {"origin": "", "why_exists": "", "signature_ritual": "del brain si existe, si no omite"},
+  "mission_vision_promise": {"mission": "", "vision": "", "promise": "la promesa que el cliente puede exigir"},
+  "tone_of_voice": {"golden_rule": "", "principles": [{"principle": "", "why": "", "avoid": "el fallo concreto que evita"}], "sound_like": "", "never_sound_like": ""},
+  "logo": {"usage_rules": [{"rule": "", "prevents": ""}], "clearspace": "", "min_size": "", "misuse": ["errores concretos a evitar"], "background_rules": ""},
+  "colors": {"palette": [{"name": "", "hex": "#RRGGBB solo con evidencia", "role": "primary|secondary|accent|neutral", "status": "ALREADY_RUNNING|PROPOSED", "usage": "", "prevents": ""}], "combinations_to_avoid": []},
+  "typography": {"primary": {"family": "", "usage": "", "status": "ALREADY_RUNNING|PROPOSED"}, "secondary": {"family": "", "usage": "", "status": "ALREADY_RUNNING|PROPOSED"}, "qa_safe_fallback": "", "hierarchy": [{"level": "H1|H2|body|caption", "spec": ""}]},
+  "imagery": {"style": "", "dos": [{"rule": "", "why": ""}], "donts": [{"rule": "", "why": ""}]},
+  "applications": [{"surface": "", "rules": ["reglas cortas y accionables"]}],
+  "voice_series_governance": {"series": [{"name": "", "status": "ALREADY_RUNNING|PROPOSED", "cadence": "", "owner": "", "description": ""}], "approval_flow": "quién aprueba qué antes de publicar"},
+  "consistency_findings": [{"finding": "", "evidence": "cita literal + fuente", "resolution": "", "severity": "alta|media|baja"}],
+  "voice_guide_onepager": {"golden_rule": "", "dos": [{"phrase": "", "why": ""}], "donts": [{"phrase": "", "why": ""}], "sound_like": "", "never_sound_like": "", "example_rewrite": {"before": "", "after": "", "why": ""}},
+  "open_items": [{"n": 1, "item": "", "owner": "cliente|agencia", "needed_for": ""}],
+  "data_gaps": []
 }`
     }
 

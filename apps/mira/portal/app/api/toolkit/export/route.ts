@@ -7,6 +7,7 @@ import { generatePlaybookHTML, type PlaybookSection } from '@/lib/export/templat
 import { generateDeckHTML, type DeckSlide } from '@/lib/export/templates/deck-template'
 import { generateDeckPptx } from '@/lib/export/templates/deck-pptx'
 import { getAdapter } from '@/lib/export/adapters'
+import { buildVoiceGuidePptx } from '@/lib/export/voice-guide-pptx'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 
 const DOC_TITLES: Record<string, string> = {
@@ -218,6 +219,31 @@ export async function GET(req: NextRequest) {
     const format = searchParams.get('format')
 
     const brand = { clientName, primaryColor: brandColor, logoUrl: clientRow?.logo_url || null }
+
+    // ── Voice Guide A4 (brand-book) — one-pager imprimible ──
+    if (format === 'voice-guide') {
+      if (toolSlug !== 'brand-book' || !result.voice_guide_onepager) {
+        return NextResponse.json(
+          { error: 'El Voice Guide solo existe para informes brand-book completos' },
+          { status: 400 }
+        )
+      }
+      const buffer = await buildVoiceGuidePptx({
+        brandName: clientName,
+        primaryColor: brandColor,
+        guide: result.voice_guide_onepager,
+      })
+      const vgFilename = `voice-guide_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pptx`
+      return new NextResponse(new Uint8Array(buffer), {
+        status: 200,
+        headers: {
+          'Content-Type':
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'Content-Disposition': `attachment; filename="${vgFilename}"`,
+          'Content-Length': String(buffer.length),
+        },
+      })
+    }
 
     // ── PPTX real (pptxgenjs) — decks de documentos y toolkit con template=deck ──
     if (format === 'pptx') {

@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const admin = adminClient()
     const { data, error } = await admin
       .from('generation_queue')
-      .select('id, client_id, status, result_data, error_message, created_at, completed_at')
+      .select('id, client_id, tool_slug, status, result_data, error_message, created_at, completed_at')
       .eq('id', queue_id)
       .single()
 
@@ -37,6 +37,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       status: data.status,
+      tool_slug: data.tool_slug,
       result_data: data.result_data,
       error_message: data.error_message,
       created_at: data.created_at,

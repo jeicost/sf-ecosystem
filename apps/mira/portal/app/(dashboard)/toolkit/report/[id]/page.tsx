@@ -15,7 +15,16 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   const [fbNote, setFbNote] = useState('')
   const [fbState, setFbState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [fbMsg, setFbMsg] = useState<string | null>(null)
+  const [toolSlug, setToolSlug] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // El Voice Guide A4 solo existe en brand-book — el slug llega del status
+  useEffect(() => {
+    fetch(`/api/toolkit/status?queue_id=${id}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setToolSlug(d?.tool_slug ?? null))
+      .catch(() => {})
+  }, [id])
 
   // B4: feedback al "diseñador de documentos" — la nota se reinyecta en la
   // siguiente generación de este mismo tool para este cliente.
@@ -135,6 +144,15 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           >
             📥 Descargar HTML
           </a>
+          {toolSlug === 'brand-book' && (
+            <a
+              href={`/api/toolkit/export?queue_id=${id}&format=voice-guide`}
+              className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
+              title="One-pager A4 de la guía de voz, listo para imprimir"
+            >
+              📄 Voice Guide A4
+            </a>
+          )}
           <button
             onClick={saveToDrive}
             disabled={driveState === 'saving' || driveState === 'saved'}
