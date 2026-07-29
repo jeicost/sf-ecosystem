@@ -447,3 +447,18 @@ El Toolkit pasa a **Business Reports**: 11 herramientas → 8 reports, formulari
 - `formatTone` en toolkit-prompts quedó sin uso tras el cambio al formato completo del brain (inofensivo; borrar en higiene).
 
 **Pendiente de verificación real (tras aplicar 0051)**: build completo de brand-book (consistency_findings, CMYK determinista, Voice Guide A4 → Slides en Drive) y de monthly (2 fases, verify-deck, Slides editable, materialización a la Cola). Los QA fixtures viven en el scratchpad de la sesión (`br_cleanup.txt` con TODOS los IDs a borrar al cierre, incluida la fila PROD del radar `f741091a`).
+
+---
+
+## mm) Fase 2 ejecutada: P0-P6 + P8 en un día; P7 parcial (2026-07-29)
+
+Plan completo en `~/.claude/plans/pasale-un-buen-sistema-cached-quill.md`. Commits: P0 `a9a04a8`+limpieza QA total · P1 rama `feat/visual-production-foundation` (`170ce78`, respuesta handoff visual + scaffolding, SIN mergear a propósito) · P2 `3fb3393`+`e23e1a4` (0052 APLICADA, conocimiento unificado) · migraciones 0053-0055 redactadas `bcc00c5` · P3 `ad2b277` (tema claro/oscuro 5 motores + feedback unificado + Refinar en informes) · P4 `4c0575d` (arquetipos 23/23 conectados en tab Workspace, tool de imagen en chat designer/spark, covers monthly, sistema visual muerto borrado) · P6 `ec7c03a` (brain chat propuesta+confirmación, lib/brain-tools) · P5 merge `d29cfa7` (cuestionarios completos + plan 'consulta' + gating toolkit por plan) · P8 `c557aec` (Brand Brain operativo: campo web + defaults brain-first + pilares en tarjetas + explicadores + esquema Drive) · P7-parcial `a33cd68`.
+
+**Decisiones de alcance**: monthly/voice-guide SIN modo oscuro a propósito (su look claro ES el spec del método del CEO); playbook/deck ganan modo por theme-flip (no re-arquitectura); FeedbackButtons solo montado en QuickActionResult (informes/documentos conservan su UI inline equivalente).
+
+**PENDIENTE**:
+- **Migraciones 0053/0054/0055 sin aplicar** (todo el código es resiliente: feedback de quick actions, cuestionarios y brain chat degradan con mensaje claro hasta aplicarlas).
+- **P7 wizard completo** (5 pasos, atrás, revisión, asistente propose-mode, limpieza de huérfanos existentes): especificado en el plan; el agente que lo implementaba murió por límite de sesión de API. El fix crítico (huérfanos al abrir) SÍ está desplegado.
+- **Verificación E2E** de P3-P8 (Playwright): pendiente de aplicar migraciones + recrear fixture QA (grant borrado en limpieza) + reconexión Drive de un cliente para la pata de carpetas por proyecto.
+- P5 dejó anotado: `save_project_memory` del ingest no liga project_id (añadir vía brain-tools); `/api/questionnaires/generate` fuera de EXPENSIVE_API_PREFIXES del rate-limit (1 línea en proxy.ts si se quiere).
+- El límite de tokens de la sesión de API (~2:40pm Asia/Bangkok) cortó al agente P7 — retomar S-next con presupuesto fresco.
