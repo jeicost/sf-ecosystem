@@ -20,7 +20,8 @@ const getToolConfig = (locale: Locale): ToolConfig => ({
       label: t('toolkit.seo.field-url-label', locale),
       type: 'text',
       placeholder: t('toolkit.seo.field-url-placeholder', locale),
-      required: true,
+      hint: 'Si lo dejas vacío, usamos la web guardada en tu Brand Brain.',
+      required: false,
     },
     {
       name: 'palabras_clave_objetivo',

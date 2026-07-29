@@ -110,6 +110,14 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
 
   return (
     <div className="space-y-4 p-5 rounded-xl border border-line bg-card">
+      {/* P8: el esquema de carpetas por fin visible — cómo alimenta el cerebro */}
+      <div className="rounded-xl border border-line bg-surface p-3.5 text-[11px] text-ink-tertiary space-y-1">
+        <p className="font-medium text-ink-secondary">📁 Cómo funciona el conocimiento de Drive</p>
+        <p>· <strong>Una carpeta de conocimiento por cliente</strong> — estructura libre (recomendado: <em>01 Marca/ · 02 Producto/ · 03 Referencias/</em>), máx. 3 niveles. Sync diario automático.</p>
+        <p>· Se leen <strong>PDF, TXT, MD, Google Docs y DOCX</strong> (hasta 100 archivos / 20 docs por sync); las imágenes se cuentan pero no se leen.</p>
+        <p>· Lo sincronizado lo ven <strong>todos los agentes e informes</strong> (índice de conocimiento unificado).</p>
+        <p>· Cada <strong>proyecto</strong> puede tener además sus carpetas Conocimiento/Entregables — se crean desde la página del proyecto.</p>
+      </div>
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-ink font-semibold text-sm">📂 Carpetas de Google Drive</p>

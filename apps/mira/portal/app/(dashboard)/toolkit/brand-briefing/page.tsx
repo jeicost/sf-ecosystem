@@ -18,7 +18,7 @@ const TOOL_CONFIG: ToolConfig = {
       type: 'text',
       placeholder: 'https://www.tumarca.com',
       hint: 'Todo lo demás — misión, audiencia, tono, colores — sale de tu Brand Brain. Si algo falta allí, el semáforo de arriba te lo dice.',
-      required: true,
+      required: false,
     },
   ],
 }

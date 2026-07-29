@@ -204,8 +204,22 @@ export async function POST(req: NextRequest) {
     let sourcesBlock: string | undefined
     let sourcesCount = 0
 
-    const inputUrl =
+    // P8 brain-first: si el formulario no trae URL, usamos la web canónica
+    // guardada en el Brand Brain (identity.website_url)
+    let inputUrl =
       typeof input_data.url_sitio === 'string' ? input_data.url_sitio.trim() : ''
+    if (!inputUrl && SNAPSHOT_GROUNDED_TOOLS.includes(tool_slug)) {
+      const { data: bp } = await admin
+        .from('brand_profiles')
+        .select('brand_data')
+        .eq('client_id', clientId)
+        .maybeSingle()
+      const brainUrl = (bp?.brand_data as Record<string, any> | null)?.identity?.website_url
+      if (typeof brainUrl === 'string' && brainUrl.trim()) {
+        inputUrl = brainUrl.trim()
+        input_data.url_sitio = inputUrl
+      }
+    }
 
     if (SNAPSHOT_GROUNDED_TOOLS.includes(tool_slug) && inputUrl) {
       snapshot = await fetchSiteSnapshot(inputUrl)

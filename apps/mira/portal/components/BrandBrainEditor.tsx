@@ -448,6 +448,18 @@ export default function BrandBrainEditor() {
         ))}
       </div>
 
+      {/* P8: cada pestaña dice DÓNDE se usa lo que guardas en ella */}
+      <p className="mb-4 text-[11px] text-ink-tertiary">
+        {{
+          brand_identity: '🧠 Identidad → entra en TODOS los informes, agentes y quick actions como fuente de verdad. La web alimenta SEO/Marketing/Brand Briefing automáticamente.',
+          audience_market: '🧠 Audiencias y mercado → personas de los informes, tono por audiencia del contenido, y scoring comercial (ICP).',
+          voice_visual: '🧠 Voz y visual → el vocabulario decimos/nunca con sus porqués gobierna TODO el copy; colores/tipografía entran duros en las imágenes generadas y en los temas de documentos.',
+          content_strategy: '🧠 Pilares y ritmo → son la base del Monthly Content System, el content engine y las quick actions de contenido.',
+          business_ops: '🧠 Negocio y oferta → hero items con precio, mecánicas de promo, restricciones y canales entran en informes, monthly y propuestas comerciales. De las secciones MÁS usadas.',
+          documents: '🧠 Documentos → se guardan en la biblioteca del cliente y desde julio TODOS los agentes e informes los leen (índice de conocimiento unificado).',
+        }[activeTab] || ''}
+      </p>
+
       {/* Tab Content - 11 Fields */}
       <div className="card p-6 mb-6 space-y-4">
         {activeTab === 'brand_identity' && (
@@ -455,6 +467,8 @@ export default function BrandBrainEditor() {
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-4">Core Identity</h3>
               <TextInput label="Brand Name" value={profile.brand_data?.identity?.name || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, name: v } } })} placeholder="e.g., Discoolver" />
+              <TextInput label="Sitio web" value={profile.brand_data?.identity?.website_url || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, website_url: v } } })} placeholder="https://www.tumarca.com" />
+              <p className="text-xs text-ink-tertiary -mt-2 mb-3">La web canónica del negocio — los informes (SEO, Marketing, Brand Briefing) la usan automáticamente si no escribes otra.</p>
               <TextInput label="Tagline" value={profile.brand_data?.identity?.tagline || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, tagline: v } } })} placeholder="Short, memorable phrase" />
               <TextInput label="One-Liner" value={profile.brand_data?.identity?.one_liner || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, one_liner: v } } })} placeholder="What does your brand do?" />
             </div>
@@ -1174,34 +1188,62 @@ export default function BrandBrainEditor() {
               />
             </div>
 
-            {/* Content Pillars */}
+            {/* Content Pillars — tarjetas editables (P8: fuera el formato 🔹) */}
             <div className="border-b border-line pb-4">
-              <h3 className="text-sm font-medium text-ink mb-3">4 Content Pillars</h3>
-              <p className="text-xs text-ink-secondary mb-3">Format: Pillar Name 🔹 Description 🔹 Claim (one per line)</p>
-              <TextareaInput
-                value={(pillars || []).map((p: any) =>
-                  `${p.pillar_name} 🔹 ${p.description} 🔹 ${p.claim || ''}`
-                ).join('\n')}
-                onChange={(v) => setPillars(
-                  v.split('\n').filter(l => l.trim()).map(line => {
-                    const [pillar_name, description, claim] = line.split('🔹').map(s => s.trim())
-                    return { pillar_name, description, claim, themes: [], examples: [] }
-                  })
-                )}
-                placeholder="Radar Logístico 🔹 Actualidad y tendencias en logística 🔹 Lo que pasa en logística afecta tu e-commerce&#10;Dadybox en Acción 🔹 Servicios y procesos reales 🔹 Así convertimos tu logística en operación escalable&#10;..."
-              />
-              {(pillars || []).length > 0 && (
-                <div className="mt-4 space-y-2 text-xs">
-                  <p className="text-ink-secondary font-medium">Pillars Summary:</p>
-                  {(pillars || []).map((p: any, i: number) => (
-                    <div key={i} className="bg-surface p-3 rounded border border-line">
-                      <div className="font-medium text-purple-300">{p.pillar_name}</div>
-                      <div className="text-ink-secondary mt-1">{p.description}</div>
-                      <div className="text-ink-tertiary text-xs mt-1 italic">"{p.claim}"</div>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-medium text-ink">Pilares de contenido</h3>
+                <button
+                  type="button"
+                  onClick={() => setPillars([...(pillars || []), { pillar_name: '', description: '', claim: '', themes: [], examples: [] }])}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors"
+                >
+                  + Añadir pilar
+                </button>
+              </div>
+              <p className="text-xs text-ink-tertiary mb-3">Los pilares alimentan el Monthly Content System, el content engine y las quick actions de marketing. Cada uno: nombre, qué es, y su claim (la promesa en una frase).</p>
+              <div className="space-y-3">
+                {(pillars || []).map((p: any, i: number) => (
+                  <div key={i} className="rounded-xl border border-line bg-surface p-4 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <input
+                        value={p.pillar_name || ''}
+                        onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, pillar_name: e.target.value } : x))}
+                        placeholder="Nombre del pilar (ej. Sauce Science)"
+                        className="flex-1 bg-page border border-line rounded-lg px-3 py-2 text-sm text-ink font-medium placeholder-ink-tertiary outline-none focus:border-purple-500"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setPillars(pillars.filter((_: any, j: number) => j !== i))}
+                        className="text-xs px-2.5 py-2 rounded-lg text-red-400/80 hover:bg-red-500/10 transition-colors"
+                        title="Eliminar pilar"
+                      >
+                        ✕
+                      </button>
                     </div>
-                  ))}
-                </div>
-              )}
+                    <input
+                      value={p.description || ''}
+                      onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, description: e.target.value } : x))}
+                      placeholder="Qué es este pilar (ej. Educación sobre salsas y proceso)"
+                      className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink placeholder-ink-tertiary outline-none focus:border-purple-500"
+                    />
+                    <input
+                      value={p.claim || ''}
+                      onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, claim: e.target.value } : x))}
+                      placeholder="Claim — la promesa en una frase (ej. Ninguna salsa sin historia)"
+                      className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink italic placeholder-ink-tertiary outline-none focus:border-purple-500"
+                    />
+                    <input
+                      value={Array.isArray(p.themes) ? p.themes.join(', ') : ''}
+                      onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, themes: e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean) } : x))}
+                      placeholder="Temas, separados por comas (opcional)"
+                      className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink-secondary placeholder-ink-tertiary outline-none focus:border-purple-500"
+                    />
+                  </div>
+                ))}
+                {(pillars || []).length === 0 && (
+                  <p className="text-xs text-ink-tertiary">Sin pilares todavía — añade el primero o genera el sistema con el Monthly Content System.</p>
+                )}
+              </div>
             </div>
 
             {/* Editorial Rhythm */}

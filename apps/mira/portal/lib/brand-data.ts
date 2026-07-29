@@ -31,6 +31,8 @@ export interface BrandDataChannel {
 export interface BrandData {
   identity?: {
     name?: string
+    /** Web canónica de la empresa — los informes la usan si el form no trae otra */
+    website_url?: string
     tagline?: string
     one_liner?: string
     mission?: string

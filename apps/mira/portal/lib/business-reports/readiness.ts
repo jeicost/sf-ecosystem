@@ -70,13 +70,16 @@ export const REPORT_REQUIREMENTS: Record<string, Requirement[]> = {
     { key: 'positioning', label: 'Propuesta de valor o posicionamiento', brainTab: 'brand_identity', weight: 'required', check: (b) => has(b.value_proposition) || has(b.competitive_positioning) },
   ],
   'seo-audit': [
+    { key: 'website', label: 'Sitio web de la empresa', brainTab: 'brand_identity', weight: 'required', check: (b) => has(b.identity?.website_url) },
     { key: 'identity', label: 'Identidad básica', brainTab: 'brand_identity', weight: 'recommended', check: (b) => has(b.identity?.name) },
   ],
   'marketing-audit': [
+    { key: 'website', label: 'Sitio web de la empresa', brainTab: 'brand_identity', weight: 'required', check: (b) => has(b.identity?.website_url) },
     { key: 'identity', label: 'Identidad básica', brainTab: 'brand_identity', weight: 'recommended', check: (b) => has(b.identity?.name) },
     { key: 'audiences', label: 'Audiencias', brainTab: 'audience_market', weight: 'recommended', check: (b) => has(b.audiences) },
   ],
   'brand-briefing': [
+    { key: 'website', label: 'Sitio web de la empresa', brainTab: 'brand_identity', weight: 'required', check: (b) => has(b.identity?.website_url) },
     { key: 'identity', label: 'Identidad básica (se enriquecerá con el informe)', brainTab: 'brand_identity', weight: 'recommended', check: (b) => has(b.identity?.name) },
   ],
   'investor-deck': [

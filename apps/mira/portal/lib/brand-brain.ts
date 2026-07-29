@@ -23,6 +23,7 @@ export interface BrandBrainContext {
   bannedPhrases: string[]
   pillars: Array<{ name: string; description: string; weight: number; exampleHooks: string[] }>
   tagline?: string
+  websiteUrl?: string
   audiences?: any[]
   visualIdentitySummary?: string
   // Ampliación 2026-07-28 (BRAND_MEMORY_TEMPLATE del método del CEO)
@@ -94,6 +95,7 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
       exampleHooks: (pi.examples as string[]) ?? [],
     })),
     tagline: brandData.identity?.tagline ?? undefined,
+    websiteUrl: brandData.identity?.website_url || undefined,
     audiences: brandData.audiences ?? undefined,
     visualIdentitySummary: visualIdentitySummary || undefined,
     // Campos ampliados (todos opcionales, tolerantes a legacy)
@@ -149,6 +151,10 @@ ${pillarsStr}
 
   if (brain.tagline) {
     result += `\n\n**Tagline:** ${brain.tagline}`
+  }
+
+  if (brain.websiteUrl) {
+    result += `\n\n**Web:** ${brain.websiteUrl}`
   }
 
   if (brain.visualIdentitySummary) {
