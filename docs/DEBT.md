@@ -458,7 +458,16 @@ Plan completo en `~/.claude/plans/pasale-un-buen-sistema-cached-quill.md`. Commi
 
 **PENDIENTE**:
 - **Migraciones 0053/0054/0055 sin aplicar** (todo el código es resiliente: feedback de quick actions, cuestionarios y brain chat degradan con mensaje claro hasta aplicarlas).
-- **P7 wizard completo** (5 pasos, atrás, revisión, asistente propose-mode, limpieza de huérfanos existentes): especificado en el plan; el agente que lo implementaba murió por límite de sesión de API. El fix crítico (huérfanos al abrir) SÍ está desplegado.
-- **Verificación E2E** de P3-P8 (Playwright): pendiente de aplicar migraciones + recrear fixture QA (grant borrado en limpieza) + reconexión Drive de un cliente para la pata de carpetas por proyecto.
+- ~~P7 wizard completo~~ ✅ COMPLETADO el mismo día (`6f92b8a`): 5 pasos, atrás, revisión editable, asistente por paso (extrae de texto libre sin escribir en BD), panel de huérfanos con borrado por ID exacto. El chat libre original se conserva en `/admin/onboarding/chat`.
 - P5 dejó anotado: `save_project_memory` del ingest no liga project_id (añadir vía brain-tools); `/api/questionnaires/generate` fuera de EXPENSIVE_API_PREFIXES del rate-limit (1 línea en proxy.ts si se quiere).
-- El límite de tokens de la sesión de API (~2:40pm Asia/Bangkok) cortó al agente P7 — retomar S-next con presupuesto fresco.
+
+**✅ VERIFICACIÓN E2E COMPLETA (2026-07-29, mismo día, con datos reales)**: las 3 migraciones (0053/0054/0055) aplicadas y sondadas; 32/33 checks PASS con evidencia real contra Salsa Burgers — Playwright con dos sesiones (cliente + una agencia sintética creada/borrada para la prueba):
+- P2: el agente copywriter (NO el rol 'brand') citó contenido real de Drive — confirma que el índice unificado funciona para todos los agentes, no solo el de marca.
+- P3: theme=dark/light cambia la URL de export real; feedback 👍 guardado con `context=toolkit` correcto; Refinar confirmado por datos (`_history` con la instrucción exacta) — el único "FAIL" del primer pase fue el test comprobando a los 25s una llamada opus que tardó más, no un bug de producto.
+- P4: la pestaña Workspace del arquetipo Studio renderiza en `/agent/designer`; Zoe generó una imagen real en el chat (verificada por `<img>` en el DOM).
+- P5: cuestionario generado de huecos reales de Salsa (11 preguntas con `maps_to`), enviado, respondido, completado, ingestado — la respuesta llegó al `brand_data` real.
+- P6: "Cuéntale a MIRA" con el caso del foodtruck — propuesta creada, el cliente NO puede confirmar (solo ve pendiente), la agencia confirma → `brand_data` y `project_memory` reflejan el cambio.
+- P7: abrir `/admin/onboarding` confirmado que NO crea clientes; wizard completo creó un cliente+proyecto+brand_profile real de punta a punta; el huérfano preexistente de la sesión anterior se borró por la UI real.
+- Cierre: Salsa restaurada byte-a-byte a su `brand_data` original; TODOS los artefactos sintéticos borrados y verificados (usuario de auth, cliente del wizard, generación, feedback, cuestionario+cascade, propuesta, 3 memorias, imagen de storage, grant QA); dev server apagado.
+
+**Pendiente real que queda** (nada bloqueante): reconexión de Drive de un cliente para probar en vivo la creación de carpetas Conocimiento/Entregables por proyecto (P2) — el flujo está verificado por código y build, no por UI real con OAuth activo; decisión del equipo visual sobre las tablas 0028 (handoff W6, ver entrada anterior).
