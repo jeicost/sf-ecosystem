@@ -10,13 +10,14 @@ import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { ProjectProvider } from '@/lib/project-context'
 import { getActiveSectionFromPath } from '@/lib/sections'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
+import { canUseFeature } from '@/lib/plans'
 import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
-import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive } from 'lucide-react'
+import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive, ClipboardList } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
 
@@ -184,16 +185,30 @@ useEffect(() => {
         </span>
       </Link>
 
-      {/* Toolkit — global link */}
-      <Link href="/toolkit"
+      {/* Toolkit — global link (oculto para el plan 'consulta': sin toolkit) */}
+      {canUseFeature(user.plan, 'toolkitGenerate') && (
+        <Link href="/toolkit"
+          className={clsx(
+            'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+            path === '/toolkit'
+              ? 'bg-violet-500/15 text-violet-400'
+              : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
+          )}>
+          <Layers size={13} />
+          <span>Business Reports</span>
+        </Link>
+      )}
+
+      {/* Cuestionarios — global link (todos los planes, incluido 'consulta') */}
+      <Link href="/questionnaires"
         className={clsx(
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path === '/toolkit'
-            ? 'bg-violet-500/15 text-violet-400'
-            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
+          path.startsWith('/questionnaires')
+            ? 'bg-sky-500/15 text-sky-400'
+            : 'text-ink-tertiary hover:text-sky-400 hover:bg-sky-500/8'
         )}>
-        <Layers size={13} />
-        <span>Business Reports</span>
+        <ClipboardList size={13} />
+        <span>Cuestionarios</span>
       </Link>
 
       {/* Documentos — global link */}
