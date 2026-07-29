@@ -15,8 +15,9 @@ import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { enrichPaletteCmyk } from '@/lib/export/color-utils'
 import { generateMonthlySystem } from '@/lib/generation/monthly-generate'
 
-// Single-tool generation with opus can take minutes
-export const maxDuration = 300
+// Single-tool generation with opus can take minutes; el monthly son 3
+// llamadas secuenciales — mismo techo que el content-engine (fluid compute)
+export const maxDuration = 800
 
 // Tools grounded with a live site snapshot (deterministic SEO checks apply)
 const SNAPSHOT_GROUNDED_TOOLS = ['seo-audit', 'marketing-audit', 'brand-briefing']

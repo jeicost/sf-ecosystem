@@ -11,6 +11,7 @@ import { getDocumentFeedbackBlock } from '@/lib/generation/toolkit-prompts'
 import {
   buildMonthlyStrategyPrompt,
   buildMonthlyProductionPrompt,
+  buildMonthlyIdeaBankPrompt,
   type MonthlyPromptParams,
 } from '@/lib/generation/monthly-prompts'
 import { getMonthlyOperatingContext } from '@/lib/business-reports/monthly-context'
@@ -114,19 +115,31 @@ export async function generateMonthlySystem(params: {
     'fase 1 (estrategia)'
   )
 
-  // Fase 2 — producción, con la estrategia ya decidida como contrato
+  // Fase 2 — producción, con la estrategia ya decidida como contrato.
+  // 14k: con 8 pilares registrados la fase truncaba en 12k (build real Salsa).
+  const strategyJson = JSON.stringify(strategy, null, 1)
   const production = await callAndParse(
     clientId,
-    buildMonthlyProductionPrompt(promptParams, JSON.stringify(strategy, null, 1)),
-    12000,
+    buildMonthlyProductionPrompt(promptParams, strategyJson),
+    14000,
     [],
     'fase 2 (producción)'
+  )
+
+  // Fase 3 — idea bank en llamada propia (no compite con briefs+captions)
+  const ideaBank = await callAndParse(
+    clientId,
+    buildMonthlyIdeaBankPrompt(promptParams, strategyJson),
+    6000,
+    [],
+    'fase 3 (idea bank)'
   )
 
   // Merge + open items renumerados + calendario determinista
   const openItems = [
     ...(Array.isArray(strategy.open_items) ? strategy.open_items : []),
     ...(Array.isArray(production.open_items) ? production.open_items : []),
+    ...(Array.isArray(ideaBank.open_items) ? ideaBank.open_items : []),
   ].map((o, i) => ({ ...(o && typeof o === 'object' ? o : { item: String(o) }), n: i + 1 }))
 
   const captions = Array.isArray(production.captions) ? production.captions : []
@@ -136,15 +149,17 @@ export async function generateMonthlySystem(params: {
 
   const { open_items: _s, ...strategyRest } = strategy
   const { open_items: _p, ...productionRest } = production
+  const { open_items: _i, ...ideaBankRest } = ideaBank
 
   return {
     ...strategyRest,
     ...productionRest,
+    ...ideaBankRest,
     month,
     month_label: monthLabel(month),
     open_items: openItems,
     calendar_entries: computeCalendarEntries(month, captions, heroTitles),
     previous_month_stats: ctx.previousStats,
-    generated_with: { phases: 2, calendar: 'computed' },
+    generated_with: { phases: 3, calendar: 'computed' },
   }
 }

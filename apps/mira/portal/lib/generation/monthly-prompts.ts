@@ -1,10 +1,12 @@
-// Monthly Content System (F4) — prompts de las 2 llamadas secuenciales.
-// El schema completo no cabe con calidad en una sola respuesta de 16k, así
-// que el sistema se genera en 2 fases y el route las fusiona:
-//   Fase 1 (estrategia): pilares + funnel + tablero semanal + prioridades +
-//                        aprendizajes del mes anterior
+// Monthly Content System (F4) — prompts de las 3 llamadas secuenciales.
+// El schema completo no cabe con calidad en una sola respuesta (con 8 pilares
+// truncaba incluso partido en 2), así que se genera en 3 fases y se fusiona:
+//   Fase 1 (estrategia): pilares (máx 6 activos) + funnel + tablero semanal +
+//                        prioridades + aprendizajes del mes anterior
 //   Fase 2 (producción): hero briefs + plantilla de brief + captions listas
-//                        (shape GeneratedPost del engine) + idea bank
+//                        (shape GeneratedPost del engine)
+//   Fase 3 (idea bank):  campañas + activaciones + influencers + comunidad +
+//                        KPIs 30/60/90 + promo ratio
 // El calendario del mes NO lo escribe el modelo: se computa en TS
 // (monthly-calendar.ts) a partir de las captions y el mes real.
 
@@ -48,7 +50,7 @@ export function buildMonthlyStrategyPrompt(p: MonthlyPromptParams): string {
 ${sharedContext(p)}
 
 RULES:
-- Pillars: start from the registered pillars. Each one: status ALREADY_RUNNING (exists) or PROPOSED (new/evolved). If a registered pillar should rest this month, list it in dormant_note instead of forcing content into it.
+- Pillars: start from the registered pillars. Each one: status ALREADY_RUNNING (exists) or PROPOSED (new/evolved). ACTIVATE AT MOST 6 pillars this month — a focused month beats spray; every other registered pillar goes to dormant_note with its reason. If a registered pillar should rest this month, list it in dormant_note instead of forcing content into it.
 - weekly_board: the month has 4-5 weeks — one entry per week, máx 7 filas por pilar EN TODO EL MES (no per week). Each row is a concrete piece with working title, not a placeholder.
 - priority_board: exactly 7 pieces — the ones that move the needle if only 7 get made. Ordered.
 - previous_month_learnings: ONLY from the previous board above (verdicts APPROVE/PASS + client notes). No board = empty array, never invented learnings.
@@ -99,10 +101,8 @@ ${sharedContext(p)}
 
 RULES:
 - hero_briefs: exactly 3 — the month's hero pieces (from priority_board top). Shot flow timecodeado: cada plano con tiempo, encuadre, acción y texto en pantalla. Un equipo pequeño debe poder grabarlo leyendo el brief.
-- captions: ${p.postsPorPilar} por pilar activo, plataformas: ${p.plataformas.join(', ')}. Listas para publicar en la voz EXACTA de la marca (vocabulario decimos/nunca decimos). ${reelNote} Cada caption lleva pillar_name (de PART 1) y suggested_day (1-28, repartidos por el mes, coherentes con weekly_board).
+- captions: ${p.postsPorPilar} por pilar ACTIVO de PART 1 (máximo 18 captions en total — si el cálculo da más, prioriza los pilares del priority_board). Plataformas: ${p.plataformas.join(', ')}. Listas para publicar en la voz EXACTA de la marca (vocabulario decimos/nunca decimos). ${reelNote} Cada caption lleva pillar_name (de PART 1) y suggested_day (1-28, repartidos por el mes, coherentes con weekly_board).
 - full_brief_template: los 9 campos de un brief reutilizable; el 9º es SIEMPRE el guardrail inspired-by (referencias = estructura, nunca copia).
-- idea_bank: material para meses siguientes — conceptos de campaña (absorbe el antiguo campaign generator), playbook de activación, sistema de influencers en 3 tiers y motor de comunidad (absorbe el antiguo community growth), todo aterrizado a ESTA marca.
-- kpis_30_60_90: solo métricas medibles con lo que la marca tiene hoy (brain/canales). Sin herramientas que no existen.
 - Todo en español (salvo que la voz de la marca indique otra cosa).
 
 Generate PART 2 JSON:
@@ -126,6 +126,31 @@ Generate PART 2 JSON:
       "reel_script": {"duration": "30s", "scenes": [{"time": "0-3s", "action": "", "text_overlay": ""}]}
     }
   ],
+  "open_items": [{"n": 1, "item": "", "owner": "cliente|agencia", "needed_for": ""}]
+}`
+}
+
+// Fase 3 — idea bank: material para los meses siguientes. Va en llamada propia
+// (la fase 2 con briefs+captions ya llena su presupuesto; truncaba en 12k con
+// clientes de 8 pilares — hallazgo del primer build real con Salsa).
+export function buildMonthlyIdeaBankPrompt(
+  p: MonthlyPromptParams,
+  strategyJson: string
+): string {
+  return `You are the monthly content strategist for this brand. PARTS 1-2 are done — you produce PART 6 for ${p.monthLabel}: the idea bank and the promo ratio. Material for the NEXT months, grounded in THIS brand.
+
+PART 1 — ESTRATEGIA YA DECIDIDA (contexto):
+${strategyJson}
+
+${sharedContext(p)}
+
+RULES:
+- idea_bank: conceptos de campaña (absorbe el antiguo campaign generator), playbook de activación, sistema de influencers en 3 tiers y motor de comunidad (absorbe el antiguo community growth), todo aterrizado a ESTA marca — nada genérico.
+- kpis_30_60_90: solo métricas medibles con lo que la marca tiene hoy (brain/canales). Sin herramientas que no existen.
+- Todo en español (salvo que la voz de la marca indique otra cosa).
+
+Generate PART 6 JSON:
+{
   "promo_ratio": {"content_pct": 0, "promo_pct": 0, "rule": "la regla de mezcla del mes y por qué"},
   "idea_bank": {
     "campaign_concepts": [{"name": "", "concept": "", "pillar": "", "when": "momento ideal del año"}],
