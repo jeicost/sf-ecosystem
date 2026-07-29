@@ -4,6 +4,7 @@ import { createServerClient } from '@supabase/ssr'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
+import { getKnowledgeContext } from '@/lib/knowledge'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
@@ -151,7 +152,15 @@ export async function POST(req: NextRequest) {
     let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE
 
     const memoryContext = await getClientMemoryContext(resolvedClientId, projectId ?? null)
-    const docContext = await getAgentDocumentContext(resolvedClientId, role)
+    // Conocimiento unificado (P2): Drive + subidas + referencias para TODOS
+    // los agentes, con prioridad del proyecto activo. Fallback al camino
+    // legacy (solo agent_documents del rol) si el unificado está apagado o
+    // la vista 0052 no existe aún.
+    const docContext =
+      (await getKnowledgeContext(resolvedClientId, {
+        projectId: projectId ?? null,
+        agentRole: role,
+      })) ?? (await getAgentDocumentContext(resolvedClientId, role))
 
     if (includeBrandBrain) {
       const brain = await fetchBrandBrain(resolvedClientId)

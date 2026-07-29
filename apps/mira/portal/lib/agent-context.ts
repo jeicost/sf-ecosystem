@@ -2,6 +2,7 @@
 // Use the service-role client — the browser/anon client has no session here
 // and its key is rejected, which silently dropped document context.
 import { adminClient } from '@/lib/supabase'
+import { isKnowledgeUnified } from '@/lib/knowledge'
 
 export interface RetrievedDocument {
   id: string
@@ -23,6 +24,8 @@ export async function retrieveAgentContext(params: {
   context_type?: 'brand' | 'product' | 'community' | 'company' | 'all'
   query?: string
   limit?: number
+  /** Proyecto activo — sus documentos puntúan primero (P2 conocimiento unificado) */
+  project_id?: string | null
 }): Promise<RetrieveContextResponse | null> {
   try {
     const {
@@ -30,6 +33,7 @@ export async function retrieveAgentContext(params: {
       context_type = 'all',
       query,
       limit = 5,
+      project_id = null,
     } = params
 
     if (!client_id) {
@@ -37,6 +41,47 @@ export async function retrieveAgentContext(params: {
     }
 
     const db = adminClient()
+
+    // Conocimiento unificado (P2 2026-07-29): con la vista 0052 disponible,
+    // los informes/quick actions/documentos ven TODO el conocimiento (Drive +
+    // subidas + referencias), no solo client_documentation. Todos los
+    // consumidores reales usan context_type 'all' (verificado), así que la
+    // delegación no pierde el filtro por tipo. Fallback legacy si el sistema
+    // está apagado (KNOWLEDGE_UNIFIED=0) o la vista no existe.
+    if (isKnowledgeUnified()) {
+      const { data: unified, error: uErr } = await db
+        .from('knowledge_items')
+        .select('id, project_id, source, title, summary, content, created_at')
+        .eq('client_id', client_id)
+        .order('created_at', { ascending: false })
+        .limit(30)
+      if (!uErr && unified) {
+        const ranked = unified
+          .filter((i: any) => i.title?.trim() || i.summary?.trim() || i.content?.trim())
+          .sort((a: any, b: any) => {
+            const pa = project_id && a.project_id === project_id ? 1 : 0
+            const pb = project_id && b.project_id === project_id ? 1 : 0
+            return pb - pa
+          })
+          .slice(0, limit)
+        const documents: RetrievedDocument[] = ranked.map((doc: any) => ({
+          id: doc.id,
+          title: doc.title || 'Sin título',
+          doc_type: doc.source,
+          excerpt: doc.content
+            ? String(doc.content).substring(0, 500) + '...'
+            : doc.summary || '',
+          relevance_score: computeRelevanceScore(doc.content ?? null, query),
+        }))
+        const totalText = documents.map((d) => d.excerpt).join('\n').length
+        return {
+          documents,
+          total_tokens_used: Math.ceil(totalText / 4),
+          count: documents.length,
+        }
+      }
+      // uErr (vista ausente pre-0052) → seguir al camino legacy de abajo
+    }
 
     // Columnas del esquema REAL de client_documentation (verificado en BD
     // 2026-07-27): filename/storage_url/file_size_bytes/created_at. El select

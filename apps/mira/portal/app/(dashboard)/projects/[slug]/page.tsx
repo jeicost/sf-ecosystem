@@ -76,6 +76,10 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
   const [driveConnected, setDriveConnected] = useState<boolean | null>(null)
   const [driveLoading, setDriveLoading] = useState(true)
   const [showLinkForm, setShowLinkForm] = useState(false)
+  // P2: la carpeta vinculada puede ser Conocimiento (el cerebro la lee, con
+  // scope de proyecto) o Entregables (destino de exportación)
+  const [linkPurpose, setLinkPurpose] = useState<'references' | 'deliverables'>('references')
+  const [creatingStructure, setCreatingStructure] = useState(false)
   const [folderLink, setFolderLink] = useState('')
   const [linking, setLinking] = useState(false)
   const [driveMessage, setDriveMessage] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
@@ -189,7 +193,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         body: JSON.stringify({
           clientId,
           link: folderLink.trim(),
-          purpose: 'deliverables',
+          purpose: linkPurpose,
           projectId: project.id,
         }),
       })
@@ -206,6 +210,26 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       })
     } finally {
       setLinking(false)
+    }
+  }
+
+  // P2: crea "MIRA — {Proyecto}/(Conocimiento|Entregables)" en el Drive del
+  // cliente y registra ambas carpetas vinculadas a este proyecto.
+  const handleCreateStructure = async () => {
+    const clientId = activeClient?.id || project?.client_id
+    if (!project?.id || !clientId || creatingStructure) return
+    setCreatingStructure(true)
+    setDriveMessage(null)
+    try {
+      const res = await fetch(`/api/projects/${project.id}/drive-structure`, { method: 'POST' })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(json?.error || 'No se pudo crear la estructura')
+      setDriveMessage({ type: 'ok', text: json?.already ? 'La estructura ya existía.' : 'Estructura creada en el Drive del cliente.' })
+      await loadDriveFolders(clientId, project.id)
+    } catch (e) {
+      setDriveMessage({ type: 'err', text: e instanceof Error ? e.message : 'No se pudo crear la estructura' })
+    } finally {
+      setCreatingStructure(false)
     }
   }
 
@@ -378,7 +402,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
           <div className="flex items-center justify-center rounded-2xl border border-line bg-surface py-6">
             <Loader2 size={16} className="animate-spin text-ink-muted" />
           </div>
-        ) : projectFolders.length > 0 ? (
+        ) : (
           <div className="space-y-2">
             {projectFolders.map((f) => (
               <div key={f.id} className="flex items-center gap-3 rounded-2xl border border-line bg-surface p-4">
@@ -388,10 +412,10 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                     {f.folder_name || f.folder_id}
                   </p>
                   <p className="mt-0.5 text-[10px] text-ink-tertiary">
-                    {t('projects.drive-linked', locale)}
+                    {f.purpose === 'deliverables' ? '📦 Entregables — MIRA exporta aquí' : '📚 Conocimiento — el cerebro la lee para este proyecto'}
                     {f.last_synced_at
                       ? ` · ${t('projects.drive-docs-count', locale).replace('{count}', String(f.files_synced))}`
-                      : ` · ${t('projects.drive-unsynced', locale)}`}
+                      : f.purpose === 'deliverables' ? '' : ` · ${t('projects.drive-unsynced', locale)}`}
                   </p>
                 </div>
                 <a
@@ -404,44 +428,66 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                 </a>
               </div>
             ))}
-          </div>
-        ) : (
-          <div className="rounded-2xl border border-dashed border-line bg-surface p-5">
-            <p className="text-xs text-ink-tertiary">{t('projects.drive-none', locale)}</p>
-            {driveConnected === false && (
-              <p className="mt-2 text-[11px] text-amber-400/80">
-                {t('projects.drive-not-connected', locale)}{' '}
-                <Link href="/integrations" className="underline">{t('nav.integrations', locale)}</Link>
-              </p>
-            )}
-            {!showLinkForm ? (
-              <button
-                onClick={() => setShowLinkForm(true)}
-                disabled={driveConnected === false}
-                className="mt-4 rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
-                style={{ background: brand }}
-              >
-                📂 {t('projects.drive-link-cta', locale)}
-              </button>
-            ) : (
-              <div className="mt-4 flex flex-col gap-2 md:flex-row">
-                <input
-                  value={folderLink}
-                  onChange={(e) => setFolderLink(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleLinkFolder()}
-                  placeholder={t('projects.drive-link-placeholder', locale)}
-                  className="flex-1 rounded-lg border border-line bg-page px-3 py-2 text-xs text-ink outline-none focus:border-ink-muted"
-                />
-                <button
-                  onClick={handleLinkFolder}
-                  disabled={linking || !folderLink.trim()}
-                  className="rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
-                  style={{ background: brand }}
-                >
-                  {linking ? t('projects.drive-linking', locale) : t('projects.drive-link-cta', locale)}
-                </button>
+
+            {projectFolders.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-line bg-surface p-5">
+                <p className="text-xs text-ink-tertiary">
+                  Conecta este proyecto a sus carpetas: <strong>Conocimiento</strong> (briefs, docs, referencias — el cerebro y los agentes la leen con prioridad al trabajar en este proyecto) y <strong>Entregables</strong> (aquí exporta MIRA).
+                </p>
+                {driveConnected === false && (
+                  <p className="mt-2 text-[11px] text-amber-400/80">
+                    {t('projects.drive-not-connected', locale)}{' '}
+                    <Link href="/integrations" className="underline">{t('nav.integrations', locale)}</Link>
+                  </p>
+                )}
               </div>
             )}
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <button
+                onClick={handleCreateStructure}
+                disabled={driveConnected === false || creatingStructure}
+                className="rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+                style={{ background: brand }}
+              >
+                {creatingStructure ? '⏳ Creando…' : '✨ Crear estructura estándar'}
+              </button>
+              {!showLinkForm ? (
+                <button
+                  onClick={() => setShowLinkForm(true)}
+                  disabled={driveConnected === false}
+                  className="rounded-lg bg-surface-hover px-4 py-2 text-xs font-semibold text-ink transition hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  📂 {t('projects.drive-link-cta', locale)}
+                </button>
+              ) : (
+                <div className="flex w-full flex-col gap-2 md:flex-row">
+                  <select
+                    value={linkPurpose}
+                    onChange={(e) => setLinkPurpose(e.target.value as 'references' | 'deliverables')}
+                    className="rounded-lg border border-line bg-page px-3 py-2 text-xs text-ink outline-none focus:border-ink-muted"
+                  >
+                    <option value="references">📚 Conocimiento</option>
+                    <option value="deliverables">📦 Entregables</option>
+                  </select>
+                  <input
+                    value={folderLink}
+                    onChange={(e) => setFolderLink(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleLinkFolder()}
+                    placeholder={t('projects.drive-link-placeholder', locale)}
+                    className="flex-1 rounded-lg border border-line bg-page px-3 py-2 text-xs text-ink outline-none focus:border-ink-muted"
+                  />
+                  <button
+                    onClick={handleLinkFolder}
+                    disabled={linking || !folderLink.trim()}
+                    className="rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-40"
+                    style={{ background: brand }}
+                  >
+                    {linking ? t('projects.drive-linking', locale) : t('projects.drive-link-cta', locale)}
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 

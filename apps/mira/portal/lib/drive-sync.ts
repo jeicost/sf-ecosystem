@@ -539,6 +539,9 @@ export async function syncDriveFolder(
       // NOT NULL: agent_role, document_type, title, analysis_status
       const docRow = {
         title: file.name,
+        // Conocimiento por proyecto (P2 2026-07-29): la carpeta puede colgar
+        // de un proyecto — sus documentos heredan el scope.
+        project_id: folderRow.project_id ?? null,
         agent_role: 'brand',
         document_type: 'drive_sync',
         analysis_status: 'completed',
@@ -588,6 +591,7 @@ export async function syncDriveFolder(
   try {
     const memoryPayload = {
       client_id: clientId,
+      project_id: folderRow.project_id ?? null,
       title: `Mapa de carpeta Drive: ${folderName}`,
       category: 'insight',
       summary: mapSummary,

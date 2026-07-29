@@ -70,8 +70,15 @@ const TOOLKIT_MEMORY_QUERIES: Record<string, string[]> = {
   'investor-deck': ['brand_briefing', 'action_plan', 'traction_data'],
 }
 
-// Fetch toolkit-specific dependencies from project_memory
-async function getToolkitDependencies(clientId: string, toolSlug: string): Promise<Record<string, any>> {
+// Fetch toolkit-specific dependencies from project_memory.
+// Fix P2 (2026-07-29): las tags se buscan en AMBAS convenciones (guion bajo
+// del mapa Y guion del auto-log — antes NUNCA matcheaban las filas del
+// auto-log), se excluyen memorias archivadas y se prioriza el proyecto activo.
+async function getToolkitDependencies(
+  clientId: string,
+  toolSlug: string,
+  projectId: string | null = null
+): Promise<Record<string, any>> {
   const tags = TOOLKIT_MEMORY_QUERIES[toolSlug] || []
   if (tags.length === 0) return {}
 
@@ -80,20 +87,23 @@ async function getToolkitDependencies(clientId: string, toolSlug: string): Promi
 
   try {
     for (const tag of tags) {
+      const variants = [tag, tag.replace(/_/g, '-')]
       const { data } = await admin
         .from('project_memory')
-        .select('*')
+        .select('id, title, full_content, project_id')
         .eq('client_id', clientId)
-        .contains('tags', [tag])
+        .overlaps('tags', variants)
+        .eq('is_archived', false)
         .order('created_at', { ascending: false })
-        .limit(1)
-        .single()
+        .limit(4)
 
-      if (data) {
+      if (data?.length) {
+        const best =
+          (projectId && data.find((d) => d.project_id === projectId)) || data[0]
         dependencies[tag] = {
-          id: data.id,
-          data: data.full_content,
-          title: data.title,
+          id: best.id,
+          data: best.full_content,
+          title: best.title,
         }
       }
     }
@@ -118,8 +128,9 @@ export async function getToolkitPrompt(
       client_id: clientId,
       context_type: 'all',
       limit: 3,
+      project_id: projectId ?? null,
     }),
-    getToolkitDependencies(clientId, toolSlug),
+    getToolkitDependencies(clientId, toolSlug, projectId ?? null),
     getDocumentFeedbackBlock(clientId, toolSlug),
   ])
 
