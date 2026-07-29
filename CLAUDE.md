@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Turborepo + pnpm workspace. **Package manager: pnpm** (never npm/yarn at root level).
 
 ```
-Desktop/Claude.nosync/
+Developer/Claude/
 ├── apps/                      # Products and internal tools (each deploys independently)
 │   ├── mira/                  # MIRA SaaS portal — 30 AI agents for clients
 │   ├── mira-landing/          # MIRA marketing site
@@ -41,8 +41,8 @@ Desktop/Claude.nosync/
 ```
 
 **Fuera del monorepo (repos independientes):**
-- `~/Desktop/discoolver-dg-editor.nosync` — editor de guías de Discoolver. Repo git del cliente (remote `discoolver-group/discoolver-dg-editor`); NO copiarlo dentro del monorepo. La skill `repaso-dg` y el lanzador `🚀 Abrir Guías Discoolver.command` apuntan ahí.
-- `~/Desktop/salsa-staff.nosync` — app de personal de Salsa Burgers (Flask + PostgreSQL: turnos `/admin/schedule`, fichajes, cocina, informes). Remote `jeicost/salsa-staff`. Deploy: Railway auto-deploy desde GitHub (`capable-luck-production-374c.up.railway.app`) — hacer push activa el deploy. Sufijo `.nosync` a propósito (iCloud corrompe repos git).
+- `~/Developer/discoolver-dg-editor` — editor de guías de Discoolver. Repo git del cliente (remote `discoolver-group/discoolver-dg-editor`); NO copiarlo dentro del monorepo. La skill `repaso-dg` y el lanzador `🚀 Abrir Guías Discoolver.command` apuntan ahí.
+- `~/Developer/salsa-staff` — app de personal de Salsa Burgers (Flask + PostgreSQL: turnos `/admin/schedule`, fichajes, cocina, informes). Remote `jeicost/salsa-staff`. Deploy: Railway auto-deploy desde GitHub (`capable-luck-production-374c.up.railway.app`) — hacer push activa el deploy. Sufijo `.nosync` a propósito (iCloud corrompe repos git).
 
 Bitácoras de sesiones antiguas: `docs/archive/sessions/`. Reorganización completa: `docs/REORG_2026-07-28.md`.
 

@@ -6,7 +6,7 @@
 PORT=3001
 PATH_TO_OPEN="${1:-/es}"
 URL="http://localhost:${PORT}${PATH_TO_OPEN}"
-PROJECT_DIR="$HOME/Desktop/Claude.nosync/apps/startup-factory-web"
+PROJECT_DIR="$HOME/Developer/Claude/apps/startup-factory-web"
 
 # Comprobar si ya está corriendo en el puerto
 if lsof -ti:${PORT} > /dev/null 2>&1; then
