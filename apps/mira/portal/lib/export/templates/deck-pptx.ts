@@ -126,7 +126,7 @@ function addBullets(slide: PptxSlide, bullets: string[], t: DeckTheme, box: { x:
       text: stripHtml(b),
       options: {
         bullet: { code: '2022', indent: 14 },
-        color: c(mix(t.ink, '#FFFFFF', 0.12)),
+        color: c(mix(t.contentInk, t.contentBg, 0.12)),
         breakLine: true,
         paraSpaceAfter: 8,
       },
@@ -240,9 +240,9 @@ function buildSection(pptx: Pptx, s: DeckSlide, num: number, o: DeckOptions, t: 
 
 function buildContent(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): void {
   const slide = pptx.addSlide()
-  slide.background = { color: 'FFFFFF' }
+  slide.background = { color: c(t.contentBg) }
   accentBar(slide, t)
-  brandLabel(slide, o.brand, c(t.ink))
+  brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85,
     y: 0.95,
@@ -259,14 +259,14 @@ function buildContent(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): v
   if (s.subtitle) {
     slide.addText(s.subtitle, {
       x: 0.85, y, w: W - 1.7, h: 0.55,
-      fontFace: FONT, fontSize: 17, bold: true, color: c(t.ink), align: 'left',
+      fontFace: FONT, fontSize: 17, bold: true, color: c(t.contentInk), align: 'left',
     })
     y += 0.65
   }
   if (s.body) {
     slide.addText(stripHtml(s.body), {
       x: 0.85, y, w: W - 1.7, h: 1.3,
-      fontFace: FONT, fontSize: 14.5, color: c(mix(t.ink, '#FFFFFF', 0.15)), align: 'left', valign: 'top',
+      fontFace: FONT, fontSize: 14.5, color: c(mix(t.contentInk, t.contentBg, 0.15)), align: 'left', valign: 'top',
     })
     y += 1.4
   }
@@ -339,9 +339,9 @@ function buildStats(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): voi
 
 function buildTimeline(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): void {
   const slide = pptx.addSlide()
-  slide.background = { color: 'FFFFFF' }
+  slide.background = { color: c(t.contentBg) }
   accentBar(slide, t)
-  brandLabel(slide, o.brand, c(t.ink))
+  brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 1,
     fontFace: FONT, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
@@ -349,7 +349,7 @@ function buildTimeline(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): 
   if (s.subtitle) {
     slide.addText(s.subtitle, {
       x: 0.85, y: 1.95, w: W - 1.7, h: 0.5,
-      fontFace: FONT, fontSize: 15, color: c(mix(t.ink, '#FFFFFF', 0.2)), align: 'left',
+      fontFace: FONT, fontSize: 15, color: c(mix(t.contentInk, t.contentBg, 0.2)), align: 'left',
     })
   }
   const items = normalizeTimeline(s.items).slice(0, 6)
@@ -375,12 +375,12 @@ function buildTimeline(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): 
     }
     slide.addText(it.title, {
       x, y: startY + 0.62, w: colW - 0.25, h: 0.85,
-      fontFace: FONT, fontSize: 15, bold: true, color: c(t.ink), align: 'left', valign: 'top',
+      fontFace: FONT, fontSize: 15, bold: true, color: c(t.contentInk), align: 'left', valign: 'top',
     })
     if (it.body) {
       slide.addText(it.body, {
         x, y: startY + 1.5, w: colW - 0.25, h: 2,
-        fontFace: FONT, fontSize: 11.5, color: c(mix(t.ink, '#FFFFFF', 0.25)), align: 'left', valign: 'top',
+        fontFace: FONT, fontSize: 11.5, color: c(mix(t.contentInk, t.contentBg, 0.25)), align: 'left', valign: 'top',
       })
     }
   })
@@ -388,9 +388,9 @@ function buildTimeline(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): 
 
 function buildComparison(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): void {
   const slide = pptx.addSlide()
-  slide.background = { color: 'FFFFFF' }
+  slide.background = { color: c(t.contentBg) }
   accentBar(slide, t)
-  brandLabel(slide, o.brand, c(t.ink))
+  brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 1,
     fontFace: FONT, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
@@ -454,13 +454,13 @@ function buildImageSlide(
     return
   }
   const slide = pptx.addSlide()
-  slide.background = { color: 'FFFFFF' }
+  slide.background = { color: c(t.contentBg) }
   accentBar(slide, t)
   const imgW = W * 0.44
   slide.addImage({ data: imageData, x: 0, y: 0.09, w: imgW, h: H - 0.09, sizing: { type: 'cover', w: imgW, h: H - 0.09 } })
   const tx = imgW + 0.6
   const tw = W - tx - 0.7
-  brandLabel(slide, o.brand, c(t.ink))
+  brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: tx, y: 1.2, w: tw, h: 1.4,
     fontFace: FONT, fontSize: 27, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
@@ -469,14 +469,14 @@ function buildImageSlide(
   if (s.subtitle) {
     slide.addText(s.subtitle, {
       x: tx, y, w: tw, h: 0.55,
-      fontFace: FONT, fontSize: 15.5, bold: true, color: c(t.ink), align: 'left',
+      fontFace: FONT, fontSize: 15.5, bold: true, color: c(t.contentInk), align: 'left',
     })
     y += 0.65
   }
   if (s.body) {
     slide.addText(stripHtml(s.body), {
       x: tx, y, w: tw, h: 1.6,
-      fontFace: FONT, fontSize: 13.5, color: c(mix(t.ink, '#FFFFFF', 0.15)), align: 'left', valign: 'top',
+      fontFace: FONT, fontSize: 13.5, color: c(mix(t.contentInk, t.contentBg, 0.15)), align: 'left', valign: 'top',
     })
     y += 1.7
   }
@@ -487,9 +487,9 @@ function buildImageSlide(
 
 function buildChartSlide(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): void {
   const slide = pptx.addSlide()
-  slide.background = { color: 'FFFFFF' }
+  slide.background = { color: c(t.contentBg) }
   accentBar(slide, t)
-  brandLabel(slide, o.brand, c(t.ink))
+  brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 0.9,
     fontFace: FONT, fontSize: 28, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
@@ -497,7 +497,7 @@ function buildChartSlide(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme)
   if (s.subtitle) {
     slide.addText(s.subtitle, {
       x: 0.85, y: 1.85, w: W - 1.7, h: 0.5,
-      fontFace: FONT, fontSize: 14, color: c(mix(t.ink, '#FFFFFF', 0.2)), align: 'left',
+      fontFace: FONT, fontSize: 14, color: c(mix(t.contentInk, t.contentBg, 0.2)), align: 'left',
     })
   }
   const chart = s.chart
@@ -519,10 +519,10 @@ function buildChartSlide(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme)
     legendPos: 'r',
     legendFontSize: 11,
     showValue: chart.type !== 'line',
-    dataLabelColor: c(t.ink),
+    dataLabelColor: c(t.contentInk),
     dataLabelFontSize: 10,
-    catAxisLabelColor: c(mix(t.ink, '#FFFFFF', 0.2)),
-    valAxisLabelColor: c(mix(t.ink, '#FFFFFF', 0.35)),
+    catAxisLabelColor: c(mix(t.contentInk, t.contentBg, 0.2)),
+    valAxisLabelColor: c(mix(t.contentInk, t.contentBg, 0.35)),
     catAxisLabelFontFace: FONT,
     valAxisLabelFontFace: FONT,
     lineSize: chart.type === 'line' ? 3 : undefined,
@@ -534,9 +534,9 @@ function buildChartSlide(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme)
 
 function buildAgenda(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): void {
   const slide = pptx.addSlide()
-  slide.background = { color: 'FFFFFF' }
+  slide.background = { color: c(t.contentBg) }
   accentBar(slide, t)
-  brandLabel(slide, o.brand, c(t.ink))
+  brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 1,
     fontFace: FONT, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
@@ -552,7 +552,7 @@ function buildAgenda(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): vo
     })
     slide.addText(text, {
       x: 2.05, y, w: W - 3, h: rowH,
-      fontFace: FONT, fontSize: 17, bold: true, color: c(t.ink), align: 'left', valign: 'middle',
+      fontFace: FONT, fontSize: 17, bold: true, color: c(t.contentInk), align: 'left', valign: 'middle',
     })
     if (i < items.length - 1) {
       slide.addShape('line', {
@@ -595,7 +595,7 @@ function buildClosing(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): v
 // ─────────────────────────────────────────────────────────────
 
 export async function generateDeckPptx(options: DeckOptions): Promise<Buffer> {
-  const t = buildDeckTheme(options.brand)
+  const t = buildDeckTheme(options.brand, options.mode ?? 'light')
   const pptx = new PptxGenJS()
   pptx.defineLayout({ name: 'WIDE', width: W, height: H })
   pptx.layout = 'WIDE'

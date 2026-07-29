@@ -3,6 +3,7 @@
 
 import { fetchBrandBrain } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
+import { getFeedbackBlock } from '@/lib/feedback'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
@@ -36,10 +37,11 @@ export async function getDocumentPrompt(
 ): Promise<string | null> {
   const { clientId, inputData, projectId } = params
 
-  const [brandBrain, memoryContext, docContext] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, feedbackBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId, projectId ?? null),
-    retrieveAgentContext({ client_id: clientId, context_type: 'all', limit: 3 }),
+    retrieveAgentContext({ client_id: clientId, context_type: 'all', limit: 3, project_id: projectId ?? null }),
+    getFeedbackBlock(clientId, docType),
   ])
 
   const brandContext = brandBrain
@@ -54,7 +56,7 @@ BRAND CONTEXT (source of truth — usa esto en todo el documento):
     : ''
 
   const docText = docContext?.documents?.map((d: { excerpt?: string }) => d.excerpt).join('\n') || ''
-  const allContext = [docText, brandContext, memoryContext].filter(Boolean).join('\n\n')
+  const allContext = [docText, brandContext, memoryContext, feedbackBlock].filter(Boolean).join('\n\n')
   const fullContext = allContext ? `\n\nCONTEXTO DEL CLIENTE:\n${allContext}` : ''
 
   // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contratos de calidad (veracidad + redacción).

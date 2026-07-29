@@ -60,6 +60,7 @@ export interface DeckSlide {
 }
 
 export interface DeckOptions {
+  mode?: 'light' | 'dark'
   brand: PlaybookBrand
   title: string
   subtitle?: string
@@ -142,9 +143,11 @@ export interface DeckTheme {
   accentInk: string // text on accent backgrounds
   primaryInk: string // text on primary backgrounds
   gradient: string // cover / closing background
+  contentBg: string // superficie de las slides de contenido (P3: claro/oscuro)
+  contentInk: string // texto sobre contentBg
 }
 
-export function buildDeckTheme(brand: PlaybookBrand): DeckTheme {
+export function buildDeckTheme(brand: PlaybookBrand, mode: 'light' | 'dark' = 'light'): DeckTheme {
   const primary = brand.primaryColor
   const accent = brand.accentColor ?? mix(primary, '#FFFFFF', 0.55)
   const darkBase = luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.65)
@@ -160,6 +163,10 @@ export function buildDeckTheme(brand: PlaybookBrand): DeckTheme {
     accentInk: luminance(accent) < 0.5 ? '#FFFFFF' : accentInkDark,
     primaryInk: luminance(primary) < 0.5 ? '#FFFFFF' : accentInkDark,
     gradient: `linear-gradient(150deg, ${g0} 0%, ${darkBase} 35%, ${g1} 65%, ${g2} 100%)`,
+    // P3: en oscuro, las slides de contenido pasan a superficie oscura con
+    // tinta clara; en claro, el look de siempre (blanco + ink de marca).
+    contentBg: mode === 'dark' ? '#15151A' : '#FFFFFF',
+    contentInk: mode === 'dark' ? '#F5F0E8' : (luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.6)),
   }
 }
 
@@ -242,7 +249,7 @@ body {
 .slide.active { opacity: 1; visibility: visible; }
 
 .slide-dark     { background: ${t.primary}; color: ${t.primaryInk}; }
-.slide-light    { background: #FFFFFF; color: ${t.ink}; }
+.slide-light    { background: ${t.contentBg}; color: ${t.contentInk}; }
 .slide-gradient { background: ${t.gradient}; color: #FFFFFF; }
 
 /* ── LOGO / EYEBROW ────────────────────────────────────────── */
@@ -434,7 +441,7 @@ body {
 /* ── PRINT: one landscape page per slide ───────────────────── */
 @page { size: 297mm 167mm; margin: 0; }
 @media print {
-  html, body { height: auto; background: #fff; overflow: visible; }
+  html, body { height: auto; background: ${t.contentBg}; overflow: visible; }
   .stage { position: static; display: block; }
   .slide {
     position: relative;
@@ -854,7 +861,7 @@ const NAV_SCRIPT = `
 // ─────────────────────────────────────────────────────────────
 
 export function generateDeckHTML(options: DeckOptions): string {
-  const t = buildDeckTheme(options.brand)
+  const t = buildDeckTheme(options.brand, options.mode ?? 'light')
   let sectionCount = 0
   const chartInstances: DeckChartInstance[] = []
   const slidesHtml = options.slides

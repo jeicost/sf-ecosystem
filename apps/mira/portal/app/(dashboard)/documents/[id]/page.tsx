@@ -1,5 +1,6 @@
 'use client'
 
+import { getTheme } from '@/lib/theme'
 import { use, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
@@ -26,6 +27,8 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   const [slideTarget, setSlideTarget] = useState('') // 1-based; empty = todo el documento
   const [refining, setRefining] = useState(false)
   const [iframeKey, setIframeKey] = useState(0)
+  const [docTheme, setDocTheme] = useState<'light' | 'dark'>('dark')
+  useEffect(() => { setDocTheme(getTheme()) }, [])
   const [toolSlug, setToolSlug] = useState<string | null>(null)
   const [slides, setSlides] = useState<SlideOption[]>([])
   const [canvaState, setCanvaState] = useState<'idle' | 'loading'>('idle')
@@ -162,15 +165,22 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
           >
             🖨️ {t('docs.print-pdf', locale)}
           </button>
+          <button
+            onClick={() => setDocTheme(docTheme === 'dark' ? 'light' : 'dark')}
+            className="text-sm px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
+            title="Tema del documento (claro/oscuro)"
+          >
+            {docTheme === 'dark' ? '🌙 Oscuro' : '☀️ Claro'}
+          </button>
           <a
-            href={`/api/toolkit/export?queue_id=${id}`}
+            href={`/api/toolkit/export?queue_id=${id}&theme=${docTheme}`}
             className="text-sm px-3 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors"
           >
             📥 HTML
           </a>
           {isDeck && (
             <a
-              href={`/api/toolkit/export?queue_id=${id}&format=pptx`}
+              href={`/api/toolkit/export?queue_id=${id}&format=pptx&theme=${docTheme}`}
               className="text-sm px-3 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors"
             >
               📥 PPTX
@@ -197,7 +207,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
         <iframe
           key={iframeKey}
           ref={iframeRef}
-          src={`/api/toolkit/export?queue_id=${id}&inline=1`}
+          src={`/api/toolkit/export?queue_id=${id}&inline=1&theme=${docTheme}`}
           className="flex-1 w-full border-0"
           title={t('docs.document', locale)}
           allow="fullscreen"

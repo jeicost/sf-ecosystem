@@ -1,6 +1,7 @@
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
+import { getFeedbackBlock } from '@/lib/feedback'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 
@@ -50,15 +51,17 @@ export async function getQuickActionPrompt(
 ): Promise<string | null> {
   const { clientId, inputData, attachmentText, leadContext, projectId } = params
 
-  const [brandBrain, memoryContext, docContext, likedBlock] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, likedBlock, feedbackBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
       client_id: clientId,
       context_type: 'all',
       limit: 2,
+      project_id: projectId ?? null,
     }),
     getLikedOutputsBlock(clientId),
+    getFeedbackBlock(clientId, actionType),
   ])
 
   const brandContext = brandBrain ? formatBrandBrainForPrompt(brandBrain) : ''
@@ -73,7 +76,7 @@ export async function getQuickActionPrompt(
     ?.map((d: any) => d.excerpt)
     .join('\n') || ''
 
-  const allContext = [docText, brandContext, memoryContext]
+  const allContext = [docText, brandContext, memoryContext, feedbackBlock]
     .filter(Boolean)
     .join('\n\n')
 

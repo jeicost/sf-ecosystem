@@ -137,6 +137,14 @@ export async function POST(req: NextRequest) {
 
     // Adjuntos del usuario (F1 Business Reports): texto extraído como fuente
     // primaria del prompt + imágenes como bloques de visión (patrón QA).
+    // P3: el tema elegido al generar se persiste para que informe y exports
+    // salgan coherentes sin re-elegir (query param del export lo puede pisar)
+    if (body.theme === 'light' || body.theme === 'dark') {
+      input_data._theme = body.theme
+    } else if (input_data._theme !== 'light' && input_data._theme !== 'dark') {
+      delete input_data._theme
+    }
+
     const attachments: Attachment[] = Array.isArray(body.attachments) ? body.attachments : []
     const { contentBlocks: attachmentImageBlocks, textContext: attachmentText } =
       await buildAttachmentBlocks(attachments)

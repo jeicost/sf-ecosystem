@@ -3,6 +3,7 @@ import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { getFeedbackBlock } from '@/lib/feedback'
 import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
 
 /**
@@ -11,24 +12,9 @@ import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
  * las corrija — mismo patrón que agent_interactions en el chat de agentes.
  * Tolerante a que la tabla no exista aún (pre-migración 0050).
  */
+// P3: delega en el helper único de lib/feedback (mismo contrato de bloque)
 export async function getDocumentFeedbackBlock(clientId: string, toolSlug: string): Promise<string> {
-  try {
-    const admin = adminClient()
-    const { data, error } = await admin
-      .from('document_feedback')
-      .select('note, created_at')
-      .eq('client_id', clientId)
-      .eq('tool_slug', toolSlug)
-      .eq('outcome', 'not_helpful')
-      .not('note', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(3)
-    if (error || !data?.length) return ''
-    const notes = data.map((f) => `- ${f.note}`).join('\n')
-    return `\n\nCLIENT FEEDBACK ON PREVIOUS ${toolSlug} REPORTS (address these — do NOT repeat them):\n${notes}`
-  } catch {
-    return ''
-  }
+  return getFeedbackBlock(clientId, toolSlug)
 }
 
 // tone_of_voice may be a plain string or an object — never spread a string into chars

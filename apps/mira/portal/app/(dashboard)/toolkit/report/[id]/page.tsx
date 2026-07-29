@@ -1,6 +1,7 @@
 'use client'
 
 import { use, useEffect, useState, useRef } from 'react'
+import { getTheme } from '@/lib/theme'
 import Link from 'next/link'
 
 export default function ToolkitReportPage({ params }: { params: Promise<{ id: string }> }) {
@@ -16,9 +17,38 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   const [fbState, setFbState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [fbMsg, setFbMsg] = useState<string | null>(null)
   const [toolSlug, setToolSlug] = useState<string | null>(null)
+  // P3: tema del documento — arranca con el tema del portal, conmutable
+  const [docTheme, setDocTheme] = useState<'light' | 'dark'>('dark')
+  useEffect(() => { setDocTheme(getTheme()) }, [])
   const [slidesState, setSlidesState] = useState<'idle' | 'creating' | 'done' | 'error'>('idle')
   const [slidesMsg, setSlidesMsg] = useState<string | null>(null)
   const [queueState, setQueueState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  // P3: Refinar el informe con una instrucción (misma ruta que los documentos)
+  const [refineOpen, setRefineOpen] = useState(false)
+  const [refineText, setRefineText] = useState('')
+  const [refineState, setRefineState] = useState<'idle' | 'working' | 'error'>('idle')
+  const [refineMsg, setRefineMsg] = useState<string | null>(null)
+
+  const runRefine = async () => {
+    if (!refineText.trim() || refineState === 'working') return
+    setRefineState('working')
+    setRefineMsg(null)
+    const res = await fetch('/api/documents/refine', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue_id: id, instruction: refineText.trim() }),
+    }).catch(() => null)
+    const data = await res?.json().catch(() => null)
+    if (res?.ok) {
+      setRefineState('idle')
+      setRefineText('')
+      setRefineOpen(false)
+      setRetryKey((k) => k + 1) // recargar el informe revisado
+    } else {
+      setRefineState('error')
+      setRefineMsg(data?.error || 'No se pudo refinar')
+    }
+  }
   const [queueMsg, setQueueMsg] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
@@ -107,7 +137,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       const res = await fetch('/api/export/google-drive', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ queue_id: id }),
+        body: JSON.stringify({ queue_id: id, theme: docTheme }),
       })
       const data = await res.json().catch(() => null)
       if (!res.ok || !data?.success) {
@@ -125,8 +155,8 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
 
   const src =
     mode === 'deck'
-      ? `/api/toolkit/export?queue_id=${id}&inline=1&template=deck`
-      : `/api/toolkit/export?queue_id=${id}&inline=1`
+      ? `/api/toolkit/export?queue_id=${id}&inline=1&template=deck&theme=${docTheme}`
+      : `/api/toolkit/export?queue_id=${id}&inline=1&theme=${docTheme}`
 
   // El iframe no expone errores HTTP: pre-chequeamos cabeceras y abortamos el
   // body para no descargar el informe dos veces.
@@ -165,6 +195,20 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
         </Link>
         <div className="flex items-center gap-2">
           <button
+            onClick={() => setRefineOpen((v) => !v)}
+            className={`text-sm px-3 py-1.5 rounded transition-colors ${refineOpen ? 'bg-ink text-page font-medium' : 'bg-surface-hover text-ink hover:opacity-80'}`}
+            title="Regenerar el informe con una instrucción"
+          >
+            ✨ Refinar
+          </button>
+          <button
+            onClick={() => setDocTheme(docTheme === 'dark' ? 'light' : 'dark')}
+            className="text-sm px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
+            title="Tema del documento (claro/oscuro)"
+          >
+            {docTheme === 'dark' ? '🌙 Oscuro' : '☀️ Claro'}
+          </button>
+          <button
             onClick={() => setMode(mode === 'deck' ? 'report' : 'deck')}
             className={`text-sm px-3 py-1.5 rounded transition-colors ${
               mode === 'deck' ? 'bg-ink text-page font-medium' : 'bg-surface-hover text-ink hover:opacity-80'
@@ -181,7 +225,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             </button>
           )}
           <a
-            href={`/api/toolkit/export?queue_id=${id}${mode === 'deck' ? '&template=deck' : ''}`}
+            href={`/api/toolkit/export?queue_id=${id}${mode === 'deck' ? '&template=deck' : ''}&theme=${docTheme}`}
             className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
           >
             📥 Descargar HTML
@@ -227,6 +271,26 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       {driveState === 'error' && driveMsg && (
         <div className="px-4 py-2 text-xs text-amber-400 bg-amber-500/10 border-b border-amber-500/20 shrink-0">
           {driveMsg}
+        </div>
+      )}
+      {refineOpen && (
+        <div className="px-4 py-2 border-b border-line bg-page shrink-0 flex items-center gap-2 flex-wrap">
+          <input
+            type="text"
+            value={refineText}
+            onChange={(e) => setRefineText(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && runRefine()}
+            placeholder="Ej.: acorta el resumen ejecutivo y haz el plan más accionable"
+            className="flex-1 min-w-[260px] px-3 py-1.5 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs"
+          />
+          <button
+            onClick={runRefine}
+            disabled={refineState === 'working' || !refineText.trim()}
+            className="text-xs px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-50"
+          >
+            {refineState === 'working' ? '⏳ Refinando…' : 'Aplicar'}
+          </button>
+          {refineState === 'error' && refineMsg && <span className="text-xs text-amber-400">{refineMsg}</span>}
         </div>
       )}
       {slidesState === 'error' && slidesMsg && (

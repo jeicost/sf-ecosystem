@@ -1,3 +1,4 @@
+import { normalizeDocMode } from '@/lib/export/doc-theme'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
@@ -144,7 +145,9 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'No completed reports for this client' }, { status: 404 })
       }
 
+      const queryMode = normalizeDocMode(searchParams.get('theme'))
       const html = generateEditorialHTML({
+        ...(queryMode ? { mode: queryMode } : {}),
         clientName: clientRow2?.name || 'Cliente',
         brandColor: clientRow2?.primary_color || '#8B5CF6',
         toolTitle: 'Business Reports — Informe completo',
@@ -218,6 +221,10 @@ export async function GET(req: NextRequest) {
     const toolTitle = tool?.name || DOC_TITLES[toolSlug] || toolSlug
     const template = searchParams.get('template')
     const format = searchParams.get('format')
+    // P3: tema del documento — query param > _theme persistido al generar > dark/light por motor
+    const mode =
+      normalizeDocMode(searchParams.get('theme')) ??
+      normalizeDocMode((queueData?.input_data as Record<string, unknown> | null)?.['_theme'])
 
     const brand = { clientName, primaryColor: brandColor, logoUrl: clientRow?.logo_url || null }
 
@@ -288,6 +295,7 @@ export async function GET(req: NextRequest) {
         )
       }
       const buffer = await generateDeckPptx({
+        ...(mode ? { mode } : {}),
         brand,
         title: pptxTitle,
         subtitle: pptxSubtitle,
@@ -310,6 +318,7 @@ export async function GET(req: NextRequest) {
     if (toolSlug === 'doc-deck' || (toolSlug.startsWith('doc-') && template === 'deck')) {
       // Documento tipo presentación
       html = generateDeckHTML({
+        ...(mode ? { mode } : {}),
         brand,
         title: (result.title as string) || toolTitle,
         subtitle: (result.subtitle as string) || clientName,
@@ -318,6 +327,7 @@ export async function GET(req: NextRequest) {
     } else if (toolSlug.startsWith('doc-')) {
       // Playbook / informe de resultados / one-pager (one-pager = compacto, 1 página)
       html = generatePlaybookHTML({
+        ...(mode ? { mode } : {}),
         brand,
         docLabel: DOC_TITLES[toolSlug] || 'Documento',
         title: (result.title as string) || toolTitle,
@@ -331,6 +341,7 @@ export async function GET(req: NextRequest) {
       const sections = adapter(result)
       if (template === 'deck') {
         html = generateDeckHTML({
+        ...(mode ? { mode } : {}),
           brand,
           title: toolTitle,
           subtitle: clientName,
@@ -338,6 +349,7 @@ export async function GET(req: NextRequest) {
         })
       } else if (template === 'playbook') {
         html = generatePlaybookHTML({
+        ...(mode ? { mode } : {}),
           brand,
           title: toolTitle,
           subtitle: clientName,
@@ -351,7 +363,8 @@ export async function GET(req: NextRequest) {
           })),
         })
       } else {
-        html = generateEditorialHTML({ clientName, brandColor, toolTitle, sections })
+        html = generateEditorialHTML({
+        ...(mode ? { mode } : {}), clientName, brandColor, toolTitle, sections })
       }
     }
 

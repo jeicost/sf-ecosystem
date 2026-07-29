@@ -1,3 +1,4 @@
+import { normalizeDocMode } from '@/lib/export/doc-theme'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
@@ -27,7 +28,8 @@ async function resolveBrand(admin: ReturnType<typeof adminClient>, clientId: str
 
 export async function POST(req: NextRequest) {
   try {
-    const { queue_id, action_id } = await req.json()
+    const { queue_id, action_id, theme } = await req.json()
+    const mode = normalizeDocMode(theme)
     if (!queue_id && !action_id) {
       return NextResponse.json({ error: 'Missing queue_id or action_id' }, { status: 400 })
     }
@@ -76,6 +78,7 @@ export async function POST(req: NextRequest) {
         sections.unshift({ title: 'Visual', content: `<img src="${out.image_url}" alt="" style="max-width:100%;border-radius:12px;"/>` })
       }
       htmlContent = generateEditorialHTML({
+        ...(mode ? { mode } : {}),
         clientName,
         brandColor,
         toolTitle: action.resource_name || action.action_type.replace(/_/g, ' '),
@@ -104,6 +107,7 @@ export async function POST(req: NextRequest) {
         (generation.result_data ?? {}) as Record<string, unknown>
       )
       htmlContent = generateEditorialHTML({
+        ...(mode ? { mode } : {}),
         clientName,
         brandColor,
         toolTitle: generation.tool_slug.replace(/-/g, ' '),

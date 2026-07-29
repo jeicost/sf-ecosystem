@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import { getTheme } from '@/lib/theme'
 import { AttachmentDropzone } from '@/components/AttachmentDropzone'
 import ReportReadiness from '@/components/ReportReadiness'
 import type { Attachment } from '@/lib/attachments'
@@ -149,7 +150,7 @@ export default function ToolRunnerPage({
     setPollingQueueId(null)
 
     try {
-      const data = await onGenerate(formData, attachments)
+      const data = await onGenerate({ ...formData, _theme: getTheme() }, attachments)
       if (data?.queue_id) {
         // Start polling for result
         setPollingQueueId(data.queue_id)

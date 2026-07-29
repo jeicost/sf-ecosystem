@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { getFeedbackBlock } from '@/lib/feedback'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
@@ -9,26 +10,6 @@ import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 
 export const maxDuration = 300
 
-// B4: las notas negativas del cliente sobre este tipo de documento se
-// reinyectan al refinar (tolerante a que la tabla no exista pre-0050).
-async function getRefineFeedbackBlock(clientId: string, toolSlug: string): Promise<string> {
-  try {
-    const admin = adminClient()
-    const { data, error } = await admin
-      .from('document_feedback')
-      .select('note')
-      .eq('client_id', clientId)
-      .eq('tool_slug', toolSlug)
-      .eq('outcome', 'not_helpful')
-      .not('note', 'is', null)
-      .order('created_at', { ascending: false })
-      .limit(3)
-    if (error || !data?.length) return ''
-    return `\nFeedback previo del cliente sobre este tipo de documento (tenlo en cuenta):\n${data.map((f) => `- ${f.note}`).join('\n')}\n`
-  } catch {
-    return ''
-  }
-}
 
 function extractJson(text: string): Record<string, unknown> {
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
@@ -118,7 +99,7 @@ ${JSON.stringify(currentDoc, null, 2)}
 \`\`\`
 
 Instrucción del usuario: "${instruction}"
-${await getRefineFeedbackBlock(row.client_id, row.tool_slug)}
+${await getFeedbackBlock(row.client_id, row.tool_slug)}
 Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estructura de keys, mismo idioma). Devuelve el JSON completo revisado, nada más.
 
 ${GROUNDING_CONTRACT}

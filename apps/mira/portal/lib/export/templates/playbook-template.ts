@@ -32,6 +32,7 @@ export interface PlaybookSection {
 }
 
 export interface PlaybookOptions {
+  mode?: 'light' | 'dark'
   brand: PlaybookBrand
   docLabel?: string // etiqueta de portada/footer (default "Playbook")
   title: string
@@ -112,16 +113,17 @@ interface PlaybookTheme {
   primaryInk: string // text on primary backgrounds
 }
 
-function buildTheme(brand: PlaybookBrand): PlaybookTheme {
+function buildTheme(brand: PlaybookBrand, mode: 'light' | 'dark' = 'light'): PlaybookTheme {
   const primary = brand.primaryColor
   const accent = brand.accentColor ?? mix(primary, '#FFFFFF', 0.55)
   return {
     primary,
     accent,
     accentDark: mix(accent, '#000000', 0.35),
-    cream: '#F5F2EB',
+    // P3: en oscuro las páginas cream pasan a superficie oscura con tinta clara
+    cream: mode === 'dark' ? '#17171B' : '#F5F2EB',
     // Ink for cream/light pages — guard against light primaries.
-    ink: luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.6),
+    ink: mode === 'dark' ? '#F5F0E8' : (luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.6)),
     accentInk: inkOn(accent, primary),
     primaryInk: inkOn(primary, primary),
   }
@@ -860,7 +862,7 @@ function renderCompactPage(o: PlaybookOptions, t: PlaybookTheme): string {
 // ─────────────────────────────────────────────────────────────
 
 export function generatePlaybookHTML(options: PlaybookOptions): string {
-  const t = buildTheme(options.brand)
+  const t = buildTheme(options.brand, options.mode ?? 'light')
 
   // Compact mode (one-pager): no cover spread, no TOC, no back cover —
   // a single page with the hero band and all sections stacked.

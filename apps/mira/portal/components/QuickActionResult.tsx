@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { FeedbackButtons } from '@/components/FeedbackButtons'
 import { Check, X, Loader2, Download, Heart, Save, ArrowRight, AlertTriangle, Copy } from 'lucide-react'
 import Link from 'next/link'
 import { t } from '@/lib/i18n'
@@ -428,6 +429,9 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
             {t('actions.view-in-approvals', locale)} <ArrowRight size={12} />
           </Link>
         )}
+
+        {/* P3: feedback al diseñador — se reinyecta en la próxima quick action del mismo tipo */}
+        {actionId && <FeedbackButtons actionId={actionId} />}
 
         {/* Guardar en Documentos — el output pasa a la biblioteca del cliente
             y sirve de grounding en generaciones futuras */}

@@ -1,3 +1,4 @@
+import { editorialPalette, rgbaOf, type DocMode } from './doc-theme'
 // Editorial HTML template for toolkit reports — sf-reports design language.
 // Generates standalone, self-contained HTML: dark #1A1A1A / cream #F5F0E8,
 // Anton + Space Mono + Inter, side nav dots, reveal animations, brand color accents.
@@ -48,6 +49,8 @@ export interface Section {
 }
 
 export interface ReportOptions {
+  /** Tema del documento (P3): dark = look histórico, light = papel (default dark) */
+  mode?: DocMode
   clientName: string
   brandColor: string
   toolTitle: string
@@ -149,6 +152,8 @@ function renderChart(chart: ChartSpec, chartId: string, brandColor: string): str
 }
 
 export function generateEditorialHTML(options: ReportOptions): string {
+  const P = editorialPalette(options.mode ?? 'dark')
+  const { r: inkR, g: inkG, b: inkB } = ((h) => { const n = parseInt(h.replace('#',''), 16); return { r: (n >> 16) & 255, g: (n >> 8) & 255, b: n & 255 } })(P.ink)
   const { clientName, brandColor, toolTitle, sections, subtitle, tagline, tickerItems } = options
 
   const year = new Date().getFullYear()
@@ -212,10 +217,10 @@ ${hasCharts ? '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/cha
 <style>
   :root {
     --primary: ${brandColor};
-    --black: #1A1A1A;
-    --cream: #F5F0E8;
-    --cream-dim: rgba(245,240,232,0.7);
-    --cream-faint: rgba(245,240,232,0.12);
+    --black: ${P.bg};
+    --cream: ${P.ink};
+    --cream-dim: ${rgbaOf(P.ink, 0.7)};
+    --cream-faint: ${rgbaOf(P.ink, 0.12)};
     --nav-w: 56px;
   }
 
@@ -223,8 +228,8 @@ ${hasCharts ? '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/cha
   html { scroll-behavior: smooth; }
   body { background: var(--black); color: var(--cream); font-family: 'Inter', sans-serif; overflow-x: hidden; }
 
-  .nav { position: fixed; left: 0; top: 0; bottom: 0; width: var(--nav-w); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 100; padding: 0 12px; background: linear-gradient(to right, rgba(26,26,26,0.98) 80%, transparent); }
-  .nav-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: rgba(245,240,232,0.25); cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
+  .nav { position: fixed; left: 0; top: 0; bottom: 0; width: var(--nav-w); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; z-index: 100; padding: 0 12px; background: linear-gradient(to right, ${rgbaOf(P.bg, 0.98)} 80%, transparent); }
+  .nav-dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: ${rgbaOf(P.ink, 0.25)}; cursor: pointer; transition: all 0.3s ease; text-decoration: none; }
   .nav-dot:hover, .nav-dot.active { background: var(--primary); transform: scale(1.4); }
   .nav-dot::after { content: attr(data-label); position: absolute; left: 18px; top: 50%; transform: translateY(-50%); white-space: nowrap; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.08em; color: var(--cream); background: var(--black); padding: 3px 8px; border-left: 2px solid var(--primary); opacity: 0; pointer-events: none; transition: opacity 0.2s; }
   .nav-dot:hover::after { opacity: 1; }
@@ -262,8 +267,8 @@ ${hasCharts ? '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/cha
   .cards-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; width: 100%; }
   .cards-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%; }
   .cards-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; width: 100%; }
-  .card { background: rgba(245,240,232,0.04); border-top: 3px solid var(--primary); padding: 32px 28px; transition: background 0.3s; }
-  .card:hover { background: rgba(245,240,232,0.08); }
+  .card { background: ${rgbaOf(P.ink, 0.04)}; border-top: 3px solid var(--primary); padding: 32px 28px; transition: background 0.3s; }
+  .card:hover { background: ${rgbaOf(P.ink, 0.08)}; }
   .card-title { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--primary); text-transform: uppercase; margin-bottom: 20px; }
   .card-body { font-size: 14px; line-height: 1.8; color: var(--cream-dim); }
   .card-body strong { color: var(--cream); }
@@ -271,43 +276,43 @@ ${hasCharts ? '<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/cha
   .card-body li { padding-left: 16px; position: relative; margin-bottom: 8px; }
   .card-body li::before { content: '—'; position: absolute; left: 0; color: var(--primary); }
 
-  .stat-card { padding: 32px 24px; background: rgba(245,240,232,0.04); text-align: center; border-bottom: 3px solid var(--primary); transition: all 0.3s; }
-  .stat-card:hover { background: rgba(245,240,232,0.08); }
+  .stat-card { padding: 32px 24px; background: ${rgbaOf(P.ink, 0.04)}; text-align: center; border-bottom: 3px solid var(--primary); transition: all 0.3s; }
+  .stat-card:hover { background: ${rgbaOf(P.ink, 0.08)}; }
   .stat-num { font-family: 'Anton', sans-serif; font-size: clamp(36px, 5vw, 60px); color: var(--primary); line-height: 1; margin-bottom: 8px; }
   .stat-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.12em; color: var(--cream-dim); text-transform: uppercase; }
 
-  .phase-box { background: rgba(245,240,232,0.04); border-left: 3px solid var(--primary); padding: 32px 28px; margin-bottom: 20px; transition: all 0.3s; }
-  .phase-box:hover { background: rgba(245,240,232,0.07); }
+  .phase-box { background: ${rgbaOf(P.ink, 0.04)}; border-left: 3px solid var(--primary); padding: 32px 28px; margin-bottom: 20px; transition: all 0.3s; }
+  .phase-box:hover { background: ${rgbaOf(P.ink, 0.07)}; }
   .phase-title { font-family: 'Anton', sans-serif; font-size: 16px; letter-spacing: 0.06em; color: var(--primary); text-transform: uppercase; margin-bottom: 12px; }
   .phase-body { font-size: 13px; line-height: 1.8; color: var(--cream-dim); }
   .phase-body strong { color: var(--cream); }
 
-  .list-item { padding: 18px 0 18px 24px; border-bottom: 1px solid rgba(245,240,232,0.07); font-size: 14px; line-height: 1.7; color: var(--cream-dim); position: relative; }
+  .list-item { padding: 18px 0 18px 24px; border-bottom: 1px solid ${rgbaOf(P.ink, 0.07)}; font-size: 14px; line-height: 1.7; color: var(--cream-dim); position: relative; }
   .list-item::before { content: '→'; position: absolute; left: 0; color: var(--primary); font-family: 'Space Mono', monospace; }
   .list-item strong { color: var(--cream); }
 
   table { width: 100%; border-collapse: collapse; margin-bottom: 28px; }
-  th { background: rgba(245,240,232,0.06); color: var(--primary); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 12px 16px; text-align: left; }
-  td { padding: 12px 16px; font-size: 13px; color: var(--cream-dim); border-bottom: 1px solid rgba(245,240,232,0.05); }
+  th { background: ${rgbaOf(P.ink, 0.06)}; color: var(--primary); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; padding: 12px 16px; text-align: left; }
+  td { padding: 12px 16px; font-size: 13px; color: var(--cream-dim); border-bottom: 1px solid ${rgbaOf(P.ink, 0.05)}; }
   td:first-child { color: var(--cream); }
-  tr:hover td { background: rgba(245,240,232,0.02); }
+  tr:hover td { background: ${rgbaOf(P.ink, 0.02)}; }
 
   .badge { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.12em; padding: 4px 10px; white-space: nowrap; display: inline-block; text-transform: uppercase; margin-right: 6px; margin-bottom: 6px; }
   .badge-live { background: rgba(34,197,94,0.2); color: #4ADE80; }
   .badge-progress { background: rgba(251,191,36,0.2); color: #FBBF24; }
-  .badge-pending { background: rgba(245,240,232,0.08); color: var(--cream-dim); }
+  .badge-pending { background: ${rgbaOf(P.ink, 0.08)}; color: var(--cream-dim); }
 
   .divider { width: 48px; height: 3px; background: var(--primary); margin-bottom: 32px; }
 
-  .chart-wrap { max-width: 720px; margin-bottom: 40px; background: rgba(245,240,232,0.03); padding: 28px; }
+  .chart-wrap { max-width: 720px; margin-bottom: 40px; background: ${rgbaOf(P.ink, 0.03)}; padding: 28px; }
 
   .final-cta { background: var(--primary); padding: 56px 60px; text-align: center; margin: 0 -80px 0 -60px; }
   .final-cta-title { font-family: 'Anton', sans-serif; font-size: clamp(36px, 5vw, 64px); color: var(--black); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 12px; }
-  .final-cta-sub { font-family: 'Anton', sans-serif; font-size: 18px; color: rgba(26,26,26,0.7); letter-spacing: 0.04em; text-transform: uppercase; }
+  .final-cta-sub { font-family: 'Anton', sans-serif; font-size: 18px; color: ${rgbaOf(P.bg, 0.7)}; letter-spacing: 0.04em; text-transform: uppercase; }
 
-  .footer { background: #0f0f0f; padding: 24px 80px; display: flex; justify-content: space-between; align-items: center; }
-  .footer p { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: rgba(245,240,232,0.2); }
-  .sf-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; color: rgba(245,240,232,0.35); text-transform: uppercase; border: 1px solid rgba(245,240,232,0.12); padding: 5px 10px; }
+  .footer { background: ${P.footerBg}; padding: 24px 80px; display: flex; justify-content: space-between; align-items: center; }
+  .footer p { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 0.1em; color: ${rgbaOf(P.ink, 0.2)}; }
+  .sf-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 0.18em; color: ${rgbaOf(P.ink, 0.35)}; text-transform: uppercase; border: 1px solid ${rgbaOf(P.ink, 0.12)}; padding: 5px 10px; }
   .sf-badge span { color: var(--primary); font-weight: 700; }
 
   @media (max-width: 1024px) { section { padding: 80px 60px 80px 50px; } .cards-3, .cards-2, .cards-4 { grid-template-columns: 1fr; } }
@@ -408,7 +413,7 @@ ${
       datasets: [{
         label: spec.label,
         data: spec.data,
-        backgroundColor: spec.type === 'doughnut' ? spec.labels.map((_, i) => i === 0 ? color : 'rgba(245,240,232,' + Math.max(0.1, 0.35 - i * 0.06) + ')') : color + 'CC',
+        backgroundColor: spec.type === 'doughnut' ? spec.labels.map((_, i) => i === 0 ? color : 'rgba(${inkR},${inkG},${inkB},' + Math.max(0.1, 0.35 - i * 0.06) + ')') : color + 'CC',
         borderColor: color,
         borderWidth: spec.type === 'line' ? 3 : 1,
         tension: 0.35,
@@ -417,10 +422,10 @@ ${
     },
     options: {
       responsive: true,
-      plugins: { legend: { display: !!spec.label, labels: { color: 'rgba(245,240,232,0.7)', font: { family: "'Space Mono', monospace", size: 10 } } } },
+      plugins: { legend: { display: !!spec.label, labels: { color: '${rgbaOf(P.ink, 0.7)}', font: { family: "'Space Mono', monospace", size: 10 } } } },
       scales: spec.type === 'doughnut' || spec.type === 'radar' ? {} : {
-        x: { ticks: { color: 'rgba(245,240,232,0.5)', font: { family: "'Space Mono', monospace", size: 10 } }, grid: { color: 'rgba(245,240,232,0.06)' } },
-        y: { ticks: { color: 'rgba(245,240,232,0.5)', font: { family: "'Space Mono', monospace", size: 10 } }, grid: { color: 'rgba(245,240,232,0.06)' } }
+        x: { ticks: { color: '${rgbaOf(P.ink, 0.5)}', font: { family: "'Space Mono', monospace", size: 10 } }, grid: { color: '${rgbaOf(P.ink, 0.06)}' } },
+        y: { ticks: { color: '${rgbaOf(P.ink, 0.5)}', font: { family: "'Space Mono', monospace", size: 10 } }, grid: { color: '${rgbaOf(P.ink, 0.06)}' } }
       }
     }
   });
