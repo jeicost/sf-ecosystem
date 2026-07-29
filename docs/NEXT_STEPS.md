@@ -1,24 +1,23 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-29)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-29 tarde)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)). Migraciones 0048/0049/0050 aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)). Migraciones 0048/0049/0050/0051 aplicadas. Este fichero lista SOLO lo que queda.
 
 ## Acciones del CEO (no técnicas)
 
-0. **⚡ APLICAR MIGRACIÓN 0051** (2 min, desbloquea los 2 reports nuevos): pegar `apps/mira/portal/supabase/migrations/0051_business_reports_slugs.sql` en https://supabase.com/dashboard/project/nnevhtfxuawexliwlbmh/sql — añade brand-book y monthly-content-system al CHECK de generation_queue. Sin esto, generar cualquiera de los dos falla con "violates check constraint".
+1. **Reconexión Drive de 4 clientes** (Startup Factory, Dadybox, Discoolver, NC Global) — ✅ Salsa ya reconectado con scope de escritura completo (verificado 2026-07-29). Un clic por cliente en MIRA → Integraciones → Conectar Google Drive.
+2. **Adrian Grooves**: entregarle la password temporal (`Mira-9Ud41Adr!7`, reseteada 2026-07-27) por canal seguro; que la cambie al entrar. Configurarle Drive con el protocolo.
+3. **Dadybox**: revocar el acceso de MIRA en su cuenta Google y reconectar (fuga de token en terminal, DEBT ff) — pendiente desde el 24/07.
+4. **Revisar Drive de Dadybox/Discoolver antes de dar por bueno su onboarding visual**: en Salsa se encontró y limpió documentación técnica interna de MIRA (schemas JSON de otro proyecto) mezclada por error en su carpeta de conocimiento (DEBT nn) — comprobar que no pasa lo mismo en las otras.
 
-1. **Reconexión Drive de los 5 clientes** (Salsa, Startup Factory, Dadybox, Discoolver, NC Global): sus conexiones son seed caducado. Un clic por cliente en MIRA → Integraciones → Conectar Google Drive (el banner ámbar ya lo pide). Con eso arranca el auto-sync diario (07:00 CET) y el export a su Drive.
-2. **Montar la carpeta de conocimiento del primer cliente real** con el protocolo nuevo (ver DEBT kk / memoria): UNA carpeta en su Drive (subcarpetas libres, docs de texto, ≤3 niveles) → pegar enlace en MIRA. "MIRA — Entregables" nace sola en su raíz; pueden arrastrarla dentro.
-3. **Adrian Grooves**: entregarle la password temporal (`Mira-9Ud41Adr!7`, reseteada 2026-07-27) por canal seguro; que la cambie al entrar. Configurarle Drive con el protocolo.
-4. **Dadybox**: revocar el acceso de MIRA en su cuenta Google y reconectar (fuga de token en terminal, DEBT ff) — pendiente desde el 24/07.
-5. **VERCEL_TOKEN del GitHub Action** caducado: regenerar el secret o quitar el step del workflow (no bloquea — el deploy real va por integración nativa).
+## MIRA — Business Reports (DEBT ll/nn) — ✅ CERRADO
 
-## MIRA — Business Reports (sesión 2026-07-28/29, DEBT ll)
+Brand Book y Monthly Content System verificados con generaciones reales completas contra Salsa (200 OK, contenido real, sin truncar). Migración 0051 aplicada. Bug de timeout del monthly (fix `a9a04a8`) confirmado resuelto en producción. Sin pendientes de esta ronda salvo lo listado abajo.
 
-- **Verificación real de brand-book y monthly** (bloqueada solo por la migración 0051): build completo con Salsa (fixture QA listo), Voice Guide A4 → Slides, deck mensual → verify-deck → Slides editable en Drive → materializar captions a la Cola. Los scripts de verificación están en el scratchpad de la sesión.
-- **Primer build real con cliente**: Dadybox (brand book) y Salsa (monthly) como casos de referencia; sembrar approval_queue del mes previo para ver previous_month_learnings en acción.
-- **v2 del monthly**: modos pillars_only / brief_greenlights / guardrail_check (del diseño original, pospuestos).
-- **Riesgo vigilado**: monthly = 2 llamadas opus secuenciales con maxDuration 300s — si aparece timeout en prod, ampliar o partir.
-- **Limpieza QA pendiente al cierre**: borrar filas de `br_cleanup.txt` (generaciones de prueba en Salsa, incluida 1 en PROD), restaurar brand_data de Salsa desde el backup del scratchpad, borrar grant QA `5fcf1db7`, matar dev server.
+## Visual Production Foundation — esperando respuesta externa (DEBT nn)
+
+- Nota de estado ya redactada para reenviar al equipo/persona del handoff — resume: seguimos esperando (a) contrato de marca congelado Salsa/Dadybox/Discoolver, (b) su decisión sobre 0028 reuse-vs-namespace, (c) aprobación de "one small backend foundation task".
+- Mientras tanto, ejecutado ya (Track A, sin tocar nada gated): Studio (designer/spark) con piezas reales aprobadas en vez de mock; `generate_image` con grounding visual real vía Claude vision. Ver detalle en DEBT (nn).
+- Pendiente real (Track B, NO empezar sin luz verde externa): aplicar `vp_brand_visual_modules`/`vp_visual_references`, descargar e indexar de verdad las fotos de "Post References" de Drive, cross-link con el JSON de 12 casos de `README (1).md` de Salsa.
 
 ## MIRA — técnico pendiente (por prioridad)
 
@@ -29,10 +28,11 @@ Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en prod
 5. **ENFORCE_PLAN_LIMITS**: sin bloqueantes desde el 24/07, activación pendiente de decisión CEO.
 6. **Stripe**: elegido como pasarela (24/07), build-out pendiente (facturación real de clientes; los ficheros mock de Operations→Billing esperan esto).
 7. **Canva**: OAuth completo en código; faltan registro de app + review + envs `NEXT_PUBLIC_CANVA_CLIENT_ID`/`CANVA_CLIENT_SECRET` (DEBT l).
-8. **Imágenes — mejoras**: edición real pixel-perfect (`images.edit` de OpenAI en vez de regenerar), carousel multi-imagen (hoy solo cover), tamaños 4:5/9:16 para stories/reels.
-9. **Drive — mejoras**: watch/push de cambios (hoy sync diario), toggle de auto_sync por carpeta en el panel (columna ya existe).
-10. **Limpieza menor**: prompts huérfanos en quick-action-prompts (patrón entrada g), tabla `toolkit_results` legacy, tablas `visual_jobs` (0028) sin rutas — decidir borrado en una ronda de higiene de BD.
-11. **Publicación en redes**: FUERA del producto por decisión CEO (2026-07-28). Si algún día se retoma: puente n8n contra los webhooks dormidos (`/api/webhook/queue-post|alert|agent-activity`, protegidos por `WEBHOOK_SECRET`) — no reconstruir desde cero.
+8. **Imágenes — mejoras reales** (`images.edit` de OpenAI con referencia real en vez de solo texto, carousel multi-imagen, tamaños 4:5/9:16): ligado a Track B de Visual Production Foundation — no elegir modelo/endpoint final hasta que se resuelva (ver sección arriba).
+9. **Drive — mejoras**: watch/push de cambios (hoy sync diario), toggle de auto_sync por carpeta en el panel (columna ya existe). Además: la tarjeta genérica de Google Drive en `/integrations` puede disparar un disconnect que no hace nada (tabla equivocada) — confuso, no roto (DEBT nn); decidir si se quita de esa tarjeta o se le da su propio handler.
+10. **Bug real, no arreglado**: `column agent_activity.created_at does not exist` — 400 en las pestañas Activity/Performance de `/agent/[role]` (DEBT nn, encontrado de rebote, sin investigar la causa).
+11. **Limpieza menor**: prompts huérfanos en quick-action-prompts (patrón entrada g), tabla `toolkit_results` legacy, tablas `visual_jobs` (0028) sin rutas — decisión ligada a Visual Production Foundation, no una ronda de higiene aparte.
+12. **Publicación en redes**: FUERA del producto por decisión CEO (2026-07-28). Si algún día se retoma: puente n8n contra los webhooks dormidos (`/api/webhook/queue-post|alert|agent-activity`, protegidos por `WEBHOOK_SECRET`) — no reconstruir desde cero.
 
 ## Resto del ecosistema
 
