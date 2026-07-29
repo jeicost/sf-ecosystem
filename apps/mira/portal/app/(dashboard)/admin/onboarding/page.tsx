@@ -41,16 +41,9 @@ export default function AdminOnboardingPage() {
   const fileInputRef = useRef<HTMLInputElement>(null)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    fetch('/api/admin/onboarding', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
-      .then(async (r) => {
-        const json = await r.json()
-        if (!r.ok) throw new Error(json.error || 'No se pudo iniciar la sesión')
-        setSessionId(json.sessionId)
-        setClientId(json.clientId)
-      })
-      .catch((e) => setError(e instanceof Error ? e.message : 'Error'))
-  }, [])
+  // P7-fix (2026-07-29): la sesión (y el cliente borrador) se crean SOLO al
+  // enviar el primer mensaje — abrir la página ya no deja huérfanos
+  // "Nuevo cliente sin nombre" en la BD.
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
@@ -85,7 +78,23 @@ export default function AdminOnboardingPage() {
   }
 
   async function sendMessage() {
-    if ((!input.trim() && pendingAttachments.length === 0) || !sessionId || sending) return
+    if ((!input.trim() && pendingAttachments.length === 0) || sending) return
+    let sid = sessionId
+    let cid = clientId
+    if (!sid) {
+      try {
+        const r = await fetch('/api/admin/onboarding', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
+        const json = await r.json()
+        if (!r.ok) throw new Error(json.error || 'No se pudo iniciar la sesión')
+        sid = json.sessionId
+        cid = json.clientId
+        setSessionId(sid)
+        setClientId(cid)
+      } catch (e) {
+        setError(e instanceof Error ? e.message : 'Error')
+        return
+      }
+    }
     const userMessage = input.trim()
     const attachments = pendingAttachments
     setMessages((prev) => [
@@ -101,7 +110,7 @@ export default function AdminOnboardingPage() {
       const res = await fetch('/api/admin/onboarding', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, message: userMessage, attachments }),
+        body: JSON.stringify({ sessionId: sid, message: userMessage, attachments }),
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Error en la conversación')
@@ -274,7 +283,7 @@ export default function AdminOnboardingPage() {
         />
         <button
           onClick={sendMessage}
-          disabled={sending || (!input.trim() && pendingAttachments.length === 0) || !sessionId}
+          disabled={sending || (!input.trim() && pendingAttachments.length === 0)}
           aria-label="Enviar mensaje"
           className="rounded-lg bg-violet-600 p-2.5 text-white transition hover:bg-violet-500 disabled:opacity-50"
         >
