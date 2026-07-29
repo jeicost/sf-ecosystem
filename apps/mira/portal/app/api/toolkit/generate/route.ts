@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt, type ToolPromptParams } from '@/lib/generation/toolkit-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { resolveRequestClient } from '@/lib/resolve-client'
+import { getSessionUser, resolveRequestClient } from '@/lib/resolve-client'
+import { canUseFeature } from '@/lib/plans'
 import {
   fetchSiteSnapshot,
   formatSnapshotForPrompt,
@@ -156,6 +157,16 @@ export async function POST(req: NextRequest) {
       userId = access.userId
     } else {
       return NextResponse.json({ error: access.error }, { status: access.status })
+    }
+
+    // Entitlement por plan (P5): el plan 'consulta' no incluye generar informes.
+    // resolveRequestClient no expone metadata — se lee el user de sesión directamente.
+    const sessionUser = await getSessionUser()
+    if (!canUseFeature(sessionUser?.user_metadata?.plan, 'toolkitGenerate')) {
+      return NextResponse.json(
+        { error: 'Tu plan no incluye la generación de Business Reports' },
+        { status: 403 }
+      )
     }
 
     const admin = adminClient()

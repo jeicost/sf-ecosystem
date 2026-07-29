@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
 
-const PLAN_OPTIONS = ['starter', 'growth', 'scale', 'admin', 'super_admin'] as const
+const PLAN_OPTIONS = ['consulta', 'starter', 'growth', 'scale', 'admin', 'super_admin'] as const
 type Plan = (typeof PLAN_OPTIONS)[number]
 
 const PLAN_LABEL: Record<Plan, string> = {
+  consulta: 'Consulta (sin toolkit)',
   starter: 'Starter',
   growth: 'Growth',
   scale: 'Scale',

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
 
-const VALID_PLANS = ['starter', 'growth', 'scale', 'admin', 'super_admin']
+const VALID_PLANS = ['consulta', 'starter', 'growth', 'scale', 'admin', 'super_admin']
 
 // Super Admin: change a real user's plan (user_metadata.plan). The GoTrue
 // Admin API intermittently fails with "unrecognized JWT kid" for write calls

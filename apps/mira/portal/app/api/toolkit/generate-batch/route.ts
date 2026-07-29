@@ -4,6 +4,8 @@ import { getToolkitPrompt } from '@/lib/generation/toolkit-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { TOOLKIT_TOOLS as TOOLKIT_TOOL_DEFS } from '@/lib/toolkit-tools'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
+import { getSessionUser } from '@/lib/resolve-client'
+import { canUseFeature } from '@/lib/plans'
 
 // Long-running generation: allow up to 800s on Vercel (fluid compute)
 export const maxDuration = 800
@@ -146,6 +148,17 @@ export async function POST(req: NextRequest) {
     const secret = process.env.BATCH_SECRET
     if (!secret || req.headers.get('x-batch-secret') !== secret) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Entitlement por plan (P5): la ruta es server-to-server (x-batch-secret,
+    // sin sesión normalmente), pero si la invoca un usuario logueado su plan
+    // debe incluir toolkitGenerate — el plan 'consulta' queda fuera.
+    const sessionUser = await getSessionUser().catch(() => null)
+    if (sessionUser && !canUseFeature(sessionUser.user_metadata?.plan, 'toolkitGenerate')) {
+      return NextResponse.json(
+        { error: 'Tu plan no incluye la generación de Business Reports' },
+        { status: 403 }
+      )
     }
 
     const body = await req.json()
