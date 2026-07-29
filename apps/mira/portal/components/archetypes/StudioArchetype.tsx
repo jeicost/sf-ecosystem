@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { Plus, Edit, Eye, Download, Lock, Palette, Zap } from 'lucide-react'
 import { clsx } from 'clsx'
 
-interface DesignProject {
+export interface DesignProject {
   id: string
   name: string
   type: 'post' | 'video' | 'thumbnail'
@@ -25,36 +25,6 @@ interface StudioArchetypeProps {
   onExportProject?: (projectId: string) => void
   connectedTools?: string[]
 }
-
-const DEFAULT_PROJECTS: DesignProject[] = [
-  {
-    id: '1',
-    name: 'May Campaign Social Post',
-    type: 'post',
-    tool: 'canva',
-    status: 'approved',
-    updatedAt: '2 hours ago',
-    dimensions: '1080 × 1350',
-  },
-  {
-    id: '2',
-    name: 'Product Launch Teaser',
-    type: 'video',
-    tool: 'canva',
-    status: 'review',
-    updatedAt: '30 min ago',
-    dimensions: '1920 × 1080',
-  },
-  {
-    id: '3',
-    name: 'YouTube Thumbnail Draft',
-    type: 'thumbnail',
-    tool: 'figma',
-    status: 'draft',
-    updatedAt: '1 day ago',
-    dimensions: '1280 × 720',
-  },
-]
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -97,7 +67,7 @@ const getToolEmoji = (tool: string) => {
 
 export default function StudioArchetype({
   agentColor,
-  projects = DEFAULT_PROJECTS,
+  projects = [],
   onCreateProject,
   onEditProject,
   onApproveProject,
@@ -144,6 +114,15 @@ export default function StudioArchetype({
         </div>
 
         {/* Project Grid */}
+        {projects.length === 0 ? (
+          <div className="card p-6 text-center border border-dashed border-line">
+            <Palette size={24} className="mx-auto text-ink-tertiary mb-2" />
+            <div className="text-sm text-ink font-medium">No hay piezas aprobadas todavía</div>
+            <div className="text-xs text-ink-tertiary mt-1">
+              En cuanto se apruebe un visual en /approvals, aparecerá aquí.
+            </div>
+          </div>
+        ) : (
         <div className="grid grid-cols-3 gap-3">
           {projects.map(project => {
             const isSelected = selectedProjectId === project.id
@@ -161,8 +140,13 @@ export default function StudioArchetype({
                 )}
               >
                 {/* Project Preview */}
-                <div className="mb-2 w-full h-24 bg-gradient-to-br from-surface-hover to-surface rounded border border-line flex items-center justify-center">
-                  <span className="text-4xl">{getProjectTypeIcon(project.type)}</span>
+                <div className="mb-2 w-full h-24 bg-gradient-to-br from-surface-hover to-surface rounded border border-line flex items-center justify-center overflow-hidden">
+                  {project.preview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={project.preview} alt={project.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-4xl">{getProjectTypeIcon(project.type)}</span>
+                  )}
                 </div>
 
                 {/* Project Info */}
@@ -187,6 +171,7 @@ export default function StudioArchetype({
             )
           })}
         </div>
+        )}
       </div>
 
       {/* Main Editing Area */}
@@ -200,24 +185,37 @@ export default function StudioArchetype({
             {/* Canvas Preview */}
             <div className="space-y-3">
               <div className="text-sm font-semibold text-ink">{selectedProject.name}</div>
-              <div className="w-full bg-gradient-to-br from-surface-hover to-surface rounded border-2 border-dashed border-line flex items-center justify-center p-12">
-                <div className="text-center space-y-3">
-                  <div className="text-5xl">{getProjectTypeIcon(selectedProject.type)}</div>
-                  <div className="text-sm text-ink-tertiary">{selectedProject.dimensions}</div>
-                  <button
-                    onClick={() => onEditProject?.(selectedProject.id)}
-                    className="mt-4 px-4 py-2 rounded font-medium text-sm transition-all flex items-center gap-2 mx-auto"
-                    style={{
-                      backgroundColor: `${agentColor}20`,
-                      color: agentColor,
-                      border: `1px solid ${agentColor}40`,
-                    }}
-                  >
-                    <Edit size={14} />
-                    Open in {selectedProject.tool === 'canva' ? 'Canva' : 'Figma'}
-                  </button>
+              {selectedProject.preview ? (
+                <div className="w-full rounded border border-line overflow-hidden flex items-center justify-center bg-surface">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={selectedProject.preview}
+                    alt={selectedProject.name}
+                    className="max-h-96 w-auto object-contain"
+                  />
                 </div>
-              </div>
+              ) : (
+                <div className="w-full bg-gradient-to-br from-surface-hover to-surface rounded border-2 border-dashed border-line flex items-center justify-center p-12">
+                  <div className="text-center space-y-3">
+                    <div className="text-5xl">{getProjectTypeIcon(selectedProject.type)}</div>
+                    <div className="text-sm text-ink-tertiary">{selectedProject.dimensions}</div>
+                    {(selectedProject.tool === 'canva' || selectedProject.tool === 'figma') && (
+                      <button
+                        onClick={() => onEditProject?.(selectedProject.id)}
+                        className="mt-4 px-4 py-2 rounded font-medium text-sm transition-all flex items-center gap-2 mx-auto"
+                        style={{
+                          backgroundColor: `${agentColor}20`,
+                          color: agentColor,
+                          border: `1px solid ${agentColor}40`,
+                        }}
+                      >
+                        <Edit size={14} />
+                        Open in {selectedProject.tool === 'canva' ? 'Canva' : 'Figma'}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Project Details */}

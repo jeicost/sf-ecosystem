@@ -240,7 +240,39 @@ export async function POST(req: NextRequest) {
             userText = `${dangling.content}\n\n${message}`
           }
 
-          const conversation: Anthropic.MessageParam[] = [...sanitized, { role: 'user', content: userText }]
+          // Grounding visual (Track A del plan de referencias, 2026-07-29):
+          // designer/spark VEN una pieza real ya aprobada del cliente (misma
+          // fuente que el Estudio: approval_queue) antes de escribir el prompt
+          // de generate_image -- mismo patrón de visión que editar_imagen_visual
+          // (lib/attachments.ts), sin cambiar el modelo de imagen ni el endpoint
+          // de generación. La librería curada de "Post References" reales de
+          // Drive queda para cuando el equipo visual externo cierre el contrato
+          // de marca compartido (ver docs del plan) -- esto es lo que se puede
+          // hacer ya, sin conflicto.
+          let userContent: Anthropic.MessageParam['content'] = userText
+          if (CREATIVE_IMAGE_ROLES.includes(role)) {
+            try {
+              const { adminClient } = await import('@/lib/supabase')
+              const { fetchApprovedVisuals } = await import('@/lib/studio-references')
+              const { buildAttachmentBlocks } = await import('@/lib/attachments')
+              const [recent] = await fetchApprovedVisuals(adminClient(), resolvedClientId, 1)
+              if (recent?.asset_url) {
+                const { contentBlocks } = await buildAttachmentBlocks([
+                  { type: 'image', name: 'Última pieza aprobada del cliente', url: recent.asset_url },
+                ])
+                if (contentBlocks.length > 0) {
+                  userContent = [
+                    ...contentBlocks,
+                    { type: 'text', text: `${userText}\n\n(Referencia visual adjunta: la última pieza real aprobada de este cliente -- úsala para mantener consistencia de estilo/color si generas una imagen.)` },
+                  ]
+                }
+              }
+            } catch (err) {
+              console.warn('Studio reference grounding failed (non-fatal):', err)
+            }
+          }
+
+          const conversation: Anthropic.MessageParam[] = [...sanitized, { role: 'user', content: userContent }]
           let toolLoops = 0
 
           // Tool-use loop: the model may call web_search one or more times before

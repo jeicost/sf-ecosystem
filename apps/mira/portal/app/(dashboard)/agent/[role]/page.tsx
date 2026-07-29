@@ -2,6 +2,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import AgentArchetypeWrapper from '@/components/archetypes/AgentArchetypeWrapper'
+import type { DesignProject } from '@/components/archetypes/StudioArchetype'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { clsx } from 'clsx'
@@ -23,6 +24,10 @@ import DocumentUploader from '@/components/document-uploader'
 import Card from '@/components/ui/Card'
 import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
+
+// Roles mapped to the STUDIO archetype in lib/agent-archetypes.ts -- the only
+// ones whose Workspace tab needs real approved visuals.
+const STUDIO_ROLES = ['designer', 'spark']
 
 type AutonomyLevel = 'always_ask' | 'full_auto'
 type TabId = 'about' | 'history' | 'chat' | 'workspace' | 'performance'
@@ -63,6 +68,7 @@ export default function AgentPage() {
   const [showUploader, setShowUploader] = useState(false)
   const [uploadingDoc, setUploadingDoc] = useState(false)
   const [recentTasks, setRecentTasks] = useState<AgentTask[]>([])
+  const [studioProjects, setStudioProjects] = useState<DesignProject[]>([])
   const [agentStats, setAgentStats] = useState<AgentStats>({
     totalInteractions: 0,
     completionRate: 0,
@@ -79,7 +85,20 @@ export default function AgentPage() {
     if (!clientId) return
     loadSettings()
     loadActivityData()
+    if (STUDIO_ROLES.includes(role)) loadStudioProjects()
   }, [clientId, role])
+
+  async function loadStudioProjects() {
+    try {
+      const res = await fetch(`/api/studio/approved-visuals?clientId=${clientId}`)
+      if (!res.ok) throw new Error('Failed to load approved visuals')
+      const data = await res.json()
+      setStudioProjects(data.projects ?? [])
+    } catch (err) {
+      console.error('Error loading Studio approved visuals:', err)
+      setStudioProjects([])
+    }
+  }
 
   async function loadSettings() {
     try {
@@ -357,6 +376,7 @@ export default function AgentPage() {
             agentName={agent.name}
             agentColor={agent.color}
             agentEmoji={agent.emoji}
+            projects={studioProjects}
           />
         )}
 
