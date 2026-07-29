@@ -11,7 +11,7 @@ import { daysInMonth } from '@/lib/business-reports/monthly-calendar'
 // Idempotente: result_data.materialized_at marca el envío — repetir no duplica.
 export async function POST(req: NextRequest) {
   try {
-    const { queue_id, force } = await req.json()
+    const { queue_id, force, with_covers } = await req.json()
     if (!queue_id) {
       return NextResponse.json({ error: 'Missing queue_id' }, { status: 400 })
     }
@@ -79,6 +79,28 @@ export async function POST(req: NextRequest) {
         }
         return { pillarName: String(c.pillar_name ?? '—'), post, scheduledTime }
       })
+
+    // P4: covers opcionales — imagen por caption (cap 8, coste acotado) que
+    // /approvals ya muestra vía asset_url. Off por defecto.
+    if (with_covers === true) {
+      const { generateAndStoreImage } = await import('@/lib/generation/openai-image')
+      const COVER_CAP = 8
+      let generated = 0
+      for (const item of items) {
+        if (generated >= COVER_CAP) break
+        const vd = item.post.visual_direction
+        if (!vd) continue
+        const stored = await generateAndStoreImage(
+          `${vd}. Estilo coherente con la marca.`,
+          row.client_id,
+          `monthly-cover-${row.id.slice(0, 8)}-${generated}`
+        )
+        if (stored?.signedUrl) {
+          ;(item as any).assetUrl = stored.signedUrl
+          generated++
+        }
+      }
+    }
 
     const { inserted } = await materializePosts(admin, row.client_id, items)
 

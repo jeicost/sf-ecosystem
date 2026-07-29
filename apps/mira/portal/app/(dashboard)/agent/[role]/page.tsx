@@ -1,13 +1,14 @@
 // FASE B: Agent page with full settings persistence + quick prompts + real activity fallback
 'use client'
 import { useState, useRef, useEffect } from 'react'
+import AgentArchetypeWrapper from '@/components/archetypes/AgentArchetypeWrapper'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
   ArrowLeft, CheckCircle, Clock, AlertCircle, Zap, Hand, Shield,
   Copy, Check, Eye, EyeOff, TrendingUp, MessageSquare, Send, Sparkles,
-  ThumbsUp, ThumbsDown,
+  ThumbsUp, ThumbsDown, LayoutGrid,
 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { getAgentPrompt } from '@/lib/agent-prompts'
@@ -24,12 +25,13 @@ import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
 
 type AutonomyLevel = 'always_ask' | 'full_auto'
-type TabId = 'about' | 'history' | 'chat' | 'performance'
+type TabId = 'about' | 'history' | 'chat' | 'workspace' | 'performance'
 
 const TABS: { id: TabId; label: string; icon: any }[] = [
   { id: 'about', label: 'About', icon: EyeOff },
   { id: 'history', label: 'Activity', icon: Clock },
   { id: 'chat', label: 'Chat', icon: MessageSquare },
+  { id: 'workspace', label: 'Workspace', icon: LayoutGrid },
   { id: 'performance', label: 'Performance', icon: TrendingUp },
 ]
 
@@ -347,6 +349,17 @@ export default function AgentPage() {
         )}
 
         {/* Tab: Chat */}
+        {activeTab === 'workspace' && (
+          // P4: la interfaz por ARQUETIPO (Oracle/Analyst/Explorer/Architect/
+          // Sentinel/Studio) por fin conectada a la página real del agente.
+          <AgentArchetypeWrapper
+            agentId={role}
+            agentName={agent.name}
+            agentColor={agent.color}
+            agentEmoji={agent.emoji}
+          />
+        )}
+
         {activeTab === 'chat' && (
           <div className="flex flex-col h-[600px] rounded-xl overflow-hidden" style={{
             background: 'var(--bg-surface)',

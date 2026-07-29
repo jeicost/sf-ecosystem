@@ -4,39 +4,42 @@
 export type AgentArchetype = 'ORACLE' | 'ANALYST' | 'EXPLORER' | 'ARCHITECT' | 'SENTINEL' | 'STUDIO'
 
 export const AGENT_ARCHETYPE_MAP: Record<string, AgentArchetype> = {
-  // ORACLE — Content & idea generators
-  alex: 'ORACLE',
-  kai: 'ORACLE',
+  // P4 (2026-07-29): claves por SLUG de rol (el routing real de /agent/[role])
+  // — antes iban por nombre de persona ('alex', 'vera'…) y solo ~9/23
+  // matcheaban; faltaban finn/quinn/riva y nova/kai estaban invertidos.
 
-  // ANALYST — Scoring & evaluation
-  vera: 'ANALYST',
-  atlas: 'ANALYST',
-  quant: 'ANALYST',
-  fiscal: 'ANALYST',
+  // COMERCIAL
+  'orchestrator': 'ARCHITECT',      // Marco — planifica el pipeline
+  'lead-scout': 'EXPLORER',         // Rex — descubrimiento
+  'icp-scorer': 'ANALYST',          // Vera — scoring
+  'icebreaker-writer': 'ORACLE',    // Finn — generación de copy
+  'reply-qualifier': 'ANALYST',     // Quinn — evaluación de respuestas
+  'proposal-writer': 'ARCHITECT',   // Nova — estructura propuestas
 
-  // EXPLORER — Discovery & research
-  rex: 'EXPLORER',
+  // MARKETING
+  'content-strategist': 'ARCHITECT', // Luna — planifica el sistema
+  'copywriter': 'ORACLE',            // Alex — generación
+  'social-media-manager': 'ARCHITECT', // Noa — calendariza y estructura
+  'designer': 'STUDIO',              // Zoe — visual
+  'video-editor': 'STUDIO',          // Kai — visual/vídeo
+  'ads-manager': 'ANALYST',          // Riva — performance
+  'community-manager': 'SENTINEL',   // Sam — monitorización de comunidad
 
-  // ARCHITECT — Planning & structuring
-  marco: 'ARCHITECT',
-  blueprint: 'ARCHITECT',
-  midas: 'ARCHITECT',
-  noa: 'ARCHITECT',
-  onboard: 'ARCHITECT',
+  // STRATEGY
+  'strategos': 'ARCHITECT',
+  'blueprint': 'ARCHITECT',
+  'atlas': 'ANALYST',
+  'spark': 'STUDIO',                 // ideación visual
 
-  // SENTINEL — Monitoring & alerts
-  pulse: 'SENTINEL',
-  harbor: 'SENTINEL', // Customer support
-  sam: 'SENTINEL', // Community monitoring
-  luna: 'SENTINEL', // Strategy monitoring
+  // OPERACIONES
+  'pulse': 'SENTINEL',
+  'onboard': 'ARCHITECT',
+  'harbor': 'SENTINEL',
 
-  // STUDIO — Visual content creation
-  zoe: 'STUDIO', // Post design & graphics
-  nova: 'STUDIO', // Video editor
-  spark: 'STUDIO', // Visual ideation
-
-  // Strategy agents that can use both ORACLE and ARCHITECT
-  strategos: 'ARCHITECT',
+  // FINANZAS
+  'midas': 'ARCHITECT',
+  'quant': 'ANALYST',
+  'fiscal': 'ANALYST',
 }
 
 export function getArchetype(agentId: string): AgentArchetype {

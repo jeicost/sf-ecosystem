@@ -14,6 +14,26 @@ import type Anthropic from '@anthropic-ai/sdk'
 // Tool-use: agents can search the web instead of guessing or refusing when
 // they lack current/real information. See docs/DEBT.md — feedback del usuario
 // 2026-07-23: "quiero que los agentes... también puedan buscar en internet".
+// P4 (2026-07-29): los agentes CREATIVOS (designer/Zoe, spark) pueden generar
+// imágenes reales desde el chat — mismo motor que las quick actions visuales
+// (gpt-image-1 + bucket generated-assets + identidad visual de la marca).
+const CREATIVE_IMAGE_ROLES = ['designer', 'spark']
+const GENERATE_IMAGE_TOOL: Anthropic.Tool = {
+  name: 'generate_image',
+  description:
+    'Genera una imagen de marca real (se muestra al usuario en el chat). Úsala cuando el usuario pida un visual, post, mockup o creatividad. El prompt debe incluir SIEMPRE la identidad visual de la marca (colores hex exactos, estilo tipográfico) y describir composición, estilo y contexto en detalle.',
+  input_schema: {
+    type: 'object' as const,
+    properties: {
+      prompt: {
+        type: 'string' as const,
+        description: 'Prompt detallado para el modelo de imagen, con la identidad visual de la marca incluida',
+      },
+    },
+    required: ['prompt'],
+  },
+}
+
 const WEB_SEARCH_TOOL: Anthropic.Tool = {
   name: 'web_search',
   description:
@@ -233,7 +253,7 @@ export async function POST(req: NextRequest) {
               max_tokens: MAX_TOKENS[role] ?? 2048,
               system: fullSystem,
               messages: conversation,
-              tools: [WEB_SEARCH_TOOL],
+              tools: CREATIVE_IMAGE_ROLES.includes(role) ? [WEB_SEARCH_TOOL, GENERATE_IMAGE_TOOL] : [WEB_SEARCH_TOOL],
             })
 
             for await (const chunk of anthropicStream) {
@@ -264,11 +284,35 @@ export async function POST(req: NextRequest) {
             }
             toolLoops++
 
-            controller.enqueue(encoder.encode('\n\n_🔎 Buscando en internet…_\n\n'))
+            const hasImageTool = toolUseBlocks.some((tb) => tb.name === 'generate_image')
+            controller.enqueue(encoder.encode(hasImageTool ? '\n\n_🎨 Generando imagen…_\n\n' : '\n\n_🔎 Buscando en internet…_\n\n'))
 
             conversation.push({ role: 'assistant', content: finalMessage.content })
             const toolResults = await Promise.all(
               toolUseBlocks.map(async (tb) => {
+                if (tb.name === 'generate_image') {
+                  const prompt = typeof (tb.input as { prompt?: string })?.prompt === 'string'
+                    ? (tb.input as { prompt: string }).prompt
+                    : ''
+                  const { generateAndStoreImage } = await import('@/lib/generation/openai-image')
+                  const stored = prompt
+                    ? await generateAndStoreImage(prompt, resolvedClientId, `agent-chat-${Date.now().toString(36)}`)
+                    : null
+                  if (stored?.signedUrl) {
+                    // La imagen va directa al stream (markdown) y el modelo recibe la URL
+                    controller.enqueue(encoder.encode(`![Imagen generada](${stored.signedUrl})\n\n`))
+                    return {
+                      type: 'tool_result' as const,
+                      tool_use_id: tb.id,
+                      content: `Imagen generada y mostrada al usuario. URL: ${stored.signedUrl}. No repitas la URL en tu respuesta; comenta brevemente la propuesta y ofrece iterarla.`,
+                    }
+                  }
+                  return {
+                    type: 'tool_result' as const,
+                    tool_use_id: tb.id,
+                    content: 'No se pudo generar la imagen (sin API key de OpenAI configurada o error del proveedor). Descríbele al usuario el concepto visual en detalle y sugiérele configurar OpenAI en Integraciones.',
+                  }
+                }
                 const query = typeof (tb.input as { query?: string })?.query === 'string'
                   ? (tb.input as { query: string }).query
                   : ''

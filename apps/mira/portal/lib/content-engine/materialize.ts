@@ -66,6 +66,7 @@ export interface MaterializeItem {
   pillarId?: string | null
   post: GeneratedPost
   scheduledTime?: string | null // ISO — el monthly lo deriva de suggested_day
+  assetUrl?: string | null // P4: cover generada — /approvals la muestra
 }
 
 /**
@@ -80,7 +81,7 @@ export async function materializePosts(
   if (!items.length) return { inserted: 0 }
   const now = new Date().toISOString()
 
-  const queueRows = items.map(({ pillarName, post, scheduledTime }) => {
+  const queueRows = items.map(({ pillarName, post, scheduledTime, assetUrl }) => {
     const platform = post.platform.toLowerCase() as Platform
     return {
       client_id: clientId,
@@ -93,6 +94,7 @@ export async function materializePosts(
       submitted_at: now,
       tone_warning: false,
       ...(scheduledTime ? { scheduled_time: scheduledTime } : {}),
+      ...(assetUrl ? { asset_url: assetUrl } : {}),
     }
   })
 
