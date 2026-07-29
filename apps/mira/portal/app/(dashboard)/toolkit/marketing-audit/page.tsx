@@ -10,7 +10,6 @@ const getToolConfig = (locale: Locale): ToolConfig => ({
   slug: 'marketing-audit',
   icon: '📊',
   title: t('toolkit.marketing-audit.title', locale),
-  subtitle: 'Salsa Burgers',
   timing: t('toolkit.marketing-audit.timing', locale),
   brandBrainNote: t('toolkit.marketing-audit.brand-brain-note', locale),
   submitButtonColor: '#60A5FA',

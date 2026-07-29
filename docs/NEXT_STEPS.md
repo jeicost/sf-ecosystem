@@ -1,14 +1,24 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-28)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-29)
 
 Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)). Migraciones 0048/0049/0050 aplicadas. Este fichero lista SOLO lo que queda.
 
 ## Acciones del CEO (no técnicas)
+
+0. **⚡ APLICAR MIGRACIÓN 0051** (2 min, desbloquea los 2 reports nuevos): pegar `apps/mira/portal/supabase/migrations/0051_business_reports_slugs.sql` en https://supabase.com/dashboard/project/nnevhtfxuawexliwlbmh/sql — añade brand-book y monthly-content-system al CHECK de generation_queue. Sin esto, generar cualquiera de los dos falla con "violates check constraint".
 
 1. **Reconexión Drive de los 5 clientes** (Salsa, Startup Factory, Dadybox, Discoolver, NC Global): sus conexiones son seed caducado. Un clic por cliente en MIRA → Integraciones → Conectar Google Drive (el banner ámbar ya lo pide). Con eso arranca el auto-sync diario (07:00 CET) y el export a su Drive.
 2. **Montar la carpeta de conocimiento del primer cliente real** con el protocolo nuevo (ver DEBT kk / memoria): UNA carpeta en su Drive (subcarpetas libres, docs de texto, ≤3 niveles) → pegar enlace en MIRA. "MIRA — Entregables" nace sola en su raíz; pueden arrastrarla dentro.
 3. **Adrian Grooves**: entregarle la password temporal (`Mira-9Ud41Adr!7`, reseteada 2026-07-27) por canal seguro; que la cambie al entrar. Configurarle Drive con el protocolo.
 4. **Dadybox**: revocar el acceso de MIRA en su cuenta Google y reconectar (fuga de token en terminal, DEBT ff) — pendiente desde el 24/07.
 5. **VERCEL_TOKEN del GitHub Action** caducado: regenerar el secret o quitar el step del workflow (no bloquea — el deploy real va por integración nativa).
+
+## MIRA — Business Reports (sesión 2026-07-28/29, DEBT ll)
+
+- **Verificación real de brand-book y monthly** (bloqueada solo por la migración 0051): build completo con Salsa (fixture QA listo), Voice Guide A4 → Slides, deck mensual → verify-deck → Slides editable en Drive → materializar captions a la Cola. Los scripts de verificación están en el scratchpad de la sesión.
+- **Primer build real con cliente**: Dadybox (brand book) y Salsa (monthly) como casos de referencia; sembrar approval_queue del mes previo para ver previous_month_learnings en acción.
+- **v2 del monthly**: modos pillars_only / brief_greenlights / guardrail_check (del diseño original, pospuestos).
+- **Riesgo vigilado**: monthly = 2 llamadas opus secuenciales con maxDuration 300s — si aparece timeout en prod, ampliar o partir.
+- **Limpieza QA pendiente al cierre**: borrar filas de `br_cleanup.txt` (generaciones de prueba en Salsa, incluida 1 en PROD), restaurar brand_data de Salsa desde el backup del scratchpad, borrar grant QA `5fcf1db7`, matar dev server.
 
 ## MIRA — técnico pendiente (por prioridad)
 

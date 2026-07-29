@@ -8,7 +8,6 @@ const TOOL_CONFIG: ToolConfig = {
   slug: 'investor-deck',
   icon: '💰',
   title: 'Investor Deck',
-  subtitle: 'Salsa Burgers',
   timing: '45-60 min',
   brandBrainNote: 'Brand Brain cargado — mercado y posicionamiento analizados',
   submitButtonColor: '#10B981',

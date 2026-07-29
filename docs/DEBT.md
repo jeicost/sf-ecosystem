@@ -425,3 +425,25 @@ Los 4 bloques restantes del Plan Maestro en un solo día, cada uno verificado y 
 **✅ Migraciones 0049 + 0050 APLICADAS por el CEO el 2026-07-28** y verificadas en vivo: auto_sync_enabled=true en las 5 carpetas existentes ✓; document_feedback con insert y CHECK de outcome funcionando ✓ (probe borrada). **Pendiente CEO restante**: avisar a los 5 clientes seed de RECONECTAR su Drive (banner needsReauth visible en Integraciones). CRON_SECRET ya en Vercel production.
 
 **Deuda que queda del plan maestro** (anotada, no bloqueante): i18n de toolkit/comercial interiores (ronda pendiente desde (hh)); modo claro del resto de páginas no-Comercial sin auditar exhaustivamente; bucket brand-assets público (adjuntos de negocio — mover a privado+signed URLs); Canva sin credenciales (l); pptx solo decks.
+
+---
+
+## ll) Business Reports F0-F4 — Toolkit sintetizado + 2 reports de nivel consultora (2026-07-28/29)
+
+El Toolkit pasa a **Business Reports**: 11 herramientas → 8 reports, formularios brain-first, adjuntos reales, semáforo de completitud, Brand Book y Monthly Content System nuevos sobre el método destilado del CEO (`~/Desktop/Brand_Content_System_GPT`). Commits: `b29840f` (F0 brain), `98cf205` (F1), `9379065` (F2), `1908006` (F3), `7272a6f` (F4). Verificaciones: F1 Playwright 21/21 con generación real + PDF adjunto referenciado; F2 12/12 + radar quick real en PROD con Tavily (6 fuentes citadas).
+
+**Bugs de producción encontrados y arreglados de paso:**
+1. **La subida de adjuntos desde navegador NUNCA funcionó** — el bucket brand-assets no tiene policy de INSERT para authenticated (cero objetos de cliente en TODO el bucket; solo logos/ subidos server-side). Afectaba a Quick Actions, onboarding chat y los nuevos reports. Fix: `/api/attachments/upload` server-side (resolveRequestClient + admin client, allowlist de mime/prefijo, límites 5×15MB); `uploadFilesToBucket` ahora postea ahí — todos los consumidores arreglados de una vez.
+2. **Brain F0 no llegaba a los reports**: toolkit-prompts emitía un resumen manual de 9 líneas en vez de `formatBrandBrainForPrompt` — golden rule, vocabulario con porqués, oferta, restricciones y what-flopped NUNCA entraban a ningún informe del toolkit. Arreglado (entra el formato completo).
+3. **`subtitle: 'Salsa Burgers'` hardcodeado** en 5 configs de tools — se mostraba a TODOS los clientes. Runner ahora cae a `activeClient.name`.
+4. **CHECK de `generation_queue.tool_slug` sin los slugs nuevos** (deriva de esquema nº6): descubierto en el primer build real. **Migración 0051 escrita, PENDIENTE de aplicar** — bloquea los builds reales de brand-book y monthly-content-system.
+
+**Deuda nueva (anotada, no bloqueante):**
+- **Tags de dependencias descoordinados**: `TOOLKIT_MEMORY_QUERIES` busca tags con guion bajo (`brand_briefing`) pero el auto-log escribe el slug con guion (`brand-briefing`) — las dependencias entre reports probablemente NUNCA han matcheado filas del auto-log (solo las de otros escritores). brand-book escribe ambas convenciones; el resto pendiente de una ronda de higiene.
+- **Tavily local muerto**: la key de producción es sensitive (no se puede pull) y la de sf-sales-engine/.env está revocada. En local `searchWeb` devuelve [] silenciosamente — los QA de competitive/investor en local salen sin fuentes. Conseguir una key de dev o documentarlo en cada QA.
+- **Monthly en prod = 2 llamadas opus secuenciales (9k+12k)** con `maxDuration=300` en el route de generate: riesgo de timeout con clientes de brain grande. Si pasa: subir maxDuration (fluid compute) o partir en 2 requests.
+- **`components/unified-history.tsx` es código muerto** (ningún consumidor) — candidata a borrado en la ronda de higiene.
+- i18n de todas las superficies nuevas de Business Reports (configs, /strategy/plan, botones del informe) — hoy ES hardcodeado, coherente con el interior del toolkit que ya estaba pendiente (hh).
+- `formatTone` en toolkit-prompts quedó sin uso tras el cambio al formato completo del brain (inofensivo; borrar en higiene).
+
+**Pendiente de verificación real (tras aplicar 0051)**: build completo de brand-book (consistency_findings, CMYK determinista, Voice Guide A4 → Slides en Drive) y de monthly (2 fases, verify-deck, Slides editable, materialización a la Cola). Los QA fixtures viven en el scratchpad de la sesión (`br_cleanup.txt` con TODOS los IDs a borrar al cierre, incluida la fila PROD del radar `f741091a`).
