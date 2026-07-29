@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import type Anthropic from '@anthropic-ai/sdk'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
+import { requireSuperAdmin } from '@/lib/require-super-admin'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { ONBOARDING_TOOLS, executeOnboardingTool } from '@/lib/onboarding/tools'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
@@ -33,12 +34,6 @@ function slugify(name: string): string {
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '')
     .slice(0, 60) || 'cliente'
-}
-
-async function requireSuperAdmin() {
-  const user = await getSessionUser()
-  if (!user || user.user_metadata?.plan !== 'super_admin') return null
-  return user
 }
 
 // Attachment + buildAttachmentBlocks vivían aquí; extraídos a lib/attachments.ts
