@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { getClientDriveAccessToken } from '@/lib/drive-sync'
+import { resolveClientDeliverablesFolder, uploadToClientDrive } from '@/lib/export/drive-upload'
 import { generateEditorialHTML } from '@/lib/export/editorial-template'
 import { getAdapter } from '@/lib/export/adapters'
 import { buildCopyText } from '@/lib/quick-actions/copy-text'
@@ -139,12 +140,13 @@ export async function POST(req: NextRequest) {
       rowClientId,
       rowProjectId
     )
-    const clientUpload = await uploadHtmlToClientDrive(
-      tokenResult.token,
+    const clientUpload = await uploadToClientDrive({
+      token: tokenResult.token,
       folderId,
       fileName,
-      htmlContent
-    )
+      content: htmlContent,
+      mimeType: 'text/html',
+    })
     if (!clientUpload.success) {
       console.error(`Client Drive export failed for client ${rowClientId}: ${clientUpload.error}`)
       return NextResponse.json(
@@ -172,224 +174,4 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
-}
-
-/**
- * Resolves the destination folder in the CLIENT's Drive:
- * 1. drive_folders row matching the exported row's project_id
- * 2. drive_folders row of the client with purpose='deliverables'
- * 3. Creates a 'MIRA Deliverables' folder in the client's Drive root and
- *    registers it in drive_folders.
- * Returns null if no folder could be resolved/created (caller uploads to root).
- */
-async function createDriveFolder(
-  token: string,
-  name: string,
-  parentId?: string | null
-): Promise<string | null> {
-  const body: { name: string; mimeType: string; parents?: string[] } = {
-    name,
-    mimeType: 'application/vnd.google-apps.folder',
-  }
-  if (parentId) body.parents = [parentId]
-  const res = await fetch(
-    'https://www.googleapis.com/drive/v3/files?fields=id&supportsAllDrives=true',
-    {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    }
-  )
-  if (!res.ok) {
-    console.warn(`Could not create Drive folder "${name}":`, await res.json().catch(() => ({})))
-    return null
-  }
-  const created = await res.json()
-  return created.id ?? null
-}
-
-async function registerFolder(
-  admin: ReturnType<typeof adminClient>,
-  row: Record<string, unknown>
-) {
-  const { error } = await admin.from('drive_folders').insert({
-    sync_status: 'completed',
-    files_synced: 0,
-    ...row,
-  })
-  if (error) console.warn('Could not register folder in drive_folders:', error)
-}
-
-async function resolveClientDeliverablesFolder(
-  admin: ReturnType<typeof adminClient>,
-  token: string,
-  clientId: string,
-  projectId: string | null
-): Promise<string | null> {
-  // 1. Carpeta ya registrada del proyecto
-  if (projectId) {
-    const { data: projectFolder } = await admin
-      .from('drive_folders')
-      .select('folder_id')
-      .eq('client_id', clientId)
-      .eq('project_id', projectId)
-      .eq('purpose', 'deliverables')
-      .limit(1)
-    if (projectFolder?.length) return projectFolder[0].folder_id
-  }
-
-  // 2. Raíz de entregables del cliente (o crearla)
-  const { data: deliverablesFolder } = await admin
-    .from('drive_folders')
-    .select('folder_id')
-    .eq('client_id', clientId)
-    .eq('purpose', 'deliverables')
-    .is('project_id', null)
-    .limit(1)
-
-  let rootId = deliverablesFolder?.[0]?.folder_id ?? null
-  if (!rootId) {
-    rootId = await createDriveFolder(token, 'MIRA — Entregables')
-    if (!rootId) return null
-    await registerFolder(admin, {
-      client_id: clientId,
-      folder_id: rootId,
-      folder_name: 'MIRA — Entregables',
-      purpose: 'deliverables',
-    })
-  }
-
-  // 3. Con proyecto: subcarpeta "MIRA — Entregables/{Proyecto}" (esquema B3)
-  if (projectId) {
-    const { data: project } = await admin
-      .from('mira_projects')
-      .select('name')
-      .eq('id', projectId)
-      .maybeSingle()
-    const projectName = project?.name?.slice(0, 80) || 'Proyecto'
-    const subId = await createDriveFolder(token, projectName, rootId)
-    if (subId) {
-      await registerFolder(admin, {
-        client_id: clientId,
-        project_id: projectId,
-        folder_id: subId,
-        folder_name: projectName,
-        purpose: 'deliverables',
-      })
-      return subId
-    }
-  }
-
-  return rootId
-}
-
-/**
- * Uploads an HTML file to the client's Drive via Drive API v3 multipart upload.
- * If folderId is null, the file lands in the Drive root.
- */
-async function uploadHtmlToClientDrive(
-  token: string,
-  folderId: string | null,
-  fileName: string,
-  htmlContent: string
-): Promise<{ success: boolean; fileId?: string; webViewLink?: string; error?: string }> {
-  try {
-    const boundary = `mira_export_${Date.now().toString(36)}`
-    const metadata: { name: string; mimeType: string; parents?: string[] } = {
-      name: fileName,
-      mimeType: 'text/html',
-    }
-    if (folderId) metadata.parents = [folderId]
-
-    const body =
-      `--${boundary}\r\n` +
-      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-      `${JSON.stringify(metadata)}\r\n` +
-      `--${boundary}\r\n` +
-      'Content-Type: text/html; charset=UTF-8\r\n\r\n' +
-      `${htmlContent}\r\n` +
-      `--${boundary}--`
-
-    const response = await fetch(
-      'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink&supportsAllDrives=true',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': `multipart/related; boundary=${boundary}`,
-        },
-        body,
-      }
-    )
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      return {
-        success: false,
-        error: errorData.error?.message || `Client Drive upload failed (HTTP ${response.status})`,
-      }
-    }
-
-    const data = await response.json()
-    return {
-      success: true,
-      fileId: data.id || undefined,
-      webViewLink: data.webViewLink || undefined,
-    }
-  } catch (error) {
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Client Drive upload failed',
-    }
-  }
-}
-
-/** snake_case/camelCase key -> readable label, mirrors the same helper in QuickActionResult.tsx. */
-function labelFromKey(key: string): string {
-  return key
-    .replace(/_/g, ' ')
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-}
-
-/** Renders a single field's value as HTML, recursing one level into arrays/objects. */
-function renderFieldHTML(value: any): string {
-  if (value === null || value === undefined || value === '') return ''
-  if (Array.isArray(value)) {
-    if (value.length === 0) return ''
-    if (typeof value[0] !== 'object') {
-      return `<ul>${value.map((v) => `<li>${escapeHTML(String(v))}</li>`).join('')}</ul>`
-    }
-    return value
-      .map((item) => {
-        const rows = Object.entries(item)
-          .filter(([, v]) => v !== null && v !== undefined && v !== '')
-          .map(([k, v]) => `<p><strong>${escapeHTML(labelFromKey(k))}:</strong> ${escapeHTML(Array.isArray(v) ? v.join(', ') : String(v))}</p>`)
-          .join('')
-        return `<div class="item-card">${rows}</div>`
-      })
-      .join('')
-  }
-  if (typeof value === 'object') {
-    return Object.entries(value)
-      .filter(([, v]) => v !== null && v !== undefined && v !== '')
-      .map(([k, v]) => `<p><strong>${escapeHTML(labelFromKey(k))}:</strong> ${escapeHTML(Array.isArray(v) ? v.join(', ') : String(v))}</p>`)
-      .join('')
-  }
-  return `<p>${escapeHTML(String(value)).replace(/\n/g, '<br>')}</p>`
-}
-
-const HEADLINE_KEYS = ['title', 'subject', 'campaign_name', 'summary', 'executive_summary']
-
-/** Formats a Quick Action / Toolkit result as readable HTML instead of a raw JSON dump. */
-
-function escapeHTML(text: string): string {
-  const map: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  }
-  return text.replace(/[&<>"']/g, (char) => map[char])
 }

@@ -8,6 +8,7 @@ import { generateDeckHTML, type DeckSlide } from '@/lib/export/templates/deck-te
 import { generateDeckPptx } from '@/lib/export/templates/deck-pptx'
 import { getAdapter } from '@/lib/export/adapters'
 import { buildVoiceGuidePptx } from '@/lib/export/voice-guide-pptx'
+import { buildMonthlyDeckPptx } from '@/lib/export/monthly-pptx'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 
 const DOC_TITLES: Record<string, string> = {
@@ -240,6 +241,28 @@ export async function GET(req: NextRequest) {
           'Content-Type':
             'application/vnd.openxmlformats-officedocument.presentationml.presentation',
           'Content-Disposition': `attachment; filename="${vgFilename}"`,
+          'Content-Length': String(buffer.length),
+        },
+      })
+    }
+
+    // ── Deck mensual (F4) — descarga local del .pptx ──
+    if (format === 'monthly-deck') {
+      if (toolSlug !== 'monthly-content-system') {
+        return NextResponse.json({ error: 'monthly-deck solo aplica a monthly-content-system' }, { status: 400 })
+      }
+      const buffer = await buildMonthlyDeckPptx({
+        brandName: clientName,
+        primaryColor: brandColor,
+        result: result as Record<string, any>,
+      })
+      const mdFilename = `sistema-contenidos_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pptx`
+      return new NextResponse(new Uint8Array(buffer), {
+        status: 200,
+        headers: {
+          'Content-Type':
+            'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'Content-Disposition': `attachment; filename="${mdFilename}"`,
           'Content-Length': String(buffer.length),
         },
       })

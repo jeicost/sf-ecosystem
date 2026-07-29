@@ -13,6 +13,7 @@ import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { enrichPaletteCmyk } from '@/lib/export/color-utils'
+import { generateMonthlySystem } from '@/lib/generation/monthly-generate'
 
 // Single-tool generation with opus can take minutes
 export const maxDuration = 300
@@ -252,6 +253,27 @@ export async function POST(req: NextRequest) {
 
     const queueId = queueData.id
 
+    let result: Record<string, unknown>
+
+    if (tool_slug === 'monthly-content-system') {
+      // ── Monthly Content System: 2 llamadas secuenciales + merge (F4) ──
+      try {
+        result = await generateMonthlySystem({
+          clientId,
+          inputData: input_data,
+          ...(attachmentText ? { attachmentText } : {}),
+          attachmentImageBlocks,
+        })
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Monthly generation failed'
+        await admin
+          .from('generation_queue')
+          .update({ status: 'failed', error_message: msg })
+          .eq('id', queueId)
+        return NextResponse.json({ error: msg }, { status: 500 })
+      }
+    } else {
+
     // Generate prompt for this tool (grounding blocks are optional params —
     // toolkit-prompts consumes them once its signature is extended)
     const promptParams: ToolPromptParams & {
@@ -309,7 +331,6 @@ export async function POST(req: NextRequest) {
       .filter(Boolean)
       .join('\n')
 
-    let result: Record<string, unknown>
     try {
       const parsed = extractJson(text)
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
@@ -326,6 +347,8 @@ export async function POST(req: NextRequest) {
         .update({ status: 'failed', error_message: errorMessage })
         .eq('id', queueId)
       return NextResponse.json({ error: errorMessage }, { status: 500 })
+    }
+
     }
 
     // Never save an empty report as completed

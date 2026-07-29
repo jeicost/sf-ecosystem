@@ -11,7 +11,7 @@ import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
  * las corrija — mismo patrón que agent_interactions en el chat de agentes.
  * Tolerante a que la tabla no exista aún (pre-migración 0050).
  */
-async function getDocumentFeedbackBlock(clientId: string, toolSlug: string): Promise<string> {
+export async function getDocumentFeedbackBlock(clientId: string, toolSlug: string): Promise<string> {
   try {
     const admin = adminClient()
     const { data, error } = await admin

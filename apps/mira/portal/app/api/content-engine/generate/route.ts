@@ -4,34 +4,13 @@ import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity } from '@/lib/brand-brain'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { materializePosts, asStringArray, type GeneratedPost } from '@/lib/content-engine/materialize'
 
 export const maxDuration = 800
 
+// Plataformas que el ENGINE acepta como input (el monthly añade facebook vía lib)
 const VALID_PLATFORMS = ['instagram', 'linkedin', 'tiktok'] as const
 type Platform = (typeof VALID_PLATFORMS)[number]
-
-const PLATFORM_LABEL: Record<Platform, string> = {
-  instagram: 'Instagram',
-  linkedin: 'LinkedIn',
-  tiktok: 'TikTok',
-}
-
-interface ReelScene {
-  time: string
-  action: string
-  text_overlay?: string
-}
-
-interface GeneratedPost {
-  platform: string
-  hook: string
-  copy: string
-  caption: string
-  hashtags?: string[]
-  cta?: string
-  visual_direction?: string
-  reel_script?: { duration?: string; scenes?: ReelScene[] }
-}
 
 interface PillarRow {
   id: string
@@ -39,11 +18,6 @@ interface PillarRow {
   description: string | null
   themes: unknown
   examples: unknown
-}
-
-function asStringArray(v: unknown): string[] {
-  if (!Array.isArray(v)) return []
-  return v.filter((x): x is string => typeof x === 'string')
 }
 
 /** Extract the JSON array of posts from a Claude text response (tolerates fences/prose). */
@@ -84,26 +58,6 @@ function parsePosts(raw: string): GeneratedPost[] {
       typeof (p as GeneratedPost).copy === 'string' &&
       typeof (p as GeneratedPost).platform === 'string'
   )
-}
-
-function formatReelScript(script: NonNullable<GeneratedPost['reel_script']>): string {
-  const lines: string[] = [`🎬 Guión de Reel${script.duration ? ` (${script.duration})` : ''}:`]
-  for (const scene of script.scenes ?? []) {
-    const overlay = scene.text_overlay ? ` · Texto: "${scene.text_overlay}"` : ''
-    lines.push(`${scene.time} — ${scene.action}${overlay}`)
-  }
-  return lines.join('\n')
-}
-
-/** Compose the full reviewable copy stored in approval_queue (no metadata column → pillar goes in the copy). */
-function composeCopy(pillarName: string, post: GeneratedPost): string {
-  const parts: string[] = [`[Pilar: ${pillarName}]`]
-  if (post.hook && !post.copy.startsWith(post.hook)) parts.push(post.hook)
-  parts.push(post.copy)
-  if (post.cta) parts.push(`CTA: ${post.cta}`)
-  if (post.visual_direction) parts.push(`🎨 Dirección visual: ${post.visual_direction}`)
-  if (post.reel_script?.scenes?.length) parts.push(formatReelScript(post.reel_script))
-  return parts.filter(Boolean).join('\n\n')
 }
 
 function buildPillarPrompt(params: {
@@ -255,39 +209,12 @@ export async function POST(req: NextRequest) {
         const posts = parsePosts(raw)
         if (posts.length === 0) throw new Error('El modelo no devolvió posts válidos')
 
-        const now = new Date().toISOString()
-        const queueRows = posts.map(post => {
-          const platform = post.platform.toLowerCase() as Platform
-          return {
-            client_id: clientId,
-            platform: PLATFORM_LABEL[platform] ?? post.platform,
-            tipo: 'content',
-            copy: composeCopy(pillar.pillar_name, post),
-            caption: (post.caption || post.copy).slice(0, 300),
-            hashtags: asStringArray(post.hashtags),
-            status: 'pending_review',
-            submitted_at: now,
-            tone_warning: false,
-          }
-        })
-
-        const { error: queueError } = await db.from('approval_queue').insert(queueRows)
-        if (queueError) throw new Error(`approval_queue: ${queueError.message}`)
-
-        // post_history como draft (tiene columna pillar_id) — no crítico
-        try {
-          await db.from('post_history').insert(posts.map(post => {
-            const platform = post.platform.toLowerCase() as Platform
-            return {
-              client_id: clientId,
-              pillar_id: pillar.id,
-              platform: PLATFORM_LABEL[platform] ?? post.platform,
-              content: composeCopy(pillar.pillar_name, post),
-              status: 'draft',
-              performance: {},
-            }
-          }))
-        } catch { /* non-critical */ }
+        // Materialización compartida con el Monthly (F4): mismo copy revisable
+        await materializePosts(db, clientId, posts.map(post => ({
+          pillarName: pillar.pillar_name,
+          pillarId: pillar.id,
+          post,
+        })))
 
         byPillar[pillar.pillar_name] = posts.length
         generated += posts.length

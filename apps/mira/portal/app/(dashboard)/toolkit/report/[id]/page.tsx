@@ -16,7 +16,49 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   const [fbState, setFbState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   const [fbMsg, setFbMsg] = useState<string | null>(null)
   const [toolSlug, setToolSlug] = useState<string | null>(null)
+  const [slidesState, setSlidesState] = useState<'idle' | 'creating' | 'done' | 'error'>('idle')
+  const [slidesMsg, setSlidesMsg] = useState<string | null>(null)
+  const [queueState, setQueueState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [queueMsg, setQueueMsg] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
+
+  // F4: PPTX → Google Slides editable en el Drive del cliente
+  const createSlides = async () => {
+    setSlidesState('creating')
+    setSlidesMsg(null)
+    const res = await fetch('/api/toolkit/export-slides', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue_id: id }),
+    }).catch(() => null)
+    const data = await res?.json().catch(() => null)
+    if (res?.ok && data?.success) {
+      setSlidesState('done')
+      if (data.driveUrl) window.open(data.driveUrl, '_blank', 'noopener')
+    } else {
+      setSlidesState('error')
+      setSlidesMsg(data?.error || 'No se pudo crear la presentación')
+    }
+  }
+
+  // F4: materializar las captions del mes a la Cola de Aprobación
+  const sendToQueue = async () => {
+    setQueueState('sending')
+    setQueueMsg(null)
+    const res = await fetch('/api/toolkit/monthly-to-queue', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue_id: id }),
+    }).catch(() => null)
+    const data = await res?.json().catch(() => null)
+    if (res?.ok && data?.success) {
+      setQueueState('sent')
+      setQueueMsg(data.already ? 'Ya estaban en la Cola — no se duplican.' : data.message || `${data.sent} enviadas`)
+    } else {
+      setQueueState('error')
+      setQueueMsg(data?.error || 'No se pudo enviar a la Cola')
+    }
+  }
 
   // El Voice Guide A4 solo existe en brand-book — el slug llega del status
   useEffect(() => {
@@ -153,6 +195,26 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               📄 Voice Guide A4
             </a>
           )}
+          {(toolSlug === 'monthly-content-system' || toolSlug === 'brand-book') && (
+            <button
+              onClick={createSlides}
+              disabled={slidesState === 'creating' || slidesState === 'done'}
+              className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
+              title="Crea una presentación de Google Slides editable en el Drive del cliente"
+            >
+              {slidesState === 'creating' ? '⏳ Creando Slides…' : slidesState === 'done' ? '✓ Slides en Drive' : '📊 Crear Google Slides'}
+            </button>
+          )}
+          {toolSlug === 'monthly-content-system' && (
+            <button
+              onClick={sendToQueue}
+              disabled={queueState === 'sending' || queueState === 'sent'}
+              className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
+              title="Materializa las captions del mes en la Cola de Aprobación con su fecha"
+            >
+              {queueState === 'sending' ? '⏳ Enviando…' : queueState === 'sent' ? '✓ En la Cola' : '📤 Enviar captions a la Cola'}
+            </button>
+          )}
           <button
             onClick={saveToDrive}
             disabled={driveState === 'saving' || driveState === 'saved'}
@@ -165,6 +227,16 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       {driveState === 'error' && driveMsg && (
         <div className="px-4 py-2 text-xs text-amber-400 bg-amber-500/10 border-b border-amber-500/20 shrink-0">
           {driveMsg}
+        </div>
+      )}
+      {slidesState === 'error' && slidesMsg && (
+        <div className="px-4 py-2 text-xs text-amber-400 bg-amber-500/10 border-b border-amber-500/20 shrink-0">
+          {slidesMsg}
+        </div>
+      )}
+      {queueMsg && (
+        <div className={`px-4 py-2 text-xs border-b shrink-0 ${queueState === 'error' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'}`}>
+          {queueMsg}
         </div>
       )}
       {/* Feedback al diseñador de documentos */}
