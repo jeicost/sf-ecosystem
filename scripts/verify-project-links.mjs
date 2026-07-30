@@ -56,15 +56,15 @@ const REGISTRY = [
     projectId: 'prj_ermiutbVMzAyE8lRL3mrot8g5JRC',
   },
   {
-    folder: 'clients/nc-global-assets',
+    folder: 'clients/_archive/nc-global-assets-vite',
     projectName: 'nc-global-assets',
     projectId: 'prj_dglycSdtgX52oCSDNqAfq8JeME82',
+    optional: true, // archived 2026-07-28, kept only as rollback — never deployed from here
   },
   {
     folder: 'clients/nc-global-assets-next',
     projectName: 'nc-global-assets-next',
     projectId: 'prj_GqKIJAxeq8ZgJ9VB6GYIr3O7qwlD',
-    optional: true, // not yet linked; WIP — don't fail the whole run if unlinked
   },
   {
     folder: 'clients/adrian-grooves',
