@@ -6,6 +6,7 @@ import { userCanAccessClient } from '@/lib/resolve-client'
 import { getDocumentPrompt, DOC_TYPES } from '@/lib/generation/document-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
+import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
 
 // Doc-deck only: generate AI images (cover + up to 2 marked slides, max 3 total).
 // Best-effort — any failure leaves the deck without images, never fails generation.
@@ -162,7 +163,27 @@ export async function POST(req: NextRequest) {
     const queueId = queueData.id
 
     try {
-      const prompt = await getDocumentPrompt(doc_type, { clientId, inputData: input_data, projectId })
+      // Investigación real sobre el tema del brief -- antes el documento solo
+      // tenía Brand Brain/memoria (contexto interno), así que cualquier dato
+      // externo (tendencias del sector, cifras de mercado, ejemplos reales)
+      // quedaba en blanco o como '[COMPLETAR: dato real]' sin que nadie lo
+      // buscara. Mismo patrón que competitive-analysis/investor-deck en
+      // Business Reports (app/api/toolkit/generate/route.ts): búsqueda previa
+      // y determinista, no un tool-use interactivo (esto es generación de un
+      // solo turno, no un chat).
+      let sourcesBlock: string | undefined
+      const topic = typeof input_data?.topic === 'string' ? input_data.topic.trim() : ''
+      if (topic) {
+        const results = await searchWeb(topic, 5)
+        sourcesBlock = formatSourcesForPrompt(results, `investigación sobre "${topic}"`)
+      }
+
+      const prompt = await getDocumentPrompt(doc_type, {
+        clientId,
+        inputData: input_data,
+        projectId,
+        ...(sourcesBlock ? { sourcesBlock } : {}),
+      })
       if (!prompt) throw new Error('Unknown doc type')
 
       const message = await createMessageForClient(clientId, 'documents/generate', {

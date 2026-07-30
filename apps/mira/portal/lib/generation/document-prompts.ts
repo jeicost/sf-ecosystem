@@ -29,13 +29,15 @@ export interface DocPromptParams {
   inputData: Record<string, unknown>
   /** Proyecto activo — la memoria inyectada prioriza este proyecto */
   projectId?: string | null
+  /** Resultados de búsqueda web reales sobre el "Tema" del brief (ver app/api/documents/generate/route.ts) — datos externos que ni el Brand Brain ni la memoria de proyecto pueden tener. */
+  sourcesBlock?: string
 }
 
 export async function getDocumentPrompt(
   docType: string,
   params: DocPromptParams
 ): Promise<string | null> {
-  const { clientId, inputData, projectId } = params
+  const { clientId, inputData, projectId, sourcesBlock } = params
 
   const [brandBrain, memoryContext, docContext, feedbackBlock] = await Promise.all([
     fetchBrandBrain(clientId),
@@ -58,9 +60,21 @@ BRAND CONTEXT (source of truth — usa esto en todo el documento):
   const docText = docContext?.documents?.map((d: { excerpt?: string }) => d.excerpt).join('\n') || ''
   const allContext = [docText, brandContext, memoryContext, feedbackBlock].filter(Boolean).join('\n\n')
   const fullContext = allContext ? `\n\nCONTEXTO DEL CLIENTE:\n${allContext}` : ''
+  const researchContext = sourcesBlock ? `\n\nINVESTIGACIÓN REAL SOBRE EL TEMA (úsala para datos externos concretos — cifras, ejemplos, tendencias reales; nunca la ignores si el tema del brief la necesita):\n${sourcesBlock}` : ''
+
+  // Este Centro de Documentos genera SIEMPRE guías/artefactos internos de
+  // negocio (estrategia, presentación, informe, one-pager) — nunca la pieza
+  // de contenido final lista para publicar (una newsletter, un post, un
+  // artículo). Encontrado un caso real (2026-07-30, Dadybox) donde el "Tema"
+  // pedía claramente el contenido de una edición de newsletter y el playbook
+  // generó una guía de "cómo escribir esto" en vez de esa edición -- técnicamente
+  // correcto para lo que este tipo de documento ES, pero no lo que el usuario
+  // esperaba y sin ningún aviso. Esta regla hace el desajuste explícito en vez
+  // de silencioso.
+  const scopeCheck = `\n\nIMPORTANTE — alcance de este documento: esto es SIEMPRE un artefacto interno de negocio (guía operativa, presentación, informe o one-pager), NUNCA la pieza de contenido final lista para publicar. Si el "Tema"/brief de abajo describe claramente una pieza concreta a publicar (una newsletter, un post, un artículo, un guion) en vez de un proceso o estrategia de negocio, añade como PRIMERA sección del documento un aviso breve y honesto: que esto es una guía sobre cómo abordar ese contenido, no el contenido en sí, y que para generar la pieza lista para publicar se debe usar Quick Actions (crear_newsletter/crear_post/etc.) en MIRA. Después, continúa igualmente con el resto del documento (la guía/estrategia sigue siendo útil).`
 
   // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contratos de calidad (veracidad + redacción).
-  const input = `\nBRIEF DEL USUARIO:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}\n\n${GROUNDING_CONTRACT}\n\n${EDITORIAL_CONTRACT}`
+  const input = `\nBRIEF DEL USUARIO:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}${researchContext}\n\n${GROUNDING_CONTRACT}\n\n${EDITORIAL_CONTRACT}${scopeCheck}`
 
   switch (docType) {
     case 'doc-playbook':
