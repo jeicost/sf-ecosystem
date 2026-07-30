@@ -141,6 +141,14 @@ export default function IntegrationsPage() {
   }
 
   const handleToolDisconnect = async (toolId: string) => {
+    // Google Drive no vive en tool_connections (OAuth propio, ver
+    // handleToolConnect) -- el disconnect genérico tocaría la tabla
+    // equivocada y no revocaría nada real. Hasta que exista un revoke
+    // real, decimos la verdad en vez de fingir que se desconectó.
+    if (toolId === 'google-drive') {
+      setErrorMessage(t('integrations.drive-disconnect-unavailable', locale))
+      return
+    }
     try {
       await disconnectTool(toolId)
     } catch (error) {
