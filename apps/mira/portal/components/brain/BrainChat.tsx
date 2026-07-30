@@ -96,10 +96,26 @@ function ProposalCard({
   )
 }
 
+const SEEN_KEY = 'mira_brain_chat_seen'
+
 export default function BrainChat({ isAgency }: { isAgency: boolean }) {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
   const [open, setOpen] = useState(false)
+
+  // Se abre sola la primera vez que alguien ve esta tarjeta (por navegador) —
+  // era descubrible del todo, cerrada por defecto y sin ninguna señal visual
+  // distinta a las demás tarjetas de /brand-brain, así que casi nadie la
+  // encontraba por accidente. Solo una vez: a partir de ahí respeta lo que
+  // el usuario decida.
+  useEffect(() => {
+    try {
+      if (!localStorage.getItem(SEEN_KEY)) {
+        setOpen(true)
+        localStorage.setItem(SEEN_KEY, '1')
+      }
+    } catch {}
+  }, [])
   const [messages, setMessages] = useState<ChatMsg[]>([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
@@ -147,7 +163,10 @@ export default function BrainChat({ isAgency }: { isAgency: boolean }) {
   }
 
   return (
-    <div className="card mb-6 overflow-hidden">
+    <div
+      className="card mb-6 overflow-hidden border-l-4"
+      style={{ borderLeftColor: 'rgba(251,191,36,0.7)' }}
+    >
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -156,7 +175,13 @@ export default function BrainChat({ isAgency }: { isAgency: boolean }) {
         <div className="flex items-center gap-3">
           <span className="text-xl">💬</span>
           <div>
-            <p className="text-sm font-semibold text-ink">Cuéntale a MIRA</p>
+            <p className="text-sm font-semibold text-ink flex items-center gap-2">
+              Cuéntale a MIRA
+              <span className="text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+                style={{ background: 'rgba(251,191,36,0.15)', color: 'rgba(251,191,36,0.7)' }}>
+                SIN FORMULARIOS
+              </span>
+            </p>
             <p className="text-[11px] text-ink-tertiary">
               ¿Novedades del negocio? Cuéntalo aquí y el brain se actualiza — con tu confirmación, nunca solo.
             </p>
