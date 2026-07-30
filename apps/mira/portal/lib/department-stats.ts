@@ -1,6 +1,7 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
+import { captureError } from '@/lib/capture-error'
 
 const STRATEGY_AGENT_IDS = STRATEGY_DEPT_AGENTS.map((a) => a.id)
 
@@ -22,121 +23,101 @@ export interface DepartmentStats {
 export async function getDepartmentStats(clientId: string): Promise<Record<string, DepartmentStats>> {
   const db = createServiceClient()
 
-  let leads = 0, hotLeads = 0, proposals = 0, posts = 0, contacts = 0, plans = 0, ideas = 0
-  let pendingApprovals = 0, openAlerts = 0
+  // 9 independent counts ran sequentially before (one await per query, no
+  // Promise.all) -- a fixed ~9x round-trip latency tax on every single
+  // dashboard load. Each keeps its own try/catch (same fail-to-0 isolation
+  // as before) but they now all fire concurrently.
+  const [
+    pendingApprovals,
+    openAlerts,
+    leads,
+    hotLeads,
+    proposals,
+    posts,
+    contacts,
+    plans,
+    ideas,
+  ] = await Promise.all([
+    // Marketing's real "needs attention" numbers -- the roster used to label
+    // the CRM contacts count as "In approval" and hardcode alerts to 0.
+    (async () => {
+      const { count } = await db.from('approval_queue')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).eq('status', 'pending_review')
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'pendingApprovals' }); return 0 }),
 
-  // Marketing's real "needs attention" numbers -- the roster used to label
-  // the CRM contacts count as "In approval" and hardcode alerts to 0.
-  try {
-    const { count } = await db
-      .from('approval_queue')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-      .eq('status', 'pending_review')
-    pendingApprovals = count || 0
-  } catch (e) {
-    console.error('Error fetching pending approvals:', e)
-  }
+    (async () => {
+      const { count } = await db.from('alerts')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).eq('status', 'open')
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'openAlerts' }); return 0 }),
 
-  try {
-    const { count } = await db
-      .from('alerts')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-      .eq('status', 'open')
-    openAlerts = count || 0
-  } catch (e) {
-    console.error('Error fetching open alerts:', e)
-  }
+    (async () => {
+      const { count } = await db.from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId)
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'leads' }); return 0 }),
 
-  try {
-    const { count: leadsCount } = await db
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-    leads = leadsCount || 0
-  } catch (e) {
-    console.error('Error fetching leads:', e)
-  }
+    (async () => {
+      const { count } = await db.from('leads')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).gte('hot_score', HOT_SCORE_THRESHOLD)
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'hotLeads' }); return 0 }),
 
-  try {
-    const { count: hotCount } = await db
-      .from('leads')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-      .gte('hot_score', HOT_SCORE_THRESHOLD)
-    hotLeads = hotCount || 0
-  } catch (e) {
-    console.error('Error fetching hot leads:', e)
-  }
+    (async () => {
+      const { count } = await db.from('proposal_library')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId)
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'proposals' }); return 0 }),
 
-  try {
-    const { count: proposalsCount } = await db
-      .from('proposal_library')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-    proposals = proposalsCount || 0
-  } catch (e) {
-    console.error('Error fetching proposals:', e)
-  }
+    (async () => {
+      const { count } = await db.from('post_history')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId)
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'posts' }); return 0 }),
 
-  try {
-    const { count: postsCount } = await db
-      .from('post_history')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-    posts = postsCount || 0
-  } catch (e) {
-    console.error('Error fetching posts:', e)
-  }
-
-  try {
     // crm_contacts no tiene columna client_id — se escribe con workspace_id
-    // (ver lib/comercial/promote-lead.ts). Sin este mapeo, este count llevaba
-    // fijo en 0 desde siempre (la query fallaba en silencio contra una
-    // columna inexistente, atrapada por este mismo try/catch).
-    const { data: mapping } = await db
-      .from('client_workspaces')
-      .select('workspace')
-      .eq('client_id', clientId)
-      .maybeSingle()
-    if (mapping?.workspace) {
-      const { count: contactsCount } = await db
+    // (ver lib/comercial/promote-lead.ts). Es una cadena de 2 pasos
+    // dependiente (el 2º necesita el resultado del 1º) -- se mantiene
+    // secuencial dentro de esta única promesa, mientras corre en paralelo
+    // con las otras 8 independientes.
+    (async () => {
+      const { data: mapping } = await db
+        .from('client_workspaces')
+        .select('workspace')
+        .eq('client_id', clientId)
+        .maybeSingle()
+      if (!mapping?.workspace) return 0
+      const { count } = await db
         .from('crm_contacts')
         .select('id', { count: 'exact', head: true })
         .eq('workspace_id', mapping.workspace)
-      contacts = contactsCount || 0
-    }
-  } catch (e) {
-    console.error('Error fetching contacts:', e)
-  }
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'contacts' }); return 0 }),
 
-  // generation_queue nunca tuvo columnas agent_type/agent_role (ver docs/DEBT.md
-  // punto r) — planes/ideas se cuentan sobre agent_activity, la tabla real que
-  // sí registra cada tarea completada por agente.
-  try {
-    const { count: plansCount } = await db
-      .from('agent_activity')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-      .in('agent_role', STRATEGY_AGENT_IDS)
-      .eq('status', 'completed')
-    plans = plansCount || 0
-  } catch (e) {
-    console.error('Error fetching strategy plans:', e)
-  }
+    // generation_queue nunca tuvo columnas agent_type/agent_role (ver docs/DEBT.md
+    // punto r) — planes/ideas se cuentan sobre agent_activity, la tabla real que
+    // sí registra cada tarea completada por agente.
+    (async () => {
+      const { count } = await db.from('agent_activity')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).in('agent_role', STRATEGY_AGENT_IDS).eq('status', 'completed')
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'plans' }); return 0 }),
 
-  try {
-    const { count: ideasCount } = await db
-      .from('agent_activity')
-      .select('id', { count: 'exact', head: true })
-      .eq('client_id', clientId)
-      .eq('agent_role', 'spark')
-      .eq('status', 'completed')
-    ideas = ideasCount || 0
-  } catch (e) {
-    console.error('Error fetching ideas:', e)
-  }
+    (async () => {
+      const { count } = await db.from('agent_activity')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).eq('agent_role', 'spark').eq('status', 'completed')
+      return count || 0
+    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'ideas' }); return 0 }),
+  ])
 
   return {
     comercial: { leads, hotLeads, proposals },

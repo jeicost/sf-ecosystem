@@ -71,31 +71,40 @@ async function getToolkitDependencies(
   const admin = adminClient()
   const dependencies: Record<string, any> = {}
 
-  try {
-    for (const tag of tags) {
-      const variants = [tag, tag.replace(/_/g, '-')]
-      const { data } = await admin
-        .from('project_memory')
-        .select('id, title, full_content, project_id')
-        .eq('client_id', clientId)
-        .overlaps('tags', variants)
-        .eq('is_archived', false)
-        .order('created_at', { ascending: false })
-        .limit(4)
+  // One query per tag ran sequentially before (2-3 round trips per Business
+  // Report generation, inside the same request path that already risks the
+  // maxDuration ceiling) -- now fired concurrently. Each tag keeps its own
+  // failure isolated (a bad tag doesn't drop tags that already succeeded,
+  // unlike the old single outer try/catch around the whole loop).
+  const results = await Promise.all(
+    tags.map(async (tag) => {
+      try {
+        const variants = [tag, tag.replace(/_/g, '-')]
+        const { data } = await admin
+          .from('project_memory')
+          .select('id, title, full_content, project_id')
+          .eq('client_id', clientId)
+          .overlaps('tags', variants)
+          .eq('is_archived', false)
+          .order('created_at', { ascending: false })
+          .limit(4)
+        return { tag, data }
+      } catch (error) {
+        console.warn(`Could not load dependency "${tag}" for ${toolSlug}:`, error)
+        return { tag, data: null }
+      }
+    })
+  )
 
-      if (data?.length) {
-        const best =
-          (projectId && data.find((d) => d.project_id === projectId)) || data[0]
-        dependencies[tag] = {
-          id: best.id,
-          data: best.full_content,
-          title: best.title,
-        }
+  for (const { tag, data } of results) {
+    if (data?.length) {
+      const best = (projectId && data.find((d) => d.project_id === projectId)) || data[0]
+      dependencies[tag] = {
+        id: best.id,
+        data: best.full_content,
+        title: best.title,
       }
     }
-  } catch (error) {
-    // Silently fail if dependencies not found (optional, not blocking)
-    console.warn(`Could not load dependencies for ${toolSlug}:`, error)
   }
 
   return dependencies

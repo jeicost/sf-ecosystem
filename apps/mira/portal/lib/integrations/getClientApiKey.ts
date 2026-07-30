@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { captureError } from '@/lib/capture-error'
 
 /**
  * Resolve API key for a client-specific tool integration.
@@ -40,8 +41,15 @@ export async function getClientApiKey(
         return defaultKey || null
       }
 
-      // Other database errors
-      console.error(`Error fetching tool connection: ${error.message}`)
+      // Other database errors — keep the safe fallback (never break a
+      // client's ability to use the platform default key over one bad
+      // query) but make it loud instead of only console.error/vercel logs.
+      await captureError(new Error(`getClientApiKey query error: ${error.message}`), {
+        route: 'getClientApiKey',
+        clientId,
+        toolId,
+        code: error.code,
+      })
       return defaultKey || null
     }
 
@@ -68,10 +76,11 @@ export async function getClientApiKey(
 
     return apiKey
   } catch (error) {
-    console.error(
-      `Unexpected error resolving API key for clientId=${clientId}, toolId=${toolId}:`,
-      error
-    )
+    await captureError(error, {
+      route: 'getClientApiKey',
+      clientId,
+      toolId,
+    })
     return defaultKey || null
   }
 }
