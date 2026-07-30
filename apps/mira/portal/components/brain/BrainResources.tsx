@@ -114,7 +114,7 @@ export default function BrainResources({ clientId }: BrainResourcesProps) {
 
       {/* Add Resource Form */}
       {showForm && (
-        <form onSubmit={handleAddResource} className="card p-4 border border-[#EC4899]30 space-y-3">
+        <form onSubmit={handleAddResource} className="card p-4 border border-[#EC4899]/30 space-y-3">
           <select
             value={formData.resourceType}
             onChange={(e) => {

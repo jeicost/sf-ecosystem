@@ -88,7 +88,7 @@ export default function BrainVersionHistory({
               </button>
             )}
             {selectedVersion.version_number === currentVersion && (
-              <div className="px-3 py-1 rounded bg-[#10B981]10 text-xs font-semibold text-[#10B981]">
+              <div className="px-3 py-1 rounded bg-[#10B981]/10 text-xs font-semibold text-[#10B981]">
                 Current
               </div>
             )}
@@ -141,7 +141,7 @@ export default function BrainVersionHistory({
                 onClick={() => setSelectedVersion(version)}
                 className={`relative pl-16 py-3 text-left rounded transition-all border ${
                   isCurrent
-                    ? 'border-[#10B981] bg-[#10B981]10'
+                    ? 'border-[#10B981] bg-[#10B981]/10'
                     : 'border-line hover:bg-surface-hover'
                 }`}
               >

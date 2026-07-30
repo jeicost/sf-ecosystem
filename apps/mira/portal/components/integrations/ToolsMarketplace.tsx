@@ -85,7 +85,7 @@ export default function ToolsMarketplace({
       </div>
 
       {/* Critical Tools Status */}
-      <div className="card p-6 border border-[#F59E0B]40 bg-[#F59E0B]10 space-y-3">
+      <div className="card p-6 border border-[#F59E0B]/40 bg-[#F59E0B]/10 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-ink mb-1">{t('integrations.critical-tools', locale)}</h3>
@@ -150,7 +150,7 @@ export default function ToolsMarketplace({
               key={tool.id}
               className={`card p-5 border transition-all ${
                 isConnected
-                  ? 'border-[#10B981] bg-[#10B981]10'
+                  ? 'border-[#10B981] bg-[#10B981]/10'
                   : isComingSoon
                     ? 'border-line opacity-80'
                     : tool.isCritical
@@ -175,7 +175,7 @@ export default function ToolsMarketplace({
                   <CheckCircle size={20} className="text-[#10B981] flex-shrink-0" />
                 )}
                 {isComingSoon && (
-                  <span className="px-2 py-0.5 text-xs rounded font-semibold bg-[#8B5CF6]20 text-[#8B5CF6] flex-shrink-0">
+                  <span className="px-2 py-0.5 text-xs rounded font-semibold bg-[#8B5CF6]/20 text-[#8B5CF6] flex-shrink-0">
                     {t('integrations.coming-soon', locale)}
                   </span>
                 )}
@@ -196,7 +196,7 @@ export default function ToolsMarketplace({
                     {tool.agentsUnlocked.map((agent) => (
                       <span
                         key={agent}
-                        className="px-2 py-0.5 text-xs rounded bg-[#EC4899]20 text-[#EC4899]"
+                        className="px-2 py-0.5 text-xs rounded bg-[#EC4899]/20 text-[#EC4899]"
                       >
                         {agent}
                       </span>
@@ -225,7 +225,7 @@ export default function ToolsMarketplace({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {tool.isCritical && (
-                    <span className="px-2 py-0.5 text-xs rounded font-semibold bg-[#FF6B6B]20 text-[#FF6B6B]">
+                    <span className="px-2 py-0.5 text-xs rounded font-semibold bg-[#FF6B6B]/20 text-[#FF6B6B]">
                       {t('integrations.critical-badge', locale)}
                     </span>
                   )}

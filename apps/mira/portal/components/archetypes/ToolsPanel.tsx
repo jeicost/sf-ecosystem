@@ -117,7 +117,7 @@ export default function ToolsPanel({
                 className={clsx(
                   'w-full card p-3 border transition-all text-left space-y-2',
                   tool.priority === 'critical' || tool === nextSuggestion
-                    ? 'border-[#F59E0B] bg-[#F59E0B]10'
+                    ? 'border-[#F59E0B] bg-[#F59E0B]/10'
                     : 'border-line hover:border-ink-muted'
                 )}
               >

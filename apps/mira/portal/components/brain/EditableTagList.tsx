@@ -54,7 +54,7 @@ export function EditableTagList({ tags, onChange, placeholder = 'Add item...' }:
           {tags.map((tag, index) => (
             <div
               key={index}
-              className="flex items-center gap-2 px-2 py-1 rounded bg-[#EC4899]20 border border-[#EC4899]40 text-sm text-ink"
+              className="flex items-center gap-2 px-2 py-1 rounded bg-[#EC4899]/20 border border-[#EC4899]/40 text-sm text-ink"
             >
               {tag}
               <button

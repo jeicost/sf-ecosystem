@@ -137,6 +137,34 @@
    se remapean a los tokens para que todo sea legible. */
 
 [data-theme="light"] .text-white { color: var(--text-primary) !important; }
+
+/* Excepción: .text-white sobre un botón de color saturado (bg-violet-600,
+   bg-[#EC4899], etc.) NO debe repintarse -- el remap de arriba asume que
+   text-white siempre vive sobre el fondo oscuro de la página, pero aquí
+   el propio fondo del botón ya da el contraste. Sin esto, ~30 CTAs en
+   toda la app quedaban con texto casi negro sobre fondo saturado en modo
+   claro (encontrado en la auditoría de modo claro, 2026-07-30). */
+[data-theme="light"] .bg-violet-500.text-white,
+[data-theme="light"] .bg-violet-600.text-white,
+[data-theme="light"] .bg-purple-600.text-white,
+[data-theme="light"] .bg-purple-700.text-white,
+[data-theme="light"] .bg-blue-500.text-white,
+[data-theme="light"] .bg-blue-600.text-white,
+[data-theme="light"] .bg-blue-700.text-white,
+[data-theme="light"] .bg-emerald-500.text-white,
+[data-theme="light"] .bg-emerald-600.text-white,
+[data-theme="light"] .bg-emerald-700.text-white,
+[data-theme="light"] .bg-red-500.text-white,
+[data-theme="light"] .bg-red-600.text-white,
+[data-theme="light"] .bg-red-700.text-white,
+[data-theme="light"] .bg-sky-500.text-white,
+[data-theme="light"] .bg-amber-500.text-white,
+[data-theme="light"] .bg-\[\#10B981\].text-white,
+[data-theme="light"] .bg-\[\#EC4899\].text-white,
+[data-theme="light"] .bg-\[\#059669\].text-white,
+[data-theme="light"] .bg-\[\#E00B7F\].text-white {
+  color: #fff !important;
+}
 [data-theme="light"] .text-gray-300,
 [data-theme="light"] .text-gray-400 { color: var(--text-secondary) !important; }
 [data-theme="light"] .text-gray-500,
@@ -155,14 +183,21 @@
 [data-theme="light"] .hover\:bg-white\/5:hover { background: var(--bg-surface-hover) !important; }
 
 /* Inline styles con blanco-alfa (texto) — el !important del stylesheet
-   gana a un style="" sin !important */
-[data-theme="light"] [style*="color: rgba(255,255,255"],
-[data-theme="light"] [style*="color:rgba(255,255,255"] { color: var(--text-secondary) !important; }
-[data-theme="light"] [style*="background: rgba(255,255,255,0.02"],
-[data-theme="light"] [style*="background: rgba(255,255,255,0.03"],
-[data-theme="light"] [style*="background: rgba(255,255,255,0.04"] { background: var(--bg-card) !important; }
-[data-theme="light"] [style*="border: 1px solid rgba(255,255,255"],
-[data-theme="light"] [style*="border: 1px dashed rgba(255,255,255"] { border-color: var(--border) !important; }
+   gana a un style="" sin !important.
+   OJO: React serializa el atributo style vía CSSOM, no copia el string
+   literal del código -- "rgba(255,255,255,0.25)" en JSX se convierte en
+   el DOM real a "rgba(255, 255, 255, 0.25)" (espacio tras cada coma) y
+   un hex "#ffffff" se convierte a "rgb(255, 255, 255)". Los selectores
+   de abajo matchean la forma serializada real (verificado con Playwright
+   2026-07-30), no el string fuente -- las versiones sin espacio nunca
+   matchearon nada. */
+[data-theme="light"] [style*="color: rgba(255, 255, 255"],
+[data-theme="light"] [style*="color: rgb(255, 255, 255"] { color: var(--text-secondary) !important; }
+[data-theme="light"] [style*="background: rgba(255, 255, 255, 0.02"],
+[data-theme="light"] [style*="background: rgba(255, 255, 255, 0.03"],
+[data-theme="light"] [style*="background: rgba(255, 255, 255, 0.04"] { background: var(--bg-card) !important; }
+[data-theme="light"] [style*="border: 1px solid rgba(255, 255, 255"],
+[data-theme="light"] [style*="border: 1px dashed rgba(255, 255, 255"] { border-color: var(--border) !important; }
 
 /* ─── UTILITIES ──────────────────────────────────────────── */
 
@@ -198,31 +233,59 @@
 
 /* ─── LIGHT MODE — PAGE-LEVEL DEEP OVERRIDES ─────────────── */
 
-/* All inline-style dark backgrounds inside main — caught by attribute selector trick */
-[data-theme="light"] main [style*="background: '#0a0a0f'"],
-[data-theme="light"] main [style*="background: #0a0a0f"],
-[data-theme="light"] main [style*="background: #0a0a10"],
-[data-theme="light"] main [style*="background: rgba(255,255,255,0.04)"],
-[data-theme="light"] main [style*="background: rgba(255,255,255,0.03)"],
-[data-theme="light"] main [style*="background: rgba(255,255,255,0.02)"] {
+/* All inline-style dark backgrounds inside main — caught by attribute
+   selector trick. Matchea la forma real serializada por el navegador
+   (hex -> rgb(r, g, b), rgba con espacio tras cada coma — verificado con
+   Playwright 2026-07-30; las variantes con el string fuente literal
+   (comillas, sin espacios) nunca matchearon nada). */
+[data-theme="light"] main [style*="background: rgb(10, 10, 15)"],
+[data-theme="light"] main [style*="background: rgb(10, 10, 16)"],
+[data-theme="light"] main [style*="background: rgba(255, 255, 255, 0.04)"],
+[data-theme="light"] main [style*="background: rgba(255, 255, 255, 0.03)"],
+[data-theme="light"] main [style*="background: rgba(255, 255, 255, 0.02)"] {
   background: var(--bg-card) !important;
 }
-[data-theme="light"] main [style*="color: rgba(255,255,255"] {
+[data-theme="light"] main [style*="color: rgba(255, 255, 255"] {
   color: var(--text-secondary) !important;
 }
-[data-theme="light"] main [style*="border: '1px solid rgba(255,255,255"],
-[data-theme="light"] main [style*="border-color: rgba(255,255,255"] {
+[data-theme="light"] main [style*="border: 1px solid rgba(255, 255, 255"],
+[data-theme="light"] main [style*="border-color: rgba(255, 255, 255"] {
   border-color: var(--border) !important;
 }
 
 /* Stats numbers stay white in dark, turn dark in light */
-[data-theme="light"] main p[style*="color: #ffffff"],
-[data-theme="light"] main h1[style*="color: #ffffff"],
-[data-theme="light"] main h2[style*="color: #ffffff"],
-[data-theme="light"] main h3[style*="color: #ffffff"],
-[data-theme="light"] main span[style*="color: #ffffff"] {
+[data-theme="light"] main p[style*="color: rgb(255, 255, 255)"],
+[data-theme="light"] main h1[style*="color: rgb(255, 255, 255)"],
+[data-theme="light"] main h2[style*="color: rgb(255, 255, 255)"],
+[data-theme="light"] main h3[style*="color: rgb(255, 255, 255)"],
+[data-theme="light"] main span[style*="color: rgb(255, 255, 255)"] {
   color: var(--text-primary) !important;
 }
+
+/* Toolkit "Result" components (action-plan, competitive-analysis,
+   investor-deck, marketing-audit, seo-audit — also reused inside
+   Strategy) hardcode a neon accent palette as inline text color, tuned
+   to pop against the dark page bg. On the near-white light bg several of
+   these drop to ~1-2:1 contrast (near-unreadable). Remapped to darker
+   equivalents of the same hue via the same rgb()-matching trick used
+   above (found in the modo-claro audit, 2026-07-30). */
+[data-theme="light"] [style*="color: rgb(255, 215, 64)"]  { color: #B45309 !important; } /* #ffd740 amber  -> amber-700 */
+[data-theme="light"] [style*="color: rgb(0, 230, 118)"]   { color: #059669 !important; } /* #00e676 green  -> emerald-600 */
+[data-theme="light"] [style*="color: rgb(255, 90, 114)"]  { color: #DC2626 !important; } /* #ff5a72 red    -> red-600 */
+[data-theme="light"] [style*="color: rgb(255, 90, 31)"]   { color: #C2410C !important; } /* #ff5a1f orange -> orange-700 */
+[data-theme="light"] [style*="color: rgb(77, 124, 255)"]  { color: #2563EB !important; } /* #4d7cff blue   -> blue-600 */
+[data-theme="light"] [style*="color: rgb(77, 217, 196)"]  { color: #0D9488 !important; } /* #4dd9c4 teal   -> teal-600 */
+[data-theme="light"] [style*="border-color: rgb(255, 215, 64)"]  { border-color: #B45309 !important; }
+[data-theme="light"] [style*="border-color: rgb(0, 230, 118)"]   { border-color: #059669 !important; }
+[data-theme="light"] [style*="border-color: rgb(255, 90, 114)"]  { border-color: #DC2626 !important; }
+[data-theme="light"] [style*="border-color: rgb(255, 90, 31)"]   { border-color: #C2410C !important; }
+[data-theme="light"] [style*="border-color: rgb(77, 124, 255)"]  { border-color: #2563EB !important; }
+[data-theme="light"] [style*="border-color: rgb(77, 217, 196)"]  { border-color: #0D9488 !important; }
+
+/* Pastel amber (#fbbf24) used as text/badge color -- readable on the dark
+   page bg, low-contrast pastel-on-pale in light mode (sidebar pending
+   badge, Finanzas/Operations stat labels, client-portal warning banners). */
+[data-theme="light"] [style*="color: rgb(251, 191, 36)"] { color: #B45309 !important; }
 
 /* Ambient glow toned down */
 [data-theme="light"] .fixed.inset-0.pointer-events-none { opacity: 0.2; }

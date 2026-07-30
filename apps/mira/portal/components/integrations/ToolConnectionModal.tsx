@@ -186,7 +186,7 @@ export default function ToolConnectionModal({
           {/* Content */}
           <form onSubmit={handleSubmit} className="p-6 space-y-4">
             {isComingSoon && (
-              <div className="p-3 rounded bg-[#8B5CF6]10 border border-[#8B5CF6]30 flex items-center gap-2">
+              <div className="p-3 rounded bg-[#8B5CF6]/10 border border-[#8B5CF6]/30 flex items-center gap-2">
                 <Clock size={16} className="text-[#8B5CF6] flex-shrink-0" />
                 <p className="text-sm text-ink">
                   {t('integrations.coming-soon', locale)} — {t('integrations.coming-soon-desc', locale)}
@@ -240,7 +240,7 @@ export default function ToolConnectionModal({
 
                   {/* Account Info Display */}
                   {accountInfo && (
-                    <div className="mt-3 p-2 rounded bg-[#10B981]10 border border-[#10B981]30 text-xs text-[#10B981]">
+                    <div className="mt-3 p-2 rounded bg-[#10B981]/10 border border-[#10B981]/30 text-xs text-[#10B981]">
                       {accountInfo.email && (
                         <div>
                           {t('integrations.modal.account', locale)}: {accountInfo.email}
@@ -273,7 +273,7 @@ export default function ToolConnectionModal({
             )}
 
             {!isComingSoon && tool.authType === 'oauth' && (
-              <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30">
+              <div className="p-3 rounded bg-[#EC4899]/10 border border-[#EC4899]/30">
                 <p className="text-sm text-ink mb-3">
                   {t('integrations.modal.oauth-info', locale).replace('{name}', toolName)}
                 </p>
@@ -284,7 +284,7 @@ export default function ToolConnectionModal({
             )}
 
             {tool.authType === 'native' && (
-              <div className="p-3 rounded bg-[#10B981]10 border border-[#10B981]30">
+              <div className="p-3 rounded bg-[#10B981]/10 border border-[#10B981]/30">
                 <p className="text-sm text-ink">
                   {t('integrations.modal.native-ready', locale).replace('{name}', toolName)}
                 </p>
@@ -296,14 +296,14 @@ export default function ToolConnectionModal({
 
             {/* Error Message */}
             {error && (
-              <div className="p-3 rounded bg-[#FF6B6B]20 border border-[#FF6B6B] text-sm text-[#FF6B6B]">
+              <div className="p-3 rounded bg-[#FF6B6B]/20 border border-[#FF6B6B] text-sm text-[#FF6B6B]">
                 {error}
               </div>
             )}
 
             {/* Info Box */}
             {tool.authType !== 'native' && (
-              <div className="p-3 rounded bg-[#EC4899]10 border border-[#EC4899]30 text-xs text-ink-secondary">
+              <div className="p-3 rounded bg-[#EC4899]/10 border border-[#EC4899]/30 text-xs text-ink-secondary">
                 <p className="font-semibold text-[#EC4899] mb-1">
                   {t('integrations.modal.no-account', locale)}
                 </p>
