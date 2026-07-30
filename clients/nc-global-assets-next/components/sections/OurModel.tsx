@@ -2,27 +2,36 @@
 
 import { Eyebrow } from '@/lib/constants'
 
-export function OurModel() {
-  const blocks = [
+export const OUR_MODEL_DEFAULTS = {
+  eyebrow: 'Our Model',
+  headline_top: 'A partnership built around ',
+  headline_gold: 'shared growth',
+  lede: 'We combine operational capacity with long-term alignment. Our commercial agreements are structured around the specific needs of each brand and project.',
+  quote: 'We aim to be the local partner that makes your brand grow in Thailand.',
+  blocks: [
     { ttl: "Operational Setup", body: "Local infrastructure, kitchen capacity and channel activation — ready from day one." },
     { ttl: "Local Execution", body: "Hands-on management of operations, sales, brand and customer experience in Bangkok." },
     { ttl: "Shared Growth", body: "Aligned commercial models — fixed structures, performance-based, revenue share or equity." },
-  ]
+  ],
+}
+
+export function OurModel({ data = OUR_MODEL_DEFAULTS }: { data?: typeof OUR_MODEL_DEFAULTS }) {
+  const blocks = data.blocks
 
   return (
     <section className="section" id="model">
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>Our Model</Eyebrow>
-            <h2 className="display-lg">A partnership built around <span className="italic gold">shared growth</span></h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_top}<span className="italic gold">{data.headline_gold}</span></h2>
           </div>
           <div>
             <p className="lede" style={{ marginBottom: 20 }}>
-              We combine operational capacity with long-term alignment. Our commercial agreements are structured around the specific needs of each brand and project.
+              {data.lede}
             </p>
             <p style={{ fontFamily: "var(--font-display)", fontSize: "clamp(18px,2vw,24px)", fontStyle: "italic", fontWeight: 600, color: "var(--ink)", borderLeft: "3px solid var(--accent)", paddingLeft: 16, lineHeight: 1.4 }}>
-              We aim to be the local partner that makes your brand grow in Thailand.
+              {data.quote}
             </p>
           </div>
         </div>

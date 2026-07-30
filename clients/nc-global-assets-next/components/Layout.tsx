@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ChatWithUsModal, FloatingChat } from '@/components/ChatWidget'
 import { openChat } from '@/lib/constants'
+import { Footer } from '@/components/Footer'
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', exact: true },
@@ -102,37 +103,6 @@ export function Nav() {
         </div>
       )}
     </nav>
-  )
-}
-
-export function Footer() {
-  return (
-    <footer className="footer">
-      <div className="container footer-inner">
-        <div className="footer-section">
-          <h3>NC Global Assets</h3>
-          <p>Local operating partner for international brands in Thailand.</p>
-        </div>
-        <div className="footer-section">
-          <h4>Contact</h4>
-          <p>Email: {CONFIG.email}</p>
-          <p>Phone: {CONFIG.phoneDisplay}</p>
-        </div>
-        <div className="footer-section">
-          <h4>Quick Links</h4>
-          <ul>
-            {NAV_LINKS.map((l) => (
-              <li key={l.to}>
-                <Link href={l.to}>{l.label}</Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      <div className="footer-bottom">
-        <p>&copy; {new Date().getFullYear()} NC Global Assets. All rights reserved.</p>
-      </div>
-    </footer>
   )
 }
 

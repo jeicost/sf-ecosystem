@@ -1,9 +1,24 @@
 'use client'
 
-import Link from 'next/link'
-import { CONFIG, Arrow, Eyebrow } from '@/lib/constants'
+import { Eyebrow } from '@/lib/constants'
 
-export function Hero() {
+export const HERO_DEFAULTS = {
+  eyebrow: 'Bangkok · Local Operating Partner',
+  headline_line1: 'Enter Thailand.',
+  headline_line2: 'Skip the ',
+  headline_line2_gold: 'hard part.',
+  headline_line3_gold: 'Your brand live in weeks.',
+  hidden_heading: 'Premium Real Estate & Investment Management in Bangkok',
+  body: 'We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.',
+  spaces_label: "What's ready for your brand",
+  spaces: [
+    { icon: '◈', label: 'Showroom', desc: 'Present your brand to buyers & partners' },
+    { icon: '⬡', label: 'Offices', desc: 'Local team base & brand management' },
+    { icon: '◎', label: 'Cloud Kitchen', desc: 'Production-ready, live on delivery apps' },
+  ],
+}
+
+export function Hero({ data = HERO_DEFAULTS }: { data?: typeof HERO_DEFAULTS }) {
   return (
     <section className="hero" id="top">
       <div
@@ -12,30 +27,26 @@ export function Hero() {
       />
       <div className="hero-content container">
         <div className="hero-eyebrow-row">
-          <Eyebrow style={{ color: "var(--accent)" }}>Bangkok · Local Operating Partner</Eyebrow>
+          <Eyebrow style={{ color: "var(--accent)" }}>{data.eyebrow}</Eyebrow>
           <span className="rule" />
         </div>
         <h1 className="hero-headline">
-          <span className="line">Enter Thailand.</span>
-          <span className="line">Skip the <span className="gold italic">hard part.</span></span>
-          <span className="line gold italic">Your brand live in weeks.</span>
+          <span className="line">{data.headline_line1}</span>
+          <span className="line">{data.headline_line2}<span className="gold italic">{data.headline_line2_gold}</span></span>
+          <span className="line gold italic">{data.headline_line3_gold}</span>
         </h1>
         <h2 style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
-          Premium Real Estate &amp; Investment Management in Bangkok
+          {data.hidden_heading}
         </h2>
         <div className="hero-body">
           <div className="hero-lede-col">
             <p className="lede">
-              We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.
+              {data.body}
             </p>
           </div>
           <div className="hero-spaces">
-            <div className="hero-spaces__label">What's ready for your brand</div>
-            {[
-              { icon: "◈", label: "Showroom", desc: "Present your brand to buyers & partners" },
-              { icon: "⬡", label: "Offices", desc: "Local team base & brand management" },
-              { icon: "◎", label: "Cloud Kitchen", desc: "Production-ready, live on delivery apps" },
-            ].map((s, i) => (
+            <div className="hero-spaces__label">{data.spaces_label}</div>
+            {data.spaces.map((s, i) => (
               <div className="hero-space-item" key={i}>
                 <span className="hero-space-item__dot" />
                 <div>

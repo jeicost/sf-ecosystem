@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { Arrow, Eyebrow } from '@/lib/constants'
-import { CompareSection } from '@/components/sections/CompareSection'
-import { FinalCTA } from '@/components/sections/FinalCTA'
+import { CompareSection, COMPARE_DEFAULTS } from '@/components/sections/CompareSection'
+import { FinalCTA, FINAL_CTA_DEFAULTS } from '@/components/sections/FinalCTA'
 import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
 
 export const metadata: Metadata = {
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 }
 
 // Ported from clients/nc-global-assets/src/App.jsx ServicesPage (L455-647)
-const SERVICES = [
+const SERVICES_DEFAULT_ITEMS = [
   {
     num: '01',
     title: 'Brand Representation & Action Plan',
@@ -98,11 +98,28 @@ const HERO_DEFAULTS = {
   headline_top: 'Three ways we',
   headline_gold: 'work with you',
   sub: 'Whether you need market clarity, an operational base or a commercial team on the ground — we have the infrastructure and the people to make it happen in Thailand.',
+  pills: ['Strategy & Roadmap', 'Cloud Kitchen Operations', 'Commercial & Distribution'],
+}
+
+const AT_A_GLANCE_DEFAULTS = {
+  eyebrow: 'At a glance',
+  headline_pre: "What's ",
+  headline_gold: 'included',
+  lede: 'Three complementary services — from strategy to full operations. You can engage with one or combine all three depending on your stage and goals.',
+}
+
+const SERVICES_DEFAULTS = {
+  items: SERVICES_DEFAULT_ITEMS,
 }
 
 export default function ServicesPage() {
   const cms = loadCmsSections('services')
   const hero = mergeCms(HERO_DEFAULTS, cms['hero']?.data)
+  const atAGlance = mergeCms(AT_A_GLANCE_DEFAULTS, cms['at-a-glance']?.data)
+  const servicesData = mergeCms(SERVICES_DEFAULTS, cms['services']?.data)
+  const compare = mergeCms(COMPARE_DEFAULTS, cms['compare']?.data)
+  const finalCta = mergeCms(FINAL_CTA_DEFAULTS, cms['final-cta']?.data)
+  const SERVICES = servicesData.items
 
   return (
     <>
@@ -116,7 +133,7 @@ export default function ServicesPage() {
           </h1>
           <p className="svc-hero__sub">{hero.sub}</p>
           <div className="svc-hero__pills">
-            {['Strategy & Roadmap', 'Cloud Kitchen Operations', 'Commercial & Distribution'].map((t, i) => (
+            {hero.pills.map((t, i) => (
               <a key={i} href={`#svc-0${i + 1}`} className="svc-pill">0{i + 1} · {t}</a>
             ))}
           </div>
@@ -128,11 +145,11 @@ export default function ServicesPage() {
         <div className="container">
           <div className="sec-header">
             <div className="lhs">
-              <Eyebrow>At a glance</Eyebrow>
-              <h2 className="display-lg">What&apos;s <span className="italic gold">included</span></h2>
+              <Eyebrow>{atAGlance.eyebrow}</Eyebrow>
+              <h2 className="display-lg">{atAGlance.headline_pre}<span className="italic gold">{atAGlance.headline_gold}</span></h2>
             </div>
             <div>
-              <p className="lede">Three complementary services — from strategy to full operations. You can engage with one or combine all three depending on your stage and goals.</p>
+              <p className="lede">{atAGlance.lede}</p>
             </div>
           </div>
           <div className="services-grid">
@@ -202,8 +219,8 @@ export default function ServicesPage() {
         </section>
       ))}
 
-      <CompareSection />
-      <FinalCTA />
+      <CompareSection data={compare} />
+      <FinalCTA data={finalCta} />
     </>
   )
 }

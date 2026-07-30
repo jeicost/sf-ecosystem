@@ -3,7 +3,15 @@
 import Image from 'next/image'
 import { Eyebrow } from '@/lib/constants'
 
-export function Ecosystem() {
+export const ECOSYSTEM_DEFAULTS = {
+  eyebrow: 'Ecosystem',
+  headline_pre: 'A ',
+  headline_accent: 'trusted',
+  headline_suffix: ' local ecosystem',
+  lede: 'We collaborate with selected partners across food innovation, entrepreneurship, marketing, business development and international expansion.',
+}
+
+export function Ecosystem({ data = ECOSYSTEM_DEFAULTS }: { data?: typeof ECOSYSTEM_DEFAULTS }) {
   const partners = [
     { name: "Makeat", logo: "/assets/partner-makeat.png" },
     { name: "KM Zero", logo: "/assets/partner-kmzero.png", inv: true },
@@ -18,11 +26,11 @@ export function Ecosystem() {
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>Ecosystem</Eyebrow>
-            <h2 className="display-lg">A <span className="italic" style={{ color: "var(--accent)" }}>trusted</span> local ecosystem</h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_pre}<span className="italic" style={{ color: "var(--accent)" }}>{data.headline_accent}</span>{data.headline_suffix}</h2>
           </div>
           <div>
-            <p className="lede">We collaborate with selected partners across food innovation, entrepreneurship, marketing, business development and international expansion.</p>
+            <p className="lede">{data.lede}</p>
           </div>
         </div>
         <div className="logo-grid">

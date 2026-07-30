@@ -6,20 +6,35 @@ const CONFIG = {
   calendlyUrl: 'https://calendly.com/nc-global-assets/discover-call',
 }
 
-export function FinalCTA() {
+export const FINAL_CTA_DEFAULTS = {
+  ready_eyebrow: 'Next Step',
+  ready_headline_line1: 'Your brand',
+  ready_headline_line2: 'Bangkok',
+  ready_headline_gold: "Let's build it",
+  ready_lede: "Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.",
+  ready_note1: 'Limited spots per quarter',
+  ready_note2: 'Transparent model · Pricing shared in the first call',
+  notready_eyebrow: 'Still exploring?',
+  notready_headline_top: "Let's talk",
+  notready_headline_gold: 'before you decide',
+  notready_lede: "Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.",
+  notready_footer: 'We reply from Bangkok within 24 hours.',
+}
+
+export function FinalCTA({ data = FINAL_CTA_DEFAULTS }: { data?: typeof FINAL_CTA_DEFAULTS }) {
   return (
     <div className="dual-cta">
       <div className="dual-cta__ready">
         <div className="dual-cta__ready-bg" style={{ backgroundImage: 'url(/assets/cta-pool.webp)' }} />
         <div className="dual-cta__ready-content">
-          <Eyebrow style={{ color: 'rgba(255,255,255,0.5)' }}>Next Step</Eyebrow>
+          <Eyebrow style={{ color: 'rgba(255,255,255,0.5)' }}>{data.ready_eyebrow}</Eyebrow>
           <h2 className="display-lg" style={{ color: '#fff' }}>
-            Your brand<br/>
-            Bangkok<br/>
-            <span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>Let's build it</span>
+            {data.ready_headline_line1}<br/>
+            {data.ready_headline_line2}<br/>
+            <span style={{ color: 'var(--accent)', fontStyle: 'italic' }}>{data.ready_headline_gold}</span>
           </h2>
           <p className="lede" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '38ch' }}>
-            Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.
+            {data.ready_lede}
           </p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
             <a href={CONFIG.calendlyUrl} target="_blank" rel="noopener" className="btn btn--primary">
@@ -27,10 +42,10 @@ export function FinalCTA() {
             </a>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.3)' }}>
-                Limited spots per quarter
+                {data.ready_note1}
               </p>
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: 10, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.22)' }}>
-                Transparent model · Pricing shared in the first call
+                {data.ready_note2}
               </p>
             </div>
           </div>
@@ -40,9 +55,9 @@ export function FinalCTA() {
         <div className="dual-cta__notready-icon">
           <span style={{ fontSize: 28, opacity: 0.6 }}>→</span>
         </div>
-        <Eyebrow>Still exploring?</Eyebrow>
-        <h2 className="display-lg">Let's talk<br/><span className="italic gold">before you decide</span></h2>
-        <p className="lede">Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.</p>
+        <Eyebrow>{data.notready_eyebrow}</Eyebrow>
+        <h2 className="display-lg">{data.notready_headline_top}<br/><span className="italic gold">{data.notready_headline_gold}</span></h2>
+        <p className="lede">{data.notready_lede}</p>
         <div className="dual-cta__btn-row">
           <a href="#" className="btn btn--ghost" onClick={(e) => { e.preventDefault(); window.open('https://chat.ncglobalassets.com') }}>
             <ChatIcon /> Chat with Us <Arrow />
@@ -51,7 +66,7 @@ export function FinalCTA() {
             Send a Brief <Arrow />
           </a>
         </div>
-        <p className="small" style={{ marginTop: 16, color: 'var(--muted)' }}>We reply from Bangkok within 24 hours.</p>
+        <p className="small" style={{ marginTop: 16, color: 'var(--muted)' }}>{data.notready_footer}</p>
       </div>
     </div>
   )

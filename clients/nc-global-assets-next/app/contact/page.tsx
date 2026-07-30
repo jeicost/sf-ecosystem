@@ -21,12 +21,30 @@ const HERO_DEFAULTS = {
   sub: 'Tell us about your brand, goals, and expansion plans. Our team will get back to you shortly with clear next steps.',
 }
 
-const ADDRESS = '507/10 Sathu Pradit Rd, Chong Nonsi, Yan Nawa, Bangkok 10120, Thailand'
-const HOURS = 'Mon–Sat · 10:00–18:00 (ICT)'
+const OFFICE_DEFAULTS = {
+  address: '507/10 Sathu Pradit Rd, Chong Nonsi, Yan Nawa, Bangkok 10120, Thailand',
+  hours: 'Mon–Sat · 10:00–18:00 (ICT)',
+}
+
+const FORM_ASIDE_DEFAULTS = {
+  body: "Fill in the form and we'll come back with a clear view of how NC Global Assets can support your brand's entry into Thailand — infrastructure, timeline and commercial model included.",
+  trust_items: [
+    'We reply within one business day from Bangkok',
+    'No commitment required for a first conversation',
+    'We work with a limited number of brands per quarter',
+    'English, Spanish and Thai spoken',
+  ],
+  chat_label: 'Prefer a direct chat?',
+  chat_cta: 'Book a Call',
+}
 
 export default function ContactPage() {
   const cms = loadCmsSections('contact')
   const hero = mergeCms(HERO_DEFAULTS, cms['hero']?.data)
+  const office = mergeCms(OFFICE_DEFAULTS, cms['office']?.data)
+  const formAside = mergeCms(FORM_ASIDE_DEFAULTS, cms['form-aside']?.data)
+  const ADDRESS = office.address
+  const HOURS = office.hours
 
   return (
     <>
@@ -93,15 +111,10 @@ export default function ContactPage() {
           <div className="contact-form-grid">
             <div className="contact-form-aside">
               <p className="contact-form-aside__body">
-                Fill in the form and we&apos;ll come back with a clear view of how NC Global Assets can support your brand&apos;s entry into Thailand — infrastructure, timeline and commercial model included.
+                {formAside.body}
               </p>
               <div className="contact-trust-items">
-                {[
-                  'We reply within one business day from Bangkok',
-                  'No commitment required for a first conversation',
-                  'We work with a limited number of brands per quarter',
-                  'English, Spanish and Thai spoken',
-                ].map((t, i) => (
+                {formAside.trust_items.map((t, i) => (
                   <div className="contact-trust-item" key={i}>
                     <span className="contact-trust-dot" />
                     {t}
@@ -109,10 +122,10 @@ export default function ContactPage() {
                 ))}
               </div>
               <div className="contact-aside-channels">
-                <p className="small" style={{ marginBottom: 12, color: 'var(--muted)' }}>Prefer a direct chat?</p>
+                <p className="small" style={{ marginBottom: 12, color: 'var(--muted)' }}>{formAside.chat_label}</p>
                 <div className="contact-channels-row">
                   <a href={CONFIG.calendlyUrl} target="_blank" rel="noopener" className="contact-channel">
-                    <Calendar size={14} /> Book a Call <Arrow size={11} />
+                    <Calendar size={14} /> {formAside.chat_cta} <Arrow size={11} />
                   </a>
                 </div>
               </div>

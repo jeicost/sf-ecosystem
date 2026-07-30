@@ -12,7 +12,15 @@ function Icon({ type }: { type: string }) {
   return <span className="compare-cross">✗</span>
 }
 
-export function CompareSection() {
+export const COMPARE_DEFAULTS = {
+  eyebrow: 'How We Compare',
+  headline_top: 'Four ways to enter',
+  headline_gold: 'Thailand',
+  lede: 'Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.',
+  footer_note: 'We onboard a limited number of brands per quarter.',
+}
+
+export function CompareSection({ data = COMPARE_DEFAULTS }: { data?: typeof COMPARE_DEFAULTS }) {
   const cols = [
     { key: "nc", label: "NC Global", sub: "Operating Partner", highlight: true },
     { key: "agency", label: "Local Agency", sub: "Strategy only" },
@@ -37,11 +45,11 @@ export function CompareSection() {
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>How We Compare</Eyebrow>
-            <h2 className="display-lg">Four ways to enter<br/><span className="italic gold">Thailand</span></h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_top}<br/><span className="italic gold">{data.headline_gold}</span></h2>
           </div>
           <div>
-            <p className="lede">Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.</p>
+            <p className="lede">{data.lede}</p>
           </div>
         </div>
         <div className="compare-table">
@@ -70,7 +78,7 @@ export function CompareSection() {
           <span><span className="compare-cross">✗</span> Not included</span>
         </div>
         <div className="compare-footer">
-          <p className="small">We onboard a limited number of brands per quarter.</p>
+          <p className="small">{data.footer_note}</p>
         </div>
       </div>
     </section>

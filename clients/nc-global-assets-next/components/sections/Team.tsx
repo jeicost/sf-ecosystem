@@ -4,8 +4,11 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Eyebrow, Arrow, LinkedInIcon } from '@/lib/constants'
 
-export function Team() {
-  const team = [
+export const TEAM_DEFAULTS = {
+  eyebrow: 'The Team',
+  headline_top: 'Led by operators entrepreneurs and ',
+  headline_gold: 'market builders',
+  team: [
     {
       name: "Carlos Jacoste",
       role: "Founder & Operating Partner",
@@ -20,15 +23,22 @@ export function Team() {
       img: "/assets/nirada-dark.jpg",
       linkedin: "https://th.linkedin.com/in/nirada-k",
     },
-  ]
+  ],
+  closing_pre: 'Together, the team combines international business vision with ',
+  closing_gold: 'local execution capacity',
+  closing_suffix: ' in Thailand.',
+}
+
+export function Team({ data = TEAM_DEFAULTS }: { data?: typeof TEAM_DEFAULTS }) {
+  const team = data.team
 
   return (
     <section className="section" id="team">
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>The Team</Eyebrow>
-            <h2 className="display-lg">Led by operators entrepreneurs and <span className="italic gold">market builders</span></h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_top}<span className="italic gold">{data.headline_gold}</span></h2>
           </div>
           <div />
         </div>
@@ -49,7 +59,7 @@ export function Team() {
           ))}
         </div>
         <p className="display-md" style={{ marginTop: 80, maxWidth: 860, color: "var(--ink)" }}>
-          Together, the team combines international business vision with <span className="italic gold">local execution capacity</span> in Thailand.
+          {data.closing_pre}<span className="italic gold">{data.closing_gold}</span>{data.closing_suffix}
         </p>
       </div>
     </section>

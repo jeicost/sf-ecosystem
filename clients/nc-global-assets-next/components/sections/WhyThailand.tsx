@@ -19,25 +19,37 @@ function ImgCard({ src, alt, caption, className = "" }: ImgCardProps) {
   )
 }
 
-export function WhyThailand() {
-  const bullets = [
+export const WHY_THAILAND_DEFAULTS = {
+  eyebrow: 'Why Thailand',
+  headline_top: 'Bangkok first',
+  headline_accent: 'Southeast Asia',
+  headline_suffix: ' next',
+  lede: 'Bangkok offers a unique combination of scale, creativity and openness to international concepts — the ideal testing ground before expanding across the region.',
+  subheading_pre: 'A market built for brands that know how to ',
+  subheading_accent: 'show up well',
+  subheading_suffix: '.',
+  bullets: [
     "One of SEA's fastest-growing F&B and lifestyle markets",
     "Strong delivery ecosystem and digital adoption",
     "High concentration of international consumers and tourism",
     "Strategic gateway to the rest of Southeast Asia",
     "A market genuinely open to new concepts and experiences",
-  ]
+  ],
+}
+
+export function WhyThailand({ data = WHY_THAILAND_DEFAULTS }: { data?: typeof WHY_THAILAND_DEFAULTS }) {
+  const bullets = data.bullets
 
   return (
     <section className="section section--light" id="why">
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>Why Thailand</Eyebrow>
-            <h2 className="display-lg">Bangkok first<br/><span className="italic" style={{ color: "var(--accent)" }}>Southeast Asia</span> next</h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_top}<br/><span className="italic" style={{ color: "var(--accent)" }}>{data.headline_accent}</span>{data.headline_suffix}</h2>
           </div>
           <div>
-            <p className="lede">Bangkok offers a unique combination of scale, creativity and openness to international concepts — the ideal testing ground before expanding across the region.</p>
+            <p className="lede">{data.lede}</p>
           </div>
         </div>
         <div className="gallery" style={{ marginBottom: 48 }}>
@@ -50,7 +62,7 @@ export function WhyThailand() {
         </div>
         <div className="why-grid">
           <h3 className="display-md" style={{ color: "var(--ink-light)" }}>
-            A market built for brands that know how to <span className="italic" style={{ color: "var(--accent)" }}>show up well</span>.
+            {data.subheading_pre}<span className="italic" style={{ color: "var(--accent)" }}>{data.subheading_accent}</span>{data.subheading_suffix}
           </h3>
           <ul className="checklist">
             {bullets.map((b, i) => (

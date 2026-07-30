@@ -2,25 +2,26 @@
 // Port from: clients/nc-global-assets/src/App.jsx (Vite SPA)
 // Fase 1: Home page core sections (Hero, HeroStrip, Tape, Intro, MarketStats, WhatWeDo)
 
-import { Hero } from '@/components/sections/Hero'
+import { Hero, HERO_DEFAULTS } from '@/components/sections/Hero'
 import { HeroStrip } from '@/components/sections/HeroStrip'
 import { Tape } from '@/components/sections/Tape'
-import { Intro } from '@/components/sections/Intro'
-import { MarketStats } from '@/components/sections/MarketStats'
-import { WhatWeDo } from '@/components/sections/WhatWeDo'
-import { OperatingPartner } from '@/components/sections/OperatingPartner'
-import { WhyThailand } from '@/components/sections/WhyThailand'
-import { Infrastructure } from '@/components/sections/Infrastructure'
-import { WhoWeWorkWith } from '@/components/sections/WhoWeWorkWith'
-import { OurModel } from '@/components/sections/OurModel'
-import { CompareSection } from '@/components/sections/CompareSection'
-import { Ecosystem } from '@/components/sections/Ecosystem'
-import { BrandsProjects } from '@/components/sections/BrandsProjects'
-import { Testimonials } from '@/components/sections/Testimonials'
-import { Team } from '@/components/sections/Team'
-import { FAQ } from '@/components/sections/FAQ'
-import { LeadMagnet } from '@/components/sections/LeadMagnet'
-import { FinalCTA } from '@/components/sections/FinalCTA'
+import { Intro, INTRO_DEFAULTS } from '@/components/sections/Intro'
+import { MarketStats, MARKET_STATS_DEFAULTS } from '@/components/sections/MarketStats'
+import { WhatWeDo, WHAT_WE_DO_DEFAULTS } from '@/components/sections/WhatWeDo'
+import { OperatingPartner, OPERATING_PARTNER_DEFAULTS } from '@/components/sections/OperatingPartner'
+import { WhyThailand, WHY_THAILAND_DEFAULTS } from '@/components/sections/WhyThailand'
+import { Infrastructure, INFRASTRUCTURE_DEFAULTS } from '@/components/sections/Infrastructure'
+import { WhoWeWorkWith, WHO_WE_WORK_WITH_DEFAULTS } from '@/components/sections/WhoWeWorkWith'
+import { OurModel, OUR_MODEL_DEFAULTS } from '@/components/sections/OurModel'
+import { CompareSection, COMPARE_DEFAULTS } from '@/components/sections/CompareSection'
+import { Ecosystem, ECOSYSTEM_DEFAULTS } from '@/components/sections/Ecosystem'
+import { BrandsProjects, BRANDS_PROJECTS_DEFAULTS } from '@/components/sections/BrandsProjects'
+import { Testimonials, TESTIMONIALS_DEFAULTS } from '@/components/sections/Testimonials'
+import { Team, TEAM_DEFAULTS } from '@/components/sections/Team'
+import { FAQ, FAQ_DEFAULTS } from '@/components/sections/FAQ'
+import { LeadMagnet, LEAD_MAGNET_DEFAULTS } from '@/components/sections/LeadMagnet'
+import { FinalCTA, FINAL_CTA_DEFAULTS } from '@/components/sections/FinalCTA'
+import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
 
 export const metadata = {
   title: 'NC Global Assets — Bangkok Operating Partner for International Brands',
@@ -33,32 +34,34 @@ export const metadata = {
 }
 
 export default function HomePage() {
+  const cms = loadCmsSections('home')
+
   return (
     <>
       {/* Fase 1: Core home sections */}
-      <Hero />
+      <Hero data={mergeCms(HERO_DEFAULTS, cms['hero']?.data)} />
       <HeroStrip />
       <Tape />
-      <Intro />
-      <MarketStats />
-      <WhatWeDo />
+      <Intro data={mergeCms(INTRO_DEFAULTS, cms['intro']?.data)} />
+      <MarketStats data={mergeCms(MARKET_STATS_DEFAULTS, cms['market-stats']?.data)} />
+      <WhatWeDo data={mergeCms(WHAT_WE_DO_DEFAULTS, cms['what-we-do']?.data)} />
 
       {/* Fase 2: Secondary home sections */}
-      <OperatingPartner />
-      <WhyThailand />
-      <Infrastructure />
-      <WhoWeWorkWith />
-      <OurModel />
-      <CompareSection />
-      <Ecosystem />
-      <BrandsProjects />
+      <OperatingPartner data={mergeCms(OPERATING_PARTNER_DEFAULTS, cms['operating-partner']?.data)} />
+      <WhyThailand data={mergeCms(WHY_THAILAND_DEFAULTS, cms['why-thailand']?.data)} />
+      <Infrastructure data={mergeCms(INFRASTRUCTURE_DEFAULTS, cms['infrastructure']?.data)} />
+      <WhoWeWorkWith data={mergeCms(WHO_WE_WORK_WITH_DEFAULTS, cms['who-we-work-with']?.data)} />
+      <OurModel data={mergeCms(OUR_MODEL_DEFAULTS, cms['our-model']?.data)} />
+      <CompareSection data={mergeCms(COMPARE_DEFAULTS, cms['compare']?.data)} />
+      <Ecosystem data={mergeCms(ECOSYSTEM_DEFAULTS, cms['ecosystem']?.data)} />
+      <BrandsProjects data={mergeCms(BRANDS_PROJECTS_DEFAULTS, cms['brands-projects']?.data)} />
 
       {/* Fase 3: Bottom sections (Testimonials, Team, FAQ, LeadMagnet, FinalCTA) */}
-      <Testimonials />
-      <Team />
-      <FAQ />
-      <LeadMagnet />
-      <FinalCTA />
+      <Testimonials data={mergeCms(TESTIMONIALS_DEFAULTS, cms['testimonials']?.data)} />
+      <Team data={mergeCms(TEAM_DEFAULTS, cms['team']?.data)} />
+      <FAQ data={mergeCms(FAQ_DEFAULTS, cms['faq']?.data)} />
+      <LeadMagnet data={mergeCms(LEAD_MAGNET_DEFAULTS, cms['lead-magnet']?.data)} />
+      <FinalCTA data={mergeCms(FINAL_CTA_DEFAULTS, cms['final-cta']?.data)} />
     </>
   )
 }

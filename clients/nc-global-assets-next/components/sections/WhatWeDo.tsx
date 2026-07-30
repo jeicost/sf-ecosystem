@@ -1,9 +1,13 @@
 'use client'
 
-import { Eyebrow, Arrow } from '@/lib/constants'
+import { Eyebrow } from '@/lib/constants'
 
-export function WhatWeDo() {
-  const cards = [
+export const WHAT_WE_DO_DEFAULTS = {
+  eyebrow: 'How It Works',
+  headline_top: 'From market test to ',
+  headline_gold: 'full operation',
+  lede: 'Three phases. One local partner. From your first product test in Bangkok to a fully operating brand across Southeast Asia — we manage the entire journey with you.',
+  cards: [
     {
       idx: "01",
       title: "Test the Market",
@@ -19,18 +23,22 @@ export function WhatWeDo() {
       title: "Operate & Scale",
       body: "Run daily operations from our Bangkok base and grow your footprint across Thailand and Southeast Asia with a local team directly invested in your results.",
     },
-  ]
+  ],
+}
+
+export function WhatWeDo({ data = WHAT_WE_DO_DEFAULTS }: { data?: typeof WHAT_WE_DO_DEFAULTS }) {
+  const cards = data.cards
 
   return (
     <section className="section section--surface" id="what">
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>How It Works</Eyebrow>
-            <h2 className="display-lg">From market test to <span className="italic gold">full operation</span></h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_top}<span className="italic gold">{data.headline_gold}</span></h2>
           </div>
           <div>
-            <p className="lede">Three phases. One local partner. From your first product test in Bangkok to a fully operating brand across Southeast Asia — we manage the entire journey with you.</p>
+            <p className="lede">{data.lede}</p>
           </div>
         </div>
         <div className="process-steps">

@@ -3,8 +3,12 @@
 import Image from 'next/image'
 import { Eyebrow } from '@/lib/constants'
 
-export function Testimonials() {
-  const testimonials = [
+export const TESTIMONIALS_DEFAULTS = {
+  eyebrow: 'Founder Perspectives',
+  headline_accent: 'Founder',
+  headline_suffix: ' perspectives',
+  lede: 'From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.',
+  testimonials: [
     {
       q: "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
       name: "Carlos Jacoste",
@@ -23,18 +27,22 @@ export function Testimonials() {
       role: "Souji · Food & Wellness",
       img: null,
     },
-  ]
+  ],
+}
+
+export function Testimonials({ data = TESTIMONIALS_DEFAULTS }: { data?: typeof TESTIMONIALS_DEFAULTS }) {
+  const testimonials = data.testimonials
 
   return (
     <section className="section section--light" id="testimonials">
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>Founder Perspectives</Eyebrow>
-            <h2 className="display-lg"><span className="italic" style={{ color: "var(--accent)" }}>Founder</span> perspectives</h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg"><span className="italic" style={{ color: "var(--accent)" }}>{data.headline_accent}</span>{data.headline_suffix}</h2>
           </div>
           <div>
-            <p className="lede">From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.</p>
+            <p className="lede">{data.lede}</p>
           </div>
         </div>
         <div>
@@ -47,7 +55,7 @@ export function Testimonials() {
                   : <div style={{ width: 44, height: 44, borderRadius: "50%", marginTop: 16, border: "1.5px solid var(--accent)", display: "flex", alignItems: "center", justifyContent: "center", background: "var(--surface-2)", fontSize: 14, fontWeight: 700, color: "var(--accent)", fontFamily: "var(--font-display)", flexShrink: 0 }}>{t.name[0]}</div>
                 }
               </div>
-              <p className="tm-quote">"{t.q}"</p>
+              <p className="tm-quote">&quot;{t.q}&quot;</p>
             </div>
           ))}
         </div>

@@ -4,7 +4,14 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { Eyebrow, Arrow } from '@/lib/constants'
 
-export function BrandsProjects() {
+export const BRANDS_PROJECTS_DEFAULTS = {
+  eyebrow: 'Brands & Projects',
+  headline_top: 'Brands in our ',
+  headline_gold: 'network',
+  lede: 'A curated portfolio across F&B, sustainability, sport, lifestyle and digital innovation — each with a real story and a real ambition.',
+}
+
+export function BrandsProjects({ data = BRANDS_PROJECTS_DEFAULTS }: { data?: typeof BRANDS_PROJECTS_DEFAULTS }) {
   const brands = [
     { name: "Salsa Burgers", tag: "F&B · Bangkok", desc: "Craft burger concept developed and operated in Bangkok.", logo: "/assets/brand-salsa-logo.png", bg: "#FFFFFF", caseStudy: "/case-studies/salsa-burgers" },
     { name: "Plesh", tag: "Food · Wellness", desc: "Next-generation chocolate snacks — full flavour, zero added sugar, backed by Marc Gasol and Gerard Piqué.", logo: "/assets/brand-plesh-logo.svg", bg: "#FAFAF7" },
@@ -20,11 +27,11 @@ export function BrandsProjects() {
       <div className="container">
         <div className="sec-header">
           <div className="lhs">
-            <Eyebrow>Brands & Projects</Eyebrow>
-            <h2 className="display-lg">Brands in our <span className="italic gold">network</span></h2>
+            <Eyebrow>{data.eyebrow}</Eyebrow>
+            <h2 className="display-lg">{data.headline_top}<span className="italic gold">{data.headline_gold}</span></h2>
           </div>
           <div>
-            <p className="lede">A curated portfolio across F&B, sustainability, sport, lifestyle and digital innovation — each with a real story and a real ambition.</p>
+            <p className="lede">{data.lede}</p>
           </div>
         </div>
         <div className="brand-grid">
