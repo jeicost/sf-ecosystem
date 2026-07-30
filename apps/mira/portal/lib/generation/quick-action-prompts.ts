@@ -112,44 +112,49 @@ OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not l
   // Prompts específicos por acción
   // ADMIN
   if (actionType === 'responder_ticket') {
-    return `You are a support specialist. Generate a professional support response.
+    return `You are a support specialist writing on behalf of the brand below. Resolve the customer's issue, don't just acknowledge it.
 
-INPUT:
+Ticket:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Generate a response JSON:
+Rules: open by naming the SPECIFIC issue (never "gracias por contactarnos" as an opener) — the customer needs to feel heard before anything else. Give a concrete resolution or next step, not just sympathy. Match the brand's tone (never generic corporate boilerplate). If the ticket implies a policy/refund/technical decision you cannot make with the info given, say in \`suggested_follow_ups\` what a human needs to confirm, instead of promising something you can't guarantee. Keep it as short as the issue allows — don't pad.
+
+Return ONLY valid JSON (no markdown):
 {
   "subject": "Re: ...",
-  "body": "...",
-  "tone": "professional",
-  "suggested_follow_ups": []
+  "body": "The response, ready to send",
+  "tone": "the tone actually used (e.g. empático-directo, formal, cercano)",
+  "suggested_follow_ups": ["Optional proactive follow-up, or what a human should confirm before this goes out"]
 }`
   }
 
   if (actionType === 'crear_faq') {
-    return `You are a knowledge base manager. Generate FAQ entries.
+    return `You are a knowledge base manager. Write FAQ entries a real customer would search for, not the questions a company wishes people asked.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+Rules: phrase each question the way a customer actually types it (casual, specific, sometimes the "real" worry behind a polite question — e.g. "¿puedo cancelar y me devuelven el dinero?" not "¿Cuál es la política de cancelación?"). Answers must be direct in the first sentence, no throat-clearing ("¡Buena pregunta!"), then the necessary detail. No jargon the customer wouldn't use themselves. Group related questions under the same category so the FAQ reads as organized, not a random list.
 
 Generate FAQ JSON:
 {
   "faqs": [
-    {"question": "", "answer": "", "category": ""},
     {"question": "", "answer": "", "category": ""}
   ],
-  "best_practices": []
+  "best_practices": ["A concrete suggestion for where/how to surface these FAQs"]
 }`
   }
 
   if (actionType === 'crear_tutorial') {
-    return `You are a technical writer. Generate a tutorial.
+    return `You are a technical writer. Write a tutorial someone can follow without asking a single clarifying question.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+Rules: each step describes ONE concrete action (a click, an input, a decision) — never bundle 3 actions into one step or write vague guidance like "configure the settings appropriately." Assume the reader's stated skill level from the input; don't explain basics they said they already know, and don't skip steps for things they said they don't. Tips are for the non-obvious gotcha at that specific step, not generic advice — omit the tips array entry for a step if there's nothing specific to add.
 
 Generate tutorial JSON:
 {
@@ -157,8 +162,8 @@ Generate tutorial JSON:
   "steps": [
     {"number": 1, "title": "", "description": "", "tips": []}
   ],
-  "script": "",
-  "resources_needed": []
+  "script": "Optional voiceover/presenter script if this tutorial is meant to be recorded, else empty string",
+  "resources_needed": ["Concrete tool/account/access needed to follow along"]
 }`
   }
 
@@ -262,11 +267,13 @@ Generate content JSON:
   }
 
   if (actionType === 'crear_newsletter') {
-    return `You are a newsletter editor. Generate a newsletter issue.
+    return `You are a newsletter editor writing on behalf of the brand below. Write an issue people actually open and read to the end, not a corporate update nobody asked for.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+Rules: the subject line must earn the open — specific and a little intriguing, never "Newsletter de [mes]" or "Novedades de [marca]". preview_text extends the subject's hook, it never just repeats it. Each section leads with why the reader should care, not a headline that describes the topic. Every section needs exactly one clear cta — if a section has nothing worth a call-to-action, question whether it belongs in this issue at all. Match the brand's tone throughout; a newsletter should sound like it's from a person, not a marketing department.
 
 Generate newsletter JSON:
 {
@@ -280,11 +287,13 @@ Generate newsletter JSON:
   }
 
   if (actionType === 'crear_video_brief') {
-    return `You are a video producer. Generate a video brief.
+    return `You are a video producer writing a brief someone can shoot from without asking follow-up questions.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+Rules: the first scene is the hook — assume 3 seconds to stop someone scrolling, so it must open on the payoff or a question, never a slow establishing shot or logo intro. Each scene_breakdown entry describes what's actually ON SCREEN (shot type, action, on-screen text if any) — not the marketing idea behind it ("mostrar el producto en uso" is not a scene; "close-up de manos abriendo el empaque, texto overlay: 'en 3 pasos'" is). technical_specs.duration must match the platform's actual best-practice length for this format (e.g. under 30s for a Reel/TikTok hook-driven video, longer for a tutorial) — don't default to a generic "60 seconds" regardless of format. The script (if provided) must match the scene timing, not run long.
 
 Generate brief JSON:
 {
@@ -397,6 +406,9 @@ Generate projection JSON:
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
+
+Only use figures for \`amount\`/\`runway_months\`/\`gap\` that are derivable from the input's real income/expense data — if the input doesn't give you enough to compute a number, leave it as '—' and explain the gap in \`assumptions\` instead of estimating a plausible-looking figure.
+
 Generate cashflow JSON:
 {
   "summary": "Current cash position assessment in 2-3 sentences",
