@@ -1,14 +1,19 @@
 import type { NextConfig } from 'next'
 import { createRequire } from 'module'
+import path from 'path'
 
 // pdfjs-dist vive hoisted en el node_modules de la RAÍZ del monorepo (pnpm
 // workspace), no en apps/mira/portal/node_modules -- una ruta relativa tipo
 // './node_modules/pdfjs-dist/...' en outputFileTracingIncludes no encuentra
-// nada ahí (confirmado: el .nft.json del build no incluía el worker pese a
-// la entrada). require.resolve (Node puro, este fichero no pasa por
-// webpack) encuentra la ruta real sea cual sea el nivel de hoisting.
+// nada ahí. Una ruta ABSOLUTA tampoco vale -- Next.js la concatena con el
+// directorio del proyecto en vez de usarla tal cual (ENOENT con la ruta
+// duplicada, confirmado en build real de Vercel: ".../apps/mira/portal/
+// vercel/path0/node_modules/..."). outputFileTracingIncludes espera SIEMPRE
+// una ruta relativa al directorio del proyecto -- se calcula con
+// path.relative para no hardcodear el nivel de hoisting ni la versión.
 const require = createRequire(import.meta.url)
-const pdfWorkerPath = require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
+const pdfWorkerAbsolutePath = require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
+const pdfWorkerPath = path.relative(process.cwd(), pdfWorkerAbsolutePath)
 
 const nextConfig: NextConfig = {
   // pdf-parse v2 no sobrevive al bundling de webpack (TypeError:
