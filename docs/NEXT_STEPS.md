@@ -1,6 +1,14 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)). Migraciones 0048/0049/0050/0051/0056 aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060 aplicadas. Este fichero lista SOLO lo que queda.
+
+## MIRA — Auditoría de producción-robustez pre-lanzamiento (DEBT qq, 2026-07-30) — ✅ CERRADA
+
+Confirmado el modelo de negocio actual (CEO sigue dando de alta cada cliente a mano) como sólido a nivel producción: trust-boundaries reales cerrados (RLS de `mira_project_access`, auth de Integraciones consolidado sobre `resolveRequestClient`), 19 rutas de debug/fix/init huérfanas eliminadas, `maxDuration` + 5 índices hot-path añadidos, 2 N+1 reales convertidos a `Promise.all`. Verificado en vivo tras el deploy (Playwright: home/roster/integrations/brand-book, sin errores de consola). Detalle completo, incluido el hallazgo de que `@sentry/node` rompe el build real (revertido, `@sentry/nextjs` es la vía correcta para una sesión futura), en DEBT (qq).
+
+**Pendiente real de esta ronda:**
+- **Observabilidad real (Sentry o similar)**: sigue sin existir ningún error-tracking en producción — solo `console.error`/`vercel logs`. Intentar de nuevo con `@sentry/nextjs` (no `@sentry/node` a pelo, ver DEBT qq) en una sesión dedicada.
+- **Cifrado de API keys de `tool_connections`**: siguen en texto plano (deuda ya conocida, DEBT c) — el CEO decidió explícitamente conectar Apollo/Hunter ya y cifrar después.
 
 ## MIRA — Arquetipos + Prompts + cierre técnico (DEBT oo/pp, 2026-07-30) — ✅ CERRADO COMPLETO
 
@@ -17,6 +25,7 @@ Los 6 archetypes muestran datos reales o vacío honesto. Los 23 prompts de agent
 3. **Dadybox**: revocar el acceso de MIRA en su cuenta Google y reconectar (fuga de token en terminal, DEBT ff) — pendiente desde el 24/07.
 4. **Revisar Drive de Dadybox/Discoolver antes de dar por bueno su onboarding visual**: en Salsa se encontró y limpió documentación técnica interna de MIRA (schemas JSON de otro proyecto) mezclada por error en su carpeta de conocimiento (DEBT nn) — comprobar que no pasa lo mismo en las otras.
 5. **Google Drive — revocar acceso desde la propia cuenta si se quiere desconectar**: la tarjeta de Integraciones ya no ofrece un botón de desconexión falso (DEBT pp); revocar hoy se hace desde Google Account → Seguridad → Apps de terceros.
+6. **Conectar Apollo.io + Hunter.io**: el CEO ya tiene cuentas reales en ambos servicios (para probar Discovery "modo profundo" en Comercial) — solo falta pegar las 2 API keys reales en MIRA → Integraciones (código ya verificado listo de punta a punta, DEBT qq).
 
 ## MIRA — Business Reports (DEBT ll/nn) — ✅ CERRADO
 
