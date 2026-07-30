@@ -1,13 +1,13 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/**0063** (0063 pendiente de aplicar). Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/**0063** todas aplicadas. Este fichero lista SOLO lo que queda.
 
 ## MIRA — Revisión adversarial de la Fase Brand Brain — 9 hallazgos reales corregidos (DEBT ww, 2026-07-30) — ✅ CERRADO
 
 Workflow de 4 dimensiones + verificación adversarial (2 verificadores por hallazgo) sobre todo lo construido en (vv). 11 de 15 hallazgos sobrevivieron; 9 corregidos, 2 documentados sin parchear (patrón `user_metadata.plan` sistémico en 25+ ficheros — sesión de seguridad aparte; límite del polyfill de DOMMatrix para renderizado futuro — no getText()). Los 2 más serios: `brain-lint.ts` marcaba SIEMPRE vacías 6 secciones reales (columnas planas fuera de `brand_data`, contaminando el aviso semanal para el 100% de los clientes), y `content_hash` NULL en documentos preexistentes disparaba síntesis innecesaria + riesgo de reabrir contradicciones ya resueltas por un humano. Detalle completo en DEBT (ww).
 
 **Pendiente real de esta ronda:**
-- **Aplicar la migración `0063_backfill_content_hash.sql`** (SQL editor de Supabase, CEO).
+- ~~Aplicar la migración `0063_backfill_content_hash.sql`~~ ✅ **Aplicada y verificada el 2026-07-30** — 0 documentos `drive_sync` con `content_hash` NULL tras el backfill.
 - Sesión de seguridad dedicada para el patrón `user_metadata.plan` en todo el repo.
 
 ## MIRA — Brand Brain como "LLM Wiki" (DEBT vv, 2026-07-30) — ✅ CERRADO, con acciones reales pendientes del CEO
