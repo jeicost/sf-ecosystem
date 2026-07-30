@@ -9,6 +9,11 @@ export interface Attachment {
   name: string
   url: string
   mimeType?: string
+  /** Path dentro de brand-assets (bucket privado) -- si está presente, se
+   *  descarga directo por el service role en vez de fetch(url), porque url
+   *  es un path relativo al proxy (/api/brand-assets?path=...) que no
+   *  resuelve fuera de un navegador. */
+  path?: string
 }
 
 export async function buildAttachmentBlocks(attachments: Attachment[]): Promise<{
@@ -20,9 +25,17 @@ export async function buildAttachmentBlocks(attachments: Attachment[]): Promise<
 
   for (const att of attachments) {
     try {
-      const res = await fetch(att.url)
-      if (!res.ok) continue
-      const buf = Buffer.from(await res.arrayBuffer())
+      let buf: Buffer
+      if (att.path) {
+        const { adminClient } = await import('@/lib/supabase')
+        const { data, error } = await adminClient().storage.from('brand-assets').download(att.path)
+        if (error || !data) continue
+        buf = Buffer.from(await data.arrayBuffer())
+      } else {
+        const res = await fetch(att.url)
+        if (!res.ok) continue
+        buf = Buffer.from(await res.arrayBuffer())
+      }
 
       if (att.type === 'image') {
         const mediaType = (att.mimeType || 'image/png') as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'

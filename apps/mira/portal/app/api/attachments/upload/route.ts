@@ -78,10 +78,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: `Error subiendo "${file.name}": ${error.message}` }, { status: 500 })
       }
 
-      const { data } = storage.getPublicUrl(path)
       const type: Attachment['type'] =
         file.type === 'application/pdf' ? 'pdf' : file.type.startsWith('image/') ? 'image' : 'text'
-      uploaded.push({ type, name: file.name, url: data.publicUrl, mimeType: file.type || 'text/plain' })
+      uploaded.push({
+        type,
+        name: file.name,
+        url: `/api/brand-assets?path=${encodeURIComponent(path)}`,
+        mimeType: file.type || 'text/plain',
+        path,
+      })
     }
 
     return NextResponse.json({ attachments: uploaded, success: true })

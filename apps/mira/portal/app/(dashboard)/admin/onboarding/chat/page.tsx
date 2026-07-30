@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Paperclip, Send, Loader2, CheckCircle2, UserPlus } from 'lucide-react'
-import { createClient } from '@/lib/supabase'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -55,18 +54,22 @@ export default function AdminOnboardingPage() {
     setUploading(true)
     setError(null)
     try {
-      const supabase = createClient()
       const uploaded: PendingAttachment[] = []
       for (const file of files) {
         const type = attachmentType(file)
-        const path =
-          type === 'image' && /logo/i.test(file.name)
-            ? `logos/${clientId}.${file.name.split('.').pop()}`
-            : `${clientId}/assets/${Date.now()}-${file.name}`
-        const { error: uploadError } = await supabase.storage.from('brand-assets').upload(path, file, { upsert: true })
-        if (uploadError) throw uploadError
-        const { data: publicUrlData } = supabase.storage.from('brand-assets').getPublicUrl(path)
-        uploaded.push({ type, name: file.name, url: publicUrlData.publicUrl, mimeType: file.type })
+        if (type === 'image' && /logo/i.test(file.name)) {
+          const form = new FormData()
+          form.append('clientId', clientId)
+          form.append('file', file)
+          const res = await fetch('/api/brand-assets/logo', { method: 'POST', body: form })
+          const data = await res.json().catch(() => null)
+          if (!res.ok || !data?.path) throw new Error(data?.error || `Error subiendo el logo (${res.status})`)
+          uploaded.push({ type, name: file.name, url: `/api/brand-assets?path=${encodeURIComponent(data.path)}`, mimeType: file.type })
+        } else {
+          const { uploadFilesToBucket } = await import('@/lib/attachments-client')
+          const [att] = await uploadFilesToBucket(clientId, [file], 'onboarding')
+          uploaded.push(att)
+        }
       }
       setPendingAttachments((prev) => [...prev, ...uploaded])
     } catch (e) {

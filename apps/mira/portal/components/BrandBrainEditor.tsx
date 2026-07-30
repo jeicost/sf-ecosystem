@@ -88,22 +88,22 @@ export default function BrandBrainEditor() {
   const [analyzing, setAnalyzing] = useState<string | null>(null)
   const [logoUploading, setLogoUploading] = useState(false)
 
-  // Sube el logo al bucket brand-assets (misma convención logos/{clientId}
-  // que el onboarding), lo fija en brand_data y espeja clients.logo_url.
+  // Sube el logo vía /api/brand-assets/logo (bucket brand-assets privado,
+  // misma convención logos/{clientId} que el onboarding), lo fija en
+  // brand_data como URL de proxy firmado y espeja clients.logo_url.
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !activeClient?.id || !profile) return
     setLogoUploading(true)
     setError(null)
     try {
-      const { createClient } = await import('@/lib/supabase')
-      const supabase = createClient()
-      const ext = file.name.split('.').pop() || 'png'
-      const path = `logos/${activeClient.id}.${ext}`
-      const { error: upErr } = await supabase.storage.from('brand-assets').upload(path, file, { upsert: true })
-      if (upErr) throw upErr
-      const { data: urlData } = supabase.storage.from('brand-assets').getPublicUrl(path)
-      const url = `${urlData.publicUrl}?v=${Date.now()}`
+      const form = new FormData()
+      form.append('clientId', activeClient.id)
+      form.append('file', file)
+      const res = await fetch('/api/brand-assets/logo', { method: 'POST', body: form })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.path) throw new Error(data?.error || `Error subiendo el logo (${res.status})`)
+      const url = `/api/brand-assets?path=${encodeURIComponent(data.path)}&v=${Date.now()}`
 
       setProfile({
         ...profile,
