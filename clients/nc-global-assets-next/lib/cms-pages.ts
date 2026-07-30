@@ -59,6 +59,26 @@ function normalizeSections(sectionsJson: unknown): CmsSections {
  * from sf-cms, bypassing the build-time bake. Used only while
  * draftMode().isEnabled — normal reads always go through loadCmsSections.
  * Returns null on any failure so the caller falls back to the static bake.
+ *
+ * KNOWN LIMITATION (2026-07-30): merging live-fetched data through mergeCms
+ * here crashes with `Cannot read properties of undefined (reading 'map')`
+ * inside array-bearing section components (e.g. Hero.tsx's `spaces`) — but
+ * ONLY when this function's fetch actually returns data, and ONLY during
+ * dynamic (draftMode) rendering; normal static rendering of the exact same
+ * components is unaffected. Root cause traced to `structuredClone` throwing
+ * `DataCloneError` on the `_DEFAULTS` constants — they're exported from
+ * 'use client' section components (e.g. `export const HERO_DEFAULTS` in
+ * components/sections/Hero.tsx), and something about their Turbopack
+ * client-reference wrapper isn't plain-cloneable/spreadable once a dynamic
+ * (non-statically-prerendered) render path touches it. This doesn't reproduce
+ * on the other 3 sites this pattern was rolled out to (their `_DEFAULTS`
+ * constants live in plain, non-'use client' modules). Proper fix: move every
+ * `_DEFAULTS` export in components/sections/* out of its 'use client' file
+ * into a shared server-safe module — non-trivial (17 components) and
+ * deliberately deferred rather than rushed. Until then, live-fetch is
+ * disabled here: Draft Mode still shows the banner and works (no 500), it
+ * just falls back to the last-published static bake instead of truly
+ * unpublished changes.
  */
 export async function loadCmsSectionsLive(pageSlug = 'home'): Promise<CmsSections | null> {
   const apiUrl = process.env.SF_CMS_API_URL || process.env.CMS_API_URL
@@ -66,7 +86,8 @@ export async function loadCmsSectionsLive(pageSlug = 'home'): Promise<CmsSection
   const projectSlug = process.env.SF_CMS_PROJECT_SLUG || process.env.PROJECT_ID || 'ncglobalassets'
   const previewSecret = process.env.SF_CMS_PREVIEW_SECRET
 
-  if (!apiUrl || !apiKey || !previewSecret) return null
+  const liveFetchDisabled = true // see KNOWN LIMITATION above
+  if (!apiUrl || !apiKey || !previewSecret || liveFetchDisabled) return null
 
   try {
     const res = await fetch(
