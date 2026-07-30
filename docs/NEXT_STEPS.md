@@ -1,17 +1,14 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)). Migraciones 0048/0049/0050/0051 aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)). Migraciones 0048/0049/0050/0051/0056 aplicadas. Este fichero lista SOLO lo que queda.
 
-## MIRA — Arquetipos + Prompts (DEBT oo, 2026-07-30) — ✅ CERRADO (capas 1-2)
+## MIRA — Arquetipos + Prompts + cierre técnico (DEBT oo/pp, 2026-07-30) — ✅ CERRADO COMPLETO
 
-Los 6 archetypes (Oracle/Analyst/Explorer/Architect/Sentinel/Studio) ya muestran datos reales o vacío honesto — cero datos inventados, i18n real, modo claro, estados de carga/error, responsive, verificado en vivo contra Salsa tras cada deploy. Los 23 prompts de agente tienen ahora límite de rol explícito (ES+EN simétrico). Detalle completo en DEBT (oo).
+Los 6 archetypes muestran datos reales o vacío honesto. Los 23 prompts de agente tienen límite de rol explícito (verificado en vivo, 3 rondas de fix). Capa 3 de prompts cerrada (quick actions 6/19 mejorados, Business Reports/monthly/document ya en nivel experto sin cambios, "otros" revisados). i18n ronda 2 completa (541 claves, 32 archivos, todo Toolkit + Comercial + shared components). Modo claro con 3 bugs sistémicos reales arreglados (texto blanco en botones de color, selectores CSS muertos, paleta neón de Toolkit). Bucket `brand-assets` migrado a privado con signed URLs. Bug real `agent_activity.created_at` arreglado. Tarjeta de Google Drive ya no dispara un disconnect falso. Chat guiado de quick actions bajado a Sonnet (coste). Detalle completo de todo esto en DEBT (pp).
 
 **Pendiente real de esta ronda:**
-- **Capa 3 de prompts** (quick actions ~19, Business Reports ~13, monthly 3, documents 4, otros ~5 — ~44 prompts): siguiente fase explícita, no tocada.
 - **Defensa estructural anti-inyección**: hoy solo hay una regla de texto en los contratos de grounding; falta un mecanismo real de sanitización/delimitación para contenido de leads/documentos. Sesión de seguridad aparte.
-- **Unificación de layout entre archetypes** (Analyst/Explorer en 2 columnas vs. el resto apilado): decisión de diseño, no bug.
-- **`onboard` sin dato real**: se dejó en vacío honesto (Architect) — no hay un concepto limpio de "progreso de onboarding" por-workspace-de-cliente; si se quiere real, requiere diseño nuevo (¿progreso del wizard admin? ¿algo per-cliente?).
-- **Tarjeta genérica de Google Drive en `/integrations`** puede disparar un disconnect que no hace nada (tabla equivocada, ver punto 9 abajo) — sigue sin decidir.
+- **Idea abierta, sin decidir**: un chat unificado (uno solo, no por departamento) donde el CEO pida lo que sea en lenguaje natural y el sistema llame internamente a los agentes/herramientas que hagan falta, en vez de entrar agente por agente. Requiere pensar: ¿un orchestrator real sobre los 23 agentes con tool-calling entre ellos, o un router más simple que clasifica intención y delega a un solo agente? Cómo se relaciona con el agente `orchestrator` ya existente (hoy vacío, sin dato real). No empezar sin diseñarlo primero con el CEO.
 
 ## Acciones del CEO (no técnicas)
 
@@ -19,10 +16,11 @@ Los 6 archetypes (Oracle/Analyst/Explorer/Architect/Sentinel/Studio) ya muestran
 2. **Adrian Grooves**: entregarle la password temporal (`Mira-9Ud41Adr!7`, reseteada 2026-07-27) por canal seguro; que la cambie al entrar. Configurarle Drive con el protocolo.
 3. **Dadybox**: revocar el acceso de MIRA en su cuenta Google y reconectar (fuga de token en terminal, DEBT ff) — pendiente desde el 24/07.
 4. **Revisar Drive de Dadybox/Discoolver antes de dar por bueno su onboarding visual**: en Salsa se encontró y limpió documentación técnica interna de MIRA (schemas JSON de otro proyecto) mezclada por error en su carpeta de conocimiento (DEBT nn) — comprobar que no pasa lo mismo en las otras.
+5. **Google Drive — revocar acceso desde la propia cuenta si se quiere desconectar**: la tarjeta de Integraciones ya no ofrece un botón de desconexión falso (DEBT pp); revocar hoy se hace desde Google Account → Seguridad → Apps de terceros.
 
 ## MIRA — Business Reports (DEBT ll/nn) — ✅ CERRADO
 
-Brand Book y Monthly Content System verificados con generaciones reales completas contra Salsa (200 OK, contenido real, sin truncar). Migración 0051 aplicada. Bug de timeout del monthly (fix `a9a04a8`) confirmado resuelto en producción. Sin pendientes de esta ronda salvo lo listado abajo.
+Brand Book y Monthly Content System verificados con generaciones reales completas contra Salsa (200 OK, contenido real, sin truncar). Migración 0051 aplicada. Bug de timeout del monthly (fix `a9a04a8`) confirmado resuelto en producción. Sin pendientes de esta ronda.
 
 ## Visual Production Foundation — esperando respuesta externa (DEBT nn)
 
@@ -32,18 +30,13 @@ Brand Book y Monthly Content System verificados con generaciones reales completa
 
 ## MIRA — técnico pendiente (por prioridad)
 
-1. **i18n ronda 2** (DEBT hh): árbol Toolkit restante (~8 sub-tools + landing/overview/report/[id]), interiores de Comercial (ya tokenizados pero con literales), `agent-workspace.tsx`, `document-uploader.tsx`, props de AgentWorkspace en Strategy/Finanzas, Community. Mecánico; mantener SIEMPRE simetría es/en de lib/i18n.ts (hoy 1100/1100).
-2. **Modo claro**: auditoría exhaustiva del resto de páginas no-Comercial (B5 solo cubrió Comercial + barrido de clases hex; quedan estilos inline y overrides frágiles de globals.css).
-3. **Bucket brand-assets → privado + signed URLs**: hoy es público y recibe adjuntos de negocio (P&L, hilos de email) de quick actions y logos.
-4. **Coste del chat guiado**: vigilar `mira_usage_log` ruta `quick-actions-guided` (Opus por turno de entrevista); decidir si el entrevistador baja a Sonnet manteniendo Opus en la generación.
-5. **ENFORCE_PLAN_LIMITS**: sin bloqueantes desde el 24/07, activación pendiente de decisión CEO.
-6. **Stripe**: elegido como pasarela (24/07), build-out pendiente (facturación real de clientes; los ficheros mock de Operations→Billing esperan esto).
-7. **Canva**: OAuth completo en código; faltan registro de app + review + envs `NEXT_PUBLIC_CANVA_CLIENT_ID`/`CANVA_CLIENT_SECRET` (DEBT l).
-8. **Imágenes — mejoras reales** (`images.edit` de OpenAI con referencia real en vez de solo texto, carousel multi-imagen, tamaños 4:5/9:16): ligado a Track B de Visual Production Foundation — no elegir modelo/endpoint final hasta que se resuelva (ver sección arriba).
-9. **Drive — mejoras**: watch/push de cambios (hoy sync diario), toggle de auto_sync por carpeta en el panel (columna ya existe). Además: la tarjeta genérica de Google Drive en `/integrations` puede disparar un disconnect que no hace nada (tabla equivocada) — confuso, no roto (DEBT nn); decidir si se quita de esa tarjeta o se le da su propio handler.
-10. **Bug real, no arreglado**: `column agent_activity.created_at does not exist` — 400 en las pestañas Activity/Performance de `/agent/[role]` (DEBT nn, encontrado de rebote, sin investigar la causa).
-11. **Limpieza menor**: prompts huérfanos en quick-action-prompts (patrón entrada g), tabla `toolkit_results` legacy, tablas `visual_jobs` (0028) sin rutas — decisión ligada a Visual Production Foundation, no una ronda de higiene aparte.
-12. **Publicación en redes**: FUERA del producto por decisión CEO (2026-07-28). Si algún día se retoma: puente n8n contra los webhooks dormidos (`/api/webhook/queue-post|alert|agent-activity`, protegidos por `WEBHOOK_SECRET`) — no reconstruir desde cero.
+1. **ENFORCE_PLAN_LIMITS**: sin bloqueantes desde el 24/07, activación pendiente de decisión CEO.
+2. **Stripe**: elegido como pasarela (24/07), build-out pendiente (facturación real de clientes; los ficheros mock de Operations→Billing esperan esto).
+3. **Canva**: OAuth completo en código; faltan registro de app + review + envs `NEXT_PUBLIC_CANVA_CLIENT_ID`/`CANVA_CLIENT_SECRET` (DEBT l).
+4. **Imágenes — mejoras reales** (`images.edit` de OpenAI con referencia real en vez de solo texto, carousel multi-imagen, tamaños 4:5/9:16): ligado a Track B de Visual Production Foundation — no elegir modelo/endpoint final hasta que se resuelva (ver sección arriba).
+5. **Drive — mejoras**: watch/push de cambios (hoy sync diario), toggle de auto_sync por carpeta en el panel (columna ya existe).
+6. **Publicación en redes**: FUERA del producto por decisión CEO (2026-07-28). Si algún día se retoma: puente n8n contra los webhooks dormidos (`/api/webhook/queue-post|alert|agent-activity`, protegidos por `WEBHOOK_SECRET`) — no reconstruir desde cero.
+7. **Tablas `visual_jobs` (0028) sin rutas**: decisión ligada a Visual Production Foundation, no una ronda de higiene aparte.
 
 ## Resto del ecosistema
 
