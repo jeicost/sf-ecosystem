@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       .single()
 
     // Call Claude to analyze document
-    const analysisPrompt = `You are a brand strategy expert. Analyze this document and extract information that could enhance a brand's Brand Brain profile.
+    const analysisPrompt = `You are a brand strategist reviewing a document a client uploaded to enrich their Brand Brain. Your job is extraction, not invention — surface what this SPECIFIC document actually says, don't pad it with generic brand-strategy filler.
 
 DOCUMENT TYPE: ${doc.document_type}
 EXTRACTED TEXT:
@@ -82,7 +82,13 @@ ${doc.extracted_text?.substring(0, 8000) || 'No text extracted'}
 CURRENT BRAND PROFILE (if exists):
 ${profile?.brand_data ? JSON.stringify(profile.brand_data, null, 2) : 'No existing profile'}
 
-Analyze the document and return ONLY valid JSON (no markdown, no text before/after) with suggested updates for these fields:
+Rules:
+- Only include a field if the document states or clearly implies it — omit fields entirely rather than guessing from the document type alone (a pitch deck doesn't automatically have a "strategy_roadmap" unless it actually lays one out).
+- If the document CONTRADICTS the current brand profile on a field (not just phrased differently — an actual conflict, e.g. a different tagline or a different target audience), still include your extracted value, but prefix it with '[CONFLICTO]' and name what it conflicts with, so the reviewer sees it before accepting.
+- Quote or closely paraphrase the document's own language where possible (tone_and_voice, tagline, mission) instead of rewording it into generic corporate phrasing.
+- hero_features and audiences must be things the document itself lists or describes — not features you'd assume this type of business has.
+
+Return ONLY valid JSON (no markdown, no text before/after) with suggested updates for these fields:
 {
   "identity": { "name": "", "tagline": "", "one_liner": "", "mission": "", "vision": "", "enemy": "" },
   "what_it_is": "",
@@ -96,8 +102,6 @@ Analyze the document and return ONLY valid JSON (no markdown, no text before/aft
   "go_to_market": "",
   "strategy_roadmap": ""
 }
-
-Only include fields where you found relevant information. Leave empty/null for fields with no clear data.
 
 ${GROUNDING_CONTRACT}`
 
