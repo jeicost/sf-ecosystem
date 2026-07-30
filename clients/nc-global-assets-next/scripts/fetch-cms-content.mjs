@@ -121,34 +121,14 @@ async function main() {
       console.log(`📊  GA4 ID patched: ${normalizedSettings.ga_measurement_id}`)
     }
 
-    // ── Sitemap with CMS pages ───────────────────────────────
-    const DOMAIN = 'https://www.ncglobalassets.com'
-    const today = new Date().toISOString()
-    const staticPages = [
-      { path: '',                        priority: '1.0', freq: 'weekly' },
-      { path: '/about',                  priority: '0.8', freq: 'monthly' },
-      { path: '/services',               priority: '0.8', freq: 'monthly' },
-      { path: '/contact',                priority: '0.7', freq: 'monthly' },
-      { path: '/blog',                   priority: '0.7', freq: 'weekly' },
-      { path: '/case-studies/salsa-burgers', priority: '0.6', freq: 'monthly' },
-    ]
-
-    const staticEntries = staticPages.map(p =>
-      `  <url><loc>${DOMAIN}${p.path}</loc><lastmod>${today.split('T')[0]}</lastmod><changefreq>${p.freq}</changefreq><priority>${p.priority}</priority></url>`
-    )
-    const cmsPageEntries = Object.entries(normalizedPages)
-      .filter(([slug]) => slug !== 'home')
-      .map(([slug, p]) => `  <url><loc>${DOMAIN}/${slug}</loc><lastmod>${(p.updatedAt || today).split('T')[0]}</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>`)
-    const postEntries = merged.map(p =>
-      `  <url><loc>${DOMAIN}/blog/${p.slug}</loc><lastmod>${p.date}</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>`
-    )
-
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${[...staticEntries, ...cmsPageEntries, ...postEntries].join('\n')}
-</urlset>`
-    fs.writeFileSync(path.join(ROOT, 'public', 'sitemap.xml'), sitemap)
-    console.log('🗺   Updated sitemap.xml')
+    // Sitemap: deliberately NOT written here. app/sitemap.ts (Next.js native,
+    // dynamic, includes CMS blog posts via getAllPosts()) is the single
+    // source of truth for /sitemap.xml. This script used to also write a
+    // static public/sitemap.xml, which silently conflicted with app/
+    // sitemap.ts for the same route (crashes in dev with "conflicting public
+    // file and page file"; undefined which one actually served in prod) —
+    // found and fixed 2026-07-30, same class of bug as NEW-3 in
+    // docs/audits/SF-CMS-GAP-AUDIT-2026-07-21.md for a different site.
 
   } catch (err) {
     console.warn('⚠️  CMS fetch failed:', err.message, '— using local content only')
