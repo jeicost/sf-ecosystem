@@ -39,3 +39,4 @@ yarn-error.log*
 Thumbs.db
 .env*.local
 .vercel
+package-lock.json
