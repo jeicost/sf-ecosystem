@@ -5,11 +5,23 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle2, Loader2, Send } from 'lucide-react'
 
+interface NarrativeSection {
+  heading?: string
+  body: string
+}
+
+interface QuestionOption {
+  label: string
+  description?: string
+  recommended?: boolean
+}
+
 interface Questionnaire {
   id: string
   client_id: string
   title: string
   intro: string | null
+  narrative: NarrativeSection[] | null
   status: 'draft' | 'sent' | 'in_progress' | 'completed' | 'ingested' | 'archived'
   completed_at: string | null
   ingested_at: string | null
@@ -22,8 +34,12 @@ interface Question {
   prompt: string
   help: string | null
   kind: 'text' | 'long_text' | 'select' | 'multi_select' | 'number' | 'url'
-  options: string[] | null
+  options: (string | QuestionOption)[] | null
   required: boolean
+}
+
+function optionLabel(o: string | QuestionOption): string {
+  return typeof o === 'string' ? o : o.label
 }
 
 interface Answer {
@@ -321,6 +337,21 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
       )}
 
+      {/* Narrativa (informes de decisión, migración 0061) — secciones de texto
+          tipo informe editorial, mostradas antes del formulario de decisión. */}
+      {questionnaire.narrative && questionnaire.narrative.length > 0 && (
+        <div className="space-y-5 rounded-2xl border border-line bg-surface p-6">
+          {questionnaire.narrative.map((section, i) => (
+            <div key={i}>
+              {section.heading && (
+                <h2 className="mb-1.5 text-sm font-semibold text-ink">{section.heading}</h2>
+              )}
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink-secondary">{section.body}</p>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Preguntas por sección */}
       {sections.map(([sectionName, sectionQuestions]) => (
         <div key={sectionName} className="space-y-4">
@@ -373,37 +404,64 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                     />
                   )}
                   {q.kind === 'select' && (
-                    <select
-                      value={typeof value === 'string' ? value : ''}
-                      onChange={(e) => setValue(q.id, e.target.value)}
-                      className={`${inputBase} ${missing ? 'border-red-500/50' : 'border-line'}`}
-                    >
-                      <option value="">Selecciona una opción…</option>
-                      {(q.options ?? []).map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {(q.options ?? []).map((opt) => {
+                        const label = optionLabel(opt)
+                        const description = typeof opt === 'object' ? opt.description : undefined
+                        const recommended = typeof opt === 'object' && opt.recommended
+                        const selected = value === label
+                        return (
+                          <button
+                            key={label}
+                            type="button"
+                            onClick={() => setValue(q.id, label)}
+                            className={`rounded-xl border p-3 text-left transition-colors ${
+                              selected ? 'border-sky-500 bg-sky-500/10' : 'border-line bg-surface hover:border-line-subtle'
+                            }`}
+                          >
+                            <p className="flex items-center gap-2 text-[13px] font-medium text-ink">
+                              {label}
+                              {recommended && (
+                                <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-400">
+                                  Recomendación
+                                </span>
+                              )}
+                            </p>
+                            {description && <p className="mt-1 text-[11px] text-ink-tertiary">{description}</p>}
+                          </button>
+                        )
+                      })}
+                    </div>
                   )}
                   {q.kind === 'multi_select' && (
-                    <div className="space-y-1.5">
+                    <div className="grid gap-2 sm:grid-cols-2">
                       {(q.options ?? []).map((opt) => {
-                        const selected = Array.isArray(value) && (value as unknown[]).includes(opt)
+                        const label = optionLabel(opt)
+                        const description = typeof opt === 'object' ? opt.description : undefined
+                        const recommended = typeof opt === 'object' && opt.recommended
+                        const selected = Array.isArray(value) && (value as unknown[]).includes(label)
                         return (
-                          <label key={opt} className="flex cursor-pointer items-center gap-2 text-sm text-ink-secondary">
-                            <input
-                              type="checkbox"
-                              checked={selected}
-                              onChange={() => {
-                                const current = Array.isArray(value) ? ([...value] as string[]) : []
-                                setValue(
-                                  q.id,
-                                  selected ? current.filter((o) => o !== opt) : [...current, opt]
-                                )
-                              }}
-                              className="h-3.5 w-3.5 accent-sky-500"
-                            />
-                            {opt}
-                          </label>
+                          <button
+                            key={label}
+                            type="button"
+                            onClick={() => {
+                              const current = Array.isArray(value) ? ([...value] as string[]) : []
+                              setValue(q.id, selected ? current.filter((o) => o !== label) : [...current, label])
+                            }}
+                            className={`rounded-xl border p-3 text-left transition-colors ${
+                              selected ? 'border-sky-500 bg-sky-500/10' : 'border-line bg-surface hover:border-line-subtle'
+                            }`}
+                          >
+                            <p className="flex items-center gap-2 text-[13px] font-medium text-ink">
+                              {label}
+                              {recommended && (
+                                <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-400">
+                                  Recomendación
+                                </span>
+                              )}
+                            </p>
+                            {description && <p className="mt-1 text-[11px] text-ink-tertiary">{description}</p>}
+                          </button>
                         )
                       })}
                     </div>

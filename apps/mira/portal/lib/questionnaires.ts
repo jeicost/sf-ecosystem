@@ -16,12 +16,30 @@ export type QuestionnaireStatus =
   | 'ingested'
   | 'archived'
 
+// Sección de texto narrativo (resumen ejecutivo, diagnóstico, benchmark...)
+// mostrada antes de las preguntas -- ver migración 0061.
+export interface NarrativeSection {
+  heading?: string
+  body: string
+}
+
+// Una opción de 'select'/'multi_select' puede ser un string plano (lo que ya
+// generan los cuestionarios de huecos del brain) o un objeto con descripción
+// y marca de "recomendación" (los informes de decisión narrativos, ver
+// migración 0061 y el ejemplo real de Adrian Grooves que los motivó).
+export interface QuestionOption {
+  label: string
+  description?: string
+  recommended?: boolean
+}
+
 export interface QuestionnaireRow {
   id: string
   client_id: string
   project_id: string | null
   title: string
   intro: string | null
+  narrative: NarrativeSection[] | null
   status: QuestionnaireStatus
   source: 'manual' | 'brain_gaps' | 'intake_template' | 'onboarding'
   created_by: string | null
@@ -38,7 +56,7 @@ export interface QuestionRow {
   prompt: string
   help: string | null
   kind: IntakeQuestionKind
-  options: string[] | null
+  options: (string | QuestionOption)[] | null
   required: boolean
   maps_to: string | null
 }
@@ -81,6 +99,54 @@ export function normalizeKind(kind: unknown): IntakeQuestionKind {
   return typeof kind === 'string' && (INTAKE_QUESTION_KINDS as string[]).includes(kind)
     ? (kind as IntakeQuestionKind)
     : 'long_text'
+}
+
+/**
+ * Normaliza options del body de creación -- admite tanto strings planos
+ * (cuestionarios generados de huecos del brain) como objetos {label,
+ * description?, recommended?} (informes de decisión narrativos, migración
+ * 0061). Descarta cualquier entrada sin label utilizable.
+ */
+export function normalizeOptions(raw: unknown): (string | QuestionOption)[] | null {
+  if (!Array.isArray(raw)) return null
+  const out: (string | QuestionOption)[] = []
+  for (const o of raw) {
+    if (typeof o === 'string') {
+      const trimmed = o.trim()
+      if (trimmed) out.push(trimmed)
+      continue
+    }
+    if (o && typeof o === 'object') {
+      const label = typeof (o as Record<string, unknown>).label === 'string'
+        ? ((o as Record<string, unknown>).label as string).trim()
+        : ''
+      if (!label) continue
+      const description = typeof (o as Record<string, unknown>).description === 'string'
+        ? ((o as Record<string, unknown>).description as string).trim() || undefined
+        : undefined
+      const recommended = (o as Record<string, unknown>).recommended === true ? true : undefined
+      out.push({ label, description, recommended })
+    }
+  }
+  return out.length > 0 ? out : null
+}
+
+/** Normaliza narrative del body de creación -- array de {heading?, body}, descarta secciones sin body. */
+export function normalizeNarrative(raw: unknown): NarrativeSection[] | null {
+  if (!Array.isArray(raw)) return null
+  const out: NarrativeSection[] = []
+  for (const s of raw) {
+    if (!s || typeof s !== 'object') continue
+    const body = typeof (s as Record<string, unknown>).body === 'string'
+      ? ((s as Record<string, unknown>).body as string).trim()
+      : ''
+    if (!body) continue
+    const heading = typeof (s as Record<string, unknown>).heading === 'string'
+      ? ((s as Record<string, unknown>).heading as string).trim() || undefined
+      : undefined
+    out.push({ heading, body })
+  }
+  return out.length > 0 ? out : null
 }
 
 export type QuestionnaireAccessResult =

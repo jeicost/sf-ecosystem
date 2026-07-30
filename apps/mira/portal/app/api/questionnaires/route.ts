@@ -5,6 +5,8 @@ import {
   isAgencyPlan,
   isMissingTableError,
   normalizeKind,
+  normalizeNarrative,
+  normalizeOptions,
   QUESTIONNAIRES_UNAVAILABLE,
   type QuestionnaireRow,
 } from '@/lib/questionnaires'
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
         project_id: projectId,
         title,
         intro: typeof body.intro === 'string' && body.intro.trim() ? body.intro.trim() : null,
+        narrative: normalizeNarrative(body.narrative),
         status: 'draft',
         source: 'manual',
         created_by: user.id,
@@ -137,9 +140,7 @@ export async function POST(req: NextRequest) {
         prompt: (q.prompt as string).trim(),
         help: typeof q.help === 'string' && q.help.trim() ? q.help.trim() : null,
         kind: normalizeKind(q.kind),
-        options: Array.isArray(q.options)
-          ? (q.options as unknown[]).map((o) => String(o)).filter(Boolean)
-          : null,
+        options: normalizeOptions(q.options),
         required: q.required === true,
         maps_to: typeof q.maps_to === 'string' && q.maps_to.trim() ? q.maps_to.trim() : null,
       }))

@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { ClipboardList } from 'lucide-react'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
 
@@ -112,11 +114,19 @@ export default function AdminUsersPage() {
       <div className="space-y-4">
         {clients.map((client) => (
           <div key={client.id} className="rounded-xl border border-line bg-card p-5">
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-3 flex items-center justify-between gap-3">
               <p className="font-semibold text-ink">{client.name}</p>
-              <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-tertiary">
-                {client.users.length} {client.users.length === 1 ? 'usuario' : 'usuarios'}
-              </span>
+              <div className="flex items-center gap-3">
+                <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-tertiary">
+                  {client.users.length} {client.users.length === 1 ? 'usuario' : 'usuarios'}
+                </span>
+                <Link
+                  href={`/admin/questionnaires/new?clientId=${client.id}&clientName=${encodeURIComponent(client.name)}`}
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-[11px] font-medium text-ink-secondary transition-colors hover:border-sky-500/40 hover:text-sky-400"
+                >
+                  <ClipboardList size={12} /> Crear informe de decisión
+                </Link>
+              </div>
             </div>
 
             {client.users.length === 0 ? (
