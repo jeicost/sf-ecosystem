@@ -8,6 +8,10 @@ export default function NewProjectPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [revealedKey, setRevealedKey] = useState<string | null>(null)
+  const [newProjectId, setNewProjectId] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+  const [confirmed, setConfirmed] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     slug: '',
@@ -32,7 +36,111 @@ export default function NewProjectPage() {
       return
     }
 
-    router.push('/admin/projects')
+    // Reveal-once: this is the only moment the raw key is ever shown again.
+    setRevealedKey(result.apiKey ?? null)
+    setNewProjectId(result.project?.id ?? null)
+    setLoading(false)
+  }
+
+  if (revealedKey) {
+    return (
+      <div style={{ maxWidth: '600px', margin: '2rem auto' }}>
+        <h1>Proyecto creado</h1>
+        <div style={{
+          padding: '1rem',
+          backgroundColor: '#fff8e1',
+          border: '1px solid #f0d060',
+          borderRadius: '4px',
+          marginBottom: '1.5rem',
+        }}>
+          <p style={{ margin: '0 0 0.75rem', fontWeight: 600 }}>
+            Copia esta API key ahora — no se volverá a mostrar nunca más.
+          </p>
+          <code style={{
+            display: 'block',
+            padding: '0.75rem',
+            backgroundColor: '#fff',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            fontSize: '0.85rem',
+            wordBreak: 'break-all',
+            marginBottom: '0.75rem',
+          }}>
+            {revealedKey}
+          </code>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText(revealedKey)
+              setCopied(true)
+            }}
+            style={{
+              padding: '0.5rem 1rem',
+              backgroundColor: copied ? '#2e7d32' : '#0070f3',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '0.875rem',
+              cursor: 'pointer',
+            }}
+          >
+            {copied ? 'Copiada ✓' : 'Copiar'}
+          </button>
+        </div>
+
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.9rem' }}>
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(e) => setConfirmed(e.target.checked)}
+          />
+          Ya la copié y la guardé (ej. en las env vars de Vercel del sitio)
+        </label>
+
+        <div style={{ display: 'flex', gap: '0.75rem' }}>
+          <button
+            type="button"
+            disabled={!confirmed}
+            onClick={() => router.push('/admin/projects')}
+            style={{
+              padding: '0.75rem 1.5rem',
+              backgroundColor: confirmed ? '#0070f3' : '#ccc',
+              color: 'white',
+              border: 'none',
+              borderRadius: '4px',
+              fontSize: '1rem',
+              fontWeight: '500',
+              cursor: confirmed ? 'pointer' : 'not-allowed',
+            }}
+          >
+            Continuar
+          </button>
+          {newProjectId && (
+            <button
+              type="button"
+              disabled={!confirmed}
+              onClick={() => router.push(`/admin/projects/${newProjectId}/brief`)}
+              style={{
+                padding: '0.75rem 1.5rem',
+                backgroundColor: confirmed ? '#fff' : '#f5f5f5',
+                color: confirmed ? '#0070f3' : '#aaa',
+                border: `1px solid ${confirmed ? '#0070f3' : '#ccc'}`,
+                borderRadius: '4px',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: confirmed ? 'pointer' : 'not-allowed',
+              }}
+            >
+              Empezar el brief de esta landing
+            </button>
+          )}
+        </div>
+        <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: '#666' }}>
+          El brief es una conversación por chat que recoge todo lo necesario para que el
+          equipo técnico construya la web — no la crea por sí solo.
+        </p>
+      </div>
+    )
   }
 
   return (

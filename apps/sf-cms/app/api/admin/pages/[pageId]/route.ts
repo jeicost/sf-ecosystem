@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { triggerDeployHook } from '@/lib/deploy-hook'
@@ -6,16 +6,12 @@ import { logActivity } from '@/lib/audit-log'
 import { captureError } from '@/lib/capture-error'
 import type { NextRequest } from 'next/server'
 
-export async function GET(
+export const GET = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ pageId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { pageId } = await params
 
     const client = createAdminClient()
@@ -43,18 +39,14 @@ export async function GET(
       { status: 500 }
     )
   }
-}
+})
 
-export async function PATCH(
+export const PATCH = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ pageId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { pageId } = await params
     const body = await request.json()
     const { title, slug, status, sections_json, seo_title, seo_description, og_image_url, canonical_url, pixels } = body
@@ -164,18 +156,14 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+})
 
-export async function DELETE(
+export const DELETE = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ pageId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { pageId } = await params
     const client = createAdminClient()
 
@@ -216,4 +204,4 @@ export async function DELETE(
       { status: 500 }
     )
   }
-}
+})

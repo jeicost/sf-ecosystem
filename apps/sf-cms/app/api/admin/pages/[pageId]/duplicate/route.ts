@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import crypto from 'crypto'
@@ -9,16 +9,12 @@ import type { NextRequest } from 'next/server'
  * Copies a page (title + sections) into a new draft with a "-copy" slug.
  * If the "-copy" slug is taken, appends -copy-2, -copy-3, ... (up to 20).
  */
-export async function POST(
+export const POST = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ pageId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { pageId } = await params
     const client = createAdminClient()
 
@@ -80,4 +76,4 @@ export async function POST(
       { status: 500 }
     )
   }
-}
+})

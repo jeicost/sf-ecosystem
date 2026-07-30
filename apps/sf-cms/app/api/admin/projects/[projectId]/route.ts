@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { NextRequest } from 'next/server'
 
@@ -6,15 +6,12 @@ import type { NextRequest } from 'next/server'
  * PATCH /api/admin/projects/[projectId]
  * Currently only supports updating vercel_hook_url (Deploy Hook automation).
  */
-export async function PATCH(
+export const PATCH = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> }
-) {
+) => {
   try {
-    if (!(await requireSession())) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { projectId } = await params
     const body = await request.json()
     const { vercel_hook_url } = body
@@ -44,4 +41,4 @@ export async function PATCH(
       { status: 500 }
     )
   }
-}
+})

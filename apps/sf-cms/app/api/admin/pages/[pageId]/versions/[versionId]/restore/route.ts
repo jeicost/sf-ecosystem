@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logActivity } from '@/lib/audit-log'
@@ -11,16 +11,12 @@ import type { NextRequest } from 'next/server'
  * sections first, so a restore is itself undoable, then writes the chosen
  * version's sections back to the page.
  */
-export async function POST(
+export const POST = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ pageId: string; versionId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { pageId, versionId } = await params
     const client = createAdminClient()
 
@@ -97,4 +93,4 @@ export async function POST(
     await captureError(err, { route: 'POST /api/admin/pages/[pageId]/versions/[versionId]/restore' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
+})

@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { captureError } from '@/lib/capture-error'
+import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
 
 /**
  * Public settings endpoint: GET /api/public/settings
@@ -28,20 +29,20 @@ export async function GET(request: Request) {
 
     const client = createAdminClient()
 
-    // Verify API key belongs to project
-    const { data: project, error: projectError } = await client
-      .from('projects')
-      .select('id, settings')
-      .eq('api_key', apiKey)
-      .eq('slug', projectSlug)
-      .single()
-
-    if (projectError || !project) {
+    // Verify API key belongs to project (legacy plaintext or hashed — MT-03/SEC-02)
+    const verified = await verifyProjectApiKey(projectSlug, apiKey)
+    if (!verified) {
       return Response.json({ error: 'Invalid API key or project' }, { status: 401 })
     }
 
+    const { data: project } = await client
+      .from('projects')
+      .select('id, settings')
+      .eq('id', verified.id)
+      .single()
+
     // Validate and normalize settings (fallback to empty object if none)
-    const settings = project.settings || {}
+    const settings = project?.settings || {}
     const normalizedSettings = {
       ga_measurement_id: settings.ga_measurement_id ?? null,
       gtm_container_id: settings.gtm_container_id ?? null,

@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { logActivity } from '@/lib/audit-log'
@@ -6,13 +6,8 @@ import { captureError } from '@/lib/capture-error'
 import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export const GET = withAdminAuth(async (user, request: NextRequest) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const projectId = request.nextUrl.searchParams.get('project_id')
 
     if (!projectId) {
@@ -43,15 +38,10 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
-export async function POST(request: NextRequest) {
+export const POST = withAdminAuth(async (user, request: NextRequest) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const body = await request.json()
     const { project_id, title, slug } = body
 
@@ -141,4 +131,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
@@ -10,17 +10,13 @@ const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 })
 
-export async function POST(
+export const POST = withAdminAuth(async (
+  user,
   req: Request,
   { params }: { params: Promise<{ pageId: string }> }
-) {
+) => {
   const { pageId } = await params
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { instruction } = await req.json()
     if (!instruction || typeof instruction !== 'string') {
       return Response.json({ error: 'Invalid instruction' }, { status: 400 })
@@ -83,4 +79,4 @@ export async function POST(
     await captureError(error, { route: 'POST /api/admin/pages/[pageId]/chat', pageId })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
+})

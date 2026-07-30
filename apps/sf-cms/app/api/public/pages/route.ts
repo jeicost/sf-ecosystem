@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
 
 export async function GET(request: Request) {
   try {
@@ -19,15 +20,10 @@ export async function GET(request: Request) {
 
     const client = createAdminClient()
 
-    // Verify API key belongs to project
-    const { data: project, error: projectError } = await client
-      .from('projects')
-      .select('id, slug')
-      .eq('api_key', apiKey)
-      .eq('slug', project_slug)
-      .single()
+    // Verify API key belongs to project (legacy plaintext or hashed — MT-03/SEC-02)
+    const project = project_slug ? await verifyProjectApiKey(project_slug, apiKey) : null
 
-    if (projectError || !project) {
+    if (!project) {
       return Response.json({ error: 'Invalid API key or project' }, { status: 401 })
     }
 

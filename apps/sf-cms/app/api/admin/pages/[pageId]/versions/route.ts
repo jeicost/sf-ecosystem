@@ -1,18 +1,14 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { NextRequest, NextResponse } from 'next/server'
 
-export async function GET(
+export const GET = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ pageId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { pageId } = await params
     const supabase = createAdminClient()
 
@@ -39,4 +35,4 @@ export async function GET(
     console.error('Error fetching versions:', err)
     return NextResponse.json({ error: message }, { status: 500 })
   }
-}
+})

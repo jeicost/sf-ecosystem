@@ -3,15 +3,33 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
+type BriefStatus = 'not_started' | 'in_progress' | 'ready' | 'built'
+
 interface Project {
   id: string
   name: string
   slug: string
   domain?: string
-  api_key: string
+  api_key_last4: string | null
+  api_key_hashed: boolean
   vercel_hook_url?: string | null
   created_at: string
   last_deploy?: { status: string; created_at: string } | null
+  brief_status?: BriefStatus | null
+}
+
+const BRIEF_STATUS_LABEL: Record<BriefStatus, string> = {
+  not_started: 'Brief: sin empezar',
+  in_progress: 'Brief: en curso',
+  ready: 'Brief: listo',
+  built: 'Brief: construido',
+}
+
+const BRIEF_STATUS_CLASS: Record<BriefStatus, string> = {
+  not_started: 'bg-slate-100 text-slate-600',
+  in_progress: 'bg-blue-100 text-blue-700',
+  ready: 'bg-green-100 text-green-700',
+  built: 'bg-purple-100 text-purple-700',
 }
 
 export default function ProjectsPage() {
@@ -111,6 +129,13 @@ export default function ProjectsPage() {
                         deploy {project.last_deploy.status}
                       </span>
                     )}
+                    <span
+                      className={`inline-flex items-center rounded px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ${
+                        BRIEF_STATUS_CLASS[(project.brief_status as BriefStatus) || 'not_started']
+                      }`}
+                    >
+                      {BRIEF_STATUS_LABEL[(project.brief_status as BriefStatus) || 'not_started']}
+                    </span>
                   </div>
                   <p className="text-sm text-slate-600 mt-1">
                     Slug: <code className="bg-slate-100 px-2 py-1 rounded">{project.slug}</code>
@@ -121,7 +146,12 @@ export default function ProjectsPage() {
                     </p>
                   )}
                   <p className="text-xs text-slate-500 mt-2">
-                    API Key: <code className="bg-slate-100 px-2 py-1 rounded text-xs">{project.api_key.slice(0, 16)}...</code>
+                    API Key: <code className="bg-slate-100 px-2 py-1 rounded text-xs">
+                      {project.api_key_last4 ? `••••${project.api_key_last4}` : '— none —'}
+                    </code>
+                    {project.api_key_hashed && (
+                      <span className="ml-2 text-slate-400">(hashed — solo se muestra al crearla)</span>
+                    )}
                   </p>
                   <p className="text-xs text-slate-400 mt-2">
                     Created {new Date(project.created_at).toLocaleDateString()}
@@ -155,12 +185,20 @@ export default function ProjectsPage() {
                   </p>
                 </div>
 
-                <Link
-                  href={`/admin/pages?project=${project.id}`}
-                  className="ml-4 px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-sm"
-                >
-                  Manage Pages
-                </Link>
+                <div className="ml-4 flex flex-col gap-2 shrink-0">
+                  <Link
+                    href={`/admin/pages?project=${project.id}`}
+                    className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-sm text-center"
+                  >
+                    Manage Pages
+                  </Link>
+                  <Link
+                    href={`/admin/projects/${project.id}/brief`}
+                    className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition text-sm text-center"
+                  >
+                    Brief de landing
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

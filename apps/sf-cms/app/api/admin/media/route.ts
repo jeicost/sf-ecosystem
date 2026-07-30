@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { NextRequest } from 'next/server'
@@ -37,13 +37,8 @@ function matchesMagicBytes(mime: string, bytes: Uint8Array): boolean {
   }
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withAdminAuth(async (user, request: NextRequest) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const formData = await request.formData()
     const file = formData.get('file') as File
     const projectId = formData.get('project_id') as string
@@ -150,15 +145,10 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
-export async function GET(request: NextRequest) {
+export const GET = withAdminAuth(async (user, request: NextRequest) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { searchParams } = new URL(request.url)
     const projectId = searchParams.get('project_id')
 
@@ -194,4 +184,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

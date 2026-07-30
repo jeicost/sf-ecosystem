@@ -1,26 +1,29 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { resolveAccess } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
+import type { User } from '@supabase/supabase-js'
 import type { NextRequest } from 'next/server'
 
 // Manage editors for a project. Global-admin only — an editor cannot grant
 // access to others. GET lists editors, POST adds one by email, DELETE removes.
+// The base session gate (is there a logged-in user at all) is handled by
+// withAdminAuth; this only adds the extra global-admin-only restriction on
+// top, which is specific to this route.
 
-async function requireGlobalAdmin() {
-  const user = await requireSession()
-  if (!user) return { error: 'Unauthorized' as const, status: 401 }
+async function requireGlobalAdmin(user: User) {
   const access = await resolveAccess(user)
   if (!access.isGlobalAdmin) return { error: 'Forbidden' as const, status: 403 }
   return { user }
 }
 
-export async function GET(
+export const GET = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> },
-) {
+) => {
   try {
-    const gate = await requireGlobalAdmin()
+    const gate = await requireGlobalAdmin(user)
     if ('error' in gate) return Response.json({ error: gate.error }, { status: gate.status })
 
     const { projectId } = await params
@@ -48,14 +51,15 @@ export async function GET(
     await captureError(err, { route: 'GET /api/admin/projects/[projectId]/roles' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
+})
 
-export async function POST(
+export const POST = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> },
-) {
+) => {
   try {
-    const gate = await requireGlobalAdmin()
+    const gate = await requireGlobalAdmin(user)
     if ('error' in gate) return Response.json({ error: gate.error }, { status: gate.status })
 
     const { projectId } = await params
@@ -92,14 +96,15 @@ export async function POST(
     await captureError(err, { route: 'POST /api/admin/projects/[projectId]/roles' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
+})
 
-export async function DELETE(
+export const DELETE = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ projectId: string }> },
-) {
+) => {
   try {
-    const gate = await requireGlobalAdmin()
+    const gate = await requireGlobalAdmin(user)
     if ('error' in gate) return Response.json({ error: gate.error }, { status: gate.status })
 
     const { projectId } = await params
@@ -120,4 +125,4 @@ export async function DELETE(
     await captureError(err, { route: 'DELETE /api/admin/projects/[projectId]/roles' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })
   }
-}
+})

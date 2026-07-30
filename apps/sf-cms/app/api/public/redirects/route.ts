@@ -1,6 +1,7 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { captureError } from '@/lib/capture-error'
+import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
 
 /**
  * Public redirects endpoint: GET /api/public/redirects?project=<slug>
@@ -18,14 +19,9 @@ export async function GET(request: Request) {
     if (!projectSlug) return Response.json({ error: 'Missing project query parameter' }, { status: 400 })
 
     const client = createAdminClient()
-    const { data: project, error: projectError } = await client
-      .from('projects')
-      .select('id')
-      .eq('api_key', apiKey)
-      .eq('slug', projectSlug)
-      .single()
+    const project = await verifyProjectApiKey(projectSlug, apiKey)
 
-    if (projectError || !project) {
+    if (!project) {
       return Response.json({ error: 'Invalid API key or project' }, { status: 401 })
     }
 

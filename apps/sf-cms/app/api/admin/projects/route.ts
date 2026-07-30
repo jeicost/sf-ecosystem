@@ -1,22 +1,17 @@
 import { createAdminClient } from '@/lib/supabase/admin'
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { resolveAccess } from '@/lib/auth/access'
 import { captureError } from '@/lib/capture-error'
 import crypto from 'crypto'
 import type { NextRequest } from 'next/server'
 
-export async function GET(request: NextRequest) {
+export const GET = withAdminAuth(async (user, request: NextRequest) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const access = await resolveAccess(user)
     const client = createAdminClient()
     let query = client
       .from('projects')
-      .select('id, name, slug, domain, api_key, vercel_hook_url, created_at')
+      .select('id, name, slug, domain, api_key, api_key_hash, api_key_last4, vercel_hook_url, created_at, brief_status')
       .order('created_at', { ascending: false })
 
     // Editors only see the projects they're assigned to.
@@ -46,7 +41,19 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return Response.json({ projects }, { status: 200 })
+    // Never ship the raw or hashed key over the wire (MT-03/SEC-02) — only a
+    // last-4 reference for identification, derived server-side either way.
+    const sanitized = (projects as Array<Record<string, unknown>>).map((p) => {
+      const legacyKey = p.api_key as string | null
+      const { api_key: _apiKey, api_key_hash: _apiKeyHash, ...rest } = p
+      return {
+        ...rest,
+        api_key_last4: legacyKey ? legacyKey.slice(-4) : (p.api_key_last4 ?? null),
+        api_key_hashed: !legacyKey,
+      }
+    })
+
+    return Response.json({ projects: sanitized }, { status: 200 })
   } catch (err) {
     await captureError(err, { route: 'GET /api/admin/projects' })
     return Response.json(
@@ -54,8 +61,11 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})
 
+// NOTE: Deliberately NOT wrapped in withAdminAuth. This is server-to-server
+// auth for scripts (e.g. landing-builder) via a Bearer ADMIN_SECRET, not a
+// user session — see SF-CMS-GAP-AUDIT-2026-07-21 discussion. Do not touch.
 export async function POST(request: Request) {
   try {
     const adminSecret = process.env.ADMIN_SECRET
@@ -89,8 +99,11 @@ export async function POST(request: Request) {
       return Response.json({ error: 'Missing required fields: name, slug' }, { status: 400 })
     }
 
-    // Generate unique API key
+    // Generate unique API key — stored hashed (MT-03/SEC-02), never persisted
+    // in plaintext. The raw value is only ever in this response, once.
     const apiKey = `sk_${crypto.randomBytes(32).toString('hex')}`
+    const apiKeyHash = crypto.createHash('sha256').update(apiKey).digest('hex')
+    const apiKeyLast4 = apiKey.slice(-4)
 
     const client = createAdminClient()
 
@@ -120,7 +133,8 @@ export async function POST(request: Request) {
         slug,
         domain,
         client_slug,
-        api_key: apiKey,
+        api_key_hash: apiKeyHash,
+        api_key_last4: apiKeyLast4,
       })
       .select()
       .single()

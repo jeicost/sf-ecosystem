@@ -1,4 +1,4 @@
-import { requireSession } from '@/lib/auth/require-session'
+import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { canAccessProject } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
@@ -8,16 +8,12 @@ import type { NextRequest } from 'next/server'
  * POST /api/admin/posts/[postId]/duplicate
  * Copies a post into a new draft with a "-copy" slug.
  */
-export async function POST(
+export const POST = withAdminAuth(async (
+  user,
   request: NextRequest,
   { params }: { params: Promise<{ postId: string }> }
-) {
+) => {
   try {
-    const user = await requireSession()
-    if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
     const { postId } = await params
     const client = createAdminClient()
 
@@ -78,4 +74,4 @@ export async function POST(
       { status: 500 }
     )
   }
-}
+})
