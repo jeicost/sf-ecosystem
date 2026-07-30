@@ -29,11 +29,16 @@ const CREATIVE_IMAGE_AGENT_IDS = ['designer', 'spark']
 export function parseDepartmentChatRole(role: unknown): DepartmentMetadata['slug'] | null {
   if (typeof role !== 'string' || !role.startsWith(DEPARTMENT_CHAT_PREFIX)) return null
   const slug = role.slice(DEPARTMENT_CHAT_PREFIX.length)
-  return slug in DEPARTMENT_METADATA ? (slug as DepartmentMetadata['slug']) : null
+  // Object.hasOwn, no `in`: DEPARTMENT_METADATA es un objeto plano, así que un
+  // slug como 'constructor'/'toString'/'__proto__' resolvería a una propiedad
+  // heredada de Object.prototype (truthy) en vez de ser rechazado.
+  return Object.hasOwn(DEPARTMENT_METADATA, slug) ? (slug as DepartmentMetadata['slug']) : null
 }
 
 export function getDepartmentAgents(slug: DepartmentMetadata['slug']): AgentMetadata[] {
-  return DEPT_AGENTS[slug] ?? []
+  // Misma guarda que arriba, por si algún caller llama a esto sin pasar antes
+  // por parseDepartmentChatRole (defensa en profundidad).
+  return Object.hasOwn(DEPT_AGENTS, slug) ? DEPT_AGENTS[slug] : []
 }
 
 export function departmentHasCreativeAgents(slug: DepartmentMetadata['slug']): boolean {

@@ -82,7 +82,12 @@ export const DEPARTMENT_METADATA: Record<DepartmentMetadata['slug'], DepartmentM
 
 // Helper: get a single department by slug
 export function getDepartmentBySlug(slug: string): DepartmentMetadata | undefined {
-  return DEPARTMENT_METADATA[slug as DepartmentMetadata['slug']]
+  // Object.hasOwn (no `in`/acceso directo): DEPARTMENT_METADATA es un objeto
+  // plano, así que sin esta comprobación un slug tipo 'constructor'/'toString'
+  // resuelve a una propiedad heredada de Object.prototype en vez de undefined.
+  return Object.hasOwn(DEPARTMENT_METADATA, slug)
+    ? DEPARTMENT_METADATA[slug as DepartmentMetadata['slug']]
+    : undefined
 }
 
 // Helper: get all departments except one
