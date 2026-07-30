@@ -140,10 +140,18 @@ export default function ToolsMarketplace({
         {filteredTools.map((tool) => {
           const isConnected = connectedTools.includes(tool.id)
           const isComingSoon = tool.status === 'coming_soon'
+          // 'paid' = el cliente paga directamente a la herramienta externa con
+          // su propia key (BYO) -- Apollo, Hunter -- MIRA no cobra de más por
+          // conectarla, así que nunca debe gatearse por plan. Bug real
+          // encontrado 2026-07-30: exigía userSubscriptionPlan === 'enterprise',
+          // un plan que no existe en ningún usuario real de MIRA (los planes
+          // reales son consulta/starter/growth/scale/admin/super_admin) --
+          // Apollo/Hunter aparecían bloqueados tras "Upgrade Plan" para TODOS
+          // los clientes, incluida la cuenta admin/super_admin del propio CEO.
           const isAccessible =
             tool.pricing === 'free' ||
-            (tool.pricing === 'via_subscription' && canAccessViaSubscription) ||
-            userSubscriptionPlan === 'enterprise'
+            tool.pricing === 'paid' ||
+            (tool.pricing === 'via_subscription' && canAccessViaSubscription)
 
           return (
             <div
