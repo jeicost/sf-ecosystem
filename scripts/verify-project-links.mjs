@@ -91,6 +91,11 @@ const REGISTRY = [
     projectName: 'discoolver-design-studio',
     projectId: 'prj_SoMU6F5A7bvp85cfPIFimYo5B2jP',
   },
+  {
+    folder: 'clients/discoolver/web',
+    projectName: 'discoolver-landing',
+    projectId: 'prj_fxRmmDp5z9FBUPmZurgb43GsN5Ep',
+  },
 ];
 
 // Known-bad project IDs that must NEVER appear in any project.json.
