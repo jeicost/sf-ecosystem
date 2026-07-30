@@ -1,6 +1,13 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060 aplicadas; **0061 pendiente** (ver abajo). Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060 aplicadas; **0061 pendiente** (ver abajo). Este fichero lista SOLO lo que queda.
+
+## MIRA — Revisión adversarial + bug real del Centro de Documentos (DEBT ss, 2026-07-30) — ✅ CERRADO
+
+Revisión de (rr) con 4 agentes + verificación escéptica: 5 hallazgos reales, los 5 corregidos (prototype pollution en chat por departamento, 2 bugs de robustez en informes de decisión, 1 documentado sin arreglar por no tener camino de UI hoy). Además, bug real reportado por el CEO en el Centro de Documentos (Playbook Operativo generaba una guía de "cómo escribir esto" en vez de contenido, con datos sin investigar) — corregido con investigación web real (Tavily) + un aviso de alcance explícito cuando el tema pedido es contenido publicable en vez de una guía interna. Verificado en vivo con una generación real completa. Detalle en DEBT (ss).
+
+**Pendiente real de esta ronda:**
+- **Extender el grounding web real a Quick Actions y al Monthly Content System** — hoy solo lo tienen el chat de agentes, Business Reports (2 tools) y el Centro de Documentos (recién arreglado). Mismo patrón ya validado, no construido todavía ahí. Sin urgencia salvo que aparezca otro caso real como el de Dadybox.
 
 ## MIRA — Chat por departamento + informes de decisión + bug real de Pipeline (DEBT rr, 2026-07-30) — ✅ CERRADO, con 2 pendientes reales
 
