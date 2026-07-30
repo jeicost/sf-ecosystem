@@ -17,13 +17,11 @@ Registro honesto de deuda técnica conocida. Última verificación completa: **2
 
 ---
 
-## a) `visual_jobs`: subsistema fantasma
+## a) ✅ Resuelto (código) / en espera (tablas) — `visual_jobs`: subsistema fantasma
 
-*(Verificado de nuevo 2026-07-22: sigue igual.)* La migración `supabase/migrations/0028_visual_jobs.sql` crea 4 tablas (`visual_jobs` L6, `visual_assets` L33, `visual_feedback` L59, `visual_approvals` L85) con RLS completo — y **ninguna ruta de la app las usa**. Grep de `visual_jobs`/`visual-provider`/`visual-storage`/`visual-refinement` sobre `app/` y `components/` devuelve 0 resultados.
+*(Re-verificado 2026-07-30 durante el barrido de deuda de la auditoría qq: la decisión SÍ se tomó, este punto había quedado desactualizado.)* Los 5 ficheros huérfanos de `lib/generation/` (`visual-provider.ts`, `mock-visual-provider.ts`, `visual-storage.ts`, `visual-refinement.ts`, `feature-flags.ts`) fueron eliminados en el commit `4c0575d` (P4, 2026-07-29) — confirmado con `test -f`/`ls`, ya no existen. `docs/VISUAL_GENERATION_INTEGRATION.md` documenta explícitamente que ese sistema "nunca se conectó" y murió en P4.
 
-Ficheros huérfanos en `lib/generation/`: `visual-provider.ts`, `mock-visual-provider.ts`, `visual-storage.ts`, `visual-refinement.ts`, `feature-flags.ts`.
-
-**Qué haría falta:** decidir si el pipeline de jobs visuales asíncronos se retoma o se elimina. Si se elimina: borrar los 5 ficheros + migración de drop de las 4 tablas. Si se retoma: cablear rutas `/api/visual-jobs` que hoy no existen.
+Las 4 tablas de `supabase/migrations/0028_visual_jobs.sql` se dejan **intactas a propósito**, no por indecisión: las reclama el draft del handoff W6 de Visual Production Foundation, en espera de la decisión reuse-vs-namespace del equipo externo (ver memoria `project_mira_visual_production` / `docs/NEXT_STEPS.md`). No tocar hasta esa respuesta.
 
 ---
 
@@ -35,11 +33,9 @@ Ficheros huérfanos en `lib/generation/`: `visual-provider.ts`, `mock-visual-pro
 
 ---
 
-## f) `StudioArchetype` con proyectos decorativos mock
+## f) ✅ Resuelto — `StudioArchetype` con proyectos decorativos mock
 
-*(Verificado de nuevo 2026-07-22: sigue igual.)* `components/archetypes/StudioArchetype.tsx:29` define `DEFAULT_PROJECTS` (hardcoded) y `:100` lo usa como default de la prop `projects`. Único caller: `components/archetypes/AgentArchetypeWrapper.tsx:56` — no alimenta proyectos reales.
-
-**Qué haría falta:** alimentar `projects` desde datos reales (p. ej. `quick_actions_results` visuales o `project_memory`) o vaciar el default y mostrar empty state.
+*(Re-verificado 2026-07-30 durante el barrido de deuda de la auditoría qq: este punto había quedado desactualizado.)* `DEFAULT_PROJECTS` ya no existe en `components/archetypes/StudioArchetype.tsx` — la prop `projects` tiene default `[]` con un empty state honesto real (i18n `archetype.studio.empty-title/-desc`). El único caller (`app/(dashboard)/agent/[role]/page.tsx`) pasa `workspaceData`, poblado por `app/api/studio/approved-visuals/route.ts` con imágenes reales aprobadas de `approval_queue.asset_url`. Resuelto en los commits `bd011ac` (29/07, "Studio con imágenes reales aprobadas") y `b383a54` (30/07, arquetipos con datos reales).
 
 ---
 
@@ -610,3 +606,29 @@ Pedida por el CEO como auditoría completa de "qué falta antes del lanzamiento"
 **Verificación en vivo tras el deploy corregido** (Playwright, sesión real): `/home`, `/roster` (ambas ejercitan el `Promise.all` de `getDepartmentStats`), `/integrations` (ejercita el `resolveRequestClient` consolidado; tarjetas de Apollo y Hunter visibles) y `/toolkit/brand-book` (ejercita el `Promise.all` de `getToolkitDependencies`) — las 4 sin ningún error de consola.
 
 **Apollo.io + Hunter.io — nada que construir**: la integración ya existía de punta a punta (`lib/integrations/marketplace-tools.ts` ya las lista con `status:'disconnected'`, `api-validators.ts` ya valida contra los health-checks reales de cada proveedor, Discovery "modo profundo" ya gatea con un error real `apollo_hunter_not_connected`, no silencioso). El CEO se dio de alta con cuentas reales en ambos servicios para probar la parte comercial — la única acción pendiente es suya: pegar las 2 API keys reales en `/integrations` desde la UI. **Deuda conocida y aceptada explícitamente por el CEO ("conectar ya, cifrado después")**: las keys quedan en `tool_connections.metadata` en texto plano — ver entrada **(c)** de este mismo documento, sigue siendo la misma deuda, no una nueva.
+
+---
+
+## rr) Chat por departamento + informes de decisión interactivos + 1 bug real de CRM (2026-07-30)
+
+Continuación el mismo día de (qq). El CEO envió una tanda de ideas "para pensar" de cara al lanzamiento a clientes finales — se entró en modo plan, se exploró el código, se hicieron preguntas de alcance y se ejecutó lo aprobado. Además, mientras corría en background el barrido completo de deuda pendiente (pedido justo antes de esta tanda), se lanzó una segunda investigación en vivo sobre 5 puntos concretos del mensaje del CEO — encontrando un bug real no reportado y confirmando que una feature pedida ya existía.
+
+**Bug real encontrado y corregido, severidad reevaluada tras verificar en vivo**: el CEO no reportó esto, salió de la investigación de "¿funciona el CRM?". `/comercial/pipeline` y `/comercial/icebreaker` consultaban `leads` directo desde el navegador (cliente anon-key) dentro de un `useEffect` sin ningún guard `if (!clientId) return` — el primer render dispara la query con `client_id=eq.undefined` (400 + error de consola) porque `useActiveClient()` resuelve el cliente activo de forma asíncrona. **La primera pasada de investigación concluyó "CRM roto" viendo 0 leads con error de consola — pero verificado de nuevo con un cliente que sí tiene leads reales (NC Global Assets, 3 filas), el pipeline los mostraba perfectamente**: el "0" observado con Salsa Burgers era el dato real (0 leads legítimos), no un bug. El único defecto real es el ruido de la carrera del primer render, cosmético pero real. **Resuelto**: guard `if (!clientId) return` en ambas páginas, mismo patrón que ya usa `use-department-stats.ts`.
+
+**Chat "Cuéntale a MIRA" — ya existía, confirmado con el CEO**: la feature que pidió (actualizar el brand brain hablando, sin subir documentos) es exactamente P6 (`ec7c03a`, 29/07), verificado intacto byte a byte. El problema era descubribilidad: tarjeta cerrada por defecto en `/brand-brain`, sin ningún color/badge distinto a las demás. **Resuelto**: se abre sola la primera vez por navegador (localStorage), borde ámbar + badge "SIN FORMULARIOS".
+
+**Bug del wizard de alta reportado por el CEO, sin poder reproducir en vivo esta sesión**: "solo trae el chat, no deja volver atrás". El código de `/admin/onboarding` (`WizardShell.tsx`, commit `6f92b8a`) contradice el reporte — 5 pasos, botón Atrás funcional, revisión editable, tal como se construyó. No se pudo reproducir en vivo porque la única sesión de prueba disponible (`nirada@ncglobalassets.com`) es una cuenta cliente sin acceso a `/admin/*` (redirige a `/home`, correcto por diseño). **Pendiente real**: reproducir con la sesión real del CEO (super_admin) — hipótesis más probable es que entrara por `/admin/onboarding/chat` (el chat libre, que sigue existiendo aparte a propósito) pensando que era el alta.
+
+**Chat por departamento (opción A: una sola voz), construido y verificado en vivo**: nuevo rol virtual `dept:<slug>` en `app/api/agent/route.ts` que reutiliza el mismo loop de tool-use/memoria/Brand Brain del chat de un agente, con un system prompt sintetizado (`lib/department-prompt.ts`) que combina la experiencia de todos los agentes del departamento en una sola voz — sin inventar nombres de colegas fuera del roster real (misma regla que ya se añadió a los 23 prompts en (oo)). Nueva página `/agent/dept/[slug]` + botón "Hablar con todo el equipo" en las 5 páginas de departamento (nuevo prop `action` opcional en `PageHeader`, retrocompatible con sus otros 13 usos). Verificado en vivo contra Salsa Burgers: respuesta real y bien fundamentada en la marca del cliente.
+
+**Informes de decisión interactivos (MVP), la pieza más grande de la ronda**: el CEO pidió, desde la gestión de clientes en super admin, poder crear un informe narrativo con un formulario de decisión embebido (aportó un ejemplo real completo preparado para Adrian Grooves — resumen ejecutivo, diagnóstico, benchmark, opciones de precio con "choice cards" de una/varias opciones marcadas como recomendación, notas libres). En vez de un sistema nuevo en paralelo, se generalizó el de cuestionarios ya existente (P5, migración 0054): `questionnaire_questions.kind` `select`/`multi_select` + `options` (jsonb) ya cubría "una o varias opciones" — solo hacía falta que `options` aceptase objetos `{label, description?, recommended?}` además de strings planos, y que el runner pasara de `<select>`/checkboxes nativos a choice cards clicables con badge de "Recomendación". Migración **0061** (columna `narrative` jsonb en `client_questionnaires`, array de `{heading?, body}` mostrado antes de las preguntas) — **redactada, PENDIENTE de aplicar por el CEO**. Nuevo builder manual `/admin/questionnaires/new` + botón "Crear informe de decisión" por cliente en `/admin/users` (pasada 1: redacción manual, sin IA todavía). El gating de solo-ver/responder para el plan `consulta` ya existía y se reutiliza sin cambios.
+
+**Verificado en vivo con datos sintéticos desechables** (creados y borrados por ID exacto contra NC Global Assets, nunca un cliente de negocio real): choice cards de una y varias opciones, badge de recomendación, clic-para-seleccionar, autosave, y persistencia tras recargar — las 5 cosas funcionando de punta a punta. **Un intento de verificación salió con un error real de React (#31, "objects are not valid as a React child")** — resultó ser que aún no había hecho `git push` del código nuevo, así que producción seguía sirviendo el `<select>` nativo antiguo intentando renderizar mis opciones-objeto nuevas; repetido tras el deploy correcto, limpio. La narrativa (migración 0061) no se pudo probar en vivo todavía porque la columna no existe en producción hasta que el CEO la aplique.
+
+**Deuda corregida de paso durante el barrido completo de `docs/DEBT.md`** (pedido separado del CEO, "qué nos falta de deuda"): 61 de 71 ítems verificados en vivo uno por uno (no solo releídos) — la mayoría siguen abiertos tal como estaban documentados, pero 14 resultaron ya resueltos sin que el documento lo reflejara (entradas **(a)** y **(f)** corregidas arriba; el resto — migración 0051, bucket `brand-assets`, tags de dependencias, riesgo de timeout de monthly, extracción de PDF — ya estaban correctamente marcadas ✅ en rondas anteriores, solo la redacción cruda de la primera pasada del barrido no había cruzado esa información).
+
+**Pendiente real que queda de esta ronda**:
+- Aplicar migración **0061** (narrativa de informes de decisión) — sin esto, la narrativa se ignora en silencio (el runner ya comprueba `narrative && narrative.length`, no rompe, solo no se ve).
+- Reproducir en vivo el bug del wizard de alta con la sesión real del CEO — confirmar si es `/admin/onboarding/chat` vs `/admin/onboarding`, o algo más.
+- Fase 2 (explícitamente no construir todavía, solo pensada): BYO-Claude para clientes (arquitectura ya lista vía `getClaudeForClient`/`used_client_key`, falta decisión de modelo de precio) y explicar el consumo a clientes (los datos ya existen en `mira_usage_log`, falta decidir si es una vista cliente-facing o solo argumentario del CEO).
+- Generación por IA del contenido narrativo de los informes de decisión (pasada 2, no construida a propósito en esta ronda).

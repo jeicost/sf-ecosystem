@@ -1,6 +1,15 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060 aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060 aplicadas; **0061 pendiente** (ver abajo). Este fichero lista SOLO lo que queda.
+
+## MIRA — Chat por departamento + informes de decisión + bug real de Pipeline (DEBT rr, 2026-07-30) — ✅ CERRADO, con 2 pendientes reales
+
+Chat por departamento (una sola voz) construido y verificado en vivo en las 5 páginas de depto. Informes de decisión interactivos (MVP) construidos y verificados en vivo con datos sintéticos — narrativa + choice cards con badge de recomendación, generalizando el sistema de cuestionarios ya existente. Bug real (no reportado, encontrado investigando) en `/comercial/pipeline`+`/comercial/icebreaker` corregido — una carrera de montaje disparaba una query con `client_id=undefined`; el "CRM roto" de la primera pasada resultó ser dato real (0 leads legítimos en el cliente probado), corregido tras verificar con un cliente con leads reales. Detalle completo en DEBT (rr).
+
+**Pendiente real de esta ronda:**
+- **Aplicar migración 0061** (columna `narrative` en `client_questionnaires`) — sin esto, la narrativa de los informes de decisión se ignora en silencio (no rompe nada, solo no se ve).
+- **Reproducir el bug del wizard de alta con la sesión real del CEO**: el código de `/admin/onboarding` parece correcto (5 pasos, botón Atrás, revisión) — no se pudo reproducir con la única sesión de prueba disponible (cuenta cliente, sin acceso a `/admin/*`). Probar de nuevo y confirmar si el CEO entraba por `/admin/onboarding/chat` (el chat libre, que sigue existiendo aparte) en vez de `/admin/onboarding`.
+- **Generación por IA de la narrativa de los informes de decisión** (pasada 2, no construida a propósito — pasada 1 es redacción manual).
 
 ## MIRA — Auditoría de producción-robustez pre-lanzamiento (DEBT qq, 2026-07-30) — ✅ CERRADA
 
@@ -26,6 +35,7 @@ Los 6 archetypes muestran datos reales o vacío honesto. Los 23 prompts de agent
 4. **Revisar Drive de Dadybox/Discoolver antes de dar por bueno su onboarding visual**: en Salsa se encontró y limpió documentación técnica interna de MIRA (schemas JSON de otro proyecto) mezclada por error en su carpeta de conocimiento (DEBT nn) — comprobar que no pasa lo mismo en las otras.
 5. **Google Drive — revocar acceso desde la propia cuenta si se quiere desconectar**: la tarjeta de Integraciones ya no ofrece un botón de desconexión falso (DEBT pp); revocar hoy se hace desde Google Account → Seguridad → Apps de terceros.
 6. **Conectar Apollo.io + Hunter.io**: el CEO ya tiene cuentas reales en ambos servicios (para probar Discovery "modo profundo" en Comercial) — solo falta pegar las 2 API keys reales en MIRA → Integraciones (código ya verificado listo de punta a punta, DEBT qq).
+7. **Aplicar migración `0061_questionnaire_narrative.sql`** en el SQL editor de Supabase — desbloquea la narrativa de los nuevos informes de decisión (DEBT rr). Aditiva y segura (columna nullable, `IF NOT EXISTS`).
 
 ## MIRA — Business Reports (DEBT ll/nn) — ✅ CERRADO
 
