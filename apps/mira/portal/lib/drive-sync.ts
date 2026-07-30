@@ -10,9 +10,21 @@
  * Token handling mirrors app/api/brand-brain/drive/ingest/route.ts.
  */
 
+import { createHash } from 'crypto'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import * as mammoth from 'mammoth'
 import { adminClient } from '@/lib/supabase'
+import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/brain-tools/drive-synthesis'
+
+/**
+ * Apagado por defecto (mismo patrón que el kill-switch KNOWLEDGE_UNIFIED de
+ * lib/knowledge.ts) -- activar con DRIVE_BRAIN_SYNTHESIS=1 en Vercel. Sin
+ * esto, drive-sync sigue haciendo solo lo que hacía antes (resumen +
+ * mapa de carpeta), sin sintetizar contra el Brand Brain.
+ */
+export function isDriveBrainSynthesisEnabled(): boolean {
+  return process.env.DRIVE_BRAIN_SYNTHESIS === '1'
+}
 
 async function extractPdfText(buffer: Buffer): Promise<string> {
   // pdf-parse v2: class-based API (PDFParse). Lazy dynamic import, same
@@ -484,8 +496,9 @@ async function generateFolderMap(
 export async function syncDriveFolder(
   admin: AdminClient,
   clientId: string,
-  folderRow: DriveFolderRow
-): Promise<{ filesSynced: number; mapSummary: string } | { error: string }> {
+  folderRow: DriveFolderRow,
+  options: { skipSynthesis?: boolean } = {}
+): Promise<{ filesSynced: number; mapSummary: string; proposalCreated: boolean } | { error: string }> {
   const markError = async (message: string) => {
     console.error(`Drive sync error (folder ${folderRow.id}): ${message}`)
     await admin
@@ -513,6 +526,10 @@ export async function syncDriveFolder(
 
   let filesSynced = 0
   const docSummaries: Array<{ path: string; summary: string }> = []
+  // Documentos con contenido nuevo/distinto desde el último sync (por
+  // content_hash) -- son el lote que se pasa a la síntesis contra el Brand
+  // Brain, para no re-sintetizar sobre algo que ya se había leído igual.
+  const changedDocs: DriveSynthesisDocument[] = []
 
   for (const file of extractableFiles) {
     try {
@@ -522,6 +539,7 @@ export async function syncDriveFolder(
         continue
       }
 
+      const contentHash = createHash('sha256').update(extraction.text).digest('hex')
       const summary = await summarizeDocument(clientId, file.name, extraction.text)
       const sourceMetadata = {
         folder_id: folderRow.folder_id,
@@ -535,7 +553,7 @@ export async function syncDriveFolder(
       // Upsert: dedup by client_id + source_metadata->>google_drive_file_id
       const { data: existing } = await admin
         .from('agent_documents')
-        .select('id')
+        .select('id, content_hash')
         .eq('client_id', clientId)
         .eq('source_metadata->>google_drive_file_id', file.id)
         .limit(1)
@@ -558,32 +576,41 @@ export async function syncDriveFolder(
         file_size: parseInt(file.size || '0'),
         file_mime_type: file.mimeType,
         source_metadata: sourceMetadata,
+        content_hash: contentHash,
         updated_at: new Date().toISOString(),
       }
 
+      let documentId: string
+      const isNewOrChanged = !existing?.length || existing[0].content_hash !== contentHash
+
       if (existing?.length) {
+        documentId = existing[0].id
         const { error: updateError } = await admin
           .from('agent_documents')
           .update(docRow)
-          .eq('id', existing[0].id)
+          .eq('id', documentId)
         if (updateError) {
           console.error(`Drive sync: failed to update document "${file.path}":`, updateError)
           continue
         }
       } else {
-        const { error: insertError } = await admin.from('agent_documents').insert({
-          client_id: clientId,
-          ...docRow,
-          created_at: new Date().toISOString(),
-        })
-        if (insertError) {
+        const { data: inserted, error: insertError } = await admin
+          .from('agent_documents')
+          .insert({ client_id: clientId, ...docRow, created_at: new Date().toISOString() })
+          .select('id')
+          .single()
+        if (insertError || !inserted) {
           console.error(`Drive sync: failed to insert document "${file.path}":`, insertError)
           continue
         }
+        documentId = inserted.id
       }
 
       filesSynced++
       docSummaries.push({ path: file.path, summary })
+      if (isNewOrChanged) {
+        changedDocs.push({ documentId, path: file.path, title: file.name, summary, excerpt: extraction.text.slice(0, 3000) })
+      }
     } catch (fileError) {
       console.error(`Drive sync: unexpected error processing "${file.path}":`, fileError)
     }
@@ -592,6 +619,63 @@ export async function syncDriveFolder(
   // 5. Folder map → project_memory (insight, dedup by tags [drive_map, folderRow.id])
   const folderName = folderRow.folder_name || 'Carpeta de Drive'
   const mapSummary = await generateFolderMap(clientId, folderName, tree, docSummaries, otherFilesCount)
+
+  // 5b. Síntesis real contra el Brand Brain (Fase 1) -- solo si hay documentos
+  // nuevos/cambiados de verdad, el flag está activo, y el circuit-breaker del
+  // cron no ha saturado ya el cupo de propuestas de esta corrida. Best-effort:
+  // un fallo aquí nunca debe tumbar el sync (mismo criterio que el mapa de
+  // carpeta, arriba).
+  let proposalCreated = false
+  if (isDriveBrainSynthesisEnabled() && !options.skipSynthesis && changedDocs.length > 0) {
+    try {
+      const synthesis = await synthesizeDriveKnowledge({ clientId, folderName, documents: changedDocs })
+      if (synthesis) {
+        if (synthesis.changes.length > 0) {
+          const { error: proposalError } = await admin.from('brain_change_proposals').insert({
+            client_id: clientId,
+            project_id: folderRow.project_id ?? null,
+            origin: 'drive_sync',
+            summary: `Sincronización de Drive — carpeta "${folderName}" (${changedDocs.length} documento${changedDocs.length > 1 ? 's' : ''} nuevo${changedDocs.length > 1 ? 's' : ''}/actualizado${changedDocs.length > 1 ? 's' : ''})`,
+            changes: synthesis.changes,
+            source_document_ids: changedDocs.map((d) => d.documentId),
+          })
+          if (proposalError) {
+            console.error('Drive sync: failed to create brain_change_proposal:', proposalError.message)
+          } else {
+            proposalCreated = true
+          }
+        }
+
+        for (const contradiction of synthesis.contradictions) {
+          // Dedup: no crear otra fila 'open' para el mismo campo -- la
+          // contradicción ya está señalada hasta que un humano la resuelva.
+          const { data: alreadyOpen } = await admin
+            .from('brain_contradictions')
+            .select('id')
+            .eq('client_id', clientId)
+            .eq('field_path', contradiction.field_path)
+            .eq('status', 'open')
+            .limit(1)
+          if (alreadyOpen?.length) continue
+
+          const { error: contradictionError } = await admin.from('brain_contradictions').insert({
+            client_id: clientId,
+            project_id: folderRow.project_id ?? null,
+            field_path: contradiction.field_path,
+            existing_value_excerpt: contradiction.existing_value_excerpt ?? null,
+            proposed_value_excerpt: contradiction.proposed_value_excerpt ?? null,
+            note: contradiction.note,
+            source_type: 'drive_sync',
+          })
+          if (contradictionError) {
+            console.error('Drive sync: failed to create brain_contradiction:', contradictionError.message)
+          }
+        }
+      }
+    } catch (synthesisError) {
+      console.error('Drive sync: synthesis failed:', synthesisError)
+    }
+  }
 
   try {
     const memoryPayload = {
@@ -633,5 +717,5 @@ export async function syncDriveFolder(
     })
     .eq('id', folderRow.id)
 
-  return { filesSynced, mapSummary }
+  return { filesSynced, mapSummary, proposalCreated }
 }

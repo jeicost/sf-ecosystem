@@ -67,13 +67,21 @@ export async function applyBrainChange(clientId: string, change: BrainChange, pr
     case 'content_pillar': {
       const { pillar_name, description, themes, examples } = change.payload
       if (!pillar_name) throw new Error('El pilar necesita pillar_name')
-      const { error } = await db.from('content_pillars').insert({
+      const row = {
         client_id: clientId,
         pillar_name,
         description: description ?? null,
         themes: Array.isArray(themes) ? themes : [],
         examples: Array.isArray(examples) ? examples : [],
-      })
+      }
+      let { error } = await db.from('content_pillars').upsert(row, { onConflict: 'client_id,pillar_name' })
+      // Fallback si la constraint única (client_id,pillar_name) todavía no
+      // existe en producción (ver migración 0062, nota sobre content_pillars):
+      // el upsert falla con 42P10 en vez de hacer merge — degrada a insert
+      // (mismo comportamiento que antes) en vez de romper la creación de pilares.
+      if (error?.code === '42P10') {
+        ;({ error } = await db.from('content_pillars').insert(row))
+      }
       if (error) throw new Error(`No se pudo guardar el pilar: ${error.message}`)
       return `Pilar creado: ${pillar_name}`
     }

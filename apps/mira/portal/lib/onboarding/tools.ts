@@ -205,13 +205,19 @@ export async function executeOnboardingTool(
 
     case 'save_content_pillar': {
       const { pillar_name, description, themes, examples } = input
-      const { error } = await db.from('content_pillars').insert({
+      const row = {
         client_id: clientId,
         pillar_name,
         description,
         themes: Array.isArray(themes) ? themes : [],
         examples: Array.isArray(examples) ? examples : [],
-      })
+      }
+      let { error } = await db.from('content_pillars').upsert(row, { onConflict: 'client_id,pillar_name' })
+      // Fallback si la constraint única todavía no existe en producción (ver
+      // migración 0062) — degrada a insert en vez de romper el onboarding.
+      if (error?.code === '42P10') {
+        ;({ error } = await db.from('content_pillars').insert(row))
+      }
       if (error) throw new Error(`Failed to save content pillar: ${error.message}`)
       return { chip: `Pilar de contenido guardado: ${pillar_name}` }
     }

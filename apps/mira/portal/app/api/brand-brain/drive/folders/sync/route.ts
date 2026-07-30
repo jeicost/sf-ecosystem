@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { filesSynced: result.filesSynced, mapSummary: result.mapSummary },
+      { filesSynced: result.filesSynced, mapSummary: result.mapSummary, proposalCreated: result.proposalCreated },
       { status: 200 }
     )
   } catch (error) {

@@ -10,6 +10,11 @@ import { syncDriveFolder } from '@/lib/drive-sync'
 export const maxDuration = 300
 
 const MAX_FOLDERS_PER_RUN = 12
+// Circuit-breaker de la síntesis Drive→Brand Brain (Fase 1): tope de
+// propuestas NUEVAS por corrida, para que una noche con muchas carpetas
+// cambiadas a la vez no inunde el buzón de brain_change_proposals (ya de por
+// sí sin paginación ni vista cross-cliente hasta la Fase 2).
+const MAX_NEW_PROPOSALS_PER_RUN = 20
 
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET
@@ -43,10 +48,13 @@ export async function GET(req: NextRequest) {
   }
 
   const results: Array<{ folder: string; ok: boolean; detail?: string }> = []
+  let newProposalsThisRun = 0
   for (const folder of folders ?? []) {
     try {
-      const result = await syncDriveFolder(admin, folder.client_id, folder)
+      const skipSynthesis = newProposalsThisRun >= MAX_NEW_PROPOSALS_PER_RUN
+      const result = await syncDriveFolder(admin, folder.client_id, folder, { skipSynthesis })
       const ok = !('error' in result)
+      if (ok && 'proposalCreated' in result && result.proposalCreated) newProposalsThisRun++
       results.push({
         folder: folder.folder_name,
         ok,
@@ -60,5 +68,10 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ synced: results.filter(r => r.ok).length, total: results.length, results })
+  return NextResponse.json({
+    synced: results.filter(r => r.ok).length,
+    total: results.length,
+    newProposals: newProposalsThisRun,
+    results,
+  })
 }
