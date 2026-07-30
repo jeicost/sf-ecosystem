@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export interface DeliverableGeneration {
   id: string
@@ -47,6 +49,7 @@ export default function DeliverableCard({
   history,
   titleFontClass = '',
 }: DeliverableCardProps) {
+  const { locale } = useLocaleContext()
   const [showHistory, setShowHistory] = useState(false)
   const score = extractScore(latest)
 
@@ -77,7 +80,9 @@ export default function DeliverableCard({
           onClick={() => setShowHistory((v) => !v)}
           className="mt-3 self-start font-mono text-[10px] text-ink-tertiary underline decoration-dotted underline-offset-4 transition-colors hover:text-ink-secondary"
         >
-          {showHistory ? '− ocultar historial' : `+ ${history.length} ${history.length === 1 ? 'versión anterior' : 'versiones anteriores'}`}
+          {showHistory
+            ? t('toolkit.card.hide-history', locale)
+            : `+ ${history.length} ${history.length === 1 ? t('toolkit.card.previous-version', locale) : t('toolkit.card.previous-versions', locale)}`}
         </button>
       )}
 
@@ -100,12 +105,12 @@ export default function DeliverableCard({
       <div className="mt-5 flex items-center justify-between border-t border-line-subtle pt-4">
         {score !== null ? (
           <div>
-            <p className="mb-0.5 text-[10px] text-ink-tertiary">Score</p>
+            <p className="mb-0.5 text-[10px] text-ink-tertiary">{t('toolkit.card.score-label', locale)}</p>
             <p className="leading-none">
               <span className={`text-[22px] font-bold ${titleFontClass}`} style={{ color: brandColor }}>
                 {score}
               </span>
-              <span className="ml-0.5 text-[11px] text-ink-tertiary">/100</span>
+              <span className="ml-0.5 text-[11px] text-ink-tertiary">{t('toolkit.card.score-suffix', locale)}</span>
             </p>
           </div>
         ) : (
@@ -119,7 +124,7 @@ export default function DeliverableCard({
           className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5"
           style={{ color: brandColor }}
         >
-          Ver informe →
+          {t('toolkit.card.view-report', locale)}
         </Link>
       </div>
     </div>

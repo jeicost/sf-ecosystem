@@ -1,32 +1,33 @@
 import type { ToolConfig } from '@/components/ToolRunnerPage'
+import { t, type Locale } from '@/lib/i18n'
 
 // Config exportada (la reutiliza Strategy si hiciera falta y evita drift).
-export const BRAND_BOOK_CONFIG: ToolConfig = {
+export const getBrandBookConfig = (locale: Locale): ToolConfig => ({
   slug: 'brand-book',
   icon: '📕',
-  title: 'Brand Book',
-  subtitle: 'El manual maestro de marca, con auditoría de consistencia y Voice Guide de 1 página',
-  timing: '~10 min',
-  brandBrainNote: 'Este reporte se construye desde tu Brand Brain — no te pediremos lo que ya sabemos. Adjunta creatividades, brand books antiguos o auditorías: las contradicciones que encontremos son oro.',
+  title: t('toolkit.brand-book.title', locale),
+  subtitle: t('toolkit.brand-book.subtitle', locale),
+  timing: t('toolkit.brand-book.timing', locale),
+  brandBrainNote: t('toolkit.brand-book.brand-brain-note', locale),
   fields: [
     {
       name: 'mode',
-      label: 'Modo',
+      label: t('toolkit.brand-book.field.mode.label', locale),
       type: 'select',
       required: true,
       defaultValue: 'full',
       options: [
-        { value: 'full', label: 'Manual completo (deck + Voice Guide)' },
-        { value: 'audit', label: 'Solo auditoría de consistencia (rápido)' },
+        { value: 'full', label: t('toolkit.brand-book.field.mode.option.full', locale) },
+        { value: 'audit', label: t('toolkit.brand-book.field.mode.option.audit', locale) },
       ],
     },
     {
       name: 'notas_diseno',
-      label: 'Notas para el diseñador (opcional)',
+      label: t('toolkit.brand-book.field.notas-diseno.label', locale),
       type: 'textarea',
-      placeholder: 'Énfasis, secciones que te importan especialmente, decisiones ya tomadas...',
+      placeholder: t('toolkit.brand-book.field.notas-diseno.placeholder', locale),
     },
   ],
-  submitButtonText: 'Generar Brand Book',
+  submitButtonText: t('toolkit.brand-book.submit', locale),
   submitButtonColor: '#8B5CF6',
-}
+})

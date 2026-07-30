@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Send, Upload, Loader2, Check, AlertCircle, X } from 'lucide-react'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface AgentWorkspaceProps {
   role: string
@@ -37,6 +39,7 @@ export default function AgentWorkspace({
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
 
   const { messages, isLoading, sendMessage } = useAgentChat({
     role,
@@ -103,7 +106,7 @@ export default function AgentWorkspace({
 
       if (!res.ok) {
         const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to upload document')
+        throw new Error(errorData.error || t('agent-workspace.upload-error-fallback', locale))
       }
 
       const { data: newDoc } = await res.json()
@@ -113,7 +116,7 @@ export default function AgentWorkspace({
         fileInputRef.current.value = ''
       }
     } catch (err) {
-      setDocError(err instanceof Error ? err.message : 'Upload failed')
+      setDocError(err instanceof Error ? err.message : t('agent-workspace.upload-failed-fallback', locale))
     } finally {
       setUploading(false)
     }
@@ -150,7 +153,7 @@ export default function AgentWorkspace({
             {quickPrompts.length > 0 && (
               <div className="mt-6 grid gap-2 w-full max-w-sm">
                 <p className="text-[10px] uppercase tracking-widest font-semibold text-ink-tertiary mb-2">
-                  Sugerencias rápidas
+                  {t('agent-workspace.quick-prompts-label', locale)}
                 </p>
                 {quickPrompts.map((qp, idx) => (
                   <button
@@ -213,7 +216,7 @@ export default function AgentWorkspace({
             onClick={() => setShowDocuments(!showDocuments)}
             className="text-xs font-medium text-ink flex items-center gap-2 mb-2 hover:text-ink-secondary"
           >
-            📄 Documentos ({documents.length}) {showDocuments ? '▼' : '▶'}
+            {t('agent-workspace.documents-count', locale).replace('{count}', String(documents.length))} {showDocuments ? '▼' : '▶'}
           </button>
           {showDocuments && (
             <div className="space-y-2 max-h-40 overflow-y-auto">
@@ -254,7 +257,7 @@ export default function AgentWorkspace({
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={`${placeholder} (Enter para enviar)`}
+            placeholder={`${placeholder} ${t('agent-workspace.input-hint', locale)}`}
             disabled={isLoading}
             className="flex-1 px-3 py-2 bg-surface-hover border border-line rounded-lg text-sm text-ink placeholder-ink-tertiary focus:border-ink-muted focus:outline-none transition-colors disabled:opacity-50"
           />
@@ -263,7 +266,7 @@ export default function AgentWorkspace({
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
             className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50 bg-surface-hover border border-line hover:border-ink-muted"
-            title="Upload document (Max 50MB)"
+            title={t('agent-workspace.upload-tooltip', locale)}
           >
             {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
           </button>

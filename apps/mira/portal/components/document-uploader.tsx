@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Upload, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface DocumentUploaderProps {
   onUploadComplete: (file: File) => Promise<void>
@@ -18,6 +20,7 @@ export default function DocumentUploader({
   const [isUploading, setIsUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const { locale } = useLocaleContext()
 
   const handleDragEnter = (e: React.DragEvent) => {
     e.preventDefault()
@@ -34,10 +37,12 @@ export default function DocumentUploader({
   const validateFile = (file: File): string | null => {
     const ext = '.' + file.name.split('.').pop()?.toLowerCase()
     if (!acceptedTypes.includes(ext)) {
-      return `Solo se aceptan: ${acceptedTypes.join(', ')}`
+      return t('document-uploader.invalid-type', locale).replace('{types}', acceptedTypes.join(', '))
     }
     if (file.size > maxSizeMB * 1024 * 1024) {
-      return `Archivo debe ser menor a ${maxSizeMB}MB (tu archivo: ${(file.size / 1024 / 1024).toFixed(1)}MB)`
+      return t('document-uploader.file-too-large', locale)
+        .replace('{maxSize}', String(maxSizeMB))
+        .replace('{size}', (file.size / 1024 / 1024).toFixed(1))
     }
     return null
   }
@@ -61,7 +66,7 @@ export default function DocumentUploader({
       setSuccess(true)
       setTimeout(() => setSuccess(false), 3000)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error en upload')
+      setError(err instanceof Error ? err.message : t('document-uploader.upload-error-fallback', locale))
     } finally {
       setIsUploading(false)
     }
@@ -97,10 +102,12 @@ export default function DocumentUploader({
         <div className="text-center pointer-events-none">
           <Upload size={32} className="mx-auto mb-3" style={{ color: '#8B5CF6' }} />
           <p className="text-sm font-medium text-ink mb-1">
-            {isUploading ? 'Subiendo...' : 'Arrastra archivo aquí o clickea para seleccionar'}
+            {isUploading ? t('document-uploader.uploading', locale) : t('document-uploader.dropzone-label', locale)}
           </p>
           <p className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-            {acceptedTypes.join(', ')} • Máx {maxSizeMB}MB
+            {t('document-uploader.accepted-types-hint', locale)
+              .replace('{types}', acceptedTypes.join(', '))
+              .replace('{max}', String(maxSizeMB))}
           </p>
         </div>
       </div>
@@ -115,7 +122,7 @@ export default function DocumentUploader({
       {success && (
         <div className="mt-3 p-3 rounded-lg flex items-start gap-2" style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)' }}>
           <CheckCircle2 size={16} className="mt-0.5" style={{ color: '#22C55E' }} />
-          <p className="text-xs text-ink">Archivo subido exitosamente</p>
+          <p className="text-xs text-ink">{t('document-uploader.upload-success', locale)}</p>
         </div>
       )}
     </div>

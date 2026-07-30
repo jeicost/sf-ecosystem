@@ -15,7 +15,6 @@ const ICEBREAKER_COLS = 'id,hot_score,company_name,first_name,last_name,title,in
 
 type Mode = 'from-lead' | 'manual'
 
-const VARIANT_LABELS = ['A — Directa', 'B — Educacional', 'C — Casual']
 const VARIANT_RE = /VARIANTE\s+[ABC]/i
 
 function parseVariants(text: string): string[] {
@@ -27,6 +26,12 @@ export default function IcebreakerPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
   const { locale } = useLocaleContext()
+
+  const VARIANT_LABELS = [
+    t('comercial.icebreaker.variant-a', locale),
+    t('comercial.icebreaker.variant-b', locale),
+    t('comercial.icebreaker.variant-c', locale),
+  ]
 
   const [mode, setMode]           = useState<Mode>('manual')
   const [hotLeads, setHotLeads]   = useState<Lead[]>([])
@@ -85,8 +90,8 @@ export default function IcebreakerPage() {
       const parsed = parseVariants(full)
       setVariants(parsed)
     } catch {
-      setRawText('Error al generar. Inténtalo de nuevo.')
-      setVariants(['Error al generar. Inténtalo de nuevo.'])
+      setRawText(t('comercial.icebreaker.error-generate', locale))
+      setVariants([t('comercial.icebreaker.error-generate', locale)])
     } finally {
       setGenerating(false)
     }
@@ -94,18 +99,15 @@ export default function IcebreakerPage() {
 
   function generateFromLead() {
     if (!selected) return
-    const msg = `Genera 3 variantes de icebreaker (VARIANTE A, VARIANTE B, VARIANTE C) para este prospect B2B:
-
-PROSPECT:
-- Nombre: ${[selected.first_name, selected.last_name].filter(Boolean).join(' ') || 'No disponible'}
-- Cargo: ${selected.title ?? 'No disponible'}
-- Empresa: ${selected.company_name ?? 'No disponible'}
-- Industria: ${selected.industry ?? 'No disponible'}
-- Geografía: ${selected.geography ?? 'No disponible'}
-- Trigger event: ${selected.trigger_event ?? 'No detectado'}
-- LinkedIn summary: ${selected.linkedin_summary ?? 'No disponible'}
-
-Genera las 3 variantes ahora.`
+    const notAvailable = t('common.not-available', locale)
+    const msg = t('comercial.icebreaker.prompt-from-lead', locale)
+      .replace('{name}', [selected.first_name, selected.last_name].filter(Boolean).join(' ') || notAvailable)
+      .replace('{title}', selected.title ?? notAvailable)
+      .replace('{company}', selected.company_name ?? notAvailable)
+      .replace('{industry}', selected.industry ?? notAvailable)
+      .replace('{geography}', selected.geography ?? notAvailable)
+      .replace('{trigger}', selected.trigger_event ?? t('comercial.icebreaker.not-detected', locale))
+      .replace('{summary}', selected.linkedin_summary ?? notAvailable)
 
     streamIcebreaker(msg)
   }
@@ -113,18 +115,15 @@ Genera las 3 variantes ahora.`
   function generateManual() {
     const { firstName, company, title, industry, geography, triggerEvent, linkedinNote } = manualForm
     if (!firstName || !company) return
-    const msg = `Genera 3 variantes de icebreaker (VARIANTE A, VARIANTE B, VARIANTE C) para este prospect B2B:
-
-PROSPECT:
-- Nombre: ${firstName} ${manualForm.lastName}
-- Empresa: ${company}
-- Cargo: ${title}
-- Industria: ${industry}
-- Geografía: ${geography}
-- Evento trigger: ${triggerEvent || 'No especificado'}
-- Notas LinkedIn: ${linkedinNote || 'No disponibles'}
-
-Genera las 3 variantes ahora.`
+    const msg = t('comercial.icebreaker.prompt-manual', locale)
+      .replace('{firstName}', firstName)
+      .replace('{lastName}', manualForm.lastName)
+      .replace('{company}', company)
+      .replace('{title}', title)
+      .replace('{industry}', industry)
+      .replace('{geography}', geography)
+      .replace('{triggerEvent}', triggerEvent || t('comercial.icebreaker.not-specified', locale))
+      .replace('{linkedinNote}', linkedinNote || t('comercial.icebreaker.not-available-plural', locale))
 
     streamIcebreaker(msg)
   }
@@ -163,7 +162,7 @@ Genera las 3 variantes ahora.`
       <PageHeader
         eyebrow={t('section.comercial', locale)}
         title="✍️ Finn — Icebreaker"
-        subtitle="Genera 3 variantes de primer mensaje ultra-personalizado."
+        subtitle={t('comercial.icebreaker.subtitle', locale)}
         eyebrowColor={DEPARTMENT_METADATA.comercial.color}
       />
 
@@ -173,13 +172,13 @@ Genera las 3 variantes ahora.`
           className={clsx('flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-all',
             mode === 'manual' ? 'bg-surface-hover text-ink font-medium' : 'hover:text-ink')}
           style={mode !== 'manual' ? { color: 'var(--text-secondary)' } : undefined}>
-          <Zap size={12} /> Entrada manual
+          <Zap size={12} /> {t('comercial.icebreaker.manual-entry', locale)}
         </button>
         <button onClick={() => setMode('from-lead')}
           className={clsx('flex items-center gap-2 px-4 py-2 rounded-lg text-xs transition-all',
             mode === 'from-lead' ? 'bg-surface-hover text-ink font-medium' : 'hover:text-ink')}
           style={mode !== 'from-lead' ? { color: 'var(--text-secondary)' } : undefined}>
-          <Users size={12} /> Desde pipeline
+          <Users size={12} /> {t('comercial.icebreaker.from-pipeline', locale)}
           {hotLeads.length > 0 && (
             <span className="bg-red-500/20 text-red-400 text-[10px] px-1.5 rounded-full">{hotLeads.length}</span>
           )}
@@ -191,12 +190,12 @@ Genera las 3 variantes ahora.`
         <div className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
-              { label: 'Nombre *', field: 'firstName' as const, placeholder: 'Carlos' },
-              { label: 'Apellido', field: 'lastName' as const, placeholder: 'García' },
-              { label: 'Empresa *', field: 'company' as const, placeholder: 'Acme Corp' },
-              { label: 'Cargo', field: 'title' as const, placeholder: 'Head of Growth' },
-              { label: 'Industria', field: 'industry' as const, placeholder: 'SaaS B2B' },
-              { label: 'Geografía', field: 'geography' as const, placeholder: 'Madrid, España' },
+              { label: t('comercial.icebreaker.label-first-name', locale), field: 'firstName' as const, placeholder: 'Carlos' },
+              { label: t('comercial.icebreaker.label-last-name', locale), field: 'lastName' as const, placeholder: 'García' },
+              { label: t('comercial.icebreaker.label-company-required', locale), field: 'company' as const, placeholder: 'Acme Corp' },
+              { label: t('comercial.icebreaker.label-title', locale), field: 'title' as const, placeholder: 'Head of Growth' },
+              { label: t('comercial.icebreaker.label-industry', locale), field: 'industry' as const, placeholder: 'SaaS B2B' },
+              { label: t('comercial.icebreaker.label-geography', locale), field: 'geography' as const, placeholder: 'Madrid, España' },
             ].map(({ label, field, placeholder }) => (
               <div key={field} className="card p-3">
                 <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>{label}</label>
@@ -206,15 +205,15 @@ Genera las 3 variantes ahora.`
             ))}
           </div>
           <div className="card p-4">
-            <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>Evento trigger (opcional)</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icebreaker.trigger-event-optional-label', locale)}</label>
             <input value={manualForm.triggerEvent} onChange={e => f('triggerEvent', e.target.value)}
-              placeholder="Ej: Acaban de levantar una ronda Serie A de $5M"
+              placeholder={t('comercial.icebreaker.trigger-placeholder', locale)}
               className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
-            <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>Notas LinkedIn</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icebreaker.linkedin-notes-label', locale)}</label>
             <textarea value={manualForm.linkedinNote} onChange={e => f('linkedinNote', e.target.value)}
-              placeholder="Ej: Publicó sobre IA la semana pasada..."
+              placeholder={t('comercial.icebreaker.linkedin-placeholder', locale)}
               rows={3} className="w-full bg-transparent text-sm text-ink outline-none resize-none leading-relaxed" style={{ color: 'var(--text-primary)' }} />
           </div>
           <button onClick={generateManual} disabled={!manualValid || generating}
@@ -223,8 +222,8 @@ Genera las 3 variantes ahora.`
               generating ? 'bg-surface-hover' : 'bg-amber-400 text-black'
             )}>
             {generating
-              ? <><Loader2 size={16} className="animate-spin text-ink" /><span className="text-ink">Finn escribiendo…</span></>
-              : <><Zap size={16} /> Generar 3 variantes con Finn</>}
+              ? <><Loader2 size={16} className="animate-spin text-ink" /><span className="text-ink">{t('comercial.icebreaker.generating', locale)}</span></>
+              : <><Zap size={16} /> {t('comercial.icebreaker.generate-with-finn', locale)}</>}
           </button>
         </div>
       )}
@@ -234,19 +233,19 @@ Genera las 3 variantes ahora.`
         <div className="space-y-5">
           {hotLeads.length === 0 ? (
             <div className="card py-16 text-center">
-              <p className="text-ink-muted text-sm mb-2">No hay leads hot (≥75) en el pipeline.</p>
-              <p className="text-ink-muted text-xs">Usa Rex para descubrir leads o la entrada manual.</p>
+              <p className="text-ink-muted text-sm mb-2">{t('comercial.icebreaker.no-hot-leads', locale)}</p>
+              <p className="text-ink-muted text-xs">{t('comercial.icebreaker.no-hot-leads-cta', locale)}</p>
             </div>
           ) : (
             <>
               <div className="card p-5">
-                <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>Selecciona un lead hot</label>
+                <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icebreaker.select-hot-lead', locale)}</label>
                 <select value={selectedId} onChange={e => { setSelectedId(e.target.value); setRawText(''); setVariants([]) }}
                   className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                  <option value="">— Elige un lead —</option>
+                  <option value="">{t('comercial.icebreaker.choose-lead-option', locale)}</option>
                   {hotLeads.map(l => (
                     <option key={l.id} value={l.id}>
-                      🔥 {l.hot_score} · {l.company_name ?? 'Sin empresa'} — {l.first_name ?? ''} {l.last_name ?? ''}
+                      🔥 {l.hot_score} · {l.company_name ?? t('common.no-company', locale)} — {l.first_name ?? ''} {l.last_name ?? ''}
                     </option>
                   ))}
                 </select>
@@ -254,13 +253,13 @@ Genera las 3 variantes ahora.`
 
               {selected && (
                 <div className="card p-5 space-y-3">
-                  <p className="text-[11px] text-ink-muted uppercase tracking-wider">Contexto del lead</p>
+                  <p className="text-[11px] text-ink-muted uppercase tracking-wider">{t('comercial.icebreaker.lead-context', locale)}</p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
                     {[
-                      { label: 'Empresa', val: selected.company_name },
-                      { label: 'Cargo', val: selected.title },
-                      { label: 'Industria', val: selected.industry },
-                      { label: 'Geografía', val: selected.geography },
+                      { label: t('comercial.icebreaker.label-company', locale), val: selected.company_name },
+                      { label: t('comercial.icebreaker.label-title', locale), val: selected.title },
+                      { label: t('comercial.icebreaker.label-industry', locale), val: selected.industry },
+                      { label: t('comercial.icebreaker.label-geography', locale), val: selected.geography },
                     ].map(({ label, val }) => (
                       <div key={label}>
                         <p className="text-[11px] mb-0.5" style={{ color: 'var(--text-tertiary)' }}>{label}</p>
@@ -270,13 +269,13 @@ Genera las 3 variantes ahora.`
                   </div>
                   {selected.trigger_event && (
                     <div className="rounded-lg p-3" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                      <p className="text-[11px] mb-1 text-amber-400/70">Trigger event</p>
+                      <p className="text-[11px] mb-1 text-amber-400/70">{t('comercial.icebreaker.trigger-event-heading', locale)}</p>
                       <p className="text-sm text-ink-secondary">{selected.trigger_event}</p>
                     </div>
                   )}
                   {selected.icebreaker_used && (
                     <div className="rounded-lg p-3 border border-emerald-400/15" style={{ background: 'var(--bg-page)' }}>
-                      <p className="text-[11px] mb-1 text-emerald-400/60">Icebreaker guardado</p>
+                      <p className="text-[11px] mb-1 text-emerald-400/60">{t('comercial.icebreaker.saved-label', locale)}</p>
                       <p className="text-sm text-ink-secondary italic">{selected.icebreaker_used}</p>
                     </div>
                   )}
@@ -286,8 +285,8 @@ Genera las 3 variantes ahora.`
               <button onClick={generateFromLead} disabled={!selectedId || generating}
                 className="w-full py-3 rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
                 {generating
-                  ? <><Loader2 size={16} className="animate-spin" /> Finn escribiendo…</>
-                  : <><Zap size={16} /> Generar 3 variantes</>}
+                  ? <><Loader2 size={16} className="animate-spin" /> {t('comercial.icebreaker.generating', locale)}</>
+                  : <><Zap size={16} /> {t('comercial.icebreaker.generate-3-variants', locale)}</>}
               </button>
             </>
           )}
@@ -298,7 +297,7 @@ Genera las 3 variantes ahora.`
       {(rawText || generating) && (
         <div className="card p-5 mt-4">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>✍️ Finn — {displayVariants.length > 1 ? '3 Variantes' : 'Resultado'}</p>
+            <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>✍️ Finn — {displayVariants.length > 1 ? t('comercial.icebreaker.label-variants', locale) : t('comercial.icebreaker.label-result', locale)}</p>
             {generating && <Loader2 size={12} className="animate-spin" style={{ color: 'var(--text-tertiary)' }} />}
           </div>
 
@@ -313,7 +312,7 @@ Genera las 3 variantes ahora.`
                       activeTab === i ? 'bg-amber-400/15 text-amber-400 border-amber-400/25' : 'hover:text-ink border-transparent'
                     )}
                     style={activeTab !== i ? { color: 'var(--text-secondary)' } : undefined}>
-                    {VARIANT_LABELS[i] ?? `Variante ${i + 1}`}
+                    {VARIANT_LABELS[i] ?? t('comercial.icebreaker.variant-fallback', locale).replace('{n}', String(i + 1))}
                   </button>
                 ))}
               </div>
@@ -329,7 +328,7 @@ Genera las 3 variantes ahora.`
               <div className="flex gap-2">
                 <button onClick={() => copy(displayVariants[activeTab])}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] border transition-all hover:text-ink" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)' }}>
-                  {copied ? <><Check size={11} className="text-emerald-400" /> Copiado</> : <><Copy size={11} /> Copiar</>}
+                  {copied ? <><Check size={11} className="text-emerald-400" /> {t('comercial.icebreaker.copied', locale)}</> : <><Copy size={11} /> {t('common.copy', locale)}</>}
                 </button>
                 {selected && (
                   <button onClick={() => saveVariant(displayVariants[activeTab])}
@@ -339,12 +338,12 @@ Genera las 3 variantes ahora.`
                         ? 'text-green-400 border border-green-400/20 bg-green-400/8 cursor-default'
                         : 'text-amber-400 border border-amber-400/25 bg-amber-400/10 hover:bg-amber-400/15'
                     )}>
-                    {saved ? <><Check size={11} /> Guardado en lead</> : 'Usar esta variante →'}
+                    {saved ? <><Check size={11} /> {t('comercial.icebreaker.saved-in-lead', locale)}</> : t('comercial.icebreaker.use-this-variant', locale)}
                   </button>
                 )}
                 <button onClick={mode === 'from-lead' ? generateFromLead : generateManual}
                   className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)' }}>
-                  <RefreshCw size={11} /> Regenerar
+                  <RefreshCw size={11} /> {t('comercial.icebreaker.regenerate', locale)}
                 </button>
               </div>
             </>

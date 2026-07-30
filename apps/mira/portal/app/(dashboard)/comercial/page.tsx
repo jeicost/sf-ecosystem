@@ -15,12 +15,12 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import type { AgentStatus } from '@/lib/agent-meta'
 
-const COMERCIAL_META: Record<string, { produces: string; href: string }> = {
-  'lead-scout': { produces: 'Qualified lead list',      href: '/comercial/discovery'  },
-  'icp-scorer': { produces: 'ICP score 0-100',          href: '/comercial/scoring'    },
-  'icebreaker-writer': { produces: 'Personalized icebreaker',  href: '/comercial/icebreaker' },
-  'reply-qualifier': { produces: 'BANT qualification',       href: '/comercial/qualify'    },
-  'proposal-writer': { produces: 'Closed proposal',          href: '/comercial/proposals'  },
+const COMERCIAL_META: Record<string, { producesKey: string; href: string }> = {
+  'lead-scout': { producesKey: 'comercial.agent-meta.lead-scout-produces',      href: '/comercial/discovery'  },
+  'icp-scorer': { producesKey: 'comercial.agent-meta.icp-scorer-produces',          href: '/comercial/scoring'    },
+  'icebreaker-writer': { producesKey: 'comercial.agent-meta.icebreaker-writer-produces',  href: '/comercial/icebreaker' },
+  'reply-qualifier': { producesKey: 'comercial.agent-meta.reply-qualifier-produces',       href: '/comercial/qualify'    },
+  'proposal-writer': { producesKey: 'comercial.agent-meta.proposal-writer-produces',          href: '/comercial/proposals'  },
 }
 
 const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
@@ -60,7 +60,7 @@ export default function ComercialPage() {
 
       <AgentPipelineHeader
         steps={PIPELINE_STEPS}
-        finalOutput="Closed deal"
+        finalOutput={t('comercial.dept.final-output', locale)}
         accentColor="#EF4444"
       />
 
@@ -72,7 +72,7 @@ export default function ComercialPage() {
         metaByAgentId={Object.fromEntries(
           COMERCIAL_DEPT_AGENTS.map((agent) => [
             agent.id,
-            { produces: COMERCIAL_META[agent.id]?.produces },
+            { produces: COMERCIAL_META[agent.id] ? t(COMERCIAL_META[agent.id].producesKey, locale) : undefined },
           ])
         )}
         hrefFn={(id) => COMERCIAL_META[id]?.href ?? `/agent/${id}`}

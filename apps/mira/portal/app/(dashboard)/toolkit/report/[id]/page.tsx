@@ -3,9 +3,12 @@
 import { use, useEffect, useState, useRef } from 'react'
 import { getTheme } from '@/lib/theme'
 import Link from 'next/link'
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 
 export default function ToolkitReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
+  const { locale } = useLocaleContext()
   const [mode, setMode] = useState<'report' | 'deck'>('report')
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading')
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
@@ -46,7 +49,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       setRetryKey((k) => k + 1) // recargar el informe revisado
     } else {
       setRefineState('error')
-      setRefineMsg(data?.error || 'No se pudo refinar')
+      setRefineMsg(data?.error || t('toolkit.report.refine-error-default', locale))
     }
   }
   const [queueMsg, setQueueMsg] = useState<string | null>(null)
@@ -67,7 +70,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       if (data.driveUrl) window.open(data.driveUrl, '_blank', 'noopener')
     } else {
       setSlidesState('error')
-      setSlidesMsg(data?.error || 'No se pudo crear la presentación')
+      setSlidesMsg(data?.error || t('toolkit.report.slides-error-default', locale))
     }
   }
 
@@ -83,10 +86,14 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
     const data = await res?.json().catch(() => null)
     if (res?.ok && data?.success) {
       setQueueState('sent')
-      setQueueMsg(data.already ? 'Ya estaban en la Cola — no se duplican.' : data.message || `${data.sent} enviadas`)
+      setQueueMsg(
+        data.already
+          ? t('toolkit.report.queue-already', locale)
+          : data.message || t('toolkit.report.queue-sent-count', locale).replace('{n}', String(data.sent))
+      )
     } else {
       setQueueState('error')
-      setQueueMsg(data?.error || 'No se pudo enviar a la Cola')
+      setQueueMsg(data?.error || t('toolkit.report.queue-error-default', locale))
     }
   }
 
@@ -110,7 +117,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
         body: JSON.stringify({ queue_id: id, outcome }),
       }).catch(() => null)
       setFbState(res?.ok ? 'sent' : 'error')
-      if (res && !res.ok) setFbMsg((await res.json().catch(() => null))?.error || 'Error')
+      if (res && !res.ok) setFbMsg((await res.json().catch(() => null))?.error || t('toolkit.report.generic-error-fallback', locale))
     }
   }
 
@@ -124,7 +131,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
     if (res?.ok) setFbState('sent')
     else {
       setFbState('error')
-      setFbMsg((await res?.json().catch(() => null))?.error || 'Error')
+      setFbMsg((await res?.json().catch(() => null))?.error || t('toolkit.report.generic-error-fallback', locale))
     }
   }
 
@@ -142,14 +149,14 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       const data = await res.json().catch(() => null)
       if (!res.ok || !data?.success) {
         setDriveState('error')
-        setDriveMsg(data?.error || 'No se pudo guardar en Drive')
+        setDriveMsg(data?.error || t('toolkit.report.drive-error-default', locale))
         return
       }
       setDriveState('saved')
       if (data.driveUrl) window.open(data.driveUrl, '_blank', 'noopener')
     } catch {
       setDriveState('error')
-      setDriveMsg('No se pudo conectar con el servidor')
+      setDriveMsg(t('toolkit.report.connection-error', locale))
     }
   }
 
@@ -170,14 +177,14 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           setStatus('ready')
         } else {
           const body = await res.json().catch(() => null)
-          setErrorMsg(body?.error || `Error ${res.status}`)
+          setErrorMsg(body?.error || t('toolkit.report.http-error', locale).replace('{status}', String(res.status)))
           setStatus('error')
         }
         controller.abort()
       })
       .catch((err) => {
         if (err?.name !== 'AbortError') {
-          setErrorMsg('No se pudo conectar con el servidor')
+          setErrorMsg(t('toolkit.report.connection-error', locale))
           setStatus('error')
         }
       })
@@ -191,22 +198,22 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
           href="/toolkit"
           className="text-sm text-ink-secondary hover:text-ink transition-colors shrink-0"
         >
-          ← Volver a Business Reports
+          {t('toolkit.report.back-link', locale)}
         </Link>
         <div className="flex items-center gap-2">
           <button
             onClick={() => setRefineOpen((v) => !v)}
             className={`text-sm px-3 py-1.5 rounded transition-colors ${refineOpen ? 'bg-ink text-page font-medium' : 'bg-surface-hover text-ink hover:opacity-80'}`}
-            title="Regenerar el informe con una instrucción"
+            title={t('toolkit.report.refine-tooltip', locale)}
           >
-            ✨ Refinar
+            {t('toolkit.report.refine-button', locale)}
           </button>
           <button
             onClick={() => setDocTheme(docTheme === 'dark' ? 'light' : 'dark')}
             className="text-sm px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
-            title="Tema del documento (claro/oscuro)"
+            title={t('toolkit.report.theme-tooltip', locale)}
           >
-            {docTheme === 'dark' ? '🌙 Oscuro' : '☀️ Claro'}
+            {docTheme === 'dark' ? t('toolkit.report.theme-dark', locale) : t('toolkit.report.theme-light', locale)}
           </button>
           <button
             onClick={() => setMode(mode === 'deck' ? 'report' : 'deck')}
@@ -214,29 +221,29 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               mode === 'deck' ? 'bg-ink text-page font-medium' : 'bg-surface-hover text-ink hover:opacity-80'
             }`}
           >
-            🎬 {mode === 'deck' ? 'Ver informe' : 'Modo presentación'}
+            🎬 {mode === 'deck' ? t('toolkit.report.view-report', locale) : t('toolkit.report.presentation-mode', locale)}
           </button>
           {mode === 'deck' && (
             <button
               onClick={() => iframeRef.current?.requestFullscreen?.()}
               className="text-sm px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
             >
-              ⛶ Pantalla completa
+              {t('toolkit.report.fullscreen', locale)}
             </button>
           )}
           <a
             href={`/api/toolkit/export?queue_id=${id}${mode === 'deck' ? '&template=deck' : ''}&theme=${docTheme}`}
             className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
           >
-            📥 Descargar HTML
+            {t('toolkit.download-html', locale)}
           </a>
           {toolSlug === 'brand-book' && (
             <a
               href={`/api/toolkit/export?queue_id=${id}&format=voice-guide`}
               className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
-              title="One-pager A4 de la guía de voz, listo para imprimir"
+              title={t('toolkit.report.voice-guide-tooltip', locale)}
             >
-              📄 Voice Guide A4
+              {t('toolkit.report.voice-guide-button', locale)}
             </a>
           )}
           {(toolSlug === 'monthly-content-system' || toolSlug === 'brand-book') && (
@@ -244,9 +251,9 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               onClick={createSlides}
               disabled={slidesState === 'creating' || slidesState === 'done'}
               className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
-              title="Crea una presentación de Google Slides editable en el Drive del cliente"
+              title={t('toolkit.report.slides-tooltip', locale)}
             >
-              {slidesState === 'creating' ? '⏳ Creando Slides…' : slidesState === 'done' ? '✓ Slides en Drive' : '📊 Crear Google Slides'}
+              {slidesState === 'creating' ? t('toolkit.report.slides-creating', locale) : slidesState === 'done' ? t('toolkit.report.slides-done', locale) : t('toolkit.report.slides-create', locale)}
             </button>
           )}
           {toolSlug === 'monthly-content-system' && (
@@ -254,9 +261,9 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               onClick={sendToQueue}
               disabled={queueState === 'sending' || queueState === 'sent'}
               className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
-              title="Materializa las captions del mes en la Cola de Aprobación con su fecha"
+              title={t('toolkit.report.queue-tooltip', locale)}
             >
-              {queueState === 'sending' ? '⏳ Enviando…' : queueState === 'sent' ? '✓ En la Cola' : '📤 Enviar captions a la Cola'}
+              {queueState === 'sending' ? t('toolkit.report.queue-sending', locale) : queueState === 'sent' ? t('toolkit.report.queue-done', locale) : t('toolkit.report.queue-send', locale)}
             </button>
           )}
           <button
@@ -264,7 +271,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             disabled={driveState === 'saving' || driveState === 'saved'}
             className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
           >
-            {driveState === 'saving' ? '⏳ Guardando…' : driveState === 'saved' ? '✓ En tu Drive' : '📂 Guardar en Drive'}
+            {driveState === 'saving' ? t('toolkit.report.drive-saving', locale) : driveState === 'saved' ? t('toolkit.report.drive-saved', locale) : t('toolkit.report.drive-save', locale)}
           </button>
         </div>
       </div>
@@ -280,7 +287,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             value={refineText}
             onChange={(e) => setRefineText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && runRefine()}
-            placeholder="Ej.: acorta el resumen ejecutivo y haz el plan más accionable"
+            placeholder={t('toolkit.report.refine-placeholder', locale)}
             className="flex-1 min-w-[260px] px-3 py-1.5 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs"
           />
           <button
@@ -288,7 +295,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             disabled={refineState === 'working' || !refineText.trim()}
             className="text-xs px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-50"
           >
-            {refineState === 'working' ? '⏳ Refinando…' : 'Aplicar'}
+            {refineState === 'working' ? t('toolkit.report.refine-working', locale) : t('toolkit.report.refine-apply', locale)}
           </button>
           {refineState === 'error' && refineMsg && <span className="text-xs text-amber-400">{refineMsg}</span>}
         </div>
@@ -306,7 +313,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       {/* Feedback al diseñador de documentos */}
       {status === 'ready' && fbState !== 'sent' && (
         <div className="px-4 py-2 border-b border-line bg-page shrink-0 flex items-center gap-3 flex-wrap">
-          <span className="text-xs text-ink-tertiary">¿Cómo mejorarías este documento?</span>
+          <span className="text-xs text-ink-tertiary">{t('toolkit.report.feedback-prompt', locale)}</span>
           <button
             onClick={() => sendFeedback('helpful')}
             className={`text-sm px-2 py-1 rounded transition-colors ${fbOutcome === 'helpful' ? 'bg-emerald-500/20' : 'hover:bg-surface-hover'}`}
@@ -321,7 +328,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
                 type="text"
                 value={fbNote}
                 onChange={(e) => setFbNote(e.target.value)}
-                placeholder="¿Qué cambiarías? (se usará en la próxima generación)"
+                placeholder={t('toolkit.report.feedback-note-placeholder', locale)}
                 className="flex-1 min-w-[220px] px-3 py-1.5 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs"
               />
               <button
@@ -329,7 +336,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
                 disabled={fbState === 'sending'}
                 className="text-xs px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-50"
               >
-                {fbState === 'sending' ? 'Enviando…' : 'Enviar'}
+                {fbState === 'sending' ? t('toolkit.report.feedback-sending', locale) : t('toolkit.report.feedback-send', locale)}
               </button>
             </>
           )}
@@ -338,20 +345,20 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       )}
       {fbState === 'sent' && (
         <div className="px-4 py-2 border-b border-line bg-page shrink-0 text-xs text-emerald-400">
-          ✓ Gracias — tu feedback se usará en la próxima generación.
+          {t('toolkit.report.feedback-thanks', locale)}
         </div>
       )}
       {status === 'error' ? (
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center max-w-sm">
             <div className="text-4xl mb-3">⚠️</div>
-            <p className="text-ink font-medium mb-1">No se pudo cargar el informe</p>
+            <p className="text-ink font-medium mb-1">{t('toolkit.report.load-error-title', locale)}</p>
             <p className="text-sm text-ink-tertiary mb-4">{errorMsg}</p>
             <button
               onClick={() => setRetryKey((k) => k + 1)}
               className="text-sm px-4 py-2 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
             >
-              Reintentar
+              {t('toolkit.report.retry', locale)}
             </button>
           </div>
         </div>
@@ -361,7 +368,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             <div className="absolute inset-0 flex items-center justify-center bg-page">
               <div className="text-center">
                 <div className="w-8 h-8 border-2 border-line border-t-ink rounded-full animate-spin mx-auto mb-3" />
-                <p className="text-sm text-ink-tertiary">Cargando informe…</p>
+                <p className="text-sm text-ink-tertiary">{t('toolkit.report.loading', locale)}</p>
               </div>
             </div>
           )}
@@ -370,7 +377,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               ref={iframeRef}
               src={src}
               className="absolute inset-0 w-full h-full border-0"
-              title="Reporte"
+              title={t('toolkit.report.iframe-title', locale)}
               allow="fullscreen"
             />
           )}

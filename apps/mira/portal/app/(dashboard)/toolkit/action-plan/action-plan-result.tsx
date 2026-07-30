@@ -175,13 +175,19 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* RISK MITIGATION */}
         {data.risk_mitigation && data.risk_mitigation.length > 0 && (
           <section>
-            <h2 className="text-2xl font-black text-ink uppercase mb-4">Risk Mitigation</h2>
+            <h2 className="text-2xl font-black text-ink uppercase mb-4">{t('toolkit.action-plan.risk-mitigation', locale)}</h2>
             <div className="space-y-3">
               {data.risk_mitigation.slice(0, 5).map((risk: any, idx: number) => (
                 <div key={idx} className="border-l-4 p-4 rounded-r" style={{borderColor: '#ff5a72', backgroundColor: 'rgba(255,61,87,0.05)'}}>
                   <div className="font-bold text-ink text-sm mb-1">{risk.risk}</div>
-                  <div className="text-xs text-ink-secondary mb-1">Probability: {risk.probability} | Impact: {risk.impact}</div>
-                  <div className="text-xs" style={{color: '#00e676'}}>Mitigation: {risk.mitigation}</div>
+                  <div className="text-xs text-ink-secondary mb-1">
+                    {t('toolkit.action-plan.risk-probability-impact', locale)
+                      .replace('{probability}', String(risk.probability))
+                      .replace('{impact}', String(risk.impact))}
+                  </div>
+                  <div className="text-xs" style={{color: '#00e676'}}>
+                    {t('toolkit.action-plan.risk-mitigation-label', locale).replace('{mitigation}', String(risk.mitigation))}
+                  </div>
                 </div>
               ))}
             </div>
@@ -191,9 +197,9 @@ export function ActionPlanResult({ data }: { data?: any }) {
         {/* MISSION ALIGNMENT */}
         {data.mission_alignment && (
           <div className="border-l-4 p-4 rounded-r mt-8" style={{borderColor: '#4dd9c4', backgroundColor: 'rgba(77,217,196,0.05)'}}>
-            <div className="text-xs font-bold" style={{color: '#4dd9c4'}}>✓ MISSION ALIGNMENT</div>
+            <div className="text-xs font-bold" style={{color: '#4dd9c4'}}>{t('toolkit.action-plan.mission-alignment-badge', locale)}</div>
             <div className="text-xs text-ink-secondary mt-1">
-              OKRs verified against Brand Briefing mission
+              {t('toolkit.action-plan.mission-alignment-desc', locale)}
             </div>
           </div>
         )}
@@ -201,7 +207,7 @@ export function ActionPlanResult({ data }: { data?: any }) {
 
       {/* Footer */}
       <div className="bg-page border-t border-line p-6 md:p-8 text-center text-xs text-ink-tertiary">
-        {data?.generatedAt && <div>Generated {data.generatedAt}</div>}
+        {data?.generatedAt && <div>{t('toolkit.results.generated', locale).replace('{date}', String(data.generatedAt))}</div>}
       </div>
     </div>
   )

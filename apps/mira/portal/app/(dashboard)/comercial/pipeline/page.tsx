@@ -25,9 +25,20 @@ const STAGES: { key: LeadStage; label: string; color: string }[] = [
   { key: 'lost',        label: 'Perdidos',     color: '#444' },
 ]
 
+const STAGE_LABEL_KEYS: Record<LeadStage, string> = {
+  prospected: 'comercial.pipeline.stage-prospected',
+  contacted: 'comercial.pipeline.stage-contacted',
+  replied: 'comercial.pipeline.stage-replied',
+  qualified: 'comercial.pipeline.stage-qualified',
+  proposal: 'comercial.pipeline.stage-proposal',
+  negotiation: 'comercial.pipeline.negotiation',
+  won: 'comercial.pipeline.stage-won',
+  lost: 'comercial.pipeline.stage-lost',
+}
+
 function getStageLabel(stage: LeadStage, locale: Locale): string {
-  if (stage === 'negotiation') return t('comercial.pipeline.negotiation', locale)
-  return STAGES.find(s => s.key === stage)?.label ?? stage
+  const key = STAGE_LABEL_KEYS[stage]
+  return key ? t(key, locale) : stage
 }
 
 const PIPELINE_COLS = 'id,stage,hot_score,company_name,first_name,last_name,title,industry,geography,trigger_event,icebreaker_used,email,linkedin_url,company_website,notes,bant_score,source,created_at'
@@ -98,13 +109,13 @@ export default function PipelinePage() {
   return (
     <div className="px-8 py-8">
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-ink">Pipeline Comercial</h1>
-        <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>Leads activos y su estado en el ciclo de ventas.</p>
+        <h1 className="text-2xl font-semibold text-ink">{t('comercial.pipeline.title', locale)}</h1>
+        <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary)' }}>{t('comercial.pipeline.subtitle', locale)}</p>
       </div>
 
       {/* View tabs: kanban vs. contacts already promoted to the external CRM */}
       <div className="flex gap-1 mb-6">
-        {([['pipeline', 'Pipeline'], ['crm', 'Enviados a CRM']] as const).map(([id, label]) => (
+        {([['pipeline', t('comercial.pipeline.tab-pipeline', locale)], ['crm', t('comercial.pipeline.tab-crm', locale)]] as const).map(([id, label]) => (
           <button
             key={id}
             onClick={() => setView(id)}
@@ -124,10 +135,10 @@ export default function PipelinePage() {
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 mb-8">
         {[
-          { label: 'Total leads',    value: leads.length },
-          { label: 'Hot (≥75)',      value: hotCount },
-          { label: 'Score promedio', value: avgScore },
-          { label: 'En pipeline',    value: activeCount },
+          { label: t('comercial.pipeline.stat-total', locale),        value: leads.length },
+          { label: t('comercial.pipeline.stat-hot', locale),          value: hotCount },
+          { label: t('comercial.pipeline.stat-avg-score', locale),    value: avgScore },
+          { label: t('comercial.pipeline.stat-in-pipeline', locale),  value: activeCount },
         ].map(({ label, value }) => (
           <div key={label} className="card px-4 py-3">
             <p className="text-[11px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
@@ -195,7 +206,7 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
   const [isRescoring, setIsRescoring] = useState(false)
   const currentHotScore = liveScore?.score ?? lead.hot_score
   const score = scoreLabel(currentHotScore)
-  const displayName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Sin nombre'
+  const displayName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || t('comercial.pipeline.no-name', locale)
   const stageInfo = STAGES.find(s => s.key === lead.stage)
   const stageLabel = getStageLabel(lead.stage, locale)
 
@@ -251,15 +262,15 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
       if (res.ok && data.success) {
         setCrmStatus('sent')
         setCrmMessage(data.already_promoted
-          ? `Ya estaba en CRM (${data.workspace}) — datos actualizados`
-          : `Enviado a CRM (${data.workspace})`)
+          ? t('comercial.pipeline.crm-already-sent', locale).replace('{workspace}', data.workspace)
+          : t('comercial.pipeline.crm-sent-msg', locale).replace('{workspace}', data.workspace))
       } else {
         setCrmStatus('error')
-        setCrmMessage(data.error ?? 'Error enviando a CRM')
+        setCrmMessage(data.error ?? t('comercial.pipeline.crm-error-generic', locale))
       }
     } catch {
       setCrmStatus('error')
-      setCrmMessage('Error de red enviando a CRM')
+      setCrmMessage(t('comercial.pipeline.crm-network-error', locale))
     }
   }
 
@@ -295,18 +306,18 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
             </div>
             {lead.bant_score !== null && (
               <div className="flex items-center gap-1 px-2 py-1 rounded-lg text-[10px]" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                BANT {lead.bant_score}/4
+                {t('comercial.pipeline.bant-score', locale).replace('{score}', String(lead.bant_score))}
               </div>
             )}
             <button
               onClick={handleRescore}
               disabled={isRescoring}
-              title="Recalcular score contra tu ICP actual"
+              title={t('comercial.pipeline.rescore-tooltip', locale)}
               className="ml-auto flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] transition-all hover:text-ink disabled:opacity-50"
               style={{ color: 'var(--text-tertiary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}
             >
               <RefreshCw size={11} className={isRescoring ? 'animate-spin' : ''} />
-              {isRescoring ? 'Recalculando...' : 'Recalcular'}
+              {isRescoring ? t('comercial.pipeline.recalculating', locale) : t('comercial.pipeline.recalculate', locale)}
             </button>
           </div>
           {liveScore?.reason && (
@@ -316,21 +327,21 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
 
         {/* Info */}
         <div className="px-6 py-4 space-y-4 flex-1">
-          <InfoRow label="Industria" value={lead.industry} />
+          <InfoRow label={t('comercial.pipeline.industry', locale)} value={lead.industry} />
           <InfoRow label={t('comercial.pipeline.geography', locale)} value={lead.geography} />
           <InfoRow label={t('comercial.pipeline.size', locale)} value={lead.company_size} />
-          <InfoRow label="Fuente" value={lead.source} />
+          <InfoRow label={t('comercial.pipeline.source', locale)} value={lead.source} />
 
           {lead.trigger_event && (
             <div>
-              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Trigger event</p>
+              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.pipeline.trigger-event', locale)}</p>
               <p className="text-[12px] text-ink-secondary italic">{lead.trigger_event}</p>
             </div>
           )}
 
           {lead.icebreaker_used && (
             <div>
-              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Icebreaker</p>
+              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.pipeline.icebreaker', locale)}</p>
               <p className="text-[12px] leading-relaxed rounded-lg p-3" style={{ color: 'var(--text-secondary)', background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                 {lead.icebreaker_used}
               </p>
@@ -339,7 +350,7 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
 
           {lead.notes && (
             <div>
-              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>Notas</p>
+              <p className="text-[10px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.pipeline.notes-label', locale)}</p>
               <p className="text-[12px]" style={{ color: 'var(--text-secondary)' }}>{lead.notes}</p>
             </div>
           )}
@@ -356,13 +367,13 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
           {lead.linkedin_url && (
             <a href={lead.linkedin_url} target="_blank" rel="noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-              <LinkedinIcon size={11} /> LinkedIn
+              <LinkedinIcon size={11} /> {t('comercial.pipeline.link-linkedin', locale)}
             </a>
           )}
           {lead.company_website && (
             <a href={lead.company_website} target="_blank" rel="noreferrer"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-              <ExternalLink size={11} /> Web
+              <ExternalLink size={11} /> {t('comercial.pipeline.link-website', locale)}
             </a>
           )}
         </div>
@@ -384,7 +395,7 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
             ) : (
               <Send size={13} />
             )}
-            {crmStatus === 'sent' ? 'En CRM' : crmStatus === 'sending' ? 'Enviando...' : 'Enviar a CRM →'}
+            {crmStatus === 'sent' ? t('comercial.pipeline.crm-in-crm', locale) : crmStatus === 'sending' ? t('comercial.pipeline.crm-sending', locale) : t('comercial.pipeline.crm-send-cta', locale)}
           </button>
           {crmMessage && (
             <p className="mt-2 text-[11px]" style={{ color: crmStatus === 'error' ? '#EF4444' : 'var(--text-secondary)' }}>
@@ -395,7 +406,7 @@ function LeadModal({ lead, onClose, onStageChange, locale }: {
 
         {/* Stage actions */}
         <div className="px-6 py-4" style={{ borderTopColor: 'var(--border-subtle)', borderTopWidth: '1px' }}>
-          <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Cambiar etapa</p>
+          <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.pipeline.change-stage', locale)}</p>
           <div className="flex flex-wrap gap-1.5">
             {STAGES.filter(s => s.key !== lead.stage).map(s => (
               <button

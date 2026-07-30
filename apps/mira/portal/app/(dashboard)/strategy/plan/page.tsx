@@ -8,9 +8,10 @@ import { createClient } from '@/lib/supabase'
 import { getStoredProjectId } from '@/lib/project-context'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
+import { t, Locale } from '@/lib/i18n'
 import { getActionPlanConfig } from '../../toolkit/action-plan/tool-config'
 import { ActionPlanResult } from '../../toolkit/action-plan/action-plan-result'
-import { COMPETITIVE_CONFIG } from '../../toolkit/competitive-analysis/tool-config'
+import { getCompetitiveConfig } from '../../toolkit/competitive-analysis/tool-config'
 import { CompetitiveAnalysisResult } from '../../toolkit/competitive-analysis/competitive-analysis-result'
 
 // Plan & Competitive (2026-07-28): el hub de Strategy absorbe los dos reports
@@ -48,7 +49,7 @@ function useToolHistory(clientId: string | undefined, toolSlug: string) {
   return rows
 }
 
-function HistoryList({ rows, emptyLabel }: { rows: HistoryRow[]; emptyLabel: string }) {
+function HistoryList({ rows, emptyLabel, locale }: { rows: HistoryRow[]; emptyLabel: string; locale: Locale }) {
   if (rows.length === 0) {
     return <p className="text-xs text-ink-tertiary">{emptyLabel}</p>
   }
@@ -60,7 +61,7 @@ function HistoryList({ rows, emptyLabel }: { rows: HistoryRow[]; emptyLabel: str
             href={`/toolkit/report/${r.id}`}
             className="flex items-center justify-between rounded-lg border border-line bg-surface px-4 py-2.5 text-sm text-ink transition-colors hover:bg-surface-hover"
           >
-            <span>{i === 0 ? '📌 Último informe' : 'Informe anterior'}</span>
+            <span>{i === 0 ? t('strategy.plan.history-latest', locale) : t('strategy.plan.history-previous', locale)}</span>
             <span className="font-mono text-[11px] text-ink-tertiary">
               {new Date(r.created_at).toLocaleDateString()}
             </span>
@@ -98,7 +99,7 @@ export default function StrategyPlanPage() {
       })
       if (!res.ok) {
         const error = await res.json()
-        throw new Error(error.error || 'Failed to generate')
+        throw new Error(error.error || t('strategy.plan.generate-error-fallback', locale))
       }
       return await res.json()
     }
@@ -107,12 +108,12 @@ export default function StrategyPlanPage() {
     <div className="pb-10">
       <div className="px-8 pt-8 max-w-4xl mx-auto">
         <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color: 'rgba(99,102,241,0.7)' }}>
-          Strategy · Plan &amp; Competitive
+          {t('strategy.plan.eyebrow', locale)}
         </p>
         <div className="flex gap-2">
           {([
-            ['plan', '📅 Plan 30/60/90'],
-            ['competencia', '⚔️ Competencia'],
+            ['plan', t('strategy.plan.tab-plan', locale)],
+            ['competencia', t('strategy.plan.tab-competencia', locale)],
           ] as Array<[Tab, string]>).map(([key, label]) => (
             <button
               key={key}
@@ -137,28 +138,29 @@ export default function StrategyPlanPage() {
         />
       ) : (
         <ToolRunnerPage
-          config={COMPETITIVE_CONFIG}
+          config={getCompetitiveConfig(locale)}
           onGenerate={makeGenerate('competitive-analysis')}
           resultComponent={CompetitiveAnalysisResult}
         />
       )}
 
       <div className="px-8 max-w-4xl mx-auto mt-2">
-        <h2 className="text-sm font-semibold text-ink mb-3">Historial</h2>
+        <h2 className="text-sm font-semibold text-ink mb-3">{t('strategy.plan.history-title', locale)}</h2>
         <HistoryList
           rows={history}
+          locale={locale}
           emptyLabel={
             tab === 'plan'
-              ? 'Todavía no hay planes generados para este cliente.'
-              : 'Todavía no hay análisis de competencia para este cliente.'
+              ? t('strategy.plan.history-empty-plan', locale)
+              : t('strategy.plan.history-empty-competencia', locale)
           }
         />
       </div>
 
       <div className="px-8 max-w-4xl mx-auto mt-12 border-t border-line pt-10">
-        <h2 className="text-sm font-semibold text-ink mb-1">¿Prefieres hablarlo?</h2>
+        <h2 className="text-sm font-semibold text-ink mb-1">{t('strategy.plan.chat-title', locale)}</h2>
         <p className="text-xs text-ink-tertiary mb-4">
-          Strategos conoce tu Brand Brain y tus informes — úsalo para iterar el plan o estresar una decisión antes de generarla.
+          {t('strategy.plan.chat-subtitle', locale)}
         </p>
         <AgentWorkspace
           role="strategos"
@@ -166,14 +168,14 @@ export default function StrategyPlanPage() {
           agentEmoji="🔭"
           color="#6366F1"
           gradient="from-indigo-500 to-violet-700"
-          title="Trabaja el plan con Strategos"
-          description="Cuéntale dónde estás y a dónde quieres llegar."
-          placeholder="Ej.: tengo 3 locales y quiero abrir el cuarto en 6 meses. ¿Qué tiene que ser verdad para que funcione?"
+          title={t('strategy.plan.agent-title', locale)}
+          description={t('strategy.plan.agent-description', locale)}
+          placeholder={t('strategy.plan.agent-placeholder', locale)}
           quickPrompts={[
-            { label: '📋 Plan 90 días conversado', prompt: 'Genera un plan estratégico de 90 días para mi negocio: diagnóstico, 3-5 iniciativas priorizadas por impacto, KPIs semanales y timeline.' },
-            { label: '🔍 Diagnóstico completo', prompt: 'Hazme un diagnóstico completo del negocio: fortalezas, debilidades, oportunidades y amenazas. Dame un semáforo verde/amarillo/rojo por área.' },
-            { label: '🎯 Priorizar iniciativas', prompt: 'Tengo varias iniciativas en mente y no sé cuál priorizar. Ayúdame a rankearlas por impacto potencial vs. esfuerzo.' },
-            { label: '⚔️ Estresar mi posicionamiento', prompt: 'Haz de abogado del diablo: ataca mi posicionamiento actual como lo haría mi competidor más agresivo y dime dónde soy vulnerable.' },
+            { label: t('strategy.plan.quick-prompt-1-label', locale), prompt: t('strategy.plan.quick-prompt-1-text', locale) },
+            { label: t('strategy.plan.quick-prompt-2-label', locale), prompt: t('strategy.plan.quick-prompt-2-text', locale) },
+            { label: t('strategy.plan.quick-prompt-3-label', locale), prompt: t('strategy.plan.quick-prompt-3-text', locale) },
+            { label: t('strategy.plan.quick-prompt-4-label', locale), prompt: t('strategy.plan.quick-prompt-4-text', locale) },
           ]}
         />
       </div>

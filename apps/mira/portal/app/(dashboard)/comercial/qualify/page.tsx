@@ -10,17 +10,24 @@ import { clsx } from 'clsx'
 import PageHeader from '@/components/ui/PageHeader'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 
-const CLASS_LABEL: Record<string, { label: string; cls: string }> = {
-  interested:     { label: 'Interesado',       cls: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/25' },
-  not_now:        { label: 'No ahora',          cls: 'text-amber-400 bg-amber-400/10 border-amber-400/25' },
-  not_interested: { label: 'No interesado',     cls: 'text-red-400 bg-red-400/10 border-red-400/25' },
-  referral:       { label: 'Deriva a otro',     cls: 'text-violet-400 bg-violet-400/10 border-violet-400/25' },
-}
-
 export default function QualifyPage() {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id
   const { locale } = useLocaleContext()
+
+  const CLASS_LABEL: Record<string, { label: string; cls: string }> = {
+    interested:     { label: t('comercial.qualify.class-interested', locale),       cls: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/25' },
+    not_now:        { label: t('comercial.qualify.class-not-now', locale),          cls: 'text-amber-400 bg-amber-400/10 border-amber-400/25' },
+    not_interested: { label: t('comercial.qualify.class-not-interested', locale),   cls: 'text-red-400 bg-red-400/10 border-red-400/25' },
+    referral:       { label: t('comercial.qualify.class-referral', locale),        cls: 'text-violet-400 bg-violet-400/10 border-violet-400/25' },
+  }
+
+  const BANT_LABELS: Record<string, string> = {
+    budget: t('comercial.qualify.bant-budget', locale),
+    authority: t('comercial.qualify.bant-authority', locale),
+    need: t('comercial.qualify.bant-need', locale),
+    timeline: t('comercial.qualify.bant-timeline', locale),
+  }
 
   const [leads, setLeads]           = useState<Lead[]>([])
   const [selectedId, setSelectedId] = useState('')
@@ -77,7 +84,7 @@ export default function QualifyPage() {
         setOutput(full)
       }
     } catch {
-      setOutput('Error al analizar. Inténtalo de nuevo.')
+      setOutput(t('comercial.qualify.error-analyze', locale))
     } finally {
       setAnalyzing(false)
     }
@@ -96,7 +103,7 @@ export default function QualifyPage() {
       <PageHeader
         eyebrow={t('section.comercial', locale)}
         title="💬 Quinn — Qualify"
-        subtitle="Analiza respuestas de outreach con BANT y genera el follow-up perfecto."
+        subtitle={t('comercial.qualify.subtitle', locale)}
         eyebrowColor={DEPARTMENT_METADATA.comercial.color}
       />
 
@@ -107,15 +114,15 @@ export default function QualifyPage() {
         </label>
         {loadingLeads ? (
           <div className="flex items-center gap-2 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-            <Loader2 size={12} className="animate-spin" /> Cargando leads...
+            <Loader2 size={12} className="animate-spin" /> {t('comercial.qualify.loading-leads', locale)}
           </div>
         ) : (
           <select value={selectedId} onChange={e => setSelectedId(e.target.value)}
             className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none appearance-none" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-            <option value="">— Sin lead específico —</option>
+            <option value="">{t('comercial.qualify.no-specific-lead', locale)}</option>
             {leads.map(l => (
               <option key={l.id} value={l.id}>
-                {l.company_name ?? 'Sin empresa'} — {[l.first_name, l.last_name].filter(Boolean).join(' ') || 'Sin nombre'}
+                {l.company_name ?? t('common.no-company', locale)} — {[l.first_name, l.last_name].filter(Boolean).join(' ') || t('comercial.qualify.no-name', locale)}
                 {l.title ? ` (${l.title})` : ''}
               </option>
             ))}
@@ -126,12 +133,12 @@ export default function QualifyPage() {
       {/* Reply input */}
       <div className="card p-5 mb-4">
         <label className="block text-[11px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-secondary)' }}>
-          Respuesta recibida <span className="text-red-400">*</span>
+          {t('comercial.qualify.reply-received-label', locale)} <span className="text-red-400">*</span>
         </label>
         <textarea
           value={replyText}
           onChange={e => setReplyText(e.target.value)}
-          placeholder="Pega aquí el mensaje que recibiste del prospect..."
+          placeholder={t('comercial.qualify.reply-placeholder', locale)}
           rows={5}
           className="w-full bg-transparent text-sm text-ink outline-none resize-none leading-relaxed"
           style={{ color: 'var(--text-primary)' }}
@@ -146,8 +153,8 @@ export default function QualifyPage() {
             : 'bg-surface text-ink-muted border border-line-subtle cursor-not-allowed'
         )}>
         {analyzing
-          ? <><Loader2 size={15} className="animate-spin" /> Quinn analizando...</>
-          : <><Send size={15} /> Analizar con Quinn</>}
+          ? <><Loader2 size={15} className="animate-spin" /> {t('comercial.qualify.analyzing', locale)}</>
+          : <><Send size={15} /> {t('comercial.qualify.analyze-btn', locale)}</>}
       </button>
 
       {/* Output */}
@@ -164,7 +171,7 @@ export default function QualifyPage() {
                     </div>
                     {parsed.bant_score !== undefined && (
                       <div className="px-2.5 py-1 rounded-lg text-[11px]" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                        BANT {parsed.bant_score}/4
+                        {t('comercial.qualify.bant-score-label', locale).replace('{score}', String(parsed.bant_score))}
                       </div>
                     )}
                   </div>
@@ -178,7 +185,7 @@ export default function QualifyPage() {
                       const val = parsed[`bant_${k}`]
                       return (
                         <div key={k} className="text-center">
-                          <p className="text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{k}</p>
+                          <p className="text-[9px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-tertiary)' }}>{BANT_LABELS[k]}</p>
                           <div className={clsx(
                             'text-[11px] font-semibold px-2 py-1 rounded',
                             val === 'yes' ? 'text-green-400 bg-green-400/10' : val === 'no' ? 'text-red-400 bg-red-400/10' : 'text-ink-muted bg-surface'
@@ -195,7 +202,7 @@ export default function QualifyPage() {
               {/* Next move */}
               {parsed.next_move && (
                 <div className="card p-4">
-                  <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Siguiente movimiento</p>
+                  <p className="text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.qualify.next-move', locale)}</p>
                   <p className="text-sm text-ink">{parsed.next_move}</p>
                 </div>
               )}
@@ -204,10 +211,10 @@ export default function QualifyPage() {
               {parsed.suggested_reply && (
                 <div className="card p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>Mensaje sugerido</p>
+                    <p className="text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.qualify.suggested-message', locale)}</p>
                     <button onClick={() => copy(parsed.suggested_reply)}
                       className="flex items-center gap-1 text-[10px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)' }}>
-                      {copied ? <><Check size={10} className="text-green-400" /> Copiado</> : <><Copy size={10} /> Copiar</>}
+                      {copied ? <><Check size={10} className="text-green-400" /> {t('common.copied', locale)}</> : <><Copy size={10} /> {t('common.copy', locale)}</>}
                     </button>
                   </div>
                   <p className="text-sm leading-relaxed rounded-lg p-3" style={{ color: 'var(--text-primary)', background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>

@@ -19,6 +19,7 @@ function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
   onRemove?: (i: number) => void
   onAdd?: (val: string) => void
 }) {
+  const { locale } = useLocaleContext()
   const [input, setInput] = useState('')
   const list = items ?? []
 
@@ -40,12 +41,12 @@ function ChipList({ items, color = '#555', editing, onRemove, onAdd }: {
           )}
         </span>
       ))}
-      {list.length === 0 && !editing && <p className="text-[11px] italic" style={{ color: 'var(--text-tertiary)' }}>No definido</p>}
+      {list.length === 0 && !editing && <p className="text-[11px] italic" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.icp.not-defined', locale)}</p>}
       {editing && onAdd && (
         <div className="flex items-center gap-1">
           <input value={input} onChange={e => setInput(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
-            placeholder="Añadir..."
+            placeholder={t('comercial.icp.add-placeholder', locale)}
             className="rounded-full px-2.5 py-1 text-[11px] text-ink focus:outline-none w-28" style={{ background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }} />
           <button onClick={handleAdd} className="text-ink-muted hover:text-ink transition-colors">
             <Plus size={11} />
@@ -139,12 +140,12 @@ export default function IcpCriteriaPanel() {
 
   const view = editing ? draft : icp
   const ARRAY_FIELDS: { field: keyof EditableIcp; label: string; color: string }[] = [
-    { field: 'industries',              label: 'Industrias objetivo',       color: '#8B5CF6' },
+    { field: 'industries',              label: t('comercial.icp.industries', locale),       color: '#8B5CF6' },
     { field: 'company_sizes',           label: t('comercial.icp.company-sizes', locale),        color: '#3B82F6' },
-    { field: 'geographies',             label: 'Geografías',                color: '#06B6D4' },
-    { field: 'job_titles',              label: 'Cargos objetivo',           color: '#F59E0B' },
-    { field: 'pain_points',             label: 'Pain points detectados',    color: '#10B981' },
-    { field: 'trigger_events',          label: 'Trigger events',            color: '#F97316' },
+    { field: 'geographies',             label: t('comercial.icp.geographies', locale),                color: '#06B6D4' },
+    { field: 'job_titles',              label: t('comercial.icp.job-titles', locale),           color: '#F59E0B' },
+    { field: 'pain_points',             label: t('comercial.icp.pain-points', locale),    color: '#10B981' },
+    { field: 'trigger_events',          label: t('comercial.icp.trigger-events', locale),            color: '#F97316' },
     { field: 'decision_maker_signals',  label: t('comercial.icp.decision-maker-signals', locale), color: '#EC4899' },
     { field: 'disqualifiers',           label: t('comercial.icp.disqualifiers', locale), color: '#EF4444' },
   ]
@@ -153,25 +154,25 @@ export default function IcpCriteriaPanel() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-          {(view as IcpProfile | null)?.icp_name ?? 'Ideal Customer Profile'} — criterios de scoring para Rex y Vera.
+          {(view as IcpProfile | null)?.icp_name ?? t('comercial.icp.default-name', locale)} {t('comercial.icp.subtitle-suffix', locale)}
         </p>
         <div className="flex gap-2">
           {editing ? (
             <>
               <button onClick={() => setEditing(false)}
                 className="px-4 py-2 text-xs rounded-lg hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                Cancelar
+                {t('comercial.icp.cancel', locale)}
               </button>
               <button onClick={save} disabled={saving}
                 className="flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 border border-[#EF4444]/25 transition-all">
                 {saving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
-                Guardar
+                {t('comercial.icp.save', locale)}
               </button>
             </>
           ) : (
             <button onClick={startEdit}
               className="flex items-center gap-1.5 px-4 py-2 text-xs rounded-lg hover:text-ink transition-all" style={{ background: 'var(--bg-surface)', color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-              <Edit2 size={12} /> Editar ICP
+              <Edit2 size={12} /> {t('comercial.icp.edit-icp', locale)}
             </button>
           )}
         </div>
@@ -181,15 +182,15 @@ export default function IcpCriteriaPanel() {
       {editing && draft && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="card p-4">
-            <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>Nombre del ICP</label>
+            <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.icp.name-label', locale)}</label>
             <input value={draft.icp_name ?? ''} onChange={e => setDraft(d => d ? { ...d, icp_name: e.target.value } : d)}
-              placeholder="Ej: Venture Builder LATAM"
+              placeholder={t('comercial.icp.name-placeholder', locale)}
               className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
           <div className="card p-4">
             <label className="block text-[10px] uppercase tracking-wider mb-2" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.icp.min-budget-usd', locale)}</label>
             <input type="number" value={draft.min_budget_usd ?? ''} onChange={e => setDraft(d => d ? { ...d, min_budget_usd: Number(e.target.value) || null } : d)}
-              placeholder="Ej: 5000"
+              placeholder={t('comercial.icp.budget-placeholder', locale)}
               className="w-full bg-transparent text-sm text-ink outline-none" style={{ color: 'var(--text-primary)' }} />
           </div>
         </div>
@@ -200,7 +201,7 @@ export default function IcpCriteriaPanel() {
           <p className="text-sm mb-2" style={{ color: 'var(--text-secondary)' }}>{t('comercial.icp.no-icp-configured', locale)}</p>
           <button onClick={startEdit}
             className="mt-4 px-5 py-2.5 rounded-lg bg-[#EF4444]/15 text-[#f87171] hover:bg-[#EF4444]/25 border border-[#EF4444]/25 text-sm transition-all">
-            Crear ICP
+            {t('comercial.icp.create-icp', locale)}
           </button>
         </div>
       ) : (

@@ -8,7 +8,7 @@ import { Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { TOOLKIT_TOOLS, getVisibleTools } from '@/lib/toolkit-tools'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
-import { t } from '@/lib/i18n'
+import { t, type Locale } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 import DeliverableCard, { DeliverableGeneration } from '@/components/toolkit/DeliverableCard'
 import LandingsSection, { ClientLanding } from '@/components/toolkit/LandingsSection'
@@ -30,22 +30,32 @@ function getCategory(slug: string): string {
   return 'Business Reports'
 }
 
-const FALLBACK_DESCRIPTIONS: Record<string, string> = {
-  'Digital Audit': 'Diagnóstico digital completo con hallazgos priorizados y plan de acción.',
-  'Brand Intelligence': 'Inteligencia de marca: estrategia, tono, pilares y sistema de contenidos.',
-  Content: 'Contenido listo para publicar, adaptado a la voz y canales de la marca.',
-  Strategy: 'Análisis estratégico con recomendaciones accionables para el negocio.',
-  Documents: 'Documento generado a partir del conocimiento de marca del cliente.',
-  'Business Reports': 'Entregable generado con los Business Reports de MIRA.',
+function getFallbackDescriptions(locale: Locale): Record<string, string> {
+  return {
+    'Digital Audit': t('toolkit.hub.fallback-desc.digital-audit', locale),
+    'Brand Intelligence': t('toolkit.hub.fallback-desc.brand-intelligence', locale),
+    Content: t('toolkit.hub.fallback-desc.content', locale),
+    Strategy: t('toolkit.hub.fallback-desc.strategy', locale),
+    Documents: t('toolkit.hub.fallback-desc.documents', locale),
+    'Business Reports': t('toolkit.hub.fallback-desc.business-reports', locale),
+  }
 }
 
-function getToolMeta(slug: string) {
+// Etiqueta visible de la categoría — las claves internas ('Documents',
+// 'Business Reports') se mantienen intactas para el lookup de FALLBACK_DESCRIPTIONS.
+function getCategoryLabel(category: string, locale: Locale): string {
+  if (category === 'Documents') return t('toolkit.hub.category.documents', locale)
+  if (category === 'Business Reports') return t('toolkit.hub.category.business-reports', locale)
+  return category
+}
+
+function getToolMeta(slug: string, locale: Locale) {
   const tool = TOOLKIT_TOOLS.find((t) => t.slug === slug)
   const category = getCategory(slug)
   return {
     icon: tool?.icon || (slug.startsWith('doc-') ? '📄' : '⚡'),
     name: tool?.name || slug.replace(/^doc-/, '').replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-    description: tool?.description || FALLBACK_DESCRIPTIONS[category],
+    description: tool?.description || getFallbackDescriptions(locale)[category],
     category,
   }
 }
@@ -162,7 +172,7 @@ export default function ToolkitHub() {
     return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
   }
 
-  const clientName = activeClient?.name || 'Business Reports'
+  const clientName = activeClient?.name || t('toolkit.hub.client-name-fallback', locale)
   const clientInitial = clientName.charAt(0).toUpperCase()
 
   return (
@@ -182,7 +192,7 @@ export default function ToolkitHub() {
         <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-line bg-surface py-1.5 pl-2.5 pr-4">
           <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
           <span className="font-mono text-[11px] text-ink-secondary">
-            Cliente · <strong className="text-xs font-semibold text-ink">{clientName}</strong>
+            {t('toolkit.hub.client-label', locale)} <strong className="text-xs font-semibold text-ink">{clientName}</strong>
           </span>
         </div>
 
@@ -204,7 +214,7 @@ export default function ToolkitHub() {
         )}
 
         <h1 className={`mb-3 text-4xl font-extrabold leading-[1.15] text-ink md:text-5xl ${syne.className}`}>
-          Entregables{' '}
+          {t('toolkit.hub.hero-title', locale)}{' '}
           <span
             className="bg-clip-text text-transparent"
             style={{ backgroundImage: `linear-gradient(135deg, ${brandColor}, ${hexToRgba(brandColor, 0.6)})` }}
@@ -214,7 +224,7 @@ export default function ToolkitHub() {
         </h1>
 
         <p className="max-w-xl text-[15px] leading-relaxed text-ink-secondary">
-          Centro de entregables · {completed.length} {completed.length === 1 ? 'informe generado' : 'informes generados'}
+          {t('toolkit.hub.hero-subtitle-prefix', locale)} {completed.length} {completed.length === 1 ? t('toolkit.hub.report-generated-singular', locale) : t('toolkit.hub.report-generated-plural', locale)}
         </p>
 
         {/* Proyecto activo — las generaciones se asociarán a él */}
@@ -235,7 +245,7 @@ export default function ToolkitHub() {
           <div className="flex items-start gap-3">
             <AlertCircle size={18} className="mt-0.5 text-red-400" />
             <div>
-              <p className="text-sm font-semibold text-red-400">Error</p>
+              <p className="text-sm font-semibold text-red-400">{t('toolkit.hub.error-label', locale)}</p>
               <p className="mt-1 text-xs text-ink-secondary">{error}</p>
             </div>
           </div>
@@ -246,7 +256,7 @@ export default function ToolkitHub() {
       {inProgress.length > 0 && (
         <div className="relative z-10 mb-8 flex flex-wrap items-center justify-center gap-3">
           {inProgress.map((gen) => {
-            const meta = getToolMeta(gen.tool_slug)
+            const meta = getToolMeta(gen.tool_slug, locale)
             return (
               <div
                 key={gen.id}
@@ -254,7 +264,7 @@ export default function ToolkitHub() {
               >
                 <Loader2 size={13} className="animate-spin text-blue-400" />
                 <span className="text-xs font-medium text-blue-300">
-                  Generando {meta.name}…
+                  {t('toolkit.hub.generating-prefix', locale).replace('{name}', meta.name)}
                 </span>
               </div>
             )
@@ -267,7 +277,7 @@ export default function ToolkitHub() {
         {loading ? (
           <div className="card flex items-center justify-center gap-3 p-10">
             <Loader2 size={20} className="animate-spin text-ink-secondary" />
-            <p className="text-ink-secondary">Cargando entregables...</p>
+            <p className="text-ink-secondary">{t('toolkit.hub.loading-deliverables', locale)}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
@@ -286,14 +296,14 @@ export default function ToolkitHub() {
                   className="mb-3 font-mono text-[9px] uppercase tracking-[0.12em] opacity-80"
                   style={{ color: brandColor }}
                 >
-                  Vista general
+                  {t('toolkit.hub.overview-badge', locale)}
                 </p>
                 <p className="mb-3 text-[26px] leading-none">📊</p>
                 <h3 className={`mb-2 text-[17px] font-bold text-ink ${syne.className}`}>
-                  Ver informe completo
+                  {t('toolkit.hub.overview-card-title', locale)}
                 </h3>
                 <p className="text-[13px] leading-relaxed text-ink-secondary">
-                  Panorámica de todos los entregables, métricas y evolución del cliente en una sola vista.
+                  {t('toolkit.hub.overview-card-desc', locale)}
                 </p>
               </div>
               <div className="mt-5 flex items-center justify-end border-t border-line-subtle pt-4">
@@ -301,17 +311,17 @@ export default function ToolkitHub() {
                   className="inline-flex items-center gap-1.5 text-xs font-semibold transition-all group-hover:gap-2.5"
                   style={{ color: brandColor }}
                 >
-                  Ver informe completo →
+                  {t('toolkit.hub.overview-card-cta', locale)}
                 </span>
               </div>
             </Link>
 
             {deliverables.map(({ latest, history }) => {
-              const meta = getToolMeta(latest.tool_slug)
+              const meta = getToolMeta(latest.tool_slug, locale)
               return (
                 <DeliverableCard
                   key={latest.tool_slug}
-                  category={meta.category}
+                  category={getCategoryLabel(meta.category, locale)}
                   icon={meta.icon}
                   title={meta.name}
                   description={meta.description}
@@ -326,9 +336,9 @@ export default function ToolkitHub() {
             {deliverables.length === 0 && (
               <div className="card flex flex-col items-center justify-center p-10 text-center md:col-span-1">
                 <p className="mb-2 text-2xl">✨</p>
-                <p className="text-sm text-ink-secondary">Aún no hay entregables completados</p>
+                <p className="text-sm text-ink-secondary">{t('toolkit.hub.empty-title', locale)}</p>
                 <p className="mt-1 text-xs text-ink-tertiary">
-                  Genera tu primer informe desde &quot;Generar Nuevo&quot;
+                  {t('toolkit.hub.empty-desc', locale)}
                 </p>
               </div>
             )}
@@ -340,17 +350,17 @@ export default function ToolkitHub() {
       {failed.length > 0 && (
         <div className="relative z-10 mt-8 space-y-2">
           <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-tertiary">
-            Generaciones fallidas
+            {t('toolkit.hub.failed-title', locale)}
           </p>
           {failed.map((gen) => {
-            const meta = getToolMeta(gen.tool_slug)
+            const meta = getToolMeta(gen.tool_slug, locale)
             return (
               <div key={gen.id} className="card flex items-center gap-3 border-red-500/15 p-4">
                 <AlertCircle size={16} className="flex-shrink-0 text-red-400" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-semibold text-ink">{meta.name}</p>
                   <p className="truncate text-xs text-red-400/80">
-                    {gen.error_message || 'Unknown error'}
+                    {gen.error_message || t('toolkit.hub.unknown-error', locale)}
                   </p>
                 </div>
                 <p className="flex-shrink-0 font-mono text-[10px] text-ink-tertiary">
@@ -375,9 +385,9 @@ export default function ToolkitHub() {
         >
           <span className="flex items-center gap-3">
             <span className="text-lg">⚡</span>
-            <span className={`text-sm font-bold text-ink ${syne.className}`}>Generar Nuevo</span>
+            <span className={`text-sm font-bold text-ink ${syne.className}`}>{t('toolkit.hub.generate-new', locale)}</span>
             <span className="font-mono text-[10px] text-ink-tertiary">
-              {getVisibleTools().length} reports disponibles
+              {t('toolkit.hub.reports-available', locale).replace('{n}', String(getVisibleTools().length))}
             </span>
           </span>
           {showGenerate ? (
@@ -407,7 +417,7 @@ export default function ToolkitHub() {
 
       {/* ─── Footer meta ──────────────────────────────────── */}
       <p className="relative z-10 mt-12 text-center font-mono text-[11px] text-ink-tertiary">
-        Preparado por Startup Factory · Confidencial · Solo para uso del cliente
+        {t('toolkit.hub.footer', locale)}
       </p>
     </div>
   )

@@ -1,12 +1,15 @@
 'use client'
 
 import ToolRunnerPage from '@/components/ToolRunnerPage'
-import { COMPETITIVE_CONFIG } from './tool-config'
+import { getCompetitiveConfig } from './tool-config'
 import { getStoredProjectId } from '@/lib/project-context'
 import { CompetitiveAnalysisResult } from './competitive-analysis-result'
+import { useLocaleContext } from '@/app/locale-provider'
 
 
 export default function CompetitiveAnalysisPage() {
+  const { locale } = useLocaleContext()
+
   const handleGenerate = async (formData: Record<string, any>, attachments?: any[]) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
@@ -29,7 +32,7 @@ export default function CompetitiveAnalysisPage() {
 
   return (
     <ToolRunnerPage
-      config={COMPETITIVE_CONFIG}
+      config={getCompetitiveConfig(locale)}
       onGenerate={handleGenerate}
       resultComponent={CompetitiveAnalysisResult}
     />

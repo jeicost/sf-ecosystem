@@ -1,5 +1,8 @@
 'use client'
 
+import { t } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
+
 export interface ClientLanding {
   title: string
   url: string
@@ -13,6 +16,7 @@ interface LandingsSectionProps {
 }
 
 export default function LandingsSection({ landings, brandColor, titleFontClass = '' }: LandingsSectionProps) {
+  const { locale } = useLocaleContext()
   if (!landings || landings.length === 0) return null
 
   return (
@@ -21,7 +25,7 @@ export default function LandingsSection({ landings, brandColor, titleFontClass =
       <div className="flex items-center gap-2.5 rounded-t-xl border border-b-0 border-line bg-card px-4 py-3">
         <span className="text-sm opacity-70">📁</span>
         <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-tertiary">
-          Landings activas
+          {t('toolkit.landings.title', locale)}
         </span>
         <span className="rounded-full bg-surface-hover px-2 py-0.5 font-mono text-[9px] text-ink-tertiary">
           {landings.length}

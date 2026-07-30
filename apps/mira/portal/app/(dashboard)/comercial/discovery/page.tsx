@@ -259,7 +259,7 @@ export default function DiscoveryPage() {
           >
             {m === 'light' ? t('comercial.discovery.mode-light', locale)
               : m === 'deep' ? t('comercial.discovery.mode-deep', locale)
-              : 'Criterios ICP'}
+              : t('comercial.discovery.mode-criteria', locale)}
           </button>
         ))}
       </div>
@@ -348,7 +348,7 @@ export default function DiscoveryPage() {
             )}
           >
             {running ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}
-            {running ? 'Buscando...' : 'Buscar con Rex'}
+            {running ? t('comercial.discovery.searching', locale) : t('comercial.discovery.search-btn', locale)}
           </button>
         </div>
 
@@ -373,13 +373,13 @@ export default function DiscoveryPage() {
           </div>
 
           {hotLeads.length > 0 && (
-            <LeadGroup title="HOT" colorClass="text-red-400" leads={hotLeads} added={added} onAdd={addToPipeline} />
+            <LeadGroup locale={locale} title={t('comercial.discovery.group-hot', locale)} colorClass="text-red-400" leads={hotLeads} added={added} onAdd={addToPipeline} />
           )}
           {warmLeads.length > 0 && (
-            <LeadGroup title="WARM" colorClass="text-amber-400" leads={warmLeads} added={added} onAdd={addToPipeline} />
+            <LeadGroup locale={locale} title={t('comercial.discovery.group-warm', locale)} colorClass="text-amber-400" leads={warmLeads} added={added} onAdd={addToPipeline} />
           )}
           {rest.length > 0 && (
-            <LeadGroup title="COLD / DESCARTADOS" colorClass="text-ink-muted" leads={rest} added={added} onAdd={addToPipeline} collapsed />
+            <LeadGroup locale={locale} title={t('comercial.discovery.group-cold', locale)} colorClass="text-ink-muted" leads={rest} added={added} onAdd={addToPipeline} collapsed />
           )}
         </div>
       )}
@@ -634,7 +634,8 @@ function DeepDiscovery({
   )
 }
 
-function LeadGroup({ title, colorClass, leads, added, onAdd, collapsed = false }: {
+function LeadGroup({ locale, title, colorClass, leads, added, onAdd, collapsed = false }: {
+  locale: Locale
   title: string
   colorClass: string
   leads: DiscoveredLead[]
@@ -659,7 +660,7 @@ function LeadGroup({ title, colorClass, leads, added, onAdd, collapsed = false }
       {open && (
         <div className="space-y-2">
           {leads.map(lead => (
-            <DiscoveryLeadRow key={lead.company_name} lead={lead} added={added.has(lead.company_name)} onAdd={onAdd} />
+            <DiscoveryLeadRow key={lead.company_name} locale={locale} lead={lead} added={added.has(lead.company_name)} onAdd={onAdd} />
           ))}
         </div>
       )}
@@ -667,7 +668,8 @@ function LeadGroup({ title, colorClass, leads, added, onAdd, collapsed = false }
   )
 }
 
-function DiscoveryLeadRow({ lead, added, onAdd }: {
+function DiscoveryLeadRow({ locale, lead, added, onAdd }: {
+  locale: Locale
   lead: DiscoveredLead
   added: boolean
   onAdd: (l: DiscoveredLead) => void
@@ -720,7 +722,7 @@ function DiscoveryLeadRow({ lead, added, onAdd }: {
             : 'text-red-400 border border-red-400/25 bg-red-400/10 hover:bg-red-400/15'
         )}
       >
-        {added ? <><CheckCircle2 size={11} /> En pipeline</> : <><Plus size={11} /> Añadir</>}
+        {added ? <><CheckCircle2 size={11} /> {t('comercial.discovery.in-pipeline', locale)}</> : <><Plus size={11} /> {t('comercial.discovery.add', locale)}</>}
       </button>
     </div>
   )

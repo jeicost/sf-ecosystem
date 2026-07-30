@@ -2,87 +2,92 @@
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { t, type Locale } from '@/lib/i18n'
+import { useLocaleContext } from '@/app/locale-provider'
 import { InvestorDeckResult } from './investor-deck-result'
 
-const TOOL_CONFIG: ToolConfig = {
+const getToolConfig = (locale: Locale): ToolConfig => ({
   slug: 'investor-deck',
   icon: '💰',
-  title: 'Investor Deck',
-  timing: '45-60 min',
-  brandBrainNote: 'Brand Brain cargado — mercado y posicionamiento analizados',
+  title: t('toolkit.investor-deck.title', locale),
+  timing: t('toolkit.investor-deck.timing', locale),
+  brandBrainNote: t('toolkit.investor-deck.brand-brain-note', locale),
   submitButtonColor: '#10B981',
-  submitButtonText: 'Generar Investor Deck',
+  submitButtonText: t('toolkit.investor-deck.submit', locale),
   fields: [
     {
       name: 'company_name',
-      label: 'NOMBRE DE LA EMPRESA',
+      label: t('toolkit.investor-deck.field.company-name.label', locale),
       type: 'text',
-      placeholder: 'Ej: Salsa Burgers',
+      placeholder: t('toolkit.investor-deck.field.company-name.placeholder', locale),
       required: true,
     },
     {
       name: 'stage',
-      label: 'ETAPA DE LA EMPRESA',
+      label: t('toolkit.investor-deck.field.stage.label', locale),
       type: 'select',
       options: [
-        { value: 'pre-seed', label: 'Pre-Seed' },
-        { value: 'seed', label: 'Seed' },
-        { value: 'series-a', label: 'Series A' },
-        { value: 'series-b', label: 'Series B' },
+        { value: 'pre-seed', label: t('toolkit.investor-deck.field.stage.option.pre-seed', locale) },
+        { value: 'seed', label: t('toolkit.investor-deck.field.stage.option.seed', locale) },
+        { value: 'series-a', label: t('toolkit.investor-deck.field.stage.option.series-a', locale) },
+        { value: 'series-b', label: t('toolkit.investor-deck.field.stage.option.series-b', locale) },
       ],
       required: true,
     },
     {
       name: 'problem_market_size',
-      label: 'PROBLEMA Y TAMAÑO DE MERCADO',
+      label: t('toolkit.investor-deck.field.problem-market-size.label', locale),
       type: 'textarea',
-      placeholder: 'Describe el problema que resuelves y el tamaño del mercado (TAM/SAM/SOM)',
+      placeholder: t('toolkit.investor-deck.field.problem-market-size.placeholder', locale),
       required: true,
     },
     {
       name: 'solution_traction',
-      label: 'SOLUCIÓN Y TRACIÓN',
+      label: t('toolkit.investor-deck.field.solution-traction.label', locale),
       type: 'textarea',
-      placeholder: 'Qué estás construyendo y qué tración has alcanzado (usuarios, MRR, etc.)',
+      placeholder: t('toolkit.investor-deck.field.solution-traction.placeholder', locale),
       required: true,
     },
     {
       name: 'team_background',
-      label: 'EQUIPO',
+      label: t('toolkit.investor-deck.field.team-background.label', locale),
       type: 'textarea',
-      placeholder: 'Nombres, roles y background relevante de los fundadores',
+      placeholder: t('toolkit.investor-deck.field.team-background.placeholder', locale),
       required: true,
     },
     {
       name: 'funding_ask',
-      label: 'CANTIDAD SOLICITADA',
+      label: t('toolkit.investor-deck.field.funding-ask.label', locale),
       type: 'text',
-      placeholder: 'Ej: $500K, $2M, etc.',
+      placeholder: t('toolkit.investor-deck.field.funding-ask.placeholder', locale),
       required: true,
     },
     {
       name: 'use_of_funds',
-      label: 'CÓMO USARÁS LOS FONDOS',
+      label: t('toolkit.investor-deck.field.use-of-funds.label', locale),
       type: 'textarea',
-      placeholder: 'En qué gastarás el dinero (% a cada área)',
+      placeholder: t('toolkit.investor-deck.field.use-of-funds.placeholder', locale),
       required: true,
     },
     {
       name: 'valuation_terms',
-      label: 'VALORACIÓN / TÉRMINOS',
+      label: t('toolkit.investor-deck.field.valuation-terms.label', locale),
       type: 'text',
-      placeholder: 'Ej: $5M pre-money, o "aún por definir"',
+      placeholder: t('toolkit.investor-deck.field.valuation-terms.placeholder', locale),
     },
     {
       name: 'board_advisors',
-      label: 'BOARD / ADVISORS',
+      label: t('toolkit.investor-deck.field.board-advisors.label', locale),
       type: 'textarea',
-      placeholder: 'Nombres y background de board members o advisors, si ya los tienes. Déjalo en blanco si no aplica.',
+      placeholder: t('toolkit.investor-deck.field.board-advisors.placeholder', locale),
     },
   ],
-}
+})
 
 export default function InvestorDeckPage() {
+  const { locale } = useLocaleContext()
+  const toolConfig = getToolConfig(locale)
+
   const handleGenerate = async (formData: Record<string, any>, attachments?: any[]) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
@@ -97,7 +102,7 @@ export default function InvestorDeckPage() {
 
     if (!res.ok) {
       const error = await res.json()
-      throw new Error(error.error || 'Failed to generate')
+      throw new Error(error.error || t('toolkit.report.generate-error-fallback', locale))
     }
 
     return await res.json()
@@ -105,7 +110,7 @@ export default function InvestorDeckPage() {
 
   return (
     <ToolRunnerPage
-      config={TOOL_CONFIG}
+      config={toolConfig}
       onGenerate={handleGenerate}
       resultComponent={InvestorDeckResult}
     />

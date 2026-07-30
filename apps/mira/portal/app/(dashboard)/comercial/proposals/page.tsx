@@ -65,7 +65,7 @@ export default function ProposalsPage() {
         setOutput(full)
       }
     } catch {
-      setOutput('Error al generar. Inténtalo de nuevo.')
+      setOutput(t('comercial.proposals.error-generate', locale))
     } finally {
       setGenerating(false)
     }
@@ -78,14 +78,14 @@ export default function ProposalsPage() {
   }
 
   const FIELDS: { field: keyof CallBrief; label: string; placeholder: string; required?: boolean; textarea?: boolean }[] = [
-    { field: 'company',       label: 'Empresa prospect',     placeholder: 'Ej: Acme Ventures',               required: true },
-    { field: 'contact_title', label: 'Cargo del contacto',   placeholder: 'Ej: Managing Partner' },
-    { field: 'industry',      label: 'Industria',            placeholder: 'Ej: Venture Capital' },
-    { field: 'budget',        label: 'Presupuesto estimado', placeholder: 'Ej: €3,000-5,000/mes' },
-    { field: 'timeline',      label: 'Timeline del prospect',placeholder: 'Ej: Empezar en 2 semanas' },
-    { field: 'services',      label: 'Servicios de interés', placeholder: 'Ej: Marketing IA + Comercial IA', textarea: true },
-    { field: 'problem',       label: 'Problema detectado en la llamada', placeholder: 'Describe el pain principal que mencionó el prospect...', required: true, textarea: true },
-    { field: 'notes',         label: 'Notas adicionales',   placeholder: 'Objeciones, contexto especial, competidores mencionados...', textarea: true },
+    { field: 'company',       label: t('comercial.proposals.field-company-label', locale),       placeholder: t('comercial.proposals.field-company-placeholder', locale),       required: true },
+    { field: 'contact_title', label: t('comercial.proposals.field-contact-title-label', locale),  placeholder: t('comercial.proposals.field-contact-title-placeholder', locale) },
+    { field: 'industry',      label: t('comercial.proposals.field-industry-label', locale),       placeholder: t('comercial.proposals.field-industry-placeholder', locale) },
+    { field: 'budget',        label: t('comercial.proposals.field-budget-label', locale),         placeholder: t('comercial.proposals.field-budget-placeholder', locale) },
+    { field: 'timeline',      label: t('comercial.proposals.field-timeline-label', locale),       placeholder: t('comercial.proposals.field-timeline-placeholder', locale) },
+    { field: 'services',      label: t('comercial.proposals.field-services-label', locale),       placeholder: t('comercial.proposals.field-services-placeholder', locale), textarea: true },
+    { field: 'problem',       label: t('comercial.proposals.field-problem-label', locale),        placeholder: t('comercial.proposals.field-problem-placeholder', locale), required: true, textarea: true },
+    { field: 'notes',         label: t('comercial.proposals.field-notes-label', locale),          placeholder: t('comercial.proposals.field-notes-placeholder', locale), textarea: true },
   ]
 
   return (
@@ -93,14 +93,14 @@ export default function ProposalsPage() {
       <PageHeader
         eyebrow={t('section.comercial', locale)}
         title="📄 Nova — Proposals"
-        subtitle="Genera propuestas comerciales completas desde el brief de una llamada."
+        subtitle={t('comercial.proposals.subtitle', locale)}
         eyebrowColor={DEPARTMENT_METADATA.comercial.color}
       />
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         {/* LEFT — Brief form */}
         <div>
-          <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>Call Brief</p>
+          <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.proposals.call-brief-heading', locale)}</p>
           <div className="space-y-3">
             {FIELDS.map(({ field, label, placeholder, required, textarea }) => (
               <div key={field} className="card p-4">
@@ -137,8 +137,8 @@ export default function ProposalsPage() {
                 : 'bg-surface text-ink-muted border border-line-subtle cursor-not-allowed'
             )}>
             {generating
-              ? <><Loader2 size={15} className="animate-spin" /> Nova escribiendo...</>
-              : <><FileText size={15} /> Generar propuesta con Nova</>}
+              ? <><Loader2 size={15} className="animate-spin" /> {t('comercial.proposals.generating-nova', locale)}</>
+              : <><FileText size={15} /> {t('comercial.proposals.generate-cta', locale)}</>}
           </button>
         </div>
 
@@ -147,15 +147,15 @@ export default function ProposalsPage() {
           {output ? (
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>📄 Nova — Propuesta generada</p>
+                <p className="text-[11px] uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>{t('comercial.proposals.output-heading', locale)}</p>
                 <div className="flex gap-2">
                   <button onClick={copy}
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] hover:text-ink transition-all" style={{ color: 'var(--text-secondary)', background: 'var(--bg-surface)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
-                    {copied ? <><Check size={11} className="text-emerald-400" /> Copiado</> : <><Copy size={11} /> Copiar</>}
+                    {copied ? <><Check size={11} className="text-emerald-400" /> {t('common.copied', locale)}</> : <><Copy size={11} /> {t('common.copy', locale)}</>}
                   </button>
                   {saved && (
                     <span className="flex items-center gap-1 px-3 py-1.5 text-[11px] text-green-400">
-                      <Save size={11} /> Guardada en biblioteca
+                      <Save size={11} /> {t('comercial.proposals.saved-to-library', locale)}
                     </span>
                   )}
                 </div>
@@ -167,7 +167,7 @@ export default function ProposalsPage() {
 
               {generating && (
                 <div className="flex items-center gap-2 mt-3 text-[11px] text-ink-muted">
-                  <Loader2 size={11} className="animate-spin" /> Generando...
+                  <Loader2 size={11} className="animate-spin" /> {t('comercial.proposals.generating', locale)}
                 </div>
               )}
             </div>
@@ -175,8 +175,8 @@ export default function ProposalsPage() {
             <div className="card flex-1 flex items-center justify-center min-h-[400px]">
               <div className="text-center">
                 <FileText size={32} className="mx-auto mb-3" style={{ color: 'var(--border-subtle)' }} />
-                <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>La propuesta aparecerá aquí</p>
-                <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>Completa el brief y pulsa Generar</p>
+                <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.proposals.empty-output', locale)}</p>
+                <p className="text-[11px] mt-1" style={{ color: 'var(--text-muted)' }}>{t('comercial.proposals.empty-output-hint', locale)}</p>
               </div>
             </div>
           )}

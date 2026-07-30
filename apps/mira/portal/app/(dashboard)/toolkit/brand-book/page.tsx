@@ -2,29 +2,42 @@
 
 import ToolRunnerPage from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
-import { BRAND_BOOK_CONFIG } from './tool-config'
+import { getBrandBookConfig } from './tool-config'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
+import type { Locale } from '@/lib/i18n'
 
-function BrandBookResult({ data }: { data?: any }) {
+function BrandBookResult({ data, locale }: { data?: any; locale: Locale }) {
   if (!data) return null
   const findings = Array.isArray(data.consistency_findings) ? data.consistency_findings.length : 0
   const openItems = Array.isArray(data.open_items) ? data.open_items.length : 0
   return (
     <div className="card p-6 space-y-3">
-      <h3 className="text-lg font-semibold text-ink">Brand Book generado</h3>
+      <h3 className="text-lg font-semibold text-ink">{t('toolkit.brand-book.result.title', locale)}</h3>
       <p className="text-sm text-ink-secondary">
-        {findings > 0
-          ? `${findings} hallazgo${findings > 1 ? 's' : ''} de consistencia detectado${findings > 1 ? 's' : ''} — revísalos en el informe.`
-          : 'Sin contradicciones detectadas en el material analizado.'}
-        {openItems > 0 && ` ${openItems} open item${openItems > 1 ? 's' : ''} pendientes, numerados al cierre.`}
+        {findings === 0
+          ? t('toolkit.brand-book.result.findings-none', locale)
+          : findings === 1
+            ? t('toolkit.brand-book.result.findings-singular', locale).replace('{n}', String(findings))
+            : t('toolkit.brand-book.result.findings-plural', locale).replace('{n}', String(findings))}
+        {openItems > 0 &&
+          ` ${
+            openItems === 1
+              ? t('toolkit.brand-book.result.open-items-singular', locale).replace('{n}', String(openItems))
+              : t('toolkit.brand-book.result.open-items-plural', locale).replace('{n}', String(openItems))
+          }`}
       </p>
       <p className="text-xs text-ink-tertiary">
-        Abre el informe completo para verlo maquetado y exportar el Voice Guide (1 página A4) a tu Drive.
+        {t('toolkit.brand-book.result.footer-note', locale)}
       </p>
     </div>
   )
 }
 
 export default function BrandBookPage() {
+  const { locale } = useLocaleContext()
+  const config = getBrandBookConfig(locale)
+
   const handleGenerate = async (formData: Record<string, any>, attachments?: any[]) => {
     const res = await fetch('/api/toolkit/generate', {
       method: 'POST',
@@ -39,16 +52,16 @@ export default function BrandBookPage() {
 
     if (!res.ok) {
       const error = await res.json()
-      throw new Error(error.error || 'Failed to generate')
+      throw new Error(error.error || t('toolkit.report.generate-error-fallback', locale))
     }
     return res.json()
   }
 
   return (
     <ToolRunnerPage
-      config={BRAND_BOOK_CONFIG}
+      config={config}
       onGenerate={handleGenerate}
-      resultComponent={BrandBookResult}
+      resultComponent={(props: { data?: any }) => <BrandBookResult {...props} locale={locale} />}
     />
   )
 }

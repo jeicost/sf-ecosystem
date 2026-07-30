@@ -90,8 +90,14 @@ export default function ScoringPage() {
     setChatMessages(prev => [...prev, { role: 'user', content: msg }])
     setChatLoading(true)
 
-    const context = `Tengo ${allLeads.length} leads. Hot: ${hot.length}, Warm: ${warm.length}, Cold: ${cold.length}. Top lead: ${topLeads[0]?.company_name ?? 'ninguno'} (score ${topLeads[0]?.hot_score ?? '—'}).`
-    const fullMessage = `${context}\n\nPregunta del equipo: ${msg}`
+    const context = t('comercial.scoring.chat-context-prompt', locale)
+      .replace('{total}', String(allLeads.length))
+      .replace('{hot}', String(hot.length))
+      .replace('{warm}', String(warm.length))
+      .replace('{cold}', String(cold.length))
+      .replace('{topCompany}', topLeads[0]?.company_name ?? t('comercial.scoring.no-top-lead', locale))
+      .replace('{topScore}', String(topLeads[0]?.hot_score ?? '—'))
+    const fullMessage = `${context}\n\n${t('comercial.scoring.team-question-label', locale)} ${msg}`
 
     try {
       const res = await fetch('/api/agent', {
@@ -116,7 +122,7 @@ export default function ScoringPage() {
         })
       }
     } catch {
-      setChatMessages(prev => [...prev, { role: 'vera', content: 'Error al conectar con Vera.' }])
+      setChatMessages(prev => [...prev, { role: 'vera', content: t('comercial.scoring.error-connect-vera', locale) }])
     } finally {
       setChatLoading(false)
     }
@@ -151,10 +157,10 @@ export default function ScoringPage() {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
             {[
-              { label: 'Total',        value: total,       cls: 'text-ink-secondary' },
-              { label: 'Hot (≥75)',    value: hot.length,  cls: 'text-red-400' },
-              { label: 'Warm (50-74)', value: warm.length, cls: 'text-amber-400' },
-              { label: 'Cold (<50)',   value: cold.length, cls: 'text-blue-400' },
+              { label: t('comercial.scoring.stat-total', locale),  value: total,       cls: 'text-ink-secondary' },
+              { label: t('comercial.scoring.stat-hot', locale),    value: hot.length,  cls: 'text-red-400' },
+              { label: t('comercial.scoring.stat-warm', locale),   value: warm.length, cls: 'text-amber-400' },
+              { label: t('comercial.scoring.stat-cold', locale),   value: cold.length, cls: 'text-blue-400' },
             ].map(({ label, value, cls }) => (
               <div key={label} className="card px-4 py-3">
                 <p className="text-[11px] uppercase tracking-wider mb-1" style={{ color: 'var(--text-secondary)' }}>{label}</p>
@@ -168,9 +174,9 @@ export default function ScoringPage() {
             <h2 className="text-sm font-medium text-ink mb-5">{t('comercial.scoring.distribution', locale)}</h2>
             <div className="space-y-4">
               {[
-                { label: '🔥 Hot (≥75)', value: hot.length, pct: hotPct, barClass: 'bg-red-400' },
-                { label: '🟡 Warm (50-74)', value: warm.length, pct: warmPct, barClass: 'bg-amber-400' },
-                { label: '🔵 Cold (<50)', value: cold.length, pct: coldPct, barClass: 'bg-blue-400' },
+                { label: t('comercial.scoring.dist-hot', locale), value: hot.length, pct: hotPct, barClass: 'bg-red-400' },
+                { label: t('comercial.scoring.dist-warm', locale), value: warm.length, pct: warmPct, barClass: 'bg-amber-400' },
+                { label: t('comercial.scoring.dist-cold', locale), value: cold.length, pct: coldPct, barClass: 'bg-blue-400' },
               ].map(({ label, value, pct, barClass }) => (
                 <div key={label}>
                   <div className="flex justify-between text-[11px] mb-1.5" style={{ color: 'var(--text-secondary)' }}>
@@ -185,18 +191,18 @@ export default function ScoringPage() {
           {/* Table */}
           <div className="card overflow-hidden">
             <div className="px-5 py-4" style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
-              <h2 className="text-sm font-medium text-ink">Top {topLeads.length} por score</h2>
+              <h2 className="text-sm font-medium text-ink">{t('comercial.scoring.top-n-label', locale).replace('{n}', String(topLeads.length))}</h2>
             </div>
             {topLeads.length === 0 ? (
               <div className="py-12 text-center text-sm" style={{ color: 'var(--text-secondary)' }}>
-                No hay leads aún. Usa Rex para descubrir leads.
+                {t('comercial.scoring.no-leads', locale)}
               </div>
             ) : (
               <div className="overflow-x-auto">
               <table className="w-full min-w-[560px]">
                 <thead>
                   <tr style={{ borderBottomColor: 'var(--border-subtle)', borderBottomWidth: '1px' }}>
-                    {['Empresa', 'Cargo', 'Industria', 'Score', ''].map(h => (
+                    {[t('comercial.scoring.th-company', locale), t('comercial.scoring.th-title', locale), t('comercial.scoring.th-industry', locale), t('comercial.scoring.th-score', locale), ''].map(h => (
                       <th key={h} className="px-5 py-3 text-left text-[10px] uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>{h}</th>
                     ))}
                   </tr>
@@ -214,7 +220,7 @@ export default function ScoringPage() {
                           {rescoring === lead.id
                             ? <Loader2 size={10} className="animate-spin" />
                             : <RefreshCw size={10} />}
-                          Re-score
+                          {t('comercial.scoring.rescore-btn', locale)}
                         </button>
                       </td>
                     </tr>
@@ -241,8 +247,8 @@ export default function ScoringPage() {
             <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
               {chatMessages.length === 0 && (
                 <div className="text-center pt-8">
-                  <p className="text-[11px] mb-4" style={{ color: 'var(--text-tertiary)' }}>Pregúntame sobre el pipeline</p>
-                  {['¿Cuáles son nuestros leads más prometedores?', '¿Qué industrias tienen mejor score?', '¿Cómo mejorar la calidad del pipeline?'].map(q => (
+                  <p className="text-[11px] mb-4" style={{ color: 'var(--text-tertiary)' }}>{t('comercial.qualify.vera-prompt', locale)}</p>
+                  {[t('comercial.qualify.vera-q1', locale), t('comercial.qualify.vera-q2', locale), t('comercial.qualify.vera-q3', locale)].map(q => (
                     <button key={q} onClick={() => { setChatInput(q); }}
                       className="block w-full text-left px-3 py-2 mb-1.5 rounded-lg text-[11px] hover:text-ink hover:bg-surface-hover transition-all" style={{ color: 'var(--text-secondary)', borderColor: 'var(--border-subtle)', borderWidth: '1px' }}>
                       {q}
@@ -271,7 +277,7 @@ export default function ScoringPage() {
                   value={chatInput}
                   onChange={e => setChatInput(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendChat()}
-                  placeholder="Pregunta a Vera..."
+                  placeholder={t('comercial.qualify.vera-placeholder', locale)}
                   className="flex-1 rounded-lg px-3 py-2 text-[12px] text-ink focus:outline-none transition-colors" style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
                 />
                 <button onClick={sendChat} disabled={!chatInput.trim() || chatLoading}

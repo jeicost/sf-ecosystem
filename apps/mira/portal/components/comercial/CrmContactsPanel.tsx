@@ -8,6 +8,8 @@
 import { useEffect, useState } from 'react'
 import { Loader2, ExternalLink, ArrowRight } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 const SF_CRM_URL = 'https://sf-crm-phi.vercel.app'
 
@@ -38,6 +40,7 @@ function scoreColor(score: number | null): string {
 
 export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: () => void }) {
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
   const [data, setData] = useState<CrmData | null>(null)
   const [error, setError] = useState<string | null>(null)
 
@@ -46,11 +49,11 @@ export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: 
     fetch(`/api/comercial/crm${qs}`)
       .then(async (r) => {
         const json = await r.json()
-        if (!r.ok) throw new Error(json.error || 'Error cargando CRM')
+        if (!r.ok) throw new Error(json.error || t('comercial.crm.error-loading', locale))
         setData(json)
       })
-      .catch((e) => setError(e instanceof Error ? e.message : 'Error'))
-  }, [activeClient?.id])
+      .catch((e) => setError(e instanceof Error ? e.message : t('comercial.crm.error-generic', locale)))
+  }, [activeClient?.id, locale])
 
   if (error) {
     return <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
@@ -65,9 +68,9 @@ export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: 
   if (!data.workspace) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface py-12 text-center">
-        <p className="mb-1 text-sm text-ink-secondary">Este cliente aún no tiene workspace en el CRM.</p>
+        <p className="mb-1 text-sm text-ink-secondary">{t('comercial.crm.no-workspace', locale)}</p>
         <p className="text-xs text-ink-tertiary">
-          Pide a tu contacto de Startup Factory que active el puente para poder promover leads.
+          {t('comercial.crm.no-workspace-hint', locale)}
         </p>
       </div>
     )
@@ -75,16 +78,16 @@ export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: 
   if (data.contacts.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-line bg-surface py-12 text-center">
-        <p className="mb-1 text-sm text-ink-secondary">Aún no hay contactos promovidos.</p>
+        <p className="mb-1 text-sm text-ink-secondary">{t('comercial.crm.no-contacts', locale)}</p>
         <p className="mb-4 text-xs text-ink-tertiary">
-          Usa «Enviar a CRM» en un lead cualificado del pipeline — aparecerá aquí al momento.
+          {t('comercial.crm.no-contacts-hint', locale)}
         </p>
         {onGoToPipeline && (
           <button
             onClick={onGoToPipeline}
             className="inline-flex items-center gap-1.5 rounded-lg border border-red-500/30 bg-red-500/15 px-4 py-2 text-xs font-medium text-red-400"
           >
-            Ver el pipeline <ArrowRight size={12} />
+            {t('comercial.crm.view-pipeline', locale)} <ArrowRight size={12} />
           </button>
         )}
       </div>
@@ -95,7 +98,7 @@ export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: 
     <>
       <div className="mb-4 flex items-center justify-between">
         <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-ink-tertiary">
-          {data.contacts.length} contactos · workspace {data.workspace}
+          {t('comercial.crm.contacts-count', locale).replace('{count}', String(data.contacts.length)).replace('{workspace}', data.workspace)}
         </p>
         <a
           href={SF_CRM_URL}
@@ -103,20 +106,20 @@ export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: 
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs text-ink-secondary transition hover:bg-surface-hover hover:text-ink"
         >
-          Abrir SF CRM <ExternalLink size={12} />
+          {t('comercial.crm.open-sf-crm', locale)} <ExternalLink size={12} />
         </a>
       </div>
       <div className="overflow-x-auto rounded-2xl border border-line">
         <table className="w-full text-left text-sm">
           <thead>
             <tr className="border-b border-line bg-surface font-mono text-[9px] uppercase tracking-[0.15em] text-ink-tertiary">
-              <th className="px-4 py-3">Contacto</th>
-              <th className="px-4 py-3">Empresa</th>
-              <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Score</th>
-              <th className="px-4 py-3">Etapa</th>
-              <th className="px-4 py-3">Origen</th>
-              <th className="px-4 py-3">Fecha</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-contact', locale)}</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-company', locale)}</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-email', locale)}</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-score', locale)}</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-stage', locale)}</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-source', locale)}</th>
+              <th className="px-4 py-3">{t('comercial.crm.col-date', locale)}</th>
             </tr>
           </thead>
           <tbody>
