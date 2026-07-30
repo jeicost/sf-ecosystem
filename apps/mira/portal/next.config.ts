@@ -4,7 +4,16 @@ const nextConfig: NextConfig = {
   // pdf-parse v2 no sobrevive al bundling de webpack (TypeError:
   // Object.defineProperty called on non-object al importarlo) — debe
   // cargarse como dependencia externa en runtime.
-  serverExternalPackages: ['pdf-parse'],
+  // pdfjs-dist (dependencia de pdf-parse) intenta cargar @napi-rs/canvas para
+  // poder rellenar DOMMatrix/ImageData/Path2D -- funciona en local (el
+  // binario nativo darwin-arm64 está instalado) pero el bundling de webpack
+  // no resuelve correctamente el binario nativo linux-x64 en el runtime
+  // serverless de Vercel, y pdfjs-dist cae al polyfill que referencia
+  // DOMMatrix -- inexistente ahí, tumbando la extracción de CUALQUIER PDF que
+  // dispare esa ruta de renderizado (confirmado en logs reales de producción,
+  // 2026-07-30). Mismo criterio que pdf-parse: externalizar en vez de dejar
+  // que webpack lo bundlee.
+  serverExternalPackages: ['pdf-parse', 'pdfjs-dist', '@napi-rs/canvas'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
