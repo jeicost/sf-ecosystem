@@ -3,8 +3,13 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   // pdf-parse v2 no sobrevive al bundling de webpack (TypeError:
   // Object.defineProperty called on non-object al importarlo) — debe
-  // cargarse como dependencia externa en runtime.
-  serverExternalPackages: ['pdf-parse'],
+  // cargarse como dependencia externa en runtime. pdfjs-dist (su
+  // dependencia real) también, para que Vercel incluya el fichero del
+  // worker (pdf.worker.mjs) en el bundle de la función -- webpack no lo
+  // detecta porque pdfjs-dist lo resuelve con una ruta dinámica, no un
+  // import estático (ver lib/pdf-extract.ts, confirmado en logs reales de
+  // producción, 2026-07-30).
+  serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },

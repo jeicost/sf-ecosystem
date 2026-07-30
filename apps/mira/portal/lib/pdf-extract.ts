@@ -76,6 +76,30 @@ function ensureDOMMatrixPolyfill(): void {
   }
 }
 
+let workerConfigured = false
+
+/**
+ * pdfjs-dist resuelve la ruta de su "fake worker" (pdf.worker.mjs) de forma
+ * dinámica y falla en el runtime serverless de Vercel ("Setting up fake
+ * worker failed: Cannot find module .../pdf.worker.mjs", confirmado en logs
+ * reales, 2026-07-30) incluso con el paquete externalizado en
+ * next.config.ts. Resolverla explícitamente con require (vía createRequire,
+ * ya que este módulo es ESM) y pasarla a PDFParse.setWorker() evita que
+ * pdfjs-dist tenga que adivinarla.
+ */
+async function ensureWorkerSrc(PDFParseClass: { setWorker(workerSrc?: string): string }): Promise<void> {
+  if (workerConfigured) return
+  workerConfigured = true
+  try {
+    const { createRequire } = await import('module')
+    const require = createRequire(import.meta.url)
+    const workerPath = require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
+    PDFParseClass.setWorker(workerPath)
+  } catch (error) {
+    console.error('pdf-extract: could not resolve pdf.worker.mjs, extraction may fail:', error)
+  }
+}
+
 /** Extrae el texto de un PDF. Lanza si pdf-parse falla -- el caller decide el fallback. */
 export async function extractPdfText(data: Buffer | Uint8Array): Promise<string> {
   ensureDOMMatrixPolyfill()
@@ -83,6 +107,7 @@ export async function extractPdfText(data: Buffer | Uint8Array): Promise<string>
   // TODOS los exports del fichero que lo importara, incluso peticiones que
   // nunca tocan un PDF (ver DEBT.md nn).
   const { PDFParse } = await import('pdf-parse')
+  await ensureWorkerSrc(PDFParse)
   const parser = new PDFParse({ data })
   try {
     const result = await parser.getText()
