@@ -1,7 +1,14 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, X, Loader2, AlertCircle } from 'lucide-react'
+import { Check, X, Loader2, AlertCircle, AlertTriangle } from 'lucide-react'
+
+interface DocumentContradiction {
+  field_path: string
+  existing_value_excerpt?: string
+  proposed_value_excerpt?: string
+  note: string
+}
 
 interface BrandBrainSuggestionsProps {
   documentId: string
@@ -17,8 +24,21 @@ export default function BrandBrainSuggestions({
 }: BrandBrainSuggestionsProps) {
   const [applying, setApplying] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // 'contradictions' es metadata (Fase 2), no un campo de brand_data -- se
+  // muestra aparte, con su propio tratamiento visual, y nunca se ofrece como
+  // checkbox normal de "aplicar" (ya queda registrada server-side en
+  // brain_contradictions al analizar el documento).
+  const contradictions: DocumentContradiction[] = Array.isArray(suggestions?.contradictions)
+    ? suggestions.contradictions
+    : []
+  const fieldSuggestions = Object.fromEntries(
+    Object.entries(suggestions || {}).filter(([key]) => key !== 'contradictions')
+  )
+  const contradictedRoots = new Set(contradictions.map((c) => c.field_path?.split('.')[0]).filter(Boolean))
+
   const [selectedFields, setSelectedFields] = useState<Set<string>>(
-    new Set(Object.keys(suggestions || {}))
+    new Set(Object.keys(fieldSuggestions))
   )
 
   const handleToggleField = (field: string) => {
@@ -38,8 +58,8 @@ export default function BrandBrainSuggestions({
     try {
       const updates: Record<string, any> = {}
       selectedFields.forEach((field) => {
-        if (suggestions[field]) {
-          updates[field] = suggestions[field]
+        if (fieldSuggestions[field]) {
+          updates[field] = fieldSuggestions[field]
         }
       })
       await onApply(updates)
@@ -50,7 +70,7 @@ export default function BrandBrainSuggestions({
     }
   }
 
-  if (!suggestions || Object.keys(suggestions).length === 0) {
+  if (!suggestions || (Object.keys(fieldSuggestions).length === 0 && contradictions.length === 0)) {
     return null
   }
 
@@ -68,24 +88,55 @@ export default function BrandBrainSuggestions({
         </div>
       )}
 
-      <div className="space-y-3 mb-6">
-        {Object.entries(suggestions).map(([field, value]) => (
-          <div key={field} className="flex items-start gap-3 p-3 bg-surface border border-line rounded">
-            <input
-              type="checkbox"
-              checked={selectedFields.has(field)}
-              onChange={() => handleToggleField(field)}
-              className="mt-1 w-4 h-4 cursor-pointer"
-            />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-ink capitalize">{field.replace(/_/g, ' ')}</p>
-              <p className="text-xs text-ink-secondary mt-1 break-words">
-                {typeof value === 'object' ? JSON.stringify(value) : String(value).substring(0, 200)}
-                {typeof value === 'string' && value.length > 200 ? '...' : ''}
-              </p>
+      {contradictions.length > 0 && (
+        <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/25 rounded space-y-2">
+          <p className="text-sm font-medium text-amber-400 flex items-center gap-1.5">
+            <AlertTriangle size={14} /> Contradicciones detectadas — quedan registradas para revisión, no se resuelven solas
+          </p>
+          {contradictions.map((c, i) => (
+            <div key={`${c.field_path}-${i}`} className="text-xs text-ink-secondary pl-1">
+              <span className="font-medium text-ink">{c.field_path}</span>: {c.note}
+              {c.existing_value_excerpt && c.proposed_value_excerpt && (
+                <span className="block mt-0.5">
+                  Actual: "{c.existing_value_excerpt}" → Propuesto: "{c.proposed_value_excerpt}"
+                </span>
+              )}
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
+      )}
+
+      <div className="space-y-3 mb-6">
+        {Object.entries(fieldSuggestions).map(([field, value]) => {
+          const hasContradiction = contradictedRoots.has(field)
+          return (
+            <div
+              key={field}
+              className={
+                hasContradiction
+                  ? 'flex items-start gap-3 p-3 bg-amber-500/5 border border-amber-500/30 rounded'
+                  : 'flex items-start gap-3 p-3 bg-surface border border-line rounded'
+              }
+            >
+              <input
+                type="checkbox"
+                checked={selectedFields.has(field)}
+                onChange={() => handleToggleField(field)}
+                className="mt-1 w-4 h-4 cursor-pointer"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-ink capitalize flex items-center gap-1.5">
+                  {field.replace(/_/g, ' ')}
+                  {hasContradiction && <AlertTriangle size={12} className="text-amber-400" />}
+                </p>
+                <p className="text-xs text-ink-secondary mt-1 break-words">
+                  {typeof value === 'object' ? JSON.stringify(value) : String(value).substring(0, 200)}
+                  {typeof value === 'string' && value.length > 200 ? '...' : ''}
+                </p>
+              </div>
+            </div>
+          )
+        })}
       </div>
 
       <div className="flex gap-3">

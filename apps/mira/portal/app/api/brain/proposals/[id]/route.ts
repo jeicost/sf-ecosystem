@@ -59,10 +59,12 @@ export async function POST(
 
     // confirm → aplicar con los executors compartidos
     try {
+      const sourceType = proposal.origin === 'drive_sync' || proposal.origin === 'lint' ? proposal.origin : 'chat'
       const applied = await applyBrainChanges(
         proposal.client_id,
         (proposal.changes as BrainChange[]) ?? [],
-        proposal.project_id
+        proposal.project_id,
+        { sourceType, sourceRef: proposal.id }
       )
       await admin
         .from('brain_change_proposals')

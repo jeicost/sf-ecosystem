@@ -33,8 +33,18 @@ export function deepMerge(base: Record<string, any>, patch: Record<string, any>)
   return result
 }
 
+export interface BrainChangeProvenance {
+  sourceType: 'chat' | 'drive_sync' | 'document_analysis' | 'manual' | 'lint' | 'onboarding'
+  sourceRef?: string
+}
+
 /** Aplica UN cambio confirmado. Lanza Error con mensaje legible si falla. */
-export async function applyBrainChange(clientId: string, change: BrainChange, projectId?: string | null): Promise<string> {
+export async function applyBrainChange(
+  clientId: string,
+  change: BrainChange,
+  projectId?: string | null,
+  provenance?: BrainChangeProvenance
+): Promise<string> {
   const db = adminClient()
 
   switch (change.target) {
@@ -61,6 +71,31 @@ export async function applyBrainChange(clientId: string, change: BrainChange, pr
       const { error } = await db.from('brand_profiles').update(update).eq('id', current.id)
       if (error) throw new Error(`No se pudo actualizar el brain: ${error.message}`)
       const saved = Object.keys(update).filter((k) => k !== 'updated_at')
+
+      // Provenance (Fase 2): de qué SECCIÓN vino cada cambio -- best-effort,
+      // un fallo aquí nunca debe deshacer el cambio real ya aplicado.
+      if (provenance) {
+        const touchedFieldPaths = saved.filter((k) => k !== 'brand_data')
+        if (brand_data && typeof brand_data === 'object') touchedFieldPaths.push(...Object.keys(brand_data))
+        if (touchedFieldPaths.length) {
+          try {
+            await db.from('brain_field_provenance').upsert(
+              touchedFieldPaths.map((fieldPath) => ({
+                client_id: clientId,
+                project_id: projectId ?? null,
+                field_path: fieldPath,
+                source_type: provenance.sourceType,
+                source_ref: provenance.sourceRef ?? null,
+                updated_at: new Date().toISOString(),
+              })),
+              { onConflict: 'client_id,field_path' }
+            )
+          } catch (provenanceError) {
+            console.error('applyBrainChange: failed to record provenance:', provenanceError)
+          }
+        }
+      }
+
       return `Brain actualizado: ${saved.join(', ')}`
     }
 
@@ -123,11 +158,12 @@ export async function applyBrainChange(clientId: string, change: BrainChange, pr
 export async function applyBrainChanges(
   clientId: string,
   changes: BrainChange[],
-  projectId?: string | null
+  projectId?: string | null,
+  provenance?: BrainChangeProvenance
 ): Promise<string[]> {
   const results: string[] = []
   for (const change of changes) {
-    results.push(await applyBrainChange(clientId, change, projectId))
+    results.push(await applyBrainChange(clientId, change, projectId, provenance))
   }
   return results
 }

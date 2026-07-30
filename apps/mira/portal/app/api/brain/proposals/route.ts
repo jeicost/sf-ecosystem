@@ -10,13 +10,19 @@ export async function GET(req: NextRequest) {
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
 
     const status = searchParams.get('status') || 'pending'
-    const { data, error } = await adminClient()
+    // Paginación real (Fase 2) -- antes un .limit(30) fijo dejaba huérfanas en
+    // silencio las propuestas más antiguas de un cliente con mucho volumen
+    // (p.ej. tras conectar la síntesis automática de Drive).
+    const limit = Math.min(Math.max(parseInt(searchParams.get('limit') || '30', 10) || 30, 1), 100)
+    const offset = Math.max(parseInt(searchParams.get('offset') || '0', 10) || 0, 0)
+
+    const { data, error, count } = await adminClient()
       .from('brain_change_proposals')
-      .select('id, origin, status, summary, changes, created_at, applied_at')
+      .select('id, origin, status, summary, changes, created_at, applied_at', { count: 'exact' })
       .eq('client_id', access.clientId)
       .eq('status', status)
       .order('created_at', { ascending: false })
-      .limit(30)
+      .range(offset, offset + limit - 1)
 
     if (error) {
       if (error.message.includes('brain_change_proposals')) {
@@ -24,7 +30,8 @@ export async function GET(req: NextRequest) {
       }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
-    return NextResponse.json({ proposals: data ?? [] })
+    const total = count ?? data?.length ?? 0
+    return NextResponse.json({ proposals: data ?? [], total, hasMore: offset + (data?.length ?? 0) < total })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error' },

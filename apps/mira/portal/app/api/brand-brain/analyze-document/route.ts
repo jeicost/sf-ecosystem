@@ -84,7 +84,7 @@ ${profile?.brand_data ? JSON.stringify(profile.brand_data, null, 2) : 'No existi
 
 Rules:
 - Only include a field if the document states or clearly implies it — omit fields entirely rather than guessing from the document type alone (a pitch deck doesn't automatically have a "strategy_roadmap" unless it actually lays one out).
-- If the document CONTRADICTS the current brand profile on a field (not just phrased differently — an actual conflict, e.g. a different tagline or a different target audience), still include your extracted value, but prefix it with '[CONFLICTO]' and name what it conflicts with, so the reviewer sees it before accepting.
+- If the document CONTRADICTS the current brand profile on a field (not just phrased differently — an actual conflict, e.g. a different tagline or a different target audience), still include your clean extracted value in its normal field (no prefix, no annotation inline) AND add a separate entry to the top-level "contradictions" array describing the conflict — the reviewer needs to see the conflict flagged clearly, not buried inside the value itself.
 - Quote or closely paraphrase the document's own language where possible (tone_and_voice, tagline, mission) instead of rewording it into generic corporate phrasing.
 - hero_features and audiences must be things the document itself lists or describes — not features you'd assume this type of business has.
 
@@ -100,7 +100,8 @@ Return ONLY valid JSON (no markdown, no text before/after) with suggested update
   "visual_identity": "",
   "competitive_positioning": "",
   "go_to_market": "",
-  "strategy_roadmap": ""
+  "strategy_roadmap": "",
+  "contradictions": [{ "field_path": "identity.tagline", "existing_value_excerpt": "", "proposed_value_excerpt": "", "note": "1 frase de por qué es un conflicto real" }]
 }
 
 ${GROUNDING_CONTRACT}`
@@ -183,6 +184,39 @@ ${GROUNDING_CONTRACT}`
 
     if (updateError) {
       console.error('Error storing analysis:', updateError)
+    }
+
+    // Contradicciones estructuradas (Fase 2) -- best-effort, un fallo aquí no
+    // debe romper el análisis ya guardado.
+    const rawContradictions = (suggestedUpdates as Record<string, unknown>)?.contradictions
+    if (jsonParseSuccess && Array.isArray(rawContradictions) && rawContradictions.length) {
+      try {
+        for (const c of rawContradictions as Array<Record<string, unknown>>) {
+          const fieldPath = typeof c.field_path === 'string' ? c.field_path : null
+          const note = typeof c.note === 'string' ? c.note : null
+          if (!fieldPath || !note) continue
+
+          const { data: alreadyOpen } = await admin
+            .from('brain_contradictions')
+            .select('id')
+            .eq('client_id', clientId)
+            .eq('field_path', fieldPath)
+            .eq('status', 'open')
+            .limit(1)
+          if (alreadyOpen?.length) continue
+
+          await admin.from('brain_contradictions').insert({
+            client_id: clientId,
+            field_path: fieldPath,
+            existing_value_excerpt: typeof c.existing_value_excerpt === 'string' ? c.existing_value_excerpt : null,
+            proposed_value_excerpt: typeof c.proposed_value_excerpt === 'string' ? c.proposed_value_excerpt : null,
+            note,
+            source_type: 'document_analysis',
+          })
+        }
+      } catch (contradictionError) {
+        console.error('analyze-document: failed to record contradictions:', contradictionError)
+      }
     }
 
     // Return error if JSON parsing failed

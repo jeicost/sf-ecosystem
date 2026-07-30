@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
                 : {}),
             },
           },
-        })
+        }, undefined, { sourceType: 'onboarding' })
         result.brand = 'ok'
       } catch (e) {
         errors.brand = e instanceof Error ? e.message : 'Error guardando la marca'

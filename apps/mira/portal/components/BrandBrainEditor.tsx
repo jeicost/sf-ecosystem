@@ -5,6 +5,7 @@ import { Save, Loader2, Check, AlertCircle, Upload } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import BrandBrainSuggestions from './BrandBrainSuggestions'
 import DriveFoldersPanel from './DriveFoldersPanel'
+import BrandBrainIndexView from './BrandBrainIndexView'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
@@ -35,7 +36,7 @@ interface BrandProfile {
   updated_at: string
 }
 
-type TabType = 'brand_identity' | 'audience_market' | 'voice_visual' | 'content_strategy' | 'business_ops' | 'documents'
+type TabType = 'brand_identity' | 'audience_market' | 'voice_visual' | 'content_strategy' | 'business_ops' | 'documents' | 'index'
 
 // Audience items arrive in several real shapes depending on who wrote them:
 // this editor's own textarea ({segment, need, message}), the seed data
@@ -430,6 +431,7 @@ export default function BrandBrainEditor() {
           { id: 'content_strategy', label: `📚 ${t('bb.tab-content', locale)}` },
           { id: 'business_ops', label: `💼 ${t('bb.tab-business', locale)}` },
           { id: 'documents', label: `📄 ${t('bb.tab-documents', locale)}` },
+          { id: 'index', label: `🗂️ ${t('bb.tab-index', locale)}` },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -457,6 +459,7 @@ export default function BrandBrainEditor() {
           content_strategy: '🧠 Pilares y ritmo → son la base del Monthly Content System, el content engine y las quick actions de contenido.',
           business_ops: '🧠 Negocio y oferta → hero items con precio, mecánicas de promo, restricciones y canales entran en informes, monthly y propuestas comerciales. De las secciones MÁS usadas.',
           documents: '🧠 Documentos → se guardan en la biblioteca del cliente y desde julio TODOS los agentes e informes los leen (índice de conocimiento unificado).',
+          index: '🧠 Índice → de dónde vino cada sección (chat, Drive, documento, edición manual) y qué contradicciones siguen abiertas — nunca se resuelven solas, un humano las revisa aquí.',
         }[activeTab] || ''}
       </p>
 
@@ -1391,6 +1394,10 @@ export default function BrandBrainEditor() {
               </div>
             )}
           </div>
+        )}
+
+        {activeTab === 'index' && activeClient?.id && (
+          <BrandBrainIndexView clientId={activeClient.id} />
         )}
       </div>
 
