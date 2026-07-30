@@ -9,6 +9,13 @@ import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
+import {
+  parseDepartmentChatRole,
+  getDepartmentPrompt,
+  getDepartmentChatName,
+  departmentHasCreativeAgents,
+  departmentSlugToAgentDomain,
+} from '@/lib/department-prompt'
 import type Anthropic from '@anthropic-ai/sdk'
 
 // Sin esto, esta ruta (la más usada de toda la app — chat de los 23 agentes,
@@ -75,7 +82,11 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    if (!AGENT_METADATA[role]) {
+    // Chat por departamento (opción A: una sola voz) — rol virtual `dept:<slug>`
+    // que no vive en AGENT_METADATA (no es un agente individual), ver
+    // lib/department-prompt.ts.
+    const deptSlug = parseDepartmentChatRole(role)
+    if (!deptSlug && !AGENT_METADATA[role]) {
       return new Response(JSON.stringify({ error: `Agente '${role}' no encontrado` }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
       })
@@ -144,8 +155,9 @@ export async function POST(req: NextRequest) {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     })
 
-    const agentName = AGENT_DISPLAY_NAMES[role] ?? role
-    const systemPrompt = getAgentPrompt(role, locale as 'es' | 'en')
+    const agentName = deptSlug ? getDepartmentChatName(deptSlug, locale as 'es' | 'en') : (AGENT_DISPLAY_NAMES[role] ?? role)
+    const systemPrompt = deptSlug ? getDepartmentPrompt(deptSlug, locale as 'es' | 'en') : getAgentPrompt(role, locale as 'es' | 'en')
+    const isCreativeRole = deptSlug ? departmentHasCreativeAgents(deptSlug) : CREATIVE_IMAGE_ROLES.includes(role)
 
     // Feedback previo negativo (👍/👎 del usuario en turnos anteriores con este
     // agente) — cierra el loop de app/api/agent-interactions/route.ts: en vez de
@@ -264,7 +276,7 @@ export async function POST(req: NextRequest) {
           // image on every single designer/spark turn regardless of whether
           // the user was asking for an image at all.
           let userContent: Anthropic.MessageParam['content'] = userText
-          if (CREATIVE_IMAGE_ROLES.includes(role) && sanitized.length === 0) {
+          if (isCreativeRole && sanitized.length === 0) {
             try {
               const { adminClient } = await import('@/lib/supabase')
               const { fetchApprovedVisuals } = await import('@/lib/studio-references')
@@ -299,7 +311,7 @@ export async function POST(req: NextRequest) {
               max_tokens: MAX_TOKENS[role] ?? 2048,
               system: fullSystem,
               messages: conversation,
-              tools: CREATIVE_IMAGE_ROLES.includes(role) ? [WEB_SEARCH_TOOL, GENERATE_IMAGE_TOOL] : [WEB_SEARCH_TOOL],
+              tools: isCreativeRole ? [WEB_SEARCH_TOOL, GENERATE_IMAGE_TOOL] : [WEB_SEARCH_TOOL],
             })
 
             for await (const chunk of anthropicStream) {
@@ -395,7 +407,7 @@ export async function POST(req: NextRequest) {
                   title: `Chat ${agentName}`,
                   category: 'insight',
                   summary: fullOutput.slice(0, 200),
-                  source_department: AGENT_METADATA[role]?.department ?? null,
+                  source_department: deptSlug ? departmentSlugToAgentDomain(deptSlug) : (AGENT_METADATA[role]?.department ?? null),
                   created_by: sessionUserId,
                 })
               } catch { /* la persistencia nunca debe romper el stream */ }

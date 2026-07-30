@@ -15,9 +15,14 @@ export interface UseAgentChatOptions {
   projectId?: string | null
   autonomy?: 'always_ask' | 'full_auto'
   locale?: 'es' | 'en'
+  // Nombre a usar en el feedback 👍/👎 (agent_interactions.agent_name) — solo
+  // necesario para roles que no viven en AGENT_METADATA (p.ej. el chat de
+  // departamento `dept:<slug>`), para que coincida con el agentName que
+  // app/api/agent/route.ts ya usa al loguear esa misma conversación.
+  agentDisplayName?: string
 }
 
-export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es' }: UseAgentChatOptions) {
+export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es', agentDisplayName }: UseAgentChatOptions) {
   const [messages, setMessages] = useState<AgentMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -130,7 +135,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             client_id: clientId,
-            agent_name: AGENT_DISPLAY_NAMES[role] ?? role,
+            agent_name: agentDisplayName ?? AGENT_DISPLAY_NAMES[role] ?? role,
             user_query: userMsg.content,
             agent_response: assistantMsg.content,
             outcome,
@@ -139,7 +144,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
         })
       } catch { /* feedback failures should never disrupt the chat */ }
     },
-    [messages, clientId, role]
+    [messages, clientId, role, agentDisplayName]
   )
 
   return { messages, isLoading, error, sendMessage, cancel, sendFeedback }

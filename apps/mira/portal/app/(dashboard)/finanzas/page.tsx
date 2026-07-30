@@ -5,6 +5,7 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
+import DepartmentChatLink from '@/components/department-chat-link'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
@@ -41,6 +42,7 @@ export default function FinanzasPage() {
         title={t('header.finance', locale)}
         subtitle={t('header.finance-desc', locale)}
         eyebrowColor={deptMeta.color}
+        action={<DepartmentChatLink slug="finanzas" />}
       />
 
       <StatRow

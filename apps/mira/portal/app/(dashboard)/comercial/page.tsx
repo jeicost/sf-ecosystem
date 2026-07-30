@@ -5,6 +5,7 @@ import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
+import DepartmentChatLink from '@/components/department-chat-link'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
@@ -47,6 +48,7 @@ export default function ComercialPage() {
         title={t('header.sales', locale)}
         subtitle={t('header.sales-desc', locale)}
         eyebrowColor={deptColor}
+        action={<DepartmentChatLink slug="comercial" />}
       />
 
       <StatRow
