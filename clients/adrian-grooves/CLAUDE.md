@@ -16,7 +16,25 @@ desde `home.pixels`.
 
 ## Env vars (Vercel)
 `SF_CMS_API_URL=https://cms.startupsfactory.es/api/public`, `SF_CMS_API_KEY=sk_...`,
-`SF_CMS_PROJECT_SLUG=adrian-grooves`. Acepta también los nombres legacy `CMS_*`.
+`SF_CMS_PROJECT_SLUG=adrian-grooves`, `SF_CMS_PREVIEW_SECRET=...`. Acepta también los
+nombres legacy `CMS_*`.
+
+## Draft Mode / preview (EDUX-N4, piloto)
+Además del bake de build-time (arriba), este sitio soporta preview en vivo de contenido
+`draft` vía Next.js Draft Mode:
+- `/api/draft?secret=<x>&slug=home` — verifica `secret` contra `SF_CMS_PREVIEW_SECRET`
+  (mismo valor que `projects.preview_secret` en sf-cms), activa draft mode, redirige a `/`.
+  Este es el link que abre el botón "Vista previa" del admin de sf-cms.
+- `/api/disable-draft` — desactiva draft mode, redirige a `/`.
+- Con draft mode activo, `app/page.tsx` hace un fetch en tiempo de request a
+  `GET /api/public/pages?project=adrian-grooves&slug=home&preview=true` (headers
+  `x-api-key` + `x-preview-secret`, `cache: 'no-store'`) en vez de leer
+  `content/pages.json` — así se ve contenido `draft` sin publicar/redeployar. Si el fetch
+  falla por cualquier motivo, cae al bake estático (nunca rompe/blanquea la página).
+- Con draft mode activo se muestra una barra amarilla fija arriba (`components/DraftBanner.tsx`,
+  deliberadamente fuera del branding del sitio) con link para salir.
+- Sin draft mode (comportamiento normal de producción): cero cambios, sigue siendo 100%
+  bake estático como antes.
 
 ## Deploy
 Proyecto Vercel propio (install aislado, NO workspace dep). Preview por ahora, sin dominio custom.

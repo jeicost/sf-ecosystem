@@ -45,3 +45,55 @@ export function loadPixels(pageSlug = 'home'): Record<string, string> {
     return {}
   }
 }
+
+/**
+ * Normalizes a raw `pages.sections_json` column (array of
+ * `{ id?, type, data }`) into the same keyed-by-id shape used by the
+ * build-time bake (content/pages.json), so live preview fetches and the
+ * static bake share one merge path (`section()`). Mirrors the logic in
+ * scripts/fetch-cms-content.mjs — keep both in sync if that shape changes.
+ */
+export function normalizeSections(sectionsJson: unknown): CmsSections {
+  const sections: CmsSections = {}
+  if (!Array.isArray(sectionsJson)) return sections
+  for (const raw of sectionsJson) {
+    if (!raw || typeof raw !== 'object') continue
+    const rec = raw as Record<string, unknown>
+    const key = (rec.id ?? rec.type) as string | undefined
+    if (!key) continue
+    sections[key] = { type: (rec.type as string) ?? '', data: (rec.data as SectionData) ?? {} }
+  }
+  return sections
+}
+
+/**
+ * Draft Mode (EDUX-N4): request-time fetch of the live (possibly-draft)
+ * page from sf-cms, bypassing the build-time bake entirely. Used only while
+ * `draftMode().isEnabled` — production reads always go through
+ * `loadCmsSections`. Returns `null` on any failure (missing env, network
+ * error, non-2xx) so the caller can fall back to the static bake — a CMS
+ * outage during preview must never blank the page.
+ */
+export async function loadCmsSectionsLive(pageSlug = 'home'): Promise<CmsSections | null> {
+  const apiUrl = process.env.SF_CMS_API_URL || process.env.CMS_API_URL
+  const apiKey = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY
+  const projectSlug = process.env.SF_CMS_PROJECT_SLUG || process.env.PROJECT_SLUG || 'adrian-grooves'
+  const previewSecret = process.env.SF_CMS_PREVIEW_SECRET
+
+  if (!apiUrl || !apiKey || !previewSecret) return null
+
+  try {
+    const res = await fetch(
+      `${apiUrl}/pages?project=${projectSlug}&slug=${pageSlug}&preview=true`,
+      {
+        headers: { 'x-api-key': apiKey, 'x-preview-secret': previewSecret },
+        cache: 'no-store',
+      },
+    )
+    if (!res.ok) return null
+    const page = await res.json()
+    return normalizeSections(page?.sections_json)
+  } catch {
+    return null
+  }
+}

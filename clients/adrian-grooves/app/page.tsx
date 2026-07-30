@@ -1,10 +1,12 @@
-import { loadCmsSections, section } from '@/lib/cms-pages'
+import { draftMode } from 'next/headers'
+import { loadCmsSections, loadCmsSectionsLive, section } from '@/lib/cms-pages'
 import { site } from '@/lib/site'
 import { courseJsonLd, faqJsonLd } from '@/lib/jsonld'
 import { Nav } from '@/components/Nav'
 import { Footer } from '@/components/Footer'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { StickyCta } from '@/components/StickyCta'
+import { DraftBanner } from '@/components/DraftBanner'
 import { PagePixels, loadPagePixels } from '@/components/PagePixels'
 import { Hero } from '@/components/sections/Hero'
 import { Problema } from '@/components/sections/Problema'
@@ -27,13 +29,21 @@ const DEFAULT_FAQS = [
   { q: '¿Y si no me convence?', a: 'Tienes 14 días de garantía. Si no es para ti, te devuelvo el dinero íntegro.' },
 ]
 
-export default function Home() {
-  const cms = loadCmsSections('home')
+export default async function Home() {
+  // Draft Mode (EDUX-N4 preview): when active, prefer a live request-time
+  // fetch from sf-cms (may include unpublished drafts) over the build-time
+  // bake. Any failure falls back to the static content — preview must never
+  // blank the page or break normal (non-draft) rendering.
+  const { isEnabled: isDraft } = await draftMode()
+  const cms = isDraft
+    ? (await loadCmsSectionsLive('home')) ?? loadCmsSections('home')
+    : loadCmsSections('home')
   const cta = (section(cms, 'hero')['cta_url'] as string) || site.checkoutUrl
   const pixels = loadPagePixels('home')
 
   return (
     <>
+      {isDraft && <DraftBanner />}
       <PagePixels pixels={pixels} />
       <ScrollReveal />
       <Nav ctaUrl={cta} />
