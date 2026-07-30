@@ -1,7 +1,6 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
-import { captureError } from '@/lib/capture-error'
 
 const STRATEGY_AGENT_IDS = STRATEGY_DEPT_AGENTS.map((a) => a.id)
 
@@ -45,42 +44,42 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId).eq('status', 'pending_review')
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'pendingApprovals' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching pendingApprovals:', e); return 0 }),
 
     (async () => {
       const { count } = await db.from('alerts')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId).eq('status', 'open')
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'openAlerts' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching openAlerts:', e); return 0 }),
 
     (async () => {
       const { count } = await db.from('leads')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId)
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'leads' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching leads:', e); return 0 }),
 
     (async () => {
       const { count } = await db.from('leads')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId).gte('hot_score', HOT_SCORE_THRESHOLD)
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'hotLeads' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching hotLeads:', e); return 0 }),
 
     (async () => {
       const { count } = await db.from('proposal_library')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId)
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'proposals' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching proposals:', e); return 0 }),
 
     (async () => {
       const { count } = await db.from('post_history')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId)
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'posts' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching posts:', e); return 0 }),
 
     // crm_contacts no tiene columna client_id — se escribe con workspace_id
     // (ver lib/comercial/promote-lead.ts). Es una cadena de 2 pasos
@@ -99,7 +98,7 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
         .select('id', { count: 'exact', head: true })
         .eq('workspace_id', mapping.workspace)
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'contacts' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching contacts:', e); return 0 }),
 
     // generation_queue nunca tuvo columnas agent_type/agent_role (ver docs/DEBT.md
     // punto r) — planes/ideas se cuentan sobre agent_activity, la tabla real que
@@ -109,14 +108,14 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId).in('agent_role', STRATEGY_AGENT_IDS).eq('status', 'completed')
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'plans' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching plans:', e); return 0 }),
 
     (async () => {
       const { count } = await db.from('agent_activity')
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId).eq('agent_role', 'spark').eq('status', 'completed')
       return count || 0
-    })().catch((e) => { captureError(e, { route: 'getDepartmentStats', clientId, metric: 'ideas' }); return 0 }),
+    })().catch((e) => { console.error('Error fetching ideas:', e); return 0 }),
   ])
 
   return {
