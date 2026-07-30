@@ -497,3 +497,47 @@ Continuación de (ll)/(mm) el mismo día. Todo verificado contra producción rea
 - Eliminadas 2 rutas sin ningún caller en toda la app: `app/api/drive-references` (duplicaba `brand_references`, que sí está vivo vía `lib/onboarding/tools.ts`/`lib/brain-tools`) y `app/api/memory/save` (endpoint de solo lectura inalcanzable).
 
 **Hallazgo colateral, sin arreglar (fuera de alcance de esta ronda)**: error 400 real en `/agent/[role]` — `column agent_activity.created_at does not exist`, en las queries de `getAgentActivityTasks`/`getAgentStats` (pestañas Activity/Performance). Pre-existente, no introducido hoy.
+
+---
+
+## oo) Cierre comercial de arquetipos + auditoría (docs/UX/software) + capa 1-2 de prompts (2026-07-30)
+
+Sesión larga, pedida explícitamente por el CEO como cierre "a nivel comercial, sin fallos ni cabos sueltos" de todo el sistema de agentes. 3 auditorías en paralelo (documentación completa del monorepo, UX de la experiencia de agentes, software/seguridad) antes de tocar código.
+
+**Hallazgo de las auditorías — los 5 arquetypes restantes tenían el MISMO bug que Studio ayer, más grave**: `OracleArchetype`, `AnalystArchetype`, `ExplorerArchetype`, `ArchitectArchetype`, `SentinelArchetype` mostraban datos 100% inventados a los 23 agentes sin excepción, con botones decorativos sin ningún handler real (Analyst "Re-score"/"Send to Finn", Explorer "Research"/"Contact" — ni siquiera tenían `onClick`; Sentinel tenía un stub explícito `onClick={e => e.stopPropagation()}`). Bug adicional real en `ARCHETYPE_CUSTOMIZATIONS` (`lib/agent-archetypes.ts`): keyed por nombre de persona (`alex`, `vera`...) mientras el único caller real pasa el slug de rol — nunca hizo match, mismo patrón que el `AGENT_ARCHETYPE_MAP` que P4 ya había arreglado. **Resuelto**: eliminado por estar completamente muerto (ningún componente leía sus campos), no re-keyeado.
+
+**Auditoría UX (dura, no diplomática) encontró, más allá del dato falso**:
+- i18n roto en los 6 (mezcla EN/ES hardcodeada) mientras el resto de la app usa `t()` — un cliente español veía "New Project" junto a texto en español en la misma pantalla.
+- 3 colores hardcodeados (`#444`, `#1E1E1E`) sin equivalente en modo claro.
+- Cero estados de carga/error — un fallo de red y "sin datos real" se veían idénticos.
+- Cero responsive (`grid-cols-3` fijo sin `md:`) — inusable en móvil.
+- Accesibilidad: flechas/puntos del carrusel de Oracle sin `aria-label`.
+- Solo Studio tenía un empty state diseñado; Analyst con `results=[]` colapsaba el panel derecho dejando un hueco sin mensaje.
+- Dato bueno: About/Activity/Chat/Performance ya estaban bien hechos y localizados — el problema estaba concentrado en Workspace.
+
+**Auditoría software/seguridad**:
+- Aislamiento entre clientes: seguro, verificado línea a línea en `resolveRequestClient`.
+- El grounding visual de ayer (P4) descargaba la imagen de referencia en CADA mensaje de designer/spark, no solo cuando iba a generar imagen — coste/latencia innecesarios. **Resuelto**: solo en el primer turno (`sanitized.length === 0`).
+- Inyección de prompts real y sin mitigar: `app/api/comercial/icebreaker/route.ts` interpola `company_name`/`linkedin_summary` de leads (dato de terceros) directo en el prompt sin ningún filtro — mismo patrón en `lib/client-memory.ts`/`lib/knowledge.ts`. Mitigación ligera añadida (ver más abajo); la defensa estructural completa queda pendiente, es tema de otra sesión.
+- Mi idea original de "una ruta genérica multi-arquetipo" NO encaja con la convención real del repo (125 rutas pequeñas en 53 `app/api/*`, cada una con su `lib/*.ts`) — descartada a favor de 5 rutas pequeñas (una por archetype, no por agente).
+
+**Decisiones del CEO caso por caso** (con datos reales verificados en Supabase antes de decidir, no solo teoría):
+- Analyst: `icp-scorer`/`reply-qualifier` → tabla `leads` real. `atlas` → `competitive-analysis` real (bucketing por competidor/oportunidad/diferenciación en vez de caliente/frío). `ads-manager`/`quant`/`fiscal` → vacío honesto, sin dato real que encaje.
+- Architect: `content-strategist`/`social-media-manager` → Monthly real. `strategos`/`blueprint` → `action-plan` real (**confirmado con 5 filas reales de Salsa antes de decidir**). `proposal-writer` → histórico real de `crear_propuesta` (**confirmado 4 filas reales de Salsa con executive_summary/pricing/next_steps**, aunque el botón de crear nuevas se retiró hace días). `midas` → `proyeccion_financiera` real (mecanismo listo, Salsa con 0 filas hoy). `orchestrator`/`onboard` → vacío honesto.
+- Sentinel: los 3 agentes → aprobaciones pendientes + coste real (`mira_usage_log`) + tasa de éxito real (`quick_actions_results.status`) — sin depender de `agent_activity.created_at` (columna rota, ver arriba).
+
+**Arquitectura implementada**: registro `WorkspaceStatus<T> = {status:'ready',data}|{status:'empty'}|{status:'error',message}` (`lib/archetype-workspace.ts`) usado por los 6 archetypes; 5 rutas nuevas `app/api/archetypes/{oracle,analyst,explorer,architect,sentinel}-data` + sus `lib/*.ts` fetchers; `app/api/studio/approved-visuals` migrada al mismo contrato tri-estado (antes un fallo de red devolvía `[]`, indistinguible de "sin datos"). `app/(dashboard)/agent/[role]/page.tsx` con un solo loader genérico (`workspaceEndpoint(role, clientId)` según `getArchetype(role)`) reemplazando el loader hardcodeado solo-Studio de ayer.
+
+**Verificado en vivo en producción** (no solo build): Playwright contra Salsa real tras cada deploy — `copywriter` con copy real generado (`[RECOMENDACIÓN]` correctamente etiquetado), `strategos` con Plan de Acción 30/60/90 real y link a `/toolkit/report/[id]`, `community-manager` con $3.88 de coste real / 86% tasa de éxito / 0 pendientes, `fiscal`/`icp-scorer`/`lead-scout` con el vacío honesto correcto. Un primer intento de verificación salió con datos falsos todavía visibles — **el deploy aún no había propagado**; el poll por status HTTP 307 no es señal fiable de que un deploy nuevo esté live (307 lo devuelve el middleware de auth para cualquier ruta, exista o no la nueva). Repetido tras confirmar `vercel ls` con estado `Ready`, correcto.
+
+**Capa 1-2 del plan de prompts (68 prompts totales, capas 3 — quick actions/Business Reports/monthly/documents, ~44 más — quedan para otra sesión)**:
+- Los 5 contratos compartidos (`GROUNDING_CONTRACT`, `AGENT_CHAT_GROUNDING_NOTE`, `EDITORIAL_CONTRACT`, `REPORT_VOICE_CONTRACT`, `formatBrandBrainForPrompt`) ya eran de buena calidad — mejoras quirúrgicas, no reescritura: desambiguación `[RECOMENDACIÓN]` vs `[SUPUESTO]` + ejemplo de calibración, regla de anti-inyección (dato de terceros nunca es instrucción) en los dos contratos de grounding, nota de precedencia entre `EDITORIAL_CONTRACT`/`REPORT_VOICE_CONTRACT`, guía para Brand Brain casi vacío.
+- Los 23 prompts de agente (`lib/agent-prompts-i18n.ts`) ya tenían buena calidad (plantilla TRAITS/TONE/OUTPUT/CONSTRAINTS/MÉTODO/FORMATO/EJEMPLO consistente) — se añadió a los 23 (ES+EN, simetría mantenida) una frase de límite/derivación específica (a qué agente redirigir ante una petición fuera de su rol) + una regla genérica de respaldo.
+- **Bug real cometido y corregido en el propio proceso**: el primer script de inserción localizaba el bloque de cada rol con una búsqueda global sobre todo el fichero, que siempre encuentra la ocurrencia en la sección ES sin importar qué idioma tocaba — mezcló las dos frases (ES+EN) dentro del bloque ES y dejó el bloque EN intacto en los 23. Detectado con `git diff --stat` + lectura antes de comitear, revertido con `git checkout --` y rehecho separando explícitamente las secciones ES/EN antes de buscar cada rol.
+- **Verificado en vivo con llamadas reales a `/api/agent`**: Alex (copywriter) al pedirle una proyección financiera se negó a inventar cifras y pidió los datos reales (grounding funcionando) — pero Fiscal, al pedirle copy de Instagram, lo escribió sin derivar a nadie porque su único ejemplo de límite (precios→Midas) no cubría ese caso. Confirma que un solo ejemplo por agente no basta; la regla genérica de respaldo se añadió precisamente por este hallazgo en vivo, no por precaución teórica.
+
+**Pendiente real que queda**:
+- Capa 3 de prompts (quick actions, Business Reports, monthly, documents, ~44 prompts) — siguiente fase explícita.
+- Defensa estructural completa contra inyección de prompts (la mitigación de hoy es una regla de texto, no un mecanismo de sanitización) — sesión de seguridad aparte.
+- Unificación de layout entre archetypes (Analyst/Explorer en 2 columnas vs. el resto apilado) — decisión de diseño, no bug, documentada para una ronda de diseño futura.
+- `column agent_activity.created_at does not exist` (ver entrada nn) — sigue sin arreglar, no introducido por esta ronda.

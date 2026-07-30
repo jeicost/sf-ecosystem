@@ -1,6 +1,17 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-29 tarde)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)). Migraciones 0048/0049/0050/0051 aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)). Migraciones 0048/0049/0050/0051 aplicadas. Este fichero lista SOLO lo que queda.
+
+## MIRA — Arquetipos + Prompts (DEBT oo, 2026-07-30) — ✅ CERRADO (capas 1-2)
+
+Los 6 archetypes (Oracle/Analyst/Explorer/Architect/Sentinel/Studio) ya muestran datos reales o vacío honesto — cero datos inventados, i18n real, modo claro, estados de carga/error, responsive, verificado en vivo contra Salsa tras cada deploy. Los 23 prompts de agente tienen ahora límite de rol explícito (ES+EN simétrico). Detalle completo en DEBT (oo).
+
+**Pendiente real de esta ronda:**
+- **Capa 3 de prompts** (quick actions ~19, Business Reports ~13, monthly 3, documents 4, otros ~5 — ~44 prompts): siguiente fase explícita, no tocada.
+- **Defensa estructural anti-inyección**: hoy solo hay una regla de texto en los contratos de grounding; falta un mecanismo real de sanitización/delimitación para contenido de leads/documentos. Sesión de seguridad aparte.
+- **Unificación de layout entre archetypes** (Analyst/Explorer en 2 columnas vs. el resto apilado): decisión de diseño, no bug.
+- **`onboard` sin dato real**: se dejó en vacío honesto (Architect) — no hay un concepto limpio de "progreso de onboarding" por-workspace-de-cliente; si se quiere real, requiere diseño nuevo (¿progreso del wizard admin? ¿algo per-cliente?).
+- **Tarjeta genérica de Google Drive en `/integrations`** puede disparar un disconnect que no hace nada (tabla equivocada, ver punto 9 abajo) — sigue sin decidir.
 
 ## Acciones del CEO (no técnicas)
 
