@@ -21,7 +21,9 @@ import { Team, TEAM_DEFAULTS } from '@/components/sections/Team'
 import { FAQ, FAQ_DEFAULTS } from '@/components/sections/FAQ'
 import { LeadMagnet, LEAD_MAGNET_DEFAULTS } from '@/components/sections/LeadMagnet'
 import { FinalCTA, FINAL_CTA_DEFAULTS } from '@/components/sections/FinalCTA'
-import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
+import { draftMode } from 'next/headers'
+import { loadCmsSections, loadCmsSectionsLive, mergeCms } from '@/lib/cms-pages'
+import { DraftBanner } from '@/components/DraftBanner'
 
 export const metadata = {
   title: 'NC Global Assets — Bangkok Operating Partner for International Brands',
@@ -33,11 +35,15 @@ export const metadata = {
   },
 }
 
-export default function HomePage() {
-  const cms = loadCmsSections('home')
+export default async function HomePage() {
+  // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
+  // of the build-time bake when active; any failure falls back to the bake.
+  const { isEnabled: isDraft } = await draftMode()
+  const cms = isDraft ? (await loadCmsSectionsLive('home')) ?? loadCmsSections('home') : loadCmsSections('home')
 
   return (
     <>
+      {isDraft && <DraftBanner />}
       {/* Fase 1: Core home sections */}
       <Hero data={mergeCms(HERO_DEFAULTS, cms['hero']?.data)} />
       <HeroStrip />

@@ -42,3 +42,8 @@ yarn-error.log*
 next-env.d.ts
 content/
 .vercel
+
+# resolves deps fresh on every deploy (same pattern as nc-global-assets-next
+# — a committed lockfile broke that project's cloud build once, see
+# docs/PROJECT_REGISTRY.md)
+package-lock.json

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { loadCmsSections, section, mergeContent } from "@/lib/cms-pages";
+import { draftMode } from "next/headers";
+import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { DraftBanner } from "@/components/DraftBanner";
 import { defaultInfluencersContent } from "@/lib/content/influencers";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -20,12 +22,16 @@ export const metadata: Metadata = buildMetadata({
   path: "/influencers",
 });
 
-export default function InfluencersPage() {
-  const cms = loadCmsSections("influencers");
+export default async function InfluencersPage() {
+  const { isEnabled: isDraft } = await draftMode();
+  const cms = isDraft
+    ? (await loadCmsSectionsLive("influencers")) ?? loadCmsSections("influencers")
+    : loadCmsSections("influencers");
   const content = mergeContent(defaultInfluencersContent, section(cms, "content"));
 
   return (
     <>
+      {isDraft && <DraftBanner />}
       <Nav />
       <main>
         <InfluencerHero content={content} />

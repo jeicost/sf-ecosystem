@@ -4,7 +4,9 @@ import Image from "next/image";
 import { getDictionary } from "@/lib/i18n/getDictionary";
 import { locales } from "@/lib/i18n/config";
 import type { Locale } from "@/lib/i18n/config";
-import { loadCmsSections, mergeCms, cmsVal } from "@/lib/cms-pages";
+import { draftMode } from "next/headers";
+import { loadCmsSections, loadCmsSectionsLive, mergeCms, cmsVal } from "@/lib/cms-pages";
+import { DraftBanner } from "@/components/DraftBanner";
 
 const site = "https://startupsfactory.es";
 
@@ -321,8 +323,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const dict = await getDictionary(l);
   const rawT = dict.home;
 
-  // Merge CMS overrides — CMS content wins over dictionary when present
-  const cms = loadCmsSections('home')
+  // Merge CMS overrides — CMS content wins over dictionary when present.
+  // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
+  // of the build-time bake when active; any failure falls back to the bake.
+  const { isEnabled: isDraft } = await draftMode()
+  const cms = isDraft ? (await loadCmsSectionsLive('home')) ?? loadCmsSections('home') : loadCmsSections('home')
   const t = {
     ...rawT,
     hero:       mergeCms(rawT.hero,       cms['hero']?.data,         l),
@@ -338,6 +343,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
+      {isDraft && <DraftBanner />}
       {/* ─── HERO ─────────────────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-black min-h-[100dvh] flex items-center">
         {/* Orbs posicionados al lado izquierdo para el split */}

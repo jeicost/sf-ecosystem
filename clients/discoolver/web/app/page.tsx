@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { faqJsonLd } from "@/lib/jsonld";
-import { loadCmsSections, section, mergeContent } from "@/lib/cms-pages";
+import { draftMode } from "next/headers";
+import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { DraftBanner } from "@/components/DraftBanner";
 import { defaultHomeContent } from "@/lib/content/home";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
@@ -26,8 +28,11 @@ export const metadata: Metadata = buildMetadata({
   path: "/",
 });
 
-export default function HomePage() {
-  const cms = loadCmsSections("home");
+export default async function HomePage() {
+  // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
+  // of the build-time bake when active; any failure falls back to the bake.
+  const { isEnabled: isDraft } = await draftMode();
+  const cms = isDraft ? (await loadCmsSectionsLive("home")) ?? loadCmsSections("home") : loadCmsSections("home");
   const content = mergeContent(defaultHomeContent, section(cms, "content"));
 
   const faqItems = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
@@ -37,6 +42,7 @@ export default function HomePage() {
 
   return (
     <>
+      {isDraft && <DraftBanner />}
       <Nav />
       <main>
         <Hero content={content} />
