@@ -1,15 +1,29 @@
 import type { NextConfig } from 'next'
+import { createRequire } from 'module'
+
+// pdfjs-dist vive hoisted en el node_modules de la RAÍZ del monorepo (pnpm
+// workspace), no en apps/mira/portal/node_modules -- una ruta relativa tipo
+// './node_modules/pdfjs-dist/...' en outputFileTracingIncludes no encuentra
+// nada ahí (confirmado: el .nft.json del build no incluía el worker pese a
+// la entrada). require.resolve (Node puro, este fichero no pasa por
+// webpack) encuentra la ruta real sea cual sea el nivel de hoisting.
+const require = createRequire(import.meta.url)
+const pdfWorkerPath = require.resolve('pdfjs-dist/legacy/build/pdf.worker.mjs')
 
 const nextConfig: NextConfig = {
   // pdf-parse v2 no sobrevive al bundling de webpack (TypeError:
   // Object.defineProperty called on non-object al importarlo) — debe
-  // cargarse como dependencia externa en runtime. pdfjs-dist (su
-  // dependencia real) también, para que Vercel incluya el fichero del
-  // worker (pdf.worker.mjs) en el bundle de la función -- webpack no lo
-  // detecta porque pdfjs-dist lo resuelve con una ruta dinámica, no un
-  // import estático (ver lib/pdf-extract.ts, confirmado en logs reales de
-  // producción, 2026-07-30).
+  // cargarse como dependencia externa en runtime.
   serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
+  // pdfjs-dist resuelve la ruta de su "fake worker" (pdf.worker.mjs) de forma
+  // dinámica (no un import estático) -- el tracer de ficheros de Vercel no lo
+  // detecta como necesario y lo deja fuera del bundle serverless, aunque
+  // pdfjs-dist calcule la ruta correcta ("Cannot find module .../
+  // pdf.worker.mjs", confirmado en logs reales de producción, 2026-07-30).
+  // Forzamos su inclusión explícita con la ruta real resuelta arriba.
+  outputFileTracingIncludes: {
+    '/api/**/*': [pdfWorkerPath],
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.supabase.co' },
