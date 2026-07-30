@@ -249,8 +249,13 @@ export async function POST(req: NextRequest) {
           // Drive queda para cuando el equipo visual externo cierre el contrato
           // de marca compartido (ver docs del plan) -- esto es lo que se puede
           // hacer ya, sin conflicto.
+          // Cost/latency fix (2026-07-30, commercial-readiness audit): only
+          // ground on the FIRST turn of a conversation (empty history), not
+          // on every message -- this was downloading + vision-encoding an
+          // image on every single designer/spark turn regardless of whether
+          // the user was asking for an image at all.
           let userContent: Anthropic.MessageParam['content'] = userText
-          if (CREATIVE_IMAGE_ROLES.includes(role)) {
+          if (CREATIVE_IMAGE_ROLES.includes(role) && sanitized.length === 0) {
             try {
               const { adminClient } = await import('@/lib/supabase')
               const { fetchApprovedVisuals } = await import('@/lib/studio-references')

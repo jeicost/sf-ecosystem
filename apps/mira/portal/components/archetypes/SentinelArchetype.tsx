@@ -1,109 +1,17 @@
 'use client'
 import { useState } from 'react'
-import { AlertCircle, CheckCircle2, Clock, Zap, Eye } from 'lucide-react'
+import { CheckCircle2, Zap, Eye } from 'lucide-react'
 import { clsx } from 'clsx'
-
-type AlertLevel = 'critical' | 'warning' | 'info' | 'success'
-
-interface Alert {
-  id: string
-  level: AlertLevel
-  title: string
-  message: string
-  timestamp: string
-  context?: string
-  action?: string
-}
-
-interface DashboardMetric {
-  label: string
-  value: string | number
-  trend?: 'up' | 'down' | 'stable'
-  trendPercent?: number
-  alert?: boolean
-}
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
+import type { SentinelAlert, SentinelData, AlertLevel } from '@/lib/sentinel-data'
 
 interface SentinelArchetypeProps {
   agentColor: string
-  agentEmoji: string
-  agentName: string
-  alerts?: Alert[]
-  metrics?: DashboardMetric[]
-  onAcknowledgeAlert?: (alertId: string) => void
-  onDismissAlert?: (alertId: string) => void
-  isMonitoring?: boolean
+  status?: 'loading' | 'ready' | 'empty' | 'error'
+  errorMessage?: string
+  data?: SentinelData
 }
-
-const DEFAULT_ALERTS: Alert[] = [
-  {
-    id: '1',
-    level: 'critical',
-    title: 'Approval Queue Backlog',
-    message: '23 posts pending review — oldest from 2 hours ago',
-    timestamp: '2 min ago',
-    context: 'Marketing department',
-    action: 'Review now',
-  },
-  {
-    id: '2',
-    level: 'warning',
-    title: 'Engagement Drop',
-    message: 'LinkedIn posts down 32% vs last week average',
-    timestamp: '15 min ago',
-    context: 'Performance anomaly',
-  },
-  {
-    id: '3',
-    level: 'warning',
-    title: 'API Response Time',
-    message: 'Claude API latency above 4s (normal: <1s)',
-    timestamp: '1 hour ago',
-    context: 'System health',
-  },
-  {
-    id: '4',
-    level: 'info',
-    title: 'New Lead Batch',
-    message: '47 hot leads added from Rex discovery',
-    timestamp: '2 hours ago',
-    context: 'Sales pipeline',
-  },
-  {
-    id: '5',
-    level: 'success',
-    title: 'Monthly Goal Achieved',
-    message: 'Content calendar 104% complete for May',
-    timestamp: '3 hours ago',
-    context: 'Goal tracking',
-  },
-]
-
-const DEFAULT_METRICS: DashboardMetric[] = [
-  {
-    label: 'Approval Queue',
-    value: 23,
-    trend: 'up',
-    trendPercent: 8,
-    alert: true,
-  },
-  {
-    label: 'Healthy Agents',
-    value: '28/30',
-    trend: 'stable',
-  },
-  {
-    label: 'Daily Costs',
-    value: '$247',
-    trend: 'down',
-    trendPercent: 12,
-  },
-  {
-    label: 'Success Rate',
-    value: '97.4%',
-    trend: 'up',
-    trendPercent: 2,
-  },
-]
 
 const getAlertColor = (level: AlertLevel) => {
   switch (level) {
@@ -118,110 +26,83 @@ const getAlertColor = (level: AlertLevel) => {
   }
 }
 
-const getTrendIcon = (trend?: 'up' | 'down' | 'stable') => {
-  if (trend === 'up') return '📈'
-  if (trend === 'down') return '📉'
-  return '➡️'
-}
-
-export default function SentinelArchetype({
-  agentColor,
-  alerts = DEFAULT_ALERTS,
-  metrics = DEFAULT_METRICS,
-  onAcknowledgeAlert,
-  onDismissAlert,
-  isMonitoring = true,
-}: SentinelArchetypeProps) {
+export default function SentinelArchetype({ agentColor, status = 'ready', errorMessage, data }: SentinelArchetypeProps) {
+  const { locale } = useLocaleContext()
   const [dismissedAlerts, setDismissedAlerts] = useState<Set<string>>(new Set())
   const [acknowledgedAlerts, setAcknowledgedAlerts] = useState<Set<string>>(new Set())
   const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null)
 
-  const visibleAlerts = alerts.filter(a => !dismissedAlerts.has(a.id))
-  const criticalAlerts = visibleAlerts.filter(a => a.level === 'critical')
-
-  const handleAcknowledge = (alertId: string) => {
-    setAcknowledgedAlerts(prev => new Set([...prev, alertId]))
-    onAcknowledgeAlert?.(alertId)
+  if (status === 'loading') {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-16 rounded-lg bg-surface" />
+        <div className="h-32 rounded-lg bg-surface" />
+      </div>
+    )
   }
 
-  const handleDismiss = (alertId: string) => {
-    setDismissedAlerts(prev => new Set([...prev, alertId]))
-    onDismissAlert?.(alertId)
+  if (status === 'error') {
+    return (
+      <div className="card p-6 text-center border border-dashed border-line">
+        <div className="text-sm text-ink font-medium">{t('agent.workspace.error-title', locale)}</div>
+        <div className="text-xs text-ink-tertiary mt-1">{errorMessage || t('agent.workspace.error-desc', locale)}</div>
+      </div>
+    )
   }
+
+  const alerts = data?.alerts ?? []
+  const metrics = data?.metrics ?? []
+  const visibleAlerts = alerts.filter((a) => !dismissedAlerts.has(a.id))
+  const criticalAlerts = visibleAlerts.filter((a) => a.level === 'critical')
 
   return (
     <div className="space-y-8">
-      {/* Monitoring Status */}
-      <div
-        className="card p-4 border-l-4 flex items-center justify-between"
-        style={{ borderLeftColor: isMonitoring ? '#10B981' : '#EF4444' }}
-      >
+      <div className="card p-4 border-l-4 flex items-center justify-between" style={{ borderLeftColor: '#10B981' }}>
         <div className="flex items-center gap-3">
-          <div
-            className="w-3 h-3 rounded-full animate-pulse"
-            style={{ backgroundColor: isMonitoring ? '#10B981' : '#EF4444' }}
-          />
+          <div className="w-3 h-3 rounded-full animate-pulse" style={{ backgroundColor: '#10B981' }} />
           <div>
-            <div className="text-sm font-semibold text-ink">
-              {isMonitoring ? '🟢 Monitoring Active' : '🔴 Monitoring Paused'}
-            </div>
+            <div className="text-sm font-semibold text-ink">🟢 {t('archetype.sentinel.monitoring-active', locale)}</div>
             <div className="text-xs text-ink-tertiary">
-              {visibleAlerts.length} active alert{visibleAlerts.length !== 1 ? 's' : ''} •{' '}
-              {criticalAlerts.length} critical
+              {visibleAlerts.length} {t('archetype.sentinel.active-alerts', locale)} • {criticalAlerts.length} críticas
             </div>
           </div>
         </div>
         <Eye size={18} style={{ color: agentColor }} />
       </div>
 
-      {/* Dashboard Metrics */}
-      <div className="space-y-3">
-        <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
-          📊 Dashboard
-        </div>
+      {metrics.length > 0 && (
+        <div className="space-y-3">
+          <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
+            📊 {t('archetype.sentinel.dashboard', locale)}
+          </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {metrics.map((metric, idx) => (
-            <div
-              key={idx}
-              className={clsx(
-                'card p-4',
-                metric.alert ? 'border border-[#EF4444]' : 'border border-line'
-              )}
-            >
-              <div className="flex items-start justify-between mb-2">
-                <div className="text-xs font-semibold text-ink-secondary uppercase">{metric.label}</div>
-                {metric.alert && <AlertCircle size={14} className="text-[#EF4444]" />}
-              </div>
-              <div className="flex items-baseline gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {metrics.map((metric, idx) => (
+              <div key={idx} className={clsx('card p-4', metric.alert && 'border border-[#EF4444]')}>
+                <div className="text-xs font-semibold text-ink-secondary uppercase mb-2">
+                  {metric.label.startsWith('archetype.') ? t(metric.label, locale) : metric.label}
+                </div>
                 <div className="text-2xl font-bold text-ink">{metric.value}</div>
-                {metric.trend && (
-                  <div className="text-xs text-ink-secondary">
-                    {getTrendIcon(metric.trend)}
-                    {metric.trendPercent && <span className="ml-1">{metric.trendPercent}%</span>}
-                  </div>
-                )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Alerts Feed */}
       <div className="space-y-3">
         <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
-          🚨 Alerts Feed
+          🚨 {t('archetype.sentinel.alerts-feed', locale)}
         </div>
 
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {visibleAlerts.length === 0 ? (
             <div className="card p-6 text-center">
               <CheckCircle2 size={32} className="mx-auto text-[#10B981] mb-2" />
-              <div className="text-sm text-ink font-medium">All Clear</div>
-              <div className="text-xs text-ink-tertiary mt-1">No active alerts — everything is running smoothly</div>
+              <div className="text-sm text-ink font-medium">{t('archetype.sentinel.all-clear', locale)}</div>
+              <div className="text-xs text-ink-tertiary mt-1">{t('archetype.sentinel.all-clear-desc', locale)}</div>
             </div>
           ) : (
-            visibleAlerts.map(alert => {
+            visibleAlerts.map((alert: SentinelAlert) => {
               const color = getAlertColor(alert.level)
               const isSelected = selectedAlertId === alert.id
               const isAcknowledged = acknowledgedAlerts.has(alert.id)
@@ -232,16 +113,10 @@ export default function SentinelArchetype({
                   onClick={() => setSelectedAlertId(isSelected ? null : alert.id)}
                   className={clsx(
                     'w-full card p-3 text-left transition-all border',
-                    isSelected
-                      ? `border-line bg-surface-hover`
-                      : `border-transparent hover:bg-surface`
+                    isSelected ? 'border-line bg-surface-hover' : 'border-transparent hover:bg-surface'
                   )}
-                  style={{
-                    ...(isSelected && { borderColor: color.border }),
-                  }}
                 >
                   <div className="space-y-2">
-                    {/* Alert Header */}
                     <div className="flex items-start gap-2">
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-lg"
@@ -253,73 +128,42 @@ export default function SentinelArchetype({
                         <div className="font-semibold text-ink text-sm">{alert.title}</div>
                         <div className="text-xs text-ink-secondary mt-0.5">{alert.message}</div>
                       </div>
-                      <div className="text-xs text-ink-tertiary flex-shrink-0 ml-2">
-                        <Clock size={12} className="inline mr-1" />
-                        {alert.timestamp}
-                      </div>
                     </div>
 
-                    {/* Expanded Details */}
                     {isSelected && (
                       <div className="border-t border-line pt-3 space-y-3 mt-3">
                         {alert.context && (
                           <div className="p-2 bg-surface rounded text-xs text-ink-secondary">
-                            <span className="text-ink-tertiary">📍 Context:</span> {alert.context}
+                            <span className="text-ink-tertiary">📍 {t('archetype.sentinel.context', locale)}:</span> {alert.context}
                           </div>
                         )}
-
                         <div className="flex gap-2 pt-2">
-                          {!isAcknowledged && (
+                          {!isAcknowledged ? (
                             <button
-                              onClick={e => {
+                              onClick={(e) => {
                                 e.stopPropagation()
-                                handleAcknowledge(alert.id)
+                                setAcknowledgedAlerts((prev) => new Set([...prev, alert.id]))
                               }}
                               className="px-3 py-1.5 text-xs rounded font-medium transition-all flex items-center gap-1"
-                              style={{
-                                backgroundColor: `${color.icon}20`,
-                                color: color.icon,
-                                border: `1px solid ${color.icon}40`,
-                              }}
+                              style={{ backgroundColor: `${color.icon}20`, color: color.icon, border: `1px solid ${color.icon}40` }}
                             >
                               <CheckCircle2 size={12} />
-                              Acknowledge
+                              OK
                             </button>
-                          )}
-                          {isAcknowledged && (
-                            <button
-                              disabled
-                              className="px-3 py-1.5 text-xs rounded font-medium flex items-center gap-1"
-                              style={{
-                                backgroundColor: `${color.icon}30`,
-                                color: color.icon,
-                              }}
-                            >
+                          ) : (
+                            <button disabled className="px-3 py-1.5 text-xs rounded font-medium flex items-center gap-1" style={{ backgroundColor: `${color.icon}30`, color: color.icon }}>
                               <CheckCircle2 size={12} />
-                              Acknowledged
+                              OK ✓
                             </button>
                           )}
-
-                          {alert.action && (
-                            <button
-                              onClick={e => {
-                                e.stopPropagation()
-                              }}
-                              className="px-3 py-1.5 text-xs rounded font-medium text-white"
-                              style={{ backgroundColor: agentColor }}
-                            >
-                              {alert.action}
-                            </button>
-                          )}
-
                           <button
-                            onClick={e => {
+                            onClick={(e) => {
                               e.stopPropagation()
-                              handleDismiss(alert.id)
+                              setDismissedAlerts((prev) => new Set([...prev, alert.id]))
                             }}
                             className="px-3 py-1.5 text-xs rounded text-ink-tertiary hover:text-ink transition-colors"
                           >
-                            Dismiss
+                            {t('archetype.sentinel.dismiss', locale)}
                           </button>
                         </div>
                       </div>
@@ -332,17 +176,15 @@ export default function SentinelArchetype({
         </div>
       </div>
 
-      {/* Help */}
       <div className="p-4 rounded bg-surface border border-line space-y-2">
         <div className="flex gap-2 items-start text-xs text-ink-secondary">
           <Zap size={14} className="flex-shrink-0 mt-0.5" style={{ color: agentColor }} />
           <div>
-            <div className="font-medium text-ink mb-1">How to use alerts</div>
+            <div className="font-medium text-ink mb-1">{t('archetype.sentinel.legend-title', locale)}</div>
             <ul className="space-y-1 text-ink-secondary">
-              <li>🔴 <strong>Critical:</strong> Requires immediate action</li>
-              <li>🟠 <strong>Warning:</strong> Attention recommended</li>
-              <li>🔵 <strong>Info:</strong> FYI updates</li>
-              <li>🟢 <strong>Success:</strong> Milestone achieved</li>
+              <li>🔴 {t('archetype.sentinel.legend-critical', locale)}</li>
+              <li>🟠 {t('archetype.sentinel.legend-warning', locale)}</li>
+              <li>🔵 {t('archetype.sentinel.legend-info', locale)}</li>
             </ul>
           </div>
         </div>

@@ -1,240 +1,157 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, Copy, Check, Lock, Sparkles, RotateCcw } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ChevronLeft, ChevronRight, Copy, Check, Sparkles } from 'lucide-react'
 import { clsx } from 'clsx'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
-interface Variant {
+export interface OracleVariant {
   id: string
   text: string
-  engagementScore?: number
   platform?: string
 }
 
 interface OracleArchetypeProps {
   agentColor: string
-  agentEmoji: string
-  agentName: string
-  briefContent?: string
-  onVariantSelect?: (variant: Variant) => void
-  onSaveToLibrary?: (variant: Variant) => void
-  isLoading?: boolean
-  variants?: Variant[]
-  defaultVariants?: Variant[]
+  status?: 'loading' | 'ready' | 'empty' | 'error'
+  errorMessage?: string
+  variants?: OracleVariant[]
 }
 
 export default function OracleArchetype({
   agentColor,
-  agentEmoji,
-  agentName,
-  briefContent = '',
-  onVariantSelect,
-  onSaveToLibrary,
-  isLoading = false,
+  status = 'ready',
+  errorMessage,
   variants = [],
-  defaultVariants = [
-    {
-      id: 'a',
-      text: 'El FOMO es un feature, no un bug. Lee cómo los mejores startups lo dominan...',
-      engagementScore: 87,
-    },
-    {
-      id: 'b',
-      text: '5 decisiones que toman los fundadores antes de levantarfunding. ¿Las conoces?',
-      engagementScore: 79,
-    },
-    {
-      id: 'c',
-      text: 'Cuando todo se rompe en el unit economics, esto es lo que funciona.',
-      engagementScore: 72,
-    },
-    {
-      id: 'd',
-      text: 'Los mejores CTOs no hablan de tech. Hablan de esto.',
-      engagementScore: 84,
-    },
-    {
-      id: 'e',
-      text: 'Tu tasa de churn dice más sobre tu producto que cualquier métrica.',
-      engagementScore: 76,
-    },
-  ],
 }: OracleArchetypeProps) {
+  const { locale } = useLocaleContext()
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [isEditing, setIsEditing] = useState(false)
   const [editText, setEditText] = useState('')
-  const [copiedId, setCopiedId] = useState<string | null>(null)
-  const [savedIds, setSavedIds] = useState<Set<string>>(new Set())
-  const [lockedId, setLockedId] = useState<string | null>(null)
-  const currentVariants = variants.length > 0 ? variants : defaultVariants
-  const selectedVariant = currentVariants[selectedIndex]
+  const [copied, setCopied] = useState(false)
+
+  const selectedVariant = variants[selectedIndex]
 
   useEffect(() => {
-    setEditText(selectedVariant.text)
+    if (selectedVariant) setEditText(selectedVariant.text)
   }, [selectedIndex, selectedVariant])
 
+  if (status === 'loading') {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-32 rounded-lg bg-surface" />
+        <div className="h-24 rounded-lg bg-surface" />
+      </div>
+    )
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="card p-6 text-center border border-dashed border-line">
+        <div className="text-sm text-ink font-medium">{t('agent.workspace.error-title', locale)}</div>
+        <div className="text-xs text-ink-tertiary mt-1">{errorMessage || t('agent.workspace.error-desc', locale)}</div>
+      </div>
+    )
+  }
+
+  if (status === 'empty' || variants.length === 0) {
+    return (
+      <div className="card p-6 text-center border border-dashed border-line">
+        <Sparkles size={24} className="mx-auto text-ink-tertiary mb-2" />
+        <div className="text-sm text-ink font-medium">{t('archetype.oracle.empty-title', locale)}</div>
+        <div className="text-xs text-ink-tertiary mt-1">{t('archetype.oracle.empty-desc', locale)}</div>
+      </div>
+    )
+  }
+
   const handlePrevious = () => {
-    setSelectedIndex(prev => (prev === 0 ? currentVariants.length - 1 : prev - 1))
+    setSelectedIndex((prev) => (prev === 0 ? variants.length - 1 : prev - 1))
     setIsEditing(false)
   }
 
   const handleNext = () => {
-    setSelectedIndex(prev => (prev === currentVariants.length - 1 ? 0 : prev + 1))
+    setSelectedIndex((prev) => (prev === variants.length - 1 ? 0 : prev + 1))
     setIsEditing(false)
   }
 
   const handleCopy = async () => {
-    await navigator.clipboard.writeText(selectedVariant.text)
-    setCopiedId(selectedVariant.id)
-    setTimeout(() => setCopiedId(null), 2000)
-  }
-
-  const handleSave = () => {
-    setSavedIds(prev => new Set([...prev, selectedVariant.id]))
-    onSaveToLibrary?.(selectedVariant)
-    setTimeout(() => {
-      setSavedIds(prev => {
-        const next = new Set(prev)
-        next.delete(selectedVariant.id)
-        return next
-      })
-    }, 2000)
-  }
-
-  const handleLock = () => {
-    setLockedId(selectedVariant.id)
-    onVariantSelect?.(selectedVariant)
-    // Animation effect
-    setTimeout(() => setLockedId(null), 1500)
-  }
-
-  const handleRegenerate = () => {
-    // Placeholder for regenerate logic
-    console.log('Regenerating variant:', selectedVariant.id)
+    await navigator.clipboard.writeText(editText)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
     <div className="space-y-8">
-      {/* Brief Card */}
-      {briefContent && (
-        <div className="card p-6 border-l-4" style={{ borderLeftColor: agentColor }}>
-          <div className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: agentColor }}>
-            📝 Brief
-          </div>
-          <div className="text-sm text-ink leading-relaxed">{briefContent}</div>
-        </div>
-      )}
-
-      {/* Generate Button */}
-      <div className="flex justify-center">
-        <button
-          disabled={isLoading}
-          className="px-6 py-3 rounded-lg font-medium text-sm transition-all flex items-center gap-2"
-          style={{
-            backgroundColor: `${agentColor}20`,
-            color: agentColor,
-            border: `1px solid ${agentColor}40`,
-            opacity: isLoading ? 0.5 : 1,
-          }}
-        >
-          <Sparkles size={16} />
-          {isLoading ? 'Generando variantes...' : 'Generar 5 variantes'}
-        </button>
-      </div>
-
-      {/* Workshop - Carousel */}
       <div className="space-y-4">
         <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
-          ⚡ Workshop
+          ⚡ {t('archetype.oracle.recent', locale)}
         </div>
 
-        <div className="card p-6 space-y-4 relative overflow-hidden">
-          {/* Variant Display */}
+        <div className="card p-4 sm:p-6 space-y-4 relative overflow-hidden">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="text-sm font-semibold text-ink">
-                Variante {String.fromCharCode(65 + selectedIndex)}
-                {lockedId === selectedVariant.id && (
-                  <span className="ml-2 text-xs px-2 py-1 rounded" style={{ backgroundColor: `${agentColor}30`, color: agentColor }}>
-                    ✓ Locked
-                  </span>
-                )}
+                {t('archetype.oracle.variant', locale)} {String.fromCharCode(65 + selectedIndex)}
               </div>
-              {selectedVariant.engagementScore && (
-                <div className="flex items-center gap-1 text-xs text-ink-secondary">
-                  <span className="text-lg">🔥</span>
-                  <span>{selectedVariant.engagementScore}% engagement vs 64% avg</span>
-                </div>
+              {selectedVariant.platform && (
+                <div className="text-xs text-ink-secondary">{selectedVariant.platform}</div>
               )}
             </div>
+            <p className="text-base text-ink leading-relaxed italic">&quot;{selectedVariant.text}&quot;</p>
+          </div>
 
-            <p className="text-base text-ink leading-relaxed italic">"{selectedVariant.text}"</p>
+          {variants.length > 1 && (
+            <div className="flex items-center justify-between pt-4 border-t border-line">
+              <button
+                onClick={handlePrevious}
+                aria-label={t('archetype.oracle.prev-variant', locale)}
+                className="p-2 hover:bg-surface-hover rounded-lg transition-colors"
+              >
+                <ChevronLeft size={18} className="text-ink-tertiary" />
+              </button>
 
-            {/* Engagement Bar */}
-            {selectedVariant.engagementScore && (
-              <div className="w-full bg-surface-hover rounded h-2 overflow-hidden">
-                <div
-                  className="h-full transition-all duration-300"
-                  style={{ width: `${selectedVariant.engagementScore}%`, backgroundColor: agentColor }}
-                />
+              <div className="flex items-center gap-2">
+                {variants.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setSelectedIndex(idx)}
+                    aria-label={t('archetype.oracle.go-to-variant', locale).replace('{n}', String(idx + 1))}
+                    className={clsx('w-2 h-2 rounded-full transition-all', idx === selectedIndex ? 'w-6' : 'bg-line')}
+                    style={idx === selectedIndex ? { backgroundColor: agentColor } : undefined}
+                  />
+                ))}
               </div>
-            )}
-          </div>
 
-          {/* Carousel Controls */}
-          <div className="flex items-center justify-between pt-4 border-t border-line">
-            <button
-              onClick={handlePrevious}
-              className="p-2 hover:bg-surface-hover rounded-lg transition-colors"
-            >
-              <ChevronLeft size={18} className="text-ink-tertiary" />
-            </button>
-
-            <div className="flex items-center gap-2">
-              {currentVariants.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setSelectedIndex(idx)}
-                  className={clsx(
-                    'w-2 h-2 rounded-full transition-all',
-                    idx === selectedIndex ? 'w-6' : '',
-                  )}
-                  style={{
-                    backgroundColor: idx === selectedIndex ? agentColor : '#444',
-                  }}
-                />
-              ))}
+              <button
+                onClick={handleNext}
+                aria-label={t('archetype.oracle.next-variant', locale)}
+                className="p-2 hover:bg-surface-hover rounded-lg transition-colors"
+              >
+                <ChevronRight size={18} className="text-ink-tertiary" />
+              </button>
             </div>
-
-            <button
-              onClick={handleNext}
-              className="p-2 hover:bg-surface-hover rounded-lg transition-colors"
-            >
-              <ChevronRight size={18} className="text-ink-tertiary" />
-            </button>
-          </div>
+          )}
         </div>
       </div>
 
-      {/* Editor - Inline Editable */}
       <div className="space-y-3">
         <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
-          🎨 Editor
+          🎨 {t('archetype.oracle.editor', locale)}
         </div>
 
-        <div className="card p-6">
+        <div className="card p-4 sm:p-6">
           {isEditing ? (
             <textarea
               value={editText}
-              onChange={e => setEditText(e.target.value)}
+              onChange={(e) => setEditText(e.target.value)}
               className="w-full bg-surface text-ink text-sm leading-relaxed p-4 rounded border border-line focus:border-ink-muted focus:outline-none resize-none"
               rows={4}
             />
           ) : (
             <div className="relative group cursor-text" onClick={() => setIsEditing(true)}>
               <p className="text-sm text-ink leading-relaxed">{editText}</p>
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-r from-transparent via-surface-hover to-transparent rounded pointer-events-none" />
               <span className="text-xs text-ink-tertiary absolute bottom-0 right-0 mt-2 group-hover:text-ink-secondary transition-colors">
-                Click to edit
+                {t('archetype.oracle.click-to-edit', locale)}
               </span>
             </div>
           )}
@@ -245,81 +162,19 @@ export default function OracleArchetype({
                 onClick={() => setIsEditing(false)}
                 className="px-3 py-1.5 text-xs rounded bg-surface hover:bg-surface-hover text-ink-secondary"
               >
-                Done
+                {t('archetype.oracle.done', locale)}
               </button>
             )}
             <button
-              onClick={handleRegenerate}
-              className="px-3 py-1.5 text-xs rounded flex items-center gap-1 text-ink-tertiary hover:text-ink"
+              onClick={handleCopy}
+              className="px-3 py-1.5 text-xs rounded flex items-center gap-1.5 transition-colors"
+              style={{ color: copied ? agentColor : undefined }}
             >
-              <RotateCcw size={12} />
-              Regenerate
+              {copied ? <Check size={12} /> : <Copy size={12} />}
+              {copied ? t('archetype.oracle.copied', locale) : t('archetype.oracle.copy', locale)}
             </button>
           </div>
         </div>
-      </div>
-
-      {/* Lock & Ship Actions */}
-      <div className="space-y-3">
-        <div className="text-xs font-semibold uppercase tracking-wider px-1" style={{ color: agentColor }}>
-          ✅ Lock & Ship
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            onClick={handleCopy}
-            className="card p-4 flex items-center justify-center gap-2 hover:bg-surface-hover transition-colors relative group"
-          >
-            {copiedId === selectedVariant.id ? (
-              <>
-                <Check size={16} style={{ color: agentColor }} />
-                <span className="text-xs font-medium" style={{ color: agentColor }}>
-                  Copied
-                </span>
-              </>
-            ) : (
-              <>
-                <Copy size={16} className="text-ink-tertiary group-hover:text-ink" />
-                <span className="text-xs font-medium text-ink-tertiary group-hover:text-ink">
-                  Copy
-                </span>
-              </>
-            )}
-          </button>
-
-          <button
-            onClick={handleSave}
-            className="card p-4 flex items-center justify-center gap-2 hover:bg-surface-hover transition-colors"
-          >
-            {savedIds.has(selectedVariant.id) ? (
-              <>
-                <Check size={16} style={{ color: agentColor }} />
-                <span className="text-xs font-medium" style={{ color: agentColor }}>
-                  Saved
-                </span>
-              </>
-            ) : (
-              <>
-                <Sparkles size={16} className="text-ink-tertiary" />
-                <span className="text-xs font-medium text-ink-tertiary">Save</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        <button
-          onClick={handleLock}
-          className="w-full py-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-2"
-          style={{
-            backgroundColor: agentColor,
-            color: 'white',
-            opacity: lockedId === selectedVariant.id ? 0.7 : 1,
-            transform: lockedId === selectedVariant.id ? 'scale(0.98)' : 'scale(1)',
-          }}
-        >
-          <Lock size={16} />
-          {lockedId === selectedVariant.id ? 'Locked ✓' : 'Use This Variant'}
-        </button>
       </div>
     </div>
   )

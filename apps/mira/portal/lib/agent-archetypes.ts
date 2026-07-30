@@ -46,46 +46,10 @@ export function getArchetype(agentId: string): AgentArchetype {
   return AGENT_ARCHETYPE_MAP[agentId] || 'ORACLE'
 }
 
-// Customize per-agent settings within an archetype
-export const ARCHETYPE_CUSTOMIZATIONS: Record<string, Record<string, any>> = {
-  alex: {
-    libraryLabel: 'Frases & Headlines',
-    engagementMetric: 'engagement',
-    previewPlatform: 'Instagram',
-  },
-  kai: {
-    libraryLabel: 'Video Templates',
-    engagementMetric: 'watch_time',
-    previewPlatform: 'YouTube',
-  },
-  vera: {
-    tableName: 'Leads',
-    scoringThresholds: { hot: 75, warm: 50, cold: 0 },
-    insightType: 'buying_signals',
-  },
-  rex: {
-    filterLabel: 'Search Criteria',
-    resultGroups: ['HOT', 'WARM', 'COLD'],
-    deepDiveLabel: 'Lead Intelligence',
-  },
-  marco: {
-    templateTypes: [
-      '90-day GTM',
-      'Product Launch',
-      'Rebranding Campaign',
-      'Partnership Strategy',
-      'Custom Brief',
-    ],
-    stepCount: 5,
-  },
-  zoe: {
-    projectTypes: ['post', 'video', 'thumbnail'],
-    primaryTool: 'canva',
-    supportedTools: ['canva', 'figma'],
-  },
-  nova: {
-    projectTypes: ['video', 'reel', 'short'],
-    primaryTool: 'canva',
-    supportedTools: ['canva', 'descript'],
-  },
-}
+// NOTA: existió aquí un ARCHETYPE_CUSTOMIZATIONS keyed por nombre de persona
+// ('alex', 'vera'...) mientras AgentArchetypeWrapper siempre recibe el slug
+// de rol ('copywriter', 'icp-scorer'...) — nunca hizo match, así que ningún
+// componente llegó a leer sus campos (verificado por grep, 2026-07-30).
+// Eliminado en vez de re-keyeado: los ajustes por agente que sí importan
+// (scoring thresholds, qué tool_slug consultar, etc.) viven ahora en los
+// fetchers reales de lib/{oracle,analyst,explorer,architect,sentinel}-data.ts.

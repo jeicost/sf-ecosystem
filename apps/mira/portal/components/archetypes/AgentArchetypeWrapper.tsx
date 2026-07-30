@@ -1,5 +1,5 @@
 'use client'
-import { getArchetype, ARCHETYPE_CUSTOMIZATIONS } from '@/lib/agent-archetypes'
+import { getArchetype } from '@/lib/agent-archetypes'
 import OracleArchetype from './OracleArchetype'
 import AnalystArchetype from './AnalystArchetype'
 import ExplorerArchetype from './ExplorerArchetype'
@@ -25,15 +25,12 @@ export default function AgentArchetypeWrapper({
   ...props
 }: AgentArchetypeWrapperProps) {
   const archetype = getArchetype(agentId)
-  const customizations = ARCHETYPE_CUSTOMIZATIONS[agentId] || {}
 
-  // Merge default props with customizations
   const mergedProps = {
     agentColor,
     agentEmoji,
     agentName,
-    ...customizations,
-    ...props, // Allow parent to override
+    ...props,
   }
 
   switch (archetype) {

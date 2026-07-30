@@ -2,7 +2,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import AgentArchetypeWrapper from '@/components/archetypes/AgentArchetypeWrapper'
-import type { DesignProject } from '@/components/archetypes/StudioArchetype'
+import { getArchetype } from '@/lib/agent-archetypes'
 import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { clsx } from 'clsx'
@@ -25,25 +25,46 @@ import Card from '@/components/ui/Card'
 import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
 
-// Roles mapped to the STUDIO archetype in lib/agent-archetypes.ts -- the only
-// ones whose Workspace tab needs real approved visuals.
-const STUDIO_ROLES = ['designer', 'spark']
-
 type AutonomyLevel = 'always_ask' | 'full_auto'
 type TabId = 'about' | 'history' | 'chat' | 'workspace' | 'performance'
+type WorkspaceStatusState = 'loading' | 'ready' | 'empty' | 'error'
 
-const TABS: { id: TabId; label: string; icon: any }[] = [
-  { id: 'about', label: 'About', icon: EyeOff },
-  { id: 'history', label: 'Activity', icon: Clock },
-  { id: 'chat', label: 'Chat', icon: MessageSquare },
-  { id: 'workspace', label: 'Workspace', icon: LayoutGrid },
-  { id: 'performance', label: 'Performance', icon: TrendingUp },
+const TABS: { id: TabId; labelKey: string; icon: any }[] = [
+  { id: 'about', labelKey: 'agent.tab.about', icon: EyeOff },
+  { id: 'history', labelKey: 'agent.tab.activity', icon: Clock },
+  { id: 'chat', labelKey: 'agent.tab.chat', icon: MessageSquare },
+  { id: 'workspace', labelKey: 'agent.tab.workspace', icon: LayoutGrid },
+  { id: 'performance', labelKey: 'agent.tab.performance', icon: TrendingUp },
 ]
 
-const AUTONOMY_OPTIONS: { id: AutonomyLevel; label: string; description: string; icon: any }[] = [
-  { id: 'always_ask', label: 'Always ask', description: 'Nothing goes out without your explicit ok.', icon: Hand },
-  { id: 'full_auto', label: 'Full autonomy', description: 'Executes and notifies. No interruptions.', icon: Zap },
+const AUTONOMY_OPTIONS: { id: AutonomyLevel; labelKey: string; descKey: string; icon: any }[] = [
+  { id: 'always_ask', labelKey: 'agent.autonomy.always-ask', descKey: 'agent.autonomy.always-ask-desc', icon: Hand },
+  { id: 'full_auto', labelKey: 'agent.autonomy.full-auto', descKey: 'agent.autonomy.full-auto-desc', icon: Zap },
 ]
+
+// Endpoint per archetype (lib/{oracle,analyst,explorer,architect,sentinel}-data.ts
+// + the pre-existing app/api/studio/approved-visuals). Adding a new agent to
+// an EXISTING archetype needs zero changes here -- only its lib/*-data.ts
+// internal role map grows by one line.
+function workspaceEndpoint(role: string, clientId: string): string {
+  const archetype = getArchetype(role)
+  const qs = `clientId=${clientId}&role=${role}`
+  switch (archetype) {
+    case 'ORACLE':
+      return `/api/archetypes/oracle-data?${qs}`
+    case 'ANALYST':
+      return `/api/archetypes/analyst-data?${qs}`
+    case 'EXPLORER':
+      return `/api/archetypes/explorer-data?clientId=${clientId}`
+    case 'ARCHITECT':
+      return `/api/archetypes/architect-data?${qs}`
+    case 'SENTINEL':
+      return `/api/archetypes/sentinel-data?clientId=${clientId}`
+    case 'STUDIO':
+    default:
+      return `/api/studio/approved-visuals?clientId=${clientId}`
+  }
+}
 
 const TASK_STATUS_CONFIG: Record<string, { icon: any; color: string }> = {
   completed: { icon: CheckCircle, color: 'text-green-500' },
@@ -68,7 +89,9 @@ export default function AgentPage() {
   const [showUploader, setShowUploader] = useState(false)
   const [uploadingDoc, setUploadingDoc] = useState(false)
   const [recentTasks, setRecentTasks] = useState<AgentTask[]>([])
-  const [studioProjects, setStudioProjects] = useState<DesignProject[]>([])
+  const [workspaceStatus, setWorkspaceStatus] = useState<WorkspaceStatusState>('loading')
+  const [workspaceData, setWorkspaceData] = useState<any>(undefined)
+  const [workspaceErrorMessage, setWorkspaceErrorMessage] = useState<string | undefined>(undefined)
   const [agentStats, setAgentStats] = useState<AgentStats>({
     totalInteractions: 0,
     completionRate: 0,
@@ -85,18 +108,22 @@ export default function AgentPage() {
     if (!clientId) return
     loadSettings()
     loadActivityData()
-    if (STUDIO_ROLES.includes(role)) loadStudioProjects()
+    loadWorkspaceData()
   }, [clientId, role])
 
-  async function loadStudioProjects() {
+  async function loadWorkspaceData() {
+    setWorkspaceStatus('loading')
     try {
-      const res = await fetch(`/api/studio/approved-visuals?clientId=${clientId}`)
-      if (!res.ok) throw new Error('Failed to load approved visuals')
-      const data = await res.json()
-      setStudioProjects(data.projects ?? [])
+      const res = await fetch(workspaceEndpoint(role, clientId))
+      if (!res.ok) throw new Error('Failed to load workspace data')
+      const json = await res.json()
+      setWorkspaceStatus(json.status)
+      setWorkspaceData(json.status === 'ready' ? json.data : undefined)
+      setWorkspaceErrorMessage(json.status === 'error' ? json.message : undefined)
     } catch (err) {
-      console.error('Error loading Studio approved visuals:', err)
-      setStudioProjects([])
+      console.error('Error loading workspace data:', err)
+      setWorkspaceStatus('error')
+      setWorkspaceErrorMessage(err instanceof Error ? err.message : 'Unknown error')
     }
   }
 
@@ -235,7 +262,7 @@ export default function AgentPage() {
 
         {/* Tabs */}
         <div className="flex gap-0 mb-8" style={{ borderBottom: '1px solid var(--border)' }}>
-          {TABS.map(({ id, label, icon: Icon }) => (
+          {TABS.map(({ id, labelKey, icon: Icon }) => (
             <button
               key={id}
               onClick={() => setActiveTab(id)}
@@ -247,7 +274,7 @@ export default function AgentPage() {
               }}
             >
               <Icon size={16} />
-              {label}
+              {t(labelKey, locale)}
             </button>
           ))}
         </div>
@@ -257,7 +284,7 @@ export default function AgentPage() {
           <div className="space-y-6">
             {/* Tone level */}
             <Card radius="card" padding="lg">
-              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Communication Tone</h3>
+              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('agent.about.tone', locale)}</h3>
               <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>How formal or casual is {agent.name}?</p>
               <div className="flex items-center gap-3">
                 <span className="text-xs" style={{ color: 'var(--text-secondary)' }}>Casual</span>
@@ -284,7 +311,7 @@ export default function AgentPage() {
 
             {/* Autonomy */}
             <Card radius="card" padding="lg">
-              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>Autonomy Level</h3>
+              <h3 className="text-sm font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{t('agent.about.autonomy', locale)}</h3>
               <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>When does {agent.name} need your approval?</p>
               <div className="grid grid-cols-2 gap-3">
                 {AUTONOMY_OPTIONS.map(opt => {
@@ -304,8 +331,8 @@ export default function AgentPage() {
                       }}
                     >
                       <Icon size={16} className="mb-2" style={{ color: selected ? agent.color : 'var(--text-secondary)' }} />
-                      <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{opt.label}</p>
-                      <p className="text-xs mt-1 leading-tight" style={{ color: 'var(--text-secondary)' }}>{opt.description}</p>
+                      <p className="text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>{t(opt.labelKey, locale)}</p>
+                      <p className="text-xs mt-1 leading-tight" style={{ color: 'var(--text-secondary)' }}>{t(opt.descKey, locale)}</p>
                     </button>
                   )
                 })}
@@ -315,7 +342,7 @@ export default function AgentPage() {
             {/* System Prompt */}
             <Card radius="card" padding="lg">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>System Prompt</h3>
+                <h3 className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>{t('agent.about.system-prompt', locale)}</h3>
                 <span className="text-xs px-2 py-1 rounded-full font-medium" style={{ background: `${agent.color}25`, color: agent.color }}>
                   v3.1 · active
                 </span>
@@ -335,7 +362,7 @@ export default function AgentPage() {
                 style={{ borderColor: `${agent.color}40`, color: copied ? '#22c55e' : agent.color }}
               >
                 {copied ? <Check size={14} /> : <Copy size={14} />}
-                {copied ? 'Copied!' : 'Copy system prompt'}
+                {copied ? t('agent.about.copied', locale) : t('agent.about.copy-prompt', locale)}
               </button>
             </Card>
           </div>
@@ -347,7 +374,7 @@ export default function AgentPage() {
             <p className="text-xs mb-4" style={{ color: 'var(--text-secondary)' }}>Latest tasks executed by {agent.name}.</p>
             {recentTasks.length === 0 ? (
               <Card radius="card" padding="lg" className="text-center">
-                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>No activity yet</p>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>{t('agent.activity.none', locale)}</p>
               </Card>
             ) : (
               recentTasks.map((task) => {
@@ -367,16 +394,22 @@ export default function AgentPage() {
           </div>
         )}
 
-        {/* Tab: Chat */}
+        {/* Tab: Workspace */}
         {activeTab === 'workspace' && (
-          // P4: la interfaz por ARQUETIPO (Oracle/Analyst/Explorer/Architect/
-          // Sentinel/Studio) por fin conectada a la página real del agente.
+          // P4/2026-07-30: la interfaz por ARQUETIPO (Oracle/Analyst/Explorer/
+          // Architect/Sentinel/Studio) con datos reales por rol -- ver
+          // lib/{oracle,analyst,explorer,architect,sentinel}-data.ts.
           <AgentArchetypeWrapper
             agentId={role}
             agentName={agent.name}
             agentColor={agent.color}
             agentEmoji={agent.emoji}
-            projects={studioProjects}
+            clientId={clientId}
+            status={workspaceStatus}
+            errorMessage={workspaceErrorMessage}
+            variants={workspaceData}
+            data={workspaceData}
+            projects={workspaceData}
           />
         )}
 
@@ -515,13 +548,13 @@ export default function AgentPage() {
         {/* Tab: Performance */}
         {activeTab === 'performance' && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Card radius="card" padding="lg">
-                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Total Interactions</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{t('agent.performance.total-interactions', locale)}</p>
                 <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.totalInteractions}</p>
               </Card>
               <Card radius="card" padding="lg">
-                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Completion Rate</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{t('agent.performance.completion-rate', locale)}</p>
                 <div className="flex items-center gap-2">
                   <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.completionRate}%</p>
                   <div className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: 'var(--bg-surface)' }}>
@@ -533,11 +566,11 @@ export default function AgentPage() {
                 </div>
               </Card>
               <Card radius="card" padding="lg">
-                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Avg Response Time</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{t('agent.performance.avg-response', locale)}</p>
                 <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.averageResponseTime}</p>
               </Card>
               <Card radius="card" padding="lg">
-                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>Last Active</p>
+                <p className="text-xs mb-1" style={{ color: 'var(--text-secondary)' }}>{t('agent.performance.last-active', locale)}</p>
                 <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{agentStats.lastActive}</p>
               </Card>
             </div>
