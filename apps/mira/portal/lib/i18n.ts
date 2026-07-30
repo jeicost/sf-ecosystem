@@ -1256,6 +1256,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'archetype.architect.build': 'Pasos del plan',
     'archetype.architect.view-full-report': 'Ver informe completo',
     'archetype.architect.step': 'Paso',
+    'archetype.architect.steps-plural': 'pasos',
     'archetype.architect.empty-title': 'Aún no hay informes generados para este rol',
     'archetype.architect.empty-desc': 'En cuanto generes el informe correspondiente, sus pasos aparecerán aquí.',
 
@@ -2568,6 +2569,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'archetype.architect.build': 'Plan steps',
     'archetype.architect.view-full-report': 'View full report',
     'archetype.architect.step': 'Step',
+    'archetype.architect.steps-plural': 'steps',
     'archetype.architect.empty-title': 'No reports generated for this role yet',
     'archetype.architect.empty-desc': 'Once you generate the matching report, its steps will appear here.',
 

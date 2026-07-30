@@ -80,7 +80,9 @@ export default function ArchitectArchetype({ agentColor, status = 'ready', error
                       {tpl.name}
                     </div>
                     {tpl.description && <div className="text-xs text-ink-secondary mb-2">{tpl.description}</div>}
-                    <div className="text-xs text-ink-tertiary">📌 {tpl.steps.length} pasos</div>
+                    <div className="text-xs text-ink-tertiary">
+                      📌 {tpl.steps.length} {tpl.steps.length === 1 ? t('archetype.architect.step', locale).toLowerCase() : t('archetype.architect.steps-plural', locale)}
+                    </div>
                   </div>
                   {selectedTemplateId === tpl.id && <Check size={18} style={{ color: agentColor }} className="flex-shrink-0 mt-1" />}
                 </div>
