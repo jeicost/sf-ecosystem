@@ -141,10 +141,31 @@ ${AGENT_CHAT_GROUNDING_NOTE}`
     }
     if (!result.has_substance) return null
 
-    return {
-      changes: Array.isArray(result.changes) ? (result.changes as BrainChange[]) : [],
-      contradictions: Array.isArray(result.contradictions) ? (result.contradictions as DriveContradiction[]) : [],
-    }
+    // Sin tool_choice en modo strict, el modelo puede devolver un item mal
+    // formado (p.ej. sin field_path) -- filtrar aquí en vez de dejar que
+    // reviente más tarde en el insert de brain_contradictions (constraint
+    // NOT NULL) perdiendo silenciosamente la contradicción real.
+    const VALID_TARGETS = ['brand_profile', 'project_memory', 'content_pillar', 'brand_reference']
+    const changes = (Array.isArray(result.changes) ? result.changes : []).filter(
+      (c): c is BrainChange =>
+        !!c &&
+        typeof c === 'object' &&
+        VALID_TARGETS.includes((c as BrainChange).target) &&
+        ((c as BrainChange).op === 'merge' || (c as BrainChange).op === 'add') &&
+        !!(c as BrainChange).payload &&
+        typeof (c as BrainChange).payload === 'object'
+    )
+    const contradictions = (Array.isArray(result.contradictions) ? result.contradictions : []).filter(
+      (c): c is DriveContradiction =>
+        !!c &&
+        typeof c === 'object' &&
+        typeof (c as DriveContradiction).field_path === 'string' &&
+        (c as DriveContradiction).field_path.trim().length > 0 &&
+        typeof (c as DriveContradiction).note === 'string' &&
+        (c as DriveContradiction).note.trim().length > 0
+    )
+
+    return { changes, contradictions }
   } catch (error) {
     console.error('drive-synthesis: synthesis call failed:', error)
     return null

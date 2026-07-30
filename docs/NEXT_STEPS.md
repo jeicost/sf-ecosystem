@@ -1,6 +1,14 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/**0062** aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/**0063** (0063 pendiente de aplicar). Este fichero lista SOLO lo que queda.
+
+## MIRA — Revisión adversarial de la Fase Brand Brain — 9 hallazgos reales corregidos (DEBT ww, 2026-07-30) — ✅ CERRADO
+
+Workflow de 4 dimensiones + verificación adversarial (2 verificadores por hallazgo) sobre todo lo construido en (vv). 11 de 15 hallazgos sobrevivieron; 9 corregidos, 2 documentados sin parchear (patrón `user_metadata.plan` sistémico en 25+ ficheros — sesión de seguridad aparte; límite del polyfill de DOMMatrix para renderizado futuro — no getText()). Los 2 más serios: `brain-lint.ts` marcaba SIEMPRE vacías 6 secciones reales (columnas planas fuera de `brand_data`, contaminando el aviso semanal para el 100% de los clientes), y `content_hash` NULL en documentos preexistentes disparaba síntesis innecesaria + riesgo de reabrir contradicciones ya resueltas por un humano. Detalle completo en DEBT (ww).
+
+**Pendiente real de esta ronda:**
+- **Aplicar la migración `0063_backfill_content_hash.sql`** (SQL editor de Supabase, CEO).
+- Sesión de seguridad dedicada para el patrón `user_metadata.plan` en todo el repo.
 
 ## MIRA — Brand Brain como "LLM Wiki" (DEBT vv, 2026-07-30) — ✅ CERRADO, con acciones reales pendientes del CEO
 
@@ -8,7 +16,7 @@ A petición del CEO tras compartir una metodología de bases de conocimiento con
 
 **Pendiente real de esta ronda (acciones del CEO, no técnicas):**
 - **Revisar la propuesta pendiente y la contradicción real que quedaron en Salsa Burgers** (`brain_change_proposals`/`brain_contradictions`, dato real no sintético, dejado a propósito para que la agencia lo revise en `/brand-brain`).
-- **Decidir cuándo activar `DRIVE_BRAIN_SYNTHESIS=1` para el resto de clientes** (hoy solo activo puntualmente, probado contra Salsa).
+- ~~Decidir cuándo activar `DRIVE_BRAIN_SYNTHESIS=1` para el resto de clientes~~ ✅ **Activado globalmente el mismo día** — Salsa Burgers y Dadybox sincronizaron bien; **Startup Factory, Discoolver y NC Global Assets necesitan reconectar Google Drive** (token expirado/revocado).
 - El cron semanal de lint (domingos 06:00 UTC) no se ha ejecutado todavía en producción — se activará solo cuando Vercel lo dispare.
 
 ## MIRA — Auditoría completa pre-lanzamiento: Brand Brain, Integraciones, chatbots y resto de secciones (DEBT uu, 2026-07-30) — ✅ CERRADA
@@ -57,12 +65,11 @@ Los 6 archetypes muestran datos reales o vacío honesto. Los 23 prompts de agent
 
 ## Acciones del CEO (no técnicas)
 
-1. **Reconexión Drive de 4 clientes** (Startup Factory, Dadybox, Discoolver, NC Global) — ✅ Salsa ya reconectado con scope de escritura completo (verificado 2026-07-29). Un clic por cliente en MIRA → Integraciones → Conectar Google Drive.
+1. **Reconexión Drive de 3 clientes** (Startup Factory, Discoolver, NC Global Assets) — verificado en vivo el 2026-07-30 disparando el sync real: los 3 fallan con "Token has been expired or revoked". Un clic por cliente en MIRA → Integraciones → Conectar Google Drive. ✅ Salsa (2026-07-29) y ✅ Dadybox (confirmado funcionando en vivo el 2026-07-30) ya no necesitan nada.
 2. **Adrian Grooves**: entregarle la password temporal (`Mira-9Ud41Adr!7`, reseteada 2026-07-27) por canal seguro; que la cambie al entrar. Configurarle Drive con el protocolo.
-3. **Dadybox**: revocar el acceso de MIRA en su cuenta Google y reconectar (fuga de token en terminal, DEBT ff) — pendiente desde el 24/07.
-4. **Revisar Drive de Dadybox/Discoolver antes de dar por bueno su onboarding visual**: en Salsa se encontró y limpió documentación técnica interna de MIRA (schemas JSON de otro proyecto) mezclada por error en su carpeta de conocimiento (DEBT nn) — comprobar que no pasa lo mismo en las otras.
-5. **Google Drive — revocar acceso desde la propia cuenta si se quiere desconectar**: la tarjeta de Integraciones ya no ofrece un botón de desconexión falso (DEBT pp); revocar hoy se hace desde Google Account → Seguridad → Apps de terceros.
-6. **Conectar Apollo.io + Hunter.io**: el CEO ya tiene cuentas reales en ambos servicios (para probar Discovery "modo profundo" en Comercial) — solo falta pegar las 2 API keys reales en MIRA → Integraciones (código ya verificado listo de punta a punta, DEBT qq).
+3. **Revisar Drive de Discoolver antes de dar por bueno su onboarding visual**: en Salsa se encontró y limpió documentación técnica interna de MIRA (schemas JSON de otro proyecto) mezclada por error en su carpeta de conocimiento (DEBT nn) — comprobar que no pasa lo mismo ahí (Dadybox ya confirmado limpio, sync real exitoso 2026-07-30).
+4. **Google Drive — revocar acceso desde la propia cuenta si se quiere desconectar**: la tarjeta de Integraciones ya no ofrece un botón de desconexión falso (DEBT pp); revocar hoy se hace desde Google Account → Seguridad → Apps de terceros.
+5. **Conectar Apollo.io + Hunter.io**: el CEO ya tiene cuentas reales en ambos servicios (para probar Discovery "modo profundo" en Comercial) — solo falta pegar las 2 API keys reales en MIRA → Integraciones (código ya verificado listo de punta a punta, DEBT qq).
 
 ## MIRA — Business Reports (DEBT ll/nn) — ✅ CERRADO
 

@@ -691,7 +691,7 @@ export async function syncDriveFolder(
   }
 
   // 6. Update drive_folders status
-  await admin
+  const { error: statusUpdateError } = await admin
     .from('drive_folders')
     .update({
       sync_status: 'completed',
@@ -699,6 +699,14 @@ export async function syncDriveFolder(
       files_synced: filesSynced,
     })
     .eq('id', folderRow.id)
+  if (statusUpdateError) {
+    // No lanzar -- el sync en sí ya tuvo éxito (documentos + síntesis ya
+    // aplicados). Pero sin loguearlo, un fallo aquí deja last_synced_at
+    // desactualizado en silencio y la carpeta vuelve a ser la primera
+    // candidata del cron (orden por last_synced_at ascendente) sin ninguna
+    // pista de por qué.
+    console.error(`Drive sync: failed to update drive_folders status for ${folderRow.id}:`, statusUpdateError.message)
+  }
 
   return { filesSynced, mapSummary, proposalCreated }
 }

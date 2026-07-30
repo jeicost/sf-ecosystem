@@ -80,7 +80,7 @@ export default function BrandBrainEditor() {
   // de Business Reports). window.location en efecto — sin exigir Suspense.
   useEffect(() => {
     const tab = new URLSearchParams(window.location.search).get('tab') as TabType | null
-    if (tab && ['brand_identity', 'audience_market', 'voice_visual', 'content_strategy', 'business_ops', 'documents'].includes(tab)) {
+    if (tab && ['brand_identity', 'audience_market', 'voice_visual', 'content_strategy', 'business_ops', 'documents', 'index'].includes(tab)) {
       setActiveTab(tab)
     }
   }, [])

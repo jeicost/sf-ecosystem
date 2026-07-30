@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Check, X, Loader2, AlertCircle, AlertTriangle } from 'lucide-react'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
 interface DocumentContradiction {
   field_path: string
@@ -22,6 +24,7 @@ export default function BrandBrainSuggestions({
   onApply,
   onDismiss,
 }: BrandBrainSuggestionsProps) {
+  const { locale } = useLocaleContext()
   const [applying, setApplying] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -91,14 +94,16 @@ export default function BrandBrainSuggestions({
       {contradictions.length > 0 && (
         <div className="mb-4 p-3 bg-amber-500/10 border border-amber-500/25 rounded space-y-2">
           <p className="text-sm font-medium text-amber-400 flex items-center gap-1.5">
-            <AlertTriangle size={14} /> Contradicciones detectadas — quedan registradas para revisión, no se resuelven solas
+            <AlertTriangle size={14} /> {t('bb.suggestions-contradictions-title', locale)}
           </p>
           {contradictions.map((c, i) => (
             <div key={`${c.field_path}-${i}`} className="text-xs text-ink-secondary pl-1">
               <span className="font-medium text-ink">{c.field_path}</span>: {c.note}
               {c.existing_value_excerpt && c.proposed_value_excerpt && (
                 <span className="block mt-0.5">
-                  Actual: "{c.existing_value_excerpt}" → Propuesto: "{c.proposed_value_excerpt}"
+                  {t('bb.suggestions-contradiction-values', locale)
+                    .replace('{existing}', c.existing_value_excerpt)
+                    .replace('{proposed}', c.proposed_value_excerpt)}
                 </span>
               )}
             </div>

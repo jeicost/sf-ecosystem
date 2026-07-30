@@ -13,8 +13,12 @@ const MAX_FOLDERS_PER_RUN = 12
 // Circuit-breaker de la síntesis Drive→Brand Brain (Fase 1): tope de
 // propuestas NUEVAS por corrida, para que una noche con muchas carpetas
 // cambiadas a la vez no inunde el buzón de brain_change_proposals (ya de por
-// sí sin paginación ni vista cross-cliente hasta la Fase 2).
-const MAX_NEW_PROPOSALS_PER_RUN = 20
+// sí sin paginación ni vista cross-cliente hasta la Fase 2). Tiene que ser
+// MENOR que MAX_FOLDERS_PER_RUN -- un valor igual o mayor lo vuelve
+// inalcanzable (como máximo 1 propuesta por carpeta, nunca más que
+// MAX_FOLDERS_PER_RUN en una corrida), confirmado por revisión adversarial
+// el 2026-07-30.
+const MAX_NEW_PROPOSALS_PER_RUN = 8
 
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET

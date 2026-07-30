@@ -11,7 +11,14 @@
 // de producción, 2026-07-30 -- problema conocido y sin fix oficial en
 // pdfjs-dist/pdf-parse a esta fecha, mismo síntoma reportado por otros
 // proyectos como n8n). Polyfill mínimo pero funcional (matriz afín 2D real).
-
+//
+// LÍMITE CONOCIDO (revisión adversarial, 2026-07-30): este polyfill cubre
+// multiply/translate/scale/inverse/transformPoint -- suficiente para
+// getText(), que es todo lo que usa este fichero hoy. Si en el futuro se usa
+// pdf-parse/pdfjs-dist para algo que SÍ renderice (miniaturas, export a
+// imagen), esa ruta puede llamar métodos de DOMMatrix no implementados aquí
+// y volver a fallar -- revisar este polyfill antes de añadir esa feature,
+// no asumir que ya está resuelto para renderizado.
 function ensureDOMMatrixPolyfill(): void {
   if (typeof (globalThis as any).DOMMatrix !== 'undefined') return
 
