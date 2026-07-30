@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
+import { extractPdfText } from '@/lib/pdf-extract'
 
 export async function POST(req: NextRequest) {
   try {
@@ -79,11 +80,7 @@ export async function POST(req: NextRequest) {
     try {
       const buffer = Buffer.from(await file.arrayBuffer())
       if (file.type === 'application/pdf') {
-        const { PDFParse } = await import('pdf-parse')
-        const parser = new PDFParse({ data: buffer })
-        const parsed = await parser.getText()
-        await parser.destroy()
-        text = parsed.text
+        text = await extractPdfText(buffer)
       } else {
         text = buffer.toString('utf-8')
         if (text.includes('\x00')) {

@@ -15,6 +15,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import * as mammoth from 'mammoth'
 import { adminClient } from '@/lib/supabase'
 import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/brain-tools/drive-synthesis'
+import { extractPdfText } from '@/lib/pdf-extract'
 
 /**
  * Apagado por defecto (mismo patrón que el kill-switch KNOWLEDGE_UNIFIED de
@@ -24,24 +25,6 @@ import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/bra
  */
 export function isDriveBrainSynthesisEnabled(): boolean {
   return process.env.DRIVE_BRAIN_SYNTHESIS === '1'
-}
-
-async function extractPdfText(buffer: Buffer): Promise<string> {
-  // pdf-parse v2: class-based API (PDFParse). Lazy dynamic import, same
-  // pattern as lib/attachments.ts and the upload-document routes -- a
-  // top-level require('pdf-parse') here crashed EVERY export of this module
-  // (GET/POST/DELETE on /api/brand-brain/drive/folders, even requests that
-  // never touch a PDF) with "ReferenceError: DOMMatrix is not defined":
-  // pdf-parse's optional @napi-rs/canvas fallback isn't available in
-  // Vercel's Node runtime and its polyfill path isn't Node-safe.
-  const { PDFParse } = await import('pdf-parse')
-  const parser = new PDFParse({ data: new Uint8Array(buffer) })
-  try {
-    const result = await parser.getText()
-    return result?.text || ''
-  } finally {
-    await parser.destroy().catch(() => {})
-  }
 }
 
 type AdminClient = ReturnType<typeof adminClient>

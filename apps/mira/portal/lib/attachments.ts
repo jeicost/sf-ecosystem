@@ -1,4 +1,5 @@
 import type Anthropic from '@anthropic-ai/sdk'
+import { extractPdfText } from '@/lib/pdf-extract'
 
 // Pipeline de adjuntos compartido (server-side). Nació en el chat de onboarding
 // (app/api/admin/onboarding) — único sitio con extracción de PDF correcta — y
@@ -48,14 +49,8 @@ export async function buildAttachmentBlocks(attachments: Attachment[]): Promise<
         // (e.g. brand_data.visual_identity.logo in onboarding).
         textParts.push(`--- Imagen adjunta "${att.name}", disponible en: ${att.url} ---`)
       } else if (att.type === 'pdf') {
-        // pdf-parse v2 dropped the old default-export function API for a
-        // PDFParse class -- new PDFParse({ data }).getText() returns the
-        // real extracted text.
-        const { PDFParse } = await import('pdf-parse')
-        const parser = new PDFParse({ data: buf })
-        const parsed = await parser.getText()
-        await parser.destroy()
-        textParts.push(`--- Documento adjunto: ${att.name} ---\n${parsed.text}`)
+        const text = await extractPdfText(buf)
+        textParts.push(`--- Documento adjunto: ${att.name} ---\n${text}`)
       } else {
         textParts.push(`--- Documento adjunto: ${att.name} ---\n${buf.toString('utf-8')}`)
       }

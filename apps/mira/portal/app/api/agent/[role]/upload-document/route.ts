@@ -7,6 +7,7 @@ import { uploadFileToStorage, initializeStorageBucket } from '@/lib/supabase-sto
 import { AGENT_METADATA } from '@/lib/agent-meta'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { hasOwnKey } from '@/lib/safe-lookup'
+import { extractPdfText } from '@/lib/pdf-extract'
 
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
@@ -121,11 +122,7 @@ export async function POST(
     try {
       const buffer = Buffer.from(await file.arrayBuffer())
       if (file.type === 'application/pdf') {
-        const { PDFParse } = await import('pdf-parse')
-        const parser = new PDFParse({ data: buffer })
-        const parsed = await parser.getText()
-        await parser.destroy()
-        text = parsed.text
+        text = await extractPdfText(buffer)
       } else {
         text = buffer.toString('utf-8')
         if (text.includes('\x00')) {
