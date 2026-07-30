@@ -1,7 +1,7 @@
 import { adminClient } from '@/lib/supabase'
 import { getQuickActionPrompt } from '@/lib/generation/quick-action-prompts'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
-import { createMessageForClient } from '@/lib/anthropic-client'
+import { generateWithWebSearch } from '@/lib/grounding/web-research'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { getQuickAction } from '@/lib/quick-actions/registry'
 
@@ -216,17 +216,18 @@ export async function generateQuickAction(
       throw new QuickActionError('Unknown action type', 400)
     }
 
-    const message = await createMessageForClient(clientId, 'quick-actions', {
+    // web_search disponible como tool -- Claude decide si la necesita mirando
+    // lo que ya tiene (brand brain, memoria, adjuntos, brief); no es una
+    // búsqueda forzada. Mismo mecanismo que app/api/agent/route.ts, ver
+    // lib/grounding/web-research.ts.
+    const { message, text } = await generateWithWebSearch({
+      clientId,
+      route: 'quick-actions',
       model: 'claude-opus-4-8',
-      max_tokens: 4000,
-      messages: [
-        {
-          role: 'user',
-          content: imageBlocks.length
-            ? [{ type: 'text' as const, text: prompt }, ...imageBlocks]
-            : prompt,
-        },
-      ],
+      maxTokens: 4000,
+      userContent: imageBlocks.length
+        ? [{ type: 'text' as const, text: prompt }, ...imageBlocks]
+        : prompt,
     })
 
     if (message.stop_reason === 'max_tokens') {
@@ -234,11 +235,7 @@ export async function generateQuickAction(
       throw new QuickActionError('Output truncated — try a shorter input')
     }
 
-    const textContent = message.content[0]
-    let output_data: Record<string, unknown> = {}
-    if (textContent && 'text' in textContent) {
-      output_data = extractJson(textContent.text)
-    }
+    let output_data: Record<string, unknown> = text ? extractJson(text) : {}
 
     // Acciones visuales: generar la imagen real desde el spec vía OpenAI
     if (isVisualResult(actionType, inputData) && Object.keys(output_data).length > 0) {

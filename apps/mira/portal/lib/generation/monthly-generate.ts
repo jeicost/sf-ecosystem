@@ -4,7 +4,7 @@
 // calendario computado en TS. Lanza Error con mensaje legible si algo falla
 // (el route lo persiste en error_message).
 
-import { createMessageForClient } from '@/lib/anthropic-client'
+import { generateWithWebSearch } from '@/lib/grounding/web-research'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { getDocumentFeedbackBlock } from '@/lib/generation/toolkit-prompts'
@@ -35,25 +35,24 @@ async function callAndParse(
   imageBlocks: any[],
   phase: string
 ): Promise<Record<string, any>> {
-  const message = await createMessageForClient(clientId, 'toolkit/generate', {
+  // web_search disponible como tool -- Claude decide si la necesita (huecos
+  // de tendencias/datos del sector que ni el brand brain ni la memoria
+  // tienen), no una búsqueda forzada. maxToolLoops=2 (no el default 3): son
+  // 3 fases secuenciales dentro de maxDuration=800, conviene no arriesgar el
+  // presupuesto de tiempo por fase. Ver lib/grounding/web-research.ts.
+  const { message, text } = await generateWithWebSearch({
+    clientId,
+    route: 'toolkit/generate',
     model: 'claude-opus-4-8',
-    max_tokens: maxTokens,
-    messages: [
-      {
-        role: 'user',
-        content: imageBlocks.length
-          ? [...imageBlocks, { type: 'text' as const, text: prompt }]
-          : prompt,
-      },
-    ],
+    maxTokens,
+    userContent: imageBlocks.length
+      ? [...imageBlocks, { type: 'text' as const, text: prompt }]
+      : prompt,
+    maxToolLoops: 2,
   })
   if (message.stop_reason === 'max_tokens') {
     throw new Error(`Monthly ${phase}: respuesta truncada en max_tokens`)
   }
-  const text = message.content
-    .map((b: any) => ('text' in b ? b.text : ''))
-    .filter(Boolean)
-    .join('\n')
   try {
     const parsed = extractJson(text)
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {

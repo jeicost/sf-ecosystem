@@ -8,7 +8,7 @@ import { getKnowledgeContext } from '@/lib/knowledge'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
-import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
+import { searchWeb, formatSourcesForPrompt, WEB_SEARCH_TOOL } from '@/lib/grounding/web-research'
 import {
   parseDepartmentChatRole,
   getDepartmentPrompt,
@@ -50,18 +50,6 @@ const GENERATE_IMAGE_TOOL: Anthropic.Tool = {
   },
 }
 
-const WEB_SEARCH_TOOL: Anthropic.Tool = {
-  name: 'web_search',
-  description:
-    'Search the web for current or verifiable information you do not already have — competitor facts, prices, news, market data, recent events. Use it instead of guessing whenever the user asks something you cannot answer confidently from the brand/context above.',
-  input_schema: {
-    type: 'object',
-    properties: {
-      query: { type: 'string', description: 'The search query, in the language most likely to return good results' },
-    },
-    required: ['query'],
-  },
-}
 const MAX_TOOL_LOOPS = 3
 // Removed hardcoded CLIENT_ID import - now reads from user_metadata or requires explicit clientId
 // import { CLIENT_ID } from '@/lib/constants'
