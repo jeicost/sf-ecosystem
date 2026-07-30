@@ -3,6 +3,15 @@ import { captureError } from '@/lib/capture-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
 
+// Without this, Next/Vercel can statically optimize this route (no dynamic
+// APIs are called) and cache a response at the edge keyed by URL alone —
+// observed serving a stale cached response to `preview=true` requests for
+// ~60-100s despite the route computing `Cache-Control: private, no-store`
+// for that branch (found piloting Draft Mode on adrian-grooves, 2026-07-30).
+// force-dynamic makes every request execute fresh so the CDN respects
+// whichever Cache-Control that specific response actually returns.
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
