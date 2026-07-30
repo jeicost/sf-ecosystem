@@ -6,8 +6,13 @@ Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en prod
 
 Revisión de (rr) con 4 agentes + verificación escéptica: 5 hallazgos reales, los 5 corregidos (prototype pollution en chat por departamento, 2 bugs de robustez en informes de decisión, 1 documentado sin arreglar por no tener camino de UI hoy). Además, bug real reportado por el CEO en el Centro de Documentos (Playbook Operativo generaba una guía de "cómo escribir esto" en vez de contenido, con datos sin investigar) — corregido con investigación web real (Tavily) + un aviso de alcance explícito cuando el tema pedido es contenido publicable en vez de una guía interna. Verificado en vivo con una generación real completa. Detalle en DEBT (ss).
 
-**Pendiente real de esta ronda:**
-- **Extender el grounding web real a Quick Actions y al Monthly Content System** — hoy solo lo tienen el chat de agentes, Business Reports (2 tools) y el Centro de Documentos (recién arreglado). Mismo patrón ya validado, no construido todavía ahí. Sin urgencia salvo que aparezca otro caso real como el de Dadybox.
+**Pendiente real de esta ronda:** ninguno — ver (tt) abajo, ya cerrado el mismo día.
+
+## MIRA — `web_search` agéntico en Quick Actions + Monthly Content System (DEBT tt, 2026-07-30) — ✅ CERRADO
+
+A petición explícita del CEO ("no quiero un aviso repetitivo, quiero que sean inteligentes de verdad"), Quick Actions (`crear_newsletter`, `crear_post` y las 18 restantes) y el Monthly Content System ganan la misma tool `web_search` que ya tiene el chat de agentes — el modelo decide por su cuenta si necesita buscar, no es una búsqueda forzada. Verificado en vivo con 2 generaciones reales de `crear_newsletter`: un tema especulativo no disparó búsqueda (honesto sobre el hueco de datos), un tema real y actual sí la disparó y citó cifras reales con fuente. Detalle en DEBT (tt).
+
+**Pendiente real:** Monthly Content System comparte el mecanismo pero no se verificó en vivo por separado (3 llamadas Opus secuenciales, más caro de probar) — riesgo bajo, mismo helper ya probado en Quick Actions.
 
 ## MIRA — Chat por departamento + informes de decisión + bug real de Pipeline (DEBT rr, 2026-07-30) — ✅ CERRADO, con 2 pendientes reales
 

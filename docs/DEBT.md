@@ -655,4 +655,24 @@ El CEO pidió "revisa que esté todo bien" sobre lo construido en (rr). Se lanz�
 
 **Verificado en vivo con una generación real completa** (NC Global Assets, tema "Inteligencia artificial en logística de comercio internacional", limpiado después por ID exacto): la Sección 1 del resultado real dice literalmente *"Antes de empezar: esto es la guía, no la newsletter... Para generar la pieza final —con copy, asuntos de email y CTA— usa las Quick Actions de MIRA (crear_newsletter)"* — el aviso de alcance funcionando exactamente como se diseñó. Las secciones de ejecución citan datos reales con fuente (`-15% costos, +35% inventario (McKinsey, vía Oracle [2])`) en vez de placeholders, y el propio documento incluye un array `data_gaps` honesto listando qué datos internos de NC Global (tasa de apertura, tamaño de lista) no estaban disponibles y hacían falta para fijar objetivos — ni inventados ni simplemente omitidos.
 
-**Pendiente real**: nada bloqueante. La generación por IA de la narrativa de los informes de decisión (Tier 4 de (rr), pasada 2) sigue fuera de alcance a propósito. El resto de generadores de MIRA sin grounding web (Quick Actions, Monthly Content System) quedan fuera de esta ronda — mismo patrón de fix ya validado aquí si se decide extenderlo, no se ha hecho todavía.
+**Pendiente real**: nada bloqueante. La generación por IA de la narrativa de los informes de decisión (Tier 4 de (rr), pasada 2) sigue fuera de alcance a propósito.
+
+---
+
+## tt) `web_search` agéntico extendido a Quick Actions y Monthly Content System (2026-07-30)
+
+El CEO, tras ver el aviso de alcance del Centro de Documentos (ss), pidió explícitamente que los generadores de CONTENIDO real (Quick Actions — `crear_newsletter`, `crear_post`, etc. — y Monthly Content System) no se limiten a repetir un aviso de "esto es una guía, no el contenido" una y otra vez, sino que sean lo bastante inteligentes para investigar de verdad cuando les falte información, igual que ya hace el Centro de Documentos.
+
+**Diferencia deliberada de patrón frente al fix de (ss)**: el Centro de Documentos usa búsqueda determinista (una query fija a partir del campo "Tema", antes de generar) porque ahí SIEMPRE hay un único campo de tema claro por brief. Quick Actions tiene 20 tipos de acción con campos de formulario distintos entre sí (no hay un "tema" único y consistente) — en vez de escribir lógica de construcción de query a medida para cada una (que sí tiene sentido para 2 tools concretos de Business Reports, `competitive-analysis`/`investor-deck`, ver arriba), aquí se usa el patrón **agéntico**: se le da a Claude la tool `web_search` y decide POR SU CUENTA, mirando lo que ya tiene (Brand Brain, memoria de proyecto, documentos, el brief del usuario), si necesita buscar algo — igual que ya hace el chat de los 23 agentes desde 2026-07-23.
+
+**Implementado**: nuevo helper compartido `generateWithWebSearch` (`lib/grounding/web-research.ts`) — mismo tool-use loop que `app/api/agent/route.ts` (ejecutar la búsqueda real, devolver el resultado, continuar hasta la respuesta final) pero sin streaming, para generación batch de un solo turno. `WEB_SEARCH_TOOL` se centralizó ahí (antes duplicado dentro de `agent/route.ts`). Conectado en:
+- `lib/quick-actions/generate.ts`: las 20 quick actions ganan la tool de golpe, sin tocar cada prompt uno a uno.
+- `lib/generation/monthly-generate.ts`: las 3 fases del Monthly Content System (`callAndParse`, helper ya compartido entre ellas) — `maxToolLoops=2` en vez del default 3, para no arriesgar el presupuesto de `maxDuration=800` con 3 fases secuenciales.
+
+**Verificado en vivo con 2 generaciones reales de `crear_newsletter`** (NC Global Assets, limpiadas después por ID exacto):
+1. Un tema deliberadamente especulativo ("tarifas arancelarias 2026", datos que hoy no existen de forma confirmada): el modelo **no buscó** — decidió que no había nada fiable que encontrar y fue honesto al respecto (`[SUPUESTO]` explícito, `data_gaps` listando qué faltaba) en vez de inventar cifras o buscar sin sentido. Confirmado con `mira_usage_log`: **1 sola llamada**, sin tool-use.
+2. Un tema real y actual ("inversión extranjera reciente en Tailandia, con fuente"): el modelo **sí buscó** — `mira_usage_log` confirma **2 llamadas** (170 tokens de salida en la primera, la tool-call; 9959 tokens de entrada en la segunda, ya con los resultados de búsqueda incorporados). El newsletter final citó cifras reales verificables (aprobaciones del Board of Investment tailandés, 38.700M$, +37% interanual, fuente indicada) en vez de placeholders o invenciones.
+
+Este par de pruebas confirma el comportamiento exacto que pidió el CEO: ni búsqueda forzada e innecesaria, ni invención — el modelo busca cuando de verdad hace falta y se queda callado/honesto cuando no hay nada real que encontrar.
+
+**Pendiente real**: Monthly Content System comparte el mismo mecanismo ya probado en Quick Actions pero **no se verificó en vivo por separado** (3 llamadas Opus secuenciales, más caro y lento de probar) — riesgo bajo dado que es el mismo helper, pero queda como pendiente de verificación si se quiere confirmación empírica específica.
