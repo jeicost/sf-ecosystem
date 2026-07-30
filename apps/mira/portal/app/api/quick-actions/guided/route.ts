@@ -155,7 +155,10 @@ ${brandBlock}${memoryBlock ? `\n\n${memoryBlock}` : ''}${leadsBlock}${capturedBl
 
     while (true) {
       const response = await createMessageForClient(access.clientId, 'quick-actions-guided', {
-        model: 'claude-opus-4-8',
+        // Entrevistador: extracción de campos por tool-use, no generación
+        // creativa -- mismo criterio que admin/onboarding/extract. La
+        // generación real (lib/quick-actions/generate.ts) se queda en Opus.
+        model: 'claude-sonnet-4-6',
         max_tokens: 1024,
         system: systemPrompt,
         messages: conversation,
