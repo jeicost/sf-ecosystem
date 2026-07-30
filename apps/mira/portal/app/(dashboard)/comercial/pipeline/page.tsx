@@ -54,6 +54,10 @@ export default function PipelinePage() {
   const [view, setView] = useState<'pipeline' | 'crm'>('pipeline')
 
   useEffect(() => {
+    if (!clientId) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     const db = createClient()
 

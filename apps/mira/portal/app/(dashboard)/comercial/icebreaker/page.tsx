@@ -50,6 +50,10 @@ export default function IcebreakerPage() {
   })
 
   useEffect(() => {
+    if (!clientId) {
+      setLoadingLeads(false)
+      return
+    }
     createClient()
       .from('leads')
       .select(ICEBREAKER_COLS)
