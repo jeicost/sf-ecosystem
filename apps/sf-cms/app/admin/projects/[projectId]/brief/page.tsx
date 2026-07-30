@@ -3,6 +3,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { Send, ChevronDown, ChevronRight } from 'lucide-react'
+import { Button, Badge, Input, InlineMessage } from '@/components/ui'
+import { cn } from '@/lib/cn'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -38,6 +40,13 @@ const STATUS_LABEL: Record<BriefStatus, string> = {
   in_progress: 'En curso',
   ready: 'Listo',
   built: 'Construido',
+}
+
+const STATUS_TONE: Record<BriefStatus, 'neutral' | 'info' | 'success' | 'special'> = {
+  not_started: 'neutral',
+  in_progress: 'info',
+  ready: 'success',
+  built: 'special',
 }
 
 function yesNo(v: boolean | undefined): string {
@@ -141,92 +150,82 @@ export default function ProjectBriefPage() {
     }
   }
 
-  const statusBadgeClass =
-    briefStatus === 'ready'
-      ? 'bg-green-100 text-green-700'
-      : briefStatus === 'in_progress'
-        ? 'bg-blue-100 text-blue-700'
-        : briefStatus === 'built'
-          ? 'bg-purple-100 text-purple-700'
-          : 'bg-slate-100 text-slate-600'
-
   return (
-    <div className="max-w-5xl mx-auto h-[calc(100vh-4rem)] flex flex-col">
+    <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-5xl flex-col px-8 py-8">
       {/* Header */}
-      <div className="px-6 py-4 bg-white border-b border-slate-200 rounded-t-lg flex justify-between items-center">
+      <div className="flex items-center justify-between rounded-t-xl border-b border-slate-200 bg-white px-6 py-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">
+          <h1 className="text-xl font-semibold text-slate-900">
             Brief de landing{projectName ? ` — ${projectName}` : ''}
           </h1>
-          <p className="text-sm text-slate-500 mt-1 flex items-center gap-2">
-            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${statusBadgeClass}`}>
-              {STATUS_LABEL[briefStatus]}
-            </span>
+          <p className="mt-1 flex items-center gap-2 text-sm text-slate-500">
+            <Badge tone={STATUS_TONE[briefStatus]}>{STATUS_LABEL[briefStatus]}</Badge>
             Este chat solo conversa y guarda el brief — no construye la web.
           </p>
         </div>
-        <button
-          onClick={() => router.push('/admin/projects')}
-          className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition text-sm"
-        >
+        <Button variant="secondary" onClick={() => router.push('/admin/projects')}>
           Volver a Projects
-        </button>
+        </Button>
       </div>
 
-      <div className="flex-1 flex overflow-hidden bg-white border-x border-slate-200">
+      <div className="flex flex-1 overflow-hidden border-x border-slate-200 bg-white">
         {/* Chat panel */}
-        <div className="flex-1 flex flex-col min-w-0">
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex-1 space-y-4 overflow-y-auto p-6">
             {loadingHistory ? (
-              <p className="text-slate-500 text-center py-12">Cargando conversación...</p>
+              <p className="py-12 text-center text-sm text-slate-500">Cargando conversación...</p>
             ) : messages.length === 0 ? (
-              <p className="text-slate-500 text-center py-12">
+              <p className="py-12 text-center text-sm text-slate-500">
                 Escribe tu primer mensaje para empezar a construir el brief de esta landing.
                 Por ejemplo: &quot;Quiero una landing para mi marca de café&quot;.
               </p>
             ) : (
               messages.map((msg, i) => (
-                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <div key={i} className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
                   <div
-                    className={`max-w-[75%] px-4 py-2 rounded-lg whitespace-pre-wrap text-sm ${
-                      msg.role === 'user' ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-900'
-                    }`}
+                    className={cn(
+                      'max-w-[75%] whitespace-pre-wrap rounded-2xl px-4 py-2 text-sm',
+                      msg.role === 'user'
+                        ? 'rounded-br-sm bg-accent-600 text-white'
+                        : 'rounded-bl-sm bg-slate-100 text-slate-900'
+                    )}
                   >
                     {msg.content}
                   </div>
                 </div>
               ))
             )}
-            {sending && <div className="text-slate-500 italic text-sm">Claude está escribiendo...</div>}
+            {sending && <p className="text-sm italic text-slate-500">Claude está escribiendo...</p>}
             <div ref={bottomRef} />
           </div>
 
           {error && (
-            <div className="mx-6 mb-3 px-4 py-2 rounded-lg text-sm bg-red-100 text-red-700">{error}</div>
+            <div className="mx-6 mb-3">
+              <InlineMessage kind="error">{error}</InlineMessage>
+            </div>
           )}
 
-          <div className="p-4 border-t border-slate-200">
+          <div className="border-t border-slate-200 p-4">
             <div className="flex gap-2">
-              <input
-                type="text"
+              <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Escribe tu respuesta..."
                 disabled={sending || loadingHistory}
-                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 disabled:opacity-50"
+                className="flex-1"
               />
-              <button
+              <Button
                 onClick={handleSend}
                 disabled={sending || loadingHistory || !input.trim()}
                 aria-label="Enviar mensaje"
-                className="p-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition"
+                className="px-3"
               >
-                <Send size={18} />
-              </button>
+                <Send className="h-4 w-4" />
+              </Button>
             </div>
             {briefStatus === 'ready' && (
-              <p className="text-xs text-slate-400 mt-2">
+              <p className="mt-2 text-xs text-slate-400">
                 El brief ya está listo, pero puedes seguir escribiendo para afinar detalles
                 — se seguirá guardando la conversación.
               </p>
@@ -236,22 +235,24 @@ export default function ProjectBriefPage() {
 
         {/* Brief summary panel — only once ready */}
         {briefStatus === 'ready' && briefJson && (
-          <div className="w-96 border-l border-slate-200 overflow-y-auto p-5 bg-slate-50">
-            <div className="mb-4 px-3 py-2 rounded-lg bg-green-50 border border-green-200 text-green-800 text-sm">
-              Brief listo. Pásaselo al equipo técnico para que construya la web.
+          <div className="w-96 overflow-y-auto border-l border-slate-200 bg-slate-50 p-5">
+            <div className="mb-4">
+              <InlineMessage kind="success">
+                Brief listo. Pásaselo al equipo técnico para que construya la web.
+              </InlineMessage>
             </div>
 
             <BriefSummary brief={briefJson} />
 
             <button
               onClick={() => setShowRawJson((v) => !v)}
-              className="mt-4 w-full flex items-center justify-between px-3 py-2 text-xs font-semibold text-slate-600 border border-slate-300 rounded-lg hover:bg-slate-100 transition"
+              className="mt-4 flex w-full items-center justify-between rounded-lg border border-slate-300 px-3 py-2 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-100"
             >
               Ver JSON completo
               {showRawJson ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
             </button>
             {showRawJson && (
-              <pre className="mt-2 p-3 bg-slate-900 text-slate-100 rounded-lg text-[0.65rem] overflow-x-auto whitespace-pre-wrap break-words">
+              <pre className="mt-2 overflow-x-auto whitespace-pre-wrap break-words rounded-lg bg-slate-900 p-3 text-[0.65rem] text-slate-100">
                 {JSON.stringify(briefJson, null, 2)}
               </pre>
             )}
@@ -268,12 +269,12 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
       <SummarySection title="Marca">
         <p className="font-semibold text-slate-800">{brief.brand?.name || 'TBD'}</p>
         <p className="text-slate-600">{brief.brand?.description || 'TBD'}</p>
-        <p className="text-slate-500 text-xs mt-1">Industria: {brief.brand?.industry || 'TBD'}</p>
+        <p className="mt-1 text-xs text-slate-500">Industria: {brief.brand?.industry || 'TBD'}</p>
       </SummarySection>
 
       <SummarySection title="Objetivo">
         <p className="text-slate-700">{brief.goal?.primary_action || 'TBD'}</p>
-        {brief.goal?.details && <p className="text-slate-500 text-xs mt-1">{brief.goal.details}</p>}
+        {brief.goal?.details && <p className="mt-1 text-xs text-slate-500">{brief.goal.details}</p>}
       </SummarySection>
 
       <SummarySection title="Público objetivo">
@@ -284,7 +285,7 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
         <div className="flex flex-wrap gap-1">
           {(brief.sections?.requested ?? []).length > 0 ? (
             brief.sections?.requested?.map((s) => (
-              <span key={s} className="px-2 py-0.5 bg-slate-200 text-slate-700 rounded text-xs">
+              <span key={s} className="rounded bg-slate-200 px-2 py-0.5 text-xs text-slate-700">
                 {s}
               </span>
             ))
@@ -292,7 +293,7 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
             <span className="text-slate-500">TBD</span>
           )}
         </div>
-        {brief.sections?.notes && <p className="text-slate-500 text-xs mt-1">{brief.sections.notes}</p>}
+        {brief.sections?.notes && <p className="mt-1 text-xs text-slate-500">{brief.sections.notes}</p>}
       </SummarySection>
 
       <SummarySection title="Diseño">
@@ -301,7 +302,7 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
         <p className="text-slate-700">Colores: {brief.design?.colors || 'TBD'}</p>
         <p className="text-slate-700">Fuentes: {brief.design?.fonts || 'TBD'}</p>
         {(brief.design?.references ?? []).length > 0 && (
-          <ul className="mt-1 list-disc list-inside text-xs text-blue-600">
+          <ul className="mt-1 list-inside list-disc text-xs text-accent-600">
             {brief.design?.references?.map((ref) => (
               <li key={ref} className="truncate">
                 {ref}
@@ -317,7 +318,7 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
 
       <SummarySection title="Contenido">
         <p className="text-slate-700">Copy listo: {yesNo(brief.content?.copy_ready)}</p>
-        {brief.content?.notes && <p className="text-slate-500 text-xs mt-1">{brief.content.notes}</p>}
+        {brief.content?.notes && <p className="mt-1 text-xs text-slate-500">{brief.content.notes}</p>}
       </SummarySection>
 
       <SummarySection title="Rediseño">
@@ -325,7 +326,7 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
           {brief.redesign?.is_redesign ? 'Sí, es un rediseño' : 'No, es un proyecto nuevo'}
         </p>
         {brief.redesign?.existing_url && (
-          <p className="text-slate-500 text-xs mt-1">{brief.redesign.existing_url}</p>
+          <p className="mt-1 text-xs text-slate-500">{brief.redesign.existing_url}</p>
         )}
       </SummarySection>
 
@@ -339,7 +340,7 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
         <SummarySection title="Notas">
           {brief.notes?.priority && <p className="text-slate-700">Prioridad: {brief.notes.priority}</p>}
           {brief.notes?.deadline && <p className="text-slate-700">Fecha límite: {brief.notes.deadline}</p>}
-          {brief.notes?.other && <p className="text-slate-500 text-xs mt-1">{brief.notes.other}</p>}
+          {brief.notes?.other && <p className="mt-1 text-xs text-slate-500">{brief.notes.other}</p>}
         </SummarySection>
       )}
     </div>
@@ -348,8 +349,8 @@ function BriefSummary({ brief }: { brief: BriefJson }) {
 
 function SummarySection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border border-slate-200 rounded-lg p-3 bg-white">
-      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">{title}</p>
+    <div className="rounded-lg border border-slate-200 bg-white p-3">
+      <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{title}</p>
       {children}
     </div>
   )

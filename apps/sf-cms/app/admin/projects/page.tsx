@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { Plus, FolderKanban } from 'lucide-react'
+import { Button, Card, CardBody, Badge, Input, EmptyState } from '@/components/ui'
 
 type BriefStatus = 'not_started' | 'in_progress' | 'ready' | 'built'
 
@@ -25,11 +27,11 @@ const BRIEF_STATUS_LABEL: Record<BriefStatus, string> = {
   built: 'Brief: construido',
 }
 
-const BRIEF_STATUS_CLASS: Record<BriefStatus, string> = {
-  not_started: 'bg-slate-100 text-slate-600',
-  in_progress: 'bg-blue-100 text-blue-700',
-  ready: 'bg-green-100 text-green-700',
-  built: 'bg-purple-100 text-purple-700',
+const BRIEF_STATUS_TONE: Record<BriefStatus, 'neutral' | 'info' | 'success' | 'special'> = {
+  not_started: 'neutral',
+  in_progress: 'info',
+  ready: 'success',
+  built: 'special',
 }
 
 export default function ProjectsPage() {
@@ -47,11 +49,9 @@ export default function ProjectsPage() {
     try {
       const response = await fetch('/api/admin/projects')
       if (!response.ok) throw new Error('Failed to fetch projects')
-      const { projects } = await response.json() as { projects: Project[] }
+      const { projects } = (await response.json()) as { projects: Project[] }
       setProjects(projects)
-      setHookDrafts(
-        Object.fromEntries(projects.map((p) => [p.id, p.vercel_hook_url || '']))
-      )
+      setHookDrafts(Object.fromEntries(projects.map((p) => [p.id, p.vercel_hook_url || ''])))
     } catch (err) {
       console.error('Error:', err)
       setError('Failed to load projects')
@@ -78,129 +78,125 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex justify-between items-center mb-8">
+    <div className="mx-auto max-w-6xl px-8 py-8">
+      <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-slate-900">Projects</h1>
-          <p className="text-slate-600 mt-2">Manage your client websites</p>
+          <h1 className="text-2xl font-semibold text-slate-900">Projects</h1>
+          <p className="mt-1 text-sm text-slate-500">Los sitios de cliente que administras en SF-CMS.</p>
         </div>
+        <Link href="/admin/projects/new">
+          <Button>
+            <Plus className="h-4 w-4" />
+            Nuevo proyecto
+          </Button>
+        </Link>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="text-center py-12">
-          <p className="text-slate-600">Loading projects...</p>
-        </div>
+        <p className="py-12 text-center text-sm text-slate-500">Cargando proyectos…</p>
       ) : projects.length === 0 ? (
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-12 text-center">
-          <p className="text-slate-600 mb-4">No projects yet</p>
-          <p className="text-sm text-slate-500">
-            Create one below, or have the landing-builder agent register it automatically
-            when CMS integration is enabled during a new landing&apos;s intake
-          </p>
-        </div>
+        <EmptyState
+          icon={<FolderKanban className="h-8 w-8" />}
+          title="Todavía no hay proyectos"
+          description="Créalo aquí, o deja que el agente de landings lo registre automáticamente cuando se active la integración con el CMS durante el brief de una nueva landing."
+          action={
+            <Link href="/admin/projects/new">
+              <Button variant="secondary">Crear el primero</Button>
+            </Link>
+          }
+        />
       ) : (
         <div className="grid gap-4">
           {projects.map((project) => (
-            <div
-              key={project.id}
-              className="bg-white rounded-lg shadow p-6 hover:shadow-lg transition border border-slate-200"
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-bold text-slate-900">{project.name}</h3>
+            <Card key={project.id}>
+              <CardBody className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="text-base font-semibold text-slate-900">{project.name}</h3>
                     {project.last_deploy && (
-                      <span
-                        title={`Último deploy: ${new Date(project.last_deploy.created_at).toLocaleString()}`}
-                        className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ${
+                      <Badge
+                        tone={
                           project.last_deploy.status === 'ok'
-                            ? 'bg-green-100 text-green-700'
+                            ? 'success'
                             : project.last_deploy.status === 'failed'
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-slate-100 text-slate-500'
-                        }`}
+                              ? 'danger'
+                              : 'neutral'
+                        }
+                        title={`Último deploy: ${new Date(project.last_deploy.created_at).toLocaleString()}`}
                       >
                         deploy {project.last_deploy.status}
-                      </span>
+                      </Badge>
                     )}
-                    <span
-                      className={`inline-flex items-center rounded px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wide ${
-                        BRIEF_STATUS_CLASS[(project.brief_status as BriefStatus) || 'not_started']
-                      }`}
-                    >
+                    <Badge tone={BRIEF_STATUS_TONE[(project.brief_status as BriefStatus) || 'not_started']}>
                       {BRIEF_STATUS_LABEL[(project.brief_status as BriefStatus) || 'not_started']}
-                    </span>
+                    </Badge>
                   </div>
-                  <p className="text-sm text-slate-600 mt-1">
-                    Slug: <code className="bg-slate-100 px-2 py-1 rounded">{project.slug}</code>
+
+                  <p className="mt-1.5 text-sm text-slate-500">
+                    Slug: <code className="rounded bg-slate-100 px-1.5 py-0.5 text-xs">{project.slug}</code>
                   </p>
                   {project.domain && (
-                    <p className="text-sm text-slate-600 mt-1">
-                      Domain: <a href={`https://${project.domain}`} className="text-blue-600 hover:underline">{project.domain}</a>
+                    <p className="mt-1 text-sm text-slate-500">
+                      Domain:{' '}
+                      <a href={`https://${project.domain}`} className="text-accent-600 hover:underline">
+                        {project.domain}
+                      </a>
                     </p>
                   )}
-                  <p className="text-xs text-slate-500 mt-2">
-                    API Key: <code className="bg-slate-100 px-2 py-1 rounded text-xs">
+                  <p className="mt-1 text-xs text-slate-400">
+                    API Key:{' '}
+                    <code className="rounded bg-slate-100 px-1.5 py-0.5">
                       {project.api_key_last4 ? `••••${project.api_key_last4}` : '— none —'}
                     </code>
-                    {project.api_key_hashed && (
-                      <span className="ml-2 text-slate-400">(hashed — solo se muestra al crearla)</span>
-                    )}
+                    {project.api_key_hashed && <span className="ml-1.5">(hashed — solo se muestra al crearla)</span>}
                   </p>
-                  <p className="text-xs text-slate-400 mt-2">
+                  <p className="mt-1.5 text-xs text-slate-400">
                     Created {new Date(project.created_at).toLocaleDateString()}
                   </p>
 
                   <div className="mt-3 flex items-center gap-2">
-                    <label className="text-xs font-medium text-slate-600 shrink-0">
-                      Deploy Hook:
-                    </label>
-                    <input
-                      type="text"
+                    <label className="shrink-0 text-xs font-medium text-slate-500">Deploy Hook</label>
+                    <Input
                       value={hookDrafts[project.id] ?? ''}
-                      onChange={(e) =>
-                        setHookDrafts((prev) => ({ ...prev, [project.id]: e.target.value }))
-                      }
+                      onChange={(e) => setHookDrafts((prev) => ({ ...prev, [project.id]: e.target.value }))}
                       placeholder="https://api.vercel.com/v1/integrations/deploy/..."
-                      className="flex-1 max-w-md px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-slate-500"
+                      className="max-w-md py-1 text-xs"
                     />
-                    <button
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       onClick={() => saveHook(project.id)}
                       disabled={savingHook === project.id}
-                      className="px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200 rounded transition disabled:opacity-50"
                     >
                       {savingHook === project.id ? 'Saving…' : 'Save'}
-                    </button>
+                    </Button>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Optional: paste a Vercel Deploy Hook URL to auto-redeploy this project's
-                    site whenever a page or post is published here (~1-2 min to go live, no
-                    manual redeploy needed).
+                  <p className="mt-1 text-xs text-slate-400">
+                    Opcional: pega la URL de un Deploy Hook de Vercel para redeployar el sitio
+                    automáticamente cuando se publique una página o post aquí (~1-2 min).
                   </p>
                 </div>
 
-                <div className="ml-4 flex flex-col gap-2 shrink-0">
-                  <Link
-                    href={`/admin/pages?project=${project.id}`}
-                    className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition text-sm text-center"
-                  >
-                    Manage Pages
+                <div className="flex shrink-0 flex-col gap-2">
+                  <Link href={`/admin/pages?project=${project.id}`}>
+                    <Button size="sm" className="w-full">
+                      Manage Pages
+                    </Button>
                   </Link>
-                  <Link
-                    href={`/admin/projects/${project.id}/brief`}
-                    className="px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition text-sm text-center"
-                  >
-                    Brief de landing
+                  <Link href={`/admin/projects/${project.id}/brief`}>
+                    <Button variant="secondary" size="sm" className="w-full">
+                      Brief de landing
+                    </Button>
                   </Link>
                 </div>
-              </div>
-            </div>
+              </CardBody>
+            </Card>
           ))}
         </div>
       )}

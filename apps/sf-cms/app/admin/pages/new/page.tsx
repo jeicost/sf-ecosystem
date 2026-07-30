@@ -3,6 +3,8 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
+import { ArrowLeft } from 'lucide-react'
+import { Button, Card, CardBody, Input, Select, Label, InlineMessage } from '@/components/ui'
 
 function NewPageContent() {
   const router = useRouter()
@@ -62,11 +64,7 @@ function NewPageContent() {
       }
 
       const { id } = await response.json()
-
-      // Redirect to editor
-      router.push(
-        `/admin/pages/${id}/edit?project=${formData.projectId}`
-      )
+      router.push(`/admin/pages/${id}/edit?project=${formData.projectId}`)
     } catch (err) {
       console.error('Error:', err)
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -75,102 +73,83 @@ function NewPageContent() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="mx-auto max-w-2xl px-8 py-8">
       <div className="mb-8">
-        <Link
-          href="/admin/pages"
-          className="text-slate-600 hover:text-slate-900 flex items-center gap-1 mb-4"
-        >
-          ← Back to Pages
+        <Link href="/admin/pages" className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900">
+          <ArrowLeft className="h-4 w-4" />
+          Back to Pages
         </Link>
-        <h1 className="text-4xl font-bold text-slate-900">Create New Page</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Create New Page</h1>
       </div>
 
       {error && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
-          {error}
+        <div className="mb-6">
+          <InlineMessage kind="error">{error}</InlineMessage>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-8">
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Project
-            </label>
-            <select
-              value={formData.projectId}
-              onChange={(e) =>
-                setFormData({ ...formData, projectId: e.target.value })
-              }
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              required
-            >
-              <option value="">Select a project...</option>
-              {projects.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <Card>
+        <CardBody className="p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="project">Project</Label>
+              <Select
+                id="project"
+                value={formData.projectId}
+                onChange={(e) => setFormData({ ...formData, projectId: e.target.value })}
+                required
+              >
+                <option value="">Select a project...</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Page Title
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-              placeholder="e.g., Homepage"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              required
-            />
-          </div>
+            <div>
+              <Label htmlFor="title">Page Title</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="e.g., Homepage"
+                required
+              />
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Page Slug
-            </label>
-            <input
-              type="text"
-              value={formData.slug}
-              onChange={(e) =>
-                setFormData({ ...formData, slug: e.target.value })
-              }
-              placeholder="e.g., home"
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              required
-            />
-          </div>
+            <div>
+              <Label htmlFor="slug">Page Slug</Label>
+              <Input
+                id="slug"
+                value={formData.slug}
+                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+                placeholder="e.g., home"
+                required
+              />
+            </div>
 
-          <div className="flex gap-4 pt-6">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : 'Create Page'}
-            </button>
-            <Link
-              href="/admin/pages"
-              className="px-6 py-3 border border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 transition"
-            >
-              Cancel
-            </Link>
-          </div>
-        </div>
-      </form>
+            <div className="flex gap-3 pt-2">
+              <Button type="submit" disabled={loading} className="flex-1">
+                {loading ? 'Creating…' : 'Create Page'}
+              </Button>
+              <Link href="/admin/pages">
+                <Button type="button" variant="secondary">
+                  Cancel
+                </Button>
+              </Link>
+            </div>
+          </form>
+        </CardBody>
+      </Card>
     </div>
   )
 }
 
 export default function NewPagePage() {
   return (
-    <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
+    <Suspense fallback={<p className="py-12 text-center text-sm text-slate-500">Loading…</p>}>
       <NewPageContent />
     </Suspense>
   )

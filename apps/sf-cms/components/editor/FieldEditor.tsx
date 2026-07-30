@@ -17,7 +17,7 @@ function labelize(key: string) {
 function TextField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const multiline = value.length > 48 || value.includes('\n')
   const cls =
-    'w-full rounded-md border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-400'
+    'w-full rounded-md border border-slate-300 px-2.5 py-1.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-accent-500 focus:border-accent-500'
   return multiline ? (
     <textarea
       value={value}

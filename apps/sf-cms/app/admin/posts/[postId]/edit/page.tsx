@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
+import { ArrowLeft } from 'lucide-react'
 import { RichTextEditor } from '@/components/editor/RichTextEditor'
+import { Button, Card, CardBody, Input, Textarea, Select, Label, HelpText, InlineMessage } from '@/components/ui'
 
 interface Post {
   id: string
@@ -89,203 +91,177 @@ export default function PostEditorPage() {
   }
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>
+    return <p className="py-12 text-center text-sm text-slate-500">Loading…</p>
   }
 
   if (!post) {
-    return <div className="text-center py-12 text-red-600">Post not found</div>
+    return <p className="py-12 text-center text-sm text-red-600">Post not found</p>
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="mx-auto max-w-4xl px-8 py-8">
       <div className="mb-8">
         <button
           onClick={() => router.back()}
-          className="text-slate-600 hover:text-slate-900 mb-4"
+          className="mb-4 inline-flex items-center gap-1 text-sm text-slate-500 hover:text-slate-900"
         >
-          ← Back to Posts
+          <ArrowLeft className="h-4 w-4" />
+          Back to Posts
         </button>
-        <h1 className="text-4xl font-bold text-slate-900">{post.title}</h1>
-        <p className="text-slate-600 mt-2">Slug: {post.slug}</p>
+        <h1 className="text-2xl font-semibold text-slate-900">{post.title}</h1>
+        <p className="mt-1 text-sm text-slate-500">Slug: {post.slug}</p>
       </div>
 
       {error && (
-        <div
-          className={`mb-6 px-4 py-3 rounded-lg ${
-            error.startsWith('✓')
-              ? 'bg-green-100 text-green-700'
-              : 'bg-red-100 text-red-700'
-          }`}
-        >
-          {error}
+        <div className="mb-6">
+          <InlineMessage kind={error.startsWith('✓') ? 'success' : 'error'}>{error}</InlineMessage>
         </div>
       )}
 
-      <form onSubmit={(e) => { e.preventDefault(); handleSave() }} className="space-y-8">
-        {/* Basic fields */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Basic Info</h2>
+      <form onSubmit={(e) => { e.preventDefault(); handleSave() }} className="space-y-6">
+        <Card>
+          <CardBody className="space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">Basic Info</h2>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Title</label>
-            <input
-              type="text"
-              value={post.title}
-              onChange={(e) => setPost({ ...post, title: e.target.value })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Slug</label>
-            <input
-              type="text"
-              value={post.slug}
-              onChange={(e) => setPost({ ...post, slug: e.target.value })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Status</label>
-            <select
-              value={post.status}
-              onChange={(e) => setPost({ ...post, status: e.target.value })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-            >
-              <option value="draft">Draft</option>
-              <option value="scheduled">Scheduled</option>
-              <option value="published">Published</option>
-            </select>
-            {post.status === 'scheduled' && (
-              <p className="mt-1.5 text-xs text-amber-600">
-                Se publicará automáticamente cuando llegue la fecha de &ldquo;Published date&rdquo; (revisado cada 15 min).
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Content</h2>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Content</label>
-            <RichTextEditor
-              value={post.content_html}
-              onChange={(html) => setPost({ ...post, content_html: html })}
-              placeholder="Write your content here..."
-              projectId={projectId}
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Excerpt</label>
-            <textarea
-              value={post.excerpt || ''}
-              onChange={(e) => setPost({ ...post, excerpt: e.target.value })}
-              rows={3}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              placeholder="Short summary..."
-            />
-          </div>
-        </div>
-
-        {/* Metadata */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Metadata</h2>
-
-          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Category</label>
-              <input
-                type="text"
-                value={post.category || ''}
-                onChange={(e) => setPost({ ...post, category: e.target.value })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                placeholder="e.g., Tech"
+              <Label htmlFor="title">Title</Label>
+              <Input id="title" value={post.title} onChange={(e) => setPost({ ...post, title: e.target.value })} />
+            </div>
+
+            <div>
+              <Label htmlFor="slug">Slug</Label>
+              <Input id="slug" value={post.slug} onChange={(e) => setPost({ ...post, slug: e.target.value })} />
+            </div>
+
+            <div>
+              <Label htmlFor="status">Status</Label>
+              <Select id="status" value={post.status} onChange={(e) => setPost({ ...post, status: e.target.value })}>
+                <option value="draft">Draft</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="published">Published</option>
+              </Select>
+              {post.status === 'scheduled' && (
+                <HelpText tone="warning">
+                  Se publicará automáticamente cuando llegue la fecha de &ldquo;Published date&rdquo; (revisado cada 15 min).
+                </HelpText>
+              )}
+            </div>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody className="space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">Content</h2>
+
+            <div>
+              <Label>Content</Label>
+              <RichTextEditor
+                value={post.content_html}
+                onChange={(html) => setPost({ ...post, content_html: html })}
+                placeholder="Write your content here..."
+                projectId={projectId}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">Author</label>
-              <input
-                type="text"
-                value={post.author_name || ''}
-                onChange={(e) => setPost({ ...post, author_name: e.target.value })}
-                className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-                placeholder="Author name"
+              <Label htmlFor="excerpt">Excerpt</Label>
+              <Textarea
+                id="excerpt"
+                value={post.excerpt || ''}
+                onChange={(e) => setPost({ ...post, excerpt: e.target.value })}
+                rows={3}
+                placeholder="Short summary..."
               />
             </div>
-          </div>
+          </CardBody>
+        </Card>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Published Date</label>
-            <input
-              type="datetime-local"
-              value={post.published_at ? new Date(post.published_at).toISOString().slice(0, 16) : ''}
-              onChange={(e) => setPost({ ...post, published_at: e.target.value ? new Date(e.target.value).toISOString() : undefined })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-            />
-          </div>
-        </div>
+        <Card>
+          <CardBody className="space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">Metadata</h2>
 
-        {/* SEO */}
-        <div className="bg-white rounded-lg shadow p-6 space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">SEO</h2>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="category">Category</Label>
+                <Input
+                  id="category"
+                  value={post.category || ''}
+                  onChange={(e) => setPost({ ...post, category: e.target.value })}
+                  placeholder="e.g., Tech"
+                />
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">SEO Title</label>
-            <input
-              type="text"
-              value={post.seo_title || ''}
-              onChange={(e) => setPost({ ...post, seo_title: e.target.value })}
-              maxLength={60}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              placeholder="Page title (max 60 chars)"
-            />
-          </div>
+              <div>
+                <Label htmlFor="author">Author</Label>
+                <Input
+                  id="author"
+                  value={post.author_name || ''}
+                  onChange={(e) => setPost({ ...post, author_name: e.target.value })}
+                  placeholder="Author name"
+                />
+              </div>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">SEO Description</label>
-            <textarea
-              value={post.seo_description || ''}
-              onChange={(e) => setPost({ ...post, seo_description: e.target.value })}
-              maxLength={160}
-              rows={2}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              placeholder="Meta description (max 160 chars)"
-            />
-          </div>
+            <div>
+              <Label htmlFor="published-at">Published Date</Label>
+              <Input
+                id="published-at"
+                type="datetime-local"
+                value={post.published_at ? new Date(post.published_at).toISOString().slice(0, 16) : ''}
+                onChange={(e) =>
+                  setPost({ ...post, published_at: e.target.value ? new Date(e.target.value).toISOString() : undefined })
+                }
+              />
+            </div>
+          </CardBody>
+        </Card>
 
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">Canonical URL</label>
-            <input
-              type="text"
-              value={post.canonical_url || ''}
-              onChange={(e) => setPost({ ...post, canonical_url: e.target.value })}
-              className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
-              placeholder="https://example.com/blog/post-slug (leave empty to self-canonicalize)"
-            />
-          </div>
-        </div>
+        <Card>
+          <CardBody className="space-y-4">
+            <h2 className="text-base font-semibold text-slate-900">SEO</h2>
 
-        {/* Actions */}
-        <div className="flex gap-4">
-          <button
-            type="submit"
-            disabled={saving}
-            className="flex-1 px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition"
-          >
-            {saving ? 'Saving...' : 'Save Post'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="px-6 py-3 border border-slate-300 text-slate-900 rounded-lg hover:bg-slate-50 transition"
-          >
+            <div>
+              <Label htmlFor="seo-title">SEO Title</Label>
+              <Input
+                id="seo-title"
+                value={post.seo_title || ''}
+                onChange={(e) => setPost({ ...post, seo_title: e.target.value })}
+                maxLength={60}
+                placeholder="Page title (max 60 chars)"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="seo-description">SEO Description</Label>
+              <Textarea
+                id="seo-description"
+                value={post.seo_description || ''}
+                onChange={(e) => setPost({ ...post, seo_description: e.target.value })}
+                maxLength={160}
+                rows={2}
+                placeholder="Meta description (max 160 chars)"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="canonical">Canonical URL</Label>
+              <Input
+                id="canonical"
+                value={post.canonical_url || ''}
+                onChange={(e) => setPost({ ...post, canonical_url: e.target.value })}
+                placeholder="https://example.com/blog/post-slug (leave empty to self-canonicalize)"
+              />
+            </div>
+          </CardBody>
+        </Card>
+
+        <div className="flex gap-3">
+          <Button type="submit" disabled={saving} className="flex-1">
+            {saving ? 'Saving…' : 'Save Post'}
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => router.back()}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </div>

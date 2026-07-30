@@ -3,10 +3,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useSearchParams, useRouter } from 'next/navigation'
 import { usePageChat } from '@/lib/hooks/usePageChat'
-import { Send, History } from 'lucide-react'
+import { Send, History, ArrowLeft, Eye } from 'lucide-react'
 import { ChatUploadWidget } from '@/components/media/ChatUploadWidget'
 import { SectionsEditor } from '@/components/editor/SectionsEditor'
 import { PIXEL_FIELDS, cleanPixels, type PagePixels } from '@/lib/pixels'
+import { Button, Badge, Tabs, Input, Textarea, Select, Label, HelpText, InlineMessage } from '@/components/ui'
+import { cn } from '@/lib/cn'
 
 interface Section {
   id: string
@@ -207,43 +209,35 @@ export default function PageEditorPage() {
   }
 
   if (loading) {
-    return <div className="text-center py-12">Loading...</div>
+    return <p className="py-12 text-center text-sm text-slate-500">Loading…</p>
   }
 
   if (!page) {
-    return <div className="text-center py-12 text-red-600">Page not found</div>
+    return <p className="py-12 text-center text-sm text-red-600">Page not found</p>
   }
 
   const seoTitleLen = (page.seo_title ?? '').length
   const seoDescLen = (page.seo_description ?? '').length
+  const flashIsSuccess = error.startsWith('✓')
 
   return (
-    <div className="max-w-full h-screen flex flex-col bg-slate-50">
+    <div className="flex h-screen max-w-full flex-col bg-slate-50">
       {/* Header */}
-      <div className="px-6 py-4 bg-white border-b border-slate-200 flex justify-between items-center">
+      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-6 py-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">{page.title}</h1>
-          <p className="text-sm text-slate-500">
+          <h1 className="text-xl font-semibold text-slate-900">{page.title}</h1>
+          <p className="mt-0.5 flex items-center gap-2 text-sm text-slate-500">
             /{page.slug}
-            <span
-              className={`ml-2 inline-block px-2 py-0.5 rounded text-xs font-semibold ${
-                page.status === 'published'
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-amber-100 text-amber-700'
-              }`}
-            >
-              {page.status}
-            </span>
+            <Badge tone={page.status === 'published' ? 'success' : 'warning'}>{page.status}</Badge>
           </p>
         </div>
         <div className="flex gap-2">
-          <button
-            onClick={() => router.back()}
-            className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition"
-          >
+          <Button variant="secondary" onClick={() => router.back()}>
+            <ArrowLeft className="h-4 w-4" />
             Back
-          </button>
-          <button
+          </Button>
+          <Button
+            variant="secondary"
             onClick={handlePreview}
             disabled={previewLoading}
             title={
@@ -251,65 +245,51 @@ export default function PageEditorPage() {
                 ? 'Configura la URL del sitio en Ajustes del proyecto para poder previsualizar'
                 : 'Ver esta página real, incluyendo cambios sin publicar'
             }
-            className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition disabled:opacity-50"
           >
+            <Eye className="h-4 w-4" />
             {previewLoading ? 'Cargando…' : 'Vista previa'}
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition"
-          >
-            {saving ? 'Saving...' : 'Save'}
-          </button>
+          </Button>
+          <Button onClick={handleSave} disabled={saving}>
+            {saving ? 'Saving…' : 'Save'}
+          </Button>
         </div>
       </div>
 
       {/* Main content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex flex-1 overflow-hidden">
         {/* Chat panel */}
-        <div className="w-[36%] border-r border-slate-200 flex flex-col bg-white">
-          <div className="flex-1 overflow-y-auto p-6 space-y-4">
+        <div className="flex w-[36%] flex-col border-r border-slate-200 bg-white">
+          <div className="flex-1 space-y-4 overflow-y-auto p-6">
             {messages.length === 0 && (
-              <p className="text-slate-500 text-center py-12">
+              <p className="py-12 text-center text-sm text-slate-500">
                 Start by describing what you&apos;d like on this page
               </p>
             )}
             {messages.map((msg, i) => (
-              <div
-                key={i}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
+              <div key={i} className={cn('flex', msg.role === 'user' ? 'justify-end' : 'justify-start')}>
                 <div
-                  className={`max-w-xs px-4 py-2 rounded-lg ${
+                  className={cn(
+                    'max-w-[85%] rounded-2xl px-4 py-2 text-sm',
                     msg.role === 'user'
-                      ? 'bg-slate-900 text-white'
-                      : 'bg-slate-100 text-slate-900'
-                  }`}
+                      ? 'rounded-br-sm bg-accent-600 text-white'
+                      : 'rounded-bl-sm bg-slate-100 text-slate-900'
+                  )}
                 >
                   {msg.content}
                 </div>
               </div>
             ))}
-            {chatLoading && (
-              <div className="text-slate-500 italic">Claude is thinking...</div>
-            )}
+            {chatLoading && <p className="text-sm italic text-slate-500">Claude is thinking…</p>}
           </div>
 
           {error && (
-            <div
-              className={`mx-4 mb-4 px-4 py-2 rounded-lg text-sm ${
-                error.startsWith('✓')
-                  ? 'bg-green-100 text-green-700'
-                  : 'bg-red-100 text-red-700'
-              }`}
-            >
-              {error}
+            <div className="mx-4 mb-4">
+              <InlineMessage kind={flashIsSuccess ? 'success' : 'error'}>{error}</InlineMessage>
             </div>
           )}
 
           {/* Input */}
-          <div className="p-4 border-t border-slate-200">
+          <div className="border-t border-slate-200 p-4">
             <div className="flex gap-2">
               <ChatUploadWidget
                 projectId={projectId}
@@ -317,246 +297,185 @@ export default function PageEditorPage() {
                   setUserInput((prev) => (prev ? `${prev} ${url}` : `Add this image: ${url}`))
                 }
               />
-              <input
-                type="text"
+              <Input
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleChatSend()}
                 placeholder="Describe changes..."
-                className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
                 disabled={chatLoading}
+                className="flex-1"
               />
-              <button
+              <Button
                 onClick={handleChatSend}
                 disabled={chatLoading || !userInput.trim()}
                 aria-label="Send instruction"
-                className="p-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition"
+                className="px-3"
               >
-                <Send size={18} />
-              </button>
+                <Send className="h-4 w-4" />
+              </Button>
             </div>
           </div>
         </div>
 
         {/* Sections panel — editable by field */}
-        <div className="flex-1 overflow-y-auto p-6 bg-slate-50">
+        <div className="flex-1 overflow-y-auto bg-slate-50 p-6">
           <SectionsEditor
             sections={page.sections_json ?? []}
             onChange={(next) => setPage({ ...page, sections_json: next as Section[] })}
           />
         </div>
 
-        {/* Settings / History sidebar */}
-        <div className="w-80 border-l border-slate-200 bg-white flex flex-col overflow-hidden">
-          <div className="flex border-b border-slate-200">
-            <button
-              onClick={() => setSidebarTab('settings')}
-              className={`flex-1 px-3 py-3 text-sm font-semibold transition ${
-                sidebarTab === 'settings'
-                  ? 'text-slate-900 border-b-2 border-slate-900'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Settings
-            </button>
-            <button
-              onClick={() => setSidebarTab('pixels')}
-              className={`flex-1 px-3 py-3 text-sm font-semibold transition ${
-                sidebarTab === 'pixels'
-                  ? 'text-slate-900 border-b-2 border-slate-900'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              Pixels
-            </button>
-            <button
-              onClick={() => setSidebarTab('history')}
-              className={`flex-1 px-3 py-3 text-sm font-semibold transition flex items-center justify-center gap-1 ${
-                sidebarTab === 'history'
-                  ? 'text-slate-900 border-b-2 border-slate-900'
-                  : 'text-slate-500 hover:text-slate-700'
-              }`}
-            >
-              <History size={14} /> History
-            </button>
-          </div>
+        {/* Settings / Pixels / History sidebar */}
+        <div className="flex w-80 flex-col overflow-hidden border-l border-slate-200 bg-white">
+          <Tabs
+            value={sidebarTab}
+            onChange={setSidebarTab}
+            items={[
+              { value: 'settings', label: 'Settings' },
+              { value: 'pixels', label: 'Pixels' },
+              { value: 'history', label: 'History' },
+            ]}
+          />
 
           {sidebarTab === 'settings' ? (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 space-y-4 overflow-y-auto p-4">
               <div>
-                <label htmlFor="pg-title" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                  Title
-                </label>
-                <input
-                  id="pg-title"
-                  type="text"
-                  value={page.title}
-                  onChange={(e) => setPage({ ...page, title: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
-                />
+                <Label htmlFor="pg-title">Title</Label>
+                <Input id="pg-title" value={page.title} onChange={(e) => setPage({ ...page, title: e.target.value })} />
               </div>
 
               <div>
-                <label htmlFor="pg-slug" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                  Slug
-                </label>
-                <input
+                <Label htmlFor="pg-slug">Slug</Label>
+                <Input
                   id="pg-slug"
-                  type="text"
                   value={page.slug}
-                  onChange={(e) =>
-                    setPage({ ...page, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })
-                  }
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  onChange={(e) => setPage({ ...page, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') })}
+                  className="font-mono"
                 />
-                <p className="mt-1 text-xs text-amber-600">
+                <HelpText tone="warning">
                   Changing the slug of a published page breaks its old URL (no redirects yet).
-                </p>
+                </HelpText>
               </div>
 
               <div>
-                <label htmlFor="pg-status" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                  Status
-                </label>
-                <select
-                  id="pg-status"
-                  value={page.status}
-                  onChange={(e) => setPage({ ...page, status: e.target.value })}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-slate-500"
-                >
+                <Label htmlFor="pg-status">Status</Label>
+                <Select id="pg-status" value={page.status} onChange={(e) => setPage({ ...page, status: e.target.value })}>
                   <option value="draft">Draft</option>
                   <option value="published">Published</option>
-                </select>
-                <p className="mt-1 text-xs text-slate-500">
-                  Saving as Published triggers the project&apos;s deploy hook.
-                </p>
+                </Select>
+                <HelpText>Saving as Published triggers the project&apos;s deploy hook.</HelpText>
               </div>
 
               <hr className="border-slate-200" />
 
               <div>
-                <label htmlFor="pg-seo-title" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                  SEO title
-                  <span className={`ml-2 font-normal ${seoTitleLen > 60 ? 'text-red-600' : 'text-slate-400'}`}>
+                <Label htmlFor="pg-seo-title">
+                  SEO title{' '}
+                  <span className={cn('font-normal normal-case tracking-normal', seoTitleLen > 60 ? 'text-red-600' : 'text-slate-400')}>
                     {seoTitleLen}/60
                   </span>
-                </label>
-                <input
+                </Label>
+                <Input
                   id="pg-seo-title"
-                  type="text"
                   value={page.seo_title ?? ''}
                   onChange={(e) => setPage({ ...page, seo_title: e.target.value })}
                   placeholder={page.title}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="pg-seo-desc" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                  SEO description
-                  <span className={`ml-2 font-normal ${seoDescLen > 160 ? 'text-red-600' : 'text-slate-400'}`}>
+                <Label htmlFor="pg-seo-desc">
+                  SEO description{' '}
+                  <span className={cn('font-normal normal-case tracking-normal', seoDescLen > 160 ? 'text-red-600' : 'text-slate-400')}>
                     {seoDescLen}/160
                   </span>
-                </label>
-                <textarea
+                </Label>
+                <Textarea
                   id="pg-seo-desc"
                   value={page.seo_description ?? ''}
                   onChange={(e) => setPage({ ...page, seo_description: e.target.value })}
                   rows={3}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-slate-500"
                 />
               </div>
 
               <div>
-                <label htmlFor="pg-canonical" className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1">
-                  Canonical URL
-                </label>
-                <input
+                <Label htmlFor="pg-canonical">Canonical URL</Label>
+                <Input
                   id="pg-canonical"
                   type="url"
                   value={page.canonical_url ?? ''}
                   onChange={(e) => setPage({ ...page, canonical_url: e.target.value })}
                   placeholder="https://…"
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-500"
+                  className="font-mono"
                 />
               </div>
 
-              <p className="text-xs text-slate-400">
-                Changes here are applied when you click Save.
-              </p>
+              <p className="text-xs text-slate-400">Changes here are applied when you click Save.</p>
             </div>
           ) : sidebarTab === 'pixels' ? (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Tracking tags for <span className="font-semibold">this page only</span>, layered on
-                top of the site-wide GA/GTM. Leave blank to inherit just the site defaults.
+            <div className="flex-1 space-y-4 overflow-y-auto p-4">
+              <p className="text-xs leading-relaxed text-slate-500">
+                Tracking tags for <span className="font-semibold">this page only</span>, layered on top of
+                the site-wide GA/GTM. Leave blank to inherit just the site defaults.
               </p>
               {PIXEL_FIELDS.map((field) => (
                 <div key={field.key}>
-                  <label
-                    htmlFor={`px-${field.key}`}
-                    className="block text-xs font-semibold text-slate-600 uppercase tracking-wide mb-1"
-                  >
-                    {field.label}
-                  </label>
+                  <Label htmlFor={`px-${field.key}`}>{field.label}</Label>
                   {field.multiline ? (
-                    <textarea
+                    <Textarea
                       id={`px-${field.key}`}
                       value={page.pixels?.[field.key] ?? ''}
-                      onChange={(e) =>
-                        setPage({ ...page, pixels: { ...page.pixels, [field.key]: e.target.value } })
-                      }
+                      onChange={(e) => setPage({ ...page, pixels: { ...page.pixels, [field.key]: e.target.value } })}
                       placeholder={field.placeholder}
                       rows={3}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="font-mono"
                     />
                   ) : (
-                    <input
+                    <Input
                       id={`px-${field.key}`}
-                      type="text"
                       value={page.pixels?.[field.key] ?? ''}
-                      onChange={(e) =>
-                        setPage({ ...page, pixels: { ...page.pixels, [field.key]: e.target.value } })
-                      }
+                      onChange={(e) => setPage({ ...page, pixels: { ...page.pixels, [field.key]: e.target.value } })}
                       placeholder={field.placeholder}
-                      className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:outline-none focus:ring-2 focus:ring-slate-500"
+                      className="font-mono"
                     />
                   )}
-                  {field.help && <p className="mt-1 text-xs text-slate-400">{field.help}</p>}
+                  {field.help && <HelpText>{field.help}</HelpText>}
                 </div>
               ))}
-              <p className="text-xs text-amber-600">
+              <HelpText tone="warning">
                 Pixels take effect on the next deploy of the site (build-time bake), not instantly.
-              </p>
+              </HelpText>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div className="flex-1 space-y-2 overflow-y-auto p-4">
               {versions.length === 0 && (
-                <p className="text-sm text-slate-500 text-center py-8">
+                <p className="py-8 text-center text-sm text-slate-500">
                   No versions yet. A snapshot is taken every time sections change on Save.
                 </p>
               )}
               {versions.map((v, i) => (
                 <div
                   key={v.id}
-                  className="border border-slate-200 rounded-lg p-3 flex items-center justify-between gap-2"
+                  className="flex items-center justify-between gap-2 rounded-lg border border-slate-200 p-3"
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-slate-800">
                       v{v.version_number ?? versions.length - i}
                       {i === 0 && <span className="ml-1.5 text-xs font-normal text-slate-400">latest</span>}
                     </p>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="truncate text-xs text-slate-500">
                       {v.created_by ?? 'unknown'} · {new Date(v.created_at).toLocaleString()}
                     </p>
                   </div>
-                  <button
+                  <Button
+                    variant="secondary"
+                    size="sm"
                     onClick={() => handleRestore(v.id)}
                     disabled={restoringId !== null}
-                    className="shrink-0 px-3 py-1.5 text-xs font-semibold border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 transition"
+                    className="shrink-0"
                   >
                     {restoringId === v.id ? 'Restoring…' : 'Restore'}
-                  </button>
+                  </Button>
                 </div>
               ))}
             </div>

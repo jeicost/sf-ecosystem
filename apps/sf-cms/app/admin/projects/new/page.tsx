@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Copy, Check, ShieldAlert } from 'lucide-react'
 import { createProject } from '../actions'
+import { Button, Card, CardBody, Input, Label, HelpText, InlineMessage } from '@/components/ui'
 
 export default function NewProjectPage() {
   const router = useRouter()
@@ -12,11 +14,7 @@ export default function NewProjectPage() {
   const [newProjectId, setNewProjectId] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [confirmed, setConfirmed] = useState(false)
-  const [formData, setFormData] = useState({
-    name: '',
-    slug: '',
-    domain: '',
-  })
+  const [formData, setFormData] = useState({ name: '', slug: '', domain: '' })
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -44,217 +42,125 @@ export default function NewProjectPage() {
 
   if (revealedKey) {
     return (
-      <div style={{ maxWidth: '600px', margin: '2rem auto' }}>
-        <h1>Proyecto creado</h1>
-        <div style={{
-          padding: '1rem',
-          backgroundColor: '#fff8e1',
-          border: '1px solid #f0d060',
-          borderRadius: '4px',
-          marginBottom: '1.5rem',
-        }}>
-          <p style={{ margin: '0 0 0.75rem', fontWeight: 600 }}>
-            Copia esta API key ahora — no se volverá a mostrar nunca más.
-          </p>
-          <code style={{
-            display: 'block',
-            padding: '0.75rem',
-            backgroundColor: '#fff',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            fontSize: '0.85rem',
-            wordBreak: 'break-all',
-            marginBottom: '0.75rem',
-          }}>
-            {revealedKey}
-          </code>
-          <button
-            type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(revealedKey)
-              setCopied(true)
-            }}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: copied ? '#2e7d32' : '#0070f3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '0.875rem',
-              cursor: 'pointer',
-            }}
-          >
-            {copied ? 'Copiada ✓' : 'Copiar'}
-          </button>
-        </div>
+      <div className="mx-auto max-w-lg px-8 py-10">
+        <h1 className="mb-6 text-2xl font-semibold text-slate-900">Proyecto creado</h1>
 
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.9rem' }}>
+        <Card className="mb-6 border-amber-200 bg-amber-50">
+          <CardBody>
+            <p className="mb-3 flex items-center gap-2 text-sm font-semibold text-amber-900">
+              <ShieldAlert className="h-4 w-4 shrink-0" />
+              Copia esta API key ahora — no se volverá a mostrar nunca más.
+            </p>
+            <code className="mb-3 block break-all rounded-lg border border-amber-200 bg-white px-3 py-2.5 text-sm text-slate-800">
+              {revealedKey}
+            </code>
+            <Button
+              type="button"
+              size="sm"
+              variant={copied ? 'secondary' : 'primary'}
+              onClick={() => {
+                navigator.clipboard.writeText(revealedKey)
+                setCopied(true)
+              }}
+            >
+              {copied ? (
+                <>
+                  <Check className="h-4 w-4" /> Copiada
+                </>
+              ) : (
+                <>
+                  <Copy className="h-4 w-4" /> Copiar
+                </>
+              )}
+            </Button>
+          </CardBody>
+        </Card>
+
+        <label className="mb-5 flex items-center gap-2 text-sm text-slate-700">
           <input
             type="checkbox"
             checked={confirmed}
             onChange={(e) => setConfirmed(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-300 text-accent-600 focus:ring-accent-500"
           />
           Ya la copié y la guardé (ej. en las env vars de Vercel del sitio)
         </label>
 
-        <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <button
-            type="button"
-            disabled={!confirmed}
-            onClick={() => router.push('/admin/projects')}
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: confirmed ? '#0070f3' : '#ccc',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              fontWeight: '500',
-              cursor: confirmed ? 'pointer' : 'not-allowed',
-            }}
-          >
+        <div className="flex gap-3">
+          <Button type="button" disabled={!confirmed} onClick={() => router.push('/admin/projects')}>
             Continuar
-          </button>
+          </Button>
           {newProjectId && (
-            <button
+            <Button
               type="button"
+              variant="secondary"
               disabled={!confirmed}
               onClick={() => router.push(`/admin/projects/${newProjectId}/brief`)}
-              style={{
-                padding: '0.75rem 1.5rem',
-                backgroundColor: confirmed ? '#fff' : '#f5f5f5',
-                color: confirmed ? '#0070f3' : '#aaa',
-                border: `1px solid ${confirmed ? '#0070f3' : '#ccc'}`,
-                borderRadius: '4px',
-                fontSize: '1rem',
-                fontWeight: '500',
-                cursor: confirmed ? 'pointer' : 'not-allowed',
-              }}
             >
               Empezar el brief de esta landing
-            </button>
+            </Button>
           )}
         </div>
-        <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: '#666' }}>
-          El brief es una conversación por chat que recoge todo lo necesario para que el
-          equipo técnico construya la web — no la crea por sí solo.
+        <p className="mt-3 text-xs text-slate-500">
+          El brief es una conversación por chat que recoge todo lo necesario para que el equipo
+          técnico construya la web — no la crea por sí solo.
         </p>
       </div>
     )
   }
 
   return (
-    <div style={{ maxWidth: '600px', margin: '2rem auto' }}>
-      <h1>Create New Project</h1>
+    <div className="mx-auto max-w-lg px-8 py-10">
+      <h1 className="mb-6 text-2xl font-semibold text-slate-900">Create New Project</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-            Project Name *
-          </label>
-          <input
-            type="text"
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <Label htmlFor="name">Project Name *</Label>
+          <Input
+            id="name"
             value={formData.name}
-            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+            onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
             required
             disabled={loading}
             placeholder="e.g., My Client Site"
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              boxSizing: 'border-box',
-            }}
           />
         </div>
 
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-            Slug *
-          </label>
-          <input
-            type="text"
+        <div>
+          <Label htmlFor="slug">Slug *</Label>
+          <Input
+            id="slug"
             value={formData.slug}
-            onChange={(e) => setFormData(prev => ({ ...prev, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') }))}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, slug: e.target.value.toLowerCase().replace(/\s+/g, '-') }))
+            }
             required
             disabled={loading}
             placeholder="e.g., my-client-site"
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              boxSizing: 'border-box',
-            }}
           />
-          <small style={{ color: '#666', marginTop: '0.25rem', display: 'block' }}>
-            URL-friendly identifier, must be unique
-          </small>
+          <HelpText>URL-friendly identifier, must be unique</HelpText>
         </div>
 
-        <div style={{ marginBottom: '1.5rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-            Domain (optional)
-          </label>
-          <input
-            type="text"
+        <div>
+          <Label htmlFor="domain">Domain (optional)</Label>
+          <Input
+            id="domain"
             value={formData.domain}
-            onChange={(e) => setFormData(prev => ({ ...prev, domain: e.target.value }))}
+            onChange={(e) => setFormData((prev) => ({ ...prev, domain: e.target.value }))}
             disabled={loading}
             placeholder="e.g., example.com"
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              boxSizing: 'border-box',
-            }}
           />
         </div>
 
-        {error && (
-          <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee', borderRadius: '4px', color: '#c00', fontSize: '0.875rem' }}>
-            {error}
-          </div>
-        )}
+        {error && <InlineMessage kind="error">{error}</InlineMessage>}
 
-        <div style={{ display: 'flex', gap: '1rem' }}>
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: loading ? '#ccc' : '#0070f3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              fontWeight: '500',
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {loading ? 'Creating...' : 'Create Project'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.back()}
-            disabled={loading}
-            style={{
-              padding: '0.75rem 1.5rem',
-              backgroundColor: '#f0f0f0',
-              color: '#333',
-              border: '1px solid #ddd',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
-          >
+        <div className="flex gap-3">
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Creating…' : 'Create Project'}
+          </Button>
+          <Button type="button" variant="secondary" onClick={() => router.back()} disabled={loading}>
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -5,7 +5,9 @@ import StarterKit from '@tiptap/starter-kit'
 import Link from '@tiptap/extension-link'
 import Image from '@tiptap/extension-image'
 import { useCallback, useState } from 'react'
+import { Bold, Italic, Code, Heading1, Heading2, List, ListOrdered, ImageIcon } from 'lucide-react'
 import { ImagePicker } from '@/components/media/ImagePicker'
+import { cn } from '@/lib/cn'
 
 interface RichTextEditorProps {
   value: string
@@ -39,85 +41,46 @@ export function RichTextEditor({ value, onChange, placeholder, projectId }: Rich
   const toggleOrderedList = useCallback(() => editor?.chain().focus().toggleOrderedList().run(), [editor])
 
   if (!editor) {
-    return <div>Loading editor...</div>
+    return <div className="rounded-lg border border-slate-300 px-4 py-8 text-center text-sm text-slate-400">Loading editor…</div>
   }
 
   return (
-    <div style={{ border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}>
+    <div className="overflow-hidden rounded-lg border border-slate-300">
       {/* Toolbar */}
-      <div style={{
-        display: 'flex',
-        gap: '0.25rem',
-        padding: '0.5rem',
-        backgroundColor: '#f9f9f9',
-        borderBottom: '1px solid #ddd',
-        flexWrap: 'wrap',
-      }}>
-        <ToolbarButton
-          onClick={toggleBold}
-          active={editor.isActive('bold')}
-          title="Bold"
-        >
-          <strong>B</strong>
+      <div className="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50 p-2">
+        <ToolbarButton onClick={toggleBold} active={editor.isActive('bold')} title="Bold">
+          <Bold className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={toggleItalic}
-          active={editor.isActive('italic')}
-          title="Italic"
-        >
-          <em>I</em>
+        <ToolbarButton onClick={toggleItalic} active={editor.isActive('italic')} title="Italic">
+          <Italic className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={toggleCode}
-          active={editor.isActive('code')}
-          title="Code"
-        >
-          <code style={{ fontSize: '0.75rem' }}>code</code>
+        <ToolbarButton onClick={toggleCode} active={editor.isActive('code')} title="Code">
+          <Code className="h-3.5 w-3.5" />
         </ToolbarButton>
 
-        <div style={{ width: '1px', backgroundColor: '#ddd', margin: '0.25rem 0' }} />
+        <Divider />
 
-        <ToolbarButton
-          onClick={toggleH1}
-          active={editor.isActive('heading', { level: 1 })}
-          title="Heading 1"
-        >
-          H1
+        <ToolbarButton onClick={toggleH1} active={editor.isActive('heading', { level: 1 })} title="Heading 1">
+          <Heading1 className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={toggleH2}
-          active={editor.isActive('heading', { level: 2 })}
-          title="Heading 2"
-        >
-          H2
+        <ToolbarButton onClick={toggleH2} active={editor.isActive('heading', { level: 2 })} title="Heading 2">
+          <Heading2 className="h-3.5 w-3.5" />
         </ToolbarButton>
 
-        <div style={{ width: '1px', backgroundColor: '#ddd', margin: '0.25rem 0' }} />
+        <Divider />
 
-        <ToolbarButton
-          onClick={toggleBulletList}
-          active={editor.isActive('bulletList')}
-          title="Bullet list"
-        >
-          • List
+        <ToolbarButton onClick={toggleBulletList} active={editor.isActive('bulletList')} title="Bullet list">
+          <List className="h-3.5 w-3.5" />
         </ToolbarButton>
-        <ToolbarButton
-          onClick={toggleOrderedList}
-          active={editor.isActive('orderedList')}
-          title="Ordered list"
-        >
-          1. List
+        <ToolbarButton onClick={toggleOrderedList} active={editor.isActive('orderedList')} title="Ordered list">
+          <ListOrdered className="h-3.5 w-3.5" />
         </ToolbarButton>
 
         {projectId && (
           <>
-            <div style={{ width: '1px', backgroundColor: '#ddd', margin: '0.25rem 0' }} />
-            <ToolbarButton
-              onClick={() => setPickerOpen(true)}
-              active={false}
-              title="Insert image"
-            >
-              🖼 Img
+            <Divider />
+            <ToolbarButton onClick={() => setPickerOpen(true)} active={false} title="Insert image">
+              <ImageIcon className="h-3.5 w-3.5" />
             </ToolbarButton>
           </>
         )}
@@ -135,17 +98,7 @@ export function RichTextEditor({ value, onChange, placeholder, projectId }: Rich
       )}
 
       {/* Editor */}
-      <EditorContent
-        editor={editor}
-        style={{
-          padding: '1rem',
-          minHeight: '300px',
-          maxHeight: '600px',
-          overflow: 'auto',
-          fontFamily: 'system-ui, -apple-system, sans-serif',
-          lineHeight: '1.6',
-        }}
-      />
+      <EditorContent editor={editor} className="max-h-[600px] min-h-[300px] overflow-auto p-4 leading-relaxed" />
 
       <style>{`
         .tiptap {
@@ -164,43 +117,46 @@ export function RichTextEditor({ value, onChange, placeholder, projectId }: Rich
         }
 
         .tiptap code {
-          background: #f0f0f0;
+          background: #f1f5f9;
           padding: 0.2em 0.4em;
-          border-radius: 2px;
+          border-radius: 4px;
           font-size: 0.9em;
-          font-family: 'Courier New', monospace;
         }
 
         .tiptap a {
-          color: #0070f3;
+          color: #4f46e5;
           text-decoration: underline;
           cursor: pointer;
         }
 
         .tiptap pre {
-          background: #f0f0f0;
+          background: #f1f5f9;
           padding: 1em;
-          border-radius: 4px;
+          border-radius: 8px;
           overflow-x: auto;
           margin: 0.5em 0;
         }
 
         .tiptap blockquote {
-          border-left: 4px solid #ddd;
+          border-left: 4px solid #cbd5e1;
           padding-left: 1em;
           margin: 0.5em 0;
-          opacity: 0.6;
+          opacity: 0.7;
         }
 
         .tiptap img {
           max-width: 100%;
           height: auto;
-          border-radius: 6px;
+          border-radius: 8px;
           margin: 0.5em 0;
         }
       `}</style>
     </div>
   )
+}
+
+function Divider() {
+  return <div className="mx-0.5 h-5 w-px bg-slate-200" />
 }
 
 interface ToolbarButtonProps {
@@ -213,30 +169,15 @@ interface ToolbarButtonProps {
 function ToolbarButton({ onClick, active, title, children }: ToolbarButtonProps) {
   return (
     <button
+      type="button"
       onClick={onClick}
       title={title}
-      style={{
-        padding: '0.4rem 0.6rem',
-        minWidth: '32px',
-        backgroundColor: active ? '#0070f3' : '#fff',
-        color: active ? '#fff' : '#333',
-        border: active ? '1px solid #0070f3' : '1px solid #ddd',
-        borderRadius: '3px',
-        cursor: 'pointer',
-        fontSize: '0.85rem',
-        fontWeight: '500',
-        transition: 'all 0.1s',
-      }}
-      onMouseEnter={(e) => {
-        if (!active) {
-          e.currentTarget.style.backgroundColor = '#f5f5f5'
-        }
-      }}
-      onMouseLeave={(e) => {
-        if (!active) {
-          e.currentTarget.style.backgroundColor = '#fff'
-        }
-      }}
+      className={cn(
+        'flex h-8 min-w-8 items-center justify-center rounded-md border text-sm font-medium transition-colors',
+        active
+          ? 'border-accent-600 bg-accent-600 text-white'
+          : 'border-transparent text-slate-600 hover:bg-slate-200/60'
+      )}
     >
       {children}
     </button>

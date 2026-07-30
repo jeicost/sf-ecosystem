@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { Button, Input, Label, InlineMessage } from '@/components/ui'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -30,85 +31,60 @@ export default function LoginPage() {
       }
 
       router.push('/admin')
-    } catch (err) {
+    } catch {
       setError('An unexpected error occurred')
       setLoading(false)
     }
   }
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5' }}>
-      <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', maxWidth: '400px', width: '100%' }}>
-        <h1 style={{ marginTop: 0, marginBottom: '1.5rem', textAlign: 'center', fontSize: '24px' }}>
-          SF-CMS Admin
-        </h1>
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-sm font-bold text-white">
+            SF
+          </div>
+          <h1 className="text-lg font-semibold text-slate-900">SF-CMS Admin</h1>
+          <p className="mt-1 text-sm text-slate-500">Inicia sesión para continuar</p>
+        </div>
 
-        <form onSubmit={handleLogin}>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Email
-            </label>
-            <input
+        <form onSubmit={handleLogin} className="rounded-xl border border-slate-200 bg-white p-6 shadow-card">
+          <div className="mb-4">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                boxSizing: 'border-box',
-              }}
+              autoFocus
+              autoComplete="email"
             />
           </div>
 
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: '500' }}>
-              Password
-            </label>
-            <input
+          <div className="mb-5">
+            <Label htmlFor="password">Password</Label>
+            <Input
+              id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               disabled={loading}
-              style={{
-                width: '100%',
-                padding: '0.75rem',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '1rem',
-                boxSizing: 'border-box',
-              }}
+              autoComplete="current-password"
             />
           </div>
 
           {error && (
-            <div style={{ marginBottom: '1rem', padding: '0.75rem', backgroundColor: '#fee', borderRadius: '4px', color: '#c00', fontSize: '0.875rem' }}>
-              {error}
+            <div className="mb-4">
+              <InlineMessage kind="error">{error}</InlineMessage>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={loading}
-            style={{
-              width: '100%',
-              padding: '0.75rem',
-              backgroundColor: loading ? '#ccc' : '#0070f3',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              fontSize: '1rem',
-              fontWeight: '500',
-              cursor: loading ? 'not-allowed' : 'pointer',
-            }}
-          >
-            {loading ? 'Signing in...' : 'Sign in'}
-          </button>
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? 'Signing in…' : 'Sign in'}
+          </Button>
         </form>
       </div>
     </div>

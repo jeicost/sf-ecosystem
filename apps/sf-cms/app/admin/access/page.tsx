@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { X } from 'lucide-react'
 import { sortProjects } from '@/lib/project-selection'
+import { Button, Card, Input, Select, Label, InlineMessage } from '@/components/ui'
 
 interface Project { id: string; name: string; slug: string }
 interface Editor { id: string; user_id: string; email: string; role: string; created_at: string }
@@ -82,81 +84,78 @@ export default function AccessPage() {
 
   if (allowed === false) {
     return (
-      <div className="p-8">
-        <h1 className="text-2xl font-bold text-slate-900">Access</h1>
-        <p className="mt-2 text-slate-600">Only a global admin can manage project access.</p>
+      <div className="mx-auto max-w-2xl px-8 py-8">
+        <h1 className="text-2xl font-semibold text-slate-900">Access</h1>
+        <p className="mt-2 text-sm text-slate-500">Only a global admin can manage project access.</p>
       </div>
     )
   }
 
   if (allowed === null) {
-    return <div className="p-8 text-slate-500">Loading…</div>
+    return <p className="py-12 text-center text-sm text-slate-500">Loading…</p>
   }
 
   return (
-    <div className="p-8 max-w-2xl">
-      <h1 className="text-3xl font-bold text-slate-900">Access</h1>
-      <p className="mt-1 text-slate-600">
+    <div className="mx-auto max-w-2xl px-8 py-8">
+      <h1 className="text-2xl font-semibold text-slate-900">Access</h1>
+      <p className="mt-1 text-sm text-slate-500">
         Grant editors access to a single client&apos;s content. Editors only see the projects listed
         for them; global admins (you) see everything.
       </p>
 
-      <div className="mt-6">
-        <label className="block text-sm font-medium text-slate-700 mb-2">Project</label>
-        <select
+      <div className="mt-6 max-w-xs">
+        <Label htmlFor="project-select">Project</Label>
+        <Select
+          id="project-select"
           value={selected?.id || ''}
           onChange={(e) => setSelected(projects.find((p) => p.id === e.target.value) || null)}
-          className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
         >
           {projects.map((p) => (
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
-        </select>
+        </Select>
       </div>
 
       {msg && (
-        <div className={`mt-4 px-4 py-2 rounded-lg text-sm ${msg.startsWith('✓') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
-          {msg}
+        <div className="mt-4">
+          <InlineMessage kind={msg.startsWith('✓') ? 'success' : 'error'}>{msg}</InlineMessage>
         </div>
       )}
 
-      <div className="mt-6 bg-white border border-slate-200 rounded-lg divide-y divide-slate-100">
+      <Card className="mt-6 divide-y divide-slate-100">
         {editors.length === 0 && (
-          <p className="px-4 py-6 text-center text-slate-500 text-sm">
+          <p className="px-4 py-6 text-center text-sm text-slate-500">
             No editors yet — only global admins can access this project.
           </p>
         )}
         {editors.map((ed) => (
-          <div key={ed.id} className="px-4 py-3 flex items-center justify-between">
+          <div key={ed.id} className="flex items-center justify-between px-4 py-3">
             <div>
               <p className="text-sm font-medium text-slate-800">{ed.email}</p>
               <p className="text-xs text-slate-500">editor · added {new Date(ed.created_at).toLocaleDateString()}</p>
             </div>
             <button
               onClick={() => removeEditor(ed.user_id)}
-              className="text-sm text-red-600 hover:text-red-700 font-medium"
+              className="flex items-center gap-1 text-sm font-medium text-red-600 hover:text-red-700"
             >
+              <X className="h-3.5 w-3.5" />
               Remove
             </button>
           </div>
         ))}
-      </div>
+      </Card>
 
       <form onSubmit={addEditor} className="mt-4 flex gap-2">
-        <input
+        <Input
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="editor@client.com"
-          className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
+          className="flex-1"
         />
-        <button
-          type="submit"
-          disabled={busy || !email.trim()}
-          className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 transition"
-        >
+        <Button type="submit" disabled={busy || !email.trim()}>
           {busy ? 'Adding…' : 'Add editor'}
-        </button>
+        </Button>
       </form>
       <p className="mt-2 text-xs text-slate-400">
         The person must already have an SF-CMS account. Create their user in Supabase Auth first,

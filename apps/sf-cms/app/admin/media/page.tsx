@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useState, useRef, Suspense } from 'react'
+import { ImageIcon, FileText, Check, Upload } from 'lucide-react'
 import { useMedia } from '@/lib/hooks/useMedia'
+import { Button, Select, Label, EmptyState, InlineMessage } from '@/components/ui'
+import { cn } from '@/lib/cn'
 
 interface Project {
   id: string
@@ -27,9 +30,7 @@ function MediaContent() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const { media, loading, error, uploadFile, fetchMedia } = useMedia(
-    selectedProject?.id || ''
-  )
+  const { media, loading, error, uploadFile, fetchMedia } = useMedia(selectedProject?.id || '')
 
   useEffect(() => {
     fetch('/api/admin/projects')
@@ -62,38 +63,36 @@ function MediaContent() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="mx-auto max-w-6xl px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-4xl font-bold text-slate-900">Media</h1>
-        <p className="text-slate-600 mt-2">Upload and manage images and files per project</p>
+        <h1 className="text-2xl font-semibold text-slate-900">Media</h1>
+        <p className="mt-1 text-sm text-slate-500">Sube y gestiona imágenes y archivos por proyecto.</p>
       </div>
 
       {(loadError || error) && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 text-red-700">
-          {loadError || error}
+        <div className="mb-6">
+          <InlineMessage kind="error">{loadError || error}</InlineMessage>
         </div>
       )}
 
       {projects.length > 0 && (
-        <div className="mb-6 flex items-end justify-between gap-4 flex-wrap">
-          <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
-              Select Project
-            </label>
-            <select
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div className="max-w-xs">
+            <Label htmlFor="project-select">Select Project</Label>
+            <Select
+              id="project-select"
               value={selectedProject?.id || ''}
               onChange={(e) => {
                 const project = projects.find((p) => p.id === e.target.value)
                 if (project) setSelectedProject(project)
               }}
-              className="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500"
             >
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div>
@@ -104,47 +103,51 @@ function MediaContent() {
               className="hidden"
               onChange={handleFileSelected}
             />
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={!selectedProject || loading}
-              className="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition disabled:opacity-50"
-            >
+            <Button onClick={() => fileInputRef.current?.click()} disabled={!selectedProject || loading}>
+              <Upload className="h-4 w-4" />
               {loading ? 'Working…' : 'Upload File'}
-            </button>
+            </Button>
           </div>
         </div>
       )}
 
       {selectedProject && media.length === 0 && !loading && (
-        <div className="bg-slate-50 rounded-lg border border-slate-200 p-12 text-center">
-          <p className="text-slate-600">No media yet for this project</p>
-        </div>
+        <EmptyState icon={<ImageIcon className="h-8 w-8" />} title="No media yet for this project" />
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
         {media.map((item) => (
           <div
             key={item.id}
-            className="bg-white rounded-lg shadow border border-slate-200 overflow-hidden hover:shadow-lg transition"
+            className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-card transition-shadow hover:shadow-panel"
           >
-            <div className="aspect-square bg-slate-100 flex items-center justify-center overflow-hidden">
+            <div className="flex aspect-square items-center justify-center overflow-hidden bg-slate-100">
               {isImage(item.mime_type) ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.url} alt={item.alt_text || item.filename} className="w-full h-full object-cover" />
+                <img src={item.url} alt={item.alt_text || item.filename} className="h-full w-full object-cover" />
               ) : (
-                <span className="text-slate-400 text-4xl">📄</span>
+                <FileText className="h-10 w-10 text-slate-300" />
               )}
             </div>
             <div className="p-3">
-              <p className="text-xs font-medium text-slate-900 truncate" title={item.filename}>
+              <p className="truncate text-xs font-medium text-slate-900" title={item.filename}>
                 {item.filename}
               </p>
-              <p className="text-xs text-slate-500 mt-0.5">{formatSize(item.size_bytes)}</p>
+              <p className="mt-0.5 text-xs text-slate-500">{formatSize(item.size_bytes)}</p>
               <button
                 onClick={() => copyUrl(item.id, item.url)}
-                className="mt-2 w-full text-xs px-2 py-1.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-700 transition"
+                className={cn(
+                  'mt-2 flex w-full items-center justify-center gap-1 rounded-md px-2 py-1.5 text-xs font-medium transition-colors',
+                  copiedId === item.id ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                )}
               >
-                {copiedId === item.id ? '✓ Copied' : 'Copy URL'}
+                {copiedId === item.id ? (
+                  <>
+                    <Check className="h-3 w-3" /> Copied
+                  </>
+                ) : (
+                  'Copy URL'
+                )}
               </button>
             </div>
           </div>
@@ -156,7 +159,7 @@ function MediaContent() {
 
 export default function MediaPage() {
   return (
-    <Suspense fallback={<div className="text-center py-12">Loading...</div>}>
+    <Suspense fallback={<p className="py-12 text-center text-sm text-slate-500">Loading…</p>}>
       <MediaContent />
     </Suspense>
   )
