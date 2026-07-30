@@ -1,6 +1,15 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/**0061** aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/**0062** aplicadas. Este fichero lista SOLO lo que queda.
+
+## MIRA — Brand Brain como "LLM Wiki" (DEBT vv, 2026-07-30) — ✅ CERRADO, con acciones reales pendientes del CEO
+
+A petición del CEO tras compartir una metodología de bases de conocimiento con LLMs, el Brand Brain gana síntesis real (no solo indexar) contra los documentos de Drive, contradicciones estructuradas con aviso visual (ya no un prefijo de texto invisible), un índice navegable por sección, y una revisión automática semanal. Sin migrar el schema de `brand_data` (sigue siendo jsonb, decisión razonada). De paso, encontrado y arreglado (con el CEO pidiendo explícitamente "dale a todo") un bug real y serio: la extracción de PDF llevaba tiempo fallando en silencio en producción (`filesSynced: 0`, sin ningún error visible sin mirar logs de Vercel) — 4 iteraciones hasta la causa raíz real (pdfjs-dist + hoisting de pnpm + rutas de tracing de Vercel). Verificado en vivo de punta a punta con el Brand Book PDF real de Salsa Burgers: propuesta real generada, contradicción real detectada (misión extendida del Brand Book vs. misión minimalista actual del Brain). Detalle completo, incluida la saga de los 4 intentos de fix, en DEBT (vv).
+
+**Pendiente real de esta ronda (acciones del CEO, no técnicas):**
+- **Revisar la propuesta pendiente y la contradicción real que quedaron en Salsa Burgers** (`brain_change_proposals`/`brain_contradictions`, dato real no sintético, dejado a propósito para que la agencia lo revise en `/brand-brain`).
+- **Decidir cuándo activar `DRIVE_BRAIN_SYNTHESIS=1` para el resto de clientes** (hoy solo activo puntualmente, probado contra Salsa).
+- El cron semanal de lint (domingos 06:00 UTC) no se ha ejecutado todavía en producción — se activará solo cuando Vercel lo dispare.
 
 ## MIRA — Auditoría completa pre-lanzamiento: Brand Brain, Integraciones, chatbots y resto de secciones (DEBT uu, 2026-07-30) — ✅ CERRADA
 

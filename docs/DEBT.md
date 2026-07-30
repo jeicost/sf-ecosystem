@@ -1,6 +1,6 @@
 # DEBT.md — Deuda técnica de MIRA
 
-Registro honesto de deuda técnica conocida. Última verificación completa: **2026-07-30** (entrada uu). Todas las rutas son relativas a `apps/mira/portal/` salvo que se indique lo contrario. Cada entrada verificada contra el código con grep en la fecha indicada.
+Registro honesto de deuda técnica conocida. Última verificación completa: **2026-07-30** (entrada vv). Todas las rutas son relativas a `apps/mira/portal/` salvo que se indique lo contrario. Cada entrada verificada contra el código con grep en la fecha indicada.
 
 ---
 
@@ -676,6 +676,38 @@ El CEO, tras ver el aviso de alcance del Centro de Documentos (ss), pidió expl�
 Este par de pruebas confirma el comportamiento exacto que pidió el CEO: ni búsqueda forzada e innecesaria, ni invención — el modelo busca cuando de verdad hace falta y se queda callado/honesto cuando no hay nada real que encontrar.
 
 **Pendiente real**: Monthly Content System comparte el mismo mecanismo ya probado en Quick Actions pero **no se verificó en vivo por separado** (3 llamadas Opus secuenciales, más caro y lento de probar) — riesgo bajo dado que es el mismo helper, pero queda como pendiente de verificación si se quiere confirmación empírica específica.
+
+---
+
+## vv) Brand Brain como "LLM Wiki" (4 fases) + saga de 4 intentos para arreglar la extracción de PDF en Vercel (2026-07-30)
+
+El CEO compartió una metodología ("LLM Wiki": el LLM sintetiza cada fuente nueva de forma persistente contra una base de conocimiento con contradicciones señaladas explícitamente, en vez de RAG plano que redescubre todo en cada consulta) y pidió aplicarla al Brand Brain. Analizado primero, luego planificado en modo plan, luego construido en 4 fases aprobadas.
+
+**Diagnóstico previo a construir nada**: MIRA ya tenía el mecanismo de síntesis correcto (`propose_brain_change` del chat "Cuéntale a MIRA", `brain_change_proposals` con confirmación humana) pero solo se disparaba desde el chat — `lib/drive-sync.ts` solo indexaba (resumen Haiku plano + mapa de carpeta), cero síntesis contra el Brand Brain, cero detección de contradicciones. El único precedente de "contradicción" era el string-prefix `'[CONFLICTO]'` de `analyze-document`, sin estructura ni tratamiento visual.
+
+**Decisión de arquitectura clave**: NO migrar `brand_data` a tablas por sección — sigue siendo un único jsonb, decisión razonada (~11 consumidores directos, objeto deliberadamente abierto y tolerante a legacy). En su lugar, capa de navegación (`lib/brand-brain-pages.ts`, registro estático sección→categoría, reutiliza las 6 categorías ya existentes de `BrandBrainEditor.tsx`) + 2 tablas nuevas aditivas.
+
+**Fase 0 — fundación** (migración `0062_brain_wiki_foundation.sql`): `brain_contradictions` (contradicciones estructuradas, ciclo de vida `open→resolved/dismissed` independiente de la propuesta que las originó — si se rechaza la propuesta, la contradicción sigue abierta), `brain_field_provenance` (de qué sección vino cada cambio), `content_hash` en `agent_documents`, `brain_change_proposals` admite `origin` `drive_sync`/`lint`. Cierre de deuda documental: `brand_references` nunca tuvo `CREATE TABLE` versionado (solo se conocía por 0052, que ya le hacía `ALTER` asumiendo que existía) — creada con `IF NOT EXISTS`. Bug real encontrado de paso: `content_pillars` no tenía la `UNIQUE(client_id,pillar_name)` que el código ya asumía en sus `upsert` — verificado con las 25 filas reales de producción (0 duplicados), fix con fallback seguro (`42P10` → cae a `insert` normal) para no depender de coordinar el deploy con el momento exacto del `ALTER`.
+
+**Fase 1 — la palanca de mayor impacto**: `lib/brain-tools/drive-synthesis.ts` — dado el `brand_data` actual + documentos nuevos/cambiados de una carpeta (por `content_hash`, no por `google_drive_file_id`), Claude Sonnet decide si hay sustancia real que proponer y si algo contradice lo que ya se sabe. Mismo contrato `BrainChange` que ya usa el chat — nunca aplica nada directo. Síntesis una vez por carpeta por sync (no por documento), circuit-breaker de propuestas nuevas por corrida del cron, flag `DRIVE_BRAIN_SYNTHESIS` apagado por defecto.
+
+**Fase 2 — riqueza de wiki**: pestaña "Índice" nueva en `/brand-brain` (última fuente/fecha por sección + badge de contradicciones abiertas, vía `GET /api/brand-brain/index`). `analyze-document` ya no usa el prefijo de texto `[CONFLICTO]` — escribe en `brain_contradictions` estructurado; `BrandBrainSuggestions.tsx` da tratamiento visual distinto (borde/badge ámbar) a un campo con contradicción asociada. Paginación real en `GET /api/brain/proposals` (antes `.limit(30)` fijo sin paginación — huérfanas en silencio para clientes con volumen). Nuevo endpoint agregado `GET /api/brain/proposals/summary` (solo agencia, mismo patrón `WorkspaceStatus<T>` de `lib/sentinel-data.ts`) para no depender de entrar cliente por cliente.
+
+**Fase 3 — lint periódico**: `app/api/cron/brain-lint/route.ts` (semanal, domingos 06:00 UTC, no solapa con drive-sync) + `lib/brain-lint.ts` — por cliente: contradicciones abiertas, secciones vacías (chequeo propio de completitud, no el heurístico de conteo de `formatBrandBrainForPrompt`), secciones sin actualizar 90+ días, carpetas de Drive sin ninguna propuesta derivada. Resultado en `project_memory` (reusa `ProjectMemoryViewer.tsx`, no tabla nueva).
+
+**Saga de 4 intentos para arreglar la extracción de PDF real en Vercel** (encontrada probando la Fase 1 con el Brand Book PDF real de Salsa Burgers — `filesSynced: 0` silencioso, ningún error visible sin mirar logs):
+1. `ReferenceError: DOMMatrix is not defined` — `pdfjs-dist` (dependencia de `pdf-parse`) intenta cargar `@napi-rs/canvas` para el polyfill; el binario nativo existe en local (darwin-arm64) pero no en el runtime serverless de Vercel (linux). Intento 1 (`serverExternalPackages`) NO funcionó — confirmado con logs reales, mismo error exacto. Fix real: polyfill propio de `DOMMatrix` (matriz afín 2D funcional, no un stub vacío) — consolidado en `lib/pdf-extract.ts`, que de paso unificó 4 sitios que parseaban PDF por separado con el mismo código duplicado (`drive-sync.ts`, `attachments.ts`, 2 rutas de `upload-document`).
+2. Con DOMMatrix resuelto, apareció un 2º error real: `Setting up fake worker failed: Cannot find module pdf.worker.mjs`. Intento con `require.resolve`+`createRequire(import.meta.url)` dentro de `lib/pdf-extract.ts` (bundleado por webpack) falló en runtime: `TypeError: t is not a function`.
+3. Causa raíz real: `pdfjs-dist` vive *hoisted* en el `node_modules` de la RAÍZ del monorepo (pnpm workspace), no en `apps/mira/portal/node_modules` — y el fichero del worker no se traza automáticamente al bundle serverless (resolución dinámica, no `import` estático). Fix con `outputFileTracingIncludes` en `next.config.ts` + `require.resolve` (esta vez en el propio `next.config.ts`, Node puro, no bundleado) — pero con ruta ABSOLUTA, que Next.js concatena con el directorio del proyecto en vez de usarla tal cual → deploy roto con `ENOENT` de ruta duplicada (`.../apps/mira/portal/vercel/path0/...`).
+4. Fix final: `path.relative(process.cwd(), rutaAbsoluta)` — `outputFileTracingIncludes` siempre espera una ruta relativa al directorio del proyecto, sea cual sea el nivel de hoisting de pnpm. Verificado leyendo el `.nft.json` del build ANTES de desplegar (ya había fallado un deploy por no hacer esto la vez anterior).
+
+**Verificado en vivo de punta a punta con el PDF real de Salsa Burgers** (cliente real, con autorización explícita del CEO para el pilote): tras el 4º fix, `content_hash` pasó de `null` a un hash real, `updated_at` se actualizó (antes atascado en 2026-07-19), `sync_status: completed`, `files_synced: 1` — y la síntesis produjo una propuesta real (`origin: drive_sync`, pendiente de confirmación) más una contradicción real y bien razonada: el Brand Book propone una misión extendida que choca con la misión minimalista actual del Brain, correctamente marcada como contradicción abierta en vez de aplicarse en silencio. Lógica del lint (Fase 3) verificada por separado, solo lectura, contra los mismos datos reales: detecta correctamente las 19 secciones vacías reales de Salsa y no marca su carpeta de Drive como huérfana (sí produjo una propuesta real).
+
+**Pendiente real que queda**:
+- Activar `DRIVE_BRAIN_SYNTHESIS=1` para el resto de clientes cuando el CEO decida (hoy solo se probó puntualmente contra Salsa).
+- Revisar/confirmar la propuesta pendiente y la contradicción real que quedaron en `brain_change_proposals`/`brain_contradictions` de Salsa Burgers (dato real, no sintético — no se borró a propósito, es exactamente el resultado esperado a revisar).
+- El cron semanal de lint (Fase 3) no se ha ejecutado todavía en producción (solo verificada su lógica por separado) — se activará solo cuando Vercel ejecute el cron programado.
+- Generación por IA de la narrativa de los informes de decisión y defensa estructural anti-inyección — ya documentadas como pendientes en rondas anteriores, no repetidas aquí.
 
 ---
 
