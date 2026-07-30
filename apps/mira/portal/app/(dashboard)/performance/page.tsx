@@ -68,6 +68,10 @@ export default function PerformancePage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!clientId) {
+      setLoading(false)
+      return
+    }
     const db = createClient()
     const days = period === '7d' ? 7 : period === '30d' ? 30 : 90
     const since = new Date(Date.now() - days * 86400000).toISOString()

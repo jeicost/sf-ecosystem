@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { setUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
@@ -24,6 +24,15 @@ export default function LoginPage() {
   const [loading, setLoading]   = useState(false)
   const [focused, setFocused]   = useState<string | null>(null)
   const [showPwd, setShowPwd]   = useState(false)
+
+  // /login is a public route at the middleware level (proxy.ts never checks
+  // auth here), so an already-authenticated session would otherwise just see
+  // the form again instead of landing on /home.
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => {
+      if (data.user) router.replace('/home')
+    })
+  }, [router])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

@@ -17,6 +17,7 @@ import { t } from '@/lib/i18n'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { minPlanForSection } from '@/lib/plans'
+import { safeLookup } from '@/lib/safe-lookup'
 import OnboardingModal from '@/components/onboarding-modal'
 
 const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'] })
@@ -172,7 +173,7 @@ function PlanBlockedBanner({ locale }: { locale: 'es' | 'en' }) {
 
   if (!blocked || dismissed) return null
 
-  const dept = DEPARTMENT_METADATA[blocked.slug as keyof typeof DEPARTMENT_METADATA]
+  const dept = safeLookup(DEPARTMENT_METADATA, blocked.slug)
   const sectionName = dept ? (locale === 'es' ? dept.nameEs : dept.name) : blocked.slug
   const requiredPlan = minPlanForSection(blocked.slug) ?? 'scale'
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(req: NextRequest) {
   try {
@@ -13,7 +14,15 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    const db = createClient()
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
+    const db = adminClient()
 
     // Fetch all documents for this client (not archived)
     const { data, error } = await db

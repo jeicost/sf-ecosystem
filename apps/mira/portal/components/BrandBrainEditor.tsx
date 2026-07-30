@@ -1160,12 +1160,6 @@ export default function BrandBrainEditor() {
         )}
 
 
-        {activeTab === 'audience_market' && (
-          <div className="space-y-4">
-            <TextareaInput label="Competitive Positioning" value={profile.brand_data?.competitive_positioning || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, competitive_positioning: v } })} placeholder="Who are competitors, what makes you unique, market opportunities" />
-          </div>
-        )}
-
         {activeTab === 'content_strategy' && (
           <div className="space-y-6">
             {/* Strategy & Roadmap */}
@@ -1233,7 +1227,18 @@ export default function BrandBrainEditor() {
                       className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink italic placeholder-ink-tertiary outline-none focus:border-purple-500"
                     />
                     <input
-                      value={Array.isArray(p.themes) ? p.themes.join(', ') : ''}
+                      value={
+                        Array.isArray(p.themes)
+                          ? p.themes
+                              .map((theme: unknown) =>
+                                typeof theme === 'string'
+                                  ? theme
+                                  : (theme as { name?: string })?.name ?? ''
+                              )
+                              .filter(Boolean)
+                              .join(', ')
+                          : ''
+                      }
                       onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, themes: e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean) } : x))}
                       placeholder="Temas, separados por comas (opcional)"
                       className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink-secondary placeholder-ink-tertiary outline-none focus:border-purple-500"

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase'
+import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,6 +18,14 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const user = await getSessionUser()
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
+      return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
+    }
+
     // Validate file
     const allowedTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain']
     if (!allowedTypes.includes(file.type)) {
@@ -30,17 +39,7 @@ export async function POST(req: NextRequest) {
     const fileUrl = `/api/documents/${clientId}/${Date.now()}-${file.name}`
     const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()) : []
 
-    const db = createClient()
-    const { data: userData } = await db.auth.getUser()
-
-    if (!userData?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    const user = userData.user
+    const db = adminClient()
 
     // Insert con las columnas del esquema REAL de client_documentation
     // (storage_url/filename/file_size_bytes — el anterior usaba los nombres de

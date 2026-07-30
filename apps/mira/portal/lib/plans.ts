@@ -1,3 +1,5 @@
+import { hasOwnKey } from './safe-lookup'
+
 export type UserPlan = 'super_admin' | 'admin' | 'scale' | 'growth' | 'starter' | 'consulta'
 
 // ─── Hardcoded section access mapping (used as fallback + during client-side checks)
@@ -19,7 +21,10 @@ export const PLAN_SECTIONS: Record<UserPlan, string[]> = {
 }
 
 export function canAccessSection(plan: UserPlan, slug: string): boolean {
-  return PLAN_SECTIONS[plan]?.includes(slug) ?? false
+  // plan llega tipado UserPlan pero en la práctica viene de un cast sin
+  // validar sobre user_metadata.plan -- defensa en profundidad con el mismo
+  // Object.hasOwn que ya se usa en el resto de este fichero.
+  return (hasOwnKey(PLAN_SECTIONS, plan) ? PLAN_SECTIONS[plan] : undefined)?.includes(slug) ?? false
 }
 
 // ─── Feature entitlements por plan (P5) ───────────────────────────────────
@@ -42,7 +47,7 @@ export const PLAN_FEATURES: Record<UserPlan, PlanFeatures> = {
 /** Acepta el plan crudo de user_metadata (unknown); planes desconocidos caen a 'starter' (mismo fallback que proxy.ts). */
 export function canUseFeature(plan: unknown, feature: keyof PlanFeatures): boolean {
   const key: UserPlan =
-    typeof plan === 'string' && plan in PLAN_FEATURES ? (plan as UserPlan) : 'starter'
+    typeof plan === 'string' && hasOwnKey(PLAN_FEATURES, plan) ? (plan as UserPlan) : 'starter'
   return PLAN_FEATURES[key][feature]
 }
 

@@ -1,5 +1,6 @@
 import type { adminClient } from '@/lib/supabase'
 import { WorkspaceStatus, workspaceError } from '@/lib/archetype-workspace'
+import { safeLookup } from '@/lib/safe-lookup'
 
 // Oracle archetype (copy variants to pick from): copywriter, icebreaker-writer.
 // Real source: recent quick_actions_results content for this role's real
@@ -31,7 +32,7 @@ export async function fetchOracleVariants(
   clientId: string,
   role: string
 ): Promise<WorkspaceStatus<OracleVariant[]>> {
-  const actionTypes = ROLE_ACTION_TYPES[role] ?? []
+  const actionTypes = safeLookup(ROLE_ACTION_TYPES, role) ?? []
   if (actionTypes.length === 0) return { status: 'empty' }
 
   const { data, error } = await admin

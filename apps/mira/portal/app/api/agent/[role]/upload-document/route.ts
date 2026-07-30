@@ -6,6 +6,7 @@ import { userCanAccessClient } from '@/lib/resolve-client'
 import { uploadFileToStorage, initializeStorageBucket } from '@/lib/supabase-storage'
 import { AGENT_METADATA } from '@/lib/agent-meta'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { hasOwnKey } from '@/lib/safe-lookup'
 
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
@@ -49,7 +50,7 @@ export async function POST(
     }
 
     // Validate agent role exists
-    if (!AGENT_METADATA[params.role]) {
+    if (!hasOwnKey(AGENT_METADATA, params.role)) {
       return NextResponse.json(
         { error: 'Unknown agent role' },
         { status: 400 }

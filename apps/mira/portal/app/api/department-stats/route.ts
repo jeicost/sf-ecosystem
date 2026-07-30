@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getDepartmentStats } from '@/lib/department-stats'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
+import { safeLookup } from '@/lib/safe-lookup'
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,7 +22,7 @@ export async function GET(request: NextRequest) {
     }
 
     const allStats = await getDepartmentStats(clientId)
-    const deptStats = dept ? allStats[dept] : allStats
+    const deptStats = dept ? safeLookup(allStats, dept) : allStats
 
     return NextResponse.json(deptStats || {})
   } catch (error) {

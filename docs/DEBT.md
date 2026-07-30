@@ -1,6 +1,6 @@
 # DEBT.md — Deuda técnica de MIRA
 
-Registro honesto de deuda técnica conocida. Última verificación completa: **2026-07-22** (post fase 2). Todas las rutas son relativas a `apps/mira/portal/` salvo que se indique lo contrario. Cada entrada verificada contra el código con grep en la fecha indicada.
+Registro honesto de deuda técnica conocida. Última verificación completa: **2026-07-30** (entrada uu). Todas las rutas son relativas a `apps/mira/portal/` salvo que se indique lo contrario. Cada entrada verificada contra el código con grep en la fecha indicada.
 
 ---
 
@@ -676,3 +676,31 @@ El CEO, tras ver el aviso de alcance del Centro de Documentos (ss), pidió expl�
 Este par de pruebas confirma el comportamiento exacto que pidió el CEO: ni búsqueda forzada e innecesaria, ni invención — el modelo busca cuando de verdad hace falta y se queda callado/honesto cuando no hay nada real que encontrar.
 
 **Pendiente real**: Monthly Content System comparte el mismo mecanismo ya probado en Quick Actions pero **no se verificó en vivo por separado** (3 llamadas Opus secuenciales, más caro y lento de probar) — riesgo bajo dado que es el mismo helper, pero queda como pendiente de verificación si se quiere confirmación empírica específica.
+
+---
+
+## uu) Auditoría completa pre-lanzamiento — Brand Brain, Integraciones, chatbots y resto de secciones (2026-07-30)
+
+El CEO pidió una auditoría genuinamente completa ("pásale tus mejores agentes a todo el sistema... acuérdate del brand brain, integraciones, chatbots y todas las secciones") antes de pasar al plan de lanzamiento y venta. 2 workflows en paralelo (smoke-test en vivo de casi todas las páginas + barrido de seguridad centrado en la clase de bug de prototype pollution ya conocida de (ss); auditoría funcional profunda de Brand Brain/Integraciones/chatbots + revisión de riesgo del código de Quick Actions/Monthly Content System). Hallazgos reales, verificados uno a uno antes de aceptarlos:
+
+**Prototype pollution — 10 sitios más de la misma familia que (ss)**, entre los 2 workflows y un grep de seguimiento propio: catálogos indexados por rol/id de agente en `department-meta.ts`/`department-prompt.ts`/`agent-prompts-i18n.ts`/`agent-quick-prompts.ts`/`agent-archetypes.ts`/`oracle-data.ts`/`plans.ts`/`oauth-config.ts` y las rutas `api/agent/route.ts`/`api/agent/[role]/upload-document`/`home/page.tsx`/`comercial/qualify/route.ts`, más 1 sitio adicional encontrado ya cerrando esta ronda en `department-stats/route.ts` (`allStats[dept]` con `dept` de un query param sin validar) — todos corregidos con el helper compartido `lib/safe-lookup.ts` (`safeLookup`/`safeLookupOr`/`hasOwnKey`) ya introducido en (ss), extendido en vez de reinventado.
+
+**`/client-portal/entregas` crasheaba 8/8 veces para cualquier entrega en estado `queued`/`processing`/`failed`**: `STATUS_COLORS` (mapa de colores de estado) solo cubría los 3 valores post-traducción (`delivered`/`in-review`/`generated`), no los 4 valores reales del CHECK constraint de `generation_queue.status` en su forma cruda. Corregido con `safeLookupOr` + 3 claves i18n nuevas (`portal.entregas.status-{queued,processing,failed}`).
+
+**Brand Brain — 2 bugs reales**: pilares de contenido con `themes` guardado como objetos `{name, focus}` (de un flujo de generación más nuevo) rendían `[object Object]` en vez del nombre — corregido extrayendo `.name` cuando no es string. Un bloque JSX de "Competitive Positioning" duplicado por error en la pestaña "Audiencia y Mercado" (se renderizaba dos veces) — eliminado el duplicado. El error "No se pudo cargar el perfil de marca" que un workflow reportó 4/4 veces **no se pudo reproducir** (6/6 en vivo limpio, el guard de carga ya existe y es correcto) — no se marca como resuelto porque no hay nada que reproducir; queda como posible falso positivo del workflow, no como bug confirmado.
+
+**Carrera `client_id=undefined` — misma familia que el bug de (rr), 4 sitios más sin arreglar todavía**: `comercial/qualify`, `comercial/scoring`, `performance` y `approvals` consultaban Supabase directo desde el navegador en un `useEffect`/`useCallback` sin guard `if (!clientId) return` antes de que `useActiveClient()` resolviera de forma asíncrona — mismo síntoma que (rr) (error de consola en la primera carga, autocorregido en el segundo render). Los 4 corregidos con el mismo guard ya usado en pipeline/icebreaker/calendar. `approvals/page.tsx` además evita montar el canal realtime (`approvals-realtime-undefined`) cuando `clientId` es falsy.
+
+**`GET /api/client/documentation` y `POST /api/client/documentation/upload` — bug real más serio de lo esperado**: ambas rutas usaban `createClient()` (el cliente de navegador, `createBrowserClient` sin adaptador de cookies) dentro de una Route Handler server-side, en vez de `adminClient()` + `getSessionUser()`/`resolveRequestClient` como el resto de la app (incluida su propia ruta hermana `DELETE .../[id]/route.ts`, que sí usa el patrón correcto). Consecuencias reales, no cosméticas: (a) el GET no comprobaba autorización en absoluto — cualquier usuario autenticado podía pasar el `client_id` de OTRO cliente en el query string y leer sus documentos (IDOR real, no solo teórico); (b) el POST llamaba a `db.auth.getUser()` sobre un cliente sin sesión adjunta, lo que probablemente devolvía usuario nulo de forma consistente (401 permanente, no solo intermitente) — explicaría por qué la subida de documentos parecía fallar sin patrón claro. **Corregido**: ambas rutas migradas a `adminClient()` + `getSessionUser()` + `userCanAccessClient()`, mismo contrato que `DELETE`.
+
+**`/login` no redirigía una sesión ya autenticada a `/home`**: confirmado intencional a nivel de middleware (`proxy.ts` lo trata como ruta pública, sin comprobar `user`) — no es un fallo de seguridad (la sesión sigue siendo válida, solo se ve el formulario de nuevo), pero es una fricción de UX real. Añadido un `useEffect` en el propio componente cliente que comprueba la sesión al montar y redirige a `/home` si ya existe.
+
+**`/toolkit` — el 400 de `clients?select=settings` no se pudo reproducir**: el `useEffect` que hace esa query ya tiene el guard `if (!clientId) return`, y `clients.id` es `UUID` (sin mismatch de tipo posible). Sin causa de código identificada — no se descarta que fuera un blip transitorio de red durante el smoke-test original, mismo veredicto que el caso de Brand Brain de arriba.
+
+**No confirmado ni desmentido**: el fetch intermitente "Failed to fetch comercial stats" — `use-department-stats.ts` ya tenía el guard correcto (`if (!activeClient?.id) return`), así que no es la misma clase de carrera; la ruta que consulta (`department-stats/route.ts`) recibió igualmente el fix de prototype pollution de arriba, pero no hay evidencia de que esa fuera la causa de un fallo de red genuino. Queda anotado, no resuelto — no se fabricó un fix sin causa confirmada.
+
+**Verificación**: `npx tsc --noEmit` limpio tras el lote completo; commits acotados por pathspec.
+
+**Pendiente real que queda de esta ronda**:
+- Confirmar si "Failed to fetch comercial stats" y el 400 de `/toolkit` eran blips transitorios reales o síntomas de algo no descubierto — sin repro no hay más que investigar por ahora.
+- Defensa estructural anti-inyección — sigue pendiente, ya documentado en (oo)/(pp), no repetido aquí.

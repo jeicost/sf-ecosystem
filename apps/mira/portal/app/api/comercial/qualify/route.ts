@@ -5,6 +5,7 @@ import { requireLeadAccess } from '@/lib/comercial/lead-access'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { safeLookup } from '@/lib/safe-lookup'
 
 const STAGE_MAP: Record<string, string> = {
   interested: 'qualified',
@@ -100,7 +101,7 @@ Classification: interested=muestra interés real, not_now=sin interés ahora per
       try {
         const cleaned = fullText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
         const parsed = JSON.parse(cleaned)
-        const newStage = STAGE_MAP[parsed.classification] ?? 'replied'
+        const newStage = safeLookup(STAGE_MAP, parsed.classification) ?? 'replied'
 
         await Promise.all([
           supabase.from('leads').update({ stage: newStage, bant_score: parsed.bant_score ?? null }).eq('id', leadId),

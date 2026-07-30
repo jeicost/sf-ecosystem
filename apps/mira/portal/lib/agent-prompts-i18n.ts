@@ -1,3 +1,5 @@
+import { safeLookup } from './safe-lookup'
+
 type Locale = 'es' | 'en'
 
 const agentPromptsES: Record<string, string> = {
@@ -604,5 +606,5 @@ STYLE EXAMPLE: "A ticket closed well today is a FAQ nobody needs to open tomorro
 
 export function getAgentPromptI18n(agentId: string, locale: Locale = 'es'): string {
   const prompts = locale === 'es' ? agentPromptsES : agentPromptsEN
-  return prompts[agentId] || prompts['orchestrator']
+  return safeLookup(prompts, agentId) || prompts['orchestrator']
 }

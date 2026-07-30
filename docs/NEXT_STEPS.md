@@ -1,6 +1,13 @@
 # PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/**0061** aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/**0061** aplicadas. Este fichero lista SOLO lo que queda.
+
+## MIRA — Auditoría completa pre-lanzamiento: Brand Brain, Integraciones, chatbots y resto de secciones (DEBT uu, 2026-07-30) — ✅ CERRADA
+
+Auditoría con 2 workflows en paralelo pedida explícitamente por el CEO antes del plan de lanzamiento/venta. Encontrados y corregidos: 10 sitios más de prototype pollution (misma familia que (ss)), crash 8/8 de `/client-portal/entregas` para entregas en `queued`/`processing`/`failed`, 2 bugs reales de Brand Brain (pilares con `[object Object]`, campo duplicado), 4 sitios más de la carrera `client_id=undefined` (qualify/scoring/performance/approvals), fricción de UX en `/login` (no redirigía sesión ya autenticada), y un bug de seguridad real en `/api/client/documentation` (GET sin ninguna comprobación de autorización — IDOR real entre clientes — y POST/upload usando el cliente de navegador sin sesión server-side, probablemente 401 permanente). Todo corregido y alineado con los patrones ya establecidos (`resolveRequestClient`/`getSessionUser`/`safeLookup`). Detalle completo en DEBT (uu).
+
+**Pendiente real de esta ronda:**
+- Dos síntomas reportados por un workflow (400 de `/toolkit` en `clients?select=settings`, fetch intermitente de stats de `/comercial`) no se pudieron reproducir con el código actual — sin descartar que fueran blips transitorios de red.
 
 ## MIRA — Revisión adversarial + bug real del Centro de Documentos (DEBT ss, 2026-07-30) — ✅ CERRADO
 

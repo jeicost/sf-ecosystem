@@ -7,12 +7,23 @@ import { getClientDeliveries } from '@/lib/client-portal-service'
 import { createClient } from '@/lib/supabase'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
+import { safeLookupOr } from '@/lib/safe-lookup'
 
+// Bug real encontrado 2026-07-30: este mapa solo cubría 3 de los 4+ valores
+// reales de generation_queue.status (CHECK: queued/processing/completed/
+// failed, más la propia traducción completed->delivered de la API) --
+// cualquier entrega en queued/processing/failed rompía la página entera
+// (StatusConfig undefined, .bg sobre undefined). Ahora cubre los reales +
+// un fallback seguro para cualquier valor futuro no previsto.
 const STATUS_COLORS: Record<string, { bg: string; text: string; label: string }> = {
   delivered: { bg: 'rgba(16,185,129,0.1)', text: '#4ade80', label: 'portal.entregas.status-delivered' },
   'in-review': { bg: 'rgba(249,115,22,0.1)', text: '#fb923c', label: 'portal.entregas.status-in-review' },
   generated: { bg: 'rgba(59,130,246,0.1)', text: '#60a5fa', label: 'portal.entregas.status-generated' },
+  queued: { bg: 'rgba(148,163,184,0.1)', text: '#94a3b8', label: 'portal.entregas.status-queued' },
+  processing: { bg: 'rgba(250,204,21,0.1)', text: '#facc15', label: 'portal.entregas.status-processing' },
+  failed: { bg: 'rgba(239,68,68,0.1)', text: '#f87171', label: 'portal.entregas.status-failed' },
 }
+const DEFAULT_STATUS_COLOR = STATUS_COLORS.generated
 
 export default function EntregasPage() {
   const { locale } = useLocaleContext()
@@ -114,7 +125,7 @@ export default function EntregasPage() {
             </thead>
             <tbody>
               {filtered.map(entrega => {
-                const statusConfig = STATUS_COLORS[entrega.status]
+                const statusConfig = safeLookupOr(STATUS_COLORS, entrega.status, DEFAULT_STATUS_COLOR)
                 return (
                   <tr key={entrega.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td className="py-3 px-4 text-[13px] text-ink">

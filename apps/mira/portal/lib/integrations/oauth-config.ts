@@ -1,6 +1,8 @@
 // OAuth configuration for integrations
 // This file scaffolds the OAuth architecture — activate by setting env vars
 
+import { safeLookup } from '@/lib/safe-lookup'
+
 export interface OAuthConfig {
   clientIdEnvVar: string
   clientSecretEnvVar: string
@@ -80,7 +82,7 @@ export const OAUTH_TOOLS: Record<string, OAuthConfig> = {
 }
 
 export function getOAuthConfig(toolId: string): OAuthConfig | null {
-  return OAUTH_TOOLS[toolId] || null
+  return safeLookup(OAUTH_TOOLS, toolId) || null
 }
 
 export function buildOAuthUrl(
@@ -89,7 +91,7 @@ export function buildOAuthUrl(
   state: string,
   codeChallenge?: string
 ): string | null {
-  const config = OAUTH_TOOLS[toolId]
+  const config = safeLookup(OAUTH_TOOLS, toolId)
   if (!config || !config.authorizationUrl) return null
 
   const redirectUri = getOAuthRedirectUri(toolId)

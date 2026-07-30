@@ -51,6 +51,10 @@ export default function ScoringPage() {
   const [chatLoading, setChatLoading]   = useState(false)
 
   const fetchLeads = useCallback(() => {
+    if (!clientId) {
+      setLoading(false)
+      return
+    }
     const db = createClient()
     const cols = 'id,company_name,title,industry,geography,hot_score'
     Promise.all([

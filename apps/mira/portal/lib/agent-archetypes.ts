@@ -1,6 +1,8 @@
 // Maps agents to their workflow archetypes
 // Archetypes: ORACLE, ANALYST, EXPLORER, ARCHITECT, SENTINEL, STUDIO
 
+import { safeLookup } from './safe-lookup'
+
 export type AgentArchetype = 'ORACLE' | 'ANALYST' | 'EXPLORER' | 'ARCHITECT' | 'SENTINEL' | 'STUDIO'
 
 export const AGENT_ARCHETYPE_MAP: Record<string, AgentArchetype> = {
@@ -43,7 +45,7 @@ export const AGENT_ARCHETYPE_MAP: Record<string, AgentArchetype> = {
 }
 
 export function getArchetype(agentId: string): AgentArchetype {
-  return AGENT_ARCHETYPE_MAP[agentId] || 'ORACLE'
+  return safeLookup(AGENT_ARCHETYPE_MAP, agentId) || 'ORACLE'
 }
 
 // NOTA: existió aquí un ARCHETYPE_CUSTOMIZATIONS keyed por nombre de persona

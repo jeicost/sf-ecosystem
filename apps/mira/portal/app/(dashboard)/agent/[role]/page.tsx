@@ -15,6 +15,7 @@ import { useActiveClient } from '@/lib/client-context'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { AGENT_METADATA } from '@/lib/agent-meta'
 import { AGENT_DETAILS } from '@/lib/agent-details'
+import { safeLookup } from '@/lib/safe-lookup'
 import { getQuickPrompts } from '@/lib/agent-quick-prompts'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { getAgentActivityTasks, getAgentStats } from '@/lib/agent-activity-stats'
@@ -99,8 +100,8 @@ export default function AgentPage() {
     lastActive: '—',
   })
 
-  const agent = AGENT_METADATA[role]
-  const agentDetails = AGENT_DETAILS[role]
+  const agent = safeLookup(AGENT_METADATA, role)
+  const agentDetails = safeLookup(AGENT_DETAILS, role)
   const quickPrompts = getQuickPrompts(role)
 
   // Load settings and activity data from API on mount

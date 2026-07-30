@@ -1,6 +1,8 @@
 // Quick prompt suggestions for each agent role
 // Shown in empty chat state, helps users start conversations
 
+import { safeLookup } from './safe-lookup'
+
 export const AGENT_QUICK_PROMPTS: Record<string, string[]> = {
   orchestrator: [
     'Necesito coordinar una nueva campaña — dime quién ejecuta y en qué orden',
@@ -121,7 +123,7 @@ export const AGENT_QUICK_PROMPTS: Record<string, string[]> = {
 }
 
 export function getQuickPrompts(role: string): string[] {
-  return AGENT_QUICK_PROMPTS[role] || [
+  return safeLookup(AGENT_QUICK_PROMPTS, role) || [
     'Cuéntame qué necesitas',
     'Cómo puedo ayudarte?',
     'Qué te ocupa en este momento?',

@@ -38,6 +38,10 @@ export default function QualifyPage() {
   const [loadingLeads, setLoadingLeads] = useState(true)
 
   useEffect(() => {
+    if (!clientId) {
+      setLoadingLeads(false)
+      return
+    }
     createClient()
       .from('leads')
       .select('id,company_name,first_name,last_name,title,hot_score,stage')

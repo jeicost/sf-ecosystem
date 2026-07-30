@@ -42,6 +42,10 @@ export default function ApprovalsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!clientId) {
+      setLoading(false)
+      return
+    }
     setLoading(true)
     const db = createClient()
 
