@@ -405,14 +405,14 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                   )}
                   {q.kind === 'select' && (
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {(q.options ?? []).map((opt) => {
+                      {(q.options ?? []).map((opt, optIdx) => {
                         const label = optionLabel(opt)
                         const description = typeof opt === 'object' ? opt.description : undefined
                         const recommended = typeof opt === 'object' && opt.recommended
                         const selected = value === label
                         return (
                           <button
-                            key={label}
+                            key={optIdx}
                             type="button"
                             onClick={() => setValue(q.id, label)}
                             className={`rounded-xl border p-3 text-left transition-colors ${
@@ -435,14 +435,14 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                   )}
                   {q.kind === 'multi_select' && (
                     <div className="grid gap-2 sm:grid-cols-2">
-                      {(q.options ?? []).map((opt) => {
+                      {(q.options ?? []).map((opt, optIdx) => {
                         const label = optionLabel(opt)
                         const description = typeof opt === 'object' ? opt.description : undefined
                         const recommended = typeof opt === 'object' && opt.recommended
                         const selected = Array.isArray(value) && (value as unknown[]).includes(label)
                         return (
                           <button
-                            key={label}
+                            key={optIdx}
                             type="button"
                             onClick={() => {
                               const current = Array.isArray(value) ? ([...value] as string[]) : []

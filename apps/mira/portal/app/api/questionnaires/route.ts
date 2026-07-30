@@ -104,6 +104,12 @@ export async function POST(req: NextRequest) {
       projectId = project.id
     }
 
+    // 'narrative' (migración 0061) es opcional y puede que la columna aún no
+    // exista en producción — solo se incluye en el insert cuando hay contenido
+    // real, para que crear un cuestionario normal (sin narrativa) siga
+    // funcionando aunque 0061 no se haya aplicado todavía.
+    const narrative = normalizeNarrative(body.narrative)
+
     const { data: created, error: insertError } = await admin
       .from('client_questionnaires')
       .insert({
@@ -111,7 +117,7 @@ export async function POST(req: NextRequest) {
         project_id: projectId,
         title,
         intro: typeof body.intro === 'string' && body.intro.trim() ? body.intro.trim() : null,
-        narrative: normalizeNarrative(body.narrative),
+        ...(narrative ? { narrative } : {}),
         status: 'draft',
         source: 'manual',
         created_by: user.id,
@@ -122,6 +128,12 @@ export async function POST(req: NextRequest) {
     if (insertError || !created) {
       if (isMissingTableError(insertError)) {
         return NextResponse.json({ error: QUESTIONNAIRES_UNAVAILABLE }, { status: 503 })
+      }
+      if (narrative && insertError?.message?.includes('narrative')) {
+        return NextResponse.json(
+          { error: 'Falta aplicar la migración 0061 (columna narrative) para crear informes con narrativa.' },
+          { status: 503 }
+        )
       }
       return NextResponse.json(
         { error: insertError?.message || 'No se pudo crear el cuestionario' },
@@ -148,6 +160,23 @@ export async function POST(req: NextRequest) {
     if (rows.length === 0) {
       await admin.from('client_questionnaires').delete().eq('id', questionnaire.id)
       return NextResponse.json({ error: 'Ninguna pregunta válida en questions' }, { status: 400 })
+    }
+
+    // select/multi_select sin >= 2 opciones (o con labels duplicados) dejan al
+    // cliente sin ninguna tarjeta que pulsar, o dos indistinguibles — el
+    // builder ya valida esto, pero cualquier llamada directa a la API debe
+    // rechazarse igual, no solo confiar en el cliente.
+    for (const row of rows) {
+      if (row.kind !== 'select' && row.kind !== 'multi_select') continue
+      const labels = (row.options ?? []).map((o) => (typeof o === 'string' ? o : o.label))
+      const unique = new Set(labels)
+      if (labels.length < 2 || unique.size !== labels.length) {
+        await admin.from('client_questionnaires').delete().eq('id', questionnaire.id)
+        return NextResponse.json(
+          { error: `La pregunta "${row.prompt}" necesita al menos 2 opciones con texto y sin duplicados.` },
+          { status: 400 }
+        )
+      }
     }
 
     const { error: qError } = await admin.from('questionnaire_questions').insert(rows)

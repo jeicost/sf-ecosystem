@@ -97,6 +97,24 @@ export default function NewQuestionnairePage() {
       setError('Añade al menos una pregunta con su texto.')
       return
     }
+    // Preguntas de opción (select/multi_select) necesitan >= 2 opciones con
+    // texto, y sin labels duplicados dentro de la misma pregunta -- un label
+    // repetido deja dos tarjetas indistinguibles en el runner del cliente
+    // (mismo valor guardado, mismo estado de selección para ambas).
+    for (const q of validQuestions) {
+      if (q.kind !== 'select' && q.kind !== 'multi_select') continue
+      const labels = q.options.map((o) => o.label.trim()).filter(Boolean)
+      if (labels.length < 2) {
+        setError(`La pregunta "${q.prompt.trim()}" necesita al menos 2 opciones con texto.`)
+        return
+      }
+      const seen = new Set<string>()
+      const dup = labels.find((l) => (seen.has(l) ? true : (seen.add(l), false)))
+      if (dup) {
+        setError(`La pregunta "${q.prompt.trim()}" tiene la opción "${dup}" repetida — cada opción necesita un texto distinto.`)
+        return
+      }
+    }
 
     setSubmitting(true)
     try {
