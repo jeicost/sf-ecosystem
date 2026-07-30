@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
       status,
       post_id: post_id ?? null,
       details: details ?? null,
-      created_at: new Date().toISOString(),
+      started_at: new Date().toISOString(),
     })
     .select('id')
     .single()

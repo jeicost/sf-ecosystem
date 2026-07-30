@@ -20,10 +20,10 @@ export async function getAgentActivityTasks(clientId: string, agentRole: string)
   try {
     const { data, error } = await supabase
       .from('agent_activity')
-      .select('id, task_type, status, created_at')
+      .select('id, task_type, status, started_at')
       .eq('client_id', clientId)
       .eq('agent_role', agentRole)
-      .order('created_at', { ascending: false })
+      .order('started_at', { ascending: false })
       .limit(10)
 
     if (error) {
@@ -39,7 +39,7 @@ export async function getAgentActivityTasks(clientId: string, agentRole: string)
       id: row.id,
       task: row.task_type || 'Task',
       status: (row.status as 'completed' | 'working' | 'waiting') || 'completed',
-      timeAgo: getTimeAgo(new Date(row.created_at)),
+      timeAgo: getTimeAgo(new Date(row.started_at)),
     }))
   } catch (err) {
     console.error('Error in getAgentActivityTasks:', err)
@@ -53,7 +53,7 @@ export async function getAgentStats(clientId: string, agentRole: string): Promis
   try {
     const { data, error } = await supabase
       .from('agent_activity')
-      .select('id, status, created_at')
+      .select('id, status, started_at')
       .eq('client_id', clientId)
       .eq('agent_role', agentRole)
 
@@ -78,7 +78,7 @@ export async function getAgentStats(clientId: string, agentRole: string): Promis
 
     const completed = data.filter(row => row.status === 'completed').length
     const completionRate = data.length > 0 ? Math.round((completed / data.length) * 100) : 0
-    const lastActivityDate = new Date(data[0]?.created_at || new Date())
+    const lastActivityDate = new Date(data[0]?.started_at || new Date())
 
     return {
       totalInteractions: data.length,

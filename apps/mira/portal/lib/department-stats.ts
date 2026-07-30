@@ -156,16 +156,16 @@ export async function getAgentStatus(clientId: string, agentRole: string): Promi
   try {
     const { data } = await db
       .from('agent_activity')
-      .select('status, created_at')
+      .select('status, started_at')
       .eq('client_id', clientId)
       .eq('agent_role', agentRole)
-      .order('created_at', { ascending: false })
+      .order('started_at', { ascending: false })
       .limit(1)
       .single()
 
     if (!data) return 'offline'
 
-    const lastActivityTime = new Date(data.created_at).getTime()
+    const lastActivityTime = new Date(data.started_at).getTime()
     const oneHourAgo = Date.now() - 3600000
     return lastActivityTime > oneHourAgo ? 'active' : 'idle'
   } catch (error) {
