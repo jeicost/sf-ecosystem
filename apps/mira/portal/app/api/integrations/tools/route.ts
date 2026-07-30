@@ -1,6 +1,6 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
-import { requireClientAccess } from '@/lib/auth-server'
+import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
 
 interface ConnectToolRequest {
   clientId: string
@@ -26,11 +26,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Validate user has access to this client
-    const authResult = await requireClientAccess(request, clientId)
-    if (authResult instanceof NextResponse) {
-      return authResult
+    const access = await resolveRequestClient(clientId)
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
-    const { user } = authResult
 
     const db = createServiceClient()
 
@@ -45,8 +44,9 @@ export async function GET(request: NextRequest) {
 
     // Plan lives on the authenticated session user's metadata, not on brand_profiles
     // (brand_profiles has no user_id column — see docs/DEBT.md (bb)), same pattern
-    // as requireClientAccess/proxy.ts/resolve-client.ts.
-    const userSubscriptionPlan = (user.user_metadata?.plan as string | undefined) || 'free'
+    // as resolve-client.ts/proxy.ts.
+    const user = await getSessionUser()
+    const userSubscriptionPlan = (user?.user_metadata?.plan as string | undefined) || 'free'
 
     return NextResponse.json({
       connectedTools: (connections || []).map((c) => c.tool_id),
@@ -68,9 +68,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate user has access to this client
-    const authResult = await requireClientAccess(request, clientId)
-    if (authResult instanceof NextResponse) {
-      return authResult
+    const access = await resolveRequestClient(clientId)
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const db = createServiceClient()
@@ -163,9 +163,9 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Validate user has access to this client
-    const authResult = await requireClientAccess(request, clientId)
-    if (authResult instanceof NextResponse) {
-      return authResult
+    const access = await resolveRequestClient(clientId)
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
     const db = createServiceClient()
