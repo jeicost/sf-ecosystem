@@ -27,15 +27,36 @@ export async function GET(request: Request) {
       return Response.json({ error: 'Invalid API key or project' }, { status: 401 })
     }
 
+    // Draft/unpublished preview (EDUX-N4): requires a SECOND, distinct secret
+    // beyond api_key — a leaked api_key alone must never expose unpublished
+    // content. api_key gates "is this a legitimate site", preview_secret
+    // gates "may this request also see drafts".
+    const wantsPreview = searchParams.get('preview') === 'true'
+    let allowDraft = false
+    if (wantsPreview) {
+      const previewSecret = request.headers.get('x-preview-secret')
+      const { data: projectRow } = await client
+        .from('projects')
+        .select('preview_secret')
+        .eq('id', project.id)
+        .single()
+      allowDraft = !!previewSecret && !!projectRow?.preview_secret && previewSecret === projectRow.preview_secret
+      if (!allowDraft) {
+        return Response.json({ error: 'Invalid or missing x-preview-secret' }, { status: 401 })
+      }
+    }
+
     // Fetch page
     if (slug) {
-      const { data: page, error } = await client
+      let query = client
         .from('pages')
         .select('*')
         .eq('project_id', project.id)
         .eq('slug', slug)
-        .eq('status', 'published')
-        .single()
+      if (!allowDraft) {
+        query = query.eq('status', 'published')
+      }
+      const { data: page, error } = await query.single()
 
       if (error || !page) {
         return Response.json({ error: 'Page not found' }, { status: 404 })
@@ -43,7 +64,11 @@ export async function GET(request: Request) {
 
       return Response.json(page, {
         headers: {
-          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+          // Never cache preview responses at the edge/CDN — always fresh,
+          // and never shared across requests that didn't present the secret.
+          'Cache-Control': allowDraft
+            ? 'private, no-store'
+            : 'public, s-maxage=60, stale-while-revalidate=300',
           'Content-Type': 'application/json',
         },
       })

@@ -48,6 +48,11 @@ export default function PageEditorPage() {
   const [versions, setVersions] = useState<PageVersion[]>([])
   const [sidebarTab, setSidebarTab] = useState<'settings' | 'pixels' | 'history'>('settings')
   const [restoringId, setRestoringId] = useState<string | null>(null)
+  const [projectPreview, setProjectPreview] = useState<{
+    preview_secret: string | null
+    preview_base_url: string | null
+  } | null>(null)
+  const [previewLoading, setPreviewLoading] = useState(false)
 
   const { messages, isLoading: chatLoading, sendMessage, currentSections } = usePageChat({
     pageId,
@@ -65,12 +70,52 @@ export default function PageEditorPage() {
     }
   }, [pageId])
 
+  const fetchProjectPreview = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/admin/projects/${projectId}`)
+      if (!response.ok) return
+      const { project } = await response.json()
+      setProjectPreview({
+        preview_secret: project.preview_secret ?? null,
+        preview_base_url: project.preview_base_url ?? null,
+      })
+    } catch {
+      // preview is a nice-to-have; leave the button disabled-ish if this fails
+    }
+  }, [projectId])
+
+  async function handlePreview() {
+    if (!page || !projectPreview) return
+    setPreviewLoading(true)
+    try {
+      let baseUrl = projectPreview.preview_base_url
+      if (!baseUrl) {
+        const entered = window.prompt(
+          'Todavía no hay una URL guardada para previsualizar este sitio.\n\nPega la URL del sitio (ej. https://mi-sitio.vercel.app):'
+        )
+        if (!entered) return
+        baseUrl = entered.replace(/\/$/, '')
+        await fetch(`/api/admin/projects/${projectId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ preview_base_url: baseUrl }),
+        })
+        setProjectPreview((p) => (p ? { ...p, preview_base_url: baseUrl } : p))
+      }
+      const url = `${baseUrl}/api/draft?secret=${encodeURIComponent(projectPreview.preview_secret ?? '')}&slug=${encodeURIComponent(page.slug)}`
+      window.open(url, '_blank', 'noopener,noreferrer')
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
   useEffect(() => {
     if (pageId && projectId) {
       fetchPage()
       fetchVersions()
+      fetchProjectPreview()
     }
-  }, [pageId, projectId, fetchVersions])
+  }, [pageId, projectId, fetchVersions, fetchProjectPreview])
 
   // Chat edits are a working draft (the chat endpoint no longer persists);
   // sync them into page state so Save persists exactly what's previewed.
@@ -197,6 +242,18 @@ export default function PageEditorPage() {
             className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition"
           >
             Back
+          </button>
+          <button
+            onClick={handlePreview}
+            disabled={previewLoading}
+            title={
+              projectPreview && !projectPreview.preview_base_url
+                ? 'Configura la URL del sitio en Ajustes del proyecto para poder previsualizar'
+                : 'Ver esta página real, incluyendo cambios sin publicar'
+            }
+            className="px-4 py-2 border border-slate-300 rounded-lg hover:bg-slate-50 transition disabled:opacity-50"
+          >
+            {previewLoading ? 'Cargando…' : 'Vista previa'}
           </button>
           <button
             onClick={handleSave}
