@@ -37,4 +37,10 @@ REPORT VOICE CONTRACT (cómo se escribe un entregable que el equipo usa de verda
 
 8. LOS NÚMEROS TIENEN FUENTE O NO EXISTEN. Igual que el GROUNDING_CONTRACT:
    cifra sin fuente = '[SUPUESTO]' o fuera.
+
+PRECEDENCIA: cuando este contrato se inyecta junto al GROUNDING_CONTRACT y al
+EDITORIAL_CONTRACT (brand-book, monthly-content-system), este es el que manda
+en cuestiones de voz y honestidad — los otros dos nunca lo contradicen, solo
+lo complementan (GROUNDING_CONTRACT cubre qué se puede afirmar como hecho,
+EDITORIAL_CONTRACT cubre cómo redactar frases y títulos).
 `.trim()

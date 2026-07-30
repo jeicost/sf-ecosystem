@@ -234,6 +234,18 @@ ${pillarsStr}
     result += `\n\n**Preguntas abiertas / contradicciones conocidas (aflorar, nunca resolver en silencio):**\n${brain.openQuestions.map((q) => `- ${q}`).join('\n')}`
   }
 
+  // Guía para Brand Brain casi vacío (cliente nuevo, pocos campos rellenos):
+  // sin esto, el agente tiende a disculparse en exceso por lo que falta o, al
+  // contrario, a inventar personalidad/tono para "sonar completo". Contamos
+  // cuántos bloques opcionales por encima realmente se rellenaron (cada uno
+  // añade un encabezado en negrita "\n\n**") -- Misión/Tono/Personalidad/
+  // Pilares son siempre el mínimo, así que un Brand Brain sano tiene bastantes
+  // más de 4 bloques.
+  const filledOptionalBlocks = (result.match(/\n\n\*\*/g) || []).length
+  if (filledOptionalBlocks <= 2) {
+    result += `\n\n**Nota — Brand Brain incompleto:** este cliente tiene pocos campos rellenos todavía. Trabaja con lo que hay arriba sin disculparte por lo que falta ni rellenar los huecos con personalidad o tono inventados — usa el criterio profesional del rol, etiquetado '[RECOMENDACIÓN]', y si el dato es genuinamente necesario para responder, pregúntalo directamente en vez de asumirlo.`
+  }
+
   return result
 }
 
