@@ -11,6 +11,14 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
+    // POST /api/admin/projects has its own server-to-server auth (Bearer
+    // ADMIN_SECRET, checked in the route handler) for scripts/agents that
+    // create projects without a user session — e.g. landing-builder. Let it
+    // through here; the route 401s itself if the secret is missing/wrong.
+    if (path === '/api/admin/projects' && request.method === 'POST') {
+      return NextResponse.next()
+    }
+
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
