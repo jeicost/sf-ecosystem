@@ -11,6 +11,15 @@ import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
 import type Anthropic from '@anthropic-ai/sdk'
 
+// Sin esto, esta ruta (la más usada de toda la app — chat de los 23 agentes,
+// a diario por cada cliente) caía al timeout por defecto de la plataforma.
+// Su loop de tool-use (hasta 3 iteraciones, cada una con posible web_search
+// o generate_image para designer/spark) puede tardar tanto como
+// toolkit/generate y content-engine/generate, que ya declaran 800s — 300s
+// cubre con margen el caso normal (1 llamada, sin tool-use, unos segundos)
+// y el caso pesado (varias imágenes en un mismo turno).
+export const maxDuration = 300
+
 // Tool-use: agents can search the web instead of guessing or refusing when
 // they lack current/real information. See docs/DEBT.md — feedback del usuario
 // 2026-07-23: "quiero que los agentes... también puedan buscar en internet".
