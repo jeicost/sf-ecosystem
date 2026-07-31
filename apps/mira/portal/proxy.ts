@@ -75,6 +75,15 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
+    // API routes must return JSON, not a redirect: fetch() follows redirects by
+    // default, so a caller doing the common `res.ok ? res.json() : ...` gets
+    // `ok: true` with the /login page's HTML and throws parsing it as JSON
+    // (confirmed happening for real in lib/client-context.tsx during a session
+    // race). Pages still redirect, since a browser navigation should land on
+    // the login form, not raw JSON.
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json({ error: 'unauthorized' }, { status: 401 })
+    }
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

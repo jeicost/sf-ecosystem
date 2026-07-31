@@ -67,21 +67,27 @@ export function useProjectManagement() {
 
   const updateProject = async (
     projectId: string,
-    updates: Partial<ProjectInput>
+    updates: Partial<ProjectInput> & { status?: string }
   ): Promise<Project | null> => {
     setLoading(true)
     setError(null)
 
     try {
-      const { data: projectData, error: projectError } = await supabase
-        .from('mira_projects')
-        .update(updates)
-        .eq('id', projectId)
-        .select('*')
-        .single()
-
-      if (projectError) throw projectError
-      return projectData
+      // Server-side (PATCH /api/projects/[id]): mira_projects tiene RLS con
+      // solo política de SELECT (migración 0037) -- un update directo desde
+      // el navegador con la anon key siempre afecta 0 filas (RLS lo filtra en
+      // silencio), lo que además rompía el .select().single() de aquí con un
+      // 406. Mismo patrón que la creación server-side de createProject().
+      const res = await fetch(`/api/projects/${projectId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updates),
+      })
+      const payload = await res.json().catch(() => null)
+      if (!res.ok || !payload?.project) {
+        throw new Error(payload?.error || 'Failed to update project')
+      }
+      return payload.project as Project
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to update project'
       setError(message)
@@ -96,12 +102,11 @@ export function useProjectManagement() {
     setError(null)
 
     try {
-      const { error } = await supabase
-        .from('mira_projects')
-        .delete()
-        .eq('id', projectId)
-
-      if (error) throw error
+      const res = await fetch(`/api/projects/${projectId}`, { method: 'DELETE' })
+      const payload = await res.json().catch(() => null)
+      if (!res.ok || !payload?.success) {
+        throw new Error(payload?.error || 'Failed to delete project')
+      }
       return true
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to delete project'
@@ -113,7 +118,7 @@ export function useProjectManagement() {
   }
 
   const archiveProject = async (projectId: string): Promise<Project | null> => {
-    return updateProject(projectId, { status: 'archived' } as any)
+    return updateProject(projectId, { status: 'archived' })
   }
 
   return {

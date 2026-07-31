@@ -222,7 +222,7 @@ function StatCard({ value, label, hint, href, brand, alert }: {
 
 export default function HomePage() {
   const router = useRouter()
-  const { activeClient } = useActiveClient()
+  const { activeClient, loading: clientLoading } = useActiveClient()
   const { activeProject, setActiveProject } = useActiveProject()
   const { locale } = useLocaleContext()
   const [data, setData] = useState<Overview | null>(null)
@@ -230,6 +230,11 @@ export default function HomePage() {
   const superAdmin = isSuperAdmin(getUser())
 
   useEffect(() => {
+    // Esperar a que ClientProvider resuelva el cliente activo real (localStorage
+    // + /api/me/clients) antes de decidir -- si no, un super_admin con cliente
+    // activo real rebota a /admin en cada hard reload, porque activeClient
+    // todavía es null en el primer render, antes de que ese fetch async resuelva.
+    if (clientLoading) return
     // Super admin sin cliente activo → visión de agencia
     if (superAdmin && !activeClient?.id) {
       router.replace('/admin')
@@ -243,8 +248,15 @@ export default function HomePage() {
         setData(json)
       })
       .catch((e) => setError(e instanceof Error ? e.message : t('home.error-generic', locale)))
-  }, [superAdmin, activeClient?.id, router, locale])
+  }, [superAdmin, activeClient?.id, clientLoading, router, locale])
 
+  if (clientLoading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Loader2 size={18} className="animate-spin text-ink-muted" />
+      </div>
+    )
+  }
   if (superAdmin && !activeClient?.id) return null
   if (error) return <div className="p-8 text-sm text-red-400">{error}</div>
   if (!data) {

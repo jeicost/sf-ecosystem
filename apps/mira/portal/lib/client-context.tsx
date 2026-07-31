@@ -13,11 +13,18 @@ export interface ActiveClient {
 interface ClientContextValue {
   activeClient: ActiveClient | null
   setActiveClient: (c: ActiveClient) => void
+  /** True until the initial /api/me/clients resolution has settled (success or
+   * failure). Consumers that redirect based on "no active client" must wait
+   * for this to go false first, or a super_admin with a real client already
+   * in localStorage gets bounced away on every hard reload — activeClient is
+   * still null on mount, before this same effect has had a chance to restore it. */
+  loading: boolean
 }
 
 const ClientContext = createContext<ClientContextValue>({
   activeClient: null,
   setActiveClient: () => {},
+  loading: true,
 })
 
 const STORAGE_KEY = 'mira_active_client'
@@ -35,6 +42,7 @@ const CLIENT_NAMES: Record<string, { name: string; slug: string }> = {
 
 export function ClientProvider({ children }: { children: ReactNode }) {
   const [activeClient, setActiveClientState] = useState<ActiveClient | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function initializeClient() {
@@ -95,6 +103,8 @@ export function ClientProvider({ children }: { children: ReactNode }) {
         // Super admin sin selección: sin cliente activo (verá /admin).
       } catch (error) {
         console.error('Client context error:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -117,7 +127,7 @@ export function ClientProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <ClientContext.Provider value={{ activeClient, setActiveClient }}>
+    <ClientContext.Provider value={{ activeClient, setActiveClient, loading }}>
       {children}
     </ClientContext.Provider>
   )
