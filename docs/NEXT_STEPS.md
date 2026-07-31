@@ -1,6 +1,16 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-30)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-31)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/**0063** todas aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063 todas aplicadas. Este fichero lista SOLO lo que queda.
+
+## Auditoría de stack técnico + limpieza (DEBT xx, 2026-07-31) — ✅ CERRADO, con pendientes reales
+
+Fases A-D ejecutadas y verificadas (10 commits `82bb05d`..`1056fa7`): cruft huérfano y paquetes vacíos borrados, bug real de Tailwind v3/v4 arreglado en `ai-agency-sf-next`, `@sf/supabase` construido con factories reales y adoptado en `sf-crm`/`sf-cms`/`mira/portal`, MIRA (`mira-landing` + `mira/portal`) actualizado a Next 16 (con un bug real de matcher `proxy.ts`/`middleware.ts` divergente encontrado y corregido antes de fusionar). Detalle completo en DEBT (xx).
+
+**Pendiente real de esta ronda:**
+- Migrar los 33+ ficheros restantes de `mira/portal` que aún construyen su propio cliente Supabase directamente en vez de usar `@sf/supabase` — deliberadamente fuera de alcance esta vez (mayor riesgo, 30+ rutas de producción activas).
+- Verificar una sesión completamente autenticada en `mira/portal` post-upgrade a Next 16 con una credencial vigente (la de referencia en memoria, 2026-05-20, fue rechazada por Supabase — probablemente rotada desde entonces).
+- `ai-agency-sf-next` sigue con `@ai-sdk/anthropic`/`ai` sin fijar (`"latest"`) — no estaba en el plan original de esta ronda.
+- Decisión de negocio pendiente (no técnica): migrar `apps/startup-factory-web` a SF-CMS como el resto de landings — hoy usa contenido local propio.
 
 ## MIRA — Revisión adversarial de la Fase Brand Brain — 9 hallazgos reales corregidos (DEBT ww, 2026-07-30) — ✅ CERRADO
 
