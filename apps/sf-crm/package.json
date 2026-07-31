@@ -10,7 +10,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.0",
+    "@sf/supabase": "workspace:*",
     "next": "^16.0.0",
     "papaparse": "^5.5.4",
     "react": "^19.0.0",
