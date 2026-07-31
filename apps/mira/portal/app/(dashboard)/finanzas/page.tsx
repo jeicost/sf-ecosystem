@@ -2,10 +2,9 @@
 
 import { FINANZAS_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
+import DepartmentChatPanel from '@/components/department-chat-panel'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
-import DepartmentChatLink from '@/components/department-chat-link'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
@@ -42,7 +41,6 @@ export default function FinanzasPage() {
         title={t('header.finance', locale)}
         subtitle={t('header.finance-desc', locale)}
         eyebrowColor={deptMeta.color}
-        action={<DepartmentChatLink slug="finanzas" />}
       />
 
       <StatRow
@@ -61,8 +59,7 @@ export default function FinanzasPage() {
       />
 
       <div className="mb-8">
-        <p className="text-[11px] uppercase tracking-wider mb-4" style={{ color: 'rgba(255,255,255,0.25)' }}>{t('section.quick-actions', locale)}</p>
-        <DepartmentQuickActions department="finanzas" />
+        <DepartmentChatPanel slug="finanzas" quickActionsDepartment="finanzas" />
       </div>
 
       <AgentGrid

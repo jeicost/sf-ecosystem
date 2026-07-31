@@ -1,10 +1,9 @@
 'use client'
 import { MARKETING_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
-import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
+import DepartmentChatPanel from '@/components/department-chat-panel'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
-import DepartmentChatLink from '@/components/department-chat-link'
 import StatRow from '@/components/ui/StatRow'
 import AgentGrid from '@/components/ui/AgentGrid'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
@@ -47,7 +46,6 @@ export default function RosterPage() {
         title={t('header.marketing', locale)}
         subtitle={t('header.marketing-desc', locale)}
         eyebrowColor={deptColor}
-        action={<DepartmentChatLink slug="marketing" />}
       />
 
       <StatRow
@@ -65,7 +63,7 @@ export default function RosterPage() {
         accentColor="#8B5CF6"
       />
 
-      <DepartmentQuickActions department="marketing" />
+      <DepartmentChatPanel slug="marketing" quickActionsDepartment="marketing" />
 
       <AgentGrid
         agents={MARKETING_DEPT_AGENTS}

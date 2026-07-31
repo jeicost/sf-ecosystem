@@ -1,38 +1,36 @@
 'use client'
 import { useState } from 'react'
-import { useRouter, useParams } from 'next/navigation'
-import { ArrowLeft, MessageSquare, Send, ThumbsUp, ThumbsDown } from 'lucide-react'
+import { MessageSquare, Send, ThumbsUp, ThumbsDown } from 'lucide-react'
 import { clsx } from 'clsx'
 import { useActiveClient } from '@/lib/client-context'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import { getDepartmentBySlug } from '@/lib/department-meta'
+import { DEPARTMENT_METADATA, type DepartmentMetadata } from '@/lib/department-meta'
 import { getDepartmentChatName } from '@/lib/department-prompt'
+import { DepartmentQuickActions } from '@/components/quick-actions/DepartmentQuickActions'
+import type { QuickActionDef } from '@/lib/quick-actions/registry'
 
-export default function DepartmentChatPage() {
-  const router = useRouter()
-  const params = useParams()
-  const slug = params.slug as string
+interface DepartmentChatPanelProps {
+  slug: DepartmentMetadata['slug']
+  quickActionsDepartment: QuickActionDef['department']
+}
+
+// Chat de equipo embebido directamente en la página del departamento (antes
+// vivía en /agent/dept/[slug], reachable solo vía el botón "Talk to the whole
+// team" en el header) con las Quick Actions del departamento debajo, dentro
+// de la misma sección — sustituye a DepartmentQuickActions en su posición.
+export default function DepartmentChatPanel({ slug, quickActionsDepartment }: DepartmentChatPanelProps) {
   const { activeClient } = useActiveClient()
   const clientId = activeClient?.id || ''
   const { locale } = useLocaleContext()
   const [input, setInput] = useState('')
 
-  const dept = getDepartmentBySlug(slug)
-
-  if (!dept) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen" style={{ background: 'var(--bg-page)' }}>
-        <p style={{ color: 'var(--text-secondary)' }}>404</p>
-      </div>
-    )
-  }
-
+  const dept = DEPARTMENT_METADATA[slug]
   const deptName = locale === 'en' ? dept.name : dept.nameEs
-  const agentDisplayName = getDepartmentChatName(dept.slug, locale)
+  const agentDisplayName = getDepartmentChatName(slug, locale)
   const { messages, isLoading, sendMessage, sendFeedback } = useAgentChat({
-    role: `dept:${dept.slug}`,
+    role: `dept:${slug}`,
     clientId,
     locale,
     agentDisplayName,
@@ -46,37 +44,11 @@ export default function DepartmentChatPage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--bg-page)' }}>
-      <div className="px-8 py-8 max-w-4xl mx-auto">
-        <button
-          onClick={() => router.back()}
-          className="flex items-center gap-2 text-sm mb-8 transition-colors"
-          style={{ color: 'var(--text-secondary)', opacity: 0.8 }}
-        >
-          <ArrowLeft size={16} />
-          {t('common.back', locale)}
-        </button>
-
-        <div className="flex items-center gap-6 mb-8">
-          <div
-            className="w-20 h-20 rounded-3xl flex items-center justify-center text-5xl flex-shrink-0"
-            style={{
-              background: `linear-gradient(135deg, ${dept.color}30, ${dept.color}10)`,
-              border: `1px solid ${dept.color}30`,
-              boxShadow: `0 12px 32px ${dept.color}25`,
-            }}
-          >
-            {dept.icon}
-          </div>
-          <div>
-            <h1 className="text-3xl font-bold" style={{ color: 'var(--text-primary)' }}>
-              {t('department-chat.title', locale)} · {deptName}
-            </h1>
-            <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-              {t('department-chat.subtitle', locale).replace('{dept}', deptName)}
-            </p>
-          </div>
-        </div>
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-semibold text-ink mb-3">
+          {t('department-chat.heading', locale).replace('{dept}', deptName)}
+        </h3>
 
         <div
           className="flex flex-col h-[600px] rounded-xl overflow-hidden"
@@ -166,6 +138,8 @@ export default function DepartmentChatPage() {
           </div>
         </div>
       </div>
+
+      <DepartmentQuickActions department={quickActionsDepartment} />
     </div>
   )
 }
