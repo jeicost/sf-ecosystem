@@ -556,7 +556,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
         <button
           onClick={handleArchive}
           disabled={project.status === 'archived'}
-          className="rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-red-700 disabled:bg-gray-700"
+          className="rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-red-700 disabled:bg-card disabled:text-ink-secondary"
         >
           {project.status === 'archived' ? 'Archivado' : 'Archivar'}
         </button>

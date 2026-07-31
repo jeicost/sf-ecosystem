@@ -132,55 +132,7 @@
 [data-theme="light"] .bg-\[\#111111\],
 [data-theme="light"] .bg-\[\#161616\] { background: #ffffff !important; }
 
-/* ─── LIGHT MODE — TAILWIND TEXT/BG REMAPS (2026-07-21) ──── */
-/* Las vistas se diseñaron dark-first con blancos hardcodeados; en claro
-   se remapean a los tokens para que todo sea legible. */
-
-[data-theme="light"] .text-white { color: var(--text-primary) !important; }
-
-/* Excepción: .text-white sobre un botón de color saturado (bg-violet-600,
-   bg-[#EC4899], etc.) NO debe repintarse -- el remap de arriba asume que
-   text-white siempre vive sobre el fondo oscuro de la página, pero aquí
-   el propio fondo del botón ya da el contraste. Sin esto, ~30 CTAs en
-   toda la app quedaban con texto casi negro sobre fondo saturado en modo
-   claro (encontrado en la auditoría de modo claro, 2026-07-30). */
-[data-theme="light"] .bg-violet-500.text-white,
-[data-theme="light"] .bg-violet-600.text-white,
-[data-theme="light"] .bg-purple-600.text-white,
-[data-theme="light"] .bg-purple-700.text-white,
-[data-theme="light"] .bg-blue-500.text-white,
-[data-theme="light"] .bg-blue-600.text-white,
-[data-theme="light"] .bg-blue-700.text-white,
-[data-theme="light"] .bg-emerald-500.text-white,
-[data-theme="light"] .bg-emerald-600.text-white,
-[data-theme="light"] .bg-emerald-700.text-white,
-[data-theme="light"] .bg-red-500.text-white,
-[data-theme="light"] .bg-red-600.text-white,
-[data-theme="light"] .bg-red-700.text-white,
-[data-theme="light"] .bg-sky-500.text-white,
-[data-theme="light"] .bg-amber-500.text-white,
-[data-theme="light"] .bg-\[\#10B981\].text-white,
-[data-theme="light"] .bg-\[\#EC4899\].text-white,
-[data-theme="light"] .bg-\[\#059669\].text-white,
-[data-theme="light"] .bg-\[\#E00B7F\].text-white {
-  color: #fff !important;
-}
-[data-theme="light"] .text-gray-300,
-[data-theme="light"] .text-gray-400 { color: var(--text-secondary) !important; }
-[data-theme="light"] .text-gray-500,
-[data-theme="light"] .text-gray-600 { color: var(--text-tertiary) !important; }
-
-[data-theme="light"] .bg-gray-900,
-[data-theme="light"] .bg-gray-900\/70,
-[data-theme="light"] .bg-gray-800 { background: var(--bg-card) !important; }
-[data-theme="light"] .border-gray-800,
-[data-theme="light"] .border-gray-700,
-[data-theme="light"] .border-white\/10 { border-color: var(--border) !important; }
-
-[data-theme="light"] .bg-white\/3,
-[data-theme="light"] .bg-white\/5,
-[data-theme="light"] .bg-white\/8 { background: var(--bg-surface) !important; }
-[data-theme="light"] .hover\:bg-white\/5:hover { background: var(--bg-surface-hover) !important; }
+/* ─── LIGHT MODE — INLINE style="" ATTRIBUTE-SELECTOR OVERRIDES ── */
 
 /* Inline styles con blanco-alfa (texto) — el !important del stylesheet
    gana a un style="" sin !important.

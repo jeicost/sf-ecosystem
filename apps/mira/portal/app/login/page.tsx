@@ -34,6 +34,17 @@ export default function LoginPage() {
     })
   }, [router])
 
+  // This page has its own bespoke always-dark design (every color is a
+  // literal hardcoded value, never theme tokens) and never calls initTheme().
+  // A client-side nav here (e.g. the dashboard's logout button) leaves
+  // data-theme="light" sitting on <html> from the previous page, which makes
+  // this page's hardcoded whites get recolored dark-on-dark by the light-mode
+  // CSS overrides meant for the dashboard. Force dark here without touching
+  // localStorage, so the user's real preference is untouched on next login.
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'dark')
+  }, [])
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true); setError('')
@@ -150,7 +161,7 @@ export default function LoginPage() {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
             <div className="flex justify-center mb-2"><MiraLogo size={48} variant="icon" /></div>
-            <h1 className="text-xl font-bold text-white" style={{ letterSpacing: '-0.03em' }}>MIRA</h1>
+            <h1 className="text-xl font-bold text-ink" style={{ letterSpacing: '-0.03em' }}>MIRA</h1>
           </div>
 
           {/* Heading */}
@@ -243,7 +254,7 @@ export default function LoginPage() {
           {/* Forgot password hint */}
           <p className="text-center text-[11px] mt-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
             ¿Problemas para acceder?{' '}
-            <a href="mailto:hola@startupsfactory.es" className="underline hover:text-white/50 transition-colors">
+            <a href="mailto:hola@startupsfactory.es" className="underline hover:text-ink-secondary transition-colors">
               Contacta con soporte
             </a>
           </p>

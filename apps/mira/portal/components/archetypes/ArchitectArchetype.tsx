@@ -129,7 +129,7 @@ export default function ArchitectArchetype({ agentColor, status = 'ready', error
                       <div className="flex items-start gap-3 flex-1 min-w-0">
                         <div
                           className={clsx(
-                            'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 text-white',
+                            'w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 text-ink',
                             !step.isCompleted && 'bg-line'
                           )}
                           style={step.isCompleted ? { backgroundColor: agentColor } : undefined}
