@@ -2,6 +2,7 @@ packages:
   - 'apps/*'
   - 'apps/*/*'
   - 'packages/*'
+  - '!apps/startup-factory-web'
 allowBuilds:
   esbuild: true
   sharp: true

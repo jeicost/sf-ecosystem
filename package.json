@@ -15,7 +15,8 @@
   "workspaces": [
     "apps/*",
     "apps/*/*",
-    "packages/*"
+    "packages/*",
+    "!apps/startup-factory-web"
   ],
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
