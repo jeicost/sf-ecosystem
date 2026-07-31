@@ -3,7 +3,7 @@ import type { NextConfig } from 'next'
 const config: NextConfig = {
   reactStrictMode: true,
   experimental: {
-    optimizePackageImports: ['@sf/ui', '@sf/auth', '@sf/supabase'],
+    optimizePackageImports: ['@sf/supabase'],
   },
   headers: async () => [
     {

@@ -1,2 +1,0 @@
-// Build stubs
-export type {}
