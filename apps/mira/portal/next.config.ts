@@ -20,6 +20,7 @@ const nextConfig: NextConfig = {
   // Object.defineProperty called on non-object al importarlo) — debe
   // cargarse como dependencia externa en runtime.
   serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
+  transpilePackages: ['@sf/supabase'],
   // pdfjs-dist resuelve la ruta de su "fake worker" (pdf.worker.mjs) de forma
   // dinámica (no un import estático) -- el tracer de ficheros de Vercel no lo
   // detecta como necesario y lo deja fuera del bundle serverless, aunque
