@@ -1,4 +1,4 @@
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createClient as createAdminClient } from '@sf/supabase'
 import { NextResponse } from 'next/server'
 import { requireAuthGate } from '@/lib/auth-gate'
 

@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 import { adminClient } from '@/lib/supabase'
 
@@ -23,10 +23,10 @@ export type ResolveResult =
 /** Get the authenticated user from request cookies (or null). */
 export async function getSessionUser() {
   const cookieStore = await cookies()
-  const supabase = createServerClient(
+  const supabase = createServerComponentClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
+    { getAll: () => cookieStore.getAll() }
   )
   const {
     data: { user },
@@ -52,15 +52,10 @@ export async function userCanAccessClient(
 
 export async function resolveRequestClient(requestedClientId: string | null): Promise<ResolveResult> {
   const cookieStore = await cookies()
-  const supabase = createServerClient(
+  const supabase = createServerComponentClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll: () => cookieStore.getAll(),
-        setAll: () => {},
-      },
-    }
+    { getAll: () => cookieStore.getAll() }
   )
 
   const {

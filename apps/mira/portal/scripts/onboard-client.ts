@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@sf/supabase'
 import { randomUUID } from 'crypto'
 
 // For the common case (client + brand profile + auth user + access grant in one go),
@@ -17,7 +17,7 @@ if (!SERVICE_ROLE_KEY) {
   process.exit(1)
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
+const supabase = createServiceRoleClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
 interface OnboardFlags {
   dbOnly?: boolean

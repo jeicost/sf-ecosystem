@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@sf/supabase'
 import * as fs from 'fs'
 import * as path from 'path'
 
@@ -19,7 +19,7 @@ if (!email || !newPassword) {
   process.exit(1)
 }
 
-const supabase = createClient(
+const supabase = createServiceRoleClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )

@@ -1,5 +1,5 @@
 import { normalizeDocMode } from '@/lib/export/doc-theme'
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
@@ -51,20 +51,12 @@ export async function GET(req: NextRequest) {
   try {
     // Session auth — export requires a logged-in user (iframe is same-origin, cookies flow)
     const cookieStore = await cookies()
-    const supabase = createServerClient(
+    const supabase = createServerComponentClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
       {
-        cookies: {
-          getAll() {
-            return cookieStore.getAll()
-          },
-          setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2])
-            )
-          },
-        },
+        getAll: () => cookieStore.getAll(),
+        set: (name, value, options) => cookieStore.set(name, value, options),
       }
     )
     const {

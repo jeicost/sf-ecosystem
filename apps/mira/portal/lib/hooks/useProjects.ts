@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useMemo } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserSupabaseClient } from '@sf/supabase'
 import { useActiveClient, getStoredClientId } from '@/lib/client-context'
 
 interface MiraUser {
@@ -32,7 +32,7 @@ export function useProjects() {
   const [error, setError] = useState<string | null>(null)
 
   const supabase = useMemo(() =>
-    createBrowserClient(
+    createBrowserSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     ), []

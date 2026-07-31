@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserSupabaseClient } from '@sf/supabase'
 import UserManagementTable from '@/components/admin/UserManagementTable'
 import StorageLimitModal from '@/components/admin/StorageLimitModal'
 
@@ -33,7 +33,7 @@ export default function AdminUsersPage() {
   } | null>(null)
   const [currentLimit, setCurrentLimit] = useState(10)
 
-  const supabase = createBrowserClient(
+  const supabase = createBrowserSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )

@@ -1,4 +1,4 @@
-import { createClient as createAdminClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@sf/supabase'
 import { NextResponse } from 'next/server'
 import { requireAuthGate } from '@/lib/auth-gate'
 
@@ -12,7 +12,7 @@ export async function GET() {
   const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!serviceKey) return NextResponse.json({ error: 'No service key' }, { status: 500 })
 
-  const supabase = createAdminClient(
+  const supabase = createServiceRoleClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     serviceKey
   )

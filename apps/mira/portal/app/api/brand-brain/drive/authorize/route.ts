@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
@@ -32,15 +32,10 @@ export async function POST(req: NextRequest) {
     }
 
     const cookieStore = await cookies()
-    const supabase = createServerClient(
+    const supabase = createServerComponentClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
-      }
+      { getAll: () => cookieStore.getAll() }
     )
 
     const { data: { user }, error: authError } = await supabase.auth.getUser()

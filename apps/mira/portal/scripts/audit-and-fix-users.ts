@@ -16,7 +16,7 @@
  * use scripts/onboard-full-client.mjs instead — this script stays for bulk audits/fixes.
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@sf/supabase'
 
 const SUPABASE_URL = 'https://nnevhtfxuawexliwlbmh.supabase.co'
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY
@@ -26,7 +26,7 @@ if (!SERVICE_ROLE_KEY) {
   process.exit(1)
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
+const supabase = createServiceRoleClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
 // ============================================
 // PART 1: AUDIT ALL USERS

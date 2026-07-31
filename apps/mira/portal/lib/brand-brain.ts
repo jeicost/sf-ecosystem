@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@sf/supabase'
 import {
   normalizeVocab,
   normalizeFlopped,
@@ -9,7 +9,7 @@ import {
 } from '@/lib/brand-data'
 
 function getAdminClient() {
-  return createClient(
+  return createServiceRoleClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )

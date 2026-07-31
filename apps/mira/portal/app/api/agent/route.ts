@@ -1,6 +1,6 @@
 import { NextRequest } from 'next/server'
 import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { getAgentPrompt } from '@/lib/agent-prompts'
 import { fetchBrandBrain, formatBrandBrainForPrompt, logAgentActivity, getAgentDocumentContext } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
@@ -101,10 +101,10 @@ export async function POST(req: NextRequest) {
     }
     if (!resolvedClientId) {
       try {
-        const supabase = createServerClient(
+        const supabase = createServerComponentClient(
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-          { cookies: { getAll: () => req.cookies.getAll(), setAll: () => {} } }
+          { getAll: () => req.cookies.getAll() }
         )
         const { data: { user } } = await supabase.auth.getUser()
         if (!user?.user_metadata?.client_id) {

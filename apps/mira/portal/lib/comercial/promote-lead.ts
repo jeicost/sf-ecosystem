@@ -15,7 +15,7 @@
  * notes, linkedin_summary, trigger_event, icebreaker, source, assigned_to.
  * Sin unique(email, workspace_id) — la dedup se hace con lookup previo.
  */
-import type { SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@sf/supabase'
 
 export type PromoteLeadResult =
   | { ok: true; crmContactId: string; alreadyPromoted: boolean; workspace: string }

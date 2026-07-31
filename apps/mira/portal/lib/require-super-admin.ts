@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
 
 /**
@@ -25,17 +25,10 @@ export async function requireSuperAdmin() {
  */
 export async function requireSuperAdminOrRedirect(): Promise<void> {
   const cookieStore = await cookies()
-  const supabase = createServerClient(
+  const supabase = createServerComponentClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll() {},
-      },
-    }
+    { getAll: () => cookieStore.getAll() }
   )
 
   const {

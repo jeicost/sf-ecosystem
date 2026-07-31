@@ -43,6 +43,17 @@ export async function proxy(request: NextRequest) {
   // Build a response we can attach refreshed cookies to
   let response = NextResponse.next({ request })
 
+  // NOTE: intentionally NOT using @sf/supabase's createServerComponentClient here.
+  // That factory's cookie adapter calls `set()` once PER COOKIE, which is correct
+  // for a Server Component (a plain object jar, order/count-independent), but wrong
+  // here: @supabase/ssr can batch multiple cookies in one setAll() (session cookies
+  // get chunked into name.0/name.1/... once the encoded session is large enough,
+  // e.g. for super_admin users with heavier user_metadata), and recreating
+  // `response` on every individual cookie call discards whatever Set-Cookie header
+  // was written on the previous cookie's now-abandoned response object -- only the
+  // last cookie in the batch would ever reach the browser. Real setAll(), which
+  // receives the whole batch at once, is required here so `response` gets recreated
+  // exactly once per batch, after every cookie has already been applied to `request`.
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,

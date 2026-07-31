@@ -162,9 +162,6 @@ importers:
       '@supabase/ssr':
         specifier: ^0.6.1
         version: 0.6.1(@supabase/supabase-js@2.110.3)
-      '@supabase/supabase-js':
-        specifier: ^2.49.4
-        version: 2.110.3
       ai:
         specifier: latest
         version: 7.0.42(zod@4.4.3)
@@ -376,6 +373,9 @@ importers:
 
   packages/supabase:
     dependencies:
+      '@supabase/ssr':
+        specifier: ^0.6.1
+        version: 0.6.1(@supabase/supabase-js@2.110.3)
       '@supabase/supabase-js':
         specifier: ^2.45.0
         version: 2.110.3

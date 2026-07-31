@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 
 /**
@@ -19,15 +19,10 @@ import { cookies } from 'next/headers'
  */
 export async function requireAuthGate(requireSuperAdmin = true) {
   const cookieStore = await cookies()
-  const supabase = createServerClient(
+  const supabase = createServerComponentClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL || '',
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-    {
-      cookies: {
-        getAll: () => cookieStore.getAll(),
-        setAll: () => {},
-      },
-    }
+    { getAll: () => cookieStore.getAll() }
   )
 
   const { data: { user }, error } = await supabase.auth.getUser()

@@ -1,4 +1,4 @@
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
@@ -39,14 +39,11 @@ async function resolveClientId(
 export async function GET(req: NextRequest) {
   try {
     const cookieStore = await cookies()
-    const supabase = createServerClient(
+    const supabase = createServerComponentClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
+        getAll: () => cookieStore.getAll(),
       }
     )
 
@@ -98,14 +95,11 @@ export async function PUT(req: NextRequest) {
     const { id, brand_data, name, mission, tone_of_voice, values, description, pillars } = body
 
     const cookieStore = await cookies()
-    const supabase = createServerClient(
+    const supabase = createServerComponentClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
       {
-        cookies: {
-          getAll: () => cookieStore.getAll(),
-          setAll: () => {},
-        },
+        getAll: () => cookieStore.getAll(),
       }
     )
 

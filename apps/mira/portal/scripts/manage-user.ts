@@ -1,4 +1,4 @@
-import { createClient } from '@supabase/supabase-js'
+import { createServiceRoleClient } from '@sf/supabase'
 
 // ===================================================================
 // SECURE USER MANAGEMENT SCRIPT
@@ -13,7 +13,7 @@ if (!SERVICE_ROLE_KEY) {
   process.exit(1)
 }
 
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
+const supabase = createServiceRoleClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
 async function createUser(email: string, plan: string, clientSlug?: string) {
   try {

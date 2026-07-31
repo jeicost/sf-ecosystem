@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserSupabaseClient } from '@sf/supabase'
 import type { Database } from '@/types/database'
 import { getStoredClientId } from '@/lib/client-context'
 
@@ -16,7 +16,7 @@ export function useProjectManagement() {
   const [error, setError] = useState<string | null>(null)
 
   const supabase = useMemo(() =>
-    createBrowserClient(
+    createBrowserSupabaseClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     ), []
