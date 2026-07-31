@@ -829,3 +829,18 @@ Pedido del CEO: sacar el chat de departamento de su página aparte a la página 
 **Limpieza adicional**: `packages/supabase/package.json` le faltaba declarar `@supabase/ssr` como dependencia propia (dependencia fantasma — solo resolvía porque las apps consumidoras la declaraban por su cuenta) — añadida. `@supabase/supabase-js` retirado de `apps/mira/portal/package.json` (cero importadores directos confirmado tras la migración; sigue resuelta correctamente vía la dependencia propia de `@sf/supabase`). `@supabase/ssr` se queda como dependencia directa de `mira/portal` porque `proxy.ts` la necesita de verdad.
 
 **Verificación**: `pnpm install` + `tsc --noEmit` + `next build` limpios. En vivo (2 rondas): login real, redirect sin sesión, gate de `/admin` (dos capas: `proxy.ts` + `admin/layout.tsx`), sesión sobreviviendo a reload real, chat real en `/roster` con respuesta grounded en el Brand Brain real de un cliente, cero 401/403/500 en toda la red capturada.
+
+---
+
+## aaa) Audit final de todo lo shippeado hoy (2026-07-31) — 3 bugs reales nuevos, ninguno introducido hoy
+
+Pedido explícito del CEO tras cerrar (zz): "compruébalo todo en profundidad, que no se nos pase nada". 4 agentes independientes con lentes distintas (revisión adversarial del diff completo desde cero, barrido de regresión en vivo de las 5 páginas de depto en ambos temas, estrés de auth/seguridad, build limpio) + síntesis.
+
+**Veredicto sobre lo shippeado hoy (entradas yy/zz + el commit posterior de integración de Quick Actions en el chat): sólido, sin hallazgos.** El fix crítico de `proxy.ts` (batching de cookies) se re-verificó de la forma más exigente posible: se infló `user_metadata` del usuario de test para forzar una sesión real fragmentada en 5 cookies (`.0`-`.4`, 3180 bytes cada una salvo la última), se forzó su expiración, y se confirmó que las 5 cookies llegan intactas y reensamblables tras el refresh — el escenario exacto que el bug original habría roto.
+
+**3 bugs reales encontrados en vivo, todos preexistentes (no introducidos por el trabajo de hoy), sin arreglar**:
+1. **`/home` no sobrevive un hard reload para super_admin con cliente activo** (`app/(dashboard)/home/page.tsx`): un `useEffect` comprueba `activeClient` antes de que el fetch async de `ClientProvider` lo resuelva, así que en cada recarga dura rebota a `/admin` en vez de mostrar el home del cliente activo — reproducido 4/4. Severidad media-alta (afecta a cualquier usuario que recargue/marque como favorito `/home`).
+2. **Archivar un proyecto no persiste de verdad** (`lib/hooks/useProjectManagement.ts`): el `.update().select().single()` de Supabase devuelve 406 (probable asimetría de políticas RLS entre UPDATE y SELECT en `mira_projects`), pero `app/(dashboard)/projects/[slug]/page.tsx` ignora el resultado y fuerza el estado local a "Archivado" igualmente — al recargar, el proyecto sigue "Activo". Reproducido 2/2. Severidad media (la función no funciona pese a parecer que sí).
+3. **Las llamadas `/api/*` sin sesión devuelven redirect 307 a `/login` en vez de 401** (`proxy.ts`, comportamiento preexistente no tocado hoy): rompe el patrón habitual `res.ok ? res.json() : ...` en clientes que esperan JSON — confirmado disparándose de forma natural en `lib/client-context.tsx` durante la sesión de pruebas. Al menos 1 fichero más comparte el patrón; no se auditaron los ~133 call sites de fetch del cliente. Severidad baja-media, es un trade-off de diseño, no un agujero de seguridad.
+
+**Pendiente**: decidir si se arreglan estos 3 (ninguno relacionado con el trabajo de hoy, todos verificados y reproducidos, no solo leídos en código).
