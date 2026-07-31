@@ -1,6 +1,6 @@
 import { createClient as createServerClient } from '@/lib/supabase/server'
 import { canEnterAdmin } from '@/lib/auth/access'
-import type { User } from '@supabase/supabase-js'
+import type { User } from '@sf/supabase'
 
 /**
  * Returns the authenticated user allowed into the admin (a global admin OR

@@ -2,7 +2,7 @@ import { withAdminAuth } from '@/lib/auth/with-admin-auth'
 import { resolveAccess } from '@/lib/auth/access'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
-import type { User } from '@supabase/supabase-js'
+import type { User } from '@sf/supabase'
 import type { NextRequest } from 'next/server'
 
 // Manage editors for a project. Global-admin only — an editor cannot grant

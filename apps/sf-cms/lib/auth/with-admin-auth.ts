@@ -1,5 +1,5 @@
 import { requireSession } from '@/lib/auth/require-session'
-import type { User } from '@supabase/supabase-js'
+import type { User } from '@sf/supabase'
 
 /**
  * Higher-order wrapper for App Router route handlers under app/api/admin/**.

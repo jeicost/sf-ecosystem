@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
+import { createServerComponentClient } from '@sf/supabase'
 
 export async function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname
@@ -19,17 +19,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
 
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() {
-            return request.cookies.getAll()
-          },
-          setAll() {},
-        },
-      }
+    const supabase = createServerComponentClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      { getAll: () => request.cookies.getAll() }
     )
 
     const { data: { user } } = await supabase.auth.getUser()

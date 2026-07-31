@@ -244,12 +244,9 @@ importers:
       '@sentry/node':
         specifier: ^9.0.0
         version: 9.47.1
-      '@supabase/ssr':
-        specifier: ^0.6.1
-        version: 0.6.1(@supabase/supabase-js@2.110.3)
-      '@supabase/supabase-js':
-        specifier: ^2.45.0
-        version: 2.110.3
+      '@sf/supabase':
+        specifier: workspace:*
+        version: link:../../packages/supabase
       '@tiptap/extension-image':
         specifier: ^3.28.0
         version: 3.28.0(@tiptap/core@3.28.0(@tiptap/pm@3.28.0))
