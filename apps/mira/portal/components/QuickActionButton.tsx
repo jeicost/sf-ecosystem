@@ -17,9 +17,11 @@ interface QuickActionButtonProps {
   action: QuickActionDef
   autofill?: AutofillBundle | null
   onActionComplete?: (actionId: string, inputData?: Record<string, unknown>) => void
+  /** 'grid' (default): the original card-sized button. 'chip': a compact pill, for placing inline above a chat input. */
+  variant?: 'grid' | 'chip'
 }
 
-export function QuickActionButton({ action, autofill, onActionComplete }: QuickActionButtonProps) {
+export function QuickActionButton({ action, autofill, onActionComplete, variant = 'grid' }: QuickActionButtonProps) {
   const [isOpen, setIsOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
@@ -96,9 +98,13 @@ export function QuickActionButton({ action, autofill, onActionComplete }: QuickA
           setSubmitError(null)
           setIsOpen(true)
         }}
-        className="card px-4 py-3 text-sm font-medium text-ink hover:bg-surface-hover transition-colors flex items-center gap-2 group"
+        className={
+          variant === 'chip'
+            ? 'shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs font-medium text-ink-secondary bg-surface border border-line hover:text-ink hover:border-purple-400/40 transition-colors flex items-center gap-1.5 group'
+            : 'card px-4 py-3 text-sm font-medium text-ink hover:bg-surface-hover transition-colors flex items-center gap-2 group'
+        }
       >
-        <Sparkles size={16} className="text-purple-400 group-hover:text-purple-300" />
+        <Sparkles size={variant === 'chip' ? 13 : 16} className="text-purple-400 group-hover:text-purple-300" />
         {title}
       </button>
 

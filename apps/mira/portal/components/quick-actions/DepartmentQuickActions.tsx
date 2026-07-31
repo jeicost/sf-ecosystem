@@ -13,9 +13,9 @@ interface DepartmentQuickActionsProps {
   department: QuickActionDef['department']
 }
 
-// Grid genérico de quick actions por departamento, alimentado por el registry.
-// Sustituye a los 5 componentes por-departamento que duplicaban esta estructura
-// con formularios JSX a mano.
+// Chips de quick actions por departamento, alimentadas por el registry —
+// pensadas para vivir dentro de DepartmentChatPanel, justo encima del input
+// del chat (cada chip sigue abriendo su propio formulario/chat guiado).
 export function DepartmentQuickActions({ department }: DepartmentQuickActionsProps) {
   const [activeActionId, setActiveActionId] = useState<string | null>(null)
   // Acción clicada, guardada en el momento del click (activeActionId es el UUID
@@ -37,25 +37,23 @@ export function DepartmentQuickActions({ department }: DepartmentQuickActionsPro
   }, [clientId])
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h3 className="text-lg font-semibold text-ink mb-3">{t('actions.quick-actions', locale)}</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {actions.map((action) => (
-            <QuickActionButton
-              key={action.id}
-              action={action}
-              autofill={autofill}
-              onActionComplete={(actionId, inputData) => {
-                setActiveAction(action)
-                setActiveOutputType(
-                  action.resolveOutputType?.(inputData ?? {}) ?? action.outputType
-                )
-                setActiveActionId(actionId)
-              }}
-            />
-          ))}
-        </div>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-1.5">
+        {actions.map((action) => (
+          <QuickActionButton
+            key={action.id}
+            action={action}
+            autofill={autofill}
+            variant="chip"
+            onActionComplete={(actionId, inputData) => {
+              setActiveAction(action)
+              setActiveOutputType(
+                action.resolveOutputType?.(inputData ?? {}) ?? action.outputType
+              )
+              setActiveActionId(actionId)
+            }}
+          />
+        ))}
       </div>
 
       {activeActionId && activeAction && (
