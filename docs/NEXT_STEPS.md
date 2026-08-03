@@ -13,11 +13,7 @@ Fases A-D ejecutadas y verificadas (commits `82bb05d`..`1056fa7`): cruft huérfa
 
 Chat de departamento embebido en las 5 páginas de depto (Quick Actions como chips dentro del propio chat), parche `!important` de light mode retirado tras migrar los ficheros reales, sidebar arreglado (active-state de Toolkit, hover del Tour, labels a inglés), y los 3 bugs preexistentes del audit final (rebote de `/home` en hard reload, archivado de proyectos que no persistía por RLS sin política de UPDATE, `/api/*` devolviendo redirect en vez de 401) arreglados y reverificados en vivo. Detalle en DEBT (yy)(zz)(aaa).
 
-**Pendiente real de esta ronda (verificado vigente 2026-08-03):**
-- Traducir al inglés las 3 páginas que siguen 100% en español pese a los labels ingleses del sidebar: `app/(dashboard)/questionnaires/page.tsx`, `app/terms/page.tsx`, `app/privacy/page.tsx` (títulos y contenido).
-- 6 hovers del sidebar usan `hover:bg-{color}-500/8`, un modificador de opacidad que Tailwind v3 nunca compila en este proyecto (los `/15` de las mismas líneas sí) — el tinte de fondo al hover no existe en ambos temas. `app/(dashboard)/layout.tsx` líneas ~148-236.
-- Confirmación visual de los badges de paso de `ArchitectArchetype.tsx` en modo claro con datos reales (contraste matemático correcto, sin verificar en pantalla).
-- Rama muerta en `app/api/load-missing-pillars/route.ts`: con service key configurada devuelve 400 sin hacer nada; el único cliente que construye usa la ANON key pese a llamarse `createAdminClient` (DEBT zz).
+**Pendiente real de esta ronda — ✅ CERRADO el mismo 2026-08-03 (commit `5bd8543`):** traducciones al inglés de Questionnaires (lista+detalle)/Terms/Privacy hechas y verificadas en producción; los 6 hovers `/8` pasados a `/10`; `load-missing-pillars` borrada (código muerto sin consumidores que además habría duplicado pilares). Único resto menor: confirmación visual de los badges de `ArchitectArchetype.tsx` en modo claro con datos reales (contraste matemático correcto).
 
 ## MIRA — Revisión adversarial de la Fase Brand Brain — 9 hallazgos reales corregidos (DEBT ww, 2026-07-30) — ✅ CERRADO
 
