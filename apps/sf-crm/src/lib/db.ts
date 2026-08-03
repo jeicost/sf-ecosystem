@@ -40,6 +40,50 @@ function unmapCrmContactRow(contact: Partial<CrmContact>): Record<string, any> {
   return mapped
 }
 
+// leads also stores snake_case columns (first_name, company_name, hot_score, ...)
+// — schema lives in apps/sf-sales-engine/supabase/migrations/002_leads_pipeline.sql.
+// Same mapping pattern as crm_contacts above.
+function mapLeadRow(row: any): Lead {
+  return {
+    id: row.id,
+    firstName: row.first_name || '',
+    lastName: row.last_name || '',
+    company: row.company_name || '',
+    title: row.title || '',
+    email: row.email || '',
+    linkedinUrl: row.linkedin_url,
+    geography: row.geography,
+    industry: row.industry,
+    score: row.hot_score ?? 0,
+    stage: row.stage,
+    clientId: row.client_id,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    notes: row.notes,
+    icereakerUsed: !!row.icebreaker_used,
+    lastActivity: row.last_contact_at,
+  }
+}
+
+// Inverse: translate camelCase to snake_case for writes
+function unmapLeadRow(lead: Partial<Lead>): Record<string, any> {
+  const mapped: Record<string, any> = {}
+  if (lead.firstName !== undefined) mapped.first_name = lead.firstName
+  if (lead.lastName !== undefined) mapped.last_name = lead.lastName
+  if (lead.company !== undefined) mapped.company_name = lead.company
+  if (lead.title !== undefined) mapped.title = lead.title
+  if (lead.email !== undefined) mapped.email = lead.email
+  if (lead.linkedinUrl !== undefined) mapped.linkedin_url = lead.linkedinUrl
+  if (lead.geography !== undefined) mapped.geography = lead.geography
+  if (lead.industry !== undefined) mapped.industry = lead.industry
+  if (lead.score !== undefined) mapped.hot_score = lead.score
+  // leads.stage has a CHECK constraint whose first stage is 'prospected'
+  // (not 'prospect', the app-side default) — normalize to avoid 23514 on writes
+  if (lead.stage !== undefined) mapped.stage = lead.stage === 'prospect' ? 'prospected' : lead.stage
+  if (lead.notes !== undefined) mapped.notes = lead.notes
+  return mapped
+}
+
 // Leads (SF Workspace)
 export async function getLeads(clientId: string, options?: { page?: number; limit?: number; stage?: string; search?: string }) {
   const page = options?.page || 1
@@ -62,30 +106,32 @@ export async function getLeads(clientId: string, options?: { page?: number; limi
 
   if (error) throw error
 
-  return { data: data as Lead[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapLeadRow), total: count || 0, page, limit }
 }
 
 export async function getLead(id: string): Promise<Lead | null> {
   const { data, error } = await supabase.from('leads').select('*').eq('id', id).single()
   if (error && error.code !== 'PGRST116') throw error
-  return (data as Lead) || null
+  return data ? mapLeadRow(data) : null
 }
 
 export async function createLead(clientId: string, lead: Omit<Lead, 'id' | 'createdAt' | 'updatedAt'>): Promise<Lead> {
+  const unmapped = unmapLeadRow(lead)
   const { data, error } = await supabase
     .from('leads')
-    .insert([{ ...lead, client_id: clientId }])
+    .insert([{ ...unmapped, client_id: clientId }])
     .select()
     .single()
 
   if (error) throw error
-  return data as Lead
+  return mapLeadRow(data)
 }
 
 export async function updateLead(id: string, updates: Partial<Lead>): Promise<Lead> {
-  const { data, error } = await supabase.from('leads').update(updates).eq('id', id).select().single()
+  const unmapped = unmapLeadRow(updates)
+  const { data, error } = await supabase.from('leads').update(unmapped).eq('id', id).select().single()
   if (error) throw error
-  return data as Lead
+  return mapLeadRow(data)
 }
 
 export async function deleteLead(id: string): Promise<void> {
@@ -94,7 +140,7 @@ export async function deleteLead(id: string): Promise<void> {
 }
 
 export async function bulkUpdateLeads(ids: string[], updates: Partial<Lead>): Promise<void> {
-  const { error } = await supabase.from('leads').update(updates).in('id', ids)
+  const { error } = await supabase.from('leads').update(unmapLeadRow(updates)).in('id', ids)
   if (error) throw error
 }
 
@@ -158,13 +204,28 @@ export async function bulkUpdateCrmContacts(ids: string[], updates: Partial<CrmC
   if (error) throw error
 }
 
-// Activities
+// Activities — lead_activities columns are lead_id, type, content, metadata,
+// created_at (apps/sf-sales-engine/supabase/migrations/002_leads_pipeline.sql).
+// There is no contact_id / description / created_by column: created_by is
+// folded into metadata.
+function mapActivityRow(row: any): Activity {
+  return {
+    id: row.id,
+    contactId: row.lead_id,
+    type: row.type,
+    description: row.content || '',
+    metadata: row.metadata,
+    createdAt: row.created_at,
+    createdBy: row.metadata?.created_by || '',
+  }
+}
+
 export async function getActivities(contactId: string, options?: { page?: number; limit?: number; type?: string }) {
   const page = options?.page || 1
   const limit = options?.limit || 50
   const offset = (page - 1) * limit
 
-  let query = supabase.from('lead_activities').select('*', { count: 'exact' }).eq('contact_id', contactId)
+  let query = supabase.from('lead_activities').select('*', { count: 'exact' }).eq('lead_id', contactId)
 
   if (options?.type) {
     query = query.eq('type', options.type)
@@ -176,13 +237,19 @@ export async function getActivities(contactId: string, options?: { page?: number
 
   if (error) throw error
 
-  return { data: data as Activity[], total: count || 0, page, limit }
+  return { data: (data || []).map(mapActivityRow), total: count || 0, page, limit }
 }
 
 export async function createActivity(activity: Omit<Activity, 'id' | 'createdAt'>): Promise<Activity> {
-  const { data, error } = await supabase.from('lead_activities').insert([activity]).select().single()
+  const row = {
+    lead_id: activity.contactId,
+    type: activity.type,
+    content: activity.description,
+    metadata: { ...(activity.metadata || {}), created_by: activity.createdBy },
+  }
+  const { data, error } = await supabase.from('lead_activities').insert([row]).select().single()
   if (error) throw error
-  return data as Activity
+  return mapActivityRow(data)
 }
 
 // Outreach Emails

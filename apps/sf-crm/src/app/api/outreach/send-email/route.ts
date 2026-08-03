@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { Resend } from 'resend'
 import { requireAuth } from '@/lib/auth'
 import { createOutreachEmail, createActivity } from '@/lib/db'
-import { handleApiError } from '@/lib/api-errors'
+import { handleApiError, isSchemaMissingError } from '@/lib/api-errors'
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
       emails: [] as any[],
       errors: [] as string[],
     }
+    let recordingUnavailable = false
 
     for (const email of recipients) {
       try {
@@ -57,32 +58,48 @@ export async function POST(request: NextRequest) {
           continue
         }
 
-        // Create local record
-        const outreachEmail = await createOutreachEmail({
-          contactId: contactId || '',
-          to: email,
-          subject,
-          body,
-          status: 'sent',
-          sentAt: new Date().toISOString(),
-          workspaceId: workspaceId || session.workspace.id,
-        })
-
-        // Log activity
-        if (contactId) {
-          await createActivity({
-            contactId,
-            type: 'email_sent',
-            description: `Email sent: ${subject}`,
-            metadata: { emailId: outreachEmail.id, resendId: response.data?.id },
-            createdBy: session.workspace.id,
+        // Past this point the email HAS been delivered to Resend — local
+        // record-keeping is best-effort and must never flag the send as failed
+        // (outreach_emails is not provisioned in the live DB yet: PGRST205).
+        let outreachEmail: any = null
+        try {
+          outreachEmail = await createOutreachEmail({
+            contactId: contactId || '',
+            to: email,
+            subject,
+            body,
+            status: 'sent',
+            sentAt: new Date().toISOString(),
+            workspaceId: workspaceId || session.workspace.id,
           })
+        } catch (recordErr) {
+          if (isSchemaMissingError(recordErr)) {
+            recordingUnavailable = true
+          } else {
+            console.error(`Failed to record outreach email for ${email}:`, recordErr)
+          }
+        }
+
+        // Log activity (best-effort too)
+        if (contactId) {
+          try {
+            await createActivity({
+              contactId,
+              type: 'email_sent',
+              description: `Email sent: ${subject}`,
+              metadata: { emailId: outreachEmail?.id, resendId: response.data?.id },
+              createdBy: session.workspace.id,
+            })
+          } catch (activityErr) {
+            console.error(`Failed to log activity for ${email}:`, activityErr)
+          }
         }
 
         results.sent++
-        results.emails.push(outreachEmail)
+        if (outreachEmail) results.emails.push(outreachEmail)
       } catch (err) {
         results.failed++
+        results.errors.push(`${email}: ${err instanceof Error ? err.message : 'send failed'}`)
         console.error(`Failed to send to ${email}:`, err)
       }
     }
@@ -90,6 +107,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: results.failed === 0,
       ...results,
+      ...(recordingUnavailable
+        ? {
+            warning:
+              'emails sent but not recorded: outreach_emails table not provisioned yet (no migration defines it — apply DDL via the Supabase SQL editor)',
+          }
+        : {}),
     })
   } catch (error) {
     return handleApiError(error, 'Failed to send emails')

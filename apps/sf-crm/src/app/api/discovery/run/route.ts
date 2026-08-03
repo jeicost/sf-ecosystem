@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireAuth } from '@/lib/auth'
 import { createDiscoveryRun, getDiscoveryRuns } from '@/lib/db'
-import { handleApiError } from '@/lib/api-errors'
+import { handleApiError, isSchemaMissingError } from '@/lib/api-errors'
+
+// Verified live (2026-08-03): discovery_runs in project nnevhtfxuawexliwlbmh
+// follows apps/sf-sales-engine/supabase/migrations/003_data_pipeline.sql
+// (client_id, sources_used, leads_found, ...). It has NO workspace_id, company,
+// status or results columns, so the queries below fail with 42703 until the
+// CRM-shaped schema is provisioned. Both handlers degrade gracefully instead
+// of returning a cryptic 500.
 
 export async function GET() {
   try {
@@ -9,6 +16,13 @@ export async function GET() {
     const { data } = await getDiscoveryRuns(session.workspace.id, { limit: 100 })
     return NextResponse.json({ data })
   } catch (error) {
+    if (isSchemaMissingError(error)) {
+      return NextResponse.json({
+        data: [],
+        warning: 'discovery_runs table does not match the schema this app expects (live table has client_id, no workspace_id)',
+        hint: 'live schema is apps/sf-sales-engine/supabase/migrations/003_data_pipeline.sql; scripts/migrations/03_sf-crm-schema.sql was never applied and has drifted — rework it before applying via the Supabase SQL editor',
+      })
+    }
     return handleApiError(error, 'Failed to fetch discovery runs')
   }
 }
@@ -65,6 +79,15 @@ export async function POST(request: NextRequest) {
       },
     })
   } catch (error) {
+    if (isSchemaMissingError(error)) {
+      return NextResponse.json(
+        {
+          error: 'discovery_runs table not provisioned for CRM-triggered runs yet',
+          hint: 'live discovery_runs (apps/sf-sales-engine/supabase/migrations/003_data_pipeline.sql) has no workspace_id/company/status columns; rework scripts/migrations/03_sf-crm-schema.sql and apply it via the Supabase SQL editor',
+        },
+        { status: 501 }
+      )
+    }
     return handleApiError(error, 'Failed to start discovery run')
   }
 }

@@ -31,8 +31,9 @@ export async function GET() {
       }
       const { data } = await getLeads(workspace.clientId, { limit: 1000 })
       metrics.totalLeads = data.length
+      // getLeads maps rows to camelCase: hot_score is exposed as `score`
       data.forEach((lead: any) => {
-        const score = getHotScore(lead.hot_score ?? 0)
+        const score = getHotScore(lead.score ?? 0)
         if (score === 'hot') metrics.hotLeads++
         else if (score === 'warm') metrics.warmLeads++
         else metrics.coldLeads++
