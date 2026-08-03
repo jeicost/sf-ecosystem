@@ -1,6 +1,8 @@
 # Backlog de bugs del ecosistema — re-verificado 2026-08-03
 
-Origen: auditoría de ecosistema del 2026-07-31 (9 agentes), cuyo informe original no se persistió a disco. Esta re-verificación se hizo desde cero contra el código actual, la BD Supabase en vivo (`nnevhtfxuawexliwlbmh`) y HTTP en producción donde aplica. Cada ítem tiene veredicto y evidencia `fichero:línea`. Ninguno está arreglado aún — este documento es el backlog de trabajo.
+Origen: auditoría de ecosistema del 2026-07-31 (9 agentes), cuyo informe original no se persistió a disco. Esta re-verificación se hizo desde cero contra el código actual, la BD Supabase en vivo (`nnevhtfxuawexliwlbmh`) y HTTP en producción donde aplica. Cada ítem tiene veredicto y evidencia `fichero:línea`.
+
+> **ACTUALIZACIÓN mismo día (2026-08-03, tarde)**: los ítems 1-2-3-4-5-6a-6b fueron arreglados, desplegados y verificados en vivo esa misma sesión (commits `5bd8543`..`47791f3` + deploys confirmados). Queda pendiente: la decisión de schema de sf-crm (outreach_emails/discovery_runs — las rutas ya degradan con elegancia en vez de 500, pero la funcionalidad real necesita el DDL, ver veredicto sobre 03_sf-crm-schema.sql abajo), el CI de sales-engine con `continue-on-error` (6c, decisión de proceso), las 2 vías silenciosas del PDF del dg-editor (7, repo del cliente, sesión aparte), y el waitlist de Discoolver (8, bloqueante pre-deploy de una web aún no desplegada).
 
 ## Prioridad ALTA — rotos en producción con usuarios/clientes reales hoy
 
