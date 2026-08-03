@@ -1,16 +1,23 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-07-31)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-08-03)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063 todas aplicadas. Este fichero lista SOLO lo que queda.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)(yy)(zz)(aaa)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063 todas aplicadas. Este fichero lista SOLO lo que queda. Última verificación de vigencia de cada ítem contra el código real: 2026-08-03.
 
-## Auditoría de stack técnico + limpieza (DEBT xx, 2026-07-31) — ✅ CERRADO, con pendientes reales
+## Auditoría de stack técnico + limpieza (DEBT xx→zz, 2026-07-31) — ✅ CERRADO COMPLETO
 
-Fases A-D ejecutadas y verificadas (10 commits `82bb05d`..`1056fa7`): cruft huérfano y paquetes vacíos borrados, bug real de Tailwind v3/v4 arreglado en `ai-agency-sf-next`, `@sf/supabase` construido con factories reales y adoptado en `sf-crm`/`sf-cms`/`mira/portal`, MIRA (`mira-landing` + `mira/portal`) actualizado a Next 16 (con un bug real de matcher `proxy.ts`/`middleware.ts` divergente encontrado y corregido antes de fusionar). Detalle completo en DEBT (xx).
+Fases A-D ejecutadas y verificadas (commits `82bb05d`..`1056fa7`): cruft huérfano y paquetes vacíos borrados, bug real de Tailwind v3/v4 arreglado en `ai-agency-sf-next` (y de paso TODAS sus versiones flotantes fijadas en `08beee6` — la mención anterior aquí a `@ai-sdk/anthropic`/`ai` era incorrecta, esas deps nunca existieron en esa app), `@sf/supabase` con factories reales adoptado en `sf-crm`/`sf-cms`/`mira/portal`, MIRA a Next 16. Los 3 pendientes que esta sección listaba se cerraron el mismo 2026-07-31: migración completa de los 33 ficheros restantes de `mira/portal` (DEBT zz — única excepción documentada: `proxy.ts`, por semántica de batching de cookies), sesión autenticada verificada en vivo incluso con sesión fragmentada en 5 cookies (zz+aaa), y el pineo de `ai-agency-sf-next`.
 
-**Pendiente real de esta ronda:**
-- Migrar los 33+ ficheros restantes de `mira/portal` que aún construyen su propio cliente Supabase directamente en vez de usar `@sf/supabase` — deliberadamente fuera de alcance esta vez (mayor riesgo, 30+ rutas de producción activas).
-- Verificar una sesión completamente autenticada en `mira/portal` post-upgrade a Next 16 con una credencial vigente (la de referencia en memoria, 2026-05-20, fue rechazada por Supabase — probablemente rotada desde entonces).
-- `ai-agency-sf-next` sigue con `@ai-sdk/anthropic`/`ai` sin fijar (`"latest"`) — no estaba en el plan original de esta ronda.
-- Decisión de negocio pendiente (no técnica): migrar `apps/startup-factory-web` a SF-CMS como el resto de landings — hoy usa contenido local propio.
+**Único pendiente real que queda de esta ronda:**
+- Decisión de negocio (no técnica): migrar `apps/startup-factory-web` a SF-CMS como el resto de landings — hoy usa contenido local propio (`content/`, sin `@sf/cms-client`, verificado 2026-08-03).
+
+## MIRA — UI + light mode + 3 bugs del audit final (DEBT yy/aaa, 2026-07-31) — ✅ CERRADO, con pendientes menores
+
+Chat de departamento embebido en las 5 páginas de depto (Quick Actions como chips dentro del propio chat), parche `!important` de light mode retirado tras migrar los ficheros reales, sidebar arreglado (active-state de Toolkit, hover del Tour, labels a inglés), y los 3 bugs preexistentes del audit final (rebote de `/home` en hard reload, archivado de proyectos que no persistía por RLS sin política de UPDATE, `/api/*` devolviendo redirect en vez de 401) arreglados y reverificados en vivo. Detalle en DEBT (yy)(zz)(aaa).
+
+**Pendiente real de esta ronda (verificado vigente 2026-08-03):**
+- Traducir al inglés las 3 páginas que siguen 100% en español pese a los labels ingleses del sidebar: `app/(dashboard)/questionnaires/page.tsx`, `app/terms/page.tsx`, `app/privacy/page.tsx` (títulos y contenido).
+- 6 hovers del sidebar usan `hover:bg-{color}-500/8`, un modificador de opacidad que Tailwind v3 nunca compila en este proyecto (los `/15` de las mismas líneas sí) — el tinte de fondo al hover no existe en ambos temas. `app/(dashboard)/layout.tsx` líneas ~148-236.
+- Confirmación visual de los badges de paso de `ArchitectArchetype.tsx` en modo claro con datos reales (contraste matemático correcto, sin verificar en pantalla).
+- Rama muerta en `app/api/load-missing-pillars/route.ts`: con service key configurada devuelve 400 sin hacer nada; el único cliente que construye usa la ANON key pese a llamarse `createAdminClient` (DEBT zz).
 
 ## MIRA — Revisión adversarial de la Fase Brand Brain — 9 hallazgos reales corregidos (DEBT ww, 2026-07-30) — ✅ CERRADO
 
@@ -103,6 +110,11 @@ Brand Book y Monthly Content System verificados con generaciones reales completa
 
 ## Resto del ecosistema
 
+- **Backlog de bugs re-verificado 2026-08-03** — ver [`docs/audits/ECOSISTEMA-BUGS-2026-08-03.md`](audits/ECOSISTEMA-BUGS-2026-08-03.md) (evidencia fichero:línea + verificación en vivo). Resumen por prioridad:
+  - **ALTA (producción con usuarios reales)**: sf-crm (leads sin mapear snake_case + `outreach_emails`/`discovery_runs.workspace_id` inexistentes → 500s), startup-factory-web (`<html>`/`<body>` duplicados servidos en startupsfactory.es), NC Global (newsletter del footer con éxito falso en www.ncglobalassets.com), sf-reports (links activos a 404 en el hub de clientes).
+  - **MEDIA (interno o latente)**: ai-agency-sf-next (reset CSS sin capa anula todos los paddings/margins con Tailwind v4), sf-sales-engine (notion_sync 100% stub usado por el worker, router seed sin registrar, CI ruff/mypy con `continue-on-error`), dg-editor (2 vías de fallo silencioso en export PDF).
+  - **BAJA (sin desplegar)**: waitlist stub de Discoolver web — bloqueante de deploy futuro.
+  - Colateral: keys Supabase locales de sf-crm y sf-sales-engine rotadas (401) — reponer al trabajar en esas apps.
 - **SF-CMS**: plan de cierre por bloques pendiente (memoria `sf-cms-estado-y-plan`); dominio apex decidido.
 - **sf-reports**: sigue siendo el hub MANUAL de entregables; candidato a alimentarse desde el export editorial de MIRA en el futuro.
 - **Reglas de oro vigentes** (no olvidar): verificar columnas reales en BD antes de confiar en ficheros de migración (5 casos de deriva encontrados); nunca `select('*')` en tablas con tokens; deletes de producción solo por IDs exactos verificados; `node scripts/verify-project-links.mjs` antes de cualquier `vercel --prod`.
