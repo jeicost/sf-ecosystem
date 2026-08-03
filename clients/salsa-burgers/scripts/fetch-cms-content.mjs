@@ -57,10 +57,15 @@ async function main() {
   try {
     console.log('📡  Fetching content from SF-CMS for Salsa Burgers…')
 
+    // Sentinel en el catch (no {}): si el fetch de settings falla NO hay que
+    // sobreescribir content/settings.json con nulls — eso apaga TODOS los
+    // pixels de producción en silencio en el siguiente build (pasó de verdad:
+    // GA4/GTM estuvieron caídos sin que nadie lo viera).
+    const SETTINGS_FETCH_FAILED = Symbol('settings-fetch-failed')
     const [{ posts }, { pages }, settings] = await Promise.all([
       fetchJson(`${CMS_API_URL}/posts?status=published&project=${PROJECT_SLUG}`),
       fetchJson(`${CMS_API_URL}/pages?project=${PROJECT_SLUG}`),
-      fetchJson(`${CMS_API_URL}/settings?project=${PROJECT_SLUG}`).catch(() => ({})),
+      fetchJson(`${CMS_API_URL}/settings?project=${PROJECT_SLUG}`).catch(() => SETTINGS_FETCH_FAILED),
     ])
 
     console.log(`✅  Posts: ${posts.length} · Pages: ${pages.length}`)
@@ -118,9 +123,27 @@ async function main() {
     }
 
     // ── settings.json ─────────────────────────────────────────
-    const normalizedSettings = {
-      ga_measurement_id: settings?.ga_measurement_id ?? null,
-      gtm_container_id:  settings?.gtm_container_id  ?? null,
+    const settingsPath = path.join(ROOT, 'content', 'settings.json')
+    let normalizedSettings
+    if (settings === SETTINGS_FETCH_FAILED) {
+      // Conservar el fichero anterior si existe; solo escribir nulls si no
+      // hay nada previo (primer build sin CMS accesible).
+      if (fs.existsSync(settingsPath)) {
+        normalizedSettings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'))
+        console.warn('⚠️  Settings fetch failed — keeping previous content/settings.json')
+      } else {
+        normalizedSettings = {}
+        console.warn('⚠️  Settings fetch failed and no previous settings.json — pixels disabled this build')
+      }
+    } else {
+      normalizedSettings = {
+        ga_measurement_id:           settings?.ga_measurement_id           ?? null,
+        gtm_container_id:            settings?.gtm_container_id            ?? null,
+        meta_pixel_id:               settings?.meta_pixel_id               ?? null,
+        google_ads_id:               settings?.google_ads_id               ?? null,
+        google_ads_conversion_label: settings?.google_ads_conversion_label ?? null,
+        tiktok_pixel_id:             settings?.tiktok_pixel_id             ?? null,
+      }
     }
 
     // ── write files ───────────────────────────────────────────
