@@ -64,6 +64,7 @@ export async function POST(request: NextRequest) {
         let outreachEmail: any = null
         try {
           outreachEmail = await createOutreachEmail({
+            // contact_id es UUID en BD ('' daría 22P02) — unmapOutreachEmailRow normaliza '' → null
             contactId: contactId || '',
             to: email,
             subject,

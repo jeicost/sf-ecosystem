@@ -1,4 +1,5 @@
 import type { NextConfig } from 'next'
+import { withSentryConfig } from '@sentry/nextjs'
 import { createRequire } from 'module'
 import path from 'path'
 
@@ -55,4 +56,21 @@ const nextConfig: NextConfig = {
   },
 }
 
-export default nextConfig
+// Sentry (2026-08-03): @sentry/nextjs v10 con soporte Turbopack nativo.
+// El intento previo con @sentry/node a pelo rompió el build (DEBT qq) — este
+// wrap es la vía soportada. Sin SENTRY_AUTH_TOKEN el plugin simplemente NO
+// sube source maps (warning inofensivo en build) pero el tracking funciona;
+// para stack traces legibles en Sentry, añadir SENTRY_AUTH_TOKEN + org/project
+// en Vercel más adelante.
+export default withSentryConfig(nextConfig, {
+  org: process.env.SENTRY_ORG,
+  project: process.env.SENTRY_PROJECT,
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  silent: !process.env.CI,
+  // No abortar el build si la subida de source maps falla o no hay token.
+  errorHandler: () => undefined,
+  // Anti-ruido: sin telemetría del plugin de build.
+  // (disableLogger/widenClientFileUpload son opciones webpack-only — con
+  // Turbopack emiten deprecation warnings y no hacen nada, por eso no están.)
+  telemetry: false,
+})

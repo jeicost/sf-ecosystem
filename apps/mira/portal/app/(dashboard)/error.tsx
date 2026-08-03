@@ -1,11 +1,13 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { t } from '@/lib/i18n'
+import { captureError } from '@/lib/capture-error'
 
 export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   const [locale, setLocale] = useState<'es' | 'en'>('es')
 
-  useEffect(() => { console.error(error) }, [error])
+  // captureError ya hace console.error siempre; si hay DSN además lo manda a Sentry
+  useEffect(() => { captureError(error, { boundary: 'dashboard', digest: error.digest }) }, [error])
 
   useEffect(() => {
     const storedLocale = localStorage.getItem('locale') as 'es' | 'en' | null

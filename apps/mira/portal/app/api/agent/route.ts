@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { captureError } from '@/lib/capture-error'
 import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
 import { createServerComponentClient } from '@sf/supabase'
 import { getAgentPrompt } from '@/lib/agent-prompts'
@@ -404,6 +405,7 @@ export async function POST(req: NextRequest) {
           }
 
         } catch (err) {
+          captureError(err, { route: 'api/agent', phase: 'stream', role, deptSlug, clientId: resolvedClientId })
           logAgentActivity({
             clientId: resolvedClientId,
             agentName,
@@ -427,6 +429,7 @@ export async function POST(req: NextRequest) {
     })
 
   } catch (err) {
+    captureError(err, { route: 'api/agent', phase: 'request' })
     return new Response(JSON.stringify({ error: err instanceof Error ? err.message : 'Error inesperado' }), {
       status: 500, headers: { 'Content-Type': 'application/json' }
     })

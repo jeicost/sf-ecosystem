@@ -98,7 +98,7 @@ export default function DiscoveryClient({ workspaceId, workspace }: DiscoveryCli
                   </span>
                 </div>
                 <p className={styles.runDate}>
-                  Started: {new Date(run.startedAt).toLocaleDateString()}
+                  Started: {new Date((run as unknown as { started_at?: string }).started_at ?? run.startedAt).toLocaleDateString()}
                 </p>
               </div>
             ))}

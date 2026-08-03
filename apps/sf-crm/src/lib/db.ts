@@ -273,8 +273,25 @@ export async function getOutreachEmails(workspaceId: string, options?: { page?: 
   return { data: data as OutreachEmail[], total: count || 0, page, limit }
 }
 
+// outreach_emails stores snake_case (see scripts/migrations/04_outreach_discovery_real.sql);
+// the TS type is camelCase — unmap on write, same pattern as unmapLeadRow above.
+// contact_id is a UUID column: empty string would 22P02, normalize to null.
+function unmapOutreachEmailRow(email: Partial<OutreachEmail>): Record<string, unknown> {
+  return {
+    workspace_id: email.workspaceId,
+    contact_id: email.contactId || null,
+    to: email.to,
+    subject: email.subject,
+    body: email.body,
+    status: email.status,
+    sent_at: email.sentAt ?? null,
+    opened_at: email.openedAt ?? null,
+    clicked_at: email.clickedAt ?? null,
+  }
+}
+
 export async function createOutreachEmail(email: Omit<OutreachEmail, 'id' | 'createdAt'>): Promise<OutreachEmail> {
-  const { data, error } = await supabase.from('outreach_emails').insert([email]).select().single()
+  const { data, error } = await supabase.from('outreach_emails').insert([unmapOutreachEmailRow(email)]).select().single()
   if (error) throw error
   return data as OutreachEmail
 }
@@ -303,14 +320,28 @@ export async function getDiscoveryRuns(workspaceId: string, options?: { page?: n
   return { data: data as DiscoveryRun[], total: count || 0, page, limit }
 }
 
+// discovery_runs is the shared sales-engine table (snake_case) + the columns
+// added by 04_outreach_discovery_real.sql — unmap camelCase writes.
+function unmapDiscoveryRunRow(run: Partial<DiscoveryRun>): Record<string, unknown> {
+  const out: Record<string, unknown> = {}
+  if (run.workspaceId !== undefined) out.workspace_id = run.workspaceId
+  if (run.clientId !== undefined) out.client_id = run.clientId
+  if (run.company !== undefined) out.company = run.company
+  if (run.status !== undefined) out.status = run.status
+  if (run.results !== undefined) out.results = run.results
+  if (run.error !== undefined) out.error = run.error
+  return out
+}
+
 export async function createDiscoveryRun(run: Omit<DiscoveryRun, 'id' | 'startedAt'>): Promise<DiscoveryRun> {
-  const { data, error } = await supabase.from('discovery_runs').insert([run]).select().single()
+  const { data, error } = await supabase.from('discovery_runs').insert([unmapDiscoveryRunRow(run)]).select().single()
   if (error) throw error
   return data as DiscoveryRun
 }
 
+
 export async function updateDiscoveryRun(id: string, updates: Partial<DiscoveryRun>): Promise<DiscoveryRun> {
-  const { data, error } = await supabase.from('discovery_runs').update(updates).eq('id', id).select().single()
+  const { data, error } = await supabase.from('discovery_runs').update(unmapDiscoveryRunRow(updates)).eq('id', id).select().single()
   if (error) throw error
   return data as DiscoveryRun
 }
