@@ -13,8 +13,40 @@ const CONFIG = {
 
 export function Footer() {
   const [email, setEmail] = useState('')
-  const [subDone, setSubDone] = useState(false)
-  const handleSub = (e: React.FormEvent) => { e.preventDefault(); if (email.includes('@')) setSubDone(true) }
+  const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
+
+  const handleSub = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.includes('@')) {
+      setErrorMsg('Please enter a valid email address.')
+      setStatus('error')
+      return
+    }
+    setStatus('sending')
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/contact@ncglobalassets.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          email,
+          _subject: `Newsletter signup — ${email}`,
+          _template: 'table',
+          source: 'Footer newsletter (Stay up to date)',
+        }),
+      })
+      const data = (await res.json()) as { success?: string }
+      if (data.success === 'true' || res.ok) {
+        setStatus('done')
+      } else {
+        setErrorMsg(`Something went wrong. Email us directly at ${CONFIG.email}`)
+        setStatus('error')
+      }
+    } catch {
+      setErrorMsg(`Something went wrong. Email us directly at ${CONFIG.email}`)
+      setStatus('error')
+    }
+  }
 
   return (
     <footer className="footer">
@@ -25,13 +57,20 @@ export function Footer() {
             <h3>Stay up to date</h3>
             <p>Market insights, brand stories and updates from Bangkok.</p>
           </div>
-          {subDone ? (
+          {status === 'done' ? (
             <p style={{ fontFamily: 'var(--font-mono)', fontSize: 11, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)' }}>✓ You're on the list.</p>
           ) : (
-            <form className="footer-newsletter__form" onSubmit={handleSub}>
-              <input className="footer-newsletter__input" type="email" placeholder="your@brand.com" value={email} onChange={e => setEmail(e.target.value)} />
-              <button type="submit" className="footer-newsletter__btn">Subscribe <Arrow size={12} /></button>
-            </form>
+            <div>
+              <form className="footer-newsletter__form" onSubmit={handleSub}>
+                <input className="footer-newsletter__input" type="email" placeholder="your@brand.com" value={email} onChange={e => setEmail(e.target.value)} />
+                <button type="submit" className="footer-newsletter__btn" disabled={status === 'sending'}>
+                  {status === 'sending' ? 'Subscribing…' : <>Subscribe <Arrow size={12} /></>}
+                </button>
+              </form>
+              {status === 'error' && (
+                <p style={{ fontSize: 12, color: 'var(--accent)', marginTop: 8 }}>{errorMsg}</p>
+              )}
+            </div>
           )}
         </div>
         <div className="footer-grid">
