@@ -46,6 +46,11 @@ export async function GET(request: Request) {
     const normalizedSettings = {
       ga_measurement_id: settings.ga_measurement_id ?? null,
       gtm_container_id: settings.gtm_container_id ?? null,
+      meta_pixel_id: settings.meta_pixel_id ?? null,
+      google_ads_id: settings.google_ads_id ?? null,
+      google_ads_conversion_label: settings.google_ads_conversion_label ?? null,
+      tiktok_pixel_id: settings.tiktok_pixel_id ?? null,
+      linkedin_partner_id: settings.linkedin_partner_id ?? null,
       // Add more fields here as needed (always with null fallback)
     }
 

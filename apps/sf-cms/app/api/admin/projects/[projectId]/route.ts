@@ -20,7 +20,7 @@ export const GET = withAdminAuth(async (
   const client = createAdminClient()
   const { data: project, error } = await client
     .from('projects')
-    .select('id, name, slug, preview_secret, preview_base_url')
+    .select('id, name, slug, preview_secret, preview_base_url, settings')
     .eq('id', projectId)
     .single()
 
@@ -50,22 +50,45 @@ export const PATCH = withAdminAuth(async (
       return Response.json({ error: 'Forbidden' }, { status: 403 })
     }
     const body = await request.json()
-    const { vercel_hook_url, preview_base_url } = body
+    const { vercel_hook_url, preview_base_url, settings } = body
 
     const updateData: Record<string, any> = {}
     if (vercel_hook_url !== undefined) updateData.vercel_hook_url = vercel_hook_url || null
     if (preview_base_url !== undefined) updateData.preview_base_url = preview_base_url || null
 
+    const client = createAdminClient()
+
+    // settings es un jsonb compartido (pixels site-wide + posible config
+    // futura): merge server-side sobre lo existente, nunca replace — un
+    // caller que solo envía pixels no debe borrar otras claves. Enviar un
+    // valor null/"" en una clave la elimina (permite limpiar un pixel).
+    if (settings !== undefined) {
+      if (typeof settings !== 'object' || settings === null || Array.isArray(settings)) {
+        return Response.json({ error: 'settings must be an object' }, { status: 400 })
+      }
+      const { data: current, error: readError } = await client
+        .from('projects')
+        .select('settings')
+        .eq('id', projectId)
+        .single()
+      if (readError) throw readError
+      const merged: Record<string, any> = { ...(current?.settings || {}) }
+      for (const [k, v] of Object.entries(settings)) {
+        if (v === null || v === '') delete merged[k]
+        else merged[k] = v
+      }
+      updateData.settings = merged
+    }
+
     if (Object.keys(updateData).length === 0) {
       return Response.json({ error: 'No valid fields to update' }, { status: 400 })
     }
 
-    const client = createAdminClient()
     const { data: project, error } = await client
       .from('projects')
       .update(updateData)
       .eq('id', projectId)
-      .select('id, name, slug, vercel_hook_url, preview_base_url')
+      .select('id, name, slug, vercel_hook_url, preview_base_url, settings')
       .single()
 
     if (error) throw error

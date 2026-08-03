@@ -194,6 +194,11 @@ export default function ProjectsPage() {
                       Brief de landing
                     </Button>
                   </Link>
+                  <Link href={`/admin/projects/${project.id}/pixels`}>
+                    <Button variant="secondary" size="sm" className="w-full">
+                      Pixels
+                    </Button>
+                  </Link>
                 </div>
               </CardBody>
             </Card>
