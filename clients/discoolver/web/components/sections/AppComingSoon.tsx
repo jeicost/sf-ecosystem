@@ -18,7 +18,7 @@ export function AppComingSoon({ content }: { content: HomeContent }) {
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, source: "app" }),
       });
       setStatus(res.ok ? "done" : "error");
     } catch {
@@ -61,6 +61,16 @@ export function AppComingSoon({ content }: { content: HomeContent }) {
                   {content.app_soon_cta} <Icon name="arrow-right" size={14} />
                 </button>
               </form>
+              {status === "done" && (
+                <p role="status" style={{ marginTop: 12, fontSize: 13, color: "var(--accent)" }}>
+                  Listo — te avisaremos por email en cuanto lancemos.
+                </p>
+              )}
+              {status === "error" && (
+                <p role="alert" style={{ marginTop: 12, fontSize: 13, color: "#ff8f7d" }}>
+                  No se pudo enviar la solicitud. Inténtalo de nuevo en unos minutos.
+                </p>
+              )}
               <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
                 <button className="btn btn-ghost" disabled aria-label="App Store — próximamente" style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
                   <Icon name="app-store" size={16} />
@@ -146,11 +156,6 @@ export function AppComingSoon({ content }: { content: HomeContent }) {
           </Reveal>
         </div>
       </div>
-      {status === "done" && (
-        <span className="sr-only" role="status">
-          Te avisaremos por email.
-        </span>
-      )}
     </section>
   );
 }

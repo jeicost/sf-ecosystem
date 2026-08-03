@@ -30,7 +30,7 @@ export function HeroForm() {
       const res = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, city: CITIES[cityIndex] }),
+        body: JSON.stringify({ email, city: CITIES[cityIndex], source: "hero" }),
       });
       setStatus(res.ok ? "done" : "error");
     } catch {
@@ -69,8 +69,13 @@ export function HeroForm() {
         <Icon name="arrow-right" />
       </button>
       {status === "done" && (
-        <span className="sr-only" role="status">
+        <span role="status" style={{ gridColumn: "1 / -1", padding: "10px 22px 14px", fontSize: 13, color: "var(--accent)" }}>
           Solicitud enviada, revisa tu correo.
+        </span>
+      )}
+      {status === "error" && (
+        <span role="alert" style={{ gridColumn: "1 / -1", padding: "10px 22px 14px", fontSize: 13, color: "#ff8f7d" }}>
+          No se pudo enviar la solicitud. Inténtalo de nuevo en unos minutos.
         </span>
       )}
     </form>

@@ -36,14 +36,31 @@ deploy real: comprimir con `sips` (ver `~/.claude/skills/loop-diseno/learnings.m
 "Compresión de imágenes para web") y decidir si los vídeos se sirven desde Vercel o un CDN externo
 — 550MB en el repo/deploy no es sostenible.
 
+## Waitlist (formsubmit.co)
+
+`app/api/waitlist/route.ts` reenvía server-side a `formsubmit.co/ajax/<destino>` — el patrón
+estándar de forms en webs de clientes SF (igual que NC Global LeadMagnet). Le postean 3 forms,
+cada uno con `source` propio que fija el `_subject` del email: `HeroForm` (`hero`),
+`AppComingSoon` (`app`), `InfluencerForm` (`influencer`).
+
+- **Destino**: env `WAITLIST_FORWARD_EMAIL`; fallback `carlos@discoolver.com`, la dirección que
+  `clients/discoolver/creators-landing` usa en producción vía formsubmit (o sea, ya activada).
+- **Gotcha formsubmit**: si cambias el destino a otra dirección (p. ej. `hola@discoolver.com`),
+  el primer envío dispara el email de activación y TODO fallará (502) hasta que ese buzón
+  confirme. Hacer un envío de prueba real tras cambiarlo.
+- El endpoint nunca finge éxito: si formsubmit no confirma, responde 502 y los tres forms
+  muestran error visible. No reintroducir el stub `{ok:true}`.
+
 ## Deploy
 
 Proyecto Vercel propio (install aislado, NO workspace dep — mismo patrón que adrian-grooves).
 `node scripts/verify-project-links.mjs clients/discoolver/web` → PASS antes de cualquier
 `vercel --prod`. **No se ha desplegado a producción todavía** — pendiente decisión del usuario
-sobre: comprimir assets, wiring real del formulario de waitlist (Resend u otro), confirmar fecha
-de lanzamiento real para `components/ui/Countdown.tsx` (`LAUNCH_DATE` es un placeholder), y
-publicar las páginas `home`/`influencers` en sf-cms (hoy en `draft`).
+sobre: comprimir assets, confirmar fecha de lanzamiento real para
+`components/ui/Countdown.tsx` (`LAUNCH_DATE` es un placeholder), y publicar las páginas
+`home`/`influencers` en sf-cms (hoy en `draft`). El waitlist ya está cableado (ver sección
+anterior); opcionalmente definir `WAITLIST_FORWARD_EMAIL` en Vercel si el destino final no es
+`carlos@discoolver.com`.
 
 ## No tocar
 

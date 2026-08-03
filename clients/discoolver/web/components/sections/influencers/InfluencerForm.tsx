@@ -37,8 +37,15 @@ export function InfluencerForm({ content }: { content: InfluencersContent }) {
         body: JSON.stringify({
           email: formData.get("creator-email"),
           type: "creator",
+          source: "influencer",
           focus: selectedTags,
           region: formData.get("region"),
+          instagram: formData.get("instagram"),
+          tiktok: formData.get("tiktok"),
+          youtube: formData.get("youtube"),
+          website: formData.get("website"),
+          other: formData.get("other"),
+          message: formData.get("message"),
         }),
       });
       setStatus(res.ok ? "done" : "error");
@@ -154,6 +161,11 @@ export function InfluencerForm({ content }: { content: InfluencersContent }) {
             <button type="submit" className="btn btn-primary" style={{ fontSize: 16, padding: "16px 32px", width: "100%" }} disabled={status === "loading"}>
               {status === "done" ? "¡Solicitud enviada!" : content.apply_submit}
             </button>
+            {status === "error" && (
+              <p role="alert" style={{ marginTop: 14, fontSize: 13, color: "#ff8f7d", textAlign: "center" }}>
+                No se pudo enviar la solicitud. Inténtalo de nuevo en unos minutos.
+              </p>
+            )}
           </Reveal>
         </form>
       </div>
