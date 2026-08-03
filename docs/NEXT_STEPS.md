@@ -100,8 +100,8 @@ Brand Book y Monthly Content System verificados con generaciones reales completa
 
 ## MIRA — técnico pendiente (por prioridad)
 
-1. **ENFORCE_PLAN_LIMITS**: sin bloqueantes desde el 24/07, activación pendiente de decisión CEO.
-2. **Stripe**: elegido como pasarela (24/07), build-out pendiente (facturación real de clientes; los ficheros mock de Operations→Billing esperan esto).
+1. **ENFORCE_PLAN_LIMITS**: sin bloqueantes; CEO preguntó qué era el 2026-08-03 — explicado, decisión aún abierta (antes de activar: comprobar plan de cada cliente real vs. lo que usa).
+2. **Stripe**: CEO confirmó GO el 2026-08-03 — esperando 3 respuestas para arrancar el build-out: ¿cuenta Stripe creada?, ¿suscripción por plan o factura por proyecto?, ¿moneda (EUR/THB/USD)?
 3. **Canva**: OAuth completo en código; faltan registro de app + review + envs `NEXT_PUBLIC_CANVA_CLIENT_ID`/`CANVA_CLIENT_SECRET` (DEBT l).
 4. **Imágenes — mejoras reales** (`images.edit` de OpenAI con referencia real en vez de solo texto, carousel multi-imagen, tamaños 4:5/9:16): ligado a Track B de Visual Production Foundation — no elegir modelo/endpoint final hasta que se resuelva (ver sección arriba).
 5. **Drive — mejoras**: watch/push de cambios (hoy sync diario), toggle de auto_sync por carpeta en el panel (columna ya existe).
@@ -118,3 +118,14 @@ Brand Book y Monthly Content System verificados con generaciones reales completa
 - **SF-CMS**: plan de cierre por bloques pendiente (memoria `sf-cms-estado-y-plan`); dominio apex decidido.
 - **sf-reports**: sigue siendo el hub MANUAL de entregables; candidato a alimentarse desde el export editorial de MIRA en el futuro.
 - **Reglas de oro vigentes** (no olvidar): verificar columnas reales en BD antes de confiar en ficheros de migración (5 casos de deriva encontrados); nunca `select('*')` en tablas con tokens; deletes de producción solo por IDs exactos verificados; `node scripts/verify-project-links.mjs` antes de cualquier `vercel --prod`.
+
+## Ola 2026-08-03 (tarde) — ejecutado tras el "vamos con todo" del CEO
+
+- ✅ **Sentry en MIRA**: implementado con `@sentry/nextjs` v10 (Turbopack nativo, build verificado). NO-OP hasta poner `NEXT_PUBLIC_SENTRY_DSN` en Vercel — **acción CEO: crear proyecto en sentry.io y pegar el DSN** (opcional: SENTRY_AUTH_TOKEN/ORG/PROJECT para source maps).
+- ✅ **dg-editor**: los 2 fallos silenciosos de PDF eliminados (commit `67c39ae` en su repo, pusheado); e2e real verificado con BARCELONA-26. Playwright instalado en su .venv (no estaba — el "caso normal" llevaba roto en este Mac).
+- ✅ **Waitlist Discoolver web**: real vía formsubmit (`165460c`) — destino `carlos@discoolver.com` (único buzón activado), override por env `WAITLIST_FORWARD_EMAIL`.
+- ✅ **Keys locales rotadas**: sf-crm y sales-engine repuestas y verificadas.
+- 📋 **sf-crm schema**: `apps/sf-crm/scripts/migrations/04_outreach_discovery_real.sql` lista para que **el CEO la aplique vía SQL editor** (incluye queries de verificación previa/posterior). El código ya está preparado (unmaps aplicados) — al aplicarla, outreach y discovery funcionan de punta a punta. Efecto colateral positivo esperado: el upsert de `status` del worker de sales-engine dejará de fallar en silencio.
+- ❌ **Chat unificado (punto 10 histórico): DESCARTADO por el CEO** — resuelto con el chat por departamento.
+- CEO hizo: password de Adrian Grooves entregada. CEO pendiente aún: Drive ×3, keys Apollo/Hunter, revisar Brand Brain Salsa, DSN de Sentry, aplicar la 04, respuestas de Stripe.
+- Cola técnica siguiente: sesión de seguridad MIRA (user_metadata.plan + anti-inyección), migración startupsfactory.es → SF-CMS (GO del CEO: "terminar"), limpieza CI sales-engine (~334 errores con continue-on-error).
