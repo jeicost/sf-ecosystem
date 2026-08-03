@@ -63,12 +63,12 @@ function valueToDisplay(v: unknown): string {
 }
 
 const STATUS_LABEL: Record<string, string> = {
-  draft: 'Borrador',
-  sent: 'Enviado',
-  in_progress: 'En curso',
-  completed: 'Completado',
-  ingested: 'Ingestado al brain',
-  archived: 'Archivado',
+  draft: 'Draft',
+  sent: 'Sent',
+  in_progress: 'In progress',
+  completed: 'Completed',
+  ingested: 'Ingested to brain',
+  archived: 'Archived',
 }
 
 export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ id: string }> }) {
@@ -98,7 +98,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
     try {
       const res = await fetch(`/api/questionnaires/${qid}`)
       const json = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(json?.error || 'No se pudo cargar el cuestionario')
+      if (!res.ok) throw new Error(json?.error || 'Could not load the questionnaire')
       setQuestionnaire(json.questionnaire)
       setQuestions(Array.isArray(json.questions) ? json.questions : [])
       setIsAgency(json.is_agency === true)
@@ -110,7 +110,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
       valuesRef.current = initial
       dirtyRef.current = new Set()
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo cargar el cuestionario')
+      setError(e instanceof Error ? e.message : 'Could not load the questionnaire')
     } finally {
       setLoading(false)
     }
@@ -118,7 +118,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
 
   useEffect(() => { if (id) load(id) }, [id, load])
 
-  // ── Autosave con debounce (~800ms) ──
+  // ── Autosave with debounce (~800ms) ──
   const flush = useCallback(
     async (opts?: { all?: boolean; final?: boolean }): Promise<boolean> => {
       if (!id) return true
@@ -142,17 +142,17 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         })
         if (!res.ok) {
           const json = await res.json().catch(() => null)
-          throw new Error(json?.error || 'No se pudieron guardar las respuestas')
+          throw new Error(json?.error || 'Could not save the answers')
         }
         setSaveState('saved')
-        // El primer guardado mueve sent → in_progress; se refleja sin recargar
+        // The first save moves sent → in_progress; reflected without reloading
         setQuestionnaire((q) => (q && q.status === 'sent' ? { ...q, status: 'in_progress' } : q))
         return true
       } catch (e) {
-        // Los ids vuelven a la cola de pendientes para el próximo intento
+        // The ids go back to the pending queue for the next attempt
         for (const qid of ids) dirtyRef.current.add(qid)
         setSaveState('error')
-        setError(e instanceof Error ? e.message : 'No se pudieron guardar las respuestas')
+        setError(e instanceof Error ? e.message : 'Could not save the answers')
         return false
       }
     },
@@ -184,7 +184,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
   const sections = useMemo(() => {
     const map = new Map<string, Question[]>()
     for (const q of questions) {
-      const key = q.section || 'Preguntas'
+      const key = q.section || 'Questions'
       if (!map.has(key)) map.set(key, [])
       map.get(key)!.push(q)
     }
@@ -209,7 +209,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
     const missing = questions.filter((q) => q.required && isEmptyValue(values[q.id]))
     if (missing.length > 0) {
       setMissingRequired(new Set(missing.map((q) => q.id)))
-      setError(`Faltan ${missing.length} pregunta(s) obligatoria(s) por responder (marcadas en rojo).`)
+      setError(`${missing.length} required question(s) still unanswered (marked in red).`)
       return
     }
     setCompleting(true)
@@ -217,17 +217,17 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
     if (timerRef.current) clearTimeout(timerRef.current)
     try {
       const ok = await flush({ all: true, final: true })
-      if (!ok) throw new Error('No se pudieron guardar las respuestas — inténtalo de nuevo')
+      if (!ok) throw new Error('Could not save the answers — try again')
       const res = await fetch(`/api/questionnaires/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'completed' }),
       })
       const json = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(json?.error || 'No se pudo completar el cuestionario')
+      if (!res.ok) throw new Error(json?.error || 'Could not complete the questionnaire')
       await load(id)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo completar el cuestionario')
+      setError(e instanceof Error ? e.message : 'Could not complete the questionnaire')
     } finally {
       setCompleting(false)
     }
@@ -244,10 +244,10 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         body: JSON.stringify({ status: 'sent' }),
       })
       const json = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(json?.error || 'No se pudo enviar el cuestionario')
+      if (!res.ok) throw new Error(json?.error || 'Could not send the questionnaire')
       await load(id)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo enviar el cuestionario')
+      setError(e instanceof Error ? e.message : 'Could not send the questionnaire')
     } finally {
       setSending(false)
     }
@@ -265,7 +265,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
     return (
       <div className="mx-auto max-w-2xl px-6 py-10">
         <Link href="/questionnaires" className="mb-4 inline-flex items-center gap-1.5 text-sm text-sky-400 hover:opacity-80">
-          <ArrowLeft size={14} /> Volver a cuestionarios
+          <ArrowLeft size={14} /> Back to questionnaires
         </Link>
         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
       </div>
@@ -287,10 +287,10 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-6 py-10">
       <Link href="/questionnaires" className="inline-flex items-center gap-1.5 text-sm text-sky-400 transition-opacity hover:opacity-80">
-        <ArrowLeft size={14} /> Volver a cuestionarios
+        <ArrowLeft size={14} /> Back to questionnaires
       </Link>
 
-      {/* Cabecera */}
+      {/* Header */}
       <div className="rounded-2xl border border-line bg-surface p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <h1 className="text-xl font-bold tracking-tight text-ink">{questionnaire.title}</h1>
@@ -301,13 +301,13 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         {questionnaire.intro && <p className="mt-2 text-sm text-ink-secondary">{questionnaire.intro}</p>}
         {!readOnly && (
           <p className="mt-3 text-[11px] text-ink-tertiary">
-            {answeredCount}/{questions.length} respondidas · tus respuestas se guardan automáticamente
+            {answeredCount}/{questions.length} answered · your answers are saved automatically
           </p>
         )}
         {isDraft && (
           <div className="mt-3 flex flex-wrap items-center gap-3 rounded-lg border border-amber-500/25 bg-amber-500/10 px-3 py-2">
             <p className="text-[11px] text-amber-400">
-              Borrador — el cliente aún no lo ve. Revísalo y envíalo cuando esté listo.
+              Draft — the client cannot see it yet. Review it and send it when ready.
             </p>
             {isAgency && (
               <button
@@ -316,19 +316,19 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                 className="inline-flex items-center gap-1.5 rounded-lg bg-green-500/15 px-3 py-1.5 text-[11px] font-semibold text-green-400 transition hover:bg-green-500/25 disabled:opacity-50"
               >
                 {sending ? <Loader2 size={11} className="animate-spin" /> : <Send size={11} />}
-                Enviar al cliente
+                Send to client
               </button>
             )}
           </div>
         )}
         {questionnaire.status === 'completed' && (
           <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-green-400">
-            <CheckCircle2 size={12} /> Completado{questionnaire.completed_at ? ` el ${new Date(questionnaire.completed_at).toLocaleDateString('es-ES')}` : ''} — la agencia revisará tus respuestas.
+            <CheckCircle2 size={12} /> Completed{questionnaire.completed_at ? ` on ${new Date(questionnaire.completed_at).toLocaleDateString('en-US')}` : ''} — the agency will review your answers.
           </p>
         )}
         {questionnaire.status === 'ingested' && (
           <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-violet-400">
-            <CheckCircle2 size={12} /> Respuestas aplicadas al Brand Brain{questionnaire.ingested_at ? ` el ${new Date(questionnaire.ingested_at).toLocaleDateString('es-ES')}` : ''}.
+            <CheckCircle2 size={12} /> Answers applied to the Brand Brain{questionnaire.ingested_at ? ` on ${new Date(questionnaire.ingested_at).toLocaleDateString('en-US')}` : ''}.
           </p>
         )}
       </div>
@@ -337,8 +337,8 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">{error}</div>
       )}
 
-      {/* Narrativa (informes de decisión, migración 0061) — secciones de texto
-          tipo informe editorial, mostradas antes del formulario de decisión. */}
+      {/* Narrative (decision reports, migration 0061) — editorial-style text
+          sections shown before the decision form. */}
       {questionnaire.narrative && questionnaire.narrative.length > 0 && (
         <div className="space-y-5 rounded-2xl border border-line bg-surface p-6">
           {questionnaire.narrative.map((section, i) => (
@@ -352,7 +352,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         </div>
       )}
 
-      {/* Preguntas por sección */}
+      {/* Questions by section */}
       {sections.map(([sectionName, sectionQuestions]) => (
         <div key={sectionName} className="space-y-4">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
@@ -369,7 +369,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                   {display ? (
                     <p className="mt-2 whitespace-pre-wrap text-sm text-ink-secondary">{display}</p>
                   ) : (
-                    <p className="mt-2 text-sm italic text-ink-muted">Sin respuesta</p>
+                    <p className="mt-2 text-sm italic text-ink-muted">No answer</p>
                   )}
                 </div>
               )
@@ -391,7 +391,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                       value={typeof value === 'string' ? value : valueToDisplay(value)}
                       onChange={(e) => setValue(q.id, e.target.value)}
                       className={`${inputBase} ${missing ? 'border-red-500/50' : 'border-line'} resize-y`}
-                      placeholder="Escribe tu respuesta…"
+                      placeholder="Write your answer…"
                     />
                   )}
                   {(q.kind === 'text' || q.kind === 'url' || q.kind === 'number') && (
@@ -400,7 +400,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                       value={typeof value === 'string' || typeof value === 'number' ? String(value) : ''}
                       onChange={(e) => setValue(q.id, e.target.value)}
                       className={`${inputBase} ${missing ? 'border-red-500/50' : 'border-line'}`}
-                      placeholder={q.kind === 'url' ? 'https://…' : 'Tu respuesta…'}
+                      placeholder={q.kind === 'url' ? 'https://…' : 'Your answer…'}
                     />
                   )}
                   {q.kind === 'select' && (
@@ -423,7 +423,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                               {label}
                               {recommended && (
                                 <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-400">
-                                  Recomendación
+                                  Recommended
                                 </span>
                               )}
                             </p>
@@ -456,7 +456,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
                               {label}
                               {recommended && (
                                 <span className="rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-amber-400">
-                                  Recomendación
+                                  Recommended
                                 </span>
                               )}
                             </p>
@@ -473,14 +473,14 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
         </div>
       ))}
 
-      {/* Barra de acciones del runner */}
+      {/* Runner action bar */}
       {!readOnly && (
         <div className="sticky bottom-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface p-4 shadow-lg">
           <p className="text-[11px] text-ink-tertiary">
-            {saveState === 'saving' && 'Guardando…'}
-            {saveState === 'saved' && 'Guardado ✓'}
-            {saveState === 'error' && <span className="text-red-400">Error al guardar — se reintentará</span>}
-            {saveState === 'idle' && `${answeredCount}/${questions.length} respondidas`}
+            {saveState === 'saving' && 'Saving…'}
+            {saveState === 'saved' && 'Saved ✓'}
+            {saveState === 'error' && <span className="text-red-400">Save failed — will retry</span>}
+            {saveState === 'idle' && `${answeredCount}/${questions.length} answered`}
           </p>
           <div className="flex items-center gap-2">
             <button
@@ -488,7 +488,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
               disabled={leaving || completing}
               className="rounded-lg bg-surface-hover px-4 py-2 text-xs font-medium text-ink transition hover:opacity-80 disabled:opacity-50"
             >
-              {leaving ? 'Guardando…' : 'Guardar y seguir luego'}
+              {leaving ? 'Saving…' : 'Save and continue later'}
             </button>
             <button
               onClick={handleComplete}
@@ -496,7 +496,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
               className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
             >
               {completing && <Loader2 size={12} className="animate-spin" />}
-              Completar cuestionario
+              Complete questionnaire
             </button>
           </div>
         </div>

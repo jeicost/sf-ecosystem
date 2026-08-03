@@ -145,7 +145,7 @@ useEffect(() => {
             'mx-3 mt-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
             path === '/admin' || path.startsWith('/admin/')
               ? 'bg-red-500/15 text-red-400'
-              : 'text-ink-tertiary hover:text-red-400 hover:bg-red-500/8'
+              : 'text-ink-tertiary hover:text-red-400 hover:bg-red-500/10'
           )}>
           <span className="text-sm">🔐</span>
           <span>Admin Panel</span>
@@ -175,7 +175,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path === '/brand-brain'
             ? 'bg-violet-500/15 text-violet-400'
-            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
+            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/10'
         )}>
         <Brain size={13} />
         <span>Brand Brain</span>
@@ -192,7 +192,7 @@ useEffect(() => {
             'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
             path === '/toolkit' || path.startsWith('/toolkit/')
               ? 'bg-violet-500/15 text-violet-400'
-              : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/8'
+              : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/10'
           )}>
           <Layers size={13} />
           <span>Business Reports</span>
@@ -205,7 +205,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path.startsWith('/questionnaires')
             ? 'bg-sky-500/15 text-sky-400'
-            : 'text-ink-tertiary hover:text-sky-400 hover:bg-sky-500/8'
+            : 'text-ink-tertiary hover:text-sky-400 hover:bg-sky-500/10'
         )}>
         <ClipboardList size={13} />
         <span>Questionnaires</span>
@@ -217,7 +217,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path.startsWith('/documents')
             ? 'bg-amber-500/15 text-amber-400'
-            : 'text-ink-tertiary hover:text-amber-400 hover:bg-amber-500/8'
+            : 'text-ink-tertiary hover:text-amber-400 hover:bg-amber-500/10'
         )}>
         <span className="text-sm">📄</span>
         <span>Documents</span>
@@ -233,7 +233,7 @@ useEffect(() => {
           'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
           path === '/integrations'
             ? 'bg-pink-500/15 text-pink-400'
-            : 'text-ink-tertiary hover:text-pink-400 hover:bg-pink-500/8'
+            : 'text-ink-tertiary hover:text-pink-400 hover:bg-pink-500/10'
         )}>
         <Zap size={13} />
         <span>Integrations</span>

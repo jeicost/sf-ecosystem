@@ -4,7 +4,7 @@ import { AlertTriangle } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 
 export const metadata: Metadata = {
-  title: 'Términos de Servicio — MIRA',
+  title: 'Terms of Service — MIRA',
 }
 
 export default function TermsPage() {
@@ -17,8 +17,8 @@ export default function TermsPage() {
             <span className="text-sm font-bold text-ink">MIRA</span>
           </Link>
           <nav className="flex items-center gap-4 text-xs text-ink-tertiary">
-            <Link href="/terms" className="text-ink">Términos</Link>
-            <Link href="/privacy" className="hover:text-ink">Privacidad</Link>
+            <Link href="/terms" className="text-ink">Terms</Link>
+            <Link href="/privacy" className="hover:text-ink">Privacy</Link>
             <Link href="/cookies" className="hover:text-ink">Cookies</Link>
           </nav>
         </div>
@@ -29,138 +29,136 @@ export default function TermsPage() {
           style={{ background: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.3)' }}>
           <AlertTriangle size={16} className="mt-0.5 shrink-0" style={{ color: '#fbbf24' }} />
           <p className="text-xs font-medium leading-relaxed" style={{ color: '#fbbf24' }}>
-            Plantilla legal — revisar con un abogado antes de publicar. No sustituye asesoría legal profesional.
+            Legal template — review with a lawyer before publishing. It does not replace professional legal advice.
           </p>
         </div>
 
-        <h1 className="text-2xl font-semibold text-ink tracking-tight mb-1">Términos de Servicio</h1>
-        <p className="text-xs text-ink-tertiary mb-8">Última actualización: 23 de julio de 2026</p>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight mb-1">Terms of Service</h1>
+        <p className="text-xs text-ink-tertiary mb-8">Last updated: July 23, 2026</p>
 
         <div className="space-y-7 text-sm text-ink-secondary leading-relaxed">
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">1. Objeto y aceptación</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">1. Purpose and acceptance</h2>
             <p>
-              Estos Términos de Servicio regulan el acceso y uso de MIRA, una plataforma SaaS que ofrece un
-              equipo de agentes de inteligencia artificial para automatizar tareas de marketing, ventas,
-              estrategia, operaciones y finanzas de tu negocio ("el Servicio"), operada por Startup Factory
-              ("nosotros", "MIRA"). Al crear una cuenta o utilizar el Servicio aceptas estos términos. Si no
-              estás de acuerdo, no debes utilizar MIRA.
+              These Terms of Service govern the access to and use of MIRA, a SaaS platform that provides a
+              team of artificial intelligence agents to automate marketing, sales, strategy, operations and
+              finance tasks for your business (&quot;the Service&quot;), operated by Startup Factory
+              (&quot;we&quot;, &quot;MIRA&quot;). By creating an account or using the Service you accept these
+              terms. If you do not agree, you must not use MIRA.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">2. Descripción del servicio</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">2. Description of the service</h2>
             <p>
-              MIRA proporciona agentes de IA organizados por departamento (marketing, ventas, estrategia,
-              operaciones y finanzas) que generan contenido, análisis, informes y recomendaciones a partir de
-              la información de tu negocio y de tus instrucciones. MIRA se encuentra actualmente en fase
-              beta: algunas funciones pueden cambiar, fallar ocasionalmente o estar incompletas.
+              MIRA provides AI agents organized by department (marketing, sales, strategy, operations and
+              finance) that generate content, analyses, reports and recommendations based on your business
+              information and your instructions. MIRA is currently in beta: some features may change, fail
+              occasionally or be incomplete.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">3. Registro y cuenta de usuario</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">3. Registration and user account</h2>
             <p>
-              Para usar MIRA necesitas crear una cuenta con datos veraces y mantenerlos actualizados. Eres
-              responsable de la confidencialidad de tus credenciales y de toda la actividad que ocurra bajo tu
-              cuenta. Avísanos de inmediato ante cualquier uso no autorizado.
+              To use MIRA you need to create an account with accurate information and keep it up to date. You
+              are responsible for the confidentiality of your credentials and for all activity that occurs
+              under your account. Notify us immediately of any unauthorized use.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">4. Uso aceptable</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">4. Acceptable use</h2>
             <p>
-              Te comprometes a no usar MIRA para fines ilegales, para generar contenido difamatorio, engañoso,
-              fraudulento o que infrinja derechos de terceros, ni a intentar acceder sin autorización a
-              sistemas, datos de otros clientes o a la infraestructura del Servicio.
+              You agree not to use MIRA for illegal purposes, to generate content that is defamatory,
+              misleading, fraudulent or that infringes third-party rights, or to attempt to gain unauthorized
+              access to systems, other customers&apos; data or the Service&apos;s infrastructure.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">5. Tu contenido</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">5. Your content</h2>
             <p>
-              Todo el contenido que subas o conectes a MIRA (documentos de marca, información de negocio,
-              briefs, conexiones a herramientas externas) sigue siendo tuyo. Nos concedes una licencia
-              limitada para almacenar y procesar ese contenido con el único fin de prestarte el Servicio,
-              incluida su uso como contexto para que los agentes de IA generen resultados.
+              All content you upload or connect to MIRA (brand documents, business information, briefs,
+              connections to external tools) remains yours. You grant us a limited license to store and
+              process that content for the sole purpose of providing the Service to you, including its use as
+              context for the AI agents to generate results.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">6. Resultados generados por IA</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">6. AI-generated results</h2>
             <p>
-              Los textos, informes, análisis e imágenes que generan los agentes de MIRA son producidos por
-              modelos de inteligencia artificial y pueden contener errores, imprecisiones o sesgos. Eres
-              responsable de revisar y validar cualquier resultado antes de usarlo, publicarlo o tomar
-              decisiones de negocio basadas en él.
+              The texts, reports, analyses and images generated by MIRA&apos;s agents are produced by
+              artificial intelligence models and may contain errors, inaccuracies or biases. You are
+              responsible for reviewing and validating any result before using it, publishing it or making
+              business decisions based on it.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">7. Planes, precios y facturación</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">7. Plans, pricing and billing</h2>
             <p>
-              MIRA se ofrece bajo distintos planes de suscripción. Al estar en fase beta, los precios,
-              límites de uso y funcionalidades incluidas en cada plan pueden cambiar; te avisaremos con
-              antelación razonable ante cambios que te afecten como cliente activo.
+              MIRA is offered under different subscription plans. As the product is in beta, the pricing,
+              usage limits and features included in each plan may change; we will give you reasonable advance
+              notice of changes that affect you as an active customer.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">8. Disponibilidad del servicio</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">8. Service availability</h2>
             <p>
-              Trabajamos para mantener MIRA disponible de forma continua, pero al ser un producto en beta no
-              garantizamos un nivel de servicio (SLA) determinado ni la ausencia total de interrupciones o
-              errores.
+              We work to keep MIRA continuously available, but as a beta product we do not guarantee a
+              specific service level (SLA) or the complete absence of interruptions or errors.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">9. Propiedad intelectual</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">9. Intellectual property</h2>
             <p>
-              La plataforma MIRA, su marca, diseño, código y los agentes de IA son propiedad de Startup
-              Factory. Nada en estos términos te transfiere derechos sobre ellos, más allá de la licencia de
-              uso del Servicio.
+              The MIRA platform, its brand, design, code and AI agents are the property of Startup Factory.
+              Nothing in these terms transfers any rights over them to you beyond the license to use the
+              Service.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">10. Limitación de responsabilidad</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">10. Limitation of liability</h2>
             <p>
-              El Servicio se ofrece "tal cual", especialmente durante esta fase beta. En la medida permitida
-              por la ley, MIRA no será responsable de daños indirectos o pérdida de negocio derivados del uso
-              del Servicio o de las decisiones tomadas a partir de los resultados generados por los agentes de
-              IA.
+              The Service is provided &quot;as is&quot;, especially during this beta phase. To the extent
+              permitted by law, MIRA shall not be liable for indirect damages or loss of business arising from
+              the use of the Service or from decisions made based on the results generated by the AI agents.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">11. Suspensión y cancelación</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">11. Suspension and termination</h2>
             <p>
-              Puedes cancelar tu cuenta cuando quieras contactando con nosotros. Podemos suspender o cancelar
-              cuentas que incumplan estos términos, tras aviso previo salvo casos graves o urgentes.
+              You can cancel your account at any time by contacting us. We may suspend or terminate accounts
+              that breach these terms, with prior notice except in serious or urgent cases.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">12. Modificaciones de estos términos</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">12. Changes to these terms</h2>
             <p>
-              Podemos actualizar estos Términos de Servicio para reflejar cambios en el producto o en la
-              normativa aplicable. Publicaremos la fecha de la última actualización en esta misma página.
+              We may update these Terms of Service to reflect changes in the product or in applicable
+              regulations. We will publish the date of the latest update on this same page.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">13. Ley aplicable y jurisdicción</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">13. Governing law and jurisdiction</h2>
             <p>
-              Estos términos se rigen por la legislación de [España]. Cualquier disputa se someterá a los
-              juzgados y tribunales competentes conforme a dicha legislación.
+              These terms are governed by the laws of [Spain]. Any dispute shall be submitted to the competent
+              courts and tribunals in accordance with such laws.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">14. Contacto</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">14. Contact</h2>
             <p>
-              Para cualquier consulta sobre estos términos, escríbenos a [contacto@startupsfactory.es].
+              For any questions about these terms, write to us at [contacto@startupsfactory.es].
             </p>
           </section>
         </div>

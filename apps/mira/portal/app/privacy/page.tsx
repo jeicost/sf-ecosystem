@@ -4,7 +4,7 @@ import { AlertTriangle } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 
 export const metadata: Metadata = {
-  title: 'Política de Privacidad — MIRA',
+  title: 'Privacy Policy — MIRA',
 }
 
 export default function PrivacyPage() {
@@ -17,8 +17,8 @@ export default function PrivacyPage() {
             <span className="text-sm font-bold text-ink">MIRA</span>
           </Link>
           <nav className="flex items-center gap-4 text-xs text-ink-tertiary">
-            <Link href="/terms" className="hover:text-ink">Términos</Link>
-            <Link href="/privacy" className="text-ink">Privacidad</Link>
+            <Link href="/terms" className="hover:text-ink">Terms</Link>
+            <Link href="/privacy" className="text-ink">Privacy</Link>
             <Link href="/cookies" className="hover:text-ink">Cookies</Link>
           </nav>
         </div>
@@ -29,118 +29,118 @@ export default function PrivacyPage() {
           style={{ background: 'rgba(245,158,11,0.1)', borderColor: 'rgba(245,158,11,0.3)' }}>
           <AlertTriangle size={16} className="mt-0.5 shrink-0" style={{ color: '#fbbf24' }} />
           <p className="text-xs font-medium leading-relaxed" style={{ color: '#fbbf24' }}>
-            Plantilla legal — revisar con un abogado antes de publicar. No sustituye asesoría legal profesional.
+            Legal template — review with a lawyer before publishing. It does not replace professional legal advice.
           </p>
         </div>
 
-        <h1 className="text-2xl font-semibold text-ink tracking-tight mb-1">Política de Privacidad</h1>
-        <p className="text-xs text-ink-tertiary mb-8">Última actualización: 23 de julio de 2026</p>
+        <h1 className="text-2xl font-semibold text-ink tracking-tight mb-1">Privacy Policy</h1>
+        <p className="text-xs text-ink-tertiary mb-8">Last updated: July 23, 2026</p>
 
         <div className="space-y-7 text-sm text-ink-secondary leading-relaxed">
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">1. Responsable del tratamiento</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">1. Data controller</h2>
             <p>
-              El responsable del tratamiento de tus datos personales es Startup Factory, operador de MIRA.
-              Para cualquier consulta relacionada con privacidad, contacta con [contacto@startupsfactory.es].
+              The controller of your personal data is Startup Factory, operator of MIRA. For any
+              privacy-related questions, contact [contacto@startupsfactory.es].
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">2. Qué datos recopilamos</h2>
-            <p>Recopilamos tres tipos de datos:</p>
+            <h2 className="text-base font-semibold text-ink mb-2">2. What data we collect</h2>
+            <p>We collect three types of data:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1.5">
               <li>
-                <span className="text-ink">Datos de cuenta</span> — nombre, email y contraseña (almacenada de
-                forma cifrada), plan contratado y rol dentro de tu organización.
+                <span className="text-ink">Account data</span> — name, email and password (stored in
+                encrypted form), subscribed plan and role within your organization.
               </li>
               <li>
-                <span className="text-ink">Contenido de marca y negocio</span> — documentos, briefs,
-                información de tu empresa y cualquier material que subas o conectes a tu Brand Brain para que
-                los agentes de IA lo usen como contexto.
+                <span className="text-ink">Brand and business content</span> — documents, briefs, information
+                about your company and any material you upload or connect to your Brand Brain for the AI
+                agents to use as context.
               </li>
               <li>
-                <span className="text-ink">Datos de uso</span> — páginas visitadas, acciones dentro del
-                producto y analítica agregada, para entender cómo se usa MIRA y mejorarlo.
+                <span className="text-ink">Usage data</span> — pages visited, actions within the product and
+                aggregated analytics, to understand how MIRA is used and improve it.
               </li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">3. Cómo usamos tus datos</h2>
-            <p>Usamos estos datos para:</p>
+            <h2 className="text-base font-semibold text-ink mb-2">3. How we use your data</h2>
+            <p>We use this data to:</p>
             <ul className="list-disc pl-5 mt-2 space-y-1.5">
-              <li>Prestar el Servicio, incluida la generación de resultados por parte de los agentes de IA.</li>
-              <li>Dar soporte y responder a tus consultas.</li>
-              <li>Mejorar el producto y detectar y corregir errores.</li>
-              <li>Enviarte comunicaciones relacionadas con tu cuenta o el Servicio.</li>
+              <li>Provide the Service, including the generation of results by the AI agents.</li>
+              <li>Provide support and respond to your inquiries.</li>
+              <li>Improve the product and detect and fix errors.</li>
+              <li>Send you communications related to your account or the Service.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">4. Con quién compartimos datos</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">4. Who we share data with</h2>
             <p>
-              No vendemos tus datos. Los compartimos únicamente con proveedores necesarios para operar MIRA,
-              actuando como encargados del tratamiento: alojamiento de base de datos y autenticación
-              (Supabase), alojamiento de la aplicación (Vercel), proveedores de modelos de IA para generar los
-              resultados de los agentes (p. ej. Anthropic, OpenAI) y herramientas de analítica (Google
-              Analytics / Google Tag Manager).
+              We do not sell your data. We share it only with providers necessary to operate MIRA, acting as
+              data processors: database hosting and authentication (Supabase), application hosting (Vercel),
+              AI model providers to generate the agents&apos; results (e.g. Anthropic, OpenAI) and analytics
+              tools (Google Analytics / Google Tag Manager).
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">5. Conservación de datos</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">5. Data retention</h2>
             <p>
-              Conservamos tus datos mientras tu cuenta esté activa. Si cancelas tu cuenta, conservaremos los
-              datos el tiempo razonablemente necesario para cumplir obligaciones legales o resolver disputas,
-              y los eliminaremos o anonimizaremos posteriormente.
+              We keep your data while your account is active. If you cancel your account, we will retain the
+              data for as long as reasonably necessary to comply with legal obligations or resolve disputes,
+              and will delete or anonymize it afterwards.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">6. Tus derechos</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">6. Your rights</h2>
             <p>
-              Puedes solicitar acceso, rectificación o eliminación de tus datos personales en cualquier
-              momento escribiendo a [contacto@startupsfactory.es]. Al ser un producto en fase beta, estas
-              solicitudes se gestionan manualmente y responderemos en un plazo razonable.
+              You can request access to, rectification of or deletion of your personal data at any time by
+              writing to [contacto@startupsfactory.es]. As the product is in beta, these requests are handled
+              manually and we will respond within a reasonable timeframe.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">7. Seguridad</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">7. Security</h2>
             <p>
-              Aplicamos medidas técnicas razonables (cifrado en tránsito, control de acceso, autenticación)
-              para proteger tus datos. Ningún sistema es 100% infalible; si detectamos una incidencia de
-              seguridad relevante, te lo comunicaremos.
+              We apply reasonable technical measures (encryption in transit, access control, authentication)
+              to protect your data. No system is 100% infallible; if we detect a relevant security incident,
+              we will inform you.
             </p>
           </section>
 
           <section>
             <h2 className="text-base font-semibold text-ink mb-2">8. Cookies</h2>
             <p>
-              MIRA utiliza cookies esenciales de sesión y, en la web informativa, cookies de analítica. Más
-              detalle en nuestra <Link href="/cookies" className="underline hover:text-ink">Política de Cookies</Link>.
+              MIRA uses essential session cookies and, on the informational website, analytics cookies. More
+              detail in our <Link href="/cookies" className="underline hover:text-ink">Cookie Policy</Link>.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">9. Menores de edad</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">9. Minors</h2>
             <p>
-              MIRA no está dirigido a menores de 18 años y no recopilamos conscientemente datos de menores.
+              MIRA is not directed at anyone under 18 years of age and we do not knowingly collect data from
+              minors.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">10. Cambios en esta política</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">10. Changes to this policy</h2>
             <p>
-              Podemos actualizar esta Política de Privacidad para reflejar cambios en el producto o en la
-              normativa aplicable. Publicaremos la fecha de la última actualización en esta misma página.
+              We may update this Privacy Policy to reflect changes in the product or in applicable
+              regulations. We will publish the date of the latest update on this same page.
             </p>
           </section>
 
           <section>
-            <h2 className="text-base font-semibold text-ink mb-2">11. Contacto</h2>
+            <h2 className="text-base font-semibold text-ink mb-2">11. Contact</h2>
             <p>
-              Para cualquier consulta sobre privacidad, escríbenos a [contacto@startupsfactory.es].
+              For any privacy questions, write to us at [contacto@startupsfactory.es].
             </p>
           </section>
         </div>
