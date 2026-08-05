@@ -14,7 +14,7 @@ export function Footer({
         <div className="foot__grid">
           <div className="foot__col foot__brand">
             <Link aria-label="Discoolver — inicio" href="/">
-              <Image src="/assets/logo-white.png" alt="Discoolver" width={140} height={32} style={{ height: 32, width: "auto" }} />
+              <Image src="/assets/logo-white.png" alt="" width={1280} height={1024} className="foot__logo" />
             </Link>
             <p>{brandDesc}</p>
           </div>
@@ -35,20 +35,20 @@ export function Footer({
               </li>
             </ul>
           </nav>
-          <nav className="foot__col" aria-label="Empresa">
-            <h4>Empresa</h4>
+          <nav className="foot__col" aria-label="Descubrir">
+            <h4>Descubrir</h4>
             <ul>
               <li>
-                <Link href="/">Sobre nosotros</Link>
+                <Link href="/#guias">Las guías</Link>
               </li>
               <li>
-                <Link href="/">Manifiesto</Link>
+                <Link href="/#curacion">Cómo curamos</Link>
               </li>
               <li>
-                <Link href="/">Prensa</Link>
+                <Link href="/#ia">La IA de tu guía</Link>
               </li>
               <li>
-                <Link href="/">Trabaja con nosotros</Link>
+                <a href="mailto:hola@discoolver.com?subject=Prensa">Prensa</a>
               </li>
             </ul>
           </nav>
@@ -73,17 +73,13 @@ export function Footer({
         <div className="foot__bottom">
           <span>© {new Date().getFullYear()} {copyright}</span>
           <span>
-            <Link style={{ color: "var(--ink-2)" }} href="/">
+            <Link style={{ color: "var(--ink-2)" }} href="/privacidad">
               Privacidad
             </Link>{" "}
             ·{" "}
-            <Link style={{ color: "var(--ink-2)" }} href="/">
-              Términos
-            </Link>{" "}
-            ·{" "}
-            <Link style={{ color: "var(--ink-2)" }} href="/">
-              Cookies
-            </Link>
+            <a style={{ color: "var(--ink-2)" }} href="mailto:hola@discoolver.com">
+              Contacto
+            </a>
           </span>
         </div>
       </div>

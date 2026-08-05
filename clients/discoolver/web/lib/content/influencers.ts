@@ -41,8 +41,8 @@ export const defaultInfluencersContent = {
 
   // Track TOP — creators with audience
   top_eyebrow: "Track 1 · Creadores con audiencia",
-  top_title_1: "Tu guía, tu marca,",
-  top_title_em: "tus ingresos.",
+  top_title_1: "Nosotros la editamos.",
+  top_title_em: "Tú la firmas y cobras.",
   top_lead:
     "Llevas años contando tu ciudad en redes. Nosotros la editamos contigo y la convertimos en un objeto que se compra, se guarda y sigue vendiendo todo el año.",
   top_step_1_label: "Importamos tus spots",
@@ -51,7 +51,7 @@ export const defaultInfluencersContent = {
   top_step_2_text: "Nuestros editores montan la guía a tu lado: tu nombre, tu criterio, nuestro formato.",
   top_step_3_label: "La vendes y cobras",
   top_step_3_text:
-    "Digital y papel, a tu audiencia. Te llevas el 50% de cada venta desde tus canales, más comisión de afiliación por cada reserva que salga de tus páginas, mientras la guía viva.",
+    "Digital desde 14€ y papel desde 29€, a tu audiencia. Te llevas el 50% de cada venta desde tus canales y el 50% de lo que ingresamos por afiliación cada vez que alguien reserva desde tus páginas, mientras la guía viva.",
   top_quote: "Un reel vive 48 horas. Tu guía vive todo el año.",
   top_note: "No nos importan tus likes; nos importa que sepas dónde se come de verdad.",
   top_mock_city: "Tu ciudad",
@@ -91,7 +91,7 @@ export const defaultInfluencersContent = {
     "Tuyo, siempre. Nos autorizas a editarlo y publicarlo dentro de la guía; ni la propiedad ni lo que hagas con él en tus canales cambian. Si un día lo dejas, tu contenido se va contigo.",
   faq_q2: "¿Cuánto y cuándo cobro?",
   faq_a2:
-    "Con guía propia: el 50% de cada venta que salga de tus canales, más comisión de afiliación por las reservas que se generen desde tus páginas, mientras la guía siga a la venta. Si envías vídeos: comisión por las ventas y reservas que genere tu recomendación. Las condiciones y el calendario de pago van por escrito antes de que firmes nada.",
+    "Con guía propia: el 50% de cada venta que salga de tus canales y el 50% del ingreso neto de afiliación por las reservas que se generen desde tus páginas, mientras la guía siga a la venta. Si envías vídeos: comisión por las ventas y reservas que genere tu recomendación. Las condiciones y el calendario de pago van por escrito antes de que firmes nada.",
   faq_q3: "¿Hay exclusividad?",
   faq_a3:
     "No. Sigues publicando donde quieras y con quien quieras. Tu guía es una pieza más de tu marca, no un contrato que te ata.",

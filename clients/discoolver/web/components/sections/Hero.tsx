@@ -48,8 +48,10 @@ export function Hero({ content }: { content: HomeContent }) {
           <Reveal delay={200} className="hero-book-col">
             <TiltBook className="hero-book">
               <div className="hero-book__float book-scene book-scene--hero">
+                {/* Portada tipográfica: no se publica la cara de nadie
+                    asociada a un nombre real sin acuerdo y foto cedidos. */}
                 <Book3D
-                  cover={{ kind: "image", src: "/assets/guide-cover-madrid-pablo.jpg", alt: "Portada de la guía discoolver Madrid según Cenando con Pablo, edición 2026" }}
+                  cover={{ kind: "typo", city: content.guide_1_city, sub: content.guide_1_sub, bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" }}
                   spineText="discoolver · Madrid 2026"
                   spineColor="#22578a"
                   priority

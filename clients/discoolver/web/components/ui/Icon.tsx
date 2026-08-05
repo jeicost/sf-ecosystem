@@ -9,9 +9,13 @@ type IconName =
   | "heart"
   | "search"
   | "app-store"
-  | "google-play";
+  | "google-play"
+  | "menu"
+  | "x";
 
 const paths: Record<IconName, React.ReactNode> = {
+  menu: <path d="M4 7h16M4 12h16M4 17h16" />,
+  x: <path d="M6 6l12 12M18 6 6 18" />,
   "arrow-up-right": <path d="M7 17 17 7M9 7h8v8" />,
   "arrow-right": <path d="M5 12h14m-5-5 5 5-5 5" />,
   pin: (

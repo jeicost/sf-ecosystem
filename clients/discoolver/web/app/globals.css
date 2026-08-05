@@ -2579,3 +2579,61 @@ button {
     padding-left: 21px;
   }
 }
+
+/* ── Correcciones de auditoría 2026-08-05 ─────────────────────────────────
+   Todas ADITIVAS al final: no se toca ni un valor de los bloques recuperados
+   1:1 del CSS original (regla de oro del CLAUDE.md). */
+
+/* La nav perdía el padding horizontal de .container: `.nav__inner { padding:
+   18px 0 }` tiene la misma especificidad y gana por orden, así que a 768px la
+   barra sangraba de borde a borde y a ≤480px los botones tocaban el borde
+   superior. Se recupera el padding lateral sin tocar el bloque original. */
+.nav__inner {
+  padding-inline: 32px;
+}
+@media (max-width: 480px) {
+  .nav__inner { padding-block: 12px; padding-inline: 20px; }
+}
+
+/* El logo (PNG 1280×1024) se declaraba 140×28 → el navegador calculaba 35px
+   de ancho y salía ilegible. Ahora se declaran las proporciones reales y el
+   tamaño se fija aquí. */
+.nav__logo  { height: 30px; width: auto; display: block; }
+.foot__logo { height: 34px; width: auto; display: block; }
+
+/* Los anclas a formularios quedaban debajo de la nav sticky (el título del
+   formulario tapado justo en el momento de conversión). */
+:target { scroll-margin-top: 96px; }
+[id] { scroll-margin-top: 96px; }
+
+/* Menú móvil: por debajo de 880px los 5 enlaces de navegación (incluido
+   Creators) eran inalcanzables y no había hamburguesa. */
+.nav__toggle { display: none; }
+@media (max-width: 880px) {
+  .nav__toggle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; flex-shrink: 0;
+    background: transparent; border: 1px solid color-mix(in oklab, var(--line) 26%, transparent);
+    border-radius: 10px; color: var(--ink); cursor: pointer;
+  }
+  .nav__toggle:hover { border-color: var(--primary); }
+  .nav__inner { gap: 10px; }
+  .nav__cta .btn-ghost { display: none; }
+  .nav__links {
+    display: none;
+    position: absolute; inset-inline: 0; top: 100%;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 8px 20px 18px;
+    background: var(--paper);
+    border-bottom: 1px solid color-mix(in oklab, var(--line) 14%, transparent);
+    box-shadow: 0 18px 40px rgba(0,0,0,.35);
+  }
+  .nav__links.is-open { display: flex; }
+  .nav__links a {
+    padding: 14px 2px; font-size: 16px;
+    border-bottom: 1px solid color-mix(in oklab, var(--line) 10%, transparent);
+  }
+  .nav__links a:last-child { border-bottom: 0; }
+  .nav__links a::after { display: none; }
+  .nav { position: sticky; }
+}

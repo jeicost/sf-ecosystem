@@ -17,11 +17,10 @@ export function Guides({ content }: { content: HomeContent }) {
       meta: content.guide_1_meta,
       spineText: "discoolver · Madrid 2026",
       spineColor: "#22578a",
-      cover: {
-        kind: "image",
-        src: "/assets/guide-cover-madrid-pablo.jpg",
-        alt: "Portada de la guía discoolver Madrid según Cenando con Pablo, edición 2026",
-      },
+      // Portada tipográfica a propósito: la portada de creator lleva su foto
+      // y su firma, y hasta que haya acuerdo firmado y foto cedida no se
+      // publica ninguna imagen de persona asociada a su nombre.
+      cover: { kind: "typo", city: content.guide_1_city, sub: content.guide_1_sub, bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" },
     },
     {
       city: content.guide_2_city,
