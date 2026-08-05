@@ -3,11 +3,11 @@ import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 
 const LINKS = [
-  { href: "/#descubre", label: "Descubre" },
-  { href: "/#planes", label: "Planes" },
-  { href: "/#categorias", label: "Categorías" },
-  { href: "/#mapa", label: "Mapa" },
-  { href: "/influencers", label: "Para empresas" },
+  { href: "/#guias", label: "Guías" },
+  { href: "/#curacion", label: "Cómo curamos" },
+  { href: "/#ia", label: "IA" },
+  { href: "/#faq", label: "FAQ" },
+  { href: "/influencers", label: "Creators" },
 ];
 
 export function Nav() {
@@ -25,11 +25,11 @@ export function Nav() {
           ))}
         </div>
         <div className="nav__cta">
-          <button className="btn btn-ghost" style={{ padding: "10px 18px" }}>
-            Tengo código
-          </button>
-          <Link href="/#hero-email" className="btn btn-primary" style={{ padding: "10px 18px" }}>
-            Pedir invitación <Icon name="arrow-up-right" size={14} />
+          <Link href="/#waitlist" className="btn btn-ghost" style={{ padding: "10px 18px" }}>
+            Avísame
+          </Link>
+          <Link href="/#guias" className="btn btn-primary" style={{ padding: "10px 18px" }}>
+            Ver las guías <Icon name="arrow-up-right" size={14} />
           </Link>
         </div>
       </div>

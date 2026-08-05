@@ -1672,3 +1672,634 @@ button {
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* ==========================================================================
+   Guide shop 2026 — additive layer (home rebuild, approved repositioning).
+   Everything below is NEW classes only; the recovered blocks above stay 1:1
+   (see CLAUDE.md golden rule). Brand print magenta #C8006B appears in cover
+   art via --brand-magenta; site UI keeps the recovered --primary (it must
+   match the magenta baked into public/assets/logo-white.png).
+   ========================================================================== */
+:root {
+  --brand-magenta: #c8006b;
+  --cover-blue: #306ea6;
+  --cover-peach: #f4b47a;
+}
+
+/* Hero (guide shop) --------------------------------------------------- */
+.hero .container {
+  position: relative;
+  z-index: 1;
+}
+.hero-wordmark {
+  position: absolute;
+  left: 50%;
+  bottom: -0.16em;
+  transform: translateX(-50%);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(140px, 24vw, 400px);
+  letter-spacing: -0.05em;
+  line-height: 1;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px color-mix(in oklab, var(--ink) 13%, transparent);
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+.hero__grid--shop {
+  align-items: center;
+}
+.hero-title {
+  font-family: var(--font-display);
+  letter-spacing: -0.045em;
+  font-size: clamp(42px, 5.6vw, 96px);
+  font-weight: 600;
+  line-height: 0.95;
+}
+.hero-title__em {
+  font-style: normal;
+  color: var(--primary);
+}
+.hero-title__underline {
+  font-style: normal;
+  position: relative;
+  display: inline-block;
+}
+.hero-title__underline::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.04em;
+  height: 0.1em;
+  background: var(--accent);
+  z-index: -1;
+}
+.hero-sub {
+  margin-top: 28px;
+  max-width: 560px;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.hero-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 36px;
+}
+.hero-notes {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid color-mix(in oklab, var(--line) 16%, transparent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.hero-notes li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.hero-notes li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+.hero-book {
+  position: relative;
+}
+.hero-book__float {
+  animation: 9s ease-in-out infinite float;
+}
+.hero-book .book3d {
+  transform: rotateY(calc(24deg + var(--tilt-y, 0deg))) rotateX(var(--tilt-x, 0deg));
+  transition: transform 0.18s ease-out;
+}
+.book-scene--hero {
+  width: min(400px, 84%);
+  margin: 0 auto;
+}
+.hero-book__caption {
+  text-align: center;
+  margin-top: 40px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.hero-book__sticker {
+  position: absolute;
+  top: -14px;
+  right: 2%;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 17px;
+  padding: 9px 16px;
+  border-radius: var(--radius-sm);
+  transform: rotate(7deg);
+  box-shadow: 0 8px 24px -8px rgba(0, 0, 0, 0.5);
+  z-index: 5;
+}
+@media (max-width: 980px) {
+  .hero-book {
+    margin-top: 32px;
+  }
+  .book-scene--hero {
+    width: min(300px, 74%);
+  }
+}
+
+/* 3D book ------------------------------------------------------------- */
+.book-scene {
+  position: relative;
+  perspective: 1600px;
+  isolation: isolate;
+}
+.book-scene::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 12%;
+  bottom: -28px;
+  height: 34px;
+  background: radial-gradient(50% 50% at 50% 50%, rgba(0, 0, 0, 0.55), transparent 72%);
+  filter: blur(12px);
+  z-index: -1;
+}
+.book3d {
+  --bt: 26px;
+  position: relative;
+  width: 100%;
+  aspect-ratio: 707 / 1000;
+  transform-style: preserve-3d;
+  transform: rotateY(24deg);
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.book3d__front {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(calc(var(--bt) / 2));
+  border-radius: 2px 10px 10px 2px;
+  overflow: hidden;
+  background: var(--bg-soft);
+  container-type: inline-size;
+}
+.book3d__gloss {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(105deg, rgba(255, 255, 255, 0.13) 0%, transparent 26%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.24), transparent 10%);
+}
+.book3d__spine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--bt) / -2);
+  width: var(--bt);
+  transform: rotateY(-90deg);
+  background: var(--book-color, var(--bg-soft));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.book3d__spine span {
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.85);
+}
+.book3d__back {
+  position: absolute;
+  inset: 0;
+  transform: translateZ(calc(var(--bt) / -2));
+  background: color-mix(in srgb, var(--book-color, #222) 75%, #000);
+  border-radius: 2px 10px 10px 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .book3d,
+  .hero-book .book3d {
+    transition: none;
+  }
+}
+
+/* Typographic covers (no invented photos) ----------------------------- */
+.cover-typo {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 8% 9%;
+  background: var(--cover-bg, var(--brand-magenta));
+  color: var(--cover-ink, var(--ink));
+}
+.cover-typo__brand {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  font-size: clamp(20px, 12.5cqi, 52px);
+}
+.cover-typo__brand em {
+  font-style: normal;
+  color: var(--cover-accent, var(--accent));
+}
+.cover-typo__chip {
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 10%;
+  background: var(--cover-accent, var(--accent));
+  color: var(--cover-bg, var(--brand-magenta));
+  font-family: var(--font-mono);
+  font-size: clamp(8px, 3.2cqi, 12px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.5em 0.9em;
+}
+.cover-typo__city {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  line-height: 0.84;
+  font-size: clamp(40px, 26cqi, 120px);
+  display: flex;
+  flex-direction: column;
+}
+.cover-typo__foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 8px;
+}
+.cover-typo__sub {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: clamp(10px, 4.6cqi, 16px);
+  max-width: 72%;
+}
+.cover-typo__mark {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(14px, 7cqi, 26px);
+}
+
+/* Guides grid (the star section) -------------------------------------- */
+.guides {
+  overflow-x: clip;
+}
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 48px 28px;
+}
+.bookcard {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100%;
+  color: inherit;
+}
+.bookcard__stage {
+  position: relative;
+  padding: 6% 10% 14%;
+}
+.bookcard:hover .book3d {
+  transform: rotateY(7deg) translateY(-10px);
+}
+.bookcard__meta {
+  border-top: 1px solid color-mix(in oklab, var(--line) 14%, transparent);
+  padding-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
+}
+.bookcard__title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.bookcard__sub {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+.bookcard__price {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--primary);
+  transition: color 0.25s;
+}
+.bookcard:hover .bookcard__price {
+  color: var(--accent);
+}
+.ghostcover {
+  aspect-ratio: 707 / 1000;
+  border: 1.5px dashed color-mix(in oklab, var(--line) 45%, transparent);
+  border-radius: 2px 10px 10px 2px;
+  background: color-mix(in oklab, var(--bg-card) 60%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--ink-2);
+  transition:
+    border-color 0.25s,
+    color 0.25s,
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.bookcard--ghost:hover .ghostcover {
+  border-color: var(--primary);
+  color: var(--ink);
+  transform: translateY(-10px);
+}
+.ghostcover__plus {
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 1;
+}
+.ghostcover__city {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+@media (max-width: 1100px) {
+  .guides-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 56px 32px;
+  }
+}
+@media (max-width: 620px) {
+  .guides-grid {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
+  .bookcard__stage {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+  .bookcard__meta {
+    text-align: center;
+  }
+}
+
+/* Curation flow -------------------------------------------------------- */
+.flow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+}
+.flow__step {
+  position: relative;
+  height: 100%;
+  padding: 44px 32px;
+  transition: background 0.25s;
+}
+.flow__cell:not(:first-child) .flow__step {
+  border-left: 1.5px solid var(--line);
+}
+.flow__step:hover {
+  background: var(--bg-soft);
+}
+.flow__num {
+  display: block;
+  font-family: var(--font-display);
+  color: var(--primary);
+  font-size: 64px;
+  font-weight: 700;
+  line-height: 0.9;
+}
+.flow__label {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 16px;
+}
+.flow__text {
+  color: var(--ink-2);
+  font-size: 15px;
+  margin-top: 10px;
+  max-width: 300px;
+}
+.flow__arrow {
+  position: absolute;
+  top: 44px;
+  right: 24px;
+  font-size: 22px;
+  color: var(--ink-2);
+}
+@media (max-width: 880px) {
+  .flow {
+    grid-template-columns: 1fr;
+  }
+  .flow__cell:not(:first-child) .flow__step {
+    border-left: none;
+    border-top: 1.5px solid var(--line);
+  }
+  .flow__arrow {
+    display: none;
+  }
+}
+
+/* The object: formats -------------------------------------------------- */
+.object-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.formats {
+  display: grid;
+  gap: 20px;
+}
+.format-card {
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  padding: 32px;
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.35s;
+}
+.format-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 60px -20px color-mix(in oklab, var(--ink) 30%, transparent);
+}
+.format-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.format-card__name {
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+}
+.format-card__chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--accent);
+  color: var(--paper);
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  white-space: nowrap;
+}
+.format-card__price {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-top: 18px;
+}
+.format-card__desc {
+  color: var(--ink-2);
+  font-size: 15px;
+  margin-top: 12px;
+  max-width: 380px;
+}
+.format-card--paper {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+.format-card--paper .format-card__desc {
+  color: color-mix(in oklab, var(--paper) 65%, transparent);
+}
+@media (max-width: 980px) {
+  .object-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+/* AI band -------------------------------------------------------------- */
+.band-card {
+  background: var(--bg-card);
+  border-top: 1.5px solid var(--line);
+  border-bottom: 1.5px solid var(--line);
+}
+.ai-grid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.ai-feats {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.ai-feat {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  padding: 22px 24px;
+  transition:
+    transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.3s;
+}
+.ai-feat:hover {
+  transform: translateX(6px);
+  background: var(--bg-soft);
+}
+.ai-feat__icon {
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid var(--line);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--primary);
+}
+.ai-feat__title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+.ai-feat__desc {
+  color: var(--ink-2);
+  font-size: 14px;
+  margin-top: 4px;
+}
+@media (max-width: 980px) {
+  .ai-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+}
+
+/* Creators band -------------------------------------------------------- */
+.creators-band {
+  background: var(--accent);
+  color: var(--paper);
+  padding: 96px 0;
+}
+.creators-band__inner {
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+.creators-band__eyebrow {
+  color: color-mix(in oklab, var(--paper) 65%, transparent);
+}
+.creators-band__text {
+  font-size: 19px;
+  max-width: 560px;
+  color: color-mix(in oklab, var(--paper) 80%, transparent);
+}
+.creators-band .btn-ink {
+  background: var(--paper);
+  color: var(--ink);
+  border-color: var(--paper);
+}
+
+/* Waitlist ------------------------------------------------------------- */
+.waitlist .hero__searchbar {
+  margin: 48px auto 0;
+  text-align: left;
+}

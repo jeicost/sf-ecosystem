@@ -9,22 +9,20 @@ import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { Ticker } from "@/components/sections/Ticker";
-import { Categories } from "@/components/sections/Categories";
-import { TravelBrain } from "@/components/sections/TravelBrain";
-import { HowItWorks } from "@/components/sections/HowItWorks";
-import { Experiences } from "@/components/sections/Experiences";
-import { MapSection } from "@/components/sections/MapSection";
-import { ForCreators } from "@/components/sections/ForCreators";
-import { AppComingSoon } from "@/components/sections/AppComingSoon";
-import { Testimonials } from "@/components/sections/Testimonials";
+import { Guides } from "@/components/sections/Guides";
+import { Curation } from "@/components/sections/Curation";
+import { GuideObject } from "@/components/sections/GuideObject";
+import { CityAI } from "@/components/sections/CityAI";
+import { CreatorsBridge } from "@/components/sections/CreatorsBridge";
+import { Waitlist } from "@/components/sections/Waitlist";
 import { FAQ } from "@/components/sections/FAQ";
 import { Wordmark } from "@/components/sections/Wordmark";
 import { CTA } from "@/components/sections/CTA";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Descubre tu ciudad antes que el resto",
+  title: "Discoolver — Guías de viaje curadas de creadores",
   description:
-    "Plataforma de acceso por invitación: planes curados por creadores locales reales y potenciados por IA. 500 plazas por ciudad. Entra hoy por la web.",
+    "Lo mejor del año en cada ciudad, editado en una guía que querrás guardar: curación humana de creadores, digital y papel, con IA para recorrer la ciudad.",
   path: "/",
 });
 
@@ -47,14 +45,12 @@ export default async function HomePage() {
       <main>
         <Hero content={content} />
         <Ticker content={content} />
-        <Categories content={content} />
-        <TravelBrain content={content} />
-        <HowItWorks content={content} />
-        <Experiences content={content} />
-        <MapSection content={content} />
-        <ForCreators content={content} />
-        <AppComingSoon content={content} />
-        <Testimonials content={content} />
+        <Guides content={content} />
+        <Curation content={content} />
+        <GuideObject content={content} />
+        <CityAI content={content} />
+        <CreatorsBridge content={content} />
+        <Waitlist content={content} />
         <FAQ content={content} />
         <Wordmark />
         <CTA content={content} />

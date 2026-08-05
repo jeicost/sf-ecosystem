@@ -1,110 +1,65 @@
-import Image from "next/image";
+import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
-import { HeroForm } from "@/components/ui/HeroForm";
+import { Icon } from "@/components/ui/Icon";
+import { TiltBook } from "@/components/ui/TiltBook";
+import { Book3D } from "@/components/ui/Book3D";
 import type { HomeContent } from "@/lib/content/home";
-
-const AVATAR_COLORS = ["#C9FF3F", "#C426C4", "#00D4D4", "#F2F0EA"];
 
 export function Hero({ content }: { content: HomeContent }) {
   return (
     <header className="hero" id="main-content">
+      <span className="hero-wordmark" aria-hidden="true">
+        discoolver.
+      </span>
       <div className="container">
-        <div className="hero__grid">
-          <div>
+        <div className="hero__grid hero__grid--shop">
+          <div className="hero-copy">
             <Reveal delay={0}>
               <span className="eyebrow">{content.hero_eyebrow}</span>
             </Reveal>
             <Reveal delay={80}>
-              <h1 className="display-xl" style={{ marginTop: 24 }}>
-                {content.hero_title_line1}{" "}
-                <span className="hero__city" style={{ color: "var(--primary)", position: "relative", display: "inline-block" }}>
-                  {content.hero_title_highlight1}
-                  <span
-                    aria-hidden="true"
-                    style={{ position: "absolute", left: 0, right: 0, bottom: "0.08em", height: "0.1em", background: "var(--accent)", zIndex: -1 }}
-                  />
-                </span>
+              <h1 className="hero-title" style={{ marginTop: 24 }}>
+                {content.hero_title_a} <em className="hero-title__em">{content.hero_title_a_em}</em>
                 <br />
-                {content.hero_title_line2}
-                <br />
-                {content.hero_title_line3} <span style={{ color: "var(--primary)" }}>{content.hero_title_highlight2}</span>
+                {content.hero_title_b} <em className="hero-title__underline">{content.hero_title_b_em}</em>
               </h1>
             </Reveal>
             <Reveal delay={160}>
-              <p className="hero__sub" style={{ marginTop: 32, maxWidth: 560, fontSize: 19, lineHeight: 1.5, color: "var(--ink-2)" }}>
-                {content.hero_sub} <strong style={{ color: "var(--ink)" }}>{content.hero_sub_strong}</strong>
-              </p>
+              <p className="hero-sub">{content.hero_sub}</p>
             </Reveal>
-            <Reveal delay={220}>
-              <HeroForm />
-              <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18, fontSize: 13, color: "var(--ink-2)", flexWrap: "wrap" }}>
-                <div style={{ display: "flex", marginRight: 4 }} aria-hidden="true">
-                  {AVATAR_COLORS.map((color, i) => (
-                    <span
-                      key={color}
-                      style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: "50%",
-                        background: color,
-                        border: "2px solid var(--paper)",
-                        marginLeft: i === 0 ? 0 : -8,
-                        display: "inline-block",
-                      }}
-                    />
-                  ))}
-                </div>
-                <span>
-                  <strong style={{ color: "var(--ink)", fontVariantNumeric: "tabular-nums" }}>{content.hero_social_count}</strong>{" "}
-                  {content.hero_social_label}
-                </span>
-                <span aria-hidden="true" style={{ width: 4, height: 4, background: "var(--ink-2)", borderRadius: "50%", display: "inline-block" }} />
-                <span style={{ color: "var(--primary)", fontWeight: 500 }}>{content.hero_social_live}</span>
+            <Reveal delay={240}>
+              <div className="hero-ctas">
+                <Link href="/#guias" className="btn btn-primary">
+                  {content.hero_cta_primary} <Icon name="arrow-right" size={14} />
+                </Link>
+                <Link href="/#waitlist" className="btn btn-ghost">
+                  {content.hero_cta_secondary}
+                </Link>
               </div>
             </Reveal>
             <Reveal delay={320}>
-              <div className="hero__stats">
-                <div>
-                  <div className="stat__num">{content.hero_stat1_num}</div>
-                  <div className="stat__label">{content.hero_stat1_label}</div>
-                </div>
-                <div>
-                  <div className="stat__num">{content.hero_stat2_num}</div>
-                  <div className="stat__label">{content.hero_stat2_label}</div>
-                </div>
-                <div>
-                  <div className="stat__num">{content.hero_stat3_num}</div>
-                  <div className="stat__label">{content.hero_stat3_label}</div>
-                </div>
-                <div>
-                  <div className="stat__num">{content.hero_stat4_num}</div>
-                  <div className="stat__label">{content.hero_stat4_label}</div>
-                </div>
-              </div>
+              <ul className="hero-notes" aria-label="Cómo se hacen las guías">
+                <li>{content.hero_note_1}</li>
+                <li>{content.hero_note_2}</li>
+                <li>{content.hero_note_3}</li>
+              </ul>
             </Reveal>
           </div>
-          <Reveal delay={200}>
-            <div className="hero__visual">
-              <video
-                src="/assets/v-hero-owl.mp4"
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-label="Demo de Discoolver mostrando planes en la ciudad"
-              />
-              <div className="hero__visual-meta">
-                <span className="hero__visual-pill">{content.hero_visual_pill}</span>
-                <span className="hero__visual-title">{content.hero_visual_title}</span>
+          <Reveal delay={200} className="hero-book-col">
+            <TiltBook className="hero-book">
+              <div className="hero-book__float book-scene book-scene--hero">
+                <Book3D
+                  cover={{ kind: "image", src: "/assets/guide-cover-madrid-pablo.jpg", alt: "Portada de la guía discoolver Madrid según Cenando con Pablo, edición 2026" }}
+                  spineText="discoolver · Madrid 2026"
+                  spineColor="#22578a"
+                  priority
+                />
+                <span className="hero-book__sticker" aria-hidden="true">
+                  {content.hero_book_sticker}
+                </span>
               </div>
-              <div className="hero__mini hero__mini--bunny" aria-hidden="true">
-                <Image src="/assets/img-bunny.jpg" alt="" width={140} height={180} style={{ objectFit: "cover", objectPosition: "center 20%" }} />
-              </div>
-              <div className="hero__mini hero__mini--fox" aria-hidden="true">
-                <Image src="/assets/img-fox.jpg" alt="" width={120} height={120} style={{ objectFit: "cover", objectPosition: "center 30%" }} />
-              </div>
-            </div>
+              <p className="hero-book__caption">{content.hero_book_caption}</p>
+            </TiltBook>
           </Reveal>
         </div>
       </div>

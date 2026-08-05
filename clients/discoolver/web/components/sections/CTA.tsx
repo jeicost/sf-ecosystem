@@ -5,7 +5,7 @@ import type { HomeContent } from "@/lib/content/home";
 
 export function CTA({ content }: { content: HomeContent }) {
   return (
-    <section className="cta" id="empresas" aria-labelledby="cta-title">
+    <section className="cta" id="cta" aria-labelledby="cta-title">
       <div className="cta__bg" aria-hidden="true" />
       <div className="container cta__inner">
         <Reveal delay={0}>
@@ -15,16 +15,16 @@ export function CTA({ content }: { content: HomeContent }) {
           <h2 className="cta__title" id="cta-title" style={{ marginTop: 24 }}>
             {content.cta_title_1} <em>{content.cta_title_1_em}</em>
             <br />
-            {content.cta_title_2} <em>{content.cta_title_2_em}</em> {content.cta_title_3}
+            {content.cta_title_2} <em>{content.cta_title_2_em}</em>
           </h2>
           <p className="cta__sub">{content.cta_sub}</p>
           <div className="cta__buttons">
-            <Link href="/#hero-email" className="btn btn-primary">
+            <Link href="/#guias" className="btn btn-primary">
               {content.cta_primary} <Icon name="arrow-right" size={14} />
             </Link>
-            <a href="mailto:empresas@discoolver.com" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
-              {content.cta_secondary} <Icon name="arrow-right" size={14} />
-            </a>
+            <Link href="/#waitlist" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
+              {content.cta_secondary}
+            </Link>
           </div>
         </Reveal>
         <div
@@ -38,9 +38,8 @@ export function CTA({ content }: { content: HomeContent }) {
             textTransform: "uppercase",
             color: "color-mix(in oklab, var(--paper) 50%, transparent)",
           }}
-          aria-label="Ciudades disponibles"
         >
-          <span>{content.cta_cities}</span>
+          <span>{content.cta_footline}</span>
         </div>
       </div>
     </section>

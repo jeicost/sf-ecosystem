@@ -26,7 +26,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   ...buildMetadata({
-    title: "Discoolver — Descubre tu ciudad antes que el resto",
+    title: "Discoolver — Guías de viaje curadas de creadores",
     description: site.description,
     path: "/",
   }),

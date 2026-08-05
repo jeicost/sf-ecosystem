@@ -11,7 +11,7 @@ export default function NotFound() {
           <div className="container">
             <span className="eyebrow">Error 404</span>
             <h1 className="display-lg section__title">
-              Este plan <span style={{ color: "var(--primary)" }}>no existe.</span>
+              Esta guía <span style={{ color: "var(--primary)" }}>no existe.</span>
             </h1>
             <p className="section__lead" style={{ margin: "16px auto 0" }}>
               Puede que el enlace esté roto o la página se haya movido. Vuelve al inicio y sigue explorando.

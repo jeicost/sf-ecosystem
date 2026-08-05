@@ -17,8 +17,8 @@ import { NextRequest, NextResponse } from "next/server";
  * prueba real tras cambiarlo.
  *
  * Este endpoint NUNCA finge éxito: si formsubmit no confirma la entrega,
- * responde 502 y los tres formularios (HeroForm, AppComingSoon,
- * InfluencerForm) muestran el error al usuario.
+ * responde 502 y los formularios (HeroForm en la home, InfluencerForm en
+ * /influencers) muestran el error al usuario.
  */
 
 const FORWARD_EMAIL = (process.env.WAITLIST_FORWARD_EMAIL || "carlos@discoolver.com").trim();

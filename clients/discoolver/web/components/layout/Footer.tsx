@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 
 export function Footer({
-  brandDesc = "La plataforma para descubrir tu ciudad como nunca antes lo habías hecho.",
+  brandDesc = "Lo mejor que los creadores cuentan de cada ciudad, editado en guías que se guardan. Digital y papel, con IA para recorrer la ciudad.",
   copyright = "Discoolver · Hecho con ♥ desde España",
 }: {
   brandDesc?: string;
@@ -18,20 +18,20 @@ export function Footer({
             </Link>
             <p>{brandDesc}</p>
           </div>
-          <nav className="foot__col" aria-label="Producto">
-            <h4>Producto</h4>
+          <nav className="foot__col" aria-label="Las guías">
+            <h4>Las guías</h4>
             <ul>
               <li>
-                <Link href="/#categorias">Categorías</Link>
+                <Link href="/#guias">La colección</Link>
               </li>
               <li>
-                <Link href="/#mapa">Mapa</Link>
+                <Link href="/#curacion">Cómo curamos</Link>
               </li>
               <li>
-                <Link href="/influencers">Para empresas</Link>
+                <Link href="/#objeto">Digital y papel</Link>
               </li>
               <li>
-                <Link href="/#creators">Curators</Link>
+                <Link href="/#ia">IA para callejear</Link>
               </li>
             </ul>
           </nav>
@@ -56,13 +56,13 @@ export function Footer({
             <h4>Recursos</h4>
             <ul>
               <li>
-                <Link href="/">Blog</Link>
+                <Link href="/#faq">FAQ</Link>
               </li>
               <li>
-                <Link href="/">Guías</Link>
+                <Link href="/#waitlist">Pide tu ciudad</Link>
               </li>
               <li>
-                <Link href="/">Soporte</Link>
+                <Link href="/influencers">Publica tu guía</Link>
               </li>
               <li>
                 <a href="mailto:hola@discoolver.com">Contacto</a>
