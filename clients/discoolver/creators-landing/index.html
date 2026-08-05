@@ -551,6 +551,12 @@ nav {
 .sticky .btn { font-size: 13px; padding: 14px 10px; }
 .sticky.off { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
+/* FOCO VISIBLE (teclado) */
+a:focus-visible, button:focus-visible, summary:focus-visible, input:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
 /* SPINNER */
 .spin-ring {
   display: inline-block; width: 16px; height: 16px;

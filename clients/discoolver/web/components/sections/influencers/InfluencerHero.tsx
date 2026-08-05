@@ -36,17 +36,17 @@ export function InfluencerHero({ content }: { content: InfluencersContent }) {
       <div className="container">
         <div className="hero-creators__copy">
           <Reveal delay={0}>
-            <span className="eyebrow">{content.hero_eyebrow}</span>
+            <span className="eyebrow">{content.hero_kicker}</span>
           </Reveal>
           <Reveal delay={80}>
             <h1 className="hero-title" style={{ marginTop: 24 }}>
-              {content.hero_title_1} {content.hero_title_2}{" "}
-              <em className="hero-title__underline">{content.hero_title_3}</em>
+              {content.hero_line_1} {content.hero_line_2}{" "}
+              <em className="hero-title__underline">{content.hero_line_3}</em>
             </h1>
           </Reveal>
           <Reveal delay={160}>
             <p className="hero-sub hero-sub--wide">
-              {content.hero_sub_1} {content.hero_sub_2}
+              {content.hero_sub_a} {content.hero_sub_b}
             </p>
           </Reveal>
         </div>

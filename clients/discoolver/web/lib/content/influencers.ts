@@ -20,13 +20,13 @@
  */
 export const defaultInfluencersContent = {
   // Hero
-  hero_eyebrow: "Programa de creators · Candidaturas abiertas",
-  hero_title_1: "Tu guía.",
-  hero_title_2: "Tu marca.",
-  hero_title_3: "Tus ingresos.",
-  hero_sub_1:
+  hero_kicker: "Programa de creators · Candidaturas abiertas",
+  hero_line_1: "Tu guía.",
+  hero_line_2: "Tu marca.",
+  hero_line_3: "Tus ingresos.",
+  hero_sub_a:
     "Si mueves audiencia, editamos contigo tu propia guía de ciudad y la vendes con tu nombre: te llevas parte de cada venta y comisión por cada reserva.",
-  hero_sub_2:
+  hero_sub_b:
     "Si estás empezando, envíanos tu mejor recomendación en vídeo — las mejores entran en la guía del año. Y cobran.",
 
   // Track picker (two cards, right under the hero)
