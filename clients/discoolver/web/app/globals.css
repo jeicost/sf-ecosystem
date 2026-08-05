@@ -2598,8 +2598,8 @@ button {
 /* El logo (PNG 1280×1024) se declaraba 140×28 → el navegador calculaba 35px
    de ancho y salía ilegible. Ahora se declaran las proporciones reales y el
    tamaño se fija aquí. */
-.nav__logo  { height: 30px; width: auto; display: block; }
-.foot__logo { height: 34px; width: auto; display: block; }
+.nav__logo  { height: 22px; width: auto; display: block; }
+.foot__logo { height: 26px; width: auto; display: block; }
 
 /* Los anclas a formularios quedaban debajo de la nav sticky (el título del
    formulario tapado justo en el momento de conversión). */

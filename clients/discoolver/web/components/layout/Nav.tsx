@@ -32,7 +32,7 @@ export function Nav() {
     <nav className="nav" role="navigation" aria-label="Navegación principal">
       <div className="container nav__inner">
         <Link aria-label="Discoolver — inicio" href="/">
-          <Image src="/assets/logo-white.png" alt="" width={1280} height={1024} priority className="nav__logo" />
+          <Image src="/assets/logo-white.png" alt="" width={968} height={174} priority className="nav__logo" />
         </Link>
 
         <div className={`nav__links${open ? " is-open" : ""}`} id="nav-links">
