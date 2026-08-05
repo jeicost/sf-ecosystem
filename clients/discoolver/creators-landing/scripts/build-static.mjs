@@ -22,12 +22,28 @@ const PAGE_SLUG = process.env.CMS_PAGE_SLUG || 'creators-landing'
 
 function render(fields) {
   const templatePath = path.join(ROOT, 'index.template.html')
-  let html = fs.readFileSync(templatePath, 'utf8')
+  const template = fs.readFileSync(templatePath, 'utf8')
+
+  // All-or-nothing: if the CMS page does not carry EVERY token the template
+  // needs, we keep the committed index.html untouched. Rendering a partial
+  // field set would either ship literal `{{token}}` text to production or,
+  // worse, resurrect a stale copy set (2026-08 repositioning renamed every
+  // field — an old CMS page must not overwrite the new landing).
+  const required = [...new Set([...template.matchAll(/\{\{([a-z0-9_]+)\}\}/g)].map((m) => m[1]))]
+  const missing = required.filter((key) => !(key in fields) || fields[key] == null || fields[key] === '')
+  if (missing.length) {
+    console.warn(
+      `⚠️  CMS page is missing ${missing.length}/${required.length} fields (${missing.slice(0, 6).join(', ')}${missing.length > 6 ? '…' : ''}) — keeping existing index.html`
+    )
+    return
+  }
+
+  let html = template
   for (const [key, value] of Object.entries(fields)) {
     html = html.split(`{{${key}}}`).join(value ?? '')
   }
   fs.writeFileSync(path.join(ROOT, 'index.html'), html)
-  console.log(`💾  index.html rendered from CMS (${Object.keys(fields).length} fields)`)
+  console.log(`💾  index.html rendered from CMS (${required.length} tokens)`)
 }
 
 async function main() {

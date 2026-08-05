@@ -2,132 +2,132 @@
  * Hardcoded fallback copy for /influencers — mirrors the SF-CMS flat-fields
  * shape (project: discoolver, page slug: influencers, section id: "content").
  * See lib/content/home.ts for the full pattern explanation.
+ *
+ * 2026-08 repositioning: this page is the CREATOR ACQUISITION landing (ads +
+ * direct pitch destination), not a product tour. One single message —
+ * "Tu guía. Tu marca. Tus ingresos." — and two tracks:
+ *   TOP   (creators with audience) -> we edit their own city guide, rev-share
+ *   MICRO (starting out)           -> they send one video recommendation
+ *
+ * Removed on purpose, do not reintroduce:
+ *   - the old "paid brand collabs, 500-1.500 EUR" model (dead business model)
+ *   - every fabricated proof point (fake handles, follower counts, "7 of 10
+ *     seats taken in Madrid", invented testimonials)
+ *   - the password field in the application form (the account is created when
+ *     an editor approves the application, not when someone applies)
+ * The only numbers allowed here are the ones we can honour: 50% rev-share on
+ * sales from the creator's own channels + affiliate commission on bookings.
  */
 export const defaultInfluencersContent = {
   // Hero
-  hero_eyebrow: "Welcome to the Cool Club",
-  hero_title_1: "Not a Tourist.",
-  hero_title_2: "Not a",
-  hero_title_2_highlight: "Follower.",
-  hero_title_3: "An",
-  hero_title_3_highlight: "Explorer.",
-  hero_sub_1: "Where creators don't just post content —",
-  hero_sub_2: "they shape how the world travels.",
-  hero_cta_primary: "Apply as Creator",
-  hero_cta_secondary: "See the tools",
-  hero_stat_1_label: "Monetizable",
-  hero_stat_2_label: "Geolocated",
-  hero_stat_3_label: "Customized",
+  hero_eyebrow: "Programa de creators · Candidaturas abiertas",
+  hero_title_1: "Tu guía.",
+  hero_title_2: "Tu marca.",
+  hero_title_3: "Tus ingresos.",
+  hero_sub_1:
+    "Si mueves audiencia, editamos contigo tu propia guía de ciudad y la vendes con tu nombre: te llevas parte de cada venta y comisión por cada reserva.",
+  hero_sub_2:
+    "Si estás empezando, envíanos tu mejor recomendación en vídeo — las mejores entran en la guía del año. Y cobran.",
 
-  // Value props
-  value_props_badge: "● Creator · invite-only",
-  value_props_badge_line: "Show the world in a different way.",
-  value_props_eyebrow: "Start creating with Discoolver",
-  value_props_title: "Transform your travels into",
-  value_props_title_highlight: "inspiring stories.",
-  value_props_lead: "Discoolver turns your content into personalized recommendations for travelers around the world.",
-  value_prop_1_title: "Earn from every sale",
-  value_prop_1_desc: "Scale your business and start generating sustainable long-term income with tracked links to your content.",
-  value_prop_2_title: "Offer new tools to your users",
-  value_prop_2_desc: "Maps, calendars and interactive guides with your content. Your followers don't just see you — they literally follow you.",
-  value_prop_3_title: "Expand your community",
-  value_prop_3_desc: "Connect with new audiences, grow your base and access travelers in different markets around the world. Get discovered for what you share, not just how you look.",
-  value_props_cta: "Start monetizing",
+  // Track picker (two cards, right under the hero)
+  picker_a_kicker: "Tengo audiencia",
+  picker_a_title: "Quiero mi guía",
+  picker_a_text: "Editamos contigo tu guía de ciudad. Sale con tu nombre y te llevas parte de cada venta.",
+  picker_a_cta: "Ver cómo funciona",
+  picker_b_kicker: "Tengo recomendaciones",
+  picker_b_title: "Envío mi vídeo",
+  picker_b_text: "Mándanos tu mejor sitio en vídeo. Si entra en la guía del año, firmas dentro y cobras.",
+  picker_b_cta: "Ver cómo funciona",
 
-  // Tools
-  tools_eyebrow: "Feed your community with gold",
-  tools_title: "Discoolver is not another promo tool.",
-  tools_title_2: "It's an",
-  tools_title_highlight: "ecosystem for creators.",
-  tools_lead: "Designed for quality content and real impact on travel.",
-  tools_cta: "Create your travel guides",
-  tool_1_title: "Trip Guides",
-  tool_1_desc: "Create your own trip guides to offer your followers.",
-  tool_2_title: "Smart Calendar",
-  tool_2_desc: "Make sure your audience know the events you are attending and help promote them.",
-  tool_3_title: "Cool Map",
-  tool_3_desc: "We design a view with all your recommendations to share with your community.",
+  // Track TOP — creators with audience
+  top_eyebrow: "Track 1 · Creadores con audiencia",
+  top_title_1: "Tu guía, tu marca,",
+  top_title_em: "tus ingresos.",
+  top_lead:
+    "Llevas años contando tu ciudad en redes. Nosotros la editamos contigo y la convertimos en un objeto que se compra, se guarda y sigue vendiendo todo el año.",
+  top_step_1_label: "Importamos tus spots",
+  top_step_1_text: "De tus propios posts. La IA hace el trabajo sucio: los saca, los ordena y los sitúa en el mapa.",
+  top_step_2_label: "La editamos contigo",
+  top_step_2_text: "Nuestros editores montan la guía a tu lado: tu nombre, tu criterio, nuestro formato.",
+  top_step_3_label: "La vendes y cobras",
+  top_step_3_text:
+    "Digital y papel, a tu audiencia. Te llevas el 50% de cada venta desde tus canales, más comisión de afiliación por cada reserva que salga de tus páginas, mientras la guía viva.",
+  top_quote: "Un reel vive 48 horas. Tu guía vive todo el año.",
+  top_note: "No nos importan tus likes; nos importa que sepas dónde se come de verdad.",
+  top_mock_city: "Tu ciudad",
+  top_mock_sub: "según tú",
+  top_mock_caption: "Tu nombre en la portada · Edición 2026",
+  top_cta: "Quiero mi guía",
 
-  // Criteria
-  criteria_eyebrow: "Creators With Criteria",
-  criteria_title: "We don't f*ck with",
-  criteria_title_highlight: "bad recommendations.",
-  criteria_lead: "Only creators who move culture get in. Micro or macro — if your content brings value, you're in.",
-  criteria_1_title: "Authentic Voice",
-  criteria_1_desc: "You've got a niche, a voice, and a mission. Not just for likes, but for meaning.",
-  criteria_2_title: "Authentic Curators",
-  criteria_2_desc: "This isn't a platform for influencers. It's for curators of real experience.",
-  criteria_cta: "Apply as Creator",
+  // Track MICRO — starting out
+  micro_eyebrow: "Track 2 · Estás empezando",
+  micro_title_1: "Envíanos",
+  micro_title_em: "tu vídeo.",
+  micro_lead:
+    "No hace falta tener una audiencia enorme para entrar en una guía. Hace falta saber de un sitio y contarlo bien.",
+  micro_step_1_label: "Graba tu recomendación",
+  micro_step_1_text: "Como ya la grabas: un sitio, por qué merece la pena, sin postureo.",
+  micro_step_2_label: "Pega el link",
+  micro_step_2_text: "En el formulario de aquí abajo. Reel, TikTok o YouTube: el formato nos da igual.",
+  micro_step_3_label: "Si entra, cobras",
+  micro_step_3_text:
+    "Si entra en la guía anual de tu ciudad: tu firma dentro de la guía, badge de curator y comisión por las ventas y reservas que genere tu recomendación.",
+  micro_criteria_title: "Qué buscan los editores",
+  micro_criteria_1: "Un sitio concreto, con nombre y barrio",
+  micro_criteria_2: "Una opinión de verdad, la tuya",
+  micro_criteria_3: "Cero publi encubierta",
+  micro_ladder: "Las mejores firmas de cada edición pueden acabar con guía propia.",
+  micro_cta: "Enviar mi vídeo",
 
-  // Territory
-  territory_eyebrow: "Design your territory",
-  territory_title: "Claim your map & guides.",
-  territory_title_highlight: "Build your legacy.",
-  territory_lead: "Give your audience something more than pretty pictures.",
-  territory_1: "Unlock explorer badges for each zone or theme",
-  territory_2: "Share interactive maps your audience can follow, save & use",
-  territory_3: "Mark territories with your unique picks, stories & content",
-  territory_cta: "Create Your account",
-  territory_badge: "🛠 SYSTEM FEATURES",
+  // FAQ
+  faq_eyebrow: "Preguntas frecuentes",
+  faq_title_1: "Lo que preguntan",
+  faq_title_highlight: "todos.",
+  faq_lead_pre: "¿Te falta algo? Escríbenos a",
+  faq_lead_email: "hola@discoolver.com",
+  faq_lead_post: " y te contesta una persona.",
+  faq_q1: "¿De quién es mi contenido?",
+  faq_a1:
+    "Tuyo, siempre. Nos autorizas a editarlo y publicarlo dentro de la guía; ni la propiedad ni lo que hagas con él en tus canales cambian. Si un día lo dejas, tu contenido se va contigo.",
+  faq_q2: "¿Cuánto y cuándo cobro?",
+  faq_a2:
+    "Con guía propia: el 50% de cada venta que salga de tus canales, más comisión de afiliación por las reservas que se generen desde tus páginas, mientras la guía siga a la venta. Si envías vídeos: comisión por las ventas y reservas que genere tu recomendación. Las condiciones y el calendario de pago van por escrito antes de que firmes nada.",
+  faq_q3: "¿Hay exclusividad?",
+  faq_a3:
+    "No. Sigues publicando donde quieras y con quien quieras. Tu guía es una pieza más de tu marca, no un contrato que te ata.",
+  faq_q4: "¿Qué pasa cuando sale la edición siguiente?",
+  faq_a4:
+    "La ciudad cambia, así que cada temporada revisamos la guía contigo: entra lo nuevo y sale lo que ya no está a la altura. La edición anterior se cierra y se queda como pieza de colección.",
+  faq_q5: "¿Puedo pasar de enviar vídeos a tener mi guía?",
+  faq_a5:
+    "Sí, así funciona esto. Las firmas que mejor funcionan en cada edición son las primeras a las que llamamos para editar una guía propia.",
 
-  // Testimonials
-  testimonials_eyebrow: "Proven by the People Who Matter",
-  testimonials_title: "We curate the best",
-  testimonials_title_highlight: "local creators.",
-  testimonial_1_quote: "Discoolver helped me tell the untold story of the city.",
-  testimonial_1_handle: "@viajeraautentica",
-  testimonial_2_quote: "I gained real connections and unexpected collabs.",
-  testimonial_2_handle: "@exploradorurbano",
-  testimonial_3_quote: "From content to community: finally a platform that gets it.",
-  testimonial_3_handle: "@aventurera_creativa",
-
-  // Movement
-  movement_eyebrow: "Not an Agency. Not a Marketplace.",
-  movement_title_highlight: "Movement.",
-  movement_desc: "We don't sell creators to brands. We partner with explorers to craft moments that matter. You bring the insight. We bring the tools, the missions, and the map.",
-  movement_cta: "Apply as Creator",
-
-  // Apply form
-  apply_eyebrow: "Apply as Creator",
-  apply_title: "Request Your",
-  apply_title_highlight: "Creator Key.",
-  apply_content_focus_label: "🔽 Content Focus",
-  apply_region_label: "🌍 Main region where you create content",
-  apply_socials_label: "🔗 Social Network Links",
-  apply_message_label: "✉️ Why do you want to be part of Discoolver?",
-  apply_message_placeholder: "Tell us about your content, your community and what moves you...",
-  apply_email_label: "📧 Your main contact",
-  apply_submit: "Apply as Creator",
-
-  // Downloadables
-  downloadables_eyebrow: "Downloadables",
-  downloadables_title: "Exclusive guides created by our",
-  downloadables_title_highlight: "explorers.",
-  guide_1_emoji: "📍",
-  guide_1_duration: "3 days",
-  guide_1_city: "Madrid",
-  guide_1_subtitle: "Culture, tapas and rooftops",
-  guide_1_desc: "Discover the best-kept secrets of the Spanish capital with this complete 3-day guide.",
-  guide_1_tag_1: "🎭 Local culture",
-  guide_1_tag_2: "🍷 Authentic tapas",
-  guide_1_tag_3: "🌆 Exclusive rooftops",
-  guide_2_emoji: "🍜",
-  guide_2_duration: "2 days",
-  guide_2_city: "Bangkok",
-  guide_2_subtitle: "Street food, night markets and temples",
-  guide_2_desc: "Immerse yourself in the vibrant Thai culture with this intensive 2-day guide.",
-  guide_2_tag_1: "🍜 Street food",
-  guide_2_tag_2: "🌙 Night markets",
-  guide_2_tag_3: "🏛️ Sacred temples",
-  guide_3_emoji: "🇪🇸",
-  guide_3_duration: "7 days",
-  guide_3_city: "Spain",
-  guide_3_subtitle: "Flexible route between cities and local experiences",
-  guide_3_desc: "Explore Spanish diversity with this flexible 7-day route through multiple cities.",
-  guide_3_tag_1: "🏙️ Multiple cities",
-  guide_3_tag_2: "🎯 Local experiences",
-  guide_3_tag_3: "🚄 Flexible route",
-  guide_cta: "Download Guide",
+  // Application forms
+  forms_eyebrow: "Candidaturas abiertas",
+  forms_title_1: "Cuéntanos",
+  forms_title_em: "quién eres.",
+  forms_lead: "Dos formularios, dos caminos. Elige el tuyo; no hace falta que rellenes los dos.",
+  form_top_title: "Quiero mi guía",
+  form_top_sub: "Para creadores con audiencia en una ciudad.",
+  form_top_name: "Nombre",
+  form_top_email: "Email",
+  form_top_handle: "@handle principal",
+  form_top_city: "Ciudad de tu guía",
+  form_top_link: "Enséñanos tu mejor contenido de ciudad (link)",
+  form_top_submit: "Quiero mi guía",
+  form_top_note: "Te respondemos en 48 h. Persona, no bot.",
+  form_micro_title: "Envío mi vídeo",
+  form_micro_sub: "Para quien empieza y tiene una recomendación buena.",
+  form_micro_name: "Nombre",
+  form_micro_email: "Email",
+  form_micro_handle: "@handle",
+  form_micro_city: "Ciudad",
+  form_micro_link: "Link a tu vídeo (Reel, TikTok o YouTube)",
+  form_micro_submit: "Enviar mi vídeo",
+  form_micro_note: "Si entra en la guía, te escribimos. Si no, también — con el porqué.",
+  forms_fine_print: "Tu contenido sigue siendo tuyo. Sin exclusividad, sin letra pequeña.",
+  form_success: "Recibido. Te escribimos al email que nos has dejado.",
+  form_error: "No se pudo enviar. Inténtalo de nuevo en unos minutos.",
 } as const;
 
 export type InfluencersContent = { -readonly [K in keyof typeof defaultInfluencersContent]: string };

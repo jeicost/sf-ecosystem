@@ -2,10 +2,10 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#080810">
-<meta name="description" content="Conviértete en Generador de Contenido Oficial de Discoolver. Crea tu guía personalizada, monetiza tu audiencia y marca tu ciudad.">
-<title>Generadores de Contenido — Discoolver</title>
+<meta name="description" content="{{meta_description}}">
+<title>{{meta_title}}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
@@ -75,6 +75,7 @@ body::before {
 @keyframes drift2 { to { transform: translate(20px, -28px) scale(1.12); } }
 
 .page { position: relative; z-index: 1; }
+.wrap { width: 100%; }
 
 /* ════════════════════════════════
    NAV
@@ -117,15 +118,16 @@ nav {
    HERO
 ════════════════════════════════ */
 .hero {
-  padding: 52px 22px 40px;
+  padding: 34px 22px 34px;
   display: flex; flex-direction: column; align-items: center;
   text-align: center;
 }
+.hero .wrap { display: flex; flex-direction: column; align-items: center; }
 
 /* BADGE */
 .badge-wrap {
-  position: relative; width: 168px; height: 168px;
-  margin-bottom: 36px; flex-shrink: 0;
+  position: relative; width: 112px; height: 112px;
+  margin-bottom: 22px; flex-shrink: 0;
 }
 .badge-aura {
   position: absolute; inset: -30px; border-radius: 50%;
@@ -155,7 +157,7 @@ nav {
 }
 @keyframes ring-cw { to { transform: rotate(360deg); } }
 .badge-face {
-  position: absolute; inset: 22px; border-radius: 50%;
+  position: absolute; inset: 16px; border-radius: 50%;
   background: linear-gradient(160deg, rgba(26,6,38,0.97) 0%, rgba(10,3,20,0.99) 100%);
   border: 1.5px solid rgba(255,0,200,0.55);
   box-shadow:
@@ -164,10 +166,10 @@ nav {
     inset 0 0 28px rgba(255,0,200,0.1),
     inset 0 1px 0 rgba(255,255,255,0.1);
   display: flex; flex-direction: column;
-  align-items: center; justify-content: center; gap: 5px;
+  align-items: center; justify-content: center; gap: 4px;
 }
 .badge-star {
-  font-size: 24px; line-height: 1;
+  font-size: 20px; line-height: 1;
   animation: star-shine 3s ease-in-out infinite;
 }
 @keyframes star-shine {
@@ -175,9 +177,9 @@ nav {
   50%      { filter: drop-shadow(0 0 14px rgba(255,0,200,1)) drop-shadow(0 0 28px rgba(255,0,200,0.4)); }
 }
 .badge-lines { display: flex; flex-direction: column; align-items: center; gap: 1px; }
-.badge-line-top  { font-family: "Syne", sans-serif; font-size: 7px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); line-height: 1; }
-.badge-line-main { font-family: "Syne", sans-serif; font-size: 9.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--mag); line-height: 1; text-align: center; }
-.badge-line-sub  { font-family: "Syne", sans-serif; font-size: 6.5px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,0,200,0.45); line-height: 1; }
+.badge-line-top  { font-family: "Syne", sans-serif; font-size: 6.5px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,255,255,0.45); line-height: 1; }
+.badge-line-main { font-family: "Syne", sans-serif; font-size: 8.5px; font-weight: 800; letter-spacing: 0.8px; text-transform: uppercase; color: var(--mag); line-height: 1.15; text-align: center; }
+.badge-line-sub  { font-family: "Syne", sans-serif; font-size: 6px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: rgba(255,0,200,0.45); line-height: 1; }
 
 /* HERO TEXT */
 .hero-kicker {
@@ -190,9 +192,9 @@ nav {
 
 .hero-h1 {
   font-family: "Syne", sans-serif;
-  font-size: clamp(38px, 10.5vw, 50px);
+  font-size: clamp(30px, 8.8vw, 52px);
   font-weight: 800; line-height: 1.03; letter-spacing: -2px;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 .gradient-span {
   background: linear-gradient(125deg, #FF00C8 0%, #BF00FF 45%, #00D4FF 100%);
@@ -200,24 +202,10 @@ nav {
 }
 
 .hero-sub {
-  font-size: 15px; font-weight: 300; line-height: 1.68; color: var(--muted2);
-  max-width: 320px; margin-bottom: 28px;
+  font-size: 15px; font-weight: 300; line-height: 1.6; color: var(--muted2);
+  max-width: 340px; margin-bottom: 24px;
 }
 .hero-sub strong { color: rgba(255,255,255,0.8); font-weight: 500; }
-
-/* SPOTS */
-.spots {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 16px; border-radius: 30px;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--border2);
-  margin-bottom: 34px;
-}
-.spots-pips { display: flex; gap: 4px; align-items: center; font-size: 0; }
-.spots-pips span { display: block; width: 20px; height: 6px; border-radius: 4px; flex-shrink: 0; }
-.spots-pips .on  { background: var(--mag); box-shadow: 0 0 8px rgba(255,0,200,0.6); }
-.spots-pips .off { background: rgba(255,255,255,0.1); }
-.spots-text { font-size: 11px; color: var(--muted2); }
-.spots-text strong { color: var(--white); font-weight: 500; }
 
 /* ════════════════════════════════
    BUTTON
@@ -238,12 +226,90 @@ nav {
 }
 .btn:active  { transform: scale(0.974); box-shadow: 0 0 14px rgba(255,0,200,0.3); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+.btn-ghost {
+  background: transparent; color: var(--white);
+  border: 1.5px solid var(--border2); box-shadow: none;
+}
+.btn-ghost::after { display: none; }
+.btn-ghost:hover { border-color: var(--mag); color: var(--mag); }
 
 /* ════════════════════════════════
-   GUIDE HIGHLIGHT (NEW SECTION)
+   SELECTOR DE TRACKS
+════════════════════════════════ */
+.tracks { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.track {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 22px 20px; border-radius: 18px;
+  background: var(--bg2); border: 1px solid var(--border2);
+  text-align: left; text-decoration: none; color: var(--white);
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+.track:hover { transform: translateY(-3px); border-color: var(--mag-a40); }
+.track.featured {
+  background: linear-gradient(145deg, rgba(255,0,200,0.09) 0%, rgba(0,212,255,0.04) 100%);
+  border-color: rgba(255,0,200,0.28);
+}
+.track-kicker {
+  font-size: 9px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--cyan);
+}
+.track.featured .track-kicker { color: var(--mag); }
+.track-title {
+  font-family: "Syne", sans-serif; font-size: 22px; font-weight: 800;
+  letter-spacing: -0.6px; line-height: 1.1;
+}
+.track-text { font-size: 13px; font-weight: 300; color: var(--muted2); line-height: 1.6; }
+.track-cta { font-size: 13px; font-weight: 600; color: var(--mag); margin-top: 2px; }
+
+/* ════════════════════════════════
+   SECCIONES
+════════════════════════════════ */
+.section { padding: 40px 22px; border-top: 1px solid var(--border); }
+.section-eyebrow {
+  font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 18px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.section-h2 {
+  font-family: "Syne", sans-serif; font-size: 26px; font-weight: 800;
+  letter-spacing: -0.8px; margin-bottom: 8px; line-height: 1.1;
+}
+.section-sub { font-size: 14px; font-weight: 300; color: var(--muted2); line-height: 1.6; margin-bottom: 24px; }
+
+/* PASOS */
+.steps { display: flex; flex-direction: column; gap: 10px; }
+.step {
+  display: flex; gap: 14px; align-items: flex-start;
+  padding: 18px; border-radius: 14px;
+  background: var(--bg2); border: 1px solid var(--border2);
+}
+.step-num {
+  font-family: "Syne", sans-serif; font-size: 20px; font-weight: 800;
+  color: var(--mag); line-height: 1.1; flex-shrink: 0; width: 30px;
+}
+.step-title {
+  font-family: "Syne", sans-serif; font-size: 15px; font-weight: 800;
+  color: var(--white); margin-bottom: 4px; letter-spacing: -0.3px;
+}
+.step-text { font-size: 13px; font-weight: 300; color: var(--muted2); line-height: 1.6; }
+
+/* CITA + NOTA */
+.quote {
+  font-family: "Syne", sans-serif; font-size: 22px; font-weight: 800;
+  letter-spacing: -0.8px; line-height: 1.15;
+  border-left: 3px solid var(--mag); padding-left: 16px;
+}
+.note {
+  font-size: 14px; font-weight: 300; color: var(--muted2); line-height: 1.6;
+  margin-top: 14px; padding-left: 19px;
+}
+.split { margin-top: 26px; display: flex; flex-direction: column; gap: 26px; }
+
+/* ════════════════════════════════
+   MOCKUP DE GUÍA
 ════════════════════════════════ */
 .guide-highlight {
-  margin: 0 22px 12px;
   padding: 22px 20px;
   border-radius: 18px;
   background: linear-gradient(145deg, rgba(255,0,200,0.07) 0%, rgba(0,212,255,0.04) 100%);
@@ -277,7 +343,7 @@ nav {
   display: flex; flex-direction: column; gap: 10px;
 }
 .guide-mockup-header {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
 }
 .guide-mockup-title {
   font-family: "Syne", sans-serif; font-size: 12px; font-weight: 800;
@@ -286,7 +352,7 @@ nav {
 .guide-mockup-badge {
   font-size: 8px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
   color: var(--mag); background: var(--mag-a12); border: 1px solid var(--mag-a25);
-  padding: 3px 8px; border-radius: 20px;
+  padding: 3px 8px; border-radius: 20px; white-space: nowrap;
 }
 .guide-mockup-rows { display: flex; flex-direction: column; gap: 6px; }
 .guide-row {
@@ -308,136 +374,81 @@ nav {
   color: var(--mag); background: var(--mag-a12); padding: 2px 6px; border-radius: 10px;
   border: 1px solid var(--mag-a25); flex-shrink: 0;
 }
+.mockup-foot {
+  font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase;
+  color: var(--muted); text-align: center; margin-top: 4px;
+}
 
 /* ════════════════════════════════
-   STATS GRID
+   QUÉ BUSCAN LOS EDITORES
 ════════════════════════════════ */
-.stats-grid {
-  display: grid; grid-template-columns: 1fr 1fr 1fr;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 0;
+.criteria { margin-top: 26px; }
+.criteria-title {
+  font-family: "Syne", sans-serif; font-size: 15px; font-weight: 800;
+  letter-spacing: -0.3px; margin-bottom: 12px;
 }
-.stat-cell {
-  padding: 22px 10px;
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  text-align: center;
-}
-.stat-cell + .stat-cell { border-left: 1px solid var(--border); }
-.stat-num {
-  font-family: "Syne", sans-serif; font-size: 36px; font-weight: 800;
-  line-height: 1; letter-spacing: -2px;
-  color: var(--white);
-}
-.stat-num.gradient {
-  background: linear-gradient(135deg, var(--mag) 0%, var(--cyan) 100%);
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-}
-.stat-lbl { font-size: 10px; color: var(--muted); line-height: 1.3; letter-spacing: 0.2px; }
-
-/* ════════════════════════════════
-   MONETIZE SECTION
-════════════════════════════════ */
-.monetize {
-  padding: 40px 22px 12px;
-  border-bottom: 1px solid var(--border);
-}
-.section-eyebrow {
-  font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 20px;
-  display: flex; align-items: center; gap: 10px;
-}
-.section-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-.monetize-h2 {
-  font-family: "Syne", sans-serif; font-size: 26px; font-weight: 800;
-  letter-spacing: -0.8px; margin-bottom: 8px;
-}
-.monetize-sub { font-size: 14px; font-weight: 300; color: var(--muted2); line-height: 1.6; margin-bottom: 24px; }
-
-.tier-cards { display: flex; flex-direction: column; gap: 10px; }
-.tier-card {
-  padding: 18px; border-radius: 14px;
-  background: var(--bg2); border: 1px solid var(--border2);
+.crit {
   display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid var(--border);
 }
-.tier-card.featured {
-  background: linear-gradient(145deg, rgba(255,0,200,0.08) 0%, rgba(0,212,255,0.04) 100%);
-  border-color: rgba(255,0,200,0.22);
-}
-.tier-icon {
-  font-size: 22px; width: 44px; height: 44px; flex-shrink: 0;
-  border-radius: 12px; background: var(--bg3); border: 1px solid var(--border2);
-  display: flex; align-items: center; justify-content: center;
-}
-.tier-info { flex: 1; min-width: 0; }
-.tier-name {
-  font-family: "Syne", sans-serif; font-size: 14px; font-weight: 800;
-  color: var(--white); margin-bottom: 2px; letter-spacing: -0.3px;
-}
-.tier-followers { font-size: 12px; color: var(--muted2); font-weight: 300; margin-bottom: 6px; }
-.tier-earn {
-  font-size: 13px; font-weight: 600;
-  color: var(--mag);
-}
-.tier-earn.cyan { color: var(--cyan); }
-.tier-earn.white { color: rgba(255,255,255,0.6); }
-
-/* ════════════════════════════════
-   PERKS
-════════════════════════════════ */
-.perks { padding: 8px 0; }
-.perks-eyebrow {
-  font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--muted); padding: 32px 22px 18px;
-  display: flex; align-items: center; gap: 10px;
-}
-.perks-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--border); }
-.perk {
-  display: flex; align-items: flex-start; gap: 16px;
-  padding: 18px 22px; border-bottom: 1px solid var(--border);
-}
-.perk:first-of-type { border-top: 1px solid var(--border); }
-.perk-icon {
-  width: 38px; height: 38px; flex-shrink: 0;
+.crit:first-of-type { border-top: 1px solid var(--border); }
+.crit-icon {
+  width: 34px; height: 34px; flex-shrink: 0;
   border-radius: 10px; background: var(--bg2); border: 1px solid var(--border2);
   display: flex; align-items: center; justify-content: center;
 }
-.perk-icon svg { width: 17px; height: 17px; }
-.perk-text h3 {
-  font-family: "Syne", sans-serif; font-size: 14px; font-weight: 800;
-  color: var(--white); margin-bottom: 3px; letter-spacing: -0.3px;
+.crit-icon svg { width: 16px; height: 16px; }
+.crit-text { font-size: 13px; color: var(--muted2); font-weight: 300; line-height: 1.5; }
+.crit-text strong { color: var(--white); font-weight: 600; display: block; font-size: 14px; margin-bottom: 3px; }
+
+/* ESCALERA */
+.ladder {
+  margin-top: 24px; padding: 20px;
+  border-radius: 16px; background: var(--bg2); border: 1px solid var(--border2);
+  display: flex; flex-direction: column; gap: 16px;
 }
-.perk-text p { font-size: 13px; color: var(--muted2); line-height: 1.55; font-weight: 300; }
+.ladder p {
+  font-family: "Syne", sans-serif; font-size: 17px; font-weight: 800;
+  letter-spacing: -0.4px; line-height: 1.2;
+}
 
 /* ════════════════════════════════
-   CITIES
+   CIUDADES
 ════════════════════════════════ */
-.cities {
-  padding: 32px 22px 36px;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-.cities-eyebrow {
-  font-size: 10px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase;
-  color: var(--muted); margin-bottom: 14px;
-  display: flex; align-items: center; gap: 10px;
-}
-.cities-eyebrow::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 .pills { display: flex; flex-wrap: wrap; gap: 7px; }
 .pill {
   font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 20px;
-  border: 1px solid var(--border); color: var(--muted);
+  border: 1px solid var(--border2); color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.03);
 }
-.pill.hot  { background: var(--mag-a12); border-color: var(--mag-a25); color: var(--mag); }
-.pill.warm { background: rgba(255,255,255,0.04); border-color: var(--border2); color: rgba(255,255,255,0.5); }
+.pill.next { background: var(--mag-a12); border-color: var(--mag-a25); color: var(--mag); }
 
 /* ════════════════════════════════
-   FORM
+   FAQ
 ════════════════════════════════ */
-.form-section {
-  padding: 44px 22px 112px;
-  position: relative;
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-item:first-of-type { border-top: 1px solid var(--border); }
+.faq-item summary {
+  list-style: none; cursor: pointer;
+  padding: 18px 30px 18px 0; position: relative;
+  font-family: "Syne", sans-serif; font-size: 15px; font-weight: 800;
+  letter-spacing: -0.3px; color: var(--white); line-height: 1.3;
 }
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%);
+  color: var(--mag); font-size: 20px; font-weight: 400; line-height: 1;
+}
+.faq-item[open] summary::after { content: "−"; }
+.faq-item p {
+  font-size: 13px; font-weight: 300; color: var(--muted2); line-height: 1.65;
+  padding: 0 0 18px;
+}
+
+/* ════════════════════════════════
+   FORMULARIOS
+════════════════════════════════ */
+.form-section { padding: 44px 22px 118px; position: relative; }
 .form-section::before {
   content: "";
   position: absolute; top: 0; left: 0; right: 0; height: 1px;
@@ -456,7 +467,22 @@ nav {
   font-family: "Syne", sans-serif; font-size: 28px; font-weight: 800;
   letter-spacing: -1px; margin-bottom: 8px;
 }
-.form-sub { font-size: 14px; font-weight: 300; color: var(--muted2); line-height: 1.55; margin-bottom: 28px; }
+.form-sub { font-size: 14px; font-weight: 300; color: var(--muted2); line-height: 1.55; margin-bottom: 26px; }
+
+.forms { display: flex; flex-direction: column; gap: 16px; }
+.cform {
+  padding: 24px 20px; border-radius: 18px;
+  background: var(--bg2); border: 1px solid var(--border2);
+}
+.cform.featured {
+  border-color: rgba(255,0,200,0.28);
+  background: linear-gradient(145deg, rgba(255,0,200,0.07) 0%, rgba(0,212,255,0.03) 100%);
+}
+.cform-title {
+  font-family: "Syne", sans-serif; font-size: 20px; font-weight: 800;
+  letter-spacing: -0.5px; margin-bottom: 4px;
+}
+.cform-sub { font-size: 13px; font-weight: 300; color: var(--muted2); line-height: 1.5; margin-bottom: 18px; }
 
 .field { margin-bottom: 12px; }
 .label {
@@ -485,38 +511,35 @@ nav {
 .form-error {
   font-size: 13px; color: #ff8080; background: rgba(255,50,50,0.08);
   border: 1px solid rgba(255,50,50,0.2); border-radius: 10px;
-  padding: 12px 16px; margin-bottom: 14px; display: none;
+  padding: 12px 16px; margin-top: 14px; display: none;
 }
 .form-error.on { display: block; }
-.form-fine { text-align: center; font-size: 12px; color: var(--muted); margin-top: 14px; line-height: 1.5; }
-.form-fine a { color: rgba(255,0,200,0.65); text-decoration: none; }
+.form-note { font-size: 12px; color: var(--muted); margin-top: 12px; line-height: 1.5; text-align: center; }
+.form-fine {
+  text-align: center; font-size: 11px; letter-spacing: 1.2px; text-transform: uppercase;
+  color: var(--muted); margin-top: 24px; line-height: 1.7;
+}
 
-/* SUCCESS */
+/* ÉXITO */
 .success {
   display: none; flex-direction: column; align-items: center;
-  text-align: center; gap: 18px; padding: 48px 0;
+  text-align: center; gap: 14px; padding: 26px 0;
 }
 .success.on { display: flex; }
 .success-orb {
-  width: 82px; height: 82px; border-radius: 50%;
+  width: 72px; height: 72px; border-radius: 50%;
   background: radial-gradient(circle, rgba(255,0,200,0.15) 0%, transparent 70%);
   border: 1.5px solid rgba(255,0,200,0.45);
-  display: flex; align-items: center; justify-content: center; font-size: 34px;
+  display: flex; align-items: center; justify-content: center; font-size: 30px;
   box-shadow: 0 0 32px rgba(255,0,200,0.22);
   animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 @keyframes pop { from { transform: scale(0.35); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-.success h3 { font-family: "Syne", sans-serif; font-size: 24px; font-weight: 800; letter-spacing: -0.8px; }
-.success p  { font-size: 14px; font-weight: 300; color: var(--muted2); line-height: 1.6; max-width: 278px; }
-.success-chip {
-  display: inline-flex; align-items: center; gap: 7px;
-  padding: 8px 18px; border-radius: 30px;
-  background: var(--mag-a12); border: 1px solid var(--mag-a25);
-  font-size: 12px; font-weight: 600; color: var(--mag); letter-spacing: 0.3px;
-}
+.success h3 { font-family: "Syne", sans-serif; font-size: 20px; font-weight: 800; letter-spacing: -0.6px; }
+.success p  { font-size: 13px; font-weight: 300; color: var(--muted2); line-height: 1.6; max-width: 300px; }
 
 /* ════════════════════════════════
-   STICKY BAR
+   STICKY
 ════════════════════════════════ */
 .sticky {
   position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
@@ -524,6 +547,8 @@ nav {
   background: linear-gradient(to top, rgba(8,8,16,1) 55%, rgba(8,8,16,0.88) 82%, transparent 100%);
   transition: transform 0.28s ease, opacity 0.28s ease;
 }
+.sticky-inner { display: flex; gap: 8px; max-width: 620px; margin: 0 auto; }
+.sticky .btn { font-size: 13px; padding: 14px 10px; }
 .sticky.off { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
 /* SPINNER */
@@ -540,6 +565,45 @@ nav {
 @keyframes fade-up { to { opacity: 1; transform: translateY(0); } }
 .d1{animation-delay:.08s} .d2{animation-delay:.18s} .d3{animation-delay:.3s}
 .d4{animation-delay:.42s} .d5{animation-delay:.55s} .d6{animation-delay:.68s}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .fade { opacity: 1; transform: none; }
+  html { scroll-behavior: auto; }
+}
+
+/* ════════════════════════════════
+   DESKTOP — la landing nació mobile-only; esto la hace usable en pantalla
+   grande sin cambiar la identidad (mismo magenta, mismas tipografías).
+════════════════════════════════ */
+@media (min-width: 900px) {
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  nav { padding: 18px 40px; }
+  .hero { padding: 64px 40px 52px; }
+  .badge-wrap { width: 148px; height: 148px; }
+  .hero-h1 { font-size: 64px; letter-spacing: -3px; }
+  .hero-sub { max-width: 680px; font-size: 17px; }
+  .tracks { flex-direction: row; gap: 20px; }
+  .track { flex: 1; padding: 28px 26px; }
+  .track-title { font-size: 26px; }
+  .track-text { font-size: 14px; }
+  .section { padding: 68px 40px; }
+  .section-h2 { font-size: 40px; letter-spacing: -1.4px; }
+  .section-sub { font-size: 16px; max-width: 640px; }
+  .steps { flex-direction: row; }
+  .step { flex: 1; flex-direction: column; gap: 10px; }
+  .step-num { font-size: 26px; width: auto; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center; margin-top: 34px; }
+  .quote { font-size: 30px; }
+  .ladder { flex-direction: row; align-items: center; justify-content: space-between; gap: 28px; padding: 26px 28px; }
+  .ladder p { font-size: 21px; }
+  .ladder .btn { width: auto; white-space: nowrap; }
+  .form-section { padding: 68px 40px 124px; }
+  .form-h2 { font-size: 40px; }
+  .forms { flex-direction: row; align-items: flex-start; gap: 20px; }
+  .cform { flex: 1; padding: 30px 28px; }
+  .sticky .btn { font-size: 14px; }
+}
 </style>
 </head>
 <body>
@@ -559,365 +623,474 @@ nav {
   </nav>
 
   <!-- HERO -->
-  <section class="hero">
+  <header class="hero">
+    <div class="wrap">
 
-    <!-- Badge -->
-    <div class="badge-wrap fade d1">
-      <div class="badge-aura"></div>
-      <div class="badge-ring-1"></div>
-      <div class="badge-ring-2"></div>
-      <div class="badge-face">
-        <div class="badge-star">✦</div>
-        <div class="badge-lines">
-          <div class="badge-line-top">Official</div>
-          <div class="badge-line-main">Content<br>Creator</div>
-          <div class="badge-line-sub">Discoolver</div>
+      <div class="badge-wrap fade d1">
+        <div class="badge-aura"></div>
+        <div class="badge-ring-1"></div>
+        <div class="badge-ring-2"></div>
+        <div class="badge-face">
+          <div class="badge-star" aria-hidden="true">✦</div>
+          <div class="badge-lines">
+            <div class="badge-line-top">Guías</div>
+            <div class="badge-line-main">Creator<br>Program</div>
+            <div class="badge-line-sub">Discoolver</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="hero-kicker fade d2">
+        <span></span>{{hero_kicker}}<span></span>
+      </p>
+
+      <h1 class="hero-h1 fade d3">
+        {{hero_title_1}}<br>
+        {{hero_title_2}}<br>
+        <span class="gradient-span">{{hero_title_3}}</span>
+      </h1>
+
+      <p class="hero-sub fade d4">
+        {{hero_sub}}
+      </p>
+
+      <!-- SELECTOR DE TRACKS -->
+      <div class="tracks fade d5">
+        <a href="#guia-propia" class="track featured">
+          <span class="track-kicker">{{picker_a_kicker}}</span>
+          <span class="track-title">{{label_guia}}</span>
+          <span class="track-text">{{picker_a_text}}</span>
+          <span class="track-cta">{{picker_cta}}</span>
+        </a>
+        <a href="#tu-video" class="track">
+          <span class="track-kicker">{{picker_b_kicker}}</span>
+          <span class="track-title">{{label_video}}</span>
+          <span class="track-text">{{picker_b_text}}</span>
+          <span class="track-cta">{{picker_cta}}</span>
+        </a>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- TRACK 1 — GUÍA PROPIA -->
+  <section class="section" id="guia-propia">
+    <div class="wrap">
+      <p class="section-eyebrow">{{top_eyebrow}}</p>
+      <h2 class="section-h2">{{top_title_1}}<br>{{top_title_2}}</h2>
+      <p class="section-sub">{{top_lead}}</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div>
+            <div class="step-title">{{top_step_1_title}}</div>
+            <div class="step-text">{{top_step_1_text}}</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div>
+            <div class="step-title">{{top_step_2_title}}</div>
+            <div class="step-text">{{top_step_2_text}}</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div>
+            <div class="step-title">{{top_step_3_title}}</div>
+            <div class="step-text">{{top_step_3_text}}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="guide-highlight">
+          <div class="guide-highlight-tag">{{top_mock_tag}}</div>
+          <h3>{{top_mock_title_1}}<br>{{top_mock_title_2}}</h3>
+          <p>{{top_mock_text}}</p>
+          <div class="guide-mockup">
+            <div class="guide-mockup-header">
+              <span class="guide-mockup-title">Tu guía · Madrid 2026</span>
+              <span class="guide-mockup-badge">✦ Tu nombre</span>
+            </div>
+            <div class="guide-mockup-rows">
+              <div class="guide-row">
+                <div class="guide-row-dot" aria-hidden="true">🍽️</div>
+                <div class="guide-row-info">
+                  <div class="guide-row-name">Tu bar de vinos de Malasaña</div>
+                  <div class="guide-row-cat">Gastronomía · importado de tu perfil</div>
+                </div>
+                <div class="guide-row-badge">Entra</div>
+              </div>
+              <div class="guide-row">
+                <div class="guide-row-dot" aria-hidden="true">🎵</div>
+                <div class="guide-row-info">
+                  <div class="guide-row-name">Esa sala de conciertos del centro</div>
+                  <div class="guide-row-cat">Música · importado de tu perfil</div>
+                </div>
+                <div class="guide-row-badge">Entra</div>
+              </div>
+              <div class="guide-row">
+                <div class="guide-row-dot" aria-hidden="true">🛍️</div>
+                <div class="guide-row-info">
+                  <div class="guide-row-name">La tienda que enseñas siempre</div>
+                  <div class="guide-row-cat">Shopping · importado de tu perfil</div>
+                </div>
+                <div class="guide-row-badge">Entra</div>
+              </div>
+            </div>
+            <p class="mockup-foot">Ejemplo de montaje · así se ve por dentro</p>
+          </div>
+        </div>
+
+        <div>
+          <p class="quote">{{top_quote_1}}<br>{{top_quote_2}}</p>
+          <p class="note">{{top_note}}</p>
+          <div style="margin-top:26px">
+            <a href="#form-guia" class="btn">{{cta_guia}}</a>
+          </div>
         </div>
       </div>
     </div>
-
-    <p class="hero-kicker fade d2">
-      <span></span>{{hero_kicker}}<span></span>
-    </p>
-
-    <h1 class="hero-h1 fade d3">
-      {{hero_headline_line1}}<br>
-      <span class="gradient-span">{{hero_headline_line2}}</span>
-    </h1>
-
-    <p class="hero-sub fade d4">
-      {{hero_sub}}
-    </p>
-
-    <div class="spots fade d5">
-      <div class="spots-pips">
-        <span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span>
-        <span class="on"></span><span class="on"></span><span class="on"></span>
-        <span class="off"></span><span class="off"></span><span class="off"></span>
-      </div>
-      <span class="spots-text"><strong>{{spots_filled}} de {{spots_total}}</strong> plazas ocupadas en {{spots_city}}</span>
-    </div>
-
-    <a href="#registro" class="btn fade d6">{{hero_cta_text}}</a>
   </section>
 
-  <!-- GUIDE HIGHLIGHT -->
-  <div class="guide-highlight">
-    <div class="guide-highlight-tag">Nueva funcionalidad</div>
-    <h3>Tu guía Discoolver,<br>con tu nombre</h3>
-    <p>Importa tus posts de Instagram directamente. La IA organiza tus spots en una guía curada y publicada en la plataforma con tu badge de creador.</p>
-    <!-- Mockup visual -->
-    <div class="guide-mockup">
-      <div class="guide-mockup-header">
-        <span class="guide-mockup-title">Mi Guía Madrid 2026</span>
-        <span class="guide-mockup-badge">✦ Creator</span>
-      </div>
-      <div class="guide-mockup-rows">
-        <div class="guide-row">
-          <div class="guide-row-dot">🍽️</div>
-          <div class="guide-row-info">
-            <div class="guide-row-name">Restaurante La Tasquita</div>
-            <div class="guide-row-cat">Gastronomía · Malasaña</div>
+  <!-- TRACK 2 — VÍDEO -->
+  <section class="section" id="tu-video">
+    <div class="wrap">
+      <p class="section-eyebrow">{{micro_eyebrow}}</p>
+      <h2 class="section-h2">{{micro_title}}</h2>
+      <p class="section-sub">{{micro_lead}}</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <div>
+            <div class="step-title">{{micro_step_1_title}}</div>
+            <div class="step-text">{{micro_step_1_text}}</div>
           </div>
-          <div class="guide-row-badge">WOW</div>
         </div>
-        <div class="guide-row">
-          <div class="guide-row-dot">🎵</div>
-          <div class="guide-row-info">
-            <div class="guide-row-name">Sala El Sol</div>
-            <div class="guide-row-cat">Music Circuit · Centro</div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <div>
+            <div class="step-title">{{micro_step_2_title}}</div>
+            <div class="step-text">{{micro_step_2_text}}</div>
           </div>
-          <div class="guide-row-badge">ICÓNICO</div>
         </div>
-        <div class="guide-row">
-          <div class="guide-row-dot">🛍️</div>
-          <div class="guide-row-info">
-            <div class="guide-row-name">Zara Concept Store</div>
-            <div class="guide-row-cat">Shopping Lover · Gran Vía</div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <div>
+            <div class="step-title">{{micro_step_3_title}}</div>
+            <div class="step-text">{{micro_step_3_text}}</div>
           </div>
-          <div class="guide-row-badge">TRENDY</div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- STATS -->
-  <div class="stats-grid">
-    <div class="stat-cell">
-      <span class="stat-num gradient">{{stat1_num}}</span>
-      <span class="stat-lbl">{{stat1_label}}</span>
-    </div>
-    <div class="stat-cell">
-      <span class="stat-num">{{stat2_num}}</span>
-      <span class="stat-lbl">{{stat2_label}}</span>
-    </div>
-    <div class="stat-cell">
-      <span class="stat-num gradient">{{stat3_num}}</span>
-      <span class="stat-lbl">{{stat3_label}}</span>
-    </div>
-  </div>
-
-  <!-- MONETIZE -->
-  <div class="monetize">
-    <p class="section-eyebrow">Gana con tu contenido</p>
-    <h2 class="monetize-h2">{{monetize_headline_line1}}<br>{{monetize_headline_line2}}</h2>
-    <p class="monetize-sub">{{monetize_sub}}</p>
-
-    <div class="tier-cards">
-      <div class="tier-card featured">
-        <div class="tier-icon">🌍</div>
-        <div class="tier-info">
-          <div class="tier-name">{{tier1_name}}</div>
-          <div class="tier-followers">{{tier1_followers}}</div>
-          <div class="tier-earn gradient">{{tier1_earn}}</div>
+      <div class="criteria">
+        <p class="criteria-title">{{micro_criteria_title}}</p>
+        <div class="crit">
+          <div class="crit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <path d="M12 22s-7-7-7-12a7 7 0 1 1 14 0c0 5-7 12-7 12Z"/><circle cx="12" cy="10" r="2.5"/>
+            </svg>
+          </div>
+          <p class="crit-text"><strong>{{micro_crit_1_title}}</strong>{{micro_crit_1_text}}</p>
+        </div>
+        <div class="crit">
+          <div class="crit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <p class="crit-text"><strong>{{micro_crit_2_title}}</strong>{{micro_crit_2_text}}</p>
+        </div>
+        <div class="crit">
+          <div class="crit-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="9"/><line x1="6" y1="18" x2="18" y2="6"/>
+            </svg>
+          </div>
+          <p class="crit-text"><strong>{{micro_crit_3_title}}</strong>{{micro_crit_3_text}}</p>
         </div>
       </div>
-      <div class="tier-card">
-        <div class="tier-icon">📍</div>
-        <div class="tier-info">
-          <div class="tier-name">{{tier2_name}}</div>
-          <div class="tier-followers">{{tier2_followers}}</div>
-          <div class="tier-earn cyan">{{tier2_earn}}</div>
+
+      <div class="ladder">
+        <p>{{micro_ladder}}</p>
+        <a href="#form-video" class="btn">{{cta_video}}</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CIUDADES -->
+  <section class="section">
+    <div class="wrap">
+      <p class="section-eyebrow">{{cities_eyebrow}}</p>
+      <div class="pills">
+        <span class="pill next">Madrid</span>
+        <span class="pill next">Bangkok</span>
+        <span class="pill">Barcelona</span>
+        <span class="pill">Valencia</span>
+        <span class="pill">Sevilla</span>
+        <span class="pill">Bilbao</span>
+        <span class="pill">San Sebastián</span>
+        <span class="pill">Málaga</span>
+      </div>
+      <p class="section-sub" style="margin-top:16px;margin-bottom:0">{{cities_note}}</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="wrap">
+      <p class="section-eyebrow">{{faq_eyebrow}}</p>
+      <details class="faq-item" open>
+        <summary>{{faq_q1}}</summary>
+        <p>{{faq_a1}}</p>
+      </details>
+      <details class="faq-item">
+        <summary>{{faq_q2}}</summary>
+        <p>{{faq_a2}}</p>
+      </details>
+      <details class="faq-item">
+        <summary>{{faq_q3}}</summary>
+        <p>{{faq_a3}}</p>
+      </details>
+      <details class="faq-item">
+        <summary>{{faq_q4}}</summary>
+        <p>{{faq_a4}}</p>
+      </details>
+      <details class="faq-item">
+        <summary>{{faq_q5}}</summary>
+        <p>{{faq_a5}}</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- FORMULARIOS -->
+  <section class="form-section" id="candidaturas">
+    <div class="wrap">
+      <div class="form-tag">{{forms_tag}}</div>
+      <h2 class="form-h2">{{forms_title}}</h2>
+      <p class="form-sub">{{forms_sub}}</p>
+
+      <div class="forms">
+        <!-- TRACK 1 -->
+        <div class="cform featured">
+          <h3 class="cform-title">{{label_guia}}</h3>
+          <p class="cform-sub">{{form_top_sub}}</p>
+
+          <form id="form-guia" novalidate>
+            <div class="field">
+              <label class="label" for="g-name">Nombre</label>
+              <input class="input" type="text" id="g-name" placeholder="Nombre y apellido" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label class="label" for="g-email">Email</label>
+              <input class="input" type="email" id="g-email" placeholder="tu@correo.com" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label class="label" for="g-handle">{{form_top_label_handle}}</label>
+              <div class="ig-wrap">
+                <span class="ig-at" aria-hidden="true">@</span>
+                <input class="input" type="text" id="g-handle" placeholder="tuhandle" autocomplete="off" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="g-city">{{form_top_label_city}}</label>
+              <input class="input" type="text" id="g-city" placeholder="Madrid, Bilbao, Bangkok…" autocomplete="address-level2" required>
+            </div>
+            <div class="field">
+              <label class="label" for="g-link">{{form_top_label_link}}</label>
+              <input class="input" type="url" id="g-link" placeholder="https://…" autocomplete="off" required>
+            </div>
+            <div style="margin-top:18px">
+              <button type="submit" class="btn" id="g-btn">{{cta_guia}}</button>
+            </div>
+            <div class="form-error" id="g-err" role="alert"></div>
+            <p class="form-note">{{form_top_note}}</p>
+          </form>
+
+          <div class="success" id="g-ok">
+            <div class="success-orb" aria-hidden="true">✦</div>
+            <h3>{{form_top_ok_title}}</h3>
+            <p>{{form_top_ok_text}}</p>
+          </div>
+        </div>
+
+        <!-- TRACK 2 -->
+        <div class="cform">
+          <h3 class="cform-title">{{label_video}}</h3>
+          <p class="cform-sub">{{form_micro_sub}}</p>
+
+          <form id="form-video" novalidate>
+            <div class="field">
+              <label class="label" for="v-name">Nombre</label>
+              <input class="input" type="text" id="v-name" placeholder="Nombre y apellido" autocomplete="name" required>
+            </div>
+            <div class="field">
+              <label class="label" for="v-email">Email</label>
+              <input class="input" type="email" id="v-email" placeholder="tu@correo.com" autocomplete="email" required>
+            </div>
+            <div class="field">
+              <label class="label" for="v-handle">{{form_micro_label_handle}}</label>
+              <div class="ig-wrap">
+                <span class="ig-at" aria-hidden="true">@</span>
+                <input class="input" type="text" id="v-handle" placeholder="tuhandle" autocomplete="off" required>
+              </div>
+            </div>
+            <div class="field">
+              <label class="label" for="v-city">{{form_micro_label_city}}</label>
+              <input class="input" type="text" id="v-city" placeholder="Madrid, Bilbao, Bangkok…" autocomplete="address-level2" required>
+            </div>
+            <div class="field">
+              <label class="label" for="v-link">{{form_micro_label_link}}</label>
+              <input class="input" type="url" id="v-link" placeholder="https://…" autocomplete="off" required>
+            </div>
+            <div style="margin-top:18px">
+              <button type="submit" class="btn" id="v-btn">{{cta_video}}</button>
+            </div>
+            <div class="form-error" id="v-err" role="alert"></div>
+            <p class="form-note">{{form_micro_note}}</p>
+          </form>
+
+          <div class="success" id="v-ok">
+            <div class="success-orb" aria-hidden="true">✦</div>
+            <h3>{{form_micro_ok_title}}</h3>
+            <p>{{form_micro_ok_text}}</p>
+          </div>
         </div>
       </div>
-      <div class="tier-card">
-        <div class="tier-icon">🏛️</div>
-        <div class="tier-info">
-          <div class="tier-name">{{tier3_name}}</div>
-          <div class="tier-followers">{{tier3_followers}}</div>
-          <div class="tier-earn white">{{tier3_earn}}</div>
-        </div>
-      </div>
+
+      <p class="form-fine">{{forms_fine_1}}<br>{{forms_fine_2}}</p>
     </div>
-  </div>
-
-  <!-- PERKS -->
-  <div class="perks">
-    <p class="perks-eyebrow">Lo que obtienes</p>
-
-    <div class="perk">
-      <div class="perk-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-        </svg>
-      </div>
-      <div class="perk-text">
-        <h3>Badge de Creador Oficial</h3>
-        <p>Perfil verificado en todas las guías Discoolver de tu ciudad. Una sola plaza por categoría.</p>
-      </div>
-    </div>
-
-    <div class="perk">
-      <div class="perk-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round">
-          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
-        </svg>
-      </div>
-      <div class="perk-text">
-        <h3>Tu guía personalizada publicada</h3>
-        <p>Importa desde Instagram. La IA genera tu guía curada lista para compartir con tus seguidores.</p>
-      </div>
-    </div>
-
-    <div class="perk">
-      <div class="perk-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round">
-          <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
-          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-        </svg>
-      </div>
-      <div class="perk-text">
-        <h3>Distribución sin algoritmos</h3>
-        <p>Tu contenido llega a miles de viajeros activos en Discoolver sin depender del alcance orgánico de Instagram.</p>
-      </div>
-    </div>
-
-    <div class="perk">
-      <div class="perk-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#FF00C8" stroke-width="1.8" stroke-linecap="round">
-          <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-        </svg>
-      </div>
-      <div class="perk-text">
-        <h3>Ingresos reales por tu trabajo</h3>
-        <p>Colaboraciones pagadas con negocios locales que quieren ser descubiertos por tu audiencia.</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- CITIES -->
-  <div class="cities">
-    <p class="cities-eyebrow">Buscando creadores en</p>
-    <div class="pills">
-      <span class="pill hot">Madrid</span>
-      <span class="pill hot">Barcelona</span>
-      <span class="pill warm">Sevilla</span>
-      <span class="pill warm">Valencia</span>
-      <span class="pill">Málaga</span>
-      <span class="pill">Ronda</span>
-      <span class="pill">San Sebastián</span>
-      <span class="pill">Bilbao</span>
-    </div>
-  </div>
-
-  <!-- SOCIAL PROOF STRIP -->
-  <div style="padding: 28px 22px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 14px;">
-    <p style="font-size:10px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:var(--muted);">Ya en la plataforma</p>
-    <div style="display:flex; flex-direction:column; gap:10px;">
-      <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; background:var(--bg2); border:1px solid var(--border2);">
-        <div style="width:34px;height:34px;border-radius:50%;background:var(--mag-a12);border:1px solid var(--mag-a25);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">🌍</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:600;color:var(--white);">@marta.viajes</div>
-          <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Travel Creator · Madrid · 87k seguidores</div>
-        </div>
-        <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mag);background:var(--mag-a12);border:1px solid var(--mag-a25);padding:3px 8px;border-radius:10px;flex-shrink:0;">✦ Creator</div>
-      </div>
-      <div style="display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:12px; background:var(--bg2); border:1px solid var(--border2);">
-        <div style="width:34px;height:34px;border-radius:50%;background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;">🎙️</div>
-        <div style="flex:1;min-width:0;">
-          <div style="font-size:12px;font-weight:600;color:var(--white);">@lopezdestinos</div>
-          <div style="font-size:11px;color:var(--muted2);margin-top:1px;">Food & Travel · Barcelona · 34k seguidores</div>
-        </div>
-        <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--cyan);background:rgba(0,212,255,0.08);border:1px solid rgba(0,212,255,0.2);padding:3px 8px;border-radius:10px;flex-shrink:0;">✦ Creator</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- FORM -->
-  <div class="form-section" id="registro">
-    <div class="form-tag">Acceso gratuito</div>
-    <h2 class="form-h2">Empieza hoy</h2>
-    <p class="form-sub">Revisamos cada perfil en menos de 48 h. Sin tarjeta de crédito.</p>
-
-    <div class="form-error" id="form-err"></div>
-
-    <form id="reg-form">
-      <div class="field">
-        <label class="label" for="f-name">Tu nombre</label>
-        <input class="input" type="text" id="f-name" placeholder="Nombre completo" autocomplete="name" required>
-      </div>
-      <div class="field">
-        <label class="label" for="f-email">Email</label>
-        <input class="input" type="email" id="f-email" placeholder="tu@email.com" autocomplete="email" required>
-      </div>
-      <div class="field">
-        <label class="label" for="f-ig">Instagram</label>
-        <div class="ig-wrap">
-          <span class="ig-at">@</span>
-          <input class="input" type="text" id="f-ig" placeholder="tuhandle" autocomplete="off">
-        </div>
-      </div>
-      <div class="field">
-        <label class="label" for="f-pw">Contraseña</label>
-        <input class="input" type="password" id="f-pw" placeholder="Mínimo 8 caracteres" autocomplete="new-password" required>
-      </div>
-      <div style="margin-top:20px">
-        <button type="submit" class="btn" id="reg-btn">Solicitar acceso gratuito →</button>
-      </div>
-      <p class="form-fine">Al registrarte aceptas los <a href="#">términos</a> de Discoolver. Sin compromisos.</p>
-    </form>
-
-    <div class="success" id="success">
-      <div class="success-orb">✦</div>
-      <h3>Solicitud enviada</h3>
-      <p>Revisaremos tu perfil en menos de 48 horas y te avisamos por email cuando esté lista tu cuenta.</p>
-      <div class="success-chip">✦ Content Creator · Pendiente de validación</div>
-    </div>
-  </div>
+  </section>
 
   <!-- FOOTER -->
   <footer style="padding: 32px 22px 24px; border-top: 1px solid var(--border); text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px;">
     <img src="/static/logo-discoolver-white.png" alt="Discoolver" style="height:20px;width:auto;max-width:120px;object-fit:contain;filter:brightness(0) invert(1);opacity:0.5;">
-    <p style="font-size:11px;color:var(--muted);line-height:1.5;">La plataforma SaaS para destinos turísticos.<br>discoolver.com</p>
+    <p style="font-size:11px;color:var(--muted);line-height:1.5;">Guías de ciudad curadas con creadores.<br>discoolver.com</p>
     <p style="font-size:10px;color:var(--muted);opacity:0.6;">© 2026 Discoolver · <a href="#" style="color:inherit;text-decoration:none;">Términos</a> · <a href="#" style="color:inherit;text-decoration:none;">Privacidad</a></p>
   </footer>
 
 </div><!-- /page -->
 
 <!-- STICKY -->
-<div class="sticky" id="sticky">
-  <a href="#registro" class="btn">Solicitar acceso gratuito →</a>
+<div class="sticky off" id="sticky">
+  <div class="sticky-inner">
+    <a href="#form-guia" class="btn">{{cta_guia}}</a>
+    <a href="#form-video" class="btn btn-ghost">{{label_video}}</a>
+  </div>
 </div>
 
 <script>
-  const sticky = document.getElementById('sticky');
-  const form   = document.getElementById('registro');
-  const heroSection = document.querySelector('.hero');
+  const sticky   = document.getElementById('sticky');
+  const formsSec = document.getElementById('candidaturas');
+  const heroSec  = document.querySelector('.hero');
 
-  const formObs = new IntersectionObserver(
-    e => sticky.classList.toggle('off', e[0].isIntersecting), { threshold: 0.1 }
-  );
-  formObs.observe(form);
+  // Sticky visible SOLO cuando ni el hero ni los formularios están en pantalla.
+  // (Dos observers toggleando la misma clase 'off' se pisaban entre sí: se
+  // resuelve con dos flags y un único punto de decisión.)
+  let heroVisible = true, formsVisible = false;
+  const updateSticky = () => sticky.classList.toggle('off', heroVisible || formsVisible);
+  new IntersectionObserver(
+    e => { formsVisible = e[0].isIntersecting; updateSticky(); }, { threshold: 0.1 }
+  ).observe(formsSec);
+  new IntersectionObserver(
+    e => { heroVisible = e[0].isIntersecting; updateSticky(); }, { threshold: 0.2 }
+  ).observe(heroSec);
 
-  const heroObs = new IntersectionObserver(
-    e => { if (e[0].isIntersecting) sticky.classList.add('off'); }, { threshold: 0.4 }
-  );
-  heroObs.observe(heroSection);
-
-  document.querySelectorAll('a[href="#registro"]').forEach(a =>
+  // Los enlaces a un formulario hacen scroll y enfocan su primer campo.
+  const FOCUS_BY_ANCHOR = { '#form-guia': 'g-name', '#form-video': 'v-name' };
+  document.querySelectorAll('a[href^="#form-"]').forEach(a =>
     a.addEventListener('click', e => {
+      const href = a.getAttribute('href');
+      const target = document.querySelector(href);
+      if (!target) return;
       e.preventDefault();
-      form.scrollIntoView({ behavior: 'smooth' });
-      setTimeout(() => document.getElementById('f-name').focus(), 650);
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const focusId = FOCUS_BY_ANCHOR[href];
+      if (focusId) setTimeout(() => document.getElementById(focusId).focus(), 650);
     })
   );
 
-  // ── API ───────────────────────────────────────────────────────────────────
-  // MVP: FormSubmit captura leads en carlos@discoolver.com mientras el backend
-  // no está publicado. Cuando Diego despliegue en DO, sustituir ENDPOINT por:
-  //   'https://api.discoolver.com/dg/v2/auth/register'
+  // ── ENVÍO ─────────────────────────────────────────────────────────────────
+  // FormSubmit recoge las candidaturas en carlos@discoolver.com (el buzón ya
+  // activado en formsubmit.co — cambiarlo obliga a reconfirmar por email).
+  // NO se pide contraseña: la cuenta se crea cuando un editor aprueba la
+  // candidatura, no al aplicar.
   const ENDPOINT = 'https://formsubmit.co/ajax/carlos@discoolver.com';
 
-  document.getElementById('reg-form').addEventListener('submit', async e => {
-    e.preventDefault();
-    const btn  = document.getElementById('reg-btn');
-    const err  = document.getElementById('form-err');
-    const name = document.getElementById('f-name').value.trim();
-    const mail = document.getElementById('f-email').value.trim();
-    const ig   = document.getElementById('f-ig').value.trim().replace(/^@/, '');
-    const pw   = document.getElementById('f-pw').value;
+  function wireForm({ formId, btnId, errId, okId, subject, track, fields, submitLabel }) {
+    const form = document.getElementById(formId);
+    const btn  = document.getElementById(btnId);
+    const err  = document.getElementById(errId);
+    const ok   = document.getElementById(okId);
 
-    err.classList.remove('on');
-    if (pw.length < 8) {
-      err.textContent = 'La contraseña debe tener al menos 8 caracteres.';
-      err.classList.add('on'); return;
-    }
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      err.classList.remove('on');
 
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spin-ring"></span>Enviando…';
+      const v = {};
+      for (const [key, id] of Object.entries(fields)) v[key] = document.getElementById(id).value.trim();
 
-    try {
-      const res = await fetch(ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify({
-          _subject: '✦ Nueva solicitud Creator Discoolver — ' + name,
-          nombre: name,
-          email: mail,
-          instagram: ig ? '@' + ig : '(no indicado)',
-          _template: 'table',
-          _captcha: 'false',
-        }),
-      });
-      const data = await res.json().catch(() => ({}));
+      if (!v.nombre || !v.email || !v.handle || !v.ciudad || !v.link) {
+        err.textContent = 'Rellena todos los campos para enviar tu candidatura.';
+        err.classList.add('on');
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.email)) {
+        err.textContent = 'Revisa el email: no parece una dirección válida.';
+        err.classList.add('on');
+        return;
+      }
 
-      if (res.ok && data.success === 'true') {
-        document.getElementById('reg-form').style.display = 'none';
-        document.getElementById('success').classList.add('on');
-        sticky.classList.add('off');
-        form.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        err.textContent = 'Error al enviar. Inténtalo de nuevo.';
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spin-ring"></span>Enviando…';
+
+      try {
+        const res = await fetch(ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({
+            _subject: subject + ' — ' + v.nombre,
+            _template: 'table',
+            track: track,
+            nombre: v.nombre,
+            email: v.email,
+            handle: '@' + v.handle.replace(/^@/, ''),
+            ciudad: v.ciudad,
+            link: v.link,
+          }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || String(data.success) !== 'true') throw new Error('formsubmit');
+
+        form.style.display = 'none';
+        ok.classList.add('on');
+        ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch {
+        err.textContent = 'No se pudo enviar. Inténtalo de nuevo en unos minutos.';
         err.classList.add('on');
         btn.disabled = false;
-        btn.textContent = 'Solicitar acceso gratuito →';
+        btn.textContent = submitLabel;
       }
-    } catch {
-      err.textContent = 'Sin conexión. Comprueba tu internet e inténtalo de nuevo.';
-      err.classList.add('on');
-      btn.disabled = false;
-      btn.textContent = 'Solicitar acceso gratuito →';
-    }
+    });
+  }
+
+  wireForm({
+    formId: 'form-guia', btnId: 'g-btn', errId: 'g-err', okId: 'g-ok',
+    subject: '✦ Creator Discoolver — Quiero mi guía',
+    track: 'Guía propia (creador con audiencia)',
+    fields: { nombre: 'g-name', email: 'g-email', handle: 'g-handle', ciudad: 'g-city', link: 'g-link' },
+    submitLabel: '{{cta_guia}}',
+  });
+
+  wireForm({
+    formId: 'form-video', btnId: 'v-btn', errId: 'v-err', okId: 'v-ok',
+    subject: '✦ Creator Discoolver — Envío mi vídeo',
+    track: 'Vídeo (creador que empieza)',
+    fields: { nombre: 'v-name', email: 'v-email', handle: 'v-handle', ciudad: 'v-city', link: 'v-link' },
+    submitLabel: '{{cta_video}}',
   });
 </script>
 </body>

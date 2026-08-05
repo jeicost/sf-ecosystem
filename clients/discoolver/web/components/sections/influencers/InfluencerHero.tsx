@@ -2,90 +2,69 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { InfluencersContent } from "@/lib/content/influencers";
 
+/**
+ * Acquisition hero — one message only ("Tu guía. Tu marca. Tus ingresos.")
+ * followed immediately by the two-track picker, so the visitor lands on a
+ * choice without scrolling. No video background here on purpose: this page is
+ * an ad destination and the LCP has to be text, not a 3 MB mp4.
+ */
 export function InfluencerHero({ content }: { content: InfluencersContent }) {
+  const tracks = [
+    {
+      kicker: content.picker_a_kicker,
+      title: content.picker_a_title,
+      text: content.picker_a_text,
+      cta: content.picker_a_cta,
+      href: "#guia-propia",
+      featured: true,
+    },
+    {
+      kicker: content.picker_b_kicker,
+      title: content.picker_b_title,
+      text: content.picker_b_text,
+      cta: content.picker_b_cta,
+      href: "#tu-video",
+      featured: false,
+    },
+  ];
+
   return (
-    <header className="hero" id="main-content" style={{ position: "relative", overflow: "hidden", minHeight: "90vh", display: "flex", alignItems: "center" }}>
-      <video
-        src="/assets/v-nike-metro.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-hidden="true"
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          background: "linear-gradient(135deg, rgba(10,10,15,.92) 0%, rgba(196,38,196,.18) 100%)",
-          zIndex: 1,
-        }}
-      />
-      <div className="container" style={{ position: "relative", zIndex: 2 }}>
-        <div style={{ maxWidth: 780 }}>
+    <header className="hero hero--creators" id="main-content">
+      <span className="hero-wordmark" aria-hidden="true">
+        creators.
+      </span>
+      <div className="container">
+        <div className="hero-creators__copy">
           <Reveal delay={0}>
-            <span className="eyebrow" style={{ color: "var(--accent)" }}>
-              {content.hero_eyebrow}
-            </span>
+            <span className="eyebrow">{content.hero_eyebrow}</span>
           </Reveal>
           <Reveal delay={80}>
-            <h1 className="display-xl" style={{ marginTop: 20, lineHeight: 0.92 }}>
-              {content.hero_title_1}
-              <br />
-              {content.hero_title_2} <span style={{ color: "var(--primary)" }}>{content.hero_title_2_highlight}</span>
-              <br />
-              {content.hero_title_3}{" "}
-              <span style={{ color: "var(--accent)", fontStyle: "italic", position: "relative", display: "inline-block" }}>
-                {content.hero_title_3_highlight}
-                <span
-                  aria-hidden="true"
-                  style={{ position: "absolute", left: 0, right: 0, bottom: "0.06em", height: "0.08em", background: "var(--primary)", zIndex: -1 }}
-                />
-              </span>
+            <h1 className="hero-title" style={{ marginTop: 24 }}>
+              {content.hero_title_1} {content.hero_title_2}{" "}
+              <em className="hero-title__underline">{content.hero_title_3}</em>
             </h1>
           </Reveal>
           <Reveal delay={160}>
-            <p style={{ marginTop: 28, fontSize: 20, lineHeight: 1.5, color: "rgba(242,240,234,.75)", maxWidth: 560 }}>
-              {content.hero_sub_1}
-              <br />
-              {content.hero_sub_2}
+            <p className="hero-sub hero-sub--wide">
+              {content.hero_sub_1} {content.hero_sub_2}
             </p>
           </Reveal>
-          <Reveal delay={240}>
-            <div style={{ display: "flex", gap: 12, marginTop: 36, flexWrap: "wrap" }}>
-              <a href="#apply" className="btn btn-primary" style={{ fontSize: 16, padding: "14px 28px" }}>
-                {content.hero_cta_primary} <Icon name="arrow-right" size={16} />
-              </a>
-              <a href="#tools" className="btn btn-ghost" style={{ fontSize: 16, padding: "14px 28px", color: "#fff", borderColor: "rgba(255,255,255,.3)" }}>
-                {content.hero_cta_secondary}
-              </a>
-            </div>
-          </Reveal>
-          <Reveal delay={320}>
-            <div style={{ display: "flex", gap: 40, marginTop: 56, paddingTop: 32, borderTop: "1px solid rgba(242,240,234,.12)" }}>
-              <div>
-                <div style={{ fontSize: 28 }}>💰</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(242,240,234,.6)", marginTop: 6 }}>
-                  {content.hero_stat_1_label}
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: 28 }}>📍</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(242,240,234,.6)", marginTop: 6 }}>
-                  {content.hero_stat_2_label}
-                </div>
-              </div>
-              <div>
-                <div style={{ fontSize: 28 }}>🎁</div>
-                <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: "rgba(242,240,234,.6)", marginTop: 6 }}>
-                  {content.hero_stat_3_label}
-                </div>
-              </div>
-            </div>
-          </Reveal>
         </div>
+
+        <Reveal delay={240}>
+          <div className="track-picker">
+            {tracks.map((track) => (
+              <a key={track.href} href={track.href} className={`track-card ${track.featured ? "track-card--featured" : ""}`}>
+                <span className="track-card__kicker">{track.kicker}</span>
+                <span className="track-card__title">{track.title}</span>
+                <span className="track-card__text">{track.text}</span>
+                <span className="track-card__cta">
+                  {track.cta} <Icon name="arrow-right" size={14} />
+                </span>
+              </a>
+            ))}
+          </div>
+        </Reveal>
       </div>
     </header>
   );

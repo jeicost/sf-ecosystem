@@ -17,7 +17,7 @@ import { NextRequest, NextResponse } from "next/server";
  * prueba real tras cambiarlo.
  *
  * Este endpoint NUNCA finge éxito: si formsubmit no confirma la entrega,
- * responde 502 y los formularios (HeroForm en la home, InfluencerForm en
+ * responde 502 y los formularios (HeroForm en la home, InfluencerForms en
  * /influencers) muestran el error al usuario.
  */
 
@@ -28,10 +28,27 @@ const SUBJECTS: Record<string, string> = {
   hero: "Discoolver waitlist — Hero (home)",
   app: "Discoolver waitlist — App coming soon",
   influencer: "Discoolver — Creator application",
+  // /influencers, dos tracks: guía propia (creador con audiencia) y vídeo
+  // (creador que empieza). Asunto distinto para poder triarlos en bandeja.
+  "creator-guide": "Discoolver creators — Quiero mi guía",
+  "creator-video": "Discoolver creators — Envío mi vídeo",
 };
 
 /** Campos opcionales admitidos (whitelist: nada más se reenvía). */
-const EXTRA_FIELDS = ["city", "type", "region", "instagram", "tiktok", "youtube", "website", "other", "message"] as const;
+const EXTRA_FIELDS = [
+  "name",
+  "handle",
+  "link",
+  "city",
+  "type",
+  "region",
+  "instagram",
+  "tiktok",
+  "youtube",
+  "website",
+  "other",
+  "message",
+] as const;
 
 function clean(value: unknown): string | undefined {
   if (typeof value !== "string") return undefined;
