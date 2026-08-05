@@ -24,10 +24,15 @@ Mismo patrón flat-fields que el resto de landings del ecosistema: el copy se de
 SF-CMS en build-time (`scripts/fetch-cms-content.mjs`) y se hornea en `content/pages.json`;
 sin envs o con el CMS caído renderiza los fallbacks de `lib/content/{home,influencers}.ts`.
 
-⚠️ **La página `home` de sf-cms (proyecto `discoolver`) ya NO sirve a esta web**: se
-re-sembró con los campos de la tienda de guías. Si se quiere gestionar esta landing desde
-el CMS hay que crearle **su propia página** con su slug (p. ej. `app-landing`) y apuntar
-`SF_CMS_PAGE_SLUG` ahí. Mientras tanto renderiza sus fallbacks, que son el copy original.
+**Slugs propios en el CMS** (2026-08-05): esta web usa las páginas **`app-home`** y
+**`app-influencers`** del proyecto `discoolver` en sf-cms — NO `home`/`influencers`, que
+sirven a la web de guías dentro del mismo proyecto. El mapeo está en
+`scripts/fetch-cms-content.mjs` (`PAGE_SLUGS`, con la clave local intacta para que
+`lib/cms-pages.ts` siga leyendo `pages["home"]`) y en `loadCmsSectionsLive` para el draft
+mode. Se puede sobreescribir con `SF_CMS_SLUG_HOME` / `SF_CMS_SLUG_INFLUENCERS`.
+
+Las dos páginas están `published` con los 206 + 107 campos del copy original, así que ya
+son editables desde el CMS sin tocar código.
 
 ## Assets
 

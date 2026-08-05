@@ -63,7 +63,14 @@ export async function loadCmsSectionsLive(pageSlug: "home" | "influencers"): Pro
 
   try {
     const res = await fetch(
-      `${apiUrl}/pages?project=${projectSlug}&slug=${pageSlug}&preview=true`,
+      // Mismo mapeo de slugs que scripts/fetch-cms-content.mjs: esta web usa
+      // `app-home`/`app-influencers`, porque `home`/`influencers` sirven a la
+      // web de guías (clients/discoolver/web) dentro del mismo proyecto CMS.
+      `${apiUrl}/pages?project=${projectSlug}&slug=${
+        pageSlug === "home"
+          ? process.env.SF_CMS_SLUG_HOME || "app-home"
+          : process.env.SF_CMS_SLUG_INFLUENCERS || "app-influencers"
+      }&preview=true`,
       { headers: { "x-api-key": apiKey, "x-preview-secret": previewSecret }, cache: "no-store" },
     );
     if (!res.ok) return null;

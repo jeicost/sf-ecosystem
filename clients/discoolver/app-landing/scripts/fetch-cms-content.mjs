@@ -30,7 +30,15 @@ const CMS_API_KEY = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY
 const PROJECT_SLUG = process.env.SF_CMS_PROJECT_SLUG || process.env.CMS_PROJECT_SLUG || 'discoolver'
 const HEADERS = { 'x-api-key': CMS_API_KEY }
 
-const PAGE_SLUGS = ['home', 'influencers']
+// Esta web es la landing de la APP, no la de guías. Comparte proyecto en
+// SF-CMS con la web de guías, así que NO puede usar los slugs `home` /
+// `influencers`: esos ya sirven a clients/discoolver/web y sus campos son
+// los de la tienda de guías. Slugs propios, con la clave local intacta para
+// que lib/cms-pages.ts siga leyendo pages["home"].
+const PAGE_SLUGS = [
+  { local: 'home',        remote: process.env.SF_CMS_SLUG_HOME || 'app-home' },
+  { local: 'influencers', remote: process.env.SF_CMS_SLUG_INFLUENCERS || 'app-influencers' },
+]
 
 function ensureContentFile() {
   fs.mkdirSync(CONTENT, { recursive: true })
@@ -53,9 +61,10 @@ async function fetchJson(url) {
 async function main() {
   const pages = {}
 
-  for (const slug of PAGE_SLUGS) {
+  for (const { local, remote } of PAGE_SLUGS) {
+    const slug = remote
     try {
-      const url = `${CMS_API_URL}/pages?project=${PROJECT_SLUG}&slug=${slug}`
+      const url = `${CMS_API_URL}/pages?project=${PROJECT_SLUG}&slug=${remote}`
       const data = await fetchJson(url)
       // API may return a single page object or { pages: [...] } depending on query shape.
       const page = Array.isArray(data?.pages) ? data.pages[0] : Array.isArray(data) ? data[0] : data
@@ -68,7 +77,7 @@ async function main() {
         const key = s.id ?? s.type
         sections[key] = { type: s.type, data: s.data ?? {} }
       }
-      pages[slug] = {
+      pages[local] = {
         title: page.title,
         sections,
         updatedAt: page.updated_at,
