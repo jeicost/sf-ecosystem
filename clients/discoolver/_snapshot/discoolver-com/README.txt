@@ -1,0 +1,1 @@
+2026-08-06T03:45:05Z — snapshot de discoolver.com (web antigua, Next 12 sobre Cloudflare, fuera del monorepo). Es la unica copia del copy B2B original (/destinos, /alojamientos). Recuperado antes de la reescritura de 2026-08.

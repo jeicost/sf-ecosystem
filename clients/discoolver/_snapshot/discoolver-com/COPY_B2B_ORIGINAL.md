@@ -1,0 +1,365 @@
+# Copy original B2B de discoolver.com (web antigua)
+
+Extraído del HTML servido el 2026-08-06. Es la **única copia** de este copy: no está en el
+monorepo ni en git. Punto de partida para reescribir `/360/destinos` y `/360/alojamientos`.
+
+
+---
+
+## `discoolver.com/es/destinos`
+
+- Home
+- Destinos
+- Influencers
+- Alojamientos
+- es
+- Sing up
+- Login
+- Soluciones Tecnológicas para destinos turísticos
+- La plataforma de promoción turística y venta de productos y servicios locales
+- La plataforma con todo lo que necesita el turista.
+- La plataforma con todo lo que buscan tus turistas.
+- # Alojamientos
+- # Party
+- # Restaurantes
+- # Comercios
+- # Sorpréndeme
+- # Eventos
+- # Actividades
+- Herramientas para los destinos
+- Recomendador y market place local
+- Sistema de promoción y venta de todos los activis turisticos de la ciudad.
+- Sistema de ventas Oficina y Monumentos (POS)
+- Vende todo tipo de productos y servicios en tus oficinas de turismo y monumentos.
+- Web y gestor de contenidos
+- Genera ingresos con todas las ventas y reservas de tus recomendaciones a través de nuestro market place.
+- Entiende al turista
+- Informes
+- Gracias a la interacción del público con el sistema discoolver 360 proporcionamos al destino una informacion actualizada de las tendencias locales.
+- Comercializa productos y actividades locales
+- Sistema de ventas
+- Comercializamos no solo los activos turisticos propios del destino sino aquellos comercios, productos y actividades interesantes de la región.
+- Convierte tu ciudad en un destino atractivo para turístas digitales.
+- Herramientas para el turista
+- Asistente de voz
+- Un asistente de voz basado en IA que se entrena con  los contenidos del destino para convertirse en tu nueva atención al turista 24/7.
+- Calendario y mapas inteligentes
+- Publica todos los eventos importantes para tu comunidad y ofrece un mapa claro con las zonas y puntos destacados de la ciudad.
+- Planificador de rutas
+- Permite a los usuarios generar rutas para descurbir la ciudad a su ritmo y en base a sus intereses.
+- Soluciones de señalética digital para destinos
+- Totems y dispositivos digitales
+- Sistemas de QR
+- Ya confían en nosotros...
+- Conoce que podemos hacer por tu destino
+- Agendar una cita
+- Contacta con nosotros y un miembro del equipo resolverá tus dudas.
+- ¿Te ayudamos?
+- Contacto
+- [email protected]
+- (+34) 681 291 571
+- C/ María de Molina 39, 28006
+- Madrid
+
+---
+
+## `discoolver.com/destinos`
+
+- Digital Marketing and
+- Software
+- for
+- Destinations
+- We help your destination to design the perfect packages to leverage all your potential create unique value proposals fot visitors.
+- Request a Demo
+- Key Features for
+- Integrated Local Marketplace
+- Connect tourists with authentic local offerings, from accommodations to unique activities, all in one place.
+- Advanced Content Management System (CMS)
+- Easily manage and update your destination's digital content, ensuring visitors have access to the latest information and activities, all in one place.
+- Intelligent Visitor Analytics
+- Utilize real-time data to understand visitor patterns, enhancing resource allocation and strategic planning.
+- POS service
+- Integrate your digital and offline sales in an all in one management solutions for tourism offices
+- Smart guides
+- Create unique guides to help users discover and interact with your destination.
+- Data-Driven
+- Decision
+- Making
+- We don’t track traffic. We track
+- desire.
+- Our platform collects live, behavioral insights from
+- real travelers
+- how they move, what they love, what they avoid
+- — based on
+- personality
+- purpose
+- , and
+- taste
+- Actionable
+- analytics
+- on how visitors truly engage with your city.
+- Insights to
+- redesign cultural offerings
+- , events, and marketing campaigns.
+- Data to
+- boost local business visibility
+- and improve public investment ROI.
+- “It’s not just where tourists go — it’s why they go. That’s the data that matters.”
+- Tools that
+- Think
+- Like a Traveler.
+- Data that Works
+- for You.
+- Not just numbers — insight that guides action.
+- Plan My Trip
+- A personalized travel planning system that adapts to each visitor’s style and rhythm.
+- From slow walkers to food hunters — everyone gets their own route.
+- Smart Maps & Dynamic Calendars
+- Live events, seasonal tips, cultural pulses — integrated and updated in real time.
+- Turn your town’s agenda into a powerful digital experience.
+- Local Buddy (AI-Powered Assistant)
+- Your destination's 24/7 digital host.
+- Speak, search, suggest — in the tone of a trusted local.
+- Marketplace + CMS
+- From restaurants to routes, manage, promote and update every listing across a centralized and curated dashboard.
+- Uncover behavioral flows, visitor clusters, and underutilized areas with our real-time data layer.
+- Empower tourists to explore at their own pace with tailored route suggestions and activity planning.
+- Good
+- Travel
+- = Good
+- Data
+- = Better
+- Cities
+- We believe tourism is emotional infrastructure.
+- Our mission is to align destination identity with traveler fulfillment.
+- Avoid frustration and wasted time
+- empower your visitors experience; making exploration human, curated, and data-driven.
+- Match real stories to real personalities
+- inspire deeper connections between travelers and the places they visit by unlocking authentic local stories and experiences through smart technology.
+- Leverage your content
+- Include all your destination media and collaborations with content creators to a new level.
+- “Local joy is measurable. Let’s track it. 📍”
+- A new gen of
+- smart
+- devices
+- Interact
+- with your visitors
+- Autonomous selling points:
+
+---
+
+## `discoolver.com/es/alojamientos`
+
+- Home
+- Destinos
+- Influencers
+- Alojamientos
+- es
+- Sing up
+- Login
+- Bienvenido a tu nuevo servicio de concierge digital
+- La plataforma definitiva para interactuar con tus clientes
+- Un ecosistema diseñado para acompañar al turista en su visita.
+- Convierte a tu establecimiento en el alma del viaje
+- Asistente de voz
+- Permite a los usuarios encontrar tus recomendaciones a hacer de nuestro mapa interactivo y crear rutas.
+- Calendario y mapas
+- Publica todos los eventos importantes para tu comodidad.
+- Planificador de rutas
+- Genera ingresos con todas las ventas y reservas de tus recomendaciones a través de nuestro market place.
+- Aprende de tus clientes
+- Aporta valor y data a tu negocio
+- Recopilamos toda la informacion disponible de nuestros usuarios de forma segura para ofrecer los análisis y reportes de negocio.
+- Genera una nueva fuente de ingresos
+- Monetiza tus recomendaciones
+- Recomienda y vende los planes y actividades que mejor se adapten a tus clientes.
+- Diseñamos soluciones a medida para
+- Hoteles
+- Desde grandes cadenas a hoteles boutique nuestra solución se ajusta a las necesidades de tu  hotel.
+- Hostales
+- La nueva forma de aportar valor al turista joven cliente de los hostels para que aprovechen su estancia al máximo.
+- Property Managers
+- Una nueva forma de presentar la ciudad a los huespedes de tu ciudad. Generamos modelos propios para redes de apartamentos.
+- Soluciones de señalética digital para alojamientos:
+- Totems y dispositivos digitales
+- Sistema de QR
+- Ya confían en nosotros...
+- ¿Quieres probar nuestras herramientas en tu negocio?
+- Agendar una demo
+- Contacta con nosotros y un miembro del equipo resolverá tus dudas
+- ¿Te ayudamos?
+- Contacto
+- [email protected]
+- (+34) 681 291 571
+- C/ María de Molina 39, 28006
+- Madrid
+
+---
+
+## `discoolver.com/alojamientos`
+
+- Request a Demo
+- Too
+- many options
+- is not freedom.
+- It's
+- chaos.
+- Discoolver was built to cut through the noise. We don't just list your business. We recommend it — when it's right for the right traveler.
+- No random ads. No boosted spam. Just perfect-fit matches.
+- The real luxury isn't information. It's
+- curation.
+- We turn 1,000 possibilities into 10 unforgettable ones — filtered by taste, travel style, and context.
+- Why Travelers Love Us
+- (and You Should Too)
+- Tools that think like a traveler.
+- Plan My Trip
+- Plan with logic a personalized itinerary planner powered by real user behavior and preferences.
+- Smart Map & Local Calendar
+- Guide with experience, highlighting your place exactly when it matters.
+- Voice AI: The Local Buddy
+- Discover with AI, our signature assistant helps users discover your business naturally.
+- CREATE YOUR OWN CITY GUIDE
+- Offer your
+- clients
+- a personalized city guide, with carefully selected recommendations that will enrich their stay.
+- Meet your next customer...
+- before they even arrive.
+- Our algorithm matches travel personalities and influencer recommendations with your offering — filtering only those whose habits, style and expectations match what you do best.
+- If they're likely to love your place, we'll show it. If not, we won't.
+- This is not exposure. This is
+- precision.
+- Key
+- Benefits
+- for your Hosting
+- Improve Guest Satisfaction
+- Surprise guests with recommendations that elevate their stay — and boost your reviews.
+- Competitive Differentiation
+- Stand out in your market with a platform that rewards quality, not ads.
+- Seamless Integration
+- Works easily with your existing system — no stress, no disruption.
+- Authenticity Boost
+- Discoolver is a mark of trust. Being recommended means something. It’s earned.
+- PERFECT for all types of
+- accommodations
+- Hotels
+- Resorts
+- Hostels
+- Touristic Apartments
+- Rural Accommodations
+- We support all types of accommodations, from hotels to hostels, and everything in between.
+- EASY AND SIMPLE
+- INTEGRATION
+- Implement Discoolver hassle-free, with quick integration and continuous support.
+- Branded
+- Customize the platform with your branding.
+- Modular
+- Choose the modules that fit into your customer experience strategy.
+- Smart Recommendation
+- Choose the most popular recommendations from our smart engine and pick what you want to recommend.
+- Sell More
+- Upsell local services with smart recommendations.
+- “Set it once, scale forever.”
+- The End of Pay-to-Play.
+- The Rise of Real Value.
+- We're not just another marketing channel. We're the beginning of a new model.
+- Discoolver doesn't promote businesses based on how much they pay. We promote what truly delivers. Your visibility isn't for sale — it's earned through the quality of the experience you offer.
+- We've had enough of 100,000 useless, biased recommendations cluttering the internet. Our platform centers what truly matters:
+- The traveler
+- We put the traveler at the center of every recommendation
+- Their time
+- Every moment counts when exploring new destinations
+- The value of your offer
+- Quality experiences speak louder than paid promotions
+- More than bookings.
+- Discoolver is business intelligence.
+- Increased Revenues
+- Drive upsells and on-site service usage — from spa to restaurant — through personalized traveler flows.
+- Real-Time Feedback
+- Access detailed analytics on how well you’re serving your ideal guest.
+- No Ads, No Noise
+- We grow your reach by the quality of what you offer — not by what you pay
+
+---
+
+## `discoolver.com/influencers`
+
+- You don't follow
+- trends
+- You
+- create
+- them.
+- Welcome to the Cool Club
+- where creators don't just post content
+- they shape how the world travels.
+- Apply as Creator ▸
+- Show the
+- world
+- in a
+- different
+- way.
+- Connect with your audience through your recommendations.
+- Are you one of those who seek authentic experiences and want to share them with your community?
+- Discoolver turns your content into personalized recommendations
+- for travelers around the world.
+- Your recommendation are now:
+- Monetizable
+- Geolocated
+- Customized
+- Start creating with Discoolver
+- Transform your travels into
+- inspiring stories.
+- Discoolver turns your content into personalized recommendations for travelers around the world.
+- Earn from every sale to your recommendations
+- Scale your business and start generating sustainable long-term income with tracked links to your content.
+- Offer new tools to your users
+- Maps, calendars and interactive guides with your content. Your followers don't just see you — they literally follow you.
+- Expand your community
+- Connect with new audiences, grow your base and access travelers in different markets around the world. Get discovered for what you share, not just how you look.
+- Start monetizing ▸
+- Feed your
+- community
+- with gold.
+- Discoolver is not another promo tool.
+- It's an ecosystem for creators, designed for quality content and real impact on travel.
+- With our tools you can:
+- Trip Guides
+- Create your own trip guides to offer your followers.
+- Smart Calendar
+- Make sure your audience know the events you are attending and help promote them.
+- Cool Map
+- We design a view with all your recommendations to share with your community.
+- Create your own travel guides for your users ▸
+- Creators
+- With Criteria
+- We don't f*ck with bad recommendations.
+- Only creators who move culture get in.
+- Micro or macro — if your content brings value, you're in.
+- Authentic Voice
+- You've got a niche, a voice, and a mission.
+- Not just for likes, but for meaning.
+- Authentic Curators
+- This isn't a platform for influencers.
+- It's for curators of real experience.
+- Apply as Creator
+- Design your
+- territory
+- Claim your map & guides. Build your legacy.
+- Give your audience something more than
+- pretty pictures.
+- 🛠 SYSTEM FEATURES
+- Unlock explorer badges
+- for each zone or theme
+- Share interactive maps
+- your audience can follow, save & use
+- Mark territories
+- with your unique picks, stories & content
+- Create Your account ▸
+- Proven by the
+- People Who Matter.
+- We are not just a platform, we curate the best local creators.
+- @viajeraautentica
+- "Discoolver helped me tell the untold story of the city."
+- @exploradorurbano
+- "I gained real connections and unexpected collabs."
+- @aventurera_creativa
+- "From content to community: finally a platform that gets it."
