@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!link || typeof link !== 'string') {
-      return NextResponse.json({ error: 'Falta el enlace de la carpeta de Drive' }, { status: 400 })
+      return NextResponse.json({ error: 'The Google Drive folder link is missing' }, { status: 400 })
     }
 
     // Optional project scoping: the project must exist and belong to the resolved client
@@ -158,11 +158,11 @@ export async function POST(req: NextRequest) {
         .eq('id', projectId)
         .maybeSingle()
       if (!projectRow) {
-        return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+        return NextResponse.json({ error: 'Project not found' }, { status: 404 })
       }
       if (projectRow.client_id !== clientId) {
         return NextResponse.json(
-          { error: 'El proyecto no pertenece a este cliente' },
+          { error: 'That project does not belong to this client' },
           { status: 403 }
         )
       }
@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
     const folderId = extractDriveFolderId(link)
     if (!folderId) {
       return NextResponse.json(
-        { error: 'Enlace de carpeta de Drive no válido. Pega un enlace tipo https://drive.google.com/drive/folders/... o el ID de la carpeta.' },
+        { error: 'Invalid Google Drive folder link. Paste a link like https://drive.google.com/drive/folders/... or the folder ID.' },
         { status: 400 }
       )
     }
@@ -186,6 +186,37 @@ export async function POST(req: NextRequest) {
     const metadata = await getDriveFolderMetadata(tokenResult.token, folderId)
     if ('error' in metadata) {
       return NextResponse.json({ error: metadata.error }, { status: 400 })
+    }
+
+    // Una carpeta pertenece a UN cliente y solo a uno.
+    //
+    // La restricción única de la tabla es (client_id, folder_id), así que nada
+    // impedía conectar la MISMA carpeta de Drive a dos clientes distintos:
+    // bastaba con pegar el enlace equivocado teniendo otro cliente activo, y
+    // ese cliente empezaba a ingerir los documentos del primero en su Brand
+    // Brain, en silencio y sin ninguna forma de notarlo salvo leyendo sus
+    // documentos uno a uno. Con las carpetas de todos los clientes viviendo
+    // dentro de la misma cuenta de Drive (MIRA_BRAND_BRAIN_INGESTION), el
+    // aislamiento entre clientes depende por completo de esta asignación —
+    // así que se comprueba explícitamente.
+    const { data: ownedElsewhere } = await admin
+      .from('drive_folders')
+      .select('client_id, clients(name)')
+      .eq('folder_id', folderId)
+      .neq('client_id', clientId)
+      .limit(1)
+      .maybeSingle()
+
+    if (ownedElsewhere) {
+      const owner = (ownedElsewhere as { clients?: { name?: string } }).clients?.name
+      return NextResponse.json(
+        {
+          error: owner
+            ? `That Drive folder is already connected to another client (${owner}). Each folder belongs to a single client — connect a different folder.`
+            : 'That Drive folder is already connected to another client. Each folder belongs to a single client — connect a different folder.',
+        },
+        { status: 409 }
+      )
     }
 
     // Default 'brand': el modelo B3 es UNA carpeta de conocimiento por cliente
@@ -227,7 +258,7 @@ export async function POST(req: NextRequest) {
           .eq('folder_id', folderId)
           .maybeSingle()
         return NextResponse.json(
-          { folder: existing, message: 'Esta carpeta ya estaba conectada para este cliente.' },
+          { folder: existing, message: 'This folder was already connected for this client.' },
           { status: 200 }
         )
       }
@@ -268,7 +299,7 @@ export async function DELETE(req: NextRequest) {
       .maybeSingle()
 
     if (rowError || !row) {
-      return NextResponse.json({ error: 'Carpeta no encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Folder not found' }, { status: 404 })
     }
 
     // Verify the row's client is accessible by this user

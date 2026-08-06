@@ -14,7 +14,13 @@ export const maxDuration = 60
 
 const ALLOWED_PREFIXES = new Set(['quick-actions', 'assets', 'business-reports', 'onboarding'])
 const MAX_FILES = 5
-const MAX_BYTES = 15 * 1024 * 1024
+// 4 MB, no 15. El límite de 15 era una promesa que la plataforma no puede
+// cumplir: en Vercel, el cuerpo de una petición a un route handler está
+// limitado a ~4,5 MB y no se puede subir por configuración (bodySizeLimit solo
+// aplica a Server Actions). Con 15 MB, una foto de móvil fallaba con un 413
+// crudo ANTES de llegar a este código, así que ni siquiera se podía dar un
+// mensaje decente. Ahora se rechaza aquí, con una explicación.
+const MAX_BYTES = 4 * 1024 * 1024
 
 function isAllowedMime(mime: string): boolean {
   return (
@@ -43,10 +49,10 @@ export async function POST(req: NextRequest) {
     const files = form.getAll('files').filter((f): f is File => f instanceof File)
 
     if (files.length === 0) {
-      return NextResponse.json({ error: 'No se recibió ningún archivo' }, { status: 400 })
+      return NextResponse.json({ error: 'No file received' }, { status: 400 })
     }
     if (files.length > MAX_FILES) {
-      return NextResponse.json({ error: `Máximo ${MAX_FILES} archivos por subida` }, { status: 400 })
+      return NextResponse.json({ error: `Maximum ${MAX_FILES} files per upload` }, { status: 400 })
     }
 
     const storage = adminClient().storage.from('brand-assets')
@@ -55,13 +61,13 @@ export async function POST(req: NextRequest) {
     for (const file of files) {
       if (file.size > MAX_BYTES) {
         return NextResponse.json(
-          { error: `"${file.name}" supera el límite de 15MB` },
+          { error: `"${file.name}" is ${(file.size / 1024 / 1024).toFixed(1)} MB — the limit is 4 MB. Resize it or take a smaller screenshot.` },
           { status: 400 }
         )
       }
       if (!isAllowedMime(file.type)) {
         return NextResponse.json(
-          { error: `Tipo de archivo no soportado: ${file.type || 'desconocido'} (${file.name})` },
+          { error: `Unsupported file type: ${file.type || 'unknown'} (${file.name})` },
           { status: 415 }
         )
       }
@@ -75,7 +81,7 @@ export async function POST(req: NextRequest) {
         upsert: true,
       })
       if (error) {
-        return NextResponse.json({ error: `Error subiendo "${file.name}": ${error.message}` }, { status: 500 })
+        return NextResponse.json({ error: `Could not upload "${file.name}": ${error.message}` }, { status: 500 })
       }
 
       const type: Attachment['type'] =
@@ -92,6 +98,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ attachments: uploaded, success: true })
   } catch (error) {
     console.error('Attachment upload error:', error)
-    return NextResponse.json({ error: 'Error interno subiendo archivos' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error uploading files' }, { status: 500 })
   }
 }

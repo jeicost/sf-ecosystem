@@ -1,8 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useActiveClient } from '@/lib/client-context'
-import { Upload, Trash2, File, Loader2, AlertCircle, CheckCircle } from 'lucide-react'
+import { Upload, Trash2, File, Loader2, AlertCircle, CheckCircle, Download } from 'lucide-react'
 
 interface Document {
   id: string
@@ -15,6 +15,11 @@ interface Document {
 }
 
 export default function DocumentUpload() {
+  // El selector de cliente activo se ignoraba por completo: fetch y subida
+  // iban sin ?clientId=, así que un usuario con varios clientes siempre
+  // veía y escribía en el primero de sus grants.
+  const { activeClient } = useActiveClient()
+  const clientId = activeClient?.id
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
@@ -23,13 +28,9 @@ export default function DocumentUpload() {
   const [isDragging, setIsDragging] = useState(false)
   const [docType, setDocType] = useState('brand-book')
 
-  useEffect(() => {
-    fetchDocuments()
-  }, [])
-
-  const fetchDocuments = async () => {
+  const fetchDocuments = useCallback(async () => {
     try {
-      const res = await fetch('/api/documents')
+      const res = await fetch(`/api/documents${clientId ? `?clientId=${clientId}` : ''}`)
       if (!res.ok) throw new Error('Failed to fetch documents')
       const { data } = await res.json()
       setDocuments(data || [])
@@ -38,7 +39,11 @@ export default function DocumentUpload() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [clientId])
+
+  useEffect(() => {
+    fetchDocuments()
+  }, [fetchDocuments])
 
   const handleFileUpload = async (files: any) => {
     if (!files || files.length === 0) return
@@ -58,27 +63,30 @@ export default function DocumentUpload() {
       formData.append('file', file)
       formData.append('docType', docType)
 
-      const res = await fetch('/api/documents/upload', {
+      const res = await fetch(`/api/documents/upload${clientId ? `?clientId=${clientId}` : ''}`, {
         method: 'POST',
         body: formData,
       })
 
       if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.error || 'Failed to upload document')
+        const errorData = await res.json().catch(() => ({}))
+        throw new Error(errorData.error || `Failed to upload document (${res.status})`)
       }
 
-      const { fileUrl, documentId } = await res.json()
+      const { fileUrl } = await res.json()
 
-      // Save document metadata with real URL
+      // Save document metadata with real URL. El `id` que se enviaba antes era
+      // un string inventado en la ruta de subida (`${Date.now()}-${random}`),
+      // no un uuid — la tabla genera el suyo, así que enviarlo solo podía
+      // confundir. Se deja que la BD asigne el id.
       const metaRes = await fetch('/api/documents', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: documentId,
+          clientId,
           doc_type: docType,
           title: fileName.replace(/\.[^/.]+$/, ''),
-          description: `Uploaded on ${new Date().toLocaleDateString()}`,
+          description: null,
           file_url: fileUrl,
           file_size: fileSize,
           file_mime_type: fileMimeType,
@@ -87,7 +95,8 @@ export default function DocumentUpload() {
       })
 
       if (!metaRes.ok) {
-        throw new Error('Failed to save document metadata')
+        const metaErr = await metaRes.json().catch(() => ({}))
+        throw new Error(metaErr.error || 'Failed to save document metadata')
       }
 
       setSuccess(true)
@@ -124,7 +133,7 @@ export default function DocumentUpload() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('es-ES', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -249,12 +258,25 @@ export default function DocumentUpload() {
                   </div>
                 </div>
 
-                <button
-                  onClick={() => handleDelete(doc.id)}
-                  className="p-2 rounded-lg text-ink-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
-                >
-                  <Trash2 size={18} />
-                </button>
+                <div className="flex items-center gap-1">
+                  {/* Descarga vía proxy que re-firma: la storage_url guardada
+                      es una signed URL de 7 días y enlazarla directamente
+                      dejaba el documento inaccesible pasada esa semana. */}
+                  <a
+                    href={`/api/documents/${doc.id}/download`}
+                    className="p-2 rounded-lg text-ink-secondary hover:text-purple-400 hover:bg-purple-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Download"
+                  >
+                    <Download size={18} />
+                  </a>
+                  <button
+                    onClick={() => handleDelete(doc.id)}
+                    className="p-2 rounded-lg text-ink-secondary hover:text-red-400 hover:bg-red-500/10 transition-colors opacity-0 group-hover:opacity-100"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
