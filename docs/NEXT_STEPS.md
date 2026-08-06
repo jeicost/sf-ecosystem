@@ -2,6 +2,32 @@
 
 Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)(yy)(zz)(aaa)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063 todas aplicadas. Este fichero lista SOLO lo que queda. Última verificación de vigencia de cada ítem contra el código real: 2026-08-03.
 
+## Discoolver — guías + curador (2026-08-06)
+
+**El producto de guías (dg-editor) queda en un estado cerrado y documentado.** Punto de
+partida para la siguiente fase: `ESTADO_2026-08-06.md` en `~/Developer/discoolver-dg-editor`
+(repo del cliente, fuera del monorepo). La **integración con el curador de Discoolver** se
+planifica en otro hilo.
+
+**Web pública reposicionada y en producción** (commits `4cf6f32`..`f668658`): la home pasa a
+ser tienda editorial de guías y `/influencers` a landing de captación de creators con dos
+tracks. La **landing de la app** quedó sustituida por el cambio y se recuperó del histórico en
+`clients/discoolver/app-landing`, con proyecto Vercel y páginas de CMS propias. Las tres webs
+y sus dominios, en el registro de proyectos.
+
+**Pendiente del CEO (bloquea el piloto de guías con creators):** foto de los dos influencers,
+crear la cuenta de Apify y pasar el token, alta en Gumroad o Lemon Squeezy, domicilio fiscal y
+NIF para la página de privacidad, y revisión legal del acuerdo de creator.
+
+**Pendiente de Diego:** los endpoints de listado del CMS (`/cms/v1/business|city|category`)
+devuelven 500 con el usuario `atenea`, y hace falta una URL pública canónica por negocio — es
+lo que se codifica en el QR impreso de cada ficha. Documento completo:
+`spring-handoff/INTEGRACION_CMS_2026-08.md`.
+
+**Sin resolver:** `discoolver.com` sirve una web antigua en inglés distinta de las dos
+actuales. O se migra o se redirige, pero hoy hay contenido duplicado indexándose.
+
+
 ## Auditoría de stack técnico + limpieza (DEBT xx→zz, 2026-07-31) — ✅ CERRADO COMPLETO
 
 Fases A-D ejecutadas y verificadas (commits `82bb05d`..`1056fa7`): cruft huérfano y paquetes vacíos borrados, bug real de Tailwind v3/v4 arreglado en `ai-agency-sf-next` (y de paso TODAS sus versiones flotantes fijadas en `08beee6` — la mención anterior aquí a `@ai-sdk/anthropic`/`ai` era incorrecta, esas deps nunca existieron en esa app), `@sf/supabase` con factories reales adoptado en `sf-crm`/`sf-cms`/`mira/portal`, MIRA a Next 16. Los 3 pendientes que esta sección listaba se cerraron el mismo 2026-07-31: migración completa de los 33 ficheros restantes de `mira/portal` (DEBT zz — única excepción documentada: `proxy.ts`, por semántica de batching de cookies), sesión autenticada verificada en vivo incluso con sesión fragmentada en 5 cookies (zz+aaa), y el pineo de `ai-agency-sf-next`.
