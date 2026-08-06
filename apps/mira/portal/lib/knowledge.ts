@@ -29,10 +29,52 @@ export interface KnowledgeContextOptions {
   projectId?: string | null
   /** Rol del agente que consulta — sus documentos puntúan más alto. */
   agentRole?: string | null
-  /** Presupuesto de caracteres del bloque final (coste de tokens acotado). */
+  /** Presupuesto de caracteres para documentos de PROSA (coste acotado). */
   charBudget?: number
+  /**
+   * Presupuesto SEPARADO para contenido estructurado (hojas de cálculo).
+   * Ver la nota de `kindOf` sobre por qué no comparten cupo.
+   */
+  structuredBudget?: number
   /** Máx. de filas a considerar antes del ranking. */
   fetchLimit?: number
+}
+
+/**
+ * Tres tipos de conocimiento con presupuestos MUY distintos.
+ *
+ * El tope era 420 caracteres por documento para todo, y `excerpt()` prefiere el
+ * resumen de IA sobre el contenido real. Para un menú en Excel eso significaba
+ * que el agente leía "un menú con 58 recetas y precios" y **nunca un precio**:
+ * justo el dato por el que se añadió el soporte de hojas de cálculo. Un CSV de
+ * 87.000 caracteres entraba al prompt como 420.
+ *
+ * - `tabular`: datos densos y ya comprimidos (una fila = un hecho). Merecen
+ *   mucho más espacio Y su propio cupo, para que un menú largo no eche fuera
+ *   al brand book.
+ * - `image`: descripción por visión, 4-6 frases (~600 chars). 420 la cortaba
+ *   justo antes del estilo visual, que suele ser lo más útil.
+ * - `prose`: PDF, docs, notas. El comportamiento de siempre.
+ */
+type KnowledgeKind = 'tabular' | 'image' | 'prose'
+
+// 8.000 caracteres para una tabla ≈ 2.000 tokens. Es lo que hace falta para que
+// quepa ENTERO un menú real: el de Salsa son 58 filas / ~6.800 caracteres, y con
+// 3.000 solo llegaban 26 precios de 58 — media tabla sigue siendo una respuesta
+// incompleta, y encima sin avisar de que falta la otra mitad. Una fila ya es
+// información comprimida (un hecho por línea), así que el coste por carácter
+// aquí es mucho más rentable que en prosa. El cupo total (`structuredBudget`)
+// acota el caso de varias hojas a la vez; si una tabla no cabe ni así, se corta
+// y el modelo ve el aviso de "Rows: N" de la cabecera.
+const PER_ITEM: Record<KnowledgeKind, number> = { tabular: 8000, image: 700, prose: 420 }
+
+function kindOf(item: KnowledgeItem): KnowledgeKind {
+  const body = item.content?.trimStart() ?? ''
+  // Marcadores que emite el extractor de hojas (lib/drive-sync.ts) y el
+  // describidor de imágenes (lib/vision.ts).
+  if (body.startsWith('## Sheet:') || body.startsWith('Columns:')) return 'tabular'
+  if (body.startsWith('[IMAGE]')) return 'image'
+  return 'prose'
 }
 
 const SOURCE_LABEL: Record<KnowledgeItem['source'], string> = {
@@ -53,7 +95,14 @@ function rank(item: KnowledgeItem, projectId?: string | null, agentRole?: string
   return score
 }
 
-function excerpt(item: KnowledgeItem, max: number): string {
+function excerpt(item: KnowledgeItem, max: number, kind: KnowledgeKind): string {
+  // En una tabla, el valor ESTÁ en el contenido: el resumen de IA describe la
+  // hoja pero se come justo los datos (precios, cantidades). Se invierte la
+  // preferencia y no se colapsan los saltos de línea, que son las filas.
+  if (kind === 'tabular') {
+    const body = (item.content?.trim() || item.summary?.trim() || '')
+    return body.slice(0, max)
+  }
   const body = (item.summary?.trim() || item.content?.trim() || '').replace(/\s+/g, ' ')
   return body.slice(0, max)
 }
@@ -67,7 +116,13 @@ export async function getKnowledgeContext(
   opts: KnowledgeContextOptions = {}
 ): Promise<string | null> {
   if (!isKnowledgeUnified()) return null
-  const { projectId = null, agentRole = null, charBudget = 4000, fetchLimit = 40 } = opts
+  const {
+    projectId = null,
+    agentRole = null,
+    charBudget = 4000,
+    structuredBudget = 10000,
+    fetchLimit = 40,
+  } = opts
 
   try {
     const admin = adminClient()
@@ -84,17 +139,27 @@ export async function getKnowledgeContext(
       .filter((i) => (i.title?.trim() || i.summary?.trim() || i.content?.trim()))
       .sort((a, b) => rank(b, projectId, agentRole) - rank(a, projectId, agentRole))
 
+    // Dos pasadas con cupos independientes: las hojas de cálculo primero (son
+    // pocas y muy densas), y después la prosa con su presupuesto intacto. Si
+    // compartieran cupo, un menú largo dejaría fuera al brand book.
     const lines: string[] = []
-    let used = 0
-    for (const item of items) {
-      const perItem = Math.min(420, charBudget - used)
-      if (perItem < 120) break
-      const tag = item.project_id && item.project_id === projectId ? ' · de ESTE proyecto' : ''
-      const line = `- [${SOURCE_LABEL[item.source]}${tag}] ${item.title || 'Untitled'}: ${excerpt(item, perItem - (item.title?.length ?? 0) - 20)}`
-      lines.push(line)
-      used += line.length
-      if (used >= charBudget) break
+    const render = (kinds: KnowledgeKind[], budget: number) => {
+      let used = 0
+      for (const item of items) {
+        const kind = kindOf(item)
+        if (!kinds.includes(kind)) continue
+        const perItem = Math.min(PER_ITEM[kind], budget - used)
+        if (perItem < 120) break
+        const tag = item.project_id && item.project_id === projectId ? ' · from THIS project' : ''
+        const head = `- [${SOURCE_LABEL[item.source]}${tag}] ${item.title || 'Untitled'}: `
+        const line = head + excerpt(item, perItem - head.length, kind)
+        lines.push(line)
+        used += line.length
+        if (used >= budget) break
+      }
     }
+    render(['tabular'], structuredBudget)
+    render(['image', 'prose'], charBudget)
     if (!lines.length) return ''
 
     return `CLIENT KNOWLEDGE (documents, Drive and references — real sources, cite them when you use them):\n${lines.join('\n')}`

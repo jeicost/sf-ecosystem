@@ -653,7 +653,12 @@ async function summarizeDocument(clientId: string, fileName: string, text: strin
       messages: [
         {
           role: 'user',
-          content: `Summarise this document in 3-5 sentences in English, capturing its purpose and the key points for a brand knowledge base.\n\nDocument: "${fileName}"\n\n${text.slice(0, 12000)}`,
+          content: text.startsWith('## Sheet:') || text.startsWith('Columns:')
+            ? // Una hoja de cálculo no se resume como prosa: lo que hace falta
+              // es saber QUÉ hay dentro y con qué rangos, para que un agente
+              // sepa que ahí están los precios antes de ir a buscarlos.
+              `Summarise this spreadsheet in 3-5 sentences in English for a brand knowledge base. Say what the table contains, which columns it has, how many rows, and the real ranges of the key values (prices, quantities, dates) using actual figures from the data. Do not invent anything not present.\n\nFile: "${fileName}"\n\n${text.slice(0, 12000)}`
+            : `Summarise this document in 3-5 sentences in English, capturing its purpose and the key points for a brand knowledge base.\n\nDocument: "${fileName}"\n\n${text.slice(0, 12000)}`,
         },
       ],
     })
@@ -845,7 +850,20 @@ export async function syncDriveFolder(
       filesSynced++
       docSummaries.push({ path: file.path, summary })
       if (isNewOrChanged) {
-        changedDocs.push({ documentId, path: file.path, title: file.name, summary, excerpt: extraction.text.slice(0, 3000) })
+        // Las hojas de cálculo llevan un extracto mucho más largo hacia la
+        // síntesis del Brand Brain: 3.000 caracteres de un menú son 2-3
+        // recetas, así que el sintetizador proponía cambios sin haber visto
+        // ni la mitad de los precios. Una tabla ya viene comprimida (una fila
+        // = un hecho), así que el coste por carácter es mucho más rentable
+        // que en prosa.
+        const isTabular = extraction.text.startsWith('## Sheet:') || extraction.text.startsWith('Columns:')
+        changedDocs.push({
+          documentId,
+          path: file.path,
+          title: file.name,
+          summary,
+          excerpt: extraction.text.slice(0, isTabular ? 20000 : 3000),
+        })
       }
     } catch (fileError) {
       console.error(`Drive sync: unexpected error processing "${file.path}":`, fileError)
