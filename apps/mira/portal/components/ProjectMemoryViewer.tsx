@@ -49,7 +49,7 @@ export default function ProjectMemoryViewer() {
 }
 
 function ProjectMemoryViewerInner() {
-  const { activeClient } = useActiveClient()
+  const { activeClient, loading: clientLoading } = useActiveClient()
   const { activeProject, projects, setActiveProject } = useActiveProject()
   const { locale } = useLocaleContext()
   const router = useRouter()
@@ -73,8 +73,14 @@ function ProjectMemoryViewerInner() {
   const selectedProjectId = urlProjectId ?? activeProject?.id ?? null
 
   useEffect(() => {
+    // Esperar a que el contexto de cliente resuelva antes de pedir nada: la
+    // primera llamada salía sin ?clientId= y, para un super_admin sin grants
+    // en mira_project_access, resolveRequestClient devuelve 403 ("No client
+    // access"). Se veía un error rojo de un parpadeo en /project-memory antes
+    // de que la segunda llamada, ya con cliente, funcionara.
+    if (clientLoading) return
     fetchMemories()
-  }, [selectedCategory, activeClient?.id, selectedProjectId])
+  }, [selectedCategory, activeClient?.id, selectedProjectId, clientLoading])
 
   const handleProjectChange = (projectId: string) => {
     const project = projects.find((p) => p.id === projectId) ?? null

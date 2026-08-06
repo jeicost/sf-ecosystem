@@ -8,64 +8,85 @@ interface ChecklistStep {
   id: string
   label: string
   hint: string
-  tabLabel: string
+  /** id estable de la pestaña (data-bb-tab), NO su etiqueta traducida */
+  tabId: string
   done: boolean
 }
 
-function buildSteps(brandData: Record<string, any>, pillars: any[], documents: any[]): ChecklistStep[] {
+function buildSteps(
+  brandData: Record<string, any>,
+  pillars: any[],
+  documents: any[],
+  flat: { name?: string | null; mission?: string | null; tone_of_voice?: string | null } = {}
+): ChecklistStep[] {
   return [
     {
       id: 'identity',
       label: 'Define brand identity',
       hint: 'Add your brand name and mission statement',
-      tabLabel: 'Brand Identity',
-      done: Boolean(brandData.identity?.name?.trim() && brandData.identity?.mission?.trim()),
+      tabId: 'brand_identity',
+      // Acepta tanto brand_data.identity.* (lo que edita esta UI) como las
+      // columnas planas name/mission (lo que rellena el alta por onboarding).
+      // Antes solo miraba brand_data, así que un cliente dado de alta por el
+      // wizard tenía este paso en rojo para siempre por mucho que su misión
+      // estuviera puesta.
+      done: Boolean(
+        (brandData.identity?.name?.trim() || flat.name?.trim()) &&
+        (brandData.identity?.mission?.trim() || flat.mission?.trim())
+      ),
     },
     {
       id: 'audience',
       label: 'Describe your audience',
       hint: 'Add at least one audience segment',
-      tabLabel: 'Audience & Market',
+      tabId: 'audience_market',
       done: Array.isArray(brandData.audiences) && brandData.audiences.length > 0,
     },
     {
       id: 'voice_visual',
       label: 'Set voice & visual identity',
-      hint: 'Add a brand archetype or a voice principle',
-      tabLabel: 'Voice & Visual',
+      hint: 'Add a brand archetype, a voice principle or a tone of voice',
+      tabId: 'voice_visual',
+      // Se añade tone_of_voice: era el único de los tres que alguna vía
+      // automática (onboarding, análisis de documento, cuestionario) llegaba a
+      // rellenar, así que sin él este paso solo se podía completar a mano.
       done: Boolean(
         (brandData.voice_archetypes || []).some((a: string) => a?.trim()) ||
-        (brandData.voice_principles || []).length > 0
+        (brandData.voice_principles || []).length > 0 ||
+        brandData.tone_and_voice?.summary?.trim() ||
+        flat.tone_of_voice?.trim()
       ),
     },
     {
       id: 'content_strategy',
       label: 'Add content pillars',
       hint: 'Define at least one content pillar',
-      tabLabel: 'Content Strategy',
+      tabId: 'content_strategy',
       done: pillars.length > 0,
     },
     {
       id: 'business_ops',
       label: 'Explain your business model',
       hint: 'Revenue streams, pricing, customer types',
-      tabLabel: 'Business & Ops',
+      tabId: 'business_ops',
       done: Boolean(brandData.business_model?.trim()),
     },
     {
       id: 'documents',
       label: 'Upload a brand document',
-      hint: 'Lets AI auto-suggest your Brand Brain fields',
-      tabLabel: 'Documents',
+      hint: 'Feeds the agents and lets AI auto-suggest your Brand Brain fields',
+      tabId: 'documents',
       done: documents.length > 0,
     },
   ]
 }
 
-function goToTab(tabLabel: string) {
+function goToTab(tabId: string) {
   if (typeof document === 'undefined') return
   const root = document.getElementById('brand-brain-editor') || document
-  const button = Array.from(root.querySelectorAll('button')).find((b) => b.textContent?.includes(tabLabel))
+  // Selector por data-bb-tab (ver BrandBrainEditor): buscarlo por el texto del
+  // botón solo funcionaba con el portal en inglés.
+  const button = root.querySelector<HTMLButtonElement>(`button[data-bb-tab="${tabId}"]`)
   button?.click()
   button?.scrollIntoView({ behavior: 'smooth', block: 'center' })
 }
@@ -97,7 +118,15 @@ export default function ActivationChecklist() {
         if (cancelled) return
 
         const brandData = profileJson.data?.brand_data || {}
-        setSteps(buildSteps(brandData, profileJson.pillars || [], docsJson.data || []))
+        // Columnas planas del perfil: son las que rellena el alta por
+        // onboarding, y sin ellas el checklist marcaba como pendientes pasos
+        // que ya estaban hechos.
+        const flat = {
+          name: profileJson.data?.name,
+          mission: profileJson.data?.mission,
+          tone_of_voice: profileJson.data?.tone_of_voice,
+        }
+        setSteps(buildSteps(brandData, profileJson.pillars || [], docsJson.data || [], flat))
       } catch {
         if (!cancelled) setSteps(null)
       }
@@ -147,7 +176,7 @@ export default function ActivationChecklist() {
           {remaining.map((step, i) => (
             <li key={step.id}>
               <button
-                onClick={() => goToTab(step.tabLabel)}
+                onClick={() => goToTab(step.tabId)}
                 className="w-full flex items-start gap-3 text-left p-2 -mx-2 rounded-lg hover:bg-surface transition-colors"
               >
                 <Circle size={16} className="text-ink-tertiary mt-0.5 shrink-0" />

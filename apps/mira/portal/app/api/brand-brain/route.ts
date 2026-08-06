@@ -142,17 +142,36 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ data: newProfile }, { status: 201 })
     }
 
-    // Update existing profile
+    // Update existing profile.
+    //
+    // `campo || undefined` trataba un string vacío como "no tocar", así que
+    // era IMPOSIBLE borrar un valor equivocado desde la UI: si un documento
+    // metía una misión mal extraída, el usuario la vaciaba, guardaba, y volvía
+    // a aparecer. Ahora solo se omite lo que llega como undefined (campo
+    // ausente en el body); un '' explícito sí limpia.
+    const patch: Record<string, unknown> = {}
+    if (name !== undefined) patch.name = name
+    if (mission !== undefined) patch.mission = mission
+    if (tone_of_voice !== undefined) patch.tone_of_voice = tone_of_voice
+    if (values !== undefined) patch.values = values
+    if (description !== undefined) patch.description = description
+    if (brand_data !== undefined) patch.brand_data = brand_data
+
+    // Mantener sincronizadas las columnas planas con lo que el editor guarda
+    // en brand_data.identity: fetchBrandBrain prefiere brand_data, pero otras
+    // consultas (listados de admin, onboarding) leen la columna, y tenerlas
+    // divergiendo era la causa de que "la misión que escribo no aparece".
+    if (brand_data && typeof brand_data === 'object') {
+      const identity = (brand_data as Record<string, any>).identity
+      if (identity && typeof identity === 'object') {
+        if (typeof identity.name === 'string' && identity.name.trim()) patch.name = identity.name.trim()
+        if (typeof identity.mission === 'string' && identity.mission.trim()) patch.mission = identity.mission.trim()
+      }
+    }
+
     const { data: updatedProfile, error: updateError } = await admin
       .from('brand_profiles')
-      .update({
-        name: name || undefined,
-        mission: mission || undefined,
-        tone_of_voice: tone_of_voice || undefined,
-        values: values || undefined,
-        description: description || undefined,
-        brand_data: brand_data || undefined,
-      })
+      .update(patch)
       .eq('id', id)
       .eq('client_id', clientId)
       .select()

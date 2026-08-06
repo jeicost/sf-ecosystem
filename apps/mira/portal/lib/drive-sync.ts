@@ -16,6 +16,7 @@ import * as mammoth from 'mammoth'
 import { adminClient } from '@/lib/supabase'
 import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/brain-tools/drive-synthesis'
 import { extractPdfText } from '@/lib/pdf-extract'
+import { describeImage, isVisionReadableImage } from '@/lib/vision'
 
 /**
  * Apagado por defecto (mismo patrón que el kill-switch KNOWLEDGE_UNIFIED de
@@ -55,7 +56,14 @@ interface DriveFileEntry {
 
 const FOLDER_MIME = 'application/vnd.google-apps.folder'
 const MAX_DEPTH = 3
-const MAX_FILES_TOTAL = 100
+// Tope del RECORRIDO (solo metadatos: id, nombre, tipo, fecha — barato, 200
+// por página). Estaba en 100 y la carpeta real de Salsa tiene 213 ficheros,
+// de los cuales 204 son fotos: los 9 documentos legibles caben hoy por los
+// pelos (posiciones 1-8 y 65), pero subir una tanda más de imágenes empujaría
+// el Excel del menú fuera del corte y desaparecería del Brand Brain sin que
+// nadie se enterara. El coste real del sync no está aquí sino en
+// MAX_DOCS_PER_SYNC (descarga + extracción + resumen con IA), que sigue en 20.
+const MAX_FILES_TOTAL = 500
 const MAX_DOCS_PER_SYNC = 20
 const HAIKU_MODEL = 'claude-haiku-4-5-20251001'
 
@@ -77,13 +85,49 @@ export function hasDriveWriteScope(
   return !!connection?.granted_scopes?.includes(DRIVE_WRITE_SCOPE)
 }
 
+const GOOGLE_DOC_MIME = 'application/vnd.google-apps.document'
+const GOOGLE_SHEET_MIME = 'application/vnd.google-apps.spreadsheet'
+const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+
+// Imágenes que la API de Anthropic sabe leer por visión. Hasta el 2026-08-06
+// las imágenes del Drive solo se CONTABAN ("204 archivos no textuales") y su
+// contenido era invisible para todos los agentes — en la carpeta de Salsa eso
+// son 204 de 213 ficheros, incluidas las fotos de producto sobre las que se le
+// pide trabajar a los agentes.
+const IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+
+// Tope propio para las imágenes, separado de MAX_DOCS_PER_SYNC: una carpeta con
+// cientos de fotos no debe monopolizar el sync ni disparar el coste de golpe.
+// Como el dedup por content_hash evita repetir, en 3-4 sincronizaciones una
+// carpeta grande queda descrita entera y a partir de ahí es gratis.
+const MAX_IMAGES_PER_SYNC = 25
+
+// Hojas de cálculo añadidas el 2026-08-05: el CEO preguntó explícitamente si
+// el Brand Brain leía CSV y la respuesta era que no. Menús con precios,
+// históricos de ventas y listas de producto viven casi siempre en una hoja,
+// y hasta ahora esos ficheros solo aparecían como un nombre en el mapa de
+// carpeta -- su contenido era invisible para todos los agentes.
 const EXTRACTABLE_MIME_TYPES = [
   'application/pdf',
   'text/plain',
   'text/markdown',
-  'application/vnd.google-apps.document',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/csv',
+  GOOGLE_DOC_MIME,
+  GOOGLE_SHEET_MIME,
+  XLSX_MIME,
+  DOCX_MIME,
+  ...IMAGE_MIME_TYPES,
 ]
+
+// Tope de filas por hoja al convertir a texto. Una hoja de 10.000 filas
+// llenaría ella sola el presupuesto de contexto de todos los prompts; con las
+// primeras 300 se captura la estructura y los datos representativos (que es
+// para lo que sirve en una base de conocimiento de marca), y se deja constancia
+// explícita de cuántas filas se omitieron para que el modelo no dé por hecho
+// que está viendo el fichero entero.
+const MAX_SPREADSHEET_ROWS = 300
+
 
 // ─── Folder link parsing ─────────────────────────────────────────
 
@@ -118,6 +162,7 @@ async function refreshAccessToken(refreshToken: string): Promise<{
   accessToken?: string
   expiresAt?: string
   error?: string
+  needsReauth?: boolean
 }> {
   try {
     const clientId = process.env.GOOGLE_OAUTH_CLIENT_ID
@@ -144,6 +189,11 @@ async function refreshAccessToken(refreshToken: string): Promise<{
       return {
         success: false,
         error: errorData.error_description || 'Token refresh failed',
+        // `invalid_grant` = el refresh token está muerto (caducado o revocado).
+        // No se arregla reintentando: hace falta que el cliente vuelva a
+        // autorizar. Se distingue de un fallo transitorio de red/Google para
+        // poder marcar la conexión como caída en vez de reintentar en bucle.
+        needsReauth: errorData.error === 'invalid_grant',
       }
     }
 
@@ -156,6 +206,27 @@ async function refreshAccessToken(refreshToken: string): Promise<{
       success: false,
       error: error instanceof Error ? error.message : 'Token refresh error',
     }
+  }
+}
+
+/**
+ * Marca una conexión de Drive como caída para que la UI pueda pedir
+ * reconexión en vez de mostrar "conectado" mintiendo. Best-effort: si el
+ * update falla, el sync sigue devolviendo su error normal.
+ *
+ * Nota de contexto (2026-08-05): la causa de fondo de que esto pase cada
+ * semana es que la app OAuth de Google está en modo "Testing", donde los
+ * refresh tokens caducan a los 7 días pase lo que pase. Publicar la app en
+ * Google Cloud Console es lo que lo arregla de verdad; esto solo evita que el
+ * fallo sea invisible.
+ */
+async function markConnectionNeedsReauth(admin: AdminClient, connectionId: string): Promise<void> {
+  const { error } = await admin
+    .from('drive_connections')
+    .update({ is_authorized: false })
+    .eq('id', connectionId)
+  if (error) {
+    console.error(`Drive: could not flag connection ${connectionId} as needing re-auth:`, error.message)
   }
 }
 
@@ -174,19 +245,28 @@ export async function getClientAccessToken(
     .maybeSingle()
 
   if (connectionError || !connection || !connection.is_authorized) {
-    return { error: 'Google Drive no está autorizado para este cliente. Conecta Drive primero.' }
+    return { error: 'Google Drive is not authorized for this client. Connect Drive first.' }
   }
 
   let accessToken: string | null = connection.access_token
 
   if (connection.token_expires_at && new Date(connection.token_expires_at) < new Date()) {
     if (!connection.refresh_token) {
-      return { error: 'El token de Drive expiró y no hay refresh token. Vuelve a autorizar Google Drive.' }
+      await markConnectionNeedsReauth(admin, connection.id)
+      return { error: 'Google Drive access expired and there is no refresh token. Reconnect Google Drive.' }
     }
 
     const refreshResult = await refreshAccessToken(connection.refresh_token)
     if (!refreshResult.success || !refreshResult.accessToken) {
-      return { error: refreshResult.error || 'No se pudo refrescar el token de Google Drive.' }
+      // Sin esto, `is_authorized` se quedaba en true con el token muerto: la
+      // tarjeta de Integraciones y el panel de carpetas seguían diciendo
+      // "Drive conectado" mientras el sync fallaba en silencio cada noche.
+      // Verificado el 2026-08-05: los 5 clientes tenían is_authorized=true y
+      // los 5 refresh tokens devolvían invalid_grant.
+      if (refreshResult.needsReauth) {
+        await markConnectionNeedsReauth(admin, connection.id)
+      }
+      return { error: refreshResult.error || 'Could not refresh the Google Drive token.' }
     }
 
     accessToken = refreshResult.accessToken
@@ -201,7 +281,7 @@ export async function getClientAccessToken(
   }
 
   if (!accessToken) {
-    return { error: 'No hay access token de Google Drive para este cliente.' }
+    return { error: 'No Google Drive access token for this client.' }
   }
 
   return { token: accessToken }
@@ -265,21 +345,21 @@ export async function getDriveFolderMetadata(
 
     if (!response.ok) {
       if (response.status === 404) {
-        return { error: 'Carpeta no encontrada en Drive. Verifica el enlace y que la cuenta conectada tenga acceso.' }
+        return { error: 'Folder not found in Drive. Check the link and that the connected account has access.' }
       }
       const errorData = await response.json().catch(() => ({}))
-      return { error: errorData.error?.message || `No se pudo acceder a la carpeta (HTTP ${response.status}).` }
+      return { error: errorData.error?.message || `Could not access the folder (HTTP ${response.status}).` }
     }
 
     const data = await response.json()
     if (data.mimeType !== FOLDER_MIME) {
-      return { error: 'El enlace no apunta a una carpeta de Drive (es un archivo).' }
+      return { error: 'That link points to a file, not a Drive folder.' }
     }
 
-    return { name: data.name || 'Carpeta sin nombre' }
+    return { name: data.name || 'Untitled folder' }
   } catch (error) {
     console.error('Error fetching Drive folder metadata:', error)
-    return { error: error instanceof Error ? error.message : 'Error accediendo a Google Drive.' }
+    return { error: error instanceof Error ? error.message : 'Error accessing Google Drive.' }
   }
 }
 
@@ -298,14 +378,14 @@ async function listFolderChildren(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}))
-      return { error: errorData.error?.message || 'No se pudieron listar los archivos de Drive.' }
+      return { error: errorData.error?.message || 'Could not list the Drive files.' }
     }
 
     const data = await response.json()
     return { files: data.files || [] }
   } catch (error) {
     console.error('Error listing Drive folder children:', error)
-    return { error: error instanceof Error ? error.message : 'Error listando la carpeta de Drive.' }
+    return { error: error instanceof Error ? error.message : 'Error listing the Drive folder.' }
   }
 }
 
@@ -357,17 +437,143 @@ async function walkFolderTree(
   return { files, tree }
 }
 
+// ─── Spreadsheet extraction ──────────────────────────────────────
+
+/**
+ * Parser de CSV mínimo pero correcto: respeta campos entrecomillados con
+ * comas o saltos de línea dentro, y comillas escapadas (""). Un `split(',')`
+ * ingenuo parte un precio como "1,290 THB" en dos columnas y desalinea toda
+ * la fila, que es justo el dato que interesa de un menú.
+ */
+function parseCsv(input: string): string[][] {
+  const rows: string[][] = []
+  let row: string[] = []
+  let field = ''
+  let inQuotes = false
+
+  for (let i = 0; i < input.length; i++) {
+    const char = input[i]
+
+    if (inQuotes) {
+      if (char === '"') {
+        if (input[i + 1] === '"') { field += '"'; i++ }
+        else inQuotes = false
+      } else field += char
+      continue
+    }
+
+    if (char === '"') { inQuotes = true }
+    else if (char === ',') { row.push(field); field = '' }
+    else if (char === '\n' || char === '\r') {
+      // \r\n cuenta como un solo salto
+      if (char === '\r' && input[i + 1] === '\n') i++
+      row.push(field); field = ''
+      rows.push(row); row = []
+    } else field += char
+  }
+  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row) }
+
+  return rows.filter((r) => r.some((cell) => cell.trim().length > 0))
+}
+
+/** Filas de una hoja → texto etiquetado por cabecera, con tope de filas. */
+function rowsToLabelledText(rows: string[][], sheetName?: string): string {
+  if (rows.length === 0) return ''
+
+  const header = rows[0].map((h) => h.trim())
+  const body = rows.slice(1, 1 + MAX_SPREADSHEET_ROWS)
+  const omitted = Math.max(0, rows.length - 1 - body.length)
+
+  const lines = body.map((cells) =>
+    cells
+      .map((cell, i) => {
+        const value = cell.trim()
+        if (!value) return null
+        const label = header[i]?.trim()
+        return label ? `${label}: ${value}` : value
+      })
+      .filter(Boolean)
+      .join(' | ')
+  ).filter(Boolean)
+
+  const parts: string[] = []
+  if (sheetName) parts.push(`## Sheet: ${sheetName}`)
+  parts.push(`Columns: ${header.filter(Boolean).join(', ')}`)
+  parts.push(`Rows: ${rows.length - 1}${omitted > 0 ? ` (showing the first ${body.length}; ${omitted} not shown)` : ''}`)
+  parts.push('', ...lines)
+  return parts.join('\n')
+}
+
+function formatCsvForPrompt(raw: string): string {
+  return rowsToLabelledText(parseCsv(raw))
+}
+
+/**
+ * Lee un .xlsx real con exceljs. Se eligió exceljs sobre SheetJS (`xlsx` en
+ * npm) a propósito: la edición community de SheetJS publicada en npm arrastra
+ * avisos de prototype pollution y ReDoS sin parchear, y este repo ya ha tenido
+ * que limpiar prototype pollution dos veces (DEBT ss y uu) -- no tiene sentido
+ * reintroducir esa familia de fallo para leer una tabla.
+ */
+async function extractXlsxText(buffer: Buffer): Promise<string> {
+  const ExcelJS = (await import('exceljs')).default
+  const workbook = new ExcelJS.Workbook()
+  await workbook.xlsx.load(buffer as unknown as ArrayBuffer)
+
+  const sheets: string[] = []
+  workbook.eachSheet((worksheet) => {
+    const rows: string[][] = []
+    worksheet.eachRow({ includeEmpty: false }, (row) => {
+      const values = row.values as unknown[]
+      // exceljs indexa las columnas desde 1: values[0] siempre es undefined
+      rows.push(values.slice(1).map((v) => cellToString(v)))
+    })
+    const text = rowsToLabelledText(rows, worksheet.name)
+    if (text) sheets.push(text)
+  })
+
+  return sheets.join('\n\n')
+}
+
+/** Una celda de exceljs puede ser fecha, fórmula, texto enriquecido o hipervínculo. */
+function cellToString(value: unknown): string {
+  if (value == null) return ''
+  if (value instanceof Date) return value.toISOString().slice(0, 10)
+  if (typeof value === 'object') {
+    const v = value as Record<string, unknown>
+    if (typeof v.text === 'string') return v.text
+    if ('result' in v) return String(v.result ?? '')
+    if (Array.isArray(v.richText)) {
+      return v.richText.map((r) => String((r as { text?: string }).text ?? '')).join('')
+    }
+    if (typeof v.hyperlink === 'string') return v.hyperlink
+    return ''
+  }
+  return String(value)
+}
+
 // ─── Text extraction (pattern from ingest route) ─────────────────
 
 async function downloadAndExtractText(
   accessToken: string,
   fileId: string,
-  mimeType: string
+  mimeType: string,
+  // clientId y fileName solo hacen falta para las imágenes (visión); se pasan
+  // siempre para no tener dos firmas distintas.
+  clientId?: string,
+  fileName = '',
+  filePath = ''
 ): Promise<{ success: boolean; text?: string; error?: string }> {
   try {
     let downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`
-    if (mimeType === 'application/vnd.google-apps.document') {
+    if (mimeType === GOOGLE_DOC_MIME) {
       downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/plain`
+    } else if (mimeType === GOOGLE_SHEET_MIME) {
+      // Los ficheros nativos de Google no se pueden descargar con alt=media,
+      // hay que exportarlos. CSV exporta solo la PRIMERA hoja -- limitación
+      // real de la API de Drive, no del código; para varias hojas haría falta
+      // la API de Sheets con otro scope.
+      downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/csv`
     }
 
     const response = await fetch(downloadUrl, {
@@ -386,15 +592,39 @@ async function downloadAndExtractText(
     } else if (
       mimeType === 'text/plain' ||
       mimeType === 'text/markdown' ||
-      mimeType === 'application/vnd.google-apps.document'
+      mimeType === GOOGLE_DOC_MIME
     ) {
       text = await response.text()
-    } else if (
-      mimeType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ) {
+    } else if (mimeType === 'text/csv' || mimeType === GOOGLE_SHEET_MIME) {
+      // Un CSV crudo ya es texto, pero se pasa por el mismo formateador que
+      // el resto de hojas para que el modelo reciba filas etiquetadas con su
+      // cabecera ("Producto: Wagyu Burger | Precio: 390") en vez de una
+      // pared de comas, que es donde los LLM pierden la correspondencia
+      // columna→valor en tablas anchas.
+      text = formatCsvForPrompt(await response.text())
+    } else if (mimeType === XLSX_MIME) {
+      const buffer = Buffer.from(await response.arrayBuffer())
+      text = await extractXlsxText(buffer)
+    } else if (mimeType === DOCX_MIME) {
       const buffer = Buffer.from(await response.arrayBuffer())
       const result = await mammoth.extractRawText({ buffer })
       text = result.value || ''
+    } else if (IMAGE_MIME_TYPES.includes(mimeType) && isVisionReadableImage(mimeType, fileName)) {
+      // Una imagen no tiene texto que extraer: se convierte en texto
+      // describiéndola por visión, y a partir de ahí entra en agent_documents
+      // y en el índice de conocimiento exactamente igual que un PDF.
+      if (!clientId) return { success: false, error: 'Missing clientId for image description' }
+      const buffer = Buffer.from(await response.arrayBuffer())
+      const description = await describeImage({
+        clientId,
+        buffer,
+        mimeType,
+        fileName,
+        context: filePath ? `Google Drive, path "${filePath}"` : undefined,
+        route: 'drive-sync:image',
+      })
+      if (!description) return { success: false, error: 'Could not describe image' }
+      text = `[IMAGE] ${fileName}\n\n${description}`
     } else {
       return { success: false, error: `Unsupported MIME type for extraction: ${mimeType}` }
     }
@@ -423,7 +653,7 @@ async function summarizeDocument(clientId: string, fileName: string, text: strin
       messages: [
         {
           role: 'user',
-          content: `Resume este documento en 3-5 frases en español, capturando su propósito y los puntos clave para una base de conocimiento de marca.\n\nDocumento: "${fileName}"\n\n${text.slice(0, 12000)}`,
+          content: `Summarise this document in 3-5 sentences in English, capturing its purpose and the key points for a brand knowledge base.\n\nDocument: "${fileName}"\n\n${text.slice(0, 12000)}`,
         },
       ],
     })
@@ -447,7 +677,7 @@ async function generateFolderMap(
     .map((d) => `- ${d.path}: ${d.summary.slice(0, 300)}`)
     .join('\n')
 
-  const fallback = `La carpeta "${folderName}" contiene ${tree.length} elementos (${docSummaries.length} documentos analizados y ${otherFilesCount} archivos no textuales como imágenes o diseños).`
+  const fallback = `Folder "${folderName}" holds ${tree.length} items (${docSummaries.length} documents analysed and ${otherFilesCount} non-text files such as images or design files).`
 
   try {
     const message = await createMessageForClient(clientId, 'drive-sync', {
@@ -456,7 +686,7 @@ async function generateFolderMap(
       messages: [
         {
           role: 'user',
-          content: `Eres el cerebro de marca de una agencia. A partir del árbol de archivos de una carpeta de Google Drive y los resúmenes de sus documentos, escribe en español un "mapa de carpeta" de 4 a 8 frases que explique qué hay y dónde (por ejemplo: "Los logos están en X, el brand book es el PDF Y, las referencias de posts en Z..."). Sé concreto con nombres de subcarpetas y archivos relevantes. Responde solo con el texto del mapa, sin encabezados.\n\nCarpeta: "${folderName}"\n\nÁrbol de archivos:\n${treeText}\n\nResúmenes de documentos:\n${summariesText || '(ningún documento de texto analizado)'}\n\nArchivos no textuales (imágenes, diseños, etc.): ${otherFilesCount}`,
+          content: `You are an agency's brand brain. From the file tree of a Google Drive folder and the summaries of its documents, write a 4-to-8 sentence "folder map" in English explaining what is there and where (for example: "The logos live in X, the brand book is the PDF Y, the post references are in Z..."). Be concrete with the names of the relevant subfolders and files. Reply with the map text only, no headings.\n\nFolder: "${folderName}"\n\nFile tree:\n${treeText}\n\nDocument summaries:\n${summariesText || '(no text document analysed)'}\n\nNon-text files (images, design files, etc.): ${otherFilesCount}`,
         },
       ],
     })
@@ -502,9 +732,32 @@ export async function syncDriveFolder(
   const { files, tree } = walked
 
   // 3. Ingest supported text documents (max 15 per sync)
-  const extractableFiles = files
-    .filter((f) => EXTRACTABLE_MIME_TYPES.includes(f.mimeType))
+  // Ordenar por fecha de modificación DESCENDENTE antes de cortar. Antes se
+  // cortaba una lista sin ordenar (el orden en que la API de Drive devolvió
+  // las carpetas), así que en una carpeta con más de MAX_DOCS_PER_SYNC
+  // documentos legibles, un fichero recién subido podía quedar fuera del
+  // corte para siempre -- exactamente el síntoma de "subo documentos nuevos y
+  // el Brain no se entera". Los que no traen modifiedTime van al final.
+  const byNewest = (a: DriveFileEntry, b: DriveFileEntry) =>
+    (b.modifiedTime || '').localeCompare(a.modifiedTime || '')
+
+  // Documentos e imágenes tienen presupuestos SEPARADOS a propósito: si
+  // compartieran el tope de 20, una carpeta con cientos de fotos (Salsa tiene
+  // 204) dejaría fuera el Excel del menú y los PDF de marca, que es justo el
+  // contenido con más valor. Además, gracias al dedup por content_hash, las
+  // imágenes ya descritas no vuelven a costar nada: en unas pocas
+  // sincronizaciones la carpeta queda descrita entera.
+  const docFiles = files
+    .filter((f) => EXTRACTABLE_MIME_TYPES.includes(f.mimeType) && !IMAGE_MIME_TYPES.includes(f.mimeType))
+    .sort(byNewest)
     .slice(0, MAX_DOCS_PER_SYNC)
+
+  const imageFiles = files
+    .filter((f) => IMAGE_MIME_TYPES.includes(f.mimeType))
+    .sort(byNewest)
+    .slice(0, MAX_IMAGES_PER_SYNC)
+
+  const extractableFiles = [...docFiles, ...imageFiles]
   const otherFilesCount = files.length - files.filter((f) => EXTRACTABLE_MIME_TYPES.includes(f.mimeType)).length
 
   let filesSynced = 0
@@ -516,7 +769,7 @@ export async function syncDriveFolder(
 
   for (const file of extractableFiles) {
     try {
-      const extraction = await downloadAndExtractText(token, file.id, file.mimeType)
+      const extraction = await downloadAndExtractText(token, file.id, file.mimeType, clientId, file.name, file.path)
       if (!extraction.success || !extraction.text) {
         console.warn(`Drive sync: could not extract "${file.path}": ${extraction.error}`)
         continue
@@ -600,7 +853,7 @@ export async function syncDriveFolder(
   }
 
   // 5. Folder map → project_memory (insight, dedup by tags [drive_map, folderRow.id])
-  const folderName = folderRow.folder_name || 'Carpeta de Drive'
+  const folderName = folderRow.folder_name || 'Drive folder'
   const mapSummary = await generateFolderMap(clientId, folderName, tree, docSummaries, otherFilesCount)
 
   // 5b. Síntesis real contra el Brand Brain (Fase 1) -- solo si hay documentos
@@ -618,7 +871,7 @@ export async function syncDriveFolder(
             client_id: clientId,
             project_id: folderRow.project_id ?? null,
             origin: 'drive_sync',
-            summary: `Sincronización de Drive — carpeta "${folderName}" (${changedDocs.length} documento${changedDocs.length > 1 ? 's' : ''} nuevo${changedDocs.length > 1 ? 's' : ''}/actualizado${changedDocs.length > 1 ? 's' : ''})`,
+            summary: `Google Drive sync — folder "${folderName}" (${changedDocs.length} new/updated document${changedDocs.length > 1 ? 's' : ''})`,
             changes: synthesis.changes,
             source_document_ids: changedDocs.map((d) => d.documentId),
           })
@@ -664,7 +917,7 @@ export async function syncDriveFolder(
     const memoryPayload = {
       client_id: clientId,
       project_id: folderRow.project_id ?? null,
-      title: `Mapa de carpeta Drive: ${folderName}`,
+      title: `Drive folder map: ${folderName}`,
       category: 'insight',
       summary: mapSummary,
       full_content: { tree, folder_id: folderRow.folder_id },

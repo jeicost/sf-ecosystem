@@ -34,6 +34,11 @@ export async function getClientMemoryContext(
     .from('project_memory')
     .select('id, title, category, summary, source_department, is_pinned, created_at, project_id')
     .eq('client_id', clientId)
+    // Sin este filtro, archivar una memoria desde /project-memory la quitaba
+    // del visor (que sí filtra, app/api/project-memory/route.ts:24) pero la
+    // seguía inyectando en el prompt de TODOS los agentes: el usuario creía
+    // haberla retirado y seguía influyendo en cada generación.
+    .eq('is_archived', false)
 
   if (projectId) {
     // Memoria del proyecto + memoria global del cliente (sin proyecto)
@@ -66,7 +71,7 @@ export async function getClientMemoryContext(
     .join('\n')
 
   return `
-## MEMORIA DE CLIENTE — Interacciones Pasadas
+## CLIENT MEMORY — past interactions
 
 ${formatted}
 `.trim()

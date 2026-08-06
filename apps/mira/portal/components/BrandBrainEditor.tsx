@@ -103,7 +103,7 @@ export default function BrandBrainEditor() {
       form.append('file', file)
       const res = await fetch('/api/brand-assets/logo', { method: 'POST', body: form })
       const data = await res.json().catch(() => null)
-      if (!res.ok || !data?.path) throw new Error(data?.error || `Error subiendo el logo (${res.status})`)
+      if (!res.ok || !data?.path) throw new Error(data?.error || `Logo upload failed (${res.status})`)
       const url = `/api/brand-assets?path=${encodeURIComponent(data.path)}&v=${Date.now()}`
 
       setProfile({
@@ -323,7 +323,21 @@ export default function BrandBrainEditor() {
             })
             newBrandData[key as keyof BrandData] = merged as any
           }
-          // Direct assignment for primitives and other cases
+          // Direct assignment for primitives and other cases.
+          //
+          // Guarda real: si el modelo propone un STRING para una sección que
+          // ya es un OBJETO, la asignación directa machacaba el objeto entero.
+          // El caso concreto es visual_identity — el prompt de
+          // analyze-document lo pide como texto libre mientras el editor lo
+          // guarda como { colors, typography, logo, status }: aplicar esa
+          // sugerencia borraba colores, tipografía y logo de un plumazo.
+          // Se conserva el objeto y el texto propuesto entra como nota.
+          else if (
+            typeof value === 'string' &&
+            existingValue && typeof existingValue === 'object' && !Array.isArray(existingValue)
+          ) {
+            newBrandData[key as keyof BrandData] = { ...existingValue, notes: value } as any
+          }
           else {
             newBrandData[key as keyof BrandData] = value
           }
@@ -435,6 +449,13 @@ export default function BrandBrainEditor() {
         ].map((tab) => (
           <button
             key={tab.id}
+            /* Identificador estable e independiente del idioma: el
+               ActivationChecklist navegaba buscando el botón por su TEXTO en
+               inglés ('Brand Identity'...), y como las pestañas se pintan con
+               t(), en el locale por defecto decían 'Identidad de Marca' y el
+               querySelector no encontraba nada — ningún paso del checklist
+               navegaba a ninguna parte. */
+            data-bb-tab={tab.id}
             onClick={() => setActiveTab(tab.id as TabType)}
             className={`px-3 py-3 text-xs font-medium transition-all whitespace-nowrap ${
               activeTab === tab.id
@@ -453,13 +474,13 @@ export default function BrandBrainEditor() {
       {/* P8: cada pestaña dice DÓNDE se usa lo que guardas en ella */}
       <p className="mb-4 text-[11px] text-ink-tertiary">
         {{
-          brand_identity: '🧠 Identidad → entra en TODOS los informes, agentes y quick actions como fuente de verdad. La web alimenta SEO/Marketing/Brand Briefing automáticamente.',
-          audience_market: '🧠 Audiencias y mercado → personas de los informes, tono por audiencia del contenido, y scoring comercial (ICP).',
-          voice_visual: '🧠 Voz y visual → el vocabulario decimos/nunca con sus porqués gobierna TODO el copy; colores/tipografía entran duros en las imágenes generadas y en los temas de documentos.',
-          content_strategy: '🧠 Pilares y ritmo → son la base del Monthly Content System, el content engine y las quick actions de contenido.',
-          business_ops: '🧠 Negocio y oferta → hero items con precio, mecánicas de promo, restricciones y canales entran en informes, monthly y propuestas comerciales. De las secciones MÁS usadas.',
-          documents: '🧠 Documentos → se guardan en la biblioteca del cliente y desde julio TODOS los agentes e informes los leen (índice de conocimiento unificado).',
-          index: '🧠 Índice → de dónde vino cada sección (chat, Drive, documento, edición manual) y qué contradicciones siguen abiertas — nunca se resuelven solas, un humano las revisa aquí.',
+          brand_identity: '🧠 Identity → feeds EVERY report, agent and quick action as the source of truth. The website automatically powers SEO / Marketing / Brand Briefing.',
+          audience_market: '🧠 Audience & market → report personas, per-audience tone for content, and sales scoring (ICP).',
+          voice_visual: '🧠 Voice & visual → the we-say / we-never-say vocabulary and its reasons govern ALL copy; colours and typography go straight into generated images and document themes.',
+          content_strategy: '🧠 Pillars & cadence → the backbone of the Monthly Content System, the content engine and the content quick actions.',
+          business_ops: '🧠 Business & offer → hero items with prices, promo mechanics, constraints and channels feed reports, the monthly system and sales proposals. One of the MOST used sections.',
+          documents: '🧠 Documents → stored in the client library, and every agent and report reads them (unified knowledge index).',
+          index: '🧠 Index → where each section came from (chat, Drive, document, manual edit) and which contradictions are still open — they never resolve themselves, a human reviews them here.',
         }[activeTab] || ''}
       </p>
 
@@ -470,8 +491,8 @@ export default function BrandBrainEditor() {
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-4">Core Identity</h3>
               <TextInput label="Brand Name" value={profile.brand_data?.identity?.name || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, name: v } } })} placeholder="e.g., Discoolver" />
-              <TextInput label="Sitio web" value={profile.brand_data?.identity?.website_url || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, website_url: v } } })} placeholder="https://www.tumarca.com" />
-              <p className="text-xs text-ink-tertiary -mt-2 mb-3">La web canónica del negocio — los informes (SEO, Marketing, Brand Briefing) la usan automáticamente si no escribes otra.</p>
+              <TextInput label="Website" value={profile.brand_data?.identity?.website_url || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, website_url: v } } })} placeholder="https://www.yourbrand.com" />
+              <p className="text-xs text-ink-tertiary -mt-2 mb-3">The canonical business website — reports (SEO, Marketing, Brand Briefing) use it automatically unless another one is given.</p>
               <TextInput label="Tagline" value={profile.brand_data?.identity?.tagline || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, tagline: v } } })} placeholder="Short, memorable phrase" />
               <TextInput label="One-Liner" value={profile.brand_data?.identity?.one_liner || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, one_liner: v } } })} placeholder="What does your brand do?" />
             </div>
@@ -490,7 +511,7 @@ export default function BrandBrainEditor() {
               <h3 className="text-sm font-medium text-ink mb-4">Value & Positioning</h3>
               <TextareaInput label="Value Proposition" value={profile.brand_data?.value_proposition || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, value_proposition: v } })} placeholder="Problems you solve + emotional promise + time/money saved" />
               <TextInput label="Enemy" value={profile.brand_data?.identity?.enemy || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, enemy: v } } })} placeholder="What do you compete against? (mindset, competitor, problem)" />
-              <TextInput label="Signature Ritual" value={profile.brand_data?.identity?.signature_ritual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, signature_ritual: v } } })} placeholder="El ritual o experiencia firma — a menudo el activo más ownable (ej.: ponerse el guante)" />
+              <TextInput label="Signature Ritual" value={profile.brand_data?.identity?.signature_ritual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, signature_ritual: v } } })} placeholder="The signature ritual or experience — often the most ownable asset (e.g. putting on the glove)" />
             </div>
             <div>
               <h3 className="text-sm font-medium text-ink mb-4">Hero Features</h3>
@@ -523,7 +544,7 @@ export default function BrandBrainEditor() {
                     })
                   }
                 })}
-                placeholder="E-commerce emergente 🔹 Ordenar operaciones 🔹 Valida y crece sin complicarte&#10;E-commerce en crecimiento 🔹 Soportar volumen 🔹 Campañas sin caos&#10;..."
+                placeholder="Emerging e-commerce 🔹 Tidy up operations 🔹 Validate and grow without the mess&#10;Growing e-commerce 🔹 Handle volume 🔹 Campaigns without chaos&#10;..."
               />
               <div className="border-t border-line pt-4 mt-4">
                 <h4 className="text-xs font-semibold text-ink-secondary mb-3">Preview:</h4>
@@ -553,7 +574,7 @@ export default function BrandBrainEditor() {
                 nunca se resuelven en silencio. Ahí está el valor. */}
             <div className="border-t border-line pt-6">
               <h3 className="text-sm font-medium text-ink mb-1">Open Questions</h3>
-              <p className="text-xs text-ink-secondary mb-2">Contradicciones conocidas, decisiones sin tomar, cosas que sospechas rotas (una por línea). Los reportes las sacarán a la luz con recomendación.</p>
+              <p className="text-xs text-ink-secondary mb-2">Known contradictions, undecided calls, things you suspect are broken (one per line). Reports surface them with a recommendation instead of resolving them silently.</p>
               <TextareaInput
                 value={[
                   ...(profile.brand_data?.open_questions?.contradictions || []),
@@ -567,7 +588,7 @@ export default function BrandBrainEditor() {
                     open_questions: { contradictions: v.split('\n').map((s) => s.trim()).filter(Boolean) }
                   }
                 })}
-                placeholder={'El deck dice lanzamiento en junio y el resumen operativo dice marzo\nNadie ha decidido si el handle es @marca.city o @marca_city'}
+                placeholder={'The deck says a June launch and the ops summary says March\nNobody has decided whether the handle is @brand.city or @brand_city'}
               />
             </div>
           </div>
@@ -580,7 +601,7 @@ export default function BrandBrainEditor() {
             {/* Offer — copy anclado a un SKU real vence a copy anclado a un adjetivo */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-1">Offer</h3>
-              <p className="text-xs text-ink-secondary mb-3">Hero items: máximo 3 — nunca se venden más de tres cosas a la vez. Con precio real.</p>
+              <p className="text-xs text-ink-secondary mb-3">Hero items: 3 maximum — never sell more than three things at once. With real prices.</p>
               {[0, 1, 2].map((i) => {
                 const item = profile.brand_data?.offer?.hero_items?.[i]
                 const update = (patch: Partial<{ name: string; price: string; note: string }>) => {
@@ -592,20 +613,20 @@ export default function BrandBrainEditor() {
                 return (
                   <div key={i} className="grid grid-cols-[2fr_1fr_2fr] gap-2 mb-2">
                     <input type="text" value={item?.name || ''} onChange={(e) => update({ name: e.target.value })} placeholder={`Hero item ${i + 1}`} className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
-                    <input type="text" value={item?.price || ''} onChange={(e) => update({ price: e.target.value })} placeholder="Precio" className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
-                    <input type="text" value={item?.note || ''} onChange={(e) => update({ note: e.target.value })} placeholder="Nota (ingrediente estrella, ángulo...)" className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
+                    <input type="text" value={item?.price || ''} onChange={(e) => update({ price: e.target.value })} placeholder="Price" className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
+                    <input type="text" value={item?.note || ''} onChange={(e) => update({ note: e.target.value })} placeholder="Note (hero ingredient, angle…)" className="px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs" />
                   </div>
                 )
               })}
-              <TextareaInput label="Oferta completa (nota)" value={profile.brand_data?.offer?.full_list_note || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, full_list_note: v } } })} placeholder="Dónde vive la carta/catálogo completo, rangos de precio..." />
-              <TextInput label="Mecánicas de promo" value={profile.brand_data?.offer?.promo_mechanics || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, promo_mechanics: v } } })} placeholder="Código, descuento, canales, si es time-boxed" />
-              <TextInput label="Dónde se compra" value={(profile.brand_data?.offer?.purchase_channels || []).join(', ')} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, purchase_channels: v.split(',').map((s) => s.trim()).filter(Boolean) } } })} placeholder="web, Grab, marketplace, local... (separado por comas)" />
+              <TextareaInput label="Full offer (note)" value={profile.brand_data?.offer?.full_list_note || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, full_list_note: v } } })} placeholder="Where the full menu/catalogue lives, price ranges…" />
+              <TextInput label="Promo mechanics" value={profile.brand_data?.offer?.promo_mechanics || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, promo_mechanics: v } } })} placeholder="Code, discount, channels, whether it is time-boxed" />
+              <TextInput label="Where to buy" value={(profile.brand_data?.offer?.purchase_channels || []).join(', ')} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, purchase_channels: v.split(',').map((s) => s.trim()).filter(Boolean) } } })} placeholder="web, Grab, marketplace, local... (comma-separated)" />
             </div>
 
             {/* Channels — un canal sin trabajo asignado es un canal que se abandona */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-1">Channels</h3>
-              <p className="text-xs text-ink-secondary mb-2">Formato: canal 🔹 trabajo 🔹 owner (uno por línea)</p>
+              <p className="text-xs text-ink-secondary mb-2">Format: channel 🔹 job 🔹 owner (one per line)</p>
               <TextareaInput
                 value={(profile.brand_data?.channels || []).map((c) => [c.channel, c.job, c.owner].filter(Boolean).join(' 🔹 ')).join('\n')}
                 onChange={(v) => setProfile({
@@ -618,9 +639,9 @@ export default function BrandBrainEditor() {
                     })
                   }
                 })}
-                placeholder={'Instagram 🔹 craving y marca 🔹 Natalia\nLinkedIn 🔹 B2B y autoridad 🔹 Carlos'}
+                placeholder={'Instagram 🔹 craving and brand 🔹 Natalia\nLinkedIn 🔹 B2B and authority 🔹 Carlos'}
               />
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Canales a EVITAR (canal 🔹 porqué)</label>
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Channels to AVOID (channel 🔹 why)</label>
               <TextareaInput
                 value={(profile.brand_data?.channels_to_avoid || []).map((c) => `${c.channel} 🔹 ${c.why}`).join('\n')}
                 onChange={(v) => setProfile({
@@ -633,23 +654,23 @@ export default function BrandBrainEditor() {
                     })
                   }
                 })}
-                placeholder={'X/Twitter 🔹 la audiencia no está ahí y roba foco'}
+                placeholder={'X/Twitter 🔹 the audience is not there and it steals focus'}
               />
             </div>
 
             {/* Constraints — lo que salva de un cease-and-desist */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">Constraints & Rules</h3>
-              <TextareaInput label="Legal / IP" value={profile.brand_data?.constraints?.legal_ip || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, legal_ip: v } } })} placeholder="Likeness, copyright, publicidad comparativa..." />
-              <TextareaInput label="Reglas de categoría" value={profile.brand_data?.constraints?.category_rules || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, category_rules: v } } })} placeholder="Claims de salud, alcohol, financiero..." />
-              <TextareaInput label="Autoimpuestas" value={profile.brand_data?.constraints?.self_imposed || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, self_imposed: v } } })} placeholder="Sin descuentos permanentes, sin stock imagery..." />
-              <TextInput label="Regla de secuenciación" value={profile.brand_data?.constraints?.sequencing_rule || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, sequencing_rule: v } } })} placeholder="ej.: comunidad → contenido → monetización → B2B" />
+              <TextareaInput label="Legal / IP" value={profile.brand_data?.constraints?.legal_ip || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, legal_ip: v } } })} placeholder="Likeness, copyright, comparative advertising..." />
+              <TextareaInput label="Category rules" value={profile.brand_data?.constraints?.category_rules || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, category_rules: v } } })} placeholder="Health, alcohol or financial claims..." />
+              <TextareaInput label="Self-imposed" value={profile.brand_data?.constraints?.self_imposed || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, self_imposed: v } } })} placeholder="No permanent discounts, no stock imagery..." />
+              <TextInput label="Sequencing rule" value={profile.brand_data?.constraints?.sequencing_rule || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, constraints: { ...profile.brand_data?.constraints, sequencing_rule: v } } })} placeholder="e.g. community → content → monetisation → B2B" />
             </div>
 
             {/* What flopped — la teoría del fracaso vale más que el fracaso */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-1">What Flopped</h3>
-              <p className="text-xs text-ink-secondary mb-2">Formato: formato/serie 🔹 teoría de por qué no funcionó</p>
+              <p className="text-xs text-ink-secondary mb-2">Format: format/series 🔹 theory of why it did not work</p>
               <TextareaInput
                 value={normalizeFlopped(profile.brand_data?.what_flopped).map((f) => (f.theory ? `${f.format} 🔹 ${f.theory}` : f.format)).join('\n')}
                 onChange={(v) => setProfile({
@@ -662,7 +683,7 @@ export default function BrandBrainEditor() {
                     })
                   }
                 })}
-                placeholder={'Memes genéricos 🔹 sin conexión con el producto, engagement vacío'}
+                placeholder={'Generic memes 🔹 no connection to the product, empty engagement'}
               />
             </div>
           </div>
@@ -683,7 +704,7 @@ export default function BrandBrainEditor() {
                     voice_archetypes: [v, profile.brand_data?.voice_archetypes?.[1] || '']
                   }
                 })}
-                placeholder="e.g., El Aliado Experto"
+                placeholder="e.g., The Expert Ally"
               />
               <TextInput
                 label="Secondary Archetype"
@@ -695,7 +716,7 @@ export default function BrandBrainEditor() {
                     voice_archetypes: [profile.brand_data?.voice_archetypes?.[0] || '', v]
                   }
                 })}
-                placeholder="e.g., El Mago Operativo"
+                placeholder="e.g., The Operations Wizard"
               />
             </div>
 
@@ -712,7 +733,7 @@ export default function BrandBrainEditor() {
                     banned_phrases: v.split('\n').map(s => s.trim()).filter(Boolean)
                   }
                 })}
-                placeholder={'"revolucionario"\n"el mejor del mercado"\n"sinergia"'}
+                placeholder={'"revolutionary"\n"the best on the market"\n"synergy"'}
               />
             </div>
 
@@ -732,15 +753,15 @@ export default function BrandBrainEditor() {
                     })
                   }
                 })}
-                placeholder="Claro 🔹 Controla stock, pedidos y devoluciones desde un solo panel.&#10;Práctico 🔹 Si tu inventario no está actualizado, tu marketing vende problemas.&#10;..."
+                placeholder="Clear 🔹 Control stock, orders and returns from a single panel.&#10;Practical 🔹 If your inventory is not up to date, your marketing sells problems.&#10;..."
               />
             </div>
 
             {/* Vocabulary */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">Vocabulary Rules</h3>
-              <p className="text-xs text-ink-secondary mb-2">Formato: frase 🔹 porqué (una por línea). El porqué es la enseñanza — una regla sin razón se ignora.</p>
-              <label className="block text-xs font-medium text-ink-secondary mb-2">✅ Decimos (y por qué)</label>
+              <p className="text-xs text-ink-secondary mb-2">Format: phrase 🔹 why (one per line). The why is the lesson — a rule without a reason gets ignored.</p>
+              <label className="block text-xs font-medium text-ink-secondary mb-2">✅ We say (and why)</label>
               <TextareaInput
                 value={vocabToLines(profile.brand_data?.voice_vocabulary?.do)}
                 onChange={(v) => setProfile({
@@ -753,9 +774,9 @@ export default function BrandBrainEditor() {
                     }
                   }
                 })}
-                placeholder={'stock bajo control 🔹 concreto y operativo, es lo que el cliente compra\npedidos sin fricción 🔹 promete el resultado, no la tecnología'}
+                placeholder={'stock under control 🔹 concrete and operational, it is what the client buys\nfrictionless orders 🔹 promises the outcome, not the technology'}
               />
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-4">❌ Nunca decimos (y por qué)</label>
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-4">❌ We never say (and why)</label>
               <TextareaInput
                 value={vocabToLines(profile.brand_data?.voice_vocabulary?.dont)}
                 onChange={(v) => setProfile({
@@ -768,7 +789,7 @@ export default function BrandBrainEditor() {
                     }
                   }
                 })}
-                placeholder={'revolucionario 🔹 lo dice todo el mundo, no diferencia\nel mejor del mercado 🔹 afirmación sin prueba, resta credibilidad'}
+                placeholder={'revolutionary 🔹 everyone says it, it does not differentiate\nbest on the market 🔹 unproven claim, costs credibility'}
               />
             </div>
 
@@ -784,7 +805,7 @@ export default function BrandBrainEditor() {
                     tone_and_voice: { ...profile.brand_data?.tone_and_voice, golden_rule: v }
                   }
                 })}
-                placeholder={'"Si {competidor genérico} pudiera publicarlo, no es {marca} suficiente."'}
+                placeholder={'"If {generic competitor} could post it, it is not {brand} enough."'}
               />
             </div>
 
@@ -792,10 +813,10 @@ export default function BrandBrainEditor() {
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">Languages</h3>
               <div className="grid grid-cols-2 gap-4">
-                <TextInput label="Manual / documentos" value={profile.brand_data?.languages?.manual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, manual: v } } })} placeholder="ES / EN" />
-                <TextInput label="Captions / contenido" value={profile.brand_data?.languages?.captions || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, captions: v } } })} placeholder="idioma del mercado (ej. TH, ES)" />
+                <TextInput label="Manual / documents" value={profile.brand_data?.languages?.manual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, manual: v } } })} placeholder="ES / EN" />
+                <TextInput label="Captions / content" value={profile.brand_data?.languages?.captions || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, captions: v } } })} placeholder="market language (e.g. TH, ES)" />
               </div>
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Por canal (canal: idioma, uno por línea)</label>
+              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Per channel (channel: language, one per line)</label>
               <TextareaInput
                 value={Object.entries(profile.brand_data?.languages?.per_channel || {}).map(([c, l]) => `${c}: ${l}`).join('\n')}
                 onChange={(v) => {
@@ -1188,16 +1209,16 @@ export default function BrandBrainEditor() {
             {/* Content Pillars — tarjetas editables (P8: fuera el formato 🔹) */}
             <div className="border-b border-line pb-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-ink">Pilares de contenido</h3>
+                <h3 className="text-sm font-medium text-ink">Content pillars</h3>
                 <button
                   type="button"
                   onClick={() => setPillars([...(pillars || []), { pillar_name: '', description: '', claim: '', themes: [], examples: [] }])}
                   className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors"
                 >
-                  + Añadir pilar
+                  + Add pillar
                 </button>
               </div>
-              <p className="text-xs text-ink-tertiary mb-3">Los pilares alimentan el Monthly Content System, el content engine y las quick actions de marketing. Cada uno: nombre, qué es, y su claim (la promesa en una frase).</p>
+              <p className="text-xs text-ink-tertiary mb-3">Pillars feed the Monthly Content System, the content engine and the marketing quick actions. Each one: name, what it is, and its claim (the promise in one sentence).</p>
               <div className="space-y-3">
                 {(pillars || []).map((p: any, i: number) => (
                   <div key={i} className="rounded-xl border border-line bg-surface p-4 space-y-2">
@@ -1205,14 +1226,14 @@ export default function BrandBrainEditor() {
                       <input
                         value={p.pillar_name || ''}
                         onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, pillar_name: e.target.value } : x))}
-                        placeholder="Nombre del pilar (ej. Sauce Science)"
+                        placeholder="Pillar name (e.g. Sauce Science)"
                         className="flex-1 bg-page border border-line rounded-lg px-3 py-2 text-sm text-ink font-medium placeholder-ink-tertiary outline-none focus:border-purple-500"
                       />
                       <button
                         type="button"
                         onClick={() => setPillars(pillars.filter((_: any, j: number) => j !== i))}
                         className="text-xs px-2.5 py-2 rounded-lg text-red-400/80 hover:bg-red-500/10 transition-colors"
-                        title="Eliminar pilar"
+                        title="Delete pillar"
                       >
                         ✕
                       </button>
@@ -1220,13 +1241,13 @@ export default function BrandBrainEditor() {
                     <input
                       value={p.description || ''}
                       onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, description: e.target.value } : x))}
-                      placeholder="Qué es este pilar (ej. Educación sobre salsas y proceso)"
+                      placeholder="What this pillar is (e.g. Education on sauces and process)"
                       className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink placeholder-ink-tertiary outline-none focus:border-purple-500"
                     />
                     <input
                       value={p.claim || ''}
                       onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, claim: e.target.value } : x))}
-                      placeholder="Claim — la promesa en una frase (ej. Ninguna salsa sin historia)"
+                      placeholder="Claim — the promise in one sentence (e.g. No sauce without a story)"
                       className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink italic placeholder-ink-tertiary outline-none focus:border-purple-500"
                     />
                     <input
@@ -1243,13 +1264,13 @@ export default function BrandBrainEditor() {
                           : ''
                       }
                       onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, themes: e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean) } : x))}
-                      placeholder="Temas, separados por comas (opcional)"
+                      placeholder="Topics, comma-separated (optional)"
                       className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink-secondary placeholder-ink-tertiary outline-none focus:border-purple-500"
                     />
                   </div>
                 ))}
                 {(pillars || []).length === 0 && (
-                  <p className="text-xs text-ink-tertiary">Sin pilares todavía — añade el primero o genera el sistema con el Monthly Content System.</p>
+                  <p className="text-xs text-ink-tertiary">No pillars yet — add the first one or generate the system with the Monthly Content System.</p>
                 )}
               </div>
             </div>
@@ -1261,7 +1282,7 @@ export default function BrandBrainEditor() {
               <TextareaInput
                 value={profile.brand_data?.editorial_rhythm || ''}
                 onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, editorial_rhythm: v } })}
-                placeholder="Lunes/Martes: E-com Playbook (framework + checklist)&#10;Miércoles: Dadybox en Acción (servicio, backstage)&#10;Jueves/Viernes: Radar Logístico (actualidad, caso)&#10;Fin de semana: Entregas Mágicas (creatividad, alcance)&#10;Principio: Publicar por función, no por llenar calendario."
+                placeholder="Mon/Tue: E-com Playbook (framework + checklist)&#10;Wed: Dadybox in Action (service, backstage)&#10;Thu/Fri: Logistics Radar (news, case study)&#10;Weekend: Magic Deliveries (creativity, reach)&#10;Principle: publish by function, not to fill a calendar."
               />
             </div>
 
@@ -1299,7 +1320,7 @@ export default function BrandBrainEditor() {
                         }
                       }
                     })}
-                    placeholder="¿Aporta algo útil o solo rellena calendario?&#10;¿Problema desde perspectiva del cliente?&#10;¿Conecta con control, margen, experiencia o escala?&#10;¿Hay lección real aunque sea creativo?&#10;¿CTA encaja con etapa del funnel?&#10;¿Diseño respeta colores, jerarquía y legibilidad?&#10;¿Claims legales verificados?"
+                    placeholder="Does it add something useful or just fill the calendar?&#10;Is the problem framed from the client's view?&#10;Does it connect with control, margin, experience or scale?&#10;Is there a real lesson even if it is creative?&#10;Does the CTA match the funnel stage?&#10;Does the design respect colours, hierarchy and legibility?&#10;Are legal claims verified?"
                   />
                 </div>
 
@@ -1317,7 +1338,7 @@ export default function BrandBrainEditor() {
                         }
                       }
                     })}
-                    placeholder="Posts sin aprendizaje, claims sin prueba, hablar de magia sin explicar, estilos visuales inconsistentes, solo hablar de marca..."
+                    placeholder="Posts with no takeaway, unproven claims, talking about magic without explaining, inconsistent visual styles, only talking about the brand..."
                   />
                 </div>
               </div>

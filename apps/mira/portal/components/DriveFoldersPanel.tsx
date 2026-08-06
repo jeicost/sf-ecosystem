@@ -3,12 +3,12 @@
 import { useCallback, useEffect, useState } from 'react'
 
 const PURPOSES: Record<string, { label: string; icon: string }> = {
-  references: { label: 'Referencias', icon: '📁' },
-  brand: { label: 'Marca', icon: '🎨' },
+  references: { label: 'References', icon: '📁' },
+  brand: { label: 'Brand', icon: '🎨' },
   logos: { label: 'Logos', icon: '🔷' },
-  deliverables: { label: 'Entregables', icon: '📦' },
-  training: { label: 'Entrenamiento', icon: '🧠' },
-  other: { label: 'Otro', icon: '📂' },
+  deliverables: { label: 'Deliverables', icon: '📦' },
+  training: { label: 'Training', icon: '🧠' },
+  other: { label: 'Other', icon: '📂' },
 }
 
 interface FolderRow {
@@ -51,10 +51,10 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
     const params = new URLSearchParams(window.location.search)
     const drive = params.get('drive')
     if (drive === 'connected') {
-      setMessage({ type: 'ok', text: '✅ Google Drive conectado. Ya puedes añadir carpetas por enlace.' })
+      setMessage({ type: 'ok', text: '✅ Google Drive connected. You can now add folders by link.' })
       window.history.replaceState({}, '', window.location.pathname)
     } else if (drive === 'error') {
-      setMessage({ type: 'err', text: `Error conectando Drive: ${params.get('reason') || 'desconocido'}` })
+      setMessage({ type: 'err', text: `Error connecting Drive: ${params.get('reason') || 'unknown'}` })
       window.history.replaceState({}, '', window.location.pathname)
     }
   }, [load])
@@ -71,12 +71,12 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
         body: JSON.stringify({ clientId, link: link.trim(), purpose }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'No se pudo añadir la carpeta')
+      if (!res.ok) throw new Error(json.error || 'Could not add the folder')
       setLink('')
-      setMessage({ type: 'ok', text: `Carpeta "${json.folder?.folder_name || 'conectada'}" añadida. Pulsa Sincronizar para ingerir su contenido.` })
+      setMessage({ type: 'ok', text: `Folder "${json.folder?.folder_name || 'conectada'}" added. Hit Sync now to ingest its contents.` })
       await load()
     } catch (e) {
-      setMessage({ type: 'err', text: e instanceof Error ? e.message : 'Error añadiendo carpeta' })
+      setMessage({ type: 'err', text: e instanceof Error ? e.message : 'Error adding the folder' })
     } finally {
       setAdding(false)
     }
@@ -92,18 +92,18 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
         body: JSON.stringify({ id }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Sync falló')
-      setMessage({ type: 'ok', text: `✅ ${json.filesSynced ?? 0} documentos sincronizados. El Brain ya tiene el mapa de esta carpeta.` })
+      if (!res.ok) throw new Error(json.error || 'Sync failed')
+      setMessage({ type: 'ok', text: `✅ ${json.filesSynced ?? 0} documents synced. The Brain now has the map of this folder.` })
       await load()
     } catch (e) {
-      setMessage({ type: 'err', text: e instanceof Error ? e.message : 'Error en el sync' })
+      setMessage({ type: 'err', text: e instanceof Error ? e.message : 'Sync error' })
     } finally {
       setSyncing(null)
     }
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('¿Desconectar esta carpeta? Los documentos ya ingeridos se conservan.')) return
+    if (!confirm('Disconnect this folder? Documents already ingested are kept.')) return
     await fetch(`/api/brand-brain/drive/folders?id=${id}`, { method: 'DELETE' })
     await load()
   }
@@ -112,37 +112,37 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
     <div className="space-y-4 p-5 rounded-xl border border-line bg-card">
       {/* P8: el esquema de carpetas por fin visible — cómo alimenta el cerebro */}
       <div className="rounded-xl border border-line bg-surface p-3.5 text-[11px] text-ink-tertiary space-y-1">
-        <p className="font-medium text-ink-secondary">📁 Cómo funciona el conocimiento de Drive</p>
-        <p>· <strong>Una carpeta de conocimiento por cliente</strong> — estructura libre (recomendado: <em>01 Marca/ · 02 Producto/ · 03 Referencias/</em>), máx. 3 niveles. Sync diario automático.</p>
-        <p>· Se leen <strong>PDF, TXT, MD, Google Docs y DOCX</strong> (hasta 100 archivos / 20 docs por sync); las imágenes se cuentan pero no se leen.</p>
-        <p>· Lo sincronizado lo ven <strong>todos los agentes e informes</strong> (índice de conocimiento unificado).</p>
-        <p>· Cada <strong>proyecto</strong> puede tener además sus carpetas Conocimiento/Entregables — se crean desde la página del proyecto.</p>
+        <p className="font-medium text-ink-secondary">📁 How Drive knowledge works</p>
+        <p>· <strong>One knowledge folder per client</strong> — free structure (suggested: <em>01 Brand/ · 02 Product/ · 03 References/</em>), max 3 levels deep. Synced automatically every day.</p>
+        <p>· Reads <strong>PDF, TXT, MD, CSV, Google Docs, Google Sheets, DOCX and XLSX</strong> (up to 100 files / 20 docs per sync); images are counted but not read.</p>
+        <p>· Everything synced is visible to <strong>every agent and report</strong> (unified knowledge index).</p>
+        <p>· Each <strong>project</strong> can have its own Knowledge/Deliverables folders too — created from the project page.</p>
       </div>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-ink font-semibold text-sm">📂 Carpetas de Google Drive</p>
+          <p className="text-ink font-semibold text-sm">📂 Google Drive folders</p>
           <p className="text-ink-secondary text-xs mt-1">
-            Pega el enlace de una carpeta de Drive y el Brain la leerá: documentos, referencias y dónde está cada cosa.
+            Paste a Drive folder link and the Brain will read it: documents, references, and where everything lives.
           </p>
         </div>
         {connected ? (
           <span className="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-surface text-emerald-400 border border-emerald-500/30">
-            ✓ Drive conectado
+            ✓ Drive connected
           </span>
         ) : (
           <a
             href="/integrations"
             className="shrink-0 px-3 py-2 rounded-lg text-xs font-semibold bg-blue-600 hover:bg-blue-500 text-white transition"
           >
-            🔗 Conectar en Integraciones
+            🔗 Connect in Integrations
           </a>
         )}
       </div>
 
       {connected === false && (
         <p className="text-amber-400/80 text-xs">
-          La cuenta de Google Drive de este cliente se conecta una sola vez en{' '}
-          <a href="/integrations" className="underline">Integraciones</a>. Después, aquí solo pegas enlaces de carpetas.
+          This client&apos;s Google Drive account is connected once, in{' '}
+          <a href="/integrations" className="underline">Integrations</a>. After that, you only paste folder links here.
         </p>
       )}
 
@@ -170,7 +170,7 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
           disabled={adding || !link.trim()}
           className="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 disabled:bg-surface-hover disabled:text-ink-secondary text-white text-xs font-semibold transition"
         >
-          {adding ? 'Verificando…' : '+ Conectar carpeta'}
+          {adding ? 'Checking…' : '+ Connect folder'}
         </button>
       </div>
 
@@ -183,15 +183,15 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
       {loading && folders.length === 0 && (
         <div className="flex items-center gap-2 px-3 py-4 text-ink-tertiary text-xs">
           <span className="w-3 h-3 border border-line border-t-ink-secondary rounded-full animate-spin inline-block" />
-          Cargando carpetas…
+          Loading folders…
         </div>
       )}
 
       {!loading && connected && folders.length === 0 && (
         <div className="px-3 py-5 rounded-lg bg-surface border border-dashed border-line text-center">
-          <p className="text-ink-secondary text-xs font-medium">Aún no hay carpetas conectadas</p>
+          <p className="text-ink-secondary text-xs font-medium">No folders connected yet</p>
           <p className="text-ink-tertiary text-[11px] mt-1">
-            Pega arriba el enlace de una carpeta de Drive y el Brain leerá su contenido en el primer sync.
+            Paste a Drive folder link above and the Brain will read its contents on the first sync.
           </p>
         </div>
       )}
@@ -213,9 +213,9 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
                   <p className="text-ink-tertiary text-[10px]">
                     {p.label}
                     {f.last_synced_at
-                      ? ` · ${f.files_synced} docs · sync ${new Date(f.last_synced_at).toLocaleString('es-ES')}`
-                      : ' · sin sincronizar'}
-                    {f.sync_status === 'error' && ' · ⚠️ último sync con error'}
+                      ? ` · ${f.files_synced} docs · synced ${new Date(f.last_synced_at).toLocaleString('en-US')}`
+                      : ' · never synced'}
+                    {f.sync_status === 'error' && ' · ⚠️ last sync failed'}
                   </p>
                 </div>
                 <button
@@ -223,7 +223,7 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
                   disabled={syncing !== null}
                   className="px-3 py-1.5 rounded text-[10px] font-medium bg-surface hover:bg-surface-hover disabled:opacity-40 text-ink transition"
                 >
-                  {syncing === f.id ? 'Sincronizando…' : '↻ Sincronizar'}
+                  {syncing === f.id ? 'Syncing…' : '↻ Sync now'}
                 </button>
                 <button
                   onClick={() => handleDelete(f.id)}

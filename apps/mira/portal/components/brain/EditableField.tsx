@@ -38,9 +38,9 @@ export default function EditableField({ label, value, onSave, placeholder, multi
       await onSave(editValue)
       setIsEditing(false)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar')
+      setError(err instanceof Error ? err.message : 'Failed to save')
       // Show alert as fallback since sonner is not available
-      alert(`Error: ${err instanceof Error ? err.message : 'Error al guardar'}`)
+      alert(`Error: ${err instanceof Error ? err.message : 'Failed to save'}`)
     } finally {
       setIsLoading(false)
     }
@@ -112,12 +112,12 @@ export default function EditableField({ label, value, onSave, placeholder, multi
             {isLoading ? (
               <>
                 <span className="w-3 h-3 rounded-full border-2 border-white/30 border-t-white animate-spin" />
-                Guardando...
+                Saving...
               </>
             ) : (
               <>
                 <Check size={14} />
-                Guardar
+                Save
               </>
             )}
           </button>
@@ -136,7 +136,7 @@ export default function EditableField({ label, value, onSave, placeholder, multi
         <button
           onClick={() => setIsEditing(true)}
           className="shrink-0 p-1.5 rounded hover:bg-surface-hover text-ink-tertiary hover:text-ink-secondary transition-colors opacity-0 group-hover:opacity-100"
-          title="Editar"
+          title="Edit"
         >
           <Edit2 size={14} />
         </button>

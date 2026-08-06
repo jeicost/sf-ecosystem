@@ -19,7 +19,11 @@ export async function GET(req: NextRequest) {
 
     let query = admin
       .from('project_memory')
-      .select('id, title, category, summary, tags, source_department, created_at, is_pinned, project_id')
+      // full_content incluido: el cron de revisión semanal del Brand Brain
+      // escribe ahí el informe entero (app/api/cron/brain-lint/route.ts:59)
+      // diciendo que "reusa el visor existente", pero el visor solo pedía el
+      // summary de una línea — el informe completo era invisible.
+      .select('id, title, category, summary, full_content, tags, source_department, created_at, is_pinned, project_id')
       .eq('client_id', clientId)
       .eq('is_archived', false)
 
