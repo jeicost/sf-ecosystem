@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import ChatThread from '@/components/chat/ChatThread'
 import { Paperclip, Send, Loader2, CheckCircle2 } from 'lucide-react'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
@@ -120,48 +121,11 @@ export function GuidedQuickActionChat({ action, clientId, projectId, onSubmitted
 
   return (
     <div className="flex flex-col h-[420px]">
-      <div ref={scrollRef} className="flex-1 overflow-y-auto space-y-3 pr-1">
-        {messages.map((m, i) => (
-          <div key={i} className={m.role === 'user' ? 'flex justify-end' : 'flex justify-start'}>
-            <div
-              className={
-                m.role === 'user'
-                  ? 'max-w-[85%] rounded-2xl rounded-br-sm bg-purple-600 text-white px-3.5 py-2 text-sm whitespace-pre-wrap'
-                  : 'max-w-[85%] rounded-2xl rounded-bl-sm bg-surface text-ink px-3.5 py-2 text-sm whitespace-pre-wrap'
-              }
-            >
-              {m.text}
-              {m.attachments && m.attachments.length > 0 && (
-                <div className="mt-1.5 flex flex-wrap gap-1">
-                  {m.attachments.map((name, j) => (
-                    <span key={j} className="inline-flex items-center gap-1 text-[11px] opacity-80">
-                      <Paperclip size={10} /> {name}
-                    </span>
-                  ))}
-                </div>
-              )}
-              {m.chips && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {m.chips.map((chip, j) => (
-                    <span
-                      key={j}
-                      className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-400 text-[11px]"
-                    >
-                      <CheckCircle2 size={11} /> {chip}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-        {sending && (
-          <div className="flex items-center gap-2 text-xs text-ink-secondary pl-1">
-            <Loader2 size={13} className="animate-spin" />
-            {t('qa.chat.thinking', locale)}
-          </div>
-        )}
-      </div>
+      <ChatThread
+            className="max-h-72"
+            messages={messages.map((m) => ({ role: m.role === 'bot' ? ('assistant' as const) : ('user' as const), content: m.text }))}
+            isLoading={sending}
+          />
 
       {pendingAttachments.length > 0 && (
         <div className="flex flex-wrap gap-1.5 pt-2">

@@ -2,11 +2,17 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { AGENT_DISPLAY_NAMES } from '@/lib/agent-meta'
+import type { Attachment } from '@/lib/attachments'
+import { extractChatOptions } from '@/lib/chat-options'
 
 export interface AgentMessage {
   role: 'user' | 'assistant'
   content: string
   feedback?: 'helpful' | 'not_helpful'
+  /** Adjuntos enviados con este mensaje (para pintarlos en la burbuja) */
+  attachments?: Attachment[]
+  /** Opciones que el agente ofrece como botones de respuesta rápida */
+  options?: string[]
 }
 
 export interface UseAgentChatOptions {
@@ -28,7 +34,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
   const [error, setError] = useState<string | null>(null)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  const sendMessage = useCallback(async (message: string) => {
+  const sendMessage = useCallback(async (message: string, attachments?: Attachment[]) => {
     setError(null)
     setIsLoading(true)
 
@@ -39,7 +45,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
       .slice(-20)
       .map(({ role: r, content }) => ({ role: r, content }))
 
-    setMessages((prev) => [...prev, { role: 'user', content: message }])
+    setMessages((prev) => [...prev, { role: 'user', content: message, attachments }])
 
     abortControllerRef.current = new AbortController()
 
@@ -56,6 +62,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
           includeBrandBrain: true,
           autonomy,
           locale,
+          attachments,
         }),
         signal: abortControllerRef.current.signal,
       })
@@ -72,7 +79,10 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
         const { done, value } = await reader.read()
         if (done) break
 
-        const chunk = decoder.decode(value)
+        // `{ stream: true }` es obligatorio: sin él, un carácter UTF-8
+        // multibyte partido entre dos chunks (acentos, ñ, emoji) se decodifica
+        // como '\uFFFD'. En un portal bilingüe eso salía constantemente.
+        const chunk = decoder.decode(value, { stream: true })
         assistantMessage += chunk
 
         setMessages((prev) => {
@@ -91,6 +101,19 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
           return updated
         })
       }
+
+      // Al cerrar el stream: separar el bloque de opciones del texto visible.
+      // Si el agente no lo emitió, `text` es el mensaje entero y `options` va
+      // vacío — el parseo es tolerante a propósito.
+      const { text, options } = extractChatOptions(assistantMessage + decoder.decode())
+      setMessages((prev) => {
+        const updated = [...prev]
+        const lastMsg = updated[updated.length - 1]
+        if (lastMsg && lastMsg.role === 'assistant') {
+          updated[updated.length - 1] = { ...lastMsg, content: text, options }
+        }
+        return updated
+      })
     } catch (err) {
       if (err instanceof Error && err.name !== 'AbortError') {
         setError(err.message)

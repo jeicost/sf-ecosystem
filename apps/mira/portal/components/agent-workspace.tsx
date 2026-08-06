@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Send, Upload, Loader2, Check, AlertCircle, X } from 'lucide-react'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
+import ChatThread from '@/components/chat/ChatThread'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
@@ -36,7 +37,6 @@ export default function AgentWorkspace({
   const [uploading, setUploading] = useState(false)
   const [showDocuments, setShowDocuments] = useState(false)
   const [docError, setDocError] = useState<string | null>(null)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()
@@ -63,13 +63,9 @@ export default function AgentWorkspace({
     loadDocuments()
   }, [activeClient?.id, role])
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }
-
-  useEffect(() => {
-    scrollToBottom()
-  }, [messages])
+  // El autoscroll ahora lo gestiona ChatThread (y a diferencia de este, no
+  // arrastra al usuario al final si ha subido a leer mientras el modelo
+  // escribe).
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -140,74 +136,48 @@ export default function AgentWorkspace({
         </p>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.length === 0 && showQuickPrompts && (
-          <div className="flex flex-col h-full items-center justify-center text-center space-y-4">
-            <div className="text-4xl">{agentEmoji}</div>
-            <div>
-              <p className="text-sm text-ink font-medium mb-1">{title}</p>
-              <p className="text-xs text-ink-secondary">{placeholder}</p>
-            </div>
-
-            {quickPrompts.length > 0 && (
-              <div className="mt-6 grid gap-2 w-full max-w-sm">
-                <p className="text-[10px] uppercase tracking-widest font-semibold text-ink-tertiary mb-2">
-                  {t('agent-workspace.quick-prompts-label', locale)}
-                </p>
-                {quickPrompts.map((qp, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleQuickPrompt(qp.prompt)}
-                    disabled={isLoading}
-                    className="text-left px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-50"
-                    style={{
-                      background: `${color}15`,
-                      color: color,
-                      border: `1px solid ${color}30`,
-                    }}
-                  >
-                    {qp.label}
-                  </button>
-                ))}
+      {/* Hilo migrado a components/chat (2026-08-06): markdown real, autoscroll
+          que respeta al usuario y opciones clicables. Se conserva a propósito
+          el composer propio de abajo con su botón de subida: aquí el fichero
+          va a la BIBLIOTECA del agente (agent_documents, conocimiento
+          persistente), que es una función distinta de adjuntar una imagen a un
+          mensaje concreto — cambiarlo por el composer compartido habría
+          eliminado esa función sin pedirlo nadie. */}
+      <ChatThread
+        messages={messages}
+        isLoading={isLoading}
+        onSelectOption={(opt) => handleQuickPrompt(opt)}
+        emptyState={
+          showQuickPrompts ? (
+            <div className="flex flex-col h-full items-center justify-center text-center space-y-4">
+              <div className="text-4xl">{agentEmoji}</div>
+              <div>
+                <p className="text-sm text-ink font-medium mb-1">{title}</p>
+                <p className="text-xs text-ink-secondary">{placeholder}</p>
               </div>
-            )}
-          </div>
-        )}
 
-        {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-xs px-4 py-2 rounded-lg text-sm ${
-                msg.role === 'user'
-                  ? 'text-white'
-                  : 'bg-surface-hover text-ink border border-line'
-              }`}
-              style={
-                msg.role === 'user'
-                  ? { background: color }
-                  : undefined
-              }
-            >
-              {msg.content}
+              {quickPrompts.length > 0 && (
+                <div className="mt-6 grid gap-2 w-full max-w-sm">
+                  <p className="text-[10px] uppercase tracking-widest font-semibold text-ink-tertiary mb-2">
+                    {t('agent-workspace.quick-prompts-label', locale)}
+                  </p>
+                  {quickPrompts.map((qp, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleQuickPrompt(qp.prompt)}
+                      disabled={isLoading}
+                      className="text-left px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-50"
+                      style={{ background: `${color}15`, color: color, border: `1px solid ${color}30` }}
+                    >
+                      {qp.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-
-        {isLoading && messages[messages.length - 1]?.role === 'user' && (
-          <div className="flex justify-start">
-            <div className="bg-surface-hover text-ink-secondary px-4 py-2 rounded-lg text-sm border border-line">
-              <div className="flex gap-1">
-                <div className="w-2 h-2 rounded-full bg-ink-tertiary animate-pulse" />
-                <div className="w-2 h-2 rounded-full bg-ink-tertiary animate-pulse" style={{ animationDelay: '0.2s' }} />
-                <div className="w-2 h-2 rounded-full bg-ink-tertiary animate-pulse" style={{ animationDelay: '0.4s' }} />
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div ref={messagesEndRef} />
-      </div>
+          ) : null
+        }
+      />
 
       {/* Documents Section */}
       {documents.length > 0 && (
@@ -276,7 +246,7 @@ export default function AgentWorkspace({
             onChange={handleDocumentUpload}
             disabled={uploading}
             className="hidden"
-            accept=".pdf,.doc,.docx,.txt,.md,.csv"
+            accept=".pdf,.doc,.docx,.txt,.md,.csv,.png,.jpg,.jpeg,.gif,.webp"
           />
           <button
             type="submit"

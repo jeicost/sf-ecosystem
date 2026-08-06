@@ -10,6 +10,7 @@ import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 import { safeLookup } from '@/lib/safe-lookup'
 import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
+import { CHAT_OPTIONS_CONTRACT } from '@/lib/chat-options'
 import { searchWeb, formatSourcesForPrompt, WEB_SEARCH_TOOL } from '@/lib/grounding/web-research'
 import {
   parseDepartmentChatRole,
@@ -39,13 +40,13 @@ const CREATIVE_IMAGE_ROLES = ['designer', 'spark']
 const GENERATE_IMAGE_TOOL: Anthropic.Tool = {
   name: 'generate_image',
   description:
-    'Genera una imagen de marca real (se muestra al usuario en el chat). Úsala cuando el usuario pida un visual, post, mockup o creatividad. El prompt debe incluir SIEMPRE la identidad visual de la marca (colores hex exactos, estilo tipográfico) y describir composición, estilo y contexto en detalle.',
+    'Generate a real brand image (shown to the user in the chat). Use it when the user asks for a visual, post, mockup or creative. The prompt must ALWAYS include the brand visual identity (exact hex colours, typographic style) and describe composition, style and context in detail.',
   input_schema: {
     type: 'object' as const,
     properties: {
       prompt: {
         type: 'string' as const,
-        description: 'Prompt detallado para el modelo de imagen, con la identidad visual de la marca incluida',
+        description: 'Detailed prompt for the image model, including the brand visual identity',
       },
     },
     required: ['prompt'],
@@ -64,10 +65,10 @@ const MAX_TOKENS: Record<string, number> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { role, message, history, clientId, projectId, includeBrandBrain = true, autonomy, locale = 'es' } = await req.json()
+    const { role, message, history, clientId, projectId, includeBrandBrain = true, autonomy, locale = 'es', attachments } = await req.json()
 
     if (!role || !message) {
-      return new Response(JSON.stringify({ error: 'role y message son requeridos' }), {
+      return new Response(JSON.stringify({ error: 'role and message are required' }), {
         status: 400, headers: { 'Content-Type': 'application/json' }
       })
     }
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
     // lib/department-prompt.ts.
     const deptSlug = parseDepartmentChatRole(role)
     if (!deptSlug && !safeLookup(AGENT_METADATA, role)) {
-      return new Response(JSON.stringify({ error: `Agente '${role}' no encontrado` }), {
+      return new Response(JSON.stringify({ error: `Agent '${role}' not found` }), {
         status: 404, headers: { 'Content-Type': 'application/json' }
       })
     }
@@ -110,7 +111,7 @@ export async function POST(req: NextRequest) {
         const { data: { user } } = await supabase.auth.getUser()
         if (!user?.user_metadata?.client_id) {
           return new Response(
-            JSON.stringify({ error: 'clientId no especificado y usuario no tiene client_id asignado' }),
+            JSON.stringify({ error: 'No clientId provided and your account has no client assigned' }),
             { status: 400, headers: { 'Content-Type': 'application/json' } }
           )
         }
@@ -118,7 +119,7 @@ export async function POST(req: NextRequest) {
         sessionUserId = user.id
       } catch (err) {
         return new Response(
-          JSON.stringify({ error: 'Error obtener client_id del usuario' }),
+          JSON.stringify({ error: 'Could not read the client assigned to your account' }),
           { status: 401, headers: { 'Content-Type': 'application/json' } }
         )
       }
@@ -135,13 +136,13 @@ export async function POST(req: NextRequest) {
           .eq('id', projectId)
           .single()
         if (proj) {
-          projectCtx = `\n\nPROYECTO ACTIVO: "${proj.name}"${proj.description ? ` — ${proj.description}` : ''}. Las decisiones e insights de esta conversación pertenecen a este proyecto.`
+          projectCtx = `\n\nACTIVE PROJECT: "${proj.name}"${proj.description ? ` — ${proj.description}` : ''}. Decisions and insights from this conversation belong to this project.`
         }
       } catch { /* proyecto no encontrado: continuar sin contexto */ }
     }
 
     // Fecha actual para agentes que la necesitan (Herald, Radar, etc.)
-    const today = new Date().toLocaleDateString('es-ES', {
+    const today = new Date().toLocaleDateString('en-US', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
     })
 
@@ -165,22 +166,22 @@ export async function POST(req: NextRequest) {
         .limit(3)
       if (pastFeedback && pastFeedback.length > 0) {
         const notes = pastFeedback
-          .map((f) => `- Pregunta: "${String(f.user_query).slice(0, 150)}"${f.user_feedback ? ` — motivo: ${f.user_feedback}` : ' — el usuario marcó la respuesta como no útil, sin más detalle'}`)
+          .map((f) => `- Question: "${String(f.user_query).slice(0, 150)}"${f.user_feedback ? ` — reason: ${f.user_feedback}` : ' — the user marked the answer as not useful, with no further detail'}`)
           .join('\n')
-        feedbackCtx = `\n\nFEEDBACK PREVIO DEL USUARIO (respuestas que marcó como NO útiles — no repitas el mismo enfoque):\n${notes}`
+        feedbackCtx = `\n\nPAST USER FEEDBACK (answers they marked as NOT useful — do not repeat the same approach):\n${notes}`
       }
     } catch { /* el feedback nunca debe bloquear el chat */ }
 
     // Instrucción de autonomía según nivel elegido por el usuario
     const autonomyCtx = autonomy === 'full_auto'
-      ? '\n\nNivel de autonomía: FULL AUTO. Ejecuta directamente, no pidas confirmación. Notifica el resultado al finalizar.'
+      ? '\n\nAutonomy level: FULL AUTO. Execute directly, do not ask for confirmation. Report the result when finished.'
       : autonomy === 'always_ask'
-      ? '\n\nNivel de autonomía: ALWAYS ASK. Antes de proponer cualquier acción concreta, pide confirmación explícita al usuario.'
+      ? '\n\nAutonomy level: ALWAYS ASK. Before proposing any concrete action, ask the user for explicit confirmation.'
       : ''
 
     // Enriquecer con Brand Brain + project_memory + agent documents si aplica
     const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + projectCtx + feedbackCtx
-    let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE
+    let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE + CHAT_OPTIONS_CONTRACT
 
     const memoryContext = await getClientMemoryContext(resolvedClientId, projectId ?? null)
     // Conocimiento unificado (P2): Drive + subidas + referencias para TODOS
@@ -231,10 +232,30 @@ export async function POST(req: NextRequest) {
           if (Array.isArray(history)) {
             for (const m of history.slice(-20)) {
               if (!m || (m.role !== 'user' && m.role !== 'assistant')) continue
+
+              // Los turnos con imagen llegan como array de bloques. Antes se
+              // descartaban enteros (`typeof m.content !== 'string' → continue`),
+              // así que el agente olvidaba una foto en cuanto le escribías otra
+              // vez: "descríbeme esta imagen" funcionaba y "¿y el fondo?" ya no.
+              // Se conservan los bloques de imagen y se trunca solo el texto.
+              if (Array.isArray(m.content)) {
+                const blocks = (m.content as Anthropic.ContentBlockParam[])
+                  .filter((b) => b && (b.type === 'image' || b.type === 'text'))
+                  .map((b) =>
+                    b.type === 'text'
+                      ? ({ type: 'text', text: String(b.text).slice(0, 8000) } as Anthropic.TextBlockParam)
+                      : b
+                  )
+                if (blocks.length) sanitized.push({ role: m.role, content: blocks })
+                continue
+              }
+
               if (typeof m.content !== 'string' || !m.content.trim()) continue
               const content = m.content.slice(0, 8000)
               const last = sanitized[sanitized.length - 1]
-              if (last && last.role === m.role) {
+              // Solo se fusionan turnos consecutivos si AMBOS son texto plano:
+              // concatenar sobre un array de bloques rompería la imagen.
+              if (last && last.role === m.role && typeof last.content === 'string') {
                 last.content = `${last.content}\n\n${content}`
               } else {
                 sanitized.push({ role: m.role, content })
@@ -246,9 +267,19 @@ export async function POST(req: NextRequest) {
           // envío previo que falló sin respuesta), fusionar ese contenido con el
           // mensaje nuevo en vez de descartarlo.
           let userText = message
+          const danglingBlocks: Anthropic.ContentBlockParam[] = []
           if (sanitized.length && sanitized[sanitized.length - 1].role === 'user') {
             const dangling = sanitized.pop()!
-            userText = `${dangling.content}\n\n${message}`
+            if (typeof dangling.content === 'string') {
+              userText = `${dangling.content}\n\n${message}`
+            } else {
+              // Turno de usuario sin respuesta que llevaba imágenes: se
+              // conservan y su texto se funde con el mensaje nuevo.
+              for (const b of dangling.content as Anthropic.ContentBlockParam[]) {
+                if (b.type === 'image') danglingBlocks.push(b)
+                else if (b.type === 'text') userText = `${b.text}\n\n${userText}`
+              }
+            }
           }
 
           // Grounding visual (Track A del plan de referencias, 2026-07-29):
@@ -265,8 +296,32 @@ export async function POST(req: NextRequest) {
           // on every message -- this was downloading + vision-encoding an
           // image on every single designer/spark turn regardless of whether
           // the user was asking for an image at all.
+          // Adjuntos del turno actual (imágenes, PDF, texto). Esta ruta sirve
+          // tanto los 23 agentes como el chat de departamento, y hasta el
+          // 2026-08-06 ni siquiera leía `attachments` del body: aunque el
+          // frontend los mandara se ignoraban en silencio. Mismo patrón que
+          // app/api/quick-actions/guided/route.ts, que ya lo tenía resuelto.
           let userContent: Anthropic.MessageParam['content'] = userText
-          if (isCreativeRole && sanitized.length === 0) {
+          const userBlocks: Anthropic.ContentBlockParam[] = [...danglingBlocks]
+
+          if (Array.isArray(attachments) && attachments.length > 0) {
+            try {
+              const { buildAttachmentBlocks } = await import('@/lib/attachments')
+              const { contentBlocks, textContext } = await buildAttachmentBlocks(
+                attachments.slice(0, 5)
+              )
+              userBlocks.push(...contentBlocks)
+              if (textContext) userText = `${userText}\n\n${textContext}`
+            } catch (err) {
+              console.warn('Agent chat: could not process attachments (non-fatal):', err)
+            }
+          }
+
+          if (userBlocks.length > 0) {
+            userContent = [...userBlocks, { type: 'text', text: userText }]
+          }
+
+          if (isCreativeRole && sanitized.length === 0 && userBlocks.length === 0) {
             try {
               const { adminClient } = await import('@/lib/supabase')
               const { fetchApprovedVisuals } = await import('@/lib/studio-references')
@@ -274,12 +329,12 @@ export async function POST(req: NextRequest) {
               const [recent] = await fetchApprovedVisuals(adminClient(), resolvedClientId, 1)
               if (recent?.asset_url) {
                 const { contentBlocks } = await buildAttachmentBlocks([
-                  { type: 'image', name: 'Última pieza aprobada del cliente', url: recent.asset_url },
+                  { type: 'image', name: 'Latest approved piece from this client', url: recent.asset_url },
                 ])
                 if (contentBlocks.length > 0) {
                   userContent = [
                     ...contentBlocks,
-                    { type: 'text', text: `${userText}\n\n(Referencia visual adjunta: la última pieza real aprobada de este cliente -- úsala para mantener consistencia de estilo/color si generas una imagen.)` },
+                    { type: 'text', text: `${userText}\n\n(Visual reference attached: the latest real approved piece from this client — use it to keep style and colour consistent if you generate an image.)` },
                   ]
                 }
               }
@@ -333,7 +388,7 @@ export async function POST(req: NextRequest) {
             toolLoops++
 
             const hasImageTool = toolUseBlocks.some((tb) => tb.name === 'generate_image')
-            controller.enqueue(encoder.encode(hasImageTool ? '\n\n_🎨 Generando imagen…_\n\n' : '\n\n_🔎 Buscando en internet…_\n\n'))
+            controller.enqueue(encoder.encode(hasImageTool ? '\n\n_🎨 Generating image…_\n\n' : '\n\n_🔎 Searching the web…_\n\n'))
 
             conversation.push({ role: 'assistant', content: finalMessage.content })
             const toolResults = await Promise.all(
@@ -348,17 +403,17 @@ export async function POST(req: NextRequest) {
                     : null
                   if (stored?.signedUrl) {
                     // La imagen va directa al stream (markdown) y el modelo recibe la URL
-                    controller.enqueue(encoder.encode(`![Imagen generada](${stored.signedUrl})\n\n`))
+                    controller.enqueue(encoder.encode(`![Generated image](${stored.signedUrl})\n\n`))
                     return {
                       type: 'tool_result' as const,
                       tool_use_id: tb.id,
-                      content: `Imagen generada y mostrada al usuario. URL: ${stored.signedUrl}. No repitas la URL en tu respuesta; comenta brevemente la propuesta y ofrece iterarla.`,
+                      content: `Image generated and shown to the user. URL: ${stored.signedUrl}. Do not repeat the URL in your reply; briefly comment on the proposal and offer to iterate on it.`,
                     }
                   }
                   return {
                     type: 'tool_result' as const,
                     tool_use_id: tb.id,
-                    content: 'No se pudo generar la imagen (sin API key de OpenAI configurada o error del proveedor). Descríbele al usuario el concepto visual en detalle y sugiérele configurar OpenAI en Integraciones.',
+                    content: 'Could not generate the image (no OpenAI API key configured, or a provider error). Describe the visual concept to the user in detail and suggest connecting OpenAI in Integrations.',
                   }
                 }
                 const query = typeof (tb.input as { query?: string })?.query === 'string'
@@ -385,21 +440,43 @@ export async function POST(req: NextRequest) {
             outputSummary: fullOutput.slice(0, 200),
           }).catch(() => {})
 
-          // Persistir en project_memory si el chat viene de un proyecto (fire-and-forget)
+          // Persistir en project_memory si el chat viene de un proyecto
+          // (fire-and-forget). Dedup de 24h, el mismo patrón que ya usan las
+          // quick actions (lib/quick-actions/generate.ts:278-281): antes se
+          // insertaba UNA FILA POR TURNO de conversación sin dedup ninguno, y
+          // como getClientMemoryContext solo inyecta las 10 últimas entradas,
+          // una tarde de chat con un agente expulsaba del contexto todas las
+          // memorias reales no fijadas del cliente.
           if (projectId && fullOutput) {
             ;(async () => {
               try {
                 const { adminClient } = await import('@/lib/supabase')
-                await adminClient().from('project_memory').insert({
-                  client_id: resolvedClientId,
-                  project_id: projectId,
-                  action_id: null,
-                  title: `Chat ${agentName}`,
-                  category: 'insight',
-                  summary: fullOutput.slice(0, 200),
-                  source_department: deptSlug ? departmentSlugToAgentDomain(deptSlug) : (safeLookup(AGENT_METADATA, role)?.department ?? null),
-                  created_by: sessionUserId,
-                })
+                const admin = adminClient()
+                const title = `Chat ${agentName}`
+                const summary = fullOutput.slice(0, 200)
+                const dayAgo = new Date(Date.now() - 24 * 3600_000).toISOString()
+                const { data: dup } = await admin
+                  .from('project_memory')
+                  .select('id')
+                  .eq('client_id', resolvedClientId)
+                  .eq('project_id', projectId)
+                  .eq('title', title)
+                  .gte('created_at', dayAgo)
+                  .limit(1)
+                if (dup?.length) {
+                  await admin.from('project_memory').update({ summary }).eq('id', dup[0].id)
+                } else {
+                  await admin.from('project_memory').insert({
+                    client_id: resolvedClientId,
+                    project_id: projectId,
+                    action_id: null,
+                    title,
+                    category: 'insight',
+                    summary,
+                    source_department: deptSlug ? departmentSlugToAgentDomain(deptSlug) : (safeLookup(AGENT_METADATA, role)?.department ?? null),
+                    created_by: sessionUserId,
+                  })
+                }
               } catch { /* la persistencia nunca debe romper el stream */ }
             })()
           }

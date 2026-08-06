@@ -21,7 +21,9 @@ import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import { getAgentActivityTasks, getAgentStats } from '@/lib/agent-activity-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import DocumentUploader from '@/components/document-uploader'
+import type { Attachment } from '@/lib/attachments'
+import ChatThread from '@/components/chat/ChatThread'
+import ChatComposer from '@/components/chat/ChatComposer'
 import Card from '@/components/ui/Card'
 import type { AgentPackage } from '@/lib/types'
 import type { AgentTask, AgentStats } from '@/lib/agent-activity-stats'
@@ -192,7 +194,7 @@ export default function AgentPage() {
     )
   }
 
-  const { messages, isLoading, sendMessage, sendFeedback } = useAgentChat({ role, clientId, projectId, autonomy, locale })
+  const { messages, isLoading, error, sendMessage, sendFeedback, cancel } = useAgentChat({ role, clientId, projectId, autonomy, locale })
   const systemPrompt = getAgentPrompt(role, locale)
 
   const handleCopyPrompt = () => {
@@ -201,10 +203,10 @@ export default function AgentPage() {
     setTimeout(() => setCopied(false), 2000)
   }
 
-  const handleSendMessage = (msg?: string) => {
-    const text = msg || inputValue
-    if (!text.trim()) return
-    sendMessage(text)
+  const handleSendMessage = (msg?: string, attachments?: Attachment[]) => {
+    const text = (msg ?? inputValue).trim()
+    if (!text && !attachments?.length) return
+    sendMessage(text, attachments)
     setInputValue('')
   }
 
@@ -419,13 +421,25 @@ export default function AgentPage() {
             background: 'var(--bg-surface)',
             border: '1px solid var(--border)',
           }}>
-            {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-4">
-              {messages.length === 0 ? (
+            {/* Reescrito el 2026-08-06 sobre components/chat: antes pintaba
+                `{msg.content}` en crudo (sin markdown, sin siquiera pre-wrap),
+                con burbujas `max-w-xs` de 320px para respuestas que los
+                prompts piden en forma de tabla, y SIN autoscroll de ningún
+                tipo dentro de un contenedor de 600px. */}
+            <ChatThread
+              messages={messages}
+              isLoading={isLoading}
+              error={error}
+              thinkingLabel={`${agent.name} is thinking…`}
+              onSelectOption={(opt) => handleSendMessage(opt)}
+              onFeedback={(idx, value) => sendFeedback(idx, value)}
+              emptyState={
                 <div className="flex flex-col items-center justify-center h-full">
                   <MessageSquare size={40} className="mb-3" style={{ opacity: 0.5, color: 'var(--text-secondary)' }} />
-                  <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>Start a conversation with {agent.name}</p>
-                  <div className="grid grid-cols-1 gap-2 w-full max-w-xs">
+                  <p className="text-sm mb-6" style={{ color: 'var(--text-secondary)' }}>
+                    Start a conversation with {agent.name}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2 w-full max-w-sm">
                     {quickPrompts.map((prompt, idx) => (
                       <button
                         key={idx}
@@ -443,106 +457,17 @@ export default function AgentPage() {
                     ))}
                   </div>
                 </div>
-              ) : (
-                messages.map((msg, idx) => {
-                  const isStreamingThisMessage = isLoading && idx === messages.length - 1 && msg.role === 'assistant'
-                  return (
-                    <div key={idx} className={clsx('flex flex-col', msg.role === 'user' ? 'items-end' : 'items-start')}>
-                      <div
-                        className="max-w-xs px-4 py-2 rounded-lg text-sm"
-                        style={{
-                          background: msg.role === 'user' ? `${agent.color}20` : `${agent.color}15`,
-                          color: 'var(--text-primary)',
-                          borderBottomRightRadius: msg.role === 'user' ? 0 : undefined,
-                          borderBottomLeftRadius: msg.role === 'user' ? undefined : 0,
-                        }}
-                      >
-                        {msg.content}
-                      </div>
-                      {msg.role === 'assistant' && msg.content && !isStreamingThisMessage && (
-                        <div className="flex items-center gap-1 mt-1 px-1">
-                          <button
-                            type="button"
-                            aria-label={t('agent-chat.feedback-helpful', locale)}
-                            onClick={() => sendFeedback(idx, 'helpful')}
-                            className="p-1 rounded hover:opacity-100"
-                            style={{ opacity: msg.feedback === 'helpful' ? 1 : 0.35, color: msg.feedback === 'helpful' ? '#22C55E' : 'var(--text-secondary)' }}
-                          >
-                            <ThumbsUp size={13} />
-                          </button>
-                          <button
-                            type="button"
-                            aria-label={t('agent-chat.feedback-not-helpful', locale)}
-                            onClick={() => sendFeedback(idx, 'not_helpful')}
-                            className="p-1 rounded hover:opacity-100"
-                            style={{ opacity: msg.feedback === 'not_helpful' ? 1 : 0.35, color: msg.feedback === 'not_helpful' ? '#EF4444' : 'var(--text-secondary)' }}
-                          >
-                            <ThumbsDown size={13} />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )
-                })
-              )}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="px-4 py-2 rounded-lg rounded-bl-none animate-pulse text-sm" style={{
-                    background: `${agent.color}15`,
-                    color: 'var(--text-primary)',
-                  }}>
-                    {agent.name} is thinking...
-                  </div>
-                </div>
-              )}
-            </div>
+              }
+            />
 
-            {/* Document Upload Area */}
-            {showUploader && (
-              <div className="p-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
-                <DocumentUploader
-                  onUploadComplete={handleDocumentUpload}
-                  acceptedTypes={['.pdf', '.docx', '.txt', '.md']}
-                  maxSizeMB={50}
-                />
-              </div>
-            )}
-
-            {/* Input */}
-            <div className="p-4" style={{ borderTop: '1px solid var(--border)', background: 'var(--bg-card)' }}>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  placeholder="Ask something..."
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                  className="flex-1 px-4 py-2 rounded-lg text-sm focus:outline-none transition-all"
-                  style={{
-                    background: 'var(--bg-surface)',
-                    border: `1px solid var(--border)`,
-                    color: 'var(--text-primary)',
-                  }}
-                />
-                <button
-                  onClick={() => handleSendMessage()}
-                  className="px-4 py-2 rounded-lg transition flex items-center gap-2 text-sm hover:opacity-90"
-                  style={{
-                    background: agent.color,
-                    color: '#ffffff',
-                  }}
-                >
-                  <Send size={16} />
-                </button>
-              </div>
-              <button
-                onClick={() => setShowUploader(!showUploader)}
-                className="text-xs transition hover:opacity-80"
-                style={{ color: 'var(--text-secondary)' }}
-              >
-                {uploadingDoc ? 'Uploading...' : showUploader ? 'Hide upload' : '+ Upload document'}
-              </button>
-            </div>
+            <ChatComposer
+              onSend={(text, attachments) => handleSendMessage(text, attachments)}
+              onCancel={cancel}
+              isLoading={isLoading}
+              clientId={activeClient?.id}
+              accent={agent.color}
+              placeholder="Ask something…"
+            />
           </div>
         )}
 
