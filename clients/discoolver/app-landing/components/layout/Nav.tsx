@@ -2,12 +2,17 @@ import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
 
+// "Para empresas" apuntaba a /influencers, que es la landing de creators — y la
+// FAQ 07 remite explícitamente a este ítem del menú para consultas B2B. Ahora
+// la etiqueta dice a dónde va, y el contacto de empresas es el que ya usa el
+// CTA final de la home.
 const LINKS = [
   { href: "/#descubre", label: "Descubre" },
   { href: "/#planes", label: "Planes" },
   { href: "/#categorias", label: "Categorías" },
   { href: "/#mapa", label: "Mapa" },
-  { href: "/influencers", label: "Para empresas" },
+  { href: "/influencers", label: "Creators" },
+  { href: "mailto:empresas@discoolver.com", label: "Para empresas" },
 ];
 
 export function Nav() {

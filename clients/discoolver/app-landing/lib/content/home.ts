@@ -174,13 +174,15 @@ export const defaultHomeContent = {
   // App coming soon
   app_soon_eyebrow: "App coming soon · iOS + Android",
   app_soon_title_1: "La app llega en",
-  app_soon_title_num: "111",
+  // El número lo pone el componente desde LAUNCH_DATE (ver Countdown.tsx).
+  // No lo devuelvas a un campo del CMS: se queda congelado y contradice al
+  // contador que tiene justo debajo.
   app_soon_title_2: "días.",
   app_soon_title_3: "Tu acceso ya está reservado.",
   app_soon_desc:
     "Mapa offline, calendario inteligente, Local Buddy AI en tu bolsillo y rutas hechas para ti en 10 segundos. Los que estén en la lista entran primero — y reciben un mes premium gratis.",
   app_soon_cta: "Avísame al lanzamiento",
-  app_soon_sticker: "in 111 days",
+  app_soon_sticker: "in {days} days",
 
   // Testimonials
   testimonials_eyebrow: "Lo que dicen los descubridores",

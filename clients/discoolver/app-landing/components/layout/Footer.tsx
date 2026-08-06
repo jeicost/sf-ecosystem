@@ -25,10 +25,10 @@ export function Footer({
                 <Link href="/#categorias">Categorías</Link>
               </li>
               <li>
-                <Link href="/#mapa">Mapa</Link>
+                <Link href="/#planes">Planes</Link>
               </li>
               <li>
-                <Link href="/influencers">Para empresas</Link>
+                <Link href="/#mapa">Mapa</Link>
               </li>
               <li>
                 <Link href="/#creators">Curators</Link>
@@ -39,16 +39,13 @@ export function Footer({
             <h4>Empresa</h4>
             <ul>
               <li>
-                <Link href="/">Sobre nosotros</Link>
+                <a href="mailto:empresas@discoolver.com">Para empresas</a>
               </li>
               <li>
-                <Link href="/">Manifiesto</Link>
+                <a href="mailto:hola@discoolver.com?subject=Prensa">Prensa</a>
               </li>
               <li>
-                <Link href="/">Prensa</Link>
-              </li>
-              <li>
-                <Link href="/">Trabaja con nosotros</Link>
+                <a href="mailto:hola@discoolver.com">Contacto</a>
               </li>
             </ul>
           </nav>
@@ -56,34 +53,29 @@ export function Footer({
             <h4>Recursos</h4>
             <ul>
               <li>
-                <Link href="/">Blog</Link>
+                <Link href="/#faq">Preguntas frecuentes</Link>
               </li>
               <li>
-                <Link href="/">Guías</Link>
+                <Link href="/#hero-email">Pedir invitación</Link>
               </li>
               <li>
-                <Link href="/">Soporte</Link>
-              </li>
-              <li>
-                <a href="mailto:hola@discoolver.com">Contacto</a>
+                <Link href="/influencers">Creators</Link>
               </li>
             </ul>
           </nav>
         </div>
         <div className="foot__bottom">
           <span>© {new Date().getFullYear()} {copyright}</span>
+          {/* Solo se enlaza lo que existe: Términos y Cookies apuntaban a "/"
+              y se retiran hasta que haya páginas reales que enlazar. */}
           <span>
-            <Link style={{ color: "var(--ink-2)" }} href="/">
+            <Link style={{ color: "var(--ink-2)" }} href="/privacidad">
               Privacidad
             </Link>{" "}
             ·{" "}
-            <Link style={{ color: "var(--ink-2)" }} href="/">
-              Términos
-            </Link>{" "}
-            ·{" "}
-            <Link style={{ color: "var(--ink-2)" }} href="/">
-              Cookies
-            </Link>
+            <a style={{ color: "var(--ink-2)" }} href="mailto:hola@discoolver.com">
+              Contacto
+            </a>
           </span>
         </div>
       </div>

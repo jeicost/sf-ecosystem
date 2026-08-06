@@ -4,12 +4,15 @@ import Image from "next/image";
 import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
-import { Countdown } from "@/components/ui/Countdown";
+import { Countdown, daysUntilLaunch } from "@/components/ui/Countdown";
 import type { HomeContent } from "@/lib/content/home";
 
 export function AppComingSoon({ content }: { content: HomeContent }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
+  // El número del titular sale de la misma fecha que el contador, no de un
+  // campo del CMS: así no pueden volver a contradecirse.
+  const [days] = useState(daysUntilLaunch);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -40,7 +43,11 @@ export function AppComingSoon({ content }: { content: HomeContent }) {
                 {content.app_soon_eyebrow}
               </span>
               <h2 className="display-lg" id="app-soon-title" style={{ marginTop: 16 }}>
-                {content.app_soon_title_1} <span style={{ color: "var(--accent)" }}>{content.app_soon_title_num}</span> {content.app_soon_title_2}
+                {content.app_soon_title_1}{" "}
+                <span style={{ color: "var(--accent)" }} suppressHydrationWarning>
+                  {days}
+                </span>{" "}
+                {content.app_soon_title_2}
                 <br />
                 {content.app_soon_title_3}
               </h2>
@@ -85,8 +92,8 @@ export function AppComingSoon({ content }: { content: HomeContent }) {
           </Reveal>
           <Reveal delay={140}>
             <div className="app-soon__phone-wrap">
-              <div className="app-soon__sticker" aria-hidden="true">
-                {content.app_soon_sticker}
+              <div className="app-soon__sticker" aria-hidden="true" suppressHydrationWarning>
+                {content.app_soon_sticker.replace("{days}", String(days))}
               </div>
               <div className="phone-frame" aria-hidden="true">
                 <div className="phone-frame__notch" />

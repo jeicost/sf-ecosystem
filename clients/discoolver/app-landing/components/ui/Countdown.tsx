@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 
 // Placeholder launch target — update when the real app-store date is confirmed.
-const LAUNCH_DATE = new Date("2026-11-18T00:00:00Z");
+// ÚNICA fuente de la fecha: el titular de AppComingSoon también lee de aquí.
+// Antes el titular llevaba un "111" fijo en el CMS mientras este contador
+// marcaba 104: dos números contradiciéndose en la misma pantalla.
+export const LAUNCH_DATE = new Date("2026-11-18T00:00:00Z");
+
+export function daysUntilLaunch() {
+  return Math.max(0, Math.floor((LAUNCH_DATE.getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+}
 
 function getRemaining() {
   const diff = Math.max(0, LAUNCH_DATE.getTime() - Date.now());
