@@ -1,6 +1,6 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-08-03)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-08-06)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)(yy)(zz)(aaa)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063 todas aplicadas. Este fichero lista SOLO lo que queda. Última verificación de vigencia de cada ítem contra el código real: 2026-08-03.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)(yy)(zz)(aaa)(bbb)(ccc)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063/0064/0065 todas aplicadas. Este fichero lista SOLO lo que queda. Última verificación de vigencia de cada ítem contra el código real: 2026-08-06.
 
 ## Discoolver — guías + curador (2026-08-06)
 
@@ -119,6 +119,18 @@ Brand Book y Monthly Content System verificados con generaciones reales completa
 - Nota de estado ya redactada para reenviar al equipo/persona del handoff — resume: seguimos esperando (a) contrato de marca congelado Salsa/Dadybox/Discoolver, (b) su decisión sobre 0028 reuse-vs-namespace, (c) aprobación de "one small backend foundation task".
 - Mientras tanto, ejecutado ya (Track A, sin tocar nada gated): Studio (designer/spark) con piezas reales aprobadas en vez de mock; `generate_image` con grounding visual real vía Claude vision. Ver detalle en DEBT (nn).
 - Pendiente real (Track B, NO empezar sin luz verde externa): aplicar `vp_brand_visual_modules`/`vp_visual_references`, descargar e indexar de verdad las fotos de "Post References" de Drive, cross-link con el JSON de 12 casos de `README (1).md` de Salsa.
+
+## MIRA — Ronda 2026-08-06 (DEBT ccc) — ✅ CERRADA, con 4 pendientes reales
+
+Fuga de lectura anónima cerrada (0064: `brand_profiles`, `generation_queue`, `content_pillars` se leían enteras SIN SESIÓN con la anon key), escritura cross-tenant corregida, subida de documentos arreglada (nunca funcionó: 401 garantizado, 0 filas en `client_documentation`), Brand Brain deja de perder información (la misión del editor no llegaba a ningún prompt, +18 campos huérfanos), CSV/Sheets/Excel legibles, contradicciones resolubles por primera vez, imágenes leídas por visión (chat y Drive), los 8 chats reescritos sobre un componente compartido, y portal + entregables 100% en inglés. Detalle completo en DEBT (ccc).
+
+**Pendientes reales de esta ronda:**
+1. **Magnific — bloqueado por una API key de Freepik.** El módulo y el validador están listos; falta cablearlo a los 4 usos que pidió el CEO (editar sobre la imagen original, mejorar fotos del Drive, pulir lo que genera gpt-image-1, Freepik como segundo generador) y verificarlo contra el endpoint real. **Magnific no tiene API pública propia** — la compró Freepik; `api.magnific.ai` devuelve 404 y el validador que había apuntaba ahí.
+2. **Probar con una cuenta de CLIENTE real.** La política RLS nueva se verificó con `super_admin` y con la anon key desde fuera, pero **no con un usuario de cliente**. Es el mayor riesgo abierto: si algo se pasa de restrictivo, un cliente vería su portal vacío. Revertir sería solo el commit `c02e4bf`.
+3. **Reconectar Drive de los 4 clientes restantes** (Salsa ya está). Lo hace el CEO proyecto a proyecto. Ya no se caerá cada 7 días: la app OAuth está publicada.
+4. **Verificación de Google** de la app OAuth — no bloquea nada, solo quita la pantalla de "app no verificada" al autorizar.
+
+**Sin probar en producción (verificado solo en local):** modo claro de los 8 chats nuevos, y descarga del PPTX con 3 imágenes.
 
 ## MIRA — técnico pendiente (por prioridad)
 

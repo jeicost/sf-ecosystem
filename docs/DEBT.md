@@ -862,3 +862,55 @@ Sesión "no pares hasta terminar todo" pedida por el CEO. Todo comiteado (`5bd85
 **5. P1 de MIRA cerrado**: Questionnaires (lista+detalle), Terms y Privacy traducidos al inglés completo; 6 hovers muertos del sidebar (`/8`→`/10`); `load-missing-pillars` borrada (código muerto, cero consumidores, y de ejecutarse duplicaría pilares).
 
 **Pendiente real que queda de esta ronda**: decisión de schema sf-crm (reescribir 03 contra el schema real — CUIDADO: proyecto Supabase compartido con MIRA); CI de sales-engine sigue con `continue-on-error` (~34 ruff/~300 mypy); PDF silencioso del dg-editor (repo cliente); waitlist Discoolver antes de su deploy; keys locales rotadas de sf-crm/.env.local y sales-engine (las de Vercel ya repuestas).
+
+## ccc) MIRA 2026-08-06: fuga de datos real, el Brand Brain dejaba de aprender a mitad de camino, y los 8 chats reescritos
+
+Sesión larga disparada por tres quejas del CEO tras trabajar Salsa Burgers con Nirada. Las tres eran ciertas, y detrás había bastante más. **8 commits (`c02e4bf`..`e1cad61`), 157 ficheros, desplegado y verificado en producción.** Migraciones **0064** y **0065** aplicadas.
+
+### Lo que NO estaba reportado y era lo más grave
+
+- **Fuga de lectura anónima.** `brand_profiles`, `generation_queue` y `content_pillars` devolvían filas de TODOS los clientes **sin ninguna sesión** con la anon key (que es pública: viaja al navegador). El Brand Brain entero y el contenido de cada deck e informe generados. Migración **0064**.
+  **La lección:** activar RLS **no bastó** en 2 de las 3. Ya tenían heredada una política `<tabla>_select_public` con `USING (true)`, y Postgres combina políticas con **OR**: basta con que una deje pasar. Detección: `SELECT tablename, policyname FROM pg_policies WHERE qual::text = 'true'`. Esa auditoría estaba pendiente desde mayo.
+- **Escritura entre clientes.** `generation_queue: insert own` tenía `WHERE generation_queue.client_id = generation_queue.client_id` — una columna comparada consigo misma, siempre cierta. Cualquier usuario con acceso a un cliente podía insertar documentos a nombre de cualquier otro. Corregido vía SQL editor.
+- **La subida de documentos nunca funcionó.** `/api/documents/upload` importaba `getUser` de `@/lib/auth`, un módulo `'use client'` que lee localStorage: en servidor devuelve `null` siempre → **401 garantizado**. `client_documentation` tenía 0 filas. Además resolvía el cliente con `mira_users.primary_client_id`, columna inexistente, cayendo a un `clients/default/` compartido.
+- **Drive se caía cada 7 días.** Los 5 refresh tokens muertos con `invalid_grant`, incluidos dos que habían sincronizado esa misma mañana: se conectaron el 07-29 y murieron el 08-05. Exactamente 7 días = app OAuth en modo **Testing**. Reconectar solo compraba otra semana. **Publicada en producción por el CEO**; ahora los tokens persisten. Ver memoria `reference_google_oauth_testing_mode_7_days`.
+- **La misión escrita en el editor no llegaba a ningún prompt.** El editor guarda `brand_data.identity.mission`; `formatBrandBrainForPrompt` leía la columna plana `brand_profiles.mission`, que la UI ni muestra ni edita. Con ella, otros **18 campos huérfanos** (visión, propuesta de valor, posicionamiento, modelo de negocio, arquetipos de voz, roadmap, ritmo editorial, reglas de calidad) y casi todas las respuestas del cuestionario de intake, que caían en claves que no leía nadie.
+
+### Las tres quejas, y su causa real
+
+1. **"¿Lee CSV el Brand Brain?"** → no. Solo PDF/TXT/MD/Google Docs/DOCX. Ahora **CSV + Google Sheets + Excel**, extraídos a texto etiquetado por cabecera (`Producto: Wagyu Burger | Precio: 390`) en vez de una pared de comas. El Excel real de Salsa son 58 recetas / 87k caracteres que eran invisibles.
+2. **"¿Dónde está el modelo de corrección de contradicciones?"** → **no existía**. Se escribían (drive-sync, analyze-document), se contaban en el índice y en el lint semanal, y **ninguna línea del repo cambiaba nunca su `status`**. Ahora se resuelven con un clic (usar el nuevo / mantener el mío / no es conflicto), aplicando al `brand_data` y registrando procedencia.
+3. **"La memoria no se actualiza al subir documentos al Drive"** → el sync **sí** funcionaba y creaba la propuesta. El fallo era que solo se veía dentro del desplegable "Cuéntale a MIRA", que **se auto-abre una única vez por navegador en toda su vida**. Nueva bandeja permanente arriba de `/brand-brain`.
+
+### Documentos
+
+- **"Fallo de carga en presentación":** ninguna slide llevaba `class="active"` en el HTML servido. `.slide` es `opacity:0` y solo `.slide.active` se ve, así que todo dependía de un `show(0)` en el script inline final — si no llegaba a ejecutarse, el usuario veía **un rectángulo en blanco sin ningún error y sin rastro en logs**. Verificado el arreglo **con JavaScript desactivado**.
+- **Refinar rompía las imágenes:** se conservaba `imageUrl` (signed URL de 7 días) pero se tiraba `image_path`, la ruta estable con la que el visor pide firma nueva.
+- **El subtítulo salía dos veces** en la portada (la banda usaba `s.subtitle ?? …`, empezando por el texto ya pintado).
+- **PPTX > límite de Vercel:** 5,07 MB con 3 imágenes. PNG sin comprimir → JPEG 85%: **85 KB en vez de 1,6 MB, 19× menos**.
+- **El 400 permanente de `/toolkit`** que la auditoría de (uu) dio por no reproducible: pedía `clients.settings`, columna inexistente (migración 0035 nunca aplicada). Reproducido y cerrado.
+- **Nuevo:** chat de brief antes de generar. Carga el Brand Brain, no pregunta lo que ya sabe, **pregunta el idioma**, y usa los `data_gaps` que cada generación ya calculaba y se tiraban.
+
+### Imágenes — los agentes ya pueden verlas
+
+Cuatro fallos: lista blanca PDF/DOCX/TXT rechazaba PNG; `/api/agent` **ni leía `attachments` del body**; el historial descartaba los bloques de imagen (el agente olvidaba una foto al turno siguiente); y las **204 imágenes de 213 ficheros** del Drive de Salsa se descartaban en el sync. Ahora se describen por visión (Haiku) con dedup por `content_hash`. Colateral: el logo del onboarding **nunca lo veía el modelo** (Attachment sin `path`), y un HEIC/SVG **tumbaba la petición entera** porque el MIME se casteaba sin validar.
+
+### Chats — 0 de 8 renderizaban markdown
+
+`react-markdown` llevaba tiempo **en el package.json, instalado, y sin importar en ningún fichero**. Los 8 chats pintaban `{msg.content}` en crudo mientras los prompts piden tablas. Las imágenes que generaba un agente (`![](url)`) **no se veían nunca**. Los dos chats principales **no tenían autoscroll de ningún tipo**. Ahora hay un componente compartido (markdown con tablas, autoscroll que respeta al usuario, composer multilínea con adjuntos y cancelar, error con reintento, opciones clicables vía bloque delimitado). Y `decoder.decode()` sin `{ stream: true }` rompía los acentos en streaming.
+
+### Inglés — ~920 strings en ~100 ficheros
+
+**El locale por defecto era `'es'`**: un cliente nuevo veía el portal en español por muy traducidas que estuvieran las claves. Además, los prompts forzaban español en el **entregable** (4 órdenes explícitas, los 4 tipos de documento, el bloque de marca inyectado en TODOS los prompts, los 68 quick prompts, las 18 plantillas de exportación, y los marcadores `[RECOMENDACIÓN]`/`[SUPUESTO]`/`[COMPLETAR]`). Prueba de que importaba: el deck de Salsa se pidió **en inglés** y salió entero en español.
+Dos bugs encontrados al traducir: el badge de estado usaba `'misaligned'.includes('aligned')` y evaluaba primero la lista de "bien" → **"Desalineado" se pintaba en verde**; y el verificador del deck mensual buscaba literalmente `'Calendario'` y devolvía **500 bloqueando la subida a Drive** — traducir la plantilla lo habría roto en silencio (check ahora bilingüe).
+
+### Presupuesto de conocimiento para tablas
+
+El índice aplicaba un tope **único de 420 caracteres** a todo, y `excerpt()` prefería el resumen de IA sobre el contenido. De un menú de 58 recetas el agente leía "una hoja con el menú" y **ni un precio**. Ahora tres presupuestos con cupos separados (tabular 8.000, imagen 700, prosa 420) y la síntesis del Brain ve 20.000. **Verificado: de 0 a 58 precios visibles.**
+
+### Pendiente de esta ronda
+
+- **Magnific**: módulo (`lib/generation/magnific.ts`) y validador listos, **sin cablear a los 4 usos** — falta una API key de Freepik para verificarlo en vivo. Ojo: la tarjeta que ya existía apuntaba a `api.magnific.ai/v1/account`, que **devuelve 404**; Magnific no tiene API propia desde que la compró Freepik.
+- **Reconexión de Drive de los 4 clientes restantes** — la hace el CEO, proyecto a proyecto.
+- **Verificación de Google** de la app OAuth (no bloquea; solo quita la pantalla de aviso).
+- **Sin probar con cuenta de cliente real**: la política RLS nueva se verificó con `super_admin`. Falta entrar como cliente y confirmar que ve lo suyo.
