@@ -1,0 +1,478 @@
+{
+  "slug": "/360/agencias",
+  "meta_title": "Agencias, DMC y touroperadores receptivos",
+  "meta_description": "Digitalizamos el catálogo local del destino y te damos marketplace y punto de venta para venderlo. Módulos desde 100 €/mes y comisión del 10-15%.",
+  "secciones": [
+    {
+      "id": "hero",
+      "tipo": "hero",
+      "nota_diseno": "Sección .hero estándar de la marca 360: .label en Space Mono magenta, h1 .h-hero en Poppins 900 a dos líneas como máximo, .lead a 640px de ancho y .btns con .btn-1 (magenta) + .btn-2 (fantasma). Debajo de los botones, hero_honestidad en .small sobre fondo .band con borde magenta al 15%: es una declaración de honestidad, tiene que leerse como una nota al pie deliberada, no como un claim. No lleva imagen ni foto de stock: esta vertical no tiene material propio y una foto genérica de aeropuerto la delataría. Fondo --b-bg plano.",
+      "campos": [
+        {
+          "clave": "hero_label",
+          "valor": "discoolver 360 · agencias, DMC y receptivos"
+        },
+        {
+          "clave": "hero_title",
+          "valor": "El catálogo local que hoy no puedes vender"
+        },
+        {
+          "clave": "hero_sub",
+          "valor": "El producto de experiencias del destino está disperso en doscientos negocios que no tienen ficha, ni precio publicado, ni forma de contratarse. Nosotros lo digitalizamos y te damos el escaparate y el punto de venta para comercializarlo."
+        },
+        {
+          "clave": "hero_cta_1",
+          "valor": "Hablemos de tu catálogo"
+        },
+        {
+          "clave": "hero_cta_1_url",
+          "valor": "/360/demo"
+        },
+        {
+          "clave": "hero_cta_2",
+          "valor": "Ver módulos y precios"
+        },
+        {
+          "clave": "hero_cta_2_url",
+          "valor": "#modulos"
+        },
+        {
+          "clave": "hero_honestidad",
+          "valor": "Esta es la vertical más reciente de discoolver 360. Los módulos llevan años funcionando en destinos y hay despliegues reales con cobro en la calle. Con agencias todavía no tenemos un caso cerrado, y preferimos decirlo aquí antes que en la segunda reunión."
+        }
+      ]
+    },
+    {
+      "id": "a-quien-sirve",
+      "tipo": "grid",
+      "nota_diseno": "Bloque .sec--alt con .section head (.label + h2 .h-sec + .lead) y una .grid.g-3 de tres .card. Cada card abre con .card__n numerado (01/02/03) en Space Mono y un h3 .h-card. Sin iconos: los tres perfiles se distinguen por el texto, no por pictogramas de maleta. Al cierre de la sección, un bloque a ancho completo con borde superior --b-line-soft para el 'cuándo no somos tu proveedor': va en gris --b-muted, cuerpo pequeño, sin caja de alerta. Decir en qué no entramos es lo que le da credibilidad a lo de arriba, pero no debe competir visualmente con las tres tarjetas.",
+      "campos": [
+        {
+          "clave": "perfiles_label",
+          "valor": "A quién sirve"
+        },
+        {
+          "clave": "perfiles_title",
+          "valor": "Si vendes destino, el producto local es tu inventario"
+        },
+        {
+          "clave": "perfiles_lead",
+          "valor": "Hablamos con dirección y con responsables de producto. Tres perfiles distintos, el mismo cuello de botella: el catálogo local está disperso, cuesta más incorporarlo que lo que deja, y el margen se va en gestionarlo a mano."
+        },
+        {
+          "clave": "perfil_1_nombre",
+          "valor": "DMC"
+        },
+        {
+          "clave": "perfil_1_texto",
+          "valor": "Montas programas a medida y el producto de experiencias lo cierras por teléfono, por correo o por WhatsApp. Cada proveedor nuevo es trabajo manual que no escala y que se pierde cuando cambia la persona que lo llevaba."
+        },
+        {
+          "clave": "perfil_2_nombre",
+          "valor": "Touroperador receptivo"
+        },
+        {
+          "clave": "perfil_2_texto",
+          "valor": "Tienes volumen y contratación resuelta en alojamiento y transporte. En el producto local repites siempre los mismos diez proveedores, porque incorporar un negocio pequeño cuesta más de lo que aporta al margen."
+        },
+        {
+          "clave": "perfil_3_nombre",
+          "valor": "Agencia receptiva y de excursiones"
+        },
+        {
+          "clave": "perfil_3_texto",
+          "valor": "Vendes en mostrador, en recepción de hotel y en punto físico. Necesitas cobrar en el sitio, con el mismo catálogo y los mismos precios en todos los canales, y saber al cierre del día qué se ha vendido y dónde."
+        },
+        {
+          "clave": "no_encaje_titulo",
+          "valor": "Cuándo no somos tu proveedor"
+        },
+        {
+          "clave": "no_encaje_texto",
+          "valor": "Si buscas un motor de reservas de vuelos, un back office contable o un conector con tu ERP, no somos eso. discoolver 360 aporta el catálogo local digitalizado, el sitio donde venderlo y el punto donde cobrarlo. Lo demás se queda donde está."
+        }
+      ]
+    },
+    {
+      "id": "que-damos",
+      "tipo": "grid",
+      "nota_diseno": "Sección .sec sobre fondo base con .grid.g-2 de cuatro .card en dos columnas (una sola columna en móvil). Título de card en .h-card y cuerpo a 14,5px. La cuarta card, la de datos, lleva borde izquierdo cyan --b-accent para romper la simetría y señalar que es el argumento de negocio, no una feature. Debajo de la rejilla, la nota de comisión en un .band con fondo --b-bg-3: el 10-15% se escribe en Poppins 900 magenta dentro de la frase, y el [PENDIENTE] se marca en Space Mono 11px en --b-slate, visible pero claramente en otro registro para que quien maquete sepa que ese texto no sale a producción tal cual.",
+      "campos": [
+        {
+          "clave": "que_damos_label",
+          "valor": "Qué ponemos nosotros"
+        },
+        {
+          "clave": "que_damos_title",
+          "valor": "La parte que nadie quiere hacer, ya hecha"
+        },
+        {
+          "clave": "que_damos_lead",
+          "valor": "No te vendemos un canal más. Te vendemos el inventario local convertido en producto vendible, el escaparate donde ponerlo y la caja donde cobrarlo."
+        },
+        {
+          "clave": "bloque_1_titulo",
+          "valor": "Catálogo local digitalizado"
+        },
+        {
+          "clave": "bloque_1_texto",
+          "valor": "Negocios, productos, actividades y eventos del destino convertidos en fichas con contenido, foto y datos estructurados. Es el trabajo lento y poco agradecido sin el cual no hay nada que vender, y es lo que llevamos años haciendo en destino."
+        },
+        {
+          "clave": "bloque_2_titulo",
+          "valor": "Marketplace"
+        },
+        {
+          "clave": "bloque_2_texto",
+          "valor": "Un sistema de venta con tus productos y los de tus colaboradores. Se integra en la web que ya tienes o se despliega como plataforma nueva. Sin desarrollo por tu parte y sin obligar a nadie a descargarse una app."
+        },
+        {
+          "clave": "bloque_3_titulo",
+          "valor": "Punto de venta físico"
+        },
+        {
+          "clave": "bloque_3_texto",
+          "valor": "Cobro en mostrador, en oficina, en hotel o en monumento, con el mismo catálogo que el canal online. Se conecta en quince días, sin hardware complejo y sin meses de desarrollo."
+        },
+        {
+          "clave": "bloque_4_titulo",
+          "valor": "Datos de qué se busca y qué se vende"
+        },
+        {
+          "clave": "bloque_4_texto",
+          "valor": "Cuadro de mando e informes con toda la actividad del ecosistema: qué consulta el viajero, qué reserva y qué se queda sin comprar. Los datos son tuyos y sirven para negociar con proveedores y decidir qué producto merece la pena contratar. El módulo de inteligencia de negocio va incluido con los módulos que contrates."
+        },
+        {
+          "clave": "comision_texto",
+          "valor": "Sobre las ventas del marketplace, discoolver aplica una comisión del 10-15%. Los módulos se contratan por separado, siempre en suscripción."
+        },
+        {
+          "clave": "comision_pendiente",
+          "valor": "[PENDIENTE: dirección comercial debe confirmar cómo se aplica esa comisión cuando quien vende es la agencia y no el destino, y si existe tarifa neta o precio de reventa para el canal.]"
+        }
+      ]
+    },
+    {
+      "id": "encaje",
+      "tipo": "pasos",
+      "nota_diseno": "Bloque .steps con cuatro .step numerados en vertical, línea magenta a la izquierda uniendo los pasos, número en Space Mono y titular en Poppins 700. Es la sección que responde a la objeción real ('¿esto me pisa lo que ya vendo?'), así que necesita aire: máximo 620px de ancho de texto y separación generosa entre pasos. La nota final va fuera de la escalera, en .small sobre --b-bg-3, y contiene un [PENDIENTE] técnico: se maqueta igual que el resto de pendientes, en Space Mono, para que el equipo lo identifique de un vistazo antes de publicar.",
+      "campos": [
+        {
+          "clave": "encaje_label",
+          "valor": "Cómo encaja"
+        },
+        {
+          "clave": "encaje_title",
+          "valor": "No sustituye a lo que ya vendes, llena el hueco de al lado"
+        },
+        {
+          "clave": "paso_1_titulo",
+          "valor": "Lo tuyo sigue siendo tuyo"
+        },
+        {
+          "clave": "paso_1_texto",
+          "valor": "Alojamiento, transporte, guías y programa propio no se tocan. discoolver 360 entra en la capa que hoy tienes vacía o resuelta a mano: el producto local del destino."
+        },
+        {
+          "clave": "paso_2_titulo",
+          "valor": "El catálogo se digitaliza una vez"
+        },
+        {
+          "clave": "paso_2_texto",
+          "valor": "Cada negocio pasa a ser una ficha con contenido, precio y condiciones. A partir de ahí deja de ser una agenda de contactos y pasa a ser inventario consultable, actualizable y vendible."
+        },
+        {
+          "clave": "paso_3_titulo",
+          "valor": "Se vende por tus canales"
+        },
+        {
+          "clave": "paso_3_texto",
+          "valor": "Marketplace en tu web, punto de venta en mostrador, tótems y códigos QR en el destino, planificador de rutas para el cliente final. El mismo catálogo alimentando todos los canales."
+        },
+        {
+          "clave": "paso_4_titulo",
+          "valor": "Se mide y se renegocia"
+        },
+        {
+          "clave": "paso_4_texto",
+          "valor": "Con el dato de qué se busca y qué se compra vas a la mesa de contratación con argumentos, y decides qué producto local escalas y cuál dejas caer."
+        },
+        {
+          "clave": "encaje_pendiente",
+          "valor": "[PENDIENTE: producto y dirección deben definir si existe API, marca blanca o acceso al catálogo desde el sistema de reservas de la agencia. Hoy no hay documentación técnica que lo respalde, así que no se promete en esta página.]"
+        }
+      ]
+    },
+    {
+      "id": "caso-ronda",
+      "tipo": "caso",
+      "nota_diseno": "Un único bloque .caso a ancho de .wrap, con gradiente --b-bg-3 a --b-bg-2 y borde magenta al 15%. Arriba .label en cyan, luego el nombre del destino en .h-sec y el cuerpo a 16px. Debajo, .caso__stats con tres cifras en Poppins 900 magenta y etiqueta en Space Mono. El párrafo de honestidad va después de las cifras, en --b-muted y cuerpo pequeño: es deliberado que el desmentido aparezca tras el dato y no antes, porque el argumento es 'la cañería existe', no 'ya trabajamos con agencias'. Sin fotos ni logos de cliente: no hay material aprobado ni testimonio con nombre real.",
+      "campos": [
+        {
+          "clave": "caso_label",
+          "valor": "Lo que ya está desplegado"
+        },
+        {
+          "clave": "caso_title",
+          "valor": "Ronda"
+        },
+        {
+          "clave": "caso_texto",
+          "valor": "En Ronda hay más de doscientos negocios y propuestas locales integrados en la plataforma, ocho puntos de venta, tótems interactivos y señalética QR repartida por la ciudad. Es un cliente de pago, con la oficina de turismo vendiendo desde el punto de venta y venta cruzada con hoteles. El segundo despliegue es Costa del Sol y Málaga, con señalética QR y marketplace."
+        },
+        {
+          "clave": "caso_stat_1_valor",
+          "valor": "200+"
+        },
+        {
+          "clave": "caso_stat_1_label",
+          "valor": "Negocios locales integrados"
+        },
+        {
+          "clave": "caso_stat_2_valor",
+          "valor": "8"
+        },
+        {
+          "clave": "caso_stat_2_label",
+          "valor": "Puntos de venta en el destino"
+        },
+        {
+          "clave": "caso_stat_3_valor",
+          "valor": "2"
+        },
+        {
+          "clave": "caso_stat_3_label",
+          "valor": "Destinos con despliegue real"
+        },
+        {
+          "clave": "caso_honestidad",
+          "valor": "Ronda es un destino, no una agencia. Lo que demuestra no es que ya trabajemos con DMC, sino que la parte difícil está hecha y en producción: digitalizar doscientos negocios locales, ponerlos a la venta y cobrar de verdad en la calle."
+        },
+        {
+          "clave": "caso_pendiente",
+          "valor": "[PENDIENTE: no existe todavía un caso con una agencia, DMC o receptivo. Cuando exista, sustituye a este bloque. No se simula ninguno mientras tanto.]"
+        }
+      ]
+    },
+    {
+      "id": "modulos",
+      "tipo": "tabla",
+      "nota_diseno": "Sección con id 'modulos' (ancla del menú). Tabla de tres columnas —módulo, precio, para qué te sirve— con cabecera en Space Mono, filas separadas por rgba(255,255,255,.04) y hover magenta al 3%. Los precios en Poppins 900 magenta, la unidad (€/mes, por punto) en Space Mono --b-slate. En móvil la tabla se convierte en tarjetas .mod apiladas, nunca en scroll horizontal. Las dos primeras filas, Marketplace y punto de venta, llevan fondo magenta al 8% para marcar que son el núcleo de esta vertical y el resto es opcional. Cierre de sección con la línea del stack completo y el pendiente de tarifa de canal.",
+      "campos": [
+        {
+          "clave": "modulos_label",
+          "valor": "Módulos aplicables"
+        },
+        {
+          "clave": "modulos_title",
+          "valor": "Se contratan por separado, en suscripción"
+        },
+        {
+          "clave": "modulos_lead",
+          "valor": "Estos son los precios de tarifa. Para una agencia el núcleo son los dos primeros; el resto entra según cómo y dónde vendas."
+        },
+        {
+          "clave": "modulo_1_nombre",
+          "valor": "Marketplace"
+        },
+        {
+          "clave": "modulo_1_precio",
+          "valor": "750 €/mes"
+        },
+        {
+          "clave": "modulo_1_para_que",
+          "valor": "Venta de tus servicios y los de tus colaboradores: alojamientos, productos, actividades y eventos. Es el escaparate donde vive el catálogo."
+        },
+        {
+          "clave": "modulo_2_nombre",
+          "valor": "Software de caja (POS)"
+        },
+        {
+          "clave": "modulo_2_precio",
+          "valor": "495 €/mes + 50 € por punto"
+        },
+        {
+          "clave": "modulo_2_para_que",
+          "valor": "Cobro en mostrador, oficina, hotel o monumento. Integración en quince días, sin hardware complejo."
+        },
+        {
+          "clave": "modulo_3_nombre",
+          "valor": "Plan My Trip"
+        },
+        {
+          "clave": "modulo_3_precio",
+          "valor": "150 €/mes"
+        },
+        {
+          "clave": "modulo_3_para_que",
+          "valor": "Planificador de rutas por tipo de viajero, duración y presupuesto. Convierte una consulta suelta en un itinerario reservable. Premio Hospitality 2021 en el Digital Enterprise Show."
+        },
+        {
+          "clave": "modulo_4_nombre",
+          "valor": "Asistente de voz local"
+        },
+        {
+          "clave": "modulo_4_precio",
+          "valor": "250 €/mes"
+        },
+        {
+          "clave": "modulo_4_para_que",
+          "valor": "Chatbot entrenado con el contenido del destino. Atiende consultas del viajero las veinticuatro horas sin ampliar plantilla."
+        },
+        {
+          "clave": "modulo_5_nombre",
+          "valor": "Calendario inteligente"
+        },
+        {
+          "clave": "modulo_5_precio",
+          "valor": "100 €/mes"
+        },
+        {
+          "clave": "modulo_5_para_que",
+          "valor": "Agenda cultural y de eventos del destino con venta de entradas integrada. Producto de temporada que hoy se te escapa."
+        },
+        {
+          "clave": "modulo_6_nombre",
+          "valor": "Señalética y tótems"
+        },
+        {
+          "clave": "modulo_6_precio",
+          "valor": "100 €/mes"
+        },
+        {
+          "clave": "modulo_6_para_que",
+          "valor": "Tótems interactivos y códigos QR en puntos físicos. Venta fuera del mostrador, donde está el viajero."
+        },
+        {
+          "clave": "modulo_7_nombre",
+          "valor": "Inteligencia de negocio"
+        },
+        {
+          "clave": "modulo_7_precio",
+          "valor": "Incluido"
+        },
+        {
+          "clave": "modulo_7_para_que",
+          "valor": "Cuadro de mando e informes con toda la data del ecosistema. Va incluido con los módulos contratados."
+        },
+        {
+          "clave": "modulos_stack",
+          "valor": "El stack completo de los siete módulos suma 1.845 €/mes. Sobre las ventas del marketplace se aplica una comisión del 10-15%."
+        },
+        {
+          "clave": "modulos_pendiente",
+          "valor": "[PENDIENTE: dirección comercial debe confirmar si la tarifa de módulo se aplica igual a una agencia o si hay un paquete específico de canal, y qué se vende exactamente en el arranque mínimo.]"
+        }
+      ]
+    },
+    {
+      "id": "interno",
+      "tipo": "tabla",
+      "nota_diseno": "NO PUBLICABLE. Este bloque no se maqueta ni se siembra en el CMS: es la hoja de ruta para la reunión comercial y viaja con el documento, no con la página. Si alguien lo pasa a HTML por error, que sea sobre fondo rojo evidente. Se elimina de la página en cuanto los cuatro puntos tengan respuesta y el copy definitivo los absorba.",
+      "campos": [
+        {
+          "clave": "interno_aviso",
+          "valor": "Bloque interno. No se publica ni se siembra en el CMS."
+        },
+        {
+          "clave": "interno_1_tema",
+          "valor": "Producto y precio de la vertical"
+        },
+        {
+          "clave": "interno_1_falta",
+          "valor": "Qué se le vende exactamente a una DMC en el arranque mínimo, con qué tarifa y con qué margen para la agencia. Hoy solo tenemos la tarifa de módulo pensada para destinos."
+        },
+        {
+          "clave": "interno_1_quien",
+          "valor": "Dirección comercial"
+        },
+        {
+          "clave": "interno_2_tema",
+          "valor": "Comisión y reparto"
+        },
+        {
+          "clave": "interno_2_falta",
+          "valor": "Cómo se aplica el 10-15% cuando quien vende es la agencia, quién cobra al cliente final y si existe precio neto de reventa."
+        },
+        {
+          "clave": "interno_2_quien",
+          "valor": "Dirección comercial y administración"
+        },
+        {
+          "clave": "interno_3_tema",
+          "valor": "Encaje técnico"
+        },
+        {
+          "clave": "interno_3_falta",
+          "valor": "Si hay API, marca blanca o acceso al catálogo desde el sistema de reservas de la agencia. Sin respuesta no se puede afirmar nada de integración en la web."
+        },
+        {
+          "clave": "interno_3_quien",
+          "valor": "Producto y desarrollo"
+        },
+        {
+          "clave": "interno_4_tema",
+          "valor": "Prueba"
+        },
+        {
+          "clave": "interno_4_falta",
+          "valor": "Un caso con una agencia, DMC o receptivo, con permiso para citarlo. Mientras no exista, la página se apoya solo en Ronda y lo dice explícitamente."
+        },
+        {
+          "clave": "interno_4_quien",
+          "valor": "CEO"
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "tipo": "cta",
+      "nota_diseno": "Cierre a ancho completo sobre --b-bg-2 con separador superior magenta al 15%. Titular en .h-sec centrado, cuerpo a 560px, un único .btn-1 magenta con radio grande y debajo los datos de contacto en Space Mono 12px --b-muted, con email y teléfono clicables (mailto y tel). Un solo CTA: aquí no se pide una demo estándar, se pide una conversación, y dos botones diluirían ese matiz. Sin formulario largo; si se monta captura, tres campos como máximo y el asunto b2b-360 dado de alta en la whitelist de la API antes de publicar.",
+      "campos": [
+        {
+          "clave": "cta_label",
+          "valor": "Siguiente paso"
+        },
+        {
+          "clave": "cta_title",
+          "valor": "Una conversación, no una demo genérica"
+        },
+        {
+          "clave": "cta_texto",
+          "valor": "Cuéntanos en qué destino operas, qué producto local vendes hoy y cómo lo cobras. De esa llamada sales con una respuesta concreta: qué módulos te encajan, a qué precio y qué queda por definir por nuestra parte."
+        },
+        {
+          "clave": "cta_boton",
+          "valor": "Hablemos de tu catálogo"
+        },
+        {
+          "clave": "cta_boton_url",
+          "valor": "/360/demo"
+        },
+        {
+          "clave": "cta_contacto_email",
+          "valor": "info@discoolver.com"
+        },
+        {
+          "clave": "cta_contacto_telefono",
+          "valor": "(+34) 681 291 571"
+        },
+        {
+          "clave": "cta_contacto_direccion",
+          "valor": "C/ María de Molina 39, 28006 Madrid"
+        }
+      ]
+    }
+  ],
+  "pendientes": [
+    "[PENDIENTE] Qué se le vende exactamente a una DMC o receptivo en el arranque mínimo y con qué tarifa: hoy solo existe tarifa de módulo pensada para destinos (campo modulos_pendiente). De dirección comercial.",
+    "[PENDIENTE] Cómo se aplica la comisión del 10-15% cuando quien vende es la agencia y no el destino, si hay tarifa neta o precio de reventa para el canal, y quién cobra al cliente final (campo comision_pendiente). De dirección comercial y administración.",
+    "[PENDIENTE] Si existe API, marca blanca o acceso al catálogo desde el sistema de reservas de la agencia. No hay documentación técnica que lo respalde y por eso la página no lo promete (campo encaje_pendiente). De producto y desarrollo.",
+    "[PENDIENTE] Un caso real con una agencia, DMC o receptivo, con permiso para citarlo. No existe: la página se apoya solo en Ronda y Costa del Sol y lo declara de forma explícita (campos caso_pendiente y hero_honestidad). Del CEO.",
+    "[PENDIENTE] Testimonio con nombre real y permiso por escrito. El único que circula en el briefing es una plantilla con [Nombre] sin rellenar, así que esta página no lleva sección de testimonio.",
+    "[PENDIENTE] Decidir si /360/agencias se siembra en el CMS. Si sí, hay que ampliar la unión de slugs en lib/cms-pages.ts y PAGE_SLUGS en scripts/fetch-cms-content.mjs, y crear la página en sf-cms con este set de campos ANTES de desplegar: en local no se ven las colisiones porque sin envs solo renderizan los fallbacks.",
+    "[PENDIENTE] Añadir /360/agencias a app/sitemap.ts (rutas hardcodeadas) y confirmar el host canónico: site.url apunta hoy a discoolver-landing.vercel.app.",
+    "[PENDIENTE] Si el CTA acaba capturando lead en lugar de enlazar a /360/demo, dar de alta el asunto b2b-360 en SUBJECTS y los campos nuevos en la whitelist EXTRA_FIELDS de app/api/waitlist/route.ts: un campo fuera de la whitelist se pierde en silencio.",
+    "[PENDIENTE] Eliminar la sección interna 'interno' antes de publicar. No se maqueta ni se siembra."
+  ]
+}

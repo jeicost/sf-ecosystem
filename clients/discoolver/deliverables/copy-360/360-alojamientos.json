@@ -1,0 +1,700 @@
+{
+  "slug": "/360/alojamientos",
+  "meta_title": "Concierge digital para alojamientos | discoolver",
+  "meta_description": "El concierge digital que entra en tu check-in, responde al huésped 24/7 y convierte tus recomendaciones en una línea de ingresos para el alojamiento.",
+  "secciones": [
+    {
+      "id": "hero",
+      "tipo": "hero",
+      "nota_diseno": "Hero a pantalla casi completa sobre fondo oscuro del sistema 360 (--s360-bg oscuro tipo #0A0A16 con gradiente 135deg hacia #12002A y vuelta). Eyebrow en mono 10px, letter-spacing .2em, magenta #FF00C8. Titular Poppins 900, clamp(36px,5.5vw,72px), line-height 1.05, máximo tres líneas: la palabra 'ingreso' en magenta. Subtítulo Inter, clamp(16px,2vw,20px), color muted #9999BB, max-width 620px. Dos CTA en fila: el primario magenta sólido radius 50px, el secundario ghost con borde a 1px del magenta al 15%. Bajo los CTA, línea de reaseguro en mono 11px muted. Sin sombras en ningún elemento (rasgo definitorio del sistema): la profundidad se hace con capas de fondo y borde magenta al 15%. Nada de badges de App Store: esta página vende al hotelero, no descarga la app del turista. Imagen o mock opcional a la derecha en desktop; en móvil el hero es solo texto para que el titular entre completo sin scroll.",
+      "campos": [
+        {
+          "clave": "hero_eyebrow",
+          "valor": "Hoteles · Hostales · Redes de apartamentos"
+        },
+        {
+          "clave": "hero_title",
+          "valor": "Tu concierge digital. Y una línea de ingreso por cada recomendación."
+        },
+        {
+          "clave": "hero_sub",
+          "valor": "discoolver entra en el check-in que ya tienes, responde a tu huésped a cualquier hora y te devuelve parte de lo que reserva fuera del alojamiento."
+        },
+        {
+          "clave": "hero_cta_primary",
+          "valor": "Agendar una demo"
+        },
+        {
+          "clave": "hero_cta_secondary",
+          "valor": "Ver módulos y precios"
+        },
+        {
+          "clave": "hero_reassurance",
+          "valor": "Demo de 30 minutos, sin compromiso. Sin desarrollo propio. Sin app obligatoria para el huésped."
+        }
+      ]
+    },
+    {
+      "id": "problema",
+      "tipo": "grid",
+      "nota_diseno": "Sección sobre fondo alterno (--bg2, #12121F) para marcar cambio de bloque. Titular a la izquierda en Poppins 900 clamp(28px,4vw,48px) ocupando 5 de 12 columnas; a la derecha el párrafo de entrada en Inter 16px/1.7. Debajo, grid de 3 tarjetas iguales (repeat(3,1fr), gap 20px, radius 16px, padding 28px, borde 1px magenta al 15%, fondo --bg3 #1A1A2E). Cada tarjeta abre con un número en mono magenta (01, 02, 03), título Poppins 700 18px y cuerpo 14px muted. En móvil, columna única. Esta sección tiene que doler antes de que aparezca la solución: nada de iconos simpáticos ni ilustraciones, solo tipografía y jerarquía.",
+      "campos": [
+        {
+          "clave": "problema_eyebrow",
+          "valor": "El punto de partida"
+        },
+        {
+          "clave": "problema_title",
+          "valor": "El huésped pregunta y la respuesta la da Google"
+        },
+        {
+          "clave": "problema_intro",
+          "valor": "Dónde ceno esta noche, qué hago mañana si llueve, cómo llego al mirador. Son las mismas preguntas todos los días. Hoy las resuelve un buscador, una reseña de TripAdvisor o el turno de recepción que tenga tiempo. El huésped acaba reservando algo que tu alojamiento no ha elegido, en una plataforma que no te devuelve nada."
+        },
+        {
+          "clave": "problema_1_titulo",
+          "valor": "Recepción responde lo mismo cien veces"
+        },
+        {
+          "clave": "problema_1_texto",
+          "valor": "Las recomendaciones viven en la cabeza de tu equipo, en un folio plastificado o en un cajón de folletos. Cambian con cada turno, se quedan desactualizadas y no existen a las dos de la mañana."
+        },
+        {
+          "clave": "problema_2_titulo",
+          "valor": "El relato de tu entorno lo escribe otro"
+        },
+        {
+          "clave": "problema_2_texto",
+          "valor": "Cuando el huésped busca por su cuenta, ve lo que las plataformas genéricas posicionan: lo más masificado, no lo que encaja con él ni con lo que tú quieres que se lleve de la zona."
+        },
+        {
+          "clave": "problema_3_titulo",
+          "valor": "La venta se cierra fuera y sin retorno"
+        },
+        {
+          "clave": "problema_3_texto",
+          "valor": "Cada cena, entrada o excursión que tu huésped reserva es dinero que se mueve gracias a tu alojamiento. Hoy no pasa por ti, no lo ves y no te deja ingreso ni dato."
+        }
+      ]
+    },
+    {
+      "id": "concierge",
+      "tipo": "grid",
+      "nota_diseno": "Vuelta al fondo base. Cabecera centrada con eyebrow mono magenta, titular Poppins 900 y lead de una línea. Debajo, grid de 4 tarjetas en 2x2 en desktop (repeat(2,1fr), gap 20px) para que cada descripción respire; una sola columna en móvil. Cada tarjeta: etiqueta de módulo en mono 10px cyan #00D4FF arriba, nombre en Poppins 700 20px, cuerpo 14px/1.6 muted y, al pie, una micro-línea en mono con el precio del módulo para que descubrimiento y coste vayan juntos desde el principio. Borde superior de 3px en gradiente magenta→cyan solo en la primera tarjeta (asistente), que es la protagonista. Si se ilustra, una única captura de móvil real del asistente; nada de mockups genéricos de stock.",
+      "campos": [
+        {
+          "clave": "concierge_eyebrow",
+          "valor": "Herramientas de descubrimiento"
+        },
+        {
+          "clave": "concierge_title",
+          "valor": "Convierte tu establecimiento en el alma del viaje"
+        },
+        {
+          "clave": "concierge_lead",
+          "valor": "Cuatro herramientas que trabajan juntas y que el huésped abre desde el navegador, sin descargar nada."
+        },
+        {
+          "clave": "concierge_1_nombre",
+          "valor": "Asistente de voz local"
+        },
+        {
+          "clave": "concierge_1_texto",
+          "valor": "Un asistente basado en IA que se entrena con los contenidos de tu alojamiento y de su entorno para convertirse en tu atención al huésped 24/7. Responde preguntas complejas, crea rutas personalizadas y actualiza su información en tiempo real."
+        },
+        {
+          "clave": "concierge_1_precio",
+          "valor": "250 €/mes"
+        },
+        {
+          "clave": "concierge_2_nombre",
+          "valor": "Plan My Trip"
+        },
+        {
+          "clave": "concierge_2_texto",
+          "valor": "El huésped indica con quién viaja, cuánto tiempo tiene y qué le interesa. Plan My Trip le genera una ruta descargable, reservable y compartible en segundos. Premio Hospitality 2021 en el Digital Enterprise Show."
+        },
+        {
+          "clave": "concierge_2_precio",
+          "valor": "150 €/mes"
+        },
+        {
+          "clave": "concierge_3_nombre",
+          "valor": "Calendario y mapa del entorno"
+        },
+        {
+          "clave": "concierge_3_texto",
+          "valor": "La agenda de eventos de la zona, con venta de entradas integrada, y un mapa claro con las zonas y puntos destacados. El huésped ve qué pasa esta semana a diez minutos de tu puerta."
+        },
+        {
+          "clave": "concierge_3_precio",
+          "valor": "100 €/mes"
+        },
+        {
+          "clave": "concierge_4_nombre",
+          "valor": "QR y tótems"
+        },
+        {
+          "clave": "concierge_4_texto",
+          "valor": "Los puntos de entrada físicos: QR en la habitación, en la llave, en el ascensor o en el mostrador, y tótem interactivo en el hall. El huésped escanea y ya está dentro."
+        },
+        {
+          "clave": "concierge_4_precio",
+          "valor": "100 €/mes"
+        }
+      ]
+    },
+    {
+      "id": "check-in",
+      "tipo": "pasos",
+      "nota_diseno": "Sección sobre fondo alterno (--bg2). Titular a la izquierda, y a la derecha un bloque de tres pasos en horizontal (repeat(3,1fr), gap 4px) separados por una flecha '→' generada con ::after, igual que el patrón de fases del sistema de marca. Cada paso: hora o momento en mono 13px magenta 700, acción en 14px/1.5 y detalle en 11px cyan. Debajo, una franja de una sola línea con fondo magenta al 8% y radius 20px con la frase de integración. El aviso de PENDIENTE va en una caja aparte con borde 1px discontinuo y texto mono 11px muted: tiene que verse claramente como dato por confirmar y desaparecer sin dejar hueco cuando llegue el listado.",
+      "campos": [
+        {
+          "clave": "checkin_eyebrow",
+          "valor": "Sistema de check-in"
+        },
+        {
+          "clave": "checkin_title",
+          "valor": "El descubrimiento empieza en el check-in, no en el móvil del huésped"
+        },
+        {
+          "clave": "checkin_intro",
+          "valor": "No añadimos un paso más a tu operativa. discoolver se acopla al flujo que ya tienes: en el momento en que el huésped completa el check-in, recibe el acceso a su concierge. En recepción, en el kiosco o en el enlace que le envías antes de llegar."
+        },
+        {
+          "clave": "checkin_paso_1_momento",
+          "valor": "Antes de llegar"
+        },
+        {
+          "clave": "checkin_paso_1_accion",
+          "valor": "El enlace al concierge viaja en el correo de confirmación o en el check-in online. El huésped empieza a planificar su estancia antes de deshacer la maleta."
+        },
+        {
+          "clave": "checkin_paso_2_momento",
+          "valor": "En el mostrador"
+        },
+        {
+          "clave": "checkin_paso_2_accion",
+          "valor": "Recepción entrega la llave con su QR. Un escaneo y el huésped tiene delante las recomendaciones de la casa, el mapa y la agenda de la semana."
+        },
+        {
+          "clave": "checkin_paso_3_momento",
+          "valor": "Durante la estancia"
+        },
+        {
+          "clave": "checkin_paso_3_accion",
+          "valor": "El QR de la habitación y el tótem del hall mantienen la puerta abierta. El asistente responde a cualquier hora, también cuando no hay nadie en recepción."
+        },
+        {
+          "clave": "checkin_integracion",
+          "valor": "Sin cambiar de PMS y sin desarrollo por tu parte: nos acoplamos a tu sistema de check-in actual, no lo sustituimos."
+        },
+        {
+          "clave": "checkin_pendiente",
+          "valor": "[PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada, y cuáles requieren desarrollo a medida — dirección técnica]"
+        }
+      ]
+    },
+    {
+      "id": "comision",
+      "tipo": "grid",
+      "nota_diseno": "La sección de dinero: la más contundente de la página y la única con tratamiento de bloque destacado. Panel único a todo el ancho del contenedor, radius 20px, padding 48px, fondo en gradiente 135deg de magenta al 10% a cyan al 5%, borde 1px magenta al 15%. Titular Poppins 900 clamp(24px,4vw,44px) a la izquierda; a la derecha, columna con el flujo en tres líneas cortas separadas por hairlines. Debajo, dos datos en fila: '10-15%' en Poppins 900 48px magenta con su etiqueta en mono, y junto a él la caja del reparto al alojamiento, maquetada con el mismo tamaño de cifra para que el porcentaje pendiente entre en el hueco sin tocar el layout: el placeholder ocupa el mismo espacio que ocupará el número. Nunca dos cifras grandes seguidas sin etiqueta que las distinga.",
+      "campos": [
+        {
+          "clave": "comision_eyebrow",
+          "valor": "Comisión por venta"
+        },
+        {
+          "clave": "comision_title",
+          "valor": "Deja de ser un coste y pasa a ser una línea de ingreso"
+        },
+        {
+          "clave": "comision_intro",
+          "valor": "Cada reserva que tu huésped hace desde tu concierge (una entrada, una cata, una excursión, una mesa) se cierra dentro del marketplace de discoolver. Sobre esa venta hay una comisión, y una parte de esa comisión vuelve a tu alojamiento. No cobras por recomendar: cobras por lo que se reserva."
+        },
+        {
+          "clave": "comision_flujo_1",
+          "valor": "Tu huésped abre el concierge y encuentra una recomendación que encaja con él."
+        },
+        {
+          "clave": "comision_flujo_2",
+          "valor": "Reserva y paga dentro de la plataforma, sin salir a un buscador."
+        },
+        {
+          "clave": "comision_flujo_3",
+          "valor": "La venta queda registrada y tu alojamiento cobra su parte."
+        },
+        {
+          "clave": "comision_dato_plataforma_valor",
+          "valor": "10-15%"
+        },
+        {
+          "clave": "comision_dato_plataforma_label",
+          "valor": "Comisión de discoolver sobre las ventas del marketplace"
+        },
+        {
+          "clave": "comision_dato_alojamiento_valor",
+          "valor": "[PENDIENTE: %]"
+        },
+        {
+          "clave": "comision_dato_alojamiento_label",
+          "valor": "Parte que percibe el alojamiento por cada venta que genera su huésped"
+        },
+        {
+          "clave": "comision_nota",
+          "valor": "El porcentaje que percibe el alojamiento se fija en el contrato y se liquida de forma periódica. [PENDIENTE: % exacto de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]"
+        },
+        {
+          "clave": "comision_cierre",
+          "valor": "El resto del argumento ya lo conoces: el nuevo perfil de viajero gasta el 70% de su presupuesto en servicios locales en destino, no en transporte ni en alojamiento. Ese gasto ocurre a tu alrededor todos los días."
+        }
+      ]
+    },
+    {
+      "id": "caso-ronda",
+      "tipo": "caso",
+      "nota_diseno": "Bloque de prueba sobre fondo base, a dos columnas: a la izquierda el relato en Inter 15px/1.7 con el titular en Poppins 700 28px; a la derecha una columna de cuatro datos apilados, cada uno con valor en Poppins 900 32px magenta y etiqueta en mono 11px muted, separados por hairline blanco al 4%. Sin fotos de stock, sin logos de terceros y sin comillas de testimonio: no hay ninguna cita atribuida aprobada, así que el bloque no debe reservar espacio para una. Si más adelante llega la cita con nombre y permiso, entra como cuarta fila del bloque de datos, no como banner.",
+      "campos": [
+        {
+          "clave": "caso_eyebrow",
+          "valor": "Despliegue real"
+        },
+        {
+          "clave": "caso_title",
+          "valor": "Ronda: la plataforma desplegada en un destino entero, con venta cruzada con hoteles"
+        },
+        {
+          "clave": "caso_texto",
+          "valor": "En Ronda, discoolver está desplegado como plataforma de destino desde 2022: más de 200 negocios y propuestas locales integrados, tótems interactivos, señalética QR en puntos clave y ocho puntos de venta. Los alojamientos entran en ese ecosistema por la vía de la venta cruzada: recomiendan dentro de la plataforma y la reserva se cierra ahí."
+        },
+        {
+          "clave": "caso_dato_1_valor",
+          "valor": "200+"
+        },
+        {
+          "clave": "caso_dato_1_label",
+          "valor": "Negocios y propuestas locales integrados"
+        },
+        {
+          "clave": "caso_dato_2_valor",
+          "valor": "8"
+        },
+        {
+          "clave": "caso_dato_2_label",
+          "valor": "Puntos de venta desplegados"
+        },
+        {
+          "clave": "caso_dato_3_valor",
+          "valor": "2022"
+        },
+        {
+          "clave": "caso_dato_3_label",
+          "valor": "Año de despliegue, cliente de pago desde entonces"
+        },
+        {
+          "clave": "caso_dato_4_valor",
+          "valor": "QR"
+        },
+        {
+          "clave": "caso_dato_4_label",
+          "valor": "Señalética y tótems interactivos en el destino"
+        }
+      ]
+    },
+    {
+      "id": "segmentos",
+      "tipo": "grid",
+      "nota_diseno": "Fondo alterno (--bg2). Tres tarjetas en fila (repeat(3,1fr), gap 20px, radius 16px, padding 32px), cada una con una barra superior de 3px en un color distinto del sistema para que se lean como tres discursos y no como tres tallas del mismo producto: magenta #FF00C8 para cadenas, cyan #00D4FF para hostales, violeta #A855F7 para redes de apartamentos. Dentro de cada tarjeta: segmento en Poppins 700 22px, una línea de 'qué compra' en mono 11px del color de la barra, cuerpo en 14px/1.6 y un cierre de una frase en blanco 600. Alturas iguales por grid, no por altura fija. En móvil se apilan manteniendo la barra de color, que es lo que identifica cada bloque.",
+      "campos": [
+        {
+          "clave": "segmentos_eyebrow",
+          "valor": "Tres formas distintas de usarlo"
+        },
+        {
+          "clave": "segmentos_title",
+          "valor": "Diseñamos la solución según cómo funciona tu casa"
+        },
+        {
+          "clave": "segmento_1_nombre",
+          "valor": "Cadenas y grupos hoteleros"
+        },
+        {
+          "clave": "segmento_1_compra",
+          "valor": "Estandarización"
+        },
+        {
+          "clave": "segmento_1_texto",
+          "valor": "Un mismo concierge en todas tus propiedades, con contenido local distinto en cada plaza. El mismo flujo de check-in, el mismo criterio de recomendación y el mismo cuadro de mando para todas. Dejas de depender de que cada director tenga su lista de sitios y pasas a tener un estándar de marca que se despliega igual en Málaga que en Bilbao."
+        },
+        {
+          "clave": "segmento_1_cierre",
+          "valor": "Una sola forma de recomendar en toda la cadena, y una sola lectura de lo que reserva tu huésped."
+        },
+        {
+          "clave": "segmento_2_nombre",
+          "valor": "Hostales y hoteles pequeños"
+        },
+        {
+          "clave": "segmento_2_compra",
+          "valor": "Diferenciación sin estructura"
+        },
+        {
+          "clave": "segmento_2_texto",
+          "valor": "Cliente joven, mucha rotación y un equipo corto que no puede estar explicando la ciudad quince veces al día. El asistente responde por ti a cualquier hora y tus recomendaciones dejan de ser un folio plastificado en el mostrador. Sin contratar a nadie y sin obra: un QR y un módulo activo bastan para dar un servicio que hasta ahora era de hotel grande."
+        },
+        {
+          "clave": "segmento_2_cierre",
+          "valor": "El servicio que te diferencia sale por el precio de un módulo, no por el de una plantilla."
+        },
+        {
+          "clave": "segmento_3_nombre",
+          "valor": "Redes de apartamentos y property managers"
+        },
+        {
+          "clave": "segmento_3_compra",
+          "valor": "Atención al huésped sin recepción"
+        },
+        {
+          "clave": "segmento_3_texto",
+          "valor": "Sin mostrador, el huésped llega y no tiene a quién preguntar. El QR que recibe en el check-in le abre un concierge que contesta a las once de la noche y a las siete de la mañana. Generamos modelos propios para redes de apartamentos, de forma que todos tus pisos den el mismo nivel de atención sin que tú multipliques llamadas ni mensajes."
+        },
+        {
+          "clave": "segmento_3_cierre",
+          "valor": "Atención de recepción en pisos que no tienen recepción, y el mismo estándar en todos."
+        }
+      ]
+    },
+    {
+      "id": "modulos",
+      "tipo": "tabla",
+      "nota_diseno": "Tabla real, no tarjetas: quien firma quiere ver precios alineados y comparables. Cabecera en mono 11px uppercase con letter-spacing .1em, filas separadas por border-bottom blanco al 4%, hover de fila con fondo magenta al 3%. Cuatro columnas en desktop: Módulo (Poppins 600 16px) · Qué hace (14px muted) · Para quién (mono 11px cyan) · Precio (mono 14px 700 magenta, alineado a la derecha). En móvil la tabla se convierte en lista apilada dentro de un contenedor con overflow-x auto; el precio se mantiene siempre visible en la primera línea de cada bloque. Bajo la tabla, dos líneas: la del stack completo con la cifra en Poppins 900 y la nota de pendiente en mono 11px muted con borde discontinuo. Business Intelligence va en fila propia con el precio escrito como 'Incluido' para que no parezca un hueco vacío.",
+      "campos": [
+        {
+          "clave": "modulos_eyebrow",
+          "valor": "Módulos y precios"
+        },
+        {
+          "clave": "modulos_title",
+          "valor": "Cada módulo funciona solo. Juntos son el concierge completo."
+        },
+        {
+          "clave": "modulos_lead",
+          "valor": "Todos los módulos se contratan en modo suscripción y se integran en la web que ya tienes o se despliegan como plataforma nueva. Sin desarrollo propio."
+        },
+        {
+          "clave": "modulo_1_nombre",
+          "valor": "Asistente de Voz Local"
+        },
+        {
+          "clave": "modulo_1_desc",
+          "valor": "Chatbot con IA entrenado con los contenidos de tu alojamiento y su entorno. Atención al huésped 24/7."
+        },
+        {
+          "clave": "modulo_1_para",
+          "valor": "El huésped, a cualquier hora"
+        },
+        {
+          "clave": "modulo_1_precio",
+          "valor": "250 €/mes"
+        },
+        {
+          "clave": "modulo_2_nombre",
+          "valor": "Plan My Trip"
+        },
+        {
+          "clave": "modulo_2_desc",
+          "valor": "Planificador de rutas personalizadas por tipología de viajero, duración y presupuesto. Premio Hospitality 2021."
+        },
+        {
+          "clave": "modulo_2_para",
+          "valor": "Huéspedes que llegan sin plan"
+        },
+        {
+          "clave": "modulo_2_precio",
+          "valor": "150 €/mes"
+        },
+        {
+          "clave": "modulo_3_nombre",
+          "valor": "Calendario Inteligente"
+        },
+        {
+          "clave": "modulo_3_desc",
+          "valor": "Agenda cultural y de eventos del entorno, con venta de entradas integrada."
+        },
+        {
+          "clave": "modulo_3_para",
+          "valor": "Estancias de fin de semana y repetidores"
+        },
+        {
+          "clave": "modulo_3_precio",
+          "valor": "100 €/mes"
+        },
+        {
+          "clave": "modulo_4_nombre",
+          "valor": "Señalética y tótems"
+        },
+        {
+          "clave": "modulo_4_desc",
+          "valor": "Tótems interactivos y sistema de QR en habitación, hall y puntos de paso."
+        },
+        {
+          "clave": "modulo_4_para",
+          "valor": "Alojamientos con espacio físico de entrada"
+        },
+        {
+          "clave": "modulo_4_precio",
+          "valor": "100 €/mes de mantenimiento"
+        },
+        {
+          "clave": "modulo_5_nombre",
+          "valor": "Market Place"
+        },
+        {
+          "clave": "modulo_5_desc",
+          "valor": "Venta de servicios turísticos propios y de colaboradores. Es el módulo que convierte tus recomendaciones en reservas cobrables."
+        },
+        {
+          "clave": "modulo_5_para",
+          "valor": "Alojamientos que quieren ingresar por recomendación"
+        },
+        {
+          "clave": "modulo_5_precio",
+          "valor": "750 €/mes + comisión 10-15% sobre ventas"
+        },
+        {
+          "clave": "modulo_6_nombre",
+          "valor": "Business Intelligence"
+        },
+        {
+          "clave": "modulo_6_desc",
+          "valor": "Cuadro de mando e informes con lo que tu huésped consulta, planifica y reserva."
+        },
+        {
+          "clave": "modulo_6_para",
+          "valor": "Dirección y revenue"
+        },
+        {
+          "clave": "modulo_6_precio",
+          "valor": "Incluido con los módulos"
+        },
+        {
+          "clave": "modulo_7_nombre",
+          "valor": "Software de Caja (POS)"
+        },
+        {
+          "clave": "modulo_7_desc",
+          "valor": "Sistema de cobros diseñado a medida para puntos físicos: oficinas de turismo, monumentos y puntos de venta del destino."
+        },
+        {
+          "clave": "modulo_7_para",
+          "valor": "Opcional, para alojamientos con punto de venta propio"
+        },
+        {
+          "clave": "modulo_7_precio",
+          "valor": "495 €/mes + 50 € por punto"
+        },
+        {
+          "clave": "modulos_stack",
+          "valor": "El stack completo de los siete módulos suma 1.845 €/mes de tarifa."
+        },
+        {
+          "clave": "modulos_pendiente",
+          "valor": "[PENDIENTE: si la tarifa aplica por establecimiento o por grupo, y condiciones para cadenas y redes multi-propiedad — dirección comercial]"
+        }
+      ]
+    },
+    {
+      "id": "arranque",
+      "tipo": "pasos",
+      "nota_diseno": "Fondo base. Titular a la izquierda y a la derecha una lista numerada vertical de cuatro pasos: círculo de 48px con el número en Poppins 900 dentro (borde 1px magenta al 15%, fondo magenta al 15%), título en Poppins 700 18px y cuerpo en 14px muted. A la derecha del bloque, o debajo en móvil, una tarjeta compacta 'Lo que pones tú' con tres líneas en mono: integración, tiempo y personal. Esta tarjeta es la que lee el director de operaciones antes que nada, así que va con borde magenta a 1px y sin adorno. Los dos avisos de PENDIENTE, en mono 11px con borde discontinuo, dentro de esa misma tarjeta para que no ensucien el flujo de pasos.",
+      "campos": [
+        {
+          "clave": "arranque_eyebrow",
+          "valor": "Puesta en marcha"
+        },
+        {
+          "clave": "arranque_title",
+          "valor": "Qué necesitas para arrancar"
+        },
+        {
+          "clave": "arranque_paso_1_titulo",
+          "valor": "Tus recomendaciones actuales"
+        },
+        {
+          "clave": "arranque_paso_1_texto",
+          "valor": "Lo que hoy recomienda tu equipo: el listado, el folleto o lo que está en la cabeza del jefe de recepción. Lo cargamos nosotros y lo completamos con el contenido local del destino."
+        },
+        {
+          "clave": "arranque_paso_2_titulo",
+          "valor": "Conexión con tu check-in"
+        },
+        {
+          "clave": "arranque_paso_2_texto",
+          "valor": "Acoplamos el acceso al concierge al flujo que ya usas: enlace en el correo de confirmación, QR en la llave o en el kiosco. Tú no cambias de sistema."
+        },
+        {
+          "clave": "arranque_paso_3_titulo",
+          "valor": "Puntos de entrada físicos"
+        },
+        {
+          "clave": "arranque_paso_3_texto",
+          "valor": "Colocamos los QR en habitación, hall y ascensor, y el tótem si lo contratas. Sin obra y sin hardware complejo."
+        },
+        {
+          "clave": "arranque_paso_4_titulo",
+          "valor": "Una sesión con tu equipo"
+        },
+        {
+          "clave": "arranque_paso_4_texto",
+          "valor": "Recepción no gestiona la plataforma: la consulta y la entrega. Con enseñar a entregar el QR y a mirar el cuadro de mando es suficiente."
+        },
+        {
+          "clave": "arranque_requisito_integracion",
+          "valor": "Integración: nos acoplamos a tu sistema de check-in. Sin desarrollo por tu parte y sin app obligatoria para el huésped."
+        },
+        {
+          "clave": "arranque_requisito_tiempo",
+          "valor": "Tiempo: el compromiso de onboarding de discoolver es de 15 días."
+        },
+        {
+          "clave": "arranque_requisito_personal",
+          "valor": "Personal: una persona de contacto para validar el contenido. Ninguna alta nueva en recepción."
+        },
+        {
+          "clave": "arranque_pendiente_1",
+          "valor": "[PENDIENTE: confirmar si el plazo de 15 días se mantiene cuando hay integración con PMS de terceros — dirección técnica]"
+        },
+        {
+          "clave": "arranque_pendiente_2",
+          "valor": "[PENDIENTE: coste del hardware de tótems, aparte de los 100 €/mes de mantenimiento — dirección comercial]"
+        }
+      ]
+    },
+    {
+      "id": "faq",
+      "tipo": "faq",
+      "nota_diseno": "Fondo alterno (--bg2). Acordeón a una sola columna, max-width 860px centrado. Pregunta en Poppins 600 17px con signo '+' magenta que rota a 45 grados al abrir; respuesta en Inter 15px/1.7 muted. Separador hairline blanco al 4% entre ítems, sin cajas ni sombras. La primera pregunta abierta por defecto, porque es la objeción número uno del hotelero y no debe quedar oculta tras un clic. Respuestas cortas: ninguna pasa de cinco líneas en desktop.",
+      "campos": [
+        {
+          "clave": "faq_eyebrow",
+          "valor": "Objeciones habituales"
+        },
+        {
+          "clave": "faq_title",
+          "valor": "Lo que nos pregunta la dirección antes de firmar"
+        },
+        {
+          "clave": "faq_1_pregunta",
+          "valor": "¿Esto no manda a mi huésped fuera del alojamiento?"
+        },
+        {
+          "clave": "faq_1_respuesta",
+          "valor": "Tu huésped va a salir igual. La cuestión es si sale con la recomendación de tu casa o con la de un buscador, y si esa salida te deja un ingreso o no. Con el concierge, sale con lo que tú has aprobado y la reserva pasa por ti."
+        },
+        {
+          "clave": "faq_2_pregunta",
+          "valor": "¿Tengo que cambiar mi PMS o mi sistema de check-in?"
+        },
+        {
+          "clave": "faq_2_respuesta",
+          "valor": "No. discoolver se acopla al flujo que ya tienes, no lo sustituye. [PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada — dirección técnica]"
+        },
+        {
+          "clave": "faq_3_pregunta",
+          "valor": "¿El huésped tiene que descargarse una aplicación?"
+        },
+        {
+          "clave": "faq_3_respuesta",
+          "valor": "No es obligatorio. Escanea el QR y entra desde el navegador. La app existe para quien la quiera, pero nunca es un requisito para usar el concierge."
+        },
+        {
+          "clave": "faq_4_pregunta",
+          "valor": "¿Quién mantiene actualizado el contenido?"
+        },
+        {
+          "clave": "faq_4_respuesta",
+          "valor": "El contenido del destino lo mantiene discoolver dentro de la plataforma, y el asistente actualiza su información en tiempo real. Tus recomendaciones propias las decides y las apruebas tú."
+        },
+        {
+          "clave": "faq_5_pregunta",
+          "valor": "¿Puedo elegir a quién recomiendo?"
+        },
+        {
+          "clave": "faq_5_respuesta",
+          "valor": "Sí. Tú apruebas qué entra en las recomendaciones de tu alojamiento. La visibilidad dentro de tu concierge no se compra: la decides tú."
+        },
+        {
+          "clave": "faq_6_pregunta",
+          "valor": "¿De quién son los datos de mis huéspedes?"
+        },
+        {
+          "clave": "faq_6_respuesta",
+          "valor": "Tuyos. Tienes cuadro de mando e informes con lo que tus huéspedes consultan, planifican y reservan, incluidos en la contratación de los módulos."
+        },
+        {
+          "clave": "faq_7_pregunta",
+          "valor": "¿Cuánto tarda en estar funcionando?"
+        },
+        {
+          "clave": "faq_7_respuesta",
+          "valor": "El compromiso de onboarding es de 15 días. Sin meses de desarrollo y sin hardware complejo."
+        },
+        {
+          "clave": "faq_8_pregunta",
+          "valor": "¿Cómo y cuándo cobro la comisión?"
+        },
+        {
+          "clave": "faq_8_respuesta",
+          "valor": "Sobre cada venta cerrada en el marketplace desde tu concierge. discoolver aplica una comisión del 10-15% sobre esas ventas y el alojamiento percibe su parte según contrato. [PENDIENTE: % de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]"
+        },
+        {
+          "clave": "faq_9_pregunta",
+          "valor": "Tengo varias propiedades. ¿Se contrata una a una?"
+        },
+        {
+          "clave": "faq_9_respuesta",
+          "valor": "Los módulos se contratan por separado y en modo suscripción, y el despliegue en varias propiedades comparte estándar y cuadro de mando. [PENDIENTE: condiciones de tarifa para cadenas y redes multi-propiedad — dirección comercial]"
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "tipo": "cta",
+      "nota_diseno": "Cierre a fondo completo con el mismo gradiente del hero para cerrar el círculo visual. Bloque centrado, max-width 720px: titular en Poppins 900 clamp(28px,4vw,48px), una línea de apoyo en muted y el botón primario magenta radius 50px, padding 16px 40px, Poppins 700 16px, letter-spacing .05em. Debajo, línea de reaseguro en mono 11px y, separados por un hairline, los datos de contacto reales en una sola línea con separadores '·'. El teléfono como enlace tel: y el correo como mailto:, no como texto plano. El botón debe abrir un formulario o una agenda real, no un handler sin destino: la web antigua no capturaba un solo lead y ese es el fallo que esta página corrige.",
+      "campos": [
+        {
+          "clave": "cta_title",
+          "valor": "¿Quieres probar el concierge en tu alojamiento?"
+        },
+        {
+          "clave": "cta_sub",
+          "valor": "Media hora de demo con tu caso delante: tu tipo de establecimiento, tu flujo de check-in y qué reservaría tu huésped en tu zona."
+        },
+        {
+          "clave": "cta_boton",
+          "valor": "Agendar una demo"
+        },
+        {
+          "clave": "cta_reassurance",
+          "valor": "Demo de 30 minutos, sin compromiso. Contacta con nosotros y un miembro del equipo resolverá tus dudas."
+        },
+        {
+          "clave": "cta_contacto",
+          "valor": "info@discoolver.com · (+34) 681 291 571 · C/ María de Molina 39, 28006 Madrid"
+        }
+      ]
+    }
+  ],
+  "pendientes": [
+    "[PENDIENTE: % exacto de reparto de la comisión al alojamiento] — dirección comercial. Aparece en dos sitios maquetados para que el número entre sin reescribir copy: campo comision_dato_alojamiento_valor (placeholder del mismo tamaño que la cifra definitiva) y faq_8_respuesta.",
+    "[PENDIENTE: periodicidad de liquidación y método de pago de esa comisión al alojamiento] — dirección comercial. Campos comision_nota y faq_8_respuesta.",
+    "[PENDIENTE: listado de PMS, channel managers y sistemas de check-in con integración ya probada, y cuáles requieren desarrollo a medida] — dirección técnica (Diego). Campos checkin_pendiente y faq_2_respuesta. Es la objeción que más frena a una cadena.",
+    "[PENDIENTE: confirmar si el compromiso de onboarding de 15 días se mantiene cuando hay integración con PMS de terceros] — dirección técnica. Campo arranque_pendiente_1. Hoy los 15 días están documentados como compromiso general de onboarding, no verificados para alojamientos con integración.",
+    "[PENDIENTE: coste del hardware de tótems, aparte de los 100 €/mes de mantenimiento] — dirección comercial. Campo arranque_pendiente_2.",
+    "[PENDIENTE: si la tarifa por módulo aplica por establecimiento o por grupo, y condiciones para cadenas y redes multi-propiedad] — dirección comercial. Campos modulos_pendiente y faq_9_respuesta. Sin esto, la página no puede cerrar el argumento de estandarización con una cadena.",
+    "[PENDIENTE: cita atribuida con nombre, cargo y permiso por escrito] — CEO. La sección caso-ronda está escrita y maquetada sin testimonio a propósito: los que existen en el briefing son plantillas con [Nombre] sin rellenar y no son publicables.",
+    "[PENDIENTE: teléfono canónico] — el snapshot de la web antigua da (+34) 681 291 571 y el brand brain da +34 656 91 43 74. En el copy se ha usado el de la web por ser el que estuvo en producción. Confirmar cuál queda.",
+    "[PENDIENTE: destino real del CTA] — formulario propio o enlace de agenda. Si se usa app/api/waitlist, hay que añadir la clave de asunto (p. ej. b2b-360) y los campos nuevos a la whitelist EXTRA_FIELDS: un campo fuera de la whitelist se pierde en silencio.",
+    "[PENDIENTE: decisión sobre el bloque 'Ya confían en nosotros'] — CEO. No se ha incluido en esta página: la lista de logos antigua mezcla partners y aceleradoras (Tetuan Valley) sin caso ni cifra, y el riesgo de prueba social no verificable está registrado internamente. Si se quiere recuperar, hace falta lista aprobada y etiqueta correcta (partner vs cliente)."
+  ]
+}

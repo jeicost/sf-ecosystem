@@ -32,6 +32,12 @@ const SUBJECTS: Record<string, string> = {
   // (creador que empieza). Asunto distinto para poder triarlos en bandeja.
   "creator-guide": "Discoolver creators — Quiero mi guía",
   "creator-video": "Discoolver creators — Envío mi vídeo",
+  // discoolver 360 (B2B). Un asunto por vertical para poder triar en bandeja:
+  // un ayuntamiento y un hostal no se contestan igual ni con el mismo plazo.
+  "360-demo": "discoolver 360 — Solicitud de demo",
+  "360-destinos": "discoolver 360 — Destino / patronato / DMO",
+  "360-alojamientos": "discoolver 360 — Alojamiento",
+  "360-agencias": "discoolver 360 — Agencia / DMC",
 };
 
 /** Campos opcionales admitidos (whitelist: nada más se reenvía). */
@@ -48,6 +54,13 @@ const EXTRA_FIELDS = [
   "website",
   "other",
   "message",
+  // Campos de discoolver 360 (B2B). Si se añade uno al formulario y NO se
+  // añade aquí, se pierde en silencio: la whitelist descarta todo lo demás.
+  "organization",
+  "role",
+  "phone",
+  "vertical",
+  "modules",
 ] as const;
 
 function clean(value: unknown): string | undefined {

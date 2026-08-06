@@ -1,0 +1,620 @@
+{
+  "slug": "/360",
+  "meta_title": "discoolver 360 — plataforma para destinos turísticos",
+  "meta_description": "Marketplace, punto de venta, rutas, eventos, asistente de voz, señalética y business intelligence para destinos, alojamientos y agencias. Módulos desde 100 €/mes.",
+  "secciones": [
+    {
+      "id": "hero",
+      "tipo": "hero",
+      "nota_diseno": "Pantalla completa sobre fondo oscuro de marca (#0A0A16) con gradiente 135deg #0A0A16 → #12002A → #0A0A16. Eyebrow en Space Mono 10px, uppercase, letter-spacing .2em, magenta #FF00C8. Titular en Poppins 900, clamp(36px,6vw,72px), line-height 1.05, las tres frases en líneas separadas: la primera acaba en magenta, la tercera en cian #00D4FF para marcar que el dato es el remate del argumento. Subtítulo en Inter, clamp(16px,2vw,20px), color #9999BB, max-width 640px. Dos botones en fila: el primario magenta sólido con radio 50px (padding 16px 40px, Poppins 700), el secundario en outline con borde rgba(255,0,200,.15). Debajo, la línea de prueba en Space Mono 11px sobre una regla superior de 1px: es lo único que sustituye a los logos, así que tiene que respirar. Sin sombras en ningún elemento (rasgo definitorio del sistema). Nada de badges de App Store: esta página no vende la app al viajero. Todo el bloque dentro del scope .s360 para no heredar .hero de globals.css.",
+      "campos": [
+        {
+          "clave": "hero_eyebrow",
+          "valor": "discoolver 360 · plataforma B2B para turismo"
+        },
+        {
+          "clave": "hero_title",
+          "valor": "Vende el destino. Entiende al visitante. Quédate con los datos."
+        },
+        {
+          "clave": "hero_sub",
+          "valor": "discoolver 360 es la plataforma SaaS todo-en-uno para destinos, alojamientos y agencias que quieren digitalizar, personalizar y monetizar la experiencia del viajero sin desarrollar tecnología propia. Siete módulos que se contratan por separado y funcionan sobre la web que ya tienes."
+        },
+        {
+          "clave": "hero_cta_primary_label",
+          "valor": "Pedir una demo"
+        },
+        {
+          "clave": "hero_cta_primary_href",
+          "valor": "/360/demo"
+        },
+        {
+          "clave": "hero_cta_secondary_label",
+          "valor": "Ver los 7 módulos y sus precios"
+        },
+        {
+          "clave": "hero_cta_secondary_href",
+          "valor": "#modulos"
+        },
+        {
+          "clave": "hero_proof",
+          "valor": "Desplegada en Ronda: más de 200 negocios locales integrados, tótems interactivos, señalética QR y ocho puntos de venta. Segundo despliegue en Costa del Sol. Premio Hospitality 2021 por Plan My Trip en el Digital Enterprise Show."
+        },
+        {
+          "clave": "hero_note",
+          "valor": "Se integra en tu web actual o se despliega como plataforma nueva. Sin desarrollo propio. Sin app obligatoria para el visitante."
+        }
+      ]
+    },
+    {
+      "id": "diferenciales",
+      "tipo": "grid",
+      "nota_diseno": "Tres tarjetas iguales en grid de 3 columnas (1 columna por debajo de 768px), gap 20px, sobre fondo #12121F (sección par). Cada tarjeta: fondo #1A1A2E, radio 16px, padding 28px, borde 1px rgba(255,0,200,.15) y borde superior de 3px que cambia de color por tarjeta (magenta, cian, magenta) para que se lean como tres argumentos distintos y no como tres features. Número en Space Mono 10px arriba a la izquierda; título en Poppins 700 18px; cuerpo en Inter 14px, line-height 1.6, color #9999BB. El orden es el aprobado y no se altera: primero se quita el miedo técnico, después se da el control del dato, y solo entonces se habla de dinero. Sin iconos ilustrados ni emojis en producción: tipografía y color bastan.",
+      "campos": [
+        {
+          "clave": "diferenciales_eyebrow",
+          "valor": "Por qué discoolver 360"
+        },
+        {
+          "clave": "diferenciales_titulo",
+          "valor": "Tres cosas que no vas a encontrar en una plataforma genérica"
+        },
+        {
+          "clave": "dif_1_titulo",
+          "valor": "Integración sin fricción"
+        },
+        {
+          "clave": "dif_1_texto",
+          "valor": "Los módulos se montan sobre la web que ya tienes o se despliegan como plataforma nueva. Ni desarrollo propio por tu parte, ni migración de tu web, ni una app que el visitante tenga que descargarse para poder comprar."
+        },
+        {
+          "clave": "dif_2_titulo",
+          "valor": "Los datos son del destino"
+        },
+        {
+          "clave": "dif_2_texto",
+          "valor": "Qué busca el visitante, qué compra, cuándo y en qué zona. Cuadro de mando e informes propios para decidir con datos del viajero real y para justificar la inversión ante quien la aprueba, no una muestra agregada que te presta un tercero."
+        },
+        {
+          "clave": "dif_3_titulo",
+          "valor": "Monetización real"
+        },
+        {
+          "clave": "dif_3_texto",
+          "valor": "Marketplace y punto de venta propios. El tráfico turístico que ya tienes se convierte en ventas para el tejido local, con una comisión del 10-15% sobre lo que se vende en el marketplace y trazabilidad de cada operación."
+        }
+      ]
+    },
+    {
+      "id": "modulos",
+      "tipo": "tabla",
+      "nota_diseno": "Tabla de tres columnas en escritorio (Módulo / Qué resuelve / Precio) dentro de un contenedor con overflow-x auto para que en móvil scrollee la tabla y nunca el body; por debajo de 768px, convertir cada fila en tarjeta apilada con el precio arriba a la derecha en Space Mono. Cabeceras en Space Mono 11px uppercase letter-spacing .1em, color #9999BB. Nombre del módulo en Poppins 700 16px; 'qué resuelve' en Inter 14px line-height 1.6; precio en Space Mono 14px magenta, alineado a la derecha y sin adornos. Separadores: border-bottom 1px rgba(255,255,255,.04); hover de fila rgba(255,0,200,.03). La fila de Business Intelligence va marcada con fondo rgba(0,212,255,.05) y el precio en cian, porque va incluido y ese es el argumento. Nota al pie de tabla en 12px #9999BB. Ancla id=\"modulos\" con scroll-margin-top corregido dentro del scope (globals.css impone 96px a todo [id]).",
+      "campos": [
+        {
+          "clave": "modulos_eyebrow",
+          "valor": "Los 7 módulos"
+        },
+        {
+          "clave": "modulos_titulo",
+          "valor": "Siete módulos, un ecosistema, precios públicos"
+        },
+        {
+          "clave": "modulos_intro",
+          "valor": "Cada módulo resuelve un problema concreto de gestión y se contrata por separado, siempre en modo suscripción. Estos son los precios de tarifa."
+        },
+        {
+          "clave": "modulos_col_1",
+          "valor": "Módulo"
+        },
+        {
+          "clave": "modulos_col_2",
+          "valor": "Qué resuelve"
+        },
+        {
+          "clave": "modulos_col_3",
+          "valor": "Precio"
+        },
+        {
+          "clave": "modulo_1_nombre",
+          "valor": "Marketplace"
+        },
+        {
+          "clave": "modulo_1_resuelve",
+          "valor": "Tu destino ya recibe visitantes que compran; hoy compran en plataformas que no te devuelven ni un euro ni un dato. El marketplace vende experiencias, entradas, productos y servicios propios y de tus colaboradores (hoteles, comercios, actividades, eventos) en un único escaparate con un único carrito."
+        },
+        {
+          "clave": "modulo_1_precio",
+          "valor": "750 €/mes"
+        },
+        {
+          "clave": "modulo_2_nombre",
+          "valor": "Software de caja (POS)"
+        },
+        {
+          "clave": "modulo_2_resuelve",
+          "valor": "Convierte oficinas de turismo, monumentos y puntos físicos en puntos de venta digitales: cobro, entradas, arqueo y todo el histórico de ventas en el mismo sitio. Se integra en 15 días, sin hardware complejo y sin meses de desarrollo."
+        },
+        {
+          "clave": "modulo_2_precio",
+          "valor": "495 €/mes + 50 € por punto de venta"
+        },
+        {
+          "clave": "modulo_3_nombre",
+          "valor": "Plan My Trip"
+        },
+        {
+          "clave": "modulo_3_resuelve",
+          "valor": "El visitante dice con quién viaja, qué le interesa, cuántos días tiene y qué presupuesto maneja, y recibe una ruta descargable, reservable y compartible. Sirve para repartir el flujo hacia zonas que hoy nadie pisa y para llevar visitantes a negocios que están fuera del circuito. Premio Hospitality 2021 en el Digital Enterprise Show."
+        },
+        {
+          "clave": "modulo_3_precio",
+          "valor": "150 €/mes"
+        },
+        {
+          "clave": "modulo_4_nombre",
+          "valor": "Calendario inteligente"
+        },
+        {
+          "clave": "modulo_4_resuelve",
+          "valor": "La agenda cultural y de eventos del destino en un solo canal, actualizada por quien la gestiona y con venta de entradas integrada. Deja de haber tres calendarios distintos y ninguno al día."
+        },
+        {
+          "clave": "modulo_4_precio",
+          "valor": "100 €/mes"
+        },
+        {
+          "clave": "modulo_5_nombre",
+          "valor": "Asistente de voz local"
+        },
+        {
+          "clave": "modulo_5_resuelve",
+          "valor": "Un asistente de IA entrenado con los contenidos de tu destino que atiende al visitante 24/7, responde preguntas complejas y crea rutas. Descarga a la oficina de turismo fuera de horario y en temporada alta, y te deja un registro de lo que la gente pregunta de verdad."
+        },
+        {
+          "clave": "modulo_5_precio",
+          "valor": "250 €/mes"
+        },
+        {
+          "clave": "modulo_6_nombre",
+          "valor": "Señalética y tótems"
+        },
+        {
+          "clave": "modulo_6_resuelve",
+          "valor": "Tótems interactivos, displays y QR en los puntos donde ya está el visitante, para moverlo desde el punto saturado hacia el resto del destino. Es la pieza que conecta la calle con la plataforma."
+        },
+        {
+          "clave": "modulo_6_precio",
+          "valor": "100 €/mes de mantenimiento"
+        },
+        {
+          "clave": "modulo_7_nombre",
+          "valor": "Business Intelligence"
+        },
+        {
+          "clave": "modulo_7_resuelve",
+          "valor": "Cuadro de mando e informes con toda la data del ecosistema: qué se busca, qué se vende, dónde, cuándo y en qué zonas. Es lo que llevas al pleno, al patronato o al consejo cuando toca justificar la inversión."
+        },
+        {
+          "clave": "modulo_7_precio",
+          "valor": "Incluido con cualquier módulo"
+        },
+        {
+          "clave": "modulos_nota",
+          "valor": "El coste del hardware de tótems y displays se presupuesta aparte del mantenimiento. [PENDIENTE: horquilla de precio del hardware de señalética — producto/CEO]"
+        }
+      ]
+    },
+    {
+      "id": "inversion",
+      "tipo": "grid",
+      "nota_diseno": "Bloque de honestidad económica, justo después de la tabla y sobre fondo #0A0A16 para que corte visualmente con ella. Tres tarjetas en grid de 3 columnas (1 en móvil) con radio 16px, borde 1px rgba(255,0,200,.15) y sin fondo relleno: aquí no queremos aspecto de 'pricing card' comercial, queremos aspecto de nota de condiciones. Cifra destacada en Poppins 900 32px magenta (1.845 €/mes) y 10-15% en cian; el resto en Inter 14px #9999BB. Encima del grid, un titular corto en Poppins 900 clamp(28px,4vw,44px). Ningún elemento debe parecer un botón: el CTA está antes y después, no aquí. Este bloque es el que compra la credibilidad de toda la página, así que márgenes generosos y cero decoración.",
+      "campos": [
+        {
+          "clave": "inversion_eyebrow",
+          "valor": "Lo que cuesta, dicho entero"
+        },
+        {
+          "clave": "inversion_titulo",
+          "valor": "Antes de que lo preguntes en la demo"
+        },
+        {
+          "clave": "inversion_intro",
+          "valor": "Preferimos que la conversación de precio empiece resuelta. Esto es todo lo que hay."
+        },
+        {
+          "clave": "inversion_1_valor",
+          "valor": "1.845 €/mes"
+        },
+        {
+          "clave": "inversion_1_titulo",
+          "valor": "El stack completo"
+        },
+        {
+          "clave": "inversion_1_texto",
+          "valor": "Es la suma de los siete módulos a tarifa, con un punto de venta. Casi nadie empieza aquí: es el techo, no la puerta de entrada."
+        },
+        {
+          "clave": "inversion_2_valor",
+          "valor": "10-15%"
+        },
+        {
+          "clave": "inversion_2_titulo",
+          "valor": "Comisión sobre marketplace"
+        },
+        {
+          "clave": "inversion_2_texto",
+          "valor": "Además de la suscripción, la plataforma se lleva entre un 10% y un 15% de las ventas que pasan por el marketplace. Solo sobre lo vendido: si no hay venta, no hay comisión. El porcentaje concreto se fija en el contrato."
+        },
+        {
+          "clave": "inversion_3_valor",
+          "valor": "Caso a caso"
+        },
+        {
+          "clave": "inversion_3_titulo",
+          "valor": "Hay clientes por debajo de tarifa"
+        },
+        {
+          "clave": "inversion_3_texto",
+          "valor": "No todos los clientes pagan el precio de esta página. Se negocian condiciones según el alcance, el número de puntos de venta y el plazo del contrato. Preferimos decirlo aquí que dejar que te enteres después."
+        },
+        {
+          "clave": "inversion_nota",
+          "valor": "Suscripción anual con facturación mensual. [PENDIENTE: permanencia mínima, preaviso de baja y condiciones de portabilidad de datos — legal/CEO]"
+        }
+      ]
+    },
+    {
+      "id": "ecosistema",
+      "tipo": "pasos",
+      "nota_diseno": "Tres pasos en horizontal con conector: círculos numerados de 48px (radio 50%, fondo rgba(255,0,200,.15) el 1, rgba(0,212,255,.15) el 2, rgba(168,85,247,.15) el 3) y una línea de 1px rgba(255,0,200,.15) que los une; en móvil pasa a vertical con la línea a la izquierda. Frase-manifiesto arriba, centrada, Poppins 900 clamp(22px,4vw,40px), max-width 800px, con 'Cada uno funciona solo' en blanco y 'juntos, son un ecosistema' en magenta. Cuerpo de cada paso en Inter 14px #9999BB, max 3 líneas. Fondo #12121F. Sin ilustraciones: el mensaje es de compromiso comercial (empiezas por uno), no de arquitectura técnica.",
+      "campos": [
+        {
+          "clave": "eco_eyebrow",
+          "valor": "Cómo se empieza"
+        },
+        {
+          "clave": "eco_titulo",
+          "valor": "Cada uno funciona solo. Juntos, son un ecosistema."
+        },
+        {
+          "clave": "eco_intro",
+          "valor": "Nadie contrata siete módulos de golpe y nosotros no lo pedimos. Se empieza por uno, el que resuelva el problema que más te está costando ahora."
+        },
+        {
+          "clave": "paso_1_titulo",
+          "valor": "Empieza por el que te duele"
+        },
+        {
+          "clave": "paso_1_texto",
+          "valor": "Si el problema es que el destino no ingresa nada de lo que gasta el visitante, se empieza por marketplace. Si es la caja de la oficina de turismo y los monumentos, por el POS. Si es la masificación de una zona concreta, por Plan My Trip y señalética."
+        },
+        {
+          "clave": "paso_2_titulo",
+          "valor": "Suma el siguiente cuando el primero rinde"
+        },
+        {
+          "clave": "paso_2_texto",
+          "valor": "Los módulos comparten catálogo, ficha de negocio y usuarios. Añadir el segundo no es un proyecto nuevo: es activar una pieza sobre lo que ya está montado y cargado."
+        },
+        {
+          "clave": "paso_3_titulo",
+          "valor": "El cuadro de mando entra desde el día uno"
+        },
+        {
+          "clave": "paso_3_texto",
+          "valor": "Business Intelligence va incluido con cualquier módulo. Aunque contrates uno solo, desde el primer mes tienes datos propios del destino, no impresiones."
+        },
+        {
+          "clave": "eco_cierre",
+          "valor": "Cuanto más ecosistema, más completo es el dato: cada módulo nuevo alimenta el mismo cuadro de mando."
+        }
+      ]
+    },
+    {
+      "id": "caso-ronda",
+      "tipo": "caso",
+      "nota_diseno": "Sección a dos columnas sobre fondo #0A0A16: a la izquierda el relato (eyebrow, titular Poppins 900 clamp(28px,4vw,48px), contexto y lista de despliegue con marcador '▶' magenta de 9px), a la derecha un panel de datos con radio 16px, borde 1px rgba(255,0,200,.15) y cuatro cifras en Poppins 900 32px magenta con label en Space Mono 11px #9999BB. En móvil, el panel de datos va debajo. Cero fotos de stock y cero comillas decorativas: mientras no haya cita autorizada con nombre y cargo, no se maqueta ningún bloque de testimonio ni un hueco que lo insinúe. Regla de comunicación obligatoria: Ronda se presenta siempre como despliegue de plataforma, nunca como guía de Ronda. Bloque de segundo despliegue como pie de sección, en 13px, separado por una regla de 1px.",
+      "campos": [
+        {
+          "clave": "caso_eyebrow",
+          "valor": "Despliegue real · Ronda"
+        },
+        {
+          "clave": "caso_titulo",
+          "valor": "En Ronda la plataforma lleva años funcionando en la calle"
+        },
+        {
+          "clave": "caso_contexto",
+          "valor": "El punto de partida es el de tantos cascos históricos: la actividad concentrada en el entorno del Puente Nuevo y cientos de negocios locales que existían pero no aparecían en el recorrido del visitante. El encargo no fue hacer una guía de la ciudad: fue desplegar la plataforma del destino."
+        },
+        {
+          "clave": "caso_bullet_1",
+          "valor": "Más de 200 negocios y propuestas locales integrados en la plataforma"
+        },
+        {
+          "clave": "caso_bullet_2",
+          "valor": "Tótems interactivos y señalética QR en puntos clave de la ciudad"
+        },
+        {
+          "clave": "caso_bullet_3",
+          "valor": "Ocho puntos de venta operativos con el software de caja"
+        },
+        {
+          "clave": "caso_bullet_4",
+          "valor": "Venta cruzada con hoteles del destino"
+        },
+        {
+          "clave": "caso_dato_1_valor",
+          "valor": "200+"
+        },
+        {
+          "clave": "caso_dato_1_label",
+          "valor": "Negocios locales integrados"
+        },
+        {
+          "clave": "caso_dato_2_valor",
+          "valor": "8"
+        },
+        {
+          "clave": "caso_dato_2_label",
+          "valor": "Puntos de venta"
+        },
+        {
+          "clave": "caso_dato_3_valor",
+          "valor": "2022"
+        },
+        {
+          "clave": "caso_dato_3_label",
+          "valor": "Inicio del despliegue"
+        },
+        {
+          "clave": "caso_dato_4_valor",
+          "valor": "QR + tótems"
+        },
+        {
+          "clave": "caso_dato_4_label",
+          "valor": "Señalética desplegada"
+        },
+        {
+          "clave": "caso_estado",
+          "valor": "Ronda es cliente de pago y el despliegue sigue en producción."
+        },
+        {
+          "clave": "caso_segundo",
+          "valor": "Segundo despliegue: Costa del Sol Tourism Hub, con señalética QR en puntos clave del destino e integración de marketplace desde 2023."
+        },
+        {
+          "clave": "caso_cita",
+          "valor": "[PENDIENTE: cita atribuida del responsable de turismo de Ronda, con nombre, cargo y autorización por escrito — CEO. Hasta entonces no se publica ningún testimonio.]"
+        }
+      ]
+    },
+    {
+      "id": "verticales",
+      "tipo": "grid",
+      "nota_diseno": "Tres tarjetas grandes en grid de 3 columnas (1 en móvil) sobre fondo #12121F, cada una clicable entera hacia su vertical. Fondo #1A1A2E, radio 16px, padding 32px, borde superior de 3px: magenta para destinos, cian para alojamientos, violeta #A855F7 para agencias. Estructura fija en las tres: etiqueta Space Mono 10px uppercase, frase de identificación en Poppins 700 20px (es la línea que hace que el lector se reconozca, tiene que ir arriba y grande), párrafo en Inter 14px #9999BB, y enlace en magenta con flecha. La tarjeta de agencias se maqueta igual pero su copy está pendiente de aprobación: si no llega a tiempo, se publica con las otras dos y esta queda fuera antes que salir vacía. Este bloque es el desvío principal de la página: debe quedar por encima del pliegue en cuanto se hace scroll una vez desde el caso.",
+      "campos": [
+        {
+          "clave": "vert_eyebrow",
+          "valor": "Tres puertas de entrada"
+        },
+        {
+          "clave": "vert_titulo",
+          "valor": "Dime quién eres y te enseño lo tuyo"
+        },
+        {
+          "clave": "vert_intro",
+          "valor": "La plataforma es la misma, pero lo que resuelve cambia según quién la contrate."
+        },
+        {
+          "clave": "vert_1_etiqueta",
+          "valor": "Destinos"
+        },
+        {
+          "clave": "vert_1_frase",
+          "valor": "Diriges un patronato, una concejalía de turismo o una DMO."
+        },
+        {
+          "clave": "vert_1_texto",
+          "valor": "Tienes visitantes, comercio local invisible fuera de la zona saturada y ningún dato propio con el que decidir. Aquí el objetivo es redistribuir el flujo, digitalizar la oficina de turismo y convertir el tráfico en ingresos para el tejido local."
+        },
+        {
+          "clave": "vert_1_cta_label",
+          "valor": "Ver la plataforma para destinos"
+        },
+        {
+          "clave": "vert_1_cta_href",
+          "valor": "/360/destinos"
+        },
+        {
+          "clave": "vert_2_etiqueta",
+          "valor": "Alojamientos"
+        },
+        {
+          "clave": "vert_2_frase",
+          "valor": "Gestionas un hotel, un hostal o una red de apartamentos."
+        },
+        {
+          "clave": "vert_2_texto",
+          "valor": "Tu huésped pregunta qué hacer y la respuesta hoy es un mapa de papel o una recepción saturada. Aquí el objetivo es convertir tu establecimiento en el alma del viaje: recomendaciones propias, concierge digital 24/7 y una nueva línea de ingresos por lo que vendes de la zona."
+        },
+        {
+          "clave": "vert_2_cta_label",
+          "valor": "Ver la plataforma para alojamientos"
+        },
+        {
+          "clave": "vert_2_cta_href",
+          "valor": "/360/alojamientos"
+        },
+        {
+          "clave": "vert_3_etiqueta",
+          "valor": "Agencias"
+        },
+        {
+          "clave": "vert_3_frase",
+          "valor": "Produces y comercializas experiencias en destino para terceros."
+        },
+        {
+          "clave": "vert_3_texto",
+          "valor": "[PENDIENTE: propuesta de valor, alcance y modelo de precio para agencias y receptivos. No existe material aprobado ni caso de referencia en esta vertical — CEO. No se publica esta tarjeta hasta tenerlo.]"
+        },
+        {
+          "clave": "vert_3_cta_label",
+          "valor": "Ver la plataforma para agencias"
+        },
+        {
+          "clave": "vert_3_cta_href",
+          "valor": "/360/agencias"
+        }
+      ]
+    },
+    {
+      "id": "faq",
+      "tipo": "faq",
+      "nota_diseno": "Acordeón de una sola columna, max-width 800px, centrado, sobre fondo #0A0A16. Pregunta en Poppins 700 16px con separador border-bottom 1px rgba(255,255,255,.04); respuesta en Inter 15px line-height 1.7 #9999BB. Primera pregunta abierta por defecto (es la del precio). Indicador de apertura: un signo '+' en Space Mono magenta que rota, sin iconografía externa. Marcar con FAQPage JSON-LD dentro del grupo /360, no en el layout raíz. Las respuestas van sin rodeos y las que están pendientes se dejan visibles en el CMS con su etiqueta: no se maquetan hasta tener el dato.",
+      "campos": [
+        {
+          "clave": "faq_titulo",
+          "valor": "Lo que preguntan siempre"
+        },
+        {
+          "clave": "faq_1_p",
+          "valor": "¿Cuánto me va a costar de verdad?"
+        },
+        {
+          "clave": "faq_1_r",
+          "valor": "Los precios de la tabla son de tarifa y son públicos. Los siete módulos juntos suman 1.845 €/mes. A la suscripción se le añade una comisión del 10-15% sobre las ventas que pasen por el marketplace, y solo sobre lo vendido. Hay clientes con condiciones negociadas por debajo de tarifa según alcance, puntos de venta y plazo, así que la cifra final sale de la propuesta, no de esta página."
+        },
+        {
+          "clave": "faq_2_p",
+          "valor": "¿Tengo que rehacer mi web o montar un desarrollo?"
+        },
+        {
+          "clave": "faq_2_r",
+          "valor": "No. Los módulos se integran en la web que ya tienes o se despliegan como plataforma nueva si prefieres empezar de cero. No necesitas equipo técnico propio ni migrar tu web actual."
+        },
+        {
+          "clave": "faq_3_p",
+          "valor": "¿El visitante tiene que descargarse una app?"
+        },
+        {
+          "clave": "faq_3_r",
+          "valor": "No. Todo funciona en navegador, desde tu web, desde un QR o desde un tótem. La app existe, pero no es requisito para comprar, planificar ni consultar."
+        },
+        {
+          "clave": "faq_4_p",
+          "valor": "¿De quién son los datos que se generan?"
+        },
+        {
+          "clave": "faq_4_r",
+          "valor": "Del destino o del negocio que contrata. El dato sale de la interacción real del público con la plataforma —búsquedas, rutas, compras, uso de tótems— y se te devuelve en un cuadro de mando y en informes. [PENDIENTE: cláusula concreta de titularidad y tratamiento de datos, y formato de exportación al finalizar el contrato — legal]"
+        },
+        {
+          "clave": "faq_5_p",
+          "valor": "¿Puedo contratar un solo módulo?"
+        },
+        {
+          "clave": "faq_5_r",
+          "valor": "Sí, y es lo habitual. Cada módulo funciona solo, en modo suscripción, y el Business Intelligence va incluido desde el primero. Se añaden los siguientes cuando el primero está rindiendo."
+        },
+        {
+          "clave": "faq_6_p",
+          "valor": "¿Cuánto se tarda en tenerlo funcionando?"
+        },
+        {
+          "clave": "faq_6_r",
+          "valor": "El software de caja se integra en 15 días: se conecta a tu catálogo y opera, sin hardware complejo. [PENDIENTE: plazos de puesta en marcha de los otros seis módulos, incluida la carga inicial de catálogo — producto]"
+        },
+        {
+          "clave": "faq_7_p",
+          "valor": "¿A quién más le está funcionando esto?"
+        },
+        {
+          "clave": "faq_7_r",
+          "valor": "Ronda es el despliegue de referencia: más de 200 negocios locales integrados, tótems, señalética QR y ocho puntos de venta, con contrato en vigor. El segundo es Costa del Sol Tourism Hub, con señalética QR y marketplace. discoolver ha cerrado además acuerdos con SEGITTUR, ICEX e ITH. En la demo te enseñamos el despliegue de Ronda en vivo, no capturas."
+        },
+        {
+          "clave": "faq_8_p",
+          "valor": "¿Qué tiene que hacer el comercio local para estar dentro?"
+        },
+        {
+          "clave": "faq_8_r",
+          "valor": "El marketplace vende los activos propios del destino y también los de comercios, productos y actividades colaboradores, así que el alta del tejido local es parte del despliegue y no un proyecto aparte. [PENDIENTE: proceso de alta del colaborador, quién carga el catálogo y qué condiciones económicas se le aplican — producto/CEO]"
+        },
+        {
+          "clave": "faq_9_p",
+          "valor": "Somos administración pública. ¿Cómo se contrata esto?"
+        },
+        {
+          "clave": "faq_9_r",
+          "valor": "[PENDIENTE: encaje con contratación pública —contrato menor, licitación, códigos CPV, modelo de pliego y certificaciones que se piden en concurso—. Es la primera objeción de un patronato o una concejalía y hoy no tenemos respuesta escrita — legal/CEO]"
+        },
+        {
+          "clave": "faq_10_p",
+          "valor": "¿En qué idiomas atiende al visitante?"
+        },
+        {
+          "clave": "faq_10_r",
+          "valor": "[PENDIENTE: idiomas soportados por el marketplace, Plan My Trip y el asistente de voz — producto]"
+        }
+      ]
+    },
+    {
+      "id": "cta",
+      "tipo": "cta",
+      "nota_diseno": "Cierre a pantalla partida sobre gradiente linear-gradient(135deg, rgba(255,0,200,.10), rgba(0,212,255,.05)) con radio 20px y padding 48px, dentro de sección de fondo #0A0A16. Titular en Poppins 900 clamp(26px,4vw,44px), max-width 720px; debajo el detalle de la demo en Inter 15px #9999BB; botón magenta sólido, radio 50px, padding 16px 40px, Poppins 700 16px, letter-spacing .05em, apuntando a /360/demo. Debajo del botón, la línea de reaseguro en 13px y los datos de contacto en Space Mono 12px con el email como enlace mailto real y el teléfono como enlace tel:. Este es el único botón primario de la sección: nada compite con él. El formulario vive en /360/demo, no aquí, para no meter un formulario largo al final de una página larga.",
+      "campos": [
+        {
+          "clave": "cta_eyebrow",
+          "valor": "Siguiente paso"
+        },
+        {
+          "clave": "cta_titulo",
+          "valor": "Media hora, tu destino sobre la mesa"
+        },
+        {
+          "clave": "cta_texto",
+          "valor": "Una demo de 30 minutos, sin compromiso, con la plataforma funcionando y el despliegue de Ronda abierto. Salimos de ahí con una propuesta de por qué módulo empezar en tu caso y qué cuesta."
+        },
+        {
+          "clave": "cta_boton_label",
+          "valor": "Pedir una demo"
+        },
+        {
+          "clave": "cta_boton_href",
+          "valor": "/360/demo"
+        },
+        {
+          "clave": "cta_reaseguro",
+          "valor": "Te responde alguien del equipo, no un formulario automático. Si prefieres escribir antes, también vale."
+        },
+        {
+          "clave": "cta_email",
+          "valor": "info@discoolver.com"
+        },
+        {
+          "clave": "cta_telefono",
+          "valor": "[PENDIENTE: teléfono de contacto B2B — hay dos números en circulación, +34 656 91 43 74 (brand brain) y +34 681 291 571 (web antigua). Confirmar cuál se publica — CEO]"
+        },
+        {
+          "clave": "cta_direccion",
+          "valor": "C/ María de Molina 39, 28006 Madrid"
+        }
+      ]
+    }
+  ],
+  "pendientes": [
+    "Cita/testimonio de Ronda: nombre real, cargo y autorización por escrito del responsable de turismo. Hasta tenerlo no se publica ningún testimonio ni se maqueta el hueco. Owner: CEO. (campo caso_cita)",
+    "Vertical de agencias: no existe material aprobado, ni propuesta de valor, ni alcance, ni modelo de precio, ni caso de referencia. La tarjeta se publica solo cuando llegue el copy; si no, la sección sale con dos verticales. Owner: CEO. (campo vert_3_texto)",
+    "Contratación pública: encaje con contrato menor/licitación, códigos CPV, modelo de pliego y certificaciones exigidas en concurso. Es la primera objeción de un patronato o una concejalía. Owner: legal/CEO. (campo faq_9_r)",
+    "Coste del hardware de tótems y displays: el mantenimiento son 100 €/mes, pero el hardware va aparte y no hay horquilla escrita. Owner: producto/CEO. (campo modulos_nota)",
+    "Plazos de puesta en marcha de los seis módulos que no son el POS, incluida la carga inicial de catálogo. Solo está documentado el POS en 15 días. Owner: producto. (campo faq_6_r)",
+    "Titularidad y tratamiento de datos: cláusula concreta del contrato y formato de exportación al finalizar. Owner: legal. (campo faq_4_r)",
+    "Permanencia mínima, preaviso de baja y portabilidad de datos. Owner: legal/CEO. (campo inversion_nota)",
+    "Alta del comercio local en el marketplace: proceso, quién carga el catálogo y condiciones económicas para el colaborador. Owner: producto/CEO. (campo faq_8_r)",
+    "Idiomas soportados por marketplace, Plan My Trip y asistente de voz. Owner: producto. (campo faq_10_r)",
+    "Teléfono de contacto B2B: hay dos números en circulación (+34 656 91 43 74 en el brand brain y +34 681 291 571 en la web antigua). Owner: CEO. (campo cta_telefono)",
+    "Confirmar si se mantiene la oferta de campaña 'primer mes sin coste para destinos nuevos': está documentada como mecánica de campaña de 2025 y no se ha publicado en esta página por no darla por vigente. Owner: CEO.",
+    "Costa del Sol/Málaga: no hay importe de contrato, número de puntos de venta ni organismo firmante documentados, por eso el caso se cita solo como segundo despliegue. Si se quiere ampliar, hace falta el dato y el permiso. Owner: CEO."
+  ]
+}

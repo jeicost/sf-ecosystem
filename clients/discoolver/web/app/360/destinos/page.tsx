@@ -1,0 +1,276 @@
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+import { defaultDestinos360Content as c } from "@/lib/content/b360/destinos";
+import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
+
+export const metadata: Metadata = buildMetadata({
+  title: "Soluciones para destinos turísticos | discoolver 360",
+  description:
+    "Plataforma SaaS para ayuntamientos, patronatos y DMO: redistribuye el flujo de visitantes, da datos propios del destino y monetiza el comercio local.",
+  path: "/360/destinos",
+});
+
+const K = (k: string) => c[k as keyof typeof c] as string;
+
+export default function Destinos360() {
+  return (
+    <>
+      {/* ---------- hero ---------- */}
+      <section className="hero">
+        <div className="wrap">
+          <span className="label">{c.hero_eyebrow}</span>
+          <h1 className="h-hero">{c.hero_title}</h1>
+          <p className="lead">{c.hero_sub}</p>
+          <div className="btns">
+            <Cta href="/360/demo">{c.hero_cta_label}</Cta>
+          </div>
+          <p className="small" style={{ marginTop: 18 }}>{c.hero_cta_sub}</p>
+          <div
+            className="grid g-4"
+            style={{ marginTop: 44, paddingTop: 32, borderTop: "1px solid var(--b-line-soft)" }}
+          >
+            {[1, 2, 3, 4].map((n) => (
+              <Stat key={n} v={K(`hero_stat_${n}_val`)} l={K(`hero_stat_${n}_label`)} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ---------- el problema de quien firma ---------- */}
+      <Section alt>
+        <Head label={c.problema_eyebrow} title={c.problema_title} lead={c.problema_lead} />
+        <div className="grid g-2" style={{ marginTop: 36 }}>
+          {[1, 2, 3].map((n) => (
+            <div className="card" key={n}>
+              <span className="card__n">0{n}</span>
+              <h3 className="h-card">{K(`problema_${n}_title`)}</h3>
+              <p style={{ fontSize: 14.5, margin: 0 }}>{K(`problema_${n}_text`)}</p>
+            </div>
+          ))}
+          <div className="card" style={{ borderColor: "var(--b-line)" }}>
+            <span className="card__n">04</span>
+            <h3 className="h-card">{c.problema_4_title}</h3>
+            <div className="mod__price" style={{ marginTop: 8 }}>{c.problema_4_dato}</div>
+            <p style={{ fontSize: 14.5, margin: "10px 0 0" }}>{c.problema_4_text}</p>
+            <p className="small" style={{ marginTop: 12, color: "var(--b-slate)", fontFamily: "var(--b-mono)", fontSize: 11.5 }}>
+              {c.problema_4_fuente}
+            </p>
+          </div>
+        </div>
+      </Section>
+
+      {/* ---------- qué hace la plataforma POR EL DESTINO ---------- */}
+      <Section>
+        <Head label={c.plataforma_eyebrow} title={c.plataforma_title} lead={c.plataforma_lead} />
+        <p className="h-card" style={{ color: "var(--b-primary)", fontSize: 22, maxWidth: "34ch", marginTop: -4 }}>
+          {c.plataforma_claim}
+        </p>
+        <div className="grid g-2" style={{ marginTop: 34 }}>
+          {[1, 2, 3, 4].map((n) => (
+            <div className="card" key={n}>
+              <h3 className="h-card">{K(`plataforma_${n}_title`)}</h3>
+              <p style={{ fontSize: 14.5, margin: 0 }}>{K(`plataforma_${n}_text`)}</p>
+            </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* ---------- módulos ---------- */}
+      <Section id="modulos" alt>
+        <Head label={c.modulos_eyebrow} title={c.modulos_title} lead={c.modulos_lead} />
+        <div className="grid g-2" style={{ marginTop: 34 }}>
+          {[1, 2, 3, 4, 5, 6, 7].map((n) => (
+            <div className="card mod" key={n}>
+              <span className="card__n">MÓDULO 0{n}</span>
+              <h3 className="h-card">{K(`modulo_${n}_nombre`)}</h3>
+              <p>{K(`modulo_${n}_desc`)}</p>
+              <div className="mod__price" style={n === 7 ? { color: "var(--b-accent)" } : undefined}>
+                {K(`modulo_${n}_precio`)}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="card" style={{ marginTop: 22, display: "flex", flexWrap: "wrap", gap: 16, alignItems: "baseline", justifyContent: "space-between" }}>
+          <span style={{ fontFamily: "var(--b-mono)", fontSize: 12, letterSpacing: ".12em", color: "var(--b-muted)", textTransform: "uppercase" }}>
+            {c.modulos_total_label}
+          </span>
+          <span className="mod__price" style={{ margin: 0 }}>{c.modulos_total_valor}</span>
+        </div>
+        <p className="small" style={{ marginTop: 18 }}>{c.modulos_nota}</p>
+        <div style={{ marginTop: 14 }}>
+          <Pending>{c.modulos_pendiente_hardware}</Pending>
+        </div>
+      </Section>
+
+      {/* ---------- los datos son del destino ---------- */}
+      <Section>
+        <div className="split">
+          <div>
+            <Head label={c.datos_eyebrow} title={c.datos_title} lead={c.datos_lead} accent />
+            <p className="h-card" style={{ color: "var(--b-accent)", fontSize: 20, maxWidth: "30ch" }}>
+              {c.datos_claim}
+            </p>
+            <ul className="ticks" style={{ marginTop: 22 }}>
+              {[1, 2, 3].map((n) => <li key={n}>{K(`datos_bullet_${n}`)}</li>)}
+            </ul>
+          </div>
+          <div className="card" style={{ borderColor: "var(--b-line)" }}>
+            <span className="card__n">{c.datos_mockup_label}</span>
+            <p style={{ fontSize: 14.5 }}>{c.datos_bi_nota}</p>
+            <Pending>{c.datos_pendiente}</Pending>
+          </div>
+        </div>
+      </Section>
+
+      {/* ---------- monetización ---------- */}
+      <Section alt>
+        <Head label={c.monetizacion_eyebrow} title={c.monetizacion_title} lead={c.monetizacion_lead} />
+        <div className="grid g-3" style={{ marginTop: 34 }}>
+          {[1, 2].map((n) => (
+            <div className="card" key={n}>
+              <h3 className="h-card">{K(`monetizacion_${n}_title`)}</h3>
+              <p style={{ fontSize: 14.5, margin: 0 }}>{K(`monetizacion_${n}_text`)}</p>
+            </div>
+          ))}
+          <div className="card" style={{ borderColor: "var(--b-line)" }}>
+            <h3 className="h-card">{c.monetizacion_3_title}</h3>
+            <div className="mod__price" style={{ color: "var(--b-accent)" }}>{c.monetizacion_3_dato}</div>
+            <p style={{ fontSize: 14.5, margin: "10px 0 0" }}>{c.monetizacion_3_text}</p>
+          </div>
+        </div>
+        <p className="h-card" style={{ marginTop: 30, fontSize: 20, color: "var(--b-primary)", maxWidth: "44ch" }}>
+          {c.monetizacion_claim}
+        </p>
+        <p className="small">{c.monetizacion_nota}</p>
+      </Section>
+
+      {/* ---------- caso Ronda ---------- */}
+      <Section id="ronda">
+        <div className="caso">
+          <span className="label label--accent">{c.caso_eyebrow}</span>
+          <h2 className="h-sec">{c.caso_title}</h2>
+          <div className="split" style={{ marginTop: 8 }}>
+            <div>
+              <h3 className="h-card">{c.caso_contexto_title}</h3>
+              <p>{c.caso_contexto_text}</p>
+              <h3 className="h-card" style={{ marginTop: 26 }}>{c.caso_despliegue_title}</h3>
+              <ul className="ticks">
+                {[1, 2, 3, 4, 5].map((n) => <li key={n}>{K(`caso_despliegue_${n}`)}</li>)}
+              </ul>
+              <p className="small" style={{ color: "var(--b-text)" }}>{c.caso_estado}</p>
+            </div>
+            <div>
+              <div className="caso__stats" style={{ marginTop: 0, paddingTop: 0, borderTop: 0 }}>
+                {[1, 2].map((n) => (
+                  <Stat key={n} v={K(`caso_stat_${n}_val`)} l={K(`caso_stat_${n}_label`)} />
+                ))}
+              </div>
+              <div style={{ marginTop: 26, paddingTop: 24, borderTop: "1px solid var(--b-line-soft)" }}>
+                <h3 className="h-card">{c.caso_segundo_title}</h3>
+                <p style={{ fontSize: 14.5 }}>{c.caso_segundo_text}</p>
+                <p className="small" style={{ color: "var(--b-slate)" }}>{c.caso_respaldo}</p>
+              </div>
+            </div>
+          </div>
+          <div style={{ marginTop: 26, display: "grid", gap: 10 }}>
+            {[1, 2, 3, 4].map((n) => <Pending key={n}>{K(`caso_pendiente_${n}`)}</Pending>)}
+          </div>
+        </div>
+      </Section>
+
+      {/* ---------- integración sin fricción ---------- */}
+      <Section alt>
+        <Head label={c.integracion_eyebrow} title={c.integracion_title} lead={c.integracion_lead} />
+        <div className="split" style={{ marginTop: 30 }}>
+          <div className="grid g-2">
+            {[1, 2, 3, 4].map((n) => (
+              <div className="card" key={n}>
+                <h3 className="h-card">{K(`integracion_${n}_title`)}</h3>
+                <p style={{ fontSize: 14.5, margin: 0 }}>{K(`integracion_${n}_text`)}</p>
+              </div>
+            ))}
+          </div>
+          <div className="card" style={{ borderColor: "var(--b-line)", textAlign: "center" }}>
+            <div className="mod__price" style={{ fontSize: 56, marginTop: 8 }}>{c.integracion_dato_val}</div>
+            <div className="mod__unit">{c.integracion_dato_unidad}</div>
+            <p style={{ fontSize: 14.5, marginTop: 14 }}>{c.integracion_dato_label}</p>
+            <Pending>{c.integracion_pendiente}</Pending>
+          </div>
+        </div>
+      </Section>
+
+      {/* ---------- cómo se contrata y cómo se justifica ---------- */}
+      <Section>
+        <Head label={c.contratacion_eyebrow} title={c.contratacion_title} />
+        <div className="split" style={{ marginTop: 26 }}>
+          <Steps
+            items={[1, 2, 3, 4, 5].map((n) => ({
+              t: K(`contratacion_paso_${n}_title`),
+              d: K(`contratacion_paso_${n}_text`),
+            }))}
+          />
+          <div>
+            <div className="card">
+              <h3 className="h-card">{c.justificacion_title}</h3>
+              <ul className="ticks" style={{ marginBottom: 0 }}>
+                {[1, 2, 3, 4, 5].map((n) => <li key={n}>{K(`justificacion_${n}`)}</li>)}
+              </ul>
+            </div>
+            <div className="card" style={{ marginTop: 16, borderColor: "var(--b-line)" }}>
+              <h3 className="h-card">{c.contratacion_publica_title}</h3>
+              <Txt v={c.contratacion_publica_text} />
+            </div>
+          </div>
+        </div>
+      </Section>
+
+      {/* ---------- FAQ ---------- */}
+      <Section alt>
+        <h2 className="h-sec" style={{ marginBottom: 28 }}>{c.faq_title}</h2>
+        <div style={{ maxWidth: 820 }}>
+          <Faq items={[1, 2, 3, 4, 5, 6, 7].map((n) => ({ q: K(`faq_${n}_q`), a: K(`faq_${n}_a`) }))} />
+        </div>
+      </Section>
+
+      {/* ---------- CTA + formulario ---------- */}
+      <Section>
+        <div className="split">
+          <div>
+            <h2 className="h-sec">{c.cta_title}</h2>
+            <p className="lead">{c.cta_sub}</p>
+            <p className="small">{c.cta_reaseguro}</p>
+            <div style={{ marginTop: 20, display: "grid", gap: 10 }}>
+              <a href={`mailto:${c.cta_contacto_email}`} style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-primary)" }}>
+                {c.cta_contacto_email}
+              </a>
+              <span style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-slate)" }}>
+                {c.cta_contacto_direccion}
+              </span>
+              <Pending>{c.cta_pendiente_telefono}</Pending>
+              <Pending>{c.cta_pendiente_destino}</Pending>
+            </div>
+          </div>
+          <div className="card" style={{ borderColor: "var(--b-line)" }}>
+            <h3 className="h-card">{c.cta_form_title}</h3>
+            <div className="form" style={{ marginTop: 18 }}>
+              {[1, 2, 3, 4, 5, 6].map((n) => (
+                <div className="field" key={n}>
+                  <label htmlFor={`d${n}`}>{K(`cta_form_campo_${n}`)}</label>
+                  {n === 6 ? (
+                    <textarea id={`d${n}`} name={`campo_${n}`} disabled />
+                  ) : (
+                    <input id={`d${n}`} name={`campo_${n}`} disabled />
+                  )}
+                </div>
+              ))}
+              <Cta href="/360/demo">{c.cta_form_submit}</Cta>
+              <p className="small" style={{ margin: 0, color: "var(--b-slate)" }}>
+                Maqueta. El formulario operativo vive en /360/demo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Section>
+    </>
+  );
+}
