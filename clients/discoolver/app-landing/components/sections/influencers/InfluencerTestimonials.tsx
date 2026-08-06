@@ -1,13 +1,23 @@
-import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { InfluencersContent } from "@/lib/content/influencers";
 
+/**
+ * Sin fotos, igual que los testimonios de la home: se servían sobre fotos de
+ * stock del pack de marca (img-testimonial-7..9.jpg) haciendo de cara de esos
+ * creadores.
+ *
+ * PENDIENTE DE CARLOS: los tres handles (@viajeraautentica, @exploradorurbano,
+ * @aventurera_creativa) no son ninguno de los dos creadores del piloto
+ * (Cenando con Pablo y Travis Leon) y no se ha podido confirmar que existan.
+ * Si son de relleno, esta sección se retira hasta que haya creadores firmados:
+ * atribuir una cita a una cuenta de Instagram ajena es peor que no tener
+ * testimonios.
+ */
 export function InfluencerTestimonials({ content }: { content: InfluencersContent }) {
   const items = [1, 2, 3].map((n) => ({
     quote: content[`testimonial_${n}_quote` as keyof InfluencersContent],
     handle: content[`testimonial_${n}_handle` as keyof InfluencersContent],
-    image: `/assets/img-testimonial-${n + 6}.jpg`,
   }));
 
   return (
@@ -22,22 +32,27 @@ export function InfluencerTestimonials({ content }: { content: InfluencersConten
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, marginTop: 48 }}>
           {items.map((item, i) => (
             <Reveal delay={i * 80} key={item.handle}>
-              <article style={{ position: "relative", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1.5px solid var(--line)", minHeight: 320 }} aria-label={`Testimonio de ${item.handle}`}>
-                <Image src={item.image} alt="" fill sizes="(max-width: 640px) 100vw, 33vw" style={{ objectFit: "cover", objectPosition: "center top" }} />
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "linear-gradient(to top, rgba(10,10,15,.95) 0%, rgba(10,10,15,.5) 50%, rgba(10,10,15,.1) 100%)",
-                  }}
-                />
-                <div style={{ position: "absolute", inset: 0, padding: 24, display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-                  <span style={{ marginBottom: 12, color: "var(--accent)" }}>
-                    <Icon name="star" size={16} />
-                  </span>
-                  <p style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 18, lineHeight: 1.3, color: "#fff", marginBottom: 16 }}>&ldquo;{item.quote}&rdquo;</p>
-                  <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--primary)", letterSpacing: ".05em" }}>{item.handle}</span>
-                </div>
+              <article
+                style={{
+                  borderRadius: "var(--radius-lg)",
+                  border: "1.5px solid var(--line)",
+                  background: "var(--bg-card)",
+                  minHeight: 240,
+                  padding: 24,
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "flex-end",
+                }}
+                aria-label={`Testimonio de ${item.handle}`}
+              >
+                <span
+                  aria-hidden="true"
+                  style={{ fontFamily: "var(--font-display)", fontSize: 40, lineHeight: 0.6, color: "var(--primary)", marginBottom: 20 }}
+                >
+                  &ldquo;
+                </span>
+                <p style={{ fontFamily: "var(--font-display)", fontWeight: 500, fontSize: 18, lineHeight: 1.3, marginBottom: 16 }}>{item.quote}</p>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--primary)", letterSpacing: ".05em" }}>{item.handle}</span>
               </article>
             </Reveal>
           ))}

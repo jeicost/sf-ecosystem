@@ -186,8 +186,12 @@ export const defaultHomeContent = {
 
   // Testimonials
   testimonials_eyebrow: "Lo que dicen los descubridores",
-  testimonials_title: "120.000 personas redescubren su ciudad",
-  testimonials_title_highlight: "cada semana.",
+  // Antes: "120.000 personas redescubren su ciudad cada semana". Cifra sin
+  // respaldo, y además incompatible con el resto de la página (8.742 en lista,
+  // 500 plazas × 12 ciudades). El titular ahora dice algo cierto y que sale de
+  // las propias citas: quienes las escriben llevan años en su ciudad.
+  testimonials_title: "Llevan años en su ciudad.",
+  testimonials_title_highlight: "Y siguen descubriendo.",
   testimonial_1_quote: "Llevo 12 años en Madrid y descubrí 3 sitios nuevos en una tarde. Brujería.",
   testimonial_1_name: "Lucía M.",
   testimonial_1_role: "Diseñadora · Madrid",
