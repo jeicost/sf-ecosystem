@@ -8,11 +8,25 @@ import { AGENT_METADATA } from '@/lib/agent-meta'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { hasOwnKey } from '@/lib/safe-lookup'
 import { extractPdfText } from '@/lib/pdf-extract'
+import { describeImage, isVisionReadableImage } from '@/lib/vision'
 
+// Imágenes añadidas el 2026-08-06. Antes esta lista era solo PDF/DOCX/TXT y
+// devolvía `400 File type not allowed. Got: image/png` — era la causa exacta
+// de "los chats no dejan subir PNG". Se añaden además text/markdown y text/csv,
+// que el `accept` del cliente YA ofrecía (agent-workspace.tsx, document-
+// uploader.tsx) y que el servidor rechazaba: subir un .md o un .csv desde el
+// chat fallaba igual, sin que nadie entendiera por qué.
 const ALLOWED_MIME_TYPES = [
   'application/pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'application/msword',
   'text/plain',
+  'text/markdown',
+  'text/csv',
+  'image/png',
+  'image/jpeg',
+  'image/gif',
+  'image/webp',
 ]
 
 const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
@@ -61,7 +75,7 @@ export async function POST(
     // Validate file MIME type
     if (!ALLOWED_MIME_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: `File type not allowed. Accepted: PDF, DOCX, TXT. Got: ${file.type}` },
+        { error: `File type not allowed. Accepted: PDF, DOCX, TXT, MD, CSV and images (PNG, JPEG, GIF, WebP). Got: ${file.type || 'unknown'}` },
         { status: 400 }
       )
     }
@@ -114,10 +128,23 @@ export async function POST(
     // Buffer.toString('utf-8') sobre el binario = contexto corrupto para el
     // agente); texto plano en utf-8 con guard de binarios.
     let text = ''
+    let isImage = false
     try {
       const buffer = Buffer.from(await file.arrayBuffer())
       if (file.type === 'application/pdf') {
         text = await extractPdfText(buffer)
+      } else if (isVisionReadableImage(file.type, file.name)) {
+        // Una imagen no tiene texto que extraer: se convierte en texto
+        // describiéndola por visión. A partir de ahí entra en el índice de
+        // conocimiento igual que un PDF y la ven todos los agentes.
+        isImage = true
+        text = (await describeImage({
+          clientId,
+          buffer,
+          mimeType: file.type,
+          fileName: file.name,
+          route: 'agent:upload-image',
+        })) || ''
       } else {
         text = buffer.toString('utf-8')
         if (text.includes('\x00')) {
@@ -132,7 +159,8 @@ export async function POST(
     // Detect document type from filename
     const filename = file.name.toLowerCase()
     let docType = 'other'
-    if (filename.includes('strategy')) docType = 'strategy'
+    if (isImage) docType = 'image'
+    else if (filename.includes('strategy')) docType = 'strategy'
     else if (filename.includes('research')) docType = 'research'
     else if (filename.includes('brief')) docType = 'brief'
     else if (filename.includes('context')) docType = 'context'

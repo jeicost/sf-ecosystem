@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import ChatThread from '@/components/chat/ChatThread'
 import { useRouter } from 'next/navigation'
 import { Paperclip, Send, Loader2, CheckCircle2, UserPlus } from 'lucide-react'
 
@@ -15,6 +16,8 @@ interface PendingAttachment {
   name: string
   url: string
   mimeType?: string
+  /** Ruta en el bucket privado — sin ella el servidor no puede descargarlo */
+  path?: string
 }
 
 function attachmentType(file: File): 'image' | 'pdf' | 'text' {
@@ -50,7 +53,15 @@ export default function AdminOnboardingPage() {
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || [])
-    if (files.length === 0 || !clientId) return
+    if (files.length === 0) return
+    // `clientId` es null hasta que se envía el primer mensaje (la sesión se
+    // crea ahí). Antes esto hacía `return` en silencio: adjuntar un logo nada
+    // más abrir el chat no hacía absolutamente nada, sin ningún aviso.
+    if (!clientId) {
+      setError('Send your first message to start the session, then attach the files.')
+      e.target.value = ''
+      return
+    }
     setUploading(true)
     setError(null)
     try {
@@ -63,8 +74,19 @@ export default function AdminOnboardingPage() {
           form.append('file', file)
           const res = await fetch('/api/brand-assets/logo', { method: 'POST', body: form })
           const data = await res.json().catch(() => null)
-          if (!res.ok || !data?.path) throw new Error(data?.error || `Error subiendo el logo (${res.status})`)
-          uploaded.push({ type, name: file.name, url: `/api/brand-assets?path=${encodeURIComponent(data.path)}`, mimeType: file.type })
+          if (!res.ok || !data?.path) throw new Error(data?.error || `Logo upload failed (${res.status})`)
+          // `path` es imprescindible: sin él, buildAttachmentBlocks intenta un
+          // fetch server-side a la URL RELATIVA del proxy, revienta, y el
+          // catch descarta el adjunto en silencio — el logo que subía el admin
+          // en el alta no lo llegaba a ver el modelo NUNCA, pese a que el
+          // system prompt le pide expresamente que lo analice.
+          uploaded.push({
+            type,
+            name: file.name,
+            url: `/api/brand-assets?path=${encodeURIComponent(data.path)}`,
+            mimeType: file.type,
+            path: data.path,
+          })
         } else {
           const { uploadFilesToBucket } = await import('@/lib/attachments-client')
           const [att] = await uploadFilesToBucket(clientId, [file], 'onboarding')
@@ -73,7 +95,7 @@ export default function AdminOnboardingPage() {
       }
       setPendingAttachments((prev) => [...prev, ...uploaded])
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error subiendo el adjunto')
+      setError(e instanceof Error ? e.message : 'Error uploading the attachment')
     } finally {
       setUploading(false)
       if (fileInputRef.current) fileInputRef.current.value = ''
@@ -88,7 +110,7 @@ export default function AdminOnboardingPage() {
       try {
         const r = await fetch('/api/admin/onboarding', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
         const json = await r.json()
-        if (!r.ok) throw new Error(json.error || 'No se pudo iniciar la sesión')
+        if (!r.ok) throw new Error(json.error || 'Could not start the session')
         sid = json.sessionId
         cid = json.clientId
         setSessionId(sid)
@@ -102,7 +124,7 @@ export default function AdminOnboardingPage() {
     const attachments = pendingAttachments
     setMessages((prev) => [
       ...prev,
-      { role: 'user', text: userMessage || `(${attachments.length} adjunto(s))` },
+      { role: 'user', text: userMessage || `(${attachments.length} attachment(s))` },
     ])
     setInput('')
     setPendingAttachments([])
@@ -116,13 +138,13 @@ export default function AdminOnboardingPage() {
         body: JSON.stringify({ sessionId: sid, message: userMessage, attachments }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Error en la conversación')
+      if (!res.ok) throw new Error(json.error || 'Conversation error')
 
       setMessages((prev) => [...prev, { role: 'assistant', text: json.botMessage, chips: json.chips }])
       if (json.slug) setSlug(json.slug)
       if (json.pendingLogin) setPendingLogin(json.pendingLogin)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error en la conversación')
+      setError(e instanceof Error ? e.message : 'Conversation error')
     } finally {
       setSending(false)
     }
@@ -139,11 +161,11 @@ export default function AdminOnboardingPage() {
         body: JSON.stringify({ clientId, email: pendingLogin.email, sessionId }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'No se pudo crear el acceso')
+      if (!res.ok) throw new Error(json.error || 'Could not create the login')
       setLoginResult({ recoveryLink: json.recoveryLink })
       setPendingLogin(null)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo crear el acceso')
+      setError(e instanceof Error ? e.message : 'Could not create the login')
     } finally {
       setCreatingLogin(false)
     }
@@ -153,10 +175,10 @@ export default function AdminOnboardingPage() {
     <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-3xl flex-col px-6 py-8">
       <div className="mb-4">
         <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-violet-400">Admin</p>
-        <h1 className="mt-1 text-2xl font-bold text-ink">Alta de cliente por chat</h1>
+        <h1 className="mt-1 text-2xl font-bold text-ink">Client onboarding by chat</h1>
         <p className="mt-1 text-sm text-ink-tertiary">
-          Pega toda la información que tengas del cliente (texto libre + adjuntos) — el sistema construye el
-          cliente y su Brand Brain, y pregunta después por lo que falte.
+          Paste everything you have about the client (free text + attachments) — the system builds the
+          client and its Brand Brain, then asks for whatever is missing.
           {slug && <span className="ml-2 text-emerald-400">· {slug}</span>}
         </p>
       </div>
@@ -167,89 +189,11 @@ export default function AdminOnboardingPage() {
         </div>
       )}
 
-      <div ref={scrollRef} className="flex-1 space-y-4 overflow-y-auto rounded-xl border border-line bg-card p-4">
-        {messages.length === 0 && !sending && (
-          <p className="text-sm text-ink-tertiary">Escribe o pega la información del cliente para empezar…</p>
-        )}
-        {messages.map((m, i) => (
-          <div key={i} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-wrap ${
-                m.role === 'user' ? 'bg-violet-600 text-white' : 'bg-surface text-ink'
-              }`}
-            >
-              {m.text}
-              {m.chips && m.chips.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {m.chips.map((chip, ci) => (
-                    <span
-                      key={ci}
-                      className="flex items-center gap-1 rounded-full bg-emerald-500/15 px-2 py-0.5 text-[10px] text-emerald-400"
-                    >
-                      <CheckCircle2 size={10} /> {chip}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        ))}
-        {sending && (
-          <div className="flex justify-start">
-            <div className="flex items-center gap-2 rounded-2xl bg-surface px-4 py-2.5 text-sm text-ink-tertiary">
-              <Loader2 size={14} className="animate-spin" /> Pensando…
-            </div>
-          </div>
-        )}
-
-        {pendingLogin && !loginResult && (
-          <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-4">
-            <p className="mb-2 flex items-center gap-2 text-sm font-medium text-amber-400">
-              <UserPlus size={14} /> Crear acceso real para {pendingLogin.email}
-            </p>
-            <p className="mb-3 text-xs text-ink-tertiary">
-              Esto crea de verdad la cuenta del cliente y le da acceso al proyecto — confírmalo explícitamente.
-            </p>
-            <button
-              onClick={confirmLoginCreation}
-              disabled={creatingLogin}
-              className="rounded-lg bg-amber-500 px-4 py-2 text-xs font-semibold text-black transition hover:bg-amber-400 disabled:opacity-50"
-            >
-              {creatingLogin ? 'Creando…' : 'Crear acceso'}
-            </button>
-          </div>
-        )}
-
-        {loginResult && (
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-            <p className="mb-2 flex items-center gap-2 text-sm font-medium text-emerald-400">
-              <CheckCircle2 size={14} /> Acceso creado
-            </p>
-            {loginResult.recoveryLink ? (
-              <a
-                href={loginResult.recoveryLink}
-                target="_blank"
-                rel="noreferrer"
-                className="break-all text-xs text-violet-400 underline"
-              >
-                {loginResult.recoveryLink}
-              </a>
-            ) : (
-              <p className="text-xs text-ink-tertiary">
-                No se pudo generar el link de recuperación — revisa manualmente en Supabase Auth.
-              </p>
-            )}
-            {clientId && (
-              <button
-                onClick={() => router.push('/admin')}
-                className="mt-3 block text-xs text-ink-tertiary underline hover:text-ink"
-              >
-                Volver al panel de admin
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+      <ChatThread
+            className="flex-1 min-h-0"
+            messages={messages.map((m) => ({ role: m.role, content: m.text }))}
+            isLoading={sending}
+          />
 
       {pendingAttachments.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -267,7 +211,7 @@ export default function AdminOnboardingPage() {
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || !clientId}
           className="rounded-lg border border-line p-2.5 text-ink-tertiary transition hover:bg-surface-hover disabled:opacity-50"
-          title="Adjuntar archivo"
+          title="Attach file"
         >
           {uploading ? <Loader2 size={16} className="animate-spin" /> : <Paperclip size={16} />}
         </button>
@@ -280,14 +224,14 @@ export default function AdminOnboardingPage() {
               sendMessage()
             }
           }}
-          placeholder="Pega toda la información del cliente…"
+          placeholder="Paste all the client information…"
           rows={2}
           className="flex-1 resize-none rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder-ink-tertiary focus:border-violet-500 focus:outline-none"
         />
         <button
           onClick={sendMessage}
           disabled={sending || (!input.trim() && pendingAttachments.length === 0)}
-          aria-label="Enviar mensaje"
+          aria-label="Send message"
           className="rounded-lg bg-violet-600 p-2.5 text-white transition hover:bg-violet-500 disabled:opacity-50"
         >
           <Send size={16} />

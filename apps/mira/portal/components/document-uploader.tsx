@@ -13,7 +13,7 @@ interface DocumentUploaderProps {
 
 export default function DocumentUploader({
   onUploadComplete,
-  acceptedTypes = ['.pdf', '.docx', '.txt'],
+  acceptedTypes = ['.pdf', '.docx', '.txt', '.md', '.csv', '.png', '.jpg', '.jpeg', '.gif', '.webp'],
   maxSizeMB = 50,
 }: DocumentUploaderProps) {
   const [isDragging, setIsDragging] = useState(false)
