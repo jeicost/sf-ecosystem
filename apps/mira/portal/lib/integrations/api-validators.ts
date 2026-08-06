@@ -99,12 +99,27 @@ export async function validateOpenAiApiKey(apiKey: string): Promise<ApiValidatio
 }
 
 // Magnific AI API Key Validator
+//
+// ⚠️ Magnific NO tiene API pública propia: la adquirió Freepik y su motor de
+// escalado se sirve desde api.freepik.com. Este validador apuntaba a
+// `https://api.magnific.ai/v1/account`, que devuelve **404** (verificado el
+// 2026-08-06) — o sea, decía "Invalid API key" para CUALQUIER clave, incluida
+// una correcta. Se valida contra el endpoint real de Freepik, que es además la
+// misma clave que usa lib/generation/magnific.ts.
 export async function validateMagnificApiKey(apiKey: string): Promise<ApiValidationResult> {
   try {
-    const res = await fetch('https://api.magnific.ai/v1/account', {
-      headers: { 'x-api-key': apiKey },
+    const res = await fetch('https://api.freepik.com/v1/info/profile', {
+      headers: { 'x-freepik-api-key': apiKey },
     })
-    if (!res.ok) return { valid: false, error: 'Invalid API key' }
+    if (!res.ok) {
+      return {
+        valid: false,
+        error:
+          res.status === 401 || res.status === 403
+            ? 'Invalid API key. Magnific is powered by Freepik — use your Freepik API key.'
+            : `Could not validate the key (HTTP ${res.status})`,
+      }
+    }
     const data = (await res.json()) as any
     return {
       valid: true,
