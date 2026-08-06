@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
 
     const { text, step } = await req.json()
     if (typeof text !== 'string' || !text.trim() || !STEP_SCHEMAS[step]) {
-      return NextResponse.json({ error: 'Faltan text o step válido' }, { status: 400 })
+      return NextResponse.json({ error: 'Missing text or invalid step' }, { status: 400 })
     }
 
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
@@ -50,13 +50,13 @@ ${STEP_SCHEMAS[step]}`,
       .map((b) => b.text)
       .join('')
     const jsonMatch = raw.match(/\{[\s\S]*\}/)
-    if (!jsonMatch) return NextResponse.json({ error: 'No se pudo extraer' }, { status: 500 })
+    if (!jsonMatch) return NextResponse.json({ error: 'Nothing could be extracted from that text' }, { status: 500 })
 
     let fields: Record<string, unknown>
     try {
       fields = JSON.parse(jsonMatch[0])
     } catch {
-      return NextResponse.json({ error: 'JSON inválido del extractor' }, { status: 500 })
+      return NextResponse.json({ error: 'The extractor returned invalid JSON' }, { status: 500 })
     }
     // limpiar vacíos para no pisar lo que el admin ya escribió
     for (const k of Object.keys(fields)) {
@@ -67,7 +67,7 @@ ${STEP_SCHEMAS[step]}`,
   } catch (error) {
     console.error('onboarding/extract error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error extrayendo' },
+      { error: error instanceof Error ? error.message : 'Extraction failed' },
       { status: 500 }
     )
   }

@@ -57,7 +57,7 @@ export async function getMonthlyOperatingContext(
   }))
 
   const pillarsBlock = pillars.length
-    ? `PILARES DE CONTENIDO REGISTRADOS (${pillars.length} — la base del sistema; consérvalos, evoluciónalos o marca dormant, pero no los ignores):\n` +
+    ? `REGISTERED CONTENT PILLARS (${pillars.length} — the backbone of the system; keep them, evolve them or mark them dormant, but do not ignore them):\n` +
       pillars
         .map((p) => {
           const parts = [`- ${p.pillar_name}${p.description ? `: ${p.description}` : ''}`]
@@ -66,7 +66,7 @@ export async function getMonthlyOperatingContext(
           return parts.join('\n')
         })
         .join('\n')
-    : 'PILARES DE CONTENIDO REGISTRADOS: ninguno todavía — propón el sistema inicial de pilares (todos status PROPOSED).'
+    : 'REGISTERED CONTENT PILLARS: none yet — propose the initial pillar system (all with status PROPOSED).'
 
   // Tablero del mes anterior: filas de approval_queue con scheduled_time en
   // ese mes. Filas antiguas sin scheduled_time no puntúan (aceptado en plan).
@@ -100,7 +100,7 @@ export async function getMonthlyOperatingContext(
 
     if (lines.length) {
       previousBoardBlock =
-        `TABLERO DEL MES ANTERIOR (${lines.length} piezas — APPROVE = el cliente lo publicó, PASS = lo descartó; aprende de esto):\n` +
+        `LAST MONTH'S BOARD (${lines.length} pieces — APPROVE = the client published it, PASS = they discarded it; learn from this):\n` +
         lines.join('\n') +
         `\nBalance: ${previousStats.approved} aprobadas · ${previousStats.rejected} descartadas · ${previousStats.pending} sin revisar.`
     }

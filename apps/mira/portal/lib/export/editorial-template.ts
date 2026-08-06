@@ -157,7 +157,7 @@ export function generateEditorialHTML(options: ReportOptions): string {
   const { clientName, brandColor, toolTitle, sections, subtitle, tagline, tickerItems } = options
 
   const year = new Date().getFullYear()
-  const dateStr = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
 
   const ticker = tickerItems?.length
     ? tickerItems
@@ -207,7 +207,7 @@ export function generateEditorialHTML(options: ReportOptions): string {
     .join('\n\n')
 
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -341,7 +341,7 @@ ${navDots}
     <div class="hero-eyebrow reveal">${esc(toolTitle.toUpperCase())} · ${year}</div>
     <div class="hero-title reveal reveal-delay-1">${esc(toolTitle.toUpperCase())}</div>
     <div class="hero-sub reveal reveal-delay-2">${esc((subtitle || clientName).toUpperCase())}</div>
-    <div class="hero-tagline reveal reveal-delay-3">${esc((tagline || `GENERADO CON MIRA · ${dateStr}`).toUpperCase())}</div>
+    <div class="hero-tagline reveal reveal-delay-3">${esc((tagline || `GENERATED WITH MIRA · ${dateStr}`).toUpperCase())}</div>
     <div style="margin-top:32px;" class="reveal reveal-delay-4">
       <div class="sf-badge">POWERED BY <span>STARTUP FACTORY</span></div>
     </div>

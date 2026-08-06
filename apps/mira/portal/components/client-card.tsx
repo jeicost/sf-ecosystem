@@ -93,7 +93,7 @@ export default function ClientCard({
             <h3 className="font-semibold text-ink text-sm truncate">{name}</h3>
             {isActive && (
               <span className="px-1.5 py-0.5 rounded-full text-xs font-medium bg-green-500/20 text-green-400 flex-shrink-0">
-                Activo
+                Active
               </span>
             )}
           </div>
@@ -117,10 +117,10 @@ export default function ClientCard({
       {/* Divider + Footer: Deliverables count + CTA */}
       <div className="flex items-center justify-between pt-3" style={{ borderTop: '1px solid var(--border-subtle)' }}>
         <div className="text-xs" style={{ color: 'var(--text-tertiary)' }}>
-          {deliverableCount} {deliverableCount === 1 ? 'entregable' : 'entregables'}
+          {deliverableCount} {deliverableCount === 1 ? 'deliverable' : 'deliverables'}
         </div>
         <div className="flex items-center gap-1 text-xs text-blue-400">
-          Abrir espacio
+          Open workspace
           <ChevronRight size={14} style={{ color: 'rgba(59, 130, 246, 0.6)' }} />
         </div>
       </div>

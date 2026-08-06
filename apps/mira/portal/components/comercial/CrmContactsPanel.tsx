@@ -144,7 +144,7 @@ export default function CrmContactsPanel({ onGoToPipeline }: { onGoToPipeline?: 
                 <td className="px-4 py-3 text-ink-secondary">{c.stage || '—'}</td>
                 <td className="px-4 py-3 text-ink-tertiary">{c.source || '—'}</td>
                 <td className="px-4 py-3 text-ink-tertiary">
-                  {new Date(c.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                  {new Date(c.created_at).toLocaleDateString('en-US', { day: 'numeric', month: 'short' })}
                 </td>
               </tr>
             ))}

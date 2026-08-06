@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
     const engineUrl = process.env.SALES_ENGINE_API_URL
     const engineKey = process.env.SALES_ENGINE_API_KEY
     if (!engineUrl || !engineKey) {
-      return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
+      return NextResponse.json({ error: 'The discovery engine is unavailable' }, { status: 503 })
     }
 
     const [apolloKey, hunterKey] = await Promise.all([
@@ -112,13 +112,13 @@ export async function POST(req: NextRequest) {
         if (!engineRes.ok) {
           const err = await engineRes.json().catch(() => ({}))
           console.error('Sales engine enrich error:', engineRes.status, err)
-          return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
+          return NextResponse.json({ error: 'The discovery engine is unavailable' }, { status: 503 })
         }
         const engineData = await engineRes.json()
         persons = engineData.leads ?? []
       } catch (fetchErr) {
         console.error('Sales engine unreachable:', fetchErr)
-        return NextResponse.json({ error: 'Motor de discovery no disponible' }, { status: 503 })
+        return NextResponse.json({ error: 'The discovery engine is unavailable' }, { status: 503 })
       }
 
       // Save enrichment result (misma tabla que antes: apollo_enrichment_results)

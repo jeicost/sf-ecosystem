@@ -3769,9 +3769,9 @@ const translations: Record<Locale, Record<string, string>> = {
   },
 }
 
-export function t(key: string, locale: Locale = 'es'): string {
+export function t(key: string, locale: Locale = 'en'): string {
   return translations[locale]?.[key] ?? translations['en']?.[key] ?? key
 }
 
 export const locales: Locale[] = ['es', 'en']
-export const defaultLocale: Locale = 'es'
+export const defaultLocale: Locale = 'en'

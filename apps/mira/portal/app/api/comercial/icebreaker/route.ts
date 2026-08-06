@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
 
   const systemPrompt = `Eres Finn, un experto en cold outreach B2B. Tu objetivo es escribir el primer mensaje de contacto perfecto en nombre de tu cliente.
 
-${brain ? `SOBRE LA EMPRESA QUE ESCRIBE (tu cliente — usa SU tono de voz, no uno genérico):\n${formatBrandBrainForPrompt(brain)}\n` : ''}
+${brain ? `ABOUT THE COMPANY WRITING (your client — use THEIR tone of voice, not a generic one):\n${formatBrandBrainForPrompt(brain)}\n` : ''}
 ${memoryContext ? `${memoryContext}\n` : ''}
 ${GROUNDING_CONTRACT}`
 
@@ -44,11 +44,11 @@ PROSPECT:
 - Cargo: ${lead.title ?? 'No disponible'}
 - Empresa: ${lead.company_name ?? 'No disponible'}
 - Industria: ${lead.industry ?? 'No disponible'}
-- Geografía: ${lead.geography ?? 'No disponible'}
+- Geography: ${lead.geography ?? 'Not available'}
 - Trigger event: ${lead.trigger_event ?? 'No detectado'}
 - LinkedIn summary: ${lead.linkedin_summary ?? 'No disponible'}
 - Noticias recientes empresa: ${lead.company_news ?? 'No disponible'}
-${context?.recent_news?.length ? `- Señales recientes: ${context.recent_news.slice(0, 2).join('; ')}` : ''}
+${context?.recent_news?.length ? `- Recent signals: ${context.recent_news.slice(0, 2).join('; ')}` : ''}
 
 ${icp ? `ICP DE NUESTRO CLIENTE:
 - Industrias objetivo: ${icp.industries?.join(', ') ?? '—'}

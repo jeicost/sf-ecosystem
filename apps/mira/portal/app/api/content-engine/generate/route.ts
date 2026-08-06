@@ -43,14 +43,14 @@ function parsePosts(raw: string): GeneratedPost[] {
     const end = text.lastIndexOf('}')
     if (start !== -1 && end > start) parsed = tryParse(text.slice(start, end + 1))
   }
-  if (!parsed) throw new Error('La respuesta del modelo no contiene JSON válido')
+  if (!parsed) throw new Error('The model response does not contain valid JSON')
 
   const arr = Array.isArray(parsed)
     ? parsed
     : Array.isArray((parsed as { posts?: unknown[] }).posts)
       ? (parsed as { posts: unknown[] }).posts
       : null
-  if (!arr) throw new Error('La respuesta del modelo no contiene un array de posts')
+  if (!arr) throw new Error('The model response does not contain an array of posts')
 
   return arr.filter(
     (p): p is GeneratedPost =>
@@ -73,41 +73,41 @@ function buildPillarPrompt(params: {
 
   const reelField = includeReels
     ? `,
-    "reel_script": {              // OBLIGATORIO para instagram y tiktok; omitir en linkedin
+    "reel_script": {              // REQUIRED for instagram and tiktok; omit on linkedin
       "duration": "30s",
-      "scenes": [{ "time": "0-3s", "action": "qué se ve/hace en cámara", "text_overlay": "texto en pantalla" }]
+      "scenes": [{ "time": "0-3s", "action": "what is seen/done on camera", "text_overlay": "on-screen text" }]
     }`
     : ''
 
   return `
-## PILAR DE CONTENIDO
-Nombre: ${pillar.pillar_name}
-Descripción: ${pillar.description ?? '—'}
-${themes.length ? `Temas del pilar:\n${themes.map(t => `- ${t}`).join('\n')}` : ''}
-${examples.length ? `Ejemplos de referencia (estilo, NO copiar literal):\n${examples.map(e => `- ${e}`).join('\n')}` : ''}
+## CONTENT PILLAR
+Name: ${pillar.pillar_name}
+Description: ${pillar.description ?? '—'}
+${themes.length ? `Pillar themes:\n${themes.map(t => `- ${t}`).join('\n')}` : ''}
+${examples.length ? `Reference examples (style only, do NOT copy verbatim):\n${examples.map(e => `- ${e}`).join('\n')}` : ''}
 
-## ENCARGO
-Genera exactamente ${postsPerPillar} posts POR CADA una de estas plataformas: ${platforms.join(', ')}.
-Total: ${total} posts. Cada post debe desarrollar un tema DISTINTO del pilar (sin repetir ángulo).
-${includeReels ? 'Incluye guión de Reel/vídeo corto para los posts de instagram y tiktok.' : ''}
+## THE BRIEF
+Generate exactly ${postsPerPillar} posts FOR EACH of these platforms: ${platforms.join(', ')}.
+Total: ${total} posts. Each post must develop a DIFFERENT theme of the pillar (no repeated angle).
+${includeReels ? 'Include a Reel/short-video script for the instagram and tiktok posts.' : ''}
 
-## REGLAS DE CONTENIDO
-- Contenido ESPECÍFICO de la marca: usa su tono, misión, audiencias y datos del Brand Brain. Prohibido contenido genérico que valdría para cualquier marca.
-- Adapta formato y longitud a cada plataforma: LinkedIn (profesional, más largo, saltos de línea), Instagram (visual, caption con gancho), TikTok (directo, hablado, hooks de 3 segundos).
-- Escribe en español salvo que el tono de la marca indique lo contrario.
-- Hashtags relevantes y específicos (5-10 por post), no genéricos tipo #love #instagood.
+## CONTENT RULES
+- Content SPECIFIC to the brand: use its tone, mission, audiences and Brand Brain data. Generic content that would fit any brand is forbidden.
+- Adapt format and length to each platform: LinkedIn (professional, longer, line breaks), Instagram (visual, caption with a hook), TikTok (direct, spoken, 3-second hooks).
+- Write in English unless the brand's tone of voice explicitly calls for another language.
+- Relevant, specific hashtags (5-10 per post), not generic ones like #love #instagood.
 
-## FORMATO DE SALIDA — SOLO JSON, sin texto antes ni después
-Devuelve un array JSON con ${total} objetos con esta forma exacta:
+## OUTPUT FORMAT — JSON ONLY, no text before or after
+Return a JSON array with ${total} objects of exactly this shape:
 [
   {
     "platform": "instagram" | "linkedin" | "tiktok",
-    "hook": "primera línea que detiene el scroll",
-    "copy": "cuerpo completo del post, listo para publicar",
-    "caption": "caption corta para la publicación (máx 300 caracteres)",
-    "hashtags": ["#ejemplo"],
-    "cta": "llamada a la acción",
-    "visual_direction": "descripción del visual/creatividad que acompaña"${reelField}
+    "hook": "first line that stops the scroll",
+    "copy": "full post body, ready to publish",
+    "caption": "short caption for the post (max 300 characters)",
+    "hashtags": ["#example"],
+    "cta": "call to action",
+    "visual_direction": "description of the accompanying visual/creative"${reelField}
   }
 ]
 `.trim()
@@ -124,19 +124,19 @@ export async function POST(req: NextRequest) {
 
     // ── Validación de input ──────────────────────────────────────────────
     if (typeof clientId !== 'string' || !clientId) {
-      return NextResponse.json({ error: 'clientId requerido' }, { status: 400 })
+      return NextResponse.json({ error: 'clientId is required' }, { status: 400 })
     }
     if (!Array.isArray(pillarIds) || pillarIds.length === 0 || !pillarIds.every(id => typeof id === 'string')) {
-      return NextResponse.json({ error: 'pillar_ids debe ser un array de ids' }, { status: 400 })
+      return NextResponse.json({ error: 'pillar_ids must be an array of ids' }, { status: 400 })
     }
     if (!Number.isInteger(postsPerPillar) || postsPerPillar < 1 || postsPerPillar > 5) {
-      return NextResponse.json({ error: 'posts_per_pillar debe estar entre 1 y 5' }, { status: 400 })
+      return NextResponse.json({ error: 'posts_per_pillar must be between 1 and 5' }, { status: 400 })
     }
     const platforms = (Array.isArray(rawPlatforms) ? rawPlatforms : [])
       .map(p => String(p).toLowerCase())
       .filter((p): p is Platform => (VALID_PLATFORMS as readonly string[]).includes(p))
     if (platforms.length === 0) {
-      return NextResponse.json({ error: 'platforms debe incluir al menos una de: instagram, linkedin, tiktok' }, { status: 400 })
+      return NextResponse.json({ error: 'platforms must include at least one of: instagram, linkedin, tiktok' }, { status: 400 })
     }
 
     // ── Auth: sesión + acceso al cliente ─────────────────────────────────
@@ -158,17 +158,17 @@ export async function POST(req: NextRequest) {
       .in('id', pillarIds)
 
     if (pillarsError) {
-      return NextResponse.json({ error: `Error leyendo pilares: ${pillarsError.message}` }, { status: 500 })
+      return NextResponse.json({ error: `Failed to read content pillars: ${pillarsError.message}` }, { status: 500 })
     }
     if (!pillars || pillars.length === 0) {
-      return NextResponse.json({ error: 'Ningún pilar encontrado para este cliente' }, { status: 404 })
+      return NextResponse.json({ error: 'No content pillars found for this client' }, { status: 404 })
     }
 
     // ── Brand Brain ──────────────────────────────────────────────────────
     const brain = await fetchBrandBrain(clientId)
     const brainContext = brain ? formatBrandBrainForPrompt(brain) : ''
     const system = [
-      `Eres el motor de contenido por pilares de MIRA. Generas contenido de redes sociales listo para publicar, fiel a la identidad de la marca. Respondes EXCLUSIVAMENTE con JSON válido.`,
+      `You are MIRA's pillar-based content engine. You produce ready-to-publish social content, faithful to the brand identity. You reply EXCLUSIVELY with valid JSON.`,
       brainContext,
       // Contrato anti-invención compartido: sin él los posts colaban cifras y
       // "logros" de la marca que no están en el Brand Brain.
@@ -207,7 +207,7 @@ export async function POST(req: NextRequest) {
           .join('')
 
         const posts = parsePosts(raw)
-        if (posts.length === 0) throw new Error('El modelo no devolvió posts válidos')
+        if (posts.length === 0) throw new Error('The model returned no valid posts')
 
         // Materialización compartida con el Monthly (F4): mismo copy revisable
         await materializePosts(db, clientId, posts.map(post => ({
@@ -228,7 +228,7 @@ export async function POST(req: NextRequest) {
           outputSummary: `${pillar.pillar_name}: ${posts.length} posts`,
         }).catch(() => {})
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Error inesperado'
+        const msg = err instanceof Error ? err.message : 'Unexpected error'
         errors[pillar.pillar_name] = msg
         byPillar[pillar.pillar_name] = 0
         logAgentActivity({
@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
 
     if (generated === 0) {
       return NextResponse.json(
-        { error: 'No se pudo generar contenido para ningún pilar', by_pillar: byPillar, errors },
+        { error: 'Content could not be generated for any pillar', by_pillar: byPillar, errors },
         { status: 500 }
       )
     }
@@ -253,12 +253,12 @@ export async function POST(req: NextRequest) {
       generated,
       by_pillar: byPillar,
       ...(Object.keys(errors).length > 0 ? { errors } : {}),
-      message: `${generated} posts generados y enviados a la Cola de Aprobación`,
+      message: `${generated} posts generated and sent to the Approval Queue`,
     })
   } catch (err) {
     console.error('Content Engine API error:', err)
     return NextResponse.json(
-      { error: err instanceof Error ? err.message : 'Error inesperado' },
+      { error: err instanceof Error ? err.message : 'Unexpected error' },
       { status: 500 }
     )
   }

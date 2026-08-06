@@ -27,7 +27,7 @@ export const SAVE_BRAND_PROFILE_FIELDS_TOOL: Anthropic.Tool = {
       mission: { type: 'string' },
       description: { type: 'string', description: 'Who they are / what they do, 2-4 sentences' },
       proposition: { type: 'string', description: 'Their value proposition — what they promise and why it matters' },
-      values: { type: 'array', items: { type: 'string' }, description: 'Flat list of brand values, e.g. ["Honestidad", "Accesibilidad"]' },
+      values: { type: 'array', items: { type: 'string' }, description: 'Flat list of brand values, e.g. ["Honesty", "Accessibility"]' },
       tone_of_voice: { type: 'string' },
       brand_data: {
         type: 'object',
@@ -191,7 +191,7 @@ export async function executeOnboardingTool(
       }
 
       const saved = Object.keys(update).filter((k) => k !== 'updated_at')
-      return { chip: `Guardado: ${saved.join(', ')}` }
+      return { chip: `Saved: ${saved.join(', ')}` }
     }
 
     case 'add_brand_reference': {
@@ -200,7 +200,7 @@ export async function executeOnboardingTool(
         .from('brand_references')
         .upsert({ client_id: clientId, url, title, pillar, why_worked, what_to_repeat }, { onConflict: 'client_id,url' })
       if (error) throw new Error(`Failed to save brand reference: ${error.message}`)
-      return { chip: `Referencia guardada: ${title}` }
+      return { chip: `Reference saved: ${title}` }
     }
 
     case 'save_content_pillar': {
@@ -219,7 +219,7 @@ export async function executeOnboardingTool(
         ;({ error } = await db.from('content_pillars').insert(row))
       }
       if (error) throw new Error(`Failed to save content pillar: ${error.message}`)
-      return { chip: `Pilar de contenido guardado: ${pillar_name}` }
+      return { chip: `Content pillar saved: ${pillar_name}` }
     }
 
     case 'save_project_memory': {
@@ -234,20 +234,20 @@ export async function executeOnboardingTool(
         source_department: 'admin',
       })
       if (error) throw new Error(`Failed to save project memory: ${error.message}`)
-      return { chip: `Memoria guardada: ${title}` }
+      return { chip: `Memory saved: ${title}` }
     }
 
     case 'propose_new_client': {
       const { name } = input
-      return { chip: `Nombre propuesto: ${name}`, proposedName: name }
+      return { chip: `Proposed name: ${name}`, proposedName: name }
     }
 
     case 'request_login_creation': {
       const { email } = input
-      return { chip: `Acceso solicitado para ${email} — pendiente de confirmación`, pendingLogin: { email } }
+      return { chip: `Login requested for ${email} — pending confirmation`, pendingLogin: { email } }
     }
 
     default:
-      return { chip: `(herramienta desconocida: ${toolName})` }
+      return { chip: `(unknown tool: ${toolName})` }
   }
 }

@@ -28,7 +28,7 @@ async function getLikedOutputsBlock(clientId: string): Promise<string> {
       })
       .filter(Boolean)
     if (!samples.length) return ''
-    return `\n\nOUTPUTS QUE EL CLIENTE MARCÓ COMO FAVORITOS (imita este estilo y nivel):\n${samples.join('\n')}`
+    return `\n\nOUTPUTS THE CLIENT MARKED AS FAVOURITES (match this style and level):\n${samples.join('\n')}`
   } catch {
     return ''
   }
@@ -89,15 +89,15 @@ export async function getQuickActionPrompt(
   // real ones. See docs/DEBT.md punto (t).
   const optionalFieldsRule = `
 
-OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not leave a gap or refuse to generate — use your professional judgment (and the brand/client context above) to fill it in, and prefix that part with '[RECOMENDACIÓN]' so the reader knows it's your call, not the user's input. This applies to creative/strategic choices (tone, angle, channel emphasis, scope). It does NOT apply to concrete figures or facts (prices, budgets, rates, specific business numbers, named competitors) — those, if missing from the input, stay null/'—' per the grounding contract below. Never invent a number to avoid leaving a field empty.`
+OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not leave a gap or refuse to generate — use your professional judgment (and the brand/client context above) to fill it in, and prefix that part with '[RECOMMENDATION]' so the reader knows it's your call, not the user's input. This applies to creative/strategic choices (tone, angle, channel emphasis, scope). It does NOT apply to concrete figures or facts (prices, budgets, rates, specific business numbers, named competitors) — those, if missing from the input, stay null/'—' per the grounding contract below. Never invent a number to avoid leaving a field empty.`
 
   // Adjuntos del usuario y lead seleccionado: datos de PRIMERA MANO — van antes
   // que el contexto general y el modelo debe preferirlos sobre cualquier supuesto.
   const attachmentBlock = attachmentText
-    ? `\n\nARCHIVOS ADJUNTOS DEL USUARIO (fuente primaria — usa su contenido real):\n${attachmentText}`
+    ? `\n\nUSER ATTACHMENTS (primary source — use their actual content):\n${attachmentText}`
     : ''
   const leadBlock = leadContext
-    ? `\n\nLEAD SELECCIONADO (datos reales del pipeline — el output debe ser específico para este lead):\n${leadContext}`
+    ? `\n\nSELECTED LEAD (real pipeline data — the output must be specific to this lead):\n${leadContext}`
     : ''
 
   const fullContext =
@@ -118,13 +118,13 @@ Ticket:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Rules: open by naming the SPECIFIC issue (never "gracias por contactarnos" as an opener) — the customer needs to feel heard before anything else. Give a concrete resolution or next step, not just sympathy. Match the brand's tone (never generic corporate boilerplate). If the ticket implies a policy/refund/technical decision you cannot make with the info given, say in \`suggested_follow_ups\` what a human needs to confirm, instead of promising something you can't guarantee. Keep it as short as the issue allows — don't pad.
+Rules: open by naming the SPECIFIC issue (never "thanks for reaching out" as an opener) — the customer needs to feel heard before anything else. Give a concrete resolution or next step, not just sympathy. Match the brand's tone (never generic corporate boilerplate). If the ticket implies a policy/refund/technical decision you cannot make with the info given, say in \`suggested_follow_ups\` what a human needs to confirm, instead of promising something you can't guarantee. Keep it as short as the issue allows — don't pad.
 
 Return ONLY valid JSON (no markdown):
 {
   "subject": "Re: ...",
   "body": "The response, ready to send",
-  "tone": "the tone actually used (e.g. empático-directo, formal, cercano)",
+  "tone": "the tone actually used (e.g. empathetic-direct, formal, warm)",
   "suggested_follow_ups": ["Optional proactive follow-up, or what a human should confirm before this goes out"]
 }`
   }
@@ -136,7 +136,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Rules: phrase each question the way a customer actually types it (casual, specific, sometimes the "real" worry behind a polite question — e.g. "¿puedo cancelar y me devuelven el dinero?" not "¿Cuál es la política de cancelación?"). Answers must be direct in the first sentence, no throat-clearing ("¡Buena pregunta!"), then the necessary detail. No jargon the customer wouldn't use themselves. Group related questions under the same category so the FAQ reads as organized, not a random list.
+Rules: phrase each question the way a customer actually types it (casual, specific, sometimes the "real" worry behind a polite question — e.g. "can I cancel and get my money back?" not "What is the cancellation policy?"). Answers must be direct in the first sentence, no throat-clearing ("Great question!"), then the necessary detail. No jargon the customer wouldn't use themselves. Group related questions under the same category so the FAQ reads as organized, not a random list.
 
 Generate FAQ JSON:
 {
@@ -172,12 +172,12 @@ Generate tutorial JSON:
   //  eran prompts huérfanos sin botón — las funciones reales viven en las
   //  páginas Comercial con sus APIs dedicadas /api/comercial/*.)
   if (actionType === 'crear_campaña') {
-    return `Task: Create an outbound acquisition campaign strategy for the brand below, ready to execute in MIRA's Prospección (lead discovery) tool.
+    return `Task: Create an outbound acquisition campaign strategy for the brand below, ready to execute in MIRA's Prospecting (lead discovery) tool.
 
 Input: ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-The "discovery_search" object is what MIRA's Prospección tool will use to actually find the leads for this campaign — fill it with the concrete search that best matches the strategy: industry (target industry of the LEADS to find, not the brand's own), geography (city/country scope), keywords (2-5 search terms describing the target companies), limit (target_count from input, default 10).
+The "discovery_search" object is what MIRA's Prospecting tool will use to actually find the leads for this campaign — fill it with the concrete search that best matches the strategy: industry (target industry of the LEADS to find, not the brand's own), geography (city/country scope), keywords (2-5 search terms describing the target companies), limit (target_count from input, default 10).
 
 Output ONLY valid JSON (no markdown, no text before/after):
 {"campaign_name":"Campaign Name","target_segment":"Audience description","messaging":["Message 1","Message 2"],"channels":["Channel 1","Channel 2"],"timeline":["Period 1: Action","Period 2: Action"],"success_metrics":["Metric 1","Metric 2"],"discovery_search":{"industry":"","geography":"","keywords":"","limit":10}}`
@@ -210,13 +210,13 @@ Context (what was sent, how long ago, previous replies):
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Rules: NO "just checking in" / "por si no viste mi último email". Add NEW value in every follow-up (an insight, a resource, a relevant hook). Use the brand's tone. If a lead is provided, personalize to their company and situation. Keep it under 120 words.
+Rules: NO "just checking in" / "in case you missed my last email". Add NEW value in every follow-up (an insight, a resource, a relevant hook). Use the brand's tone. If a lead is provided, personalize to their company and situation. Keep it under 120 words.
 
 Return ONLY valid JSON (no markdown):
 {
   "subject": "Subject line that gets opened",
   "body": "The follow-up email, ready to send",
-  "timing_advice": "When to send it and why (e.g. 'espera al martes por la mañana')",
+  "timing_advice": "When to send it and why (e.g. 'wait until Tuesday morning')",
   "variant_breakup": "A polite 'last attempt' variant for when this is the final follow-up",
   "next_step": "What to do if there's still no reply"
 }`
@@ -273,7 +273,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Rules: the subject line must earn the open — specific and a little intriguing, never "Newsletter de [mes]" or "Novedades de [marca]". preview_text extends the subject's hook, it never just repeats it. Each section leads with why the reader should care, not a headline that describes the topic. Every section needs exactly one clear cta — if a section has nothing worth a call-to-action, question whether it belongs in this issue at all. Match the brand's tone throughout; a newsletter should sound like it's from a person, not a marketing department.
+Rules: the subject line must earn the open — specific and a little intriguing, never "[Month] newsletter" or "News from [brand]". preview_text extends the subject's hook, it never just repeats it. Each section leads with why the reader should care, not a headline that describes the topic. Every section needs exactly one clear cta — if a section has nothing worth a call-to-action, question whether it belongs in this issue at all. Match the brand's tone throughout; a newsletter should sound like it's from a person, not a marketing department.
 
 Generate newsletter JSON:
 {
@@ -293,7 +293,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-Rules: the first scene is the hook — assume 3 seconds to stop someone scrolling, so it must open on the payoff or a question, never a slow establishing shot or logo intro. Each scene_breakdown entry describes what's actually ON SCREEN (shot type, action, on-screen text if any) — not the marketing idea behind it ("mostrar el producto en uso" is not a scene; "close-up de manos abriendo el empaque, texto overlay: 'en 3 pasos'" is). technical_specs.duration must match the platform's actual best-practice length for this format (e.g. under 30s for a Reel/TikTok hook-driven video, longer for a tutorial) — don't default to a generic "60 seconds" regardless of format. The script (if provided) must match the scene timing, not run long.
+Rules: the first scene is the hook — assume 3 seconds to stop someone scrolling, so it must open on the payoff or a question, never a slow establishing shot or logo intro. Each scene_breakdown entry describes what's actually ON SCREEN (shot type, action, on-screen text if any) — not the marketing idea behind it ("show the product in use" is not a scene; "close-up of hands opening the packaging, text overlay: 'in 3 steps'" is). technical_specs.duration must match the platform's actual best-practice length for this format (e.g. under 30s for a Reel/TikTok hook-driven video, longer for a tutorial) — don't default to a generic "60 seconds" regardless of format. The script (if provided) must match the scene timing, not run long.
 
 Generate brief JSON:
 {
@@ -334,7 +334,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-If \`audience\` is empty, derive targeting.audience from the brand context's target audiences instead of leaving it blank or inventing a new one — label it '[RECOMENDACIÓN]'. budget_allocation must split the \`budget\` figure from the input across channels/platforms (percentages or amounts that sum to it) — never invent a total budget that wasn't provided. kpis targets must be null unless derivable from input/context.
+If \`audience\` is empty, derive targeting.audience from the brand context's target audiences instead of leaving it blank or inventing a new one — label it '[RECOMMENDATION]'. budget_allocation must split the \`budget\` figure from the input across channels/platforms (percentages or amounts that sum to it) — never invent a total budget that wasn't provided. kpis targets must be null unless derivable from input/context.
 
 Generate campaign JSON:
 {
@@ -386,7 +386,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-If \`growth_rate\` is empty, do not invent a specific rate — use a conservative, clearly-labeled '[SUPUESTO]' range instead, and say so in \`assumptions\`.
+If \`growth_rate\` is empty, do not invent a specific rate — use a conservative, clearly-labeled '[ASSUMPTION]' range instead, and say so in \`assumptions\`.
 
 Generate projection JSON:
 {
@@ -412,11 +412,11 @@ Only use figures for \`amount\`/\`runway_months\`/\`gap\` that are derivable fro
 Generate cashflow JSON:
 {
   "summary": "Current cash position assessment in 2-3 sentences",
-  "inflows": [{"source": "", "amount": "", "frequency": "", "reliability": "alta|media|baja"}],
+  "inflows": [{"source": "", "amount": "", "frequency": "", "reliability": "high|medium|low"}],
   "outflows": [{"category": "", "amount": "", "frequency": "", "optimizable": true}],
   "runway_months": "",
   "cash_gaps": [{"period": "", "gap": "", "mitigation": ""}],
-  "improvement_actions": [{"action": "", "impact": "", "effort": "bajo|medio|alto"}],
+  "improvement_actions": [{"action": "", "impact": "", "effort": "low|medium|high"}],
   "alerts": ["alert 1"],
   "assumptions": []
 }`
@@ -429,7 +429,7 @@ INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-If \`target_savings\` is empty, propose a reasonable target yourself from the described spending structure, prefixed '[RECOMENDACIÓN]', instead of leaving it unaddressed — but never invent specific euro amounts for \`current_monthly\`/\`optimized_monthly\` that aren't derivable from \`current_expenses\`.
+If \`target_savings\` is empty, propose a reasonable target yourself from the described spending structure, prefixed '[RECOMMENDATION]', instead of leaving it unaddressed — but never invent specific euro amounts for \`current_monthly\`/\`optimized_monthly\` that aren't derivable from \`current_expenses\`.
 
 Generate optimization JSON:
 {
@@ -456,9 +456,9 @@ You have no live research — this is expert-informed analysis based on general 
 Generate trends JSON:
 {
   "industry_context": "2-3 sentence context of where the industry is heading",
-  "trends": [{"name": "", "description": "", "maturity": "emergente|creciendo|consolidada", "relevance": "alta|media|baja", "opportunity": "", "first_move": ""}],
+  "trends": [{"name": "", "description": "", "maturity": "emerging|growing|established", "relevance": "high|medium|low", "opportunity": "", "first_move": ""}],
   "threats": [{"threat": "", "timeline": "", "mitigation": ""}],
-  "recommended_bets": [{"bet": "", "why_now": "", "investment_level": "bajo|medio|alto"}],
+  "recommended_bets": [{"bet": "", "why_now": "", "investment_level": "low|medium|high"}],
   "watch_list": ["trend to monitor 1", "trend to monitor 2"]
 }`
   }
@@ -478,7 +478,7 @@ All scores ("innovation_score" and each dimension "score") must be numbers on an
 
 Generate roadmap JSON:
 {
-  "diagnosis": {"innovation_score": 0, "summary": "2-3 sentence assessment of current innovation capacity", "dimensions": [{"dimension": "Cultura|Procesos|Portfolio|Tecnología|Talento", "score": 0, "findings": "", "gap": ""}], "strengths": [""], "gaps": [""]},
+  "diagnosis": {"innovation_score": 0, "summary": "2-3 sentence assessment of current innovation capacity", "dimensions": [{"dimension": "Culture|Processes|Portfolio|Technology|Talent", "score": 0, "findings": "", "gap": ""}], "strengths": [""], "gaps": [""]},
   "vision": "Where innovation takes this brand in the requested timeline",
   "horizons": {
     "h1_core": {"focus": "Optimize the core business", "initiatives": [{"name": "", "quarter": "Q1|Q2|Q3|Q4", "outcome": ""}]},

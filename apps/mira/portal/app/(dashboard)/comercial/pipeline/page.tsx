@@ -15,14 +15,14 @@ import CrmContactsPanel from '@/components/comercial/CrmContactsPanel'
 const TERMINAL_STAGES: LeadStage[] = ['won', 'lost']
 
 const STAGES: { key: LeadStage; label: string; color: string }[] = [
-  { key: 'prospected',  label: 'Prospectados', color: '#555' },
-  { key: 'contacted',   label: 'Contactados',  color: '#3B82F6' },
-  { key: 'replied',     label: 'Respondieron', color: '#8B5CF6' },
-  { key: 'qualified',   label: 'Calificados',  color: '#F59E0B' },
-  { key: 'proposal',    label: 'Propuesta',    color: '#F97316' },
-  { key: 'negotiation', label: 'Negociación',  color: '#EF4444' },
-  { key: 'won',         label: 'Ganados',      color: '#22C55E' },
-  { key: 'lost',        label: 'Perdidos',     color: '#444' },
+  { key: 'prospected',  label: 'Prospected', color: '#555' },
+  { key: 'contacted',   label: 'Contacted',  color: '#3B82F6' },
+  { key: 'replied',     label: 'Replied',    color: '#8B5CF6' },
+  { key: 'qualified',   label: 'Qualified',  color: '#F59E0B' },
+  { key: 'proposal',    label: 'Proposal',   color: '#F97316' },
+  { key: 'negotiation', label: 'Negotiation', color: '#EF4444' },
+  { key: 'won',         label: 'Won',        color: '#22C55E' },
+  { key: 'lost',        label: 'Lost',       color: '#444' },
 ]
 
 const STAGE_LABEL_KEYS: Record<LeadStage, string> = {

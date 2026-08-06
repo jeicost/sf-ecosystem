@@ -45,7 +45,7 @@ async function fetchLeadsAnalyst(
       id: lead.id as string,
       rank: idx + 1,
       score,
-      name: (lead.company_name as string) || 'Sin nombre',
+      name: (lead.company_name as string) || 'Unnamed',
       subtitle: (lead.geography as string) || '',
       metrics: [lead.industry, lead.stage].filter(Boolean) as string[],
       triggers: lead.company_news ? [lead.company_news as string] : undefined,
@@ -115,7 +115,7 @@ async function fetchAtlasAnalyst(
       warmCount: opportunities.length,
       coldCount: differentiation.length,
       results,
-      tierLabels: { hot: 'Competencia', warm: 'Oportunidades', cold: 'Diferenciación' },
+      tierLabels: { hot: 'Competitors', warm: 'Opportunities', cold: 'Differentiation' },
       viewFullReportUrl: `/toolkit/report/${row.id}`,
     },
   }

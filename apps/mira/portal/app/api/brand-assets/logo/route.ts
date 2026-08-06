@@ -20,13 +20,13 @@ export async function POST(req: NextRequest) {
 
     const file = form.get('file')
     if (!(file instanceof File)) {
-      return NextResponse.json({ error: 'No se recibió ningún archivo' }, { status: 400 })
+      return NextResponse.json({ error: 'No file was received' }, { status: 400 })
     }
     if (file.size > MAX_BYTES) {
-      return NextResponse.json({ error: 'El logo supera el límite de 10MB' }, { status: 400 })
+      return NextResponse.json({ error: 'The logo exceeds the 10MB limit' }, { status: 400 })
     }
     if (!ALLOWED_MIME.has(file.type)) {
-      return NextResponse.json({ error: `Tipo de archivo no soportado: ${file.type || 'desconocido'}` }, { status: 415 })
+      return NextResponse.json({ error: `Unsupported file type: ${file.type || 'unknown'}` }, { status: 415 })
     }
 
     const ext = file.name.split('.').pop() || 'png'
@@ -37,12 +37,12 @@ export async function POST(req: NextRequest) {
       .upload(path, buffer, { contentType: file.type, upsert: true })
 
     if (error) {
-      return NextResponse.json({ error: `Error subiendo el logo: ${error.message}` }, { status: 500 })
+      return NextResponse.json({ error: `Failed to upload the logo: ${error.message}` }, { status: 500 })
     }
 
     return NextResponse.json({ path })
   } catch (error) {
     console.error('Logo upload error:', error)
-    return NextResponse.json({ error: 'Error interno subiendo el logo' }, { status: 500 })
+    return NextResponse.json({ error: 'Internal error while uploading the logo' }, { status: 500 })
   }
 }

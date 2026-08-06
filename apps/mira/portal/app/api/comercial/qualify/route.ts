@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     getClientMemoryContext(lead.client_id),
   ])
 
-  const systemPrompt = `Eres Quinn, Reply Qualifier de MIRA. Analizas respuestas de cold outreach para clasificar intención y proponer el siguiente paso.
+  const systemPrompt = `You are Quinn, MIRA's Reply Qualifier. You analyse cold-outreach replies to classify intent and propose the next step.
 
 ${brain ? `SOBRE LA EMPRESA QUE HACE EL OUTREACH (tu cliente):\n${formatBrandBrainForPrompt(brain)}\n` : ''}
 ${memoryContext ? `${memoryContext}\n` : ''}
@@ -57,13 +57,13 @@ Analiza y devuelve JSON exacto (sin markdown):
   "bant_need": "yes|no|unknown",
   "bant_timeline": "yes|no|unknown",
   "bant_score": 0,
-  "next_move": "Texto exacto de qué hacer ahora mismo (1-2 frases)",
-  "suggested_reply": "Mensaje listo para enviar (máximo 3 frases, tono conversacional)",
-  "buying_signals": ["señal1", "señal2"]
+  "next_move": "Exactly what to do right now (1-2 sentences)",
+  "suggested_reply": "Ready-to-send message (3 sentences max, conversational tone)",
+  "buying_signals": ["signal 1", "signal 2"]
 }
 
 bant_score = suma de los 4 "yes" (0-4).
-Classification: interested=muestra interés real, not_now=sin interés ahora pero puede volver, not_interested=rechazo claro, referral=deriva a otra persona.`
+Classification: interested = shows real interest, not_now = no interest right now but may come back, not_interested = clear rejection, referral = points to someone else.`
 
   // BYO-Claude: key del cliente dueño del lead (fallback plataforma) + usage log
   const { client: anthropic, usedClientKey } = await getClaudeForClient(lead.client_id)

@@ -56,9 +56,9 @@ export async function POST(req: NextRequest) {
         .select('id, name, slug')
         .eq('id', body.delete_orphan_id)
         .maybeSingle()
-      if (!orphan) return NextResponse.json({ error: 'No existe' }, { status: 404 })
+      if (!orphan) return NextResponse.json({ error: 'Not found' }, { status: 404 })
       if (!orphan.slug?.startsWith('draft-') || orphan.name !== 'Nuevo cliente sin nombre') {
-        return NextResponse.json({ error: 'Solo se borran borradores draft-* sin nombre' }, { status: 400 })
+        return NextResponse.json({ error: 'Only unnamed draft-* clients can be deleted' }, { status: 400 })
       }
       const { data: grants } = await admin
         .from('mira_project_access')
@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
         .eq('project_id', orphan.id)
         .limit(1)
       if (grants?.length) {
-        return NextResponse.json({ error: 'Tiene usuarios con acceso — no es un huérfano' }, { status: 400 })
+        return NextResponse.json({ error: 'This client has users with access — it is not an orphan draft' }, { status: 400 })
       }
       await admin.from('brand_profiles').delete().eq('client_id', orphan.id)
       await admin.from('onboarding_sessions').delete().eq('client_id', orphan.id)
@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
     // ── Reintento de solo-login para un cliente ya creado ──
     if (body.mode === 'login_only') {
       const { clientId, email, plan } = body
-      if (!clientId || !email) return NextResponse.json({ error: 'Faltan clientId/email' }, { status: 400 })
+      if (!clientId || !email) return NextResponse.json({ error: 'Missing clientId or email' }, { status: 400 })
       const login = await createClientLoginAccess(clientId, email, typeof plan === 'string' ? plan : 'starter')
       return 'error' in login
         ? NextResponse.json({ error: login.error }, { status: 500 })
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
     // ── Creación completa ──
     const { basics, brand, project, login } = body ?? {}
     const companyName = typeof basics?.company_name === 'string' ? basics.company_name.trim() : ''
-    if (!companyName) return NextResponse.json({ error: 'Falta el nombre de la empresa' }, { status: 400 })
+    if (!companyName) return NextResponse.json({ error: 'The company name is required' }, { status: 400 })
 
     const errors: Record<string, string> = {}
     const result: Record<string, unknown> = {}
@@ -112,10 +112,10 @@ export async function POST(req: NextRequest) {
         clientId = data.id
         result.client = data
       } else if (!String(error?.message || '').includes('duplicate')) {
-        return NextResponse.json({ error: `No se pudo crear el cliente: ${error?.message}` }, { status: 500 })
+        return NextResponse.json({ error: `The client could not be created: ${error?.message}` }, { status: 500 })
       }
     }
-    if (!clientId) return NextResponse.json({ error: 'No se encontró slug libre' }, { status: 500 })
+    if (!clientId) return NextResponse.json({ error: 'No free slug available for this client' }, { status: 500 })
 
     // 2. Brand profile base + merge vía executor compartido
     const { error: bpError } = await admin
@@ -160,7 +160,7 @@ export async function POST(req: NextRequest) {
         }, undefined, { sourceType: 'onboarding' })
         result.brand = 'ok'
       } catch (e) {
-        errors.brand = e instanceof Error ? e.message : 'Error guardando la marca'
+        errors.brand = e instanceof Error ? e.message : 'Failed to save the brand data'
       }
     }
 
@@ -180,7 +180,7 @@ export async function POST(req: NextRequest) {
             .single()
           miraUser = created
         }
-        if (!miraUser) throw new Error('No se pudo provisionar mira_users')
+        if (!miraUser) throw new Error('Could not provision the mira_users row')
         const pSlugBase = slugify(project.name) || 'proyecto'
         let created = null
         for (let attempt = 0; attempt < 5 && !created; attempt++) {
@@ -202,9 +202,9 @@ export async function POST(req: NextRequest) {
           else if (!String(error?.message || '').includes('duplicate')) throw new Error(error?.message)
         }
         if (created) result.project = created
-        else errors.project = 'No se encontró slug libre para el proyecto'
+        else errors.project = 'No free slug available for the project'
       } catch (e) {
-        errors.project = e instanceof Error ? e.message : 'Error creando el proyecto'
+        errors.project = e instanceof Error ? e.message : 'Failed to create the project'
       }
     }
 
@@ -237,7 +237,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('onboarding/create error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error creando el cliente' },
+      { error: error instanceof Error ? error.message : 'Failed to create the client' },
       { status: 500 }
     )
   }

@@ -32,7 +32,7 @@ export default function ToolkitToolPage({
       {/* Header */}
       <Link href="/toolkit" className="inline-flex items-center gap-1 text-xs font-medium mb-6" style={{ color }}>
         <ArrowLeft size={12} />
-        Volver a Business Reports
+        Back to Business Reports
       </Link>
 
       <div className="mb-10">
@@ -40,7 +40,7 @@ export default function ToolkitToolPage({
           <div className="text-5xl">{icon}</div>
           <div>
             <p className="text-[10px] uppercase tracking-widest font-semibold mb-2" style={{ color }}>
-              Herramienta IA
+              AI Tool
             </p>
             <h1 className="text-3xl font-semibold text-ink tracking-tight mb-2">{name}</h1>
             <p className="text-sm" style={{ color: 'var(--text-tertiary)' }}>
@@ -60,22 +60,22 @@ export default function ToolkitToolPage({
         <div>
           <div className="card px-5 py-4 sticky top-8">
             <p className="text-xs font-semibold uppercase tracking-wider mb-4" style={{ color }}>
-              Sobre esta Herramienta
+              About this tool
             </p>
             <div className="space-y-3 text-xs" style={{ color: 'var(--text-tertiary)' }}>
               <div>
-                <p className="font-medium text-ink mb-1">Tiempo estimado</p>
+                <p className="font-medium text-ink mb-1">Estimated time</p>
                 <p>{estimatedTime}</p>
               </div>
               <div>
-                <p className="font-medium text-ink mb-1">Salida</p>
+                <p className="font-medium text-ink mb-1">Output</p>
                 <p>{outputFormat}</p>
               </div>
               {guideUrl && (
                 <div>
-                  <p className="font-medium text-ink mb-1">Recursos</p>
+                  <p className="font-medium text-ink mb-1">Resources</p>
                   <Link href={guideUrl} style={{ color }} className="hover:underline">
-                    Ver Guía →
+                    View guide →
                   </Link>
                 </div>
               )}
@@ -85,11 +85,11 @@ export default function ToolkitToolPage({
               <div className="mt-6 space-y-2">
                 <button onClick={() => window.print()} className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: `${color}18`, color }}>
                   <Download size={12} />
-                  Descargar PDF
+                  Download PDF
                 </button>
                 <button className="w-full inline-flex items-center justify-center gap-1 px-3 py-2 rounded-lg text-xs font-medium" style={{ background: 'var(--bg-surface)', color: 'var(--text-tertiary)' }}>
                   <Share2 size={12} />
-                  Compartir
+                  Share
                 </button>
               </div>
             )}

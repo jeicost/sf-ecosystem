@@ -602,8 +602,8 @@ function renderToc(o: PlaybookOptions, t: PlaybookTheme): string {
   <div class="toc-dark">
     ${arcTopRight(t, 90)}
     <div>
-      <div class="eyebrow" style="margin-bottom:8px">Contenidos</div>
-      <div class="toc-dark-title">&Iacute;ndice</div>
+      <div class="eyebrow" style="margin-bottom:8px">Contents</div>
+      <div class="toc-dark-title">Table of Contents</div>
     </div>
     <div style="opacity:0.4">${brandMark(o.brand, 20, t.primaryInk)}</div>
   </div>
@@ -768,7 +768,7 @@ function renderStatusTable(table: {
 }
 
 function renderSection(sec: PlaybookSection, num: number, o: PlaybookOptions, t: PlaybookTheme): string {
-  const label = `Secci&oacute;n ${String(num).padStart(2, '0')}`
+  const label = `Section ${String(num).padStart(2, '0')}`
   return `
 <div class="page light-page" id="seccion-${num}">
   <div class="page-header">
@@ -874,7 +874,7 @@ ${options.sections.map((sec, i) => renderSection(sec, i + 1, options, t)).join('
 ${renderBackCover(options, t)}`
 
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">

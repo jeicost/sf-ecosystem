@@ -19,12 +19,12 @@ export default function ComingSoon({ title, icon, color, desc, agent }: Props) {
           style={{ background: `${color}15`, border: `1px solid ${color}25` }}>
           {icon}
         </div>
-        <p className="text-ink font-semibold text-base mb-2">{title} — En configuración</p>
+        <p className="text-ink font-semibold text-base mb-2">{title} — Being set up</p>
         <p className="text-sm max-w-sm leading-relaxed" style={{ color: 'var(--text-muted)' }}>{desc}</p>
         <div className="mt-5 flex items-center gap-2 px-3 py-1.5 rounded-full"
           style={{ background: `${color}10`, border: `1px solid ${color}20` }}>
           <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: color }} />
-          <span className="text-xs font-medium" style={{ color }}>Agente {agent} próximamente activo</span>
+          <span className="text-xs font-medium" style={{ color }}>Agent {agent} coming online soon</span>
         </div>
       </div>
     </div>

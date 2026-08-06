@@ -68,7 +68,7 @@ export default function ExplorerArchetype({ agentColor, status = 'ready', errorM
       <div className="card p-6 text-center border border-dashed border-line">
         <Compass size={24} className="mx-auto text-ink-tertiary mb-2" />
         <div className="text-sm text-ink font-medium">
-          {isFiltered ? 'Sin resultados para ese filtro' : t('archetype.explorer.empty-title', locale)}
+          {isFiltered ? 'No results for that filter' : t('archetype.explorer.empty-title', locale)}
         </div>
         {!isFiltered && <div className="text-xs text-ink-tertiary mt-1">{t('archetype.explorer.empty-desc', locale)}</div>}
       </div>
@@ -140,7 +140,7 @@ export default function ExplorerArchetype({ agentColor, status = 'ready', errorM
             <Search size={16} className="absolute left-3 top-3 text-ink-tertiary" />
             <input
               type="text"
-              placeholder="Nombre, industria o ubicación..."
+              placeholder="Name, industry or location..."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               className="w-full pl-10 pr-3 py-2 rounded bg-surface border border-line text-sm text-ink focus:border-ink-muted focus:outline-none"

@@ -13,13 +13,13 @@ export function buildGuidedTools(def: QuickActionDef): Anthropic.Tool[] {
   const tools: Anthropic.Tool[] = [
     {
       name: 'set_fields',
-      description: `Guarda uno o varios campos del formulario en cuanto el usuario (o un adjunto) aporte su valor. Campos válidos: ${fieldNames.join(', ')}. Llámala incrementalmente — no esperes a tenerlos todos.`,
+      description: `Save one or more form fields as soon as the user (or an attachment) provides their value. Valid fields: ${fieldNames.join(', ')}. Call it incrementally — don't wait until you have them all.`,
       input_schema: {
         type: 'object' as const,
         properties: {
           fields: {
             type: 'object' as const,
-            description: 'Pares campo→valor a guardar (merge sobre lo ya capturado)',
+            description: 'Field→value pairs to save (merged on top of what has already been captured)',
           },
         },
         required: ['fields'],
@@ -28,7 +28,7 @@ export function buildGuidedTools(def: QuickActionDef): Anthropic.Tool[] {
     {
       name: 'submit_action',
       description:
-        'Lanza la generación con los campos capturados. Llámala SOLO después de resumir lo capturado y de que el usuario confirme explícitamente.',
+        'Launch the generation with the captured fields. Call it ONLY after summarizing what was captured and after the user has explicitly confirmed.',
       input_schema: { type: 'object' as const, properties: {} },
     },
   ]
@@ -37,11 +37,11 @@ export function buildGuidedTools(def: QuickActionDef): Anthropic.Tool[] {
     tools.splice(1, 0, {
       name: 'select_lead',
       description:
-        'Asocia un lead del pipeline a esta acción (o pásala sin lead si el usuario no quiere). Usa el id exacto de la lista de leads del contexto.',
+        'Attach a pipeline lead to this action (or run it without a lead if the user prefers not to). Use the exact id from the lead list in the context.',
       input_schema: {
         type: 'object' as const,
         properties: {
-          lead_id: { type: 'string' as const, description: 'id del lead elegido' },
+          lead_id: { type: 'string' as const, description: 'id of the chosen lead' },
         },
         required: ['lead_id'],
       },
@@ -65,7 +65,7 @@ function coerceValue(field: QAField, value: unknown): { value: unknown; error?: 
     }
     case 'number': {
       const n = Number(value)
-      if (!Number.isFinite(n)) return { value, error: `"${field.name}" debe ser un número` }
+      if (!Number.isFinite(n)) return { value, error: `"${field.name}" must be a number` }
       if (field.min != null && n < field.min) return { value: field.min }
       if (field.max != null && n > field.max) return { value: field.max }
       return { value: n }
@@ -77,7 +77,7 @@ function coerceValue(field: QAField, value: unknown): { value: unknown; error?: 
       const normalized = String(value).trim().toLowerCase()
       const match = allowed.find((a) => a.toLowerCase() === normalized)
       if (match) return { value: match }
-      return { value, error: `"${field.name}" debe ser uno de: ${allowed.filter(Boolean).join(', ')}` }
+      return { value, error: `"${field.name}" must be one of: ${allowed.filter(Boolean).join(', ')}` }
     }
     case 'checkbox_group': {
       const allowed = (field.options ?? []).map((o) => o.value)
@@ -103,7 +103,7 @@ export function applySetFields(
   for (const [name, rawValue] of Object.entries(incoming ?? {})) {
     const field = def.fields.find((f) => f.name === name && f.type !== 'lead_picker')
     if (!field) {
-      errors.push(`Campo desconocido: "${name}"`)
+      errors.push(`Unknown field: "${name}"`)
       continue
     }
     if (rawValue == null || rawValue === '') {

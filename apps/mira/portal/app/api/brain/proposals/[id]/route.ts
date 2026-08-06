@@ -18,7 +18,7 @@ export async function POST(
 
     const { action } = await req.json()
     if (action !== 'confirm' && action !== 'reject') {
-      return NextResponse.json({ error: "action debe ser 'confirm' o 'reject'" }, { status: 400 })
+      return NextResponse.json({ error: "action must be 'confirm' or 'reject'" }, { status: 400 })
     }
 
     const admin = adminClient()
@@ -28,25 +28,25 @@ export async function POST(
       .eq('id', id)
       .maybeSingle()
     if (error || !proposal) {
-      return NextResponse.json({ error: 'Propuesta no encontrada' }, { status: 404 })
+      return NextResponse.json({ error: 'Proposal not found' }, { status: 404 })
     }
     if (!(await userCanAccessClient(user, proposal.client_id))) {
       return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
     if (proposal.status !== 'pending') {
-      return NextResponse.json({ error: `La propuesta ya está ${proposal.status}` }, { status: 409 })
+      return NextResponse.json({ error: `This proposal is already ${proposal.status}` }, { status: 409 })
     }
 
     const plan = (user.user_metadata?.plan as string) ?? 'starter'
     const isAgency = plan === 'super_admin' || plan === 'admin'
     if (action === 'confirm' && !isAgency) {
       return NextResponse.json(
-        { error: 'Las propuestas las confirma la agencia — la tuya quedó registrada y avisada.' },
+        { error: 'Proposals are confirmed by the agency — yours has been recorded and the agency notified.' },
         { status: 403 }
       )
     }
     if (action === 'reject' && !isAgency && proposal.proposed_by !== user.id) {
-      return NextResponse.json({ error: 'Solo puedes retirar tus propias propuestas' }, { status: 403 })
+      return NextResponse.json({ error: 'You can only withdraw your own proposals' }, { status: 403 })
     }
 
     if (action === 'reject') {
@@ -77,13 +77,13 @@ export async function POST(
         .update({ status: 'failed', resolved_by: user.id })
         .eq('id', proposal.id)
       return NextResponse.json(
-        { error: applyError instanceof Error ? applyError.message : 'Error aplicando los cambios' },
+        { error: applyError instanceof Error ? applyError.message : 'Failed to apply the changes' },
         { status: 500 }
       )
     }
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error' },
+      { error: error instanceof Error ? error.message : 'Unexpected error' },
       { status: 500 }
     )
   }

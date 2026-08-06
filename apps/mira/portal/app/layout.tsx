@@ -7,13 +7,13 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'MIRA — AI Agency Platform',
-  description: '30 agentes de IA + Quick Actions framework para escalar tu negocio.',
+  description: '30 AI agents + Quick Actions framework to scale your business.',
   icons: { icon: '/favicon.svg' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="es">
+    <html lang="en">
       <body>
         <LocaleProvider>
           {children}

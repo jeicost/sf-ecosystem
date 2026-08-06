@@ -21,23 +21,23 @@ import {
 function overviewSection(r: Record<string, any>): Section {
   const stats: StatItem[] = []
   const matrix = asArr(r.competitive_matrix).filter(isPlainObject)
-  if (matrix.length) stats.push({ value: String(matrix.length), label: 'Competidores analizados' })
+  if (matrix.length) stats.push({ value: String(matrix.length), label: 'Competitors analyzed' })
   const validation = asStr(r.positioning_validation)
   if (validation) {
     const map: Record<string, string> = {
-      verified: 'Verificado',
-      at_risk: 'En riesgo',
-      needs_adjustment: 'Requiere ajuste',
+      verified: 'Verified',
+      at_risk: 'At risk',
+      needs_adjustment: 'Needs adjustment',
     }
-    stats.push({ value: map[validation] || validation, label: 'Posicionamiento' })
+    stats.push({ value: map[validation] || validation, label: 'Positioning' })
   }
   const opportunities = asArr(asObj(r.key_takeaways).top_3_opportunities)
-  if (opportunities.length) stats.push({ value: String(opportunities.length), label: 'Oportunidades clave' })
+  if (opportunities.length) stats.push({ value: String(opportunities.length), label: 'Key opportunities' })
 
   const section: Section = {
-    title: 'Resumen Ejecutivo',
-    navLabel: 'Resumen',
-    subtitle: 'Panorama competitivo y validación de posicionamiento',
+    title: 'Executive Summary',
+    navLabel: 'Summary',
+    subtitle: 'Competitive landscape and positioning validation',
     stats: stats.length ? stats : undefined,
   }
   if (asStr(r.executive_summary)) {
@@ -53,10 +53,10 @@ function marketSection(r: Record<string, any>): Section | null {
   const m = asObj(r.market_landscape)
   if (!Object.keys(m).length) return null
   const cards = [
-    { title: 'Tamaño de Mercado', body: valueToHtml(m.size) },
-    { title: 'Crecimiento', body: valueToHtml(m.growth_rate) },
-    { title: 'Segmentos', body: valueToHtml(m.segments) },
-    { title: 'Tendencias', body: valueToHtml(m.trends) },
+    { title: 'Market Size', body: valueToHtml(m.size) },
+    { title: 'Growth', body: valueToHtml(m.growth_rate) },
+    { title: 'Segments', body: valueToHtml(m.segments) },
+    { title: 'Trends', body: valueToHtml(m.trends) },
   ].filter((c) => c.body)
   // extra keys
   for (const [k, v] of Object.entries(m)) {
@@ -66,20 +66,20 @@ function marketSection(r: Record<string, any>): Section | null {
     }
   }
   if (!cards.length) return null
-  return { title: 'Panorama de Mercado', navLabel: 'Mercado', cards }
+  return { title: 'Market Landscape', navLabel: 'Market', cards }
 }
 
 function matrixSection(r: Record<string, any>): Section | null {
   const matrix = asArr(r.competitive_matrix).filter(isPlainObject)
   if (!matrix.length) return null
   return {
-    title: 'Matriz Competitiva',
-    navLabel: 'Competidores',
-    subtitle: 'Fortalezas, debilidades y posicionamiento de cada competidor',
+    title: 'Competitive Matrix',
+    navLabel: 'Competitors',
+    subtitle: 'Strengths, weaknesses and positioning of each competitor',
     table: {
-      headers: ['Competidor', 'Posicionamiento', 'Fortalezas', 'Debilidades', 'Pricing', 'Cliente Objetivo'],
+      headers: ['Competitor', 'Positioning', 'Strengths', 'Weaknesses', 'Pricing', 'Target Customer'],
       rows: matrix.map((c) => [
-        `<strong>${esc(asStr(c.name) || 'Competidor')}</strong>`,
+        `<strong>${esc(asStr(c.name) || 'Competitor')}</strong>`,
         valueToHtml(c.positioning),
         valueToHtml(c.strengths),
         valueToHtml(c.weaknesses),
@@ -94,12 +94,12 @@ function pricingSection(r: Record<string, any>): Section | null {
   const pricing = asArr(r.pricing_comparison).filter(isPlainObject)
   if (!pricing.length) return null
   return {
-    title: 'Comparativa de Precios',
-    navLabel: 'Precios',
+    title: 'Pricing Comparison',
+    navLabel: 'Pricing',
     table: {
-      headers: ['Empresa', 'Rango de Precio', 'Propuesta de Valor'],
+      headers: ['Company', 'Price Range', 'Value Proposition'],
       rows: pricing.map((p) => [
-        `<strong>${esc(asStr(p.company) || asStr(p.name) || 'Empresa')}</strong>`,
+        `<strong>${esc(asStr(p.company) || asStr(p.name) || 'Company')}</strong>`,
         valueToHtml(p.price_range),
         valueToHtml(p.value_prop),
       ]),
@@ -111,19 +111,19 @@ function swotSection(r: Record<string, any>): Section | null {
   const swot = asObj(r.swot_vs_competitors)
   if (!Object.keys(swot).length) return null
   const labels: Record<string, string> = {
-    strengths: 'Fortalezas',
-    weaknesses: 'Debilidades',
-    opportunities: 'Oportunidades',
-    threats: 'Amenazas',
+    strengths: 'Strengths',
+    weaknesses: 'Weaknesses',
+    opportunities: 'Opportunities',
+    threats: 'Threats',
   }
   const cards = Object.entries(labels)
     .map(([k, label]) => ({ title: label, body: valueToHtml(swot[k]) }))
     .filter((c) => c.body)
   if (!cards.length) return null
   return {
-    title: 'Análisis SWOT',
+    title: 'SWOT Analysis',
     navLabel: 'SWOT',
-    subtitle: 'Tu posición frente a los competidores del mercado',
+    subtitle: 'Your position against the competitors in the market',
     cards,
   }
 }
@@ -132,32 +132,32 @@ function strategySection(r: Record<string, any>): Section | null {
   const w = asObj(r.winning_strategy)
   if (!Object.keys(w).length) return null
   const cards = [
-    { title: 'Diferenciación', body: valueToHtml(w.differentiation) },
-    { title: 'Estrategia Go-To-Market', body: valueToHtml(w.gtm_strategy) },
-    { title: 'Ángulos de Marketing', body: valueToHtml(w.marketing_angles) },
+    { title: 'Differentiation', body: valueToHtml(w.differentiation) },
+    { title: 'Go-To-Market Strategy', body: valueToHtml(w.gtm_strategy) },
+    { title: 'Marketing Angles', body: valueToHtml(w.marketing_angles) },
   ].filter((c) => c.body)
   if (!cards.length) {
     const fallback = toCards(w)
     if (!fallback.length) return null
-    return { title: 'Estrategia Ganadora', cards: fallback }
+    return { title: 'Winning Strategy', cards: fallback }
   }
-  return { title: 'Estrategia Ganadora', navLabel: 'Estrategia', cards }
+  return { title: 'Winning Strategy', navLabel: 'Strategy', cards }
 }
 
 function takeawaysSection(r: Record<string, any>): Section | null {
   const t = asObj(r.key_takeaways)
   if (!Object.keys(t).length) return null
   const cards = [
-    { title: 'Top 3 Competidores', body: valueToHtml(t.top_3_competitors) },
-    { title: 'Top 3 Diferenciadores', body: valueToHtml(t.top_3_differentiation) },
-    { title: 'Top 3 Oportunidades', body: valueToHtml(t.top_3_opportunities) },
+    { title: 'Top 3 Competitors', body: valueToHtml(t.top_3_competitors) },
+    { title: 'Top 3 Differentiators', body: valueToHtml(t.top_3_differentiation) },
+    { title: 'Top 3 Opportunities', body: valueToHtml(t.top_3_opportunities) },
   ].filter((c) => c.body)
   if (!cards.length) {
     const fallback = toCards(t)
     if (!fallback.length) return null
-    return { title: 'Conclusiones Clave', cards: fallback }
+    return { title: 'Key Takeaways', cards: fallback }
   }
-  return { title: 'Conclusiones Clave', navLabel: 'Conclusiones', cards }
+  return { title: 'Key Takeaways', navLabel: 'Takeaways', cards }
 }
 
 function adjustmentsSection(r: Record<string, any>): Section | null {
@@ -165,10 +165,10 @@ function adjustmentsSection(r: Record<string, any>): Section | null {
   if (!adjustments.length) return null
   const validation = asStr(r.positioning_validation)
   return {
-    title: 'Ajustes Recomendados',
-    subtitle: validation ? undefined : 'Recomendaciones para reforzar el posicionamiento',
+    title: 'Recommended Adjustments',
+    subtitle: validation ? undefined : 'Recommendations to reinforce the positioning',
     content: validation
-      ? `<p><strong>Estado del posicionamiento:</strong> ${statusBadge(validation)}</p>`
+      ? `<p><strong>Positioning status:</strong> ${statusBadge(validation)}</p>`
       : undefined,
     listItems: adjustments.map((a) => valueToHtml(a)).filter(Boolean),
   }

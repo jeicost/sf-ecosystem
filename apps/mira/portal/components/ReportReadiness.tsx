@@ -43,11 +43,11 @@ export default function ReportReadiness({ toolSlug }: { toolSlug: string }) {
           <span className={`w-2.5 h-2.5 rounded-full ${DOT[readiness.overall]}`} />
           <span className="text-sm font-medium text-ink">
             Brand Brain: {missing.length === 0
-              ? 'completo para este informe'
-              : `${missing.length} dato${missing.length > 1 ? 's' : ''} mejorable${missing.length > 1 ? 's' : ''}`}
+              ? 'complete for this report'
+              : `${missing.length} field${missing.length > 1 ? 's' : ''} could be improved`}
           </span>
         </div>
-        <span className="text-xs text-ink-tertiary">{expanded ? 'Ocultar' : 'Ver detalle'}</span>
+        <span className="text-xs text-ink-tertiary">{expanded ? 'Hide' : 'View details'}</span>
       </button>
 
       {expanded && (
@@ -63,7 +63,7 @@ export default function ReportReadiness({ toolSlug }: { toolSlug: string }) {
                   href={`/brand-brain?tab=${item.brainTab}`}
                   className="text-purple-400 hover:text-purple-300 transition-colors shrink-0"
                 >
-                  Completar en Brand Brain →
+                  Complete in Brand Brain →
                 </Link>
               )}
             </div>
@@ -73,7 +73,7 @@ export default function ReportReadiness({ toolSlug }: { toolSlug: string }) {
 
       {missing.length > 0 && (
         <p className="mt-3 text-[11px] text-ink-tertiary">
-          Puedes generar igualmente — los huecos saldrán como open items numerados en el informe.
+          You can generate anyway — the gaps will appear as numbered open items in the report.
         </p>
       )}
     </div>

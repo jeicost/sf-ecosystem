@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
     if (!result.ok) {
       if (result.error?.includes('document_feedback')) {
         return NextResponse.json(
-          { error: 'El sistema de feedback aún no está activo (falta aplicar la migración 0050).' },
+          { error: 'The feedback system is not active yet (migration 0050 still needs to be applied).' },
           { status: 503 }
         )
       }

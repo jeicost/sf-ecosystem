@@ -70,7 +70,7 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
     fontFace: FONT, fontSize: 11, color: '666666', charSpacing: 3, bold: true,
   })
   y += 0.34
-  slide.addText('Guía de Voz — One Pager', {
+  slide.addText('Voice Guide — One Pager', {
     x: MARGIN, y, w: CONTENT_W, h: 0.5,
     fontFace: FONT, fontSize: 26, color: '111111', bold: true,
   })
@@ -85,7 +85,7 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
       fill: { color: accent }, line: { color: accent }, rectRadius: 0.06,
     })
     slide.addText([
-      { text: 'REGLA DE ORO   ', options: { fontSize: 9, bold: true, color: 'FFFFFF', charSpacing: 2 } },
+      { text: 'GOLDEN RULE   ', options: { fontSize: 9, bold: true, color: 'FFFFFF', charSpacing: 2 } },
       { text: golden, options: { fontSize: 13, bold: true, color: 'FFFFFF' } },
     ], {
       x: MARGIN + 0.18, y, w: CONTENT_W - 0.36, h: goldenH,
@@ -122,8 +122,8 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
       })
     })
   }
-  drawColumn(MARGIN, '✓ DECIMOS', '1B7F4B', dos)
-  drawColumn(MARGIN + colW + 0.25, '✗ NUNCA DECIMOS', 'B3261E', donts)
+  drawColumn(MARGIN, '✓ WE SAY', '1B7F4B', dos)
+  drawColumn(MARGIN + colW + 0.25, '✗ WE NEVER SAY', 'B3261E', donts)
   y += blockH + 0.24
 
   // ── Bloque 3: sonamos a / nunca sonamos a ──
@@ -137,8 +137,8 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
       fill: { color: 'F4F4F4' }, line: { color: 'DDDDDD', width: 0.5 },
     })
     const runs: PptxGenJS.TextProps[] = []
-    if (sound) runs.push({ text: `SONAMOS A: `, options: { fontSize: 9, bold: true, color: '1B7F4B' } }, { text: sound + (never ? '\n' : ''), options: { fontSize: 10, color: '222222' } })
-    if (never) runs.push({ text: `NUNCA SONAMOS A: `, options: { fontSize: 9, bold: true, color: 'B3261E' } }, { text: never, options: { fontSize: 10, color: '222222' } })
+    if (sound) runs.push({ text: `WE SOUND LIKE: `, options: { fontSize: 9, bold: true, color: '1B7F4B' } }, { text: sound + (never ? '\n' : ''), options: { fontSize: 10, color: '222222' } })
+    if (never) runs.push({ text: `WE NEVER SOUND LIKE: `, options: { fontSize: 9, bold: true, color: 'B3261E' } }, { text: never, options: { fontSize: 10, color: '222222' } })
     slide.addText(runs, {
       x: MARGIN + 0.15, y, w: CONTENT_W - 0.3, h: soundH,
       fontFace: FONT, valign: 'middle', lineSpacingMultiple: 1.15,
@@ -157,10 +157,10 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
       x: MARGIN, y, w: 0.05, h: rwH, fill: { color: accent }, line: { color: accent },
     })
     const runs: PptxGenJS.TextProps[] = [
-      { text: 'ASÍ SE REESCRIBE\n', options: { fontSize: 9, bold: true, color: '666666', charSpacing: 2 } },
-      { text: `Antes: `, options: { fontSize: 9.5, bold: true, color: '999999' } },
+      { text: 'HOW TO REWRITE IT\n', options: { fontSize: 9, bold: true, color: '666666', charSpacing: 2 } },
+      { text: `Before: `, options: { fontSize: 9.5, bold: true, color: '999999' } },
       { text: `${before}\n`, options: { fontSize: 9.5, color: '777777', strike: false } },
-      { text: `Después: `, options: { fontSize: 10.5, bold: true, color: '111111' } },
+      { text: `After: `, options: { fontSize: 10.5, bold: true, color: '111111' } },
       { text: `${after}`, options: { fontSize: 10.5, color: '111111' } },
     ]
     const why = clean(rw.why, 140)
@@ -173,7 +173,7 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
   }
 
   // ── Pie ──
-  slide.addText(opts.versionNote || `Voice Guide · ${brandName} · generado con MIRA`, {
+  slide.addText(opts.versionNote || `Voice Guide · ${brandName} · generated with MIRA`, {
     x: MARGIN, y: H - MARGIN - 0.25, w: CONTENT_W, h: 0.25,
     fontFace: FONT, fontSize: 7.5, color: 'AAAAAA', align: 'right',
   })

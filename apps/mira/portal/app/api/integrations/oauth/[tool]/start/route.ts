@@ -74,7 +74,7 @@ export async function GET(
     if (sessionInsertError) {
       console.error('oauth_sessions insert failed:', sessionInsertError)
       return NextResponse.json(
-        { error: 'OAuth session could not be created (¿migración 0036 aplicada?)' },
+        { error: 'OAuth session could not be created (has migration 0036 been applied?)' },
         { status: 500 }
       )
     }

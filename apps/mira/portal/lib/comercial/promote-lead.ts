@@ -46,10 +46,10 @@ export async function promoteLeadToCrm(
     .eq('id', leadId)
     .maybeSingle()
 
-  if (leadError) return { ok: false, status: 500, error: `Error cargando lead: ${leadError.message}` }
+  if (leadError) return { ok: false, status: 500, error: `Failed to load the lead: ${leadError.message}` }
   if (!lead) return { ok: false, status: 404, error: 'Lead not found' }
   if (lead.client_id !== clientId) {
-    return { ok: false, status: 403, error: 'El lead no pertenece a este cliente' }
+    return { ok: false, status: 403, error: 'That lead does not belong to this client' }
   }
 
   // 2. Resolver workspace de sf-crm
@@ -64,14 +64,14 @@ export async function promoteLeadToCrm(
     return {
       ok: false,
       status: 422,
-      error: `Cliente sin workspace de CRM configurado (${mapError.message}). Aplica supabase/migrations/0034_client_workspaces.sql y añade la fila del cliente.`,
+      error: `This client has no CRM workspace configured (${mapError.message}). Apply supabase/migrations/0034_client_workspaces.sql and add the client's row.`,
     }
   }
   if (!mapping?.workspace) {
     return {
       ok: false,
       status: 422,
-      error: 'Cliente sin workspace de CRM configurado. Añade la fila en client_workspaces (ver migración 0034).',
+      error: 'This client has no CRM workspace configured. Add its row to client_workspaces (see migration 0034).',
     }
   }
   const workspace = mapping.workspace
@@ -127,7 +127,7 @@ export async function promoteLeadToCrm(
       .from('crm_contacts')
       .update({ ...contactFields, updated_at: new Date().toISOString() })
       .eq('id', existingId)
-    if (updError) return { ok: false, status: 500, error: `Error actualizando crm_contacts: ${updError.message}` }
+    if (updError) return { ok: false, status: 500, error: `Failed to update crm_contacts: ${updError.message}` }
     crmContactId = existingId
   } else {
     const { data: inserted, error: insError } = await admin
@@ -136,7 +136,7 @@ export async function promoteLeadToCrm(
       .select('id')
       .single()
     if (insError || !inserted) {
-      return { ok: false, status: 500, error: `Error insertando en crm_contacts: ${insError?.message ?? 'sin fila'}` }
+      return { ok: false, status: 500, error: `Failed to insert into crm_contacts: ${insError?.message ?? 'no row returned'}` }
     }
     crmContactId = inserted.id
   }
@@ -146,7 +146,7 @@ export async function promoteLeadToCrm(
     await admin.from('lead_activities').insert({
       lead_id: leadId,
       type: 'note',
-      content: `Enviado a CRM (workspace ${workspace}, contacto ${crmContactId})`,
+      content: `Sent to CRM (workspace ${workspace}, contact ${crmContactId})`,
       metadata: { event: PROMOTED_EVENT, crm_contact_id: crmContactId, workspace },
     })
   } catch { /* best-effort */ }

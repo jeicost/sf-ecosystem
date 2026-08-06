@@ -42,13 +42,13 @@ export function FeedbackButtons({
 
   if (state === 'sent') {
     return (
-      <p className="text-xs text-emerald-400">✓ Gracias — tu feedback mejora la próxima generación.</p>
+      <p className="text-xs text-emerald-400">✓ Thanks — your feedback improves the next generation.</p>
     )
   }
 
   return (
     <div className={`flex items-center gap-2 flex-wrap ${compact ? '' : 'py-1'}`}>
-      {!compact && <span className="text-xs text-ink-tertiary">¿Cómo salió?</span>}
+      {!compact && <span className="text-xs text-ink-tertiary">How did it go?</span>}
       <button
         onClick={() => { setOutcome('helpful'); send('helpful') }}
         disabled={state === 'sending'}
@@ -66,7 +66,7 @@ export function FeedbackButtons({
             value={note}
             onChange={(e) => setNote(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && note.trim() && send('not_helpful', note.trim())}
-            placeholder="¿Qué cambiarías? (se usa en la próxima generación)"
+            placeholder="What would you change? (used in the next generation)"
             className="flex-1 min-w-[200px] px-3 py-1.5 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs"
           />
           <button
@@ -74,7 +74,7 @@ export function FeedbackButtons({
             disabled={state === 'sending' || !note.trim()}
             className="text-xs px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-50"
           >
-            {state === 'sending' ? 'Enviando…' : 'Enviar'}
+            {state === 'sending' ? 'Sending…' : 'Send'}
           </button>
         </>
       )}

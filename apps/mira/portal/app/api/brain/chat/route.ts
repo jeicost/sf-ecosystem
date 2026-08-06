@@ -19,13 +19,13 @@ export const maxDuration = 120
 const PROPOSE_TOOL: Anthropic.Tool = {
   name: 'propose_brain_change',
   description:
-    'Propone cambios concretos al Brand Brain / memoria / pilares / referencias a partir de lo que cuenta el usuario. NUNCA aplica nada: la propuesta queda pendiente de confirmación humana. Úsala en cuanto tengas información sustantiva; una propuesta por tema.',
+    'Propose concrete changes to the Brand Brain / memory / pillars / references based on what the user tells you. It NEVER applies anything: the proposal stays pending human confirmation. Use it en cuanto tengas información sustantiva; una propuesta por tema.',
   input_schema: {
     type: 'object' as const,
     properties: {
       summary: {
         type: 'string' as const,
-        description: 'Resumen en una frase de qué se va a actualizar y por qué (visible para quien confirma)',
+        description: 'One-sentence summary of what will be updated and why (visible to whoever confirms it)',
       },
       changes: {
         type: 'array' as const,
@@ -64,7 +64,7 @@ export async function POST(req: NextRequest) {
       ? body.messages.filter((m: any) => m && (m.role === 'user' || m.role === 'assistant') && typeof m.content === 'string').slice(-12)
       : []
     if (!messages.length || messages[messages.length - 1].role !== 'user') {
-      return NextResponse.json({ error: 'Falta el mensaje del usuario' }, { status: 400 })
+      return NextResponse.json({ error: 'The user message is missing' }, { status: 400 })
     }
 
     const plan = (user.user_metadata?.plan as string) ?? 'starter'
@@ -77,11 +77,11 @@ export async function POST(req: NextRequest) {
     ])
 
     const system = [
-      `Eres el asistente del Brand Brain de MIRA. El usuario te CUENTA novedades del negocio (nueva línea, cambio de precios, algo que funcionó o dejó de funcionar, una decisión…) y tú:
+      `You are MIRA's Brand Brain assistant. The user TELLS you business news (a new line, a price change, something that worked or stopped working, a decision…) and you:
 1. Haces las preguntas mínimas para concretar (máximo 1-2 por turno, solo si de verdad faltan).
 2. En cuanto haya sustancia, llamas a propose_brain_change con el patch EXACTO (claves reales del brain — el contexto de abajo te enseña su estructura). Nunca inventes datos que el usuario no dijo.
 3. Tras proponer, explica en una frase qué quedará pendiente de confirmación. NUNCA digas que ya está guardado — se guarda al confirmar.
-Responde siempre en español, cercano y breve.`,
+Always reply in English, warm and brief.`,
       brain ? `BRAND BRAIN ACTUAL:\n${formatBrandBrainForPrompt(brain)}` : '',
       memoryCtx || '',
       knowledgeCtx || '',
@@ -114,7 +114,7 @@ Responde siempre en español, cercano y breve.`,
       const results: Anthropic.ToolResultBlockParam[] = []
       for (const tu of toolUses) {
         const input = tu.input as { summary?: string; changes?: unknown[] }
-        const summary = typeof input.summary === 'string' ? input.summary : 'Actualización del brain'
+        const summary = typeof input.summary === 'string' ? input.summary : 'Brain update'
         const changes = Array.isArray(input.changes) ? input.changes : []
         const { data, error } = await admin
           .from('brain_change_proposals')
@@ -132,14 +132,14 @@ Responde siempre en español, cercano y breve.`,
           results.push({
             type: 'tool_result',
             tool_use_id: tu.id,
-            content: `No se pudo registrar la propuesta (${error.message.includes('brain_change_proposals') ? 'falta aplicar la migración 0055' : error.message}). Discúlpate y sugiere reintentarlo más tarde.`,
+            content: `No se pudo registrar la propuesta (${error.message.includes('brain_change_proposals') ? 'migration 0055 has not been applied yet' : error.message}). Apologise and suggest trying again laarde.`,
           })
         } else {
           proposals.push({ id: data.id, summary, changes })
           results.push({
             type: 'tool_result',
             tool_use_id: tu.id,
-            content: `Propuesta registrada (id ${data.id}), pendiente de confirmación${origin === 'client' ? ' por la agencia' : ''}.`,
+            content: `Proposal recorded (id ${data.id}), pending confirmation${origin === 'client' ? ' by the agency' : ''}.`,
           })
         }
       }
@@ -150,7 +150,7 @@ Responde siempre en español, cercano y breve.`,
   } catch (error) {
     console.error('brain/chat error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error en el chat del brain' },
+      { error: error instanceof Error ? error.message : 'Brand Brain chat failed' },
       { status: 500 }
     )
   }

@@ -54,11 +54,11 @@ const EMPTY_STATE: WizardState = {
 }
 
 const STEPS = [
-  { n: 1, label: 'Datos básicos' },
-  { n: 2, label: 'Marca' },
-  { n: 3, label: 'Proyecto' },
-  { n: 4, label: 'Acceso' },
-  { n: 5, label: 'Revisión' },
+  { n: 1, label: 'Basics' },
+  { n: 2, label: 'Brand' },
+  { n: 3, label: 'Project' },
+  { n: 4, label: 'Access' },
+  { n: 5, label: 'Review' },
 ] as const
 
 function slugify(s: string): string {
@@ -97,7 +97,7 @@ function OrphansPanel() {
   }
 
   const remove = async (id: string) => {
-    if (!window.confirm('¿Borrar este borrador huérfano? Esta acción no se puede deshacer.')) return
+    if (!window.confirm('Delete this orphaned draft? This action cannot be undone.')) return
     setBusyId(id)
     const res = await fetch('/api/admin/onboarding/create', {
       method: 'POST',
@@ -115,13 +115,13 @@ function OrphansPanel() {
         onClick={() => { setOpen((v) => !v); if (!rows) load() }}
         className="w-full flex items-center justify-between px-4 py-3 text-left"
       >
-        <span className="text-xs font-medium text-ink-secondary">🗑️ Borradores huérfanos del alta anterior</span>
-        <span className="text-[11px] text-ink-tertiary">{open ? 'Ocultar' : 'Ver'}</span>
+        <span className="text-xs font-medium text-ink-secondary">🗑️ Orphaned drafts from a previous onboarding</span>
+        <span className="text-[11px] text-ink-tertiary">{open ? 'Hide' : 'View'}</span>
       </button>
       {open && (
         <div className="border-t border-line p-4 space-y-2">
-          {rows === null && <p className="text-xs text-ink-tertiary">Cargando…</p>}
-          {rows?.length === 0 && <p className="text-xs text-ink-tertiary">Ninguno — todo limpio.</p>}
+          {rows === null && <p className="text-xs text-ink-tertiary">Loading…</p>}
+          {rows?.length === 0 && <p className="text-xs text-ink-tertiary">None — all clean.</p>}
           {rows?.map((r) => (
             <div key={r.id} className="flex items-center justify-between gap-3 rounded-lg bg-page px-3 py-2">
               <span className="text-xs text-ink-tertiary font-mono">{r.slug} · {new Date(r.created_at).toLocaleDateString()}</span>
@@ -131,7 +131,7 @@ function OrphansPanel() {
                 disabled={busyId === r.id}
                 className="text-[11px] px-2.5 py-1 rounded-md text-red-400/80 hover:bg-red-500/10 transition-colors disabled:opacity-50"
               >
-                {busyId === r.id ? '…' : 'Borrar'}
+                {busyId === r.id ? '…' : 'Delete'}
               </button>
             </div>
           ))}
@@ -222,7 +222,7 @@ export default function WizardShell() {
         fetch(`/api/projects/${data.result.project.id}/drive-structure`, { method: 'POST' }).catch(() => {})
       }
     } else {
-      setResult({ success: false, errors: { general: data?.error || 'Error creando el cliente' } })
+      setResult({ success: false, errors: { general: data?.error || 'Error creating the client' } })
     }
     setCreating(false)
   }
@@ -248,13 +248,13 @@ export default function WizardShell() {
     return (
       <div className="max-w-2xl mx-auto px-8 py-12">
         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/5 p-6 space-y-4">
-          <p className="text-lg font-semibold text-ink">✅ Cliente creado</p>
+          <p className="text-lg font-semibold text-ink">✅ Client created</p>
           <div className="space-y-1.5 text-sm text-ink-secondary">
             <p><strong className="text-ink">{state.basics.company_name}</strong> · slug <code className="text-xs">{result.result?.client?.slug}</code></p>
-            {result.result?.project && <p>Proyecto: {result.result.project.name}</p>}
+            {result.result?.project && <p>Project: {result.result.project.name}</p>}
             {result.result?.login?.recoveryLink && (
               <p>
-                Link de acceso:{' '}
+                Access link:{' '}
                 <a href={result.result.login.recoveryLink} target="_blank" rel="noopener noreferrer" className="text-purple-400 underline break-all">
                   {result.result.login.recoveryLink}
                 </a>
@@ -262,13 +262,13 @@ export default function WizardShell() {
             )}
           </div>
           <div className="flex gap-2 pt-2">
-            <Link href="/admin" className="text-xs px-4 py-2 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors">Volver al panel</Link>
+            <Link href="/admin" className="text-xs px-4 py-2 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors">Back to dashboard</Link>
             <button
               type="button"
               onClick={() => { setResult(null); setState(EMPTY_STATE); setStep(1); setMaxVisited(1) }}
               className="text-xs px-4 py-2 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 transition-colors"
             >
-              Dar de alta otro cliente
+              Onboard another client
             </button>
           </div>
         </div>
@@ -279,12 +279,12 @@ export default function WizardShell() {
   return (
     <div className="max-w-2xl mx-auto px-8 py-10">
       <div className="mb-6">
-        <p className="text-[10px] uppercase tracking-widest font-semibold text-ink-tertiary mb-1">Admin · Alta de clientes</p>
-        <h1 className="text-xl font-bold text-ink">Dar de alta un cliente</h1>
+        <p className="text-[10px] uppercase tracking-widest font-semibold text-ink-tertiary mb-1">Admin · Client onboarding</p>
+        <h1 className="text-xl font-bold text-ink">Onboard a client</h1>
         {draftRestored && !result && (
           <p className="text-[11px] text-amber-400/90 mt-1">
-            Borrador restaurado de una sesión anterior — {' '}
-            <button type="button" onClick={discardDraft} className="underline">descartar y empezar de cero</button>
+            Draft restored from a previous session — {' '}
+            <button type="button" onClick={discardDraft} className="underline">discard and start over</button>
           </p>
         )}
       </div>
@@ -310,7 +310,7 @@ export default function WizardShell() {
 
       {result && !result.success && (
         <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/5 p-4 space-y-2">
-          <p className="text-sm font-medium text-red-300">Algo falló al crear</p>
+          <p className="text-sm font-medium text-red-300">Something failed while creating</p>
           {result.errors && Object.entries(result.errors).map(([k, v]) => (
             <p key={k} className="text-xs text-ink-secondary">· {k}: {v}</p>
           ))}
@@ -321,7 +321,7 @@ export default function WizardShell() {
               disabled={retryingLogin}
               className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors"
             >
-              {retryingLogin ? 'Reintentando…' : 'Reintentar solo el acceso'}
+              {retryingLogin ? 'Retrying…' : 'Retry access only'}
             </button>
           )}
         </div>
@@ -331,17 +331,17 @@ export default function WizardShell() {
         {step === 1 && (
           <>
             <AssistantPanel step="basics" onExtracted={(f) => setState((s) => ({ ...s, basics: { ...s.basics, ...f as Partial<Basics> } }))} />
-            <Field label="Nombre de la empresa *">
-              <input className={inputCls} value={state.basics.company_name} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, company_name: e.target.value } }))} placeholder="Ej. Salsa Burgers" />
+            <Field label="Company name *">
+              <input className={inputCls} value={state.basics.company_name} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, company_name: e.target.value } }))} placeholder="e.g. Salsa Burgers" />
             </Field>
-            <Field label="Slug (URL interna)" hint={`Se usará: ${effectiveSlug || '—'}`}>
+            <Field label="Slug (internal URL)" hint={`Will use: ${effectiveSlug || '—'}`}>
               <input className={inputCls} value={state.basics.slug} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, slug: e.target.value } }))} placeholder={slugify(state.basics.company_name) || 'auto'} />
             </Field>
-            <Field label="Sector / industria">
-              <input className={inputCls} value={state.basics.sector} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, sector: e.target.value } }))} placeholder="Ej. F&B Delivery" />
+            <Field label="Sector / industry">
+              <input className={inputCls} value={state.basics.sector} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, sector: e.target.value } }))} placeholder="e.g. F&B Delivery" />
             </Field>
-            <Field label="Sitio web" hint="Los informes de SEO/Marketing la usan automáticamente si el cliente no la repite.">
-              <input className={inputCls} value={state.basics.website_url} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, website_url: e.target.value } }))} placeholder="https://www.tumarca.com" />
+            <Field label="Website" hint="SEO/Marketing reports use it automatically if the client does not repeat it.">
+              <input className={inputCls} value={state.basics.website_url} onChange={(e) => setState((s) => ({ ...s, basics: { ...s.basics, website_url: e.target.value } }))} placeholder="https://www.yourbrand.com" />
             </Field>
           </>
         )}
@@ -349,32 +349,32 @@ export default function WizardShell() {
         {step === 2 && (
           <>
             <AssistantPanel step="brand" onExtracted={(f) => setState((s) => ({ ...s, brand: { ...s.brand, ...f as Partial<Brand> } }))} />
-            <Field label="Misión">
+            <Field label="Mission">
               <textarea className={inputCls} rows={2} value={state.brand.mission} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, mission: e.target.value } }))} />
             </Field>
-            <Field label="Propuesta de valor">
+            <Field label="Value proposition">
               <textarea className={inputCls} rows={2} value={state.brand.proposition} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, proposition: e.target.value } }))} />
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Tagline">
                 <input className={inputCls} value={state.brand.tagline} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, tagline: e.target.value } }))} />
               </Field>
-              <Field label="Tono de voz">
+              <Field label="Tone of voice">
                 <input className={inputCls} value={state.brand.tone_of_voice} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, tone_of_voice: e.target.value } }))} />
               </Field>
             </div>
-            <Field label="Valores (uno por línea)">
+            <Field label="Values (one per line)">
               <textarea className={inputCls} rows={2} value={state.brand.values} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, values: e.target.value } }))} />
             </Field>
             <div className="grid grid-cols-2 gap-3">
-              <Field label="Color primario">
+              <Field label="Primary color">
                 <input className={inputCls} value={state.brand.primary_color} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, primary_color: e.target.value } }))} placeholder="#8B5CF6" />
               </Field>
-              <Field label="Color secundario">
+              <Field label="Secondary color">
                 <input className={inputCls} value={state.brand.secondary_color} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, secondary_color: e.target.value } }))} placeholder="#22D3EE" />
               </Field>
             </div>
-            <Field label="URL del logo">
+            <Field label="Logo URL">
               <input className={inputCls} value={state.brand.logo_url} onChange={(e) => setState((s) => ({ ...s, brand: { ...s.brand, logo_url: e.target.value } }))} placeholder="https://…/logo.png" />
             </Field>
           </>
@@ -383,16 +383,16 @@ export default function WizardShell() {
         {step === 3 && (
           <>
             <AssistantPanel step="project" onExtracted={(f) => setState((s) => ({ ...s, project: { ...s.project, ...f as Partial<ProjectDraft> } }))} />
-            <p className="text-xs text-ink-tertiary">Opcional — puedes crear el primer proyecto ahora o más tarde desde el cliente.</p>
-            <Field label="Nombre del proyecto">
-              <input className={inputCls} value={state.project.name} onChange={(e) => setState((s) => ({ ...s, project: { ...s.project, name: e.target.value } }))} placeholder="Ej. Lanzamiento Q3" />
+            <p className="text-xs text-ink-tertiary">Optional — you can create the first project now or later from the client.</p>
+            <Field label="Project name">
+              <input className={inputCls} value={state.project.name} onChange={(e) => setState((s) => ({ ...s, project: { ...s.project, name: e.target.value } }))} placeholder="e.g. Q3 Launch" />
             </Field>
-            <Field label="Descripción">
+            <Field label="Description">
               <textarea className={inputCls} rows={2} value={state.project.description} onChange={(e) => setState((s) => ({ ...s, project: { ...s.project, description: e.target.value } }))} />
             </Field>
             <label className="flex items-center gap-2 text-xs text-ink-secondary">
               <input type="checkbox" checked={state.project.create_drive_structure} onChange={(e) => setState((s) => ({ ...s, project: { ...s.project, create_drive_structure: e.target.checked } }))} />
-              Crear estructura de Drive (Conocimiento + Entregables) si el cliente ya tiene Drive conectado
+              Create Drive structure (Knowledge + Deliverables) if the client already has Drive connected
             </label>
           </>
         )}
@@ -400,9 +400,9 @@ export default function WizardShell() {
         {step === 4 && (
           <>
             <AssistantPanel step="login" onExtracted={(f) => setState((s) => ({ ...s, login: { ...s.login, ...f as Partial<LoginDraft> } }))} />
-            <p className="text-xs text-ink-tertiary">Opcional — puedes dar acceso ahora o más tarde desde Usuarios.</p>
-            <Field label="Email del cliente">
-              <input className={inputCls} type="email" value={state.login.email} onChange={(e) => setState((s) => ({ ...s, login: { ...s.login, email: e.target.value } }))} placeholder="contacto@sumarca.com" />
+            <p className="text-xs text-ink-tertiary">Optional — you can grant access now or later from Users.</p>
+            <Field label="Client email">
+              <input className={inputCls} type="email" value={state.login.email} onChange={(e) => setState((s) => ({ ...s, login: { ...s.login, email: e.target.value } }))} placeholder="contact@theirbrand.com" />
             </Field>
             <Field label="Plan">
               <select className={inputCls} value={state.login.plan} onChange={(e) => setState((s) => ({ ...s, login: { ...s.login, plan: e.target.value as LoginDraft['plan'] } }))}>
@@ -414,17 +414,17 @@ export default function WizardShell() {
 
         {step === 5 && (
           <div className="space-y-4">
-            <p className="text-xs text-ink-tertiary">Revisa antes de crear — nada se ha guardado todavía.</p>
+            <p className="text-xs text-ink-tertiary">Review before creating — nothing has been saved yet.</p>
             {[
-              { n: 1, title: 'Datos básicos', lines: [state.basics.company_name, state.basics.sector, state.basics.website_url].filter(Boolean) },
-              { n: 2, title: 'Marca', lines: [state.brand.mission, state.brand.tagline, state.brand.tone_of_voice].filter(Boolean) },
-              { n: 3, title: 'Proyecto', lines: state.project.name ? [state.project.name, state.project.description].filter(Boolean) : ['— (sin proyecto inicial)'] },
-              { n: 4, title: 'Acceso', lines: state.login.email ? [`${state.login.email} · plan ${state.login.plan}`] : ['— (sin acceso todavía)'] },
+              { n: 1, title: 'Basics', lines: [state.basics.company_name, state.basics.sector, state.basics.website_url].filter(Boolean) },
+              { n: 2, title: 'Brand', lines: [state.brand.mission, state.brand.tagline, state.brand.tone_of_voice].filter(Boolean) },
+              { n: 3, title: 'Project', lines: state.project.name ? [state.project.name, state.project.description].filter(Boolean) : ['— (no initial project)'] },
+              { n: 4, title: 'Access', lines: state.login.email ? [`${state.login.email} · plan ${state.login.plan}`] : ['— (no access yet)'] },
             ].map((sec) => (
               <div key={sec.n} className="rounded-xl border border-line bg-surface p-3.5">
                 <div className="flex items-center justify-between mb-1.5">
                   <p className="text-xs font-semibold text-ink">{sec.title}</p>
-                  <button type="button" onClick={() => goTo(sec.n)} className="text-[11px] text-purple-400 hover:text-purple-300">Editar →</button>
+                  <button type="button" onClick={() => goTo(sec.n)} className="text-[11px] text-purple-400 hover:text-purple-300">Edit →</button>
                 </div>
                 {sec.lines.map((l, i) => <p key={i} className="text-xs text-ink-tertiary">{l}</p>)}
               </div>
@@ -440,7 +440,7 @@ export default function WizardShell() {
           disabled={step === 1}
           className="text-sm px-4 py-2 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-30"
         >
-          ← Atrás
+          ← Back
         </button>
         {step < 5 ? (
           <button
@@ -449,7 +449,7 @@ export default function WizardShell() {
             disabled={step === 1 && !canNextFrom1}
             className="text-sm px-5 py-2 rounded-lg bg-purple-600 text-white hover:opacity-90 transition-colors disabled:opacity-40"
           >
-            Siguiente →
+            Next →
           </button>
         ) : (
           <button
@@ -458,7 +458,7 @@ export default function WizardShell() {
             disabled={creating || !canNextFrom1}
             className="text-sm px-5 py-2 rounded-lg bg-purple-600 text-white hover:opacity-90 transition-colors disabled:opacity-50"
           >
-            {creating ? '⏳ Creando…' : '✓ Crear cliente'}
+            {creating ? '⏳ Creating…' : '✓ Create client'}
           </button>
         )}
       </div>

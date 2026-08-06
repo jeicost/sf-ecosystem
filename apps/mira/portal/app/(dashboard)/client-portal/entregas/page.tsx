@@ -129,7 +129,7 @@ export default function EntregasPage() {
                 return (
                   <tr key={entrega.id} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
                     <td className="py-3 px-4 text-[13px] text-ink">
-                      {new Date(entrega.date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
+                      {new Date(entrega.date).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td className="py-3 px-4 text-[13px] text-ink font-medium">{entrega.tool}</td>
                     <td className="py-3 px-4">

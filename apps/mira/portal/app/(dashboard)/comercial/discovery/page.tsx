@@ -176,7 +176,7 @@ export default function DiscoveryPage() {
     setRunning(true)
     setLeads([])
     setSavedCount(null)
-    setStatus('Iniciando búsqueda...')
+    setStatus(t('comercial.discovery.starting-search', locale))
 
     try {
       const res = await fetch('/api/comercial/discovery', {
@@ -273,13 +273,13 @@ export default function DiscoveryPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div className="col-span-2">
             <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
-              Palabras clave <span className="text-red-400">*</span>
+              Keywords <span className="text-red-400">*</span>
             </label>
             <input
               value={keywords}
               onChange={e => setKeywords(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && runDiscovery()}
-              placeholder='Ej: "venture builder España" o "startup studio LATAM"'
+              placeholder='e.g. "venture builder Spain" or "startup studio LATAM"'
               className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{
                 background: 'var(--bg-page)',
@@ -290,11 +290,11 @@ export default function DiscoveryPage() {
             />
           </div>
           <div>
-            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>Industria</label>
+            <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>Industry</label>
             <input
               value={industry}
               onChange={e => setIndustry(e.target.value)}
-              placeholder='Ej: "Venture Capital" o "SaaS B2B"'
+              placeholder='e.g. "Venture Capital" or "SaaS B2B"'
               className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{
                 background: 'var(--bg-page)',
@@ -309,7 +309,7 @@ export default function DiscoveryPage() {
             <input
               value={geography}
               onChange={e => setGeography(e.target.value)}
-              placeholder='Ej: "España" o "LATAM"'
+              placeholder='e.g. "Spain" or "LATAM"'
               className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{
                 background: 'var(--bg-page)',
@@ -464,13 +464,13 @@ function DeepDiscovery({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
             <label className="text-[11px] uppercase tracking-wider block mb-1.5" style={{ color: 'var(--text-tertiary)' }}>
-              Industria / sector <span className="text-red-400">*</span>
+              Industry / sector <span className="text-red-400">*</span>
             </label>
             <input
               value={industry}
               onChange={e => setIndustry(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && onSearch()}
-              placeholder='Ej: "Venture Capital" o "SaaS B2B"'
+              placeholder='e.g. "Venture Capital" or "SaaS B2B"'
               className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
             />
@@ -480,7 +480,7 @@ function DeepDiscovery({
             <input
               value={geography}
               onChange={e => setGeography(e.target.value)}
-              placeholder='Ej: "España" o "LATAM"'
+              placeholder='e.g. "Spain" or "LATAM"'
               className="w-full rounded-lg px-3 py-2.5 text-sm text-ink focus:outline-none transition-colors"
               style={{ background: 'var(--bg-page)', borderColor: 'var(--border-subtle)', borderWidth: '1px', color: 'var(--text-primary)' }}
             />
@@ -523,7 +523,7 @@ function DeepDiscovery({
           <div className="mt-4 text-[12px] text-red-400">
             {deepError === 'not_connected' && t('comercial.discovery.deep-not-connected', locale)}
             {deepError === 'limit' && t('comercial.discovery.deep-limit-hit', locale)}
-            {deepError === 'other' && 'Error — inténtalo de nuevo.'}
+            {deepError === 'other' && 'Error — please try again.'}
           </div>
         )}
       </div>
@@ -531,7 +531,7 @@ function DeepDiscovery({
       {deepCompanies.length > 0 && deepStep !== 'searching' && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-ink font-medium">{deepCompanies.length} resultados de Apollo</p>
+            <p className="text-sm text-ink font-medium">{deepCompanies.length} results from Apollo</p>
             {(deepStep === 'results' || deepStep === 'enriching') && (
               <button
                 onClick={onEnrich}
@@ -580,7 +580,7 @@ function DeepDiscovery({
       {deepEnriched.length > 0 && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-ink font-medium">{deepEnriched.length} enriquecidos con datos reales</p>
+            <p className="text-sm text-ink font-medium">{deepEnriched.length} enriched with real data</p>
             {deepStep !== 'synced' && (
               <button
                 onClick={onSync}
@@ -621,7 +621,7 @@ function DeepDiscovery({
                       </p>
                     )}
                     {!e.crm_ready && (
-                      <p className="text-[10px] mt-1 italic" style={{ color: 'var(--text-tertiary)' }}>Sin contacto verificado para esta empresa</p>
+                      <p className="text-[10px] mt-1 italic" style={{ color: 'var(--text-tertiary)' }}>No verified contact for this company</p>
                     )}
                   </div>
                 </div>

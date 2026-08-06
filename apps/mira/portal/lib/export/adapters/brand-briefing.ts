@@ -26,22 +26,22 @@ function identitySection(r: Record<string, any>): Section | null {
   const pillars = asArr(r.brand_pillars)
   const values = asArrOrWrap(id.values)
   const personality = asArrOrWrap(id.personality)
-  if (pillars.length) stats.push({ value: String(pillars.length), label: 'Pilares de marca' })
-  if (values.length) stats.push({ value: String(values.length), label: 'Valores' })
-  if (personality.length) stats.push({ value: String(personality.length), label: 'Rasgos de personalidad' })
+  if (pillars.length) stats.push({ value: String(pillars.length), label: 'Brand pillars' })
+  if (values.length) stats.push({ value: String(values.length), label: 'Values' })
+  if (personality.length) stats.push({ value: String(personality.length), label: 'Personality traits' })
 
   const cards = [
-    { title: 'Misión', body: valueToHtml(id.mission) },
-    { title: 'Visión', body: valueToHtml(id.vision) },
-    { title: 'Valores', body: valueToHtml(id.values) },
-    { title: 'Personalidad', body: valueToHtml(id.personality) },
+    { title: 'Mission', body: valueToHtml(id.mission) },
+    { title: 'Vision', body: valueToHtml(id.vision) },
+    { title: 'Values', body: valueToHtml(id.values) },
+    { title: 'Personality', body: valueToHtml(id.personality) },
   ].filter((c) => c.body)
 
   if (!stats.length && !cards.length) return null
   return {
-    title: 'Identidad de Marca',
-    navLabel: 'Identidad',
-    subtitle: asStr(id.name) ? `Fuente de verdad de la marca ${asStr(id.name)}` : 'Fuente de verdad de la marca',
+    title: 'Brand Identity',
+    navLabel: 'Identity',
+    subtitle: asStr(id.name) ? `Single source of truth for ${asStr(id.name)}` : 'Single source of truth for the brand',
     stats: stats.length ? stats : undefined,
     cards: cards.length ? cards : undefined,
   }
@@ -66,8 +66,8 @@ function simpleCardsSection(title: string, obj: any, labels: Record<string, stri
 function audienceSection(r: Record<string, any>): Section | null {
   const ta = asObj(r.target_audience)
   const section: Section = {
-    title: 'Audiencia Objetivo',
-    navLabel: 'Audiencia',
+    title: 'Target Audience',
+    navLabel: 'Audience',
   }
   let has = false
   if (asStr(ta.description)) {
@@ -77,7 +77,7 @@ function audienceSection(r: Record<string, any>): Section | null {
   const personas = asArr(ta.personas).filter(isPlainObject)
   if (personas.length) {
     section.table = {
-      headers: ['Persona', 'Comportamiento', 'Pain Points'],
+      headers: ['Persona', 'Behavior', 'Pain Points'],
       rows: personas.map((p) => [
         `<strong>${esc(asStr(p.name) || 'Persona')}</strong>`,
         valueToHtml(p.behavior),
@@ -99,18 +99,18 @@ function pillarsSection(r: Record<string, any>): Section | null {
   const pillars = asArr(r.brand_pillars).filter(isPlainObject)
   if (!pillars.length) {
     const s = sectionForValue('brand_pillars', r.brand_pillars)
-    return s ? { ...s, title: 'Pilares de Marca' } : null
+    return s ? { ...s, title: 'Brand Pillars' } : null
   }
   return {
-    title: 'Pilares de Marca',
-    navLabel: 'Pilares',
-    subtitle: 'Los pilares canónicos que usarán todos los demás toolkits',
+    title: 'Brand Pillars',
+    navLabel: 'Pillars',
+    subtitle: 'The canonical pillars every other toolkit will use',
     cards: pillars.map((p) => ({
-      title: asStr(p.name) || 'Pilar',
+      title: asStr(p.name) || 'Pillar',
       body:
         (asStr(p.description) ? `<p>${esc(asStr(p.description))}</p>` : '') +
         (asArr(p.examples).length
-          ? `<p style="margin-top:8px;"><strong>Ejemplos:</strong></p>${valueToHtml(p.examples)}`
+          ? `<p style="margin-top:8px;"><strong>Examples:</strong></p>${valueToHtml(p.examples)}`
           : ''),
     })),
   }
@@ -120,23 +120,23 @@ function voiceSection(r: Record<string, any>): Section | null {
   const v = asObj(r.brand_voice)
   if (!Object.keys(v).length) return null
   const cards = [
-    { title: 'Tono', body: valueToHtml(v.tone) },
-    { title: 'Rasgos', body: valueToHtml(v.traits) },
-    { title: 'Mensajes Clave', body: valueToHtml(v.messaging) },
+    { title: 'Tone', body: valueToHtml(v.tone) },
+    { title: 'Traits', body: valueToHtml(v.traits) },
+    { title: 'Key Messages', body: valueToHtml(v.messaging) },
     {
-      title: 'Sí Decir',
+      title: 'Say This',
       body: asArrOrWrap(v.do_examples).length ? valueToHtml(v.do_examples) : '',
     },
     {
-      title: 'No Decir',
+      title: 'Never Say This',
       body: asArrOrWrap(v.dont_examples).length ? valueToHtml(v.dont_examples) : '',
     },
   ].filter((c) => c.body)
   if (!cards.length) return null
   return {
-    title: 'Voz de Marca',
-    navLabel: 'Voz',
-    subtitle: 'Estándar de tono y mensajería para todo el contenido',
+    title: 'Brand Voice',
+    navLabel: 'Voice',
+    subtitle: 'Tone and messaging standard for all content',
     cards,
   }
 }
@@ -144,13 +144,13 @@ function voiceSection(r: Record<string, any>): Section | null {
 function visualSection(r: Record<string, any>): Section | null {
   const vi = asObj(r.visual_identity)
   if (!Object.keys(vi).length) return null
-  const section: Section = { title: 'Identidad Visual', navLabel: 'Visual' }
+  const section: Section = { title: 'Visual Identity', navLabel: 'Visual' }
   let has = false
 
   const colors = asArr(vi.colors).filter(isPlainObject)
   if (colors.length) {
     section.table = {
-      headers: ['Color', 'Hex', 'Uso'],
+      headers: ['Color', 'Hex', 'Usage'],
       rows: colors.map((c) => {
         const hex = asStr(c.hex)
         const swatch = /^#?[0-9a-fA-F]{3,8}$/.test(hex.replace('#', ''))
@@ -163,8 +163,8 @@ function visualSection(r: Record<string, any>): Section | null {
   }
 
   const cards = [
-    { title: 'Tipografía', body: valueToHtml(vi.typography) },
-    { title: 'Estilo de Imagen', body: valueToHtml(vi.imagery_style) },
+    { title: 'Typography', body: valueToHtml(vi.typography) },
+    { title: 'Imagery Style', body: valueToHtml(vi.imagery_style) },
   ].filter((c) => c.body)
   if (cards.length) {
     section.cards = cards
@@ -177,9 +177,9 @@ function journeySection(r: Record<string, any>): Section | null {
   const cj = asObj(r.customer_journey_touchpoints)
   const labels: Record<string, string> = {
     awareness: 'Awareness',
-    consideration: 'Consideración',
-    decision: 'Decisión',
-    loyalty: 'Fidelización',
+    consideration: 'Consideration',
+    decision: 'Decision',
+    loyalty: 'Loyalty',
   }
   const cards = Object.entries(cj)
     .map(([k, v]) => ({ title: labels[k] || k.replace(/_/g, ' '), body: valueToHtml(v) }))
@@ -188,7 +188,7 @@ function journeySection(r: Record<string, any>): Section | null {
   return {
     title: 'Customer Journey',
     navLabel: 'Journey',
-    subtitle: 'Touchpoints por etapa del recorrido del cliente',
+    subtitle: 'Touchpoints by customer journey stage',
     cards,
   }
 }
@@ -196,12 +196,12 @@ function journeySection(r: Record<string, any>): Section | null {
 function metricsSection(r: Record<string, any>): Section | null {
   const sm = asObj(r.success_metrics)
   if (!Object.keys(sm).length) return null
-  const section: Section = { title: 'Métricas de Éxito', navLabel: 'Métricas' }
+  const section: Section = { title: 'Success Metrics', navLabel: 'Metrics' }
   let has = false
   const kpis = asArr(sm.kpis).filter(isPlainObject)
   if (kpis.length) {
     section.table = {
-      headers: ['KPI', 'Objetivo', 'Tracking'],
+      headers: ['KPI', 'Target', 'Tracking'],
       rows: kpis.map((k) => [
         `<strong>${esc(asStr(k.name) || asStr(k.metric) || 'KPI')}</strong>`,
         valueToHtml(k.target),
@@ -211,7 +211,7 @@ function metricsSection(r: Record<string, any>): Section | null {
     has = true
   }
   if (asStr(sm.health_dashboard)) {
-    section.content = `<p><strong>Dashboard de salud:</strong> ${esc(asStr(sm.health_dashboard))}</p>`
+    section.content = `<p><strong>Health dashboard:</strong> ${esc(asStr(sm.health_dashboard))}</p>`
     has = true
   }
   return has ? section : null
@@ -223,11 +223,11 @@ function coherenceSection(r: Record<string, any>): Section | null {
   if (!Object.keys(dc).length) return null
   if (!warnings.length && dc.conflicts_detected !== true) return null
   return {
-    title: 'Coherencia de Datos',
-    subtitle: 'Advertencias detectadas durante la generación del briefing',
+    title: 'Data Coherence',
+    subtitle: 'Warnings detected while generating the briefing',
     listItems: warnings.length
       ? warnings.map((w) => valueToHtml(w)).filter(Boolean)
-      : ['<strong>Atención:</strong> se han detectado posibles conflictos en los datos de marca.'],
+      : ['<strong>Warning:</strong> potential conflicts detected in the brand data.'],
   }
 }
 
@@ -246,25 +246,25 @@ export const adapter: ToolAdapter = (result) => {
     push(['brand_identity', 'brand_pillars'], identitySection(r))
     push(
       'brand_story',
-      simpleCardsSection('Historia de Marca', r.brand_story, {
-        founding: 'Fundación',
-        origin_narrative: 'Narrativa de Origen',
-        why_exists: 'Por Qué Existe',
+      simpleCardsSection('Brand Story', r.brand_story, {
+        founding: 'Founding',
+        origin_narrative: 'Origin Narrative',
+        why_exists: 'Why It Exists',
       })
     )
     push(
       'brand_promise',
-      simpleCardsSection('Promesa de Marca', r.brand_promise, {
-        covenant: 'Compromiso',
-        customer_expectation: 'Expectativa del Cliente',
-        guarantee: 'Garantía',
+      simpleCardsSection('Brand Promise', r.brand_promise, {
+        covenant: 'Covenant',
+        customer_expectation: 'Customer Expectation',
+        guarantee: 'Guarantee',
       })
     )
     push(
       'competitive_positioning',
-      simpleCardsSection('Posicionamiento Competitivo', r.competitive_positioning, {
-        vs_alternatives: 'Frente a Alternativas',
-        unique_advantage: 'Ventaja Única',
+      simpleCardsSection('Competitive Positioning', r.competitive_positioning, {
+        vs_alternatives: 'Vs. Alternatives',
+        unique_advantage: 'Unique Advantage',
       })
     )
     push('target_audience', audienceSection(r))
@@ -273,20 +273,20 @@ export const adapter: ToolAdapter = (result) => {
     push('visual_identity', visualSection(r))
     push('content_strategy', (() => {
       const s = sectionForValue('content_strategy', r.content_strategy)
-      return s ? { ...s, title: 'Estrategia de Contenido' } : null
+      return s ? { ...s, title: 'Content Strategy' } : null
     })())
     push('customer_journey_touchpoints', journeySection(r))
     push('brand_values_in_practice', (() => {
       const items = asArr(r.brand_values_in_practice).filter(isPlainObject)
       if (!items.length) return null
       const table = toTable(items)
-      return table ? { title: 'Valores en Práctica', table } : null
+      return table ? { title: 'Values in Practice', table } : null
     })())
     push(
       'brand_evolution',
-      simpleCardsSection('Evolución de Marca', r.brand_evolution, {
-        '2_year_roadmap': 'Roadmap a 2 Años',
-        potential_expansions: 'Expansiones Potenciales',
+      simpleCardsSection('Brand Evolution', r.brand_evolution, {
+        '2_year_roadmap': '2-Year Roadmap',
+        potential_expansions: 'Potential Expansions',
       })
     )
     push('success_metrics', metricsSection(r))

@@ -63,7 +63,7 @@ export default function SentinelArchetype({ agentColor, status = 'ready', errorM
           <div>
             <div className="text-sm font-semibold text-ink">🟢 {t('archetype.sentinel.monitoring-active', locale)}</div>
             <div className="text-xs text-ink-tertiary">
-              {visibleAlerts.length} {t('archetype.sentinel.active-alerts', locale)} • {criticalAlerts.length} críticas
+              {visibleAlerts.length} {t('archetype.sentinel.active-alerts', locale)} • {criticalAlerts.length} critical
             </div>
           </div>
         </div>

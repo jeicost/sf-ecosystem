@@ -119,8 +119,8 @@ export function SeoAuditResult({ data }: { data?: any }) {
                   <div className="flex items-start justify-between gap-4 mb-2">
                     <div className="font-semibold text-ink">{aidx + 1}. {action.title}</div>
                     {action.priority && <span className="text-xs font-bold px-3 py-1 rounded-full whitespace-nowrap" style={{
-                      backgroundColor: action.priority === 'CRÍTICO' ? 'rgba(255,61,87,0.2)' : 'rgba(255,215,64,0.2)',
-                      color: action.priority === 'CRÍTICO' ? '#ff5a72' : '#ffd740'
+                      backgroundColor: action.priority === 'CRITICAL' || action.priority === 'CRÍTICO' ? 'rgba(255,61,87,0.2)' : 'rgba(255,215,64,0.2)',
+                      color: action.priority === 'CRITICAL' || action.priority === 'CRÍTICO' ? '#ff5a72' : '#ffd740'
                     }}>{action.priority}</span>}
                   </div>
                   {action.description && <p className="text-sm text-ink-secondary mb-3">{action.description}</p>}

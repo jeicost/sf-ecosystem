@@ -37,7 +37,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     // Los borradores son workspace de la agencia — el cliente aún no los ve.
     if (result.questionnaire.status === 'draft' && !agency) {
       return NextResponse.json(
-        { error: 'Este cuestionario aún no está disponible' },
+        { error: 'This questionnaire is not available yet' },
         { status: 403 }
       )
     }
@@ -54,7 +54,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   } catch (error) {
     console.error('questionnaires/[id] GET error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error cargando el cuestionario' },
+      { error: error instanceof Error ? error.message : 'Failed to load the questionnaire' },
       { status: 500 }
     )
   }
@@ -69,7 +69,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const nextStatus = body?.status as QuestionnaireStatus | undefined
 
     if (!nextStatus || !(nextStatus in VALID_TRANSITIONS)) {
-      return NextResponse.json({ error: 'Estado no válido' }, { status: 400 })
+      return NextResponse.json({ error: 'Invalid status' }, { status: 400 })
     }
 
     const user = await getSessionUser()
@@ -83,14 +83,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (!VALID_TRANSITIONS[current]?.includes(nextStatus)) {
       return NextResponse.json(
-        { error: `Transición no permitida: ${current} → ${nextStatus}` },
+        { error: `Status change not allowed: ${current} → ${nextStatus}` },
         { status: 409 }
       )
     }
     // Enviar al cliente es un acto de la agencia; responder/completar es del cliente.
     if (nextStatus === 'sent' && !isAgencyPlan(user.user_metadata?.plan)) {
       return NextResponse.json(
-        { error: 'Solo la agencia puede enviar cuestionarios' },
+        { error: 'Only the agency can send questionnaires' },
         { status: 403 }
       )
     }
@@ -108,7 +108,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     if (error || !data) {
       return NextResponse.json(
-        { error: error?.message || 'No se pudo actualizar el estado' },
+        { error: error?.message || 'The status could not be updated' },
         { status: 500 }
       )
     }
@@ -117,7 +117,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   } catch (error) {
     console.error('questionnaires/[id] PATCH error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error actualizando el cuestionario' },
+      { error: error instanceof Error ? error.message : 'Failed to update the questionnaire' },
       { status: 500 }
     )
   }

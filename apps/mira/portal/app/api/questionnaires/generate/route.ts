@@ -25,27 +25,27 @@ function computeBrainGaps(brain: BrandBrainContext | null): string[] {
   const add = (label: string, mapsTo: string) => gaps.push(`- ${label} (maps_to sugerido: ${mapsTo})`)
 
   if (!brain) {
-    gaps.push('- No existe Brand Brain todavía: TODO está por capturar (nombre, misión, tono, propuesta, audiencias, pilares...)')
+    gaps.push('- There is no Brand Brain yet: EVERYTHING is still to capture (name, mission, tone, proposition, audiences, pillars...)')
   }
   if (!brain?.brandName) add('Nombre de la marca', 'brand_profile.name')
-  if (!brain?.mission) add('Misión', 'brand_profile.mission')
+  if (!brain?.mission) add('Mission', 'brand_profile.mission')
   if (!brain?.toneOfVoice) add('Tono de voz', 'brand_profile.tone_of_voice')
   if (!brain?.brandPersonality?.length) add('Valores / personalidad de marca', 'brand_profile.values')
   if (!brain?.pillars?.length) add('Pilares de contenido (3-5 temas)', 'content_pillar')
   if (!brain?.tagline) add('Tagline', 'brand_profile.brand_data.identity.tagline')
   if (!brain?.audiences?.length) add('Audiencias / cliente ideal', 'brand_profile.brand_data.audiences')
-  if (!brain?.visualIdentitySummary) add('Identidad visual (colores, tipografías, estilo)', 'brand_profile.brand_data.visual_identity.notes')
+  if (!brain?.visualIdentitySummary) add('Visual identity (colours, typography, style)', 'brand_profile.brand_data.visual_identity.notes')
   if (!brain?.goldenRule) add('Regla de oro de la voz', 'brand_profile.brand_data.tone_and_voice.golden_rule')
   if (!brain?.voiceVocabulary?.do?.length && !brain?.voiceVocabulary?.dont?.length) {
-    add('Vocabulario de voz (qué decimos / qué nunca decimos)', 'brand_profile.brand_data.tone_and_voice.vocabulary_notes')
+    add('Voice vocabulary (what we say / what we never say)', 'brand_profile.brand_data.tone_and_voice.vocabulary_notes')
   }
   if (!brain?.bannedPhrases?.length) add('Frases prohibidas', 'brand_profile.brand_data.banned_phrases')
   if (!brain?.signatureRitual) add('Ritual o experiencia firma', 'brand_profile.brand_data.identity.signature_ritual')
-  if (!brain?.offer) add('Oferta (productos hero, precios, dónde se compra)', 'brand_profile.brand_data.offer.full_list_note')
-  if (!brain?.languages) add('Idiomas de comunicación', 'brand_profile.brand_data.languages.manual')
+  if (!brain?.offer) add('Offer (hero products, prices, where to buy)', 'brand_profile.brand_data.offer.full_list_note')
+  if (!brain?.languages) add('Communication languages', 'brand_profile.brand_data.languages.manual')
   if (!brain?.channels?.length) add('Canales activos y su trabajo', 'brand_profile.brand_data.audience_channels')
-  if (!brain?.constraints) add('Restricciones (legales, de categoría, autoimpuestas)', 'brand_profile.brand_data.constraints.notes')
-  if (!brain?.whatFlopped?.length) add('Qué se probó y no funcionó', 'brand_profile.brand_data.strategy.what_worked_what_didnt')
+  if (!brain?.constraints) add('Constraints (legal, category, self-imposed)', 'brand_profile.brand_data.constraints.notes')
+  if (!brain?.whatFlopped?.length) add('What was tried and did not work', 'brand_profile.brand_data.strategy.what_worked_what_didnt')
   return gaps
 }
 
@@ -114,28 +114,28 @@ export async function POST(req: NextRequest) {
     const prompt = `Eres MIRA, la plataforma de agencia de Startup Factory. Vas a redactar un CUESTIONARIO para que ${clientName} lo responda con calma desde su portal. El objetivo es rellenar los huecos reales de su Brand Brain y resolver preguntas abiertas — nunca preguntar lo que ya sabemos.
 
 ## LO QUE YA SABEMOS (Brand Brain actual)
-${brain ? formatBrandBrainForPrompt(brain) : '(Este cliente aún no tiene Brand Brain: está todo por capturar.)'}
+${brain ? formatBrandBrainForPrompt(brain) : '(This client has no Brand Brain yet: everything is still to capture.)'}
 
-## HUECOS DETECTADOS (campos vacíos del brain)
-${gaps.length ? gaps.join('\n') : '- Ninguno relevante: el brain está bastante completo. Céntrate en las preguntas abiertas y el foco de la agencia.'}
+## DETECTED GAPS (empty Brand Brain fields)
+${gaps.length ? gaps.join('\n') : '- Nothing significant: the brain is fairly complete. Focus on the open questions and the agency\'s priorities.'}
 
 ## PREGUNTAS ABIERTAS / CONTRADICCIONES REGISTRADAS
 ${openQuestions.length ? openQuestions.map((q) => `- ${q}`).join('\n') : '- Ninguna registrada.'}
 ${focus ? `\n## FOCO PEDIDO POR LA AGENCIA\n${focus}\n` : ''}
-## BANCO DE PREGUNTAS (plantilla de intake — reutiliza o adapta las que cubran los huecos; sus maps_to ya están bien derivados)
+## QUESTION BANK (intake template — reuse or adapt the ones that cover the gaps; their maps_to are already correctly derived)
 ${formatIntakeTemplateForPrompt()}
 
 ## INSTRUCCIONES
-- Entre 6 y 14 preguntas como máximo. Prioriza los huecos más valiosos para generar buenos informes y contenido; no intentes cubrirlo todo.
-- En español, en segunda persona, tono cercano y profesional. Cada pregunta con un "help" corto con un ejemplo concreto adaptado a ${clientName} cuando aporte.
+- Between 6 and 14 questions maximum. Prioritise the gaps most valuable for producing good reports and content; do not try to cover everything.
+- In English, in the second person, warm and professional. Give each question a short "help" line with a concrete example tailored to ${clientName} where it adds something.
 - Agrupa en 2-4 secciones cortas con nombres claros.
 - kind ∈ "text" | "long_text" | "select" | "multi_select" | "number" | "url". Usa "options" SOLO con select/multi_select (array de strings).
 - "required": true solo en las 2-4 preguntas realmente imprescindibles.
-- "maps_to" indica dónde se aplicará la respuesta al ingerirla: "brand_profile.<ruta>" (columna de brand_profiles o path dentro de brand_data, p. ej. "brand_profile.brand_data.identity.tagline"), "project_memory" (contexto/objetivos/prioridades) o "content_pillar" (temas de contenido). Usa los maps_to sugeridos en los huecos y en el banco; null si la respuesta es solo informativa.
-- Para las preguntas abiertas/contradicciones: pregunta de forma neutral para que el cliente decida (nunca des por resuelta una contradicción).
+- "maps_to" says where the answer will be applied on ingestion: "brand_profile.<path>" (a brand_profiles column or a path inside brand_data, e.g. "brand_profile.brand_data.identity.tagline"), "project_memory" (contexto/objetivos/prioridades) o "content_pillar" (temas de contenido). Usa los maps_to sugeridos en los huecos y en el banco; null si la respuesta es solo informativa.
+- For open questions and contradictions: ask neutrally so the client decides (never treat a contradiction as already resolved).
 
-Responde SOLO con un objeto JSON válido, sin texto fuera del JSON:
-{"title": "...", "intro": "2-3 frases explicando al cliente por qué le pedimos esto y cuánto tarda", "questions": [{"section": "...", "prompt": "...", "help": "... o null", "kind": "...", "options": [...] | null, "required": true|false, "maps_to": "... | null"}]}`
+Reply ONLY with a valid JSON object, with no text outside the JSON:
+{"title": "...", "intro": "2-3 sentences telling the client why we are asking and how long it takes", "questions": [{"section": "...", "prompt": "...", "help": "... or null", "kind": "...", "options": [...] | null, "required": true|false, "maps_to": "... | null"}]}`
 
     const message = await createMessageForClient(clientId, 'questionnaires/generate', {
       model: 'claude-opus-4-8',
@@ -187,7 +187,7 @@ Responde SOLO con un objeto JSON válido, sin texto fuera del JSON:
 
     if (questionRows.length === 0) {
       return NextResponse.json(
-        { error: 'El modelo no devolvió ninguna pregunta válida — inténtalo de nuevo' },
+        { error: 'The model did not return any valid question — please try again' },
         { status: 500 }
       )
     }

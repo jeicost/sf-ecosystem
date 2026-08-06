@@ -233,7 +233,7 @@ export function QuickActionResult({ actionId, resourceName, department, outputTy
           projectId: getStoredProjectId(),
           title: resourceName,
           category: determineCategoryFromDepartment(department),
-          summary: summary || 'Resultado guardado del toolkit',
+          summary: summary || 'Toolkit result saved',
           tags: [department, displayOutputType],
           sourceDepartment: department,
           fullContent: result.output_data,
@@ -533,7 +533,7 @@ function extractSummary(outputData: any, _outputType: string): string {
   if (outputData.subject) return outputData.subject
   if (outputData.copy) return outputData.copy.substring(0, 200)
   if (outputData.script) return outputData.script.substring(0, 200)
-  return t('actions.complete', 'es')
+  return t('actions.complete', 'en')
 }
 
 function determineCategoryFromDepartment(department: string): string {

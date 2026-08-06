@@ -25,13 +25,13 @@ function overviewSection(r: Record<string, any>): Section {
     stats.push({ value: `${score}/100`, label: asStr(r.scoreLabel) || 'Marketing Health Score' })
   }
   if (asStr(r.overall_trend)) {
-    stats.push({ value: asStr(r.overall_trend), label: 'Tendencia 90 días' })
+    stats.push({ value: asStr(r.overall_trend), label: '90-Day Trend' })
   }
 
   const section: Section = {
-    title: 'Resumen Ejecutivo',
-    navLabel: 'Resumen',
-    subtitle: 'Puntuación global y desglose por categorías de marketing',
+    title: 'Executive Summary',
+    navLabel: 'Summary',
+    subtitle: 'Overall score and breakdown by marketing category',
     stats: stats.length ? stats : undefined,
   }
 
@@ -47,13 +47,13 @@ function overviewSection(r: Record<string, any>): Section {
     }
   }
   if (labels.length >= 2) {
-    section.chart = { type: 'bar', labels, data, label: 'Score por categoría' }
+    section.chart = { type: 'bar', labels, data, label: 'Score by Category' }
   }
 
   const cards = statCards
     .filter((c) => asStr(c.description))
     .map((c) => ({
-      title: asStr(c.label) || 'Categoría',
+      title: asStr(c.label) || 'Category',
       body:
         `<p><strong>${esc(asStr(c.value))}</strong></p>` +
         (asStr(c.status) ? statusBadge(c.status) : '') +
@@ -65,7 +65,7 @@ function overviewSection(r: Record<string, any>): Section {
 }
 
 function auditSubSection(sec: Record<string, any>): Section | null {
-  const title = asStr(sec.title) || 'Sección'
+  const title = asStr(sec.title) || 'Section'
   const subtitle = asStr(sec.description) || undefined
 
   const cards = asArr(sec.cards).filter(isPlainObject)
@@ -74,7 +74,7 @@ function auditSubSection(sec: Record<string, any>): Section | null {
       title,
       subtitle,
       cards: cards.map((c) => ({
-        title: asStr(c.title) || 'Hallazgo',
+        title: asStr(c.title) || 'Finding',
         body:
           statusBadge(c.status) +
           `<p style="margin-top:8px;">${esc(asStr(c.content) || asStr(c.description))}</p>`,
@@ -88,7 +88,7 @@ function auditSubSection(sec: Record<string, any>): Section | null {
       title,
       subtitle,
       cards: dimensions.map((d) => ({
-        title: asStr(d.name) || 'Dimensión',
+        title: asStr(d.name) || 'Dimension',
         body:
           statusBadge(d.status) +
           `<p style="margin-top:8px;">${esc(asStr(d.content) || asStr(d.description))}</p>`,
@@ -110,15 +110,15 @@ function quickWinsSection(wins: any[]): Section | null {
   if (!items.length) return null
   return {
     title: 'Quick Wins',
-    subtitle: 'Acciones de alto retorno y bajo esfuerzo',
+    subtitle: 'High-return, low-effort actions',
     phases: items.map((w, i) => {
       const num = asStr(w.number) || asStr(w.id) || String(i + 1)
       const parts: string[] = []
       if (asStr(w.description)) parts.push(`<p>${esc(asStr(w.description))}</p>`)
       const meta: string[] = []
-      if (asStr(w.effort_tag)) meta.push(`<strong>Esfuerzo:</strong> ${esc(asStr(w.effort_tag))}`)
-      if (asStr(w.effort_hours)) meta.push(`<strong>Horas:</strong> ${esc(asStr(w.effort_hours))}`)
-      if (asStr(w.impact)) meta.push(`<strong>Impacto:</strong> ${esc(asStr(w.impact))}`)
+      if (asStr(w.effort_tag)) meta.push(`<strong>Effort:</strong> ${esc(asStr(w.effort_tag))}`)
+      if (asStr(w.effort_hours)) meta.push(`<strong>Hours:</strong> ${esc(asStr(w.effort_hours))}`)
+      if (asStr(w.impact)) meta.push(`<strong>Impact:</strong> ${esc(asStr(w.impact))}`)
       if (asStr(w.roi_score)) meta.push(`<strong>ROI:</strong> ${esc(asStr(w.roi_score))}`)
       if (meta.length) parts.push(`<p>${meta.join(' · ')}</p>`)
       return {
@@ -132,24 +132,24 @@ function quickWinsSection(wins: any[]): Section | null {
 function coherenceSection(check: Record<string, any>): Section | null {
   const entries = Object.entries(check)
   if (!entries.length) return null
-  const alignLabel = (v: any) => (v === true ? 'Alineado' : v === false ? 'Desalineado' : asStr(v) || '—')
+  const alignLabel = (v: any) => (v === true ? 'Aligned' : v === false ? 'Misaligned' : asStr(v) || '—')
   const cards = [
-    { title: 'Pilares', body: statusBadge(alignLabel(check.pillars_aligned)) },
-    { title: 'Voz de Marca', body: statusBadge(alignLabel(check.voice_aligned)) },
-    { title: 'Posicionamiento', body: statusBadge(alignLabel(check.positioning_aligned)) },
+    { title: 'Pillars', body: statusBadge(alignLabel(check.pillars_aligned)) },
+    { title: 'Brand Voice', body: statusBadge(alignLabel(check.voice_aligned)) },
+    { title: 'Positioning', body: statusBadge(alignLabel(check.positioning_aligned)) },
   ].filter((c) => c.body)
 
   const conflicts = asArr(check.conflicts)
   const section: Section = {
-    title: 'Coherencia con Brand Briefing',
-    navLabel: 'Coherencia',
-    subtitle: 'Validación del marketing actual contra la identidad de marca definida',
+    title: 'Brand Briefing Coherence',
+    navLabel: 'Coherence',
+    subtitle: 'Validation of current marketing against the defined brand identity',
   }
   if (cards.length) section.cards = cards
   if (conflicts.length) {
-    section.listItems = conflicts.map((c) => `<strong>Conflicto:</strong> ${valueToHtml(c)}`)
+    section.listItems = conflicts.map((c) => `<strong>Conflict:</strong> ${valueToHtml(c)}`)
   } else {
-    section.content = '<p>No se han detectado conflictos entre el marketing actual y el Brand Briefing.</p>'
+    section.content = '<p>No conflicts detected between current marketing and the Brand Briefing.</p>'
   }
   return section
 }

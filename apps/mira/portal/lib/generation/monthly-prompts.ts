@@ -33,9 +33,9 @@ function sharedContext(p: MonthlyPromptParams): string {
     p.pillarsBlock,
     p.previousBoardBlock,
     p.attachmentText
-      ? `ARCHIVOS ADJUNTOS DEL USUARIO (fuente primaria — usa su contenido real):\n${p.attachmentText}`
+      ? `USER ATTACHMENTS (primary source — use their actual content):\n${p.attachmentText}`
       : '',
-    p.contextoAdicional ? `CONTEXTO DEL MES (del usuario): ${p.contextoAdicional}` : '',
+    p.contextoAdicional ? `CONTEXT FOR THIS MONTH (from the user): ${p.contextoAdicional}` : '',
     p.feedbackBlock || '',
     GROUNDING_CONTRACT,
     REPORT_VOICE_CONTRACT,
@@ -51,10 +51,10 @@ ${sharedContext(p)}
 
 RULES:
 - Pillars: start from the registered pillars. Each one: status ALREADY_RUNNING (exists) or PROPOSED (new/evolved). ACTIVATE AT MOST 6 pillars this month — a focused month beats spray; every other registered pillar goes to dormant_note with its reason. If a registered pillar should rest this month, list it in dormant_note instead of forcing content into it.
-- weekly_board: the month has 4-5 weeks — one entry per week, máx 7 filas por pilar EN TODO EL MES (no per week). Each row is a concrete piece with working title, not a placeholder.
+- weekly_board: the month has 4-5 weeks — one entry per week, max 7 rows per pillar FOR THE WHOLE MONTH (not per week). Each row is a concrete piece with working title, not a placeholder.
 - priority_board: exactly 7 pieces — the ones that move the needle if only 7 get made. Ordered.
 - previous_month_learnings: ONLY from the previous board above (verdicts APPROVE/PASS + client notes). No board = empty array, never invented learnings.
-- Todo en español (salvo que la voz de la marca indique otra cosa).
+- Write every prose field in English, unless the brand voice explicitly calls for another language.
 
 Generate PART 1 JSON:
 {
@@ -63,25 +63,25 @@ Generate PART 1 JSON:
     {
       "name": "",
       "status": "ALREADY_RUNNING|PROPOSED",
-      "promise": "qué recibe la audiencia cada vez que este pilar publica",
-      "audience": "a quién le habla (del brain)",
+      "promise": "what the audience gets every time this pillar publishes",
+      "audience": "who it speaks to (from the brain)",
       "funnel_role": "tofu|mofu|bofu",
-      "cadence": "p.ej. 2x/semana",
-      "do": "la regla nº1 de este pilar",
-      "dont": "el error que mata este pilar",
-      "idea_seeds": ["3-5 semillas de contenido concretas"]
+      "cadence": "e.g. 2x/week",
+      "do": "the #1 rule of this pillar",
+      "dont": "the mistake that kills this pillar",
+      "idea_seeds": ["3-5 concrete content seeds"]
     }
   ],
-  "dormant_note": "pilares registrados que este mes descansan y por qué (o vacío)",
-  "funnel_balance": {"tofu_pct": 0, "mofu_pct": 0, "bofu_pct": 0, "rationale": "por qué este reparto ESTE mes"},
+  "dormant_note": "registered pillars resting this month and why (or empty)",
+  "funnel_balance": {"tofu_pct": 0, "mofu_pct": 0, "bofu_pct": 0, "rationale": "why this split THIS month"},
   "weekly_board": [
-    {"week": 1, "theme": "hilo de la semana", "rows": [
-      {"pillar": "", "format": "reel|carrusel|foto|story|post", "platform": "instagram|linkedin|tiktok", "working_title": "título de trabajo concreto", "goal": "qué debe conseguir"}
+    {"week": 1, "theme": "the thread of the week", "rows": [
+      {"pillar": "", "format": "reel|carousel|photo|story|post", "platform": "instagram|linkedin|tiktok", "working_title": "concrete working title", "goal": "what it must achieve"}
     ]}
   ],
   "priority_board": [{"n": 1, "title": "", "pillar": "", "why_priority": ""}],
-  "previous_month_learnings": [{"learning": "", "evidence": "APPROVE/PASS + pieza o nota concreta"}],
-  "open_items": [{"n": 1, "item": "", "owner": "cliente|agencia", "needed_for": ""}]
+  "previous_month_learnings": [{"learning": "", "evidence": "APPROVE/PASS + concrete piece or note"}],
+  "open_items": [{"n": 1, "item": "", "owner": "client|agency", "needed_for": ""}]
 }`
 }
 
@@ -90,29 +90,29 @@ export function buildMonthlyProductionPrompt(
   strategyJson: string
 ): string {
   const reelNote = p.includeReels
-    ? 'Los posts de instagram/tiktok marcados como reel llevan reel_script con escenas timecodeadas.'
-    : 'Sin reels este mes — no generes reel_script.'
+    ? 'Instagram/TikTok posts marked as reel carry a reel_script with timecoded scenes.'
+    : 'No reels this month — do not generate reel_script.'
   return `You are the monthly content producer for this brand. PART 1 (strategy) is already decided — you produce PART 2 for ${p.monthLabel}: hero briefs, ready-to-publish captions and the idea bank. Everything must execute the strategy below, not reinvent it.
 
-PART 1 — ESTRATEGIA YA DECIDIDA (síguela):
+PART 1 — STRATEGY ALREADY DECIDED (follow it):
 ${strategyJson}
 
 ${sharedContext(p)}
 
 RULES:
-- hero_briefs: exactly 3 — the month's hero pieces (from priority_board top). Shot flow timecodeado: cada plano con tiempo, encuadre, acción y texto en pantalla. Un equipo pequeño debe poder grabarlo leyendo el brief.
-- captions: ${p.postsPorPilar} por pilar ACTIVO de PART 1 (máximo 18 captions en total — si el cálculo da más, prioriza los pilares del priority_board). Plataformas: ${p.plataformas.join(', ')}. Listas para publicar en la voz EXACTA de la marca (vocabulario decimos/nunca decimos). ${reelNote} Cada caption lleva pillar_name (de PART 1) y suggested_day (1-28, repartidos por el mes, coherentes con weekly_board).
-- full_brief_template: los 9 campos de un brief reutilizable; el 9º es SIEMPRE el guardrail inspired-by (referencias = estructura, nunca copia).
-- Todo en español (salvo que la voz de la marca indique otra cosa).
+- hero_briefs: exactly 3 — the month's hero pieces (from priority_board top). Timecoded shot flow: every shot with its time, framing, action and on-screen text. A small team must be able to shoot it just by reading the brief.
+- captions: ${p.postsPorPilar} per ACTIVE pillar from PART 1 (max 18 captions in total — if the maths gives more, prioritize the priority_board pillars). Platforms: ${p.plataformas.join(', ')}. Ready to publish in the EXACT brand voice (we-say / we-never-say vocabulary). ${reelNote} Every caption carries pillar_name (from PART 1) and suggested_day (1-28, spread across the month, consistent with weekly_board).
+- full_brief_template: the 9 fields of a reusable brief; the 9th is ALWAYS the inspired-by guardrail (references = structure, never a copy).
+- Write every prose field in English, unless the brand voice explicitly calls for another language.
 
 Generate PART 2 JSON:
 {
   "hero_briefs": [
     {
       "title": "", "pillar": "", "platform": "", "objective": "",
-      "hook": "primera frase/plano que detiene el scroll",
-      "shot_flow": [{"time": "0-3s", "shot": "encuadre", "action": "qué pasa", "text_overlay": ""}],
-      "cta": "", "success_metric": "cómo sabremos que funcionó"
+      "hook": "first line/shot that stops the scroll",
+      "shot_flow": [{"time": "0-3s", "shot": "framing", "action": "what happens", "text_overlay": ""}],
+      "cta": "", "success_metric": "how we will know it worked"
     }
   ],
   "full_brief_template": [
@@ -121,12 +121,12 @@ Generate PART 2 JSON:
   "captions": [
     {
       "pillar_name": "", "platform": "instagram|linkedin|tiktok", "suggested_day": 1,
-      "hook": "", "copy": "cuerpo completo listo para publicar", "caption": "caption corta (máx 300 chars)",
+      "hook": "", "copy": "full body ready to publish", "caption": "short caption (max 300 chars)",
       "hashtags": ["#"], "cta": "", "visual_direction": "",
       "reel_script": {"duration": "30s", "scenes": [{"time": "0-3s", "action": "", "text_overlay": ""}]}
     }
   ],
-  "open_items": [{"n": 1, "item": "", "owner": "cliente|agencia", "needed_for": ""}]
+  "open_items": [{"n": 1, "item": "", "owner": "client|agency", "needed_for": ""}]
 }`
 }
 
@@ -139,27 +139,27 @@ export function buildMonthlyIdeaBankPrompt(
 ): string {
   return `You are the monthly content strategist for this brand. PARTS 1-2 are done — you produce PART 6 for ${p.monthLabel}: the idea bank and the promo ratio. Material for the NEXT months, grounded in THIS brand.
 
-PART 1 — ESTRATEGIA YA DECIDIDA (contexto):
+PART 1 — STRATEGY ALREADY DECIDED (context):
 ${strategyJson}
 
 ${sharedContext(p)}
 
 RULES:
-- idea_bank: conceptos de campaña (absorbe el antiguo campaign generator), playbook de activación, sistema de influencers en 3 tiers y motor de comunidad (absorbe el antiguo community growth), todo aterrizado a ESTA marca — nada genérico.
-- kpis_30_60_90: solo métricas medibles con lo que la marca tiene hoy (brain/canales). Sin herramientas que no existen.
-- Todo en español (salvo que la voz de la marca indique otra cosa).
+- idea_bank: campaign concepts (absorbs the old campaign generator), activation playbook, a 3-tier influencer system and a community engine (absorbs the old community growth), all grounded in THIS brand — nothing generic.
+- kpis_30_60_90: only metrics measurable with what the brand has today (brain/channels). No tools that do not exist.
+- Write every prose field in English, unless the brand voice explicitly calls for another language.
 
 Generate PART 6 JSON:
 {
-  "promo_ratio": {"content_pct": 0, "promo_pct": 0, "rule": "la regla de mezcla del mes y por qué"},
+  "promo_ratio": {"content_pct": 0, "promo_pct": 0, "rule": "the month's content/promo mix rule and why"},
   "idea_bank": {
-    "campaign_concepts": [{"name": "", "concept": "", "pillar": "", "when": "momento ideal del año"}],
-    "activation_playbook": [{"play": "", "how": "", "cost": "0€|bajo|medio"}],
-    "influencer_system": {"tiers": [{"tier": "nano|micro|medio", "who": "perfil concreto para esta marca", "deal": "qué se ofrece", "content": "qué crean"}], "rule": ""},
+    "campaign_concepts": [{"name": "", "concept": "", "pillar": "", "when": "ideal moment of the year"}],
+    "activation_playbook": [{"play": "", "how": "", "cost": "zero|low|medium"}],
+    "influencer_system": {"tiers": [{"tier": "nano|micro|mid", "who": "concrete profile for this brand", "deal": "what is offered", "content": "what they create"}], "rule": ""},
     "community_engine": [{"ritual": "", "cadence": "", "why": ""}],
     "kpis_30_60_90": {"d30": [""], "d60": [""], "d90": [""]},
-    "dormant_pillars": ["ideas aparcadas con potencial"]
+    "dormant_pillars": ["parked ideas with potential"]
   },
-  "open_items": [{"n": 1, "item": "", "owner": "cliente|agencia", "needed_for": ""}]
+  "open_items": [{"n": 1, "item": "", "owner": "client|agency", "needed_for": ""}]
 }`
 }

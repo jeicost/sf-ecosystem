@@ -121,11 +121,11 @@ export function statusBadge(v: any): string {
   const low = s.toLowerCase()
   const good = ['ok', 'perfect', 'good', 'strong', 'active', 'aligned', 'present', 'verified', 'live', 'done']
   const bad = ['critical', 'critico', 'crítico', 'falta', 'missing', 'fail', 'error', 'weak', 'misaligned']
-  if (good.some((k) => low.includes(k))) {
-    return `<span class="badge badge-live">${esc(s)}</span>`
-  }
   if (bad.some((k) => low.includes(k))) {
     return `<span class="badge" style="background:rgba(239,68,68,0.2);color:#F87171;">${esc(s)}</span>`
+  }
+  if (good.some((k) => low.includes(k))) {
+    return `<span class="badge badge-live">${esc(s)}</span>`
   }
   return `<span class="badge badge-progress">${esc(s)}</span>`
 }
@@ -175,7 +175,7 @@ export function toKeyValueTable(obj: any): TableData | undefined {
       .filter(([, v]) => v !== null && v !== undefined && v !== '')
       .map(([k, v]) => [`<strong>${esc(humanize(k))}</strong>`, valueToHtml(v)])
     if (rows.length === 0) return undefined
-    return { headers: ['Concepto', 'Detalle'], rows }
+    return { headers: ['Concept', 'Detail'], rows }
   } catch {
     return undefined
   }
@@ -184,7 +184,7 @@ export function toKeyValueTable(obj: any): TableData | undefined {
 /** Build a Section for an arbitrary key/value following the generic rules. */
 export function sectionForValue(key: string, value: any): Section | null {
   try {
-    const title = humanize(key) || 'Datos'
+    const title = humanize(key) || 'Data'
     if (value === null || value === undefined) return null
 
     if (typeof value === 'string') {

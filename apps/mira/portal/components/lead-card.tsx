@@ -18,7 +18,7 @@ interface LeadCardProps {
 
 export default function LeadCard({ lead, onStageChange, onClick }: LeadCardProps) {
   const score = scoreLabel(lead.hot_score)
-  const displayName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'Sin nombre'
+  const displayName = [lead.first_name, lead.last_name].filter(Boolean).join(' ') || 'No name'
   const [advancing, setAdvancing] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -101,18 +101,18 @@ export default function LeadCard({ lead, onStageChange, onClick }: LeadCardProps
           {lead.icebreaker_used && (
             <button
               onClick={copyIcebreaker}
-              title="Copiar icebreaker"
+              title="Copy icebreaker"
               className="flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] text-ink-muted hover:text-ink hover:bg-surface-hover transition-all"
             >
               {copied ? <Check size={9} className="text-green-400" /> : <Copy size={9} />}
-              {copied ? 'Copiado' : 'Icebreaker'}
+              {copied ? 'Copied' : 'Icebreaker'}
             </button>
           )}
           {nextStage && onStageChange && (
             <button
               onClick={advanceStage}
               disabled={advancing}
-              title={`Mover a ${nextStage}`}
+              title={`Move to ${nextStage}`}
               className="ml-auto flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[9px] text-ink-muted hover:text-ink hover:bg-surface-hover transition-all"
             >
               {advancing ? '...' : <><ChevronRight size={9} /><span className="capitalize">{nextStage}</span></>}

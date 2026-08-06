@@ -54,7 +54,7 @@ export default function SuperAdminPage() {
     fetch('/api/admin/overview')
       .then(async (r) => {
         const json = await r.json()
-        if (!r.ok) throw new Error(json.error || 'Error cargando overview')
+        if (!r.ok) throw new Error(json.error || 'Error loading overview')
         setData(json)
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Error'))
@@ -76,7 +76,7 @@ export default function SuperAdminPage() {
     return <div className="p-8 text-red-400 text-sm">{error}</div>
   }
   if (!data) {
-    return <div className="p-8 text-ink-tertiary text-sm">Cargando visión de agencia…</div>
+    return <div className="p-8 text-ink-tertiary text-sm">Loading agency overview…</div>
   }
 
   return (
@@ -84,44 +84,44 @@ export default function SuperAdminPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-violet-400">
-            Buenos días, equipo 👋
+            Good morning, team 👋
           </p>
-          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-ink">Clientes y Operaciones</h1>
-          <p className="mt-2 text-sm text-ink-tertiary">Gestión unificada de todos los clientes y su progreso en MIRA</p>
+          <h1 className="mt-1 text-4xl font-extrabold tracking-tight text-ink">Clients and Operations</h1>
+          <p className="mt-2 text-sm text-ink-tertiary">Unified management of every client and their progress in MIRA</p>
         </div>
         <div className="flex items-center gap-2 text-xs">
           <Link href="/admin/onboarding"
             className="rounded-xl bg-violet-600 px-4 py-2.5 font-semibold text-white transition hover:bg-violet-500">
-            + Nuevo cliente (chat)
+            + New client (chat)
           </Link>
           <Link href="/toolkit"
             className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
-            Generar entregable
+            Generate deliverable
           </Link>
           <Link href="/admin/users" className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
-            👥 Usuarios
+            👥 Users
           </Link>
           <Link href="/admin/facturacion" className="rounded-lg border border-line px-3 py-2 text-ink-tertiary hover:bg-surface-hover">
-            💶 Facturación
+            💶 Billing
           </Link>
           <Link href="/admin/sistema" className="rounded-lg border border-line px-3 py-2 text-ink-tertiary hover:bg-surface-hover">
-            ⚙️ Sistema
+            ⚙️ System
           </Link>
         </div>
       </div>
 
       {/* StatCards */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard value={String(data.totals.clients)} label="Clientes activos" accent />
-        <StatCard value={String(data.totals.reports)} label="Informes generados" />
-        <StatCard value={String(data.totals.documents)} label="Documentos" />
-        <StatCard value={`$${data.totals.usage_cost_usd.toFixed(2)}`} label="Consumo IA este mes" />
+        <StatCard value={String(data.totals.clients)} label="Active clients" accent />
+        <StatCard value={String(data.totals.reports)} label="Reports generated" />
+        <StatCard value={String(data.totals.documents)} label="Documents" />
+        <StatCard value={`$${data.totals.usage_cost_usd.toFixed(2)}`} label="AI spend this month" />
       </div>
 
       {/* Client grid */}
       <div>
         <p className="mb-4 font-mono text-[10px] uppercase tracking-[0.2em] text-ink-tertiary">
-          Espacios activos · Clientes
+          Active workspaces · Clients
         </p>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {data.clients.map((c) => {
@@ -149,8 +149,8 @@ export default function SuperAdminPage() {
                     <p className="truncate font-semibold text-ink group-hover:text-ink">{c.name}</p>
                     <p className="flex items-center gap-1.5 text-[10px] text-ink-tertiary">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      Activo
-                      {c.own_key && <span className="ml-1 rounded bg-emerald-500/15 px-1.5 text-emerald-400">BYO key</span>}
+                      Active
+                      {c.own_key &&<span className="ml-1 rounded bg-emerald-500/15 px-1.5 text-emerald-400">BYO key</span>}
                     </p>
                   </div>
                 </div>
@@ -158,7 +158,7 @@ export default function SuperAdminPage() {
                 <div className="mt-4 grid grid-cols-3 gap-2 text-center">
                   <div>
                     <p className="text-lg font-bold text-ink">{c.reports}</p>
-                    <p className="font-mono text-[9px] uppercase text-ink-tertiary">Informes</p>
+                    <p className="font-mono text-[9px] uppercase text-ink-tertiary">Reports</p>
                   </div>
                   <div>
                     <p className="text-lg font-bold text-ink">{c.documents}</p>
@@ -173,11 +173,11 @@ export default function SuperAdminPage() {
                 <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-[10px] text-ink-tertiary">
                   <span>
                     {c.last_deliverable
-                      ? `Último: ${new Date(c.last_deliverable).toLocaleDateString('es-ES')}`
-                      : 'Sin entregables'}
+                      ? `Latest: ${new Date(c.last_deliverable).toLocaleDateString('en-US')}`
+                      : 'No deliverables'}
                   </span>
                   <span style={{ color }}>
-                    {c.usage_cost_usd > 0 ? `$${c.usage_cost_usd.toFixed(2)} IA/mes` : '—'}
+                    {c.usage_cost_usd > 0 ? `$${c.usage_cost_usd.toFixed(2)} AI/month` : '—'}
                   </span>
                 </div>
               </button>

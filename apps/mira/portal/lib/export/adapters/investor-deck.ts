@@ -27,21 +27,21 @@ function overviewSection(r: Record<string, any>): Section {
   const traction = asObj(r.traction_and_validation)
 
   const stats: StatItem[] = []
-  if (asStr(ask.amount)) stats.push({ value: asStr(ask.amount), label: 'Ronda solicitada' })
-  if (asStr(ask.valuation)) stats.push({ value: asStr(ask.valuation), label: 'Valoración' })
-  if (asStr(traction.customers_count)) stats.push({ value: asStr(traction.customers_count), label: 'Clientes' })
-  if (asStr(traction.revenue_mrr_arr)) stats.push({ value: asStr(traction.revenue_mrr_arr), label: 'Ingresos (MRR/ARR)' })
+  if (asStr(ask.amount)) stats.push({ value: asStr(ask.amount), label: 'Round requested' })
+  if (asStr(ask.valuation)) stats.push({ value: asStr(ask.valuation), label: 'Valuation' })
+  if (asStr(traction.customers_count)) stats.push({ value: asStr(traction.customers_count), label: 'Customers' })
+  if (asStr(traction.revenue_mrr_arr)) stats.push({ value: asStr(traction.revenue_mrr_arr), label: 'Revenue (MRR/ARR)' })
 
   const parts: string[] = []
   if (asStr(title.tagline)) parts.push(`<p><strong>${esc(asStr(title.tagline))}</strong></p>`)
   if (asStr(title.mission)) parts.push(`<p>${esc(asStr(title.mission))}</p>`)
   if (asStr(summary.problem_solution_market)) parts.push(`<p>${esc(asStr(summary.problem_solution_market))}</p>`)
-  if (asStr(summary.why_now)) parts.push(`<p><strong>Por qué ahora:</strong> ${esc(asStr(summary.why_now))}</p>`)
+  if (asStr(summary.why_now)) parts.push(`<p><strong>Why now:</strong> ${esc(asStr(summary.why_now))}</p>`)
 
   return {
-    title: 'Resumen Ejecutivo',
-    navLabel: 'Resumen',
-    subtitle: asStr(title.company) ? `Narrativa de inversión de ${asStr(title.company)}` : 'Narrativa de inversión',
+    title: 'Executive Summary',
+    navLabel: 'Summary',
+    subtitle: asStr(title.company) ? `Investment narrative for ${asStr(title.company)}` : 'Investment narrative',
     stats: stats.length ? stats : undefined,
     content: parts.length ? parts.join('') : undefined,
   }
@@ -76,7 +76,7 @@ function unitEconomicsSection(r: Record<string, any>): Section | null {
     { value: asStr(u.cac), label: 'CAC' },
     { value: asStr(u.ltv), label: 'LTV' },
     { value: asStr(u.payback_period), label: 'Payback' },
-    { value: asStr(u.gross_margin), label: 'Margen Bruto' },
+    { value: asStr(u.gross_margin), label: 'Gross Margin' },
   ].filter((s) => s.value)
   if (!stats.length) {
     const cards = toCards(u)
@@ -89,8 +89,8 @@ function tractionSection(r: Record<string, any>): Section | null {
   const t = asObj(r.traction_and_validation)
   if (!Object.keys(t).length) return null
   const section: Section = {
-    title: 'Tracción y Validación',
-    navLabel: 'Tracción',
+    title: 'Traction & Validation',
+    navLabel: 'Traction',
   }
   let has = false
 
@@ -109,8 +109,8 @@ function tractionSection(r: Record<string, any>): Section | null {
   }
 
   const parts: string[] = []
-  if (asStr(t.growth_trajectory)) parts.push(`<p><strong>Trayectoria de crecimiento:</strong> ${esc(asStr(t.growth_trajectory))}</p>`)
-  if (asStr(t.awards_partnerships)) parts.push(`<p><strong>Premios y partnerships:</strong> ${esc(asStr(t.awards_partnerships))}</p>`)
+  if (asStr(t.growth_trajectory)) parts.push(`<p><strong>Growth trajectory:</strong> ${esc(asStr(t.growth_trajectory))}</p>`)
+  if (asStr(t.awards_partnerships)) parts.push(`<p><strong>Awards & partnerships:</strong> ${esc(asStr(t.awards_partnerships))}</p>`)
   if (parts.length) {
     section.content = parts.join('')
     has = true
@@ -122,9 +122,9 @@ function testimonialsSection(r: Record<string, any>): Section | null {
   const items = asArr(r.customer_testimonials).filter(isPlainObject)
   if (!items.length) return null
   return {
-    title: 'Testimonios de Clientes',
+    title: 'Customer Testimonials',
     cards: items.map((t) => ({
-      title: [asStr(t.customer), asStr(t.company)].filter(Boolean).join(' — ') || 'Cliente',
+      title: [asStr(t.customer), asStr(t.company)].filter(Boolean).join(' — ') || 'Customer',
       body: `<p>&ldquo;${esc(asStr(t.quote))}&rdquo;</p>`,
     })),
   }
@@ -134,10 +134,10 @@ function teamSection(r: Record<string, any>): Section | null {
   const team = asArr(r.team).filter(isPlainObject)
   const advisors = asArr(r.board_and_advisors).filter(isPlainObject)
   if (!team.length && !advisors.length) return null
-  const section: Section = { title: 'Equipo', navLabel: 'Equipo' }
+  const section: Section = { title: 'Team', navLabel: 'Team' }
   if (team.length) {
     section.table = {
-      headers: ['Nombre', 'Rol', 'Background', 'Logros'],
+      headers: ['Name', 'Role', 'Background', 'Wins'],
       rows: team.map((m) => [
         `<strong>${esc(asStr(m.name))}</strong>`,
         valueToHtml(m.role),
@@ -151,7 +151,7 @@ function teamSection(r: Record<string, any>): Section | null {
       title: asStr(a.name) || 'Advisor',
       body: valueToHtml(a.background) || '<p>—</p>',
     }))
-    if (!section.subtitle) section.subtitle = 'Equipo fundador, board y advisors'
+    if (!section.subtitle) section.subtitle = 'Founding team, board and advisors'
   }
   return section
 }
@@ -160,10 +160,10 @@ function risksSection(r: Record<string, any>): Section | null {
   const risks = asArr(r.risks_and_mitigation).filter(isPlainObject)
   if (!risks.length) return null
   return {
-    title: 'Riesgos y Mitigación',
-    navLabel: 'Riesgos',
+    title: 'Risks & Mitigation',
+    navLabel: 'Risks',
     table: {
-      headers: ['Riesgo', 'Probabilidad', 'Mitigación'],
+      headers: ['Risk', 'Probability', 'Mitigation'],
       rows: risks.map((k) => [
         `<strong>${esc(asStr(k.risk))}</strong>`,
         valueToHtml(k.probability),
@@ -177,17 +177,17 @@ function roadmapSection(r: Record<string, any>): Section | null {
   const roadmap = asObj(r.product_roadmap)
   if (!Object.keys(roadmap).length) return null
   const milestones = asArr(roadmap.next_12_months).filter(isPlainObject)
-  const section: Section = { title: 'Roadmap de Producto', navLabel: 'Roadmap' }
+  const section: Section = { title: 'Product Roadmap', navLabel: 'Roadmap' }
   let has = false
   if (milestones.length) {
     section.phases = milestones.map((m, i) => ({
-      title: asStr(m.q) || `Hito ${i + 1}`,
+      title: asStr(m.q) || `Milestone ${i + 1}`,
       body: valueToHtml(m.milestone) || valueToHtml(m),
     }))
     has = true
   }
   if (asStr(roadmap.how_funding_accelerates)) {
-    section.content = `<p><strong>Cómo acelera la financiación:</strong> ${esc(asStr(roadmap.how_funding_accelerates))}</p>`
+    section.content = `<p><strong>How the funding accelerates:</strong> ${esc(asStr(roadmap.how_funding_accelerates))}</p>`
     has = true
   }
   return has ? section : null
@@ -197,13 +197,13 @@ function askSection(r: Record<string, any>): Section | null {
   const ask = asObj(r.the_ask)
   if (!Object.keys(ask).length) return null
   const section: Section = {
-    title: 'La Inversión',
+    title: 'The Ask',
     navLabel: 'The Ask',
-    subtitle: 'Ronda, valoración y uso de los fondos',
+    subtitle: 'Round, valuation and use of funds',
   }
   const stats: StatItem[] = [
-    { value: asStr(ask.amount), label: 'Importe' },
-    { value: asStr(ask.valuation), label: 'Valoración' },
+    { value: asStr(ask.amount), label: 'Amount' },
+    { value: asStr(ask.valuation), label: 'Valuation' },
     { value: asStr(ask.post_money), label: 'Post-Money' },
   ].filter((s) => s.value)
   if (stats.length) section.stats = stats
@@ -220,7 +220,7 @@ function askSection(r: Record<string, any>): Section | null {
     }
   }
   if (labels.length >= 2) {
-    section.chart = { type: 'doughnut', labels, data, label: 'Uso de los fondos (%)' }
+    section.chart = { type: 'doughnut', labels, data, label: 'Use of funds (%)' }
   } else if (funds.length) {
     const table = toTable(funds)
     if (table) section.table = table
@@ -266,77 +266,77 @@ export const adapter: ToolAdapter = (result) => {
 
     push(
       'the_problem',
-      objectCardsSection('El Problema', r.the_problem, {
+      objectCardsSection('The Problem', r.the_problem, {
         tam: 'TAM',
-        market_segments: 'Segmentos de Mercado',
+        market_segments: 'Market Segments',
         pain_points: 'Pain Points',
-        incumbent_solutions: 'Soluciones Actuales',
-      }, 'Problema')
+        incumbent_solutions: 'Incumbent Solutions',
+      }, 'Problem')
     )
     push(
       'the_solution',
-      objectCardsSection('La Solución', r.the_solution, {
-        description: 'Descripción',
-        how_it_works: 'Cómo Funciona',
-        unique_value_prop: 'Propuesta de Valor Única',
-        defensibility: 'Defensibilidad',
-      }, 'Solución')
+      objectCardsSection('The Solution', r.the_solution, {
+        description: 'Description',
+        how_it_works: 'How It Works',
+        unique_value_prop: 'Unique Value Proposition',
+        defensibility: 'Defensibility',
+      }, 'Solution')
     )
     push(
       'go_to_market',
       objectCardsSection('Go-To-Market', r.go_to_market, {
-        acquisition_channels: 'Canales de Adquisición',
+        acquisition_channels: 'Acquisition Channels',
         partnerships: 'Partnerships',
-        sales_process: 'Proceso de Ventas',
+        sales_process: 'Sales Process',
       }, 'GTM')
     )
     push(
       'business_model',
-      objectCardsSection('Modelo de Negocio', r.business_model, {
-        revenue_streams: 'Líneas de Ingreso',
-        pricing_strategy: 'Estrategia de Precios',
-        pricing_tiers: 'Tiers de Precio',
-      }, 'Modelo')
+      objectCardsSection('Business Model', r.business_model, {
+        revenue_streams: 'Revenue Streams',
+        pricing_strategy: 'Pricing Strategy',
+        pricing_tiers: 'Pricing Tiers',
+      }, 'Model')
     )
     push(null, unitEconomicsSection(r))
     push(
       'market_and_competition',
-      objectCardsSection('Mercado y Competencia', r.market_and_competition, {
-        market_size: 'Tamaño de Mercado',
-        growth_rate: 'Crecimiento',
-        competitive_landscape: 'Panorama Competitivo',
-        differentiation: 'Diferenciación',
-      }, 'Mercado')
+      objectCardsSection('Market & Competition', r.market_and_competition, {
+        market_size: 'Market Size',
+        growth_rate: 'Growth',
+        competitive_landscape: 'Competitive Landscape',
+        differentiation: 'Differentiation',
+      }, 'Market')
     )
     push(null, tractionSection(r))
     push(null, testimonialsSection(r))
     push(null, teamSection(r))
     push(
       'financials',
-      objectCardsSection('Financieros', r.financials, {
-        funding_history: 'Historial de Financiación',
-        monthly_burn: 'Burn Mensual',
-        '24mo_revenue_projection': 'Proyección de Ingresos 24 Meses',
-      }, 'Financieros')
+      objectCardsSection('Financials', r.financials, {
+        funding_history: 'Funding History',
+        monthly_burn: 'Monthly Burn',
+        '24mo_revenue_projection': '24-Month Revenue Projection',
+      }, 'Financials')
     )
     push(null, risksSection(r))
     push(null, roadmapSection(r))
     push(null, askSection(r))
     push(
       'contact_and_next_steps',
-      objectCardsSection('Contacto y Próximos Pasos', r.contact_and_next_steps, {
-        contact_email: 'Email de Contacto',
-        process_timeline: 'Timeline del Proceso',
-        links: 'Enlaces',
-      }, 'Contacto')
+      objectCardsSection('Contact & Next Steps', r.contact_and_next_steps, {
+        contact_email: 'Contact Email',
+        process_timeline: 'Process Timeline',
+        links: 'Links',
+      }, 'Contact')
     )
 
     // Coherence warnings (only when conflicts were found)
     const conflicts = asArr(r.conflicts)
     if (conflicts.length) {
       sections.push({
-        title: 'Coherencia Narrativa',
-        subtitle: 'Conflictos detectados entre las fuentes del deck',
+        title: 'Narrative Coherence',
+        subtitle: 'Conflicts detected across the deck sources',
         listItems: conflicts.map((c) => valueToHtml(c)).filter(Boolean),
       })
     }

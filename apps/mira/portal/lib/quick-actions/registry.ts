@@ -85,7 +85,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
           { value: 'casual', labelKey: 'qa.opt.casual' },
           { value: 'humorous', labelKey: 'qa.opt.humorous' },
         ],
-        guidedHint: 'Propón el tono según el tone_of_voice del Brand Brain en vez de preguntar.',
+        guidedHint: 'Propose the tone from the Brand Brain tone_of_voice instead of asking for it.',
       },
       { name: 'with_image', type: 'toggle', labelKey: 'qa.field.with_image', defaultValue: false },
       { name: 'style', type: 'text', labelKey: 'qa.field.image_style', visibleWhen: { field: 'with_image', equals: true } },
@@ -202,7 +202,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       },
       {
         name: 'datos_reales', type: 'textarea', labelKey: 'qa.field.datos_reales',
-        guidedHint: 'Sin datos reales el informe queda en recomendaciones — sugiere adjuntar un export o pegar cifras.',
+        guidedHint: 'Without real data the report stays at the recommendation level — suggest attaching an export or pasting the figures.',
       },
     ],
   },
@@ -220,8 +220,8 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       {
         name: 'region', type: 'select', labelKey: 'qa.field.region', required: true,
         options: [
-          { value: 'españa', labelKey: 'qa.opt.spain' },
-          { value: 'europa', labelKey: 'qa.opt.europe' },
+          { value: 'spain', labelKey: 'qa.opt.spain' },
+          { value: 'europe', labelKey: 'qa.opt.europe' },
           { value: 'global', labelKey: 'qa.opt.global' },
         ],
       },
@@ -272,7 +272,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       {
         name: 'objection', type: 'textarea', labelKey: 'qa.field.objection', required: true,
         placeholderKey: 'qa.field.objection.ph',
-        guidedHint: 'Si el usuario adjunta el hilo de email, extrae la objeción de ahí.',
+        guidedHint: 'If the user attaches the email thread, extract the objection from it.',
       },
       { name: 'lead_id', type: 'lead_picker', labelKey: 'qa.lead.label' },
     ],
@@ -288,7 +288,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       {
         name: 'context', type: 'textarea', labelKey: 'qa.field.followup_context', required: true,
         placeholderKey: 'qa.field.followup_context.ph',
-        guidedHint: 'Si el usuario adjunta el hilo, deduce el contexto (qué se envió, hace cuánto, respuesta previa).',
+        guidedHint: 'If the user attaches the thread, infer the context (what was sent, how long ago, any previous reply).',
       },
       { name: 'lead_id', type: 'lead_picker', labelKey: 'qa.lead.label' },
     ],
@@ -304,7 +304,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       { name: 'call_goal', type: 'text', labelKey: 'qa.field.call_goal', required: true, placeholderKey: 'qa.field.call_goal.ph' },
       {
         name: 'lead_id', type: 'lead_picker', labelKey: 'qa.lead.label',
-        guidedHint: 'Ofrece los leads calientes del pipeline — el brief mejora mucho con lead elegido.',
+        guidedHint: 'Offer the hot leads from the pipeline — the brief is much better with a lead selected.',
       },
     ],
   },
@@ -339,7 +339,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
       { name: 'period', type: 'text', labelKey: 'qa.field.cashflow_period', required: true },
       {
         name: 'expenses', type: 'textarea', labelKey: 'qa.field.expenses', required: true,
-        guidedHint: 'Sugiere adjuntar el export del banco o el P&L en vez de teclear los gastos.',
+        guidedHint: 'Suggest attaching the bank export or the P&L instead of typing the expenses in by hand.',
       },
     ],
   },
@@ -352,7 +352,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
     fields: [
       {
         name: 'current_expenses', type: 'textarea', labelKey: 'qa.field.current_expenses', required: true,
-        guidedHint: 'Sugiere adjuntar el desglose real de gastos (CSV/PDF) — el análisis gana mucho.',
+        guidedHint: 'Suggest attaching the real expense breakdown (CSV/PDF) — the analysis gains a lot from it.',
       },
       { name: 'target_savings', type: 'number', labelKey: 'qa.field.target_savings' },
     ],

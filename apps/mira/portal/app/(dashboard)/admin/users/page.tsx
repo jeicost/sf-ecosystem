@@ -10,11 +10,11 @@ const PLAN_OPTIONS = ['consulta', 'starter', 'growth', 'scale', 'admin', 'super_
 type Plan = (typeof PLAN_OPTIONS)[number]
 
 const PLAN_LABEL: Record<Plan, string> = {
-  consulta: 'Consulta (sin toolkit)',
+  consulta: 'Consulting (no toolkit)',
   starter: 'Starter',
   growth: 'Growth',
   scale: 'Scale',
-  admin: 'Admin (interno)',
+  admin: 'Admin (internal)',
   super_admin: 'Super Admin',
 }
 
@@ -45,7 +45,7 @@ export default function AdminUsersPage() {
     fetch('/api/admin/clients-users')
       .then(async (r) => {
         const json = await r.json()
-        if (!r.ok) throw new Error(json.error || 'Error cargando clientes y usuarios')
+        if (!r.ok) throw new Error(json.error || 'Error loading clients and users')
         setClients(json.clients)
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Error'))
@@ -61,7 +61,7 @@ export default function AdminUsersPage() {
         body: JSON.stringify({ userId, plan }),
       })
       const json = await res.json()
-      if (!res.ok) throw new Error(json.error || 'Error al cambiar el plan')
+      if (!res.ok) throw new Error(json.error || 'Error changing the plan')
 
       // Optimistic local update — no need to refetch everything.
       setClients((prev) =>
@@ -73,7 +73,7 @@ export default function AdminUsersPage() {
           : prev
       )
     } catch (e) {
-      setSaveError(e instanceof Error ? e.message : 'Error al cambiar el plan')
+      setSaveError(e instanceof Error ? e.message : 'Error changing the plan')
       fetchData() // revert to real state on failure
     } finally {
       setSavingUserId(null)
@@ -84,7 +84,7 @@ export default function AdminUsersPage() {
     return <div className="p-8 text-sm text-red-400">{error}</div>
   }
   if (!clients) {
-    return <div className="p-8 text-sm text-ink-tertiary">Cargando clientes y usuarios…</div>
+    return <div className="p-8 text-sm text-ink-tertiary">Loading clients and users…</div>
   }
 
   const totalUsers = clients.reduce((sum, c) => sum + c.users.length, 0)
@@ -93,15 +93,15 @@ export default function AdminUsersPage() {
     <div className="space-y-8">
       <PageHeader
         eyebrow="Admin"
-        title="Clientes y usuarios"
-        subtitle="Qué clientes hay, quién tiene acceso a cada uno y con qué plan — edítalo directamente aquí."
+        title="Clients and users"
+        subtitle="Which clients exist, who has access to each one and on what plan — edit it directly here."
         eyebrowColor="#6366F1"
       />
 
       <StatRow
         items={[
-          { label: 'Clientes', value: clients.length },
-          { label: 'Usuarios con acceso', value: totalUsers },
+          { label: 'Clients', value: clients.length },
+          { label: 'Users with access', value: totalUsers },
         ]}
       />
 
@@ -118,19 +118,19 @@ export default function AdminUsersPage() {
               <p className="font-semibold text-ink">{client.name}</p>
               <div className="flex items-center gap-3">
                 <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-ink-tertiary">
-                  {client.users.length} {client.users.length === 1 ? 'usuario' : 'usuarios'}
+                  {client.users.length} {client.users.length === 1 ? 'user' : 'users'}
                 </span>
                 <Link
                   href={`/admin/questionnaires/new?clientId=${client.id}&clientName=${encodeURIComponent(client.name)}`}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1.5 text-[11px] font-medium text-ink-secondary transition-colors hover:border-sky-500/40 hover:text-sky-400"
                 >
-                  <ClipboardList size={12} /> Crear informe de decisión
+                  <ClipboardList size={12} /> Create decision report
                 </Link>
               </div>
             </div>
 
             {client.users.length === 0 ? (
-              <p className="text-xs text-ink-tertiary">Sin usuarios con acceso todavía.</p>
+              <p className="text-xs text-ink-tertiary">No users with access yet.</p>
             ) : (
               <div className="space-y-2">
                 {client.users.map((u) => (
@@ -140,7 +140,7 @@ export default function AdminUsersPage() {
                   >
                     <div className="min-w-0">
                       <p className="truncate text-sm text-ink">{u.email}</p>
-                      <p className="text-[10px] uppercase tracking-wide text-ink-tertiary">rol: {u.role}</p>
+                      <p className="text-[10px] uppercase tracking-wide text-ink-tertiary">role: {u.role}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <select
@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
                         ))}
                       </select>
                       {savingUserId === u.userId && (
-                        <span className="text-[10px] text-ink-tertiary">Guardando…</span>
+                        <span className="text-[10px] text-ink-tertiary">Saving…</span>
                       )}
                     </div>
                   </div>

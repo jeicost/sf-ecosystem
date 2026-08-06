@@ -156,7 +156,7 @@ export async function POST(req: NextRequest) {
     const sessionUser = await getSessionUser().catch(() => null)
     if (sessionUser && !canUseFeature(sessionUser.user_metadata?.plan, 'toolkitGenerate')) {
       return NextResponse.json(
-        { error: 'Tu plan no incluye la generación de Business Reports' },
+        { error: 'Your plan does not include generating Business Reports' },
         { status: 403 }
       )
     }

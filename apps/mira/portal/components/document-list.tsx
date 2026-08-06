@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { Trash2, Eye, FileText, Calendar } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import { es } from 'date-fns/locale'
 
 interface Document {
   id: string
@@ -29,7 +28,7 @@ const DOC_TYPE_LABELS: Record<string, {label: string, icon: string}> = {
   handbook: { label: 'Handbook', icon: '📙' },
   guidelines: { label: 'Guidelines', icon: '📋' },
   case_studies: { label: 'Case Studies', icon: '📊' },
-  other: { label: 'Otro', icon: '📄' },
+  other: { label: 'Other', icon: '📄' },
 }
 
 function formatFileSize(bytes: number): string {
@@ -61,7 +60,7 @@ export default function DocumentList({
       <div className="text-center py-12">
         <FileText size={32} className="mx-auto mb-3 text-ink-muted" />
         <p className="text-sm text-ink-tertiary">
-          No hay documentos subidos aún
+          No documents uploaded yet
         </p>
       </div>
     )
@@ -71,7 +70,7 @@ export default function DocumentList({
     <div className="space-y-3">
       {documents.map(doc => {
         const docTypeInfo = DOC_TYPE_LABELS[doc.doc_type as keyof typeof DOC_TYPE_LABELS] || DOC_TYPE_LABELS.other
-        const relativeTime = formatDistanceToNow(new Date(doc.uploaded_at), { locale: es, addSuffix: true })
+        const relativeTime = formatDistanceToNow(new Date(doc.uploaded_at), { addSuffix: true })
 
         return (
           <div
@@ -122,7 +121,7 @@ export default function DocumentList({
               <button
                 onClick={() => onPreview(doc.id)}
                 className="p-2 rounded-lg hover:bg-surface-hover transition-all"
-                title="Vista previa"
+                title="Preview"
               >
                 <Eye size={14} style={{ color: '#8B5CF6' }} />
               </button>
@@ -132,7 +131,7 @@ export default function DocumentList({
                   setTimeout(() => onDelete(doc.id), 300)
                 }}
                 className="p-2 rounded-lg hover:bg-red-500/10 transition-all"
-                title="Eliminar"
+                title="Delete"
               >
                 <Trash2 size={14} style={{ color: deletingId === doc.id ? '#EF4444' : 'var(--text-muted)' }} />
               </button>

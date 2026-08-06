@@ -131,8 +131,8 @@ export async function POST(req: NextRequest) {
           reason,
           error:
             reason === 'not_connected'
-              ? 'Tu Google Drive no está conectado. Ve a Integraciones → Conectar Google Drive y vuelve a intentarlo.'
-              : 'Tu conexión con Google Drive necesita renovarse. Ve a Integraciones y reconecta tu Drive (falta el permiso de escritura).',
+              ? 'Your Google Drive is not connected. Go to Integrations → Connect Google Drive and try again.'
+              : 'Your Google Drive connection needs to be renewed. Go to Integrations and reconnect your Drive (the write permission is missing).',
         },
         { status: 409 }
       )
@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           error:
-            'No se pudo guardar en tu Google Drive. Tu resultado sigue disponible arriba — inténtalo de nuevo o guárdalo en Memoria.',
+            'Could not save to your Google Drive. Your result is still available above — try again or save it to Memory.',
         },
         { status: 500 }
       )

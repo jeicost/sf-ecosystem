@@ -39,13 +39,13 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (error || !row) {
-      return NextResponse.json({ error: 'Informe no encontrado' }, { status: 404 })
+      return NextResponse.json({ error: 'Report not found' }, { status: 404 })
     }
     if (!(await userCanAccessClient(user, row.client_id))) {
       return NextResponse.json({ error: 'No access to this report' }, { status: 403 })
     }
     if (row.status !== 'completed' || !row.result_data) {
-      return NextResponse.json({ error: 'El informe aún no está completado' }, { status: 409 })
+      return NextResponse.json({ error: 'This report is not finished yet' }, { status: 409 })
     }
 
     const result = row.result_data as Record<string, any>
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
 
     if (kind === 'monthly-deck') {
       if (row.tool_slug !== 'monthly-content-system') {
-        return NextResponse.json({ error: 'monthly-deck solo aplica a informes monthly-content-system' }, { status: 400 })
+        return NextResponse.json({ error: 'monthly-deck is only available for monthly-content-system reports' }, { status: 400 })
       }
       buffer = await buildMonthlyDeckPptx({ brandName, primaryColor, result })
       verification = await verifyMonthlyDeck(buffer, {
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
         console.error('Monthly deck failed verification:', verification.issues)
         return NextResponse.json(
           {
-            error: `El deck no pasó la verificación estructural: ${verification.issues.join(' · ')}`,
+            error: `The deck failed its structural check: ${verification.issues.join(' · ')}`,
             verification,
           },
           { status: 500 }
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
       fileName = `Sistema de Contenidos — ${result.month_label || result.month || dateStamp}`
     } else if (kind === 'voice-guide') {
       if (!result.voice_guide_onepager) {
-        return NextResponse.json({ error: 'Este informe no tiene Voice Guide' }, { status: 400 })
+        return NextResponse.json({ error: 'This report has no Voice Guide' }, { status: 400 })
       }
       buffer = await buildVoiceGuidePptx({
         brandName,
@@ -98,7 +98,7 @@ export async function POST(req: NextRequest) {
       })
       fileName = `Voice Guide — ${brandName}`
     } else {
-      return NextResponse.json({ error: 'Artefacto no soportado para Slides' }, { status: 400 })
+      return NextResponse.json({ error: 'This artifact cannot be exported to Slides' }, { status: 400 })
     }
 
     // ── Drive del cliente + conversión a Google Slides ──
@@ -110,8 +110,8 @@ export async function POST(req: NextRequest) {
           reason: tokenResult.error,
           error:
             tokenResult.error === 'not_connected'
-              ? 'Tu Google Drive no está conectado. Ve a Integraciones → Conectar Google Drive y vuelve a intentarlo.'
-              : 'Tu conexión con Google Drive necesita renovarse. Ve a Integraciones y reconecta tu Drive.',
+              ? 'Your Google Drive is not connected. Go to Integrations → Connect Google Drive and try again.'
+              : 'Your Google Drive connection needs to be renewed. Go to Integrations and reconnect your Drive.',
         },
         { status: 409 }
       )
@@ -134,7 +134,7 @@ export async function POST(req: NextRequest) {
     if (!upload.success) {
       console.error(`Slides export failed for client ${row.client_id}: ${upload.error}`)
       return NextResponse.json(
-        { success: false, error: 'No se pudo crear la presentación en tu Drive. Inténtalo de nuevo.' },
+        { success: false, error: 'The presentation could not be created in your Drive. Please try again.' },
         { status: 500 }
       )
     }

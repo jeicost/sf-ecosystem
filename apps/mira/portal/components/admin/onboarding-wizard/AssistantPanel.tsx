@@ -32,20 +32,20 @@ export default function AssistantPanel({
       onExtracted(data.fields)
       const n = Object.keys(data.fields).length
       setState('done')
-      setMsg(n ? `${n} campo${n > 1 ? 's' : ''} rellenado${n > 1 ? 's' : ''} — revísalos abajo.` : 'No encontré nada nuevo en ese texto.')
+      setMsg(n ? `${n} field${n > 1 ? 's' : ''} filled in — review ${n > 1 ? 'them' : 'it'} below.` : 'I found nothing new in that text.')
     } else {
       setState('error')
-      setMsg(data?.error || 'No se pudo extraer')
+      setMsg(data?.error || 'Could not extract')
     }
   }
 
   return (
     <div className="rounded-xl border border-line bg-surface p-4 space-y-2.5">
-      <p className="text-xs font-semibold text-ink-secondary">✨ Asistente — pega texto y rellena este paso</p>
+      <p className="text-xs font-semibold text-ink-secondary">✨ Assistant — paste text to fill in this step</p>
       <textarea
         value={text}
         onChange={(e) => setText(e.target.value)}
-        placeholder="Pega aquí el brief, notas de la llamada, o el texto de su web…"
+        placeholder="Paste the brief, call notes, or their website copy here…"
         rows={3}
         className="w-full rounded-lg border border-line bg-page px-3 py-2 text-xs text-ink placeholder-ink-tertiary outline-none focus:border-purple-500 resize-none"
       />
@@ -56,7 +56,7 @@ export default function AssistantPanel({
           disabled={!text.trim() || state === 'working'}
           className="text-xs px-3 py-1.5 rounded-lg bg-purple-600/20 text-purple-300 hover:bg-purple-600/30 transition-colors disabled:opacity-50"
         >
-          {state === 'working' ? '⏳ Extrayendo…' : '✨ Extraer y rellenar'}
+          {state === 'working' ? '⏳ Extracting…' : '✨ Extract and fill in'}
         </button>
         {msg && (
           <span className={`text-[11px] ${state === 'error' ? 'text-amber-400' : 'text-ink-tertiary'}`}>{msg}</span>

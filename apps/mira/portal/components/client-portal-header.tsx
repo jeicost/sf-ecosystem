@@ -16,7 +16,7 @@ export default function ClientPortalHeader({
       <div className="flex items-center gap-2 mb-2">
         <span className="text-xl">{icon}</span>
         <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: accentColor, letterSpacing: '0.12em' }}>
-          Mi Portal
+          My Portal
         </p>
       </div>
       <h1 className="text-2xl font-semibold text-ink tracking-tight">{title}</h1>

@@ -58,14 +58,14 @@ async function fetchMonthlyArchitect(
         return {
           id: `${row.id}-w${idx}`,
           number: idx + 1,
-          title: (week.theme as string) || `Semana ${(week.week as number) ?? idx + 1}`,
+          title: (week.theme as string) || `Week ${(week.week as number) ?? idx + 1}`,
           description: summary || '',
           isCompleted: false,
         }
       })
       return {
         id: row.id as string,
-        name: `Mes ${result?.month ?? ''}`.trim(),
+        name: `Month ${result?.month ?? ''}`.trim(),
         emoji: '📆',
         description: (result?.dormant_note as string) || '',
         createdAt: row.created_at as string,
@@ -122,9 +122,9 @@ async function fetchActionPlanArchitect(
 
       return {
         id: row.id as string,
-        name: 'Plan de Acción 30/60/90',
+        name: '30/60/90 Action Plan',
         emoji: '🎯',
-        description: asArray(result.kpis).length > 0 ? `${asArray(result.kpis).length} KPIs definidos` : '',
+        description: asArray(result.kpis).length > 0 ? `${asArray(result.kpis).length} KPIs defined` : '',
         createdAt: row.created_at as string,
         reportUrl: `/toolkit/report/${row.id}`,
         steps,
@@ -208,13 +208,13 @@ async function fetchFinancialArchitect(
       const steps: ArchitectStep[] = months.map((m, idx) => ({
         id: `${row.id}-m${idx}`,
         number: idx + 1,
-        title: (m.month as string) || `Mes ${idx + 1}`,
+        title: (m.month as string) || `Month ${idx + 1}`,
         description: (m.revenue as string) || (m.summary as string) || '',
         isCompleted: false,
       }))
       return {
         id: row.id as string,
-        name: 'Proyección Financiera',
+        name: 'Financial Projection',
         emoji: '📈',
         description: '',
         createdAt: row.created_at as string,

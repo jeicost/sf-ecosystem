@@ -27,8 +27,8 @@ interface DeliverableCardProps {
 
 function formatDateTime(dateString: string) {
   const d = new Date(dateString)
-  return d.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) +
-    ' · ' + d.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) +
+    ' · ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
 }
 
 export function extractScore(gen: DeliverableGeneration): number | null {
@@ -95,7 +95,7 @@ export default function DeliverableCard({
               className="flex items-center justify-between rounded-md px-2 py-1.5 text-[11px] text-ink-secondary transition-colors hover:bg-surface-hover hover:text-ink"
             >
               <span className="font-mono">{formatDateTime(gen.completed_at || gen.created_at)}</span>
-              <span style={{ color: brandColor }}>abrir →</span>
+              <span style={{ color: brandColor }}>open →</span>
             </Link>
           ))}
         </div>

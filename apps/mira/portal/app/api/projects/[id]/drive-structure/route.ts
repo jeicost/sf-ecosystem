@@ -28,7 +28,7 @@ export async function POST(
       .eq('id', projectId)
       .maybeSingle()
     if (!project) {
-      return NextResponse.json({ error: 'Proyecto no encontrado' }, { status: 404 })
+      return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
     if (!(await userCanAccessClient(user, project.client_id))) {
       return NextResponse.json({ error: 'No access to this project' }, { status: 403 })
@@ -42,8 +42,8 @@ export async function POST(
           reason: tokenResult.error,
           error:
             tokenResult.error === 'not_connected'
-              ? 'El Drive del cliente no está conectado. Ve a Integraciones → Conectar Google Drive.'
-              : 'La conexión con Drive necesita renovarse. Reconecta desde Integraciones.',
+              ? "The client's Google Drive is not connected. Go to Integrations → Connect Google Drive."
+              : 'The Google Drive connection needs to be renewed. Reconnect it from Integrations.',
         },
         { status: 409 }
       )
@@ -66,7 +66,7 @@ export async function POST(
     const rootId = await createDriveFolder(token, `MIRA — ${projectName}`)
     if (!rootId) {
       return NextResponse.json(
-        { error: 'No se pudo crear la carpeta raíz del proyecto en Drive' },
+        { error: "Could not create the project's root folder in Google Drive" },
         { status: 500 }
       )
     }
@@ -95,7 +95,7 @@ export async function POST(
 
     if (!created.length) {
       return NextResponse.json(
-        { error: 'No se pudo registrar ninguna carpeta nueva' },
+        { error: 'No new folder could be registered' },
         { status: 500 }
       )
     }
@@ -104,12 +104,12 @@ export async function POST(
       success: true,
       root_folder_id: rootId,
       created,
-      message: `Estructura creada en el Drive del cliente: MIRA — ${projectName}/(${created.map((c) => c.folder_name).join(' | ')})`,
+      message: `Folder structure created in the client's Google Drive: MIRA — ${projectName}/(${created.map((c) => c.folder_name).join(' | ')})`,
     })
   } catch (error) {
     console.error('drive-structure error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error creando la estructura' },
+      { error: error instanceof Error ? error.message : 'Failed to create the folder structure' },
       { status: 500 }
     )
   }

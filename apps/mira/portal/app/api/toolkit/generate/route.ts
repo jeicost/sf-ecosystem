@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
     const sessionUser = await getSessionUser()
     if (!canUseFeature(sessionUser?.user_metadata?.plan, 'toolkitGenerate')) {
       return NextResponse.json(
-        { error: 'Tu plan no incluye la generación de Business Reports' },
+        { error: 'Your plan does not include generating Business Reports' },
         { status: 403 }
       )
     }
@@ -374,7 +374,7 @@ export async function POST(req: NextRequest) {
     } catch (err) {
       const errorMessage =
         err instanceof ExtractJsonError
-          ? `No se pudo extraer JSON de la respuesta del modelo: ${err.message}`
+          ? `Could not extract JSON from the model response: ${err.message}`
           : `JSON extraction failed: ${err instanceof Error ? err.message : String(err)}`
       await admin
         .from('generation_queue')

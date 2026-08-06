@@ -26,7 +26,7 @@ export async function uploadFilesToBucket(
   const res = await fetch('/api/attachments/upload', { method: 'POST', body: form })
   const data = await res.json().catch(() => null)
   if (!res.ok || !data?.attachments) {
-    throw new Error(data?.error || `Error subiendo archivos (${res.status})`)
+    throw new Error(data?.error || `Failed to upload files (${res.status})`)
   }
   return data.attachments as Attachment[]
 }

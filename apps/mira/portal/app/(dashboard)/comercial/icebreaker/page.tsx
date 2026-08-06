@@ -195,11 +195,11 @@ export default function IcebreakerPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {[
               { label: t('comercial.icebreaker.label-first-name', locale), field: 'firstName' as const, placeholder: 'Carlos' },
-              { label: t('comercial.icebreaker.label-last-name', locale), field: 'lastName' as const, placeholder: 'García' },
+              { label: t('comercial.icebreaker.label-last-name', locale), field: 'lastName' as const, placeholder: 'Garcia' },
               { label: t('comercial.icebreaker.label-company-required', locale), field: 'company' as const, placeholder: 'Acme Corp' },
               { label: t('comercial.icebreaker.label-title', locale), field: 'title' as const, placeholder: 'Head of Growth' },
               { label: t('comercial.icebreaker.label-industry', locale), field: 'industry' as const, placeholder: 'SaaS B2B' },
-              { label: t('comercial.icebreaker.label-geography', locale), field: 'geography' as const, placeholder: 'Madrid, España' },
+              { label: t('comercial.icebreaker.label-geography', locale), field: 'geography' as const, placeholder: 'Madrid, Spain' },
             ].map(({ label, field, placeholder }) => (
               <div key={field} className="card p-3">
                 <label className="block text-[10px] uppercase tracking-wider mb-1.5" style={{ color: 'var(--text-secondary)' }}>{label}</label>

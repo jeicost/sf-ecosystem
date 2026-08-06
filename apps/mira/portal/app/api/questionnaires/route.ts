@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error('questionnaires GET error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error cargando cuestionarios' },
+      { error: error instanceof Error ? error.message : 'Failed to load questionnaires' },
       { status: 500 }
     )
   }
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     if (!isAgencyPlan(user.user_metadata?.plan)) {
       return NextResponse.json(
-        { error: 'Solo la agencia puede crear cuestionarios' },
+        { error: 'Only the agency can create questionnaires' },
         { status: 403 }
       )
     }
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     const rawQuestions: unknown[] = Array.isArray(body.questions) ? body.questions : []
     if (!title || rawQuestions.length === 0) {
       return NextResponse.json(
-        { error: 'Faltan title o questions en el cuerpo de la petición' },
+        { error: 'The request body is missing title or questions' },
         { status: 400 }
       )
     }
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
         .eq('id', body.projectId)
         .maybeSingle()
       if (!project || project.client_id !== access.clientId) {
-        return NextResponse.json({ error: 'El proyecto no pertenece a este cliente' }, { status: 403 })
+        return NextResponse.json({ error: 'That project does not belong to this client' }, { status: 403 })
       }
       projectId = project.id
     }
@@ -131,12 +131,12 @@ export async function POST(req: NextRequest) {
       }
       if (narrative && insertError?.message?.includes('narrative')) {
         return NextResponse.json(
-          { error: 'Falta aplicar la migración 0061 (columna narrative) para crear informes con narrativa.' },
+          { error: 'Migration 0061 (narrative column) has not been applied yet — required to create reports with narrative sections.' },
           { status: 503 }
         )
       }
       return NextResponse.json(
-        { error: insertError?.message || 'No se pudo crear el cuestionario' },
+        { error: insertError?.message || 'The questionnaire could not be created' },
         { status: 500 }
       )
     }
@@ -159,7 +159,7 @@ export async function POST(req: NextRequest) {
 
     if (rows.length === 0) {
       await admin.from('client_questionnaires').delete().eq('id', questionnaire.id)
-      return NextResponse.json({ error: 'Ninguna pregunta válida en questions' }, { status: 400 })
+      return NextResponse.json({ error: 'No valid question found in questions' }, { status: 400 })
     }
 
     // select/multi_select sin >= 2 opciones (o con labels duplicados) dejan al
@@ -173,7 +173,7 @@ export async function POST(req: NextRequest) {
       if (labels.length < 2 || unique.size !== labels.length) {
         await admin.from('client_questionnaires').delete().eq('id', questionnaire.id)
         return NextResponse.json(
-          { error: `La pregunta "${row.prompt}" necesita al menos 2 opciones con texto y sin duplicados.` },
+          { error: `The question "${row.prompt}" needs at least 2 options, each with text and no duplicates.` },
           { status: 400 }
         )
       }
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
   } catch (error) {
     console.error('questionnaires POST error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error creando el cuestionario' },
+      { error: error instanceof Error ? error.message : 'Failed to create the questionnaire' },
       { status: 500 }
     )
   }

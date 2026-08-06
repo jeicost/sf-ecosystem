@@ -51,7 +51,7 @@ export default function LoginPage() {
     const db = createClient()
     const { data, error: authError } = await db.auth.signInWithPassword({ email: email.toLowerCase(), password })
     if (authError || !data.user) {
-      setError('Email o contraseña incorrectos')
+      setError('Incorrect email or password')
       setLoading(false); return
     }
     const meta = data.user.user_metadata ?? {}
@@ -121,17 +121,17 @@ export default function LoginPage() {
           <h1 style={{ fontSize: '48px', fontWeight: 800, color: '#ffffff', letterSpacing: '-0.05em', lineHeight: 1 }}>MIRA</h1>
           <p className="mt-3 text-center max-w-[280px] leading-relaxed"
             style={{ fontSize: '14px', color: 'rgba(255,255,255,0.55)' }}>
-            Tu equipo de{' '}
-            <span style={{ color: '#ffffff', fontWeight: 600 }}>23 agentes IA</span>{' '}
-            trabajando 24/7 para hacer crecer tu negocio.
+            Your team of{' '}
+            <span style={{ color: '#ffffff', fontWeight: 600 }}>23 AI agents</span>{' '}
+            working 24/7 to grow your business.
           </p>
 
           {/* Stats */}
           <div className="mt-10 flex items-stretch">
             {[
-              { n: '23', l: 'Agentes' },
-              { n: '5',  l: 'Equipos' },
-              { n: '24/7', l: 'Disponibles' },
+              { n: '23', l: 'Agents' },
+              { n: '5',  l: 'Teams' },
+              { n: '24/7', l: 'Available' },
             ].map(({ n, l }, i) => (
               <div key={l} className="text-center flex flex-col items-center px-8"
                 style={{ borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.1)' : 'none' }}>
@@ -253,9 +253,9 @@ export default function LoginPage() {
 
           {/* Forgot password hint */}
           <p className="text-center text-[11px] mt-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
-            ¿Problemas para acceder?{' '}
+            Trouble signing in?{' '}
             <a href="mailto:hola@startupsfactory.es" className="underline hover:text-ink-secondary transition-colors">
-              Contacta con soporte
+              Contact support
             </a>
           </p>
         </div>

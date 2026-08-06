@@ -223,11 +223,11 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
     try {
       const res = await fetch(`/api/projects/${project.id}/drive-structure`, { method: 'POST' })
       const json = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(json?.error || 'No se pudo crear la estructura')
-      setDriveMessage({ type: 'ok', text: json?.already ? 'La estructura ya existía.' : 'Estructura creada en el Drive del cliente.' })
+      if (!res.ok) throw new Error(json?.error || 'Could not create the structure')
+      setDriveMessage({ type: 'ok', text: json?.already ? 'The structure already existed.' : 'Structure created in the client Drive.' })
       await loadDriveFolders(clientId, project.id)
     } catch (e) {
-      setDriveMessage({ type: 'err', text: e instanceof Error ? e.message : 'No se pudo crear la estructura' })
+      setDriveMessage({ type: 'err', text: e instanceof Error ? e.message : 'Could not create the structure' })
     } finally {
       setCreatingStructure(false)
     }
@@ -412,7 +412,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                     {f.folder_name || f.folder_id}
                   </p>
                   <p className="mt-0.5 text-[10px] text-ink-tertiary">
-                    {f.purpose === 'deliverables' ? '📦 Entregables — MIRA exporta aquí' : '📚 Conocimiento — el cerebro la lee para este proyecto'}
+                    {f.purpose === 'deliverables' ? '📦 Deliverables — MIRA exports here' : '📚 Knowledge — the brain reads it for this project'}
                     {f.last_synced_at
                       ? ` · ${t('projects.drive-docs-count', locale).replace('{count}', String(f.files_synced))}`
                       : f.purpose === 'deliverables' ? '' : ` · ${t('projects.drive-unsynced', locale)}`}
@@ -432,7 +432,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
             {projectFolders.length === 0 && (
               <div className="rounded-2xl border border-dashed border-line bg-surface p-5">
                 <p className="text-xs text-ink-tertiary">
-                  Conecta este proyecto a sus carpetas: <strong>Conocimiento</strong> (briefs, docs, referencias — el cerebro y los agentes la leen con prioridad al trabajar en este proyecto) y <strong>Entregables</strong> (aquí exporta MIRA).
+                  Connect this project to its folders: <strong>Knowledge</strong> (briefs, docs, references — the brain and the agents read it first when working on this project) and <strong>Deliverables</strong> (this is where MIRA exports).
                 </p>
                 {driveConnected === false && (
                   <p className="mt-2 text-[11px] text-amber-400/80">
@@ -450,7 +450,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                 className="rounded-lg px-4 py-2 text-xs font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
                 style={{ background: brand }}
               >
-                {creatingStructure ? '⏳ Creando…' : '✨ Crear estructura estándar'}
+                {creatingStructure ? '⏳ Creating…' : '✨ Create standard structure'}
               </button>
               {!showLinkForm ? (
                 <button
@@ -467,8 +467,8 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                     onChange={(e) => setLinkPurpose(e.target.value as 'references' | 'deliverables')}
                     className="rounded-lg border border-line bg-page px-3 py-2 text-xs text-ink outline-none focus:border-ink-muted"
                   >
-                    <option value="references">📚 Conocimiento</option>
-                    <option value="deliverables">📦 Entregables</option>
+                    <option value="references">📚 Knowledge</option>
+                    <option value="deliverables">📦 Deliverables</option>
                   </select>
                   <input
                     value={folderLink}
@@ -502,19 +502,19 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       <div>
         <div className="mb-3 flex items-center justify-between">
           <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
-            Memoria del proyecto
+            Project memory
           </p>
           <Link href={`/project-memory?project=${project.id}`}
             className="text-[11px] font-medium transition-opacity hover:opacity-80" style={{ color: brand }}>
-            Ver toda →
+            View all →
           </Link>
         </div>
 
         {memory.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-line bg-surface py-8 text-center">
             <p className="text-xs text-ink-tertiary">
-              Aún no hay memoria. Chatea con los agentes con este proyecto activo y las
-              decisiones importantes se guardarán aquí.
+              No memory yet. Chat with the agents while this project is active and the
+              important decisions will be saved here.
             </p>
           </div>
         ) : (
@@ -533,7 +533,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
                   {m.summary && <p className="mt-1 line-clamp-2 text-[11px] text-ink-tertiary">{m.summary}</p>}
                 </div>
                 <span className="shrink-0 text-[10px] text-ink-tertiary">
-                  {new Date(m.created_at).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}
+                  {new Date(m.created_at).toLocaleDateString(locale === 'en' ? 'en-US' : 'es-ES', { day: 'numeric', month: 'short' })}
                 </span>
               </div>
             ))}
@@ -545,12 +545,12 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       <div className="flex items-center justify-between rounded-2xl border border-red-900/30 bg-red-950/20 p-5">
         <div>
           <p className="text-sm font-semibold text-red-400">
-            {project.status === 'archived' ? 'Proyecto archivado' : 'Archivar proyecto'}
+            {project.status === 'archived' ? 'Project archived' : 'Archive project'}
           </p>
           <p className="mt-0.5 text-[11px] text-ink-tertiary">
             {project.status === 'archived'
-              ? 'Este proyecto está archivado.'
-              : 'Lo retira de tu lista activa; podrás restaurarlo.'}
+              ? 'This project is archived.'
+              : 'It is removed from your active list; you can restore it later.'}
           </p>
         </div>
         <button
@@ -558,7 +558,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
           disabled={project.status === 'archived'}
           className="rounded-lg bg-red-600 px-4 py-2 text-xs font-medium text-white transition hover:bg-red-700 disabled:bg-card disabled:text-ink-secondary"
         >
-          {project.status === 'archived' ? 'Archivado' : 'Archivar'}
+          {project.status === 'archived' ? 'Archived' : 'Archive'}
         </button>
       </div>
     </div>

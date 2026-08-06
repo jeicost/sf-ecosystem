@@ -224,7 +224,7 @@ export async function GET(req: NextRequest) {
     if (format === 'voice-guide') {
       if (toolSlug !== 'brand-book' || !result.voice_guide_onepager) {
         return NextResponse.json(
-          { error: 'El Voice Guide solo existe para informes brand-book completos' },
+          { error: 'The Voice Guide is only available for complete brand-book reports' },
           { status: 400 }
         )
       }
@@ -248,7 +248,7 @@ export async function GET(req: NextRequest) {
     // ── Deck mensual (F4) — descarga local del .pptx ──
     if (format === 'monthly-deck') {
       if (toolSlug !== 'monthly-content-system') {
-        return NextResponse.json({ error: 'monthly-deck solo aplica a monthly-content-system' }, { status: 400 })
+        return NextResponse.json({ error: 'monthly-deck is only available for monthly-content-system reports' }, { status: 400 })
       }
       const buffer = await buildMonthlyDeckPptx({
         brandName: clientName,

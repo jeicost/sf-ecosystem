@@ -217,8 +217,8 @@ export default function ToolRunnerPage({
           <div className="flex items-start gap-3">
             <Loader2 size={20} className="animate-spin" style={{ color: '#3B82F6' }} />
             <div>
-              <p className="font-semibold text-blue-400">Generando...</p>
-              <p className="text-sm text-ink-secondary mt-1">Claude está analizando tu solicitud (puede tomar 30-60 segundos)</p>
+              <p className="font-semibold text-blue-400">Generating...</p>
+              <p className="text-sm text-ink-secondary mt-1">Claude is analyzing your request (this can take 30-60 seconds)</p>
             </div>
           </div>
         </div>
@@ -285,7 +285,7 @@ export default function ToolRunnerPage({
                   className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink focus:border-purple-500 focus:outline-none transition-colors"
                   required={field.required}
                 >
-                  <option value="">Selecciona...</option>
+                  <option value="">Select...</option>
                   {field.options?.map((opt) => (
                     <option key={opt.value} value={opt.value}>
                       {opt.label}
@@ -352,7 +352,7 @@ export default function ToolRunnerPage({
               )}
 
               {field.example && (
-                <p className="text-xs text-ink-tertiary mt-1">Ej: {field.example}</p>
+                <p className="text-xs text-ink-tertiary mt-1">e.g. {field.example}</p>
               )}
             </div>
           ))}
@@ -360,12 +360,12 @@ export default function ToolRunnerPage({
           {!config.hideExtras && (
             <>
               <div>
-                <label className="block text-sm font-semibold text-ink mb-2">Contexto adicional (opcional)</label>
-                <p className="text-xs text-ink-tertiary mb-2">Pega aquí cualquier información extra que el informe deba tener en cuenta.</p>
+                <label className="block text-sm font-semibold text-ink mb-2">Additional context (optional)</label>
+                <p className="text-xs text-ink-tertiary mb-2">Paste any extra information the report should take into account.</p>
                 <textarea
                   value={formData.contexto_adicional || ''}
                   onChange={(e) => handleChange('contexto_adicional', e.target.value)}
-                  placeholder="Notas, datos, contexto del momento..."
+                  placeholder="Notes, data, current context..."
                   className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-none h-24"
                 />
               </div>
@@ -390,7 +390,7 @@ export default function ToolRunnerPage({
             {isLoading || externalLoading ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                Generando...
+                Generating...
               </>
             ) : (
               <>
@@ -412,13 +412,13 @@ export default function ToolRunnerPage({
                 }}
                 className="flex-1 px-6 py-3 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors text-sm"
               >
-                📥 Descargar HTML
+                📥 Download HTML
               </button>
               <button
                 onClick={() => setResultData(null)}
                 className="px-6 py-3 rounded-lg font-semibold text-ink bg-surface hover:bg-surface-hover transition-colors text-sm"
               >
-                ↻ Nuevamente
+                ↻ Run again
               </button>
             </div>
           )}

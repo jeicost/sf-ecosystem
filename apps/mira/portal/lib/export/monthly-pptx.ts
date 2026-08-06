@@ -165,7 +165,7 @@ function coverSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
     x: MARGIN, y: 2.1, w: CONTENT_W, h: 0.4,
     fontFace: FONT, fontSize: 14, bold: true, color: INK_SOFT, charSpacing: 4,
   })
-  slide.addText('Sistema de Contenidos', {
+  slide.addText('Content System', {
     x: MARGIN, y: 2.5, w: CONTENT_W, h: 1.0,
     fontFace: FONT, fontSize: 44, bold: true, color: PLATE,
   })
@@ -177,37 +177,37 @@ function coverSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   const pillars = arr(r.pillars)
   const captions = arr(r.captions)
   const stats: string[] = [
-    `${pillars.length} pilares`,
-    `${captions.length} piezas listas`,
+    `${pillars.length} pillars`,
+    `${captions.length} ready pieces`,
     `${arr(r.hero_briefs).length} hero briefs`,
   ]
   const promo = r.promo_ratio
   if (promo && typeof promo === 'object' && promo.content_pct) {
-    stats.push(`${promo.content_pct}/${promo.promo_pct} contenido·promo`)
+    stats.push(`${promo.content_pct}/${promo.promo_pct} content·promo`)
   }
   for (const st of stats) x += chip(slide, x, 4.5, st, accent) + 0.15
-  slide.addText('Cómo se usa: revisa el tablero, marca APPROVE / EDIT / PASS en cada pieza, y nada se produce hasta que está en verde.', {
+  slide.addText('How to use it: review the board, mark APPROVE / EDIT / PASS on every piece — nothing gets produced until it is green.', {
     x: MARGIN, y: 5.3, w: CONTENT_W - 3, h: 0.7,
     fontFace: FONT, fontSize: 11.5, color: INK_SOFT, italic: true, lineSpacingMultiple: 1.2,
   })
-  footer(slide, o.brandName, 'Sistema mensual de contenidos')
+  footer(slide, o.brandName, 'Monthly content system')
 }
 
 function pillarSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
-  divider(pptx, accent, o.brandName, 1, 'El Sistema', 'Los pilares del mes: qué promete cada uno, a quién le habla y las reglas que lo mantienen vivo.')
+  divider(pptx, accent, o.brandName, 1, 'The System', 'This month\'s pillars: what each one promises, who it speaks to and the rules that keep it alive.')
   for (const p of arr(o.result.pillars).slice(0, 8)) {
     const slide = pptx.addSlide()
     slide.background = { color: PAPER }
-    let y = titleBar(slide, accent, 'Part 1 · Pilar', s(p.name, 60) || 'Pilar')
+    let y = titleBar(slide, accent, 'Part 1 · Pillar', s(p.name, 60) || 'Pillar')
     let x = MARGIN
-    x += chip(slide, x, y, s(p.status, 20) === 'ALREADY_RUNNING' ? 'En marcha' : 'Propuesta', accent) + 0.12
+    x += chip(slide, x, y, s(p.status, 20) === 'ALREADY_RUNNING' ? 'Running' : 'Proposed', accent) + 0.12
     if (s(p.funnel_role)) x += chip(slide, x, y, s(p.funnel_role, 8), accent, { light: true }) + 0.12
     if (s(p.cadence)) chip(slide, x, y, s(p.cadence, 16), accent, { light: true })
     y += 0.48
 
     gate(y, 0.8, 'promesa pilar')
     slide.addText([
-      { text: 'PROMESA  ', options: { fontSize: 9, bold: true, color: accent, charSpacing: 2 } },
+      { text: 'PROMISE  ', options: { fontSize: 9, bold: true, color: accent, charSpacing: 2 } },
       { text: s(p.promise, 220), options: { fontSize: 13, color: '222222' } },
     ], { x: MARGIN, y, w: CONTENT_W, h: 0.8, fontFace: FONT, valign: 'top', lineSpacingMultiple: 1.15 })
     y += 0.85
@@ -217,8 +217,8 @@ function pillarSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
     gate(y, tileH, 'tiles do/dont')
     const tileW = (CONTENT_W - 0.3) / 2
     const tiles: Array<[string, string, string]> = [
-      ['REGLA Nº1', s(p.do, 160), '1B7F4B'],
-      ['LO QUE LO MATA', s(p.dont, 160), 'B3261E'],
+      ['RULE #1', s(p.do, 160), '1B7F4B'],
+      ['WHAT KILLS IT', s(p.dont, 160), 'B3261E'],
     ]
     tiles.forEach(([label, text, color], i) => {
       const tx = MARGIN + i * (tileW + 0.3)
@@ -235,27 +235,27 @@ function pillarSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
       const seedsH = Math.min(0.34 * seeds.length + 0.3, FOOTER_Y - y)
       gate(y, seedsH, 'semillas')
       slide.addText([
-        { text: 'SEMILLAS DEL MES\n', options: { fontSize: 9, bold: true, color: accent, charSpacing: 2 } },
+        { text: 'SEEDS OF THE MONTH\n', options: { fontSize: 9, bold: true, color: accent, charSpacing: 2 } },
         ...seeds.map((seed) => ({ text: `•  ${seed}\n`, options: { fontSize: 10.5, color: '333333' } })),
       ], { x: MARGIN, y, w: CONTENT_W, h: seedsH, fontFace: FONT, valign: 'top', lineSpacingMultiple: 1.1 })
     }
     if (s(p.audience)) {
-      slide.addText(`Habla a: ${s(p.audience, 100)}`, {
+      slide.addText(`Speaks to: ${s(p.audience, 100)}`, {
         x: MARGIN, y: FOOTER_Y - 0.32, w: CONTENT_W, h: 0.3,
         fontFace: FONT, fontSize: 9, italic: true, color: '888888',
       })
     }
-    footer(slide, o.brandName, `Pilar · ${s(p.name, 40)}`)
+    footer(slide, o.brandName, `Pillar · ${s(p.name, 40)}`)
   }
 }
 
 function weeklyBoardSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
-  divider(pptx, accent, o.brandName, 2, 'Tablero Semanal', 'La vista de trabajo: qué se produce cada semana, en qué formato y para qué.')
+  divider(pptx, accent, o.brandName, 2, 'Weekly Board', 'The working view: what gets produced each week, in what format and what for.')
   for (const w of arr(o.result.weekly_board).slice(0, 6)) {
     const slide = pptx.addSlide()
     slide.background = { color: PAPER }
     const theme = s(w.theme, 80)
-    const y = titleBar(slide, accent, 'Part 2 · Tablero', `Semana ${s(w.week, 4) || '?'}${theme ? ` — ${theme}` : ''}`)
+    const y = titleBar(slide, accent, 'Part 2 · Board', `Week ${s(w.week, 4) || '?'}${theme ? ` — ${theme}` : ''}`)
     const rows = arr(w.rows).slice(0, 8).map((row: any) => [
       s(row.pillar, 28) || '—',
       s(row.format, 16) || '—',
@@ -264,20 +264,20 @@ function weeklyBoardSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: strin
       s(row.goal, 60) || '—',
     ])
     if (rows.length) {
-      tableOn(slide, y + 0.1, FOOTER_Y - y - 0.2, ['Pilar', 'Formato', 'Canal', 'Pieza', 'Objetivo'], rows,
+      tableOn(slide, y + 0.1, FOOTER_Y - y - 0.2, ['Pillar', 'Format', 'Channel', 'Piece', 'Goal'], rows,
         [2.0, 1.3, 1.3, 4.6, 3.03], `tablero semana ${w.week}`)
     } else {
-      slide.addText('Semana sin piezas asignadas.', { x: MARGIN, y: y + 0.3, w: CONTENT_W, h: 0.4, fontFace: FONT, fontSize: 11, color: INK_SOFT })
+      slide.addText('No pieces assigned for this week.', { x: MARGIN, y: y + 0.3, w: CONTENT_W, h: 0.4, fontFace: FONT, fontSize: 11, color: INK_SOFT })
     }
-    footer(slide, o.brandName, `Tablero · Semana ${s(w.week, 4)}`)
+    footer(slide, o.brandName, `Board · Week ${s(w.week, 4)}`)
   }
 }
 
 function prioritySlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
-  divider(pptx, accent, o.brandName, 3, 'Prioridades', 'Si solo se producen 7 piezas este mes, son estas. En orden.')
+  divider(pptx, accent, o.brandName, 3, 'Priorities', 'If only 7 pieces get produced this month, these are the ones. In order.')
   const slide = pptx.addSlide()
   slide.background = { color: PAPER }
-  const y = titleBar(slide, accent, 'Part 3 · Prioridades', 'Las 7 del mes')
+  const y = titleBar(slide, accent, 'Part 3 · Priorities', 'The 7 of the month')
   const items = arr(o.result.priority_board).slice(0, 7)
   const rowH = Math.min(0.72, (FOOTER_Y - y - 0.2) / Math.max(items.length, 1))
   items.forEach((it: any, i: number) => {
@@ -295,11 +295,11 @@ function prioritySlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
       { text: `   ${s(it.pillar, 30)}${it.why_priority ? ` — ${s(it.why_priority, 110)}` : ''}`, options: { fontSize: 9.5, color: INK_SOFT } },
     ], { x: MARGIN + 0.65, y: iy, w: CONTENT_W - 0.65, h: rowH - 0.06, fontFace: FONT, valign: 'middle' })
   })
-  footer(slide, o.brandName, 'Prioridades del mes')
+  footer(slide, o.brandName, 'Priorities of the month')
 }
 
 function heroBriefSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
-  divider(pptx, accent, o.brandName, 4, 'Hero Briefs', 'Las piezas hero, listas para grabar: plano a plano, con tiempos y texto en pantalla.')
+  divider(pptx, accent, o.brandName, 4, 'Hero Briefs', 'The hero pieces, ready to shoot: shot by shot, with timings and on-screen text.')
   for (const h of arr(o.result.hero_briefs).slice(0, 4)) {
     const slide = pptx.addSlide()
     slide.background = { color: PAPER }
@@ -318,10 +318,10 @@ function heroBriefSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string)
       s(sc.time, 10) || '—', s(sc.shot, 34) || '—', s(sc.action, 90) || '—', s(sc.text_overlay, 50) || '—',
     ])
     if (flow.length) {
-      tableOn(slide, y, FOOTER_Y - y - 0.55, ['Tiempo', 'Plano', 'Acción', 'Texto en pantalla'], flow,
+      tableOn(slide, y, FOOTER_Y - y - 0.55, ['Time', 'Shot', 'Action', 'On-screen text'], flow,
         [1.0, 2.4, 5.4, 3.43], 'shot flow', 9)
     }
-    slide.addText(`CTA: ${s(h.cta, 80) || '—'}    ·    Éxito = ${s(h.success_metric, 90) || '—'}`, {
+    slide.addText(`CTA: ${s(h.cta, 80) || '—'}    ·    Success = ${s(h.success_metric, 90) || '—'}`, {
       x: MARGIN, y: FOOTER_Y - 0.4, w: CONTENT_W, h: 0.35,
       fontFace: FONT, fontSize: 10, bold: true, color: '333333',
     })
@@ -330,15 +330,15 @@ function heroBriefSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string)
 }
 
 function captionSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
-  divider(pptx, accent, o.brandName, 5, 'Ready to Publish', 'Cada pieza con su copy final. Marca APPROVE / EDIT / PASS — nada se produce hasta estar en verde.')
+  divider(pptx, accent, o.brandName, 5, 'Ready to Publish', 'Every piece with its final copy. Mark APPROVE / EDIT / PASS — nothing gets produced until it is green.')
   for (const c of arr(o.result.captions).slice(0, 30)) {
     const slide = pptx.addSlide()
     slide.background = { color: PAPER }
-    let y = titleBar(slide, accent, 'Part 5 · Pieza', s(c.hook, 75) || 'Pieza')
+    let y = titleBar(slide, accent, 'Part 5 · Piece', s(c.hook, 75) || 'Piece')
     let x = MARGIN
     if (s(c.platform)) x += chip(slide, x, y, s(c.platform, 14), accent) + 0.12
     if (s(c.pillar_name)) x += chip(slide, x, y, s(c.pillar_name, 26), accent, { light: true }) + 0.12
-    if (c.suggested_day) chip(slide, x, y, `día ${s(c.suggested_day, 4)}`, accent, { light: true })
+    if (c.suggested_day) chip(slide, x, y, `day ${s(c.suggested_day, 4)}`, accent, { light: true })
     y += 0.46
 
     const colW = (CONTENT_W - 0.3) * 0.62
@@ -380,11 +380,11 @@ function calendarSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   if (!entries.length) return
   const slide = pptx.addSlide()
   slide.background = { color: PAPER }
-  const y0 = titleBar(slide, accent, 'Calendario', s(o.result.month_label || o.result.month, 40))
+  const y0 = titleBar(slide, accent, 'Content Calendar', s(o.result.month_label || o.result.month, 40))
   // Grid 7 columnas × hasta 6 filas, semana empezando en lunes
   const colW = CONTENT_W / 7
   const headY = y0 + 0.05
-  const labels = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom']
+  const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
   labels.forEach((l, i) => {
     slide.addText(l.toUpperCase(), {
       x: MARGIN + i * colW, y: headY, w: colW, h: 0.26,
@@ -411,28 +411,32 @@ function calendarSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
     for (const it of items.slice(0, 2)) {
       runs.push({ text: `${it.is_hero ? '★ ' : ''}${s(it.platform, 2) ? s(it.platform, 12).slice(0, 2).toUpperCase() + ' · ' : ''}${s(it.title, 26)}\n`, options: { fontSize: 6.8, color: '333333' } })
     }
-    if (items.length > 2) runs.push({ text: `+${items.length - 2} más`, options: { fontSize: 6.5, italic: true, color: '888888' } })
+    if (items.length > 2) runs.push({ text: `+${items.length - 2} more`, options: { fontSize: 6.5, italic: true, color: '888888' } })
     slide.addText(runs, {
       x: cx + 0.07, y: cy + 0.05, w: colW - 0.14, h: cellH - 0.1,
       fontFace: FONT, valign: 'top', lineSpacingMultiple: 1.0,
     })
   })
-  footer(slide, o.brandName, 'Calendario del mes')
+  // verify-deck.ts comprueba que exista una slide de calendario con un regex
+  // bilingüe (/calendar(io)?/i), así que este texto ya se puede traducir.
+  // del deck para dar por válida la slide de calendario. Este pie es el ancla que
+  // hace pasar esa verificación: no traducir sin actualizar verify-deck.ts.
+  footer(slide, o.brandName, 'Monthly calendar')
 }
 
 function ideaBankSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   const bank = (o.result.idea_bank ?? {}) as Record<string, any>
-  divider(pptx, accent, o.brandName, 6, 'Idea Bank', 'Material para los próximos meses: campañas, activaciones, influencers y comunidad — más los KPIs 30/60/90.')
+  divider(pptx, accent, o.brandName, 6, 'Idea Bank', 'Material for the coming months: campaigns, activations, influencers and community — plus the 30/60/90 KPIs.')
 
   // Slide A: campañas + activaciones
   const a = pptx.addSlide()
   a.background = { color: PAPER }
-  let y = titleBar(a, accent, 'Part 6 · Idea bank', 'Campañas y activaciones')
+  let y = titleBar(a, accent, 'Part 6 · Idea bank', 'Campaigns and activations')
   const campaigns = arr(bank.campaign_concepts).slice(0, 4).map((c: any) => [
     s(c.name, 34) || '—', s(c.concept, 110) || '—', s(c.pillar, 24) || '—', s(c.when, 30) || '—',
   ])
   if (campaigns.length) {
-    tableOn(a, y + 0.05, 2.4, ['Campaña', 'Concepto', 'Pilar', 'Cuándo'], campaigns, [2.3, 6.0, 2.0, 1.93], 'campañas')
+    tableOn(a, y + 0.05, 2.4, ['Campaign', 'Concept', 'Pillar', 'When'], campaigns, [2.3, 6.0, 2.0, 1.93], 'campañas')
     y += 0.5 + campaigns.length * 0.52
   }
   const plays = arr(bank.activation_playbook).slice(0, 4).map((p: any) => [
@@ -440,19 +444,19 @@ function ideaBankSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) 
   ])
   if (plays.length) {
     tableOn(a, Math.min(y + 0.15, FOOTER_Y - 0.6 - plays.length * 0.45), plays.length * 0.5 + 0.4,
-      ['Activación', 'Cómo', 'Coste'], plays, [2.6, 8.03, 1.6], 'activaciones')
+      ['Activation', 'How', 'Cost'], plays, [2.6, 8.03, 1.6], 'activaciones')
   }
-  footer(a, o.brandName, 'Idea Bank · Campañas')
+  footer(a, o.brandName, 'Idea Bank · Campaigns')
 
   // Slide B: influencers + comunidad
   const b = pptx.addSlide()
   b.background = { color: PAPER }
-  y = titleBar(b, accent, 'Part 6 · Idea bank', 'Influencers y comunidad')
+  y = titleBar(b, accent, 'Part 6 · Idea bank', 'Influencers and community')
   const tiers = arr(bank.influencer_system?.tiers).slice(0, 3).map((t: any) => [
     s(t.tier, 12) || '—', s(t.who, 70) || '—', s(t.deal, 60) || '—', s(t.content, 70) || '—',
   ])
   if (tiers.length) {
-    tableOn(b, y + 0.05, 2.1, ['Tier', 'Quién', 'Deal', 'Contenido'], tiers, [1.2, 4.0, 3.4, 3.63], 'influencers')
+    tableOn(b, y + 0.05, 2.1, ['Tier', 'Who', 'Deal', 'Content'], tiers, [1.2, 4.0, 3.4, 3.63], 'influencers')
     y += 0.55 + tiers.length * 0.5
   }
   const rituals = arr(bank.community_engine).slice(0, 4).map((rt: any) => [
@@ -460,16 +464,16 @@ function ideaBankSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) 
   ])
   if (rituals.length) {
     tableOn(b, Math.min(y + 0.2, FOOTER_Y - 0.5 - rituals.length * 0.42), rituals.length * 0.46 + 0.4,
-      ['Ritual', 'Cadencia', 'Por qué'], rituals, [3.2, 1.8, 7.23], 'comunidad')
+      ['Ritual', 'Cadence', 'Why'], rituals, [3.2, 1.8, 7.23], 'comunidad')
   }
-  footer(b, o.brandName, 'Idea Bank · Comunidad')
+  footer(b, o.brandName, 'Idea Bank · Community')
 
   // Slide C: KPIs 30/60/90 + dormant en tiles oscuros
   const kp = (bank.kpis_30_60_90 ?? {}) as Record<string, any>
   const c = pptx.addSlide()
   c.background = { color: PAPER }
   y = titleBar(c, accent, 'Part 6 · Idea bank', 'KPIs 30 / 60 / 90')
-  const cols: Array<[string, any[]]> = [['30 días', arr(kp.d30)], ['60 días', arr(kp.d60)], ['90 días', arr(kp.d90)]]
+  const cols: Array<[string, any[]]> = [['30 days', arr(kp.d30)], ['60 days', arr(kp.d60)], ['90 days', arr(kp.d90)]]
   const tileW = (CONTENT_W - 0.6) / 3
   const tileH = 3.0
   gate(y, tileH, 'kpis tiles')
@@ -484,7 +488,7 @@ function ideaBankSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) 
   const dormant = arr(bank.dormant_pillars).slice(0, 6).map((d: unknown) => s(d, 60)).filter(Boolean)
   if (dormant.length) {
     c.addText([
-      { text: 'EN LA NEVERA  ', options: { fontSize: 8.5, bold: true, color: accent, charSpacing: 2 } },
+      { text: 'ON ICE  ', options: { fontSize: 8.5, bold: true, color: accent, charSpacing: 2 } },
       { text: dormant.join('  ·  '), options: { fontSize: 9.5, color: INK_SOFT } },
     ], { x: MARGIN, y: y + tileH + 0.25, w: CONTENT_W, h: 0.5, fontFace: FONT, valign: 'top' })
   }
@@ -498,7 +502,7 @@ function closingSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
     x: MARGIN, y: 0.6, w: CONTENT_W, h: 0.6,
     fontFace: FONT, fontSize: 28, bold: true, color: 'FFFFFF',
   })
-  slide.addText('Huecos honestos — cada uno con owner. Un sistema con open items claros vale más que uno "completo" con relleno.', {
+  slide.addText('Honest gaps — each one with an owner. A system with clear open items is worth more than a "complete" one padded with filler.', {
     x: MARGIN, y: 1.25, w: CONTENT_W - 2, h: 0.5,
     fontFace: FONT, fontSize: 11, color: 'BBBBBB',
   })
@@ -510,10 +514,10 @@ function closingSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
     slide.addText([
       { text: `${String(it.n ?? i + 1).padStart(2, '0')}  `, options: { fontSize: 11, bold: true, color: accent } },
       { text: `${s(it.item, 110)}  `, options: { fontSize: 10.5, color: 'FFFFFF' } },
-      { text: `→ ${s(it.owner, 14) || '¿?'}${it.needed_for ? ` · para: ${s(it.needed_for, 60)}` : ''}`, options: { fontSize: 9, color: '999999' } },
+      { text: `→ ${s(it.owner, 14) || '?'}${it.needed_for ? ` · for: ${s(it.needed_for, 60)}` : ''}`, options: { fontSize: 9, color: '999999' } },
     ], { x: MARGIN, y: iy, w: CONTENT_W, h: rowH, fontFace: FONT, valign: 'middle' })
   })
-  slide.addText('Nada se produce hasta que está en verde. ✅', {
+  slide.addText('Nothing gets produced until it is green. ✅', {
     x: MARGIN, y: FOOTER_Y - 0.45, w: CONTENT_W, h: 0.4,
     fontFace: FONT, fontSize: 12, bold: true, color: accent,
   })

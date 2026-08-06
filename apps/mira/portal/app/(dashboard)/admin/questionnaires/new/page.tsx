@@ -9,11 +9,11 @@ import PageHeader from '@/components/ui/PageHeader'
 type QuestionKind = 'text' | 'long_text' | 'select' | 'multi_select' | 'number' | 'url'
 
 const KIND_LABEL: Record<QuestionKind, string> = {
-  text: 'Texto corto',
-  long_text: 'Texto largo',
-  select: 'Una opción (choice cards)',
-  multi_select: 'Varias opciones (choice cards)',
-  number: 'Número',
+  text: 'Short text',
+  long_text: 'Long text',
+  select: 'Single choice (choice cards)',
+  multi_select: 'Multiple choice (choice cards)',
+  number: 'Number',
   url: 'URL',
 }
 
@@ -85,16 +85,16 @@ export default function NewQuestionnairePage() {
   async function handleSubmit() {
     setError(null)
     if (!clientId) {
-      setError('Falta el cliente — vuelve a abrir este builder desde la gestión de clientes.')
+      setError('Missing client — reopen this builder from client management.')
       return
     }
     if (!title.trim()) {
-      setError('El título es obligatorio.')
+      setError('Title is required.')
       return
     }
     const validQuestions = questions.filter((q) => q.prompt.trim())
     if (validQuestions.length === 0) {
-      setError('Añade al menos una pregunta con su texto.')
+      setError('Add at least one question with its text.')
       return
     }
     // Preguntas de opción (select/multi_select) necesitan >= 2 opciones con
@@ -105,13 +105,13 @@ export default function NewQuestionnairePage() {
       if (q.kind !== 'select' && q.kind !== 'multi_select') continue
       const labels = q.options.map((o) => o.label.trim()).filter(Boolean)
       if (labels.length < 2) {
-        setError(`La pregunta "${q.prompt.trim()}" necesita al menos 2 opciones con texto.`)
+        setError(`Question "${q.prompt.trim()}" needs at least 2 options with text.`)
         return
       }
       const seen = new Set<string>()
       const dup = labels.find((l) => (seen.has(l) ? true : (seen.add(l), false)))
       if (dup) {
-        setError(`La pregunta "${q.prompt.trim()}" tiene la opción "${dup}" repetida — cada opción necesita un texto distinto.`)
+        setError(`Question "${q.prompt.trim()}" repeats the option "${dup}" — each option needs a distinct text.`)
         return
       }
     }
@@ -148,10 +148,10 @@ export default function NewQuestionnairePage() {
         }),
       })
       const json = await res.json().catch(() => null)
-      if (!res.ok) throw new Error(json?.error || 'No se pudo crear el informe de decisión')
+      if (!res.ok) throw new Error(json?.error || 'Could not create the decision report')
       router.push(`/questionnaires/${json.questionnaire.id}`)
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo crear el informe de decisión')
+      setError(e instanceof Error ? e.message : 'Could not create the decision report')
     } finally {
       setSubmitting(false)
     }
@@ -163,19 +163,19 @@ export default function NewQuestionnairePage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8 px-6 py-10 pb-24">
       <Link href="/admin/users" className="inline-flex items-center gap-1.5 text-sm text-sky-400 hover:opacity-80">
-        <ArrowLeft size={14} /> Volver a clientes y usuarios
+        <ArrowLeft size={14} /> Back to clients and users
       </Link>
 
       <PageHeader
         eyebrow="Admin"
-        title="Nuevo informe de decisión"
-        subtitle={clientName ? `Para ${clientName} — narrativa + preguntas de decisión, se comporta como los informes que ya generamos.` : 'Narrativa + preguntas de decisión, se comporta como los informes que ya generamos.'}
+        title="New decision report"
+        subtitle={clientName ? `For ${clientName} — narrative + decision questions, it behaves like the reports we already generate.` : 'Narrative + decision questions, it behaves like the reports we already generate.'}
         eyebrowColor="#6366F1"
       />
 
       {!clientId && (
         <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
-          Falta el cliente en la URL — abre este builder desde el botón "Crear informe de decisión" en Clientes y usuarios.
+          Missing client in the URL — open this builder from the &quot;Create decision report&quot; button in Clients and users.
         </div>
       )}
 
@@ -186,29 +186,29 @@ export default function NewQuestionnairePage() {
       {/* Cabecera del informe */}
       <div className="space-y-3 rounded-2xl border border-line bg-surface p-5">
         <div>
-          <label className="mb-1 block text-[11px] uppercase tracking-wide text-ink-tertiary">Título</label>
-          <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputBase} placeholder="Ej.: Análisis estratégico — modelo de negocio y precio" />
+          <label className="mb-1 block text-[11px] uppercase tracking-wide text-ink-tertiary">Title</label>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className={inputBase} placeholder="e.g. Strategic analysis — business model and pricing" />
         </div>
         <div>
-          <label className="mb-1 block text-[11px] uppercase tracking-wide text-ink-tertiary">Introducción (opcional)</label>
-          <textarea rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} className={`${inputBase} resize-y`} placeholder="Una frase de contexto para el cliente…" />
+          <label className="mb-1 block text-[11px] uppercase tracking-wide text-ink-tertiary">Introduction (optional)</label>
+          <textarea rows={2} value={intro} onChange={(e) => setIntro(e.target.value)} className={`${inputBase} resize-y`} placeholder="One line of context for the client…" />
         </div>
       </div>
 
       {/* Narrativa */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-ink">Narrativa (opcional)</h2>
+          <h2 className="text-sm font-semibold text-ink">Narrative (optional)</h2>
           <button
             type="button"
             onClick={() => setNarrative((prev) => [...prev, emptyNarrative()])}
             className="inline-flex items-center gap-1 text-xs font-medium text-sky-400 hover:opacity-80"
           >
-            <Plus size={13} /> Añadir sección
+            <Plus size={13} /> Add section
           </button>
         </div>
         <p className="text-[11px] text-ink-tertiary">
-          Resumen ejecutivo, diagnóstico, benchmark… se muestra antes de las preguntas, como en un informe.
+          Executive summary, diagnosis, benchmark… shown before the questions, as in a report.
         </p>
         {narrative.map((section, i) => (
           <div key={i} className="space-y-2 rounded-2xl border border-line bg-surface p-4">
@@ -217,7 +217,7 @@ export default function NewQuestionnairePage() {
                 value={section.heading}
                 onChange={(e) => updateNarrative(i, { heading: e.target.value })}
                 className={`${inputBase} flex-1`}
-                placeholder="Encabezado de la sección (opcional)"
+                placeholder="Section heading (optional)"
               />
               <button type="button" onClick={() => setNarrative((prev) => prev.filter((_, idx) => idx !== i))} className="p-2 text-ink-tertiary hover:text-red-400">
                 <Trash2 size={15} />
@@ -228,7 +228,7 @@ export default function NewQuestionnairePage() {
               value={section.body}
               onChange={(e) => updateNarrative(i, { body: e.target.value })}
               className={`${inputBase} resize-y`}
-              placeholder="Texto de la sección…"
+              placeholder="Section text…"
             />
           </div>
         ))}
@@ -237,13 +237,13 @@ export default function NewQuestionnairePage() {
       {/* Preguntas */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-ink">Preguntas de decisión</h2>
+          <h2 className="text-sm font-semibold text-ink">Decision questions</h2>
           <button
             type="button"
             onClick={() => setQuestions((prev) => [...prev, emptyQuestion()])}
             className="inline-flex items-center gap-1 text-xs font-medium text-sky-400 hover:opacity-80"
           >
-            <Plus size={13} /> Añadir pregunta
+            <Plus size={13} /> Add question
           </button>
         </div>
 
@@ -255,13 +255,13 @@ export default function NewQuestionnairePage() {
                   value={q.prompt}
                   onChange={(e) => updateQuestion(qi, { prompt: e.target.value })}
                   className={inputBase}
-                  placeholder="Pregunta (ej.: Modelo de precio)"
+                  placeholder="Question (e.g. Pricing model)"
                 />
                 <input
                   value={q.help}
                   onChange={(e) => updateQuestion(qi, { help: e.target.value })}
                   className={inputBase}
-                  placeholder="Ayuda/contexto (opcional)"
+                  placeholder="Help/context (optional)"
                 />
               </div>
               <button
@@ -286,20 +286,20 @@ export default function NewQuestionnairePage() {
               </select>
               <label className="flex items-center gap-1.5 text-xs text-ink-secondary">
                 <input type="checkbox" checked={q.required} onChange={(e) => updateQuestion(qi, { required: e.target.checked })} className="h-3.5 w-3.5 accent-sky-500" />
-                Obligatoria
+                Required
               </label>
             </div>
 
             {(q.kind === 'select' || q.kind === 'multi_select') && (
               <div className="space-y-2 rounded-xl border border-line-subtle bg-page p-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Opciones</p>
+                  <p className="text-[11px] uppercase tracking-wide text-ink-tertiary">Options</p>
                   <button
                     type="button"
                     onClick={() => updateQuestion(qi, { options: [...q.options, emptyOption()] })}
                     className="inline-flex items-center gap-1 text-[11px] font-medium text-sky-400 hover:opacity-80"
                   >
-                    <Plus size={11} /> Añadir opción
+                    <Plus size={11} /> Add option
                   </button>
                 </div>
                 {q.options.map((o, oi) => (
@@ -309,13 +309,13 @@ export default function NewQuestionnairePage() {
                         value={o.label}
                         onChange={(e) => updateOption(qi, oi, { label: e.target.value })}
                         className={`${inputBase} py-1.5 text-xs`}
-                        placeholder="Título de la opción"
+                        placeholder="Option title"
                       />
                       <input
                         value={o.description}
                         onChange={(e) => updateOption(qi, oi, { description: e.target.value })}
                         className={`${inputBase} py-1.5 text-xs`}
-                        placeholder="Descripción breve (opcional)"
+                        placeholder="Short description (optional)"
                       />
                       <label className="flex items-center gap-1.5 text-[11px] text-amber-400">
                         <input
@@ -324,7 +324,7 @@ export default function NewQuestionnairePage() {
                           onChange={(e) => updateOption(qi, oi, { recommended: e.target.checked })}
                           className="h-3 w-3 accent-amber-500"
                         />
-                        Marcar como recomendación
+                        Mark as recommended
                       </label>
                     </div>
                     <button
@@ -339,7 +339,7 @@ export default function NewQuestionnairePage() {
                   </div>
                 ))}
                 {q.options.length === 0 && (
-                  <p className="text-[11px] italic text-ink-muted">Sin opciones todavía — añade al menos 2.</p>
+                  <p className="text-[11px] italic text-ink-muted">No options yet — add at least 2.</p>
                 )}
               </div>
             )}
@@ -354,7 +354,7 @@ export default function NewQuestionnairePage() {
           className="inline-flex items-center gap-1.5 rounded-lg bg-sky-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
         >
           {submitting && <Loader2 size={13} className="animate-spin" />}
-          Crear borrador
+          Create draft
         </button>
       </div>
     </div>

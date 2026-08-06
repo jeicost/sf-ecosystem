@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
           enrichment_id: enrichment.id,
           company: enrichment.company_name,
           status: 'failed',
-          error: stageError?.message ?? 'No se pudo crear el lead de staging',
+          error: stageError?.message ?? 'The staging lead could not be created',
         })
         continue
       }

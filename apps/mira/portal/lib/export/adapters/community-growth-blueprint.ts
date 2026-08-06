@@ -20,23 +20,23 @@ import {
 } from './generic'
 
 const MONTHS: Array<[string, string]> = [
-  ['month_1_foundation', 'Mes 1 — Fundación'],
-  ['month_2_growth', 'Mes 2 — Crecimiento'],
-  ['month_3_retention', 'Mes 3 — Retención'],
+  ['month_1_foundation', 'Month 1 — Foundation'],
+  ['month_2_growth', 'Month 2 — Growth'],
+  ['month_3_retention', 'Month 3 — Retention'],
 ]
 
 function overviewSection(r: Record<string, any>): Section {
   const metrics = asObj(r.metrics)
   const stats: StatItem[] = []
-  if (asStr(metrics.target_members)) stats.push({ value: asStr(metrics.target_members), label: 'Miembros objetivo' })
-  if (asStr(metrics.monthly_active)) stats.push({ value: asStr(metrics.monthly_active), label: 'Activos mensuales' })
+  if (asStr(metrics.target_members)) stats.push({ value: asStr(metrics.target_members), label: 'Target members' })
+  if (asStr(metrics.monthly_active)) stats.push({ value: asStr(metrics.monthly_active), label: 'Monthly active' })
   if (metrics.engagement_rate !== undefined) stats.push({ value: asPct(metrics.engagement_rate), label: 'Engagement' })
-  if (metrics.retention_rate !== undefined) stats.push({ value: asPct(metrics.retention_rate), label: 'Retención' })
+  if (metrics.retention_rate !== undefined) stats.push({ value: asPct(metrics.retention_rate), label: 'Retention' })
 
   const section: Section = {
-    title: 'Resumen de Estrategia',
-    navLabel: 'Resumen',
-    subtitle: 'Blueprint de crecimiento de comunidad a 90 días',
+    title: 'Strategy Summary',
+    navLabel: 'Summary',
+    subtitle: '90-day community growth blueprint',
     stats: stats.length ? stats : undefined,
   }
   if (asStr(r.strategy_summary)) {
@@ -58,15 +58,15 @@ function roadmapSection(r: Record<string, any>): Section | null {
       continue
     }
     const parts: string[] = []
-    if (asStr(m.focus)) parts.push(`<p><strong>Foco:</strong> ${esc(asStr(m.focus))}</p>`)
+    if (asStr(m.focus)) parts.push(`<p><strong>Focus:</strong> ${esc(asStr(m.focus))}</p>`)
     const initiatives = asArr(m.key_initiatives)
     if (initiatives.length) {
-      parts.push(`<p style="margin-top:8px;"><strong>Iniciativas clave:</strong></p>${valueToHtml(initiatives)}`)
+      parts.push(`<p style="margin-top:8px;"><strong>Key initiatives:</strong></p>${valueToHtml(initiatives)}`)
     } else if (asStr(m.key_initiatives)) {
-      parts.push(`<p style="margin-top:8px;"><strong>Iniciativas clave:</strong> ${esc(asStr(m.key_initiatives))}</p>`)
+      parts.push(`<p style="margin-top:8px;"><strong>Key initiatives:</strong> ${esc(asStr(m.key_initiatives))}</p>`)
     }
     if (asStr(m.expected_growth)) {
-      parts.push(`<p style="margin-top:8px;"><strong>Crecimiento esperado:</strong> ${esc(asStr(m.expected_growth))}</p>`)
+      parts.push(`<p style="margin-top:8px;"><strong>Expected growth:</strong> ${esc(asStr(m.expected_growth))}</p>`)
     }
     const body = parts.join('') || valueToHtml(m)
     if (body) {
@@ -77,9 +77,9 @@ function roadmapSection(r: Record<string, any>): Section | null {
   }
   if (!phases.length) return null
   return {
-    title: 'Roadmap 90 Días',
+    title: '90-Day Roadmap',
     navLabel: 'Roadmap',
-    subtitle: 'Fundación, crecimiento y retención mes a mes',
+    subtitle: 'Foundation, growth and retention month by month',
     phases,
   }
 }
@@ -88,19 +88,19 @@ function playbookSection(r: Record<string, any>): Section | null {
   const p = asObj(r.engagement_playbook)
   if (!Object.keys(p).length) return null
   const labels: Record<string, string> = {
-    daily_check_ins: 'Check-ins Diarios',
-    weekly_ama: 'AMA Semanal',
-    monthly_workshop: 'Workshop Mensual',
-    quarterly_event: 'Evento Trimestral',
+    daily_check_ins: 'Daily Check-ins',
+    weekly_ama: 'Weekly AMA',
+    monthly_workshop: 'Monthly Workshop',
+    quarterly_event: 'Quarterly Event',
   }
   const cards = Object.entries(p)
     .map(([k, v]) => ({ title: labels[k] || humanize(k), body: valueToHtml(v) }))
     .filter((c) => c.body)
   if (!cards.length) return null
   return {
-    title: 'Playbook de Engagement',
+    title: 'Engagement Playbook',
     navLabel: 'Engagement',
-    subtitle: 'Rituales de comunidad por cadencia',
+    subtitle: 'Community rituals by cadence',
     cards,
   }
 }
@@ -111,14 +111,14 @@ function influencerSection(r: Record<string, any>): Section | null {
   const labels: Record<string, string> = {
     tier_1_micro: 'Tier 1 — Micro-influencers',
     tier_2_power_users: 'Tier 2 — Power Users',
-    tier_3_experts: 'Tier 3 — Expertos',
+    tier_3_experts: 'Tier 3 — Experts',
   }
   const cards = Object.entries(inf)
     .map(([k, v]) => ({ title: labels[k] || humanize(k), body: valueToHtml(v) }))
     .filter((c) => c.body)
   if (!cards.length) return null
   return {
-    title: 'Sourcing de Influencers',
+    title: 'Influencer Sourcing',
     navLabel: 'Influencers',
     cards,
   }
@@ -129,16 +129,16 @@ function metricsSection(r: Record<string, any>): Section | null {
   if (!Object.keys(metrics).length) return null
 
   const section: Section = {
-    title: 'Métricas Objetivo',
-    navLabel: 'Métricas',
-    subtitle: 'Tasas objetivo de salud de la comunidad',
+    title: 'Target Metrics',
+    navLabel: 'Metrics',
+    subtitle: 'Target community health rates',
   }
 
   // Bar chart with the comparable rates (as percentages)
   const rateKeys: Array<[string, string]> = [
     ['engagement_rate', 'Engagement'],
-    ['retention_rate', 'Retención'],
-    ['referral_rate', 'Referidos'],
+    ['retention_rate', 'Retention'],
+    ['referral_rate', 'Referrals'],
   ]
   const labels: string[] = []
   const data: number[] = []
@@ -150,7 +150,7 @@ function metricsSection(r: Record<string, any>): Section | null {
     }
   }
   if (labels.length >= 2) {
-    section.chart = { type: 'bar', labels, data, label: 'Tasas objetivo (%)' }
+    section.chart = { type: 'bar', labels, data, label: 'Target rates (%)' }
   }
 
   const rows = Object.entries(metrics)
@@ -160,7 +160,7 @@ function metricsSection(r: Record<string, any>): Section | null {
       return [`<strong>${esc(humanize(k))}</strong>`, isRate ? esc(asPct(v)) : valueToHtml(v)]
     })
   if (rows.length) {
-    section.table = { headers: ['Métrica', 'Objetivo'], rows }
+    section.table = { headers: ['Metric', 'Target'], rows }
   }
   if (!section.chart && !section.table) return null
   return section
@@ -170,11 +170,11 @@ function risksSection(r: Record<string, any>): Section | null {
   const risks = asArr(r.risks_and_mitigations)
   if (!risks.length) {
     const body = valueToHtml(r.risks_and_mitigations)
-    return body ? { title: 'Riesgos y Mitigaciones', content: body } : null
+    return body ? { title: 'Risks & Mitigations', content: body } : null
   }
   return {
-    title: 'Riesgos y Mitigaciones',
-    navLabel: 'Riesgos',
+    title: 'Risks & Mitigations',
+    navLabel: 'Risks',
     listItems: risks.map((item) => valueToHtml(item)).filter(Boolean),
   }
 }

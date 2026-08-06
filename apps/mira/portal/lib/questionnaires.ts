@@ -72,7 +72,7 @@ export interface AnswerRow {
 }
 
 export const QUESTIONNAIRES_UNAVAILABLE =
-  'Los cuestionarios aún no están disponibles: falta aplicar la migración 0054 en Supabase.'
+  'Questionnaires are not available yet: migration 0054 still needs to be applied in Supabase.'
 
 /**
  * True cuando el error de Supabase/PostgREST indica que las tablas 0054 no
@@ -173,13 +173,13 @@ export async function getQuestionnaireForUser(
     if (isMissingTableError(error)) {
       return { ok: false, status: 503, error: QUESTIONNAIRES_UNAVAILABLE }
     }
-    return { ok: false, status: 404, error: 'Cuestionario no encontrado' }
+    return { ok: false, status: 404, error: 'Questionnaire not found' }
   }
-  if (!data) return { ok: false, status: 404, error: 'Cuestionario no encontrado' }
+  if (!data) return { ok: false, status: 404, error: 'Questionnaire not found' }
 
   const questionnaire = data as QuestionnaireRow
   if (!(await userCanAccessClient(user, questionnaire.client_id))) {
-    return { ok: false, status: 403, error: 'Sin acceso a este cuestionario' }
+    return { ok: false, status: 403, error: 'No access to this questionnaire' }
   }
   return { ok: true, questionnaire }
 }

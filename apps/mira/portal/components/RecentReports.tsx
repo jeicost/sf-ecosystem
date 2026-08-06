@@ -85,7 +85,7 @@ export default function RecentReports() {
               <div className="flex items-center gap-2 mt-0.5">
                 <Calendar size={10} className="text-ink-tertiary" />
                 <p className="text-[10px] text-ink-tertiary">
-                  {new Date(report.created_at).toLocaleDateString('es-ES', {
+                  {new Date(report.created_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                   })}

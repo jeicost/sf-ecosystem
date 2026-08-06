@@ -61,7 +61,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     if (!isAgencyPlan(user.user_metadata?.plan)) {
       return NextResponse.json(
-        { error: 'Solo la agencia puede ingestar cuestionarios al brain' },
+        { error: 'Only the agency can ingest questionnaires into the Brand Brain' },
         { status: 403 }
       )
     }
@@ -77,7 +77,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     }
     if (questionnaire.status !== 'completed') {
       return NextResponse.json(
-        { error: 'Solo se pueden ingestar cuestionarios completados' },
+        { error: 'Only completed questionnaires can be ingested' },
         { status: 409 }
       )
     }
@@ -183,7 +183,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
           applied.pillars++
           chips.push(res.chip)
         } catch (e) {
-          errors.push(`Pilar "${pillar.slice(0, 40)}": ${e instanceof Error ? e.message : String(e)}`)
+          errors.push(`Pillar "${pillar.slice(0, 40)}": ${e instanceof Error ? e.message : String(e)}`)
         }
       }
     }
@@ -212,7 +212,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
         applied.memory_entries = 1
         chips.push(res.chip)
       } catch (e) {
-        errors.push(`Memoria: ${e instanceof Error ? e.message : String(e)}`)
+        errors.push(`Memory: ${e instanceof Error ? e.message : String(e)}`)
       }
     }
 
@@ -222,7 +222,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
     if (errors.length > 0) {
       return NextResponse.json(
         {
-          error: `La ingesta falló parcialmente: ${errors.join(' · ')}. Revisa y reintenta (los pilares ya creados podrían duplicarse al reintentar).`,
+          error: `The ingest partially failed: ${errors.join(' · ')}. Review and retry (pillars already created may be duplicated on retry).`,
           applied,
           chips,
         },
@@ -240,7 +240,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
     if (updateError) {
       return NextResponse.json(
-        { error: `Respuestas aplicadas pero no se pudo marcar como ingested: ${updateError.message}` },
+        { error: `Answers were applied but the questionnaire could not be marked as ingested: ${updateError.message}` },
         { status: 500 }
       )
     }
@@ -255,7 +255,7 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
   } catch (error) {
     console.error('questionnaires/[id]/ingest error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error ingestando el cuestionario' },
+      { error: error instanceof Error ? error.message : 'Failed to ingest the questionnaire' },
       { status: 500 }
     )
   }

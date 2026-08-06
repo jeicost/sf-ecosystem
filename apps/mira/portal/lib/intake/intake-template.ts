@@ -40,85 +40,85 @@ export const INTAKE_QUESTION_KINDS: IntakeQuestionKind[] = [
   'url',
 ]
 
-const S1 = '1 · Información básica del proyecto'
-const S2 = '2 · Propuesta de valor y diferenciación'
-const S3 = '3 · Cliente ideal (ICP)'
-const S4 = '4 · Competencia y posicionamiento'
-const S5 = '5 · Modelo de negocio y tracción'
-const S6 = '6 · Estrategia actual y objetivos'
-const S7 = '7 · Recursos y restricciones'
-const S8 = '8 · Marca y mensajes'
-const S9 = '9 · Contexto y prioridades'
+const S1 = '1 · Basic project information'
+const S2 = '2 · Value proposition and differentiation'
+const S3 = '3 · Ideal customer (ICP)'
+const S4 = '4 · Competition and positioning'
+const S5 = '5 · Business model and traction'
+const S6 = '6 · Current strategy and goals'
+const S7 = '7 · Resources and constraints'
+const S8 = '8 · Brand and messaging'
+const S9 = '9 · Context and priorities'
 
 export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 1: Información Básica del Proyecto ──
   {
     section: S1,
-    prompt: '¿Cómo se llama tu proyecto/producto?',
-    help: 'Ejemplo: "Salsa Burgers — App de delivery de comida rápida"',
+    prompt: 'What is your project/product called?',
+    help: 'Example: "Salsa Burgers — Fast food delivery app"',
     kind: 'text',
     required: true,
     maps_to: 'brand_profile.name',
   },
   {
     section: S1,
-    prompt: '¿En qué industria/sector operas?',
-    help: 'Ejemplo: Food & Beverage, SaaS, E-Commerce, Servicios Profesionales…',
+    prompt: 'What industry/sector do you operate in?',
+    help: 'Example: Food & Beverage, SaaS, E-Commerce, Professional Services…',
     kind: 'text',
     required: true,
     maps_to: 'brand_profile.brand_data.company_facts.industry',
   },
   {
     section: S1,
-    prompt: '¿Cuánto tiempo llevas operando?',
-    help: 'Ejemplo: 2 años, 6 meses, inicio en 2024…',
+    prompt: 'How long have you been operating?',
+    help: 'Example: 2 years, 6 months, started in 2024…',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.company_facts.time_operating',
   },
   {
     section: S1,
-    prompt: '¿Cuántas personas hay en tu equipo?',
-    help: 'Ejemplo: 3 (founder + 2 devs), 12 (startup en scale-up)…',
+    prompt: 'How many people are on your team?',
+    help: 'Example: 3 (founder + 2 devs), 12 (startup scaling up)…',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.company_facts.team_size',
   },
   {
     section: S1,
-    prompt: '¿Cuál es tu ingreso mensual aproximado?',
-    help: 'Un rango es suficiente — nos ayuda a calibrar las recomendaciones.',
+    prompt: 'What is your approximate monthly revenue?',
+    help: 'A range is enough — it helps us calibrate our recommendations.',
     kind: 'select',
-    options: ['Menos de 5k €/mes', '5-20k €/mes', '20-100k €/mes', 'Más de 100k €/mes', 'Prefiero no decirlo'],
+    options: ['Under €5k/month', '€5-20k/month', '€20-100k/month', 'Over €100k/month', 'Prefer not to say'],
     maps_to: 'brand_profile.brand_data.company_facts.monthly_revenue',
   },
 
   // ── SECCIÓN 2: Propuesta de Valor & Diferenciación ──
   {
     section: S2,
-    prompt: '¿QUÉ resuelve tu producto? (el problema que atacas)',
-    help: 'Ejemplo: "Entrega de comida rápida en <30 minutos con opciones saludables"',
+    prompt: 'WHAT does your product solve? (the problem you attack)',
+    help: 'Example: "Fast food delivered in under 30 minutes with healthy options"',
     kind: 'long_text',
     required: true,
     maps_to: 'brand_profile.brand_data.problem_solved',
   },
   {
     section: S2,
-    prompt: '¿CÓMO lo resuelves? (tu solución única)',
-    help: 'Ejemplo: "Asociaciones con restaurantes locales + logística propia + app mobile"',
+    prompt: 'HOW do you solve it? (your unique solution)',
+    help: 'Example: "Partnerships with local restaurants + in-house logistics + mobile app"',
     kind: 'long_text',
     required: true,
     maps_to: 'brand_profile.proposition',
   },
   {
     section: S2,
-    prompt: '¿POR QUÉ tú y no otros? (tu diferenciación)',
-    help: 'Ejemplo: "Enfoque en comida local artesanal, no cadenas multinacionales"',
+    prompt: 'WHY you and not the others? (your differentiation)',
+    help: 'Example: "Focus on local artisan food, not multinational chains"',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.competitive_positioning',
   },
   {
     section: S2,
-    prompt: '¿Cuál es tu tagline/slogan?',
-    help: 'Ejemplo: "Comida rápida, comida real"',
+    prompt: 'What is your tagline/slogan?',
+    help: 'Example: "Fast food, real food"',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.identity.tagline',
   },
@@ -126,30 +126,30 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 3: Target Audience & ICP ──
   {
     section: S3,
-    prompt: '¿Quién es tu cliente ideal? Describe 1-3 personajes.',
-    help: 'Ejemplo: profesionales 25-40 años trabajando desde casa que buscan almuerzo rápido; padres con niños el fin de semana…',
+    prompt: 'Who is your ideal customer? Describe 1-3 personas.',
+    help: 'Example: professionals aged 25-40 working from home looking for a quick lunch; parents with kids on the weekend…',
     kind: 'long_text',
     required: true,
     maps_to: 'brand_profile.brand_data.audiences',
   },
   {
     section: S3,
-    prompt: '¿Dónde se encuentra tu cliente ideal? (online/offline, qué plataformas)',
-    help: 'Ejemplo: Instagram, LinkedIn, Google Maps, recomendación personal…',
+    prompt: 'Where is your ideal customer? (online/offline, which platforms)',
+    help: 'Example: Instagram, LinkedIn, Google Maps, word of mouth…',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.audience_channels',
   },
   {
     section: S3,
-    prompt: '¿Cuántos clientes tienes hoy y cuál es tu tasa de crecimiento?',
-    help: 'Ejemplo: 5.000 usuarios activos, creciendo 15% mes a mes',
+    prompt: 'How many customers do you have today and what is your growth rate?',
+    help: 'Example: 5,000 active users, growing 15% month over month',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.traction.customers_and_growth',
   },
   {
     section: S3,
-    prompt: '¿Cuál es tu LTV (lifetime value) y CAC (coste de adquisición) aproximados?',
-    help: 'Si no lo sabes: ¿cuánto gastas en marketing y cuántos clientes nuevos trae?',
+    prompt: 'What are your approximate LTV (lifetime value) and CAC (customer acquisition cost)?',
+    help: "If you don't know: how much do you spend on marketing, and how many new customers does it bring?",
     kind: 'text',
     maps_to: 'brand_profile.brand_data.traction.ltv_cac',
   },
@@ -157,26 +157,26 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 4: Competencia & Posicionamiento ──
   {
     section: S4,
-    prompt: '¿Quiénes son tus principales competidores?',
-    help: 'Ejemplo: Uber Eats, Didi Food, restaurantes con delivery propio',
+    prompt: 'Who are your main competitors?',
+    help: 'Example: Uber Eats, Didi Food, restaurants running their own delivery',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.competitors.main',
   },
   {
     section: S4,
-    prompt: '¿Qué hacen MEJOR que tú? (sé honesto)',
+    prompt: 'What do they do BETTER than you? (be honest)',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.competitors.they_do_better',
   },
   {
     section: S4,
-    prompt: '¿Qué haces TÚ MEJOR que ellos?',
+    prompt: 'What do YOU do BETTER than them?',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.competitors.we_do_better',
   },
   {
     section: S4,
-    prompt: '¿Cuál es tu ventaja defensible? (qué es difícil de copiar)',
+    prompt: 'What is your defensible advantage? (what is hard to copy)',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.competitors.moat',
   },
@@ -184,28 +184,28 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 5: Modelo de Negocio & Tracción ──
   {
     section: S5,
-    prompt: '¿Cómo haces dinero? (modelo de ingresos)',
-    help: 'Ejemplo: comisión 15% por pedido, suscripción premium 99 €/mes, publicidad…',
+    prompt: 'How do you make money? (revenue model)',
+    help: 'Example: 15% commission per order, €99/month premium subscription, advertising…',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.business_model',
   },
   {
     section: S5,
-    prompt: '¿Cuál es tu métrica #1 de éxito?',
-    help: 'Ejemplo: GMV, pedidos/día, NPS, usuarios activos mensuales…',
+    prompt: 'What is your #1 success metric?',
+    help: 'Example: GMV, orders/day, NPS, monthly active users…',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.metrics.north_star',
   },
   {
     section: S5,
-    prompt: '¿Cuáles son tus métricas #2 y #3?',
+    prompt: 'What are your #2 and #3 metrics?',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.metrics.secondary',
   },
   {
     section: S5,
-    prompt: '¿Cuál es tu runway? (cuánto tiempo puedes operar sin nuevos ingresos)',
-    help: 'Ejemplo: 18 meses, 8 meses, sin preocupación (rentable)',
+    prompt: 'What is your runway? (how long you can operate without new revenue)',
+    help: 'Example: 18 months, 8 months, not a concern (profitable)',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.metrics.runway',
   },
@@ -213,27 +213,27 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 6: Estrategia Actual & Objetivos ──
   {
     section: S6,
-    prompt: '¿Cuál fue tu estrategia de crecimiento en los últimos 6 meses?',
-    help: 'Ejemplo: paid ads en Instagram + partnerships con influencers + PR local',
+    prompt: 'What was your growth strategy over the last 6 months?',
+    help: 'Example: paid ads on Instagram + influencer partnerships + local PR',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.strategy.last_6_months',
   },
   {
     section: S6,
-    prompt: '¿Qué funcionó y qué no?',
+    prompt: 'What worked and what did not?',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.strategy.what_worked_what_didnt',
   },
   {
     section: S6,
-    prompt: '¿Cuál es tu objetivo para los próximos 90 días?',
-    help: 'Ejemplo: llegar a 10k usuarios activos, entrar en 2 ciudades nuevas…',
+    prompt: 'What is your goal for the next 90 days?',
+    help: 'Example: reach 10k active users, launch in 2 new cities…',
     kind: 'long_text',
     maps_to: 'project_memory',
   },
   {
     section: S6,
-    prompt: '¿Y para los próximos 12 meses?',
+    prompt: 'And for the next 12 months?',
     kind: 'long_text',
     maps_to: 'project_memory',
   },
@@ -241,21 +241,21 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 7: Recursos & Restricciones ──
   {
     section: S7,
-    prompt: '¿Cuál es tu presupuesto actual de marketing/growth?',
-    help: 'Ejemplo: 5k €/mes, 50k € puntuales, no tengo presupuesto',
+    prompt: 'What is your current marketing/growth budget?',
+    help: 'Example: €5k/month, a one-off €50k, no budget at all',
     kind: 'text',
     maps_to: 'brand_profile.brand_data.resources.marketing_budget',
   },
   {
     section: S7,
-    prompt: '¿Qué recursos tienes? (equipo, datos, partnerships…)',
-    help: 'Ejemplo: 1 persona de growth, base de datos de 10k contactos, alianza con XYZ',
+    prompt: 'What resources do you have? (team, data, partnerships…)',
+    help: 'Example: 1 growth person, a database of 10k contacts, a partnership with XYZ',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.resources.available',
   },
   {
     section: S7,
-    prompt: '¿Qué restricciones tienes? (presupuesto, tiempo, regulación…)',
+    prompt: 'What constraints do you have? (budget, time, regulation…)',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.constraints.notes',
   },
@@ -263,23 +263,23 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 8: Brand & Messaging ──
   {
     section: S8,
-    prompt: '¿Cuál es el TONO de tu marca?',
-    help: 'Ejemplo: profesional y cercano, playful, authoritative, casual startup…',
+    prompt: 'What is your brand TONE?',
+    help: 'Example: professional and approachable, playful, authoritative, casual startup…',
     kind: 'long_text',
     required: true,
     maps_to: 'brand_profile.tone_of_voice',
   },
   {
     section: S8,
-    prompt: '¿Cuáles son los 3-5 temas principales sobre los que comunicas?',
-    help: 'Uno por línea. Ejemplo: innovación en entregas · sostenibilidad · historias de emprendedores locales · tips de nutrición',
+    prompt: 'What are the 3-5 main topics you communicate about?',
+    help: 'One per line. Example: delivery innovation · sustainability · local entrepreneur stories · nutrition tips',
     kind: 'long_text',
     maps_to: 'content_pillar',
   },
   {
     section: S8,
-    prompt: '¿Tienes brand book, guía de estilo o documento similar?',
-    help: 'Si sí, comparte el enlace. Si no, describe colores, tipografías y estilo visual.',
+    prompt: 'Do you have a brand book, style guide or similar document?',
+    help: 'If you do, share the link. If not, describe your colors, typography and visual style.',
     kind: 'long_text',
     maps_to: 'brand_profile.brand_data.visual_identity.notes',
   },
@@ -287,22 +287,22 @@ export const INTAKE_TEMPLATE: IntakeQuestion[] = [
   // ── SECCIÓN 9: Contexto & Prioridades ──
   {
     section: S9,
-    prompt: '¿Cuáles son tus 3 prioridades estratégicas AHORA MISMO?',
-    help: 'Ejemplo: validar product-market fit, reducir coste de adquisición, mejorar retención…',
+    prompt: 'What are your 3 strategic priorities RIGHT NOW?',
+    help: 'Example: validate product-market fit, reduce acquisition cost, improve retention…',
     kind: 'long_text',
     required: true,
     maps_to: 'project_memory',
   },
   {
     section: S9,
-    prompt: '¿En qué te gustaría que nos enfoquemos en la asesoría?',
-    help: 'Ejemplo: estrategia SEO, posicionamiento de marca, calendario de contenidos, investor deck…',
+    prompt: 'What would you like us to focus on in the advisory work?',
+    help: 'Example: SEO strategy, brand positioning, content calendar, investor deck…',
     kind: 'long_text',
     maps_to: 'project_memory',
   },
   {
     section: S9,
-    prompt: '¿Hay algo más que deberíamos saber sobre tu proyecto?',
+    prompt: 'Is there anything else we should know about your project?',
     kind: 'long_text',
     maps_to: 'project_memory',
   },
@@ -313,10 +313,10 @@ export function formatIntakeTemplateForPrompt(): string {
   return INTAKE_TEMPLATE.map((q, i) => {
     const parts = [
       `${i + 1}. [${q.section}] ${q.prompt}`,
-      `kind: ${q.kind}${q.options ? ` (opciones: ${q.options.join(' | ')})` : ''}`,
-      q.maps_to ? `maps_to: ${q.maps_to}` : 'maps_to: (ninguno)',
+      `kind: ${q.kind}${q.options ? ` (options: ${q.options.join(' | ')})` : ''}`,
+      q.maps_to ? `maps_to: ${q.maps_to}` : 'maps_to: (none)',
     ]
-    if (q.help) parts.push(`ayuda: ${q.help}`)
+    if (q.help) parts.push(`help: ${q.help}`)
     return parts.join(' · ')
   }).join('\n')
 }

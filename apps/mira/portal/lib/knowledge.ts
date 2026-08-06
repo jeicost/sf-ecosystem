@@ -38,7 +38,7 @@ export interface KnowledgeContextOptions {
 const SOURCE_LABEL: Record<KnowledgeItem['source'], string> = {
   drive: 'Drive',
   upload_chat: 'Subido en chat',
-  upload: 'Documentación',
+  upload: 'Documentation',
   reference: 'Referencia',
 }
 
@@ -90,14 +90,14 @@ export async function getKnowledgeContext(
       const perItem = Math.min(420, charBudget - used)
       if (perItem < 120) break
       const tag = item.project_id && item.project_id === projectId ? ' · de ESTE proyecto' : ''
-      const line = `- [${SOURCE_LABEL[item.source]}${tag}] ${item.title || 'Sin título'}: ${excerpt(item, perItem - (item.title?.length ?? 0) - 20)}`
+      const line = `- [${SOURCE_LABEL[item.source]}${tag}] ${item.title || 'Untitled'}: ${excerpt(item, perItem - (item.title?.length ?? 0) - 20)}`
       lines.push(line)
       used += line.length
       if (used >= charBudget) break
     }
     if (!lines.length) return ''
 
-    return `CONOCIMIENTO DEL CLIENTE (documentos, Drive y referencias — fuente real, cítala cuando la uses):\n${lines.join('\n')}`
+    return `CLIENT KNOWLEDGE (documents, Drive and references — real sources, cite them when you use them):\n${lines.join('\n')}`
   } catch {
     return null
   }

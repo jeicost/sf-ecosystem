@@ -55,8 +55,8 @@ export async function applyBrainChange(
         .select('id, brand_data')
         .eq('client_id', clientId)
         .maybeSingle()
-      if (fetchError) throw new Error(`No se pudo leer brand_data: ${fetchError.message}`)
-      if (!current) throw new Error('Este cliente no tiene brand_profiles todavía')
+      if (fetchError) throw new Error(`Could not read brand_data: ${fetchError.message}`)
+      if (!current) throw new Error('This client has no brand_profiles row yet')
 
       const update: Record<string, any> = { updated_at: new Date().toISOString() }
       if (name !== undefined) update.name = name
@@ -69,7 +69,7 @@ export async function applyBrainChange(
         update.brand_data = deepMerge((current.brand_data as Record<string, any>) || {}, brand_data)
       }
       const { error } = await db.from('brand_profiles').update(update).eq('id', current.id)
-      if (error) throw new Error(`No se pudo actualizar el brain: ${error.message}`)
+      if (error) throw new Error(`Could not update the brain: ${error.message}`)
       const saved = Object.keys(update).filter((k) => k !== 'updated_at')
 
       // Provenance (Fase 2): de qué SECCIÓN vino cada cambio -- best-effort,
@@ -96,12 +96,12 @@ export async function applyBrainChange(
         }
       }
 
-      return `Brain actualizado: ${saved.join(', ')}`
+      return `Brain updated: ${saved.join(', ')}`
     }
 
     case 'content_pillar': {
       const { pillar_name, description, themes, examples } = change.payload
-      if (!pillar_name) throw new Error('El pilar necesita pillar_name')
+      if (!pillar_name) throw new Error('The pillar needs a pillar_name')
       const row = {
         client_id: clientId,
         pillar_name,
@@ -117,23 +117,23 @@ export async function applyBrainChange(
       if (error?.code === '42P10') {
         ;({ error } = await db.from('content_pillars').insert(row))
       }
-      if (error) throw new Error(`No se pudo guardar el pilar: ${error.message}`)
-      return `Pilar creado: ${pillar_name}`
+      if (error) throw new Error(`Could not save the pillar: ${error.message}`)
+      return `Pillar created: ${pillar_name}`
     }
 
     case 'brand_reference': {
       const { url, title, pillar, why_worked, what_to_repeat } = change.payload
-      if (!url || !title) throw new Error('La referencia necesita url y title')
+      if (!url || !title) throw new Error('The reference needs url and title')
       const { error } = await db
         .from('brand_references')
         .upsert({ client_id: clientId, url, title, pillar: pillar ?? null, why_worked: why_worked ?? null, what_to_repeat: what_to_repeat ?? null }, { onConflict: 'client_id,url' })
-      if (error) throw new Error(`No se pudo guardar la referencia: ${error.message}`)
-      return `Referencia guardada: ${title}`
+      if (error) throw new Error(`Could not save the reference: ${error.message}`)
+      return `Reference saved: ${title}`
     }
 
     case 'project_memory': {
       const { title, category, summary, full_content, tags } = change.payload
-      if (!title || !summary) throw new Error('La memoria necesita title y summary')
+      if (!title || !summary) throw new Error('The memory needs title and summary')
       const VALID = ['insight', 'decision', 'action', 'metric', 'content']
       const { error } = await db.from('project_memory').insert({
         client_id: clientId,
@@ -145,12 +145,12 @@ export async function applyBrainChange(
         tags: Array.isArray(tags) ? tags : [],
         source_department: 'brain-chat',
       })
-      if (error) throw new Error(`No se pudo guardar la memoria: ${error.message}`)
-      return `Memoria guardada: ${title}`
+      if (error) throw new Error(`Could not save the memory: ${error.message}`)
+      return `Memory saved: ${title}`
     }
 
     default:
-      throw new Error(`Target desconocido: ${(change as BrainChange).target}`)
+      throw new Error(`Unknown target: ${(change as BrainChange).target}`)
   }
 }
 

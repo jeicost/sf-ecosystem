@@ -70,8 +70,8 @@ export async function fetchSentinelData(
     alerts.push({
       id: 'pending-approvals',
       level: pendingCount >= 10 ? 'critical' : 'warning',
-      title: 'Aprobaciones pendientes',
-      message: `${pendingCount} elemento(s) esperando revisión en /approvals`,
+      title: 'Pending approvals',
+      message: `${pendingCount} item(s) waiting for review in /approvals`,
       timestamp: 'now',
     })
   }
@@ -79,8 +79,8 @@ export async function fetchSentinelData(
     alerts.push({
       id: failed.id as string,
       level: 'warning',
-      title: `Fallo en ${failed.action_type}`,
-      message: (failed.error_message as string) || 'La generación falló sin mensaje de error registrado',
+      title: `Failure in ${failed.action_type}`,
+      message: (failed.error_message as string) || 'The generation failed with no error message recorded',
       timestamp: failed.created_at as string,
     })
   }
@@ -88,8 +88,8 @@ export async function fetchSentinelData(
     alerts.push({
       id: 'all-clear',
       level: 'success',
-      title: 'Todo en orden',
-      message: 'Sin incidencias detectadas en los últimos 30 días',
+      title: 'All clear',
+      message: 'No incidents detected in the last 30 days',
       timestamp: 'now',
     })
   }

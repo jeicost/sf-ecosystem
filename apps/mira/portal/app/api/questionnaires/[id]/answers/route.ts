@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const body = await req.json()
     const rawAnswers: unknown[] = Array.isArray(body?.answers) ? body.answers : []
     if (rawAnswers.length === 0) {
-      return NextResponse.json({ error: 'answers vacío' }, { status: 400 })
+      return NextResponse.json({ error: 'answers is empty' }, { status: 400 })
     }
 
     const user = await getSessionUser()
@@ -32,7 +32,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (!['sent', 'in_progress'].includes(questionnaire.status)) {
       return NextResponse.json(
-        { error: `El cuestionario no admite respuestas en estado "${questionnaire.status}"` },
+        { error: `This questionnaire does not accept answers while its status is "${questionnaire.status}"` },
         { status: 409 }
       )
     }
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (rows.length === 0) {
       return NextResponse.json(
-        { error: 'Ninguna respuesta válida para este cuestionario' },
+        { error: 'No valid answer for this questionnaire' },
         { status: 400 }
       )
     }
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   } catch (error) {
     console.error('questionnaires/[id]/answers error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error guardando respuestas' },
+      { error: error instanceof Error ? error.message : 'Failed to save the answers' },
       { status: 500 }
     )
   }

@@ -40,14 +40,14 @@ export default function ResetPasswordPage() {
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden')
+      setError('Passwords do not match')
       setLoading(false)
       return
     }
 
     // Validate password strength (min 8 chars)
     if (password.length < 8) {
-      setError('La contraseña debe tener al menos 8 caracteres')
+      setError('Password must be at least 8 characters')
       setLoading(false)
       return
     }
@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
       })
 
       if (updateError) {
-        setError(updateError.message || 'Error al actualizar contraseña')
+        setError(updateError.message || 'Could not update password')
         setLoading(false)
         return
       }
@@ -67,7 +67,7 @@ export default function ResetPasswordPage() {
       // Success — redirect to home
       router.push('/home')
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido')
+      setError(err instanceof Error ? err.message : 'Unknown error')
       setLoading(false)
     }
   }
@@ -103,9 +103,9 @@ export default function ResetPasswordPage() {
           <h1 style={{ fontSize: '48px', fontWeight: 800, color: 'var(--text-primary)', letterSpacing: '-0.05em', lineHeight: 1 }}>MIRA</h1>
           <p className="mt-3 text-center max-w-[280px] leading-relaxed"
             style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-            Tu equipo de{' '}
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>30 agentes IA</span>{' '}
-            trabajando 24/7 para hacer crecer tu negocio.
+            Your team of{' '}
+            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>30 AI agents</span>{' '}
+            working 24/7 to grow your business.
           </p>
         </div>
 
@@ -133,10 +133,10 @@ export default function ResetPasswordPage() {
           {/* Heading */}
           <div className="mb-8">
             <h2 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--text-primary)', letterSpacing: '-0.02em' }}>
-              Restablecer contraseña
+              Reset password
             </h2>
             <p className="mt-1.5 text-sm" style={{ color: 'var(--text-tertiary)' }}>
-              Ingresa tu nueva contraseña para acceder a tu cuenta
+              Enter your new password to access your account
             </p>
           </div>
 
@@ -151,7 +151,7 @@ export default function ResetPasswordPage() {
               }}>
               <input
                 type={showPwd ? 'text' : 'password'}
-                placeholder="Nueva contraseña"
+                placeholder="New password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 onFocus={() => setFocused('password')}
@@ -181,7 +181,7 @@ export default function ResetPasswordPage() {
               }}>
               <input
                 type={showConfirm ? 'text' : 'password'}
-                placeholder="Confirmar contraseña"
+                placeholder="Confirm password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
                 onFocus={() => setFocused('confirm')}
@@ -220,17 +220,17 @@ export default function ResetPasswordPage() {
                 <span className="flex items-center justify-center gap-2">
                   <span className="w-4 h-4 rounded-full border-2 animate-spin"
                     style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.8)' }} />
-                  Guardando...
+                  Saving...
                 </span>
-              ) : 'Guardar contraseña'}
+              ) : 'Save password'}
             </button>
           </form>
 
           {/* Back to login */}
           <p className="text-center text-[11px] mt-4" style={{ color: 'var(--text-muted)' }}>
-            ¿Recordaste tu contraseña?{' '}
+            Remembered your password?{' '}
             <a href="/login" className="underline hover:text-ink-tertiary transition-colors">
-              Vuelve a iniciar sesión
+              Sign in again
             </a>
           </p>
         </div>

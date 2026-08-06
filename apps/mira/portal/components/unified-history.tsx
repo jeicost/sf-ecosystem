@@ -127,7 +127,7 @@ export default function UnifiedHistory() {
             className="inline-flex items-center gap-2 text-[12px] font-medium px-3 py-2 rounded-lg transition-all hover:bg-surface-hover"
             style={{ color: '#a78bfa' }}
           >
-            Ver todo
+            View all
             <ArrowRight size={12} />
           </Link>
         </div>
@@ -137,7 +137,7 @@ export default function UnifiedHistory() {
       {trends?.months && trends.months.length > 0 && (
         <div className="card px-6 py-5">
           <div className="mb-4">
-            <p className="text-sm font-semibold text-ink mb-1">Tendencia Mensual</p>
+            <p className="text-sm font-semibold text-ink mb-1">Monthly Trend</p>
             <p className="text-[11px] text-ink-tertiary">
               {trends.trend?.message || `Trend: ${trends.trend?.percentChange > 0 ? '↗' : '↘'} ${Math.abs(trends.trend?.percentChange ?? 0)}%`}
             </p>

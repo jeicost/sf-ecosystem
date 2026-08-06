@@ -19,10 +19,10 @@ import {
 } from './generic'
 
 const WEEKS: Array<[string, string]> = [
-  ['week_1', 'Semana 1'],
-  ['week_2', 'Semana 2'],
-  ['week_3', 'Semana 3'],
-  ['week_4', 'Semana 4'],
+  ['week_1', 'Week 1'],
+  ['week_2', 'Week 2'],
+  ['week_3', 'Week 3'],
+  ['week_4', 'Week 4'],
 ]
 
 function kpiStats(kpis: Record<string, any>): StatItem[] {
@@ -32,11 +32,11 @@ function kpiStats(kpis: Record<string, any>): StatItem[] {
     const value = pct ? asPct(kpis[key]) : asStr(kpis[key]) || String(asNum(kpis[key]) ?? '')
     if (value) stats.push({ value, label })
   }
-  push('reach_target', 'Alcance objetivo', false)
+  push('reach_target', 'Reach target', false)
   push('engagement_rate', 'Engagement rate', true)
-  push('ctr_target', 'CTR objetivo', true)
-  push('conversion_rate', 'Conversión', true)
-  push('cac_target', 'CAC objetivo', false)
+  push('ctr_target', 'CTR target', true)
+  push('conversion_rate', 'Conversion', true)
+  push('cac_target', 'CAC target', false)
   // any extra KPI keys
   for (const [k, v] of Object.entries(kpis)) {
     if (['reach_target', 'engagement_rate', 'ctr_target', 'conversion_rate', 'cac_target'].includes(k)) continue
@@ -48,9 +48,9 @@ function kpiStats(kpis: Record<string, any>): StatItem[] {
 
 function overviewSection(r: Record<string, any>): Section {
   const section: Section = {
-    title: 'Resumen de Campaña',
-    navLabel: 'Resumen',
-    subtitle: 'Campaña de marketing a 30 días',
+    title: 'Campaign Summary',
+    navLabel: 'Summary',
+    subtitle: '30-day marketing campaign',
   }
   if (asStr(r.campaign_overview)) {
     section.content = `<p>${esc(asStr(r.campaign_overview))}</p>`
@@ -74,15 +74,15 @@ function weeklyPlanSection(r: Record<string, any>): Section | null {
       continue
     }
     const parts: string[] = []
-    if (asStr(w.focus)) parts.push(`<p><strong>Foco:</strong> ${esc(asStr(w.focus))}</p>`)
+    if (asStr(w.focus)) parts.push(`<p><strong>Focus:</strong> ${esc(asStr(w.focus))}</p>`)
     const activities = asArr(w.activities)
     if (activities.length) {
-      parts.push(`<p style="margin-top:8px;"><strong>Actividades:</strong></p>${valueToHtml(activities)}`)
+      parts.push(`<p style="margin-top:8px;"><strong>Activities:</strong></p>${valueToHtml(activities)}`)
     } else if (asStr(w.activities)) {
-      parts.push(`<p style="margin-top:8px;"><strong>Actividades:</strong> ${esc(asStr(w.activities))}</p>`)
+      parts.push(`<p style="margin-top:8px;"><strong>Activities:</strong> ${esc(asStr(w.activities))}</p>`)
     }
     if (asStr(w.budget_allocation)) {
-      parts.push(`<p style="margin-top:8px;"><strong>Presupuesto:</strong> ${esc(asStr(w.budget_allocation))}</p>`)
+      parts.push(`<p style="margin-top:8px;"><strong>Budget:</strong> ${esc(asStr(w.budget_allocation))}</p>`)
     }
     const body = parts.join('') || valueToHtml(w)
     if (body) {
@@ -91,9 +91,9 @@ function weeklyPlanSection(r: Record<string, any>): Section | null {
   }
   if (!phases.length) return null
   return {
-    title: 'Plan Semanal',
-    navLabel: 'Plan 30 días',
-    subtitle: 'Ejecución semana a semana durante los 30 días de campaña',
+    title: 'Weekly Plan',
+    navLabel: '30-Day Plan',
+    subtitle: 'Week-by-week execution across the 30 days of the campaign',
     phases,
   }
 }
@@ -104,9 +104,9 @@ function channelsSection(r: Record<string, any>): Section | null {
   if (!entries.length) return null
 
   const section: Section = {
-    title: 'Distribución de Canales',
-    navLabel: 'Canales',
-    subtitle: 'Reparto de inversión y foco por canal',
+    title: 'Channel Distribution',
+    navLabel: 'Channels',
+    subtitle: 'Spend split and focus by channel',
   }
 
   const labels: string[] = []
@@ -121,13 +121,13 @@ function channelsSection(r: Record<string, any>): Section | null {
     }
     const focus = asStr(c.focus) || (typeof raw === 'string' ? raw : '')
     const body =
-      (pct !== null ? `<p><strong>${esc(String(pct))}%</strong> del presupuesto</p>` : '') +
+      (pct !== null ? `<p><strong>${esc(String(pct))}%</strong> of the budget</p>` : '') +
       (focus ? `<p style="margin-top:8px;">${esc(focus)}</p>` : '') ||
       valueToHtml(raw)
     if (body) cards.push({ title: channel, body })
   }
   if (labels.length >= 2) {
-    section.chart = { type: 'doughnut', labels, data, label: 'Distribución de canales (%)' }
+    section.chart = { type: 'doughnut', labels, data, label: 'Channel distribution (%)' }
   }
   if (cards.length) section.cards = cards
   if (!section.chart && !section.cards) return null
@@ -138,12 +138,12 @@ function successSection(r: Record<string, any>): Section | null {
   const metrics = asArr(r.success_metrics)
   if (!metrics.length) {
     const body = valueToHtml(r.success_metrics)
-    return body ? { title: 'Métricas de Éxito', content: body } : null
+    return body ? { title: 'Success Metrics', content: body } : null
   }
   return {
-    title: 'Métricas de Éxito',
-    navLabel: 'Métricas',
-    subtitle: 'Cómo mediremos el éxito de la campaña',
+    title: 'Success Metrics',
+    navLabel: 'Metrics',
+    subtitle: 'How we will measure the success of the campaign',
     listItems: metrics.map((m) => valueToHtml(m)).filter(Boolean),
   }
 }

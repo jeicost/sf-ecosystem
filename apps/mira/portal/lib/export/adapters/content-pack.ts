@@ -27,23 +27,23 @@ function overviewSection(r: Record<string, any>): Section {
   const blog = asArr(r.blog_content_hub)
   const emails = asArr(r.email_sequences)
   const videos = asArr(r.video_content_briefs)
-  if (pillars.length) stats.push({ value: String(pillars.length), label: 'Pilares de contenido' })
-  if (blog.length) stats.push({ value: String(blog.length), label: 'Artículos de blog' })
-  if (emails.length) stats.push({ value: String(emails.length), label: 'Secuencias de email' })
-  if (videos.length) stats.push({ value: String(videos.length), label: 'Briefs de vídeo' })
+  if (pillars.length) stats.push({ value: String(pillars.length), label: 'Content pillars' })
+  if (blog.length) stats.push({ value: String(blog.length), label: 'Blog articles' })
+  if (emails.length) stats.push({ value: String(emails.length), label: 'Email sequences' })
+  if (videos.length) stats.push({ value: String(videos.length), label: 'Video briefs' })
 
   const alignment = asStr(r.pillar_alignment)
   const section: Section = {
-    title: 'Resumen del Content Pack',
-    navLabel: 'Resumen',
-    subtitle: 'Estrategia de contenido alineada con el Brand Briefing',
+    title: 'Content Pack Summary',
+    navLabel: 'Summary',
+    subtitle: 'Content strategy aligned with the Brand Briefing',
     stats: stats.length ? stats : undefined,
   }
   if (alignment) {
     const map: Record<string, string> = {
-      exact_match: 'Alineación exacta con los pilares del Brand Briefing',
-      mismatch: 'ATENCIÓN: pilares no coinciden con el Brand Briefing',
-      warning: 'Advertencia: revisar alineación con el Brand Briefing',
+      exact_match: 'Exact match with the Brand Briefing pillars',
+      mismatch: 'WARNING: pillars do not match the Brand Briefing',
+      warning: 'Caution: review alignment with the Brand Briefing',
     }
     section.content = `<p>${statusBadge(alignment)} ${esc(map[alignment] || '')}</p>`
   }
@@ -54,17 +54,17 @@ function pillarsSection(r: Record<string, any>): Section | null {
   const pillars = asArr(r.content_pillars).filter(isPlainObject)
   if (!pillars.length) return null
   return {
-    title: 'Pilares de Contenido',
-    navLabel: 'Pilares',
+    title: 'Content Pillars',
+    navLabel: 'Pillars',
     cards: pillars.map((p) => ({
-      title: asStr(p.name) || 'Pilar',
+      title: asStr(p.name) || 'Pillar',
       body:
         (asStr(p.description) ? `<p>${esc(asStr(p.description))}</p>` : '') +
         (asArr(p.content_types).length
-          ? `<p style="margin-top:8px;"><strong>Formatos:</strong></p>${valueToHtml(p.content_types)}`
+          ? `<p style="margin-top:8px;"><strong>Formats:</strong></p>${valueToHtml(p.content_types)}`
           : '') +
         (asStr(p.monthly_volume)
-          ? `<p style="margin-top:8px;"><strong>Volumen mensual:</strong> ${esc(asStr(p.monthly_volume))}</p>`
+          ? `<p style="margin-top:8px;"><strong>Monthly volume:</strong> ${esc(asStr(p.monthly_volume))}</p>`
           : ''),
     })),
   }
@@ -76,9 +76,9 @@ function blogSection(r: Record<string, any>): Section | null {
   return {
     title: 'Blog Content Hub',
     navLabel: 'Blog',
-    subtitle: 'Artículos planificados con enfoque SEO',
+    subtitle: 'Planned articles with an SEO focus',
     table: {
-      headers: ['Título', 'Outline', 'Keywords SEO', 'Audiencia', 'Extensión'],
+      headers: ['Title', 'Outline', 'SEO Keywords', 'Audience', 'Word Count'],
       rows: posts.map((p) => [
         `<strong>${esc(asStr(p.title))}</strong>`,
         valueToHtml(p.outline),
@@ -98,9 +98,9 @@ function socialSection(r: Record<string, any>): Section | null {
     .filter((c) => c.body)
   if (!cards.length) return null
   return {
-    title: 'Estrategia de Social Media',
+    title: 'Social Media Strategy',
     navLabel: 'Social',
-    subtitle: 'Contenido por plataforma',
+    subtitle: 'Content by platform',
     cards,
   }
 }
@@ -109,10 +109,10 @@ function emailSection(r: Record<string, any>): Section | null {
   const emails = asArr(r.email_sequences).filter(isPlainObject)
   if (!emails.length) return null
   return {
-    title: 'Secuencias de Email',
+    title: 'Email Sequences',
     navLabel: 'Email',
     table: {
-      headers: ['Secuencia', 'Asunto', 'Contenido', 'CTA', 'Timing'],
+      headers: ['Sequence', 'Subject', 'Content', 'CTA', 'Timing'],
       rows: emails.map((e) => [
         `<strong>${esc(asStr(e.name))}</strong>`,
         valueToHtml(e.subject),
@@ -128,12 +128,12 @@ function videoSection(r: Record<string, any>): Section | null {
   const videos = asArr(r.video_content_briefs).filter(isPlainObject)
   if (!videos.length) return null
   return {
-    title: 'Briefs de Vídeo',
+    title: 'Video Briefs',
     cards: videos.map((v, i) => ({
-      title: asStr(v.type) || `Vídeo ${i + 1}`,
+      title: asStr(v.type) || `Video ${i + 1}`,
       body:
-        (asStr(v.script_outline) ? `<p><strong>Guion:</strong> ${esc(asStr(v.script_outline))}</p>` : valueToHtml(v.script_outline)) +
-        (asStr(v.visuals) ? `<p style="margin-top:8px;"><strong>Visuales:</strong> ${esc(asStr(v.visuals))}</p>` : ''),
+        (asStr(v.script_outline) ? `<p><strong>Script:</strong> ${esc(asStr(v.script_outline))}</p>` : valueToHtml(v.script_outline)) +
+        (asStr(v.visuals) ? `<p style="margin-top:8px;"><strong>Visuals:</strong> ${esc(asStr(v.visuals))}</p>` : ''),
     })),
   }
 }
@@ -147,8 +147,8 @@ function seasonalSection(r: Record<string, any>): Section | null {
     .filter((p) => p.body)
   if (!phases.length) return null
   return {
-    title: 'Campañas Estacionales',
-    navLabel: 'Estacional',
+    title: 'Seasonal Campaigns',
+    navLabel: 'Seasonal',
     phases,
   }
 }
@@ -158,15 +158,15 @@ function calendarSection(r: Record<string, any>): Section | null {
   const rolling = asArr(cal['12_month_rolling'] ?? r.content_calendar)
   if (!rolling.length) {
     const s = sectionForValue('content_calendar', r.content_calendar)
-    return s ? { ...s, title: 'Calendario de Contenidos' } : null
+    return s ? { ...s, title: 'Content Calendar' } : null
   }
   if (rolling.every(isPlainObject)) {
     const table = toTable(rolling)
-    if (table) return { title: 'Calendario de Contenidos', navLabel: 'Calendario', table }
+    if (table) return { title: 'Content Calendar', navLabel: 'Calendar', table }
   }
   return {
-    title: 'Calendario de Contenidos',
-    navLabel: 'Calendario',
+    title: 'Content Calendar',
+    navLabel: 'Calendar',
     listItems: rolling.map((m) => valueToHtml(m)).filter(Boolean),
   }
 }
@@ -200,12 +200,12 @@ export const adapter: ToolAdapter = (result) => {
     for (const s of parts) if (s) sections.push(s)
 
     const mapped: Array<[string, string]> = [
-      ['content_repurposing', 'Repurposing de Contenido'],
-      ['distribution_amplification', 'Distribución y Amplificación'],
-      ['content_governance', 'Gobernanza de Contenido'],
-      ['analytics_measurement', 'Analítica y Medición'],
-      ['brand_aligned_checklist', 'Checklist de Alineación de Marca'],
-      ['ugc_strategy', 'Estrategia UGC'],
+      ['content_repurposing', 'Content Repurposing'],
+      ['distribution_amplification', 'Distribution & Amplification'],
+      ['content_governance', 'Content Governance'],
+      ['analytics_measurement', 'Analytics & Measurement'],
+      ['brand_aligned_checklist', 'Brand Alignment Checklist'],
+      ['ugc_strategy', 'UGC Strategy'],
     ]
     for (const [key, title] of mapped) {
       used.add(key)

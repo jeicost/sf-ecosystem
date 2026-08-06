@@ -10,7 +10,7 @@ export default function AdminOnboardingPage() {
     <div>
       <div className="max-w-2xl mx-auto px-8 pt-4 flex justify-end">
         <Link href="/admin/onboarding/chat" className="text-[11px] text-ink-tertiary hover:text-ink-secondary transition-colors">
-          ¿Prefieres el chat libre? →
+          Prefer the free-form chat? →
         </Link>
       </div>
       <WizardShell />

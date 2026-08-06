@@ -33,7 +33,7 @@ function withoutSource(obj: any): Record<string, any> {
 
 function sourceNote(obj: any): string | undefined {
   const src = asStr(asObj(obj).source)
-  return src ? `Fuente: ${humanize(src)}` : undefined
+  return src ? `Source: ${humanize(src)}` : undefined
 }
 
 function blockSection(title: string, obj: any, navLabel?: string): Section | null {
@@ -48,24 +48,24 @@ function blockSection(title: string, obj: any, navLabel?: string): Section | nul
 
 function overviewSection(r: Record<string, any>): Section {
   const stats: StatItem[] = []
-  if (asStr(r.version)) stats.push({ value: asStr(r.version), label: 'Versión del brandbook' })
+  if (asStr(r.version)) stats.push({ value: asStr(r.version), label: 'Brandbook version' })
   const rec = asObj(r.reconciliation)
   const conflicts = asArr(rec.conflicts)
-  stats.push({ value: String(conflicts.length), label: 'Conflictos entre fuentes' })
+  stats.push({ value: String(conflicts.length), label: 'Conflicts between sources' })
   if (rec.verified === true || rec.verified === false) {
-    stats.push({ value: rec.verified ? 'Verificado' : 'Pendiente', label: 'Estado de reconciliación' })
+    stats.push({ value: rec.verified ? 'Verified' : 'Pending', label: 'Reconciliation status' })
   }
   const pillars = asArr(asObj(r.brand_pillars).pillars ?? r.brand_pillars)
-  if (pillars.length) stats.push({ value: String(pillars.length), label: 'Pilares de marca' })
+  if (pillars.length) stats.push({ value: String(pillars.length), label: 'Brand pillars' })
 
   const section: Section = {
-    title: 'Resumen del Brandbook',
-    navLabel: 'Resumen',
-    subtitle: 'Manual operativo vivo de la marca — consolida todas las fuentes',
+    title: 'Brandbook Summary',
+    navLabel: 'Summary',
+    subtitle: 'Living operating manual for the brand — consolidates every source',
     stats,
   }
   if (conflicts.length) {
-    section.listItems = conflicts.map((c) => `<strong>Conflicto:</strong> ${valueToHtml(c)}`)
+    section.listItems = conflicts.map((c) => `<strong>Conflict:</strong> ${valueToHtml(c)}`)
   }
   return section
 }
@@ -73,13 +73,13 @@ function overviewSection(r: Record<string, any>): Section {
 function pillarsSection(r: Record<string, any>): Section | null {
   const block = asObj(r.brand_pillars)
   const pillars = asArr(block.pillars ?? r.brand_pillars).filter(isPlainObject)
-  if (!pillars.length) return blockSection('Pilares de Marca', r.brand_pillars, 'Pilares')
+  if (!pillars.length) return blockSection('Brand Pillars', r.brand_pillars, 'Pillars')
   return {
-    title: 'Pilares de Marca',
-    navLabel: 'Pilares',
+    title: 'Brand Pillars',
+    navLabel: 'Pillars',
     subtitle: sourceNote(block),
     cards: pillars.map((p) => ({
-      title: asStr(p.name) || 'Pilar',
+      title: asStr(p.name) || 'Pillar',
       body: valueToHtml(p.description) || valueToHtml(p) || '<p>—</p>',
     })),
   }
@@ -89,14 +89,14 @@ function voiceSection(r: Record<string, any>): Section | null {
   const v = withoutSource(r.brand_voice)
   if (!Object.keys(v).length) return null
   const cards = [
-    { title: 'Tono', body: valueToHtml(v.tone) },
-    { title: 'Rasgos', body: valueToHtml(v.traits) },
-    { title: 'Ejemplos de Copy Real', body: valueToHtml(v.real_copy_examples) },
-    { title: 'Sí Decir', body: valueToHtml(v.do_examples) },
-    { title: 'No Decir', body: valueToHtml(v.dont_examples) },
+    { title: 'Tone', body: valueToHtml(v.tone) },
+    { title: 'Traits', body: valueToHtml(v.traits) },
+    { title: 'Real Copy Examples', body: valueToHtml(v.real_copy_examples) },
+    { title: 'Say This', body: valueToHtml(v.do_examples) },
+    { title: 'Never Say This', body: valueToHtml(v.dont_examples) },
   ].filter((c) => c.body)
   if (!cards.length) return null
-  return { title: 'Voz de Marca', navLabel: 'Voz', subtitle: sourceNote(r.brand_voice), cards }
+  return { title: 'Brand Voice', navLabel: 'Voice', subtitle: sourceNote(r.brand_voice), cards }
 }
 
 function calendarSection(r: Record<string, any>): Section | null {
@@ -106,12 +106,12 @@ function calendarSection(r: Record<string, any>): Section | null {
   if (rolling.every(isPlainObject)) {
     const table = toTable(rolling)
     if (table) {
-      return { title: 'Calendario Editorial', navLabel: 'Calendario', subtitle: sourceNote(cal), table }
+      return { title: 'Editorial Calendar', navLabel: 'Calendar', subtitle: sourceNote(cal), table }
     }
   }
   return {
-    title: 'Calendario Editorial',
-    navLabel: 'Calendario',
+    title: 'Editorial Calendar',
+    navLabel: 'Calendar',
     subtitle: sourceNote(cal),
     listItems: rolling.map((m) => valueToHtml(m)).filter(Boolean),
   }
@@ -123,10 +123,10 @@ function dosDontsSection(r: Record<string, any>): Section | null {
   const donts = asArr(g.dont)
   if (!dos.length && !donts.length) return null
   const cards = [
-    { title: 'Hacer', body: valueToHtml(dos) },
-    { title: 'No Hacer', body: valueToHtml(donts) },
+    { title: 'Do', body: valueToHtml(dos) },
+    { title: "Don't", body: valueToHtml(donts) },
   ].filter((c) => c.body)
-  return { title: 'Guías: Qué Hacer y Qué No', navLabel: "Do's & Don'ts", cards }
+  return { title: "Guidelines: Do's & Don'ts", navLabel: "Do's & Don'ts", cards }
 }
 
 export const adapter: ToolAdapter = (result) => {
@@ -154,23 +154,23 @@ export const adapter: ToolAdapter = (result) => {
       if (s) sections.push(s)
     }
 
-    push('brand_story', blockSection('Historia de Marca', r.brand_story))
-    push('brand_identity', blockSection('Identidad de Marca', r.brand_identity, 'Identidad'))
-    push('brand_promise', blockSection('Promesa de Marca', r.brand_promise))
-    push('competitive_positioning', blockSection('Posicionamiento Competitivo', r.competitive_positioning, 'Posicionamiento'))
-    push('target_audience', blockSection('Audiencia Objetivo', r.target_audience, 'Audiencia'))
+    push('brand_story', blockSection('Brand Story', r.brand_story))
+    push('brand_identity', blockSection('Brand Identity', r.brand_identity, 'Identity'))
+    push('brand_promise', blockSection('Brand Promise', r.brand_promise))
+    push('competitive_positioning', blockSection('Competitive Positioning', r.competitive_positioning, 'Positioning'))
+    push('target_audience', blockSection('Target Audience', r.target_audience, 'Audience'))
     push(null, pillarsSection(r))
     push(null, voiceSection(r))
-    push('visual_identity', blockSection('Identidad Visual', r.visual_identity, 'Visual'))
-    push('content_templates', blockSection('Plantillas de Contenido', r.content_templates, 'Plantillas'))
+    push('visual_identity', blockSection('Visual Identity', r.visual_identity, 'Visual'))
+    push('content_templates', blockSection('Content Templates', r.content_templates, 'Templates'))
     push(null, calendarSection(r))
-    push('channel_playbooks', blockSection('Playbooks por Canal', r.channel_playbooks, 'Playbooks'))
-    push('packaging_collateral', blockSection('Colaterales y Packaging', r.packaging_collateral))
-    push('crisis_communication', blockSection('Comunicación de Crisis', r.crisis_communication, 'Crisis'))
-    push('employee_brand', blockSection('Marca Empleadora', r.employee_brand))
-    push('brand_evolution', blockSection('Evolución de Marca', r.brand_evolution, 'Evolución'))
+    push('channel_playbooks', blockSection('Channel Playbooks', r.channel_playbooks, 'Playbooks'))
+    push('packaging_collateral', blockSection('Collateral & Packaging', r.packaging_collateral))
+    push('crisis_communication', blockSection('Crisis Communication', r.crisis_communication, 'Crisis'))
+    push('employee_brand', blockSection('Employer Brand', r.employee_brand))
+    push('brand_evolution', blockSection('Brand Evolution', r.brand_evolution, 'Evolution'))
     push(null, dosDontsSection(r))
-    push('living_document_notes', blockSection('Documento Vivo', r.living_document_notes))
+    push('living_document_notes', blockSection('Living Document', r.living_document_notes))
 
     sections.push(...genericSections(r, used))
     return sections

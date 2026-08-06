@@ -26,7 +26,7 @@ function overviewSection(r: Record<string, any>): Section {
     stats.push({ value: `${score}/100`, label: asStr(r.scoreLabel) || 'SEO Health Score' })
   }
   if (asStr(r.overall_trend)) {
-    stats.push({ value: asStr(r.overall_trend), label: 'Tendencia 90 días' })
+    stats.push({ value: asStr(r.overall_trend), label: '90-Day Trend' })
   }
 
   const statCards = asArr(r.statCards).filter(isPlainObject)
@@ -37,9 +37,9 @@ function overviewSection(r: Record<string, any>): Section {
   }
 
   const section: Section = {
-    title: 'Resumen Ejecutivo',
-    navLabel: 'Resumen',
-    subtitle: 'Estado general de salud SEO del sitio',
+    title: 'Executive Summary',
+    navLabel: 'Summary',
+    subtitle: 'Overall SEO health of the site',
     stats: stats.length ? stats : undefined,
   }
 
@@ -54,14 +54,14 @@ function overviewSection(r: Record<string, any>): Section {
     }
   }
   if (chartLabels.length >= 2) {
-    section.chart = { type: 'bar', labels: chartLabels, data: chartData, label: 'Indicadores clave' }
+    section.chart = { type: 'bar', labels: chartLabels, data: chartData, label: 'Key Indicators' }
   }
 
   // Descriptions as cards below the stats
   const cards = statCards
     .filter((c) => asStr(c.description))
     .map((c) => ({
-      title: asStr(c.label) || 'Indicador',
+      title: asStr(c.label) || 'Indicator',
       body: `${statusBadge(c.status)}<p style="margin-top:8px;">${esc(asStr(c.description))}</p>`,
     }))
   if (cards.length) section.cards = cards
@@ -70,7 +70,7 @@ function overviewSection(r: Record<string, any>): Section {
 }
 
 function auditSubSection(sec: Record<string, any>): Section | null {
-  const title = asStr(sec.title) || 'Sección'
+  const title = asStr(sec.title) || 'Section'
   const subtitle = asStr(sec.description) || undefined
 
   const elements = asArr(sec.elements).filter(isPlainObject)
@@ -79,7 +79,7 @@ function auditSubSection(sec: Record<string, any>): Section | null {
       title,
       subtitle,
       table: {
-        headers: ['Elemento', 'Estado', 'Actual', 'Recomendación', 'Análisis'],
+        headers: ['Element', 'Status', 'Current', 'Recommendation', 'Analysis'],
         rows: elements.map((e) => [
           `<strong>${esc(asStr(e.element) || asStr(e.title))}</strong>`,
           statusBadge(e.status),
@@ -97,7 +97,7 @@ function auditSubSection(sec: Record<string, any>): Section | null {
       title,
       subtitle,
       table: {
-        headers: ['Check', 'Estado', 'Detalle'],
+        headers: ['Check', 'Status', 'Detail'],
         rows: checks.map((c) => [
           `<strong>${esc(asStr(c.check) || asStr(c.element) || asStr(c.title))}</strong>`,
           statusBadge(c.status),
@@ -116,9 +116,9 @@ function auditSubSection(sec: Record<string, any>): Section | null {
         title: asStr(s.name) || 'Schema',
         body:
           statusBadge(s.status) +
-          (asStr(s.impact) ? `<p style="margin-top:8px;"><strong>Impacto:</strong> ${esc(asStr(s.impact))}</p>` : '') +
+          (asStr(s.impact) ? `<p style="margin-top:8px;"><strong>Impact:</strong> ${esc(asStr(s.impact))}</p>` : '') +
           (asStr(s.opportunity)
-            ? `<p style="margin-top:8px;"><strong>Oportunidad:</strong> ${esc(asStr(s.opportunity))}</p>`
+            ? `<p style="margin-top:8px;"><strong>Opportunity:</strong> ${esc(asStr(s.opportunity))}</p>`
             : ''),
       })),
     }
@@ -130,7 +130,7 @@ function auditSubSection(sec: Record<string, any>): Section | null {
       title,
       subtitle,
       table: {
-        headers: ['Keyword', 'Volumen', 'Intención', 'Prioridad', 'Ranking actual'],
+        headers: ['Keyword', 'Volume', 'Intent', 'Priority', 'Current Ranking'],
         rows: keywords.map((k) => [
           `<strong>${esc(asStr(k.keyword))}</strong>`,
           esc(asStr(k.volume)),
@@ -148,7 +148,7 @@ function auditSubSection(sec: Record<string, any>): Section | null {
       title,
       subtitle,
       table: {
-        headers: ['Elemento', 'Estado', 'Detalle', 'Recomendación'],
+        headers: ['Element', 'Status', 'Detail', 'Recommendation'],
         rows: assessment.map((a) => [
           `<strong>${esc(asStr(a.element) || asStr(a.check))}</strong>`,
           statusBadge(a.status),
@@ -173,22 +173,22 @@ function actionsSection(actions: any[]): Section | null {
   const items = actions.filter(isPlainObject)
   if (!items.length) return null
   return {
-    title: 'Plan de Acción',
-    navLabel: 'Acciones',
-    subtitle: 'Acciones priorizadas por impacto y esfuerzo',
+    title: 'Action Plan',
+    navLabel: 'Actions',
+    subtitle: 'Actions prioritized by impact and effort',
     phases: items.map((a, i) => {
       const num = asStr(a.number) || asStr(a.id) || String(i + 1)
       const priority = asStr(a.priority)
       const parts: string[] = []
       if (asStr(a.description)) parts.push(`<p>${esc(asStr(a.description))}</p>`)
       const meta: string[] = []
-      if (asStr(a.impact)) meta.push(`<strong>Impacto:</strong> ${esc(asStr(a.impact))}`)
-      if (asStr(a.effort)) meta.push(`<strong>Esfuerzo:</strong> ${esc(asStr(a.effort))}`)
-      if (asStr(a.owner)) meta.push(`<strong>Responsable:</strong> ${esc(asStr(a.owner))}`)
-      if (asStr(a.expected_roi)) meta.push(`<strong>ROI esperado:</strong> ${esc(asStr(a.expected_roi))}`)
+      if (asStr(a.impact)) meta.push(`<strong>Impact:</strong> ${esc(asStr(a.impact))}`)
+      if (asStr(a.effort)) meta.push(`<strong>Effort:</strong> ${esc(asStr(a.effort))}`)
+      if (asStr(a.owner)) meta.push(`<strong>Owner:</strong> ${esc(asStr(a.owner))}`)
+      if (asStr(a.expected_roi)) meta.push(`<strong>Expected ROI:</strong> ${esc(asStr(a.expected_roi))}`)
       if (meta.length) parts.push(`<p>${meta.join(' · ')}</p>`)
       return {
-        title: `${num}. ${asStr(a.title) || 'Acción'}${priority ? ` — ${priority}` : ''}`,
+        title: `${num}. ${asStr(a.title) || 'Action'}${priority ? ` — ${priority}` : ''}`,
         body: parts.join('') || valueToHtml(a),
       }
     }),
@@ -223,7 +223,7 @@ export const adapter: ToolAdapter = (result) => {
     } else if (r.actions !== undefined) {
       used.add('actions')
       const s = sectionForValue('plan_de_accion', r.actions)
-      if (s) sections.push({ ...s, title: 'Plan de Acción' })
+      if (s) sections.push({ ...s, title: 'Action Plan' })
     }
 
     sections.push(...genericSections(r, used))

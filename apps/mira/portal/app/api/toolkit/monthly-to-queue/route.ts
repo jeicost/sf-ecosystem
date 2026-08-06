@@ -29,16 +29,16 @@ export async function POST(req: NextRequest) {
       .single()
 
     if (error || !row) {
-      return NextResponse.json({ error: 'Informe no encontrado' }, { status: 404 })
+      return NextResponse.json({ error: 'Report not found' }, { status: 404 })
     }
     if (row.tool_slug !== 'monthly-content-system') {
-      return NextResponse.json({ error: 'Solo aplica a informes monthly-content-system' }, { status: 400 })
+      return NextResponse.json({ error: 'This only applies to monthly-content-system reports' }, { status: 400 })
     }
     if (!(await userCanAccessClient(user, row.client_id))) {
       return NextResponse.json({ error: 'No access to this report' }, { status: 403 })
     }
     if (row.status !== 'completed' || !row.result_data) {
-      return NextResponse.json({ error: 'El informe aún no está completado' }, { status: 409 })
+      return NextResponse.json({ error: 'This report is not finished yet' }, { status: 409 })
     }
 
     const result = row.result_data as Record<string, any>
@@ -47,13 +47,13 @@ export async function POST(req: NextRequest) {
         success: true,
         already: true,
         materialized_at: result.materialized_at,
-        message: 'Estas captions ya se enviaron a la Cola — no se duplican.',
+        message: 'These captions were already sent to the Approval Queue — nothing was duplicated.',
       })
     }
 
     const captions: any[] = Array.isArray(result.captions) ? result.captions : []
     if (!captions.length) {
-      return NextResponse.json({ error: 'El informe no tiene captions que enviar' }, { status: 400 })
+      return NextResponse.json({ error: 'This report has no captions to send' }, { status: 400 })
     }
 
     const month = typeof result.month === 'string' && /^\d{4}-\d{2}$/.test(result.month) ? result.month : null
@@ -113,12 +113,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       sent: inserted,
-      message: `${inserted} captions enviadas a la Cola de Aprobación con su fecha del mes.`,
+      message: `${inserted} captions sent to the Approval Queue with their scheduled date.`,
     })
   } catch (error) {
     console.error('monthly-to-queue error:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Error enviando a la cola' },
+      { error: error instanceof Error ? error.message : 'Failed to send to the Approval Queue' },
       { status: 500 }
     )
   }

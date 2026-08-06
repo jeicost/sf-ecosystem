@@ -189,7 +189,7 @@ function PlanBlockedBanner({ locale }: { locale: 'es' | 'en' }) {
         <p className="text-sm text-ink">{message}</p>
       </div>
       <div className="flex shrink-0 items-center gap-2">
-        <a href="mailto:hola@startupsfactory.es?subject=Actualizar%20mi%20plan%20MIRA"
+        <a href="mailto:hola@startupsfactory.es?subject=Update%20my%20MIRA%20plan"
           className="rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90"
           style={{ background: '#fbbf24' }}>
           {t('plan.blocked-cta', locale)}
