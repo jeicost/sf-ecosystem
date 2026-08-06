@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
 import DocumentUpload from '@/components/DocumentUpload'
+import GuidedDocumentChat from '@/components/documents/GuidedDocumentChat'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
@@ -49,6 +50,11 @@ export default function DocumentsPage() {
   const [creating, setCreating] = useState<string | null>(null)
   const [generating, setGenerating] = useState(false)
   const [form, setForm] = useState({ topic: '', objective: '', key_data: '' })
+  // El chat de brief es el camino por defecto (petición del CEO 2026-08-05:
+  // "un chat que te haga las preguntas oportunas... preguntando por las áreas
+  // sin información"). El formulario plano sigue existiendo para quien ya sabe
+  // exactamente lo que quiere, a un clic de distancia.
+  const [mode, setMode] = useState<'chat' | 'form'>('chat')
   const [error, setError] = useState<string | null>(null)
 
   const loadDocs = useCallback(async () => {
@@ -117,7 +123,7 @@ export default function DocumentsPage() {
           {Object.entries(DOC_TYPE_META).map(([slug, meta]) => (
             <button
               key={slug}
-              onClick={() => setCreating(creating === slug ? null : slug)}
+              onClick={() => { setMode('chat'); setError(null); setCreating(creating === slug ? null : slug) }}
               className={`p-5 rounded-xl border text-left transition ${
                 creating === slug
                   ? 'border-amber-500/60 bg-amber-500/10'
@@ -131,7 +137,17 @@ export default function DocumentsPage() {
           ))}
         </div>
 
-        {creating && (
+        {creating && mode === 'chat' && activeClient?.id && (
+          <GuidedDocumentChat
+            docType={creating}
+            docLabel={t(DOC_TYPE_META[creating].name, locale)}
+            clientId={activeClient.id}
+            onCancel={() => setCreating(null)}
+            onSwitchToForm={() => setMode('form')}
+          />
+        )}
+
+        {creating && mode === 'form' && (
           <div className="p-6 rounded-xl border border-amber-500/30 bg-card space-y-4">
             <p className="text-ink font-semibold">
               {DOC_TYPE_META[creating].icon} {t('docs.new', locale)} {t(DOC_TYPE_META[creating].name, locale)}
@@ -233,7 +249,7 @@ export default function DocumentsPage() {
                     <div className="flex-1 min-w-0">
                       <p className="text-ink text-sm font-medium truncate">{topic}</p>
                       <p className="text-ink-tertiary text-xs mt-0.5">
-                        {meta ? t(meta.name, locale) : ''} · {new Date(d.created_at).toLocaleString('es-ES')}
+                        {meta ? t(meta.name, locale) : ''} · {new Date(d.created_at).toLocaleString(locale === 'en' ? 'en-US' : 'es-ES')}
                       </p>
                     </div>
                     {d.status === 'completed' ? (

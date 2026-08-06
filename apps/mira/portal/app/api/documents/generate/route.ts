@@ -19,7 +19,7 @@ async function attachDeckImages(
   try {
     if (!Array.isArray(result.slides)) return
     const slides = result.slides as Record<string, unknown>[]
-    const styleSuffix = ` — Estilo: fotografía/ilustración editorial premium para una presentación de negocio, paleta dominada por el color de marca ${brandColor}, composición limpia, sin texto, sin letras, sin logos.`
+    const styleSuffix = ` — Style: premium editorial photography/illustration for a business presentation, palette dominated by the brand colour ${brandColor}, clean composition, no text, no lettering, no logos.`
 
     const targets: { slide: Record<string, unknown>; prompt: string }[] = []
 
@@ -28,7 +28,7 @@ async function attachDeckImages(
       const coverPrompt =
         typeof cover.image_prompt === 'string' && cover.image_prompt.trim()
           ? cover.image_prompt
-          : `Imagen de fondo abstracta y elegante para la portada de una presentación titulada "${String(result.title ?? '')}"`
+          : `Elegant abstract background image for the cover of a presentation titled "${String(result.title ?? '')}"`
       targets.push({ slide: cover, prompt: coverPrompt })
     }
 
@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
       // Investigación real sobre el tema del brief -- antes el documento solo
       // tenía Brand Brain/memoria (contexto interno), así que cualquier dato
       // externo (tendencias del sector, cifras de mercado, ejemplos reales)
-      // quedaba en blanco o como '[COMPLETAR: dato real]' sin que nadie lo
+      // quedaba en blanco o como '[MISSING: real data]' sin que nadie lo
       // buscara. Mismo patrón que competitive-analysis/investor-deck en
       // Business Reports (app/api/toolkit/generate/route.ts): búsqueda previa
       // y determinista, no un tool-use interactivo (esto es generación de un
@@ -175,13 +175,23 @@ export async function POST(req: NextRequest) {
       const topic = typeof input_data?.topic === 'string' ? input_data.topic.trim() : ''
       if (topic) {
         const results = await searchWeb(topic, 5)
-        sourcesBlock = formatSourcesForPrompt(results, `investigación sobre "${topic}"`)
+        sourcesBlock = formatSourcesForPrompt(results, `research on "${topic}"`)
       }
+
+      // Idioma del entregable: lo elige quien pide el documento (el chat de
+      // generación lo pregunta y lo guarda aquí). Sin esto, los prompts
+      // llevaban "Todo el contenido en ESPAÑOL" hardcodeado y un brief escrito
+      // en inglés salía en español.
+      const outputLanguage =
+        typeof input_data?.output_language === 'string' && input_data.output_language.trim()
+          ? input_data.output_language.trim()
+          : 'English'
 
       const prompt = await getDocumentPrompt(doc_type, {
         clientId,
         inputData: input_data,
         projectId,
+        outputLanguage,
         ...(sourcesBlock ? { sourcesBlock } : {}),
       })
       if (!prompt) throw new Error('Unknown doc type')

@@ -131,19 +131,41 @@ ${EDITORIAL_CONTRACT}`
       ...(slideMode ? { slide_index } : {}),
     })
 
+    // Campos que NUNCA debe decidir el modelo: son punteros a ficheros reales
+    // en Storage. `image_path` es la ruta estable con la que el visor pide una
+    // firma fresca a /api/assets; `imageUrl` es una signed URL que caduca a los
+    // 7 días. Antes se conservaba solo `imageUrl` y se perdía `image_path`, así
+    // que refinar una slide condenaba sus imágenes a romperse esa misma semana.
+    // Y en el modo documento completo se sustituía el JSON entero por la salida
+    // del modelo, así que bastaba con que no reprodujera literalmente unas URLs
+    // firmadas de ~250 caracteres para que las imágenes desaparecieran al
+    // instante.
+    const preserveImageFields = (
+      revisedSlide: Record<string, unknown>,
+      original: Record<string, unknown> | undefined
+    ): Record<string, unknown> => {
+      const out = { ...revisedSlide }
+      for (const key of ['image_path', 'imageUrl'] as const) {
+        if (!out[key] && original?.[key]) out[key] = original[key]
+      }
+      return out
+    }
+
     let nextDoc: Record<string, unknown>
     if (slideMode) {
-      // Sustituir solo la slide editada; conservar la imagen si la revisión no trae una
-      const original = slides![slide_index as number]
-      const revisedSlide: Record<string, unknown> = { ...revised }
-      if (!revisedSlide.imageUrl && original?.imageUrl) {
-        revisedSlide.imageUrl = original.imageUrl
-      }
+      const original = slides![slide_index as number] as Record<string, unknown> | undefined
       const nextSlides = [...slides!]
-      nextSlides[slide_index as number] = revisedSlide
+      nextSlides[slide_index as number] = preserveImageFields({ ...revised }, original)
       nextDoc = { ...currentDoc, slides: nextSlides }
     } else {
-      nextDoc = revised
+      // Modo documento completo: se acepta la revisión, pero las imágenes de
+      // cada slide se re-emparejan por posición con las originales.
+      nextDoc = { ...revised }
+      if (Array.isArray(revised.slides) && Array.isArray(slides)) {
+        nextDoc.slides = (revised.slides as Record<string, unknown>[]).map((sl, i) =>
+          preserveImageFields(sl, slides[i] as Record<string, unknown> | undefined)
+        )
+      }
     }
 
     const { error: updateError } = await admin

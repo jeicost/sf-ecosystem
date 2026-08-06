@@ -65,6 +65,11 @@ export interface DeckOptions {
   title: string
   subtitle?: string
   slides: DeckSlide[]
+  /** Código BCP-47 para <html lang>. El deck se generaba siempre con lang="es"
+   *  aunque el contenido saliera en otro idioma (lectores de pantalla y
+   *  traductores se lo creen). Por defecto 'en', que es el idioma por defecto
+   *  de los entregables. */
+  lang?: string
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -213,7 +218,10 @@ function brandMark(brand: PlaybookBrand, heightEm: number, color: string): strin
 
 function buildCss(t: DeckTheme): string {
   return `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+/* La fuente se carga con <link rel="preconnect"> + <link rel="stylesheet"> en
+   el <head> (ver generateDeckHTML): un @import aquí dentro obliga al navegador
+   a bajar primero este CSS, descubrir el import y solo entonces pedir la
+   fuente -- dos viajes en serie que bloquean el render del deck. */
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -467,7 +475,18 @@ body {
 // ─────────────────────────────────────────────────────────────
 
 function renderCoverSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
-  const strip = s.subtitle ?? o.subtitle ?? o.title
+  // La banda inferior de la portada es un segundo mensaje, no un eco del que
+  // ya está en el centro. La cadena anterior (`s.subtitle ?? o.subtitle ??
+  // o.title`) empezaba justo por el subtítulo de la slide, que es el que se
+  // acaba de pintar arriba — así que en el caso normal (portada CON subtítulo)
+  // el mismo texto salía dos veces en la misma pantalla. Ahora se elige el
+  // primer candidato que aporte algo distinto, y si no hay ninguno la banda
+  // simplemente no se pinta.
+  const shownSubtitle = (s.subtitle ?? '').trim()
+  const strip =
+    [o.subtitle, o.title, s.subtitle]
+      .map((c) => (c ?? '').trim())
+      .find((c) => c.length > 0 && c !== shownSubtitle) ?? ''
   const coverImage = slideImageUrl(s)
   const imageBg = coverImage
     ? `<div class="cover-image-bg deco" style="background-image:url('${esc(coverImage)}')"></div><div class="cover-image-overlay deco"></div>`
@@ -487,7 +506,7 @@ function renderCoverSlide(s: DeckSlide, o: DeckOptions, t: DeckTheme): string {
         : ''
     }
   </div>
-  <div class="cover-strip"><span>${esc(strip)}</span></div>
+  ${strip ? `<div class="cover-strip"><span>${esc(strip)}</span></div>` : ''}
 </section>`
 }
 
@@ -498,7 +517,7 @@ function renderSectionSlide(s: DeckSlide, num: number, o: DeckOptions, t: DeckTh
   <div class="section-num">${String(num).padStart(2, '0')}</div>
   <div class="logo-bar">${brandMark(o.brand, 2.2, t.primaryInk)}</div>
   <div style="flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:4em 6em 6em;position:relative;z-index:2">
-    <div class="eyebrow">${esc(s.subtitle ?? `Sección ${String(num).padStart(2, '0')}`)}</div>
+    <div class="eyebrow">${esc(s.subtitle ?? `Section ${String(num).padStart(2, '0')}`)}</div>
     <div class="slide-title-xl" style="max-width:12em;margin-bottom:0">${esc(s.title)}</div>
   </div>
 </section>`
@@ -789,12 +808,17 @@ function buildChartScript(instances: DeckChartInstance[], t: DeckTheme): string 
   const configs = instances.map((inst) => ({ id: inst.id, config: buildChartConfig(inst.chart, t) }))
   const json = JSON.stringify(configs).replace(/<\/script/gi, '<\\/script')
   return `
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
 (function () {
   var charts = ${json};
+  var drawn = false;
   function draw() {
-    if (typeof Chart === 'undefined') return;
+    // Chart.js va con defer: se ejecuta tras el parseo y antes de
+    // DOMContentLoaded. El listener de 'load' es la red de seguridad por si la
+    // CDN tarda; el flag evita pintar dos veces.
+    if (drawn || typeof Chart === 'undefined') return;
+    drawn = true;
     charts.forEach(function (c) {
       var el = document.getElementById(c.id);
       if (el) { try { new Chart(el, c.config); } catch (e) { /* chart failed, deck still works */ } }
@@ -805,6 +829,7 @@ function buildChartScript(instances: DeckChartInstance[], t: DeckTheme): string 
   } else {
     draw();
   }
+  window.addEventListener('load', draw);
 })();
 </script>`
 }
@@ -899,22 +924,37 @@ export function generateDeckHTML(options: DeckOptions): string {
     })
     .join('\n')
 
+  // La primera slide se marca `active` YA en el HTML servido.
+  //
+  // Antes, NINGUNA slide llevaba la clase `active` en el documento que salía
+  // del servidor: `.slide` es `opacity:0; visibility:hidden` y solo
+  // `.slide.active` es visible, así que lo único que hacía aparecer la portada
+  // era `show(0)` dentro del <script> inline del final. Si ese script no
+  // llegaba a ejecutarse — CDN de Chart.js lenta o bloqueada, extensión del
+  // navegador, red mala, JS desactivado — el usuario veía un rectángulo
+  // completamente en blanco, sin ningún error y sin dejar rastro en logs.
+  // Con esto el deck se ve siempre; el JS solo añade la navegación.
+  const slidesHtmlWithFirstActive = slidesHtml.replace('class="slide ', 'class="slide active ')
+
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="${esc(options.lang || 'en')}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(options.title)} | ${esc(options.brand.clientName)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
 <style>${buildCss(t)}</style>
 </head>
 <body>
 <div class="stage">
-${slidesHtml}
+${slidesHtmlWithFirstActive}
 </div>
-<div class="deck-ui deck-zone" id="deck-zone-left" title="Anterior"></div>
-<div class="deck-ui deck-zone" id="deck-zone-right" title="Siguiente"></div>
+<div class="deck-ui deck-zone" id="deck-zone-left" title="Previous"></div>
+<div class="deck-ui deck-zone" id="deck-zone-right" title="Next"></div>
 <div class="deck-ui" id="deck-counter">1 / ${options.slides.length}</div>
-<div class="deck-ui" id="deck-hint">&larr; &rarr; navegar &middot; F pantalla completa</div>
+<div class="deck-ui" id="deck-hint">&larr; &rarr; navigate &middot; F fullscreen</div>
 ${buildChartScript(chartInstances, t)}
 <script>${NAV_SCRIPT}</script>
 </body>

@@ -36,6 +36,17 @@ export async function generateAndStoreImage(
         prompt: prompt.slice(0, 4000),
         size: '1024x1024',
         n: 1,
+        // PNG sin comprimir daba ~1,6 MB por imagen (medido en Storage:
+        // 1.658.096 y 1.583.909 bytes). El .pptx las embebe en base64, así que
+        // un deck con las 3 imágenes que permite attachDeckImages pesaba
+        // 5,07 MB y superaba el límite de 4,5 MB de respuesta de una función
+        // serverless de Vercel -> FUNCTION_PAYLOAD_TOO_LARGE al descargar.
+        // JPEG al 85% baja cada imagen a ~85 KB (medido con una generación real
+        // el 2026-08-06: 84.747 bytes, 19× menos) sin diferencia visible en
+        // fotografía/ilustración editorial, que es todo lo que generamos aquí.
+        // Con 3 imágenes el .pptx pasa de ~5,07 MB a ~0,5 MB.
+        output_format: 'jpeg',
+        output_compression: 85,
       }),
     })
 
@@ -74,10 +85,10 @@ export async function generateAndStoreImage(
       await db.storage.createBucket(VISUAL_BUCKET, { public: false, fileSizeLimit: 52428800 })
     }
 
-    const storagePath = `clients/${clientId}/quick-actions/${actionId}/${Date.now()}.png`
+    const storagePath = `clients/${clientId}/quick-actions/${actionId}/${Date.now()}.jpg`
     const { error: uploadError } = await db.storage
       .from(VISUAL_BUCKET)
-      .upload(storagePath, buffer, { contentType: 'image/png', upsert: true })
+      .upload(storagePath, buffer, { contentType: 'image/jpeg', upsert: true })
 
     if (uploadError) {
       console.error('[openai-image] Upload failed:', uploadError.message)

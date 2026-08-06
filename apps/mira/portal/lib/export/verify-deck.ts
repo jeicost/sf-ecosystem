@@ -61,11 +61,15 @@ export async function verifyMonthlyDeck(
   const approveRows = texts.filter((t) => t.includes('APPROVE')).length
   const expectedApprove = Math.min(expected.captions, 30)
   if (expectedApprove > 0 && approveRows < expectedApprove) {
-    issues.push(`${approveRows} feedback rows para ${expectedApprove} captions`)
+    issues.push(`${approveRows} feedback rows for ${expectedApprove} captions`)
   }
 
-  const hasCalendar = texts.some((t) => t.includes('Calendario') || t.includes('CALENDARIO'))
-  if (!hasCalendar) issues.push('No hay slide de calendario')
+  // Acepta ambos idiomas: las plantillas se tradujeron a inglés el 2026-08-06
+  // y esta comprobación bloqueaba la subida a Drive con un 500 si no encontraba
+  // literalmente 'Calendario'. Se conserva el español para los decks ya
+  // generados que sigan en circulación.
+  const hasCalendar = texts.some((t) => /calendar(io)?/i.test(t))
+  if (!hasCalendar) issues.push('No calendar slide found')
 
   return { ok: issues.length === 0, slides, approveRows, partsInOrder, hasCalendar, issues }
 }

@@ -4,6 +4,7 @@ import { getTheme } from '@/lib/theme'
 import { use, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
+import ChatThread from '@/components/chat/ChatThread'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
@@ -30,15 +31,19 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   const [docTheme, setDocTheme] = useState<'light' | 'dark'>('dark')
   useEffect(() => { setDocTheme(getTheme()) }, [])
   const [toolSlug, setToolSlug] = useState<string | null>(null)
+  // Estado real de la generación. El visor montaba el iframe a ciegas: si la
+  // fila estaba en 'processing' o 'failed', /api/toolkit/export devuelve 400
+  // y el usuario veía JSON crudo o un marco en blanco, sin mensaje, sin
+  // reintento y sin forma de saber si aquello iba a terminar alguna vez.
+  const [docStatus, setDocStatus] = useState<'loading' | 'processing' | 'failed' | 'completed' | 'missing'>('loading')
+  const [docError, setDocError] = useState<string | null>(null)
+  const [stuck, setStuck] = useState(false)
   const [slides, setSlides] = useState<SlideOption[]>([])
   const [canvaState, setCanvaState] = useState<'idle' | 'loading'>('idle')
   const [canvaError, setCanvaError] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const chatEndRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  // El autoscroll lo gestiona ChatThread.
 
   // Carga tool_slug + lista de slides del result_data (se refresca tras cada refine)
   useEffect(() => {
@@ -46,10 +51,27 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
     async function loadDoc() {
       const { data } = await createClient()
         .from('generation_queue')
-        .select('tool_slug, result_data')
+        .select('tool_slug, result_data, status, error_message, created_at')
         .eq('id', id)
         .single()
-      if (cancelled || !data) return
+      if (cancelled) return
+      if (!data) { setDocStatus('missing'); return }
+
+      const status = String(data.status)
+      setDocStatus(
+        status === 'completed' ? 'completed' : status === 'failed' ? 'failed' : 'processing'
+      )
+      setDocError((data.error_message as string) || null)
+      // "Colgado": mismo umbral que app/api/quick-actions/retry/route.ts (10
+      // min). Si Vercel mata la función a los 300 s, el catch de la ruta no
+      // llega a ejecutarse y la fila se queda en 'processing' para siempre —
+      // indistinguible de una generación en curso salvo por el tiempo.
+      if (status !== 'completed' && status !== 'failed' && data.created_at) {
+        setStuck(Date.now() - new Date(data.created_at as string).getTime() > 10 * 60 * 1000)
+      } else {
+        setStuck(false)
+      }
+
       setToolSlug(data.tool_slug as string)
       const result = (data.result_data || {}) as Record<string, unknown>
       const rawSlides = Array.isArray(result.slides) ? (result.slides as Record<string, unknown>[]) : []
@@ -62,10 +84,19 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
       )
     }
     loadDoc()
+    // Mientras esté generando, refrescar cada 5 s para pasar a 'completed' y
+    // montar el iframe (y para detectar el caso "colgado"). Se detiene en
+    // cuanto termina: el listado tenía un polling que no paraba nunca cuando
+    // una fila se quedaba atascada en 'processing'.
+    const poll =
+      docStatus === 'processing' || docStatus === 'loading'
+        ? setInterval(loadDoc, 5000)
+        : null
     return () => {
       cancelled = true
+      if (poll) clearInterval(poll)
     }
-  }, [id, iframeKey])
+  }, [id, iframeKey, docStatus])
 
   const isDeck = toolSlug === 'doc-deck'
 
@@ -168,9 +199,9 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
           <button
             onClick={() => setDocTheme(docTheme === 'dark' ? 'light' : 'dark')}
             className="text-sm px-3 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
-            title="Tema del documento (claro/oscuro)"
+            title="Document theme (light/dark)"
           >
-            {docTheme === 'dark' ? '🌙 Oscuro' : '☀️ Claro'}
+            {docTheme === 'dark' ? '🌙 Dark' : '☀️ Light'}
           </button>
           <a
             href={`/api/toolkit/export?queue_id=${id}&theme=${docTheme}`}
@@ -204,14 +235,78 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
       )}
 
       <div className="flex flex-1 min-h-0">
-        <iframe
-          key={iframeKey}
-          ref={iframeRef}
-          src={`/api/toolkit/export?queue_id=${id}&inline=1&theme=${docTheme}`}
-          className="flex-1 w-full border-0"
-          title={t('docs.document', locale)}
-          allow="fullscreen"
-        />
+        {docStatus === 'completed' ? (
+          <iframe
+            key={iframeKey}
+            ref={iframeRef}
+            src={`/api/toolkit/export?queue_id=${id}&inline=1&theme=${docTheme}`}
+            className="flex-1 w-full border-0"
+            title={t('docs.document', locale)}
+            allow="fullscreen"
+          />
+        ) : (
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="max-w-md text-center space-y-3">
+              {docStatus === 'loading' && (
+                <p className="text-sm text-ink-secondary">Loading…</p>
+              )}
+
+              {docStatus === 'processing' && !stuck && (
+                <>
+                  <p className="text-2xl">✨</p>
+                  <p className="text-sm font-semibold text-ink">Still generating</p>
+                  <p className="text-xs text-ink-secondary">
+                    A full document takes a couple of minutes. This page refreshes on its own —
+                    you can leave and come back.
+                  </p>
+                </>
+              )}
+
+              {docStatus === 'processing' && stuck && (
+                <>
+                  <p className="text-2xl">⏱️</p>
+                  <p className="text-sm font-semibold text-ink">This one got stuck</p>
+                  <p className="text-xs text-ink-secondary">
+                    It has been running for over 10 minutes, which means the generation was cut off
+                    before it could finish. Nothing was charged twice — start a new one, ideally with
+                    a narrower topic.
+                  </p>
+                  <a href="/documents" className="inline-block text-xs px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+                    Back to Documents
+                  </a>
+                </>
+              )}
+
+              {docStatus === 'failed' && (
+                <>
+                  <p className="text-2xl">⚠️</p>
+                  <p className="text-sm font-semibold text-ink">This document failed to generate</p>
+                  {docError && (
+                    <p className="text-xs text-ink-tertiary font-mono break-words bg-surface border border-line rounded p-2">
+                      {docError}
+                    </p>
+                  )}
+                  <a href="/documents" className="inline-block text-xs px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+                    Try again
+                  </a>
+                </>
+              )}
+
+              {docStatus === 'missing' && (
+                <>
+                  <p className="text-2xl">🔍</p>
+                  <p className="text-sm font-semibold text-ink">Document not found</p>
+                  <p className="text-xs text-ink-secondary">
+                    It may belong to a different client than the one selected.
+                  </p>
+                  <a href="/documents" className="inline-block text-xs px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+                    Back to Documents
+                  </a>
+                </>
+              )}
+            </div>
+          </div>
+        )}
 
         {chatOpen && (
           <div className="w-80 border-l border-line flex flex-col bg-card">
@@ -221,29 +316,12 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                 {t('docs.refine-hint', locale)}
               </p>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {messages.length === 0 && (
-                <p className="text-ink-muted text-xs text-center mt-8">
-                  {t('docs.refine-empty', locale)}
-                </p>
-              )}
-              {messages.map((m, i) => (
-                <div
-                  key={i}
-                  className={`text-xs rounded-lg px-3 py-2 leading-relaxed ${
-                    m.role === 'user' ? 'bg-amber-500/15 text-ink ml-6' : 'bg-surface text-ink-secondary mr-6'
-                  }`}
-                >
-                  {m.content}
-                </div>
-              ))}
-              {refining && (
-                <div className="text-xs rounded-lg px-3 py-2 bg-surface text-ink-tertiary mr-6 animate-pulse">
-                  {t('docs.applying-changes', locale)}
-                </div>
-              )}
-              <div ref={chatEndRef} />
-            </div>
+            <ChatThread
+              className="flex-1 min-h-0"
+              messages={messages}
+              isLoading={refining}
+              thinkingLabel="Applying your changes…"
+            />
             <div className="p-3 border-t border-line space-y-2">
               {slides.length > 0 && (
                 <div className="flex items-center gap-2">

@@ -212,7 +212,7 @@ function buildSection(pptx: Pptx, s: DeckSlide, num: number, o: DeckOptions, t: 
     color: c(mix(t.primary, t.accent, 0.28)),
     align: 'right',
   })
-  slide.addText((s.subtitle ?? `Sección ${String(num).padStart(2, '0')}`).toUpperCase(), {
+  slide.addText((s.subtitle ?? `Section ${String(num).padStart(2, '0')}`).toUpperCase(), {
     x: 0.85,
     y: 4.7,
     w: W - 2,
@@ -509,7 +509,7 @@ function buildChartSlide(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme)
   const doughnutPalette = labels.map((_, i) =>
     c(mix(t.primary, t.accent, labels.length > 1 ? i / (labels.length - 1) : 0))
   )
-  slide.addChart(chartType, [{ name: s.title || 'Serie', labels, values }], {
+  slide.addChart(chartType, [{ name: s.title || 'Series', labels, values }], {
     x: 0.85,
     y: 2.5,
     w: W - 1.7,

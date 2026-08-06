@@ -126,28 +126,22 @@ export default function ToolkitHub() {
     return () => clearInterval(interval)
   }, [clientId, fetchGenerations])
 
-  // Fetch client settings → landings
+  // Landings del cliente — desactivado a propósito, no es código muerto por
+  // descuido.
+  //
+  // Leía `clients.settings`, columna que NO existe en el esquema real: la
+  // migración 0035 que la añadía nunca se aplicó. La consulta devolvía 400 en
+  // CADA carga de /toolkit (Postgres 42703, undefined_column) y la lista
+  // acababa vacía igualmente por la rama `else`. Era el "400 de /toolkit en
+  // clients?select=settings" que la auditoría del 2026-07-30 (DEBT uu) dio por
+  // no reproducible — reproducido y cerrado el 2026-08-06.
+  //
+  // Mismo criterio que ya se había aplicado en app/api/home/overview/route.ts
+  // (ver su nota en el select): no pedir una columna que no existe. Para
+  // reactivar las landings hay que aplicar antes la 0035; en cuanto exista la
+  // columna, se restaura esta consulta.
   useEffect(() => {
-    if (!clientId) return
-    const client = createClient()
-    client
-      .from('clients')
-      .select('settings')
-      .eq('id', clientId)
-      .maybeSingle()
-      .then(({ data }) => {
-        const raw = (data?.settings as Record<string, any> | null)?.landings
-        if (Array.isArray(raw)) {
-          setLandings(
-            raw.filter(
-              (l): l is ClientLanding =>
-                l && typeof l.title === 'string' && typeof l.url === 'string'
-            )
-          )
-        } else {
-          setLandings([])
-        }
-      })
+    setLandings([])
   }, [clientId])
 
   // ─── Derived data ──────────────────────────────────────────
