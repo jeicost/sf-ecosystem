@@ -36,6 +36,7 @@ filtra con criterio humano, y las convierte en algo usable para moverse por la c
 
 **Claim principal (EN):** *"Handpicked recommendations from social media. AI tools to discover the
 city at your path."*
+
 **Claim principal (ES):** *"Tu mapa de las mejores recomendaciones en redes sociales."*
 
 **El enemigo:** la búsqueda genérica, los rankings pagados, la trampa turística, el ruido tipo
@@ -126,7 +127,8 @@ venta es que empiezas por uno.
 **Estos precios son públicos** (de momento — si cambia la política, este documento se actualiza).
 Se pueden decir en una propuesta, en la web y en una llamada.
 
-Dos cosas que conviene saber para no meter la pata al citarlos:
+Tres cosas que conviene saber para no meter la pata al citarlos:
+
 - El **stack completo suma 1.845 €/mes**, que es el contrato medio de referencia. Casi nadie
   contrata los siete de entrada: el discurso correcto es "empiezas por uno".
 - Hay clientes con **condiciones negociadas por debajo de tarifa** (Ronda está en 1.300 €/mes). No
@@ -147,6 +149,7 @@ presupuestaria.
 
 **Alojamientos** — hoteles, hostales, redes de apartamentos.
 Quien firma es dirección de hotel o un property manager. Los tres argumentos son:
+
 - **Concierge digital**: el huésped descubre la ciudad con las recomendaciones del establecimiento,
   no con las de Google.
 - **Comisión por venta de recomendaciones**: el alojamiento se lleva parte de lo que reserva su
@@ -285,6 +288,7 @@ comunidad, creadores y narrativa local *antes* de abrirse. Abrir una ciudad con 
 es el error que ya se cometió.
 
 Lenguaje a usar según el estado real de cada plaza:
+
 - **Abierta** — hay contenido publicado y se puede usar. Solo entonces se dice que está activa.
 - **En edición** — se está produciendo, con fecha pública comprometida.
 - **Destino con discoolver desplegado** — para Ronda y Costa del Sol: es despliegue de plataforma
