@@ -15,8 +15,15 @@
  *     seats taken in Madrid", invented testimonials)
  *   - the password field in the application form (the account is created when
  *     an editor approves the application, not when someone applies)
- * The only numbers allowed here are the ones we can honour: 50% rev-share on
- * sales from the creator's own channels + affiliate commission on bookings.
+ * Decisión del CEO (2026-08-06): NINGUNA cifra del reparto económico va en la
+ * web. Ni porcentajes, ni fracciones ("la mitad"), ni importes de lo que cobra
+ * el creador. El reparto varía por formato y por canal (el print no aguanta el
+ * mismo porcentaje que el digital), así que publicarlo sería comprometerse a un
+ * número que luego hay que defender caso por caso. Se comunica en la llamada y
+ * por escrito antes de firmar.
+ *
+ * Sí pueden aparecer los PRECIOS PÚBLICOS del producto (digital desde 14€,
+ * papel desde 29€): eso es precio de venta, no reparto.
  */
 export const defaultInfluencersContent = {
   // Hero
@@ -51,7 +58,7 @@ export const defaultInfluencersContent = {
   top_step_2_text: "Nuestros editores montan la guía a tu lado: tu nombre, tu criterio, nuestro formato.",
   top_step_3_label: "La vendes y cobras",
   top_step_3_text:
-    "Digital desde 14€ y papel desde 29€, a tu audiencia. Te llevas el 50% de cada venta desde tus canales y el 50% de lo que ingresamos por afiliación cada vez que alguien reserva desde tus páginas, mientras la guía viva.",
+    "Digital desde 14€ y papel desde 29€, a tu audiencia. Cobras por cada venta que salga de tus canales y por cada reserva que entre desde tus páginas. Dos vías, y las dos siguen corriendo mientras la guía viva. Los números, por escrito antes de que firmes.",
   top_quote: "Un reel vive 48 horas. Tu guía vive todo el año.",
   top_note: "No nos importan tus likes; nos importa que sepas dónde se come de verdad.",
   top_mock_city: "Tu ciudad",
@@ -91,7 +98,7 @@ export const defaultInfluencersContent = {
     "Tuyo, siempre. Nos autorizas a editarlo y publicarlo dentro de la guía; ni la propiedad ni lo que hagas con él en tus canales cambian. Si un día lo dejas, tu contenido se va contigo.",
   faq_q2: "¿Cuánto y cuándo cobro?",
   faq_a2:
-    "Con guía propia: el 50% de cada venta que salga de tus canales y el 50% del ingreso neto de afiliación por las reservas que se generen desde tus páginas, mientras la guía siga a la venta. Si envías vídeos: comisión por las ventas y reservas que genere tu recomendación. Las condiciones y el calendario de pago van por escrito antes de que firmes nada.",
+    "Con guía propia cobras por dos vías: cada venta que salga de tus canales y cada reserva que entre desde tus páginas. Las dos siguen corriendo mientras la guía esté a la venta, no solo la semana del lanzamiento. Si envías vídeos, cobras por las ventas y las reservas que genere tu recomendación. El reparto exacto y el día de pago te los enseñamos en la llamada, con los números delante, y van por escrito antes de que firmes nada. No hay letra pequeña que aparezca después.",
   faq_q3: "¿Hay exclusividad?",
   faq_a3:
     "No. Sigues publicando donde quieras y con quien quieras. Tu guía es una pieza más de tu marca, no un contrato que te ata.",

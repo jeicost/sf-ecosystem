@@ -13,14 +13,28 @@ más IA para recorrer la ciudad. Estrategia completa y roadmap:
 
 - **Home** = catálogo de guías (`Guides.tsx` con `Book3D`/`TiltBook`: libros 3D en CSS con lomo y
   sombra) + curación + objeto + IA + puente a creators. CTA principal "Ver las guías", no waitlist.
-- **`/influencers`** = landing de captación con DOS tracks: TOP ("Tu guía. Tu marca. Tus ingresos.",
-  50% de cada venta desde sus canales + 50% de la afiliación neta) y MICRO ("Envíanos tu vídeo").
-  Es el destino de los anuncios y del pitch directo a influencers.
+- **`/influencers`** = landing de captación con DOS tracks: TOP ("Tu guía. Tu marca. Tus ingresos.")
+  y MICRO ("Envíanos tu vídeo"). Es el destino de los anuncios y del pitch directo a influencers.
+
+**Ninguna cifra del reparto con el creador va en la web** (decisión del CEO, 2026-08-06). Ni
+porcentajes, ni fracciones ("la mitad"), ni importes de lo que cobra. El reparto varía por formato
+y por canal —el print no aguanta el mismo porcentaje que el digital— así que publicarlo sería
+comprometerse a un número que luego hay que defender caso por caso. El copy dice qué se cobra
+(cada venta desde sus canales + cada reserva desde sus páginas) y durante cuánto (mientras la guía
+viva), y remite a la llamada y al escrito previo a la firma. Los **precios públicos** del producto
+(digital desde 14€, papel desde 29€) sí se publican: eso es precio de venta, no reparto.
+
+La cifra vivía en **cinco sitios** y hay que tocarlos todos o vuelve por la puerta de atrás:
+`web/lib/content/influencers.ts`, la página `influencers` del CMS, la página `creators-landing`
+del CMS, `creators-landing/index.html` (render commiteado: regenerar con `scripts/build-static.mjs`,
+no editar a mano) y `~/Developer/discoolver-dg-editor/ui/influencers.html` (copia gemela sin CMS
+detrás, edición manual, otro repo).
 
 **Prohibido reintroducir** (se eliminó a propósito y está verificado en producción): "No es una
 guía. No es un blog.", las "500 plazas por ciudad", los "120.000 usuarios"/"8.742 en lista", los
-testimonios y handles inventados (@marta.viajes…), las colaboraciones pagadas de €500-1.500 y el
-campo **contraseña** en el formulario de creators (la cuenta se crea al aprobar la candidatura).
+testimonios y handles inventados (@marta.viajes…), las colaboraciones pagadas de €500-1.500, las
+fotos de stock haciendo de cara de quien firma un testimonio, y el campo **contraseña** en el
+formulario de creators (la cuenta se crea al aprobar la candidatura).
 Cualquier prueba social debe ser verificable.
 
 ## Regla de oro: los tokens recuperados no se tocan sin verificar
