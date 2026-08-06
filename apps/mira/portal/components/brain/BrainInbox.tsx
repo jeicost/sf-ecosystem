@@ -18,7 +18,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { AlertTriangle, Check, Loader2, Sparkles, X } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
-import { createClient } from '@/lib/supabase'
 
 interface Proposal {
   id: string
@@ -79,16 +78,6 @@ export default function BrainInbox() {
   const [error, setError] = useState<string | null>(null)
   const [loaded, setLoaded] = useState(false)
 
-  useEffect(() => {
-    createClient()
-      .auth.getUser()
-      .then(({ data }) => {
-        const plan = (data.user?.user_metadata?.plan as string) ?? 'starter'
-        setIsAgency(plan === 'super_admin' || plan === 'admin')
-      })
-      .catch(() => {})
-  }, [])
-
   const load = useCallback(async () => {
     if (!clientId) return
     const [pRes, cRes] = await Promise.allSettled([
@@ -100,6 +89,16 @@ export default function BrainInbox() {
     }
     if (cRes.status === 'fulfilled' && Array.isArray(cRes.value?.contradictions)) {
       setContradictions(cRes.value.contradictions)
+    }
+    // isAgency viene del SERVIDOR, donde la sesión es autoritativa. Antes se
+    // miraba en el navegador con un getUser() de montaje único: si la sesión no
+    // estaba hidratada todavía, el super_admin se quedaba sin botones para
+    // siempre (bug real reportado en producción el 2026-08-06).
+    const fromServer = [pRes, cRes].find(
+      (r) => r.status === 'fulfilled' && typeof (r.value as { isAgency?: boolean })?.isAgency === 'boolean'
+    )
+    if (fromServer && fromServer.status === 'fulfilled') {
+      setIsAgency(Boolean((fromServer.value as { isAgency?: boolean }).isAgency))
     }
     setLoaded(true)
   }, [clientId])

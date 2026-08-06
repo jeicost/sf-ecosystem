@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
-import { resolveRequestClient } from '@/lib/resolve-client'
+import { getSessionUser, resolveRequestClient } from '@/lib/resolve-client'
 
 // P6 — propuestas de cambio al brain pendientes/resueltas del cliente activo.
 export async function GET(req: NextRequest) {
@@ -8,6 +8,14 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url)
     const access = await resolveRequestClient(searchParams.get('clientId'))
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+
+    // Quién puede resolver se decide en el SERVIDOR. El cliente lo miraba con
+    // `supabase.auth.getUser()` en un useEffect de montaje único: si la sesión
+    // aún no estaba hidratada, devolvía null, el plan caía a 'starter' y los
+    // botones NO aparecían nunca — ni siquiera para un super_admin, porque el
+    // efecto no se vuelve a ejecutar. Aquí la sesión es autoritativa.
+    const plan = (await getSessionUser())?.user_metadata?.plan as string | undefined
+    const isAgency = plan === 'super_admin' || plan === 'admin'
 
     const status = searchParams.get('status') || 'pending'
     // Paginación real (Fase 2) -- antes un .limit(30) fijo dejaba huérfanas en
@@ -26,12 +34,12 @@ export async function GET(req: NextRequest) {
 
     if (error) {
       if (error.message.includes('brain_change_proposals')) {
-        return NextResponse.json({ proposals: [], pending_migration: true })
+        return NextResponse.json({ proposals: [], isAgency, pending_migration: true })
       }
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
     const total = count ?? data?.length ?? 0
-    return NextResponse.json({ proposals: data ?? [], total, hasMore: offset + (data?.length ?? 0) < total })
+    return NextResponse.json({ proposals: data ?? [], isAgency, total, hasMore: offset + (data?.length ?? 0) < total })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error' },
