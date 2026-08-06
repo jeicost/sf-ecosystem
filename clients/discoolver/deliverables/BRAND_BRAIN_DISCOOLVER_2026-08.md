@@ -108,13 +108,31 @@ marketplace, POS, planificador de viajes, calendario de eventos e inteligencia d
 3. **Monetización real** — marketplace + POS + comisión sobre ventas. El destino convierte tráfico
    turístico en ingreso para el tejido local.
 
-### 3.2 Los siete módulos
-
-Marketplace · POS y puntos de venta autónomos · Plan My Trip · Calendario Inteligente · Asistente de
-Voz Local · Señalética y tótems · Business Intelligence.
+### 3.2 Los siete módulos, con su tarifa
 
 **"Cada uno funciona solo. Juntos, son un ecosistema."** Se contratan por separado; el argumento de
 venta es que empiezas por uno.
+
+| Módulo | Tarifa | Qué resuelve |
+|---|---|---|
+| **Marketplace** | 750 €/mes | Promoción y venta de los activos turísticos y del comercio local |
+| **POS / Software de caja** | 495 €/mes + 50 € por punto | Venta en oficinas de turismo, monumentos y puntos físicos |
+| **Plan My Trip** | 150 €/mes | Rutas personalizadas para el visitante (Premio Hospitality 2021) |
+| **Calendario Inteligente** | 100 €/mes | Agenda de eventos del destino, en tiempo real |
+| **Asistente de Voz Local** | 250 €/mes | Atención al turista 24/7 entrenada con los contenidos del destino |
+| **Señalética y tótems** | 100 €/mes | Tótems interactivos y sistema de QR por la ciudad |
+| **Business Intelligence** | incluido | Cuadro de mando e informes propios del destino |
+
+**Estos precios son públicos** (de momento — si cambia la política, este documento se actualiza).
+Se pueden decir en una propuesta, en la web y en una llamada.
+
+Dos cosas que conviene saber para no meter la pata al citarlos:
+- El **stack completo suma 1.845 €/mes**, que es el contrato medio de referencia. Casi nadie
+  contrata los siete de entrada: el discurso correcto es "empiezas por uno".
+- Hay clientes con **condiciones negociadas por debajo de tarifa** (Ronda está en 1.300 €/mes). No
+  presentar la tarifa como precio cerrado e inamovible si el interlocutor ya conoce otro caso.
+- A la suscripción se le añade **comisión del 10-15% sobre las ventas** del marketplace. La tarifa
+  sola no describe el modelo.
 
 ### 3.3 Las tres verticales, cada una con su discurso
 
@@ -297,7 +315,6 @@ Para no dar por cerrado lo que no lo está:
 
 - Fecha real de la app nativa (hoy la web muestra una cuenta atrás con fecha provisional).
 - Qué es gratis y qué de pago en la app.
-- Si los precios de los módulos de 360 se publican o van bajo petición.
 - Comisión concreta para alojamientos por venta de recomendaciones.
 - Si el check-in es producto disponible o roadmap.
 - Cuántos creadores hay firmados y cuáles se pueden nombrar.
