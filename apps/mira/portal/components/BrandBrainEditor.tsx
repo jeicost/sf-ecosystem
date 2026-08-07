@@ -38,6 +38,71 @@ interface BrandProfile {
 
 type TabType = 'brand_identity' | 'audience_market' | 'voice_visual' | 'content_strategy' | 'business_ops' | 'documents' | 'index'
 
+/**
+ * Las columnas planas de `brand_profiles` (mission, tone_of_voice, values,
+ * proposition) son anteriores al jsonb `brand_data` y siguen llenas: son las
+ * que escriben el onboarding, los seeds y las rutas de IA antiguas. Este
+ * editor, en cambio, pinta SOLO `brand_data.*` — así que su contenido llevaba
+ * tiempo siendo invisible en pantalla aunque sí llegara a los prompts.
+ *
+ * Medido en producción el 2026-08-06: los 6 clientes tenían `tone_of_voice`,
+ * `values` y `proposition` con texto real sin un solo widget que los mostrara.
+ * En Salsa eso dejaba la pestaña de Voz en blanco teniendo un tono de voz
+ * escrito ("Confiado, irreverente y obsesivo... nunca dice 'delicious'"), que
+ * es exactamente el "el brain está casi vacío" que reportó el CEO.
+ *
+ * Al cargar se vuelca la columna plana al hueco de `brand_data` equivalente
+ * SOLO si ese hueco está vacío (nunca pisa lo que el usuario ya editó). Al
+ * guardar, el PUT vuelve a sincronizar las columnas planas, así que la
+ * migración se consolida sola en cuanto alguien pulsa Guardar.
+ */
+function hydrateLegacyColumns(data: BrandProfile): BrandProfile {
+  const bd: BrandData = { ...(data.brand_data ?? {}) }
+  const flatText = (v: unknown): string => (typeof v === 'string' ? v.trim() : '')
+
+  const legacyTone = flatText(data.tone_of_voice)
+  if (legacyTone && !flatText(bd.tone_and_voice?.summary)) {
+    bd.tone_and_voice = { ...bd.tone_and_voice, summary: legacyTone }
+  }
+
+  const legacyValues = Array.isArray(data.values) ? data.values.filter((v) => typeof v === 'string' && v.trim()) : []
+  const currentValues = Array.isArray(bd.values) ? bd.values : []
+  if (legacyValues.length && !currentValues.length) bd.values = legacyValues
+
+  const legacyProposition = flatText((data as { proposition?: unknown }).proposition)
+  if (legacyProposition && !flatText(bd.value_proposition)) bd.value_proposition = legacyProposition
+
+  const legacyMission = flatText(data.mission)
+  if (legacyMission && !flatText(bd.identity?.mission)) {
+    bd.identity = { ...bd.identity, mission: legacyMission }
+  }
+
+  return { ...data, brand_data: bd }
+}
+
+/**
+ * Claves de `brand_data` que este editor pinta con un widget propio. Todo lo
+ * que quede fuera se muestra en el bloque de rescate del final de la pestaña
+ * Index, para que no se pueda volver a repetir el caso de tener conocimiento
+ * guardado y no verlo por ningún lado (Salsa tenía aquí `competitors`,
+ * `benchmarks`, `targets_2026` y `differentiator`; otros clientes,
+ * `course_curriculum` o `pending_items`).
+ */
+const PAINTED_BRAND_DATA_KEYS = new Set([
+  'audiences', 'banned_phrases', 'business_model', 'channels', 'channels_to_avoid',
+  'competitive_positioning', 'constraints', 'editorial_rhythm', 'go_to_market',
+  'hero_features', 'identity', 'languages', 'offer', 'open_questions', 'qa_rules',
+  'strategy_roadmap', 'tone_and_voice', 'value_proposition', 'values', 'visual_identity',
+  'voice_archetypes', 'voice_principles', 'voice_vocabulary', 'what_flopped', 'what_it_is',
+])
+
+function hasContent(value: unknown): boolean {
+  if (value == null) return false
+  if (Array.isArray(value)) return value.length > 0
+  if (typeof value === 'object') return Object.keys(value as object).length > 0
+  return String(value).trim().length > 0
+}
+
 // Audience items arrive in several real shapes depending on who wrote them:
 // this editor's own textarea ({segment, need, message}), the seed data
 // ({name, segment, pain_point, percent...}), or AI write paths (e.g.
@@ -72,6 +137,8 @@ export default function BrandBrainEditor() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [relearning, setRelearning] = useState(false)
+  const [relearnMsg, setRelearnMsg] = useState<{ ok: boolean; text: string } | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [activeTab, setActiveTab] = useState<TabType>('brand_identity')
@@ -139,7 +206,7 @@ export default function BrandBrainEditor() {
         if (!res.ok) throw new Error(t('bb.fetch-failed', locale))
         const { data, pillars: fetchedPillars } = await res.json()
         setPillars(fetchedPillars || [])
-        setProfile(data || {
+        setProfile(data ? hydrateLegacyColumns(data) : {
           id: '',
           client_id: '',
           name: '',
@@ -188,6 +255,37 @@ export default function BrandBrainEditor() {
     if (activeClient?.id) fetchProfile()
     else setLoading(false) // sin cliente activo: no dejar loading infinito
   }, [activeClient?.id])
+
+  const handleRelearn = async () => {
+    if (!activeClient?.id) return
+    setRelearning(true)
+    setRelearnMsg(null)
+    try {
+      const res = await fetch('/api/brain/relearn', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: activeClient.id }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data.success) throw new Error(data.error || 'The re-read failed')
+
+      if (data.changes > 0 || data.contradictions > 0) {
+        setRelearnMsg({
+          ok: true,
+          text: `Read ${data.documentsRead} document${data.documentsRead === 1 ? '' : 's'}. ${data.changes} change${data.changes === 1 ? '' : 's'} and ${data.contradictions} conflict${data.contradictions === 1 ? '' : 's'} are waiting for you at the top of this page.`,
+        })
+      } else {
+        setRelearnMsg({
+          ok: true,
+          text: data.reason || `Read ${data.documentsRead} documents — nothing new to add.`,
+        })
+      }
+    } catch (err) {
+      setRelearnMsg({ ok: false, text: err instanceof Error ? err.message : 'The re-read failed' })
+    } finally {
+      setRelearning(false)
+    }
+  }
 
   const handleSave = async () => {
     if (!profile) return
@@ -501,6 +599,25 @@ export default function BrandBrainEditor() {
               <TextareaInput label="Mission" value={profile.brand_data?.identity?.mission || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, mission: v } } })} placeholder="Your mission and purpose" />
               <TextareaInput label="Vision" value={profile.brand_data?.identity?.vision || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, identity: { ...profile.brand_data?.identity, vision: v } } })} placeholder="Your long-term vision" />
             </div>
+            {/* Valores — vivían solo en la columna plana `values`, sin widget:
+                los 6 clientes los tenían escritos y sin forma de verlos. */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-4">Brand Values</h3>
+              <label className="block text-xs text-ink-secondary mb-2">One per line</label>
+              <TextareaInput
+                value={(Array.isArray(profile.brand_data?.values) ? profile.brand_data.values : [])
+                  .filter((v): v is string => typeof v === 'string')
+                  .join('\n')}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    values: v.split('\n').map((s) => s.trim()).filter(Boolean),
+                  }
+                })}
+                placeholder={'Ingredient obsession\nQuality over volume\nDelivery reliability'}
+              />
+            </div>
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-4">What Your Brand Is</h3>
               <label className="block text-xs text-ink-secondary mb-2">(5-7 simultaneous things)</label>
@@ -691,6 +808,28 @@ export default function BrandBrainEditor() {
 
         {activeTab === 'voice_visual' && (
           <div className="space-y-6">
+            {/* Tono de voz en prosa — es lo que escriben el onboarding y los
+                seeds en la columna plana `tone_of_voice`, y hasta ahora no
+                tenía ningún widget: la pestaña salía vacía con el tono escrito.
+                Ver hydrateLegacyColumns(). */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-3">Tone of Voice</h3>
+              <p className="text-xs text-ink-secondary mb-3">
+                How the brand sounds, in your own words. The agents read this on every generation.
+              </p>
+              <TextareaInput
+                value={profile.brand_data?.tone_and_voice?.summary || ''}
+                onChange={(v) => setProfile({
+                  ...profile,
+                  brand_data: {
+                    ...profile.brand_data,
+                    tone_and_voice: { ...profile.brand_data?.tone_and_voice, summary: v }
+                  }
+                })}
+                placeholder="Confident, irreverent and obsessive. Speaks in the imperative. Never asks permission."
+              />
+            </div>
+
             {/* Archetypes */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">Brand Archetypes</h3>
@@ -1348,6 +1487,35 @@ export default function BrandBrainEditor() {
 
         {activeTab === 'documents' && (
           <div className="space-y-4">
+            {/* Relectura completa. El sync de Drive solo mira los ficheros que
+                han cambiado, así que sin esto la única forma de que el Brain
+                reaprendiera de un documento ya sincronizado era editarlo en
+                Drive para cambiarle el hash. Ver lib/brain-tools/relearn.ts. */}
+            <div className="card p-4">
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div className="flex-1 min-w-[240px]">
+                  <h3 className="text-sm font-medium text-ink mb-1">Re-read everything</h3>
+                  <p className="text-xs text-ink-secondary">
+                    Goes through every document already stored — Drive and uploads — and proposes what
+                    the Brand Brain should learn, filling the fields that are still empty. Nothing is
+                    written until you approve it.
+                  </p>
+                </div>
+                <button
+                  onClick={handleRelearn}
+                  disabled={relearning || !activeClient?.id}
+                  className="px-4 py-2 rounded-lg text-sm font-medium bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50 flex items-center gap-2 shrink-0"
+                >
+                  {relearning ? <><Loader2 size={14} className="animate-spin" /> Reading…</> : 'Re-read everything'}
+                </button>
+              </div>
+              {relearnMsg && (
+                <p className={`text-xs mt-3 ${relearnMsg.ok ? 'text-emerald-400' : 'text-red-400'}`}>
+                  {relearnMsg.text}
+                </p>
+              )}
+            </div>
+
             {activeClient?.id && <DriveFoldersPanel clientId={activeClient.id} />}
 
             <label className="block text-sm font-medium text-ink">Upload Brand Documents</label>
@@ -1418,7 +1586,42 @@ export default function BrandBrainEditor() {
         )}
 
         {activeTab === 'index' && activeClient?.id && (
-          <BrandBrainIndexView clientId={activeClient.id} />
+          <div className="space-y-6">
+            <BrandBrainIndexView clientId={activeClient.id} />
+
+            {/* Red de seguridad: todo lo que hay guardado en brand_data y NO
+                tiene un widget propio en ninguna pestaña. Sin esto, un agente
+                (o el sync de Drive) puede escribir conocimiento perfectamente
+                válido en una clave nueva y quedarse invisible para siempre —
+                que es justo lo que pasaba con `competitors`, `benchmarks`,
+                `targets_2026` y `differentiator` en Salsa. */}
+            {(() => {
+              const extras = Object.entries(profile.brand_data ?? {})
+                .filter(([key, value]) => !PAINTED_BRAND_DATA_KEYS.has(key) && hasContent(value))
+              if (!extras.length) return null
+              return (
+                <div className="card p-4">
+                  <h3 className="text-sm font-medium text-ink mb-1">Also stored in this Brain</h3>
+                  <p className="text-xs text-ink-secondary mb-4">
+                    Knowledge saved by an agent or by the Drive sync that has no dedicated field yet.
+                    The agents already read it — this is here so you can see it.
+                  </p>
+                  <div className="space-y-3">
+                    {extras.map(([key, value]) => (
+                      <div key={key} className="rounded-lg border border-line bg-surface p-3">
+                        <p className="text-xs font-medium text-ink mb-1.5">
+                          {key.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+                        </p>
+                        <pre className="text-[11px] text-ink-secondary whitespace-pre-wrap break-words font-sans">
+                          {typeof value === 'string' ? value : JSON.stringify(value, null, 2)}
+                        </pre>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
+          </div>
         )}
       </div>
 

@@ -93,6 +93,51 @@ export interface BrandData {
   [key: string]: unknown
 }
 
+/**
+ * Catálogo canónico de huecos del Brand Brain: qué claves existen en
+ * `brand_data`, qué va en cada una y con qué forma.
+ *
+ * Por qué existe (2026-08-07): la síntesis de Drive solo recibía el
+ * `brand_data` ACTUAL del cliente con la instrucción "usa estas claves
+ * exactas". Con un Brain recién creado eso significa 4 claves, así que el
+ * modelo no tenía forma de saber que existen `voice_principles`,
+ * `banned_phrases`, `qa_rules` o `business_model`. Resultado medido en Salsa:
+ * 167.000 caracteres sincronizados desde Drive — incluido un
+ * `SALSA_Brand_Voice_Guide.pdf` y un Brand Book completo — y la pestaña de Voz
+ * del editor a 1 campo de 7. Un Brain vacío se quedaba vacío para siempre,
+ * porque solo se podía proponer sobre lo que ya estaba lleno.
+ *
+ * Al declarar los huecos explícitamente, el sintetizador puede colocar lo que
+ * lee en su sitio en vez de tener que adivinar el esquema.
+ */
+export const BRAND_DATA_SLOTS: Array<{ key: string; what: string }> = [
+  { key: 'identity', what: 'Object {name, tagline, one_liner, mission, vision, enemy, signature_ritual, website_url} — who the brand is' },
+  { key: 'what_it_is', what: 'String, one item per line — the 5-7 things the brand is at the same time' },
+  { key: 'value_proposition', what: 'String — problems solved + emotional promise + time/money saved' },
+  { key: 'competitive_positioning', what: 'String — where it sits against alternatives and why' },
+  { key: 'hero_features', what: 'Object {feature_1, feature_2, feature_3} — the three differentiators that lead the narrative' },
+  { key: 'values', what: 'Array of strings — the brand values' },
+  { key: 'business_model', what: 'String — how it makes money' },
+  { key: 'offer', what: 'Object — products/services, hero items, prices, packages' },
+  { key: 'go_to_market', what: 'String — how it reaches the market' },
+  { key: 'strategy_roadmap', what: 'String — strategy and what is coming next' },
+  { key: 'audiences', what: 'Array of {segment, need, message} — the audience segments' },
+  { key: 'channels', what: 'Array of {channel, ...} — the channels in use and how each is used' },
+  { key: 'channels_to_avoid', what: 'Array of {channel, why} — channels deliberately not used' },
+  { key: 'constraints', what: 'Object {legal_ip, category_rules, self_imposed, sequencing_rule} — what the brand may not do' },
+  { key: 'tone_and_voice', what: 'Object {summary, golden_rule} — how the brand sounds, in prose, plus its self-check sentence' },
+  { key: 'voice_archetypes', what: 'Array of 2 strings — primary and secondary archetype' },
+  { key: 'voice_principles', what: 'Array of {name, example} — voice rules with a real example of each' },
+  { key: 'voice_vocabulary', what: 'Object {do: [{phrase, why}], dont: [{phrase, why}]} — words to use and to avoid' },
+  { key: 'banned_phrases', what: 'Array of strings — phrases the brand never says' },
+  { key: 'languages', what: 'Object {manual, captions, per_channel} — which language is used where' },
+  { key: 'visual_identity', what: 'Object {status, colors, typography, logo, imagery_style} — the visual system' },
+  { key: 'editorial_rhythm', what: 'String — publishing cadence and content mix' },
+  { key: 'qa_rules', what: 'Object {formula, checklist[], what_to_avoid[]} — how to tell a piece is ready' },
+  { key: 'what_flopped', what: 'Array of {format, theory} — what was tried and did not work' },
+  { key: 'open_questions', what: 'Object {contradictions[], undecided[], suspected_broken[]} — what is still unresolved' },
+]
+
 /** Normaliza vocabulario legacy (strings sueltos) al shape {phrase, why}. */
 export function normalizeVocab(list?: Array<string | VocabEntry>): VocabEntry[] {
   if (!Array.isArray(list)) return []
