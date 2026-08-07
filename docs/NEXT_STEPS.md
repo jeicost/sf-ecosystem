@@ -1,6 +1,6 @@
-# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-08-06)
+# PRÓXIMOS PASOS — SF Ecosystem (actualizado 2026-08-07)
 
-Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)(yy)(zz)(aaa)(bbb)(ccc)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063/0064/0065 todas aplicadas. Este fichero lista SOLO lo que queda. Última verificación de vigencia de cada ítem contra el código real: 2026-08-06.
+Estado de referencia: Quick Actions 2.0 + Plan Maestro B1-B5 completos y en producción (bitácora completa en `docs/DEBT.md`, entradas (ii)(jj)(kk)(nn)(oo)(pp)(qq)(rr)(ss)(tt)(uu)(vv)(ww)(xx)(yy)(zz)(aaa)(bbb)(ccc)(ddd)). Migraciones 0048/0049/0050/0051/0056/0058/0059/0060/0061/0062/0063/0064/0065 todas aplicadas. Este fichero lista SOLO lo que queda. Última verificación de vigencia de cada ítem contra el código real: 2026-08-07.
 
 ## Discoolver — guías + curador (2026-08-06)
 
@@ -34,6 +34,26 @@ Fases A-D ejecutadas y verificadas (commits `82bb05d`..`1056fa7`): cruft huérfa
 
 **Único pendiente real que queda de esta ronda:**
 - Decisión de negocio (no técnica): migrar `apps/startup-factory-web` a SF-CMS como el resto de landings — hoy usa contenido local propio (`content/`, sin `@sf/cms-client`, verificado 2026-08-03).
+
+## MIRA — El Brand Brain se quedaba vacío teniendo la información delante (DEBT ddd, 2026-08-07) — ✅ CERRADO, con 1 verificación pendiente
+
+Salsa tenía 167.000 caracteres sincronizados desde Drive y 12 de 27 campos del Brand Brain llenos.
+No faltaba información: el sintetizador solo recibía las claves que YA existían ("use these exact
+keys"), así que un hueco vacío no se podía llenar nunca; y el editor pintaba solo `brand_data.*`,
+dejando invisibles las columnas planas (`mission`, `tone_of_voice`, `values`, `proposition`) que
+tenían texto real **en los 6 clientes**. Arreglado con el catálogo `BRAND_DATA_SLOTS`, el volcado
+de columnas planas al cargar, una red de seguridad en la pestaña Index que muestra cualquier clave
+sin widget, y un botón **"Re-read everything"** (antes, releer un documento ya sincronizado exigía
+editarlo en Drive para cambiarle el hash). Salsa quedó en **26/27 campos**, 14 pilares y 5
+referencias. Cerrada también la carrera de hidratación de `BrainChatGate`, gemela de la de
+`BrainInbox`. Commits `acbdc51`, `46272c3`.
+
+**Pendiente:** abrir `/brand-brain` con la cuenta real y confirmar visualmente las pestañas — el
+portal está tras el SSO de Vercel y no tiene dominio propio, así que la verificación de esta ronda
+fue a nivel de base de datos + build + typecheck.
+
+**Aplicar el mismo "Re-read everything" al resto de clientes:** solo se ha ejecutado para Salsa.
+Los otros 5 tienen sus documentos ya sincronizados y los huecos igual de vacíos.
 
 ## MIRA — UI + light mode + 3 bugs del audit final (DEBT yy/aaa, 2026-07-31) — ✅ CERRADO, con pendientes menores
 

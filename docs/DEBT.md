@@ -914,3 +914,55 @@ El índice aplicaba un tope **único de 420 caracteres** a todo, y `excerpt()` p
 - **Reconexión de Drive de los 4 clientes restantes** — la hace el CEO, proyecto a proyecto.
 - **Verificación de Google** de la app OAuth (no bloquea; solo quita la pantalla de aviso).
 - **Sin probar con cuenta de cliente real**: la política RLS nueva se verificó con `super_admin`. Falta entrar como cliente y confirmar que ve lo suyo.
+
+---
+
+## ddd) MIRA — El Brand Brain se quedaba vacío teniendo la información delante (2026-08-07)
+
+Reportado por el CEO tras el cierre del día anterior: *"todo el brain casi vacío. vaya trabajo más malo"*. Tenía razón. **No faltaba información**: Salsa tenía **167.000 caracteres** ya sincronizados desde Drive — brand book, guía de voz, menú maestro, estrategia de lanzamiento, informe de contenido — y **12 de 27 campos** del Brand Brain llenos, con la pestaña de Voz a 1 de 7. Fallaban dos cosas encadenadas, las dos nuestras.
+
+### 1. El sintetizador no sabía que los huecos existían
+
+`drive-synthesis.ts` recibía el `brand_data` **ACTUAL** del cliente con la instrucción literal *"use these exact keys for field_path"*. Con un Brain recién creado eso son 4 claves. El modelo no tenía forma de saber que existen `voice_principles`, `voice_vocabulary`, `banned_phrases`, `qa_rules`, `business_model`, `go_to_market`, `editorial_rhythm`… **Un hueco vacío se quedaba vacío para siempre, porque solo se podía proponer sobre lo que ya estaba lleno.** Circular y silencioso: el sync decía "sincronizado ✅" y no cambiaba nada.
+
+Además la regla *"be demanding about substance: if the documents say nothing the brand_data did not already know, has_substance=false"* empujaba activamente a **no** rellenar: un brand book completo contra un Brain vacío se saldaba con "nada nuevo".
+
+**Arreglo:** catálogo canónico `BRAND_DATA_SLOTS` en `lib/brand-data.ts` (25 huecos, cada uno con su forma esperada), que se manda **siempre**, con los vacíos señalados aparte y la regla invertida: *"filling an EMPTY slot with something the documents actually say IS substance"*. Más una regla anti-invención explícita. `max_tokens` **2.000 → 8.000**: con 2.000 una relectura de un brand book se truncaba a media respuesta y se perdía el `tool_use` entero.
+
+### 2. El editor no pintaba las columnas planas
+
+`brand_profiles` tiene columnas anteriores al jsonb (`mission`, `tone_of_voice`, `values`, `proposition`) que **siguen siendo las que escriben el onboarding, los seeds y las rutas de IA antiguas**. El editor pinta SOLO `brand_data.*`. Medido: **los 6 clientes** tenían tono de voz y valores escritos **sin un solo widget que los mostrara**. En Salsa eso dejaba la pestaña de Voz en blanco teniendo el tono redactado ("Confiado, irreverente y obsesivo… nunca dice 'delicious'").
+
+**Arreglo:** `hydrateLegacyColumns()` vuelca la columna plana al hueco equivalente al cargar, **solo si ese hueco está vacío** (nunca pisa lo editado), y el PUT ya sincronizaba de vuelta — así la migración se consolida sola al guardar. Campos propios nuevos para *Tone of Voice* y *Brand Values*.
+
+### 3. Red de seguridad: nada guardado puede quedar invisible
+
+Un agente o el sync pueden escribir conocimiento válido en una clave sin widget y desaparecer de la vista. Salsa escondía así `competitors`, `benchmarks`, `targets_2026` y `differentiator`; otros clientes, `course_curriculum`, `status` y `pending_items`. Ahora la pestaña Index lista **cualquier** clave de `brand_data` sin widget propio, en solo lectura.
+
+### 4. "Re-read everything"
+
+El sync solo sintetiza los ficheros **cambiados** (`changedDocs`). Correcto para el cron, pero dejaba un agujero: si el sintetizador mejora —o si un hueco estaba vacío por un fallo nuestro— no había forma de releer lo ya guardado. **La única salida era editar los ficheros en Drive para cambiarles el hash.** Nuevo `lib/brain-tools/relearn.ts` + `POST /api/brain/relearn` (solo agencia) + botón en la pestaña Documents. Nunca aplica nada: deja propuesta pendiente, igual que el sync.
+
+### Resultado medido en Salsa
+
+| | Antes | Después |
+|---|---|---|
+| Campos del Brand Brain | 12/27 | **26/27** |
+| Pestaña Voice & Visual | 1/7 | **7/7** |
+| Business & Ops | 6/9 | **9/9** |
+| Brand Identity | 2/5 | **5/5** |
+| Propuestas de una síntesis | 2 | **12** |
+| Pilares de contenido | 13 | 14 |
+| Referencias de marca | 0 | **5** |
+
+El único "vacío" que queda es `brand_data.content_pillars`, que no es un hueco real: los pilares viven en la tabla `content_pillars` y el editor los lee aparte.
+
+Señal de que la extracción es buena y no inventada: `banned_phrases` salió con **"Delicious"** dentro, que es exactamente lo que decía el tono de voz que llevaba meses oculto en la columna plana.
+
+### 5. Cerrado de paso: el super_admin tampoco podía confirmar en "Cuéntale a MIRA"
+
+`BrainChatGate` tenía la **misma** carrera de hidratación que se arregló ayer en `BrainInbox` y que quedó identificada sin cerrar: `getUser()` en un `useEffect` de montaje único → si la sesión no está hidratada, plan a `'starter'` y el efecto no se repite. `/brand-brain` es un server component, así que ahora la sesión se resuelve ahí y se pasa como prop. **El gate se elimina: sin efecto de cliente no hay carrera posible.**
+
+**Commits:** `acbdc51`, `46272c3`. Backup previo de Salsa en el scratchpad de la sesión (`salsa-backup-2026-08-07.json`).
+
+**Sin verificar en UI de producción:** el portal está detrás del SSO de Vercel y no hay dominio propio (el registro dice "vercel.app only"), así que la verificación fue a nivel de base de datos + build + typecheck. Falta abrir `/brand-brain` con la cuenta real y confirmar visualmente las pestañas.
