@@ -89,6 +89,15 @@ export async function POST(req: NextRequest) {
     _subject: SUBJECTS[source] ?? "Discoolver waitlist",
     _template: "table",
   };
+  // El lead B2B recibe confirmación con plazo — la misma promesa que hace la
+  // pantalla de éxito del DemoForm. Solo en la demo: los forms B2C no la llevan.
+  if (source === "360-demo") {
+    payload._autoresponse =
+      "Recibido — tu solicitud de demo ya está en la bandeja del equipo de discoolver 360. " +
+      "Te escribimos en menos de 24 horas laborables con dos o tres huecos para la media hora. " +
+      "Si quieres que llevemos algo preparado, responde a este correo con la web de tu organización " +
+      "o el nombre de tu destino.";
+  }
   for (const key of EXTRA_FIELDS) {
     const value = clean(body?.[key]);
     if (value) payload[key] = value;

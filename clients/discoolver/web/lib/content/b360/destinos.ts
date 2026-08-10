@@ -42,11 +42,12 @@ export const defaultDestinos360Content = {
   problema_3_text:
     "Los negocios fuera del circuito principal no tienen presencia digital propia y dependen del ranking de una plataforma que no controlan. Nadie los pone en la ruta del viajero, así que para el viajero no existen.",
   problema_4_title: "El gasto en destino se escapa",
-  problema_4_dato: "70%",
+  problema_4_dato: "Sin capturar",
   problema_4_text:
-    "El nuevo perfil de viajero gasta el 70% de su presupuesto en servicios locales en destino, no en transporte ni alojamiento. Sin herramientas propias, el destino no captura ni mide ese gasto: se reparte fuera del tejido local.",
-  problema_4_fuente:
-    "[PENDIENTE: fuente, estudio y año del dato del 70%. El dato circula en todo el material de marca pero no tiene atribución documental. Sin fuente citable, esta card se publica sin la cifra y con el argumento cualitativo.]",
+    "El gasto del viajero se desplaza cada año hacia los servicios locales en destino — actividades, restauración, experiencias — y cada vez menos hacia el transporte y la cama. Sin herramientas propias, el destino ni captura ni mide ese gasto: se reparte fuera del tejido local.",
+  problema_4_fuente: "",
+  problema_4_pendiente:
+    "[PENDIENTE: fuente, estudio y año del dato del 70% si se quiere recuperar la cifra — marketing]",
   plataforma_eyebrow: "Qué hace por el destino",
   plataforma_title: "No es una app para el turista. Es infraestructura para el destino",
   plataforma_claim:
@@ -214,7 +215,7 @@ export const defaultDestinos360Content = {
   justificacion_1:
     "Gasto corriente, no inversión: suscripción mensual por módulo, sin desarrollo a medida ni activos tecnológicos que amortizar.",
   justificacion_2:
-    "Importe conocido de antemano: las tarifas son públicas y por módulo, así que la partida se dimensiona antes de sentarse a negociar.",
+    "Importe anual conocido de antemano: 495 €/mes de punto de venta son 5.940 € al año; 750 €/mes de marketplace, 9.000 €. La partida se dimensiona en euros por ejercicio antes de sentarse a negociar, no después de pedir una propuesta.",
   justificacion_3:
     "Alcance modular: se puede empezar por un módulo y ampliar en el ejercicio siguiente, en lugar de comprometer un proyecto completo de una sola vez.",
   justificacion_4:
@@ -223,7 +224,9 @@ export const defaultDestinos360Content = {
     "Impacto en el tejido local demostrable: comercios integrados, puntos de venta activos y ventas por el canal del destino.",
   contratacion_publica_title: "Sobre el encaje en contratación pública",
   contratacion_publica_text:
-    "[PENDIENTE: base documental de contratación pública. No existe en el material ningún dato sobre encaje en contrato menor, procedimiento abierto, acuerdo marco, códigos CPV, homologación como proveedor ni la fórmula bajo la que se formalizaron Ronda y Costa del Sol. Hasta tenerlo confirmado por dirección y por asesoría jurídica, esta sección se publica con el texto neutro: 'El equipo de discoolver acompaña al destino en la preparación de la documentación técnica y económica que requiera su procedimiento de contratación.' Necesario de: CEO + responsable legal.]",
+    "Lo que podemos decirte hoy, y lo decimos entero: es gasto corriente en modo suscripción, no inversión ni desarrollo a medida — no hay activo tecnológico que amortizar ni entregable de obra que recepcionar. Las tarifas son públicas y el importe anual es calculable antes de pedirnos nada. Ya operamos con administración pública: Ronda es cliente en vigor y hay despliegue en Costa del Sol Tourism Hub, además de acuerdos con SEGITTUR, ICEX e ITH. Y preparamos la documentación técnica y económica que requiera tu procedimiento, trabajando con tu servicio de contratación en lugar de mandarte un PDF. Lo que no vamos a decirte en una web es por qué vía concreta debe tramitarse tu expediente: eso lo determina tu órgano de contratación con el objeto y el importe delante, y quien te diga lo contrario en una landing te está vendiendo un problema.",
+  contratacion_publica_pendiente:
+    "[PENDIENTE: CPV, certificaciones y bajo qué fórmula se formalizaron Ronda y Costa del Sol — legal/CEO]",
   faq_title: "Preguntas que salen siempre",
   faq_1_q: "¿De quién son los datos que genera la plataforma?",
   faq_1_a:
@@ -245,7 +248,9 @@ export const defaultDestinos360Content = {
     "Ronda, con más de 200 negocios locales integrados, tótems, señalética QR y ocho puntos de venta. Y Costa del Sol y Málaga, con señalética QR e integración de marketplace dentro del Costa del Sol Tourism Hub.",
   faq_7_q: "¿Cómo encaja esto en un procedimiento de contratación pública?",
   faq_7_a:
-    "El equipo de discoolver acompaña al destino en la preparación de la documentación técnica y económica que requiera su procedimiento. [PENDIENTE: sustituir por la respuesta concreta (tipo de contrato, CPV, homologaciones) cuando exista base documental.]",
+    "Como suscripción anual con facturación mensual: gasto corriente con importe público y calculable por ejercicio. El equipo de discoolver acompaña al destino en la preparación de la documentación técnica y económica que requiera su procedimiento — la vía concreta la determina tu órgano de contratación, y el encaje en tu expediente te lo mandamos por escrito tras la demo.",
+  faq_7_pendiente:
+    "[PENDIENTE: sustituir por la respuesta con CPV y homologaciones cuando exista base documental — legal]",
   cta_title: "Conoce qué puede hacer discoolver por tu destino",
   cta_sub:
     "Treinta minutos con el equipo, sobre el caso concreto de tu destino: qué módulos aplican, qué se integra en la web que ya tienes y qué verías en el cuadro de mando.",
@@ -253,19 +258,10 @@ export const defaultDestinos360Content = {
   cta_reaseguro:
     "Sin compromiso. Un miembro del equipo responde en menos de 24 horas laborables.",
   cta_form_title: "Cuéntanos de qué destino hablamos",
-  cta_form_campo_1: "Nombre y apellidos",
-  cta_form_campo_2: "Organismo (ayuntamiento, patronato, DMO)",
-  cta_form_campo_3: "Cargo",
-  cta_form_campo_4: "Email corporativo",
-  cta_form_campo_5: "Destino",
-  cta_form_campo_6: "Módulos que te interesan",
-  cta_form_submit: "Solicitar demo",
   cta_contacto_email: "info@discoolver.com",
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
   cta_pendiente_telefono:
-    "[PENDIENTE: teléfono de contacto B2B. En el material hay dos números distintos, +34 656 91 43 74 y (+34) 681 291 571, y ninguno está identificado como el canal comercial de destinos. Confirmar cuál se publica antes de maquetar.]",
-  cta_pendiente_destino:
-    "[PENDIENTE: destino real del CTA. Decidir entre formulario propio conectado al endpoint de captación o enlace a agenda. Si es formulario, hay que dar de alta los campos nuevos en la whitelist del endpoint o se pierden en silencio. Necesario de: Carlos.]",
+    "(+66) 83 829 1723",
 } as const;
 
 export type Destinos360Content = { -readonly [K in keyof typeof defaultDestinos360Content]: string };

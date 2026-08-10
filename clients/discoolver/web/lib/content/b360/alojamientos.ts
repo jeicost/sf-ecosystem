@@ -17,7 +17,7 @@ export const defaultAlojamientos360Content = {
   hero_sub:
     "discoolver entra en el check-in que ya tienes, responde a tu huésped a cualquier hora y te devuelve parte de lo que reserva fuera del alojamiento.",
   hero_cta_primary: "Agendar una demo",
-  hero_cta_secondary: "Ver módulos y precios",
+  hero_cta_secondary: "Ver módulos y precios",  // href corregido en page.tsx: #modulos, no #comision
   hero_reassurance:
     "Demo de 30 minutos, sin compromiso. Sin desarrollo propio. Sin app obligatoria para el huésped.",
   problema_eyebrow: "El punto de partida",
@@ -80,12 +80,15 @@ export const defaultAlojamientos360Content = {
   comision_flujo_3: "La venta queda registrada y tu alojamiento cobra su parte.",
   comision_dato_plataforma_valor: "10-15%",
   comision_dato_plataforma_label: "Comisión de discoolver sobre las ventas del marketplace",
-  comision_dato_alojamiento_valor: "[PENDIENTE: %]",
-  comision_dato_alojamiento_label: "Parte que percibe el alojamiento por cada venta que genera su huésped",
+  comision_dato_alojamiento_valor: "Tu parte",
+  comision_dato_alojamiento_label:
+    "Se fija en el contrato, sobre cada venta cerrada desde tu concierge, y se liquida periódicamente",
   comision_nota:
-    "El porcentaje que percibe el alojamiento se fija en el contrato y se liquida de forma periódica. [PENDIENTE: % exacto de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]",
+    "Tu porcentaje te lo decimos en la primera llamada, con tu volumen delante: cambia según los módulos que contrates y según si eres una propiedad o un grupo. No es una cifra de folleto porque no aplicamos lo mismo a un hostal de veinte camas que a una cadena de nueve hoteles.",
+  comision_pendiente:
+    "[PENDIENTE: % de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]",
   comision_cierre:
-    "El resto del argumento ya lo conoces: el nuevo perfil de viajero gasta el 70% de su presupuesto en servicios locales en destino, no en transporte ni en alojamiento. Ese gasto ocurre a tu alrededor todos los días.",
+    "El gasto del viajero se va cada vez más a lo que hace en destino — actividades, mesas, experiencias — y cada vez menos a la cama. Ese gasto hoy pasa por delante de tu recepción sin dejarte nada.",
   caso_eyebrow: "Despliegue real",
   caso_title:
     "Ronda: la plataforma desplegada en un destino entero, con venta cruzada con hoteles",
@@ -143,7 +146,7 @@ export const defaultAlojamientos360Content = {
     "Tótems interactivos y sistema de QR en habitación, hall y puntos de paso.",
   modulo_4_para: "Alojamientos con espacio físico de entrada",
   modulo_4_precio: "100 €/mes de mantenimiento",
-  modulo_5_nombre: "Market Place",
+  modulo_5_nombre: "Marketplace",
   modulo_5_desc:
     "Venta de servicios turísticos propios y de colaboradores. Es el módulo que convierte tus recomendaciones en reservas cobrables.",
   modulo_5_para: "Alojamientos que quieren ingresar por recomendación",
@@ -155,7 +158,7 @@ export const defaultAlojamientos360Content = {
   modulo_6_precio: "Incluido con los módulos",
   modulo_7_nombre: "Software de Caja (POS)",
   modulo_7_desc:
-    "Sistema de cobros diseñado a medida para puntos físicos: oficinas de turismo, monumentos y puntos de venta del destino.",
+    "Cobro en el punto físico que ya tienes: la recepción, la tienda del hotel o el mostrador de excursiones. Mismo catálogo que el concierge, y el arqueo del día en el mismo sitio.",
   modulo_7_para: "Opcional, para alojamientos con punto de venta propio",
   modulo_7_precio: "495 €/mes + 50 € por punto",
   modulos_stack: "El stack completo de los siete módulos suma 1.845 €/mes de tarifa.",
@@ -177,7 +180,8 @@ export const defaultAlojamientos360Content = {
     "Recepción no gestiona la plataforma: la consulta y la entrega. Con enseñar a entregar el QR y a mirar el cuadro de mando es suficiente.",
   arranque_requisito_integracion:
     "Integración: nos acoplamos a tu sistema de check-in. Sin desarrollo por tu parte y sin app obligatoria para el huésped.",
-  arranque_requisito_tiempo: "Tiempo: el compromiso de onboarding de discoolver es de 15 días.",
+  arranque_requisito_tiempo:
+    "Tiempo: el arranque depende de cuánto contenido propio nos pases y de tu sistema de check-in. Te damos fecha cerrada en la propuesta, no antes.",
   arranque_requisito_personal:
     "Personal: una persona de contacto para validar el contenido. Ninguna alta nueva en recepción.",
   arranque_pendiente_1:
@@ -191,7 +195,9 @@ export const defaultAlojamientos360Content = {
     "Tu huésped va a salir igual. La cuestión es si sale con la recomendación de tu casa o con la de un buscador, y si esa salida te deja un ingreso o no. Con el concierge, sale con lo que tú has aprobado y la reserva pasa por ti.",
   faq_2_pregunta: "¿Tengo que cambiar mi PMS o mi sistema de check-in?",
   faq_2_respuesta:
-    "No. discoolver se acopla al flujo que ya tienes, no lo sustituye. [PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada — dirección técnica]",
+    "No. discoolver se acopla al flujo que ya tienes, no lo sustituye.",
+  faq_2_pendiente:
+    "[PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada — dirección técnica]",
   faq_3_pregunta: "¿El huésped tiene que descargarse una aplicación?",
   faq_3_respuesta:
     "No es obligatorio. Escanea el QR y entra desde el navegador. La app existe para quien la quiera, pero nunca es un requisito para usar el concierge.",
@@ -206,13 +212,17 @@ export const defaultAlojamientos360Content = {
     "Tuyos. Tienes cuadro de mando e informes con lo que tus huéspedes consultan, planifican y reservan, incluidos en la contratación de los módulos.",
   faq_7_pregunta: "¿Cuánto tarda en estar funcionando?",
   faq_7_respuesta:
-    "El compromiso de onboarding es de 15 días. Sin meses de desarrollo y sin hardware complejo.",
+    "El punto de venta se integra en 15 días; el resto depende de tu contenido y tu check-in, y va con fecha cerrada en la propuesta. Sin meses de desarrollo y sin hardware complejo.",
   faq_8_pregunta: "¿Cómo y cuándo cobro la comisión?",
   faq_8_respuesta:
-    "Sobre cada venta cerrada en el marketplace desde tu concierge. discoolver aplica una comisión del 10-15% sobre esas ventas y el alojamiento percibe su parte según contrato. [PENDIENTE: % de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]",
+    "Sobre cada venta cerrada en el marketplace desde tu concierge. discoolver aplica una comisión del 10-15% sobre esas ventas y el alojamiento percibe su parte según contrato.",
+  faq_8_pendiente:
+    "[PENDIENTE: % de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]",
   faq_9_pregunta: "Tengo varias propiedades. ¿Se contrata una a una?",
   faq_9_respuesta:
-    "Los módulos se contratan por separado y en modo suscripción, y el despliegue en varias propiedades comparte estándar y cuadro de mando. [PENDIENTE: condiciones de tarifa para cadenas y redes multi-propiedad — dirección comercial]",
+    "Los módulos se contratan por separado y en modo suscripción, y el despliegue en varias propiedades comparte estándar y cuadro de mando.",
+  faq_9_pendiente:
+    "[PENDIENTE: condiciones de tarifa para cadenas y redes multi-propiedad — dirección comercial]",
   cta_title: "¿Quieres probar el concierge en tu alojamiento?",
   cta_sub:
     "Media hora de demo con tu caso delante: tu tipo de establecimiento, tu flujo de check-in y qué reservaría tu huésped en tu zona.",
@@ -220,7 +230,7 @@ export const defaultAlojamientos360Content = {
   cta_reassurance:
     "Demo de 30 minutos, sin compromiso. Contacta con nosotros y un miembro del equipo resolverá tus dudas.",
   cta_contacto:
-    "info@discoolver.com · (+34) 681 291 571 · C/ María de Molina 39, 28006 Madrid",
+    "info@discoolver.com · (+66) 83 829 1723 · C/ María de Molina 39, 28006 Madrid",
 } as const;
 
 export type Alojamientos360Content = { -readonly [K in keyof typeof defaultAlojamientos360Content]: string };

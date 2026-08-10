@@ -136,9 +136,12 @@ export default async function Home360() {
             </div>
           ))}
         </div>
-        <div style={{ marginTop: 22 }}>
-          <Pending>{c.inversion_nota}</Pending>
-        </div>
+        <p className="small" style={{ marginTop: 22 }}>{c.inversion_nota}</p>
+        {isPending(c.inversion_pendiente) && (
+          <div style={{ marginTop: 12 }}>
+            <Pending>{c.inversion_pendiente}</Pending>
+          </div>
+        )}
       </Section>
 
       {/* ---------- ecosistema ---------- */}
@@ -191,7 +194,11 @@ export default async function Home360() {
             {c.caso_segundo}
           </p>
           <div style={{ marginTop: 16 }}>
-            <Pending>{c.caso_cita}</Pending>
+            {isPending(c.caso_cita) ? (
+              <Pending>{c.caso_cita}</Pending>
+            ) : (
+              <p className="small" style={{ fontStyle: "italic", color: "var(--b-text)" }}>{c.caso_cita}</p>
+            )}
           </div>
         </div>
       </Section>
@@ -199,16 +206,15 @@ export default async function Home360() {
       {/* ---------- verticales ---------- */}
       <Section>
         <Head label={c.vert_eyebrow} title={c.vert_titulo} lead={c.vert_intro} />
-        <div className="grid g-3" style={{ marginTop: 36 }}>
-          {VERTICALES.map((v) => (
+        {/* Una vertical con el texto en [PENDIENTE] no se publica — decisión del
+            CEO (2026-08-10): agencias queda fuera del nav y de este bloque hasta
+            tener modelo de canal y un piloto. El grid pasa a 2 columnas solo. */}
+        <div className="grid g-2" style={{ marginTop: 36 }}>
+          {VERTICALES.filter((v) => !isPending(v.texto)).map((v) => (
             <Link href={v.href} className="card vert" key={v.etiqueta}>
               <span className="card__n">{v.etiqueta.toUpperCase()}</span>
               <h3 className="h-card" style={{ fontSize: 19 }}>{v.frase}</h3>
-              {isPending(v.texto) ? (
-                <Pending>{v.texto}</Pending>
-              ) : (
-                <p style={{ fontSize: 14.5, margin: 0 }}>{v.texto}</p>
-              )}
+              <p style={{ fontSize: 14.5, margin: 0 }}>{v.texto}</p>
               <span className="vert__go">{v.label} →</span>
             </Link>
           ))}
@@ -243,9 +249,18 @@ export default async function Home360() {
             <span style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-slate)" }}>
               {c.cta_direccion}
             </span>
-            <div style={{ maxWidth: 560 }}>
-              <Pending>{c.cta_telefono}</Pending>
-            </div>
+            {isPending(c.cta_telefono) ? (
+              <div style={{ maxWidth: 560 }}>
+                <Pending>{c.cta_telefono}</Pending>
+              </div>
+            ) : (
+              <a
+                href={`tel:${c.cta_telefono.replace(/[^+\d]/g, "")}`}
+                style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-primary)" }}
+              >
+                {c.cta_telefono}
+              </a>
+            )}
           </div>
         </div>
       </Section>

@@ -23,7 +23,6 @@ export function Footer360() {
             <ul>
               <li><Link href="/360/destinos">Destinos</Link></li>
               <li><Link href="/360/alojamientos">Alojamientos</Link></li>
-              <li><Link href="/360/agencias">Agencias y DMC</Link></li>
             </ul>
           </div>
           <div>
@@ -49,7 +48,7 @@ export function Footer360() {
         </div>
         <div className="b360-foot__bar">
           <span>© {new Date().getFullYear()} discoolver</span>
-          <a href="mailto:hola@discoolver.com">hola@discoolver.com</a>
+          <a href="mailto:info@discoolver.com">info@discoolver.com</a>
         </div>
       </div>
     </footer>

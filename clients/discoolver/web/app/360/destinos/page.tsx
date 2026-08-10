@@ -3,6 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 import { draftMode } from "next/headers";
 import { defaultDestinos360Content } from "@/lib/content/b360/destinos";
 import { pageContent } from "@/lib/cms-pages";
+import { DemoForm } from "@/components/b360/DemoForm";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
@@ -31,7 +32,7 @@ export default async function Destinos360() {
           <h1 className="h-hero">{c.hero_title}</h1>
           <p className="lead">{c.hero_sub}</p>
           <div className="btns">
-            <Cta href="/360/demo">{c.hero_cta_label}</Cta>
+            <Cta href="/360/demo?v=destino">{c.hero_cta_label}</Cta>
           </div>
           <p className="small" style={{ marginTop: 18 }}>{c.hero_cta_sub}</p>
           <div
@@ -61,9 +62,13 @@ export default async function Destinos360() {
             <h3 className="h-card">{c.problema_4_title}</h3>
             <div className="mod__price" style={{ marginTop: 8 }}>{c.problema_4_dato}</div>
             <p style={{ fontSize: 14.5, margin: "10px 0 0" }}>{c.problema_4_text}</p>
-            <p className="small" style={{ marginTop: 12, color: "var(--b-slate)", fontFamily: "var(--b-mono)", fontSize: 11.5 }}>
-              {c.problema_4_fuente}
-            </p>
+            {/* La fuente solo se pinta si existe: la cifra del 70% se retiró
+                por no tener atribución documental (el campo quedó vacío). */}
+            {c.problema_4_fuente.trim() !== "" && (
+              <p className="small" style={{ marginTop: 12, color: "var(--b-slate)", fontFamily: "var(--b-mono)", fontSize: 11.5 }}>
+                {c.problema_4_fuente}
+              </p>
+            )}
           </div>
         </div>
       </Section>
@@ -255,27 +260,17 @@ export default async function Destinos360() {
               <span style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-slate)" }}>
                 {c.cta_contacto_direccion}
               </span>
-              <Pending>{c.cta_pendiente_telefono}</Pending>
-              <Pending>{c.cta_pendiente_destino}</Pending>
+              <a href={`tel:${c.cta_pendiente_telefono.replace(/[^+\d]/g, "")}`} style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-primary)" }}>
+                {c.cta_pendiente_telefono}
+              </a>
             </div>
           </div>
           <div className="card" style={{ borderColor: "var(--b-line)" }}>
             <h3 className="h-card">{c.cta_form_title}</h3>
-            <div className="form" style={{ marginTop: 18 }}>
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <div className="field" key={n}>
-                  <label htmlFor={`d${n}`}>{K(`cta_form_campo_${n}`)}</label>
-                  {n === 6 ? (
-                    <textarea id={`d${n}`} name={`campo_${n}`} disabled />
-                  ) : (
-                    <input id={`d${n}`} name={`campo_${n}`} disabled />
-                  )}
-                </div>
-              ))}
-              <Cta href="/360/demo">{c.cta_form_submit}</Cta>
-              <p className="small" style={{ margin: 0, color: "var(--b-slate)" }}>
-                Maqueta. El formulario operativo vive en /360/demo.
-              </p>
+            {/* Antes: una maqueta con los campos disabled. Un formulario
+                decorativo no se publica — este es el real, el mismo de /360/demo. */}
+            <div style={{ marginTop: 18 }}>
+              <DemoForm defaultVertical="Destino · ayuntamiento, patronato o DMO" />
             </div>
           </div>
         </div>

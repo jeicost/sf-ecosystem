@@ -28,7 +28,7 @@ export const defaultHomeContent = {
   hero_note_1: "Curado por editores humanos",
   hero_note_2: "Edición anual por destino",
   hero_note_3: "Digital y papel",
-  hero_book_caption: "Madrid según Cenando con Pablo · Edición 2026",
+  hero_book_caption: "Madrid · Edición 2026",
   hero_book_sticker: "Desde 14€",
 
   // Marquee (brand claims)
@@ -44,13 +44,13 @@ export const defaultHomeContent = {
   guides_title_em: "2026.",
   guides_lead: "Una ciudad, un año, una guía. Digital 14-19€ · Papel 29-35€ con el digital incluido.",
   guide_1_city: "Madrid",
-  guide_1_sub: "según Cenando con Pablo",
+  guide_1_sub: "858 sitios revisados · Edición 2026",
   guide_1_meta: "Desde 14€ · Próximamente",
   guide_2_city: "Bangkok",
-  guide_2_sub: "según Travis Leon",
+  guide_2_sub: "La primera ciudad de Tailandia",
   guide_2_meta: "Desde 14€ · Próximamente",
   guide_3_city: "Barcelona",
-  guide_3_sub: "Edición de ciudad",
+  guide_3_sub: "182 sitios revisados · Edición 2026",
   guide_3_meta: "Desde 14€ · Próximamente",
   guides_ghost_city: "¿Tu ciudad?",
   guides_ghost_text: "Pide la siguiente edición",
@@ -129,7 +129,7 @@ export const defaultHomeContent = {
     "Porque la ciudad cambia. Cada temporada volvemos a mirar lo que los creadores están contando y editamos una nueva edición. La anterior no muere: se convierte en pieza de colección.",
   faq_q5: "¿Qué ciudades hay ahora mismo?",
   faq_a5:
-    "Madrid abre la colección — con la guía de Cenando con Pablo — y Bangkok está en edición con Travis Leon. Si tu ciudad no está, déjanosla en el formulario y te avisamos en cuanto su guía entre en producción.",
+    "Madrid abre la colección, con Barcelona y Ronda detrás. Bangkok será la primera ciudad de Tailandia. La firma de cada edición se anuncia cuando se cierra — y si tu ciudad no está, déjanosla en el formulario y te avisamos en cuanto entre en producción.",
   faq_q6: "¿Cuándo puedo comprarlas?",
   faq_a6:
     "Muy pronto. Estamos cerrando la edición 2026: déjanos tu email en el formulario y te avisamos el día exacto en que salgan a la venta. Sin spam, solo el aviso.",

@@ -17,7 +17,7 @@ export const defaultAgencias360Content = {
   hero_sub:
     "El producto de experiencias del destino está disperso en doscientos negocios que no tienen ficha, ni precio publicado, ni forma de contratarse. Nosotros lo digitalizamos y te damos el escaparate y el punto de venta para comercializarlo.",
   hero_cta_1: "Hablemos de tu catálogo",
-  hero_cta_1_url: "/360/demo",
+  hero_cta_1_url: "/360/demo?v=agencia",
   hero_cta_2: "Ver módulos y precios",
   hero_cta_2_url: "#modulos",
   hero_honestidad:
@@ -129,9 +129,9 @@ export const defaultAgencias360Content = {
   cta_texto:
     "Cuéntanos en qué destino operas, qué producto local vendes hoy y cómo lo cobras. De esa llamada sales con una respuesta concreta: qué módulos te encajan, a qué precio y qué queda por definir por nuestra parte.",
   cta_boton: "Hablemos de tu catálogo",
-  cta_boton_url: "/360/demo",
+  cta_boton_url: "/360/demo?v=agencia",
   cta_contacto_email: "info@discoolver.com",
-  cta_contacto_telefono: "(+34) 681 291 571",
+  cta_contacto_telefono: "(+66) 83 829 1723",
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
 } as const;
 

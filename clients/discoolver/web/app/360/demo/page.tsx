@@ -18,8 +18,20 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
-export default async function Demo360() {
+const VERTICAL_LABELS: Record<string, string> = {
+  destino: "Destino · ayuntamiento, patronato o DMO",
+  alojamiento: "Alojamiento · hotel, hostal o apartamentos",
+  agencia: "Agencia · DMC, touroperador o receptivo",
+};
+
+export default async function Demo360({
+  searchParams,
+}: {
+  searchParams: Promise<{ v?: string }>;
+}) {
   const { isEnabled: isDraft } = await draftMode();
+  const { v } = await searchParams;
+  const defaultVertical = VERTICAL_LABELS[v ?? ""] ?? "";
   const c = await pageContent("360-demo", defaultDemo360Content, isDraft);
   const K = (k: string) => c[k as keyof typeof c] as string;
 
@@ -61,7 +73,7 @@ export default async function Demo360() {
         </div>
 
         <div className="card" style={{ borderColor: "var(--b-line)", padding: 30 }}>
-          <DemoForm />
+          <DemoForm defaultVertical={defaultVertical} />
         </div>
       </div>
     </Section>

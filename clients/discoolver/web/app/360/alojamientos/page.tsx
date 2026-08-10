@@ -31,8 +31,8 @@ export default async function Alojamientos360() {
           <h1 className="h-hero">{c.hero_title}</h1>
           <p className="lead">{c.hero_sub}</p>
           <div className="btns">
-            <Cta href="/360/demo">{c.hero_cta_primary}</Cta>
-            <Cta href="#comision" variant="2">{c.hero_cta_secondary}</Cta>
+            <Cta href="/360/demo?v=alojamiento">{c.hero_cta_primary}</Cta>
+            <Cta href="#modulos" variant="2">{c.hero_cta_secondary}</Cta>
           </div>
           <p className="small" style={{ marginTop: 26, maxWidth: "62ch" }}>{c.hero_reassurance}</p>
         </div>
@@ -209,7 +209,7 @@ export default async function Alojamientos360() {
           <h2 className="h-sec">{c.cta_title}</h2>
           <p className="lead">{c.cta_sub}</p>
           <div className="btns">
-            <Cta href="/360/demo">{c.cta_boton}</Cta>
+            <Cta href="/360/demo?v=alojamiento">{c.cta_boton}</Cta>
           </div>
           <p className="small" style={{ marginTop: 22 }}>{c.cta_reassurance}</p>
           <p className="small" style={{ fontFamily: "var(--b-mono)", fontSize: 12.5 }}>{c.cta_contacto}</p>

@@ -10,12 +10,12 @@
  */
 export const defaultDemo360Content = {
   eyebrow: "Demo",
-  title: "Media hora, tu destino sobre la mesa",
+  title: "Media hora, tu caso sobre la mesa",
   lead:
     "Sin compromiso y sin presentación de cuarenta diapositivas. Enseñamos la plataforma funcionando y el despliegue de Ronda abierto, no capturas de pantalla.",
   tick_1_label: "Qué ves:",
   tick_1_texto:
-    "marketplace, punto de venta y cuadro de mando en vivo, con datos reales de un destino desplegado.",
+    "la plataforma en vivo con datos reales de un despliegue en producción — marketplace, cuadro de mando y, según tu caso, el concierge o el punto de venta.",
   tick_2_label: "Qué te llevas:",
   tick_2_texto:
     "por qué módulo empezar en tu caso, qué cuesta y en qué plazo puede estar operativo.",
