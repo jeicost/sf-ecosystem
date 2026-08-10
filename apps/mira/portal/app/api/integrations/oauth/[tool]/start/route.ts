@@ -6,10 +6,12 @@ import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { tool: string } }
+  // Next 16: params llega como Promise — sin el await, tool era undefined y
+  // todo el OAuth del marketplace daba "Invalid tool" (auditoría 2026-08-10).
+  { params }: { params: Promise<{ tool: string }> }
 ) {
   try {
-    const { tool } = params
+    const { tool } = await params
     const { searchParams } = new URL(request.url)
     const clientId = searchParams.get('clientId')
 

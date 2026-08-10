@@ -1,9 +1,10 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { Loader2, Eye } from 'lucide-react'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { useActiveClient } from '@/lib/client-context'
 
 interface Generation {
   id: string
@@ -21,22 +22,31 @@ const TOOLS_INFO: Record<string, { icon: string; color: string; name: string }> 
 export default function GalleryPage() {
   const [generations, setGenerations] = useState<Generation[]>([])
   const [loading, setLoading] = useState(true)
+  const { activeClient } = useActiveClient()
 
-  useEffect(() => {
-    fetchGenerations()
-  }, [])
-
-  const fetchGenerations = async () => {
+  // Filtro de cliente EXPLÍCITO: la consulta original leía la cola entera y
+  // delegaba el aislamiento por completo a RLS (auditoría 2026-08-10).
+  const fetchGenerations = useCallback(async (clientId: string) => {
     try {
       const client = createClient()
-      const { data } = await client.from('generation_queue').select('*').eq('status', 'completed').order('created_at', { ascending: false }).limit(100)
+      const { data } = await client
+        .from('generation_queue')
+        .select('*')
+        .eq('client_id', clientId)
+        .eq('status', 'completed')
+        .order('created_at', { ascending: false })
+        .limit(100)
       setGenerations(data || [])
     } catch (error) {
       console.error('Fetch error:', error)
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    if (activeClient?.id) fetchGenerations(activeClient.id)
+  }, [activeClient?.id, fetchGenerations])
 
   if (loading) return <div className="flex items-center justify-center h-screen"><Loader2 className="animate-spin" size={24} /></div>
 

@@ -17,17 +17,24 @@ export default function ResetPasswordPage() {
   const [focused, setFocused] = useState<string | null>(null)
   const [showPwd, setShowPwd] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
-  const [isRecoveryMode, setIsRecoveryMode] = useState(false)
+  // null = comprobando · false = sin sesión de recuperación · true = válido.
+  // Antes isRecoveryMode se escribía y nunca se leía: la página no validaba
+  // que se viniera de un enlace de recuperación (auditoría 08-10).
+  const [isRecoveryMode, setIsRecoveryMode] = useState<boolean | null>(null)
 
-  // Listen for PASSWORD_RECOVERY auth state change
   useEffect(() => {
     const supabase = createClient()
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'PASSWORD_RECOVERY') {
+    // El enlace de recuperación inicia sesión al aterrizar; un login normal
+    // también tiene sesión y puede cambiar su contraseña aquí. Sin sesión ni
+    // evento PASSWORD_RECOVERY, el formulario no puede funcionar: se avisa.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event) => {
+      if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
         setIsRecoveryMode(true)
       }
     })
-
+    supabase.auth.getSession().then(({ data }) => {
+      setIsRecoveryMode((prev) => prev ?? Boolean(data.session))
+    })
     return () => {
       subscription?.unsubscribe()
     }
@@ -140,8 +147,17 @@ export default function ResetPasswordPage() {
             </p>
           </div>
 
+          {isRecoveryMode === false && (
+            <div className="mb-6 rounded-xl px-4 py-3 text-sm"
+              style={{ background: 'var(--bg-surface)', border: '1px solid var(--border)', color: 'var(--text-tertiary)' }}>
+              This page only works from a password reset link. Request one from the{' '}
+              <a href="/login" className="underline" style={{ color: 'var(--text-primary)' }}>sign-in page</a>{' '}
+              with &ldquo;Forgot password?&rdquo;.
+            </div>
+          )}
+
           {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-3">
+          <form onSubmit={handleSubmit} className="space-y-3" style={isRecoveryMode === false ? { opacity: .45, pointerEvents: 'none' } : undefined}>
             {/* New Password */}
             <div className="rounded-xl transition-all duration-200 flex items-center"
               style={{

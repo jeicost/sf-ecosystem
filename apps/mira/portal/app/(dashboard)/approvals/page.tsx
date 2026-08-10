@@ -40,6 +40,9 @@ export default function ApprovalsPage() {
   const [filter, setFilter] = useState<FilterTab>('pending')
   const [expanded, setExpanded] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  // Edición antes de aprobar: el botón existía sin handler (auditoría 08-10).
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editText, setEditText] = useState('')
 
   useEffect(() => {
     if (!clientId) {
@@ -76,6 +79,19 @@ export default function ApprovalsPage() {
       .update({ status, reviewed_at: new Date().toISOString() })
       .eq('id', id)
     setItems(prev => prev.map(i => i.id === id ? { ...i, status } : i))
+  }
+
+  // Guarda el copy editado y aprueba en el mismo gesto, con el estado
+  // approved_with_edits que el modelo ya contemplaba.
+  const saveEditAndApprove = async (id: string) => {
+    const copy = editText.trim()
+    if (!copy) return
+    const db = createClient()
+    await db.from('approval_queue')
+      .update({ copy, status: 'approved_with_edits', reviewed_at: new Date().toISOString() })
+      .eq('id', id)
+    setItems(prev => prev.map(i => i.id === id ? { ...i, copy, status: 'approved_with_edits' } : i))
+    setEditingId(null)
   }
 
   const filtered = items.filter(i => {
@@ -220,7 +236,33 @@ export default function ApprovalsPage() {
                         <p className="text-xs text-ink-tertiary mt-2">{item.hashtags.join(' ')}</p>
                       )}
                     </div>
-                    {isPending && (
+                    {isPending && editingId === item.id && (
+                      <div className="mb-3">
+                        <textarea
+                          value={editText}
+                          onChange={(e) => setEditText(e.target.value)}
+                          rows={6}
+                          autoFocus
+                          className="w-full text-sm bg-card border border-line rounded-lg p-3 text-ink leading-relaxed focus:outline-none focus:ring-1 focus:ring-ink-muted resize-y"
+                        />
+                        <div className="flex gap-2 mt-2">
+                          <button
+                            onClick={() => saveEditAndApprove(item.id)}
+                            disabled={!editText.trim()}
+                            className="flex-1 py-2.5 text-xs rounded-lg bg-ink text-page hover:opacity-90 transition-colors font-semibold flex items-center justify-center gap-1.5 disabled:opacity-50"
+                          >
+                            <Check size={13} /> {t('approvals.edit-save', locale)}
+                          </button>
+                          <button
+                            onClick={() => setEditingId(null)}
+                            className="px-4 py-2.5 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors"
+                          >
+                            {t('approvals.edit-cancel', locale)}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    {isPending && editingId !== item.id && (
                       <div className="flex gap-2">
                         <button
                           onClick={() => updateStatus(item.id, 'approved')}
@@ -228,7 +270,10 @@ export default function ApprovalsPage() {
                         >
                           <Check size={13} /> {t('approvals.approve-schedule', locale)}
                         </button>
-                        <button className="flex-1 py-2.5 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors flex items-center justify-center gap-1.5">
+                        <button
+                          onClick={() => { setEditingId(item.id); setEditText(item.copy ?? '') }}
+                          className="flex-1 py-2.5 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors flex items-center justify-center gap-1.5"
+                        >
                           <Edit3 size={13} /> {t('approvals.edit', locale)}
                         </button>
                         <button

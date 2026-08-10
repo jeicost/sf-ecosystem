@@ -24,6 +24,25 @@ export default function LoginPage() {
   const [loading, setLoading]   = useState(false)
   const [focused, setFocused]   = useState<string | null>(null)
   const [showPwd, setShowPwd]   = useState(false)
+  // Recuperación de contraseña: antes solo había un mailto (auditoría 08-10).
+  const [resetSent, setResetSent] = useState(false)
+  const [resetLoading, setResetLoading] = useState(false)
+
+  async function handleForgotPassword() {
+    setError('')
+    if (!email.trim()) {
+      setError('Enter your email above first, then click "Forgot password?"')
+      return
+    }
+    setResetLoading(true)
+    const db = createClient()
+    // No revelamos si la cuenta existe: la respuesta es la misma en ambos casos.
+    await db.auth.resetPasswordForEmail(email.toLowerCase().trim(), {
+      redirectTo: `${window.location.origin}/reset-password`,
+    })
+    setResetLoading(false)
+    setResetSent(true)
+  }
 
   // /login is a public route at the middleware level (proxy.ts never checks
   // auth here), so an already-authenticated session would otherwise just see
@@ -251,12 +270,29 @@ export default function LoginPage() {
             </button>
           </form>
 
-          {/* Forgot password hint */}
+          {/* Forgot password */}
           <p className="text-center text-[11px] mt-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
-            Trouble signing in?{' '}
-            <a href="mailto:hola@startupsfactory.es" className="underline hover:text-ink-secondary transition-colors">
-              Contact support
-            </a>
+            {resetSent ? (
+              <span style={{ color: 'rgba(255,255,255,0.45)' }}>
+                If an account exists for that email, a reset link is on its way. Check your inbox.
+              </span>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleForgotPassword}
+                  disabled={resetLoading}
+                  className="underline hover:text-ink-secondary transition-colors disabled:opacity-50"
+                  style={{ color: 'inherit', background: 'none', border: 'none', cursor: 'pointer', font: 'inherit' }}
+                >
+                  {resetLoading ? 'Sending reset link…' : 'Forgot password?'}
+                </button>
+                {' · '}
+                <a href="mailto:hola@startupsfactory.es" className="underline hover:text-ink-secondary transition-colors">
+                  Contact support
+                </a>
+              </>
+            )}
           </p>
         </div>
 

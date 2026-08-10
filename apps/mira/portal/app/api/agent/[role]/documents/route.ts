@@ -6,9 +6,12 @@ import { userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { role: string } }
+  // Next 16: params llega como Promise — sin el await, role era undefined y la
+  // lista salía siempre vacía (auditoría 2026-08-10).
+  { params }: { params: Promise<{ role: string }> }
 ) {
   try {
+    const { role } = await params
     const searchParams = req.nextUrl.searchParams
     const explicitClientId = searchParams.get('clientId')
 
@@ -49,7 +52,7 @@ export async function GET(
       .from('agent_documents')
       .select('*')
       .eq('client_id', clientId)
-      .eq('agent_role', params.role)
+      .eq('agent_role', role)
       .order('uploaded_at', { ascending: false })
 
     if (error) {

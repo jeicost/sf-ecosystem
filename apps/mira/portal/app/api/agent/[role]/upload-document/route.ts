@@ -33,9 +33,12 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50MB
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { role: string } }
+  // Next 16: params llega como Promise — sin el await, role era undefined y
+  // toda subida daba 400 "Unknown agent role" (auditoría 2026-08-10).
+  { params }: { params: Promise<{ role: string }> }
 ) {
   try {
+    const { role } = await params
     const { searchParams } = new URL(req.url)
     const clientId = searchParams.get('clientId')
     const formData = await req.formData()
@@ -65,7 +68,7 @@ export async function POST(
     }
 
     // Validate agent role exists
-    if (!hasOwnKey(AGENT_METADATA, params.role)) {
+    if (!hasOwnKey(AGENT_METADATA, role)) {
       return NextResponse.json(
         { error: 'Unknown agent role' },
         { status: 400 }
@@ -116,7 +119,7 @@ export async function POST(
     }
 
     // Upload file to Supabase Storage
-    const uploadResult = await uploadFileToStorage(clientId, params.role, file)
+    const uploadResult = await uploadFileToStorage(clientId, role, file)
     if (!uploadResult.success) {
       return NextResponse.json(
         { error: uploadResult.error || 'Upload failed' },
@@ -172,7 +175,7 @@ export async function POST(
       .from('agent_documents')
       .insert({
         client_id: clientId,
-        agent_role: params.role,
+        agent_role: role,
         document_type: docType,
         title: file.name,
         description: '',

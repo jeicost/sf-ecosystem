@@ -99,11 +99,13 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       setError(null)
       try {
         const resolvedParams = await params
-        const { data, error: fetchError } = await supabase
-          .from('mira_projects')
-          .select('*')
-          .eq('slug', resolvedParams.slug)
-          .single()
+        // Filtro de cliente EXPLÍCITO: buscar solo por slug delegaba el
+        // aislamiento por completo a RLS (auditoría 2026-08-10). Con el
+        // cliente activo resuelto, se acota; sin él (carga inicial), la
+        // consulta espera a la siguiente pasada del efecto.
+        let query = supabase.from('mira_projects').select('*').eq('slug', resolvedParams.slug)
+        if (activeClient?.id) query = query.eq('client_id', activeClient.id)
+        const { data, error: fetchError } = await query.single()
         if (fetchError) throw fetchError
         setProject(data)
 
@@ -124,7 +126,7 @@ export default function ProjectPage({ params }: { params: Promise<{ slug: string
       }
     }
     fetchProject()
-  }, [params, supabase])
+  }, [params, supabase, activeClient?.id])
 
   // Entregables del proyecto. La ruta puede no existir aún en dev (404) —
   // en ese caso se muestra el empty state sin error.

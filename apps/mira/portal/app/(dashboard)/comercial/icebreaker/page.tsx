@@ -78,7 +78,9 @@ export default function IcebreakerPage() {
       const res = await fetch('/api/agent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: 'icebreaker-writer', message, includeBrandBrain: true, locale }),
+        // clientId explícito: sin él, la API caía al cliente del metadata del
+        // usuario — con usuarios multi-marca, Brain equivocado (auditoría 08-10).
+        body: JSON.stringify({ role: 'icebreaker-writer', message, includeBrandBrain: true, locale, clientId }),
       })
       if (!res.ok || !res.body) throw new Error('Error')
       const reader = res.body.getReader()

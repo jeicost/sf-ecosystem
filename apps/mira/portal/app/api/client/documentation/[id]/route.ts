@@ -2,9 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
-export async function DELETE(req: NextRequest, { params }: any) {
+// Next 16: params llega como Promise — el `any` de antes escondía el error de
+// tipos y `params.id` era undefined → 404 en todo borrado (auditoría 2026-08-10).
+export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const id = params.id
+    const { id } = await params
 
     const user = await getSessionUser()
     if (!user) {

@@ -69,7 +69,9 @@ useEffect(() => {
 
     const channel = db.channel('sidebar-approvals')
       .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'approvals', filter: `client_id=eq.${clientId}` },
+        // La tabla real es approval_queue — el canal escuchaba una tabla
+        // inexistente ("approvals") y el badge solo cambiaba al recargar.
+        { event: '*', schema: 'public', table: 'approval_queue', filter: `client_id=eq.${clientId}` },
         () => {
           db.from('approval_queue').select('id', { count: 'exact', head: true })
             .eq('client_id', clientId).eq('status', 'pending_review')
