@@ -13,16 +13,18 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import type { AgentStatus } from '@/lib/agent-meta'
 
-const MARKETING_META = [
-  { produces: 'Brief & task queue' },
-  { produces: 'Content briefs' },
-  { produces: 'Copy & captions' },
-  { produces: 'Visual briefs' },
-  { produces: 'Video scripts' },
-  { produces: 'Published posts' },
-  { produces: 'Campaign briefs' },
-  { produces: 'Community replies' },
-]
+// Por ID de agente, no por índice: la lista posicional conservaba la entrada
+// del orchestrator (retirado) y desplazaba TODAS las etiquetas una posición —
+// el copywriter decía producir "Content briefs" (auditoría 08-10).
+const MARKETING_META: Record<string, { produces: string }> = {
+  'content-strategist':   { produces: 'Content briefs' },
+  'copywriter':           { produces: 'Copy & captions' },
+  'social-media-manager': { produces: 'Published posts' },
+  'designer':             { produces: 'Visual briefs' },
+  'video-editor':         { produces: 'Video scripts' },
+  'ads-manager':          { produces: 'Campaign briefs' },
+  'community-manager':    { produces: 'Community replies' },
+}
 
 const PIPELINE_STEPS = MARKETING_DEPT_AGENTS.map(a => ({
   name: a.name,
@@ -69,7 +71,7 @@ export default function RosterPage() {
         agents={MARKETING_DEPT_AGENTS}
         agentStatuses={agentStatuses}
         metaByAgentId={Object.fromEntries(
-          MARKETING_DEPT_AGENTS.map((agent, i) => [agent.id, { produces: MARKETING_META[i]?.produces }])
+          MARKETING_DEPT_AGENTS.map((agent) => [agent.id, { produces: MARKETING_META[agent.id]?.produces }])
         )}
       />
 

@@ -20,6 +20,8 @@ export interface UseAgentChatOptions {
   clientId: string
   projectId?: string | null
   autonomy?: 'always_ask' | 'full_auto'
+  /** 0 = casual, 1 = formal — el slider de la ficha del agente. */
+  toneLevel?: number
   locale?: 'es' | 'en'
   // Nombre a usar en el feedback 👍/👎 (agent_interactions.agent_name) — solo
   // necesario para roles que no viven en AGENT_METADATA (p.ej. el chat de
@@ -28,7 +30,7 @@ export interface UseAgentChatOptions {
   agentDisplayName?: string
 }
 
-export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es', agentDisplayName }: UseAgentChatOptions) {
+export function useAgentChat({ role, clientId, projectId, autonomy, toneLevel, locale = 'es', agentDisplayName }: UseAgentChatOptions) {
   const [messages, setMessages] = useState<AgentMessage[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -61,6 +63,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
           projectId: projectId || undefined,
           includeBrandBrain: true,
           autonomy,
+          toneLevel,
           locale,
           attachments,
         }),
@@ -125,7 +128,7 @@ export function useAgentChat({ role, clientId, projectId, autonomy, locale = 'es
     } finally {
       setIsLoading(false)
     }
-  }, [role, clientId, autonomy, projectId, locale, messages])
+  }, [role, clientId, autonomy, toneLevel, projectId, locale, messages])
 
   const cancel = useCallback(() => {
     abortControllerRef.current?.abort()

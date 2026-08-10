@@ -45,10 +45,11 @@ export default function FinanzasPage() {
 
       <StatRow
         items={[
+          // KPIs REALES: revenue/margin/audits eran claves que la API nunca
+          // devolvía — "Monthly revenue: 0" permanente (auditoría 08-10).
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.monthly-revenue', locale), value: String(stats.revenue ?? 0) },
-          { label: t('stat.profit-margin', locale), value: String(stats.margin ?? 0) },
-          { label: t('stat.audit-status', locale), value: String(stats.audits ?? 0) },
+          { label: t('stat.tasks-completed', locale), value: String(stats.tasks ?? 0) },
+          { label: t('stat.leads', locale), value: String(stats.leads ?? 0) },
         ]}
       />
 

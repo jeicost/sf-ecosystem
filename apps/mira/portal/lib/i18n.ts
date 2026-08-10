@@ -352,6 +352,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'stat.monthly-revenue': 'Ingresos mensuales',
     'stat.profit-margin': 'Margen de ganancia',
     'stat.audit-status': 'Estado de auditoría',
+    'stat.tasks-completed': 'Tareas completadas',
+    'stat.crm-contacts': 'Contactos en CRM',
 
     // BUTTONS
     'btn.generate': 'Generar',
@@ -2236,6 +2238,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'stat.monthly-revenue': 'Monthly revenue',
     'stat.profit-margin': 'Profit margin',
     'stat.audit-status': 'Audit status',
+    'stat.tasks-completed': 'Tasks completed',
+    'stat.crm-contacts': 'CRM contacts',
 
     // BUTTONS
     'btn.generate': 'Generate',

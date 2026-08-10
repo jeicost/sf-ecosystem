@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'MIRA — AI Agency Platform',
-  description: '30 AI agents + Quick Actions framework to scale your business.',
+  description: 'Your AI marketing team + Quick Actions framework to scale your business.',
   icons: { icon: '/favicon.svg' },
 }
 

@@ -65,7 +65,7 @@ const MAX_TOKENS: Record<string, number> = {
 
 export async function POST(req: NextRequest) {
   try {
-    const { role, message, history, clientId, projectId, includeBrandBrain = true, autonomy, locale = 'es', attachments } = await req.json()
+    const { role, message, history, clientId, projectId, includeBrandBrain = true, autonomy, toneLevel, locale = 'es', attachments } = await req.json()
 
     if (!role || !message) {
       return new Response(JSON.stringify({ error: 'role and message are required' }), {
@@ -179,8 +179,20 @@ export async function POST(req: NextRequest) {
       ? '\n\nAutonomy level: ALWAYS ASK. Before proposing any concrete action, ask the user for explicit confirmation.'
       : ''
 
+    // Tono elegido en la ficha del agente (0 = casual, 1 = formal). Se
+    // guardaba en agent_settings y NUNCA llegaba aquí: el slider era
+    // decorativo (auditoría 08-10). Los valores medios no añaden instrucción:
+    // el tono lo marca el Brand Brain.
+    const toneCtx = typeof toneLevel === 'number'
+      ? toneLevel >= 0.75
+        ? '\n\nTone setting: FORMAL. The user dialed this agent toward formal — professional register, no slang, measured phrasing (within the brand voice).'
+        : toneLevel <= 0.25
+        ? '\n\nTone setting: CASUAL. The user dialed this agent toward casual — relaxed, conversational register (within the brand voice).'
+        : ''
+      : ''
+
     // Enriquecer con Brand Brain + project_memory + agent documents si aplica
-    const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + projectCtx + feedbackCtx
+    const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + toneCtx + projectCtx + feedbackCtx
     let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE + CHAT_OPTIONS_CONTRACT
 
     const memoryContext = await getClientMemoryContext(resolvedClientId, projectId ?? null)

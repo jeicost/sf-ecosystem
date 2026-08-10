@@ -194,7 +194,7 @@ export default function AgentPage() {
     )
   }
 
-  const { messages, isLoading, error, sendMessage, sendFeedback, cancel } = useAgentChat({ role, clientId, projectId, autonomy, locale })
+  const { messages, isLoading, error, sendMessage, sendFeedback, cancel } = useAgentChat({ role, clientId, projectId, autonomy, toneLevel, locale })
   const systemPrompt = getAgentPrompt(role, locale)
 
   const handleCopyPrompt = () => {

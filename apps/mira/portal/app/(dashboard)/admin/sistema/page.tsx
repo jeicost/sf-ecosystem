@@ -6,7 +6,7 @@ import StatRow from '@/components/ui/StatRow'
 import Card from '@/components/ui/Card'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import { useDepartmentStats } from '@/lib/use-department-stats'
+import { useEffect, useState } from 'react'
 import {
   MARKETING_DEPT_AGENTS,
   COMERCIAL_DEPT_AGENTS,
@@ -24,35 +24,34 @@ const TOTAL_AGENTS =
 
 const TOTAL_DEPARTMENTS = 5
 
-const AGENT_STATUS = [
-  { emoji: '🎬', name: 'Marco', status: 'idle' },
-  { emoji: '🔍', name: 'Luna', status: 'working' },
-  { emoji: '✍️', name: 'Alex', status: 'idle' },
-  { emoji: '🎨', name: 'Zoe', status: 'idle' },
-  { emoji: '🎞️', name: 'Kai', status: 'idle' },
-  { emoji: '📅', name: 'Noa', status: 'waiting' },
-  { emoji: '📣', name: 'Riva', status: 'working' },
-  { emoji: '💬', name: 'Sam', status: 'idle' },
-  { emoji: '🔍', name: 'Rex', status: 'working' },
-  { emoji: '🎯', name: 'Vera', status: 'idle' },
-  { emoji: '✍️', name: 'Finn', status: 'idle' },
+// El roster REAL desde los metadatos — antes había 11 agentes con estados
+// working/idle/waiting inventados (auditoría 08-10). Sin telemetría en vivo,
+// no se pinta estado: solo el equipo desplegado.
+const ALL_AGENTS = [
+  ...MARKETING_DEPT_AGENTS,
+  ...COMERCIAL_DEPT_AGENTS,
+  ...STRATEGY_DEPT_AGENTS,
+  ...OPERACIONES_DEPT_AGENTS,
+  ...FINANZAS_DEPT_AGENTS,
 ]
-
-const STATUS_COLORS: Record<string, string> = {
-  idle: 'var(--text-muted)',
-  working: '#22C55E',
-  waiting: '#F59E0B',
-}
 
 export default function Page() {
   const { locale } = useLocaleContext()
-  const { stats } = useDepartmentStats('operations')
+  // Clientes REALES desde el overview de agencia — la clave stats.clients no
+  // existía en department-stats y el tile decía 0; el uptime 99.2% era un
+  // literal inventado (auditoría 08-10).
+  const [clientCount, setClientCount] = useState<number | null>(null)
+  useEffect(() => {
+    fetch('/api/admin/overview')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => setClientCount(typeof d?.clients === 'number' ? d.clients : null))
+      .catch(() => setClientCount(null))
+  }, [])
 
   const SYSTEM_METRICS = [
     { label: 'admin.system.total-agents', value: String(TOTAL_AGENTS), delta: 'Across all depts' },
     { label: 'admin.system.total-depts', value: String(TOTAL_DEPARTMENTS), delta: 'Active teams' },
-    { label: 'admin.system.clients-connected', value: String(stats.clients ?? 0), delta: 'Using MIRA' },
-    { label: 'admin.system.uptime', value: '99.2%', delta: 'Last 30 days' },
+    { label: 'admin.system.clients-connected', value: clientCount === null ? '—' : String(clientCount), delta: 'Using MIRA' },
   ]
 
   return (
@@ -79,17 +78,13 @@ export default function Page() {
           {t('admin.system.agent-status', locale)}
         </p>
         <div className="flex flex-wrap gap-2">
-          {AGENT_STATUS.map((a) => (
+          {ALL_AGENTS.map((a) => (
             <div
-              key={a.name}
+              key={a.id}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-surface border border-line"
             >
               <span className="text-sm leading-none">{a.emoji}</span>
               <span className="text-[11px] text-ink">{a.name}</span>
-              <div
-                className={`w-1.5 h-1.5 rounded-full ${a.status === 'working' ? 'animate-pulse' : ''}`}
-                style={{ background: STATUS_COLORS[a.status] }}
-              />
             </div>
           ))}
         </div>

@@ -1,8 +1,10 @@
 import { createServiceClient } from '@/lib/supabase-admin'
-import { STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
+import { FINANZAS_DEPT_AGENTS, OPERACIONES_DEPT_AGENTS, STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
 
 const STRATEGY_AGENT_IDS = STRATEGY_DEPT_AGENTS.map((a) => a.id)
+const FINANZAS_AGENT_IDS = FINANZAS_DEPT_AGENTS.map((a) => a.id)
+const OPERACIONES_AGENT_IDS = OPERACIONES_DEPT_AGENTS.map((a) => a.id)
 
 export interface DepartmentStats {
   leads?: number
@@ -12,6 +14,7 @@ export interface DepartmentStats {
   plans?: number
   ideas?: number
   contacts?: number
+  tasks?: number
   pendingApprovals?: number
   openAlerts?: number
 }
@@ -36,6 +39,8 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
     contacts,
     plans,
     ideas,
+    finanzasTasks,
+    operacionesTasks,
   ] = await Promise.all([
     // Marketing's real "needs attention" numbers -- the roster used to label
     // the CRM contacts count as "In approval" and hardcode alerts to 0.
@@ -116,14 +121,36 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
         .eq('client_id', clientId).eq('agent_role', 'spark').eq('status', 'completed')
       return count || 0
     })().catch((e) => { console.error('Error fetching ideas:', e); return 0 }),
+
+    // Finanzas y Operaciones medían con claves que nunca se devolvían
+    // (revenue/margin/invoices…): sus hubs enseñaban 0 permanente. MIRA no
+    // conoce los ingresos del cliente — lo que SÍ es real es el trabajo de
+    // sus agentes, con el mismo patrón que strategy.
+    (async () => {
+      const { count } = await db.from('agent_activity')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).in('agent_role', FINANZAS_AGENT_IDS).eq('status', 'completed')
+      return count || 0
+    })().catch((e) => { console.error('Error fetching finanzas tasks:', e); return 0 }),
+
+    (async () => {
+      const { count } = await db.from('agent_activity')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId).in('agent_role', OPERACIONES_AGENT_IDS).eq('status', 'completed')
+      return count || 0
+    })().catch((e) => { console.error('Error fetching operaciones tasks:', e); return 0 }),
   ])
 
+  const operacionesStats = { contacts, tasks: operacionesTasks }
   return {
     comercial: { leads, hotLeads, proposals },
     marketing: { posts, pendingApprovals, openAlerts },
     strategy: { plans, ideas },
-    operaciones: { contacts },
-    finanzas: { leads },
+    // Bajo las DOS claves: la página pide 'operations' y los metadatos de
+    // agente dicen 'operaciones' — el desajuste dejaba el hub a cero.
+    operaciones: operacionesStats,
+    operations: operacionesStats,
+    finanzas: { tasks: finanzasTasks, leads },
   }
 }
 

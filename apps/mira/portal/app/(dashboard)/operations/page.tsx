@@ -48,10 +48,11 @@ export default function AdminPage() {
 
       <StatRow
         items={[
+          // KPIs REALES: invoices/alerts/onboarded eran claves que la API
+          // nunca devolvía (auditoría 08-10).
           { label: t('stat.active-agents', locale), value: String(agentCount) },
-          { label: t('stat.pending-invoices', locale), value: String(stats.invoices ?? 0) },
-          { label: t('stat.system-alerts', locale), value: String(stats.alerts ?? 0) },
-          { label: t('stat.onboarding', locale), value: String(stats.onboarded ?? 0) },
+          { label: t('stat.crm-contacts', locale), value: String(stats.contacts ?? 0) },
+          { label: t('stat.tasks-completed', locale), value: String(stats.tasks ?? 0) },
         ]}
       />
 

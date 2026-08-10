@@ -109,7 +109,7 @@ const STEPS: Step[] = [
       { emoji: '🎓', name: 'Onboard', role: 'Processes & Training' },
     ],
     quickWinKey: 'onboarding.dept.admin.quickwin',
-    cta: { labelKey: 'onboarding.dept.admin.cta', href: '/operations/system' },
+    cta: { labelKey: 'onboarding.dept.admin.cta', href: '/operations' },
   },
   {
     id: 'finanzas', type: 'dept', color: '#F59E0B', icon: '💰',

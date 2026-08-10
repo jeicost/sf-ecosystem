@@ -111,7 +111,7 @@ export default function ResetPasswordPage() {
           <p className="mt-3 text-center max-w-[280px] leading-relaxed"
             style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
             Your team of{' '}
-            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>30 AI agents</span>{' '}
+            <span style={{ color: 'var(--text-primary)', fontWeight: 600 }}>AI agents</span>{' '}
             working 24/7 to grow your business.
           </p>
         </div>
