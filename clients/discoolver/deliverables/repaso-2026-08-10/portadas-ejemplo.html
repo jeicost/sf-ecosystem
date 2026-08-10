@@ -1,0 +1,74 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body { background: #17131c; color: #fff; font-family: "Space Grotesk", sans-serif; width: 1560px; padding: 52px 56px 64px; }
+  h1 { font-weight: 700; font-size: 34px; letter-spacing: -.02em; margin-bottom: 6px; }
+  .sub { color: #a99db3; font-size: 15px; max-width: 90ch; line-height: 1.5; }
+  .note { font-family: "Roboto Mono", monospace; font-size: 12px; color: #d9a75e; margin-top: 10px; }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px 30px; margin-top: 40px; }
+  .slot { display: flex; flex-direction: column; gap: 12px; }
+  .id { font-family: "Roboto Mono", monospace; font-size: 12px; letter-spacing: .12em; color: #c8a0e8; }
+
+  .book { aspect-ratio: 707/1000; border-radius: 3px 12px 12px 3px; overflow: hidden; position: relative;
+          box-shadow: -14px 22px 40px rgba(0,0,0,.5), inset 12px 0 18px -12px rgba(0,0,0,.45); }
+  .gloss { position: absolute; inset: 0; pointer-events: none;
+           background: linear-gradient(105deg, rgba(255,255,255,.13) 0%, transparent 26%),
+                       linear-gradient(to right, rgba(0,0,0,.24), transparent 10%); }
+  .cover { position: absolute; inset: 0; display: flex; flex-direction: column;
+           justify-content: space-between; padding: 8% 9%; container-type: inline-size; }
+  .brand { font-weight: 700; letter-spacing: -.04em; line-height: 1; font-size: 12.5cqi; }
+  .brand em { font-style: normal; }
+  .chip { display: inline-block; align-self: flex-start; margin-top: 10%;
+          font-family: "Roboto Mono", monospace; font-size: 3.2cqi; letter-spacing: .14em;
+          text-transform: uppercase; padding: .5em .9em; }
+  .city { font-weight: 700; text-transform: uppercase; letter-spacing: -.03em; line-height: .84;
+          font-size: 26cqi; display: flex; flex-direction: column; }
+  .foot { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; }
+  .autor { font-weight: 600; text-transform: uppercase; letter-spacing: .06em; font-size: 4.6cqi; max-width: 72%; }
+  .mark { font-family: "Roboto Mono", monospace; font-size: 4.2cqi; }
+</style></head>
+<body>
+  <h1>Portadas de ejemplo — para tu OK</h1>
+  <p class="sub">Réplica exacta de la portada tipográfica de la web (mismo layout, misma tipografía, mismas paletas de la colección).
+     Ciudades reales del catálogo, <strong>firmas ficticias</strong> con aspecto de creador real — para enseñar la oportunidad en la web
+     y en el pitch a influencers mientras se firman los contratos. Cuando cada creador firme, su nombre real sustituye al de ejemplo.</p>
+  <p class="note">⚠ Los nombres son inventados a propósito. Antes de meterles publicidad, dales un vistazo por si alguno coincidiera con una cuenta real — es la única línea que no cruzamos.</p>
+
+  <div class="grid" id="grid"></div>
+
+<script>
+const COVERS = [
+  { id: "A", city: "MADRID",    autor: "según Callejeando con Vera", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" },
+  { id: "B", city: "MADRID",    autor: "según La Otra Gran Vía",     bg: "#141414", ink: "#f2f0ea", accent: "#c9ff3f" },
+  { id: "C", city: "BARCELONA", autor: "según El Mapa de Lía",       bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" },
+  { id: "D", city: "BARCELONA", autor: "según Barrio a Barrio",      bg: "#f4b47a", ink: "#141414", accent: "#c8006b" },
+  { id: "E", city: "RONDA",     autor: "según Ronda a Pie",          bg: "#c47f3e", ink: "#141414", accent: "#f2f0ea" },
+  { id: "F", city: "IBIZA",     autor: "según Sal y Sombra",         bg: "#f2f0ea", ink: "#141414", accent: "#c8006b" },
+  { id: "G", city: "MÁLAGA",    autor: "según La Málaga de Hugo",    bg: "#c9ff3f", ink: "#141414", accent: "#c8006b" },
+  { id: "H", city: "BANGKOK",   autor: "según Km. Cero Bangkok",     bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a" },
+];
+function splitCity(c){ if(c.includes(" ")) return c.split(/\s+/); if(c.length<=5) return [c];
+  const cut=Math.ceil(c.length/2); return [c.slice(0,cut), c.slice(cut)]; }
+document.getElementById("grid").innerHTML = COVERS.map(c => `
+  <div class="slot">
+    <span class="id">PORTADA ${c.id} · ${c.city}</span>
+    <div class="book">
+      <div class="cover" style="background:${c.bg};color:${c.ink}">
+        <div>
+          <p class="brand">dis<em style="color:${c.accent}">cool</em>ver</p>
+          <p class="chip" style="background:${c.accent};color:${c.bg}">Guía discoolver · 2026</p>
+        </div>
+        <p class="city">${splitCity(c.city).map(l=>`<span>${l}</span>`).join("")}</p>
+        <div class="foot">
+          <span class="autor">${c.autor}</span>
+          <span class="mark">2◗26</span>
+        </div>
+      </div>
+      <span class="gloss"></span>
+    </div>
+  </div>`).join("");
+</script>
+</body></html>

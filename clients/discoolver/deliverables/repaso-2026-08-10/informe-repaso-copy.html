@@ -1,0 +1,633 @@
+<title>Discoolver — repaso de copy y funnel</title>
+<style>
+  :root {
+    --paper:      #faf7fa;
+    --paper-2:    #f2edf2;
+    --card:       #ffffff;
+    --ink:        #17121c;
+    --ink-2:      #4a4252;
+    --ink-3:      #746b7d;
+    --rule:       #e3dbe4;
+    --rule-2:     #cfc4d1;
+    --brand:      #c4009a;
+    --critical:   #c62348;
+    --critical-bg:#fdeef1;
+    --alto:       #a8630d;
+    --alto-bg:    #fcf3e6;
+    --medio:      #5f6472;
+    --medio-bg:   #eff0f3;
+    --verified:   #0a6f7d;
+    --verified-bg:#e6f4f6;
+
+    --serif: ui-serif, "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper:      #131018;
+      --paper-2:    #1b1622;
+      --card:       #1c1724;
+      --ink:        #f2ecf3;
+      --ink-2:      #bdb2c3;
+      --ink-3:      #8c8195;
+      --rule:       #2e2739;
+      --rule-2:     #443b50;
+      --brand:      #ff4fd8;
+      --critical:   #ff7591;
+      --critical-bg:#38131f;
+      --alto:       #e0a55a;
+      --alto-bg:    #33240f;
+      --medio:      #a2a8b8;
+      --medio-bg:   #23202b;
+      --verified:   #5ecfdd;
+      --verified-bg:#0e2c31;
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper:#131018; --paper-2:#1b1622; --card:#1c1724;
+    --ink:#f2ecf3; --ink-2:#bdb2c3; --ink-3:#8c8195;
+    --rule:#2e2739; --rule-2:#443b50; --brand:#ff4fd8;
+    --critical:#ff7591; --critical-bg:#38131f;
+    --alto:#e0a55a; --alto-bg:#33240f;
+    --medio:#a2a8b8; --medio-bg:#23202b;
+    --verified:#5ecfdd; --verified-bg:#0e2c31;
+  }
+  :root[data-theme="light"] {
+    --paper:#faf7fa; --paper-2:#f2edf2; --card:#ffffff;
+    --ink:#17121c; --ink-2:#4a4252; --ink-3:#746b7d;
+    --rule:#e3dbe4; --rule-2:#cfc4d1; --brand:#c4009a;
+    --critical:#c62348; --critical-bg:#fdeef1;
+    --alto:#a8630d; --alto-bg:#fcf3e6;
+    --medio:#5f6472; --medio-bg:#eff0f3;
+    --verified:#0a6f7d; --verified-bg:#e6f4f6;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16.5px; line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- cabecera ---------- */
+  header.top { border-bottom: 2px solid var(--ink); padding: 56px 0 26px; margin-bottom: 8px; }
+  .eyebrow {
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .16em;
+    text-transform: uppercase; color: var(--brand); margin: 0 0 18px;
+  }
+  h1 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(34px, 6vw, 52px);
+    line-height: 1.05; letter-spacing: -.015em; margin: 0 0 18px; text-wrap: balance;
+  }
+  .standfirst { font-size: 19px; line-height: 1.55; color: var(--ink-2); margin: 0; max-width: 60ch; }
+  .meta {
+    font-family: var(--mono); font-size: 12px; color: var(--ink-3);
+    margin-top: 26px; display: flex; flex-wrap: wrap; gap: 8px 20px;
+  }
+
+  /* ---------- tira de cifras ---------- */
+  .tally { display: grid; grid-template-columns: repeat(auto-fit, minmax(128px,1fr)); gap: 1px;
+           background: var(--rule); border: 1px solid var(--rule); margin: 38px 0 8px; }
+  .tally div { background: var(--card); padding: 16px 18px; }
+  .tally .n { font-family: var(--serif); font-size: 30px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .tally .l { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+              color: var(--ink-3); margin-top: 8px; display: block; line-height: 1.4; }
+  .tally .crit .n { color: var(--critical); }
+
+  /* ---------- secciones ---------- */
+  section { padding: 52px 0 8px; }
+  section + section { border-top: 1px solid var(--rule); }
+  h2 {
+    font-family: var(--serif); font-weight: 600; font-size: clamp(25px, 3.6vw, 33px);
+    line-height: 1.15; letter-spacing: -.01em; margin: 0 0 10px; text-wrap: balance;
+  }
+  .sec-num { font-family: var(--mono); font-size: 11.5px; letter-spacing: .16em;
+             color: var(--brand); text-transform: uppercase; display: block; margin-bottom: 12px; }
+  .lede { font-size: 17.5px; color: var(--ink-2); margin: 0 0 30px; max-width: 62ch; }
+  p { margin: 0 0 16px; max-width: 68ch; }
+  h3 { font-family: var(--sans); font-weight: 660; font-size: 17px; margin: 30px 0 10px; line-height: 1.35; }
+  a { color: var(--brand); }
+
+  /* ---------- hallazgos ---------- */
+  .find { border: 1px solid var(--rule); border-left: 4px solid var(--medio);
+          background: var(--card); padding: 20px 22px; margin: 0 0 16px; }
+  .find.c { border-left-color: var(--critical); }
+  .find.a { border-left-color: var(--alto); }
+  .find h4 { font-family: var(--sans); font-weight: 660; font-size: 17px; margin: 0 0 10px; line-height: 1.35; }
+  .find p:last-child { margin-bottom: 0; }
+  .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 11px; }
+  .pill { font-family: var(--mono); font-size: 10px; letter-spacing: .09em; text-transform: uppercase;
+          padding: 3px 8px; border-radius: 2px; font-weight: 700; white-space: nowrap; }
+  .p-c { background: var(--critical-bg); color: var(--critical); }
+  .p-a { background: var(--alto-bg); color: var(--alto); }
+  .p-m { background: var(--medio-bg); color: var(--medio); }
+  .p-v { background: var(--verified-bg); color: var(--verified); }
+  .p-w { background: transparent; color: var(--ink-3); border: 1px solid var(--rule-2); font-weight: 500; }
+
+  /* ---------- citas de copy ---------- */
+  blockquote {
+    font-family: var(--mono); font-size: 13.5px; line-height: 1.6;
+    background: var(--paper-2); border-left: 2px solid var(--rule-2);
+    margin: 14px 0; padding: 13px 16px; color: var(--ink-2);
+    overflow-x: auto;
+  }
+  blockquote strong { color: var(--critical); font-weight: 700; }
+  .fix { border-left-color: var(--verified); }
+  .fix strong { color: var(--verified); }
+  code { font-family: var(--mono); font-size: .87em; background: var(--paper-2);
+         padding: 1px 5px; border-radius: 2px; }
+
+  /* ---------- tablas ---------- */
+  .scroll { overflow-x: auto; margin: 22px 0; border: 1px solid var(--rule); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; min-width: 520px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase;
+       color: var(--ink-3); font-weight: 600; background: var(--paper-2); }
+  tr:last-child td { border-bottom: 0; }
+  td.num { font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .q { font-family: var(--mono); font-size: 12.5px; color: var(--ink-2); }
+
+  /* ---------- destacado ---------- */
+  .flag { background: var(--critical-bg); border: 1px solid var(--critical);
+          padding: 22px 24px; margin: 26px 0; }
+  .flag h3 { margin-top: 0; color: var(--critical); }
+  .flag p:last-child { margin-bottom: 0; }
+
+  ol, ul { max-width: 68ch; padding-left: 22px; margin: 0 0 18px; }
+  li { margin-bottom: 9px; }
+  ol.plan { list-style: none; padding: 0; counter-reset: s; }
+  ol.plan > li {
+    counter-increment: s; border-top: 1px solid var(--rule);
+    padding: 20px 0 4px 52px; position: relative; margin: 0;
+  }
+  ol.plan > li::before {
+    content: counter(s); position: absolute; left: 0; top: 20px;
+    font-family: var(--serif); font-size: 27px; line-height: 1; color: var(--brand);
+    font-variant-numeric: tabular-nums;
+  }
+  ol.plan h3 { margin: 0 0 8px; }
+
+  footer { border-top: 2px solid var(--ink); margin-top: 60px; padding: 30px 0 70px;
+           font-size: 14.5px; color: var(--ink-3); }
+  footer p { max-width: 68ch; }
+  @media (max-width: 560px) { body { font-size: 16px; } .wrap { padding: 0 18px; } }
+</style>
+
+<div class="wrap">
+
+<header class="top">
+  <p class="eyebrow">Repaso de negocio y funnel · 10 de agosto de 2026</p>
+  <h1>Cinco webs, cuatro empresas distintas y un lanzamiento en tres semanas</h1>
+  <p class="standfirst">
+    Auditoría de copy de todas las superficies públicas de Discoolver, leídas como funnel de venta
+    y contrastadas contra la base de datos de producción. No es una corrección de estilo: casi todo
+    lo grave que aparece es una promesa que el producto no puede cumplir el 1 de septiembre.
+  </p>
+  <p class="meta">
+    <span>11 páginas · 5 superficies</span>
+    <span>6 auditorías en paralelo</span>
+    <span>Hallazgos críticos verificados en vivo, uno a uno</span>
+  </p>
+</header>
+
+<div class="tally">
+  <div class="crit"><span class="n">7</span><span class="l">Bloqueantes<br>verificados</span></div>
+  <div><span class="n">15</span><span class="l">Contradicciones<br>entre webs</span></div>
+  <div class="crit"><span class="n">9</span><span class="l">Ciudades vendidas<br>con 0 fichas</span></div>
+  <div><span class="n">10</span><span class="l">Campos que publican<br>notas internas</span></div>
+  <div><span class="n">3</span><span class="l">Landings captando<br>al mismo creador</span></div>
+</div>
+
+<section>
+  <span class="sec-num">01 — El veredicto</span>
+  <h2>El problema no es cómo está escrito. Es lo que promete.</h2>
+  <p class="lede">
+    El copy de Discoolver está, en general, bien escrito: honesto, con voz, sin la palabrería
+    habitual del sector. El problema está una capa más abajo.
+  </p>
+  <p>
+    <strong>Uno.</strong> Las cuatro superficies no parecen la misma empresa. Comparten logo y poco
+    más: cuatro emails de contacto distintos, tres promesas de tiempo de respuesta, dos modelos de
+    negocio incompatibles para la misma IA, y ningún enlace que lleve de una a otra. Quien entra por
+    una no puede saber que existen las otras tres.
+  </p>
+  <p>
+    <strong>Dos.</strong> La limpieza de agosto —fuera cifras inventadas, fuera testimonios falsos—
+    se hizo en la web de guías y a medias en la de creators. La landing de la app se quedó fuera del
+    barrido y hoy sirve, en producción e indexable, el inventario completo de lo prohibido.
+  </p>
+  <p>
+    <strong>Tres, y es el que cambia decisiones de producto y no de copy:</strong> la contradicción
+    entre "curación sin rankings de pago" y "vendemos visibilidad a negocios locales" no está
+    anticipada en ninguna superficie, y la respuesta que teníamos preparada no se sostiene. No por
+    cómo esté redactada: por cómo está montada la base de datos.
+  </p>
+</section>
+
+<section>
+  <span class="sec-num">02 — Publicado ahora mismo</span>
+  <h2>Lo que cualquiera puede abrir hoy</h2>
+  <p class="lede">
+    Todo lo de esta sección lo he comprobado sobre el HTML que sirven los dominios en vivo, no sobre
+    el código. Es lo único del informe que no admite discusión.
+  </p>
+
+  <div class="find c">
+    <div class="tags">
+      <span class="pill p-c">Bloqueante</span>
+      <span class="pill p-v">Verificado en vivo</span>
+      <span class="pill p-w">creators-landing</span>
+    </div>
+    <h4>La cifra del reparto con creadores está publicada, en dos sitios</h4>
+    <p>
+      Es la regla más explícita que hay: ninguna cifra del reparto, ni porcentajes, ni fracciones,
+      ni importes. Se eliminó de cinco superficies en agosto. Esta seguía sirviéndola:
+    </p>
+    <blockquote>03 La vendes y cobras · Digital y papel, a tu audiencia.<br>Te llevas el <strong>50% de cada venta</strong> desde tus canales…</blockquote>
+    <blockquote>¿Cuánto y cuándo cobro? · Con guía propia: el <strong>50%</strong> de cada venta que salga de tus canales…</blockquote>
+    <p>
+      Lo revelador es que en <em>esa misma pantalla</em>, el hero y el selector de tracks ya dicen
+      "te llevas <em>parte</em> de cada venta". Conviven la versión limpia y la vieja.
+    </p>
+    <p>
+      <strong>El mecanismo, cerrado por la auditoría a fondo:</strong> no es un CMS a medio sembrar.
+      Plantilla, CMS e <code>index.html</code> del repo están sincronizados byte a byte (mismo MD5) y
+      limpios — la limpieza del 6 de agosto tocó exactamente las 2 líneas del 50%. Lo que está roto
+      es el <strong>despliegue</strong>: Vercel lleva sirviendo un build anterior al día 6, y nada lo
+      delata porque <code>updated_at</code> está congelado en el CMS y el build está diseñado para no
+      fallar nunca. <strong>El arreglo es un redeploy y nada más.</strong>
+    </p>
+    <p>
+      <span class="pill p-v" style="margin-right:6px">Decisión</span> Redeploy inmediato y
+      verificación en vivo de que el 50% desaparece del texto.
+    </p>
+  </div>
+
+  <div class="find c">
+    <div class="tags">
+      <span class="pill p-c">Bloqueante</span>
+      <span class="pill p-v">Verificado en vivo</span>
+      <span class="pill p-w">app-landing</span>
+    </div>
+    <h4>La limpieza de agosto nunca llegó a la landing de la app</h4>
+    <p>
+      Hay dos commits de limpieza del 6 de agosto que <strong>nunca se desplegaron</strong>.
+      Producción sigue sirviendo el deploy del día 5. Lo comprobé contando sobre el HTML de las dos
+      versiones: en local <code>"120.000"</code> aparece 0 veces; en producción, 1.
+    </p>
+    <div class="scroll"><table>
+      <tr><th>Elemento prohibido</th><th>Home</th><th>/influencers</th></tr>
+      <tr><td>"120.000 personas cada semana"</td><td>vivo</td><td>—</td></tr>
+      <tr><td>"No es una guía. No es un blog."</td><td>vivo</td><td>—</td></tr>
+      <tr><td>"500 plazas por ciudad"</td><td class="num">16 veces</td><td>—</td></tr>
+      <tr><td>"8742 personas en lista"</td><td>vivo</td><td>—</td></tr>
+      <tr><td>Fotos de stock como testimonio</td><td class="num">204 refs</td><td class="num">36 refs</td></tr>
+      <tr><td>@viajeraautentica · @exploradorurbano · @aventurera_creativa</td><td>—</td><td>vivos</td></tr>
+    </table></div>
+    <p>
+      Y desplegar no basta: los campos viejos siguen sembrados en el CMS (<code>app-home</code>,
+      <code>app-influencers</code>) y <strong>el CMS pisa al código</strong>. Si solo se despliega,
+      el 120.000 vuelve en el build siguiente. Es la trampa que ya costó 40 colisiones en agosto.
+    </p>
+    <p>
+      <span class="pill p-v" style="margin-right:6px">Decisión</span> La landing se limpia y se
+      mantiene viva (no se apaga): deploy de la limpieza + purga del CMS + cifras reales en lugar de
+      las inventadas.
+    </p>
+  </div>
+
+  <div class="find c">
+    <div class="tags">
+      <span class="pill p-c">Bloqueante</span>
+      <span class="pill p-v">Verificado en vivo</span>
+      <span class="pill p-w">app-landing</span>
+    </div>
+    <h4>Seis experiencias con valoración, número de reseñas y precio, inventadas</h4>
+    <p>
+      "★ 4.9 · 312 reseñas · 18 €", seis veces. No existe sistema de puntuación ni pasarela de pago.
+      Esto ya no es un problema de marketing: es exactamente lo que persigue la normativa europea de
+      reseñas falsas, y lo señala el propio Brand Brain.
+    </p>
+  </div>
+
+  <div class="find c">
+    <div class="tags">
+      <span class="pill p-c">Bloqueante</span>
+      <span class="pill p-w">app-landing</span>
+    </div>
+    <h4>La puerta que promete el copy no existe</h4>
+    <p>
+      "Entra hoy por la web con tu código" y "en menos de 24 h recibes tu código personal". El botón
+      <em>Tengo código</em> del nav es un <code>&lt;button&gt;</code> sin <code>onClick</code> ni
+      <code>href</code>. No lleva a ninguna parte. Cada euro de anuncio captura un email y quema la
+      confianza en el mismo movimiento.
+    </p>
+    <p>
+      <span class="pill p-v" style="margin-right:6px">Decisión</span> La puerta existe:
+      <strong>app.discoolver.com está viva desde el principio</strong>. El botón pasa a enlazar ahí,
+      y la cuenta atrás se reutiliza para el lanzamiento de ciudades en vez de para una app futura.
+    </p>
+  </div>
+</section>
+
+<section>
+  <span class="sec-num">03 — La contradicción de fondo</span>
+  <h2>"360 vende tecnología, no posiciones" no se sostiene</h2>
+  <p class="lede">
+    Es la respuesta que teníamos preparada para cuando alguien señale que el B2C promete curación
+    honesta mientras 360 vende visibilidad a negocios locales. Es una defensa por tipo de cliente, y
+    falla por tres sitios. El tercero no se arregla escribiendo.
+  </p>
+
+  <h3>El copy de 360 vende justo lo que la defensa niega</h3>
+  <blockquote>Comercios, <strong>restauración</strong> y actividades de la zona <strong>entran en el marketplace y en las rutas del planificador</strong>.<br><span style="color:var(--ink-3)">— /360/destinos, monetizacion_2_text</span></blockquote>
+  <blockquote>Es el módulo que <strong>empuja físicamente al visitante hacia las zonas que el destino quiere activar</strong>.<br><span style="color:var(--ink-3)">— /360/destinos, módulo 6</span></blockquote>
+  <p>
+    Contra esto, el B2C repite tres veces "sin rankings de pago". Si el criterio de qué se recomienda
+    pertenece a quien paga la suscripción, eso es un ranking de pago con otro nombre. En alojamientos
+    es más incómodo, porque hay dinero en la decisión: el hotel aprueba qué entra en sus
+    recomendaciones <em>y cobra una parte de lo que se reserva</em>.
+  </p>
+
+  <div class="flag">
+    <h3>Y el golpe definitivo: es una sola tabla</h3>
+    <p>
+      El snapshot de la base de datos de producción tiene <strong>7.253 filas en una única tabla</strong>,
+      mismas columnas y mismos estados para todas las ciudades:
+    </p>
+    <div class="scroll"><table>
+      <tr><th>Ciudad</th><th class="num">Filas</th><th>Qué es</th></tr>
+      <tr><td>Madrid</td><td class="num">5.933</td><td>De aquí se edita la guía editorial "sin rankings de pago"</td></tr>
+      <tr><td><strong>Ronda</strong></td><td class="num">333</td><td><strong>Despliegue insignia de 360.</strong> Cliente de pago, suscripción + comisión del 10-15%</td></tr>
+      <tr><td>Barcelona</td><td class="num">254</td><td>Editorial</td></tr>
+      <tr><td>Málaga</td><td class="num">226</td><td>Editorial</td></tr>
+    </table></div>
+    <p>
+      De las 333 fichas de Ronda, <strong>71 son Alojamiento y 53 Restaurantes</strong> — el catálogo
+      que un cliente B2B pagó por integrar en su marketplace. Viven en la misma tabla de la que salen
+      las guías editoriales. <strong>La separación que promete la respuesta preparada no existe en la
+      arquitectura de datos.</strong> El día que salga una guía de Ronda, sus restaurantes vendrán de
+      un catálogo poblado por un despliegue comercial.
+    </p>
+  </div>
+
+  <p>
+    Hay además una pregunta que nadie ha respondido y que bloquea todo lo anterior. Está escrita en
+    el propio copy de 360, en la FAQ 8: <em>"[PENDIENTE: proceso de alta del colaborador… y qué
+    condiciones económicas se le aplican]"</em>. Traducido: <strong>todavía no sabemos si un negocio
+    local paga por estar dentro</strong>. Hasta que eso tenga respuesta no hay defensa posible.
+  </p>
+  <p>
+    Lo que sí sostendría la respuesta —y hay que construirlo, no solo redactarlo— son tres cosas:
+    separar de verdad el catálogo editorial del comercial, que la selección de la guía salga solo de
+    contenido de creadores filtrado por editores, y publicar la regla
+    <em>"un negocio nunca puede pagar por entrar en una guía"</em> con la excepción de 360 explicada
+    al lado. Hoy no se cumple ninguna de las tres.
+  </p>
+  <p>
+    <span class="pill p-v" style="margin-right:6px">Decisión</span> El CEO ha confirmado el
+    principio: <strong>un negocio local nunca paga por entrar ni por posición</strong> — solo la
+    comisión del 10-15% sobre venta cerrada. Con eso, la defensa se puede escribir y publicar en el
+    B2C y en la FAQ de 360. La separación editorial/comercial en la base de datos queda como trabajo
+    de fondo pendiente.
+  </p>
+</section>
+
+<section>
+  <span class="sec-num">04 — Las ciudades</span>
+  <h2>Se venden nueve ciudades que no tienen ni una ficha</h2>
+  <p class="lede">
+    Es el hallazgo con más consecuencias para el 1 de septiembre, porque no se arregla con copy: o se
+    cambia lo que se promete, o se cambia el calendario.
+  </p>
+  <div class="scroll"><table>
+    <tr><th>Superficie</th><th>Qué promete</th><th>Realidad en la BD</th></tr>
+    <tr><td>Landing de la app</td><td>"Empezamos con 12: Madrid, Barcelona, Sevilla, Valencia, Bilbao, Málaga, Zaragoza, Granada, San Sebastián, Palma, Toledo y Córdoba"</td><td><strong>9 de las 12 con cero filas.</strong> Solo Madrid, Barcelona y Málaga existen</td></tr>
+    <tr><td>Tienda de guías</td><td>Bangkok en el escaparate, "según Travis Leon", con precio y "Próximamente" — y dentro del JSON-LD que indexa Google</td><td><strong>Cero fichas en producción.</strong> Matiz de la auditoría a fondo: en el editor de guías sí existen 2 borradores de Bangkok con Travis Leon — hay trabajo real detrás, pero no publicable aún, y el nombre de un tercero está publicado sin firma</td></tr>
+    <tr><td>creators-landing</td><td>"Buscamos creadores en" 8 ciudades</td><td><strong>5 de las 8 sin contenido</strong> (Valencia, Sevilla, Bilbao, San Sebastián y Málaga como guía). Es reclutamiento, no inventario — no es prueba social inventada, pero sí inversión de captación donde no se puede servir</td></tr>
+    <tr><td>Ninguna</td><td>—</td><td><strong>Ronda 333 · Punta Cana 149 · Aranjuez 117 · Santo Domingo 82 · Ibiza 82.</strong> Tienen contenido y no se venden en ningún sitio</td></tr>
+  </table></div>
+  <p>
+    El Caribe está listo y nadie lo ha pedido. Ronda, que es el mejor caso comercial que existe, no
+    aparece en el escaparate. Y mientras tanto el ticker de la app vende "412 plazas restantes" en
+    Sevilla, que tiene cero.
+  </p>
+  <p>
+    <span class="pill p-v" style="margin-right:6px">Decisión</span> Septiembre = 100% lanzado todo lo
+    posible de España, y <strong>Bangkok se queda como primera ciudad de Tailandia</strong>. Las
+    guías reales llegan firmadas una a una en ~3 semanas desde el editor; mientras, el escaparate
+    muestra la oportunidad con portadas de ejemplo. Los nombres reales (Cenando con Pablo, Travis
+    Leon) se retiran del copy y del JSON-LD hasta que haya contrato firmado.
+  </p>
+</section>
+
+<section>
+  <span class="sec-num">05 — Por superficie</span>
+  <h2>Lo que le pasa a cada web</h2>
+
+  <h3>Tienda de guías — la tienda no vende</h3>
+  <p>
+    De once secciones, ninguna termina en una acción de compra. El CTA principal, "Ver las guías",
+    lleva al catálogo, y <strong>las tres fichas no son enlaces</strong>: el único elemento clicable
+    es la tarjeta fantasma "¿Tu ciudad?". El único formulario de la página se titula
+    <em>"¿Tu ciudad no está?"</em>.
+  </p>
+  <p>
+    Es decir: capturas el email del que se va y pierdes el del que quería comprar. Y no hay fecha de
+    lanzamiento en ninguna parte, solo "Muy pronto". Faltan también envíos, plazos y devoluciones,
+    que en venta a distancia en la UE son información precontractual obligatoria.
+  </p>
+  <blockquote class="fix"><strong>Propuesta</strong> — cada ficha con "Digital 14€ · Papel 29€ · A la venta el 1 de septiembre" y un CTA propio "Avísame el día que salga", y la waitlist reencuadrada como lista de lanzamiento en vez de consuelo.</blockquote>
+  <p>
+    Y un claim que hay que revisar antes de septiembre: <em>"Miles de vídeos pasan cada año por
+    editores humanos. <strong>Todos</strong>."</em> Con 3.935 fichas esperando revisión, 94% generadas
+    por IA y 6% con foto, ese absoluto no se sostiene. El dato real es mejor que el claim vago: de
+    858 sitios sobre la mesa en Madrid, a la guía entran unos 80. <em>Eso</em> es lo que se compra.
+  </p>
+
+  <h3>/influencers — la mejor página del ecosistema, y le falta la prueba</h3>
+  <p>
+    Está limpia y bien escrita. Su problema es que no puede dar cifras de reparto y no ha compensado
+    ese hueco con nada: no hay una guía terminada que enseñar, ni quiénes sois, ni por qué vosotros y
+    no autopublicarse. El competidor real de un creador con audiencia es hacerse un PDF y quedarse el
+    100%, y la página nunca lo menciona.
+  </p>
+  <p>
+    Además hay una contradicción interna: una FAQ dice que se cobra "mientras la guía esté a la
+    venta" y otra que "la edición anterior se cierra". Y los dos botones del selector de tracks tienen
+    literalmente el mismo texto.
+  </p>
+
+  <h3>/360 — muy por encima de la media B2B, con dos autogoles</h3>
+  <p>
+    La arquitectura de precio público es un activo real y poco común. Pero la única tabla que presume
+    de transparencia no cuadra: los siete módulos suman <strong>1.845 € sin ningún punto de venta</strong>
+    (solo seis tienen precio, el séptimo va incluido), y el copy dice "con un punto de venta". Con uno
+    serían 1.895. Un técnico de patronato hace esa suma en la reunión.
+  </p>
+  <p>
+    El segundo autogol: <em>"No todos los clientes pagan el precio de esta página"</em>. En B2B privado
+    es admirable; en venta pública le dice a un interventor que tu tarifa publicada no es tu precio
+    real, y toda conversación empezará pidiendo el descuento que tienen los otros.
+  </p>
+  <p>
+    Ronda, además, demuestra que se instaló, no que funcionó: los cuatro datos del caso son inputs de
+    despliegue (200 negocios, 8 puntos de venta, tótems). Cero resultado. Un patronato no aprueba una
+    partida porque otro instalara tótems.
+  </p>
+
+  <h3>Las verticales — cada una convence y luego entrega el mismo folleto</h3>
+  <p>
+    Los bloques de diagnóstico están escritos por vertical y están bien. Lo calcado es todo lo que va
+    de la mitad hacia abajo —módulos, integración, FAQ— justo cuando el comprador entra en la zona de
+    decisión. El POS se le vende a un hotel con copy de oficina de turismo: <em>"puntos físicos:
+    oficinas de turismo, monumentos…"</em>.
+  </p>
+  <p>
+    En alojamientos, la promesa central se renderiza como un placeholder: la sección se titula "Deja
+    de ser un coste y pasa a ser una línea de ingreso" y enseña dos cifras grandes — el 10-15% que
+    cobra Discoolver, y <code>[PENDIENTE: %]</code> como la parte del hotel. El peor orden posible de
+    la información.
+  </p>
+
+  <h3>Agencias — la recomendación es no publicarla</h3>
+  <p>
+    No por los cinco campos pendientes, sino por un problema de modelo. En destinos y alojamientos, el
+    10-15% se cobra sobre ventas que hoy no existen: es ingreso incremental y la comisión es indolora.
+    En agencias se cobra sobre ventas que la agencia <em>ya hace</em>. Un receptivo trabaja con
+    márgenes de dos dígitos bajos sobre producto local; sumar 10-15% de la venta bruta más 750 €/mes
+    se lleva el margen entero del canal. Cualquier DMC lo calcula en treinta segundos.
+  </p>
+  <p>
+    La propia home ya tomó la decisión —el campo dice literalmente <em>"No se publica esta tarjeta
+    hasta tenerlo"</em>— y el código la ignora: las tres verticales se pintan como enlaces sin
+    condición. Lo que sí hay que conservar es el bloque "Cuándo no somos tu proveedor", que es el
+    mejor párrafo de las cuatro páginas y sirve tal cual como guion de llamada.
+  </p>
+  <p>
+    <span class="pill p-v" style="margin-right:6px">Decisión</span> Agencias se retira del nav y
+    queda en noindex como material de pitch uno a uno, hasta que haya modelo de canal decidido y un
+    piloto.
+  </p>
+</section>
+
+<section>
+  <span class="sec-num">06 — Higiene</span>
+  <h2>Contradicciones entre webs</h2>
+  <p class="lede">
+    Ninguna es dramática por separado. Juntas son la razón por la que las cuatro superficies no
+    parecen la misma empresa.
+  </p>
+  <div class="scroll"><table>
+    <tr><th>Dato</th><th>Qué dice cada una</th></tr>
+    <tr><td>Email</td><td class="q">hola@ (tienda, /influencers, footer de 360) · info@ (copy de 360) · empresas@ (app) · carlos@ (destino real del formulario). <strong>Decisión: hola@ para B2C, info@ para B2B; empresas@ desaparece</strong></td></tr>
+    <tr><td>Tiempo de respuesta</td><td class="q">12 h · 24 h · 48 h · "24 h laborables", según la página. Propuesta: unificar en "24 h laborables"</td></tr>
+    <tr><td>Teléfono B2B</td><td class="q">Dos páginas de 360 publican (+34) 681 291 571; las otras dos dicen "[PENDIENTE: hay dos números en circulación]". <strong>Decisión: el canal B2B es +66 838291723, en las cinco páginas</strong></td></tr>
+    <tr><td>La capa de IA</td><td class="q">La tienda: se activa comprando la guía de 14€. La app: es premium por "menos de un café al mes". Dos modelos de ingreso incompatibles, los dos publicados</td></tr>
+    <tr><td>Fecha de lanzamiento</td><td class="q">La única fecha pública es una cuenta atrás al 18-nov (placeholder) en la app. <strong>Decisión: el countdown pasa a contar el lanzamiento de ciudades; la plataforma está viva desde ya en app.discoolver.com</strong></td></tr>
+    <tr><td>Primer punto de venta</td><td class="q">Destinos: "50 € por cada punto <em>adicional</em>". Alojamientos y agencias: "+ 50 € por punto"</td></tr>
+    <tr><td>La marca</td><td class="q">"discoolver" en minúscula en 360; "Discoolver" en los tres footers</td></tr>
+    <tr><td>Quien recomienda</td><td class="q">creador · creator · curator · explorer · influencer · microinfluencer. Seis nombres para lo mismo</td></tr>
+  </table></div>
+
+  <h3>Y un fallo de código con fecha de caducidad</h3>
+  <p>
+    <code>isPending()</code> comprueba <code>startsWith("[PENDIENTE")</code>, así que solo detecta la
+    nota interna cuando abre el campo. Cuando va al final de una frase buena, se imprime tal cual.
+    Son <strong>10 campos</strong>. Hoy es inocuo por el banner de propuesta; el día que se quite el
+    banner y el <code>noindex</code>, la web publica esto en la FAQ:
+  </p>
+  <blockquote>No. discoolver se acopla al flujo que ya tienes, no lo sustituye. <strong>[PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada — dirección técnica]</strong></blockquote>
+</section>
+
+<section>
+  <span class="sec-num">07 — El plan, ya decidido</span>
+  <h2>Qué se hace, en orden</h2>
+  <p class="lede">
+    Las recomendaciones pasaron por tres rondas de decisión con el CEO el 10 de agosto. Esto ya no
+    es una propuesta: es el plan aprobado, con la decisión anotada donde difiere de lo recomendado.
+  </p>
+
+  <ol class="plan">
+    <li>
+      <h3>creators-landing: redeploy inmediato</h3>
+      <p>
+        La auditoría a fondo cerró el mecanismo: CMS, plantilla y repo están limpios y sincronizados
+        — el 50% vivo es un build anterior al 6 de agosto que nadie redesplegó. Un
+        <code>vercel --prod</code> y verificación en vivo.
+      </p>
+    </li>
+    <li>
+      <h3>Landing de la app: limpiar y mantener viva</h3>
+      <p>
+        <strong>Decisión del CEO: no se apaga.</strong> Se despliega la limpieza pendiente, se purga
+        el CMS (si no, el 120.000 vuelve en el siguiente build), las cifras inventadas se sustituyen
+        por las reales, el botón <em>Tengo código</em> pasa a <code>app.discoolver.com</code> —que
+        está viva— y la cuenta atrás se reconvierte al lanzamiento de ciudades.
+      </p>
+    </li>
+    <li>
+      <h3>Ciudades: España al máximo + Bangkok como primera de Tailandia</h3>
+      <p>
+        <strong>Decisión del CEO.</strong> Septiembre lanza todo lo posible de España; Bangkok se
+        mantiene en el escaparate como primera ciudad de Tailandia (tiene 2 guías en borrador con
+        creador en el editor — trabajo real, aún no publicable). Los nombres de creadores sin
+        contrato firmado (Cenando con Pablo, Travis Leon) se retiran del copy y del JSON-LD; entran
+        de nuevo, uno a uno, según se firme en las próximas tres semanas. Mientras, el escaparate
+        muestra la oportunidad con portadas de ejemplo. Las ciudades con contenido que hoy no se
+        venden (Ronda, Punta Cana, Santo Domingo, Aranjuez, Ibiza) entran al mapa.
+      </p>
+    </li>
+    <li>
+      <h3>Modelo: "un negocio nunca paga por entrar" — confirmado, se publica</h3>
+      <p>
+        <strong>Decisión del CEO: nunca paga, ni por entrar ni por posición.</strong> Solo la
+        comisión del 10-15% sobre venta cerrada. La defensa se escribe en la FAQ de 360 y en el B2C.
+        La separación editorial/comercial en la base de datos queda como trabajo de fondo — hasta
+        entonces, la afirmación pública es cierta pero la arquitectura no la respalda.
+      </p>
+    </li>
+    <li>
+      <h3>La vertical de agencias se retira</h3>
+      <p>
+        Fuera del nav y en noindex, como su propio copy ordenaba. Queda como guion de pitch uno a
+        uno. Vuelve con modelo de canal decidido y un piloto.
+      </p>
+    </li>
+    <li>
+      <h3>Coser la arquitectura</h3>
+      <p>
+        <strong>Decidido:</strong> hola@ para B2C · info@ para B2B · teléfono B2B +66 838291723 en
+        las cinco páginas de 360 · SLA único de 24 h laborables · suma de 1.845 corregida ·
+        <code>isPending()</code> arreglado para que los 10 campos con nota interna no se publiquen ·
+        formulario real en /destinos · demo por vertical.
+      </p>
+    </li>
+    <li>
+      <h3>Pendiente de decisión mayor (no va en este bloque)</h3>
+      <p>
+        El corte de <code>discoolver.com</code> (hoy el dominio de marca sirve la web antigua en
+        inglés), la unificación de las tres landings de creators en un solo <code>/creators</code>, y
+        la separación editorial/comercial en la BD. Son las tres palancas grandes que quedan.
+      </p>
+    </li>
+  </ol>
+</section>
+
+<footer>
+  <p>
+    <strong>Método.</strong> Seis auditorías en paralelo, una por superficie más una de coherencia
+    cruzada, cada una con la realidad de la base de datos de producción delante para poder contrastar
+    promesas contra inventario. Los hallazgos marcados <em>verificado en vivo</em> los he comprobado
+    yo sobre el HTML servido por los dominios o sobre el código, no son conclusiones de los agentes.
+  </p>
+  <p>
+    <strong>Estado.</strong> Las 7 auditorías completadas, las decisiones tomadas con el CEO en tres
+    rondas el 10 de agosto, y la ejecución en marcha. Este repaso es de copy y funnel: el de diseño
+    va después.
+  </p>
+</footer>
+
+</div>
