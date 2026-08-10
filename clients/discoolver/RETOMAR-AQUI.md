@@ -1,8 +1,22 @@
-# Discoolver — dónde lo dejamos (6 de agosto de 2026)
+# Discoolver — dónde lo dejamos (madrugada del 11 de agosto de 2026)
 
 Punto de entrada para la próxima sesión. Lee esto antes que nada.
 
 ---
+
+## Lo último (11-ago): repaso de negocio ejecutado + pendientes respondidos
+
+El repaso de 7 auditorías está EJECUTADO y en producción (informe:
+https://claude.ai/code/artifact/5afd7f0d-46c8-4c09-ac97-416c71f79f9f). Las tres
+webs limpias, la tienda con 6 portadas aprobadas y fecha pública (1-sept), /360
+con las respuestas del CEO aplicadas (teléfono +66, contrato, PMS honesto,
+tarifa neta para agencias, credenciales reales: SEGITTUR/DTI/aceleradora
+CdS/FITUR). De 39 [PENDIENTE] quedan 4, todos de la vertical de agencias, que
+espera su piloto fuera del nav. Detalle completo en la memoria
+`project_discoolver_2026-08-10_repaso_ejecutado`.
+
+**Queda**: el repaso de DISEÑO, quitar banner+noindex de /360 cuando Carlos dé
+el OK final, y la decisión del corte de discoolver.com.
 
 ## Cómo volver a ver las propuestas nuevas
 
