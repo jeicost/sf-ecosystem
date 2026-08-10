@@ -192,6 +192,8 @@ export async function POST(req: NextRequest) {
       (await getKnowledgeContext(resolvedClientId, {
         projectId: projectId ?? null,
         agentRole: role,
+        // El mensaje decide qué documentos largos entran (y si no casa nada, ninguno).
+        query: typeof message === 'string' ? message : null,
       })) ?? (await getAgentDocumentContext(resolvedClientId, role))
 
     if (includeBrandBrain) {

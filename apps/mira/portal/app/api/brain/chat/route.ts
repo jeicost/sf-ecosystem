@@ -73,7 +73,8 @@ export async function POST(req: NextRequest) {
     const [brain, memoryCtx, knowledgeCtx] = await Promise.all([
       fetchBrandBrain(clientId),
       getClientMemoryContext(clientId, projectId),
-      getKnowledgeContext(clientId, { projectId }),
+      // El último mensaje del usuario decide qué documentos largos entran.
+      getKnowledgeContext(clientId, { projectId, query: messages[messages.length - 1].content }),
     ])
 
     const system = [
