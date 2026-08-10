@@ -21,7 +21,7 @@ export const defaultHome360Content = {
   hero_cta_secondary_label: "Ver los 7 módulos y sus precios",
   hero_cta_secondary_href: "#modulos",
   hero_proof:
-    "Desplegada en Ronda: más de 200 negocios locales integrados, tótems interactivos, señalética QR y ocho puntos de venta. Segundo despliegue en Costa del Sol. Premio Hospitality 2021 por Plan My Trip en el Digital Enterprise Show.",
+    "Desplegada en Ronda: más de 200 negocios locales integrados, tótems interactivos, señalética QR y ocho puntos de venta, con contrato en vigor desde 2022. Parte de SEGITTUR y de la red DTI de Destinos Turísticos Inteligentes, acelerada en Costa del Sol Tourism Hub, presente en FITUR y Premio Hospitality 2021 por Plan My Trip en el Digital Enterprise Show.",
   hero_note:
     "Se integra en tu web actual o se despliega como plataforma nueva. Sin desarrollo propio. Sin app obligatoria para el visitante.",
   diferenciales_eyebrow: "Por qué discoolver 360",
@@ -72,8 +72,6 @@ export const defaultHome360Content = {
   modulo_7_precio: "Incluido con cualquier módulo",
   modulos_nota:
     "El coste del hardware de tótems y displays se presupuesta aparte del mantenimiento y se cierra en la propuesta, según formato y número de puntos.",
-  modulos_pendiente:
-    "[PENDIENTE: horquilla de precio del hardware de señalética — producto/CEO]",
   inversion_eyebrow: "Lo que cuesta, dicho entero",
   inversion_titulo: "Antes de que lo preguntes en la demo",
   inversion_intro:
@@ -90,9 +88,8 @@ export const defaultHome360Content = {
   inversion_3_titulo: "La tarifa se ajusta por volumen, no por regateo",
   inversion_3_texto:
     "El precio de esta página es la tarifa de referencia, la que se usa para dimensionar una partida. Cambia por criterios objetivos y verificables — número de módulos, puntos de venta y duración del contrato — y el criterio aplicado queda escrito en la propuesta. No hay precio de amigo ni tarifa que dependa de quién pregunte.",
-  inversion_nota: "Suscripción anual con facturación mensual.",
-  inversion_pendiente:
-    "[PENDIENTE: permanencia mínima, preaviso de baja y condiciones de portabilidad de datos — legal/CEO]",
+  inversion_nota:
+    "Suscripción anual con facturación mensual, sin permanencia añadida: se renueva —o no— cada año, con 60 días de preaviso. Y si te vas, te llevas un export completo de tus datos.",
   eco_eyebrow: "Cómo se empieza",
   eco_titulo: "Cada uno funciona solo. Juntos, son un ecosistema.",
   eco_intro:
@@ -126,9 +123,9 @@ export const defaultHome360Content = {
   caso_dato_4_label: "De contrato en vigor sin interrupción, desde 2022",
   caso_estado: "Ronda es cliente de pago y el despliegue sigue en producción.",
   caso_segundo:
-    "Segundo despliegue: Costa del Sol Tourism Hub, con señalética QR en puntos clave del destino e integración de marketplace desde 2023.",
+    "El proyecto además forma parte de SEGITTUR y de la red DTI de Destinos Turísticos Inteligentes, pasó por el programa de aceleración Costa del Sol Tourism Hub y se ha presentado en FITUR.",
   caso_cita:
-    "[PENDIENTE: cita atribuida del responsable de turismo de Ronda, con nombre, cargo y autorización por escrito — CEO. Hasta entonces no se publica ningún testimonio.]",
+    "«Discoolver ha sido parte esencial en la transformación digital de nuestra ciudad.» — Turismo de Ronda",
   vert_eyebrow: "Tres puertas de entrada",
   vert_titulo: "Dime quién eres y te enseño lo tuyo",
   vert_intro:
@@ -163,35 +160,25 @@ export const defaultHome360Content = {
     "No. Todo funciona en navegador, desde tu web, desde un QR o desde un tótem. La app existe, pero no es requisito para comprar, planificar ni consultar.",
   faq_4_p: "¿De quién son los datos que se generan?",
   faq_4_r:
-    "Del destino o del negocio que contrata. El dato sale de la interacción real del público con la plataforma —búsquedas, rutas, compras, uso de tótems— y se te devuelve en un cuadro de mando y en informes.",
-  faq_4_pendiente:
-    "[PENDIENTE: cláusula concreta de titularidad y tratamiento de datos, y formato de exportación al finalizar el contrato — legal]",
+    "Del destino o del negocio que contrata. El dato sale de la interacción real del público con la plataforma —búsquedas, rutas, compras, uso de tótems— y se te devuelve en un cuadro de mando y en informes. Y si el contrato termina, te llevas un export completo: los datos siguen siendo tuyos.",
   faq_5_p: "¿Puedo contratar un solo módulo?",
   faq_5_r:
     "Sí, y es lo habitual. Cada módulo funciona solo, en modo suscripción, y el Business Intelligence va incluido desde el primero. Se añaden los siguientes cuando el primero está rindiendo.",
   faq_6_p: "¿Cuánto se tarda en tenerlo funcionando?",
   faq_6_r:
     "El software de caja se integra en 15 días: se conecta a tu catálogo y opera, sin hardware complejo. El resto de módulos se dimensiona en la propuesta según el catálogo a cargar — te damos fecha cerrada ahí, no antes.",
-  faq_6_pendiente:
-    "[PENDIENTE: plazos documentados de los otros seis módulos, incluida la carga inicial de catálogo — producto]",
   faq_7_p: "¿A quién más le está funcionando esto?",
   faq_7_r:
-    "Ronda es el despliegue de referencia: más de 200 negocios locales integrados, tótems, señalética QR y ocho puntos de venta, con contrato en vigor. El segundo es Costa del Sol Tourism Hub, con señalética QR y marketplace. discoolver ha cerrado además acuerdos con SEGITTUR, ICEX e ITH. En la demo te enseñamos el despliegue de Ronda en vivo, no capturas.",
+    "Ronda es el despliegue de referencia: más de 200 negocios locales integrados, tótems, señalética QR y ocho puntos de venta, con contrato en vigor desde 2022. El proyecto forma parte de SEGITTUR y de la red DTI de Destinos Turísticos Inteligentes, pasó por la aceleradora Costa del Sol Tourism Hub, tiene acuerdos con ICEX e ITH y se ha presentado en FITUR. En la demo te enseñamos el despliegue de Ronda en vivo con sus datos reales de venta — los enseñamos en directo, no los publicamos.",
   faq_8_p: "¿Qué tiene que hacer el comercio local para estar dentro? ¿Paga por aparecer?",
   faq_8_r:
-    "No paga. Ningún negocio paga a discoolver por salir en la plataforma de su destino, ni por aparecer más arriba en una ruta o en un listado: aquí no se venden posiciones. Quien contrata es el destino, el alojamiento o la agencia, y lo que contrata es tecnología. Quién entra en el marketplace y con qué criterio lo decide el destino, no nosotros, y el alta del tejido local es parte del despliegue, no un proyecto aparte. Lo único que se cobra es la comisión del 10-15% sobre una venta efectivamente cerrada: si no hay venta, no hay cobro. Es la misma regla que aplicamos en la marca de viajero de discoolver, donde tampoco existen rankings de pago.",
-  faq_8_pendiente:
-    "[PENDIENTE: proceso operativo de alta del colaborador y quién carga el catálogo — producto]",
+    "No paga. Ningún negocio paga a discoolver por salir en la plataforma de su destino, ni por aparecer más arriba en una ruta o en un listado: aquí no se venden posiciones. Quien contrata es el destino, el alojamiento o la agencia, y lo que contrata es tecnología. Quién entra en el marketplace y con qué criterio lo decide el destino, no nosotros, y el alta del tejido local es parte del despliegue, no un proyecto aparte — la carga inicial del catálogo la hace discoolver. Lo único que se cobra es la comisión del 10-15% sobre una venta efectivamente cerrada: si no hay venta, no hay cobro. Es la misma regla que aplicamos en la marca de viajero de discoolver, donde tampoco existen rankings de pago.",
   faq_9_p: "Somos administración pública. ¿Cómo se contrata esto?",
   faq_9_r:
-    "Como servicio en suscripción anual con facturación mensual — gasto corriente, no inversión ni desarrollo a medida: no hay activo tecnológico que amortizar. Los importes por módulo son públicos y están en esta página, así que la partida se dimensiona en euros por ejercicio antes de sentarte con nosotros. Ya operamos con administración pública — Ronda es cliente en vigor y hay despliegue en Costa del Sol — y acompañamos al organismo en la preparación de la documentación técnica y económica que requiera su procedimiento. La vía concreta de tramitación la determina tu órgano de contratación con el objeto y el importe delante; si necesitas el encaje en tu expediente, dínoslo en la demo y te lo mandamos por escrito.",
-  faq_9_pendiente:
-    "[PENDIENTE: CPV, certificaciones y bajo qué fórmula se formalizaron Ronda y Costa del Sol — legal/CEO]",
+    "Como servicio en suscripción anual con facturación mensual — gasto corriente, no inversión ni desarrollo a medida: no hay activo tecnológico que amortizar. Los importes por módulo son públicos y están en esta página, así que la partida se dimensiona en euros por ejercicio antes de sentarte con nosotros. Ya operamos con administración pública — Ronda es cliente en vigor desde 2022 — y acompañamos al organismo en la preparación de la documentación técnica y económica que requiera su procedimiento. La vía concreta de tramitación la determina tu órgano de contratación con el objeto y el importe delante; si necesitas el encaje en tu expediente, dínoslo en la demo y te lo mandamos por escrito.",
   faq_10_p: "¿En qué idiomas atiende al visitante?",
   faq_10_r:
     "La plataforma del viajero funciona hoy en castellano, inglés y francés. Si tu destino necesita otra lengua — cooficial o de mercado emisor — dínoslo en la demo: es de las primeras cosas que se dimensionan en la propuesta.",
-  faq_10_pendiente:
-    "[PENDIENTE: confirmar con producto la lista exacta de idiomas por módulo — producto]",
   cta_eyebrow: "Siguiente paso",
   cta_titulo: "Media hora, tu destino sobre la mesa",
   cta_texto:

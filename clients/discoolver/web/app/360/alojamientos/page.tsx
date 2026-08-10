@@ -79,7 +79,7 @@ export default async function Alojamientos360() {
           <div className="card" style={{ borderColor: "var(--b-line)" }}>
             <h3 className="h-card">Integración</h3>
             <Txt v={c.checkin_integracion} />
-            <Pending>{c.checkin_pendiente}</Pending>
+            
           </div>
         </div>
       </Section>
@@ -158,7 +158,7 @@ export default async function Alojamientos360() {
         </div>
         <p className="small" style={{ marginTop: 20 }}>{c.modulos_stack}</p>
         <div style={{ marginTop: 12 }}>
-          <Pending>{c.modulos_pendiente}</Pending>
+          
         </div>
       </Section>
 
@@ -182,8 +182,8 @@ export default async function Alojamientos360() {
               </ul>
             </div>
             <div style={{ marginTop: 16, display: "grid", gap: 10 }}>
-              <Pending>{c.arranque_pendiente_1}</Pending>
-              <Pending>{c.arranque_pendiente_2}</Pending>
+              
+              
             </div>
           </div>
         </div>

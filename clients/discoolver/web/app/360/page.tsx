@@ -137,11 +137,6 @@ export default async function Home360() {
           ))}
         </div>
         <p className="small" style={{ marginTop: 22 }}>{c.inversion_nota}</p>
-        {isPending(c.inversion_pendiente) && (
-          <div style={{ marginTop: 12 }}>
-            <Pending>{c.inversion_pendiente}</Pending>
-          </div>
-        )}
       </Section>
 
       {/* ---------- ecosistema ---------- */}

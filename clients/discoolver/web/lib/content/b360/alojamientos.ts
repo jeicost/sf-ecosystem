@@ -68,8 +68,6 @@ export const defaultAlojamientos360Content = {
     "El QR de la habitación y el tótem del hall mantienen la puerta abierta. El asistente responde a cualquier hora, también cuando no hay nadie en recepción.",
   checkin_integracion:
     "Sin cambiar de PMS y sin desarrollo por tu parte: nos acoplamos a tu sistema de check-in actual, no lo sustituimos.",
-  checkin_pendiente:
-    "[PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada, y cuáles requieren desarrollo a medida — dirección técnica]",
   comision_eyebrow: "Comisión por venta",
   comision_title: "Deja de ser un coste y pasa a ser una línea de ingreso",
   comision_intro:
@@ -84,9 +82,7 @@ export const defaultAlojamientos360Content = {
   comision_dato_alojamiento_label:
     "Se fija en el contrato, sobre cada venta cerrada desde tu concierge, y se liquida periódicamente",
   comision_nota:
-    "Tu porcentaje te lo decimos en la primera llamada, con tu volumen delante: cambia según los módulos que contrates y según si eres una propiedad o un grupo. No es una cifra de folleto porque no aplicamos lo mismo a un hostal de veinte camas que a una cadena de nueve hoteles.",
-  comision_pendiente:
-    "[PENDIENTE: % de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]",
+    "Tu porcentaje te lo decimos en la primera llamada, con tu volumen delante: cambia según los módulos que contrates y según si eres una propiedad o un grupo. No es una cifra de folleto porque no aplicamos lo mismo a un hostal de veinte camas que a una cadena de nueve hoteles. La liquidación es mensual.",
   comision_cierre:
     "El gasto del viajero se va cada vez más a lo que hace en destino — actividades, mesas, experiencias — y cada vez menos a la cama. Ese gasto hoy pasa por delante de tu recepción sin dejarte nada.",
   caso_eyebrow: "Despliegue real",
@@ -162,8 +158,6 @@ export const defaultAlojamientos360Content = {
   modulo_7_para: "Opcional, para alojamientos con punto de venta propio",
   modulo_7_precio: "495 €/mes + 50 € por punto",
   modulos_stack: "El stack completo de los siete módulos suma 1.845 €/mes de tarifa.",
-  modulos_pendiente:
-    "[PENDIENTE: si la tarifa aplica por establecimiento o por grupo, y condiciones para cadenas y redes multi-propiedad — dirección comercial]",
   arranque_eyebrow: "Puesta en marcha",
   arranque_title: "Qué necesitas para arrancar",
   arranque_paso_1_titulo: "Tus recomendaciones actuales",
@@ -184,10 +178,6 @@ export const defaultAlojamientos360Content = {
     "Tiempo: el arranque depende de cuánto contenido propio nos pases y de tu sistema de check-in. Te damos fecha cerrada en la propuesta, no antes.",
   arranque_requisito_personal:
     "Personal: una persona de contacto para validar el contenido. Ninguna alta nueva en recepción.",
-  arranque_pendiente_1:
-    "[PENDIENTE: confirmar si el plazo de 15 días se mantiene cuando hay integración con PMS de terceros — dirección técnica]",
-  arranque_pendiente_2:
-    "[PENDIENTE: coste del hardware de tótems, aparte de los 100 €/mes de mantenimiento — dirección comercial]",
   faq_eyebrow: "Objeciones habituales",
   faq_title: "Lo que nos pregunta la dirección antes de firmar",
   faq_1_pregunta: "¿Esto no manda a mi huésped fuera del alojamiento?",
@@ -195,9 +185,7 @@ export const defaultAlojamientos360Content = {
     "Tu huésped va a salir igual. La cuestión es si sale con la recomendación de tu casa o con la de un buscador, y si esa salida te deja un ingreso o no. Con el concierge, sale con lo que tú has aprobado y la reserva pasa por ti.",
   faq_2_pregunta: "¿Tengo que cambiar mi PMS o mi sistema de check-in?",
   faq_2_respuesta:
-    "No. discoolver se acopla al flujo que ya tienes, no lo sustituye.",
-  faq_2_pendiente:
-    "[PENDIENTE: listado de PMS y sistemas de check-in con integración ya probada — dirección técnica]",
+    "No, y no hace falta: el concierge funciona en paralelo a tu sistema, sin integración con tu PMS. Se entrega con un QR o un enlace en el check-in — no toca tu operativa, no requiere desarrollo y da igual qué software uses.",
   faq_3_pregunta: "¿El huésped tiene que descargarse una aplicación?",
   faq_3_respuesta:
     "No es obligatorio. Escanea el QR y entra desde el navegador. La app existe para quien la quiera, pero nunca es un requisito para usar el concierge.",
@@ -215,14 +203,10 @@ export const defaultAlojamientos360Content = {
     "El punto de venta se integra en 15 días; el resto depende de tu contenido y tu check-in, y va con fecha cerrada en la propuesta. Sin meses de desarrollo y sin hardware complejo.",
   faq_8_pregunta: "¿Cómo y cuándo cobro la comisión?",
   faq_8_respuesta:
-    "Sobre cada venta cerrada en el marketplace desde tu concierge. discoolver aplica una comisión del 10-15% sobre esas ventas y el alojamiento percibe su parte según contrato.",
-  faq_8_pendiente:
-    "[PENDIENTE: % de reparto al alojamiento, periodicidad de liquidación y método de pago — dirección comercial]",
+    "Sobre cada venta cerrada en el marketplace desde tu concierge. discoolver aplica una comisión del 10-15% sobre esas ventas y tu parte se fija en el contrato según tu volumen, con liquidación mensual.",
   faq_9_pregunta: "Tengo varias propiedades. ¿Se contrata una a una?",
   faq_9_respuesta:
-    "Los módulos se contratan por separado y en modo suscripción, y el despliegue en varias propiedades comparte estándar y cuadro de mando.",
-  faq_9_pendiente:
-    "[PENDIENTE: condiciones de tarifa para cadenas y redes multi-propiedad — dirección comercial]",
+    "La tarifa aplica por establecimiento, y el despliegue en varias propiedades comparte estándar y cuadro de mando. Para grupos y cadenas se dimensiona un acuerdo conjunto en la propuesta, con condiciones por volumen.",
   cta_title: "¿Quieres probar el concierge en tu alojamiento?",
   cta_sub:
     "Media hora de demo con tu caso delante: tu tipo de establecimiento, tu flujo de check-in y qué reservaría tu huésped en tu zona.",

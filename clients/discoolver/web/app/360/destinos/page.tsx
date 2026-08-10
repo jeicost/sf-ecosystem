@@ -111,9 +111,7 @@ export default async function Destinos360() {
           <span className="mod__price" style={{ margin: 0 }}>{c.modulos_total_valor}</span>
         </div>
         <p className="small" style={{ marginTop: 18 }}>{c.modulos_nota}</p>
-        <div style={{ marginTop: 14 }}>
-          <Pending>{c.modulos_pendiente_hardware}</Pending>
-        </div>
+
       </Section>
 
       {/* ---------- los datos son del destino ---------- */}
@@ -131,7 +129,7 @@ export default async function Destinos360() {
           <div className="card" style={{ borderColor: "var(--b-line)" }}>
             <span className="card__n">{c.datos_mockup_label}</span>
             <p style={{ fontSize: 14.5 }}>{c.datos_bi_nota}</p>
-            <Pending>{c.datos_pendiente}</Pending>
+            {isPending(c.datos_pendiente) && <Pending>{c.datos_pendiente}</Pending>}
           </div>
         </div>
       </Section>
@@ -187,7 +185,18 @@ export default async function Destinos360() {
             </div>
           </div>
           <div style={{ marginTop: 26, display: "grid", gap: 10 }}>
-            {[1, 2, 3, 4].map((n) => <Pending key={n}>{K(`caso_pendiente_${n}`)}</Pending>)}
+            {/* La cita ya es real; los demás pendientes del caso se resolvieron
+                (datos → solo en demo, CdS → aceleradora). Solo se pinta lo que tenga contenido. */}
+            {[1, 2, 3, 4]
+              .map((n) => K(`caso_pendiente_${n}`))
+              .filter((v) => v.trim() !== "")
+              .map((v, i) =>
+                isPending(v) ? (
+                  <Pending key={i}>{v}</Pending>
+                ) : (
+                  <p key={i} className="small" style={{ fontStyle: "italic", color: "var(--b-text)" }}>{v}</p>
+                ),
+              )}
           </div>
         </div>
       </Section>
@@ -208,7 +217,7 @@ export default async function Destinos360() {
             <div className="mod__price" style={{ fontSize: 56, marginTop: 8 }}>{c.integracion_dato_val}</div>
             <div className="mod__unit">{c.integracion_dato_unidad}</div>
             <p style={{ fontSize: 14.5, marginTop: 14 }}>{c.integracion_dato_label}</p>
-            <Pending>{c.integracion_pendiente}</Pending>
+            
           </div>
         </div>
       </Section>

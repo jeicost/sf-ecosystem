@@ -10,38 +10,32 @@ import type { HomeContent } from "@/lib/content/home";
  * real cover art (blue + peach) plus the discoolver print magenta #C8006B.
  */
 export function Guides({ content }: { content: HomeContent }) {
-  const guides: { city: string; sub: string; meta: string; cta: string; spineText: string; spineColor: string; cover: CoverArt }[] = [
-    {
-      city: content.guide_1_city,
-      sub: content.guide_1_sub,
-      meta: content.guide_1_meta,
-      cta: content.guide_1_cta,
-      spineText: "discoolver · Madrid 2026",
-      spineColor: "#22578a",
-      // Portada tipográfica a propósito: la portada de creator lleva su foto
-      // y su firma, y hasta que haya acuerdo firmado y foto cedida no se
-      // publica ninguna imagen de persona asociada a su nombre.
-      cover: { kind: "typo", city: content.guide_1_city, sub: content.guide_1_sub, bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" },
-    },
-    {
-      city: content.guide_2_city,
-      sub: content.guide_2_sub,
-      meta: content.guide_2_meta,
-      cta: content.guide_2_cta,
-      spineText: "discoolver · Bangkok 2026",
-      spineColor: "#c47f3e",
-      cover: { kind: "typo", city: content.guide_2_city, sub: content.guide_2_sub, bg: "#f4b47a", ink: "#141414", accent: "#c8006b" },
-    },
-    {
-      city: content.guide_3_city,
-      sub: content.guide_3_sub,
-      meta: content.guide_3_meta,
-      cta: content.guide_3_cta,
-      spineText: "discoolver · Barcelona 2026",
-      spineColor: "#8f004d",
-      cover: { kind: "typo", city: content.guide_3_city, sub: content.guide_3_sub, bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" },
-    },
+  // Paletas de la tanda de portadas aprobada por el CEO el 2026-08-11
+  // (una por ciudad: A Madrid, C Barcelona, E Ronda, G Málaga, F Ibiza, H Bangkok).
+  // Las firmas son ficticias a propósito hasta que cada creador firme; el nombre
+  // real sustituye al de ejemplo desde el CMS, sin tocar código.
+  const PALETTES: { spineColor: string; bg: string; ink: string; accent: string }[] = [
+    { spineColor: "#22578a", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" }, // Madrid
+    { spineColor: "#8f004d", bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" }, // Barcelona
+    { spineColor: "#c47f3e", bg: "#c47f3e", ink: "#141414", accent: "#f2f0ea" }, // Ronda
+    { spineColor: "#141414", bg: "#c9ff3f", ink: "#141414", accent: "#c8006b" }, // Málaga
+    { spineColor: "#141414", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b" }, // Ibiza
+    { spineColor: "#8f004d", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a" }, // Bangkok
   ];
+  const guides = [1, 2, 3, 4, 5, 6].map((n, i) => {
+    const city = content[`guide_${n}_city` as keyof HomeContent];
+    const sub = content[`guide_${n}_sub` as keyof HomeContent];
+    const pal = PALETTES[i];
+    return {
+      city,
+      sub,
+      meta: content[`guide_${n}_meta` as keyof HomeContent],
+      cta: content[`guide_${n}_cta` as keyof HomeContent],
+      spineText: `discoolver · ${city} 2026`,
+      spineColor: pal.spineColor,
+      cover: { kind: "typo", city, sub, bg: pal.bg, ink: pal.ink, accent: pal.accent } as CoverArt,
+    };
+  });
 
   return (
     <section className="section guides" id="guias" aria-labelledby="guides-title">

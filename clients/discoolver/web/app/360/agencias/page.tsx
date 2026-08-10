@@ -81,7 +81,6 @@ export default async function Agencias360() {
         </div>
         <p className="small" style={{ marginTop: 22 }}>{c.comision_texto}</p>
         <div style={{ marginTop: 12 }}>
-          <Pending>{c.comision_pendiente}</Pending>
         </div>
       </Section>
 

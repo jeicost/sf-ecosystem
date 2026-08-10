@@ -55,9 +55,7 @@ export const defaultAgencias360Content = {
   bloque_4_texto:
     "Cuadro de mando e informes con toda la actividad del ecosistema: qué consulta el viajero, qué reserva y qué se queda sin comprar. Los datos son tuyos y sirven para negociar con proveedores y decidir qué producto merece la pena contratar. El módulo de inteligencia de negocio va incluido con los módulos que contrates.",
   comision_texto:
-    "Sobre las ventas del marketplace, discoolver aplica una comisión del 10-15%. Los módulos se contratan por separado, siempre en suscripción.",
-  comision_pendiente:
-    "[PENDIENTE: dirección comercial debe confirmar cómo se aplica esa comisión cuando quien vende es la agencia y no el destino, y si existe tarifa neta o precio de reventa para el canal.]",
+    "Para el canal, el modelo es tarifa neta: compras el producto local a neto y construyes tu margen sobre él — sin comisión sobre tus ventas. La comisión del 10-15% aplica al marketplace del destino, no al canal de agencias. Los módulos se contratan por separado, siempre en suscripción.",
   encaje_label: "Cómo encaja",
   encaje_title: "No sustituye a lo que ya vendes, llena el hueco de al lado",
   paso_1_titulo: "Lo tuyo sigue siendo tuyo",
@@ -77,13 +75,13 @@ export const defaultAgencias360Content = {
   caso_label: "Lo que ya está desplegado",
   caso_title: "Ronda",
   caso_texto:
-    "En Ronda hay más de doscientos negocios y propuestas locales integrados en la plataforma, ocho puntos de venta, tótems interactivos y señalética QR repartida por la ciudad. Es un cliente de pago, con la oficina de turismo vendiendo desde el punto de venta y venta cruzada con hoteles. El segundo despliegue es Costa del Sol y Málaga, con señalética QR y marketplace.",
+    "En Ronda hay más de doscientos negocios y propuestas locales integrados en la plataforma, ocho puntos de venta, tótems interactivos y señalética QR repartida por la ciudad. Es un cliente de pago, con la oficina de turismo vendiendo desde el punto de venta y venta cruzada con hoteles. El proyecto forma parte además de SEGITTUR y de la red DTI, y pasó por la aceleradora Costa del Sol Tourism Hub.",
   caso_stat_1_valor: "200+",
   caso_stat_1_label: "Negocios locales integrados",
   caso_stat_2_valor: "8",
   caso_stat_2_label: "Puntos de venta en el destino",
-  caso_stat_3_valor: "2",
-  caso_stat_3_label: "Destinos con despliegue real",
+  caso_stat_3_valor: "4 años",
+  caso_stat_3_label: "De contrato en vigor en Ronda",
   caso_honestidad:
     "Ronda es un destino, no una agencia. Lo que demuestra no es que ya trabajemos con DMC, sino que la parte difícil está hecha y en producción: digitalizar doscientos negocios locales, ponerlos a la venta y cobrar de verdad en la calle.",
   caso_pendiente:

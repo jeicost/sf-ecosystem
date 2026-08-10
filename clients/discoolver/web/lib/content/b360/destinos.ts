@@ -46,8 +46,6 @@ export const defaultDestinos360Content = {
   problema_4_text:
     "El gasto del viajero se desplaza cada año hacia los servicios locales en destino — actividades, restauración, experiencias — y cada vez menos hacia el transporte y la cama. Sin herramientas propias, el destino ni captura ni mide ese gasto: se reparte fuera del tejido local.",
   problema_4_fuente: "",
-  problema_4_pendiente:
-    "[PENDIENTE: fuente, estudio y año del dato del 70% si se quiere recuperar la cifra — marketing]",
   plataforma_eyebrow: "Qué hace por el destino",
   plataforma_title: "No es una app para el turista. Es infraestructura para el destino",
   plataforma_claim:
@@ -105,8 +103,6 @@ export const defaultDestinos360Content = {
   modulos_total_valor: "1.845 €/mes",
   modulos_nota:
     "Tarifas públicas de módulo, en modo suscripción. El punto de venta añade 50 € por cada punto físico adicional. La inteligencia de negocio va incluida con cualquier combinación de módulos.",
-  modulos_pendiente_hardware:
-    "[PENDIENTE: confirmar con producto si el hardware de tótems y displays se factura aparte del mantenimiento de 100 €/mes, y bajo qué fórmula. El material vigente omite el hardware y el material antiguo lo mencionaba.]",
   datos_eyebrow: "Los datos",
   datos_title: "El destino es dueño de sus datos",
   datos_lead:
@@ -121,9 +117,8 @@ export const defaultDestinos360Content = {
     "Serie histórica propia: la comparativa entre temporadas deja de depender de que un tercero siga publicando su informe.",
   datos_mockup_label: "Vista de ejemplo del cuadro de mando",
   datos_bi_nota:
-    "La inteligencia de negocio va incluida con los módulos contratados, sin coste adicional.",
-  datos_pendiente:
-    "[PENDIENTE: captura real y anonimizada del cuadro de mando, aprobada por producto (Diego), y lista cerrada de métricas exportables. Hasta entonces el panel es un mockup rotulado como ejemplo.]",
+    "La inteligencia de negocio va incluida con los módulos contratados, sin coste adicional. El cuadro de mando en vivo, con los datos reales de Ronda, se enseña en la demo.",
+  datos_pendiente: "",
   monetizacion_eyebrow: "Monetización",
   monetizacion_title: "Que el comercio local gane dinero, y el destino también",
   monetizacion_lead:
@@ -160,19 +155,16 @@ export const defaultDestinos360Content = {
   caso_stat_1_label: "Negocios locales integrados",
   caso_stat_2_val: "8",
   caso_stat_2_label: "Puntos de venta",
-  caso_segundo_title: "Segundo despliegue: Costa del Sol y Málaga",
+  caso_segundo_title: "Respaldo del sector, no solo un cliente",
   caso_segundo_text:
-    "Señalética QR en puntos clave del destino e integración de marketplace, dentro del Costa del Sol Tourism Hub.",
+    "discoolver forma parte de SEGITTUR y de la red DTI de Destinos Turísticos Inteligentes, pasó por el programa de aceleración Costa del Sol Tourism Hub, se ha presentado en FITUR y tiene el Premio Hospitality 2021 del Digital Enterprise Show.",
   caso_respaldo:
     "discoolver ha cerrado acuerdos con SEGITTUR, ICEX, ITH (Instituto Tecnológico Hotelero) y Costa del Sol Tourism Hub.",
   caso_pendiente_1:
-    "[PENDIENTE: nombre del organismo firmante en Ronda y autorización por escrito para citarlo, con logo. Sin eso, el caso se publica sin nombre de interlocutor y sin logotipo.]",
-  caso_pendiente_2:
-    "[PENDIENTE: testimonio real con nombre, cargo y permiso del responsable de turismo de Ronda. El testimonio que circula en el material interno es una plantilla sin rellenar y no se publica.]",
-  caso_pendiente_3:
-    "[PENDIENTE: resultados medidos del despliegue de Ronda (variación de visitas por zona, ventas por el canal, transacciones en los ocho puntos). No existe ninguna cifra de resultado documentada y verificable, así que el caso se publica describiendo el despliegue, no su impacto.]",
-  caso_pendiente_4:
-    "[PENDIENTE: número de puntos de venta y alcance exacto del despliegue de Costa del Sol/Málaga. Solo está documentado el hecho del despliegue, no su dimensión.]",
+    "«Discoolver ha sido parte esencial en la transformación digital de nuestra ciudad.» — Turismo de Ronda",
+  caso_pendiente_2: "",
+  caso_pendiente_3: "",
+  caso_pendiente_4: "",
   integracion_eyebrow: "Integración",
   integracion_title: "Entra en la web que ya tienes",
   integracion_lead:
@@ -192,8 +184,6 @@ export const defaultDestinos360Content = {
   integracion_dato_val: "15",
   integracion_dato_unidad: "días",
   integracion_dato_label: "Puesta en marcha del punto de venta",
-  integracion_pendiente:
-    "[PENDIENTE: plazos de puesta en marcha documentados del resto de módulos (marketplace, planificador, calendario, asistente, señalética). Solo está documentado el plazo del punto de venta; no se publican los demás hasta que producto los confirme.]",
   contratacion_eyebrow: "Contratación",
   contratacion_title: "Cómo se contrata y cómo se justifica",
   contratacion_paso_1_title: "Demo de 30 minutos",
@@ -225,8 +215,6 @@ export const defaultDestinos360Content = {
   contratacion_publica_title: "Sobre el encaje en contratación pública",
   contratacion_publica_text:
     "Lo que podemos decirte hoy, y lo decimos entero: es gasto corriente en modo suscripción, no inversión ni desarrollo a medida — no hay activo tecnológico que amortizar ni entregable de obra que recepcionar. Las tarifas son públicas y el importe anual es calculable antes de pedirnos nada. Ya operamos con administración pública: Ronda es cliente en vigor y hay despliegue en Costa del Sol Tourism Hub, además de acuerdos con SEGITTUR, ICEX e ITH. Y preparamos la documentación técnica y económica que requiera tu procedimiento, trabajando con tu servicio de contratación en lugar de mandarte un PDF. Lo que no vamos a decirte en una web es por qué vía concreta debe tramitarse tu expediente: eso lo determina tu órgano de contratación con el objeto y el importe delante, y quien te diga lo contrario en una landing te está vendiendo un problema.",
-  contratacion_publica_pendiente:
-    "[PENDIENTE: CPV, certificaciones y bajo qué fórmula se formalizaron Ronda y Costa del Sol — legal/CEO]",
   faq_title: "Preguntas que salen siempre",
   faq_1_q: "¿De quién son los datos que genera la plataforma?",
   faq_1_a:
@@ -249,8 +237,6 @@ export const defaultDestinos360Content = {
   faq_7_q: "¿Cómo encaja esto en un procedimiento de contratación pública?",
   faq_7_a:
     "Como suscripción anual con facturación mensual: gasto corriente con importe público y calculable por ejercicio. El equipo de discoolver acompaña al destino en la preparación de la documentación técnica y económica que requiera su procedimiento — la vía concreta la determina tu órgano de contratación, y el encaje en tu expediente te lo mandamos por escrito tras la demo.",
-  faq_7_pendiente:
-    "[PENDIENTE: sustituir por la respuesta con CPV y homologaciones cuando exista base documental — legal]",
   cta_title: "Conoce qué puede hacer discoolver por tu destino",
   cta_sub:
     "Treinta minutos con el equipo, sobre el caso concreto de tu destino: qué módulos aplican, qué se integra en la web que ya tienes y qué verías en el cuadro de mando.",
