@@ -1,15 +1,18 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
+import { PLATFORM } from "@/lib/platform";
 
 const STEP_ICONS = ["pin", "compass", "calendar", "buddy"] as const;
 
 export function HowItWorks({ content }: { content: HomeContent }) {
+  // Cada herramienta enlaza a su contrapartida REAL en la plataforma: la
+  // landing promete, app.discoolver.com cumple. Mismo orden que los campos.
   const steps = [
-    { title: content.step_1_title, desc: content.step_1_desc },
-    { title: content.step_2_title, desc: content.step_2_desc },
-    { title: content.step_3_title, desc: content.step_3_desc },
-    { title: content.step_4_title, desc: content.step_4_desc },
+    { title: content.step_1_title, desc: content.step_1_desc, href: PLATFORM.coolMap },
+    { title: content.step_2_title, desc: content.step_2_desc, href: PLATFORM.planMyTrip },
+    { title: content.step_3_title, desc: content.step_3_desc, href: PLATFORM.smartCalendar },
+    { title: content.step_4_title, desc: content.step_4_desc, href: PLATFORM.collections },
   ];
 
   return (
@@ -42,6 +45,13 @@ export function HowItWorks({ content }: { content: HomeContent }) {
                 </div>
                 <h3 className="step__title">{step.title}</h3>
                 <p className="step__desc">{step.desc}</p>
+                <a
+                  href={step.href}
+                  aria-label={`Abrir ${step.title} en la plataforma`}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 12, fontWeight: 600, fontSize: 14 }}
+                >
+                  Ábrelo en la plataforma <Icon name="arrow-up-right" size={13} />
+                </a>
               </li>
             ))}
           </ol>

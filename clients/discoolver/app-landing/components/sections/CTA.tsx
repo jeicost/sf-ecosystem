@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
+import { PLATFORM } from "@/lib/platform";
 
 export function CTA({ content }: { content: HomeContent }) {
   return (
@@ -19,10 +20,10 @@ export function CTA({ content }: { content: HomeContent }) {
           </h2>
           <p className="cta__sub">{content.cta_sub}</p>
           <div className="cta__buttons">
-            <Link href="/#hero-email" className="btn btn-primary">
+            <a href={PLATFORM.home} className="btn btn-primary">
               {content.cta_primary} <Icon name="arrow-right" size={14} />
-            </Link>
-            <a href="mailto:empresas@discoolver.com" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
+            </a>
+            <a href="mailto:info@discoolver.com" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
               {content.cta_secondary} <Icon name="arrow-right" size={14} />
             </a>
           </div>

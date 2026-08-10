@@ -39,7 +39,7 @@ export function Footer({
             <h4>Empresa</h4>
             <ul>
               <li>
-                <a href="mailto:empresas@discoolver.com">Para empresas</a>
+                <a href="mailto:info@discoolver.com">Para empresas</a>
               </li>
               <li>
                 <a href="mailto:hola@discoolver.com?subject=Prensa">Prensa</a>
@@ -56,7 +56,7 @@ export function Footer({
                 <Link href="/#faq">Preguntas frecuentes</Link>
               </li>
               <li>
-                <Link href="/#hero-email">Pedir invitación</Link>
+                <a href="https://app.discoolver.com">Entrar en la plataforma</a>
               </li>
               <li>
                 <Link href="/influencers">Creators</Link>

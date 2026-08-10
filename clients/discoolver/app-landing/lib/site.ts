@@ -3,7 +3,7 @@ export const site = {
   url: "https://discoolver-app-landing.vercel.app",
   locale: "es_ES",
   description:
-    "Discoolver es la plataforma de acceso por invitación para descubrir tu ciudad como un local: planes curados por creadores reales y potenciados por IA. Solo 500 plazas por ciudad.",
+    "Discoolver es la plataforma para descubrir tu ciudad como un local: sitios recomendados por creadores reales, revisados uno a uno por editores y potenciados por IA. Abierta ciudad a ciudad.",
   ogImage: "/og-default.jpg",
   twitter: "@discoolver",
   organization: {

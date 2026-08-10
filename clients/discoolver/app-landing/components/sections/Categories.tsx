@@ -1,8 +1,8 @@
 import Image from "next/image";
-import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
+import { PLATFORM } from "@/lib/platform";
 
 export function Categories({ content }: { content: HomeContent }) {
   return (
@@ -17,14 +17,15 @@ export function Categories({ content }: { content: HomeContent }) {
               </h2>
               <p className="section__lead">{content.categories_lead}</p>
             </div>
-            <Link className="btn btn-ghost" href="/#planes">
+            {/* La búsqueda por categorías vive en la plataforma real. */}
+            <a className="btn btn-ghost" href={PLATFORM.search}>
               {content.categories_cta} <Icon name="arrow-right" size={14} />
-            </Link>
+            </a>
           </div>
         </Reveal>
         <Reveal delay={120}>
           <div className="bento" role="list">
-            <div className="bento__card bento__featured" role="listitem" aria-label={`${content.cat_1_name} & ${content.cat_1_highlight} — ${content.cat_1_count}`}>
+            <a href={PLATFORM.search} className="bento__card bento__featured" role="listitem" aria-label={`${content.cat_1_name} & ${content.cat_1_highlight} — ${content.cat_1_count}`}>
               <Image
                 src="/assets/img-feat-monetizable.jpg"
                 alt="Gastronomía y sabores — experiencias culinarias en la ciudad"
@@ -41,9 +42,9 @@ export function Categories({ content }: { content: HomeContent }) {
                 {content.cat_1_name}
                 <br />& <span style={{ color: "var(--accent)" }}>{content.cat_1_highlight}</span>
               </div>
-            </div>
+            </a>
 
-            <div className="bento__card bento__color-1" role="listitem" aria-label={`Cultura viva — ${content.cat_2_count} planes`}>
+            <a href={PLATFORM.search} className="bento__card bento__color-1" role="listitem" aria-label={`${content.cat_2_name} ${content.cat_2_highlight} — ${content.cat_2_count}`}>
               <div className="bento__top">
                 <span className="bento__num" style={{ background: "var(--accent)", border: "1px solid var(--ink)" }}>
                   02
@@ -55,9 +56,9 @@ export function Categories({ content }: { content: HomeContent }) {
                 <br />
                 <span style={{ color: "var(--primary)" }}>{content.cat_2_highlight}</span>
               </div>
-            </div>
+            </a>
 
-            <div className="bento__card bento__color-2" role="listitem" aria-label={`Aire libre — ${content.cat_3_count} planes`}>
+            <a href={PLATFORM.search} className="bento__card bento__color-2" role="listitem" aria-label={`${content.cat_3_name} ${content.cat_3_highlight} — ${content.cat_3_count}`}>
               <div className="bento__top">
                 <span className="bento__num">03</span>
                 <span className="bento__count">{content.cat_3_count}</span>
@@ -67,9 +68,9 @@ export function Categories({ content }: { content: HomeContent }) {
                 <br />
                 <span style={{ color: "var(--accent)" }}>{content.cat_3_highlight}</span>
               </div>
-            </div>
+            </a>
 
-            <div className="bento__card bento__img-card" role="listitem" aria-label={`Nightlife — ${content.cat_4_count}`}>
+            <a href={PLATFORM.search} className="bento__card bento__img-card" role="listitem" aria-label={`${content.cat_4_name}${content.cat_4_highlight} — ${content.cat_4_count}`}>
               <Image
                 src="/assets/img-tickets.jpg"
                 alt="Nightlife — vida nocturna y ocio urbano"
@@ -86,23 +87,23 @@ export function Categories({ content }: { content: HomeContent }) {
                 {content.cat_4_name}
                 <span style={{ color: "var(--accent)" }}>{content.cat_4_highlight}</span>
               </div>
-            </div>
+            </a>
 
-            <div className="bento__card bento__sm" role="listitem" aria-label={`Familia — ${content.cat_5_count} planes`}>
+            <a href={PLATFORM.search} className="bento__card bento__sm" role="listitem" aria-label={`${content.cat_5_name} — ${content.cat_5_count}`}>
               <div className="bento__top">
                 <span className="bento__num">05</span>
                 <span className="bento__count">{content.cat_5_count}</span>
               </div>
               <div className="bento__title">{content.cat_5_name}</div>
-            </div>
+            </a>
 
-            <div className="bento__card bento__sm" role="listitem" aria-label={`Compras — ${content.cat_6_count} planes`}>
+            <a href={PLATFORM.search} className="bento__card bento__sm" role="listitem" aria-label={`${content.cat_6_name} — ${content.cat_6_count}`}>
               <div className="bento__top">
                 <span className="bento__num">06</span>
                 <span className="bento__count">{content.cat_6_count}</span>
               </div>
               <div className="bento__title">{content.cat_6_name}</div>
-            </div>
+            </a>
           </div>
         </Reveal>
       </div>

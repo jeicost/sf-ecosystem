@@ -24,7 +24,7 @@ import { CTA } from "@/components/sections/CTA";
 export const metadata: Metadata = buildMetadata({
   title: "Discoolver — Descubre tu ciudad antes que el resto",
   description:
-    "Plataforma de acceso por invitación: planes curados por creadores locales reales y potenciados por IA. 500 plazas por ciudad. Entra hoy por la web.",
+    "Sitios recomendados por creadores locales reales, revisados por editores y potenciados por IA. Madrid, Barcelona y Málaga ya abiertas — entra hoy por la web.",
   path: "/",
 });
 

@@ -2,18 +2,21 @@ import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
+import { PLATFORM } from "@/lib/platform";
 
 const IMAGES = ["/assets/img-owl.jpg", "/assets/img-fox.jpg", "/assets/img-koala-rome.jpg", "/assets/img-bear.jpg", "/assets/img-metro-kangaroo.jpg", "/assets/img-rabbit-cave.jpg"];
-const FILTERS = ["Todos", "Cultura", "Gastro", "Aire libre", "Nightlife", "Familia"];
+
+// 2026-08-10: fuera ratings, nº de reseñas y precios — eran inventados (ver
+// repaso de negocio; la normativa de reseñas falsas no es broma). Las tarjetas
+// ahora son sitios REALES del catálogo publicado (badge = ciudad) y cada una
+// abre la plataforma, que es donde está la ficha de verdad. Los filtros falsos
+// que no filtraban se retiran con ellos.
 
 export function Experiences({ content }: { content: HomeContent }) {
   const cards = [1, 2, 3, 4, 5, 6].map((n) => ({
     badge: content[`exp_${n}_badge` as keyof HomeContent],
     cat: content[`exp_${n}_cat` as keyof HomeContent],
     title: content[`exp_${n}_title` as keyof HomeContent],
-    rating: content[`exp_${n}_rating` as keyof HomeContent],
-    reviews: content[`exp_${n}_reviews` as keyof HomeContent],
-    price: content[`exp_${n}_price` as keyof HomeContent],
     image: IMAGES[n - 1],
   }));
 
@@ -28,55 +31,34 @@ export function Experiences({ content }: { content: HomeContent }) {
                 {content.experiences_title} <span style={{ color: "var(--primary)" }}>{content.experiences_title_highlight}</span> {content.experiences_title_2}
               </h2>
             </div>
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }} role="group" aria-label="Filtrar por categoría">
-              {FILTERS.map((f, i) => (
-                <button
-                  key={f}
-                  type="button"
-                  className="btn"
-                  aria-pressed={i === 0}
-                  style={{
-                    padding: "10px 16px",
-                    fontSize: 13,
-                    background: i === 0 ? "var(--ink)" : "transparent",
-                    color: i === 0 ? "var(--paper)" : "var(--ink)",
-                    border: "1.5px solid var(--line)",
-                  }}
-                >
-                  {f}
-                </button>
-              ))}
-            </div>
+            <a className="btn btn-ghost" href={PLATFORM.search}>
+              Ver todo el catálogo <Icon name="arrow-up-right" size={14} />
+            </a>
           </div>
         </Reveal>
         <div className="exps">
           {cards.map((card, i) => (
             <Reveal delay={i * 60} key={card.title}>
-              <article className="exp" aria-label={`${card.title} — ${card.cat}`}>
-                <div className="exp__media">
-                  <span className="exp__badge" aria-label={`Badge: ${card.badge}`}>
-                    {card.badge}
-                  </span>
-                  <button className="exp__heart" aria-label={`Guardar ${card.title} en favoritos`} aria-pressed="false">
-                    <Icon name="heart" size={16} />
-                  </button>
-                  <Image src={card.image} alt={card.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw" style={{ objectFit: "cover", objectPosition: "center top" }} />
-                </div>
-                <div className="exp__body">
-                  <span className="exp__cat">{card.cat}</span>
-                  <h3 className="exp__title">{card.title}</h3>
-                  <div className="exp__meta">
-                    <span className="exp__rating">
-                      <Icon name="star" size={14} />
-                      {card.rating}
-                      <span style={{ color: "var(--ink-2)" }}> · {card.reviews}</span>
+              <a href={PLATFORM.search} style={{ display: "block" }} aria-label={`${card.title} — ${card.cat}. Abrir en la plataforma`}>
+                <article className="exp">
+                  <div className="exp__media">
+                    <span className="exp__badge" aria-hidden="true">
+                      {card.badge}
                     </span>
-                    <span className="exp__price">
-                      <strong>{card.price}</strong>
-                    </span>
+                    <Image src={card.image} alt={card.title} fill sizes="(max-width: 640px) 100vw, (max-width: 1000px) 50vw, 33vw" style={{ objectFit: "cover", objectPosition: "center top" }} />
                   </div>
-                </div>
-              </article>
+                  <div className="exp__body">
+                    <span className="exp__cat">{card.cat}</span>
+                    <h3 className="exp__title">{card.title}</h3>
+                    <div className="exp__meta">
+                      <span className="exp__rating" style={{ color: "var(--ink-2)" }}>Ficha completa en la plataforma</span>
+                      <span className="exp__price">
+                        <Icon name="arrow-up-right" size={14} />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              </a>
             </Reveal>
           ))}
         </div>

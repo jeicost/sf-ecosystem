@@ -1,18 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@/components/ui/Icon";
+import { PLATFORM } from "@/lib/platform";
 
-// "Para empresas" apuntaba a /influencers, que es la landing de creators — y la
-// FAQ 07 remite explícitamente a este ítem del menú para consultas B2B. Ahora
-// la etiqueta dice a dónde va, y el contacto de empresas es el que ya usa el
-// CTA final de la home.
+// El email B2B canónico es info@ (decisión 2026-08-10); empresas@ se retira.
 const LINKS = [
   { href: "/#descubre", label: "Descubre" },
   { href: "/#planes", label: "Planes" },
   { href: "/#categorias", label: "Categorías" },
   { href: "/#mapa", label: "Mapa" },
   { href: "/influencers", label: "Creators" },
-  { href: "mailto:empresas@discoolver.com", label: "Para empresas" },
+  { href: "mailto:info@discoolver.com", label: "Para empresas" },
 ];
 
 export function Nav() {
@@ -30,12 +28,14 @@ export function Nav() {
           ))}
         </div>
         <div className="nav__cta">
-          <button className="btn btn-ghost" style={{ padding: "10px 18px" }}>
-            Tengo código
-          </button>
-          <Link href="/#hero-email" className="btn btn-primary" style={{ padding: "10px 18px" }}>
-            Pedir invitación <Icon name="arrow-up-right" size={14} />
+          {/* Antes: un <button> muerto que decía "Tengo código". La puerta real
+              existe — la plataforma está viva — así que el CTA principal entra. */}
+          <Link href="/#hero-email" className="btn btn-ghost" style={{ padding: "10px 18px" }}>
+            Avísame de mi ciudad
           </Link>
+          <a href={PLATFORM.home} className="btn btn-primary" style={{ padding: "10px 18px" }}>
+            Entrar <Icon name="arrow-up-right" size={14} />
+          </a>
         </div>
       </div>
     </nav>

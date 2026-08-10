@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
+import { PLATFORM } from "@/lib/platform";
 
 const PINS = [
   { left: "22%", top: "32%", num: "01" },
@@ -28,7 +29,8 @@ export function MapSection({ content }: { content: HomeContent }) {
               </h2>
               <p className="section__lead">{content.map_lead}</p>
             </div>
-            <a className="btn btn-ink" href="#main-content">
+            {/* Antes: href="#main-content", devolvía al hero. El mapa existe de verdad. */}
+            <a className="btn btn-ink" href={PLATFORM.coolMap}>
               {content.map_cta} <Icon name="arrow-up-right" size={14} />
             </a>
           </div>

@@ -6,16 +6,14 @@ import { Icon } from "./Icon";
 const CITIES = [
   "Madrid",
   "Barcelona",
-  "Sevilla",
-  "Valencia",
-  "Bilbao",
   "Málaga",
-  "Zaragoza",
-  "Granada",
-  "San Sebastián",
-  "Palma",
-  "Toledo",
-  "Córdoba",
+  "Ronda",
+  "Ibiza",
+  "Aranjuez",
+  "Punta Cana",
+  "Santo Domingo",
+  "Bangkok",
+  "Otra ciudad",
 ];
 
 export function HeroForm() {

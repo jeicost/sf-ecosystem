@@ -1,140 +1,142 @@
 /**
  * Hardcoded fallback copy for the home page — the "flat-fields" shape this
- * mirrors 1:1 in SF-CMS (project: discoolver, page slug: home, section id:
+ * mirrors 1:1 in SF-CMS (project: discoolver, page slug: app-home, section id:
  * "content", type: flat-fields). Every key here is a candidate CMS field.
  * scripts/fetch-cms-content.mjs bakes CMS overrides into content/pages.json
  * at build time; lib/cms-pages.ts#mergeContent() merges them over this
  * object so a CMS outage (or an empty field) never breaks the page — the
  * hardcoded value here always renders.
+ *
+ * REESCRITO 2026-08-10 (repaso de negocio + decisiones del CEO):
+ * - La plataforma está VIVA en https://app.discoolver.com — la landing deja de
+ *   vender una espera y pasa a ser la puerta: cada sección enlaza a su
+ *   contrapartida real (/map, /plan-my-trip, /calendar, /search, /wishlist).
+ * - Cero cifras inventadas. Todos los números salen del corte de producción
+ *   del 2026-08-06 (tarjetas listas = viva + STATE=4 + foto + categoría):
+ *   Madrid 858 · Barcelona 182 · Ronda 165 · Punta Cana 128 · Málaga 107 ·
+ *   Santo Domingo 75 · Aranjuez 64 · Ibiza 50 → 1.629 en total (sin el cajón
+ *   "Filipinas"). Por categoría: Restaurantes 367 · Ocio y eventos 262 ·
+ *   Alojamiento 237 · Compras 217 · Qué ver 216 · Fiesta 199.
+ * - PROHIBIDO reintroducir (regla del CEO): "No es una guía. No es un blog.",
+ *   plazas por ciudad, contadores de lista, nº de curators inventado,
+ *   ratings/reseñas/precios inventados, "12 ciudades activas".
+ * - El countdown cuenta el lanzamiento de ciudades (Countdown.tsx), no una app.
  */
 export const defaultHomeContent = {
   // Hero
-  hero_eyebrow: "Solo por invitación · 500 plazas / ciudad · app coming soon",
+  hero_eyebrow: "Plataforma abierta · nuevas ciudades cada mes",
   hero_title_line1: "Enjoy like a",
   hero_title_highlight1: "local.",
   hero_title_line2: "Discover like",
   hero_title_line3: "an",
   hero_title_highlight2: "animal.",
   hero_sub:
-    "Tus instintos nacieron para explorar. Discoolver desbloquea el lado salvaje de la ciudad — curado por creadores reales y potenciado por IA. Entra hoy por la web con tu código. La app llega",
-  hero_sub_strong: "muy pronto.",
-  hero_stat1_num: "500",
-  hero_stat1_label: "plazas / ciudad",
-  hero_stat2_num: "12",
-  hero_stat2_label: "ciudades activas",
-  hero_stat3_num: "42",
-  hero_stat3_label: "curators locales",
-  hero_stat4_num: "app",
-  hero_stat4_label: "muy pronto · iOS / Android",
-  hero_social_count: "8742",
-  hero_social_label: "personas ya en lista",
-  hero_social_live: "● 247 entraron esta semana",
+    "Los sitios que recomiendan quienes viven la ciudad, revisados uno a uno por editores antes de publicarse. Ya puedes usarlo en la web — mapa, rutas y calendario",
+  hero_sub_strong: "desde hoy.",
+  hero_stat1_num: "1.629",
+  hero_stat1_label: "sitios revisados y publicados",
+  hero_stat2_num: "8",
+  hero_stat2_label: "ciudades con contenido",
+  hero_stat3_num: "858",
+  hero_stat3_label: "solo en Madrid",
+  hero_stat4_num: "web",
+  hero_stat4_label: "abierta · app en camino",
+  hero_social_count: "858",
+  hero_social_label: "sitios revisados en Madrid",
+  hero_social_live: "● Barcelona y Málaga ya abiertas",
   hero_visual_pill: "● Madrid · ahora mismo",
-  hero_visual_title: "Cool Map · 4 planes cerca de ti",
+  hero_visual_title: "Cool Map · abre el mapa real",
 
-  // Ticker
-  ticker_1: "Madrid · 217 plazas restantes",
-  ticker_2: "Concierto sorpresa en Malasaña",
-  ticker_3: "Barcelona · 89 plazas restantes",
-  ticker_4: "Ruta de tapas · 7 paradas",
-  ticker_5: "Sevilla · 412 plazas restantes",
-  ticker_6: "Cinema bajo las estrellas",
-  ticker_7: "Valencia · 333 plazas restantes",
-  ticker_8: "Cata de vinos naturales",
-  ticker_9: "Bilbao · 156 plazas restantes",
-  ticker_10: "Free-tour barrios olvidados",
+  // Ticker — inventario real por ciudad, nada de plazas
+  ticker_1: "Madrid · 858 sitios publicados",
+  ticker_2: "Cine Doré · Arte y Cultura",
+  ticker_3: "Barcelona · 182 sitios publicados",
+  ticker_4: "1862 Dry Bar · Fiesta",
+  ticker_5: "Ronda · 165 sitios publicados",
+  ticker_6: "Acinipo · Qué ver",
+  ticker_7: "Málaga · 107 sitios publicados",
+  ticker_8: "La Croquetta · Restaurantes",
+  ticker_9: "Ibiza · 50 sitios publicados",
+  ticker_10: "Aranjuez · 64 sitios publicados",
 
-  // Categories (bento)
+  // Categories (bento) — categorías reales con recuento real de tarjetas listas
   categories_eyebrow: "Categorías · 06",
   categories_title: "Encuentra",
   categories_title_highlight: "tu vibra.",
-  categories_lead: "Seis universos para explorar la ciudad. Cada plan está verificado por un curator local.",
-  categories_cta: "Ver todas",
+  categories_lead:
+    "Seis universos para explorar la ciudad. Cada sitio pasa por un editor antes de publicarse — abre cualquiera y sigue en la plataforma.",
+  categories_cta: "Buscar en la plataforma",
   cat_1_name: "Gastronomía",
   cat_1_highlight: "sabores",
-  cat_1_count: "412 planes",
-  cat_2_name: "Cultura",
-  cat_2_highlight: "viva",
-  cat_2_count: "186",
-  cat_3_name: "Aire",
-  cat_3_highlight: "libre",
-  cat_3_count: "247",
+  cat_1_count: "367 sitios",
+  cat_2_name: "Qué",
+  cat_2_highlight: "ver",
+  cat_2_count: "216",
+  cat_3_name: "Ocio y",
+  cat_3_highlight: "eventos",
+  cat_3_count: "262",
   cat_4_name: "Night",
   cat_4_highlight: "life",
-  cat_4_count: "98 planes",
-  cat_5_name: "Familia",
-  cat_5_count: "163",
-  cat_6_name: "Compras",
-  cat_6_count: "274",
+  cat_4_count: "199 sitios",
+  cat_5_name: "Compras",
+  cat_5_count: "217",
+  cat_6_name: "Alojamiento",
+  cat_6_count: "237",
 
   // Travel brain (smart card)
   travel_brain_eyebrow: "No es otra app de reseñas",
-  travel_brain_badge: "◉ Demo · Smart Card",
-  travel_brain_title_1: "We're not another review app.",
-  travel_brain_title_2: "We're your",
-  travel_brain_title_highlight: "travel brain.",
+  travel_brain_badge: "◉ En vivo · app.discoolver.com",
+  travel_brain_title_1: "No somos otra app de reseñas.",
+  travel_brain_title_2: "Somos tu",
+  travel_brain_title_highlight: "cerebro viajero.",
   travel_brain_bullet_1: "Curamos lo mejor de blogs, redes y creadores — sin rankings de pago.",
   travel_brain_bullet_2: "La IA personaliza según tu ciudad, fechas y estilo de viaje.",
-  travel_brain_bullet_3: "Te saltas las horas de búsqueda. Reservas al instante.",
+  travel_brain_bullet_3: "Te saltas las horas de búsqueda. Todo en un mapa, una ruta y un calendario.",
   travel_brain_bullet_4: "Desde azoteas hasta cenas secretas. Evitas trampas turísticas. Siempre.",
-  travel_brain_quote: "Smart suggestions. Real vibes. Zero BS.",
+  travel_brain_quote: "Sugerencias con criterio. Sitios de verdad.",
 
-  // How it works (steps)
+  // How it works (steps) — cada paso enlaza a su contrapartida real
   how_it_works_eyebrow: "Tus armas secretas en la ciudad",
-  how_it_works_title_1: "No es una guía. No es un blog.",
-  how_it_works_title_2: "Es un",
-  how_it_works_title_highlight: "sexto sentido",
-  how_it_works_title_3: "para experiencias reales.",
+  how_it_works_title_1: "Un mapa, una ruta, un calendario",
+  how_it_works_title_2: "y",
+  how_it_works_title_highlight: "alguien a quien preguntar.",
+  how_it_works_title_3: "Nada más.",
   step_1_title: "Cool Map",
-  step_1_desc: "Solo los 10 sitios. Sin ruido. Just gold. Curado a mano, no clickbait — navega como local, no como turista.",
+  step_1_desc:
+    "Los sitios buenos, en un mapa sin ruido. Curado a mano, no clickbait — navega como local, no como turista. Ábrelo: está vivo.",
   step_2_title: "Plan My Trip",
-  step_2_desc: "Cuéntanos tus fechas, presupuesto y vibra. Construimos tu ruta 100% personalizada. Cero tiempo perdido.",
+  step_2_desc:
+    "Cuéntanos tus fechas, presupuesto y vibra. Construimos tu ruta 100% personalizada. Cero tiempo perdido.",
   step_3_title: "Smart Calendar",
-  step_3_desc: "Eventos en tiempo real, alertas, recordatorios. Sintonizado con tu agenda — saber qué pasa ya.",
-  step_4_title: "Local Buddy AI",
-  step_4_desc: "Pregúntale lo que sea, como a un colega de toda la vida. Tu sexto sentido digital 24/7.",
+  step_3_desc:
+    "Eventos en tiempo real, alertas, recordatorios. Sintonizado con tu agenda — saber qué pasa ya.",
+  step_4_title: "Tus colecciones",
+  step_4_desc:
+    "Guarda los sitios que te llaman, móntalos en listas y compártelas. Tu ciudad, ordenada a tu manera.",
 
-  // Experiences
-  experiences_eyebrow: "Experiencias destacadas",
-  experiences_title: "Planes con",
-  experiences_title_highlight: "chispa",
-  experiences_title_2: "esta semana.",
-  exp_1_badge: "Top de la semana",
-  exp_1_cat: "Cultura",
-  exp_1_title: "Arte y misterio en los museos",
-  exp_1_rating: "4.9",
-  exp_1_reviews: "312",
-  exp_1_price: "18 €",
-  exp_2_badge: "Nuevo",
-  exp_2_cat: "Gastro",
-  exp_2_title: "Cena con encanto local",
-  exp_2_rating: "4.8",
-  exp_2_reviews: "198",
-  exp_2_price: "Gratis",
-  exp_3_badge: "Plan estrella",
-  exp_3_cat: "Cultura",
-  exp_3_title: "Ciudades de película",
-  exp_3_rating: "4.9",
-  exp_3_reviews: "244",
-  exp_3_price: "29 €",
-  exp_4_badge: "Sábados",
-  exp_4_cat: "Nightlife",
-  exp_4_title: "Noche en el estadio",
-  exp_4_rating: "4.7",
-  exp_4_reviews: "156",
-  exp_4_price: "22 €",
-  exp_5_badge: "Plazas: 6",
-  exp_5_cat: "Aire libre",
-  exp_5_title: "Metro tour nocturno",
-  exp_5_rating: "4.8",
-  exp_5_reviews: "89",
-  exp_5_price: "Gratis",
-  exp_6_badge: "Local pick",
-  exp_6_cat: "Cultura",
-  exp_6_title: "Escapada VIP al siguiente nivel",
-  exp_6_rating: "5",
-  exp_6_reviews: "47",
-  exp_6_price: "35 €",
+  // Experiences — recomendaciones REALES del catálogo publicado (corte 2026-08-06)
+  experiences_eyebrow: "Del catálogo real",
+  experiences_title: "Sitios",
+  experiences_title_highlight: "publicados",
+  experiences_title_2: "esta temporada.",
+  exp_1_badge: "Madrid",
+  exp_1_cat: "Restaurantes · Tradicional",
+  exp_1_title: "La Croquetta",
+  exp_2_badge: "Madrid",
+  exp_2_cat: "Arte y Cultura · Cines",
+  exp_2_title: "Cine Doré",
+  exp_3_badge: "Madrid",
+  exp_3_cat: "Fiesta · Bares de copas",
+  exp_3_title: "1862 Dry Bar",
+  exp_4_badge: "Ronda",
+  exp_4_cat: "Qué ver · Barrios",
+  exp_4_title: "Barrio de San Francisco",
+  exp_5_badge: "Málaga",
+  exp_5_cat: "Qué ver · Arqueología",
+  exp_5_title: "Acinipo",
+  exp_6_badge: "Barcelona",
+  exp_6_cat: "Restaurantes · Fusión",
+  exp_6_title: "A Tu Bola",
 
   // Map
   map_eyebrow: "Mapa interactivo",
@@ -142,7 +144,7 @@ export const defaultHomeContent = {
   map_title_highlight: "cabe",
   map_title_2: "en tu bolsillo.",
   map_lead: "Filtros por barrio, hora y vibra. Guardas tus pins y los compartes con quien quieras.",
-  map_cta: "Abrir mapa completo",
+  map_cta: "Abrir el Cool Map",
   map_pin_1_cat: "Gastronomía",
   map_pin_1_name: "Mercado de San Fernando",
   map_pin_2_cat: "Cultura",
@@ -156,14 +158,14 @@ export const defaultHomeContent = {
   map_popup_desc: "Vistas 360º de la ciudad y un sunset que vale la entrada.",
 
   // For creators
-  creators_eyebrow: "Para creators · invite-only",
-  creators_title_1: "Not a tourist. Not a follower.",
-  creators_title_highlight: "A creator.",
+  creators_eyebrow: "Para creadores · por invitación",
+  creators_title_1: "Ni turista. Ni follower.",
+  creators_title_highlight: "Creador.",
   creators_lead:
-    "No solo viajas. Influyes en cómo viajan los demás. Convierte tus rutas en historias que pagan — con links únicos, tracking real y comisión por venta.",
-  creators_cta: "Apply as creator",
+    "No solo viajas: influyes en cómo viajan los demás. Tus recomendaciones, editadas y publicadas con tu firma — y cobras por lo que generan.",
+  creators_cta: "Quiero participar",
   creator_value_1_title: "Monetizable",
-  creator_value_1_desc: "Gana por cada venta generada con tu contenido. Tracking real.",
+  creator_value_1_desc: "Cobras por lo que tus recomendaciones generan. Con seguimiento real.",
   creator_value_2_title: "Personalizado",
   creator_value_2_desc: "Tu audiencia ve experiencias hechas para ellos, no listas genéricas.",
   creator_value_3_title: "Localizado",
@@ -171,33 +173,29 @@ export const defaultHomeContent = {
   creator_value_4_title: "Escalable",
   creator_value_4_desc: "Llega a viajeros de todo el mundo y crece tu comunidad.",
 
-  // App coming soon
-  app_soon_eyebrow: "App coming soon · iOS + Android",
-  app_soon_title_1: "La app llega en",
+  // Lanzamiento de ciudades (el contador vive en Countdown.tsx)
+  app_soon_eyebrow: "Lanzamiento por ciudades · otoño 2026",
+  app_soon_title_1: "Nuevas ciudades en",
   // El número lo pone el componente desde LAUNCH_DATE (ver Countdown.tsx).
   // No lo devuelvas a un campo del CMS: se queda congelado y contradice al
   // contador que tiene justo debajo.
   app_soon_title_2: "días.",
-  app_soon_title_3: "Tu acceso ya está reservado.",
+  app_soon_title_3: "La plataforma ya está abierta.",
   app_soon_desc:
-    "Mapa offline, calendario inteligente, Local Buddy AI en tu bolsillo y rutas hechas para ti en 10 segundos. Los que estén en la lista entran primero — y reciben un mes premium gratis.",
-  app_soon_cta: "Avísame al lanzamiento",
-  app_soon_sticker: "in {days} days",
+    "Madrid, Barcelona y Málaga ya se pueden explorar en app.discoolver.com. Cada ciudad nueva se abre cuando sus sitios están revisados uno a uno — déjanos tu email y te avisamos el día que abra la tuya.",
+  app_soon_cta: "Entrar en la plataforma",
+  app_soon_sticker: "en {days} días",
 
   // Testimonials
   testimonials_eyebrow: "Lo que dicen los descubridores",
-  // Antes: "120.000 personas redescubren su ciudad cada semana". Cifra sin
-  // respaldo, y además incompatible con el resto de la página (8.742 en lista,
-  // 500 plazas × 12 ciudades). El titular ahora dice algo cierto y que sale de
-  // las propias citas: quienes las escriben llevan años en su ciudad.
   testimonials_title: "Llevan años en su ciudad.",
   testimonials_title_highlight: "Y siguen descubriendo.",
   testimonial_1_quote: "Llevo 12 años en Madrid y descubrí 3 sitios nuevos en una tarde. Brujería.",
   testimonial_1_name: "Lucía M.",
   testimonial_1_role: "Diseñadora · Madrid",
-  testimonial_2_quote: "La app que necesitaba para no parecer turista en mi propia ciudad.",
+  testimonial_2_quote: "Lo que necesitaba para no parecer turista en mi propia ciudad.",
   testimonial_2_name: "Andrés P.",
-  testimonial_2_role: "Local · Sevilla",
+  testimonial_2_role: "Local · Madrid",
   testimonial_3_quote: "Los planes son raros en el buen sentido — nada de cosas obvias de TripAdvisor.",
   testimonial_3_name: "Marta G.",
   testimonial_3_role: "Curator · BCN",
@@ -206,7 +204,7 @@ export const defaultHomeContent = {
   testimonial_4_role: "Madrid",
   testimonial_5_quote: "Curaduría real, no listicles. Eso vale oro.",
   testimonial_5_name: "Sofía T.",
-  testimonial_5_role: "Periodista · Bilbao",
+  testimonial_5_role: "Periodista · Málaga",
   testimonial_6_quote: "El mapa es adictivo. Salí a por el pan y volví con 4 fotos nuevas.",
   testimonial_6_name: "Carmen L.",
   testimonial_6_role: "Madrid",
@@ -217,36 +215,41 @@ export const defaultHomeContent = {
   faq_title_highlight: "preguntes.",
   faq_lead_pre: "Si no encuentras tu respuesta, escríbenos a",
   faq_lead_email: "hola@discoolver.com",
-  faq_lead_post: ". Respondemos en menos de 12 h.",
+  faq_lead_post: ". Te contestamos en 24-48 h laborables.",
   faq_q1: "¿Qué es exactamente Discoolver?",
   faq_a1:
-    "Una plataforma local con curaduría humana + IA que te enseña los planes, rincones y eventos que realmente merecen la pena de tu ciudad. Sin rankings de pago, sin trampas turísticas. Hoy se accede por la web; la app llega muy pronto.",
-  faq_q2: "¿Cómo consigo mi invitación?",
-  faq_a2: "Déjanos tu email y tu ciudad en el formulario del hero. En menos de 24 h recibes tu código personal. Hay 500 plazas por ciudad en esta primera oleada.",
-  faq_q3: "¿Cuándo lanzáis la app?",
-  faq_a3: "Estamos en sprint final. Si estás en la lista, entras primero — y te regalamos un mes premium completo. Suscríbete arriba para recibir el aviso justo el día del lanzamiento.",
+    "Una plataforma local con curaduría humana + IA que te enseña los planes, rincones y eventos que realmente merecen la pena de tu ciudad. Sin rankings de pago, sin trampas turísticas. Se usa desde la web, en app.discoolver.com.",
+  faq_q2: "¿Cómo entro?",
+  faq_a2:
+    "Directamente: entra en app.discoolver.com y explora. Abrimos ciudad a ciudad — si la tuya todavía no está, déjanos tu email en el formulario y te avisamos el día que abra.",
+  faq_q3: "¿Y la app del móvil?",
+  faq_a3:
+    "La plataforma web ya funciona en tu móvil, sin descargar nada. La app nativa llega después: apúntate a la lista y recibes el aviso el día que salga.",
   faq_q4: "¿En qué ciudades funciona?",
-  faq_a4: "Empezamos con 12: Madrid, Barcelona, Sevilla, Valencia, Bilbao, Málaga, Zaragoza, Granada, San Sebastián, Palma, Toledo y Córdoba. Las siguientes oleadas las decidirá la comunidad.",
+  faq_a4:
+    "Madrid, Barcelona y Málaga están abiertas, con más de 1.100 sitios revisados entre las tres. Ronda, Ibiza y Aranjuez entran a continuación, y Bangkok será la primera ciudad fuera de España. ¿La tuya no está? Apúntate y te avisamos el día que abra: el orden lo marca la lista.",
   faq_q5: "¿Cuánto cuesta?",
   faq_a5:
-    "Tener cuenta y usar el mapa, gratis. La membresía premium (rutas IA ilimitadas, eventos privados, ventajas en partners) cuesta menos que un café al mes — y tu primer mes va de nuestra parte si entras desde la lista.",
-  faq_q6: "Soy creator local, ¿cómo participo?",
+    "Usar Discoolver es gratis mientras abrimos ciudades. Si algún día una parte pasa a ser de pago, lo sabrás antes y sin sorpresas — nunca a mitad de viaje.",
+  faq_q6: "Soy creador local, ¿cómo participo?",
   faq_a6:
-    'Tenemos un programa de creators por invitación con tracking de ventas, comisión por cada experiencia que cierres y herramientas para construir tu marca personal. Hay un botón "Apply as creator" en la sección de creators.',
+    "Tenemos un programa de creadores por invitación: tus recomendaciones editadas y publicadas con tu firma, con seguimiento de lo que generan. Entra desde la sección de creadores y aplica.",
   faq_q7: "Soy negocio o ayuntamiento. ¿Hay algo para mí?",
-  faq_a7: 'Sí. Tenemos un programa B2B con dashboard de visibilidad, campañas locales y partnerships exclusivos. Escríbenos desde la sección "Para empresas" del menú.',
+  faq_a7:
+    "Sí: discoolver 360, nuestra plataforma para destinos, alojamientos y agencias. Escríbenos a info@discoolver.com y te enseñamos cómo funciona con tu caso delante.",
 
   // CTA
-  cta_eyebrow: "Acceso por invitación · web abierta hoy · app muy pronto",
-  cta_title_1: "Pide tu",
-  cta_title_1_em: "código.",
+  cta_eyebrow: "Plataforma abierta · nuevas ciudades cada mes",
+  cta_title_1: "Tu ciudad,",
+  cta_title_1_em: "en serio.",
   cta_title_2: "Entra",
-  cta_title_2_em: "antes",
-  cta_title_3: "que el resto.",
-  cta_sub: "Solo 500 plazas por ciudad en esta primera oleada. Hoy entras a Discoolver desde la web; cuando lance la app, tendrás acceso prioritario y un mes premium gratis.",
-  cta_primary: "Pedir mi invitación",
+  cta_title_2_em: "hoy",
+  cta_title_3: "y explórala.",
+  cta_sub:
+    "Madrid, Barcelona y Málaga ya están abiertas en app.discoolver.com. Cada sitio lo ha revisado una persona antes de publicarse — no damos por bueno lo que escupe un algoritmo. ¿Tu ciudad no está? Déjanos tu email y te avisamos cuando abra.",
+  cta_primary: "Entrar en la plataforma",
   cta_secondary: "Para empresas",
-  cta_cities: "Madrid · Barcelona · Sevilla · Valencia · Bilbao · Málaga · Zaragoza · Granada · San Sebastián · Palma · Toledo · Córdoba",
+  cta_cities: "Madrid · Barcelona · Málaga · Ronda · Ibiza · Aranjuez · Punta Cana · Santo Domingo · Bangkok próximamente",
 
   // Footer
   footer_brand_desc: "La plataforma para descubrir tu ciudad como nunca antes lo habías hecho.",
