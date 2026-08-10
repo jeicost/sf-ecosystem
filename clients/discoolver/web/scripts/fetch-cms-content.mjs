@@ -1,10 +1,10 @@
 /**
  * Discoolver web — build-time CMS bake (SF-CMS).
- * Runs BEFORE `next build` (see package.json). Fetches the "home" and
- * "influencers" pages from SF-CMS — each page has a single `flat-fields`
- * section (id: "content") holding editable copy — and writes
- * content/pages.json so the site renders CMS overrides on top of the
- * hardcoded fallbacks in lib/content/{home,influencers}.ts.
+ * Runs BEFORE `next build` (see package.json). Fetches the pages listed in
+ * PAGE_SLUGS from SF-CMS — each page has a single `flat-fields` section
+ * (id: "content") holding editable copy — and writes content/pages.json so the
+ * site renders CMS overrides on top of the hardcoded fallbacks in
+ * lib/content/{home,influencers}.ts and lib/content/b360/*.ts.
  *
  * Same safety contract as clients/adrian-grooves/scripts/fetch-cms-content.mjs
  * and clients/discoolver/creators-landing/scripts/build-static.mjs: a CMS
@@ -30,7 +30,18 @@ const CMS_API_KEY = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY
 const PROJECT_SLUG = process.env.SF_CMS_PROJECT_SLUG || process.env.CMS_PROJECT_SLUG || 'discoolver'
 const HEADERS = { 'x-api-key': CMS_API_KEY }
 
-const PAGE_SLUGS = ['home', 'influencers']
+// Las de 360 van prefijadas: el proyecto `discoolver` del CMS sirve a varias webs
+// y los slugs no se pueden repetir entre ellas (`home` ya es el de la tienda de
+// guías; `app-home` y `app-influencers`, los de la landing de la app).
+const PAGE_SLUGS = [
+  'home',
+  'influencers',
+  '360-home',
+  '360-destinos',
+  '360-alojamientos',
+  '360-agencias',
+  '360-demo',
+]
 
 function ensureContentFile() {
   fs.mkdirSync(CONTENT, { recursive: true })

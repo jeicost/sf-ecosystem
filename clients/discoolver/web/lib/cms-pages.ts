@@ -9,7 +9,21 @@
 type SectionData = Record<string, unknown>;
 type CmsSections = Record<string, { type: string; data: SectionData }>;
 
-export function loadCmsSections(pageSlug: "home" | "influencers"): CmsSections {
+/**
+ * Slugs de este proyecto en SF-CMS. Los de 360 van prefijados porque el proyecto
+ * `discoolver` del CMS sirve a varias webs y no se pueden repetir slugs entre
+ * ellas (`home` ya es de la tienda de guías; `app-home`, de la landing de la app).
+ */
+export type PageSlug =
+  | "home"
+  | "influencers"
+  | "360-home"
+  | "360-destinos"
+  | "360-alojamientos"
+  | "360-agencias"
+  | "360-demo";
+
+export function loadCmsSections(pageSlug: PageSlug): CmsSections {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pages = require("../content/pages.json");
@@ -34,6 +48,22 @@ export function mergeContent<T extends Record<string, unknown>>(fallback: T, cms
   return merged as T;
 }
 
+/**
+ * Atajo para páginas flat-fields: resuelve Draft Mode, carga y mergea de una vez.
+ * Las páginas de /360 lo usan; app/page.tsx y app/influencers/page.tsx siguen con
+ * las tres llamadas sueltas porque además pintan un DraftBanner condicional.
+ */
+export async function pageContent<T extends Record<string, unknown>>(
+  slug: PageSlug,
+  fallback: T,
+  isDraft: boolean,
+): Promise<T> {
+  const cms = isDraft
+    ? ((await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug))
+    : loadCmsSections(slug);
+  return mergeContent(fallback, section(cms, "content"));
+}
+
 function normalizeSections(sectionsJson: unknown): CmsSections {
   const sections: CmsSections = {};
   if (!Array.isArray(sectionsJson)) return sections;
@@ -53,7 +83,7 @@ function normalizeSections(sectionsJson: unknown): CmsSections {
  * draftMode().isEnabled — normal reads always go through loadCmsSections.
  * Returns null on any failure so the caller falls back to the static bake.
  */
-export async function loadCmsSectionsLive(pageSlug: "home" | "influencers"): Promise<CmsSections | null> {
+export async function loadCmsSectionsLive(pageSlug: PageSlug): Promise<CmsSections | null> {
   const apiUrl = process.env.SF_CMS_API_URL || process.env.CMS_API_URL;
   const apiKey = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY;
   const projectSlug = process.env.SF_CMS_PROJECT_SLUG || process.env.CMS_PROJECT_SLUG || "discoolver";

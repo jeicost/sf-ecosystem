@@ -39,6 +39,13 @@ export const metadata: Metadata = {
     default: "discoolver 360 — Plataforma para destinos, alojamientos y agencias",
     template: "%s — discoolver 360",
   },
+  // El root layout declara los iconos del B2C. 360 es otra marca: se sobrescriben
+  // aquí para todo el segmento en vez de fiarse de la convención de ficheros
+  // (app/360/icon.png), que no gana a un `icons` explícito heredado de la raíz.
+  icons: {
+    icon: [{ url: "/assets/360/icon-512.png", sizes: "512x512", type: "image/png" }],
+    apple: "/assets/360/apple-icon.png",
+  },
 };
 
 export default function Brand360Layout({ children }: { children: React.ReactNode }) {

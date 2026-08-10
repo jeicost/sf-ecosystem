@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo360 } from "@/components/b360/Logo360";
 
 /**
  * Footer de 360. Regla heredada de la auditoría: NINGÚN enlace a "#".
@@ -11,9 +12,7 @@ export function Footer360() {
       <div className="wrap">
         <div className="b360-foot__grid">
           <div>
-            <Link href="/360" className="b360-logo">
-              discoolver <span>360</span>
-            </Link>
+            <Logo360 size={38} />
             <p className="small" style={{ marginTop: 14, maxWidth: "34ch" }}>
               La plataforma que convierte el tráfico turístico de un destino en ingreso para su
               tejido local.

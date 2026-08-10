@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { defaultAlojamientos360Content as c } from "@/lib/content/b360/alojamientos";
+import { draftMode } from "next/headers";
+import { defaultAlojamientos360Content } from "@/lib/content/b360/alojamientos";
+import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, Txt } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
@@ -8,11 +10,18 @@ export const metadata: Metadata = buildMetadata({
   description:
     "El concierge digital que entra en tu check-in, responde al huésped 24/7 y convierte tus recomendaciones en una línea de ingresos para el alojamiento.",
   path: "/360/alojamientos",
+  image: "/assets/360/og-360.png",
+  siteName: "discoolver 360",
+  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
+  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
+  noindex: true,
 });
 
-const K = (k: string) => c[k as keyof typeof c] as string;
+export default async function Alojamientos360() {
+  const { isEnabled: isDraft } = await draftMode();
+  const c = await pageContent("360-alojamientos", defaultAlojamientos360Content, isDraft);
+  const K = (k: string) => c[k as keyof typeof c] as string;
 
-export default function Alojamientos360() {
   return (
     <>
       {/* ---------- hero ---------- */}

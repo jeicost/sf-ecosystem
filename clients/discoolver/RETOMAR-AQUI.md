@@ -27,12 +27,17 @@ Se quita cuando Carlos dé el OK.
 
 ---
 
-## Estado: 8 commits locales, CERO push
+## Estado: los 8 commits de agosto ya están en origin
 
-`main…origin/main [ahead 8]`. **No se ha desplegado nada.** Un push a `main`
-dispara build de producción en cinco proyectos de Vercel (discoolver-landing,
-salsaburgers, startupsfactory, ncglobalassets, adrian-grooves), así que eso se
-hace con Carlos delante y revisando los cuatro que no son de Discoolver.
+Aquello se pusheó. Lo del 2026-08-10 (logo de 360 + siembra en el CMS) también.
+
+**Sigue vigente el aviso:** un push a `main` dispara build de producción en cinco
+proyectos de Vercel — `discoolver-landing`, `salsa-burgers-web`,
+`startup-factory-web`, `nc-global-assets-next` y `adrian-grooves`. No hay
+path-filter: se reconstruyen los cinco aunque solo toques uno. Tres de ellos son
+webs de cliente **vivas**. Antes de pushear, anotar el `dpl_` de producción de
+cada uno y comprobar los cinco después; si uno falla, Vercel mantiene el
+deployment anterior sirviendo, pero hay que enterarse igual.
 
 También hay un cambio **sin commitear** en `~/Developer/discoolver-dg-editor/ui/influencers.html`
 (quitar la comisión del 50%). Es el repo del cliente, por eso se dejó fuera.
@@ -66,6 +71,21 @@ La hoja "Estado por ciudad" del Excel está rehecha con estos datos
 sistema visual propio aislado del B2C. 552 campos de copy en
 `web/lib/content/b360/` y el original en `deliverables/copy-360/`.
 
+**Logo de 360 + siembra en el CMS (2026-08-10, SIN COMMITEAR)** — el logo que
+faltaba ya existe como asset: Carlos pasó la D y está vectorizada en
+`web/components/b360/Logo360.tsx` y `web/public/assets/360/` (el asset original de Carlos, no una reconstrucción), con
+favicon, apple-icon y OG propios. Va en el nav y en el footer de /360.
+
+Y las cinco páginas **ya están en SF-CMS**: slugs `360-home`, `360-destinos`,
+`360-alojamientos`, `360-agencias`, `360-demo`, 566 campos, publicadas. El copy
+de `/360/demo` estaba hardcodeado en el JSX y se extrajo a
+`web/lib/content/b360/demo.ts` para que también se pudiera editar. Se re-siembra
+con `npx tsx scripts/seed-cms-360.ts` (idempotente). Verificado en vivo que el
+CMS pisa al código y que `next build` deja las cinco rutas estáticas.
+
+Mientras el banner "PROPUESTA EN REVISIÓN" siga puesto, las cinco llevan
+`noindex` — no tiene sentido que Google indexe una propuesta. Se quitan juntos.
+
 ---
 
 ## Lo que rompe el plan del 1 de septiembre
@@ -98,8 +118,8 @@ guía. El Caribe está listo y nadie lo ha pedido: decisión de negocio.
 3. **Fase 1 · Consolidación** — i18n ES/EN con hreflang y absorber `app-landing`
    en un solo proyecto Vercel. Va después del copy: primero se aprueba qué se
    dice, luego se monta la estructura.
-4. **Sembrar en SF-CMS** — las páginas de 360 con el set de campos nuevo. Regla
-   de `web/CLAUDE.md`: **re-sembrar ANTES de desplegar** o las claves viejas
+4. ~~**Sembrar en SF-CMS**~~ — HECHO el 2026-08-10 (ver arriba). La regla sigue
+   viva para lo que venga: **re-sembrar ANTES de desplegar** o las claves viejas
    pisan el copy nuevo. Pasó con 40 colisiones reales en agosto.
 5. **Fase 4 · Corte de dominio** — lo último, con el equipo de Discoolver. Es la
    única operación irreversible en caliente.
@@ -120,7 +140,10 @@ magenta al navegarlas):
 - Teléfono B2B: circulan dos (+34 656 91 43 74 y +34 681 291 571).
 - Cita de Ronda con nombre, cargo y autorización por escrito.
 - Agencias: qué se le vende exactamente a una DMC, con qué tarifa y margen.
-- **El logo de discoolver 360** — está en el deck pero no hay asset en el repo.
+- ~~**El logo de discoolver 360**~~ — resuelto el 2026-08-10 con el asset original
+  que pasó Carlos (`Logo Discoolver 360 D.png`). Está en `web/public/assets/360/`.
+  Si algún día aparece el vector (AI/Figma del deck), sustituirlo ahí: hoy es un
+  bitmap, suficiente para web pero no para gran formato ni serigrafía.
 - Los Keynotes por vertical (Alojamientos ×3, Destinos ×5, DMCs).
 
 **Para el plan de lanzamiento:**

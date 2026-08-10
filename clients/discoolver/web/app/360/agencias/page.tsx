@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { defaultAgencias360Content as c } from "@/lib/content/b360/agencias";
+import { draftMode } from "next/headers";
+import { defaultAgencias360Content } from "@/lib/content/b360/agencias";
+import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Stat, Steps, Pending } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
@@ -8,11 +10,18 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Digitalizamos el catálogo local del destino y te damos marketplace y punto de venta para venderlo. Módulos desde 100 €/mes y comisión del 10-15%.",
   path: "/360/agencias",
+  image: "/assets/360/og-360.png",
+  siteName: "discoolver 360",
+  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
+  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
+  noindex: true,
 });
 
-const K = (k: string) => c[k as keyof typeof c] as string;
+export default async function Agencias360() {
+  const { isEnabled: isDraft } = await draftMode();
+  const c = await pageContent("360-agencias", defaultAgencias360Content, isDraft);
+  const K = (k: string) => c[k as keyof typeof c] as string;
 
-export default function Agencias360() {
   return (
     <>
       {/* ---------- hero ---------- */}

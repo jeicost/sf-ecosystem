@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
+import { draftMode } from "next/headers";
 import { buildMetadata } from "@/lib/seo";
+import { defaultDemo360Content } from "@/lib/content/b360/demo";
+import { pageContent } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
 import { Section } from "@/components/b360/Bits";
 
@@ -8,37 +11,33 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Media hora con la plataforma funcionando y el despliegue de Ronda abierto. Salimos con una propuesta de por qué módulo empezar y qué cuesta.",
   path: "/360/demo",
+  image: "/assets/360/og-360.png",
+  siteName: "discoolver 360",
+  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
+  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
+  noindex: true,
 });
 
-export default function Demo360() {
+export default async function Demo360() {
+  const { isEnabled: isDraft } = await draftMode();
+  const c = await pageContent("360-demo", defaultDemo360Content, isDraft);
+  const K = (k: string) => c[k as keyof typeof c] as string;
+
   return (
     <Section>
       <div className="split" style={{ paddingTop: 40 }}>
         <div>
-          <span className="label">Demo</span>
+          <span className="label">{c.eyebrow}</span>
           <h1 className="h-hero" style={{ fontSize: "clamp(32px,4.6vw,58px)" }}>
-            Media hora, tu destino sobre la mesa
+            {c.title}
           </h1>
-          <p className="lead">
-            Sin compromiso y sin presentación de cuarenta diapositivas. Enseñamos la plataforma
-            funcionando y el despliegue de Ronda abierto, no capturas de pantalla.
-          </p>
+          <p className="lead">{c.lead}</p>
           <ul className="ticks" style={{ marginTop: 26 }}>
-            <li>
-              <strong>Qué ves:</strong> marketplace, punto de venta y cuadro de mando en vivo, con
-              datos reales de un destino desplegado.
-            </li>
-            <li>
-              <strong>Qué te llevas:</strong> por qué módulo empezar en tu caso, qué cuesta y en qué
-              plazo puede estar operativo.
-            </li>
-            <li>
-              <strong>Quién la hace:</strong> alguien del equipo que conoce el producto, no un
-              comercial de guion.
-            </li>
-            <li>
-              <strong>Cuánto dura:</strong> 30 minutos. Si hace falta una segunda, se cuadra.
-            </li>
+            {[1, 2, 3, 4].map((n) => (
+              <li key={n}>
+                <strong>{K(`tick_${n}_label`)}</strong> {K(`tick_${n}_texto`)}
+              </li>
+            ))}
           </ul>
           <div
             style={{
@@ -50,13 +49,13 @@ export default function Demo360() {
             }}
           >
             <span style={{ fontFamily: "var(--b-mono)", fontSize: 11, letterSpacing: ".16em", textTransform: "uppercase", color: "var(--b-slate)" }}>
-              También puedes escribir
+              {c.contacto_label}
             </span>
-            <a href="mailto:info@discoolver.com" style={{ fontFamily: "var(--b-mono)", fontSize: 13.5, color: "var(--b-primary)" }}>
-              info@discoolver.com
+            <a href={`mailto:${c.contacto_email}`} style={{ fontFamily: "var(--b-mono)", fontSize: 13.5, color: "var(--b-primary)" }}>
+              {c.contacto_email}
             </a>
             <span style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-slate)" }}>
-              C/ María de Molina 39, 28006 Madrid
+              {c.contacto_direccion}
             </span>
           </div>
         </div>

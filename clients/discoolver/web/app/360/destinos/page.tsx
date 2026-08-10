@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { defaultDestinos360Content as c } from "@/lib/content/b360/destinos";
+import { draftMode } from "next/headers";
+import { defaultDestinos360Content } from "@/lib/content/b360/destinos";
+import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
@@ -8,11 +10,18 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Plataforma SaaS para ayuntamientos, patronatos y DMO: redistribuye el flujo de visitantes, da datos propios del destino y monetiza el comercio local.",
   path: "/360/destinos",
+  image: "/assets/360/og-360.png",
+  siteName: "discoolver 360",
+  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
+  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
+  noindex: true,
 });
 
-const K = (k: string) => c[k as keyof typeof c] as string;
+export default async function Destinos360() {
+  const { isEnabled: isDraft } = await draftMode();
+  const c = await pageContent("360-destinos", defaultDestinos360Content, isDraft);
+  const K = (k: string) => c[k as keyof typeof c] as string;
 
-export default function Destinos360() {
   return (
     <>
       {/* ---------- hero ---------- */}

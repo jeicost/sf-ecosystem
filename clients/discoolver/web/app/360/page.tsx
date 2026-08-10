@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
-import { defaultHome360Content as c } from "@/lib/content/b360/home";
+import { draftMode } from "next/headers";
+import { defaultHome360Content } from "@/lib/content/b360/home";
+import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
@@ -9,28 +11,36 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Marketplace, punto de venta, rutas, eventos, asistente de voz, señalética y business intelligence para destinos, alojamientos y agencias. Módulos desde 100 €/mes.",
   path: "/360",
+  image: "/assets/360/og-360.png",
+  siteName: "discoolver 360",
+  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
+  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
+  noindex: true,
 });
 
-const MODULOS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
-  nombre: c[`modulo_${n}_nombre` as keyof typeof c] as string,
-  resuelve: c[`modulo_${n}_resuelve` as keyof typeof c] as string,
-  precio: c[`modulo_${n}_precio` as keyof typeof c] as string,
-}));
+export default async function Home360() {
+  const { isEnabled: isDraft } = await draftMode();
+  const c = await pageContent("360-home", defaultHome360Content, isDraft);
 
-const VERTICALES = [1, 2, 3].map((n) => ({
-  etiqueta: c[`vert_${n}_etiqueta` as keyof typeof c] as string,
-  frase: c[`vert_${n}_frase` as keyof typeof c] as string,
-  texto: c[`vert_${n}_texto` as keyof typeof c] as string,
-  label: c[`vert_${n}_cta_label` as keyof typeof c] as string,
-  href: c[`vert_${n}_cta_href` as keyof typeof c] as string,
-}));
+  const MODULOS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+    nombre: c[`modulo_${n}_nombre` as keyof typeof c] as string,
+    resuelve: c[`modulo_${n}_resuelve` as keyof typeof c] as string,
+    precio: c[`modulo_${n}_precio` as keyof typeof c] as string,
+  }));
 
-const FAQ = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({
-  q: c[`faq_${n}_p` as keyof typeof c] as string,
-  a: c[`faq_${n}_r` as keyof typeof c] as string,
-}));
+  const VERTICALES = [1, 2, 3].map((n) => ({
+    etiqueta: c[`vert_${n}_etiqueta` as keyof typeof c] as string,
+    frase: c[`vert_${n}_frase` as keyof typeof c] as string,
+    texto: c[`vert_${n}_texto` as keyof typeof c] as string,
+    label: c[`vert_${n}_cta_label` as keyof typeof c] as string,
+    href: c[`vert_${n}_cta_href` as keyof typeof c] as string,
+  }));
 
-export default function Home360() {
+  const FAQ = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({
+    q: c[`faq_${n}_p` as keyof typeof c] as string,
+    a: c[`faq_${n}_r` as keyof typeof c] as string,
+  }));
+
   return (
     <>
       {/* ---------- hero ---------- */}

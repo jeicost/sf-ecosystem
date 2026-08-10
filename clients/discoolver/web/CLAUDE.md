@@ -74,6 +74,49 @@ nuevo ANTES de desplegar. Proyecto Supabase `dmzecrlkclocqaywkjtc`, tabla `pages
 discoolver `674dda33-f0dd-4d2f-8433-92aa86941caf` (home `2b4b0062-…`, influencers `85c1e18d-…`,
 creators-landing `c09293e7-…`).
 
+**La API pública del CMS cachea 60s** (`s-maxage=60, stale-while-revalidate=300` en
+`apps/sf-cms/app/api/public/pages/route.ts`). Tras sembrar, un `fetch-cms-content.mjs` inmediato
+puede traerse todavía el contenido anterior — no es un fallo de la siembra, es el CDN. Comprobar
+contra Supabase directamente si hay duda, o esperar el minuto.
+
+### Las páginas de /360 (marca B2B)
+
+Slugs **prefijados** en el mismo proyecto del CMS, porque `discoolver` sirve a varias webs y no se
+pueden repetir: `360-home`, `360-destinos`, `360-alojamientos`, `360-agencias`, `360-demo`
+(566 campos en total, sembradas y publicadas el 2026-08-10). Fallbacks en `lib/content/b360/*.ts`,
+que siguen siendo la fuente de verdad del copy — el CMS es la capa de edición, no el origen.
+
+Re-sembrar con:
+
+```bash
+# las credenciales están en apps/sf-cms/.env.local
+SF_CMS_SUPABASE_URL=… SF_CMS_SUPABASE_SERVICE_KEY=… npx tsx scripts/seed-cms-360.ts [--dry]
+```
+
+Es idempotente (crea o actualiza por slug). Las cinco páginas usan el atajo `pageContent()` de
+`lib/cms-pages.ts`, que resuelve Draft Mode + bake + merge de una vez.
+
+## La marca de /360 es otra marca
+
+`components/b360/Logo360.tsx` monta el lockup: isotipo + "discoolver **360**". El isotipo es el
+asset **original** que pasó Carlos (2026-08-10) — degradado, sombra burdeos y swoosh — no una
+reconstrucción: si alguien lo redibuja "para vectorizarlo", la marca se bifurca. Vive en
+`public/assets/360/`: `logo-360-mark.webp` (27 KB, lo que carga la web), el mismo bitmap en `.png`
+para deck y firmas, `logo-360-mark-white.png` (una tinta) e `icon-512.png` / `apple-icon.png`.
+El maestro sin recortar está fuera del repo, en el escritorio de Carlos.
+
+Se sirve con `<img>` y no con `next/image` a propósito: son 27 KB, el optimizador no aporta nada
+y así el nav no depende de la image optimization de Vercel.
+
+`app/360/layout.tsx` **sobrescribe los iconos** del root layout. Es a propósito: el root declara
+un `icons` explícito para el B2C y un `icons` explícito heredado gana a la convención de ficheros
+(`app/360/icon.png`), así que los de 360 se declaran también explícitos apuntando a
+`public/assets/360/`. El OG de las cinco páginas es `/assets/360/og-360.png`, vía el parámetro
+`image` de `buildMetadata`.
+
+Mientras el banner "PROPUESTA EN REVISIÓN" siga en el layout, las cinco páginas llevan
+`noindex: true`. **Se quitan las dos cosas a la vez**, no una sin la otra.
+
 ## Assets pesados
 
 `public/assets/` tiene ~550MB (varios PNG de 20-35MB sin comprimir + vídeos mp4/mov). Antes de un

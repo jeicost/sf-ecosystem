@@ -7,9 +7,18 @@ interface SeoArgs {
   path?: string;
   image?: string;
   noindex?: boolean;
+  /** Las páginas de /360 son otra marca: "discoolver 360", no "Discoolver". */
+  siteName?: string;
 }
 
-export function buildMetadata({ title, description, path = "", image, noindex }: SeoArgs): Metadata {
+export function buildMetadata({
+  title,
+  description,
+  path = "",
+  image,
+  noindex,
+  siteName,
+}: SeoArgs): Metadata {
   const url = `${site.url}${path}`;
   const ogImage = image ?? site.ogImage;
   return {
@@ -20,7 +29,7 @@ export function buildMetadata({ title, description, path = "", image, noindex }:
       title,
       description,
       url,
-      siteName: site.name,
+      siteName: siteName ?? site.name,
       locale: site.locale,
       type: "website",
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],

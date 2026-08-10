@@ -346,25 +346,27 @@
   gap: 28px;
 }
 .b360-logo {
+  text-decoration: none;
+  color: var(--b-text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.b360-logo img {
+  display: block;
+  flex: none;
+}
+.b360-logo__wm {
   font-family: var(--b-display);
   font-weight: 900;
   font-size: 19px;
   letter-spacing: -0.02em;
-  text-decoration: none;
-  color: var(--b-text);
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
+  line-height: 1;
 }
-.b360-logo span {
-  font-size: 12px;
-  font-family: var(--b-mono);
-  font-weight: 400;
+.b360-logo__360 {
   color: var(--b-primary);
-  letter-spacing: 0.12em;
-  border: 1px solid var(--b-line);
-  border-radius: 5px;
-  padding: 2px 6px;
+  /* El espacio en blanco del JSX se queda corto entre la "r" y el "3". */
+  margin-left: 0.16em;
 }
 .b360-nav__links { display: flex; gap: 22px; margin-left: auto; align-items: center; }
 .b360-nav__links a {
