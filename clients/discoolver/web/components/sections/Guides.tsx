@@ -10,11 +10,12 @@ import type { HomeContent } from "@/lib/content/home";
  * real cover art (blue + peach) plus the discoolver print magenta #C8006B.
  */
 export function Guides({ content }: { content: HomeContent }) {
-  const guides: { city: string; sub: string; meta: string; spineText: string; spineColor: string; cover: CoverArt }[] = [
+  const guides: { city: string; sub: string; meta: string; cta: string; spineText: string; spineColor: string; cover: CoverArt }[] = [
     {
       city: content.guide_1_city,
       sub: content.guide_1_sub,
       meta: content.guide_1_meta,
+      cta: content.guide_1_cta,
       spineText: "discoolver · Madrid 2026",
       spineColor: "#22578a",
       // Portada tipográfica a propósito: la portada de creator lleva su foto
@@ -26,6 +27,7 @@ export function Guides({ content }: { content: HomeContent }) {
       city: content.guide_2_city,
       sub: content.guide_2_sub,
       meta: content.guide_2_meta,
+      cta: content.guide_2_cta,
       spineText: "discoolver · Bangkok 2026",
       spineColor: "#c47f3e",
       cover: { kind: "typo", city: content.guide_2_city, sub: content.guide_2_sub, bg: "#f4b47a", ink: "#141414", accent: "#c8006b" },
@@ -34,7 +36,8 @@ export function Guides({ content }: { content: HomeContent }) {
       city: content.guide_3_city,
       sub: content.guide_3_sub,
       meta: content.guide_3_meta,
-      spineText: "discoolver · Madrid 2026",
+      cta: content.guide_3_cta,
+      spineText: "discoolver · Barcelona 2026",
       spineColor: "#8f004d",
       cover: { kind: "typo", city: content.guide_3_city, sub: content.guide_3_sub, bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" },
     },
@@ -57,7 +60,11 @@ export function Guides({ content }: { content: HomeContent }) {
         <div className="guides-grid">
           {guides.map((guide, i) => (
             <Reveal delay={i * 90} key={`${guide.city}-${guide.sub}`}>
-              <article className="bookcard">
+              {/* La tarjeta entera es un enlace: antes las fichas no eran
+                  clicables y el visitante que quería una ciudad concreta no
+                  tenía nada que hacer. Hoy el destino es la lista de
+                  lanzamiento; cuando exista la ficha de producto, será ella. */}
+              <Link href="/#waitlist" className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
                 <div className="bookcard__stage book-scene">
                   <Book3D cover={guide.cover} spineText={guide.spineText} spineColor={guide.spineColor} />
                 </div>
@@ -66,8 +73,9 @@ export function Guides({ content }: { content: HomeContent }) {
                     {guide.city} <span className="bookcard__sub">{guide.sub}</span>
                   </h3>
                   <p className="bookcard__price">{guide.meta}</p>
+                  <p className="bookcard__price" style={{ color: "var(--primary)", fontWeight: 600 }}>{guide.cta} →</p>
                 </div>
-              </article>
+              </Link>
             </Reveal>
           ))}
           <Reveal delay={270}>

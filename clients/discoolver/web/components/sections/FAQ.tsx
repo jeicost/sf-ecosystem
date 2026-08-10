@@ -6,7 +6,7 @@ import type { HomeContent } from "@/lib/content/home";
 
 export function FAQ({ content }: { content: HomeContent }) {
   const [openIndex, setOpenIndex] = useState<number>(0);
-  const items = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+  const items = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
     q: content[`faq_q${n}` as keyof HomeContent],
     a: content[`faq_a${n}` as keyof HomeContent],
   }));

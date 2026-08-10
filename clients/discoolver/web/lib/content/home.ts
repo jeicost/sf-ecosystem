@@ -16,7 +16,7 @@
  */
 export const defaultHomeContent = {
   // Hero
-  hero_eyebrow: "Edición 2026 · Nuevos destinos cada temporada",
+  hero_eyebrow: "Edición 2026 · Madrid a la venta el 1 de septiembre",
   hero_title_a: "Lo mejor del año",
   hero_title_a_em: "en cada ciudad.",
   hero_title_b: "En una guía que querrás",
@@ -25,11 +25,11 @@ export const defaultHomeContent = {
     "Vemos miles de recomendaciones de creadores en redes, nos quedamos con las que valen y las editamos en guías por destino — digital o en papel — con IA para recorrer la ciudad a tu ritmo.",
   hero_cta_primary: "Ver las guías",
   hero_cta_secondary: "¿Tu ciudad no está? Avísame",
-  hero_note_1: "Curado por editores humanos",
+  hero_note_1: "Un editor revisa cada ficha",
   hero_note_2: "Edición anual por destino",
   hero_note_3: "Digital y papel",
   hero_book_caption: "Madrid · Edición 2026",
-  hero_book_sticker: "Desde 14€",
+  hero_book_sticker: "14€ de lanzamiento",
 
   // Marquee (brand claims)
   marquee_1: "Curamos el año. Tú disfruta el viaje.",
@@ -42,31 +42,34 @@ export const defaultHomeContent = {
   guides_eyebrow: "Guías por destino · Digital y papel",
   guides_title_1: "La colección",
   guides_title_em: "2026.",
-  guides_lead: "Una ciudad, un año, una guía. Digital 14-19€ · Papel 29-35€ con el digital incluido.",
+  guides_lead: "Una ciudad, un año, una guía. Digital 14€ de lanzamiento (después 19€) · Papel desde 29€ con el digital incluido.",
   guide_1_city: "Madrid",
   guide_1_sub: "858 sitios revisados · Edición 2026",
-  guide_1_meta: "Desde 14€ · Próximamente",
+  guide_1_meta: "Digital 14€ · Papel desde 29€ · A la venta el 1 de septiembre",
+  guide_1_cta: "Avísame el día que salga",
   guide_2_city: "Bangkok",
   guide_2_sub: "La primera ciudad de Tailandia",
-  guide_2_meta: "Desde 14€ · Próximamente",
+  guide_2_meta: "En preparación · Preventa próximamente",
+  guide_2_cta: "Avísame cuando abra",
   guide_3_city: "Barcelona",
   guide_3_sub: "182 sitios revisados · Edición 2026",
-  guide_3_meta: "Desde 14€ · Próximamente",
-  guides_ghost_city: "¿Tu ciudad?",
-  guides_ghost_text: "Pide la siguiente edición",
+  guide_3_meta: "Digital 14€ · Papel desde 29€ · Otoño 2026",
+  guide_3_cta: "Avísame el día que salga",
+  guides_ghost_city: "¿Otra ciudad?",
+  guides_ghost_text: "Pide la próxima edición",
   guides_ghost_cta: "Avísame",
 
   // Curation (block 1, id="curacion")
   curation_eyebrow: "Curación humana",
   curation_title: "Deja de guardar reels que no vas a volver a mirar.",
   curation_text:
-    "Nosotros sí los miramos. Todos. Miles de vídeos y posts pasan cada año por editores humanos. Entra lo mejor; el resto, fuera. Sin rankings de pago, sin trampas turísticas.",
+    "Nosotros sí los miramos. Para la edición de Madrid pusimos sobre la mesa 858 sitios: lo que los creadores han contado de la ciudad este año, revisado por editores. En la guía entran unos 80. Descartar el resto es exactamente lo que estás comprando — eso, y que nadie paga por entrar: ni el restaurante, ni la agencia, ni nosotros a nadie por recomendarlo.",
   flow_1_label: "Redes",
-  flow_1_text: "Miles de reels y posts de creadores, vistos uno a uno.",
+  flow_1_text: "Recogemos lo que los creadores publican de la ciudad durante todo el año.",
   flow_2_label: "Filtro editorial",
-  flow_2_text: "Editores humanos contrastan y descartan. Sin rankings de pago.",
+  flow_2_text: "Un editor revisa ficha a ficha, contrasta y descarta. Nadie paga por entrar.",
   flow_3_label: "La guía",
-  flow_3_text: "Solo lo mejor entra en la edición del año.",
+  flow_3_text: "De 858 sitios a unos 80. La escasez es el producto.",
 
   // The object (block 2, id="objeto")
   object_eyebrow: "El objeto",
@@ -75,10 +78,10 @@ export const defaultHomeContent = {
   object_text:
     "Digital desde 14€ para llevar en el móvil. En papel para la estantería, con el digital incluido. Cuando sale la edición siguiente, la tuya se convierte en pieza de colección.",
   format_1_name: "Digital",
-  format_1_price: "14-19€",
-  format_1_desc: "Para llevar en el móvil y activar la IA. Tuya al momento.",
+  format_1_price: "14€",
+  format_1_desc: "Para llevarla en el móvil desde el primer minuto. Precio de lanzamiento — después, 19€.",
   format_2_name: "Papel",
-  format_2_price: "29-35€",
+  format_2_price: "Desde 29€",
   format_2_chip: "Digital incluido",
   format_2_desc: "Para la estantería. Cuando salga la siguiente edición, la tuya será pieza de colección.",
 
@@ -102,11 +105,11 @@ export const defaultHomeContent = {
   creators_cta: "Publica tu guía",
 
   // Waitlist (id="waitlist")
-  waitlist_eyebrow: "Lista de aviso · Sin spam",
-  waitlist_title_1: "¿Tu ciudad no está?",
-  waitlist_title_em: "Avísame.",
+  waitlist_eyebrow: "Lista de lanzamiento · Sin spam",
+  waitlist_title_1: "Sé de los primeros",
+  waitlist_title_em: "en tenerla.",
   waitlist_text:
-    "Déjanos tu email y tu ciudad. Te escribimos solo cuando su guía entre en edición — y el día que salga a la venta.",
+    "Déjanos tu email y tu ciudad. Te escribimos dos veces como mucho: el día que tu guía salga a la venta, con el precio de lanzamiento de 14€ activo, y cuando entre en edición si todavía no existe. Nada más.",
 
   // FAQ
   faq_eyebrow: "Preguntas frecuentes",
@@ -114,27 +117,33 @@ export const defaultHomeContent = {
   faq_title_highlight: "preguntes.",
   faq_lead_pre: "Si no encuentras tu respuesta, escríbenos a",
   faq_lead_email: "hola@discoolver.com",
-  faq_lead_post: ". Respondemos en menos de 12 h.",
+  faq_lead_post: ". Te contestamos en 24-48 h laborables.",
   faq_q1: "¿Qué es exactamente una guía discoolver?",
   faq_a1:
     "Cada año vemos miles de recomendaciones que los creadores publican en redes sobre una ciudad, las contrastamos con editores humanos y editamos lo mejor en una guía por destino. Sin rankings de pago ni trampas turísticas: solo lo que de verdad vale la pena, en digital o en papel.",
   faq_q2: "¿Qué diferencia hay entre la edición digital y la de papel?",
   faq_a2:
-    "La digital (14-19€) la llevas en el móvil desde el primer minuto y activa la capa de IA. La de papel (29-35€) es la pieza para la estantería e incluye la digital. Mismas recomendaciones, dos formas de usarlas.",
+    "La digital cuesta 14€ durante el lanzamiento y pasará a 19€: la llevas en el móvil desde el primer minuto y activa la capa de IA. La de papel, desde 29€, es la pieza para la estantería e incluye la digital. Mismas recomendaciones, dos formas de usarlas.",
   faq_q3: "¿Qué hace la IA de la guía?",
   faq_a3:
     "Convierte la guía en ruta: dinos cuántos días tienes, qué vibra buscas y qué presupuesto llevas. Cool Map para ver los sitios en el mapa, itinerarios en 10 segundos y un local buddy 24/7 al que preguntarle lo que sea.",
-  faq_q4: "¿Por qué las ediciones caducan?",
+  faq_q4: "Si compro ahora, ¿se me queda vieja enseguida?",
   faq_a4:
-    "Porque la ciudad cambia. Cada temporada volvemos a mirar lo que los creadores están contando y editamos una nueva edición. La anterior no muere: se convierte en pieza de colección.",
+    "No. La edición 2026 es la vigente durante un año entero, no hasta fin de año. La ciudad cambia y por eso cada temporada editamos una nueva — y cuando llegue la siguiente, la tuya no muere: se convierte en pieza de colección, y los cambios de verdad (horarios, cierres) los tendrás al día en la capa digital.",
   faq_q5: "¿Qué ciudades hay ahora mismo?",
   faq_a5:
     "Madrid abre la colección, con Barcelona y Ronda detrás. Bangkok será la primera ciudad de Tailandia. La firma de cada edición se anuncia cuando se cierra — y si tu ciudad no está, déjanosla en el formulario y te avisamos en cuanto entre en producción.",
   faq_q6: "¿Cuándo puedo comprarlas?",
   faq_a6:
-    "Muy pronto. Estamos cerrando la edición 2026: déjanos tu email en el formulario y te avisamos el día exacto en que salgan a la venta. Sin spam, solo el aviso.",
-  faq_q7: "Soy creador, ¿cómo publico mi guía?",
+    "Madrid sale a la venta el 1 de septiembre de 2026, en digital y en papel, y detrás vienen Barcelona y Ronda. Déjanos tu email y te avisamos esa mañana, con el precio de lanzamiento de 14€ activo. Un solo correo, sin spam.",
+  faq_q7: "¿Cuánto tarda en llegarme el papel?",
   faq_a7:
+    "Imprimimos bajo demanda: tu guía se imprime cuando la pides. En España llega en 5-8 días laborables; al resto de Europa, en 7-12. Los gastos de envío se calculan al pagar. La digital la tienes en el correo al momento, así que empiezas a usarla el mismo día.",
+  faq_q8: "¿Puedo devolverla?",
+  faq_a8:
+    "El papel, sí: tienes 14 días desde que lo recibes para devolverlo sin dar explicaciones. Con la digital, al ser descarga inmediata, renuncias al desistimiento al confirmar la compra — es el estándar en contenido digital y te lo pedimos de forma explícita antes de cobrar. Si algo no funciona, escríbenos y lo resolvemos.",
+  faq_q9: "Soy creador, ¿cómo publico mi guía?",
+  faq_a9:
     "Si llevas años contando una ciudad, esa guía puede llevar tu nombre: tu contenido, nuestro equipo editorial e ingresos por cada venta. Entra en «Publica tu guía» y cuéntanos qué ciudad es la tuya.",
 
   // CTA
@@ -144,10 +153,10 @@ export const defaultHomeContent = {
   cta_title_2: "Tú disfruta",
   cta_title_2_em: "el viaje.",
   cta_sub:
-    "Lo mejor que los creadores han contado de cada ciudad, editado en una guía que querrás guardar. Digital o papel, con IA para callejear.",
-  cta_primary: "Ver las guías",
-  cta_secondary: "¿Tu ciudad no está? Avísame",
-  cta_footline: "Curado por editores humanos · Edición anual por destino · Sin rankings de pago",
+    "Madrid sale el 1 de septiembre a 14€ de lanzamiento — después, 19€. Déjanos tu email y te escribimos esa mañana. Un correo, no una newsletter.",
+  cta_primary: "Avísame de Madrid",
+  cta_secondary: "Pedir otra ciudad",
+  cta_footline: "Un editor revisa cada ficha · Edición anual por destino · Nadie paga por entrar",
 
   // Footer
   footer_brand_desc:

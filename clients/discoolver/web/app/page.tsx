@@ -33,7 +33,7 @@ export default async function HomePage() {
   const cms = isDraft ? (await loadCmsSectionsLive("home")) ?? loadCmsSections("home") : loadCmsSections("home");
   const content = mergeContent(defaultHomeContent, section(cms, "content"));
 
-  const faqItems = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+  const faqItems = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],
     answer: content[`faq_a${n}` as keyof typeof content],
   }));
@@ -49,9 +49,11 @@ export default async function HomePage() {
         <Curation content={content} />
         <GuideObject content={content} />
         <CityAI content={content} />
-        <CreatorsBridge content={content} />
+        {/* El puente a creators va DESPUÉS del cierre B2C: en el punto de máxima
+            intención de compra estaba derivando el tráfico caliente a /influencers. */}
         <Waitlist content={content} />
         <FAQ content={content} />
+        <CreatorsBridge content={content} />
         <Wordmark />
         <CTA content={content} />
       </main>
