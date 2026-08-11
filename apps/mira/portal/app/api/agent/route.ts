@@ -385,7 +385,10 @@ export async function POST(req: NextRequest) {
             try {
               await logUsage({
                 clientId: resolvedClientId,
-                route: 'agent',
+                // C6 (plan 08-11): el rol en la ruta permite saber qué agentes
+                // se usan de verdad — antes todo era 'agent' y C2 no se podía
+                // responder. Formato agent:<role>.
+                route: `agent:${role}`,
                 model: 'claude-sonnet-4-6',
                 usage: finalMessage.usage,
                 usedClientKey,

@@ -1,4 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
+import { decryptSecret } from '@/lib/crypto'
 
 /**
  * Resolve API key for a client-specific tool integration.
@@ -62,11 +63,10 @@ export async function getClientApiKey(
       return defaultKey || null
     }
 
-    // TODO: If lib/crypto.ts exists, decrypt the key here
-    // const decrypted = await decryptApiKey(apiKey)
-    // return decrypted
-
-    return apiKey
+    // Descifrado en reposo (F1): las keys se guardan cifradas desde 2026-08-11.
+    // decryptSecret devuelve el texto plano legacy tal cual si el valor no lleva
+    // el prefijo enc:v1: — la transición no rompe nada.
+    return decryptSecret(apiKey) ?? (defaultKey || null)
   } catch (error) {
     console.error(
       `Unexpected error resolving API key for clientId=${clientId}, toolId=${toolId}:`,

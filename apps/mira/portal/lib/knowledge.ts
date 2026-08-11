@@ -141,14 +141,46 @@ const QUERY_STOPWORDS = new Set([
 
 const fold = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
 
+// Puente ES↔EN de términos frecuentes del dominio (C8 del plan 08-11). El
+// portal está en inglés y los documentos del cliente en castellano: sin esto,
+// "contingency plan" NO encuentra "plan de contingencia" — mismatch de idioma,
+// no de léxico. Se expande cada término con su equivalente en el otro idioma
+// antes de puntuar. Bidireccional: cada par se registra en los dos sentidos.
+const BILINGUAL_PAIRS: Array<[string, string]> = [
+  ['contingencia', 'contingency'], ['licitacion', 'tender'], ['pliego', 'tender'],
+  ['memoria', 'proposal'], ['propuesta', 'proposal'], ['presupuesto', 'budget'],
+  ['tarifa', 'pricing'], ['precio', 'price'], ['entrega', 'delivery'],
+  ['recogida', 'pickup'], ['transporte', 'transport'], ['mensajeria', 'courier'],
+  ['muestra', 'sample'], ['muestras', 'samples'], ['flota', 'fleet'],
+  ['conductor', 'driver'], ['calidad', 'quality'], ['certificacion', 'certification'],
+  ['seguridad', 'safety'], ['incidencia', 'incident'], ['trazabilidad', 'tracking'],
+  ['cliente', 'client'], ['audiencia', 'audience'], ['competencia', 'competitor'],
+  ['competidor', 'competitor'], ['marca', 'brand'], ['contenido', 'content'],
+  ['publicacion', 'post'], ['campana', 'campaign'], ['estrategia', 'strategy'],
+  ['plan', 'plan'], ['valores', 'values'], ['mision', 'mission'],
+  ['vision', 'vision'], ['servicio', 'service'], ['producto', 'product'],
+  ['equipo', 'team'], ['personal', 'staff'], ['almacen', 'warehouse'],
+  ['logistica', 'logistics'], ['reparto', 'distribution'], ['factura', 'invoice'],
+  ['facturacion', 'billing'], ['informe', 'report'], ['auditoria', 'audit'],
+  ['puesta', 'launch'], ['marcha', 'launch'], ['compromiso', 'commitment'],
+  ['referencia', 'reference'], ['hospital', 'hospital'], ['internacional', 'international'],
+  ['nacional', 'national'],
+]
+const BILINGUAL: Record<string, string[]> = (() => {
+  const m: Record<string, string[]> = {}
+  const add = (k: string, v: string) => { (m[k] ??= []).push(v) }
+  for (const [es, en] of BILINGUAL_PAIRS) { add(es, en); add(en, es) }
+  return m
+})()
+
 /** Palabras con carga temática de la petición: ≥4 letras y fuera de la lista. */
 function queryTerms(query?: string | null): string[] {
   if (!query?.trim()) return []
-  return [...new Set(
-    fold(query)
-      .split(/[^a-zñ0-9]+/)
-      .filter((w) => w.length >= 4 && !QUERY_STOPWORDS.has(w))
-  )]
+  const base = fold(query)
+    .split(/[^a-zñ0-9]+/)
+    .filter((w) => w.length >= 4 && !QUERY_STOPWORDS.has(w))
+  const expanded = base.flatMap((w) => [w, ...(BILINGUAL[w] ?? [])])
+  return [...new Set(expanded)]
 }
 
 /**

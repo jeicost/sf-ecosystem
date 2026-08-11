@@ -1,5 +1,6 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
+import { encryptSecret } from '@/lib/crypto'
 import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
 
 interface ConnectToolRequest {
@@ -63,6 +64,14 @@ export async function POST(request: NextRequest) {
     const body = (await request.json()) as ConnectToolRequest
     const { clientId, toolId, accountEmail, accountHandle, authToken, metadata } = body
 
+    // F1 (auditoría 08-10): las BYO API keys se guardaban en claro. Se cifran
+    // en reposo antes de tocar la BD — tanto el auth_token como cualquier
+    // metadata.api_key/apiKey (las tres formas que lee getClientApiKey).
+    const encAuthToken = authToken ? encryptSecret(authToken) : null
+    const encMetadata: Record<string, any> = { ...(metadata || {}) }
+    if (typeof encMetadata.api_key === 'string') encMetadata.api_key = encryptSecret(encMetadata.api_key)
+    if (typeof encMetadata.apiKey === 'string') encMetadata.apiKey = encryptSecret(encMetadata.apiKey)
+
     if (!clientId || !toolId) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
@@ -91,8 +100,8 @@ export async function POST(request: NextRequest) {
           status: 'connected',
           account_email: accountEmail || null,
           account_handle: accountHandle || null,
-          auth_token: authToken || null,
-          metadata: metadata || {},
+          auth_token: encAuthToken,
+          metadata: encMetadata,
           connected_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -108,8 +117,8 @@ export async function POST(request: NextRequest) {
         status: 'connected',
         account_email: accountEmail || null,
         account_handle: accountHandle || null,
-        auth_token: authToken || null,
-        metadata: metadata || {},
+        auth_token: encAuthToken,
+        metadata: encMetadata,
         connected_at: new Date().toISOString(),
       })
 
