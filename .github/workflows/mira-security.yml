@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22 # supabase-js pide WebSocket nativo (Node 22+)
       # Instalación AISLADA: `npm install` en la raíz choca con las deps
       # `workspace:*` de pnpm del monorepo. Se instala supabase-js en un dir
       # aparte y se copia ahí el script para que la resolución ESM encuentre la
