@@ -19,6 +19,8 @@ import { DEPARTMENT_METADATA } from '@/lib/department-meta'
 import { minPlanForSection } from '@/lib/plans'
 import { safeLookup } from '@/lib/safe-lookup'
 import OnboardingModal from '@/components/onboarding-modal'
+import WeeklyReportCard from '@/components/WeeklyReportCard'
+import { isIdealUI } from '@/lib/sections'
 
 const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'] })
 const FALLBACK_BRAND = '#8B5CF6'
@@ -311,6 +313,10 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+      {/* Parte Semanal — Fase 2. En el espacio "Hoy" del sistema ideal; se
+          muestra con la UI consolidada (mismo bundle reversible). */}
+      {isIdealUI() && <WeeklyReportCard clientId={data.client.id} brand={brand} />}
 
       {/* Analíticas clave */}
       <div className="mb-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
