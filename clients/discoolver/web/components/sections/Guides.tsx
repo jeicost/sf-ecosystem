@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { Book3D, type CoverArt } from "@/components/ui/Book3D";
 import type { HomeContent } from "@/lib/content/home";
+import { BuyButtons } from "@/components/ui/BuyButtons";
+import { CHECKOUT_ABIERTO, type Sku } from "@/lib/checkout";
 import type { Locale } from "@/lib/i18n";
 
 /**
@@ -23,6 +25,12 @@ export function Guides({ content, locale = "es" }: { content: HomeContent; local
     { spineColor: "#141414", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b" }, // Ibiza
     { spineColor: "#8f004d", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a" }, // Bangkok
   ];
+  // Qué guías se venden ya (por ciudad). El resto sigue en "Avísame" hasta
+  // que su edición cierre — añadir aquí una ciudad la pone a la venta.
+  const SKUS: Record<string, { digital: Sku; papel: Sku }> = {
+    Madrid: { digital: "madrid-digital", papel: "madrid-papel" },
+  };
+
   const guides = [1, 2, 3, 4, 5, 6].map((n, i) => {
     const city = content[`guide_${n}_city` as keyof HomeContent];
     const sub = content[`guide_${n}_sub` as keyof HomeContent];
@@ -55,22 +63,36 @@ export function Guides({ content, locale = "es" }: { content: HomeContent; local
         <div className="guides-grid">
           {guides.map((guide, i) => (
             <Reveal delay={i * 90} key={`${guide.city}-${guide.sub}`}>
-              {/* La tarjeta entera es un enlace: antes las fichas no eran
-                  clicables y el visitante que quería una ciudad concreta no
-                  tenía nada que hacer. Hoy el destino es la lista de
-                  lanzamiento; cuando exista la ficha de producto, será ella. */}
-              <Link href="#waitlist" className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
-                <div className="bookcard__stage book-scene">
-                  <Book3D cover={guide.cover} spineText={guide.spineText} spineColor={guide.spineColor} />
-                </div>
-                <div className="bookcard__meta">
-                  <h3 className="bookcard__title">
-                    {guide.city} <span className="bookcard__sub">{guide.sub}</span>
-                  </h3>
-                  <p className="bookcard__price">{guide.meta}</p>
-                  <p className="bookcard__price">{guide.cta} →</p>
-                </div>
-              </Link>
+              {/* Con la tienda abierta, la ficha vendible lleva botones de
+                  compra y NO puede ser un enlace (botón dentro de <a> es HTML
+                  inválido). Las no vendibles siguen enlazando a la lista. */}
+              {CHECKOUT_ABIERTO && SKUS[guide.city] ? (
+                <article className="bookcard">
+                  <div className="bookcard__stage book-scene">
+                    <Book3D cover={guide.cover} spineText={guide.spineText} spineColor={guide.spineColor} />
+                  </div>
+                  <div className="bookcard__meta">
+                    <h3 className="bookcard__title">
+                      {guide.city} <span className="bookcard__sub">{guide.sub}</span>
+                    </h3>
+                    <p className="bookcard__price">{guide.meta}</p>
+                    <BuyButtons digital={SKUS[guide.city].digital} papel={SKUS[guide.city].papel} locale={locale} />
+                  </div>
+                </article>
+              ) : (
+                <Link href="#waitlist" className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
+                  <div className="bookcard__stage book-scene">
+                    <Book3D cover={guide.cover} spineText={guide.spineText} spineColor={guide.spineColor} />
+                  </div>
+                  <div className="bookcard__meta">
+                    <h3 className="bookcard__title">
+                      {guide.city} <span className="bookcard__sub">{guide.sub}</span>
+                    </h3>
+                    <p className="bookcard__price">{guide.meta}</p>
+                    <p className="bookcard__price">{guide.cta} →</p>
+                  </div>
+                </Link>
+              )}
             </Reveal>
           ))}
           <Reveal delay={270}>
