@@ -37,11 +37,21 @@ sin banner e indexable (agencias sigue noindex hasta piloto), puerta B2C→360
 abierta en footers/nav, creators-landing = 308 permanente a /influencers,
 sitemaps al día. Verificado en vivo.
 
-**Queda (nada pendiente de código)**: (1) corte de discoolver.com CON DIEGO —
-DNS del cliente, checklist en el informe de coherencia; (2) CÓMO SE COBRA la
-guía el 1-sept — no hay pasarela, decisión urgente de negocio; (3) firmas de
-creadores → nombres reales vía CMS; (4) los 6 bloques de Diego (mensaje enviado,
-esperando su respuesta); (5) piloto de agencias → quitar su noindex.
+**11-ago tarde 2 — STRIPE construido y dormido** (commit `93c8459`): checkout
+hosted completo (catálogo en lib/checkout.ts, /api/checkout, webhook firmado
+→ pedidos al buzón, /gracias ES/EN). El 1-sept es una env var
+(NEXT_PUBLIC_CHECKOUT=1), no un deploy. Activación: `web/STRIPE.md` (3 pasos).
+
+**PAUSA — esperando dos cosas de fuera** (nada pendiente de código):
+1. **Las claves de Stripe de Carlos** (cuenta de DISCOOLVER + webhook, ver
+   STRIPE.md) → se meten en Vercel y el flip queda listo para el 1-sept.
+   Pendiente gestor: IVA digital/libro → Stripe Tax.
+2. **La respuesta de Diego** al mensaje de 6 bloques
+   (deliverables/repaso-2026-08-10/MENSAJE_DIEGO_CIERRE_INTEGRACION.md) → con
+   ella: fechas por bloque + el corte de discoolver.com (DNS suyo).
+Mientras: el equipo crea HOY las guías de los creadores en el dg-editor para
+enseñárselas; al firmar cada uno, su nombre real sustituye al ficticio vía CMS.
+Piloto de agencias → quitar su noindex cuando exista.
 
 ## Cómo volver a ver las propuestas nuevas
 
