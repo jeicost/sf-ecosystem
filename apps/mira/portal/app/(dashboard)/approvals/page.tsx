@@ -73,36 +73,56 @@ export default function ApprovalsPage() {
     return () => { db.removeChannel(channel) }
   }, [clientId])
 
+  // El raíl (fase 0): la decisión va por /api/approvals/decide (server-side),
+  // que además PROPAGA el estado a post_history — antes se actualizaba solo
+  // approval_queue desde el navegador y el historial quedaba en 'draft'.
   const updateStatus = async (id: string, status: 'approved' | 'rejected') => {
-    const db = createClient()
-    await db.from('approval_queue')
-      .update({ status, reviewed_at: new Date().toISOString() })
-      .eq('id', id)
+    const res = await fetch('/api/approvals/decide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queueId: id, decision: status }),
+    })
+    if (!res.ok) return
     setItems(prev => prev.map(i => i.id === id ? { ...i, status } : i))
   }
 
-  // Guarda el copy editado y aprueba en el mismo gesto, con el estado
-  // approved_with_edits que el modelo ya contemplaba.
+  // Guarda el copy editado y aprueba en el mismo gesto (approved_with_edits).
   const saveEditAndApprove = async (id: string) => {
     const copy = editText.trim()
     if (!copy) return
-    const db = createClient()
-    await db.from('approval_queue')
-      .update({ copy, status: 'approved_with_edits', reviewed_at: new Date().toISOString() })
-      .eq('id', id)
+    const res = await fetch('/api/approvals/decide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queueId: id, decision: 'approved_with_edits', copy }),
+    })
+    if (!res.ok) return
     setItems(prev => prev.map(i => i.id === id ? { ...i, copy, status: 'approved_with_edits' } : i))
     setEditingId(null)
   }
 
+  // Cierra el raíl: marca la pieza como publicada/usada de verdad → post_history
+  // pasa a 'published' + posted_at. Es el dato de "qué se usó" (B2) que no existía.
+  const markPublished = async (id: string) => {
+    const res = await fetch('/api/approvals/decide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queueId: id, mark: 'published' }),
+    })
+    if (!res.ok) return
+    setItems(prev => prev.map(i => i.id === id ? { ...i, status: 'published' } : i))
+  }
+
+  // 'published' es un estado posterior a 'approved' — cae en la pestaña Approved.
+  const isApprovedState = (s: string) => s === 'approved' || s === 'approved_with_edits' || s === 'published'
   const filtered = items.filter(i => {
     if (filter === 'pending') return i.status === 'pending_review'
-    if (filter === 'approved') return i.status === 'approved' || i.status === 'approved_with_edits'
+    if (filter === 'approved') return isApprovedState(i.status)
     if (filter === 'rejected') return i.status === 'rejected'
     return false
   })
 
   const pending  = items.filter(i => i.status === 'pending_review').length
-  const approved = items.filter(i => i.status === 'approved' || i.status === 'approved_with_edits').length
+  const approved = items.filter(i => isApprovedState(i.status)).length
   const rejected = items.filter(i => i.status === 'rejected').length
 
   if (loading) return (
@@ -180,7 +200,8 @@ export default function ApprovalsPage() {
           )}
           {filtered.map(item => {
             const isPending  = item.status === 'pending_review'
-            const isApproved = item.status === 'approved' || item.status === 'approved_with_edits'
+            const isPublished = item.status === 'published'
+            const isApproved = item.status === 'approved' || item.status === 'approved_with_edits' || isPublished
             const isExpanded = expanded === item.id
 
             return (
@@ -207,8 +228,11 @@ export default function ApprovalsPage() {
                     {item.tone_warning && isPending && (
                       <span className="text-[10px] bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full">⚠ {t('approvals.review-tone', locale)}</span>
                     )}
-                    {isApproved && (
+                    {isApproved && !isPublished && (
                       <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full">✓ {t('approvals.approved-badge', locale)}</span>
+                    )}
+                    {isPublished && (
+                      <span className="text-[10px] bg-emerald-500/25 text-emerald-300 px-2 py-0.5 rounded-full">🚀 {t('approvals.published-badge', locale)}</span>
                     )}
                     {item.status === 'rejected' && (
                       <span className="text-[10px] bg-red-500/15 text-red-400 px-2 py-0.5 rounded-full">{t('approvals.rejected-badge', locale)}</span>
@@ -284,9 +308,23 @@ export default function ApprovalsPage() {
                         </button>
                       </div>
                     )}
-                    {isApproved && (
-                      <p className="text-xs text-emerald-400 flex items-center gap-1.5 py-1">
-                        <Check size={12} /> {t('approvals.approved-in-queue', locale)}
+                    {isApproved && !isPublished && (
+                      <div className="flex items-center justify-between gap-2 py-1">
+                        <p className="text-xs text-emerald-400 flex items-center gap-1.5">
+                          <Check size={12} /> {t('approvals.approved-in-queue', locale)}
+                        </p>
+                        {/* Cierra el raíl: registra el uso real de la pieza. */}
+                        <button
+                          onClick={() => markPublished(item.id)}
+                          className="text-xs rounded-lg px-3 py-1.5 bg-surface text-ink-secondary hover:text-ink transition-colors flex items-center gap-1.5"
+                        >
+                          🚀 {t('approvals.mark-published', locale)}
+                        </button>
+                      </div>
+                    )}
+                    {isPublished && (
+                      <p className="text-xs text-emerald-300 flex items-center gap-1.5 py-1">
+                        🚀 {t('approvals.published-in-queue', locale)}
                       </p>
                     )}
                   </div>

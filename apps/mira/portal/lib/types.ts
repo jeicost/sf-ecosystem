@@ -64,7 +64,7 @@ export interface ApprovalItem {
   caption: string | null
   hashtags: string[] | null
   scheduled_time: string | null
-  status: 'pending_review' | 'approved' | 'approved_with_edits' | 'rejected'
+  status: 'pending_review' | 'approved' | 'approved_with_edits' | 'rejected' | 'published'
   tone_warning: boolean
   submitted_at: string
   reviewed_at: string | null

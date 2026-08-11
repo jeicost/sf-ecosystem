@@ -1,0 +1,37 @@
+name: MIRA security · RLS audit
+
+# C7 del plan (11-08): institucionaliza el test RLS anónimo. Nace de una fuga
+# real — approval_queue/alerts/agent_activity legibles por anónimo por deriva de
+# migraciones. Corre el mismo script del ritual mensual, automático:
+#  - en cada push a main (detecta regresiones de política al desplegar)
+#  - semanal (por si una migración manual reabre algo entre despliegues)
+#  - a demanda (workflow_dispatch)
+#
+# Job SEPARADO: no bloquea el deploy de Vercel (que es por git-integration). Su
+# valor es la ALARMA: si sale rojo, hay una tabla sensible leíble sin sesión.
+#
+# La key es la PUBLISHABLE (anon) — pública por diseño (viaja en el frontend);
+# aquí va como secret por higiene y para rotarla sin tocar el workflow.
+
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1' # lunes 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  rls-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install @supabase/supabase-js
+        run: npm install --no-save @supabase/supabase-js
+      - name: Run RLS anonymous-read audit
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://nnevhtfxuawexliwlbmh.supabase.co
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.MIRA_SUPABASE_PUBLISHABLE_KEY }}
+        run: node apps/mira/portal/scripts/rls-audit.mjs

@@ -70,8 +70,26 @@ export interface MaterializeItem {
 }
 
 /**
- * Inserta posts en approval_queue (status pending_review) + post_history como
- * draft (best-effort). Devuelve cuántos entraron.
+ * Etiquetas de la pieza para el loop de aprendizaje (raíl, fase 0). Se guardan
+ * en post_history.performance.tags — sin migración, la columna jsonb ya existe.
+ * A las 48-72h el recap asociará las métricas a estas etiquetas.
+ */
+function pieceTags(pillarName: string, post: GeneratedPost, platformLabel: string) {
+  return {
+    pillar: pillarName,
+    hook: post.hook ? post.hook.slice(0, 120) : null,
+    format: post.reel_script?.scenes?.length ? 'reel' : 'post',
+    platform: platformLabel,
+  }
+}
+
+/**
+ * Inserta posts en el raíl. Orden INVERTIDO respecto al original: primero
+ * post_history (para capturar sus ids y ETIQUETAR la pieza), luego
+ * approval_queue con post_id ENLAZADO a su fila de historial. Ese enlace es lo
+ * que permite que aprobar/publicar propague el estado (ver /api/approvals/decide)
+ * y que el loop de aprendizaje asocie métricas a etiquetas. Devuelve cuántos
+ * entraron.
  */
 export async function materializePosts(
   db: Admin,
@@ -81,10 +99,36 @@ export async function materializePosts(
   if (!items.length) return { inserted: 0 }
   const now = new Date().toISOString()
 
-  const queueRows = items.map(({ pillarName, post, scheduledTime, assetUrl }) => {
+  // 1) post_history PRIMERO — con .select('id') para enlazar y etiquetado en
+  //    performance.tags. Postgres devuelve las filas en orden de inserción, así
+  //    que el índice i corresponde 1:1 con items[i]. Si el insert o el conteo
+  //    fallan, postIds queda a null y el raíl sigue funcionando sin enlace.
+  let postIds: (string | null)[] = items.map(() => null)
+  const historyRows = items.map(({ pillarName, pillarId, post }) => {
+    const platform = post.platform.toLowerCase() as Platform
+    const label = PLATFORM_LABEL[platform] ?? post.platform
+    return {
+      client_id: clientId,
+      ...(pillarId ? { pillar_id: pillarId } : {}),
+      platform: label,
+      content: composeCopy(pillarName, post),
+      status: 'draft',
+      performance: { tags: pieceTags(pillarName, post, label) },
+    }
+  })
+  try {
+    const { data } = await db.from('post_history').insert(historyRows).select('id')
+    if (data && data.length === items.length) postIds = data.map((r: { id: string }) => r.id)
+  } catch {
+    /* sin enlace, el raíl sigue funcionando */
+  }
+
+  // 2) approval_queue con post_id enlazado a su fila de historial
+  const queueRows = items.map(({ pillarName, post, scheduledTime, assetUrl }, i) => {
     const platform = post.platform.toLowerCase() as Platform
     return {
       client_id: clientId,
+      ...(postIds[i] ? { post_id: postIds[i] } : {}),
       platform: PLATFORM_LABEL[platform] ?? post.platform,
       tipo: 'content',
       copy: composeCopy(pillarName, post),
@@ -100,25 +144,6 @@ export async function materializePosts(
 
   const { error: queueError } = await db.from('approval_queue').insert(queueRows)
   if (queueError) throw new Error(`approval_queue: ${queueError.message}`)
-
-  // post_history como draft (tiene columna pillar_id) — no crítico
-  try {
-    await db.from('post_history').insert(
-      items.map(({ pillarName, pillarId, post }) => {
-        const platform = post.platform.toLowerCase() as Platform
-        return {
-          client_id: clientId,
-          ...(pillarId ? { pillar_id: pillarId } : {}),
-          platform: PLATFORM_LABEL[platform] ?? post.platform,
-          content: composeCopy(pillarName, post),
-          status: 'draft',
-          performance: {},
-        }
-      })
-    )
-  } catch {
-    /* non-critical */
-  }
 
   return { inserted: queueRows.length }
 }

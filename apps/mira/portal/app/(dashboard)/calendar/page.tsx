@@ -117,16 +117,19 @@ export default function CalendarPage() {
     })
   }, [clientId])
 
-  // ── Aprobar / rechazar (mismo update que approvals) ────────
+  // ── Aprobar / rechazar (vía el raíl: /api/approvals/decide propaga a post_history) ──
   const updateStatus = async (item: CalendarItem, status: 'approved' | 'rejected') => {
     if (item.source !== 'queue' || updating) return
     setUpdating(true)
-    const db = createClient()
-    await db.from('approval_queue')
-      .update({ status, reviewed_at: new Date().toISOString() })
-      .eq('id', item.id)
-    setItems(prev => prev.map(i => (i.key === item.key ? { ...i, status } : i)))
-    setSelected(prev => (prev?.key === item.key ? { ...prev, status } : prev))
+    const res = await fetch('/api/approvals/decide', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queueId: item.id, decision: status }),
+    })
+    if (res.ok) {
+      setItems(prev => prev.map(i => (i.key === item.key ? { ...i, status } : i)))
+      setSelected(prev => (prev?.key === item.key ? { ...prev, status } : prev))
+    }
     setUpdating(false)
   }
 
