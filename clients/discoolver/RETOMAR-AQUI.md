@@ -32,11 +32,16 @@ inglés ¿se queda?; (5) personajes animales en la tienda.
 traducidos y verificados, rutas /en espejo con switcher y hreflang, 8 páginas -en
 en el CMS. El inglés está EN PROD CON NOINDEX hasta revisión de Carlos.
 
-**Queda ahora**: (1) revisar el INGLÉS → quitar su noindex; (2) OK a /360 →
-banner + noindex + puerta B2C→360, juntos; (3) creators-landing
-matar/reconstruir; (4) corte de discoolver.com; (5) CÓMO SE COBRA la guía el
-1-sept (hoy la tienda captura emails, no hay pasarela); (6) firmas de creadores
-→ los nombres reales entran vía CMS.
+**11-ago tarde — ESTRENO COMPLETO** (commit `576ebfc`): inglés indexable, /360
+sin banner e indexable (agencias sigue noindex hasta piloto), puerta B2C→360
+abierta en footers/nav, creators-landing = 308 permanente a /influencers,
+sitemaps al día. Verificado en vivo.
+
+**Queda (nada pendiente de código)**: (1) corte de discoolver.com CON DIEGO —
+DNS del cliente, checklist en el informe de coherencia; (2) CÓMO SE COBRA la
+guía el 1-sept — no hay pasarela, decisión urgente de negocio; (3) firmas de
+creadores → nombres reales vía CMS; (4) los 6 bloques de Diego (mensaje enviado,
+esperando su respuesta); (5) piloto de agencias → quitar su noindex.
 
 ## Cómo volver a ver las propuestas nuevas
 
