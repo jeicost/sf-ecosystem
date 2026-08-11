@@ -15,8 +15,18 @@ CdS/FITUR). De 39 [PENDIENTE] quedan 4, todos de la vertical de agencias, que
 espera su piloto fuera del nav. Detalle completo en la memoria
 `project_discoolver_2026-08-10_repaso_ejecutado`.
 
-**Queda**: el repaso de DISEÑO, quitar banner+noindex de /360 cuando Carlos dé
-el OK final, y la decisión del corte de discoolver.com.
+**11-ago (2ª tanda): repaso de DISEÑO ejecutado + datos vivos.** Cuatro
+auditorías con hallazgos medidos, aplicadas y en prod (informe + evidencias en
+`deliverables/repaso-2026-08-10/diseno/`). La landing de la app pinta los
+números REALES de la plataforma vía ISR 24h (hoy: 1.500 sitios en 4 ciudades)
+y cada sección enlaza a su contrapartida en app.discoolver.com. Spec de deep
+links para Diego en `deliverables/repaso-2026-08-10/spec-deep-links-plataforma.md`.
+
+**Queda (decisiones de Carlos, tras su revisión)**: (1) creators-landing —
+matar o reconstruir (es una tercera marca huérfana que duplica /influencers);
+(2) OK final a /360 → quitar banner + noindex + abrir la puerta B2C→360 en
+footers, todo a la vez; (3) el corte de discoolver.com; (4) H1 de la app en
+inglés ¿se queda?; (5) personajes animales en la tienda.
 
 ## Cómo volver a ver las propuestas nuevas
 
