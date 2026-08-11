@@ -28,10 +28,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Install @supabase/supabase-js
-        run: npm install --no-save @supabase/supabase-js
+      # Instalación AISLADA: `npm install` en la raíz choca con las deps
+      # `workspace:*` de pnpm del monorepo. Se instala supabase-js en un dir
+      # aparte y se copia ahí el script para que la resolución ESM encuentre la
+      # dependencia adyacente (NODE_PATH no aplica a imports ESM).
       - name: Run RLS anonymous-read audit
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://nnevhtfxuawexliwlbmh.supabase.co
           SUPABASE_PUBLISHABLE_KEY: ${{ secrets.MIRA_SUPABASE_PUBLISHABLE_KEY }}
-        run: node apps/mira/portal/scripts/rls-audit.mjs
+        run: |
+          mkdir -p /tmp/rls && cd /tmp/rls
+          npm init -y >/dev/null 2>&1
+          npm install @supabase/supabase-js >/dev/null 2>&1
+          cp "$GITHUB_WORKSPACE/apps/mira/portal/scripts/rls-audit.mjs" ./rls-audit.mjs
+          node rls-audit.mjs
