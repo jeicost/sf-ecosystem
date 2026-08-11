@@ -28,6 +28,16 @@ matar o reconstruir (es una tercera marca huérfana que duplica /influencers);
 footers, todo a la vez; (3) el corte de discoolver.com; (4) H1 de la app en
 inglés ¿se queda?; (5) personajes animales en la tienda.
 
+**11-ago mediodía: ES/EN en todo el ecosistema** (commit `02434d1`) — 947 campos
+traducidos y verificados, rutas /en espejo con switcher y hreflang, 8 páginas -en
+en el CMS. El inglés está EN PROD CON NOINDEX hasta revisión de Carlos.
+
+**Queda ahora**: (1) revisar el INGLÉS → quitar su noindex; (2) OK a /360 →
+banner + noindex + puerta B2C→360, juntos; (3) creators-landing
+matar/reconstruir; (4) corte de discoolver.com; (5) CÓMO SE COBRA la guía el
+1-sept (hoy la tienda captura emails, no hay pasarela); (6) firmas de creadores
+→ los nombres reales entran vía CMS.
+
 ## Cómo volver a ver las propuestas nuevas
 
 El servidor de desarrollo muere al cerrar la sesión. Para levantarlo otra vez:
