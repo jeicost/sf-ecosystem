@@ -7,8 +7,6 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Places recommended by real local creators, reviewed by editors and powered by AI. Madrid, Barcelona and Málaga now open — enter today on the web.",
   path: "/en",
-  // El inglés sale con noindex hasta que Carlos revise la traducción.
-  noindex: true,
 });
 
 export default function Page() {

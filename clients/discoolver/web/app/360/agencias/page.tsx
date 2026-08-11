@@ -14,8 +14,8 @@ export const metadata: Metadata = buildMetadata({
   path: "/360/agencias",
   image: "/assets/360/og-360.png",
   siteName: "discoolver 360",
-  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
-  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
+  // Agencias sigue fuera del nav y sin indexar hasta que exista el piloto
+  // con una DMC (decisión CEO 11-ago). El resto de 360 ya se estrenó.
   noindex: true,
 });
 

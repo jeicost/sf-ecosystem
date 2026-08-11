@@ -4,7 +4,7 @@ import { site } from "@/lib/site";
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     { path: "", priority: 1 },
-    { path: "/influencers", priority: 0.8 },
+    { path: "/en", priority: 0.9 },
     { path: "/privacidad", priority: 0.2 },
   ];
   return routes.map((route) => ({

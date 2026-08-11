@@ -10,7 +10,7 @@ import type { Locale } from "@/lib/i18n";
  * (flat color + big type — no invented photos). Cover palettes riff on the
  * real cover art (blue + peach) plus the discoolver print magenta #C8006B.
  */
-export function Guides({ content }: { content: HomeContent; locale?: Locale }) {
+export function Guides({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
   // Paletas de la tanda de portadas aprobada por el CEO el 2026-08-11
   // (una por ciudad: A Madrid, C Barcelona, E Ronda, G Málaga, F Ibiza, H Bangkok).
   // Las firmas son ficticias a propósito hasta que cada creador firme; el nombre
@@ -34,7 +34,7 @@ export function Guides({ content }: { content: HomeContent; locale?: Locale }) {
       cta: content[`guide_${n}_cta` as keyof HomeContent],
       spineText: `discoolver · ${city} 2026`,
       spineColor: pal.spineColor,
-      cover: { kind: "typo", city, sub, bg: pal.bg, ink: pal.ink, accent: pal.accent } as CoverArt,
+      cover: { kind: "typo", city, sub, bg: pal.bg, ink: pal.ink, accent: pal.accent, chip: locale === "en" ? "Discoolver Guide · 2026" : undefined } as CoverArt,
     };
   });
 

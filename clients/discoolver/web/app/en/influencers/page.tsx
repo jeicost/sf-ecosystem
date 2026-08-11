@@ -8,7 +8,6 @@ export const metadata: Metadata = buildMetadata({
     "We edit your city guide with you: it ships with your name and you earn from every sale. Just starting? Send us your best recommendation on video.",
   path: "/en/influencers",
   locale: "en",
-  noindex: true,
 });
 
 export default function Page() {

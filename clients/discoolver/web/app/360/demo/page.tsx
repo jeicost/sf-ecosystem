@@ -15,9 +15,6 @@ export const metadata: Metadata = buildMetadata({
   path: "/360/demo",
   image: "/assets/360/og-360.png",
   siteName: "discoolver 360",
-  // Va de la mano del banner "PROPUESTA EN REVISIÓN" del layout: mientras /360
-  // sea una propuesta no puede indexarse. Se quitan los dos a la vez con el OK.
-  noindex: true,
 });
 
 const VERTICAL_LABELS: Record<string, string> = {

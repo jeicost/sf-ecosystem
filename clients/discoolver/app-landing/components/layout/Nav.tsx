@@ -15,7 +15,7 @@ const LINKS = {
     { href: "/#categorias", label: "Categorías" },
     { href: "/#mapa", label: "Mapa" },
     { href: "/influencers", label: "Creators" },
-    { href: "mailto:info@discoolver.com", label: "Para empresas" },
+    { href: "https://discoolver-landing.vercel.app/360", label: "Para empresas" },
   ],
   en: [
     { href: "/#descubre", label: "Discover" },
@@ -23,7 +23,7 @@ const LINKS = {
     { href: "/#categorias", label: "Categories" },
     { href: "/#mapa", label: "Map" },
     { href: "/influencers", label: "Creators" },
-    { href: "mailto:info@discoolver.com", label: "For business" },
+    { href: "https://discoolver-landing.vercel.app/en/360", label: "For business" },
   ],
 } as const;
 

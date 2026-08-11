@@ -1,13 +1,9 @@
 {
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "headers": [
+  "redirects": [
     {
       "source": "/(.*)",
-      "headers": [
-        { "key": "X-Frame-Options", "value": "SAMEORIGIN" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
+      "destination": "https://discoolver-landing.vercel.app/influencers",
+      "permanent": true
     }
   ]
 }

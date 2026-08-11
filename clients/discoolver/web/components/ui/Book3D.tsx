@@ -13,7 +13,7 @@ import Image from "next/image";
 
 export type CoverArt =
   | { kind: "image"; src: string; alt: string }
-  | { kind: "typo"; city: string; sub: string; bg: string; ink: string; accent: string };
+  | { kind: "typo"; city: string; sub: string; bg: string; ink: string; accent: string; chip?: string };
 
 /** "BANGKOK" -> ["BANG", "KOK"], "MADRID" -> ["MAD", "RID"], "SAN SEBASTIÁN" -> words. */
 function splitCityLines(city: string): string[] {
@@ -55,7 +55,7 @@ export function Book3D({
               <p className="cover-typo__brand" aria-hidden="true">
                 dis<em>cool</em>ver
               </p>
-              <p className="cover-typo__chip">Guía discoolver · 2026</p>
+              <p className="cover-typo__chip">{cover.chip ?? "Guía discoolver · 2026"}</p>
             </div>
             <p className="cover-typo__city">
               {splitCityLines(cover.city).map((line) => (

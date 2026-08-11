@@ -32,19 +32,6 @@ const spaceMono = Space_Mono({
 export function Brand360Shell({ children, locale = "es" }: { children: React.ReactNode; locale?: Locale }) {
   return (
     <div className={`b360 ${poppins.variable} ${inter.variable} ${spaceMono.variable}`}>
-      {/* Propuesta en revisión: se retira cuando Carlos dé el OK y antes de cortar el dominio. */}
-      <div className="b360-wip">
-        {locale === "en" ? (
-          <>
-            <strong>PROPOSAL UNDER REVIEW</strong> · discoolver 360 · the current sites remain live for comparison
-          </>
-        ) : (
-          <>
-            <strong>PROPUESTA EN REVISIÓN</strong> · discoolver 360 · las webs actuales siguen intactas
-            para poder compararlas
-          </>
-        )}
-      </div>
       <Nav360 locale={locale} />
       <main id="main-content">{children}</main>
       <Footer360 locale={locale} />

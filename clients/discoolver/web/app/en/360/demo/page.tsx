@@ -10,7 +10,6 @@ export const metadata: Metadata = buildMetadata({
   image: "/assets/360/og-360.png",
   siteName: "discoolver 360",
   locale: "en",
-  noindex: true,
 });
 
 export default function Page(props: { searchParams: Promise<{ v?: string }> }) {

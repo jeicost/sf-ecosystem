@@ -52,7 +52,7 @@ export function Hero({ content, locale = "es" }: { content: HomeContent; locale?
                 {/* Portada tipográfica: no se publica la cara de nadie
                     asociada a un nombre real sin acuerdo y foto cedidos. */}
                 <Book3D
-                  cover={{ kind: "typo", city: content.guide_1_city, sub: content.guide_1_sub, bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" }}
+                  cover={{ kind: "typo", city: content.guide_1_city, sub: content.guide_1_sub, bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a", chip: locale === "en" ? "Discoolver Guide · 2026" : undefined }}
                   spineText="discoolver · Madrid 2026"
                   spineColor="#22578a"
                   priority
