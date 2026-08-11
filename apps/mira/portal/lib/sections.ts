@@ -3,7 +3,7 @@ import {
   Users, LayoutDashboard, CheckSquare, BarChart3,
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
   Search, MessageSquare, FileText,
-  Home, Calendar, Brain, Library, ClipboardList, Layers, Archive,
+  Home, Calendar, Brain, Library, ClipboardList, Layers, Archive, Image,
 } from 'lucide-react'
 import { DEFAULT_SECTION_SLUG } from './constants'
 
@@ -129,15 +129,18 @@ export const IDEAL_SPACES: IdealSpace[] = [
     items: [
       { href: '/toolkit',        label: 'Informes',      icon: Layers },
       { href: '/documents',      label: 'Documentos',    icon: FileText },
+      // Galería de visuales generados (estaba huérfana del menú). El pipeline
+      // "Estudio Visual" gobernado sigue pausado (feat/visual-production).
+      { href: '/gallery',        label: 'Estudio visual', icon: Image },
       { href: '/questionnaires', label: 'Cuestionarios', icon: ClipboardList },
     ],
   },
   {
     key: 'equipo', label: 'Equipo', icon: Users,
     items: [
-      { href: '/roster',    label: 'Crecimiento', icon: Target },
-      { href: '/comercial', label: 'Ventas',      icon: Kanban },
-      { href: '/strategy',  label: 'Dirección',   icon: Map },
+      { href: '/roster',    label: 'Marketing', icon: Target },
+      { href: '/comercial', label: 'Ventas',    icon: Kanban },
+      { href: '/strategy',  label: 'Dirección', icon: Map },
     ],
   },
   {
