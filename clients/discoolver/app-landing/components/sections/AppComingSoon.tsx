@@ -6,8 +6,9 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import { Countdown, daysUntilLaunch } from "@/components/ui/Countdown";
 import type { HomeContent } from "@/lib/content/home";
+import type { Locale } from "@/lib/i18n";
 
-export function AppComingSoon({ content }: { content: HomeContent }) {
+export function AppComingSoon({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   // El número del titular sale de la misma fecha que el contador, no de un
@@ -52,7 +53,7 @@ export function AppComingSoon({ content }: { content: HomeContent }) {
                 {content.app_soon_title_3}
               </h2>
               <p style={{ marginTop: 20, fontSize: 17, color: "rgba(255,255,255,.7)", maxWidth: 520 }}>{content.app_soon_desc}</p>
-              <Countdown />
+              <Countdown locale={locale} />
               <form className="app-soon__form" aria-label="Suscribirse al aviso de lanzamiento de la app" onSubmit={handleSubmit}>
                 <input
                   type="email"

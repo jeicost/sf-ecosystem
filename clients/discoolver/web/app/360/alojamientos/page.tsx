@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { draftMode } from "next/headers";
 import { defaultAlojamientos360Content } from "@/lib/content/b360/alojamientos";
+import { defaultAlojamientos360Content as defaultAlojamientos360ContentEn } from "@/lib/content/b360/en/alojamientos";
+import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, Txt } from "@/components/b360/Bits";
 
@@ -17,9 +19,11 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
-export default async function Alojamientos360() {
+export async function Alojamientos360({ locale = "es" }: { locale?: Locale }) {
   const { isEnabled: isDraft } = await draftMode();
-  const c = await pageContent("360-alojamientos", defaultAlojamientos360Content, isDraft);
+  const slug = locale === "en" ? ("360-alojamientos-en" as const) : ("360-alojamientos" as const);
+  const fallback = locale === "en" ? defaultAlojamientos360ContentEn : defaultAlojamientos360Content;
+  const c = await pageContent(slug, fallback, isDraft);
   const K = (k: string) => c[k as keyof typeof c] as string;
 
   return (
@@ -31,7 +35,7 @@ export default async function Alojamientos360() {
           <h1 className="h-hero">{c.hero_title}</h1>
           <p className="lead">{c.hero_sub}</p>
           <div className="btns">
-            <Cta href="/360/demo?v=alojamiento">{c.hero_cta_primary}</Cta>
+            <Cta href={withLocale("/360/demo?v=alojamiento", locale)}>{c.hero_cta_primary}</Cta>
             <Cta href="#modulos" variant="2">{c.hero_cta_secondary}</Cta>
           </div>
           <p className="small" style={{ marginTop: 26, maxWidth: "62ch" }}>{c.hero_reassurance}</p>
@@ -214,7 +218,7 @@ export default async function Alojamientos360() {
           <h2 className="h-sec">{c.cta_title}</h2>
           <p className="lead">{c.cta_sub}</p>
           <div className="btns">
-            <Cta href="/360/demo?v=alojamiento">{c.cta_boton}</Cta>
+            <Cta href={withLocale("/360/demo?v=alojamiento", locale)}>{c.cta_boton}</Cta>
           </div>
           <p className="small" style={{ marginTop: 22 }}>{c.cta_reassurance}</p>
           <p className="small" style={{ fontFamily: "var(--b-mono)", fontSize: 12.5 }}>{c.cta_contacto}</p>
@@ -222,4 +226,8 @@ export default async function Alojamientos360() {
       </Section>
     </>
   );
+}
+
+export default function Page() {
+  return <Alojamientos360 locale="es" />;
 }

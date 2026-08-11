@@ -41,6 +41,14 @@ const PAGE_SLUGS = [
   '360-alojamientos',
   '360-agencias',
   '360-demo',
+  // inglés — espejo -en de cada página
+  'home-en',
+  'influencers-en',
+  '360-home-en',
+  '360-destinos-en',
+  '360-alojamientos-en',
+  '360-agencias-en',
+  '360-demo-en',
 ]
 
 function ensureContentFile() {

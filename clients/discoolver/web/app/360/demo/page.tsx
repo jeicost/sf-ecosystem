@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { draftMode } from "next/headers";
 import { buildMetadata } from "@/lib/seo";
 import { defaultDemo360Content } from "@/lib/content/b360/demo";
+import { defaultDemo360Content as defaultDemo360ContentEn } from "@/lib/content/b360/en/demo";
+import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
 import { Section } from "@/components/b360/Bits";
@@ -24,15 +26,19 @@ const VERTICAL_LABELS: Record<string, string> = {
   agencia: "Agencia · DMC, touroperador o receptivo",
 };
 
-export default async function Demo360({
+export async function Demo360({
   searchParams,
+  locale = "es",
 }: {
   searchParams: Promise<{ v?: string }>;
+  locale?: Locale;
 }) {
   const { isEnabled: isDraft } = await draftMode();
   const { v } = await searchParams;
   const defaultVertical = VERTICAL_LABELS[v ?? ""] ?? "";
-  const c = await pageContent("360-demo", defaultDemo360Content, isDraft);
+  const slug = locale === "en" ? ("360-demo-en" as const) : ("360-demo" as const);
+  const fallback = locale === "en" ? defaultDemo360ContentEn : defaultDemo360Content;
+  const c = await pageContent(slug, fallback, isDraft);
   const K = (k: string) => c[k as keyof typeof c] as string;
 
   return (
@@ -73,9 +79,13 @@ export default async function Demo360({
         </div>
 
         <div className="card" style={{ borderColor: "var(--b-line)", padding: 30 }}>
-          <DemoForm defaultVertical={defaultVertical} />
+          <DemoForm locale={locale} defaultVertical={defaultVertical} />
         </div>
       </div>
     </Section>
   );
+}
+
+export default function Page(props: { searchParams: Promise<{ v?: string }> }) {
+  return <Demo360 {...props} locale="es" />;
 }

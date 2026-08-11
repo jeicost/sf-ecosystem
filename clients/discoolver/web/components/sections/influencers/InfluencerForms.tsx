@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { InfluencersContent } from "@/lib/content/influencers";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * The two application forms, one per track. Five fields each — name, email,
@@ -28,7 +29,7 @@ interface FormCopy {
   featured?: boolean;
 }
 
-function CreatorForm({ copy, successText, errorText }: { copy: FormCopy; successText: string; errorText: string }) {
+function CreatorForm({ copy, successText, errorText, locale = "es" }: { copy: FormCopy; successText: string; errorText: string; locale?: Locale }) {
   const [status, setStatus] = useState<Status>("idle");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -55,10 +56,10 @@ function CreatorForm({ copy, successText, errorText }: { copy: FormCopy; success
   }
 
   const fields = [
-    { key: "name", label: copy.labels.name, type: "text", autoComplete: "name", placeholder: "Nombre y apellido", required: true },
-    { key: "email", label: copy.labels.email, type: "email", autoComplete: "email", placeholder: "tu@correo.com", required: true },
-    { key: "handle", label: copy.labels.handle, type: "text", autoComplete: "off", placeholder: "@tuhandle", required: true },
-    { key: "city", label: copy.labels.city, type: "text", autoComplete: "address-level2", placeholder: "Madrid, Bilbao, Bangkok…", required: true },
+    { key: "name", label: copy.labels.name, type: "text", autoComplete: "name", placeholder: locale === "en" ? "First and last name" : "Nombre y apellido", required: true },
+    { key: "email", label: copy.labels.email, type: "email", autoComplete: "email", placeholder: locale === "en" ? "you@email.com" : "tu@correo.com", required: true },
+    { key: "handle", label: copy.labels.handle, type: "text", autoComplete: "off", placeholder: locale === "en" ? "@yourhandle" : "@tuhandle", required: true },
+    { key: "city", label: copy.labels.city, type: "text", autoComplete: "address-level2", placeholder: locale === "en" ? "Madrid, Bangkok, Lisbon…" : "Madrid, Bilbao, Bangkok…", required: true },
     { key: "link", label: copy.labels.link, type: "url", autoComplete: "off", placeholder: "https://…", required: true },
   ] as const;
 
@@ -105,7 +106,7 @@ function CreatorForm({ copy, successText, errorText }: { copy: FormCopy; success
   );
 }
 
-export function InfluencerForms({ content }: { content: InfluencersContent }) {
+export function InfluencerForms({ content, locale = "es" }: { content: InfluencersContent; locale?: Locale }) {
   const forms: FormCopy[] = [
     {
       id: "form-guia",
@@ -157,7 +158,7 @@ export function InfluencerForms({ content }: { content: InfluencersContent }) {
         <div className="forms-grid">
           {forms.map((copy, i) => (
             <Reveal delay={i * 120} key={copy.id}>
-              <CreatorForm copy={copy} successText={content.form_success} errorText={content.form_error} />
+              <CreatorForm locale={locale} copy={copy} successText={content.form_success} errorText={content.form_error} />
             </Reveal>
           ))}
         </div>

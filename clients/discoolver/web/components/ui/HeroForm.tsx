@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UI, type Locale } from "@/lib/i18n";
 import { Icon } from "./Icon";
 
 /**
@@ -9,7 +10,7 @@ import { Icon } from "./Icon";
  * never fakes success, so both outcomes are surfaced to the user. Free-text
  * city (the whole point is asking for cities we don't cover yet).
  */
-export function HeroForm() {
+export function HeroForm({ locale = "es" }: { locale?: Locale }) {
   const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
@@ -30,10 +31,10 @@ export function HeroForm() {
   }
 
   return (
-    <form className="hero__searchbar" aria-label="Formulario de aviso: pide la guía de tu ciudad" onSubmit={handleSubmit}>
+    <form className="hero__searchbar" aria-label={locale === "en" ? "Waitlist form: request your city's guide" : "Formulario de aviso: pide la guía de tu ciudad"} onSubmit={handleSubmit}>
       <div className="search__field">
         <label htmlFor="waitlist-city" className="search__label">
-          Tu ciudad
+          {UI[locale].heroForm.city}
         </label>
         <input
           id="waitlist-city"
@@ -55,7 +56,7 @@ export function HeroForm() {
           id="hero-email"
           type="email"
           className="search__input"
-          placeholder="tu@correo.com"
+          placeholder={UI[locale].heroForm.emailPlaceholder}
           required
           aria-required="true"
           autoComplete="email"
@@ -63,12 +64,12 @@ export function HeroForm() {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-      <button type="submit" className="search__btn" aria-label="Avisarme cuando salga la guía" disabled={status === "loading"}>
-        Avísame <Icon name="arrow-right" />
+      <button type="submit" className="search__btn" aria-label={UI[locale].heroForm.ariaSubmit} disabled={status === "loading"}>
+        {UI[locale].heroForm.submit} <Icon name="arrow-right" />
       </button>
       {status === "done" && (
         <span role="status" style={{ gridColumn: "1 / -1", padding: "10px 22px 14px", fontSize: 13, color: "var(--accent)" }}>
-          Hecho. Te avisamos cuando la guía de tu ciudad entre en edición.
+          {UI[locale].heroForm.done}
         </span>
       )}
       {status === "error" && (

@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
+import type { Locale } from "@/lib/i18n";
 
-export function CTA({ content }: { content: HomeContent }) {
+export function CTA({ content }: { content: HomeContent; locale?: Locale }) {
   return (
     <section className="cta" id="cta" aria-labelledby="cta-title">
       <div className="cta__bg" aria-hidden="true" />
@@ -19,10 +20,10 @@ export function CTA({ content }: { content: HomeContent }) {
           </h2>
           <p className="cta__sub">{content.cta_sub}</p>
           <div className="cta__buttons">
-            <Link href="/#guias" className="btn btn-primary">
+            <Link href="#guias" className="btn btn-primary">
               {content.cta_primary} <Icon name="arrow-right" size={14} />
             </Link>
-            <Link href="/#waitlist" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
+            <Link href="#waitlist" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
               {content.cta_secondary}
             </Link>
           </div>

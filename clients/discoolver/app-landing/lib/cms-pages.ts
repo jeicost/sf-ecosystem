@@ -9,7 +9,7 @@
 type SectionData = Record<string, unknown>;
 type CmsSections = Record<string, { type: string; data: SectionData }>;
 
-export function loadCmsSections(pageSlug: "home" | "influencers"): CmsSections {
+export function loadCmsSections(pageSlug: "home" | "influencers" | "app-home-en"): CmsSections {
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const pages = require("../content/pages.json");
@@ -53,7 +53,7 @@ function normalizeSections(sectionsJson: unknown): CmsSections {
  * draftMode().isEnabled — normal reads always go through loadCmsSections.
  * Returns null on any failure so the caller falls back to the static bake.
  */
-export async function loadCmsSectionsLive(pageSlug: "home" | "influencers"): Promise<CmsSections | null> {
+export async function loadCmsSectionsLive(pageSlug: "home" | "influencers" | "app-home-en"): Promise<CmsSections | null> {
   const apiUrl = process.env.SF_CMS_API_URL || process.env.CMS_API_URL;
   const apiKey = process.env.SF_CMS_API_KEY || process.env.CMS_API_KEY;
   const projectSlug = process.env.SF_CMS_PROJECT_SLUG || process.env.CMS_PROJECT_SLUG || "discoolver";

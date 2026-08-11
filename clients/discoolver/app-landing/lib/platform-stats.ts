@@ -14,6 +14,7 @@
  * una vez al día y, si la API falla, sigue sirviendo la última buena.
  */
 import type { HomeContent } from "@/lib/content/home";
+import type { Locale } from "@/lib/i18n";
 
 type CityStat = { id: number; slug: string; name: string; sitios: number };
 type PlatformStats = { fetchedAt?: string; totalSitios?: number; cities?: CityStat[] };
@@ -85,7 +86,7 @@ function loadBakedStats(): PlatformStats {
 const nf = { format: (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ".") };
 
 /** Pisa en el contenido ya mergeado los números que salen de la plataforma. */
-export async function applyPlatformStats(content: HomeContent): Promise<HomeContent> {
+export async function applyPlatformStats(content: HomeContent, locale: Locale = "es"): Promise<HomeContent> {
   let stats: PlatformStats;
   try {
     stats = await fetchLiveStats();
@@ -110,7 +111,7 @@ export async function applyPlatformStats(content: HomeContent): Promise<HomeCont
   // Las pares (sitios concretos) se quedan: son picks editoriales.
   cities.slice(0, 5).forEach((c, i) => {
     const key = `ticker_${i * 2 + 1}` as keyof HomeContent;
-    out[key] = `${c.name} · ${nf.format(c.sitios)} sitios publicados`;
+    out[key] = `${c.name} · ${nf.format(c.sitios)} ${locale === "en" ? "places published" : "sitios publicados"}`;
   });
 
   return out;

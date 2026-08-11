@@ -6,6 +6,8 @@ import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/l
 import { applyPlatformStats } from "@/lib/platform-stats";
 import { DraftBanner } from "@/components/DraftBanner";
 import { defaultHomeContent } from "@/lib/content/home";
+import { defaultHomeContent as defaultHomeContentEn } from "@/lib/content/en/home";
+import type { Locale } from "@/lib/i18n";
 import { Nav } from "@/components/layout/Nav";
 import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
@@ -29,12 +31,14 @@ export const metadata: Metadata = buildMetadata({
   path: "/",
 });
 
-export default async function HomePage() {
+export async function HomePage({ locale = "es" }: { locale?: Locale }) {
   // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
   // of the build-time bake when active; any failure falls back to the bake.
   const { isEnabled: isDraft } = await draftMode();
-  const cms = isDraft ? (await loadCmsSectionsLive("home")) ?? loadCmsSections("home") : loadCmsSections("home");
-  const content = await applyPlatformStats(mergeContent(defaultHomeContent, section(cms, "content")));
+  const slug = locale === "en" ? "app-home-en" : "home";
+  const fallback = locale === "en" ? defaultHomeContentEn : defaultHomeContent;
+  const cms = isDraft ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug) : loadCmsSections(slug);
+  const content = await applyPlatformStats(mergeContent(fallback, section(cms, "content")), locale);
 
   const faqItems = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],
@@ -44,7 +48,7 @@ export default async function HomePage() {
   return (
     <>
       {isDraft && <DraftBanner />}
-      <Nav />
+      <Nav locale={locale} />
       <main>
         <Hero content={content} />
         <Ticker content={content} />
@@ -54,7 +58,7 @@ export default async function HomePage() {
         <Experiences content={content} />
         <MapSection content={content} />
         <ForCreators content={content} />
-        <AppComingSoon content={content} />
+        <AppComingSoon content={content} locale={locale} />
         <Testimonials content={content} />
         <FAQ content={content} />
         <Wordmark />
@@ -67,4 +71,8 @@ export default async function HomePage() {
       />
     </>
   );
+}
+
+export default function Page() {
+  return <HomePage locale="es" />;
 }

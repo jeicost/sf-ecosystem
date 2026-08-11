@@ -1,9 +1,10 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { HeroForm } from "@/components/ui/HeroForm";
+import type { Locale } from "@/lib/i18n";
 import type { HomeContent } from "@/lib/content/home";
 
 /** City-request waitlist — reuses the existing formsubmit-backed form. */
-export function Waitlist({ content }: { content: HomeContent }) {
+export function Waitlist({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
   return (
     <section className="section waitlist" id="waitlist" aria-labelledby="waitlist-title">
       <div className="container" style={{ textAlign: "center" }}>
@@ -17,7 +18,7 @@ export function Waitlist({ content }: { content: HomeContent }) {
           </p>
         </Reveal>
         <Reveal delay={140}>
-          <HeroForm />
+          <HeroForm locale={locale} />
         </Reveal>
       </div>
     </section>

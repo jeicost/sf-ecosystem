@@ -4,8 +4,9 @@ import { Icon } from "@/components/ui/Icon";
 import { TiltBook } from "@/components/ui/TiltBook";
 import { Book3D } from "@/components/ui/Book3D";
 import type { HomeContent } from "@/lib/content/home";
+import type { Locale } from "@/lib/i18n";
 
-export function Hero({ content }: { content: HomeContent }) {
+export function Hero({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
   return (
     <header className="hero" id="main-content">
       <span className="hero-wordmark" aria-hidden="true">
@@ -29,10 +30,10 @@ export function Hero({ content }: { content: HomeContent }) {
             </Reveal>
             <Reveal delay={240}>
               <div className="hero-ctas">
-                <Link href="/#guias" className="btn btn-primary">
+                <Link href="#guias" className="btn btn-primary">
                   {content.hero_cta_primary} <Icon name="arrow-right" size={14} />
                 </Link>
-                <Link href="/#waitlist" className="btn btn-ghost">
+                <Link href="#waitlist" className="btn btn-ghost">
                   {content.hero_cta_secondary}
                 </Link>
               </div>

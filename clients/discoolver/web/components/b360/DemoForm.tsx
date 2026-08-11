@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * Formulario cualificado de /360/demo (y embebido en /360/destinos).
@@ -17,27 +18,103 @@ import { useState } from "react";
  * vertical (/360/demo?v=destino|alojamiento|agencia).
  */
 
-const VERTICALES = [
-  "Destino · ayuntamiento, patronato o DMO",
-  "Alojamiento · hotel, hostal o apartamentos",
-  "Agencia · DMC, touroperador o receptivo",
-  "Otro",
-];
-
-const MODULOS = [
-  "Marketplace",
-  "Software de caja (POS)",
-  "Plan My Trip",
-  "Calendario inteligente",
-  "Asistente de voz local",
-  "Señalética y tótems",
-  "Business Intelligence",
-  "Todavía no lo sé",
-];
+const T = {
+  es: {
+    verticales: [
+      "Destino · ayuntamiento, patronato o DMO",
+      "Alojamiento · hotel, hostal o apartamentos",
+      "Agencia · DMC, touroperador o receptivo",
+      "Otro",
+    ],
+    modulos: [
+      "Marketplace",
+      "Software de caja (POS)",
+      "Plan My Trip",
+      "Calendario inteligente",
+      "Asistente de voz local",
+      "Señalética y tótems",
+      "Business Intelligence",
+      "Todavía no lo sé",
+    ],
+    okTitle: "Recibido. Ya está en la bandeja del equipo.",
+    okBody1a: "Te escribimos ",
+    okBody1b: "en menos de 24 horas laborables",
+    okBody1c:
+      " al correo que nos has dejado, con dos o tres huecos para la media hora. Contesta una persona que conoce el producto, no un automatismo.",
+    okBody2:
+      "Si quieres que llevemos algo preparado, responde a ese correo con la web de tu organización o el nombre de tu destino. ¿Prefieres escribir tú? info@discoolver.com",
+    name: "Nombre y apellidos",
+    role: "Cargo",
+    rolePh: "Director de turismo",
+    org: "Organización o establecimiento",
+    city: "Destino o ciudad",
+    cityPh: "Ronda, Costa del Sol…",
+    email: "Email",
+    phone: "Teléfono (opcional)",
+    vertical: "Qué gestionas",
+    chooseOne: "Elige una opción",
+    modules: "Qué módulos te interesan",
+    problem: "Qué problema quieres resolver",
+    problemPh:
+      "Ej.: la oficina de turismo no puede cobrar, o el comercio local no aparece en el recorrido del visitante.",
+    sending: "Enviando…",
+    submit: "Pedir la demo",
+    error: "No se pudo enviar. Inténtalo de nuevo en unos minutos o escribe a info@discoolver.com.",
+    legal1:
+      "Al enviar aceptas que tratemos estos datos solo para preparar y responder a tu solicitud. Puedes pedirnos que los borremos en info@discoolver.com.",
+    legal2: "Política de privacidad",
+  },
+  en: {
+    verticales: [
+      "Destination · city council, tourism board or DMO",
+      "Accommodation · hotel, hostel or apartments",
+      "Agency · DMC, tour operator or inbound",
+      "Other",
+    ],
+    modulos: [
+      "Marketplace",
+      "Point of sale software (POS)",
+      "Plan My Trip",
+      "Smart Calendar",
+      "Local voice assistant",
+      "Signage & interactive kiosks",
+      "Business Intelligence",
+      "Not sure yet",
+    ],
+    okTitle: "Received. It's in the team's inbox.",
+    okBody1a: "We'll write to you ",
+    okBody1b: "within 24 working hours",
+    okBody1c:
+      " at the email you left, with two or three slots for the half hour. A person who knows the product replies — not an automation.",
+    okBody2:
+      "Want us to come prepared? Reply to that email with your organization's website or your destination's name. Prefer to write first? info@discoolver.com",
+    name: "Full name",
+    role: "Role",
+    rolePh: "Head of tourism",
+    org: "Organization or property",
+    city: "Destination or city",
+    cityPh: "Ronda, Costa del Sol…",
+    email: "Email",
+    phone: "Phone (optional)",
+    vertical: "What do you manage",
+    chooseOne: "Choose an option",
+    modules: "Which modules interest you",
+    problem: "What problem do you want to solve",
+    problemPh:
+      "E.g.: the tourist office can't take payments, or local businesses don't show up on the visitor's route.",
+    sending: "Sending…",
+    submit: "Book the demo",
+    error: "Couldn't send. Try again in a few minutes or write to info@discoolver.com.",
+    legal1:
+      "By submitting you agree we use this data only to prepare and answer your request. Ask us to delete it any time at info@discoolver.com.",
+    legal2: "Privacy policy",
+  },
+} as const;
 
 type State = "idle" | "sending" | "ok" | "error";
 
-export function DemoForm({ defaultVertical = "" }: { defaultVertical?: string }) {
+export function DemoForm({ defaultVertical = "", locale = "es" }: { defaultVertical?: string; locale?: Locale }) {
+  const t = T[locale];
   const [state, setState] = useState<State>("idle");
   const [mods, setMods] = useState<string[]>([]);
 
@@ -80,15 +157,12 @@ export function DemoForm({ defaultVertical = "" }: { defaultVertical?: string })
   if (state === "ok") {
     return (
       <div className="card" style={{ borderColor: "var(--b-primary)" }}>
-        <h3 className="h-card">Recibido. Ya está en la bandeja del equipo.</h3>
+        <h3 className="h-card">{t.okTitle}</h3>
         <p style={{ marginTop: 0 }}>
-          Te escribimos <strong>en menos de 24 horas laborables</strong> al correo que nos has
-          dejado, con dos o tres huecos para la media hora. Contesta una persona que conoce el
-          producto, no un automatismo.
+          {t.okBody1a}<strong>{t.okBody1b}</strong>{t.okBody1c}
         </p>
         <p style={{ margin: 0 }} className="small">
-          Si quieres que llevemos algo preparado, responde a ese correo con la web de tu
-          organización o el nombre de tu destino. ¿Prefieres escribir tú? info@discoolver.com
+          {t.okBody2}
         </p>
       </div>
     );
@@ -108,44 +182,44 @@ export function DemoForm({ defaultVertical = "" }: { defaultVertical?: string })
 
       <div className="grid g-2" style={{ gap: 16 }}>
         <div className="field">
-          <label htmlFor="f-name">Nombre y apellidos</label>
+          <label htmlFor="f-name">{t.name}</label>
           <input id="f-name" name="name" required autoComplete="name" />
         </div>
         <div className="field">
-          <label htmlFor="f-role">Cargo</label>
-          <input id="f-role" name="role" placeholder="Director de turismo" />
+          <label htmlFor="f-role">{t.role}</label>
+          <input id="f-role" name="role" placeholder={t.rolePh} />
         </div>
       </div>
 
       <div className="grid g-2" style={{ gap: 16 }}>
         <div className="field">
-          <label htmlFor="f-org">Organización o establecimiento</label>
+          <label htmlFor="f-org">{t.org}</label>
           <input id="f-org" name="organization" required />
         </div>
         <div className="field">
-          <label htmlFor="f-city">Destino o ciudad</label>
-          <input id="f-city" name="city" required placeholder="Ronda, Costa del Sol…" />
+          <label htmlFor="f-city">{t.city}</label>
+          <input id="f-city" name="city" required placeholder={t.cityPh} />
         </div>
       </div>
 
       <div className="grid g-2" style={{ gap: 16 }}>
         <div className="field">
-          <label htmlFor="f-email">Email</label>
+          <label htmlFor="f-email">{t.email}</label>
           <input id="f-email" name="email" type="email" required autoComplete="email" />
         </div>
         <div className="field">
-          <label htmlFor="f-phone">Teléfono (opcional)</label>
+          <label htmlFor="f-phone">{t.phone}</label>
           <input id="f-phone" name="phone" type="tel" autoComplete="tel" />
         </div>
       </div>
 
       <div className="field">
-        <label htmlFor="f-vertical">Qué gestionas</label>
+        <label htmlFor="f-vertical">{t.vertical}</label>
         <select id="f-vertical" name="vertical" required defaultValue={defaultVertical}>
           <option value="" disabled>
-            Elige una opción
+            {t.chooseOne}
           </option>
-          {VERTICALES.map((v) => (
+          {t.verticales.map((v) => (
             <option key={v} value={v}>
               {v}
             </option>
@@ -154,9 +228,9 @@ export function DemoForm({ defaultVertical = "" }: { defaultVertical?: string })
       </div>
 
       <div className="field">
-        <label>Qué módulos te interesan</label>
+        <label>{t.modules}</label>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 4 }}>
-          {MODULOS.map((m) => {
+          {t.modulos.map((m) => {
             const on = mods.includes(m);
             return (
               <button
@@ -183,29 +257,28 @@ export function DemoForm({ defaultVertical = "" }: { defaultVertical?: string })
       </div>
 
       <div className="field">
-        <label htmlFor="f-msg">Qué problema quieres resolver</label>
+        <label htmlFor="f-msg">{t.problem}</label>
         <textarea
           id="f-msg"
           name="message"
-          placeholder="Ej.: la oficina de turismo no puede cobrar, o el comercio local no aparece en el recorrido del visitante."
+          placeholder={t.problemPh}
         />
       </div>
 
       <button type="submit" className="btn btn-1" disabled={state === "sending"}>
-        {state === "sending" ? "Enviando…" : "Pedir la demo"} <span aria-hidden="true">→</span>
+        {state === "sending" ? t.sending : t.submit} <span aria-hidden="true">→</span>
       </button>
 
       {state === "error" && (
         <p style={{ color: "var(--b-primary)", fontSize: 14, margin: 0 }} role="alert">
-          No se pudo enviar. Inténtalo de nuevo en unos minutos o escribe a info@discoolver.com.
+          {t.error}
         </p>
       )}
 
       <p className="small" style={{ margin: 0, color: "var(--b-slate)", fontSize: 13 }}>
-        Al enviar aceptas que tratemos estos datos solo para preparar y responder a tu solicitud.
-        Puedes pedirnos que los borremos en info@discoolver.com.{" "}
+        {t.legal1}{" "}
         <a href="/privacidad" style={{ color: "var(--b-muted)", textDecoration: "underline" }}>
-          Política de privacidad
+          {t.legal2}
         </a>
         .
       </p>

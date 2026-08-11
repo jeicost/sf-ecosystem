@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { Book3D, type CoverArt } from "@/components/ui/Book3D";
 import type { HomeContent } from "@/lib/content/home";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * The star section: the guide collection as physical objects. First card
@@ -9,7 +10,7 @@ import type { HomeContent } from "@/lib/content/home";
  * (flat color + big type — no invented photos). Cover palettes riff on the
  * real cover art (blue + peach) plus the discoolver print magenta #C8006B.
  */
-export function Guides({ content }: { content: HomeContent }) {
+export function Guides({ content }: { content: HomeContent; locale?: Locale }) {
   // Paletas de la tanda de portadas aprobada por el CEO el 2026-08-11
   // (una por ciudad: A Madrid, C Barcelona, E Ronda, G Málaga, F Ibiza, H Bangkok).
   // Las firmas son ficticias a propósito hasta que cada creador firme; el nombre
@@ -58,7 +59,7 @@ export function Guides({ content }: { content: HomeContent }) {
                   clicables y el visitante que quería una ciudad concreta no
                   tenía nada que hacer. Hoy el destino es la lista de
                   lanzamiento; cuando exista la ficha de producto, será ella. */}
-              <Link href="/#waitlist" className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
+              <Link href="#waitlist" className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
                 <div className="bookcard__stage book-scene">
                   <Book3D cover={guide.cover} spineText={guide.spineText} spineColor={guide.spineColor} />
                 </div>
@@ -73,7 +74,7 @@ export function Guides({ content }: { content: HomeContent }) {
             </Reveal>
           ))}
           <Reveal delay={270}>
-            <Link href="/#waitlist" className="bookcard bookcard--ghost" aria-label={`${content.guides_ghost_city} ${content.guides_ghost_text}`}>
+            <Link href="#waitlist" className="bookcard bookcard--ghost" aria-label={`${content.guides_ghost_city} ${content.guides_ghost_text}`}>
               <div className="bookcard__stage">
                 <div className="ghostcover">
                   <span className="ghostcover__plus" aria-hidden="true">

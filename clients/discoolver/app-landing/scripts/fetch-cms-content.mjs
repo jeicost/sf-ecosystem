@@ -38,6 +38,7 @@ const HEADERS = { 'x-api-key': CMS_API_KEY }
 const PAGE_SLUGS = [
   { local: 'home',        remote: process.env.SF_CMS_SLUG_HOME || 'app-home' },
   { local: 'influencers', remote: process.env.SF_CMS_SLUG_INFLUENCERS || 'app-influencers' },
+  { local: 'app-home-en', remote: 'app-home-en' },
 ]
 
 function ensureContentFile() {

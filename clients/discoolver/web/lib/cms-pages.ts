@@ -21,7 +21,15 @@ export type PageSlug =
   | "360-destinos"
   | "360-alojamientos"
   | "360-agencias"
-  | "360-demo";
+  | "360-demo"
+  // Inglés: misma página, otro idioma. Sufijo -en, mismo modelo flat-fields.
+  | "home-en"
+  | "influencers-en"
+  | "360-home-en"
+  | "360-destinos-en"
+  | "360-alojamientos-en"
+  | "360-agencias-en"
+  | "360-demo-en";
 
 export function loadCmsSections(pageSlug: PageSlug): CmsSections {
   try {

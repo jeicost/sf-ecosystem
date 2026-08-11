@@ -16,6 +16,8 @@
  */
 import { defaultHomeContent } from "../lib/content/home";
 import { defaultInfluencersContent } from "../lib/content/influencers";
+import { defaultHomeContent as homeEn } from "../lib/content/en/home";
+import { defaultInfluencersContent as influencersEn } from "../lib/content/en/influencers";
 
 const PROJECT_ID = "674dda33-f0dd-4d2f-8433-92aa86941caf";
 const SUPABASE_URL = process.env.SF_CMS_SUPABASE_URL;
@@ -31,12 +33,13 @@ const H = {
   apikey: SERVICE_KEY,
   Authorization: `Bearer ${SERVICE_KEY}`,
   "Content-Type": "application/json",
-  Prefer: "return=minimal",
 };
 
 const PAGES: { slug: string; data: Record<string, string> }[] = [
   { slug: "home", data: defaultHomeContent },
   { slug: "influencers", data: defaultInfluencersContent },
+  { slug: "home-en", data: homeEn },
+  { slug: "influencers-en", data: influencersEn },
 ];
 
 async function main() {
@@ -47,20 +50,27 @@ async function main() {
       console.log(`· ${page.slug.padEnd(12)} UPDATE  ${fields} campos`);
       continue;
     }
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/pages?project_id=eq.${PROJECT_ID}&slug=eq.${page.slug}`,
-      {
-        method: "PATCH",
-        headers: H,
-        body: JSON.stringify({
-          sections_json: [{ id: "content", type: "flat-fields", data: page.data }],
-          status: "published",
-          updated_at: new Date().toISOString(),
-        }),
-      },
-    );
+    const q = `${SUPABASE_URL}/rest/v1/pages?project_id=eq.${PROJECT_ID}&slug=eq.${page.slug}`;
+    const existing = (await (await fetch(`${q}&select=id`, { headers: H })).json()) as { id: string }[];
+    const body = {
+      project_id: PROJECT_ID,
+      client_slug: "discoolver",
+      slug: page.slug,
+      title: page.slug,
+      sections_json: [{ id: "content", type: "flat-fields", data: page.data }],
+      status: "published",
+    };
+    const res = existing[0]
+      ? await fetch(`${SUPABASE_URL}/rest/v1/pages?id=eq.${existing[0].id}`, {
+          method: "PATCH", headers: H,
+          body: JSON.stringify({ sections_json: body.sections_json, status: "published", updated_at: new Date().toISOString() }),
+        })
+      : await fetch(`${SUPABASE_URL}/rest/v1/pages`, {
+          method: "POST", headers: H,
+          body: JSON.stringify({ ...body, section_id: `page-${page.slug}` }),
+        });
     if (!res.ok) throw new Error(`${page.slug}: ${res.status} ${await res.text()}`);
-    console.log(`✅ ${page.slug.padEnd(12)} ${fields} campos`);
+    console.log(`✅ ${page.slug.padEnd(16)} ${existing[0] ? "actualizada" : "creada"}  ${fields} campos`);
   }
 }
 

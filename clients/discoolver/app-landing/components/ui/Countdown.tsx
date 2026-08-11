@@ -23,7 +23,11 @@ function getRemaining() {
   return { days, hours, minutes, seconds };
 }
 
-export function Countdown() {
+export function Countdown({ locale = "es" }: { locale?: "es" | "en" } = {}) {
+  const L =
+    locale === "en"
+      ? { d: "days", h: "h", m: "min", s: "sec", aria: "Countdown to launch" }
+      : { d: "días", h: "h", m: "min", s: "seg", aria: "Cuenta regresiva para el lanzamiento" };
   // Lazy initial state so the very first paint (server + client) already
   // shows a real countdown value. The number can legitimately differ by a
   // second between server render and client hydration — suppressHydrationWarning
@@ -38,30 +42,30 @@ export function Countdown() {
   const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div className="countdown" aria-label="Cuenta regresiva para el lanzamiento">
+    <div className="countdown" aria-label={L.aria}>
       <div className="countdown__cell">
         <span className="countdown__num" aria-live="polite" suppressHydrationWarning>
           {r.days}
         </span>
-        <span className="countdown__lbl">días</span>
+        <span className="countdown__lbl">{L.d}</span>
       </div>
       <div className="countdown__cell">
         <span className="countdown__num" aria-live="polite" suppressHydrationWarning>
           {pad(r.hours)}
         </span>
-        <span className="countdown__lbl">h</span>
+        <span className="countdown__lbl">{L.h}</span>
       </div>
       <div className="countdown__cell">
         <span className="countdown__num" aria-live="polite" suppressHydrationWarning>
           {pad(r.minutes)}
         </span>
-        <span className="countdown__lbl">min</span>
+        <span className="countdown__lbl">{L.m}</span>
       </div>
       <div className="countdown__cell">
         <span className="countdown__num" aria-live="polite" suppressHydrationWarning>
           {pad(r.seconds)}
         </span>
-        <span className="countdown__lbl">seg</span>
+        <span className="countdown__lbl">{L.s}</span>
       </div>
     </div>
   );

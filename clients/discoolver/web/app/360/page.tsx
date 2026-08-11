@@ -3,6 +3,8 @@ import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { draftMode } from "next/headers";
 import { defaultHome360Content } from "@/lib/content/b360/home";
+import { defaultHome360Content as defaultHome360ContentEn } from "@/lib/content/b360/en/home";
+import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending } from "@/components/b360/Bits";
 
@@ -18,9 +20,11 @@ export const metadata: Metadata = buildMetadata({
   noindex: true,
 });
 
-export default async function Home360() {
+export async function Home360({ locale = "es" }: { locale?: Locale }) {
   const { isEnabled: isDraft } = await draftMode();
-  const c = await pageContent("360-home", defaultHome360Content, isDraft);
+  const slug = locale === "en" ? ("360-home-en" as const) : ("360-home" as const);
+  const fallback = locale === "en" ? defaultHome360ContentEn : defaultHome360Content;
+  const c = await pageContent(slug, fallback, isDraft);
 
   const MODULOS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
     nombre: c[`modulo_${n}_nombre` as keyof typeof c] as string,
@@ -50,7 +54,7 @@ export default async function Home360() {
           <h1 className="h-hero">{c.hero_title}</h1>
           <p className="lead">{c.hero_sub}</p>
           <div className="btns">
-            <Cta href={c.hero_cta_primary_href}>{c.hero_cta_primary_label}</Cta>
+            <Cta href={withLocale(c.hero_cta_primary_href, locale)}>{c.hero_cta_primary_label}</Cta>
             <Cta href={c.hero_cta_secondary_href} variant="2">
               {c.hero_cta_secondary_label}
             </Cta>
@@ -206,7 +210,7 @@ export default async function Home360() {
             tener modelo de canal y un piloto. El grid pasa a 2 columnas solo. */}
         <div className="grid g-2" style={{ marginTop: 36 }}>
           {VERTICALES.filter((v) => !isPending(v.texto)).map((v) => (
-            <Link href={v.href} className="card vert" key={v.etiqueta}>
+            <Link href={withLocale(v.href, locale)} className="card vert" key={v.etiqueta}>
               <span className="card__n">{v.etiqueta.toUpperCase()}</span>
               <h3 className="h-card" style={{ fontSize: 19 }}>{v.frase}</h3>
               <p style={{ fontSize: 14.5, margin: 0 }}>{v.texto}</p>
@@ -231,7 +235,7 @@ export default async function Home360() {
           <h2 className="h-sec">{c.cta_titulo}</h2>
           <p className="lead">{c.cta_texto}</p>
           <div className="btns">
-            <Cta href={c.cta_boton_href}>{c.cta_boton_label}</Cta>
+            <Cta href={withLocale(c.cta_boton_href, locale)}>{c.cta_boton_label}</Cta>
           </div>
           <p className="small" style={{ marginTop: 22 }}>{c.cta_reaseguro}</p>
           <div style={{ marginTop: 14, display: "grid", gap: 10, justifyItems: "center" }}>
@@ -261,4 +265,8 @@ export default async function Home360() {
       </Section>
     </>
   );
+}
+
+export default function Page() {
+  return <Home360 locale="es" />;
 }

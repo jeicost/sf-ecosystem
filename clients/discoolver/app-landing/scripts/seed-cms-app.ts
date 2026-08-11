@@ -16,6 +16,7 @@
  * aquello al siguiente build. Fuente de verdad del copy: lib/content/home.ts.
  */
 import { defaultHomeContent } from "../lib/content/home";
+import { defaultHomeContent as homeEn } from "../lib/content/en/home";
 
 const PROJECT_ID = "674dda33-f0dd-4d2f-8433-92aa86941caf";
 const SUPABASE_URL = process.env.SF_CMS_SUPABASE_URL;
@@ -58,6 +59,37 @@ async function main() {
     status: "published",
   });
   console.log(`   ${fields} campos (antes 206 — los retirados eran las cifras inventadas)`);
+
+  // app-home-en: el espejo inglés. Upsert (la primera vez no existe).
+  const enFields = Object.keys(homeEn).length;
+  const q = `${SUPABASE_URL}/rest/v1/pages?project_id=eq.${PROJECT_ID}&slug=eq.app-home-en&select=id`;
+  const existing = DRY ? [] : ((await (await fetch(q, { headers: { apikey: SERVICE_KEY!, Authorization: `Bearer ${SERVICE_KEY}` } })).json()) as { id: string }[]);
+  if (existing[0] || DRY) {
+    await patch("app-home-en", {
+      sections_json: [{ id: "content", type: "flat-fields", data: homeEn }],
+      status: "published",
+    });
+  } else {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/pages`, {
+      method: "POST",
+      headers: H,
+      body: JSON.stringify({
+        project_id: PROJECT_ID,
+        client_slug: "discoolver",
+        slug: "app-home-en",
+        section_id: "page-app-home-en",
+        title: "App — Home (EN)",
+        seo_title: "Discoolver — Discover your city before everyone else",
+        seo_description:
+          "Places recommended by real local creators, reviewed by editors and powered by AI. Madrid, Barcelona and Málaga now open.",
+        status: "published",
+        sections_json: [{ id: "content", type: "flat-fields", data: homeEn }],
+      }),
+    });
+    if (!res.ok) throw new Error(`app-home-en: ${res.status} ${await res.text()}`);
+    console.log("✅ app-home-en creada");
+  }
+  console.log(`   ${enFields} campos EN`);
 
   // app-influencers: la ruta redirige a la web de guías; se despublica para
   // que la API deje de servir los handles sin verificar.

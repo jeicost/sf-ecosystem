@@ -21,6 +21,11 @@ import { defaultDestinos360Content } from "../lib/content/b360/destinos";
 import { defaultAlojamientos360Content } from "../lib/content/b360/alojamientos";
 import { defaultAgencias360Content } from "../lib/content/b360/agencias";
 import { defaultDemo360Content } from "../lib/content/b360/demo";
+import { defaultHome360Content as home360En } from "../lib/content/b360/en/home";
+import { defaultDestinos360Content as destinos360En } from "../lib/content/b360/en/destinos";
+import { defaultAlojamientos360Content as alojamientos360En } from "../lib/content/b360/en/alojamientos";
+import { defaultAgencias360Content as agencias360En } from "../lib/content/b360/en/agencias";
+import { defaultDemo360Content as demo360En } from "../lib/content/b360/en/demo";
 
 const PROJECT_ID = "674dda33-f0dd-4d2f-8433-92aa86941caf";
 const CLIENT_SLUG = "discoolver";
@@ -91,6 +96,46 @@ const PAGES: Seed[] = [
     seoDescription:
       "Media hora con la plataforma funcionando y el despliegue de Ronda abierto. Salimos con una propuesta de por qué módulo empezar y qué cuesta.",
     data: defaultDemo360Content,
+  },
+  {
+    slug: "360-home-en",
+    title: "360 — Home (EN)",
+    seoTitle: "discoolver 360 — the platform for tourist destinations",
+    seoDescription:
+      "Marketplace, point of sale, routes, events, voice assistant, signage and Business Intelligence for destinations, accommodation and agencies. Modules from €100/month.",
+    data: home360En,
+  },
+  {
+    slug: "360-destinos-en",
+    title: "360 — Destinations (EN)",
+    seoTitle: "Solutions for tourist destinations | discoolver 360",
+    seoDescription:
+      "SaaS platform for city councils, tourism boards and DMOs: redistribute visitor flow, own your destination's data and monetize local commerce.",
+    data: destinos360En,
+  },
+  {
+    slug: "360-alojamientos-en",
+    title: "360 — Accommodation (EN)",
+    seoTitle: "Digital concierge for accommodation | discoolver 360",
+    seoDescription:
+      "The digital concierge that joins your check-in, answers guests 24/7 and turns your recommendations into a revenue line for your property.",
+    data: alojamientos360En,
+  },
+  {
+    slug: "360-agencias-en",
+    title: "360 — Agencies (EN)",
+    seoTitle: "Agencies, DMCs and inbound operators | discoolver 360",
+    seoDescription:
+      "We digitize the destination's local catalog and give you a marketplace and point of sale to sell it. Net rates for the trade channel.",
+    data: agencias360En,
+  },
+  {
+    slug: "360-demo-en",
+    title: "360 — Book a demo (EN)",
+    seoTitle: "Book a demo | discoolver 360",
+    seoDescription:
+      "Half an hour with the platform running and the Ronda deployment open. You leave with a proposal: which module to start with and what it costs.",
+    data: demo360En,
   },
 ];
 
