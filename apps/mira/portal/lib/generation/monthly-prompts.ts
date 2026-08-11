@@ -25,6 +25,8 @@ export interface MonthlyPromptParams {
   attachmentText?: string
   contextoAdicional?: string
   feedbackBlock?: string
+  /** Few-shot: piezas que el cliente aprobó sin editar (Pilar 2.2). */
+  approvedExamplesBlock?: string
 }
 
 function sharedContext(p: MonthlyPromptParams): string {
@@ -36,6 +38,7 @@ function sharedContext(p: MonthlyPromptParams): string {
       ? `USER ATTACHMENTS (primary source — use their actual content):\n${p.attachmentText}`
       : '',
     p.contextoAdicional ? `CONTEXT FOR THIS MONTH (from the user): ${p.contextoAdicional}` : '',
+    p.approvedExamplesBlock || '',
     p.feedbackBlock || '',
     GROUNDING_CONTRACT,
     REPORT_VOICE_CONTRACT,

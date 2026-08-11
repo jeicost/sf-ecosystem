@@ -8,6 +8,7 @@ import { generateWithWebSearch } from '@/lib/grounding/web-research'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { getDocumentFeedbackBlock } from '@/lib/generation/toolkit-prompts'
+import { getApprovedExamplesBlock } from '@/lib/generation/approved-examples'
 import {
   buildMonthlyStrategyPrompt,
   buildMonthlyProductionPrompt,
@@ -96,10 +97,11 @@ export async function generateMonthlySystem(params: {
     .map((p: unknown) => String(p).toLowerCase())
     .filter(Boolean)
 
-  const [brain, ctx, feedbackBlock] = await Promise.all([
+  const [brain, ctx, feedbackBlock, approvedExamplesBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getMonthlyOperatingContext(clientId, month),
     getDocumentFeedbackBlock(clientId, 'monthly-content-system'),
+    getApprovedExamplesBlock(clientId), // few-shot: piezas aprobadas sin editar
   ])
 
   const promptParams: MonthlyPromptParams = {
@@ -116,6 +118,7 @@ export async function generateMonthlySystem(params: {
       ? { contextoAdicional: inputData.contexto_adicional.trim() }
       : {}),
     ...(feedbackBlock ? { feedbackBlock } : {}),
+    ...(approvedExamplesBlock ? { approvedExamplesBlock } : {}),
   }
 
   // Fase 1 — estrategia (los adjuntos de imagen entran aquí: moodboards, refs)

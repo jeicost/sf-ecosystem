@@ -2,6 +2,7 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { getFeedbackBlock } from '@/lib/feedback'
+import { getApprovedExamplesBlock } from '@/lib/generation/approved-examples'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 
@@ -51,7 +52,7 @@ export async function getQuickActionPrompt(
 ): Promise<string | null> {
   const { clientId, inputData, attachmentText, leadContext, projectId } = params
 
-  const [brandBrain, memoryContext, docContext, likedBlock, feedbackBlock] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, likedBlock, approvedBlock, feedbackBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
@@ -61,6 +62,7 @@ export async function getQuickActionPrompt(
       project_id: projectId ?? null,
     }),
     getLikedOutputsBlock(clientId),
+    getApprovedExamplesBlock(clientId), // few-shot: piezas aprobadas sin editar
     getFeedbackBlock(clientId, actionType),
   ])
 
@@ -105,6 +107,7 @@ OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not l
     leadBlock +
     (allContext ? `\n\nCONTEXT:\n${allContext}` : '') +
     likedBlock +
+    (approvedBlock ? `\n\n${approvedBlock}` : '') +
     languageRule +
     optionalFieldsRule +
     `\n\n${GROUNDING_CONTRACT}`
