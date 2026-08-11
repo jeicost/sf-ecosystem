@@ -2740,3 +2740,17 @@ button {
   .section { padding: 72px 0; }
   .section__head { margin-bottom: 40px; }
 }
+
+/* HOTFIX 2026-08-11 · Las tarjetas de precio pasaron a ser <a> (para enlazar a
+   la waitlist) y .format-card no declara display: como enlace es inline y la
+   caja colapsaba con el texto desbordando fuera. */
+a.format-card {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+/* La crema define su propio color de tinta y a.format-card (0,1,1) se lo
+   pisaba con inherit: el título "Papel" y el precio quedaban crema sobre crema. */
+a.format-card--paper {
+  color: var(--paper);
+}
