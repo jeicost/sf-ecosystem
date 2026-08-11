@@ -4,11 +4,12 @@ import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
 import SectionSwitcher from '@/components/section-switcher'
+import IdealSidebarNav from '@/components/ideal-sidebar-nav'
 import ClientSwitcher from '@/components/client-switcher'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { ProjectProvider } from '@/lib/project-context'
-import { getActiveSectionFromPath } from '@/lib/sections'
+import { getActiveSectionFromPath, isIdealUI } from '@/lib/sections'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { canUseFeature } from '@/lib/plans'
 import { createClient } from '@/lib/supabase'
@@ -31,6 +32,7 @@ function SidebarContent() {
   const [pendingCount, setPending] = useState(0)
   const activeSection = getActiveSectionFromPath(path)
   const navItems = activeSection?.navItems ?? []
+  const idealUI = isIdealUI() // flag: si off, la navegación es la de siempre
 
 useEffect(() => {
     const stored = getUser()
@@ -158,6 +160,13 @@ useEffect(() => {
         </Link>
       )}
 
+      {/* UI ideal (6 espacios) — solo con el flag. Nada se borra; la nav de
+          siempre vive en el bloque !idealUI de abajo. */}
+      {idealUI && (
+        <IdealSidebarNav path={path} pendingCount={pendingCount} isAgency={isSuperAdmin(user)} />
+      )}
+
+      {!idealUI && (<>
       {/* Home */}
       <Link href="/home"
         className={clsx(
@@ -310,6 +319,7 @@ useEffect(() => {
           <span>Resources</span>
         </Link>
       </div>
+      </>)}
 
       {/* Tour button */}
       <div className="px-3 pb-1">
