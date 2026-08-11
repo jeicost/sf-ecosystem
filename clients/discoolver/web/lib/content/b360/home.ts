@@ -125,8 +125,8 @@ export const defaultHome360Content = {
   caso_segundo:
     "El proyecto además forma parte de SEGITTUR y de la red DTI de Destinos Turísticos Inteligentes, pasó por el programa de aceleración Costa del Sol Tourism Hub y se ha presentado en FITUR.",
   caso_cita:
-    "«Discoolver ha sido parte esencial en la transformación digital de nuestra ciudad.» — Turismo de Ronda",
-  vert_eyebrow: "Tres puertas de entrada",
+    "«discoolver ha sido parte esencial en la transformación digital de nuestra ciudad.» — Turismo de Ronda",
+  vert_eyebrow: "Dos puertas de entrada",
   vert_titulo: "Dime quién eres y te enseño lo tuyo",
   vert_intro:
     "La plataforma es la misma, pero lo que resuelve cambia según quién la contrate.",

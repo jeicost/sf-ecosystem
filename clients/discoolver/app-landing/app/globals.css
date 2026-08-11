@@ -1672,3 +1672,85 @@ button {
   outline-offset: 2px;
   border-radius: 2px;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PARCHE DE DISEÑO 2026-08-11 — repaso de diseño. Hallazgos medidos en
+   producción. Aditivo: no toca los bloques compartidos con la tienda.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* A1 · La sección del countdown estaba pintada para fondo claro y luego se le
+   puso una foto oscura encima: titular de 72px y contador a 1,3:1 — invisibles.
+   Y el email que tecleabas, también. */
+.app-soon { background: var(--paper); color: var(--ink); }
+.app-soon__form input { color: var(--ink); }
+.countdown__lbl { opacity: 0.75; color: var(--ink); }
+
+/* A2 · scrollWidth 717px en un viewport de 390: el grid del countdown resolvía
+   a 480px por el min-content del formulario. */
+@media (max-width: 980px) {
+  .app-soon__grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .app-soon__form { flex-direction: column; align-items: stretch; }
+  .app-soon__form input { min-width: 0; }
+  .countdown { gap: 8px; }
+  .countdown__num { font-size: 34px; }
+}
+
+/* A2b · Las 4 tarjetas de creators iban con grid inline (sin media query):
+   las tarjetas 03 y 04 quedaban fuera de pantalla en móvil. */
+.creator-values { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 900px) { .creator-values { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .creator-values { grid-template-columns: minmax(0, 1fr); } }
+
+/* A3 · El bento featured lleva foto pero heredaba el color de tarjeta clara:
+   "Gastronomía" en negro sobre foto nocturna. Scrim + blanco, como img-card. */
+.bento__featured { color: #fff; }
+.bento__featured .bento__count { color: rgba(255, 255, 255, 0.85); position: relative; z-index: 1; }
+.bento__featured .bento__title { text-shadow: 0 2px 24px rgba(0, 0, 0, 0.55); position: relative; z-index: 1; }
+.bento__featured .bento__top { position: relative; z-index: 1; }
+.bento__featured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(transparent 35%, rgba(0, 0, 0, 0.65));
+}
+
+/* A4 · Crema sobre lima daba 1,03:1 en la tarjeta 02. */
+.bento__color-1 { color: var(--paper); }
+.bento__color-1 .bento__count { color: color-mix(in oklab, var(--paper) 72%, transparent); }
+
+/* A5 · El conejo (z-index 3) tapaba el caption del visual: se leía "· AHORA
+   MISMO" sin "MADRID". El conejo sube arriba y el caption gana la capa. */
+.hero__visual-meta { z-index: 4; }
+.hero__mini--bunny { bottom: auto; top: -32px; left: -32px; }
+
+/* A7 · En móvil "Alojamiento" se recortaba a "Alojamie". */
+@media (max-width: 640px) {
+  .bento__title { font-size: 26px; hyphens: auto; overflow-wrap: anywhere; }
+}
+
+/* M1 · La fila de meta de Experiences quedó coja tras retirar los ratings
+   inventados: texto y flecha se agrupan y responden al hover de la tarjeta. */
+.exp__meta { justify-content: flex-start; gap: 8px; }
+.exp:hover .exp__rating { color: var(--primary); }
+
+/* M2 · El ticker se transparentaba a través de la nav al 80%. */
+.nav { background: color-mix(in oklab, var(--paper) 94%, transparent); }
+
+/* M6 · Los puntos del ticker eran lima sobre crema: 1,03:1. */
+.ticker__dot { color: var(--primary); }
+
+/* M7 · La tarjeta de testimonio perdió el avatar y quedó sin ancla visual:
+   la comilla pasa a ser el elemento gráfico. */
+.testi__quote-mark { font-size: 96px; opacity: 0.25; }
+
+/* M8 · El wordmark gigante se cortaba por los dos lados (perdía el punto
+   final de "discoolver."). */
+.wordmark { font-size: min(316px, 13.5vw); }
+
+/* Fila del step: el padre necesita flex para que marginTop:auto del enlace
+   alinee los cuatro "Ábrelo en la plataforma" (23px de escalón medido). */
+.step { display: flex; flex-direction: column; }

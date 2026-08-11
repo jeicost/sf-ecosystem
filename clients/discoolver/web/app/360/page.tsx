@@ -192,7 +192,7 @@ export default async function Home360() {
             {isPending(c.caso_cita) ? (
               <Pending>{c.caso_cita}</Pending>
             ) : (
-              <p className="small" style={{ fontStyle: "italic", color: "var(--b-text)" }}>{c.caso_cita}</p>
+              <p className="b360-quote">{c.caso_cita}</p>
             )}
           </div>
         </div>

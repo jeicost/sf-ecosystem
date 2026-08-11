@@ -31,7 +31,7 @@ export function ForCreators({ content }: { content: HomeContent }) {
             </a>
           </div>
         </Reveal>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16 }} role="list">
+        <div className="creator-values" role="list">
           {values.map((value, i) => (
             <Reveal delay={i * 80} key={value.title}>
               <div role="listitem" style={{ background: "var(--bg-card)", border: "1.5px solid var(--line)", borderRadius: "var(--radius-md)", overflow: "hidden", height: "100%" }}>

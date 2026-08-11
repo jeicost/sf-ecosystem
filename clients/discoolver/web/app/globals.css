@@ -2637,3 +2637,106 @@ button {
   .nav__links a::after { display: none; }
   .nav { position: sticky; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PARCHE DE DISEÑO 2026-08-11 — repaso de diseño (aditivo, no toca los
+   bloques recuperados 1:1 ni :root). Hallazgos medidos en producción.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* A1 · El lime sobre el crema del CTA final daba 1,03:1 — el titular de
+   cierre era invisible. El magenta es el énfasis del resto de la página. */
+.cta__title em { color: var(--primary); }
+
+/* A2 · 7 ítems en 4 columnas dejaban una celda vacía de 283×518 abajo a la
+   derecha. A 3 columnas las dos filas quedan llenas, los libros crecen ~40%
+   y la tarjeta fantasma pasa a banda horizontal a todo el ancho. */
+@media (min-width: 1101px) {
+  .guides-grid { grid-template-columns: repeat(3, 1fr); gap: 64px 40px; }
+  .guides-grid > *:last-child { grid-column: 1 / -1; }
+  .bookcard--ghost { flex-direction: row; align-items: center; gap: 32px; }
+  .bookcard--ghost .bookcard__stage { flex: 0 0 150px; padding: 0; }
+  .bookcard--ghost .bookcard__meta { margin: 0; border-top: 0; }
+}
+
+/* A3 · La filete de la fantasma caía 42px por debajo de la de sus vecinas
+   (alineaban por abajo con metas de distinta altura). Por arriba siempre casan. */
+.bookcard { justify-content: flex-start; }
+.bookcard__meta {
+  margin-top: 0;
+  border-top-width: 1.5px;
+  border-top-color: color-mix(in oklab, var(--line) 32%, transparent);
+}
+
+/* A4 · El CTA por ficha era idéntico a la línea de precio (mismo mono magenta
+   12px) y daba 4,16:1. El precio sube a primary-2; la acción se hace acción. */
+.bookcard__price { color: var(--primary-2); }
+.bookcard .bookcard__price:last-child {
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  white-space: nowrap;
+}
+
+/* A5 · La nav sticky al 80% dejaba ver las portadas de colores a través:
+   "IA" desaparecía sobre el ocre de Ronda. */
+.nav { background: color-mix(in oklab, var(--paper) 94%, transparent); }
+.nav__links a { color: color-mix(in oklab, var(--ink) 78%, transparent); }
+
+/* A6 · El placeholder iba en el mismo gris que la etiqueta: el campo parecía
+   relleno. (La etiqueta del botón se añade en el JSX de HeroForm.) */
+.search__input::placeholder { color: color-mix(in oklab, var(--ink-2) 62%, transparent); }
+.search__btn { width: auto; min-width: 150px; padding-inline: 24px; gap: 8px; font-weight: 600; font-size: 15px; }
+
+/* A7 · La tarjeta Digital (el precio de lanzamiento, la que hay que vender)
+   era la recesiva frente al crema sólido de Papel. */
+.format-card:not(.format-card--paper) {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 10%, var(--bg-card)), var(--bg-card));
+  border-color: var(--primary);
+}
+
+/* M5 · Las dos puertas de /influencers no parecían pulsables (texto plano
+   magenta a 3,86:1). */
+.track-card__cta { color: var(--primary-2); text-decoration: underline; text-underline-offset: 4px; }
+.track-card { cursor: pointer; }
+.track-card:hover { border-color: var(--primary); }
+
+/* M7 · El único email de contacto visible iba a 4,16:1. */
+.faq a[href^="mailto"] { color: var(--primary-2); }
+
+/* B1 · El cuadrado del eyebrow quedaba huérfano cuando el texto envolvía. */
+.eyebrow { align-items: flex-start; }
+.eyebrow::before { margin-top: 0.35em; }
+
+/* B2 · Objetivos táctiles de 18-21px en nav y footer. */
+.foot a, .nav__links a { padding-block: 8px; }
+
+/* B4 · Los enlaces del menú móvil leían como deshabilitados. */
+@media (max-width: 900px) {
+  .nav__links a { color: var(--ink); }
+}
+
+/* Fix 3 móvil · El escaparate a 1 columna medía 4.456px y empujaba el
+   formulario de captación a y=9.587 (68% de la página). A 2 columnas:
+   −57% de alto de sección, el formulario sube 2.861px. */
+@media (max-width: 620px) {
+  .guides-grid { grid-template-columns: 1fr 1fr; gap: 40px 20px; }
+  .guides-grid > *:last-child { grid-column: 1 / -1; }
+  .bookcard--ghost { flex-direction: row; align-items: center; gap: 24px; }
+  .bookcard--ghost .bookcard__stage { flex: 0 0 110px; }
+  .bookcard--ghost .bookcard__meta { margin: 0; border-top: 0; }
+  .bookcard__stage { max-width: none; }
+  .bookcard__meta { text-align: left; }
+  .bookcard__title { font-size: 18px; }
+  .bookcard__sub { font-size: 13px; }
+  .bookcard__price { font-size: 10.5px; letter-spacing: 0.04em; }
+}
+
+/* M1 · 240px de aire idéntico entre todas las secciones a 390px de ancho. */
+@media (max-width: 760px) {
+  .section { padding: 72px 0; }
+  .section__head { margin-bottom: 40px; }
+}

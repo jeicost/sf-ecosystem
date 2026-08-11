@@ -17,7 +17,7 @@ export function Guides({ content }: { content: HomeContent }) {
   const PALETTES: { spineColor: string; bg: string; ink: string; accent: string }[] = [
     { spineColor: "#22578a", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" }, // Madrid
     { spineColor: "#8f004d", bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" }, // Barcelona
-    { spineColor: "#c47f3e", bg: "#c47f3e", ink: "#141414", accent: "#f2f0ea" }, // Ronda
+    { spineColor: "#c47f3e", bg: "#c47f3e", ink: "#141414", accent: "#141414" }, // Ronda (crema sobre ocre daba 2,86:1)
     { spineColor: "#141414", bg: "#c9ff3f", ink: "#141414", accent: "#c8006b" }, // Málaga
     { spineColor: "#141414", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b" }, // Ibiza
     { spineColor: "#8f004d", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a" }, // Bangkok
@@ -67,7 +67,7 @@ export function Guides({ content }: { content: HomeContent }) {
                     {guide.city} <span className="bookcard__sub">{guide.sub}</span>
                   </h3>
                   <p className="bookcard__price">{guide.meta}</p>
-                  <p className="bookcard__price" style={{ color: "var(--primary)", fontWeight: 600 }}>{guide.cta} →</p>
+                  <p className="bookcard__price">{guide.cta} →</p>
                 </div>
               </Link>
             </Reveal>

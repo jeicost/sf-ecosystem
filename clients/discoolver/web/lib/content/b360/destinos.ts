@@ -161,7 +161,7 @@ export const defaultDestinos360Content = {
   caso_respaldo:
     "discoolver ha cerrado acuerdos con SEGITTUR, ICEX, ITH (Instituto Tecnológico Hotelero) y Costa del Sol Tourism Hub.",
   caso_pendiente_1:
-    "«Discoolver ha sido parte esencial en la transformación digital de nuestra ciudad.» — Turismo de Ronda",
+    "«discoolver ha sido parte esencial en la transformación digital de nuestra ciudad.» — Turismo de Ronda",
   caso_pendiente_2: "",
   caso_pendiente_3: "",
   caso_pendiente_4: "",

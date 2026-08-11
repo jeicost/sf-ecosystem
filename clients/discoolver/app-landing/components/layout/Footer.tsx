@@ -14,7 +14,7 @@ export function Footer({
         <div className="foot__grid">
           <div className="foot__col foot__brand">
             <Link aria-label="Discoolver — inicio" href="/">
-              <Image src="/assets/logo-white.png" alt="Discoolver" width={140} height={32} style={{ height: 32, width: "auto" }} />
+              <Image src="/assets/logo-white.png" alt="Discoolver" width={139} height={25} style={{ height: 25, width: "auto" }} />
             </Link>
             <p>{brandDesc}</p>
           </div>

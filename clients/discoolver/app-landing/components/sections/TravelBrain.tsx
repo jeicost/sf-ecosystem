@@ -51,7 +51,7 @@ export function TravelBrain({ content }: { content: HomeContent }) {
           <h2 className="display-lg" id="travel-brain-title" style={{ marginTop: 16, color: "#fff" }}>
             {content.travel_brain_title_1}
             <br />
-            {content.travel_brain_title_2} <span style={{ color: "#FFD23F" }}>{content.travel_brain_title_highlight}</span>
+            {content.travel_brain_title_2} <span style={{ color: "var(--accent)" }}>{content.travel_brain_title_highlight}</span>
           </h2>
           <ul role="list" style={{ listStyle: "none", marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
             {bullets.map((bullet, i) => (

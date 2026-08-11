@@ -51,7 +51,7 @@ export function Experiences({ content }: { content: HomeContent }) {
                     <span className="exp__cat">{card.cat}</span>
                     <h3 className="exp__title">{card.title}</h3>
                     <div className="exp__meta">
-                      <span className="exp__rating" style={{ color: "var(--ink-2)" }}>Ficha completa en la plataforma</span>
+                      <span className="exp__rating">Ficha completa en la plataforma</span>
                       <span className="exp__price">
                         <Icon name="arrow-up-right" size={14} />
                       </span>

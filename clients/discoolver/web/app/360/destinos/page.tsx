@@ -194,7 +194,7 @@ export default async function Destinos360() {
                 isPending(v) ? (
                   <Pending key={i}>{v}</Pending>
                 ) : (
-                  <p key={i} className="small" style={{ fontStyle: "italic", color: "var(--b-text)" }}>{v}</p>
+                  <p key={i} className="b360-quote">{v}</p>
                 ),
               )}
           </div>

@@ -64,7 +64,7 @@ export function HeroForm() {
         />
       </div>
       <button type="submit" className="search__btn" aria-label="Avisarme cuando salga la guía" disabled={status === "loading"}>
-        <Icon name="arrow-right" />
+        Avísame <Icon name="arrow-right" />
       </button>
       {status === "done" && (
         <span role="status" style={{ gridColumn: "1 / -1", padding: "10px 22px 14px", fontSize: 13, color: "var(--accent)" }}>

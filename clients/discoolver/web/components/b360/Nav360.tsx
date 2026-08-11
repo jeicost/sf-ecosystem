@@ -5,7 +5,7 @@ export function Nav360() {
   return (
     <header className="b360-nav">
       <div className="b360-nav__in">
-        <Logo360 size={36} />
+        <Logo360 size={28} />
         <nav className="b360-nav__links" aria-label="Navegación de discoolver 360">
           <Link href="/360/destinos">Destinos</Link>
           <Link href="/360/alojamientos">Alojamientos</Link>

@@ -97,7 +97,12 @@ export default async function Alojamientos360() {
             <div className="card" style={{ borderColor: "var(--b-line)" }}>
               <div className="caso__stats" style={{ marginTop: 0, paddingTop: 0, borderTop: 0 }}>
                 <Stat v={c.comision_dato_plataforma_valor} l={c.comision_dato_plataforma_label} />
-                <Stat v={c.comision_dato_alojamiento_valor} l={c.comision_dato_alojamiento_label} />
+                {/* "Tu parte" en un slot de cifra hacía conspicua la ausencia
+                    del número. Como titular + texto, cuenta el mecanismo. */}
+                <div>
+                  <h3 className="h-card" style={{ marginBottom: 6 }}>{c.comision_dato_alojamiento_valor}</h3>
+                  <p style={{ fontSize: 14.5, margin: 0 }}>{c.comision_dato_alojamiento_label}</p>
+                </div>
               </div>
               <div style={{ marginTop: 20 }}>
                 <Txt v={c.comision_nota} />

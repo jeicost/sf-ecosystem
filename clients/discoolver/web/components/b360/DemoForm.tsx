@@ -113,7 +113,7 @@ export function DemoForm({ defaultVertical = "" }: { defaultVertical?: string })
         </div>
         <div className="field">
           <label htmlFor="f-role">Cargo</label>
-          <input id="f-role" name="role" placeholder="Director de turismo, dirección de hotel…" />
+          <input id="f-role" name="role" placeholder="Director de turismo" />
         </div>
       </div>
 

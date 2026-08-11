@@ -12,7 +12,7 @@ export function Footer360() {
       <div className="wrap">
         <div className="b360-foot__grid">
           <div>
-            <Logo360 size={38} />
+            <Logo360 size={30} />
             <p className="small" style={{ marginTop: 14, maxWidth: "34ch" }}>
               La plataforma que convierte el tráfico turístico de un destino en ingreso para su
               tejido local.

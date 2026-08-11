@@ -18,7 +18,7 @@ export function Nav() {
     <nav className="nav" role="navigation" aria-label="Navegación principal">
       <div className="container nav__inner">
         <Link aria-label="Discoolver — inicio" href="/">
-          <Image src="/assets/logo-white.png" alt="Discoolver" width={140} height={28} priority style={{ height: 28, width: "auto" }} />
+          <Image src="/assets/logo-white.png" alt="Discoolver" width={122} height={22} priority style={{ height: 22, width: "auto" }} />
         </Link>
         <div className="nav__links" aria-label="Links de navegación">
           {LINKS.map((link) => (

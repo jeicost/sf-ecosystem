@@ -469,3 +469,97 @@
 @media (prefers-reduced-motion: reduce) {
   .b360 *, .b360 *::before, .b360 *::after { transition: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PARCHE DE DISEÑO 2026-08-11 — repaso de diseño. Hallazgos medidos en
+   producción (contrastes con muestreo de píxel, grids con getComputedStyle).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* A1 · BLINDAJE: globals.css (B2C) se fugaba dentro de .b360 — los bloques
+   de pasos heredaban repeat(4,1fr) y rayas crema #F2F0EA sobre fondo negro
+   en cinco bloques de tres páginas. Se sombrean los tokens del B2C y se
+   declara todo lo que su .steps/.step impone. */
+.b360 {
+  --line: var(--b-line-soft);
+  --bg-soft: var(--b-bg-2);
+  --primary: var(--b-primary);
+  --ink-2: var(--b-muted);
+}
+.b360 .steps {
+  display: grid;
+  grid-template-columns: 1fr; /* faltaba: ganaba repeat(4,1fr) del B2C */
+  gap: 2px;
+  border-top: 0;
+  border-bottom: 0;
+}
+.b360 .step {
+  display: block; /* el B2C lo pone en flex */
+  border-right: 0; /* las rayas crema verticales */
+  border-bottom: 1px solid var(--b-line-soft);
+  padding: 22px 0 22px 62px;
+}
+.b360 .step:last-child { border-bottom: 0; }
+.b360 .step:hover { background: transparent; }
+
+/* A2 · --b-slate #4D4D6E daba 2,44:1 — ilegible en las etiquetas del propio
+   formulario de conversión (y RD 1112/2018 exige AA al comprador público). */
+.b360 { --b-slate: #7a7a9e; } /* 4,78:1 sobre --b-bg */
+
+/* A3 · Blanco sobre #FF00C8 = 3,45:1 en el CTA primario. Tinta oscura: 5,85:1. */
+.b360 .btn-1 { color: #12001a; }
+
+/* A4/Fix3 · El formulario de la demo: fila descuadrada por una label a dos
+   líneas, cuatro alturas de control distintas, y 15px que disparan el zoom
+   automático de iOS Safari. */
+.b360 .form .g-2 { align-items: end; }
+.b360 .field input,
+.b360 .field select,
+.b360 .field textarea {
+  font-size: 16px;
+  min-height: 52px;
+  border-color: rgba(153, 153, 187, 0.34); /* el borde a 1,36:1 era invisible */
+}
+.b360 .field select { height: 52px; padding: 0 15px; }
+.b360 .field ::placeholder { color: #7a7a9e; }
+.b360 .field [aria-pressed] {
+  min-height: 44px; /* área táctil mínima */
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.b360 .field [aria-pressed="false"]:hover { border-color: var(--b-primary); }
+.b360 .btn[disabled] { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
+
+/* A5 · La cita de Ronda —el mejor activo del caso— iba a 14px cursiva como un
+   pie de foto. Pasa a cita de display con filete magenta. */
+.b360 .b360-quote {
+  font-family: var(--b-display);
+  font-weight: 600;
+  font-style: normal;
+  font-size: clamp(17px, 1.8vw, 21px);
+  line-height: 1.5;
+  color: var(--b-text);
+  border-left: 3px solid var(--b-primary);
+  padding-left: 18px;
+  max-width: 56ch;
+}
+
+/* A7 · La tarjeta 07 (Business Intelligence) quedaba huérfana con 541px de
+   vacío al lado — destinos ya lo resuelve a ancho completo. */
+.b360 #modulos .g-2 > :nth-child(7) { grid-column: 1 / -1; }
+
+/* A8 · En móvil los enlaces del nav pasaban a display:none sin hamburguesa:
+   la navegación desaparecía. Fila desplazable en su lugar. */
+@media (max-width: 700px) {
+  .b360-nav__in { flex-wrap: wrap; row-gap: 10px; }
+  .b360-nav__links { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .b360-nav__links::-webkit-scrollbar { display: none; }
+  .b360-nav__links a:not(.btn) { display: inline-block; white-space: nowrap; font-size: 13.5px; }
+}
+
+/* B1 · Lockup: el isotipo pesaba 2,7× el wordmark. Se equilibra vía tipografía. */
+.b360-logo__wm { font-size: 21px; }
+
+/* B2 · La @ de Space Mono se empasta a 12,5px. */
+.b360 a[href^="mailto"] { letter-spacing: 0.04em; }
+
+/* B5 · El copyright iba en el slate ilegible contra un enlace muted. */
+.b360-foot__bar span { color: var(--b-muted); }

@@ -48,7 +48,7 @@ export function HowItWorks({ content }: { content: HomeContent }) {
                 <a
                   href={step.href}
                   aria-label={`Abrir ${step.title} en la plataforma`}
-                  style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 12, fontWeight: 600, fontSize: 14 }}
+                  style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: "auto", paddingTop: 16, fontWeight: 600, fontSize: 14 }}
                 >
                   Ábrelo en la plataforma <Icon name="arrow-up-right" size={13} />
                 </a>
