@@ -6,6 +6,8 @@ import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
 import { t, type Locale } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
+import ValueReportCard from '@/components/ValueReportCard'
+import { isIdealUI } from '@/lib/sections'
 
 type Period = '7d' | '30d' | '90d'
 
@@ -155,6 +157,9 @@ export default function PerformancePage() {
           ))}
         </div>
       </div>
+
+      {/* Informe de Valor mensual — Fase 2.2, espacio "Resultados" */}
+      {isIdealUI() && <ValueReportCard clientId={clientId} brand="#8B5CF6" locale={locale} />}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
