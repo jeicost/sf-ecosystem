@@ -3,6 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 import { faqJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
 import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { applyPlatformStats } from "@/lib/platform-stats";
 import { DraftBanner } from "@/components/DraftBanner";
 import { defaultHomeContent } from "@/lib/content/home";
 import { Nav } from "@/components/layout/Nav";
@@ -33,7 +34,7 @@ export default async function HomePage() {
   // of the build-time bake when active; any failure falls back to the bake.
   const { isEnabled: isDraft } = await draftMode();
   const cms = isDraft ? (await loadCmsSectionsLive("home")) ?? loadCmsSections("home") : loadCmsSections("home");
-  const content = mergeContent(defaultHomeContent, section(cms, "content"));
+  const content = await applyPlatformStats(mergeContent(defaultHomeContent, section(cms, "content")));
 
   const faqItems = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],
