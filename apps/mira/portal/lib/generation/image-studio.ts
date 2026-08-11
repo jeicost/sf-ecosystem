@@ -3,6 +3,48 @@ import { fetchBrandBrain } from '@/lib/brand-brain'
 import { createServiceClient } from '@/lib/supabase-admin'
 import { generateAndStoreImage, type ImageSize } from '@/lib/generation/openai-image'
 
+/**
+ * Bloque de REFERENCIAS VISUALES: las fotos reales de la marca (sincronizadas
+ * de Drive y descritas por visión) guían el look de lo generado. Es lo que hace
+ * que el Estudio produzca en el estilo real del cliente, no genérico — y escala:
+ * cualquier marca con imágenes de referencia en su conocimiento se beneficia.
+ * Devuelve '' si no hay referencias (Estudio sigue funcionando solo con el Brain).
+ */
+export async function getVisualReferencesBlock(clientId: string, limit = 4): Promise<{ block: string; count: number }> {
+  try {
+    const admin = createServiceClient()
+    const { data } = await admin
+      .from('agent_documents')
+      .select('title, extracted_text')
+      .eq('client_id', clientId)
+      .like('file_mime_type', 'image/%')
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    if (!data?.length) return { block: '', count: 0 }
+    const refs = data
+      .map((d) => {
+        const txt = String(d.extracted_text || '')
+          .replace(/^\[IMAGE\][^\n]*\n/, '')
+          .replace(/#+\s*/g, '')
+          .replace(/\*\*/g, '')
+          .replace(/\s+/g, ' ')
+          .trim()
+          .slice(0, 240)
+        return txt ? `- ${txt}` : null
+      })
+      .filter(Boolean)
+    if (!refs.length) return { block: '', count: 0 }
+    return {
+      count: refs.length,
+      block:
+        "BRAND REFERENCE PHOTOGRAPHY — the generated image MUST match the look, lighting, palette, plating and composition of this brand's real photos:\n" +
+        refs.join('\n'),
+    }
+  } catch {
+    return { block: '', count: 0 }
+  }
+}
+
 // Estudio Visual v1 — capa de generación de imagen GUIADA POR LA MARCA.
 // La clave de escalabilidad: la identidad visual (hex, tipografía, estilo) sale
 // del Brand Brain de CADA cliente, así que funciona para cualquier marca sin
@@ -31,12 +73,16 @@ export type StudioFormat = keyof typeof STUDIO_FORMATS
 export function composeBrandImagePrompt(opts: {
   userPrompt: string
   visualIdentity?: string
+  referencesBlock?: string
   format: StudioFormat
 }): string {
   const f = STUDIO_FORMATS[opts.format] ?? STUDIO_FORMATS.post
   const parts = [opts.userPrompt.trim(), `Output format: ${f.guidance} (${f.size}).`]
   if (opts.visualIdentity?.trim()) {
     parts.push(`BRAND VISUAL IDENTITY — MANDATORY, apply exactly (palette hex, typography style): ${opts.visualIdentity.trim()}`)
+  }
+  if (opts.referencesBlock?.trim()) {
+    parts.push(opts.referencesBlock.trim())
   }
   parts.push(
     'Editorial, professional quality. Avoid a generic stock-photo look and avoid watermarks. ' +
@@ -50,6 +96,7 @@ export interface StudioResult {
   imageUrl: string
   format: StudioFormat
   usedBrandIdentity: boolean
+  referencesUsed: number
 }
 
 /**
@@ -63,9 +110,17 @@ export async function generateStudioImage(opts: {
   format: StudioFormat
   userId?: string | null
 }): Promise<StudioResult | null> {
-  const brain = await fetchBrandBrain(opts.clientId)
+  const [brain, references] = await Promise.all([
+    fetchBrandBrain(opts.clientId),
+    getVisualReferencesBlock(opts.clientId),
+  ])
   const visualIdentity = brain?.visualIdentitySummary
-  const finalPrompt = composeBrandImagePrompt({ userPrompt: opts.userPrompt, visualIdentity, format: opts.format })
+  const finalPrompt = composeBrandImagePrompt({
+    userPrompt: opts.userPrompt,
+    visualIdentity,
+    referencesBlock: references.block,
+    format: opts.format,
+  })
 
   const actionId = randomUUID()
   const stored = await generateAndStoreImage(finalPrompt, opts.clientId, actionId, {
@@ -94,5 +149,6 @@ export async function generateStudioImage(opts: {
     imageUrl: stored.signedUrl,
     format: opts.format,
     usedBrandIdentity: Boolean(visualIdentity?.trim()),
+    referencesUsed: references.count,
   }
 }

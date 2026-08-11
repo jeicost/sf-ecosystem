@@ -10,7 +10,7 @@ import { STUDIO_FORMATS } from '@/lib/generation/image-studio'
 // motor y el almacenamiento son los que ya existían; esto es la UI dedicada.
 const FORMAT_KEYS = Object.keys(STUDIO_FORMATS) as Array<keyof typeof STUDIO_FORMATS>
 
-interface Result { imageUrl: string; format: string; usedBrandIdentity: boolean }
+interface Result { imageUrl: string; format: string; usedBrandIdentity: boolean; referencesUsed: number }
 
 export default function StudioPage() {
   const { activeClient } = useActiveClient()
@@ -106,7 +106,8 @@ export default function StudioPage() {
               <img src={result.imageUrl} alt="Imagen generada" className="w-full rounded-xl border border-line object-contain" style={{ aspectRatio: aspect }} />
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-[11px] text-ink-tertiary">
-                  {result.usedBrandIdentity ? '✓ Con la identidad de tu marca' : '⚠ Sin identidad visual en el Brain'}
+                  {result.usedBrandIdentity ? '✓ Identidad de marca' : '⚠ Sin identidad visual en el Brain'}
+                  {result.referencesUsed > 0 && ` · ✓ ${result.referencesUsed} referencias reales`}
                 </span>
                 <a href={result.imageUrl} download className="inline-flex items-center gap-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
                   <Download size={14} /> Descargar
