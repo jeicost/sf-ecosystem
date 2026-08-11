@@ -26,6 +26,17 @@ CREATE POLICY "approval_queue: read own client" ON approval_queue
     client_id IN (SELECT project_id FROM mira_project_access WHERE user_id = auth.uid())
     OR (auth.jwt() -> 'user_metadata' ->> 'plan') = 'super_admin'
   );
+-- La página /approvals ACTUALIZA el estado (aprobar/rechazar/editar) desde el
+-- NAVEGADOR con la sesión del usuario. Sin esta política de UPDATE, activar RLS
+-- rompería el botón de aprobar en silencio (0 filas afectadas). Mismo alcance:
+-- solo filas del propio cliente. El INSERT lo hace el server (materialize con
+-- service_role, que ignora RLS), así que no necesita política.
+DROP POLICY IF EXISTS "approval_queue: update own client" ON approval_queue;
+CREATE POLICY "approval_queue: update own client" ON approval_queue
+  FOR UPDATE USING (
+    client_id IN (SELECT project_id FROM mira_project_access WHERE user_id = auth.uid())
+    OR (auth.jwt() -> 'user_metadata' ->> 'plan') = 'super_admin'
+  );
 REVOKE ALL ON approval_queue FROM anon;
 
 -- ── alerts ──────────────────────────────────────────────────────────────────
