@@ -129,9 +129,9 @@ export const IDEAL_SPACES: IdealSpace[] = [
     items: [
       { href: '/toolkit',        label: 'Informes',      icon: Layers },
       { href: '/documents',      label: 'Documentos',    icon: FileText },
-      // Galería de visuales generados (estaba huérfana del menú). El pipeline
-      // "Estudio Visual" gobernado sigue pausado (feat/visual-production).
-      { href: '/gallery',        label: 'Estudio visual', icon: Image },
+      // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
+      // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
+      { href: '/studio',         label: 'Estudio visual', icon: Image },
       { href: '/questionnaires', label: 'Cuestionarios', icon: ClipboardList },
     ],
   },

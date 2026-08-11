@@ -15,11 +15,26 @@ export interface StoredImage {
   signedUrl: string
 }
 
+export type ImageSize = '1024x1024' | '1024x1536' | '1536x1024'
+
+export interface GenerateImageOptions {
+  /** Tamaño de salida. Por defecto 1:1 (compat con quick actions). */
+  size?: ImageSize
+  /** Carpeta dentro del bucket: clients/{id}/{pathPrefix}/{actionId}/... */
+  pathPrefix?: string
+  /** Ruta para la telemetría de consumo. */
+  route?: string
+}
+
 export async function generateAndStoreImage(
   prompt: string,
   clientId: string,
-  actionId: string
+  actionId: string,
+  opts: GenerateImageOptions = {}
 ): Promise<StoredImage | null> {
+  const size = opts.size ?? '1024x1024'
+  const pathPrefix = opts.pathPrefix ?? 'quick-actions'
+  const route = opts.route ?? 'quick-actions:image'
   // Key del cliente (Integraciones → OpenAI) con fallback a la key de plataforma
   const apiKey = await getClientApiKey(clientId, 'openai', process.env.OPENAI_API_KEY)
   if (!apiKey) return null
@@ -34,7 +49,7 @@ export async function generateAndStoreImage(
       body: JSON.stringify({
         model: 'gpt-image-1',
         prompt: prompt.slice(0, 4000),
-        size: '1024x1024',
+        size,
         n: 1,
         // PNG sin comprimir daba ~1,6 MB por imagen (medido en Storage:
         // 1.658.096 y 1.583.909 bytes). El .pptx las embebe en base64, así que
@@ -61,7 +76,7 @@ export async function generateAndStoreImage(
     // Registrar consumo (nunca rompe la generación, ver logUsage)
     await logUsage({
       clientId,
-      route: 'quick-actions:image',
+      route,
       model: 'gpt-image-1',
       usage: {
         input_tokens: json?.usage?.input_tokens ?? 0,
@@ -85,7 +100,7 @@ export async function generateAndStoreImage(
       await db.storage.createBucket(VISUAL_BUCKET, { public: false, fileSizeLimit: 52428800 })
     }
 
-    const storagePath = `clients/${clientId}/quick-actions/${actionId}/${Date.now()}.jpg`
+    const storagePath = `clients/${clientId}/${pathPrefix}/${actionId}/${Date.now()}.jpg`
     const { error: uploadError } = await db.storage
       .from(VISUAL_BUCKET)
       .upload(storagePath, buffer, { contentType: 'image/jpeg', upsert: true })
