@@ -40,19 +40,32 @@ async function callAndParse(
   // tienen), no una búsqueda forzada. maxToolLoops=2 (no el default 3): son
   // 3 fases secuenciales dentro de maxDuration=800, conviene no arriesgar el
   // presupuesto de tiempo por fase. Ver lib/grounding/web-research.ts.
-  const { message, text } = await generateWithWebSearch({
-    clientId,
-    route: 'toolkit/generate',
-    model: 'claude-opus-4-8',
-    maxTokens,
-    userContent: imageBlocks.length
-      ? [...imageBlocks, { type: 'text' as const, text: prompt }]
-      : prompt,
-    maxToolLoops: 2,
+  const CONCISE =
+    '\n\nIMPORTANT: your entire response MUST be a single COMPLETE valid JSON object. ' +
+    'If you are running long, shorten descriptions rather than leaving the JSON unclosed.'
+  const baseContent = imageBlocks.length
+    ? [...imageBlocks, { type: 'text' as const, text: prompt }]
+    : prompt
+
+  const run = (mt: number, content: any) => generateWithWebSearch({
+    clientId, route: 'toolkit/generate', model: 'claude-opus-4-8',
+    maxTokens: mt, userContent: content, maxToolLoops: 2,
   })
-  if (message.stop_reason === 'max_tokens') {
-    throw new Error(`Monthly ${phase}: respuesta truncada en max_tokens`)
+
+  let { message, text } = await run(maxTokens, baseContent)
+
+  // Reintento ante truncación o JSON inválido (E8, plan 08-11). Este fallo
+  // ya ocurrió de verdad: el monthly de Salsa se truncó el 29-07. Antes se
+  // lanzaba y el job moría; ahora se reintenta una vez con más presupuesto.
+  const parses = () => { try { const p = extractJson(text); return p && typeof p === 'object' && !Array.isArray(p) } catch { return false } }
+  if (message.stop_reason === 'max_tokens' || !parses()) {
+    const bumped = Math.min(32000, Math.max(maxTokens + 8000, Math.ceil(maxTokens * 1.5)))
+    const retryContent = typeof baseContent === 'string'
+      ? baseContent + CONCISE
+      : [...(baseContent as any[]), { type: 'text' as const, text: CONCISE }]
+    ;({ message, text } = await run(bumped, retryContent))
   }
+
   try {
     const parsed = extractJson(text)
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
@@ -61,7 +74,7 @@ async function callAndParse(
     return parsed as Record<string, any>
   } catch (err) {
     throw new Error(
-      `Monthly ${phase}: no se pudo extraer JSON — ${err instanceof Error ? err.message : String(err)}`
+      `Monthly ${phase}: no se pudo extraer JSON tras reintento — ${err instanceof Error ? err.message : String(err)}`
     )
   }
 }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt, type ToolPromptParams } from '@/lib/generation/toolkit-prompts'
-import { createMessageForClient } from '@/lib/anthropic-client'
+import { generateJsonReport } from '@/lib/generation/robust-json'
 import { getSessionUser, resolveRequestClient } from '@/lib/resolve-client'
 import { canUseFeature } from '@/lib/plans'
 import {
@@ -338,39 +338,20 @@ export async function POST(req: NextRequest) {
       tool_slug === 'competitive-analysis' && input_data.profundidad === 'quick'
     // brand-book en modo audit: solo findings — mucho más corto y barato
     const isBrandBookAudit = tool_slug === 'brand-book' && input_data.mode === 'audit'
-    const message = await createMessageForClient(clientId, 'toolkit/generate', {
-      model: isQuickCompetitive ? 'claude-sonnet-4-6' : 'claude-opus-4-8',
-      max_tokens: isQuickCompetitive ? 8000 : isBrandBookAudit ? 8000 : 16000,
-      messages: [
-        {
-          role: 'user',
-          content: attachmentImageBlocks.length
-            ? [...attachmentImageBlocks, { type: 'text' as const, text: prompt }]
-            : prompt,
-        },
-      ],
-    })
-
-    if (message.stop_reason === 'max_tokens') {
-      await admin
-        .from('generation_queue')
-        .update({ status: 'failed', error_message: 'Response truncated at max_tokens' })
-        .eq('id', queueId)
-      return NextResponse.json({ error: 'Response truncated' }, { status: 500 })
-    }
-
-    // Extract JSON from Claude's response (concatenate all text blocks)
-    const text = message.content
-      .map((b) => ('text' in b ? b.text : ''))
-      .filter(Boolean)
-      .join('\n')
-
+    // Generación con REINTENTO ante truncación/JSON inválido (E8). Antes,
+    // stop_reason===max_tokens o un JSON roto marcaban el job "failed" sin más;
+    // ahora se reintenta una vez con más presupuesto. Ver lib/generation/robust-json.
     try {
-      const parsed = extractJson(text)
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        throw new ExtractJsonError('Model output is not a JSON object', text)
-      }
-      result = parsed as Record<string, unknown>
+      const { data } = await generateJsonReport({
+        clientId,
+        route: 'toolkit/generate',
+        model: isQuickCompetitive ? 'claude-sonnet-4-6' : 'claude-opus-4-8',
+        maxTokens: isQuickCompetitive ? 8000 : isBrandBookAudit ? 8000 : 16000,
+        userContent: attachmentImageBlocks.length
+          ? [...attachmentImageBlocks, { type: 'text' as const, text: prompt }]
+          : prompt,
+      })
+      result = data
     } catch (err) {
       const errorMessage =
         err instanceof ExtractJsonError
