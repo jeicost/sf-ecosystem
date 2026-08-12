@@ -1,5 +1,6 @@
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { retrieveAgentContext } from '@/lib/agent-context'
+import { fenceUntrusted } from '@/lib/grounding/untrusted'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
@@ -154,7 +155,10 @@ export async function getToolkitPrompt(
     })
     .join('\n')
 
-  const allContext = [docText, brandContext, dependencyContext, memoryContext]
+  // F4: los documentos del cliente vienen de fuera (subidas, Drive) — se vallan
+  // como dato. El brand context, las dependencias y la memoria los produce el
+  // propio sistema, así que no se tocan.
+  const allContext = [fenceUntrusted('CLIENT DOCUMENTS', docText), brandContext, dependencyContext, memoryContext]
     .filter(Boolean)
     .join('\n\n')
 
@@ -169,7 +173,7 @@ export async function getToolkitPrompt(
   // and the anti-hallucination contract.
   const fullContext = [
     attachmentText
-      ? `\n\nUSER ATTACHMENTS (primary source — use their actual content):\n${attachmentText}`
+      ? `\n\nUSER ATTACHMENTS (primary source — use their actual content):\n${fenceUntrusted('USER ATTACHMENTS', attachmentText)}`
       : '',
     allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : '',
     groundingBlocks ? `\n\n${groundingBlocks}` : '',

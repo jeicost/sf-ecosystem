@@ -7,6 +7,7 @@ import {
   type BrandDataOffer,
   type BrandDataChannel,
 } from '@/lib/brand-data'
+import { fenceUntrusted } from '@/lib/grounding/untrusted'
 
 function getAdminClient() {
   return createServiceRoleClient(
@@ -409,9 +410,7 @@ ${doc.analysis_summary || doc.extracted_text?.slice(0, 500) || 'Sin contenido'}
 `)
     .join('\n---\n')
 
-  return `## CONTEXTO DE DOCUMENTOS SUBIDOS
-
-${docContext}
-
-Use estos documentos como contexto adicional para responder las preguntas del usuario.`
+  // F4: camino legacy (se usa cuando el conocimiento unificado no devuelve nada).
+  // Es contenido subido por el cliente, así que va vallado igual que en knowledge.ts.
+  return fenceUntrusted('UPLOADED DOCUMENTS', docContext)
 }

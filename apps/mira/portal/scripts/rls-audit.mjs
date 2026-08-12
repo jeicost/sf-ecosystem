@@ -37,6 +37,8 @@ const SENSITIVE = [
   'alerts', 'agent_activity', 'post_history', 'deliverables', 'icp_profiles',
   'prospect_context', 'onboarding_sessions', 'drive_folders', 'drive_connections',
   'brain_contradictions', 'client_documentation', 'lead_activities',
+  // 0067: los expedientes de licitación llevan pliegos y memorias del cliente
+  'tenders',
 ]
 
 const anon = createClient(URL, KEY, { auth: { persistSession: false } })
