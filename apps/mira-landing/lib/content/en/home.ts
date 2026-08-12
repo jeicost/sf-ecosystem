@@ -165,7 +165,7 @@ export const defaultHomeContent: Record<keyof HomeContent, string> = {
   price_3_cta: "Let's talk",
   price_3_featured: "true",
 
-  price_4_name: "Production",
+  price_4_name: "Growth",
   price_4_for: "You publish daily and produce at volume",
   price_4_amount: "€1,290",
   price_4_period: "/month",
@@ -193,7 +193,7 @@ export const defaultHomeContent: Record<keyof HomeContent, string> = {
 
   addons_title: "Add-ons",
   addon_1: "Extra person — €75/month",
-  addon_2: "Tenders — €390/month, 8 proposals and the radar",
+  addon_2: "Tenders — €190/month, 8 proposals and the radar",
   addon_3: "Extra brand — €490/month",
   addon_4: "100 more images — €79",
   addon_5: "Brand Diagnostic — €490, credited against onboarding",

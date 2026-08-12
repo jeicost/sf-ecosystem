@@ -166,7 +166,7 @@ export const defaultHomeContent = {
   price_3_cta: "Hablemos",
   price_3_featured: "true",
 
-  price_4_name: "Producción",
+  price_4_name: "Growth",
   price_4_for: "Publicas a diario y produces de verdad",
   price_4_amount: "1.290 €",
   price_4_period: "/mes",
@@ -194,7 +194,7 @@ export const defaultHomeContent = {
 
   addons_title: "Complementos",
   addon_1: "Persona adicional — 75 €/mes",
-  addon_2: "Licitaciones — 390 €/mes, 8 memorias y el radar",
+  addon_2: "Licitaciones — 190 €/mes, 8 memorias y el radar",
   addon_3: "Marca adicional — 490 €/mes",
   addon_4: "100 imágenes más — 79 €",
   addon_5: "Diagnóstico de Marca — 490 €, se descuenta del alta",
