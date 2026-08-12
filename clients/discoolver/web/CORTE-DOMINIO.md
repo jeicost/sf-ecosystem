@@ -1,52 +1,88 @@
-# Corte de discoolver.com — checklist ejecutable
+# Corte de discoolver.com — LISTO PARA EJECUTAR
 
-**Estado (verificado 12-ago):** registrador IONOS (acceso Carlos) · zona DNS en
-CLOUDFLARE (NS kayden/leia.ns.cloudflare.com) · de esa zona cuelgan
-app/api/images.discoolver.com (LA PLATAFORMA) y el correo (MX ionos.es) ·
-la web vieja es un Next servido tras el proxy de Cloudflare, y el dominio está
-RECLAMADO en otra cuenta de Vercel (la de la web vieja, seguramente de Diego).
+Estado verificado el 12-ago-2026. Ya no falta nada de Diego: con acceso a
+Cloudflare se hace entero.
 
-## ⛔ Lo que NO se hace
+## Lo que hay hoy
 
-Cambiar los nameservers en IONOS. Tumbaría app, api, images y el correo:
-los orígenes reales están ocultos tras el proxy de Cloudflare y no se pueden
-replicar a ciegas. El corte se hace DENTRO de Cloudflare, tocando solo 2 hosts.
+| | |
+|---|---|
+| Registrador | IONOS (**no se toca**) |
+| Zona DNS | **Cloudflare** (`kayden` / `leia.ns.cloudflare.com`) |
+| Apex y www | Proxy de Cloudflare → web antigua (SPA de 2024, "Sing up", "Confían en nosotros") |
+| `app` · `api` · `images` | **LA PLATAFORMA. No se tocan.** |
+| MX | `mx00/mx01.ionos.es` — **el correo. No se tocan.** |
+| `/portal`, `/es`, `/en` | Rutas de la misma SPA (todas devuelven el mismo HTML). Nada que preservar |
 
-## Qué falta para poder ejecutar (2 accesos)
+## ⛔ La regla
 
-1. **Login de Cloudflare** de la zona discoolver.com (¿Carlos o Diego?).
-2. Liberar el dominio en la **cuenta de Vercel vieja** (Diego: quitar
-   discoolver.com del proyecto viejo), O verificación TXT `_vercel` en
-   Cloudflare desde nuestro dashboard (Domains → Add → discoolver.com → copia
-   el TXT que pide). Cualquiera de las dos vale.
+**Nunca cambiar los nameservers en IONOS.** Tumbaría plataforma y correo: los
+orígenes reales están tras el proxy de Cloudflare y no se pueden replicar a
+ciegas. El corte se hace DENTRO de Cloudflare tocando **solo 3 registros**.
 
-## Lo que YA está preparado (este repo)
+## Paso 0 — el rollback, antes de nada
 
-- Redirects de las rutas viejas (`/es/destinos` → `/360/destinos`…): next.config.ts ✓
-- `site.url` sale de `NEXT_PUBLIC_SITE_URL` ✓ — el flip de canónicos/sitemap/OG
-  es una env, no un deploy de código.
-- La web es bilingüe con hreflang y sitemap completos ✓
+Cloudflare → DNS → **Export** (descarga el fichero de zona). Es el seguro.
 
-## El día D (15 min, con acceso a Cloudflare)
+## Paso 1 — verificar la propiedad (1 registro)
 
-0. **Exportar la zona** de Cloudflare (Advanced → Export) — es el rollback.
-1. Vercel (nuestro team) → discoolver-landing → Domains → add `discoolver.com`
-   y `www.discoolver.com` (con el TXT o tras liberar; apex = primario,
-   www → redirect 308 al apex — el apex es lo que hoy sirve, se conserva).
-2. En Cloudflare, SOLO estos dos hosts (el resto de la zona NO SE TOCA):
-   - `discoolver.com`  → A `76.76.21.21` — **proxy OFF (nube gris)**
-   - `www`             → CNAME `cname.vercel-dns.com` — **proxy OFF**
-3. Esperar verificación en Vercel (~1-5 min) y SSL.
-4. Env en Vercel (production): `NEXT_PUBLIC_SITE_URL=https://discoolver.com`
-   → Redeploy.
-5. Verificar: apex 200 tienda nueva · /360 · /en · /es/destinos → 308 →
-   /360/destinos · app.discoolver.com sigue 200 · api.discoolver.com sigue 200 ·
-   enviar/recibir un correo de prueba.
-6. Última pasada: en app-landing, cambiar los enlaces "Para empresas"
-   (hoy discoolver-landing.vercel.app/360 → https://discoolver.com/360) y su
-   propia NEXT_PUBLIC_SITE_URL si aplica. Y avisar a Search Console.
+Los dominios ya están añadidos a nuestro proyecto `discoolver-landing` y Vercel
+pide un TXT. En Cloudflare, DNS → Add record:
 
-## Rollback (si algo huele mal)
+| Tipo | Nombre | Contenido | Proxy |
+|---|---|---|---|
+| TXT | `_vercel` | `vc-domain-verify=discoolver.com,09cc5bc752d38d33fe75` | — |
+| TXT | `_vercel` | `vc-domain-verify=www.discoolver.com,9944aa5b01b1429e6481` | — |
 
-Restaurar los 2 registros del export del paso 0 en Cloudflare. La web vieja
-vuelve en minutos. Nada más se ha tocado.
+(Sí, dos TXT con el mismo nombre `_vercel`: Cloudflare admite varios.)
+
+Verificar con: `vercel domains inspect discoolver.com` o el dashboard.
+
+## Paso 2 — apuntar el dominio (2 registros)
+
+Solo estos. **El resto de la zona no se toca.**
+
+| Tipo | Nombre | Contenido | Proxy |
+|---|---|---|---|
+| A | `discoolver.com` (@) | `76.76.21.21` | **OFF — nube gris** |
+| CNAME | `www` | `cname.vercel-dns.com` | **OFF — nube gris** |
+
+⚠️ El proxy en gris es obligatorio: con la nube naranja, Vercel no puede emitir
+el certificado y el sitio queda en bucle de redirección.
+
+## Paso 3 — el canónico
+
+Vercel → discoolver-landing → Settings → Environment Variables (Production):
+
+```
+NEXT_PUBLIC_SITE_URL = https://discoolver.com
+```
+
+Redeploy. Con eso, canonical, sitemap, hreflang y OG saltan al dominio bueno
+(el código ya lo lee de esa variable).
+
+## Paso 4 — verificar, en este orden
+
+```bash
+curl -sI https://discoolver.com | head -3                   # 200, la tienda nueva
+curl -s https://discoolver.com | grep -o '<title>[^<]*'     # "Discoolver — Guías…"
+curl -sI https://discoolver.com/es/destinos | grep -i loc   # 308 → /360/destinos
+curl -so /dev/null -w '%{http_code}\n' https://app.discoolver.com/    # 200 ← LA PLATAFORMA
+curl -so /dev/null -w '%{http_code}\n' https://api.discoolver.com/v3/countries/es  # 200
+dig +short MX discoolver.com                                 # mx00/mx01.ionos.es
+```
+
+Y **enviar y recibir un correo de prueba** a una dirección @discoolver.com.
+
+## Paso 5 — la cola
+
+- app-landing: los enlaces "Para empresas" pasan de
+  `discoolver-landing.vercel.app/360` a `https://discoolver.com/360`.
+- Search Console: añadir la propiedad y mandar el sitemap.
+- Avisar a Diego: el dominio ya sirve la web nueva (su CMS y la plataforma
+  siguen intactos en sus subdominios).
+
+## Rollback
+
+Restaurar los 2 registros del export del paso 0. La web vieja vuelve en minutos.
+Nada más se ha tocado.
