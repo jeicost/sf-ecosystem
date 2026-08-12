@@ -59,11 +59,26 @@ export default function BlogPage() {
               {posts.map((p) => (
                 <article key={p.slug} className="blog-card">
                   <Link href={`/blog/${p.slug}`} className="blog-card__link">
-                    {p.ogImage && (
+                    {p.ogImage ? (
                       // eslint-disable-next-line @next/next/no-img-element -- imágenes
                       // rescatadas del blog viejo, de tamaños dispares; el optimizador
                       // de Vercel no aporta aquí y encarece el build.
                       <img className="blog-card__img" src={p.ogImage} alt="" loading="lazy" />
+                    ) : (
+                      // 32 de los 50 artículos rescatados perdieron su foto con el
+                      // alojamiento viejo y no están en el archivo. Antes que inventar
+                      // una imagen con IA —que no correspondería al sitio del que habla
+                      // el artículo— se pone un fondo tipográfico por categoría: la
+                      // rejilla queda pareja y se lee como una decisión, no como un
+                      // hueco. El color sale de la categoría, así que es estable entre
+                      // renders y agrupa visualmente los temas.
+                      <div
+                        className="blog-card__img blog-card__falso"
+                        data-cat={p.category || "Ciudad"}
+                        aria-hidden="true"
+                      >
+                        <span>{p.category || "Discoolver"}</span>
+                      </div>
                     )}
                     <div className="blog-card__body">
                       <div className="blog-card__meta">

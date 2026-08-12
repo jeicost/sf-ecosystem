@@ -3027,3 +3027,46 @@ a.format-card--paper {
   cursor: pointer;
 }
 .renuncia a { color: var(--primary-2); }
+
+/* Portada tipográfica para los artículos que perdieron su foto (32 de 50: el
+   alojamiento viejo desapareció y el archivo no las guardó). Se prefirió esto
+   a generar imágenes con IA, que no corresponderían al sitio del que habla el
+   artículo. El color va por categoría: estable entre renders y agrupa temas. */
+.blog-card__falso {
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  text-align: center;
+  background: linear-gradient(140deg, var(--bg-soft), var(--bg-card));
+  position: relative;
+  overflow: hidden;
+}
+.blog-card__falso::before {
+  content: "";
+  position: absolute;
+  inset: -40% -10% auto auto;
+  width: 70%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tono, var(--primary));
+  opacity: .16;
+  filter: blur(28px);
+}
+.blog-card__falso span {
+  position: relative;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  border: 1px solid var(--line-soft, rgba(242, 240, 234, .16));
+  border-radius: 999px;
+  padding: 7px 15px;
+}
+.blog-card__falso[data-cat="Comer y beber"]       { --tono: var(--accent); }
+.blog-card__falso[data-cat="Salir de noche"]      { --tono: var(--primary-2); }
+.blog-card__falso[data-cat="Historia y leyendas"] { --tono: var(--cover-blue); }
+.blog-card__falso[data-cat="Compras"]             { --tono: var(--accent-2); }
+.blog-card__falso[data-cat="Con niños"]           { --tono: var(--cover-peach); }
+.blog-card__falso[data-cat="Planes"]              { --tono: var(--brand-magenta); }
+.blog-card__falso[data-cat="Ciudad"]              { --tono: var(--primary); }
