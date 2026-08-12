@@ -31,3 +31,4 @@ content/*.json
 
 # audit workspace (loop-diseno scratch, not shipped)
 audit-workspace/
+.env*

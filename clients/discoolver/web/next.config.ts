@@ -19,6 +19,13 @@ const nextConfig: NextConfig = {
       { source: "/es/:path*", destination: "/", permanent: true },
       { source: "/en/destinos", destination: "/en/360/destinos", permanent: true },
       { source: "/en/alojamientos", destination: "/en/360/alojamientos", permanent: true },
+      // El blog es el rescate del blog viejo de discoolver.com y está ENTERO en
+      // español. No hay espejo inglés porque no existe el contenido: montarlo
+      // con los textos en español sería fingir una traducción. El selector de
+      // idioma del nav genera /en/blog igualmente, así que en vez de un 404 se
+      // devuelve al artículo. Si algún día se traduce, esto se quita.
+      { source: "/en/blog", destination: "/blog", permanent: false },
+      { source: "/en/blog/:slug", destination: "/blog/:slug", permanent: false },
     ];
   },
   async headers() {

@@ -60,6 +60,10 @@ function ensureContentFile() {
   fs.mkdirSync(CONTENT, { recursive: true })
   const p = path.join(CONTENT, 'pages.json')
   if (!fs.existsSync(p)) fs.writeFileSync(p, '{}')
+  // El blog es SSG: sin este fichero, /blog reventaría el build en vez de
+  // renderizar vacío. Mismo criterio que pages.json — nunca exit(1).
+  const q = path.join(CONTENT, 'posts.json')
+  if (!fs.existsSync(q)) fs.writeFileSync(q, '[]')
 }
 
 if (!CMS_API_URL || !CMS_API_KEY) {
@@ -106,6 +110,35 @@ async function main() {
   fs.mkdirSync(CONTENT, { recursive: true })
   fs.writeFileSync(path.join(CONTENT, 'pages.json'), JSON.stringify(pages, null, 2))
   console.log(`💾  content/pages.json written (${Object.keys(pages).length} page(s) from CMS)`)
+
+  // ── El blog ───────────────────────────────────────────────────────────────
+  // Los artículos viven en la tabla `posts` del CMS, no en `pages`, y salen por
+  // otro endpoint. Se hornean igual: un JSON que el build convierte en páginas
+  // estáticas. Si el CMS no responde, se conserva el posts.json anterior en vez
+  // de dejar el blog vacío — un blog que desaparece en un deploy es peor que uno
+  // con un artículo desactualizado.
+  try {
+    const data = await fetchJson(`${CMS_API_URL}/posts?project=${PROJECT_SLUG}&limit=200`)
+    const crudos = Array.isArray(data?.posts) ? data.posts : Array.isArray(data) ? data : []
+    const posts = crudos.map((p) => ({
+      id: p.id,
+      title: p.title,
+      slug: p.slug,
+      excerpt: p.excerpt ?? '',
+      contentHtml: p.content_html ?? '',
+      category: p.category ?? '',
+      author: p.author_name ?? 'Discoolver',
+      date: p.published_at?.split('T')[0] ?? '',
+      seoTitle: p.seo_title || p.title,
+      seoDescription: p.seo_description ?? p.excerpt ?? '',
+      ogImage: p.og_image_url ?? '',
+    }))
+    fs.writeFileSync(path.join(CONTENT, 'posts.json'), JSON.stringify(posts, null, 2))
+    console.log(`💾  content/posts.json written (${posts.length} post(s) from CMS)`)
+  } catch (err) {
+    console.warn('⚠️  CMS posts fetch failed:', err.message, '— keeping previous posts.json')
+    ensureContentFile()
+  }
 }
 
 main().catch((err) => {

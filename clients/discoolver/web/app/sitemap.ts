@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
+import { getAllPosts } from "@/lib/posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -33,11 +34,25 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/en/terminos", priority: 0.2 },
     { path: "/en/privacidad", priority: 0.2 },
     { path: "/en/cookies", priority: 0.2 },
+    { path: "/blog", priority: 0.7 },
   ];
-  return routes.map((route) => ({
-    url: `${site.url}${route.path}`,
-    lastModified: new Date(),
-    changeFrequency: "weekly" as const,
-    priority: route.priority,
+
+  // Los artículos, uno a uno. Son el rescate del blog viejo de discoolver.com:
+  // esas URLs tuvieron tráfico e enlaces durante años, así que entran al sitemap
+  // para que Google las reencuentre en su sitio nuevo.
+  const articulos = getAllPosts().map((p) => ({
+    url: `${site.url}/blog/${p.slug}`,
+    lastModified: p.date ? new Date(`${p.date}T00:00:00Z`) : new Date(),
+    changeFrequency: "yearly" as const,
+    priority: 0.5,
   }));
+  return [
+    ...routes.map((route) => ({
+      url: `${site.url}${route.path}`,
+      lastModified: new Date(),
+      changeFrequency: "weekly" as const,
+      priority: route.priority,
+    })),
+    ...articulos,
+  ];
 }
