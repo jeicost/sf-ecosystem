@@ -5,11 +5,12 @@
  * y salen de aquí como datos, no como JSX: así el ES y el EN no se
  * desincronizan y añadir un idioma es añadir una clave.
  *
- * IDENTIDAD FISCAL: vive una sola vez, en `TITULAR`. La usan los tres
- * documentos y también /privacidad — antes esa página llevaba
- * "[dirección fiscal]" literal en producción. Falta el NIF: es el único dato
- * que la LSSI exige y que no está en ningún sitio del repo. En cuanto Carlos
- * lo pase, se cambia AQUÍ y entra en las ocho páginas de golpe.
+ * IDENTIDAD FISCAL: vive una sola vez, en `TITULAR`, y de ahí sale a las ocho
+ * páginas. Datos confirmados por Carlos el 12-ago-2026.
+ *
+ * OJO con el domicilio: la web antigua publicaba "C/ María de Molina 39,
+ * 28006 Madrid", que ya no es la sede. Si alguien vuelve a sacar datos de
+ * discoolver.com viejo (sigue vivo por IP en 161.35.84.60), que no lo copie.
  *
  * Sintaxis inline admitida en los párrafos: [texto](destino) para enlaces y
  * correos. No hay HTML crudo a propósito — nada de dangerouslySetInnerHTML.
@@ -17,8 +18,8 @@
 
 export const TITULAR = {
   razonSocial: "Discoolverworld S.L.",
-  nif: "[NIF pendiente]",
-  domicilio: "C/ María de Molina 39, 28006 Madrid, España",
+  nif: "B88394465",
+  domicilio: "C/ Alfonso XII 62, 28014 Madrid, España",
   emailB2C: "hola@discoolver.com",
   emailB2B: "info@discoolver.com",
 } as const;
