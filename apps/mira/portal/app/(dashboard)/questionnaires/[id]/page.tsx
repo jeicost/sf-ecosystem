@@ -23,6 +23,8 @@ interface Questionnaire {
   intro: string | null
   narrative: NarrativeSection[] | null
   status: 'draft' | 'sent' | 'in_progress' | 'completed' | 'ingested' | 'archived'
+  /** 'onboarding' = cuestionario del alta autoservicio, se lo responde el dueño. */
+  source: 'manual' | 'brain_gaps' | 'intake_template' | 'onboarding'
   completed_at: string | null
   ingested_at: string | null
 }
@@ -89,6 +91,7 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
   const [completing, setCompleting] = useState(false)
   const [leaving, setLeaving] = useState(false)
   const [sending, setSending] = useState(false)
+  const [ingesting, setIngesting] = useState(false)
 
   useEffect(() => { params.then((p) => setId(p.id)) }, [params])
 
@@ -201,7 +204,9 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
     setLeaving(true)
     if (timerRef.current) clearTimeout(timerRef.current)
     await flush()
-    router.push('/questionnaires')
+    // El cuestionario del alta se responde desde el alta: se vuelve allí, no a
+    // una bandeja de cuestionarios que ese cliente no usa.
+    router.push(questionnaire?.source === 'onboarding' ? '/onboarding' : '/questionnaires')
   }
 
   async function handleComplete() {
@@ -225,11 +230,53 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
       })
       const json = await res.json().catch(() => null)
       if (!res.ok) throw new Error(json?.error || 'Could not complete the questionnaire')
+
+      // En el alta autoservicio no hay nadie de la agencia que vaya a pulsar
+      // "ingerir" después: las respuestas se aplican al Cerebro aquí mismo. Para
+      // el resto de cuestionarios la ingesta sigue siendo un acto manual de la
+      // agencia desde su bandeja, como hasta ahora.
+      if (questionnaire?.source === 'onboarding') {
+        const ingestRes = await fetch(`/api/questionnaires/${id}/ingest`, { method: 'POST' })
+        const ingestJson = await ingestRes.json().catch(() => null)
+        if (!ingestRes.ok) {
+          // Las respuestas están guardadas y el cuestionario completado: se dice
+          // exactamente eso, en vez de dejar creer que el Cerebro se actualizó.
+          setError(
+            ingestJson?.error ||
+              'Your answers are saved, but they could not be added to your Brand Brain. Open your setup again to retry.'
+          )
+        }
+      }
+
       await load(id)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not complete the questionnaire')
     } finally {
       setCompleting(false)
+    }
+  }
+
+  /**
+   * Reintento de la ingesta del cuestionario de alta.
+   *
+   * Si la aplicación al Cerebro falla, el cuestionario se queda en 'completed'
+   * y el runner pasa a solo lectura: sin este botón el cliente vería sus
+   * respuestas guardadas para siempre y su Cerebro vacío, sin nada que pulsar.
+   * El brand-merge es idempotente, así que reintentar es seguro.
+   */
+  async function handleIngest() {
+    if (!id || ingesting) return
+    setIngesting(true)
+    setError(null)
+    try {
+      const res = await fetch(`/api/questionnaires/${id}/ingest`, { method: 'POST' })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(json?.error || 'Could not add your answers to your Brand Brain')
+      await load(id)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not add your answers to your Brand Brain')
+    } finally {
+      setIngesting(false)
     }
   }
 
@@ -280,14 +327,17 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
     questionnaire.status === 'archived' ||
     questionnaire.status === 'draft'
   const isDraft = questionnaire.status === 'draft'
+  const isOnboarding = questionnaire.source === 'onboarding'
+  const backHref = isOnboarding ? '/onboarding' : '/questionnaires'
+  const backLabel = isOnboarding ? 'Back to your setup' : 'Back to questionnaires'
 
   const inputBase =
     'w-full rounded-lg border bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-1 focus:ring-sky-500/40'
 
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-6 py-10">
-      <Link href="/questionnaires" className="inline-flex items-center gap-1.5 text-sm text-sky-400 transition-opacity hover:opacity-80">
-        <ArrowLeft size={14} /> Back to questionnaires
+      <Link href={backHref} className="inline-flex items-center gap-1.5 text-sm text-sky-400 transition-opacity hover:opacity-80">
+        <ArrowLeft size={14} /> {backLabel}
       </Link>
 
       {/* Header */}
@@ -322,9 +372,27 @@ export default function QuestionnaireRunnerPage({ params }: { params: Promise<{ 
           </div>
         )}
         {questionnaire.status === 'completed' && (
-          <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-green-400">
-            <CheckCircle2 size={12} /> Completed{questionnaire.completed_at ? ` on ${new Date(questionnaire.completed_at).toLocaleDateString('en-US')}` : ''} — the agency will review your answers.
+          // 'completed' en un cuestionario de alta significa que la ingesta no
+          // salió: no se le puede decir que la agencia lo revisará, porque en
+          // autoservicio no hay agencia detrás.
+          <p className={`mt-3 inline-flex items-center gap-1.5 text-[11px] ${isOnboarding ? 'text-amber-400' : 'text-green-400'}`}>
+            <CheckCircle2 size={12} /> Completed{questionnaire.completed_at ? ` on ${new Date(questionnaire.completed_at).toLocaleDateString('en-US')}` : ''}
+            {isOnboarding
+              ? ' — your answers are saved but not yet in your Brand Brain.'
+              : ' — the agency will review your answers.'}
           </p>
+        )}
+        {isOnboarding && questionnaire.status === 'completed' && (
+          <div className="mt-3">
+            <button
+              onClick={handleIngest}
+              disabled={ingesting}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-violet-500/15 px-3 py-1.5 text-[11px] font-semibold text-violet-400 transition hover:bg-violet-500/25 disabled:opacity-50"
+            >
+              {ingesting && <Loader2 size={11} className="animate-spin" />}
+              Add my answers to my Brand Brain
+            </button>
+          </div>
         )}
         {questionnaire.status === 'ingested' && (
           <p className="mt-3 inline-flex items-center gap-1.5 text-[11px] text-violet-400">

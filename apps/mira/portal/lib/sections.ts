@@ -135,7 +135,6 @@ export const IDEAL_SPACES: IdealSpace[] = [
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
       { href: '/studio',         label: 'Visual Studio', icon: Image },
-      { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList },
     ],
   },
   {
@@ -149,8 +148,13 @@ export const IDEAL_SPACES: IdealSpace[] = [
   {
     key: 'cerebro', label: 'Brain', icon: Brain,
     items: [
-      { href: '/brand-brain',    label: 'Brand Brain', icon: Brain },
-      { href: '/project-memory', label: 'Memory',      icon: Archive },
+      { href: '/brand-brain',    label: 'Brand Brain',    icon: Brain },
+      // Los cuestionarios NO son una herramienta de biblioteca: son la forma de
+      // rellenar los huecos del Cerebro (sus respuestas se ingestan en
+      // brand_profiles, content_pillars y project_memory). Por eso viven aquí,
+      // junto al Cerebro y a la Memoria que alimentan.
+      { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList },
+      { href: '/project-memory', label: 'Memory',         icon: Archive },
     ],
   },
   {

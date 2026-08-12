@@ -17,6 +17,17 @@ interface QuestionnaireListItem {
   created_at: string
   completed_at: string | null
   question_count: number
+  /** Zonas del Cerebro que rellena al ingestarse (derivadas de los maps_to). */
+  brain_targets?: string[]
+  /** Preguntas sin maps_to: se leen, pero no escriben en el Cerebro. */
+  informational_count?: number
+}
+
+/** Estado del Cerebro para encabezar la página: cuántos huecos quedan. */
+interface BrainGapsSummary {
+  trackedFields: number
+  filled: number
+  gaps: Array<{ id: string; label: string }>
 }
 
 const STATUS_META: Record<string, { label: string; classes: string }> = {
@@ -46,6 +57,7 @@ export default function QuestionnairesPage() {
   const [focus, setFocus] = useState('')
   const [generating, setGenerating] = useState(false)
   const [busyId, setBusyId] = useState<string | null>(null)
+  const [brainGaps, setBrainGaps] = useState<BrainGapsSummary | null>(null)
 
   useEffect(() => {
     const stored = getUser()
@@ -79,6 +91,14 @@ export default function QuestionnairesPage() {
       setError(e instanceof Error ? e.message : 'Error loading questionnaires')
     } finally {
       setLoading(false)
+    }
+    // Los huecos del Cerebro son el porqué de esta página: se cargan aparte
+    // para que un fallo aquí no tumbe la lista de cuestionarios.
+    try {
+      const res = await fetch(`/api/brand-brain/gaps?clientId=${clientId}`)
+      setBrainGaps(res.ok ? ((await res.json()) as BrainGapsSummary) : null)
+    } catch {
+      setBrainGaps(null)
     }
   }, [])
 
@@ -169,14 +189,39 @@ export default function QuestionnairesPage() {
     <div className="mx-auto max-w-3xl space-y-6 px-6 py-10">
       <div>
         <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.25em] text-sky-400">
-          Questionnaires · {activeClient.name}
+          Brain · {activeClient.name}
         </p>
         <h1 className="text-2xl font-bold tracking-tight text-ink">Questionnaires</h1>
         <p className="mt-1.5 max-w-xl text-sm text-ink-secondary">
           {isAgency
-            ? 'Generate questionnaires from Brand Brain gaps, send them to the client and, once completed, ingest their answers into the brain.'
-            : 'Take your time — your answers are saved automatically and help MIRA work with your real context.'}
+            ? 'This is how the Brand Brain gets filled: MIRA asks only for what is missing, the client answers, and the answers are written into the brain, the content pillars and the project memory.'
+            : 'Every answer goes straight into your Brand Brain, so MIRA works with your real context. Your answers are saved automatically.'}
         </p>
+        {/* Estado del Cerebro: sin esto la lista no dice para qué existe. */}
+        {brainGaps && (
+          <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl border border-line bg-surface px-4 py-2.5">
+            <BrainCircuit size={14} className="shrink-0 text-violet-400" />
+            <p className="text-xs text-ink-secondary">
+              Brand Brain: <span className="font-semibold text-ink">{brainGaps.filled}/{brainGaps.trackedFields}</span> fields
+              captured
+              {brainGaps.gaps.length > 0 && (
+                <>
+                  {' · '}
+                  <span className="text-ink-tertiary">
+                    still missing {brainGaps.gaps.slice(0, 3).map((g) => g.label.toLowerCase()).join(', ')}
+                    {brainGaps.gaps.length > 3 ? ` +${brainGaps.gaps.length - 3} more` : ''}
+                  </span>
+                </>
+              )}
+            </p>
+            <Link
+              href="/brand-brain"
+              className="ml-auto shrink-0 text-[11px] font-medium text-ink-tertiary transition hover:text-ink"
+            >
+              Open Brand Brain →
+            </Link>
+          </div>
+        )}
       </div>
 
       {unavailable && (
@@ -205,6 +250,12 @@ export default function QuestionnairesPage() {
           <p className="mt-1 text-[11px] text-ink-tertiary">
             MIRA reviews what is missing in the Brand Brain (empty fields + open questions) and drafts a
             questionnaire for you to review before sending it.
+            {brainGaps && brainGaps.gaps.length > 0 && (
+              <> Right now there {brainGaps.gaps.length === 1 ? 'is' : 'are'}{' '}
+                <span className="font-semibold text-ink-secondary">{brainGaps.gaps.length}</span> empty{' '}
+                {brainGaps.gaps.length === 1 ? 'field' : 'fields'} to cover.
+              </>
+            )}
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <input
@@ -260,6 +311,33 @@ export default function QuestionnairesPage() {
                   <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-medium ${meta.classes}`}>
                     {meta.label}
                   </span>
+                </div>
+
+                {/* Qué parte del Cerebro rellena. Sin esto la lista son títulos
+                    sueltos y nadie sabe qué cambia al ingestar uno. */}
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] uppercase tracking-wide text-ink-muted">
+                    {q.status === 'ingested' ? 'Filled in brain' : 'Fills in brain'}
+                  </span>
+                  {(q.brain_targets ?? []).length === 0 ? (
+                    <span className="text-[10px] text-ink-tertiary">
+                      Nothing yet — no question is mapped to the brain
+                    </span>
+                  ) : (
+                    (q.brain_targets ?? []).map((target) => (
+                      <span
+                        key={target}
+                        className="rounded-full bg-violet-500/10 px-2 py-0.5 text-[10px] text-violet-300"
+                      >
+                        {target}
+                      </span>
+                    ))
+                  )}
+                  {(q.informational_count ?? 0) > 0 && (
+                    <span className="text-[10px] text-ink-muted">
+                      +{q.informational_count} informational
+                    </span>
+                  )}
                 </div>
 
                 <div className="mt-3 flex flex-wrap items-center gap-2">

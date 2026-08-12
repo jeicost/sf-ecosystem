@@ -18,13 +18,15 @@ export const maxDuration = 300
 //
 // Lee la web del cliente y redacta el borrador de su Cerebro. NO ESCRIBE NADA:
 // devuelve el borrador para que lo revise en pantalla. Es el mismo contrato que
-// el AssistantPanel del alta de agencia (extraer sin tocar BD), pero:
-//   - sin requireSuperAdmin (extract/route.ts:20 lo bloquea a la agencia), y
-//   - proponiendo el Cerebro ENTERO con pilares, no los 9 campos del formulario
-//     de agencia, que son exactamente el perfil de un cliente que no produce.
-// Por eso no se reutiliza /api/admin/onboarding/extract tal cual: abrirlo a
-// clientes obligaría a tocar el camino de la agencia y aun así devolvería la
-// forma equivocada.
+// el AssistantPanel del alta de agencia (extraer sin tocar BD), pero proponiendo
+// el Cerebro ENTERO con pilares, no los 9 campos del formulario de agencia, que
+// son exactamente el perfil de un cliente que no produce.
+//
+// El extractor genérico (/api/onboarding/extract, antes bajo /admin y cerrado
+// con requireSuperAdmin) ya está abierto al cliente sobre su propio cliente.
+// Aun así esta ruta sigue existiendo aparte: aquel devuelve los campos de UN
+// paso del formulario de agencia, y aquí hace falta el borrador completo con
+// pilares, que es lo único que evita otro cliente con 0 pilares.
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}))

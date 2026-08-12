@@ -131,7 +131,7 @@ export const defaultHomeContent = {
   price_1_amount: "99 €",
   price_1_period: "/mes",
   price_1_usd: "108 $",
-  price_1_setup: "Alta autoservicio gratis · 300 € si prefieres que la entrenemos nosotros",
+  price_1_setup: "Alta autoservicio gratis · 390 € si prefieres que la entrenemos nosotros",
   price_1_f1: "1 marca · 2 personas",
   price_1_f2: "Equipo de agentes, bandeja y calendario",
   price_1_f3: "8 informes y 19 acciones rápidas",

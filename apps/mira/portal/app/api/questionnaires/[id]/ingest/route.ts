@@ -59,18 +59,27 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
 
     const user = await getSessionUser()
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!isAgencyPlan(user.user_metadata?.plan)) {
-      return NextResponse.json(
-        { error: 'Only the agency can ingest questionnaires into the Brand Brain' },
-        { status: 403 }
-      )
-    }
 
+    // Se carga ANTES de decidir el permiso porque el permiso depende del
+    // `source`. getQuestionnaireForUser ya comprueba el acceso al cliente
+    // (super_admin o grant en mira_project_access) y no muta nada.
     const result = await getQuestionnaireForUser(id, user)
     if (!result.ok) {
       return NextResponse.json({ error: result.error }, { status: result.status })
     }
     const questionnaire = result.questionnaire
+
+    // La ingesta sigue siendo de la agencia para todo lo demás. La única
+    // excepción es el cuestionario del alta autoservicio (source 'onboarding'),
+    // que el dueño de la marca se genera y responde él solo: si tuviera que
+    // esperar a que alguien de la agencia pulsara "ingerir", el alta no sería
+    // autoservicio y sus respuestas no llegarían nunca al Cerebro.
+    if (!isAgencyPlan(user.user_metadata?.plan) && questionnaire.source !== 'onboarding') {
+      return NextResponse.json(
+        { error: 'Only the agency can ingest questionnaires into the Brand Brain' },
+        { status: 403 }
+      )
+    }
 
     if (questionnaire.status === 'ingested') {
       return NextResponse.json({ already: true, questionnaire })

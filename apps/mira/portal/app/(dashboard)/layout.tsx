@@ -203,6 +203,21 @@ useEffect(() => {
         </span>
       </Link>
 
+      {/* Cuestionarios — global link (todos los planes, incluido 'consulta').
+          Va pegado al Brand Brain a propósito: es la forma de rellenar sus
+          huecos, no una herramienta suelta (mismo criterio que el espacio
+          'cerebro' de IDEAL_SPACES). */}
+      <Link href="/questionnaires"
+        className={clsx(
+          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+          path.startsWith('/questionnaires')
+            ? 'bg-sky-500/15 text-sky-400'
+            : 'text-ink-tertiary hover:text-sky-400 hover:bg-sky-500/10'
+        )}>
+        <ClipboardList size={13} />
+        <span>Questionnaires</span>
+      </Link>
+
       {/* Toolkit — global link (oculto para el plan 'consulta': sin toolkit) */}
       {canUseFeature(user.plan, 'toolkitGenerate') && (
         <Link href="/toolkit"
@@ -216,18 +231,6 @@ useEffect(() => {
           <span>Business Reports</span>
         </Link>
       )}
-
-      {/* Cuestionarios — global link (todos los planes, incluido 'consulta') */}
-      <Link href="/questionnaires"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path.startsWith('/questionnaires')
-            ? 'bg-sky-500/15 text-sky-400'
-            : 'text-ink-tertiary hover:text-sky-400 hover:bg-sky-500/10'
-        )}>
-        <ClipboardList size={13} />
-        <span>Questionnaires</span>
-      </Link>
 
       {/* Documentos — global link */}
       <Link href="/documents"

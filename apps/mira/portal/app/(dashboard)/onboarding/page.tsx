@@ -15,6 +15,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,11 +23,13 @@ import {
   Check,
   CircleAlert,
   Circle,
+  ClipboardList,
   FileText,
   Loader2,
   Sparkles,
 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import type { BrainGap } from '@/lib/brain-gaps'
 import {
   EMPTY_ANSWERS,
   EMPTY_DRAFT,
@@ -42,6 +45,21 @@ import {
 const STORAGE_KEY = 'mira_self_serve_onboarding'
 
 type Stage = 'intro' | 'ask' | 'thinking' | 'review' | 'done'
+
+/** Lo que devuelve /api/onboarding/self-serve/questionnaire sobre el cuestionario de huecos. */
+interface QuestionnaireSummary {
+  id: string
+  title: string
+  status: string
+  answered: number
+  total: number
+}
+
+/** Estados en los que el cuestionario todavía admite respuestas. */
+const OPEN_QUESTIONNAIRE_STATUSES = ['sent', 'in_progress']
+
+/** Abierto, o respondido pero sin aplicar al Cerebro: en ambos casos queda trabajo. */
+const PENDING_QUESTIONNAIRE_STATUSES = [...OPEN_QUESTIONNAIRE_STATUSES, 'completed']
 
 const ASK_STEPS: Array<{ step: 1 | 2 | 3; title: string; blurb: string }> = [
   { step: 1, title: 'Your brand', blurb: 'Two things, then we go and read your site ourselves.' },
@@ -132,7 +150,115 @@ function ReadinessPanel({ readiness, compact }: { readiness: Readiness; compact?
   )
 }
 
+/**
+ * El último tramo: el cuestionario que cubre lo que el borrador no pudo.
+ *
+ * Es la pieza que convierte esto en un alta completa y no en un formulario
+ * bonito. El motor ya existía entero —lo genera Opus a partir de los huecos
+ * reales, se responde con autosave y se aplica al Cerebro con los mismos
+ * executors que usa la agencia— y nunca se había usado: client_questionnaires
+ * tenía 0 filas. Aquí solo se le abre la puerta al cliente.
+ */
+function GapsCard({
+  gaps,
+  questionnaire,
+  busy,
+  onStart,
+}: {
+  gaps: BrainGap[]
+  questionnaire: QuestionnaireSummary | null
+  busy: boolean
+  onStart: () => void
+}) {
+  const open = questionnaire && OPEN_QUESTIONNAIRE_STATUSES.includes(questionnaire.status)
+  // Respondido entero pero sin llegar al Cerebro: la ingesta falló y hay que
+  // reintentarla, no volver a preguntar nada.
+  const needsIngest = questionnaire?.status === 'completed'
+  const done = questionnaire?.status === 'ingested'
+
+  // Sin huecos y sin nada a medias no hay nada que ofrecer: callar es más
+  // honesto que inventarse un paso más.
+  if (gaps.length === 0 && !open && !needsIngest && !done) return null
+
+  return (
+    <div className="card p-6">
+      <div className="mb-3 flex items-center gap-2">
+        <ClipboardList size={16} className={needsIngest ? 'text-amber-400' : 'text-sky-400'} />
+        <span
+          className={`text-[10px] font-semibold uppercase tracking-widest ${needsIngest ? 'text-amber-400' : 'text-sky-400'}`}
+        >
+          {needsIngest
+            ? 'One step left'
+            : open
+              ? 'Picked up where you left off'
+              : done
+                ? 'Questionnaire applied'
+                : 'Finish the rest'}
+        </span>
+      </div>
+
+      {done ? (
+        <p className="text-sm text-ink-secondary">
+          Your answers are already part of your Brand Brain.
+          {gaps.length > 0 && ' A few fields are still empty — the list below tells you which.'}
+        </p>
+      ) : (
+        <>
+          <h2 className="mb-2 text-lg font-bold tracking-tight text-ink">
+            {needsIngest
+              ? 'Your answers are saved but not in your Brand Brain yet'
+              : open
+                ? `${questionnaire.answered} of ${questionnaire.total} questions answered`
+                : `${gaps.length} thing${gaps.length === 1 ? '' : 's'} we still do not know about you`}
+          </h2>
+          <p className="text-sm text-ink-secondary">
+            {needsIngest
+              ? 'You answered everything, but adding it to your Brand Brain did not go through. Open it again and retry — nothing was lost.'
+              : open
+                ? 'Your answers were saved as you typed. Finish it whenever you like — nothing was lost.'
+                : 'MIRA turns these gaps into a short set of questions written for your brand. Answer them and they go straight into your Brand Brain.'}
+          </p>
+        </>
+      )}
+
+      {gaps.length > 0 && !done && (
+        <ul className="mt-4 flex flex-wrap gap-1.5">
+          {gaps.slice(0, 8).map((gap) => (
+            <li
+              key={gap.id}
+              className="rounded-full border border-line px-2.5 py-1 text-[11px] text-ink-tertiary"
+            >
+              {gap.label}
+            </li>
+          ))}
+          {gaps.length > 8 && (
+            <li className="px-1 py-1 text-[11px] text-ink-tertiary">+{gaps.length - 8} more</li>
+          )}
+        </ul>
+      )}
+
+      {!done && (
+        <button
+          onClick={onStart}
+          disabled={busy}
+          className="mt-5 inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-500 disabled:opacity-40"
+        >
+          {busy ? <Loader2 size={14} className="animate-spin" /> : <ArrowRight size={14} />}
+          {needsIngest
+            ? 'Open it and retry'
+            : open
+              ? 'Resume the questionnaire'
+              : busy
+                ? 'Writing your questions…'
+                : 'Start the questionnaire'}
+        </button>
+      )}
+    </div>
+  )
+}
+
 export default function SelfServeOnboardingPage() {
+  const router = useRouter()
   const { activeClient, loading: clientLoading } = useActiveClient()
   const clientId = activeClient?.id
 
@@ -146,6 +272,11 @@ export default function SelfServeOnboardingPage() {
   const [error, setError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const restored = useRef(false)
+
+  // ── Cuestionario de huecos ──
+  const [gaps, setGaps] = useState<BrainGap[]>([])
+  const [questionnaire, setQuestionnaire] = useState<QuestionnaireSummary | null>(null)
+  const [startingQuestionnaire, setStartingQuestionnaire] = useState(false)
 
   // ── Borrador local ──
   useEffect(() => {
@@ -195,6 +326,56 @@ export default function SelfServeOnboardingPage() {
   }, [clientId])
 
   useEffect(() => { void loadProgress() }, [loadProgress])
+
+  /**
+   * Qué sigue faltando y si hay un cuestionario a medias.
+   *
+   * Los fallos aquí no se le enseñan al cliente: es información de apoyo, y un
+   * error rojo por no haber podido contar huecos taparía el alta entera. Si la
+   * migración 0054 no estuviese aplicada, el endpoint responde sin cuestionario
+   * y la tarjeta sencillamente no aparece.
+   */
+  const loadQuestionnaire = useCallback(async () => {
+    if (!clientId) return
+    try {
+      const res = await fetch(`/api/onboarding/self-serve/questionnaire?clientId=${clientId}`)
+      const json = await res.json().catch(() => null)
+      if (!res.ok || !json) return
+      setGaps(Array.isArray(json.gaps) ? (json.gaps as BrainGap[]) : [])
+      setQuestionnaire((json.questionnaire as QuestionnaireSummary | null) ?? null)
+    } catch {
+      /* sin datos de huecos: la tarjeta no se pinta y el alta sigue */
+    }
+  }, [clientId])
+
+  useEffect(() => { void loadQuestionnaire() }, [loadQuestionnaire])
+
+  /** Genera el cuestionario (o retoma el que había) y lleva al cliente a responderlo. */
+  async function startQuestionnaire() {
+    if (!clientId || startingQuestionnaire) return
+    setStartingQuestionnaire(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/onboarding/self-serve/questionnaire', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId }),
+      })
+      const json = await res.json().catch(() => null)
+      if (!res.ok) throw new Error(json?.error || 'Could not build your questionnaire')
+      if (json?.questionnaire?.id) {
+        router.push(`/questionnaires/${json.questionnaire.id}`)
+        return
+      }
+      // complete: true — no quedaban huecos que preguntar
+      setGaps([])
+      setQuestionnaire(null)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not build your questionnaire')
+    } finally {
+      setStartingQuestionnaire(false)
+    }
+  }
 
   const setAnswer = (id: keyof SelfServeAnswers, value: string) =>
     setAnswers((prev) => ({ ...prev, [id]: value }))
@@ -256,6 +437,9 @@ export default function SelfServeOnboardingPage() {
         setError(json.errors.join(' · '))
         return
       }
+      // Los huecos se recalculan contra la BD después de guardar: lo que acaba
+      // de entrar en el Cerebro ya no se le puede volver a preguntar.
+      void loadQuestionnaire()
       if (finish) {
         setAlreadyFinished(true)
         setStage('done')
@@ -324,6 +508,20 @@ export default function SelfServeOnboardingPage() {
               <ReadinessPanel readiness={readiness} />
             </div>
           )}
+
+          {/* Un cuestionario a medias se ofrece ANTES que nada: quien vuelve a
+              esta pantalla con respuestas a medio escribir viene a terminarlas,
+              no a repetir el alta desde el principio. */}
+          {(alreadyFinished ||
+            (questionnaire && PENDING_QUESTIONNAIRE_STATUSES.includes(questionnaire.status))) && (
+            <GapsCard
+              gaps={gaps}
+              questionnaire={questionnaire}
+              busy={startingQuestionnaire}
+              onStart={() => void startQuestionnaire()}
+            />
+          )}
+
           {errorBox}
         </>
       )}
@@ -487,6 +685,16 @@ export default function SelfServeOnboardingPage() {
           <div className="card p-6">
             <ReadinessPanel readiness={readiness} />
           </div>
+
+          {/* Lo que el borrador no pudo cubrir se pregunta, no se da por bueno.
+              Sin este paso el cliente se iría de aquí creyendo que ha terminado
+              con el Cerebro a medias. */}
+          <GapsCard
+            gaps={gaps}
+            questionnaire={questionnaire}
+            busy={startingQuestionnaire}
+            onStart={() => void startQuestionnaire()}
+          />
 
           <div className="card p-6">
             <p className="mb-3 text-sm font-medium text-ink">What moves the needle next</p>

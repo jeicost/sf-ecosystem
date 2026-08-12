@@ -130,7 +130,7 @@ export const defaultHomeContent: Record<keyof HomeContent, string> = {
   price_1_amount: "€99",
   price_1_period: "/month",
   price_1_usd: "$108",
-  price_1_setup: "Self-serve onboarding free · €300 if you'd rather we train it for you",
+  price_1_setup: "Self-serve onboarding free · €390 if you'd rather we train it for you",
   price_1_f1: "1 brand · 2 people",
   price_1_f2: "Agent team, inbox and calendar",
   price_1_f3: "8 reports and 19 quick actions",

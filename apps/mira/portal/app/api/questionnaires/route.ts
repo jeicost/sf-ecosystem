@@ -10,6 +10,7 @@ import {
   QUESTIONNAIRES_UNAVAILABLE,
   type QuestionnaireRow,
 } from '@/lib/questionnaires'
+import { describeQuestionnaireTargets } from '@/lib/brain-gaps'
 
 // GET /api/questionnaires?clientId= — lista de cuestionarios del cliente.
 // La agencia ve todos; el cliente no ve borradores (workspace de la agencia).
@@ -25,9 +26,12 @@ export async function GET(req: NextRequest) {
     const agency = isAgencyPlan(user?.user_metadata?.plan)
 
     const admin = adminClient()
+    // Se traen los maps_to de las preguntas (no solo el count): con ellos la
+    // lista puede decir QUÉ parte del Cerebro rellena cada cuestionario, que es
+    // lo único que lo distingue de una lista de títulos sueltos.
     let query = admin
       .from('client_questionnaires')
-      .select('*, questionnaire_questions(count)')
+      .select('*, questionnaire_questions(maps_to)')
       .eq('client_id', access.clientId)
       .order('created_at', { ascending: false })
     if (!agency) {
@@ -44,9 +48,16 @@ export async function GET(req: NextRequest) {
     }
 
     const questionnaires = (data ?? []).map((row: Record<string, unknown>) => {
-      const counts = row.questionnaire_questions as Array<{ count: number }> | undefined
+      const questions = (row.questionnaire_questions ?? []) as Array<{ maps_to: string | null }>
       const { questionnaire_questions: _qq, ...rest } = row
-      return { ...rest, question_count: counts?.[0]?.count ?? 0 }
+      return {
+        ...rest,
+        question_count: questions.length,
+        // Etiquetas legibles de las zonas del Cerebro que toca al ingestarse.
+        brain_targets: describeQuestionnaireTargets(questions.map((q) => q?.maps_to)),
+        // Preguntas puramente informativas (sin maps_to): no escriben nada.
+        informational_count: questions.filter((q) => !q?.maps_to).length,
+      }
     })
 
     return NextResponse.json({ questionnaires })

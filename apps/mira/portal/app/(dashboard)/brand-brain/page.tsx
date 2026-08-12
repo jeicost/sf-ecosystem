@@ -2,6 +2,7 @@ import BrandBrainEditor from '@/components/BrandBrainEditor'
 import ActivationChecklist from '@/components/brain/ActivationChecklist'
 import BrainChat from '@/components/brain/BrainChat'
 import BrainInbox from '@/components/brain/BrainInbox'
+import BrainGapsPanel from '@/components/brain/BrainGapsPanel'
 import { getSessionUser } from '@/lib/resolve-client'
 
 export const metadata = {
@@ -28,6 +29,11 @@ export default async function BrandBrainPage() {
             Drive parecían no existir. */}
         <BrainInbox />
         <ActivationChecklist />
+        {/* Los huecos del Cerebro y el cuestionario que los rellena: el bucle
+            vive AQUÍ, no en la Biblioteca. El checklist de arriba dice qué
+            pasos faltan; esto dice qué campos concretos están vacíos y ofrece
+            pedírselos al cliente de una sentada. */}
+        <BrainGapsPanel isAgency={isAgency} />
         {/* P6: "Cuéntale a MIRA" — actualizar el brain conversando, con confirmación */}
         <BrainChat isAgency={isAgency} />
       </div>

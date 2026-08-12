@@ -1,0 +1,138 @@
+{
+  "q": {
+    "id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+    "client_id": "91abb051-cae5-462d-b1fa-8e50a299e3b3",
+    "project_id": null,
+    "title": "Completa el cerebro de marca de Discoolver 360",
+    "intro": "Ya tienes confirmada la base de tu marca: misión, tono, identidad visual y propuesta de valor. Ahora queremos rellenar solo los huecos que faltan para poder generar informes y contenido que suenen exactamente a Discoolver 360. Son unas 10 preguntas y te llevará entre 10 y 15 minutos con calma.",
+    "status": "sent",
+    "source": "onboarding",
+    "created_by": "af1af6fa-ec61-416f-a517-18efc32ea363",
+    "created_at": "2026-08-12T17:10:49.75287+00:00",
+    "completed_at": null,
+    "ingested_at": null,
+    "narrative": null
+  },
+  "questions": [
+    {
+      "id": "5bc0c752-fa70-4f0c-8f72-f02ea8310539",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 1,
+      "section": "A quién le hablas",
+      "prompt": "Describe a tus 1-3 clientes ideales. ¿Quién decide, quién firma y quién usa la plataforma en el día a día?",
+      "help": "Por ejemplo: técnico de turismo de un ayuntamiento mediano, gerente de patronato provincial, responsable de un DTI que ya tiene un PMS y busca integrar descubrimiento.",
+      "kind": "long_text",
+      "options": null,
+      "required": true,
+      "maps_to": "brand_profile.brand_data.audiences"
+    },
+    {
+      "id": "d1b19f87-5cdb-47df-a0bd-67a342f79192",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 2,
+      "section": "A quién le hablas",
+      "prompt": "¿Dónde está ese cliente y por dónde llega hasta ti? (canales online y offline)",
+      "help": "Por ejemplo: FITUR y ferias de turismo, LinkedIn, contacto directo con concejalías, credenciales SEGITTUR/DTI, boca a boca entre destinos.",
+      "kind": "long_text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.audience_channels"
+    },
+    {
+      "id": "6bc00726-81ce-4ddd-8fa6-b2db24e78a93",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 3,
+      "section": "Temas y voz",
+      "prompt": "¿Sobre qué 3-5 temas quieres comunicar de forma recurrente?",
+      "help": "Uno por línea. Por ejemplo: control del destino sobre su contenido · curación real frente a pay-to-list · integración con lo que ya tienen · casos de destinos en producción · datos y retorno para el gestor público.",
+      "kind": "long_text",
+      "options": null,
+      "required": true,
+      "maps_to": "content_pillar"
+    },
+    {
+      "id": "00559893-10f9-4fe2-95e3-99b3e481259f",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 4,
+      "section": "Temas y voz",
+      "prompt": "Palabras y expresiones que SÍ usáis, y las que NUNCA usáis.",
+      "help": "Ya sabemos que evitas el 'vive la magia del destino'. Aquí concreta: ¿decís 'gestor del destino' o 'cliente'? ¿'módulos' o 'funciones'? ¿'curado' o 'seleccionado'? Y lista lo que jamás dirías.",
+      "kind": "long_text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.tone_and_voice.vocabulary_notes"
+    },
+    {
+      "id": "54157655-a961-41a1-a86b-1699dfc8cf69",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 5,
+      "section": "Temas y voz",
+      "prompt": "Frases o afirmaciones prohibidas: ¿qué no podemos escribir nunca?",
+      "help": "Por ejemplo: no inventar cifras de reparto con creadores, no prometer integraciones PMS que no existen, no usar lenguaje de agencia de viajes ni superlativos vacíos ('el mejor', 'revolucionario').",
+      "kind": "long_text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.banned_phrases"
+    },
+    {
+      "id": "6746a91f-9117-49e2-9cec-7f0e8322a9cb",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 6,
+      "section": "Oferta y idiomas",
+      "prompt": "Detállanos los 7 módulos con sus precios públicos y cómo se contratan.",
+      "help": "Ya sabemos el modelo SaaS modular a 1.300 €/mes + IVA. Aquí queremos el desglose real: qué precio tiene cada módulo (marketplace, TPV/POS, web informativa, visitas guiadas, herramientas de descubrimiento, QR de ciudad, acceso profesional) y si se activan sueltos o en paquete.",
+      "kind": "long_text",
+      "options": null,
+      "required": true,
+      "maps_to": "brand_profile.brand_data.offer.full_list_note"
+    },
+    {
+      "id": "e567e2e3-6403-42d0-bf8d-d8cd74c65b91",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 7,
+      "section": "Oferta y idiomas",
+      "prompt": "¿En qué idiomas comunicáis y en cuáles hay que producir contenido?",
+      "help": "Por ejemplo: castellano como principal; ¿inglés para FITUR o para destinos con turismo internacional? ¿lenguas cooficiales para ayuntamientos concretos?",
+      "kind": "text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.languages.manual"
+    },
+    {
+      "id": "b1648e43-4b58-4163-ae0d-cfef63d99513",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 8,
+      "section": "Experiencia y límites",
+      "prompt": "¿Hay un gesto o momento característico en cómo enseñáis Discoolver 360 a un destino?",
+      "help": "Por ejemplo: una demo en vivo con los datos reales del propio destino, un recorrido por los 1.500+ sitios curados, o mostrar el módulo funcionando sobre su territorio antes de hablar de precio.",
+      "kind": "long_text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.identity.signature_ritual"
+    },
+    {
+      "id": "d05424a8-2d5d-430c-bb2e-3587e3f22964",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 9,
+      "section": "Experiencia y límites",
+      "prompt": "¿Qué restricciones tenéis que debamos respetar? (legales, del sector público, o autoimpuestas)",
+      "help": "Por ejemplo: normativa de contratación pública, no prometer plazos de integración, plantillas obligatorias para concursos, decisiones del CEO sobre qué se hace público.",
+      "kind": "long_text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.constraints.notes"
+    },
+    {
+      "id": "8866552b-d920-4a70-bca2-bf6bb6d474ef",
+      "questionnaire_id": "06d4eaa6-14ff-430e-af52-f4d1ef5a83de",
+      "position": 10,
+      "section": "Experiencia y límites",
+      "prompt": "¿Qué habéis probado para captar destinos que NO funcionó, y qué sí?",
+      "help": "Por ejemplo: si el enfoque puramente comercial no cala pero la demo con datos reales sí, o si las licitaciones dan mejor resultado que la venta directa en según qué destinos.",
+      "kind": "long_text",
+      "options": null,
+      "required": false,
+      "maps_to": "brand_profile.brand_data.strategy.what_worked_what_didnt"
+    }
+  ]
+}

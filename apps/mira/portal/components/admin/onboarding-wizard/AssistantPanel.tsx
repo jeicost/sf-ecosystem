@@ -22,7 +22,9 @@ export default function AssistantPanel({
     if (!text.trim() || state === 'working') return
     setState('working')
     setMsg(null)
-    const res = await fetch('/api/admin/onboarding/extract', {
+    // Ruta canónica: el extractor ya no vive bajo /admin (lo usa también el
+    // alta autoservicio). /api/admin/onboarding/extract sigue como alias.
+    const res = await fetch('/api/onboarding/extract', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ text: text.trim(), step }),
