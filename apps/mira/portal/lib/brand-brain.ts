@@ -25,7 +25,7 @@ export interface BrandBrainContext {
   pillars: Array<{ name: string; description: string; weight: number; exampleHooks: string[] }>
   tagline?: string
   websiteUrl?: string
-  audiences?: any[]
+  audiences?: any[] | { primary?: any[]; not_our_audience?: string }
   visualIdentitySummary?: string
   // Ampliación 2026-07-28 (BRAND_MEMORY_TEMPLATE del método del CEO)
   goldenRule?: string
@@ -269,17 +269,34 @@ ${pillarsStr}
   if (brain.websiteUrl) section(`\n\n**Website:** ${brain.websiteUrl}`)
   if (brain.visualIdentitySummary) section(`\n\n**Visual identity:** ${brain.visualIdentitySummary}`)
 
-  if (brain.audiences && brain.audiences.length > 0) {
-    const audiencesStr = brain.audiences
+  // Las audiencias se han escrito de dos formas distintas según quién dio de
+  // alta al cliente: como ARRAY de segmentos, o como OBJETO {primary:[…],
+  // not_our_audience}. Solo se contemplaba el array, así que un cliente con la
+  // forma de objeto tenía sus audiencias detalladas INVISIBLES para todos los
+  // agentes (verificado el 12-ago en Discoolver 360: 3 segmentos con dolores y
+  // necesidades que no llegaban a ningún prompt).
+  const audienceList: unknown[] = Array.isArray(brain.audiences)
+    ? brain.audiences
+    : Array.isArray((brain.audiences as { primary?: unknown[] } | undefined)?.primary)
+      ? (brain.audiences as unknown as { primary: unknown[] }).primary
+      : []
+  if (audienceList.length > 0) {
+    const audiencesStr = audienceList
       .map((a: any) => {
         if (typeof a === 'string') return a
-        if (typeof a === 'object' && a.name) {
+        // 'segment' es la clave que usa la forma de objeto; 'name', la del array.
+        const label = a?.name ?? a?.segment
+        if (typeof a === 'object' && label) {
           const extras = [
             a.description,
+            a.pains ? `pains: ${a.pains}` : null,
+            a.wants ? `wants: ${a.wants}` : null,
+            a.need ? `need: ${a.need}` : null,
+            a.message ? `message: ${a.message}` : null,
             a.incentive ? `incentive: ${a.incentive}` : null,
             a.language_behaviour ? `language: ${a.language_behaviour}` : null,
           ].filter(Boolean).join(' · ')
-          return `${a.name}${extras ? ` (${extras})` : ''}`
+          return `${label}${extras ? ` (${extras})` : ''}`
         }
         return JSON.stringify(a)
       })

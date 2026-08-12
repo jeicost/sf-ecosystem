@@ -184,8 +184,13 @@ export async function POST(_req: NextRequest, { params }: { params: Promise<{ id
             'save_content_pillar',
             {
               pillar_name: pillar.slice(0, 120),
-              description:
-                pillar.length > 120 ? pillar : `Capturado del cuestionario "${questionnaire.title}"`,
+              // Sin descripción real, mejor vacía. La plantilla que había aquí
+              // ('Capturado del cuestionario …') no describe el pilar y se colaba
+              // en TODOS los prompts de generación como si lo hiciera:
+              //   "- Casos en producción (100%): Capturado del cuestionario …"
+              // El nombre del pilar solo se usa como descripción si es lo bastante
+              // largo para explicarse por sí mismo.
+              description: pillar.length > 120 ? pillar : '',
             },
             questionnaire.client_id
           )

@@ -99,7 +99,17 @@ const BRAIN_GAP_DEFS: BrainGapDef[] = [
     label: 'Audiences / ideal customer',
     mapsTo: 'brand_profile.brand_data.audiences',
     area: 'audience_market',
-    isFilled: (b) => !!b?.audiences?.length,
+    // Cuidado: 'audiences' se guarda como array O como objeto {primary:[…]}.
+    // Comprobar solo .length daba hueco falso en la forma de objeto, y entonces
+    // se le preguntaba al cliente algo que YA había contestado — y la respuesta
+    // sustituía el objeto rico por cadenas sueltas, perdiendo dolores y
+    // necesidades. Verificado destruyendo (y restaurando) datos reales.
+    isFilled: (b) => {
+      const a = b?.audiences as unknown
+      if (Array.isArray(a)) return a.length > 0
+      if (a && typeof a === 'object') return Array.isArray((a as { primary?: unknown[] }).primary) && (a as { primary: unknown[] }).primary.length > 0
+      return false
+    },
   },
   {
     id: 'visual_identity',
@@ -118,7 +128,8 @@ const BRAIN_GAP_DEFS: BrainGapDef[] = [
   {
     id: 'voice_vocabulary',
     label: 'Voice vocabulary (what we say / what we never say)',
-    mapsTo: 'brand_profile.brand_data.tone_and_voice.vocabulary_notes',
+    // lee 'voice_vocabulary'; escribir en tone_and_voice.vocabulary_notes era escritura muerta — antes el hueco nunca se cerraba y se repreguntaba en cada ronda.
+    mapsTo: 'brand_profile.brand_data.voice_vocabulary',
     area: 'voice_visual',
     isFilled: (b) => !!(b?.voiceVocabulary?.do?.length || b?.voiceVocabulary?.dont?.length),
   },
@@ -153,7 +164,8 @@ const BRAIN_GAP_DEFS: BrainGapDef[] = [
   {
     id: 'channels',
     label: 'Active channels and their job',
-    mapsTo: 'brand_profile.brand_data.audience_channels',
+    // fetchBrandBrain lee 'channels', no 'audience_channels' — antes el hueco nunca se cerraba y se repreguntaba en cada ronda.
+    mapsTo: 'brand_profile.brand_data.channels',
     area: 'audience_market',
     isFilled: (b) => !!b?.channels?.length,
   },
@@ -167,7 +179,8 @@ const BRAIN_GAP_DEFS: BrainGapDef[] = [
   {
     id: 'what_flopped',
     label: 'What was tried and did not work',
-    mapsTo: 'brand_profile.brand_data.strategy.what_worked_what_didnt',
+    // lee 'what_flopped' — antes el hueco nunca se cerraba y se repreguntaba en cada ronda.
+    mapsTo: 'brand_profile.brand_data.what_flopped',
     area: 'business_ops',
     isFilled: (b) => !!b?.whatFlopped?.length,
   },
