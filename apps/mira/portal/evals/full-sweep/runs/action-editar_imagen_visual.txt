@@ -1,0 +1,42 @@
+INPUT
+{
+  "refinement": "Make the sauce pour the hero, darker background"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "e3edd83a-4442-4840-8c52-827bb76b183b",
+  "outputData": {
+    "refinement_request": "Make the sauce pour the hero of the shot, and use a darker background.",
+    "original_description": "Product photograph of a serving of loaded nachos in a branded white cardboard takeout container. The nachos are built on crispy golden tortilla chips and topped generously with melted yellow cheese, seasoned ground meat, bacon bits, diced red peppers, dollops of guacamole, sour cream, black olive slices, and sliced green onions. The white cardboard container carries red branded text reading 'Salsa Burgers.' A wooden skewer/stick is inserted into the food. The image is bright and appetizing, shot from a slightly elevated angle with the food filling the frame on a light, neutral background. Warm, casual food-photography styling with rich reds, yellows and greens against the white packaging.",
+    "specific_changes": [
+      {
+        "element": "Sauce",
+        "current_state": "Sauce/toppings sit statically on top of the nachos; no visible pour, no motion",
+        "desired_state": "A glossy stream of house sauce being poured onto the nachos in mid-air, caught in motion — the sauce is the clear hero of the shot, with a fresh sheen, ribbons and a small pool forming over the melted cheese and chips. Warm amber-red sauce tones (#D49222 as accent detail only)"
+      },
+      {
+        "element": "Background",
+        "current_state": "Light, bright neutral background",
+        "desired_state": "Dark, moody background (deep black #000000 with subtle warm falloff), spotlit so the food and the pouring sauce pop as the focal point — dramatic editorial food-porn lighting"
+      }
+    ],
+    "protected_elements": [
+      "The 'Salsa Burgers' red branded text on the packaging",
+      "White cardboard takeout container form and branding",
+      "Nacho toppings: melted yellow cheese, seasoned ground meat, bacon bits, diced red peppers, guacamole, sour cream, black olives, sliced green onions",
+      "Crispy golden tortilla chip base",
+      "Wooden skewer/stick inserted in the food",
+      "Real product (no AI/stock look — must read as authentic Salsa Burgers food)"
+    ],
+    "refinement_prompt": "Editorial food-porn product photograph of a serving of loaded nachos in a branded white cardboard takeout container, shot on a DARK moody background: deep matte black (#000000) with a subtle warm falloff, dramatic spotlighting so the food is the glowing focal point. The nachos are built on crispy golden tortilla chips and loaded with melted yellow cheese, seasoned ground meat, bacon bits, diced red peppers, dollops of guacamole, sour cream, black olive slices and sliced green onions. A wooden skewer/stick is inserted into the food. The container carries the red branded text 'Salsa Burgers' in a clean modern style. HERO ACTION: a glossy stream of warm amber-red house sauce is being POURED onto the nachos, frozen in mid-air motion — visible ribbons, a fresh sheen and a small pool forming over the melted cheese; the pouring sauce is unmistakably the hero of the composition, sharp focus, catching the light. Slightly elevated three-quarter angle, food filling the frame, shallow depth of field with the sauce stream tack-sharp and the background dropping into darkness. Premium, appetizing, authentic real-product look (no stock/AI feel). Brand palette #B61010 (primary red), #000000, #FFFFFF, #E3E1DF, #D49222 (accent amber — sauce/detail only), #805814 (deep gold — accent only), #BCBEBF; usage roughly 55% red, 25% black, 12% cream, 8% amber. Amber and gold used as accents only, never as logo or full background. Avoid forbidden colours: no green/black scheme as the palette, no gradients over brand red, no approximate reds like #FC0000 or #E30613. Keep the 'Salsa Burgers' text legible; if any headline is added use Anton uppercase, subtitles in Glacial Indifference. No white background.",
+    "data_gaps": [
+      "Exact sauce name/variety intended for the pour (context lists 18 house sauces but the specific one is not specified)",
+      "Whether any headline/caption text should appear on this asset and its final aspect ratio (brand default is 4:5 for posters/carousels)"
+    ],
+    "image_url": "https://nnevhtfxuawexliwlbmh.supabase.co/storage/v1/object/sign/generated-assets/clients/c375bb80-b0d1-4923-a73a-ac96a3ce7799/quick-actions/e3edd83a-4442-4840-8c52-827bb76b183b/1786515075521.jpg?token=eyJraWQiOiJzdG9yYWdlLXVybC1zaWduaW5nLWtleV82NjU1YzBlNS0yMzU1LTQzOTAtYTc2MC0wYjFkMGI0ODQ1YTQiLCJhbGciOiJIUzI1NiJ9.eyJ1cmwiOiJnZW5lcmF0ZWQtYXNzZXRzL2NsaWVudHMvYzM3NWJiODAtYjBkMS00OTIzLWE3M2EtYWM5NmEzY2U3Nzk5L3F1aWNrLWFjdGlvbnMvZTNlZGQ4M2EtNDQ0Mi00ODQwLThjNTItODI3YmI3NmIxODNiLzE3ODY1MTUwNzU1MjEuanBnIiwic2NvcGUiOiJkb3dubG9hZCIsImlhdCI6MTc4NjUxNTA3NSwiZXhwIjoxNzg3MTE5ODc1fQ.9eUocjIqeoxQKuze4NK96hbC5Kr6ZkqQijRveu6uGNw",
+    "image_path": "clients/c375bb80-b0d1-4923-a73a-ac96a3ce7799/quick-actions/e3edd83a-4442-4840-8c52-827bb76b183b/1786515075521.jpg"
+  },
+  "processingTimeMs": 66183
+}

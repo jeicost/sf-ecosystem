@@ -1,83 +1,196 @@
 [
   {
-    "surface": "report",
-    "id": "brand-briefing",
+    "surface": "action",
+    "id": "crear_post",
     "ok": true,
-    "ms": 95782,
-    "inTok": 12879,
-    "outTok": 8365,
-    "usd": 0.27352,
-    "chars": 20327
+    "ms": 15966,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 2018
   },
   {
-    "surface": "report",
-    "id": "marketing-audit",
+    "surface": "action",
+    "id": "crear_newsletter",
     "ok": true,
-    "ms": 70756,
-    "inTok": 14283,
-    "outTok": 5642,
-    "usd": 0.212465,
-    "chars": 14935
+    "ms": 40219,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 3967
   },
   {
-    "surface": "report",
-    "id": "competitive-analysis",
+    "surface": "action",
+    "id": "crear_video_brief",
     "ok": true,
-    "ms": 57681,
-    "inTok": 12739,
-    "outTok": 4752,
-    "usd": 0.182495,
-    "chars": 11824
+    "ms": 33244,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 4545
   },
   {
-    "surface": "report",
-    "id": "seo-audit",
+    "surface": "action",
+    "id": "crear_carousel",
     "ok": true,
-    "ms": 75883,
-    "inTok": 14136,
-    "outTok": 6182,
-    "usd": 0.22523,
-    "chars": 16626
+    "ms": 30255,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 2964
   },
   {
-    "surface": "report",
-    "id": "action-plan",
+    "surface": "action",
+    "id": "crear_campaña_ads",
     "ok": true,
-    "ms": 61035,
-    "inTok": 12830,
-    "outTok": 5005,
-    "usd": 0.189275,
-    "chars": 12010
+    "ms": 55066,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 7396
   },
   {
-    "surface": "report",
-    "id": "brand-book",
+    "surface": "action",
+    "id": "editar_imagen_visual",
     "ok": true,
-    "ms": 122768,
-    "inTok": 14517,
-    "outTok": 10463,
-    "usd": 0.33416,
-    "chars": 26298
+    "ms": 66264,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 5028
   },
   {
-    "surface": "report",
-    "id": "investor-deck",
-    "ok": true,
-    "ms": 70276,
-    "inTok": 13168,
-    "outTok": 6340,
-    "usd": 0.22434,
-    "chars": 15259
-  },
-  {
-    "surface": "report",
-    "id": "monthly-content-system",
+    "surface": "action",
+    "id": "generar_reporte",
     "ok": false,
-    "ms": 243,
+    "ms": 60791,
     "inTok": 0,
     "outTok": 0,
     "usd": 0,
     "chars": 0,
-    "error": "getToolkitPrompt devolvió null (slug desconocido)"
+    "error": "Output truncated — try a shorter input"
+  },
+  {
+    "surface": "action",
+    "id": "analizar_tendencias",
+    "ok": false,
+    "ms": 70692,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 0,
+    "error": "Output truncated — try a shorter input"
+  },
+  {
+    "surface": "action",
+    "id": "roadmap_innovacion",
+    "ok": false,
+    "ms": 59760,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 0,
+    "error": "Output truncated — try a shorter input"
+  },
+  {
+    "surface": "action",
+    "id": "crear_campaña",
+    "ok": true,
+    "ms": 28726,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 4703
+  },
+  {
+    "surface": "action",
+    "id": "responder_objecion",
+    "ok": true,
+    "ms": 15349,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 2073
+  },
+  {
+    "surface": "action",
+    "id": "email_seguimiento",
+    "ok": true,
+    "ms": 17163,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 2341
+  },
+  {
+    "surface": "action",
+    "id": "preparar_llamada",
+    "ok": true,
+    "ms": 30176,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 4804
+  },
+  {
+    "surface": "action",
+    "id": "proyeccion_financiera",
+    "ok": false,
+    "ms": 60205,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 0,
+    "error": "Output truncated — try a shorter input"
+  },
+  {
+    "surface": "action",
+    "id": "analisis_cashflow",
+    "ok": true,
+    "ms": 45117,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 7138
+  },
+  {
+    "surface": "action",
+    "id": "optimizar_costos",
+    "ok": true,
+    "ms": 59550,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 9049
+  },
+  {
+    "surface": "action",
+    "id": "responder_ticket",
+    "ok": true,
+    "ms": 10036,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 1213
+  },
+  {
+    "surface": "action",
+    "id": "crear_faq",
+    "ok": true,
+    "ms": 39463,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 6712
+  },
+  {
+    "surface": "action",
+    "id": "crear_tutorial",
+    "ok": true,
+    "ms": 20053,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 3617
   }
 ]

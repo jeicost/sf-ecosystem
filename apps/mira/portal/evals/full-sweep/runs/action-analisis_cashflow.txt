@@ -1,0 +1,122 @@
+INPUT
+{
+  "period": "August 2026",
+  "expenses": "Rent, staff, beef sourcing, delivery commissions"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "0abafa2d-b06f-4a25-9bcc-caf8275831b5",
+  "outputData": {
+    "summary": "Salsa Burgers is a delivery-first Wagyu burger brand in Sathorn (launched Apr 2026), now in Phase 2 — Traction (Aug–Oct 2026) with revenue targets of ฿1.8M/month at 80–100 orders/day and an average ticket of ฿650. However, no actual August 2026 revenue, order volume, or expense figures were supplied — only expense categories (rent, staff, beef sourcing, delivery commissions). A true cash position, runway, or gap cannot be computed from the input as provided; the figures below are targets/model assumptions from context, not booked cash.",
+    "inflows": [
+      {
+        "source": "Grab orders (commission-based)",
+        "amount": "[MISSING: real data]",
+        "frequency": "Daily (payout cycle unknown)",
+        "reliability": "high"
+      },
+      {
+        "source": "LINE MAN orders (commission-based)",
+        "amount": "[MISSING: real data]",
+        "frequency": "Daily (payout cycle unknown)",
+        "reliability": "high"
+      },
+      {
+        "source": "[RECOMMENDATION] Corporate/catering outreach (Sathorn offices) — pipeline exists in client memory but no booked revenue provided",
+        "amount": "[MISSING: real data]",
+        "frequency": "Ad hoc",
+        "reliability": "low"
+      }
+    ],
+    "outflows": [
+      {
+        "category": "Rent (Sathorn kitchen)",
+        "amount": "[MISSING: real data]",
+        "frequency": "Monthly",
+        "optimizable": false
+      },
+      {
+        "category": "Staff / payroll",
+        "amount": "[MISSING: real data]",
+        "frequency": "Monthly",
+        "optimizable": true
+      },
+      {
+        "category": "Beef sourcing (100% Wagyu — COGS driver)",
+        "amount": "[MISSING: real data]",
+        "frequency": "Variable / order-linked",
+        "optimizable": true
+      },
+      {
+        "category": "Delivery platform commissions (Grab, LINE MAN)",
+        "amount": "[MISSING: real data]",
+        "frequency": "Per order (deducted from payout)",
+        "optimizable": true
+      }
+    ],
+    "runway_months": "—",
+    "cash_gaps": [
+      {
+        "period": "August 2026",
+        "gap": "—",
+        "mitigation": "[RECOMMENDATION] Cannot quantify a gap without August revenue and expense amounts. First action is to capture actual monthly figures per category so a real gap can be measured. Structurally, watch the mismatch between order-linked inflows (net of commission, paid on a delivery-platform cycle) and fixed monthly outflows (rent, payroll) that fall due regardless of order volume."
+      }
+    ],
+    "improvement_actions": [
+      {
+        "action": "[RECOMMENDATION] Track net-of-commission revenue per platform. Delivery commissions are deducted before payout, so 'revenue' at ฿650/ticket overstates cash landed. Reconcile gross orders vs. actual payouts to see true cash inflow.",
+        "impact": "[RECOMMENDATION] Reveals real cash landed vs. booked sales — the single biggest blind spot for a commission-based delivery model. Impact unquantifiable without figures.",
+        "effort": "low"
+      },
+      {
+        "action": "[RECOMMENDATION] Develop the commission-free direct channels already flagged as open bets: WhatsApp Sauce Hotline and LINE OA loyalty. Every order shifted off Grab/LINE MAN retains the platform commission as margin.",
+        "impact": "[RECOMMENDATION] Higher net margin per order; reduces dependence on platform commission structure. Magnitude depends on the (unknown) commission rate and adoption.",
+        "effort": "high"
+      },
+      {
+        "action": "[RECOMMENDATION] Manage Wagyu beef sourcing as the primary COGS lever — negotiate volume pricing / lock supplier terms as order volume climbs toward the 120/day target. Do NOT compromise the '100% Wagyu' claim, which is a core brand fact.",
+        "impact": "[RECOMMENDATION] Protects gross margin as the largest variable cost scales with orders. Unquantifiable without cost data.",
+        "effort": "medium"
+      },
+      {
+        "action": "[RECOMMENDATION] Use combo structure (Hero, Full Craving, Duo, Full Indulgence) and time-boxed promos to lift average ticket above ฿650 — never permanent discounts, per brand rules.",
+        "impact": "[RECOMMENDATION] Raises inflow per order without added fixed cost. Cannot size without baseline ticket mix.",
+        "effort": "low"
+      },
+      {
+        "action": "[RECOMMENDATION] Stress-test the fixed cost base (rent + payroll) against the low end of the Phase 2 range (80 orders/day) to confirm the kitchen breaks even at trough volume, not just at target.",
+        "impact": "[RECOMMENDATION] Prevents a cash gap in a slow month; identifies whether staffing is optimizable. Needs real rent/payroll figures.",
+        "effort": "medium"
+      }
+    ],
+    "alerts": [
+      "No actual August 2026 income, order-volume, or expense amounts were provided — runway, cash gap, and net position CANNOT be calculated. All ฿ figures below are model targets from Brand Brain context, not booked cash.",
+      "[RECOMMENDATION] Delivery-platform commission rate is unknown (web search returned no verifiable source). It directly determines net cash per order and must be confirmed from actual payout statements before any margin/runway math.",
+      "[RECOMMENDATION] The business is delivery-first with ~100% of revenue routed through Grab and LINE MAN — a concentration/dependency risk on two intermediaries that control both commission terms and payout timing.",
+      "[RECOMMENDATION] Wagyu beef is a premium, order-linked COGS item; a supplier price shock would compress margin fastest of any line."
+    ],
+    "assumptions": [
+      "[ASSUMPTION] Average ticket ฿650 and target revenue ฿1.8M/month (Phase 2) are pulled from the Brand Brain business model/roadmap — they are targets/plans, NOT confirmed August 2026 actuals.",
+      "[ASSUMPTION] Phase 2 (Aug–Oct 2026) order volume 80–100/day is a stated target, not measured throughput for August.",
+      "[ASSUMPTION] Inflows are assumed to arrive net of platform commission on the platforms' payout cycles; actual cycle timing was not provided.",
+      "Rent, staff, beef sourcing, and delivery commission amounts were named as categories only — no ฿ values given, so all outflow amounts are '[MISSING: real data]'.",
+      "No opening cash balance was provided, so runway_months cannot be derived and is left as '—'."
+    ],
+    "data_gaps": [
+      "Actual August 2026 revenue (gross and net of commission)",
+      "Actual August 2026 order volume",
+      "Opening cash balance / current bank position",
+      "Rent amount (฿/month)",
+      "Staff/payroll amount (฿/month)",
+      "Wagyu beef sourcing cost (฿ or % of COGS)",
+      "Delivery platform commission rate(s) for Grab and LINE MAN",
+      "Grab / LINE MAN payout timing and cycle",
+      "Split of orders between Grab and LINE MAN",
+      "Any non-delivery revenue (corporate/catering) booked in August",
+      "Other operating costs not listed (packaging, sauces/ingredients beyond beef, marketing spend, utilities)"
+    ]
+  },
+  "processingTimeMs": 45016
+}

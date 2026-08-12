@@ -1,0 +1,131 @@
+INPUT
+{
+  "goal": "Increase delivery orders",
+  "budget": "30000 THB"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "600a7cf3-d7d9-4e08-a0ca-69cae8a667f4",
+  "outputData": {
+    "campaign_name": "DIP NOW — Sathorn Delivery Push",
+    "platforms": [
+      "Instagram (Meta Ads)",
+      "Facebook (Meta Ads)",
+      "TikTok Ads"
+    ],
+    "platforms_rationale": "[RECOMMENDATION] Instagram + Facebook lead for the 70% Expats & Internationals segment (Instagram-first, Grab-heavy, ฿500+ spend) in Sathorn/Silom; TikTok covers the 30% Urban Thais segment (TikTok-first, 22–35). LinkedIn is excluded per brand rules (zero food-discovery relevance in Thailand). LINE OA is a strong owned channel (53M+ Thai users) but is flagged in memory as not yet defined in the channel framework — not activated for paid here until its mechanic is set.",
+    "ad_variants": [
+      {
+        "headline": "DIP NOW · THINK LATER",
+        "copy": "Glove up. Box open. 18 house sauces, made from scratch this morning — you finish the Wagyu yourself.\nไม่มีทางอื่นที่จะกินสิ่งนี้\nOrder now on Grab.",
+        "cta": "Order Now",
+        "platform_fit": "[RECOMMENDATION] Instagram/Facebook — Drive Craving pillar, real product hero (Nachos Salsa / OG Cheeseburger). Conversion-oriented."
+      },
+      {
+        "headline": "THIS ONE CROSSES THE LINE",
+        "copy": "Wagyu. Your sauce. Your call. The delivery box is the stage — glove up and pour.\nซอสทำสดใหม่ทุกเช้า 18 สูตร\nGrab & LINE MAN, Sathorn.",
+        "cta": "Order Now",
+        "platform_fit": "[RECOMMENDATION] TikTok — Urban Thais 22–35. Pair with the Salsa Ritual video (gloves → sauce → pour → first bite), the highest-potential viral concept flagged in memory but not yet filmed. Real product only — no AI/stock (proven to fail on TikTok)."
+      },
+      {
+        "headline": "EXTRA SAUCE IS SELF-RESPECT",
+        "copy": "18 sauces. Made this morning. No premixes, ever. Pick yours, pour it, take the first bite.\nกลิ่นเบคอน ชีสเยิ้ม เนื้อวากิว ที่หน้าประตูคุณ\nDIP NOW on Grab.",
+        "cta": "Order Now",
+        "platform_fit": "[RECOMMENDATION] Instagram/Facebook — Salsa Phrases + Drive Craving. Conversion."
+      },
+      {
+        "headline": "GLOVE UP",
+        "copy": "Black glove on. This is where it starts. Every hand-eaten Wagyu deserves the ritual.\nเปิดกล่อง หยิบถุงมือ แล้วเริ่มพิธีกรรม\nDelivery-first, Sathorn — order on Grab.",
+        "cta": "Order Now",
+        "platform_fit": "[RECOMMENDATION] TikTok + IG Reels — Ritual & Packaging pillar (#1 differentiator). ASMR / box-reveal format."
+      }
+    ],
+    "targeting": {
+      "audience": "[RECOMMENDATION] Two segments derived from Brand Brain: (1) PRIMARY (70% weight, Meta) — Expats & Internationals, age 25–42, Sathorn/Silom Bangkok, Instagram-first, heavy Grab users, ฿500+ spend, social & share-driven, tired of generic ฿500 burgers with zero theater. (2) SECONDARY (30% weight, TikTok) — Urban Thais, age 22–35, Bangkok city, TikTok-first, culturally curious, trend-driven, experience-seeking, want a local premium burger with soul.",
+      "interests": [
+        "Food delivery",
+        "Grab",
+        "LINE MAN",
+        "Gourmet / premium burgers",
+        "Wagyu beef",
+        "Bangkok food & dining",
+        "Expat communities Bangkok",
+        "Foodie / food photography",
+        "Fusion cuisine (Thai / Korean / Japanese)",
+        "Shake Shack / premium burger brands (competitor-adjacent)"
+      ],
+      "geo": "[RECOMMENDATION] Radius-target Sathorn / Silom first (delivery-first brand born there; matches primary audience geography), expanding to wider Bangkok city for the TikTok Thai segment.",
+      "exclusions": "[RECOMMENDATION] LinkedIn placement excluded per brand rules."
+    },
+    "budget_allocation": {
+      "total_budget": "30000 THB",
+      "currency": "THB",
+      "note": "Splits the ฿30,000 input figure only — no invented total. [RECOMMENDATION] weighting follows the 70/30 audience share of mix with a slight hold-back for testing.",
+      "Meta_Ads_Instagram_Facebook": "18000 THB (60%)",
+      "TikTok_Ads": "9000 THB (30%)",
+      "Creative_testing_reserve": "3000 THB (10%)"
+    },
+    "budget_allocation_detail": {
+      "Instagram_Feed_and_Reels": "10800 THB",
+      "Facebook_Feed_and_Stories": "7200 THB",
+      "TikTok_In_Feed": "9000 THB",
+      "Testing_reserve_reallocate_to_winner": "3000 THB"
+    },
+    "kpis": [
+      {
+        "name": "CTR on ads",
+        "target": "2.5%+",
+        "source": "Brand Brain targets 2026 / client memory"
+      },
+      {
+        "name": "Orders per day (steady-state brand target)",
+        "target": "120",
+        "source": "Brand Brain business model & launch KPIs — this is the brand's overall target, not a campaign-isolated figure"
+      },
+      {
+        "name": "Content views",
+        "target": "100k+",
+        "source": "Brand Brain targets 2026"
+      },
+      {
+        "name": "Average ticket",
+        "target": "650 THB",
+        "source": "Brand Brain business model"
+      },
+      {
+        "name": "Campaign-specific delivery orders attributable to this ฿30,000 spend",
+        "target": null,
+        "source": "[MISSING: real data] — no target CPA, ROAS, or order-attribution figure provided in input or context; cannot be derived without a cost-per-order or conversion-rate input."
+      }
+    ],
+    "landing_destination": "[RECOMMENDATION] Grab (primary order channel per business model), with LINE MAN as secondary. Website https://salsaburgers.com/ as brand-support link. CTA copy uses 'Order now on Grab' — memory explicitly flags replacing 'Launching soon!' with this since the brand is already live.",
+    "creative_guardrails": [
+      "Real Salsa Burgers product as hero only — no AI/stock food (proven to destroy TikTok credibility in past tests).",
+      "Every FB/IG ad carries at least one Thai line (non-negotiable).",
+      "No banned/taste adjectives (delicious, best, irresistible, unforgettable, bold burgers).",
+      "No permanent-discount language — all promos time-boxed.",
+      "Hook in first 3 words of copy / first 1.5s of video.",
+      "Brand-specific hashtags (#SalsaBurgers #SalsaRitual #SathornEats) over generic ones.",
+      "Logo in #B61010 — but note the unresolved logo colour conflict below.",
+      "Own motifs used: black glove, sauce pour, box reveal, first bite."
+    ],
+    "open_flags": [
+      "[contradiction] Logo file is #D31C07 vs. palette #B61010 — decision pending before scaling paid media. Surface, don't resolve.",
+      "[RECOMMENDATION] File the Salsa Ritual video before scaling TikTok spend — it's flagged as the single highest viral-potential asset and is not yet produced.",
+      "[RECOMMENDATION] Define LINE OA loyalty mechanic before paid media scales; it is the largest owned Thai channel (53M+ users) and currently absent from the paid mix."
+    ],
+    "data_gaps": [
+      "Target cost-per-order / CPA for delivery orders",
+      "Target ROAS or conversion rate from ad click to Grab order",
+      "Campaign flight dates / duration",
+      "Historical CPC / CPM benchmarks for this brand on Meta and TikTok (only launch impressions of 110,940 are on record, no cost data)",
+      "Current daily order baseline at time of this campaign",
+      "Grab vs. LINE MAN split of orders",
+      "Any active time-boxed promo/offer to feature in the ads",
+      "Confirmed hero SKU for the ad creative (Brand Brain lists hero items as 'undefined')"
+    ]
+  },
+  "processingTimeMs": 54951
+}

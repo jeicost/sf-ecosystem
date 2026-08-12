@@ -1,0 +1,27 @@
+INPUT
+{
+  "topic": "The glove ritual and the 18 house sauces",
+  "platform": "Instagram",
+  "tone": "bold",
+  "with_image": false
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "32b03206-5fc1-4934-8519-28df5e5ba8a2",
+  "outputData": {
+    "platform": "Instagram",
+    "copy": "Glove up. There's no other way to eat this.\n\nBlack glove on. Box open. Then the only real decision left: which of the 18 house sauces finishes your Wagyu. Made from scratch every morning — no premixes, ever. You don't order a burger here. You perform it.\n\nDip now. Think later.\n\nสวมถุงมือ แล้วเลือกซอสของคุณ — 18 ซอสทำสดใหม่ทุกเช้า",
+    "hashtags": [
+      "#SalsaRitual",
+      "#SalsaBurgers",
+      "#DipNowThinkLater",
+      "#SathornEats",
+      "#SalsaSauceMuseum"
+    ],
+    "call_to_action": "Order now on Grab and finish it your way.",
+    "media_brief": "[RECOMMENDATION] Format: 4:5 carousel (per approved series spec). Real product only — no AI, no stock, no white backgrounds. Slide 1: overhead hero of a black-gloved hand mid-pour, one house sauce streaming over an open Wagyu build inside the branded Salsa Burgers box — dark editorial lighting, brand red (#B61010) as dominant, cream and amber as accents only. Slide 2: the sauce lineup framed as a 'sauce museum' — real dispensers/pots shot as a curated wall, emphasising the number 18 without listing taste adjectives. Slide 3: first-bite moment, gloved hand, real reaction, box branding visible. Motifs to keep: black glove, sauce pour, box reveal — never replace them. Typography: Anton uppercase for any on-image headline ('GLOVE UP' / 'PICK YOUR 18'), Glacial Indifference for support text, Quote Script sparingly for 'Dip now. Think later.' Palette proportion ~55% red / 25% black / 12% cream / 8% amber. Grid role: hero product column. NOTE: logo colour conflict unresolved (#D31C07 file vs #B61010 palette) — export logo in #B61010 to match backgrounds before publishing. [ASSUMPTION] The '18 house sauces' and 'made from scratch every morning, no premixes' claims are used verbatim from brand context; do not add any invented sauce names, flavours or preparation steps to the visual."
+  },
+  "processingTimeMs": 15887
+}

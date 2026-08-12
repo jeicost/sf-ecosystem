@@ -1,0 +1,110 @@
+INPUT
+{
+  "current_expenses": "Beef 38%, staff 22%, rent 15%, delivery commissions 18%"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "fdef6d05-e308-4bae-9d2e-5c492eacfe50",
+  "outputData": {
+    "summary": "Salsa Burgers' cost base is dominated by two controllable levers — beef (38% of expenses) and delivery commissions (18%) — which together account for over half of all spend. The input provides only relative percentages with no revenue or absolute cost figures, so this plan prioritises WHERE the savings sit and HOW to capture them without touching the Wagyu-and-ritual premium that justifies the ฿650 average ticket. The single largest structural opportunity is shifting order volume toward a commission-free direct channel; the largest operational opportunity is beef yield and portioning discipline.",
+    "cost_categories": [
+      {
+        "category": "Beef (Wagyu)",
+        "current_monthly": "[MISSING: real data]",
+        "optimized_monthly": "[MISSING: real data]",
+        "savings": "[MISSING: real data]",
+        "how": "[RECOMMENDATION] Attack yield and waste, NOT quality or the 100% Wagyu claim (a hero feature that must survive). Levers: (1) tighten portion control with calibrated patty weights and a scale-at-station rule; (2) audit trim/waste and repurpose usable trim into menu items that already use ground/seasoned meat (e.g. the loaded nachos shown); (3) renegotiate supplier pricing on committed volume as Phase 2/3 order counts rise; (4) review whether every SKU needs the same Wagyu grade, keeping premium cuts for Deluxe tiers (Lobster, Foie Gras, Dry-Aged Ribeye) where the price already carries it. Actual saving cannot be quantified without absolute beef spend and current yield data."
+      },
+      {
+        "category": "Delivery commissions",
+        "current_monthly": "[MISSING: real data]",
+        "optimized_monthly": "[MISSING: real data]",
+        "savings": "[MISSING: real data]",
+        "how": "[RECOMMENDATION] This is the highest-leverage line because every baht moved off Grab/LINE MAN to a direct channel is saved commission with no quality trade-off. The brand already has two direct-channel bets in context: the WhatsApp Sauce Hotline (explicitly 'commission-free conversational commerce') and a LINE OA loyalty mechanic (53M+ Thai LINE users). Move repeat/loyal customers to direct ordering while KEEPING the marketplaces for discovery and new-customer acquisition. Do NOT try to eliminate commissions entirely — the platforms are the primary acquisition and discovery engine for the 70% expat/Grab-heavy segment. Exact commission rate could not be verified via search (no sources returned), so the baht saving is unknown."
+      },
+      {
+        "category": "Staff",
+        "current_monthly": "[MISSING: real data]",
+        "optimized_monthly": "[MISSING: real data]",
+        "savings": "[MISSING: real data]",
+        "how": "[RECOMMENDATION] At 22%, staff is a moderate line for a delivery-first, ritual-heavy kitchen and should be treated cautiously — the '18 sauces made from scratch every morning' and 'no shortcuts' promises are labour-dependent and are core brand equity. Optimise through shift scheduling aligned to order-time peaks and prep batching rather than headcount cuts. Treat as efficiency, not reduction."
+      },
+      {
+        "category": "Rent",
+        "current_monthly": "[MISSING: real data]",
+        "optimized_monthly": "[MISSING: real data]",
+        "savings": "[MISSING: real data]",
+        "how": "[RECOMMENDATION] Rent is largely fixed short-term. The relevant lever is the planned Q3 2026 satellite dark kitchen in Sukhumvit: expand capacity/coverage via low-overhead dark-kitchen space rather than premium retail footprint, keeping cost-per-order flat as volume scales. No renegotiation figure derivable."
+      }
+    ],
+    "quick_wins": [
+      {
+        "action": "[RECOMMENDATION] Portion-control audit: standardise patty weights and scale-check at station; measure beef waste/trim for two weeks to expose overspend.",
+        "monthly_savings": "[MISSING: real data]",
+        "implementation_time": "[RECOMMENDATION] 1–2 weeks"
+      },
+      {
+        "action": "[RECOMMENDATION] Launch the LINE OA loyalty mechanic (stamp card / monthly exclusive) to start migrating repeat orders off commission-charging marketplaces — already an open bet in context.",
+        "monthly_savings": "[MISSING: real data]",
+        "implementation_time": "[RECOMMENDATION] 3–4 weeks"
+      },
+      {
+        "action": "[RECOMMENDATION] Pilot the WhatsApp Sauce Hotline for known repeat customers only, so direct-channel commission savings start compounding without cannibalising marketplace discovery.",
+        "monthly_savings": "[MISSING: real data]",
+        "implementation_time": "[RECOMMENDATION] 2–4 weeks"
+      },
+      {
+        "action": "[RECOMMENDATION] Repurpose usable Wagyu trim into seasoned-meat menu items (e.g. the loaded nachos) to convert waste into revenue.",
+        "monthly_savings": "[MISSING: real data]",
+        "implementation_time": "[RECOMMENDATION] 1–2 weeks"
+      }
+    ],
+    "structural_changes": [
+      {
+        "change": "[RECOMMENDATION] Build a direct-order channel (LINE OA + WhatsApp Hotline) and shift a growing share of repeat orders off Grab/LINE MAN commissions, while keeping marketplaces as the acquisition front door.",
+        "annual_impact": "[MISSING: real data]",
+        "risk": "[RECOMMENDATION] Medium — if pushed too hard it could reduce marketplace visibility/ranking (and undermine the pursued Grab #1 Sathorn badge). Migrate loyal customers only, never suppress new-customer discovery."
+      },
+      {
+        "change": "[RECOMMENDATION] Use the Q3 2026 Sukhumvit dark kitchen to scale coverage on low overhead instead of a second premium storefront, holding rent-per-order down as volume grows toward the 120 orders/day target.",
+        "annual_impact": "[MISSING: real data]",
+        "risk": "[RECOMMENDATION] Medium — a second site adds fixed cost before its volume matures; gate the go-live on demonstrated Sukhumvit demand."
+      },
+      {
+        "change": "[RECOMMENDATION] Tiered beef sourcing — reserve top Wagyu grade for Deluxe builds that carry the price, standardise the core menu grade, and lock volume pricing with suppliers as order counts rise through Phase 2/3.",
+        "annual_impact": "[MISSING: real data]",
+        "risk": "[RECOMMENDATION] High if mishandled — the 100% Wagyu claim is a non-negotiable hero feature and 'no shortcuts' is a brand value. Any grade change must be invisible on the plate and must never break the Wagyu promise."
+      }
+    ],
+    "do_not_cut": [
+      "The 18 house sauces made from scratch every morning — this is the #1 differentiator and the labour behind it cannot be cut without breaking the core brand promise.",
+      "100% Wagyu across the menu — a stated hero feature that justifies the premium ฿650 ticket; do not substitute or dilute it.",
+      "The SALSA Ritual components (black glove, sauce dispenser, box, ritual card) — the packaging/theatre IS the product and the only ritual no Bangkok competitor owns; cutting it commoditises the brand.",
+      "Content production with REAL product (no AI/stock as hero) — context shows AI/stock food destroyed credibility on TikTok; this protects growth and must stay funded.",
+      "Marketplace presence (Grab/LINE MAN) as an acquisition channel — even though commissions are the biggest cost lever, these platforms drive discovery for the 70% Grab-heavy expat segment."
+    ],
+    "total_potential_savings": {
+      "monthly": "[MISSING: real data]",
+      "annual": "[MISSING: real data]"
+    },
+    "assumptions": [
+      "[RECOMMENDATION] Target: prioritise the beef and delivery-commission lines, which together represent 56% of the expense mix — a realistic first-year focus is reducing beef waste/yield loss and shifting a share of repeat orders to commission-free direct channels. No specific percentage or baht target can be set without absolute cost and revenue figures.",
+      "[ASSUMPTION] The percentages in the input represent share of total operating expenses (they sum to 93%, so ~7% of spend is unaccounted for — likely packaging, utilities, marketing or other); this residual could hide additional savings but is not detailed in the input.",
+      "Delivery commission rate for Grab/LINE MAN could not be verified — web search returned no sources — so no baht value is attached to the commission-shift opportunity."
+    ],
+    "data_gaps": [
+      "Monthly revenue and absolute baht value of each expense line (only percentages provided)",
+      "Total monthly operating expense figure",
+      "Actual Grab and LINE MAN commission rates",
+      "Current beef cost per unit, portion weight, and waste/yield rate",
+      "Staff headcount, roles and shift structure",
+      "Rent amount and lease terms",
+      "The unaccounted ~7% of the expense mix (packaging, utilities, marketing, etc.)",
+      "Current split of orders between Grab, LINE MAN and any direct channel",
+      "Current daily order volume vs. the 120/day target"
+    ]
+  },
+  "processingTimeMs": 59442
+}

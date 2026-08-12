@@ -1,0 +1,54 @@
+INPUT
+{
+  "client_name": "Corporate catering leads in Sathorn",
+  "target_count": 50
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "167d09cf-cc36-48ed-97d3-9e9c5f0b4b0b",
+  "outputData": {
+    "campaign_name": "Salsa Burgers — Sathorn Corporate Catering Outreach",
+    "target_segment": "[RECOMMENDATION] Corporate offices, co-working spaces, boutique hotels, agencies and financial/professional-services firms located in the Sathorn business district of Bangkok — companies that regularly host team lunches, client meetings, launch events and staff celebrations and are potential recurring catering accounts for premium Wagyu delivery. This is a B2B lead-discovery layer that sits alongside the brand's core B2C delivery model; the messaging must still respect the brand's imperative, sauce-first voice while being appropriate for a business buyer (office manager, HR/admin, EA, events lead).",
+    "messaging": [
+      "Glove up for the office. [RECOMMENDATION] Position group catering as the Salsa Ritual scaled for a boardroom — 100% Wagyu burgers with 18 house sauces made from scratch every morning, delivered to your Sathorn floor. Lead with the ritual, not a discount.",
+      "One Thai line, always: [RECOMMENDATION] every outreach touch carries at least one Thai line for reach and warmth (e.g. 'ยกทีมมาใส่ถุงมือกัน') — English leads the voice, Thai leads the reach, per the brand's non-negotiable bilingual rule.",
+      "Warn, don't sell: [RECOMMENDATION] use lines in the brand register — 'This one crosses the line.' / 'Extra sauce is self-respect.' — reframed for a corporate order (feeding the team, impressing a client) rather than taste adjectives. No 'delicious', no 'best', no permanent-discount language; any offer must be time-boxed per brand rules.",
+      "Proof over promise: [RECOMMENDATION] reference that the brand is Sathorn-born and delivery-first on Grab and LINE MAN, and offer a sample Ritual Kit tasting (burger + black gloves + mini sauce dispenser) to the decision-maker as the B2B version of the influencer seeding model — product-first, no hard pitch."
+    ],
+    "channels": [
+      "[RECOMMENDATION] Direct email / contact-form outreach to office managers, HR/admin and events leads",
+      "[RECOMMENDATION] LINE OA / LINE MAN business ordering — Thai-primary, the dominant local channel with 53M+ Thai users",
+      "[RECOMMENDATION] LinkedIn for B2B prospecting ONLY — note the brand explicitly bans LinkedIn as a CONTENT channel for food discovery, but corporate-catering lead identification is a legitimate B2B networking use; keep all consumer content off it",
+      "[RECOMMENDATION] Grab for Business / bulk-order delivery as the fulfilment channel"
+    ],
+    "timeline": [
+      "[RECOMMENDATION] Week 1: Run the MIRA Prospecting search below to surface 50 qualified Sathorn corporate/office/hotel/co-working accounts; enrich with a named contact (office manager / EA / events lead) where available.",
+      "[RECOMMENDATION] Week 2: First outreach wave — bilingual email/LINE intro built on the Ritual angle; offer a sample Ritual Kit tasting to top-tier prospects.",
+      "[RECOMMENDATION] Week 3–4: Follow-up wave + deliver tasting kits to responders; convert interest into a first catered team lunch and set a time-boxed group-order offer.",
+      "[RECOMMENDATION] Month 2: Nurture warm accounts toward recurring catering; capture reviews/testimonials and feed learnings into a repeatable Sathorn B2B playbook."
+    ],
+    "success_metrics": [
+      "[RECOMMENDATION] 50 qualified Sathorn corporate leads discovered and enriched (matches target_count)",
+      "[RECOMMENDATION] Outreach reply rate and number of tasting kits accepted",
+      "[RECOMMENDATION] Number of first catered orders booked from the list",
+      "[RECOMMENDATION] Recurring/repeat corporate accounts secured — supports the brand's ฿2.5M/month and 120 orders/day steady-state targets (actual corporate-catering ticket/margin benchmarks: [MISSING: real data])"
+    ],
+    "discovery_search": {
+      "industry": "Corporate offices, professional services, hospitality",
+      "geography": "Sathorn, Bangkok, Thailand",
+      "keywords": "office, co-working space, hotel, financial services, agency",
+      "limit": 50
+    },
+    "data_gaps": [
+      "Corporate/catering average ticket value and margin (only B2C avg ticket ฿650 provided)",
+      "Number of employees / order-volume threshold to qualify a corporate account",
+      "Named contacts / decision-makers at target companies (to be enriched during prospecting)",
+      "Whether a formal B2B/catering offer or pricing tier exists (menu is delivery-first B2C)",
+      "Grab for Business / LINE MAN corporate ordering availability and terms",
+      "Budget allocated to this outbound campaign"
+    ]
+  },
+  "processingTimeMs": 28642
+}

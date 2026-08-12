@@ -1,0 +1,24 @@
+INPUT
+{
+  "objection": "Your burgers are more expensive than the competition"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "07e89d56-84ff-44e8-b3aa-ffb99a7f39ab",
+  "outputData": {
+    "objection_type": "price",
+    "subject": "You're not paying for a burger",
+    "body": "You're right. We're not the cheap option, and we never will be.\n\nHere's the difference: every burger is 100% Wagyu, and you finish it yourself with one of 18 house sauces made from scratch every morning — no premixes, ever. Glove up, open the box, pour, first bite. That's not a ฿500 burger. That's a ritual no other kitchen in Bangkok hands you at your door.\n\nCheaper burgers cost less because they're worth less. Ours land at an average ฿650 ticket because people order them again.\n\nถ้าจ่ายถูกกว่า คุณก็ได้น้อยกว่า.\n\nTry the OG Cheeseburger on Grab. Dip it like you mean it — then tell me it's the same burger.",
+    "variant_softer": "Fair point on price. But think about what's actually in the box: 100% Wagyu, plus 18 house sauces made fresh every morning that you pour yourself. Glove on, box open, first bite — no other Bangkok kitchen delivers that. The cheaper burger saves you a little today; this one is the reason people reorder. Start with the OG Cheeseburger on Grab and judge it on the first bite. ลองก่อนแล้วค่อยตัดสิน.",
+    "variant_direct": "Cheaper burgers are cheaper for a reason. Ours are 100% Wagyu, finished with one of 18 sauces made from scratch every morning — a ritual nobody else in Bangkok puts in your box. Average ticket ฿650 because people come back. Order the OG Cheeseburger on Grab, glove up, and compare. อย่าคิดมาก จิ้มเลย. Then we'll talk price.",
+    "next_step": "[RECOMMENDATION] Send a first-order incentive tied to a ritual moment (not a permanent discount — brand rule) via Grab/LINE MAN. If no order within 3 days, follow up with the Salsa Ritual video (gloves → sauce pour → first bite) so they see the value they're buying, not just the price.",
+    "data_gaps": [
+      "competitor burger pricing (specific figures)",
+      "prospect identity/name",
+      "current promotional offers available to reference"
+    ]
+  },
+  "processingTimeMs": 15264
+}

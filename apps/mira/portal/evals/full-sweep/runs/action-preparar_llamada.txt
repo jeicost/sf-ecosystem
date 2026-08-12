@@ -1,0 +1,60 @@
+INPUT
+{
+  "call_goal": "Close a weekly corporate catering order"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "e78d202f-d7c9-4feb-b953-fd4c8103da65",
+  "outputData": {
+    "lead_summary": "[ASSUMPTION] A Sathorn/Silom-based corporate office, co-working space, agency or professional-services firm — the exact company was not named in the brief. They sit inside the 'Sathorn Corporate Catering Outreach' campaign already created in client memory, and they have already been to a tasting (per the follow-up email note: 'nobody agreed on the same sauce'). Pipeline state: warm — post-tasting, sauce split the room, this call is the close for a recurring weekly order. They matter because a weekly corporate order is predictable, high-average-ticket volume (฿650 average ticket) that de-risks the delivery-first model beyond one-off Grab/LINE MAN orders.",
+    "call_objective": "Lock a standing weekly corporate order — an agreed day, headcount and combo structure — starting on a named date.",
+    "discovery_questions": [
+      "After the tasting, which sauces did your team keep coming back to — and did the split we saw turn into a talking point in the office?",
+      "How does your team handle food for the office right now — set caterer, everyone orders their own, or ad-hoc?",
+      "What does a typical week look like — which day and how many people are you feeding, and is that number steady or does it swing?",
+      "When lunch gets ordered in for the team, what usually goes wrong that you'd want fixed?",
+      "If we set a fixed weekly day for the office, who signs off on that internally and what would they need to see to say yes?"
+    ],
+    "likely_objections": [
+      {
+        "objection": "It's more expensive than what we usually order for the office.",
+        "answer": "You're right. We're not the cheap option, and we never will be. Every burger is 100% Wagyu and every box comes with house sauces made from scratch that morning. You're not paying for a burger — you're paying for the one lunch nobody in the office argues about. Old school. Still hits."
+      },
+      {
+        "objection": "Wagyu and a whole ritual sounds like a lot for a normal Tuesday office lunch.",
+        "answer": "That's the point. Glove up, open the box, pour your sauce, first bite — it turns a desk lunch into ten minutes the team actually talks about. Same delivery you already do, minus the generic."
+      },
+      {
+        "objection": "Our headcount changes week to week — we can't commit to a fixed number.",
+        "answer": "[RECOMMENDATION] Then we lock the day, not the number. You confirm the count by a cutoff each week, we deliver. The standing slot stays; the volume flexes with you."
+      },
+      {
+        "objection": "Can you handle a large office order reliably, on time, every week?",
+        "answer": "[RECOMMENDATION] Delivery reliability is the brand — we're built delivery-first, not a dine-in kitchen bolting on catering. Let's put it to the test with one week before you commit to the standing order."
+      },
+      {
+        "objection": "Some of the team are vegetarian / don't eat beef.",
+        "answer": "[RECOMMENDATION] I'd need to confirm the exact builds we'd offer your office — the sauce range is the flexible part, so let me come back with options that cover the whole room rather than guess now."
+      }
+    ],
+    "talking_points": [
+      "The tasting already did the selling — nobody agreed on the same sauce. That's 18 house sauces made from scratch every morning, no premixes. The weekly order keeps that argument going every week.",
+      "This is theater no other Bangkok burger brand has: the Salsa Ritual — glove up, box, sauce pour, first bite. It's the difference between feeding the office and giving them something to post.",
+      "100% Wagyu across the whole menu, and a combo structure (Hero, Full Craving, Duo, Full Indulgence) that makes it easy to scale the order to the room.",
+      "[RECOMMENDATION] Position the weekly slot as a fixed ritual for the office — one locked day beats ad-hoc ordering, and it's easier for whoever signs off internally to defend a routine than a one-off."
+    ],
+    "proposed_next_step": "Agree a first standing delivery: name the day, confirm a headcount for week one, and set a weekly confirmation cutoff — book it in now for a specific start date rather than 'we'll be in touch'.",
+    "data_gaps": [
+      "Lead company name, size and exact location",
+      "Weekly headcount / order volume",
+      "Corporate catering pricing, minimum order and any volume terms",
+      "Whether a catering-specific menu or vegetarian/non-beef builds exist",
+      "Delivery cutoff / lead-time mechanics for large office orders",
+      "Who the internal decision-maker / budget holder is",
+      "Which sauces or builds this specific team preferred at the tasting"
+    ]
+  },
+  "processingTimeMs": 30056
+}

@@ -1,0 +1,27 @@
+INPUT
+{
+  "context": "Follow-up after a corporate catering tasting"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "284769f1-3146-4758-9f5b-e09371e8f14d",
+  "outputData": {
+    "subject": "You already know which sauce won the room",
+    "body": "Hi [Name],\n\nOne thing we noticed at the tasting: nobody agreed on the same sauce. Good. That's the point — 18 house sauces made from scratch every morning means a 30-person office never fights over one \"safe\" option.\n\nHere's the new value for you: for corporate orders we send the black gloves and the finishing sauces on the side, so each person builds their own Wagyu at their desk. No soggy, no compromise. The ritual travels.\n\nWant me to put together a headcount-based catering plan for your team's next Friday or client lunch?\n\nGlove up when you're ready.\n\n[Your name]\nSalsa Burgers\n\nอยากได้แผนจัดเลี้ยงสำหรับทีมไหม บอกจำนวนคนมาได้เลย",
+    "timing_advice": "[RECOMMENDATION] Send 3–4 business days after the tasting, Tuesday or Wednesday around 10:00 Bangkok time — after the Monday backlog clears but while the taste memory is still fresh. Avoid Friday afternoon, when catering decisions get pushed to next week.",
+    "variant_breakup": "Subject: Last one from me\n\nHi [Name],\n\nI'll stop landing in your inbox after this — you've got enough of those.\n\nIf catering for the team is a this-quarter thing, reply with a rough headcount and I'll send a plan. If it's not the moment, no problem — I'll leave the gloves on the shelf for you.\n\nWhenever you're ready to feed the office properly, you know where we are.\n\nDip now, think later.\n\n[Your name]\nSalsa Burgers\n\nถ้าพร้อมเมื่อไหร่ ทักมาได้เลย",
+    "next_step": "[RECOMMENDATION] If no reply after the break-up email, stop email outreach and move the contact to a low-touch nurture: add them to the corporate catering campaign audience so brand content keeps them warm, and set a manual reminder to re-approach around a natural trigger (year-end parties, a new Sauce Drop, or a Sathorn office event). Re-open with a fresh hook, not another follow-up on this thread.",
+    "data_gaps": [
+      "contact name and role",
+      "prospect company name",
+      "exact date of the tasting",
+      "any previous replies from the prospect",
+      "corporate catering pricing / minimum order",
+      "number of attendees at the tasting",
+      "which sauces or items were served"
+    ]
+  },
+  "processingTimeMs": 17076
+}

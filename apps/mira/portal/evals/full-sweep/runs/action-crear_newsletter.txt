@@ -1,0 +1,53 @@
+INPUT
+{
+  "theme": "New sauce of the month launch",
+  "article_count": 5
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "0e877b56-1168-4168-ba64-d67a6f7c13f2",
+  "outputData": {
+    "subject": "There's a 19th sauce now. You weren't ready.",
+    "preview_text": "One more bottle in the box this month. Glove up before you meet it.",
+    "sections": [
+      {
+        "title": "The box just got one bottle heavier — and you already know what that means",
+        "content": "Eighteen house sauces, made from scratch every morning, no premixes. That number moves this month. There's a new one in the lineup, and it's here on a timer — Sauce Drop season, not a permanent fixture. So don't get comfortable. Meet the newest member of the shelf before it rotates back out.\n\nรสชาติใหม่มาแล้ว — สั่งก่อนหมดรอบ.\n\n[ASSUMPTION] The specific sauce name, flavour profile and pairing are not in the brief — filled here as a placeholder concept only. [MISSING: real data] — sauce name and details must be added before send.",
+        "cta": "DIP NOW — order on Grab"
+      },
+      {
+        "title": "Before you say a word about the new sauce: put on the gloves",
+        "content": "You don't taste a Sauce Drop with clean hands and a fork. Black glove on. Box open. Then the only real decision left — which bottle finishes your Wagyu this time. This month there's a new answer on the table. New sauce, same ritual, no shortcuts.\n\nสวมถุงมือก่อน แล้วค่อยตัดสินใจ.",
+        "cta": "GLOVE UP — see the ritual"
+      },
+      {
+        "title": "This one crosses the line — so we're telling you, not selling you",
+        "content": "Some sauces sit politely on the side. This is not that. We're not going to describe how it tastes — that's your job, over a Wagyu patty, at your door. We're just warning you it's here for a limited run and it doesn't play nice.\n\nรอบนี้แรงกว่าเดิม — เตือนแล้วนะ.\n\n[RECOMMENDATION] Pair this drop with the #SalsaFlavorChallenge already in the Phase 1 roadmap — first-bite reaction clips are the strongest content trigger for this section.",
+        "cta": "Take the first bite"
+      },
+      {
+        "title": "Film your pour, or it didn't happen",
+        "content": "The Sauce Drop lives or dies on the pour. Glove up, open the box, add the new sauce, first bite, share it — that's the whole ritual, and this month it has a fresh star. Tag your pour and it goes on the shelf with the rest of the cult.\n\nถ่ายตอนราดซอสแล้วแท็กมา — #SalsaRitual.",
+        "cta": "Post your pour with #SalsaRitual"
+      },
+      {
+        "title": "It's made this morning — which is exactly why it won't wait for you",
+        "content": "Every sauce here is made from scratch, fresh, daily. A Sauce Drop isn't a product you shelf-stack — it's a window. When the rotation moves on, it moves on. Extra sauce is self-respect, so get the new one in your box while it's in ours.\n\nทำสดทุกเช้า — สั่งวันนี้ก่อนจะสายเกินไป.",
+        "cta": "Order the new drop before it rotates out"
+      }
+    ],
+    "footer": "Salsa Burgers · Sathorn, Bangkok · 18 house sauces made from scratch every morning, over Wagyu.\nDIP NOW · THINK LATER · salsaburgers.com\nOrder on Grab & LINE MAN. No permanent discounts — Sauce Drops are on a timer, just like everything worth having.\n\n[RECOMMENDATION] Add a Thai-language footer line for LINE OA broadcast reuse — LINE (53M+ Thai users) is the strongest owned channel for this audience and this issue should be repurposed there.",
+    "data_gaps": [
+      "Name of the new sauce of the month",
+      "Flavour profile / ingredients of the new sauce (kept out of copy per grounding rules — needed before send)",
+      "Which Wagyu build or menu item the new sauce pairs with / is featured on",
+      "Exact Sauce Drop number in the roadmap sequence (#1–#5) this launch corresponds to",
+      "Time window / end date of the limited run",
+      "Whether this issue is going out via LINE OA, email, or both",
+      "Any promo code or combo tie-in for the launch (none provided; none invented)"
+    ]
+  },
+  "processingTimeMs": 40060
+}

@@ -1,0 +1,75 @@
+INPUT
+{
+  "feature": "Salsa Burgers",
+  "skill_level": "beginner"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "d92c44f4-f339-48eb-b1ce-da46ad66f697",
+  "outputData": {
+    "title": "The Salsa Ritual: How to Eat a Salsa Burger the Right Way",
+    "steps": [
+      {
+        "number": 1,
+        "title": "Get your order in front of you",
+        "description": "Place the Salsa Burgers box on a flat surface with the lid facing up. Don't open it yet. Have the black glove, the sauce that came with your order, and a spot to sit ready before you start.",
+        "tips": [
+          "The black glove and your finishing sauce arrive inside the delivery box — check for them before you assume something's missing.",
+          "[RECOMMENDATION] Prop your phone up now if you plan to film — the reveal and the pour are the moments worth capturing for #SalsaRitual."
+        ]
+      },
+      {
+        "number": 2,
+        "title": "Glove up",
+        "description": "Put on the black glove. This is step one of the ritual and it's what the glove is for — you eat the burger with it on.",
+        "tips": [
+          "Put it on your dominant hand — that's the hand that lifts the burger."
+        ]
+      },
+      {
+        "number": 3,
+        "title": "Open the box",
+        "description": "Lift the lid and reveal the burger. Take one second to look at it before you touch anything.",
+        "tips": []
+      },
+      {
+        "number": 4,
+        "title": "Add the sauce",
+        "description": "Take the finishing sauce from your order and pour it over the burger yourself. You're finishing the build — this is the part no other Bangkok brand hands over to you.",
+        "tips": [
+          "Pour slowly and let it fall over the top — this is the hero moment. Extra sauce is self-respect.",
+          "There's no 'wrong' amount. If the sauce in your box is not the one you ordered, that's on the kitchen, not on you — flag it."
+        ]
+      },
+      {
+        "number": 5,
+        "title": "Take the first bite",
+        "description": "Lift the burger with your gloved hand and bite. Don't overthink it — dip now, think later.",
+        "tips": []
+      },
+      {
+        "number": 6,
+        "title": "Share it",
+        "description": "Post the moment and tag it #SalsaRitual and #SalsaBurgers. This is the last step of the ritual.",
+        "tips": [
+          "Use the brand tags (#SalsaRitual, #SalsaBurgers) rather than generic ones like #bkkburger — they're the ones that count.",
+          "[RECOMMENDATION] If you're posting on Instagram or TikTok, one Thai line in your caption helps it travel further in Bangkok."
+        ]
+      }
+    ],
+    "script": "Five steps. That's the whole ritual. Glove up — the black glove is step one, and yes, you eat with it on. Open the box. Now the important part: take your sauce and pour it yourself. You're finishing this burger — nobody else does that in Bangkok. Extra sauce is self-respect, so don't be shy. Lift it, first bite — dip now, think later. Then share it: tag it #SalsaRitual. That's it. That's the ritual.",
+    "resources_needed": [
+      "A Salsa Burgers order delivered via Grab or LINE MAN (includes the box, the black glove and your finishing sauce)",
+      "A flat surface to open the box on",
+      "[RECOMMENDATION] A phone to film or photograph the pour and first bite for the share step"
+    ],
+    "data_gaps": [
+      "Whether every order ships with a glove and finishing sauce by default, or only specific combos/tiers",
+      "The exact list of which sauce pairs with which burger",
+      "Any official on-box or in-app instruction wording for the ritual that should be quoted verbatim"
+    ]
+  },
+  "processingTimeMs": 19906
+}

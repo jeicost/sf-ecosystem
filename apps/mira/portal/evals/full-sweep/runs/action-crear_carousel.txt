@@ -1,0 +1,56 @@
+INPUT
+{
+  "idea": "How the Salsa ritual works, step by step",
+  "slide_count": 5,
+  "with_image": false
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "cd4e0a9e-f56c-4cb5-91f0-b21c363ff972",
+  "outputData": {
+    "title": "THE SALSA RITUAL",
+    "slides": [
+      {
+        "number": 1,
+        "copy": "GLOVE UP\nไม่มีทางอื่นที่จะกินสิ่งนี้\n\nBlack glove on. This is where it starts. Every hand-eaten Wagyu deserves the ritual.",
+        "visual_direction": "[RECOMMENDATION] Dark editorial. Close-up of a hand pulling on the black glove against a #B61010 red backdrop. Anton headline 'GLOVE UP' uppercase, cream text. Real product/hand only — no AI, no stock. 4:5. Motif: the black glove is the hero."
+      },
+      {
+        "number": 2,
+        "copy": "OPEN THE BOX\nเปิดกล่อง แล้วเวทีก็เริ่มขึ้น\n\nThe box is the stage. Lift the lid on Wagyu that's been waiting for this moment.",
+        "visual_direction": "[RECOMMENDATION] Hero product shot: gloved hands opening the branded 'Salsa Burgers' takeout box (as in Nachos Salsa 2.png packaging), Wagyu build revealed inside. Top-down or 3/4 angle, no white background. Amber used only as a detail accent. 4:5."
+      },
+      {
+        "number": 3,
+        "copy": "ADD THE SAUCE\nซอส 18 ชนิด ทำสดใหม่ทุกเช้า\n\n18 house sauces, made from scratch every morning. Pick one. Pour it like you mean it. Extra sauce is self-respect.",
+        "visual_direction": "[RECOMMENDATION] The money shot — sauce pour over the Wagyu, mid-air drip, macro focus. This is the #1 motif. Deep red and black frame, sauce is the hero of the visual. Real product, ASMR-still energy. 4:5."
+      },
+      {
+        "number": 4,
+        "copy": "FIRST BITE\nคำแรก ห้ามลังเล\n\nDip now, think later. No second-guessing. Just the first bite.",
+        "visual_direction": "[RECOMMENDATION] Lifestyle / Salsa Moments column: real first-bite moment, gloved hands, sauce visible on the Wagyu. Editorial dark tone, authentic — no AI, no stock, no celebrity faces. 4:5."
+      },
+      {
+        "number": 5,
+        "copy": "SHARE IT\nถ่ายรูป แล้วแท็ก #SalsaRitual\n\nYou did the ritual. Now prove it. Tag it and it counts.",
+        "visual_direction": "[RECOMMENDATION] Composition showing the finished box + gloves + phone-frame gesture, or a stylised 'end card' with Anton 'SHARE IT' and #SalsaRitual in Quote Script accent. Red/black/cream only, amber as detail. 4:5."
+      }
+    ],
+    "cta_slide": "DIP NOW · THINK LATER\nสั่งเลยบน Grab และ LINE MAN\n\nDo the ritual yourself. Order on Grab or LINE MAN.",
+    "hashtags": [
+      "#SalsaRitual",
+      "#SalsaBurgers",
+      "#DipNowThinkLater",
+      "#SathornEats",
+      "#GloveUp"
+    ],
+    "data_gaps": [
+      "Confirmed Grab/LINE MAN store link or ordering URL for the CTA slide",
+      "Whether a real filmed/photographed Salsa Ritual asset set exists yet (context flags the sequence as not yet produced) — carousel assumes real product photography must be shot before publishing",
+      "Resolved logo colour (#B61010 vs #D31C07) for correct on-asset logo export"
+    ]
+  },
+  "processingTimeMs": 30164
+}

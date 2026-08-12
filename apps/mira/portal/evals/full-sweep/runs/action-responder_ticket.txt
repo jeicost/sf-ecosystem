@@ -1,0 +1,21 @@
+INPUT
+{
+  "issue": "Order arrived with the wrong sauce"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "bb27f0f3-18f7-4225-b144-665f841054be",
+  "outputData": {
+    "subject": "Re: Wrong sauce in your order",
+    "body": "Wrong sauce in the box — that's a broken ritual, and we don't let that stand.\n\nThe sauce is the whole point here, so getting it wrong is on us. Here's the fix: reply with your order number and the sauce you were supposed to get, and we'll send the correct one out to you. Keep the wrong one — consider it a free tasting.\n\nส่งเลขออเดอร์มาให้เราหน่อย เดี๋ยวเราจัดซอสที่ถูกไปให้ใหม่ทันที\n\nGlove up. We'll make this right.",
+    "tone": "empathetic-direct",
+    "suggested_follow_ups": [
+      "[RECOMMENDATION] A human should confirm the re-send/replacement policy and any delivery-fee coverage before promising free redelivery — the exact remedy (resend correct sauce, refund, or credit) isn't defined in the context.",
+      "[RECOMMENDATION] Confirm which order channel this came through (Grab / LINE MAN) — resolution and refund mechanics differ by platform and may need to be handled there rather than direct.",
+      "Ask the customer for the order number and the correct sauce name so the kitchen can verify against the ticket."
+    ]
+  },
+  "processingTimeMs": 9948
+}

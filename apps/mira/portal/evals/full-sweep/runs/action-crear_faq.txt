@@ -1,0 +1,105 @@
+INPUT
+{
+  "topic": "The glove ritual and the 18 house sauces"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "26d74d1a-e1fe-4492-9ddd-de2b82d6fa36",
+  "outputData": {
+    "faqs": [
+      {
+        "question": "what are the gloves that come with my burger for?",
+        "answer": "They're for eating the burger. The black glove is step one of the Salsa Ritual — you put it on, open the box, pour your sauce, and eat with your hands without the mess. Glove up.",
+        "category": "The Glove Ritual"
+      },
+      {
+        "question": "do I actually have to wear the gloves or is it just for the photos?",
+        "answer": "Do whatever you want — but the gloves are there so you can eat a Wagyu burger with your hands and not wear it on your fingers. That's the whole point of the ritual. Most people put them on once and never go back.",
+        "category": "The Glove Ritual"
+      },
+      {
+        "question": "there were no gloves in my order, what happened?",
+        "answer": "The gloves are meant to come with every order as part of the ritual. If yours arrived without them, that's on us — message us through Grab or LINE MAN with your order number and we'll make it right.",
+        "category": "The Glove Ritual"
+      },
+      {
+        "question": "what's this 'ritual' thing on the box about?",
+        "answer": "It's the five steps we build every delivery around: glove up, open the box, add your sauce, take the first bite, share it. The box is the stage — the burger and the sauce are the show.",
+        "category": "The Glove Ritual"
+      },
+      {
+        "question": "are the gloves latex? I have an allergy",
+        "answer": "[MISSING: real data] — we don't have the glove material confirmed in our records here. Message us on Grab or LINE MAN before you order and we'll tell you exactly what they're made of so you can decide safely.",
+        "category": "The Glove Ritual"
+      },
+      {
+        "question": "how many sauces do you actually have?",
+        "answer": "18 house sauces. All made from scratch every morning — no premixes, ever.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "do I choose my sauce or does it come with the burger?",
+        "answer": "Every burger comes with its own sauces built in — for example the OG Cheeseburger comes with Salsa House Sauce and Cheese Sauce. The ritual is about the finishing sauce you pour yourself at the table. [RECOMMENDATION] Check the specific item on Grab or LINE MAN to see which sauces are included with each burger.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "can I get extra sauce with my order?",
+        "answer": "Extra sauce is self-respect. [RECOMMENDATION] Add-on sauce should be available as an extra on your order — check the add-ons section on Grab or LINE MAN. We don't have the exact pricing per sauce in our records here, so message us if it's not showing.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "what's in the house sauce?",
+        "answer": "[MISSING: real data] — we don't have the individual sauce recipes listed here, and we're not going to guess at ingredients. Ask us directly on Grab or LINE MAN and we'll tell you what's in the one you're curious about.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "are any of the sauces spicy? I can't do too much heat",
+        "answer": "[MISSING: real data] — we can't confirm the heat level of each sauce from what's in front of us. Our menu draws on Thai (Tom Yum, Holy Basil), Korean, Japanese and Sichuan flavours, so some will carry heat. Message us on Grab or LINE MAN with 'no spice' and we'll point you to the milder ones.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "are the sauces vegetarian / any without meat or fish?",
+        "answer": "[MISSING: real data] — we don't have the full ingredient breakdown for each sauce here, so we won't guess. Ask us on Grab or LINE MAN which of the 18 are meat- and fish-free and we'll give you the honest list.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "are the sauces made fresh or is it out of a bottle?",
+        "answer": "Made from scratch every morning. That's the one thing we won't compromise on — 18 sauces, no premixes.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "can I buy the sauces on their own?",
+        "answer": "[MISSING: real data] — standalone sauce sales aren't confirmed in what we have here. Message us on Grab or LINE MAN and we'll tell you if you can order sauce by itself.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "I got the wrong sauce in my box",
+        "answer": "Wrong sauce is a broken ritual, and we don't let that stand — the sauce is the whole point. Message us on Grab or LINE MAN with your order number and we'll fix it.",
+        "category": "The 18 House Sauces"
+      },
+      {
+        "question": "will the sauce leak everywhere during delivery?",
+        "answer": "The finishing sauce is meant for you to pour at the table, not soaked into the burger in transit — that's part of why the ritual works for delivery. [RECOMMENDATION] If a sauce ever arrives spilled, message us on Grab or LINE MAN and we'll sort it.",
+        "category": "The 18 House Sauces"
+      }
+    ],
+    "best_practices": [
+      "Put a short 'How the Ritual Works' card inside the box (it's already part of the Ritual Kit) and mirror the same glove + 18-sauce Q&A on the product pages in Grab and LINE MAN, where people decide to order — with at least one Thai line per the bilingual rule.",
+      "[RECOMMENDATION] Pin the glove and sauce questions as a highlight on Instagram and a saved reply set on LINE OA, since the ritual is the #1 differentiator and most 'what are the gloves for?' searches happen right after the box arrives.",
+      "[RECOMMENDATION] Fill the [MISSING: real data] gaps below (glove material, per-sauce heat/allergen/vegetarian info, extra-sauce pricing, standalone sauce availability) with the kitchen before publishing — these are the questions customers actually ask and answering them wrong on ingredients would embarrass the brand."
+    ],
+    "data_gaps": [
+      "Glove material (latex/nitrile/vinyl) for allergy questions",
+      "Individual recipes/ingredients for each of the 18 sauces",
+      "Heat level per sauce",
+      "Which sauces are vegetarian / vegan / free of meat or fish",
+      "Allergen information per sauce",
+      "Extra-sauce add-on pricing",
+      "Whether sauces can be bought standalone",
+      "Whether gloves are included in every single order or only certain tiers/kits"
+    ]
+  },
+  "processingTimeMs": 38716
+}

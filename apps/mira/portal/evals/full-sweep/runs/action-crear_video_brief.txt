@@ -1,0 +1,57 @@
+INPUT
+{
+  "product": "Wagyu burger with Tom Yum sauce",
+  "duration": "30s",
+  "style": "dark editorial"
+}
+
+SALIDA
+============================================================
+{
+  "actionId": "e252dd62-5a73-46b7-98c2-43b494f13ed7",
+  "outputData": {
+    "title": "TOM YUM CROSSES THE LINE",
+    "objective": "[RECOMMENDATION] Drive craving and orders for the Wagyu burger with Tom Yum sauce among the 25–42 expat/international audience (Instagram-first) and urban Thais (TikTok), positioned in the 'Drive Craving' pillar with a dark editorial treatment that keeps the sauce as the hero and warns instead of sells. Vertical hook-driven video for IG Reels / TikTok.",
+    "script": "[0.0–3.0s] (No VO. Hard cut in on the pour. Text overlay only.) ON-SCREEN: 'This one crosses the line.'\n[3.0–8.0s] VO (low, confident, unhurried): 'Wagyu. Then Tom Yum.'\n[8.0–15.0s] VO: 'Glove up. Open the box.' ON-SCREEN Thai line: 'ใส่ถุงมือก่อน'\n[15.0–22.0s] VO: 'Pour it. All of it.' ON-SCREEN: 'Extra sauce is self-respect.'\n[22.0–27.0s] (First bite. Sound design carries — no VO.) ON-SCREEN Thai line: 'กัดคำแรกแล้วค่อยคิด'\n[27.0–30.0s] VO: 'Dip now. Think later.' ON-SCREEN: 'DIP NOW · THINK LATER' + 'Order on Grab & LINE MAN'",
+    "scene_breakdown": [
+      {
+        "scene": "Scene 1 — Hook / the pour (0.0–3.0s)",
+        "description": "Extreme macro, top-down. Tom Yum sauce being poured in a slow ribbon over the exposed Wagyu patty, catching a single hard side-light against near-black background. Shallow depth of field, steam just visible. No logo, no establishing shot. Text overlay lower third, Anton uppercase, brand red #B61010: 'THIS ONE CROSSES THE LINE.'"
+      },
+      {
+        "scene": "Scene 2 — The Wagyu (3.0–8.0s)",
+        "description": "Side-on macro push-in on the seared Wagyu patty edge, sauce running down the side onto the box. Dark editorial: deep shadows, cream (#E3E1DF) rim of the box the only light note. No text, or minimal small Glacial Indifference caption bottom-left."
+      },
+      {
+        "scene": "Scene 3 — Glove up + box reveal (8.0–15.0s)",
+        "description": "Black-gloved hands enter frame and lift the top bun / open the branded takeout box on a black surface. Motif: the black glove and box reveal. Text overlay Anton uppercase red: 'GLOVE UP.' Thai overlay in Glacial Indifference below it: 'ใส่ถุงมือก่อน'."
+      },
+      {
+        "scene": "Scene 4 — The pour, full (15.0–22.0s)",
+        "description": "Gloved hand pours the remaining Tom Yum sauce from the mini dispenser over the assembled burger, close-up, sauce pooling and glossing under the light. Text overlay Quote Script accent (used sparingly): 'Extra sauce is self-respect.'"
+      },
+      {
+        "scene": "Scene 5 — First bite (22.0–27.0s)",
+        "description": "Cut to the burger closed and cross-section held toward a first bite — sauce visible in the build. ASMR-forward sound design (bite crunch, no VO). Thai overlay Glacial Indifference: 'กัดคำแรกแล้วค่อยคิด'."
+      },
+      {
+        "scene": "Scene 6 — Lockup / CTA (27.0–30.0s)",
+        "description": "Cut to black. Logo in correct brand red #B61010 (see data gap on logo colour conflict), tagline lockup Anton uppercase: 'DIP NOW · THINK LATER.' Small line below in Glacial Indifference: 'Order on Grab & LINE MAN.'"
+      }
+    ],
+    "technical_specs": {
+      "duration": "30s",
+      "format": "[RECOMMENDATION] Vertical 9:16, 1080×1920, for IG Reels and TikTok (Drive Craving pillar). Shoot real product only — no AI/stock food as hero. Native audio + ASMR bite/pour sound design. English VO hook with Thai text overlay for local reach. Subtitles burned in. If a 4:5 static/carousel companion is needed for the IG grid, export a cut per the approved 4:5 asset standard."
+    },
+    "call_to_action": "DIP NOW — Order on Grab & LINE MAN. #SalsaBurgers #SalsaRitual #SathornEats",
+    "data_gaps": [
+      "Exact appearance/colour of the Tom Yum sauce (creamy vs. clear, red vs. orange) — not specified in context; sauce shots described generically to avoid inventing detail.",
+      "Whether the Wagyu Tom Yum burger is a named menu SKU with confirmed build/layers (context confirms Tom Yum as a fusion flavour over Wagyu but no ingredient list for this specific burger).",
+      "Price / promotional offer for this item (none provided; no discount language used per brand rules).",
+      "Logo colour to use in the CTA lockup — unresolved brand conflict: file #D31C07 vs. palette #B61010 (recommendation on record: re-export in #B61010).",
+      "Approved VO talent / voice and language mix confirmation.",
+      "Music track / licensed audio direction for the dark editorial cut."
+    ]
+  },
+  "processingTimeMs": 33154
+}

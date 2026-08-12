@@ -234,6 +234,42 @@ async function markConnectionNeedsReauth(admin: AdminClient, connectionId: strin
  * Reads the client's drive_connections row, refreshing the access token if it
  * expired (and persisting the new one). Clear error when not authorized.
  */
+
+/**
+ * Token de la CUENTA DE SERVICIO de la agencia, como respaldo de LECTURA.
+ *
+ * Durante la fase de alta, las carpetas de cada cliente viven en el Drive de la
+ * agencia (jacostech@gmail.com) y no hay OAuth por cliente: exigirlo obligaba a
+ * autorizar 11 veces algo que ya es de casa. La carpeta madre está compartida
+ * con la cuenta de servicio, así que esta hereda lectura sobre todas.
+ *
+ * SOLO LECTURA a propósito: una service account no tiene cuota de Drive propia
+ * y no puede crear ficheros fuera de una Unidad Compartida (verificado el
+ * 12-ago-2026: "The user's Drive storage quota has been exceeded"). Por eso el
+ * camino de ESCRITURA (getClientDriveAccessToken) NO usa este respaldo.
+ *
+ * Cuando el cliente conecte su propio Drive, su OAuth manda: esto solo entra
+ * cuando no hay conexión.
+ */
+export async function getAgencyServiceAccountToken(): Promise<{ token: string } | { error: string }> {
+  const raw = process.env.GOOGLE_SERVICE_ACCOUNT_KEY
+  if (!raw) return { error: 'No hay GOOGLE_SERVICE_ACCOUNT_KEY configurada.' }
+  try {
+    const key = JSON.parse(raw) as { client_email: string; private_key: string }
+    const { google } = await import('googleapis')
+    const jwt = new google.auth.JWT({
+      email: key.client_email,
+      key: key.private_key,
+      scopes: ['https://www.googleapis.com/auth/drive.readonly'],
+    })
+    const { access_token } = await jwt.authorize()
+    if (!access_token) return { error: 'La cuenta de servicio no devolvió token.' }
+    return { token: access_token }
+  } catch (e) {
+    return { error: e instanceof Error ? e.message : 'Fallo autorizando la cuenta de servicio.' }
+  }
+}
+
 export async function getClientAccessToken(
   admin: AdminClient,
   clientId: string
@@ -245,7 +281,12 @@ export async function getClientAccessToken(
     .maybeSingle()
 
   if (connectionError || !connection || !connection.is_authorized) {
-    return { error: 'Google Drive is not authorized for this client. Connect Drive first.' }
+    // Sin OAuth del cliente: se cae a la cuenta de servicio de la agencia, que
+    // lee las carpetas del Drive propio. Es el caso normal mientras el cliente
+    // está en alta y su material todavía vive en el Drive de la agencia.
+    const fallback = await getAgencyServiceAccountToken()
+    if ('token' in fallback) return fallback
+    return { error: `Google Drive is not authorized for this client, and the agency service account is unavailable: ${fallback.error}` }
   }
 
   let accessToken: string | null = connection.access_token
