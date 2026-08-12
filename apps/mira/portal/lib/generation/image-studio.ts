@@ -61,7 +61,7 @@ export interface StudioFormatDef {
 export const STUDIO_FORMATS: Record<string, StudioFormatDef> = {
   post:  { label: 'Post (1:1)',           size: '1024x1024', guidance: 'square social post, balanced composition' },
   story: { label: 'Story / Reel (9:16)',  size: '1024x1536', guidance: 'vertical full-screen story; keep key elements centered, leave safe margins top and bottom for platform UI' },
-  wide:  { label: 'Banner / portada (16:9)', size: '1536x1024', guidance: 'wide banner or cover, cinematic composition' },
+  wide:  { label: 'Banner / cover (16:9)', size: '1536x1024', guidance: 'wide banner or cover, cinematic composition' },
 }
 export type StudioFormat = keyof typeof STUDIO_FORMATS
 

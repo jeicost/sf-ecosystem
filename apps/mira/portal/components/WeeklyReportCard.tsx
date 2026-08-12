@@ -21,10 +21,10 @@ export default function WeeklyReportCard({ clientId, brand }: { clientId?: strin
   if (!r) return null
 
   const stats = [
-    { label: 'Producido', value: r.produced, icon: Sparkles, tint: brand },
-    { label: 'Por aprobar', value: r.pending, icon: CheckSquare, tint: '#F59E0B', href: '/approvals' },
-    { label: 'Aprobado', value: r.approved, icon: Send, tint: '#10B981' },
-    { label: 'Publicado', value: r.published, icon: Rocket, tint: '#6366F1' },
+    { label: 'Produced', value: r.produced, icon: Sparkles, tint: brand },
+    { label: 'Pending', value: r.pending, icon: CheckSquare, tint: '#F59E0B', href: '/approvals' },
+    { label: 'Approved', value: r.approved, icon: Send, tint: '#10B981' },
+    { label: 'Published', value: r.published, icon: Rocket, tint: '#6366F1' },
   ]
 
   return (
@@ -32,12 +32,12 @@ export default function WeeklyReportCard({ clientId, brand }: { clientId?: strin
       <div className="mb-4 flex items-center justify-between">
         <div>
           <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: brand }}>
-            Parte semanal
+            Weekly report
           </p>
-          <p className="text-sm text-ink-secondary">Cómo va tu semana, de un vistazo</p>
+          <p className="text-sm text-ink-secondary">How your week is going, at a glance</p>
         </div>
         <Link href="/performance" className="text-xs text-ink-tertiary hover:text-ink transition-colors">
-          Ver detalle →
+          View details →
         </Link>
       </div>
 

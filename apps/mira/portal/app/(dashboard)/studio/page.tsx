@@ -33,10 +33,10 @@ export default function StudioPage() {
         body: JSON.stringify({ prompt, format, clientId }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'No se pudo generar la imagen'); return }
+      if (!res.ok) { setError(data.error || 'Could not generate the image'); return }
       setResult(data)
     } catch {
-      setError('Fallo de red al generar')
+      setError('Network error while generating')
     } finally {
       setLoading(false)
     }
@@ -49,31 +49,31 @@ export default function StudioPage() {
       <div className="mb-8 flex items-end justify-between">
         <div>
           <p className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-widest font-semibold" style={{ color: brand }}>
-            <ImageIcon size={13} /> Estudio visual
+            <ImageIcon size={13} /> Image Studio
           </p>
-          <h1 className="text-2xl font-semibold text-ink">Genera imágenes con la identidad de tu marca</h1>
+          <h1 className="text-2xl font-semibold text-ink">Generate images with your brand identity</h1>
           <p className="mt-1 text-sm text-ink-tertiary">
-            Los colores, la tipografía y el estilo salen de tu Brand Brain automáticamente.
+            Colors, typography and style come from your Brand Brain automatically.
           </p>
         </div>
         <Link href="/gallery" className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink-secondary hover:text-ink transition-colors">
-          <Library size={14} /> Biblioteca
+          <Library size={14} /> Gallery
         </Link>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Panel de generación */}
         <div className="rounded-2xl border border-line bg-surface p-5">
-          <label className="mb-2 block text-xs font-medium text-ink-secondary">¿Qué imagen necesitas?</label>
+          <label className="mb-2 block text-xs font-medium text-ink-secondary">What image do you need?</label>
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             rows={5}
-            placeholder="Ej.: una hamburguesa gourmet sobre fondo oscuro, humo suave, estilo editorial de producto…"
+            placeholder="E.g. a gourmet burger on a dark background, soft smoke, editorial product style…"
             className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted"
           />
 
-          <label className="mb-2 mt-4 block text-xs font-medium text-ink-secondary">Formato</label>
+          <label className="mb-2 mt-4 block text-xs font-medium text-ink-secondary">Format</label>
           <div className="flex flex-wrap gap-2">
             {FORMAT_KEYS.map((k) => (
               <button key={k} onClick={() => setFormat(k)}
@@ -89,12 +89,12 @@ export default function StudioPage() {
             disabled={!prompt.trim() || loading || !clientId}
             className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
             style={{ background: brand }}>
-            {loading ? <><Loader2 size={16} className="animate-spin" /> Generando…</> : <><Sparkles size={16} /> Generar imagen</>}
+            {loading ? <><Loader2 size={16} className="animate-spin" /> Generating…</> : <><Sparkles size={16} /> Generate image</>}
           </button>
 
           {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
           <p className="mt-3 text-[11px] text-ink-tertiary">
-            Se genera con la key de OpenAI de tu cuenta (Integraciones) o la de la plataforma. Cada imagen queda en tu biblioteca.
+            Uses the OpenAI key from your account (Integrations) or the platform key. Every image is saved to your gallery.
           </p>
         </div>
 
@@ -103,26 +103,26 @@ export default function StudioPage() {
           {result ? (
             <div className="w-full">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={result.imageUrl} alt="Imagen generada" className="w-full rounded-xl border border-line object-contain" style={{ aspectRatio: aspect }} />
+              <img src={result.imageUrl} alt="Generated image" className="w-full rounded-xl border border-line object-contain" style={{ aspectRatio: aspect }} />
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-[11px] text-ink-tertiary">
-                  {result.usedBrandIdentity ? '✓ Identidad de marca' : '⚠ Sin identidad visual en el Brain'}
-                  {result.referencesUsed > 0 && ` · ✓ ${result.referencesUsed} referencias reales`}
+                  {result.usedBrandIdentity ? '✓ Brand identity' : '⚠ No visual identity in the Brain'}
+                  {result.referencesUsed > 0 && ` · ✓ ${result.referencesUsed} real references`}
                 </span>
                 <a href={result.imageUrl} download className="inline-flex items-center gap-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
-                  <Download size={14} /> Descargar
+                  <Download size={14} /> Download
                 </a>
               </div>
             </div>
           ) : loading ? (
             <div className="text-center text-ink-tertiary">
               <Loader2 size={22} className="mx-auto mb-2 animate-spin" />
-              <p className="text-xs">Componiendo con tu marca…</p>
+              <p className="text-xs">Composing with your brand…</p>
             </div>
           ) : (
             <div className="text-center text-ink-muted">
               <ImageIcon size={28} className="mx-auto mb-2 opacity-40" />
-              <p className="text-xs">Tu imagen aparecerá aquí</p>
+              <p className="text-xs">Your image will appear here</p>
             </div>
           )}
         </div>

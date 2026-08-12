@@ -21,9 +21,9 @@ export default function ValueReportCard({ clientId, brand, locale }: { clientId?
   if (!r) return null
 
   const verifiable = [
-    { label: 'Producido', value: String(r.produced), icon: Sparkles, tint: brand },
-    { label: 'Publicado / usado', value: String(r.published), icon: Rocket, tint: '#6366F1' },
-    { label: 'Coste de IA', value: `$${r.aiCostUsd.toFixed(2)}`, icon: PiggyBank, tint: '#10B981' },
+    { label: 'Produced', value: String(r.produced), icon: Sparkles, tint: brand },
+    { label: 'Published / used', value: String(r.published), icon: Rocket, tint: '#6366F1' },
+    { label: 'AI cost', value: `$${r.aiCostUsd.toFixed(2)}`, icon: PiggyBank, tint: '#10B981' },
   ]
 
   return (
@@ -32,9 +32,9 @@ export default function ValueReportCard({ clientId, brand, locale }: { clientId?
       <div className="mb-5 flex items-center justify-between">
         <div>
           <p className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: brand }}>
-            Informe de valor · {r.monthLabel}
+            Value report · {r.monthLabel}
           </p>
-          <p className="text-sm text-ink-secondary">Lo que MIRA produjo y te ahorró este mes</p>
+          <p className="text-sm text-ink-secondary">What MIRA produced and saved you this month</p>
         </div>
       </div>
 
@@ -52,17 +52,17 @@ export default function ValueReportCard({ clientId, brand, locale }: { clientId?
 
       {/* Estimaciones — claramente marcadas para no confundir con dato duro */}
       <div className="rounded-xl border border-dashed border-line-subtle p-4 flex flex-wrap items-center gap-x-8 gap-y-3">
-        <span className="text-[10px] uppercase tracking-wider text-ink-muted">Estimado</span>
+        <span className="text-[10px] uppercase tracking-wider text-ink-muted">Estimated</span>
         <div className="flex items-center gap-2">
           <Clock size={15} className="text-ink-tertiary" />
           <span className="text-sm text-ink-secondary">
-            <strong className="text-ink tabular-nums">~{r.hoursSavedEst}h</strong> de trabajo ahorradas
+            <strong className="text-ink tabular-nums">~{r.hoursSavedEst}h</strong> of work saved
           </span>
         </div>
         <div className="flex items-center gap-2">
           <PiggyBank size={15} className="text-ink-tertiary" />
           <span className="text-sm text-ink-secondary">
-            hacerlo por fuera te costaría <strong className="text-ink tabular-nums">~{r.costAvoidedEurEst}€</strong>
+            outsourcing it would have cost you <strong className="text-ink tabular-nums">~{r.costAvoidedEurEst}€</strong>
           </span>
         </div>
       </div>

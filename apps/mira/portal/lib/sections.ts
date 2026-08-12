@@ -134,7 +134,7 @@ export const IDEAL_SPACES: IdealSpace[] = [
       { href: '/documents',      label: 'Documents',     icon: FileText },
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
-      { href: '/studio',         label: 'Visual studio', icon: Image },
+      { href: '/studio',         label: 'Image Studio', icon: Image },
       { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList },
     ],
   },
