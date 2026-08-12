@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
 
     const result = await generateStudioImage({
       clientId: access.clientId,
+      referenceImages: Array.isArray(body.referenceImages) ? body.referenceImages.slice(0, 3) : [],
       userPrompt: prompt,
       format,
       userId: user.id,

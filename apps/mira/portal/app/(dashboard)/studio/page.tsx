@@ -22,6 +22,21 @@ export default function StudioPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [result, setResult] = useState<Result | null>(null)
+  // Referencias que se suben en el momento: mandan sobre las del corpus, porque
+  // si alguien se molesta en dar un ejemplo es que quiere ESE look.
+  const [refs, setRefs] = useState<{ name: string; dataUrl: string }[]>([])
+
+  const addRefs = (files: FileList | null) => {
+    if (!files) return
+    const room = 3 - refs.length
+    Array.from(files).slice(0, Math.max(0, room)).forEach((file) => {
+      if (!file.type.startsWith('image/')) return
+      if (file.size > 4 * 1024 * 1024) { setError(`${file.name} is over 4 MB`); return }
+      const reader = new FileReader()
+      reader.onload = () => setRefs((prev) => prev.length >= 3 ? prev : [...prev, { name: file.name, dataUrl: String(reader.result) }])
+      reader.readAsDataURL(file)
+    })
+  }
 
   const generate = async () => {
     if (!prompt.trim() || !clientId || loading) return
@@ -30,7 +45,7 @@ export default function StudioPage() {
       const res = await fetch('/api/studio/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, format, clientId }),
+        body: JSON.stringify({ prompt, format, clientId, referenceImages: refs.map(r => r.dataUrl) }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not generate the image'); return }
@@ -49,7 +64,7 @@ export default function StudioPage() {
       <div className="mb-8 flex items-end justify-between">
         <div>
           <p className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-widest font-semibold" style={{ color: brand }}>
-            <ImageIcon size={13} /> Image Studio
+            <ImageIcon size={13} /> Visual Studio
           </p>
           <h1 className="text-2xl font-semibold text-ink">Generate images with your brand identity</h1>
           <p className="mt-1 text-sm text-ink-tertiary">
@@ -83,6 +98,34 @@ export default function StudioPage() {
               </button>
             ))}
           </div>
+
+          {/* Referencias visuales subidas al vuelo */}
+          <label className="mb-2 mt-4 block text-xs font-medium text-ink-secondary">
+            References <span className="font-normal text-ink-muted">— optional, up to 3</span>
+          </label>
+          <div className="flex flex-wrap items-center gap-2">
+            {refs.map((r, i) => (
+              <div key={i} className="group relative h-16 w-16 overflow-hidden rounded-lg border border-line">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={r.dataUrl} alt={r.name} className="h-full w-full object-cover" />
+                <button onClick={() => setRefs(refs.filter((_, j) => j !== i))}
+                  className="absolute inset-0 flex items-center justify-center bg-black/70 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+                  Remove
+                </button>
+              </div>
+            ))}
+            {refs.length < 3 && (
+              <label className="flex h-16 w-16 cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line text-ink-muted transition-colors hover:border-ink-muted hover:text-ink-secondary">
+                <span className="text-lg leading-none">+</span>
+                <span className="text-[9px]">Add</span>
+                <input type="file" accept="image/*" multiple className="hidden"
+                  onChange={(e) => { addRefs(e.target.files); e.target.value = '' }} />
+              </label>
+            )}
+          </div>
+          <p className="mt-1.5 text-[11px] text-ink-muted">
+            A reference you upload wins over the brand photos already in the corpus.
+          </p>
 
           <button
             onClick={generate}

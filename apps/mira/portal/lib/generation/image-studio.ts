@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import { fetchBrandBrain } from '@/lib/brand-brain'
 import { createServiceClient } from '@/lib/supabase-admin'
 import { generateAndStoreImage, type ImageSize } from '@/lib/generation/openai-image'
+import { createMessageForClient } from '@/lib/anthropic-client'
 
 /**
  * Bloque de REFERENCIAS VISUALES: las fotos reales de la marca (sincronizadas
@@ -104,21 +105,78 @@ export interface StudioResult {
  * y la registra en generation_queue para que aparezca en la Biblioteca/galería.
  * Devuelve null si el motor falla (p. ej. sin key de OpenAI).
  */
+
+/**
+ * Referencias que el usuario sube en el momento.
+ *
+ * El generador de imágenes recibe texto, no imágenes, así que la referencia se
+ * "traduce": Claude mira cada foto y la describe en términos accionables (luz,
+ * paleta, encuadre, textura), y esa descripción entra en el prompt como
+ * obligatoria — el mismo mecanismo que ya usaban las fotos del cliente
+ * indexadas, solo que sin tener que subirlas antes a Documentos.
+ */
+export async function describeUploadedReferences(
+  clientId: string,
+  dataUrls: string[]
+): Promise<{ block: string; count: number }> {
+  const images = dataUrls.filter((u) => typeof u === 'string' && u.startsWith('data:image/')).slice(0, 3)
+  if (!images.length) return { block: '', count: 0 }
+  try {
+    // El SDK solo acepta estos cuatro; cualquier otro formato se descarta antes
+    // de llamar, en vez de reventar la petición entera.
+    const ALLOWED = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const
+    type AllowedMedia = (typeof ALLOWED)[number]
+    const blocks = images.flatMap((url) => {
+      const [meta, b64] = url.split(',')
+      const media_type = meta.slice(5, meta.indexOf(';')) as AllowedMedia
+      if (!b64 || !ALLOWED.includes(media_type)) return []
+      return [{ type: 'image' as const, source: { type: 'base64' as const, media_type, data: b64 } }]
+    })
+    if (!blocks.length) return { block: '', count: 0 }
+    const msg = await createMessageForClient(clientId, 'studio:describe-refs', {
+      model: 'claude-sonnet-4-6',
+      max_tokens: 900,
+      messages: [{
+        role: 'user',
+        content: [
+          ...blocks,
+          { type: 'text' as const, text: 'Describe each image as a VISUAL REFERENCE for an image generator: lighting, palette, camera angle, depth of field, surface and texture, composition and mood. Be concrete and visual. No preamble, one short paragraph per image, numbered.' },
+        ],
+      }],
+    })
+    const text = msg.content.filter((b) => b.type === 'text').map((b) => (b as { text: string }).text).join('').trim()
+    if (!text) return { block: '', count: 0 }
+    return {
+      block:
+        'USER-SUPPLIED VISUAL REFERENCES — the generated image MUST match this look. These take priority over any other reference:\n' +
+        text,
+      count: blocks.length,
+    }
+  } catch {
+    return { block: '', count: 0 }
+  }
+}
+
 export async function generateStudioImage(opts: {
   clientId: string
   userPrompt: string
   format: StudioFormat
   userId?: string | null
+  /** Imágenes de referencia subidas en el momento (data URLs). */
+  referenceImages?: string[]
 }): Promise<StudioResult | null> {
-  const [brain, references] = await Promise.all([
+  const [brain, references, uploaded] = await Promise.all([
     fetchBrandBrain(opts.clientId),
     getVisualReferencesBlock(opts.clientId),
+    describeUploadedReferences(opts.clientId, opts.referenceImages ?? []),
   ])
   const visualIdentity = brain?.visualIdentitySummary
+  // Las subidas van primero: si el usuario se molesta en dar una referencia,
+  // manda sobre las del corpus.
   const finalPrompt = composeBrandImagePrompt({
     userPrompt: opts.userPrompt,
     visualIdentity,
-    referencesBlock: references.block,
+    referencesBlock: [uploaded.block, references.block].filter(Boolean).join('\n\n'),
     format: opts.format,
   })
 
@@ -149,6 +207,6 @@ export async function generateStudioImage(opts: {
     imageUrl: stored.signedUrl,
     format: opts.format,
     usedBrandIdentity: Boolean(visualIdentity?.trim()),
-    referencesUsed: references.count,
+    referencesUsed: references.count + uploaded.count,
   }
 }
