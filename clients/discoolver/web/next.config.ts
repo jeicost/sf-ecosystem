@@ -27,6 +27,15 @@ const nextConfig: NextConfig = {
       { source: "/en/blog", destination: "/blog", permanent: false },
       { source: "/en/blog/:slug", destination: "/blog/:slug", permanent: false },
 
+      // El blog viejo publicó tres artículos DOS VECES, con distinto slug. Al
+      // rescatarlo salieron duplicados, que es contenido duplicado y Google lo
+      // penaliza. Se despublicó el más corto de cada par y su URL —que estuvo
+      // indexada años— redirige al gemelo que sí se queda, para no tirar sus
+      // enlaces a un 404.
+      { source: "/blog/monday-clubbing-madrid", destination: "/blog/mondays-where-to-go-out-in-madrid", permanent: true },
+      { source: "/blog/cerveza-artesanal-madrid", destination: "/blog/mejores-cervezas-artesanales-madrid", permanent: true },
+      { source: "/blog/reduce-plastico-maleta", destination: "/blog/reduce-el-plastico-de-tu-maleta", permanent: true },
+
       // ── blog.discoolver.com ──────────────────────────────────────────────
       // El subdominio del blog viejo apunta ahora aquí. Sus URLs no se tiran a
       // la papelera: cada una aterriza en SU artículo. El blog usó dos formatos

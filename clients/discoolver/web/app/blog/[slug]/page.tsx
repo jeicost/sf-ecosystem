@@ -87,6 +87,26 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </p>
           )}
 
+          {(() => {
+            // Aviso de antigüedad. El blog es el rescate de artículos de
+            // 2016-2021 sobre bares y tiendas concretos: muchos habrán cerrado.
+            // Se avisa en vez de despublicarlos, porque siguen trayendo el
+            // tráfico correcto y borrarlos sería tirar años de posicionamiento.
+            // Decirlo también nos protege: recomendar a ciegas un sitio cerrado
+            // desgasta la marca; avisar de la fecha, no.
+            const anios = post.date
+              ? (Date.now() - new Date(`${post.date}T00:00:00Z`).getTime()) / 31557600000
+              : 0;
+            if (anios < 2) return null;
+            return (
+              <p className="blog-viejo">
+                Este artículo se publicó en {post.date.slice(0, 4)}. Lo mantenemos porque
+                sigue siendo útil, pero comprueba horarios y si el sitio sigue abierto
+                antes de ir: los negocios cambian.
+              </p>
+            );
+          })()}
+
           <div
             className="prose blog-body"
             dangerouslySetInnerHTML={{ __html: post.contentHtml }}
