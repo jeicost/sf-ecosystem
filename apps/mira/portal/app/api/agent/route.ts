@@ -208,16 +208,45 @@ export async function POST(req: NextRequest) {
         query: typeof message === 'string' ? message : null,
       })) ?? (await getAgentDocumentContext(resolvedClientId, role))
 
+    // ── Prefijo ESTABLE vs cola VOLÁTIL ──────────────────────────────────
+    //
+    // Antes todo esto se concatenaba en un único string, y con ello se pagaba
+    // el Cerebro entero en CADA mensaje: medido, una conversación de 50 turnos
+    // con Salsa reenviaba 630.900 tokens que eran literalmente el mismo Cerebro
+    // repetido 50 veces (6,24 $ el hilo).
+    //
+    // La caché de prompts no podía arreglarlo tal cual estaba: el bloque de
+    // conocimiento se recalcula con CADA mensaje como consulta, así que iba
+    // mezclado con el Cerebro y hacía que el prefijo cambiase siempre — la
+    // caché nunca habría acertado, y activarla a ciegas habría salido MÁS caro
+    // (escribir en caché cuesta 1,25× la entrada normal).
+    //
+    // Ahora: lo invariable del hilo (prompt del agente, contratos, Cerebro,
+    // memoria) va primero y se marca como cacheable; el conocimiento, que
+    // depende de la pregunta, va después del punto de corte.
     if (includeBrandBrain) {
       const brain = await fetchBrandBrain(resolvedClientId)
       const brainContext = brain ? formatBrandBrainForPrompt(brain) : ''
-      const contextBlocks = [brainContext, memoryContext, docContext].filter(Boolean)
-      if (contextBlocks.length > 0) {
-        fullSystem += `\n\n---\n\n${contextBlocks.join('\n\n---\n\n')}`
-      }
-    } else if (memoryContext || docContext) {
-      const contextBlocks = [memoryContext, docContext].filter(Boolean)
-      fullSystem += `\n\n---\n\n${contextBlocks.join('\n\n---\n\n')}`
+      const stable = [brainContext, memoryContext].filter(Boolean)
+      if (stable.length > 0) fullSystem += `\n\n---\n\n${stable.join('\n\n---\n\n')}`
+    } else if (memoryContext) {
+      fullSystem += `\n\n---\n\n${memoryContext}`
+    }
+
+    // La caché exige un mínimo de 1.024 tokens para que compense; por debajo,
+    // la API la ignora y solo habríamos pagado el recargo de escritura.
+    const CACHE_MIN_CHARS = 4000 // ~1.150 tokens al ratio real medido (3,4 ch/tok)
+    const systemBlocks: Anthropic.TextBlockParam[] = [
+      {
+        type: 'text',
+        text: fullSystem,
+        ...(fullSystem.length >= CACHE_MIN_CHARS ? { cache_control: { type: 'ephemeral' as const } } : {}),
+      },
+    ]
+    // El conocimiento va FUERA del prefijo cacheado, porque cambia con cada
+    // pregunta. Si entrara antes del corte, invalidaría la caché en cada turno.
+    if (docContext) {
+      systemBlocks.push({ type: 'text', text: `\n\n---\n\n${docContext}` })
     }
 
     // Log inicio de tarea
@@ -357,6 +386,25 @@ export async function POST(req: NextRequest) {
             }
           }
 
+          // Caché incremental del historial: se marca el ÚLTIMO turno previo, de
+          // modo que todo lo anterior (system + historial) viaja como prefijo
+          // cacheado y solo el mensaje nuevo se paga a precio completo. Sin
+          // esto, el historial —22.820 de los 35.438 tokens de entrada de un
+          // mensaje en régimen— se seguiría pagando entero en cada turno.
+          if (sanitized.length > 0) {
+            const last = sanitized[sanitized.length - 1]
+            const blocks: Anthropic.ContentBlockParam[] =
+              typeof last.content === 'string'
+                ? [{ type: 'text', text: last.content }]
+                : [...(last.content as Anthropic.ContentBlockParam[])]
+            const tail = blocks[blocks.length - 1]
+            // cache_control solo es válido en bloques de texto o imagen.
+            if (tail && (tail.type === 'text' || tail.type === 'image')) {
+              blocks[blocks.length - 1] = { ...tail, cache_control: { type: 'ephemeral' } }
+              sanitized[sanitized.length - 1] = { ...last, content: blocks }
+            }
+          }
+
           const conversation: Anthropic.MessageParam[] = [...sanitized, { role: 'user', content: userContent }]
           let toolLoops = 0
 
@@ -368,7 +416,7 @@ export async function POST(req: NextRequest) {
             const anthropicStream = anthropic.messages.stream({
               model: 'claude-sonnet-4-6',
               max_tokens: safeLookup(MAX_TOKENS, role) ?? 2048,
-              system: fullSystem,
+              system: systemBlocks,
               messages: conversation,
               tools: isCreativeRole ? [WEB_SEARCH_TOOL, GENERATE_IMAGE_TOOL] : [WEB_SEARCH_TOOL],
             })

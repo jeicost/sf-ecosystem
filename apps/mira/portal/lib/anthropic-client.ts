@@ -83,7 +83,7 @@ export async function logUsage(params: {
   clientId: string | null | undefined
   route: string
   model: string
-  usage?: { input_tokens?: number; output_tokens?: number } | null
+  usage?: { input_tokens?: number; output_tokens?: number; cache_creation_input_tokens?: number; cache_read_input_tokens?: number } | null
   usedClientKey: boolean
 }): Promise<void> {
   const { clientId, route, model, usage, usedClientKey } = params
@@ -96,6 +96,12 @@ export async function logUsage(params: {
       model,
       input_tokens: usage.input_tokens ?? 0,
       output_tokens: usage.output_tokens ?? 0,
+      // Caché de prompts: sin registrar esto no hay forma de comprobar si el
+      // prefijo estable acierta. Una lectura de caché cuesta 0,1× la entrada
+      // normal; escribirla, 1,25×. Si cache_read se queda a cero, el refactor
+      // del chat no está funcionando y hay que mirar por qué.
+      cache_creation_tokens: usage.cache_creation_input_tokens ?? 0,
+      cache_read_tokens: usage.cache_read_input_tokens ?? 0,
       used_client_key: usedClientKey,
     })
     if (error) console.warn('usage_log insert failed:', error.message)
