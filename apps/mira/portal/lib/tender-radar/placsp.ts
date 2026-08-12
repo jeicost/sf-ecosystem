@@ -13,9 +13,10 @@
 const FEED_HEAD =
   'https://contrataciondelsectorpublico.gob.es/sindicacion/sindicacion_643/licitacionesPerfilesContratanteCompleto3.atom'
 
-// CPV por defecto para mensajería / paquetería / transporte / servicios postales.
-// Red amplia a propósito: el filtro fino de relevancia lo hace el scorer con el Cerebro.
-export const DEFAULT_CPV_PREFIXES = ['641', '601', '6016', '6010', '795', '6413']
+// La lista vive en lib/entitlements (datos puros) para que la UI pueda mostrar
+// el criterio antes de buscar sin importar este módulo.
+import { DEFAULT_CPV } from '@/lib/entitlements'
+export const DEFAULT_CPV_PREFIXES = DEFAULT_CPV
 
 export interface RadarCandidate {
   id: string
@@ -109,8 +110,8 @@ export interface RadarOptions {
 /** Camina el feed hacia atrás y devuelve los candidatos recientes, en CPV y con plazo abierto. */
 export async function fetchPlacspCandidates(opts: RadarOptions): Promise<{ candidates: RadarCandidate[]; pagesRead: number; stopReason: string }> {
   const prefixes = opts.cpvPrefixes?.length ? opts.cpvPrefixes : DEFAULT_CPV_PREFIXES
-  const maxPages = Math.min(opts.maxPages ?? 6, 12)
-  const maxAgeDays = opts.maxAgeDays ?? 7
+  const maxPages = Math.min(opts.maxPages ?? 12, 20)
+  const maxAgeDays = opts.maxAgeDays ?? 21
   const now = new Date(opts.nowIso).getTime()
   const minPublished = now - maxAgeDays * 86400_000
 
@@ -118,6 +119,7 @@ export async function fetchPlacspCandidates(opts: RadarOptions): Promise<{ candi
   const candidates: RadarCandidate[] = []
   let url: string | null = FEED_HEAD
   let pagesRead = 0
+  let staleStreak = 0
   let stopReason = 'max-pages'
 
   const controller = new AbortController()
@@ -139,8 +141,16 @@ export async function fetchPlacspCandidates(opts: RadarOptions): Promise<{ candi
         if (!open) continue
         candidates.push(c)
       }
-      // Parada temprana: si esta página ya es más vieja que la ventana, no seguimos.
-      if (oldestOnPage < minPublished) { stopReason = 'age-window'; break }
+      // Parada temprana, pero no a la primera: el feed no viene estrictamente
+      // ordenado por fecha, y cortar en cuanto una página tiene algo viejo hacía
+      // que se leyera UNA sola página (~500 anuncios de toda España) y el radar
+      // saliera casi vacío. Se exigen 2 páginas viejas seguidas.
+      if (oldestOnPage < minPublished) {
+        staleStreak++
+        if (staleStreak >= 2) { stopReason = 'age-window'; break }
+      } else {
+        staleStreak = 0
+      }
       url = next
       if (!url) stopReason = 'feed-end'
     }

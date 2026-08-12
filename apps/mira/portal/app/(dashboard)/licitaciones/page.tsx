@@ -1,9 +1,9 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus } from 'lucide-react'
+import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
-import { hasTenderTool } from '@/lib/entitlements'
+import { hasTenderTool, cpvFor, CPV_LABEL } from '@/lib/entitlements'
 
 // Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
 // el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
@@ -44,6 +44,13 @@ export default function LicitacionesPage() {
   const [radarItems, setRadarItems] = useState<RadarItem[] | null>(null)
   const [radarMeta, setRadarMeta] = useState<RadarMeta | null>(null)
   const [radarError, setRadarError] = useState<string | null>(null)
+  // El criterio de búsqueda, visible y editable ANTES de buscar: sin esto el
+  // radar es una caja negra y no se entiende por qué trae lo que trae.
+  const [cpv, setCpv] = useState<string[]>([])
+  const [days, setDays] = useState(21)
+  const [showFilters, setShowFilters] = useState(false)
+  const [newCpv, setNewCpv] = useState('')
+  useEffect(() => { setCpv(cpvFor(clientId)) }, [clientId])
   const pliegoRef = useRef<HTMLTextAreaElement>(null)
   // Expediente persistido: sin esto, la memoria se perdía al recargar.
   const [saved, setSaved] = useState<SavedTender[]>([])
@@ -113,7 +120,7 @@ export default function LicitacionesPage() {
     if (!clientId) return
     setRadarLoading(true); setRadarError(null)
     try {
-      const res = await fetch('/api/tender/radar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId }) })
+      const res = await fetch('/api/tender/radar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, cpvPrefixes: cpv, maxAgeDays: days }) })
       const data = await res.json()
       if (!res.ok) { setRadarError(data.error || 'Could not fetch tenders'); return }
       setRadarItems(data.results || []); setRadarMeta(data.meta || null)
@@ -221,6 +228,51 @@ export default function LicitacionesPage() {
             {radarLoading ? <><Loader2 size={16} className="animate-spin" /> Searching…</> : <><Radar size={16} /> Find tenders</>}
           </button>
         </div>
+        {/* Criterio de búsqueda: qué se va a buscar exactamente */}
+        <div className="mt-3">
+          <button onClick={() => setShowFilters(v => !v)}
+            className="flex items-center gap-1.5 text-[11px] text-ink-tertiary transition-colors hover:text-ink">
+            <SlidersHorizontal size={12} />
+            Searching {cpv.length} CPV categories · published in the last {days} days
+            <span className="text-ink-muted">{showFilters ? '▲' : '▼'}</span>
+          </button>
+
+          {showFilters && (
+            <div className="mt-2 rounded-xl border border-line-subtle bg-page p-3">
+              <p className="mb-2 text-[11px] text-ink-muted">
+                CPV is the official EU code for what is being contracted. The radar only surfaces tenders whose code starts with one of these.
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {cpv.map((c) => (
+                  <span key={c} className="flex items-center gap-1.5 rounded-lg border border-line px-2 py-1 text-[11px] text-ink-secondary">
+                    <span className="font-mono text-ink">{c}</span>
+                    <span className="text-ink-muted">{CPV_LABEL[c] || 'Custom code'}</span>
+                    <button onClick={() => setCpv(cpv.filter(x => x !== c))} className="text-ink-muted hover:text-ink" aria-label={`Remove ${c}`}>
+                      <X size={11} />
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                <input value={newCpv} onChange={e => setNewCpv(e.target.value.replace(/\D/g, ''))}
+                  onKeyDown={e => { if (e.key === 'Enter' && newCpv) { setCpv([...new Set([...cpv, newCpv])]); setNewCpv('') } }}
+                  placeholder="Add CPV code…"
+                  className="w-36 rounded-lg border border-line bg-surface px-2 py-1 text-[11px] text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+                <label className="flex items-center gap-1.5 text-[11px] text-ink-tertiary">
+                  Last
+                  <input type="number" min={1} max={90} value={days} onChange={e => setDays(Math.max(1, Math.min(90, Number(e.target.value) || 21)))}
+                    className="w-14 rounded-lg border border-line bg-surface px-2 py-1 text-[11px] text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+                  days
+                </label>
+                <button onClick={() => { setCpv(cpvFor(clientId)); setDays(21) }}
+                  className="text-[11px] text-ink-muted underline-offset-2 hover:text-ink hover:underline">
+                  Reset
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
         {radarError && <p className="mt-3 text-xs text-red-400">{radarError}</p>}
         {radarMeta && (
           <p className="mt-3 text-[11px] text-ink-muted">
