@@ -1,0 +1,543 @@
+/**
+ * Textos legales — aviso legal, términos y cookies, en ES y EN.
+ *
+ * Los tres documentos comparten componente (`components/legal/LegalDoc.tsx`)
+ * y salen de aquí como datos, no como JSX: así el ES y el EN no se
+ * desincronizan y añadir un idioma es añadir una clave.
+ *
+ * IDENTIDAD FISCAL: vive una sola vez, en `TITULAR`. La usan los tres
+ * documentos y también /privacidad — antes esa página llevaba
+ * "[dirección fiscal]" literal en producción. Falta el NIF: es el único dato
+ * que la LSSI exige y que no está en ningún sitio del repo. En cuanto Carlos
+ * lo pase, se cambia AQUÍ y entra en las ocho páginas de golpe.
+ *
+ * Sintaxis inline admitida en los párrafos: [texto](destino) para enlaces y
+ * correos. No hay HTML crudo a propósito — nada de dangerouslySetInnerHTML.
+ */
+
+export const TITULAR = {
+  razonSocial: "Discoolverworld S.L.",
+  nif: "[NIF pendiente]",
+  domicilio: "C/ María de Molina 39, 28006 Madrid, España",
+  emailB2C: "hola@discoolver.com",
+  emailB2B: "info@discoolver.com",
+} as const;
+
+/** Fecha de última revisión — se muestra al pie de cada documento. */
+export const LEGAL_UPDATED = "12 de agosto de 2026";
+export const LEGAL_UPDATED_EN = "12 August 2026";
+
+export type LegalSection = { h: string; p?: string[]; ul?: string[] };
+export type LegalDoc = {
+  title: string;
+  description: string;
+  eyebrow: string;
+  h1: string;
+  lead: string;
+  updatedLabel: string;
+  back: string;
+  sections: LegalSection[];
+};
+
+const T = TITULAR;
+
+// ───────────────────────────────────────────────────────────── aviso legal ──
+
+const avisoEs: LegalDoc = {
+  title: "Aviso legal — discoolver",
+  description:
+    "Quién está detrás de discoolver: titular, datos fiscales, condiciones de uso del sitio y propiedad intelectual.",
+  eyebrow: "Legal",
+  h1: "Aviso legal",
+  lead: "Quién hay detrás de esta web y bajo qué condiciones puedes usarla.",
+  updatedLabel: `Última revisión: ${LEGAL_UPDATED}`,
+  back: "Volver a discoolver",
+  sections: [
+    {
+      h: "Titular del sitio",
+      p: [
+        `En cumplimiento del artículo 10 de la Ley 34/2002 de Servicios de la Sociedad de la Información y de Comercio Electrónico:`,
+      ],
+      ul: [
+        `**Razón social:** ${T.razonSocial}`,
+        `**NIF:** ${T.nif}`,
+        `**Domicilio:** ${T.domicilio}`,
+        `**Correo:** [${T.emailB2C}](mailto:${T.emailB2C})`,
+        `**Actividad:** edición y venta de guías de viaje, y explotación de la plataforma discoolver.`,
+      ],
+    },
+    {
+      h: "Qué es esta web",
+      p: [
+        "discoolver.com es el sitio de la marca: el catálogo de guías, la captación de creadores y la presentación de discoolver 360, nuestra plataforma para destinos y alojamientos. La plataforma en sí vive en [app.discoolver.com](https://app.discoolver.com).",
+        "Usar esta web te convierte en usuario y supone que aceptas este aviso. Si vas a comprar una guía, además se te aplican los [términos y condiciones de venta](/terminos).",
+      ],
+    },
+    {
+      h: "Propiedad intelectual",
+      p: [
+        "El diseño, los textos, el código y las marcas de este sitio son nuestros o los usamos con permiso. Las guías —su selección, su redacción y su edición— son obra protegida: puedes leerlas y usarlas, no republicarlas ni revenderlas.",
+        "El contenido que aporta un creador sigue siendo suyo. Nos concede una licencia para editarlo y publicarlo dentro de su guía, y las condiciones van por escrito antes de empezar.",
+        "Si crees que algo publicado aquí vulnera un derecho tuyo, escríbenos y lo revisamos en serio.",
+      ],
+    },
+    {
+      h: "Responsabilidad",
+      p: [
+        "Ponemos cuidado en que lo que recomendamos exista y esté bien, pero los negocios cambian de horario, de carta y de dueño. Una recomendación no es una garantía: comprueba horarios y disponibilidad antes de ir.",
+        "No respondemos de lo que pase en webs de terceros a las que enlazamos, ni de interrupciones del servicio ajenas a nosotros.",
+      ],
+    },
+    {
+      h: "Enlaces a esta web",
+      p: [
+        "Puedes enlazarnos sin pedir permiso, siempre que no sugieras una relación comercial que no existe ni presentes discoolver de forma que induzca a error.",
+      ],
+    },
+    {
+      h: "Ley aplicable",
+      p: [
+        "Se aplica la ley española. Para cualquier conflicto, y salvo que la normativa de consumo diga otra cosa, los juzgados de Madrid.",
+      ],
+    },
+  ],
+};
+
+const avisoEn: LegalDoc = {
+  title: "Legal notice — discoolver",
+  description:
+    "Who runs discoolver: company details, terms of use for the site and intellectual property.",
+  eyebrow: "Legal",
+  h1: "Legal notice",
+  lead: "Who is behind this site and on what terms you can use it.",
+  updatedLabel: `Last reviewed: ${LEGAL_UPDATED_EN}`,
+  back: "Back to discoolver",
+  sections: [
+    {
+      h: "Site owner",
+      p: [
+        "Under article 10 of Spanish Law 34/2002 on information society services and electronic commerce:",
+      ],
+      ul: [
+        `**Company:** ${T.razonSocial}`,
+        `**Tax ID:** ${T.nif}`,
+        `**Registered address:** ${T.domicilio}`,
+        `**Email:** [${T.emailB2C}](mailto:${T.emailB2C})`,
+        `**Activity:** publishing and selling travel guides, and operating the discoolver platform.`,
+      ],
+    },
+    {
+      h: "What this site is",
+      p: [
+        "discoolver.com is the brand site: the guide catalogue, creator recruitment, and discoolver 360, our platform for destinations and hotels. The platform itself lives at [app.discoolver.com](https://app.discoolver.com).",
+        "Using this site makes you a user and means you accept this notice. If you buy a guide, the [terms of sale](/en/terminos) also apply.",
+      ],
+    },
+    {
+      h: "Intellectual property",
+      p: [
+        "The design, copy, code and trademarks on this site are ours or used with permission. The guides — their selection, writing and editing — are protected work: read them and use them, don't republish or resell them.",
+        "Content contributed by a creator stays theirs. They grant us a licence to edit and publish it within their guide, and the terms are agreed in writing beforehand.",
+        "If you believe something published here infringes your rights, write to us and we'll look into it properly.",
+      ],
+    },
+    {
+      h: "Liability",
+      p: [
+        "We take care that what we recommend exists and is good, but businesses change their hours, their menu and their owners. A recommendation is not a guarantee: check opening times and availability before you go.",
+        "We are not responsible for third-party sites we link to, or for service interruptions outside our control.",
+      ],
+    },
+    {
+      h: "Linking to this site",
+      p: [
+        "You may link to us without asking, as long as you don't imply a commercial relationship that doesn't exist or present discoolver misleadingly.",
+      ],
+    },
+    {
+      h: "Governing law",
+      p: [
+        "Spanish law applies. For any dispute, and unless consumer law says otherwise, the courts of Madrid.",
+      ],
+    },
+  ],
+};
+
+// ─────────────────────────────────────────────────────────────── términos ──
+
+const terminosEs: LegalDoc = {
+  title: "Términos y condiciones — discoolver",
+  description:
+    "Condiciones de venta de las guías de discoolver: precios, pago, entrega, derecho de desistimiento y devoluciones.",
+  eyebrow: "Legal",
+  h1: "Términos y condiciones",
+  lead: "Las condiciones de venta de las guías. En corto y sin trampas.",
+  updatedLabel: `Última revisión: ${LEGAL_UPDATED}`,
+  back: "Volver a discoolver",
+  sections: [
+    {
+      h: "Quién vende",
+      p: [
+        `${T.razonSocial}, NIF ${T.nif}, con domicilio en ${T.domicilio}. Para cualquier cosa relacionada con tu pedido: [${T.emailB2C}](mailto:${T.emailB2C}).`,
+      ],
+    },
+    {
+      h: "Qué compras",
+      ul: [
+        "**Guía digital.** Un archivo descargable con la edición del año de esa ciudad, más el acceso a la IA que la acompaña. Se entrega por correo electrónico.",
+        "**Guía en papel.** El libro impreso, que incluye además la versión digital. Se envía a la dirección que indiques.",
+      ],
+      p: [
+        "Cada guía se cierra una vez al año. Lo que compras es esa edición: no se actualiza sola a la del año siguiente.",
+      ],
+    },
+    {
+      h: "Precios y pago",
+      p: [
+        "Los precios se muestran en euros con el IVA incluido. Los gastos de envío del papel, si los hay, se calculan y se enseñan antes de que confirmes.",
+        "El pago se procesa con Stripe. No vemos ni guardamos los datos de tu tarjeta en ningún momento.",
+        "El precio de lanzamiento es el que figura en la ficha cuando compras; los precios pueden cambiar en el futuro, pero nunca con efecto retroactivo sobre un pedido ya hecho.",
+      ],
+    },
+    {
+      h: "Entrega",
+      ul: [
+        "**Digital:** te llega por correo justo después del pago. Si en una hora no ha llegado, mira el spam y luego escríbenos: lo resolvemos el mismo día.",
+        "**Papel:** se envía en el plazo que se indique en la ficha del producto. Te avisamos cuando salga.",
+      ],
+    },
+    {
+      h: "Derecho de desistimiento",
+      p: [
+        "**Guía en papel:** tienes 14 días naturales desde que la recibes para devolverla sin dar explicaciones. Escríbenos y te decimos cómo. Te devolvemos lo pagado en cuanto nos llegue; el coste de la devolución corre de tu cuenta salvo que el libro llegara defectuoso.",
+        "**Guía digital:** al comprar te pedimos que confirmes expresamente que quieres recibirla ya y que aceptas que, al hacerlo, pierdes el derecho de desistimiento —es lo que prevé el artículo 103.m del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios para el contenido digital que se entrega al instante—. Si no marcas esa casilla, no hay descarga inmediata.",
+        "Que no puedas desistir no significa que te aguantes: si el archivo no abre, está incompleto o no es lo que describimos, lo arreglamos o te devolvemos el dinero.",
+      ],
+    },
+    {
+      h: "Si algo sale mal",
+      p: [
+        `Escríbenos a [${T.emailB2C}](mailto:${T.emailB2C}). Contestamos a todo, y lo normal es que sea en menos de 48 horas laborables.`,
+        "Como consumidor tienes las garantías legales del TRLGDCU. Si no llegamos a un acuerdo, puedes acudir a la plataforma europea de resolución de litigios en línea: [ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr).",
+      ],
+    },
+    {
+      h: "Uso de las guías",
+      p: [
+        "La guía es para ti. Puedes leerla en tus dispositivos y enseñársela a quien quieras; no puedes revenderla, subirla a ningún sitio ni repartir copias.",
+      ],
+    },
+    {
+      h: "Ley aplicable",
+      p: [
+        "Ley española. Si compras como consumidor, conservas la protección de las normas imperativas de tu país de residencia en la UE.",
+      ],
+    },
+  ],
+};
+
+const terminosEn: LegalDoc = {
+  title: "Terms and conditions — discoolver",
+  description:
+    "Terms of sale for discoolver guides: prices, payment, delivery, right of withdrawal and refunds.",
+  eyebrow: "Legal",
+  h1: "Terms and conditions",
+  lead: "The terms of sale for the guides. Short, and no tricks.",
+  updatedLabel: `Last reviewed: ${LEGAL_UPDATED_EN}`,
+  back: "Back to discoolver",
+  sections: [
+    {
+      h: "Who sells",
+      p: [
+        `${T.razonSocial}, tax ID ${T.nif}, registered at ${T.domicilio}. For anything about your order: [${T.emailB2C}](mailto:${T.emailB2C}).`,
+      ],
+    },
+    {
+      h: "What you buy",
+      ul: [
+        "**Digital guide.** A downloadable file with that city's edition for the year, plus access to the AI that comes with it. Delivered by email.",
+        "**Print guide.** The printed book, which also includes the digital version. Shipped to the address you give us.",
+      ],
+      p: [
+        "Each guide closes once a year. What you buy is that edition: it does not roll over to next year's on its own.",
+      ],
+    },
+    {
+      h: "Prices and payment",
+      p: [
+        "Prices are shown in euros, VAT included. Shipping costs for print, where they apply, are calculated and shown before you confirm.",
+        "Payment is processed by Stripe. We never see or store your card details.",
+        "The launch price is whatever the product page shows when you buy; prices may change later, but never retroactively on an order already placed.",
+      ],
+    },
+    {
+      h: "Delivery",
+      ul: [
+        "**Digital:** arrives by email right after payment. If it hasn't landed within an hour, check your spam and then write to us — we fix it the same day.",
+        "**Print:** shipped within the timeframe stated on the product page. We'll tell you when it leaves.",
+      ],
+    },
+    {
+      h: "Right of withdrawal",
+      p: [
+        "**Print guide:** you have 14 calendar days from delivery to return it, no explanation needed. Write to us and we'll tell you how. We refund you once it arrives; return shipping is on you unless the book arrived faulty.",
+        "**Digital guide:** at checkout we ask you to expressly confirm that you want it delivered immediately and that you accept losing the right of withdrawal by doing so — this is what article 103.m of the Spanish consumer protection act provides for digital content delivered instantly. If you don't tick that box, there is no immediate download.",
+        "Losing the right to withdraw doesn't mean you're stuck: if the file won't open, is incomplete, or isn't what we described, we fix it or refund you.",
+      ],
+    },
+    {
+      h: "If something goes wrong",
+      p: [
+        `Write to [${T.emailB2C}](mailto:${T.emailB2C}). We answer everything, usually within 48 working hours.`,
+        "As a consumer you have the statutory guarantees of Spanish consumer law. If we can't reach an agreement, you can use the European online dispute resolution platform: [ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr).",
+      ],
+    },
+    {
+      h: "Using the guides",
+      p: [
+        "The guide is yours. Read it on your devices and show it to whoever you like; you can't resell it, upload it anywhere, or hand out copies.",
+      ],
+    },
+    {
+      h: "Governing law",
+      p: [
+        "Spanish law. If you buy as a consumer, you keep the protection of the mandatory rules of your country of residence in the EU.",
+      ],
+    },
+  ],
+};
+
+// ───────────────────────────────────────────────────────────────── cookies ──
+
+const cookiesEs: LegalDoc = {
+  title: "Política de cookies — discoolver",
+  description:
+    "discoolver.com no usa cookies: ni de análisis, ni de publicidad, ni de seguimiento. Qué significa eso y qué pasaría si cambiara.",
+  eyebrow: "Legal",
+  h1: "Cookies",
+  lead: "Esta web no usa cookies. Ni una.",
+  updatedLabel: `Última revisión: ${LEGAL_UPDATED}`,
+  back: "Volver a discoolver",
+  sections: [
+    {
+      h: "No hay banner porque no hay nada que consentir",
+      p: [
+        "Esta web no instala cookies de análisis, ni de publicidad, ni de redes sociales, ni de seguimiento entre sitios. No usamos Google Analytics, ni el píxel de Meta, ni ninguna herramienta equivalente. Tampoco guardamos nada en el almacenamiento local de tu navegador.",
+        "Por eso no verás una ventana pidiéndote permiso: la ley obliga a pedirlo para las cookies que no son estrictamente necesarias, y aquí no hay ninguna.",
+      ],
+    },
+    {
+      h: "Entonces, ¿cómo sabéis cuánta gente entra?",
+      p: [
+        "Por los registros del servidor, que son anónimos y agregados. Nuestro proveedor de alojamiento cuenta peticiones para poder servir la web y protegerla de abusos; eso no identifica a nadie ni se usa para perfilarte.",
+      ],
+    },
+    {
+      h: "Cuando compres una guía",
+      p: [
+        "El pago lo procesa Stripe en sus propias páginas. Stripe sí usa cookies técnicas y antifraude mientras estás allí, bajo su propia política. Nosotros no recibimos esas cookies ni tus datos de tarjeta.",
+      ],
+    },
+    {
+      h: "Si esto cambia, lo verás",
+      p: [
+        "El día que añadamos medición o publicidad, aparecerá el banner de consentimiento correspondiente y esta página se reescribirá con el detalle de cada cookie antes de activar nada. No vamos a colar seguimiento en silencio.",
+      ],
+    },
+    {
+      h: "Tus datos",
+      p: [
+        "Lo que sí recogemos —lo que nos escribes en un formulario— está explicado en la [política de privacidad](/privacidad).",
+      ],
+    },
+  ],
+};
+
+const cookiesEn: LegalDoc = {
+  title: "Cookie policy — discoolver",
+  description:
+    "discoolver.com uses no cookies: no analytics, no advertising, no tracking. What that means and what would change if it did.",
+  eyebrow: "Legal",
+  h1: "Cookies",
+  lead: "This site uses no cookies. Not one.",
+  updatedLabel: `Last reviewed: ${LEGAL_UPDATED_EN}`,
+  back: "Back to discoolver",
+  sections: [
+    {
+      h: "No banner, because there's nothing to consent to",
+      p: [
+        "This site sets no analytics, advertising, social or cross-site tracking cookies. No Google Analytics, no Meta pixel, no equivalent tool. We don't store anything in your browser's local storage either.",
+        "That's why you won't see a pop-up asking permission: the law requires consent for cookies that aren't strictly necessary, and here there are none.",
+      ],
+    },
+    {
+      h: "So how do you know how many people visit?",
+      p: [
+        "From server logs, which are anonymous and aggregated. Our hosting provider counts requests in order to serve the site and protect it from abuse; that identifies nobody and is not used to profile you.",
+      ],
+    },
+    {
+      h: "When you buy a guide",
+      p: [
+        "Payment is handled by Stripe on their own pages. Stripe does use technical and anti-fraud cookies while you're there, under their own policy. We receive neither those cookies nor your card details.",
+      ],
+    },
+    {
+      h: "If this changes, you'll see it",
+      p: [
+        "The day we add measurement or advertising, the corresponding consent banner will appear and this page will be rewritten with the detail of every cookie before anything is switched on. We won't slip tracking in quietly.",
+      ],
+    },
+    {
+      h: "Your data",
+      p: [
+        "What we do collect — whatever you type into a form — is explained in the [privacy policy](/en/privacidad).",
+      ],
+    },
+  ],
+};
+
+// ────────────────────────────────────────────────────────────── privacidad ──
+// Migrada desde el JSX suelto de app/privacidad/page.tsx (que llevaba
+// "[dirección fiscal]" literal en producción) para que use TITULAR y tenga EN.
+
+const privacidadEs: LegalDoc = {
+  title: "Privacidad — discoolver",
+  description:
+    "Qué datos recogemos en discoolver cuando pides tu ciudad, compras una guía o envías una candidatura de creator, para qué los usamos y cómo ejercer tus derechos.",
+  eyebrow: "Legal",
+  h1: "Privacidad",
+  lead: "Sin letra pequeña: esto es todo lo que hacemos con tus datos.",
+  updatedLabel: `Última revisión: ${LEGAL_UPDATED}`,
+  back: "Volver a discoolver",
+  sections: [
+    {
+      h: "Quién trata tus datos",
+      p: [
+        `${T.razonSocial}, NIF ${T.nif}, con domicilio en ${T.domicilio}. Para cualquier cosa relacionada con tus datos: [${T.emailB2C}](mailto:${T.emailB2C}).`,
+      ],
+    },
+    {
+      h: "Qué recogemos y por qué",
+      p: ["Solo lo que nos escribes tú en un formulario de esta web:"],
+      ul: [
+        "**Aviso por destino:** tu email y la ciudad que pides, para escribirte cuando esa edición exista.",
+        "**Candidatura de creator:** nombre, email, tu handle, tu ciudad y un enlace a tu contenido, para valorar la candidatura y responderte.",
+        "**Envío de vídeo:** los mismos datos más el enlace al vídeo, para que lo valore el equipo editorial.",
+        "**Compra de una guía:** tu email y, si pides el papel, la dirección de envío. El pago lo procesa Stripe: los datos de tu tarjeta no pasan por nosotros.",
+        "**Demo de discoolver 360:** los datos de contacto profesionales que dejas en el formulario, para llamarte.",
+      ],
+    },
+    {
+      h: "Cookies",
+      p: [
+        "Ninguna. No usamos analítica, ni publicidad, ni seguimiento, ni perfilado, ni decisiones automatizadas. El detalle está en la [política de cookies](/cookies).",
+      ],
+    },
+    {
+      h: "Base legal",
+      p: [
+        "Tu consentimiento al enviar el formulario; la ejecución del contrato cuando compras una guía; y nuestro interés legítimo en responder a una candidatura que nos has enviado tú. Puedes retirar el consentimiento cuando quieras escribiéndonos.",
+      ],
+    },
+    {
+      h: "Cuánto tiempo",
+      p: [
+        "Los avisos por destino, hasta que salga esa edición o nos pidas borrarte. Las candidaturas, mientras la colaboración esté viva o hasta que pidas borrarlas. Los datos de una compra, el tiempo que exige la normativa fiscal y contable.",
+      ],
+    },
+    {
+      h: "Con quién los compartimos",
+      p: [
+        "Con nadie que no sea necesario para que esto funcione: el proveedor que aloja la web, el que nos entrega los correos de los formularios, y Stripe para cobrar. No vendemos ni cedemos tus datos a terceros.",
+      ],
+    },
+    {
+      h: "Tus derechos",
+      p: [
+        `Puedes acceder, rectificar, borrar, oponerte, limitar el tratamiento y llevarte tus datos. Escríbenos a [${T.emailB2C}](mailto:${T.emailB2C}) y lo resolvemos. Si algo no te cuadra, puedes reclamar ante la Agencia Española de Protección de Datos ([aepd.es](https://www.aepd.es)).`,
+      ],
+    },
+    {
+      h: "Contenido de creators",
+      p: [
+        "Cuando publicamos una guía firmada por un creator, su contenido sigue siendo suyo: nos concede una licencia no exclusiva para editarlo y publicarlo dentro de esa guía, y las condiciones van por escrito antes de empezar.",
+      ],
+    },
+  ],
+};
+
+const privacidadEn: LegalDoc = {
+  title: "Privacy — discoolver",
+  description:
+    "What we collect at discoolver when you request your city, buy a guide or apply as a creator, what we use it for and how to exercise your rights.",
+  eyebrow: "Legal",
+  h1: "Privacy",
+  lead: "No small print: this is everything we do with your data.",
+  updatedLabel: `Last reviewed: ${LEGAL_UPDATED_EN}`,
+  back: "Back to discoolver",
+  sections: [
+    {
+      h: "Who processes your data",
+      p: [
+        `${T.razonSocial}, tax ID ${T.nif}, registered at ${T.domicilio}. For anything to do with your data: [${T.emailB2C}](mailto:${T.emailB2C}).`,
+      ],
+    },
+    {
+      h: "What we collect and why",
+      p: ["Only what you type into a form on this site:"],
+      ul: [
+        "**City notification:** your email and the city you ask for, so we can write when that edition exists.",
+        "**Creator application:** name, email, your handle, your city and a link to your work, to assess the application and reply.",
+        "**Video submission:** the same, plus the link to the video, for the editorial team to review.",
+        "**Buying a guide:** your email and, for print, a shipping address. Payment is processed by Stripe: your card details never pass through us.",
+        "**discoolver 360 demo:** the professional contact details you leave in the form, so we can call you.",
+      ],
+    },
+    {
+      h: "Cookies",
+      p: [
+        "None. No analytics, no advertising, no tracking, no profiling, no automated decisions. The detail is in the [cookie policy](/en/cookies).",
+      ],
+    },
+    {
+      h: "Legal basis",
+      p: [
+        "Your consent when you submit the form; performance of the contract when you buy a guide; and our legitimate interest in replying to an application you sent us. You can withdraw consent at any time by writing to us.",
+      ],
+    },
+    {
+      h: "How long",
+      p: [
+        "City notifications, until that edition ships or you ask to be removed. Applications, while the collaboration is alive or until you ask us to delete them. Purchase data, for as long as tax and accounting law requires.",
+      ],
+    },
+    {
+      h: "Who we share it with",
+      p: [
+        "Nobody who isn't needed to make this work: the provider hosting the site, the one delivering form emails, and Stripe to take payment. We don't sell or hand your data to third parties.",
+      ],
+    },
+    {
+      h: "Your rights",
+      p: [
+        `You can access, correct, delete, object, restrict processing and take your data with you. Write to [${T.emailB2C}](mailto:${T.emailB2C}) and we'll sort it. If something doesn't add up, you can complain to the Spanish data protection authority ([aepd.es](https://www.aepd.es)).`,
+      ],
+    },
+    {
+      h: "Creator content",
+      p: [
+        "When we publish a guide signed by a creator, their content stays theirs: they grant us a non-exclusive licence to edit and publish it within that guide, and the terms are agreed in writing beforehand.",
+      ],
+    },
+  ],
+};
+
+export const LEGAL = {
+  aviso: { es: avisoEs, en: avisoEn },
+  terminos: { es: terminosEs, en: terminosEn },
+  cookies: { es: cookiesEs, en: cookiesEn },
+  privacidad: { es: privacidadEs, en: privacidadEn },
+} as const;
+
+export type LegalSlug = keyof typeof LEGAL;

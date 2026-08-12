@@ -2754,3 +2754,52 @@ a.format-card {
 a.format-card--paper {
   color: var(--paper);
 }
+
+/* LEGALES 2026-08-12 · El pie pasó de dos enlaces (privacidad y contacto) a
+   cinco, y la columna de marca estrenó las cuentas sociales recuperadas de la
+   web antigua. .foot__bottom ya es flex con space-between y a 480px apila en
+   columna: aquí solo se añade que la tira de legales rompa bien y el bloque
+   de redes. Nada de esto toca los bloques recuperados del CSS original. */
+.foot__legal {
+  text-align: right;
+  line-height: 2;
+}
+.foot__social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+  padding: 0;
+  list-style: none;
+}
+.foot__social a {
+  color: var(--ink-2);
+  font-size: 13px;
+  text-decoration: none;
+}
+.foot__social a:hover {
+  opacity: 0.7;
+}
+@media (max-width: 480px) {
+  .foot__legal {
+    text-align: center;
+  }
+}
+
+/* El pie de 360 estrena la misma tira legal. Su barra es flex en fila. */
+.b360-foot__legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 2px;
+}
+@media (max-width: 620px) {
+  .b360-foot__bar {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  .b360-foot__legal {
+    justify-content: center;
+  }
+}

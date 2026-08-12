@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { withLocale, type Locale } from "@/lib/i18n";
+import { SOCIAL } from "@/lib/site";
 
 const T = {
   es: {
@@ -32,6 +33,10 @@ const T = {
     ],
     contacto: "Contacto",
     privacidad: "Privacidad",
+    avisoLegal: "Aviso legal",
+    terminos: "Términos",
+    cookies: "Cookies",
+    siguenos: "Síguenos",
   },
   en: {
     aria: "Footer",
@@ -62,6 +67,10 @@ const T = {
     ],
     contacto: "Contact",
     privacidad: "Privacy",
+    avisoLegal: "Legal notice",
+    terminos: "Terms",
+    cookies: "Cookies",
+    siguenos: "Follow us",
   },
 } as const;
 
@@ -84,6 +93,15 @@ export function Footer({
               <Image src="/assets/logo-white.png" alt="" width={968} height={174} className="foot__logo" />
             </Link>
             <p>{brandDesc ?? t.brandDesc}</p>
+            <ul className="foot__social" aria-label={t.siguenos}>
+              {SOCIAL.map((s) => (
+                <li key={s.name}>
+                  <a href={s.href} target="_blank" rel="noopener noreferrer me">
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
           <nav className="foot__col" aria-label={t.col1}>
             <h4>{t.col1}</h4>
@@ -126,11 +144,23 @@ export function Footer({
           <span>
             © {new Date().getFullYear()} {copyright ?? t.copyright}
           </span>
-          <span>
-            <Link style={{ color: "var(--ink-2)" }} href="/privacidad">
-              {t.privacidad}
-            </Link>{" "}
-            ·{" "}
+          <span className="foot__legal">
+            {(
+              [
+                ["/aviso-legal", t.avisoLegal],
+                ["/terminos", t.terminos],
+                ["/privacidad", t.privacidad],
+                ["/cookies", t.cookies],
+              ] as const
+            ).map(([href, label], i) => (
+              <span key={href}>
+                {i > 0 && " · "}
+                <Link style={{ color: "var(--ink-2)" }} href={withLocale(href, locale)}>
+                  {label}
+                </Link>
+              </span>
+            ))}
+            {" · "}
             <a style={{ color: "var(--ink-2)" }} href="mailto:hola@discoolver.com">
               {t.contacto}
             </a>

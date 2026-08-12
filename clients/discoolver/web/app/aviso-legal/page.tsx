@@ -2,12 +2,12 @@ import { LegalDoc } from "@/components/legal/LegalDoc";
 import { LEGAL } from "@/lib/content/legal";
 import { buildMetadata } from "@/lib/seo";
 
-const doc = LEGAL.privacidad.es;
+const doc = LEGAL.aviso.es;
 
 export const metadata = buildMetadata({
   title: doc.title,
   description: doc.description,
-  path: "/privacidad",
+  path: "/aviso-legal",
   locale: "es",
 });
 

@@ -18,6 +18,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/en/360/destinos", priority: 0.7 },
     { path: "/en/360/alojamientos", priority: 0.7 },
     { path: "/en/360/demo", priority: 0.6 },
+    // legales — prioridad baja pero indexables: Google penaliza una tienda
+    // que no publica quién vende ni en qué condiciones.
+    { path: "/aviso-legal", priority: 0.3 },
+    { path: "/terminos", priority: 0.3 },
+    { path: "/privacidad", priority: 0.3 },
+    { path: "/cookies", priority: 0.3 },
+    { path: "/en/aviso-legal", priority: 0.2 },
+    { path: "/en/terminos", priority: 0.2 },
+    { path: "/en/privacidad", priority: 0.2 },
+    { path: "/en/cookies", priority: 0.2 },
   ];
   return routes.map((route) => ({
     url: `${site.url}${route.path}`,
