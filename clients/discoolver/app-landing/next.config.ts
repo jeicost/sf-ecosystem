@@ -9,14 +9,27 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // 2026-08-10: la captación de creators se unifica en la web de guías. La
-      // versión local de /influencers estaba 100% en inglés, con tres handles
-      // sin verificar y "guías descargables" que no descargaban — todo material
-      // prohibido por el repaso de negocio. La página y sus componentes siguen
-      // en el repo por historial, pero ya no se sirven.
+      // 2026-08-12: esta landing PASÓ A SER la home de discoolver.com. Su código
+      // se fusionó en clients/discoolver/web (componentes en components/app/,
+      // contenido en lib/content/app-home.ts) y aquí ya no queda nada que servir
+      // que no esté allí: dejarlo vivo era publicar la misma home en dos URLs y
+      // competir contra nosotros mismos en Google.
+      //
+      // El proyecto no se borra —el historial de despliegues y las variables de
+      // entorno tienen valor— pero todo redirige al dominio bueno.
       {
         source: "/influencers",
-        destination: "https://discoolver-landing.vercel.app/influencers",
+        destination: "https://discoolver.com/influencers",
+        permanent: true,
+      },
+      {
+        source: "/en/:path*",
+        destination: "https://discoolver.com/en/:path*",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        destination: "https://discoolver.com/:path*",
         permanent: true,
       },
     ];
