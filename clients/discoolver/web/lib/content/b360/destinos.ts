@@ -247,7 +247,7 @@ export const defaultDestinos360Content = {
   cta_contacto_email: "info@discoolver.com",
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
   cta_pendiente_telefono:
-    "(+66) 83 829 1723",
+    "Consultas por WhatsApp · (+66) 83 829 1723",
 } as const;
 
 export type Destinos360Content = { -readonly [K in keyof typeof defaultDestinos360Content]: string };

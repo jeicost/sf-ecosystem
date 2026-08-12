@@ -8,9 +8,13 @@
  * IDENTIDAD FISCAL: vive una sola vez, en `TITULAR`, y de ahí sale a las ocho
  * páginas. Datos confirmados por Carlos el 12-ago-2026.
  *
- * OJO con el domicilio: la web antigua publicaba "C/ María de Molina 39,
- * 28006 Madrid", que ya no es la sede. Si alguien vuelve a sacar datos de
- * discoolver.com viejo (sigue vivo por IP en 161.35.84.60), que no lo copie.
+ * SON DOS DIRECCIONES DISTINTAS y las dos son buenas:
+ *   - Alfonso XII 62 (28014) = domicilio social de la S.L. Va AQUÍ, en las
+ *     legales, porque es lo que exige la LSSI.
+ *   - María de Molina 39 (28006) = la oficina. Va en el copy comercial de 360
+ *     (lib/content/b360/**), que es donde tiene sentido decirle a un cliente
+ *     dónde estamos.
+ * No unificarlas "por coherencia": no son lo mismo.
  *
  * Sintaxis inline admitida en los párrafos: [texto](destino) para enlaces y
  * correos. No hay HTML crudo a propósito — nada de dangerouslySetInnerHTML.

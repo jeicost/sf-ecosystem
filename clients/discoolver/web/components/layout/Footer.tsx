@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { withLocale, type Locale } from "@/lib/i18n";
-import { SOCIAL } from "@/lib/site";
+import { SOCIAL, WHATSAPP, waHref } from "@/lib/site";
 
 const T = {
   es: {
@@ -37,6 +37,7 @@ const T = {
     terminos: "Términos",
     cookies: "Cookies",
     siguenos: "Síguenos",
+    whatsapp: "Consultas por WhatsApp",
   },
   en: {
     aria: "Footer",
@@ -71,6 +72,7 @@ const T = {
     terminos: "Terms",
     cookies: "Cookies",
     siguenos: "Follow us",
+    whatsapp: "Questions on WhatsApp",
   },
 } as const;
 
@@ -136,6 +138,16 @@ export function Footer({
               ))}
               <li>
                 <a href="mailto:hola@discoolver.com">{t.contacto}</a>
+              </li>
+              <li>
+                <a
+                  href={waHref()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={WHATSAPP.display}
+                >
+                  {t.whatsapp}
+                </a>
               </li>
             </ul>
           </nav>

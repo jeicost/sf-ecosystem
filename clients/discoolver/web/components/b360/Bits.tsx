@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { waHref } from "@/lib/site";
 
 /**
  * Primitivas compartidas de la marca 360.
@@ -180,7 +181,7 @@ export function Band({
             </a>
           )}
           {phone && (isPending(phone) ? <Pending>{phone}</Pending> : (
-            <a href={`tel:${phone.replace(/\s/g, "")}`} style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-muted)" }}>
+            <a href={waHref()} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-muted)" }}>
               {phone}
             </a>
           ))}

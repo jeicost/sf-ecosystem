@@ -7,6 +7,7 @@ import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
+import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
   title: "Soluciones para destinos turísticos | discoolver 360",
@@ -270,7 +271,7 @@ export async function Destinos360({ locale = "es" }: { locale?: Locale }) {
               <span style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-slate)" }}>
                 {c.cta_contacto_direccion}
               </span>
-              <a href={`tel:${c.cta_pendiente_telefono.replace(/[^+\d]/g, "")}`} style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-primary)" }}>
+              <a href={waHref()} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--b-mono)", fontSize: 13, color: "var(--b-primary)" }}>
                 {c.cta_pendiente_telefono}
               </a>
             </div>

@@ -127,7 +127,7 @@ export const defaultAgencias360Content = {
   cta_boton: "Let's talk about your catalog",
   cta_boton_url: "/360/demo?v=agencia",
   cta_contacto_email: "info@discoolver.com",
-  cta_contacto_telefono: "(+66) 83 829 1723",
+  cta_contacto_telefono: "Questions on WhatsApp · (+66) 83 829 1723",
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
 } as const;
 

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Logo360 } from "@/components/b360/Logo360";
 import { withLocale, type Locale } from "@/lib/i18n";
+import { WHATSAPP, waHref } from "@/lib/site";
 
 /**
  * Footer de 360. Regla heredada de la auditoría: NINGÚN enlace a "#".
@@ -11,12 +12,12 @@ const F = {
   es: { verticales: "Verticales", destinos: "Destinos", alojamientos: "Alojamientos",
         plataforma: "Plataforma", modulos: "Los 7 módulos", ronda: "Caso Ronda", demo: "Pedir demo",
         marca: "La marca de viajero", app: "La app", privacidad: "Privacidad",
-        avisoLegal: "Aviso legal", terminos: "Términos", cookies: "Cookies",
+        avisoLegal: "Aviso legal", terminos: "Términos", cookies: "Cookies", whatsapp: "WhatsApp",
         claim: "La plataforma que convierte el tráfico turístico de un destino en ingreso para su tejido local." },
   en: { verticales: "Verticals", destinos: "Destinations", alojamientos: "Accommodation",
         plataforma: "Platform", modulos: "The 7 modules", ronda: "Ronda case study", demo: "Book a demo",
         marca: "The traveller brand", app: "The app", privacidad: "Privacy",
-        avisoLegal: "Legal notice", terminos: "Terms", cookies: "Cookies",
+        avisoLegal: "Legal notice", terminos: "Terms", cookies: "Cookies", whatsapp: "WhatsApp",
         claim: "The platform that turns a destination's tourist traffic into revenue for its local businesses." },
 } as const;
 
@@ -70,6 +71,10 @@ export function Footer360({ locale = "es" }: { locale?: Locale }) {
             <Link href={withLocale("/cookies", locale)}>{t.cookies}</Link>
             {" · "}
             <a href="mailto:info@discoolver.com">info@discoolver.com</a>
+            {" · "}
+            <a href={waHref()} target="_blank" rel="noopener noreferrer">
+              {t.whatsapp} {WHATSAPP.display}
+            </a>
           </span>
         </div>
       </div>

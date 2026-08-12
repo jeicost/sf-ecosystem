@@ -6,6 +6,7 @@ import { defaultAgencias360Content as defaultAgencias360ContentEn } from "@/lib/
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Stat, Steps, Pending } from "@/components/b360/Bits";
+import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
   title: "Agencias, DMC y touroperadores receptivos | discoolver 360",
@@ -156,7 +157,7 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
             <a href={`mailto:${c.cta_contacto_email}`} style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-primary)" }}>
               {c.cta_contacto_email}
             </a>
-            <a href={`tel:${c.cta_contacto_telefono.replace(/[^\d+]/g, "")}`} style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-muted)" }}>
+            <a href={waHref()} target="_blank" rel="noopener noreferrer" style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-muted)" }}>
               {c.cta_contacto_telefono}
             </a>
             <span style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-slate)" }}>

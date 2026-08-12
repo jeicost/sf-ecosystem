@@ -22,6 +22,25 @@ export const site = {
   },
 } as const;
 
+/**
+ * El teléfono de contacto, uno solo para las dos marcas. Es un número
+ * tailandés y el comprador de 360 es español, así que NO se enlaza con `tel:`
+ * —una llamada internacional no la hace nadie— sino por WhatsApp, que es
+ * gratis y es como se va a usar de verdad. Decisión de Carlos, 12-ago-2026.
+ *
+ * El texto visible vive en los ficheros de contenido (que tienen gemelo en
+ * inglés y se editan desde el CMS); aquí solo el destino del enlace.
+ */
+export const WHATSAPP = {
+  display: "(+66) 83 829 1723",
+  href: "https://wa.me/66838291723",
+} as const;
+
+/** Enlace a WhatsApp, opcionalmente con el mensaje ya escrito. */
+export function waHref(texto?: string): string {
+  return texto ? `${WHATSAPP.href}?text=${encodeURIComponent(texto)}` : WHATSAPP.href;
+}
+
 /** Las mismas cuentas, para pintarlas en los footers. */
 export const SOCIAL = [
   { name: "Instagram", href: "https://www.instagram.com/discoolver_mad/" },

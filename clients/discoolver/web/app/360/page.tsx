@@ -7,6 +7,7 @@ import { defaultHome360Content as defaultHome360ContentEn } from "@/lib/content/
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending } from "@/components/b360/Bits";
+import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
   title: "discoolver 360 — plataforma para destinos turísticos",
@@ -251,7 +252,7 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
               </div>
             ) : (
               <a
-                href={`tel:${c.cta_telefono.replace(/[^+\d]/g, "")}`}
+                href={waHref()} target="_blank" rel="noopener noreferrer"
                 style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-primary)" }}
               >
                 {c.cta_telefono}

@@ -188,7 +188,7 @@ export const defaultHome360Content = {
   cta_reaseguro:
     "Te responde alguien del equipo, no un formulario automático. Si prefieres escribir antes, también vale.",
   cta_email: "info@discoolver.com",
-  cta_telefono: "(+66) 83 829 1723",
+  cta_telefono: "Consultas por WhatsApp · (+66) 83 829 1723",
   cta_direccion: "C/ María de Molina 39, 28006 Madrid",
 } as const;
 

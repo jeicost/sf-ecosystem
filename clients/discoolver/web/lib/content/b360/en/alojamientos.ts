@@ -216,7 +216,7 @@ export const defaultAlojamientos360Content = {
   cta_reassurance:
     "A 30-minute demo, no strings attached. Get in touch and someone from the team will answer your questions.",
   cta_contacto:
-    "info@discoolver.com · (+66) 83 829 1723 · C/ María de Molina 39, 28006 Madrid",
+    "info@discoolver.com · Questions on WhatsApp · (+66) 83 829 1723 · C/ María de Molina 39, 28006 Madrid",
 } as const;
 
 export type Alojamientos360Content = { -readonly [K in keyof typeof defaultAlojamientos360Content]: string };
