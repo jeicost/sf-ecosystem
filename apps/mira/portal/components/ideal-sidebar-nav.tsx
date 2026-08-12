@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import { Zap, BookOpen } from 'lucide-react'
 import { IDEAL_SPACES } from '@/lib/sections'
+import { useActiveClient } from '@/lib/client-context'
+import { hasTenderTool } from '@/lib/entitlements'
 
 // Navegación consolidada del sistema ideal: 6 espacios en vez de 27 rutas
 // sueltas (Fase 1). Se monta detrás del flag NEXT_PUBLIC_IDEAL_UI; con el flag
@@ -19,10 +21,19 @@ export default function IdealSidebarNav({
   isAgency: boolean
 }) {
   const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'))
+  const { activeClient } = useActiveClient()
+
+  // Herramientas restringidas por cliente (p. ej. Licitaciones): solo aparecen
+  // para clientes con el entitlement, o para la agencia.
+  const canSee = (item: { requires?: 'tender' }) =>
+    item.requires !== 'tender' || hasTenderTool(activeClient?.id, isAgency)
 
   return (
     <nav className="flex-1 px-3 py-2 space-y-3 overflow-y-auto">
-      {IDEAL_SPACES.map((space) => (
+      {IDEAL_SPACES.map((space) => {
+        const items = space.items.filter(canSee)
+        if (items.length === 0) return null
+        return (
         <div key={space.key}>
           <div className="flex items-center gap-1.5 px-2 mb-1">
             <space.icon size={12} className="text-ink-muted" />
@@ -31,7 +42,7 @@ export default function IdealSidebarNav({
             </span>
           </div>
           <div className="space-y-0.5">
-            {space.items.map(({ href, label, icon: Icon }) => {
+            {items.map(({ href, label, icon: Icon }) => {
               const active = isActive(href)
               const showBadge = href === '/approvals' && pendingCount > 0
               return (
@@ -55,7 +66,8 @@ export default function IdealSidebarNav({
             })}
           </div>
         </div>
-      ))}
+        )
+      })}
 
       {/* Secundarios: se conservan, fuera de los 6 espacios principales */}
       <div className="pt-2 border-t border-line-subtle space-y-0.5">

@@ -1,14 +1,26 @@
 'use client'
-import { useState } from 'react'
-import { Loader2, FileText, ListChecks, Sparkles, Copy, Check } from 'lucide-react'
+import { useRef, useState } from 'react'
+import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import { hasTenderTool } from '@/lib/entitlements'
 
-// Herramienta de licitaciones (D4 Entrega). Flujo de 3 pasos:
-// 1) pegar el pliego → 2) extraer criterios de puntuación → 3) generar memoria.
+// Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
+// el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
 interface Criterion { group: string; name: string; points: number | null; sub?: { name: string; points: number | null }[]; requires?: string }
 interface Criteria { object?: string; expediente?: string; deadline?: string; total_points: number | null; criteria: Criterion[]; data_gaps?: string[] }
 interface Section { criterio: string; puntos_objetivo: number | null; titulo: string; contenido: string; datos_a_confirmar?: string[] }
 interface Memoria { titulo?: string; resumen_ejecutivo?: string; secciones?: Section[]; checklist_qa?: string[]; data_gaps?: string[] }
+interface RadarScore { fit: number; verdict: 'go' | 'revisar' | 'no-go'; reason: string }
+interface RadarItem { id: string; expediente: string; title: string; org: string; cpv: string[]; amount: number | null; deadline: string | null; link: string; score: RadarScore | null }
+interface RadarMeta { total_found: number; scored: number; capped: boolean; pagesRead: number; stopReason: string }
+
+const VERDICT_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
+  go: { bg: 'rgba(16,185,129,.14)', fg: '#10B981', label: 'Encaja' },
+  revisar: { bg: 'rgba(245,158,11,.14)', fg: '#F59E0B', label: 'Revisar' },
+  'no-go': { bg: 'rgba(148,163,184,.14)', fg: '#94A3B8', label: 'No encaja' },
+}
+const fmtEur = (n: number | null) => (n == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n))
+const daysLeft = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000) : null)
 
 const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Juicio de valor', automatico_tecnico: 'Automático técnico', precio: 'Precio' }
 
@@ -23,6 +35,22 @@ export default function LicitacionesPage() {
   const [step, setStep] = useState<'idle' | 'extracting' | 'generating'>('idle')
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
+  const [radarLoading, setRadarLoading] = useState(false)
+  const [radarItems, setRadarItems] = useState<RadarItem[] | null>(null)
+  const [radarMeta, setRadarMeta] = useState<RadarMeta | null>(null)
+  const [radarError, setRadarError] = useState<string | null>(null)
+  const pliegoRef = useRef<HTMLTextAreaElement>(null)
+
+  const runRadar = async () => {
+    if (!clientId) return
+    setRadarLoading(true); setRadarError(null)
+    try {
+      const res = await fetch('/api/tender/radar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId }) })
+      const data = await res.json()
+      if (!res.ok) { setRadarError(data.error || 'Error al buscar concursos'); return }
+      setRadarItems(data.results || []); setRadarMeta(data.meta || null)
+    } catch { setRadarError('Fallo de red') } finally { setRadarLoading(false) }
+  }
 
   const extract = async () => {
     if (pliego.trim().length < 200 || !clientId) return
@@ -54,6 +82,18 @@ export default function LicitacionesPage() {
 
   const byGroup = (g: string) => criteria?.criteria.filter(c => c.group === g) || []
 
+  // Guard suave: la herramienta solo aplica a clientes que licitan. Si se llega por
+  // URL con un cliente sin entitlement, se explica en vez de operar en vano.
+  if (activeClient && !hasTenderTool(activeClient.id)) {
+    return (
+      <div className="mx-auto max-w-2xl px-8 py-16 text-center">
+        <FileText size={28} className="mx-auto mb-3 text-ink-muted" />
+        <h1 className="text-lg font-semibold text-ink">Licitaciones no está activo para {activeClient.name}</h1>
+        <p className="mt-2 text-sm text-ink-tertiary">Esta herramienta es para clientes que concurren a concursos públicos. Si {activeClient.name} debe usarla, avísanos y la activamos.</p>
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-5xl px-8 py-10">
       <div className="mb-6">
@@ -64,10 +104,66 @@ export default function LicitacionesPage() {
         <p className="mt-1 text-sm text-ink-tertiary">Pega el pliego, extrae los criterios de puntuación y genera la memoria criterio a criterio, con el corpus de {activeClient?.name || 'tu empresa'}.</p>
       </div>
 
+      {/* Radar de concursos (PLACSP, gratis) */}
+      <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Radar size={15} style={{ color: brand }} /> Radar de concursos</h2>
+            <p className="mt-0.5 text-xs text-ink-tertiary">Concursos publicados en la PLACSP (últimos días), filtrados por vuestra actividad y puntuados con el Cerebro.</p>
+          </div>
+          <button onClick={runRadar} disabled={radarLoading || !clientId}
+            className="flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+            {radarLoading ? <><Loader2 size={16} className="animate-spin" /> Buscando…</> : <><Radar size={16} /> Buscar concursos</>}
+          </button>
+        </div>
+        {radarError && <p className="mt-3 text-xs text-red-400">{radarError}</p>}
+        {radarMeta && (
+          <p className="mt-3 text-[11px] text-ink-muted">
+            {radarMeta.total_found} encontrados · {radarMeta.scored} valorados{radarMeta.capped ? ' (tope 24)' : ''} · {radarMeta.pagesRead} páginas del feed
+          </p>
+        )}
+        {radarItems && radarItems.length === 0 && !radarLoading && (
+          <p className="mt-3 text-xs text-ink-tertiary">Sin concursos recientes que encajen con vuestros CPV. Vuelve a mirar en unos días.</p>
+        )}
+        {radarItems && radarItems.length > 0 && (
+          <div className="mt-4 space-y-2.5">
+            {radarItems.map((it) => {
+              const v = it.score ? VERDICT_STYLE[it.score.verdict] : null
+              const d = daysLeft(it.deadline)
+              return (
+                <div key={it.id} className="rounded-xl border border-line-subtle bg-page p-3.5">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-medium text-ink">{it.title}</p>
+                      <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-ink-tertiary"><Building2 size={11} /> {it.org || 'Órgano no indicado'}</p>
+                    </div>
+                    {it.score && v && (
+                      <span className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: v.bg, color: v.fg }}>
+                        {v.label} · {it.score.fit}
+                      </span>
+                    )}
+                  </div>
+                  {it.score && <p className="mt-1.5 text-xs text-ink-secondary">{it.score.reason}</p>}
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-muted">
+                    <span>{fmtEur(it.amount)}</span>
+                    {d != null && <span className="flex items-center gap-1"><CalendarClock size={11} /> {d > 0 ? `${d} días` : 'vence hoy'}</span>}
+                    {it.expediente && <span>Exp. {it.expediente}</span>}
+                    {it.cpv[0] && <span>CPV {it.cpv.slice(0, 2).join(', ')}</span>}
+                    {it.link && <a href={it.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-ink-secondary hover:text-ink"><ExternalLink size={11} /> Ver en PLACSP</a>}
+                    <button onClick={() => pliegoRef.current?.focus()} className="text-ink-secondary hover:text-ink underline-offset-2 hover:underline">Preparar memoria ↓</button>
+                  </div>
+                </div>
+              )
+            })}
+            <p className="pt-1 text-[11px] text-ink-muted">Para preparar la oferta, abre el concurso en PLACSP, descarga el pliego y pégalo abajo.</p>
+          </div>
+        )}
+      </div>
+
       {/* Paso 1: pliego */}
       <div className="rounded-2xl border border-line bg-surface p-5">
         <label className="mb-2 flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><FileText size={13} /> 1 · Pega el pliego (PCAP + PPT + criterios)</label>
-        <textarea value={pliego} onChange={e => setPliego(e.target.value)} rows={7}
+        <textarea ref={pliegoRef} value={pliego} onChange={e => setPliego(e.target.value)} rows={7}
           placeholder="Pega aquí el texto del pliego de la licitación…"
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
         <button onClick={extract} disabled={pliego.trim().length < 200 || step !== 'idle' || !clientId}

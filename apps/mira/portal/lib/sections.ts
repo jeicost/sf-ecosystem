@@ -18,6 +18,8 @@ export interface NavItem {
   href: string
   label: string
   icon: LucideIcon
+  /** Herramienta con acceso restringido por cliente (ver lib/entitlements). */
+  requires?: 'tender'
 }
 
 export interface MiraSection {
@@ -128,7 +130,7 @@ export const IDEAL_SPACES: IdealSpace[] = [
     key: 'biblioteca', label: 'Biblioteca', icon: Library,
     items: [
       { href: '/toolkit',        label: 'Informes',      icon: Layers },
-      { href: '/licitaciones',   label: 'Licitaciones',  icon: Briefcase },
+      { href: '/licitaciones',   label: 'Licitaciones',  icon: Briefcase, requires: 'tender' },
       { href: '/documents',      label: 'Documentos',    icon: FileText },
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
