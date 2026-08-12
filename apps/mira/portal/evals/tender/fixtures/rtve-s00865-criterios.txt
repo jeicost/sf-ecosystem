@@ -1,0 +1,109 @@
+ 
+ “SERVICIOS POSTALES Y TRASNPORTE DE PAQUETERÍA” 
+Expediente n.º S/00865/2026 
+ 
+PLIEGO DE CLAUSULAS ADMINISTRATIVAS PARTICULARES - PCAP 12 
+CRITERIOS DE ADJUDICACIÓN PUNTUACIÓN 
+CRITERIOS DE VALORACIÓN SOMETIDOS A JUICIO DE VALOR 
+(SOBRE B) 25 PUNTOS 
+1. Descripción general del servicio 15 puntos 
+2. Red de oficinas 10 puntos 
+CRITERIOS DE VALORACIÓN AUTOMÁTICOS - TÉCNICOS (SOBRE C) 25 PUNTOS 
+3. Sistema informático de solicitud y seguimiento de envíos Hasta un máximo de 15 puntos 
+Plataforma única de solicitud y seguimiento 3 puntos 
+Plataforma via web sin instalación local 2 puntos 
+Integración mediante API con sistemas RTVE 3 puntos 
+Incluir campos de facturación de RTVE 3 puntos Informes parametrizables por el usuario y automátizables 2 puntos 
+Sistema de notificaciones de entrega y/o retraso a través de email o SMS 1 puntos 
+Registro y trazabilidad de incidencias 1 punto 
+4. Mejora de tiempos de recogidas Hasta un máximo de 4 
+puntos 
+Posibilidad de recogidas posteriores a las 18.00 con preaviso de 2 
+horas de antelación 2 puntos 
+Posibilidad de recogidas antes de las 18.00 con preaviso de 1 hora. 2 puntos 
+5. Medidas medioambientales Hasta un máximo de 6 
+puntos 50% de la flota adscrita al contrato con etiqueta ECO o CERO 3 puntos Sistema de cálculo y compensación de huella de carbono del servicio 3 puntos CRITERIOS DE VALORACIÓN AUTOMÁTICA - PRECIO (SOBRE C) 50 PUNTOS 
+ 
+Descripción de los criterios de valoración sometidos a juicio de valor: 
+Serán valoradas con un máximo de 25 puntos, repartidos de la forma indicada, las ofertas que 
+presenten documentación relativa a: 
+ Será valorada con un máximo de 15 puntos la claridad, detalle y viabilidad de la solución 
+propuesta para la prestación del servicio, incluyendo: 
+ “SERVICIOS POSTALES Y TRASNPORTE DE PAQUETERÍA” 
+Expediente n.º S/00865/2026 
+ 
+PLIEGO DE CLAUSULAS ADMINISTRATIVAS PARTICULARES - PCAP 13 
+o Descripción del circuito logístico. 
+o Sistema de gestión de incidencias. 
+o Procedimiento de control de entregas. 
+o Plan de contingencia ante incidencias operativas (huelgas, picos de 
+actividad, emergencias). 
+o Coordinación con los centros de RTVE. 
+Se valorará especialmente la adecuación a la actividad audiovisual y la capacidad de 
+respuesta ante envíos urgentes o sensibles. 
+ Se valorará con un máximo de 10 puntos aquellas ofertas que incluyan una relación de 
+la red de oficinas de atención al público, especificando población y horario de atención 
+al público, adicionales a las requeridas en el Pliego de Condiciones Técnicas 
+Descripción de los criterios de valoración automáticos: 
+ Se otorgarán hasta un máximo de 15 puntos el sistema informático propuesto por el 
+licitador para las solicitudes y seguimiento de envíos al que poder acceder desde RTVE 
+según se indica a continuación. 
+o Propuestas que el sistema de solicitud y gestión están unificado en una sola 
+plataforma para facilitar la tramitación y seguimiento…3 puntos 
+o Sistema informático de solicitudes y gestión vía web sin instalación local (en la 
+nube) …2 puntos 
+o Integración mediante API compatibles con sistemas compatibles con sistemas 
+RTVE…3 puntos 
+o Aquellas plataformas que se puedan incluir campo de facturación de RTVE con 
+los códigos aportados por RTVE y que se pueda desplegar para facilitar su 
+imputación contable …3 puntos 
+o Si la plataforma permite crear informes y programarlos para su generación 
+automática también …2 puntos 
+o Si el sistema puede mandar notificaciones de entrega y/o retraso por vía email 
+SMS…1 punto 
+o Si el sistema permite realizar el registro y trazabilidad de incidencias…1 punto 
+ Se otorgarán con un máximo de 4 puntos las mejoras en la recogida de envíos: 
+o Aquellas ofertas que se comprometan a recogidas posteriores a las 18.00 con 
+preaviso de 2 horas de antelación … 2 puntos 
+o Aquellas ofertas que se comprometan a recogidas antes de las 18.00 con 
+preaviso de 1 hora de antelación … 2 puntos 
+ Se otorgarán con un máximo de 6 puntos las medias medioambientales: 
+o Aquellas empresas en el que el 50 % de su flota adscrita al contrato cuente con 
+ “SERVICIOS POSTALES Y TRASNPORTE DE PAQUETERÍA” 
+Expediente n.º S/00865/2026 
+ 
+PLIEGO DE CLAUSULAS ADMINISTRATIVAS PARTICULARES - PCAP 14 
+etiqueta ECO o CERO… 3 puntos 
+o Sistema de cálculo y compensación de huella de carbono del servicio… 3 
+puntos. Se valorará el compromiso del licitador de calcular la huella de carbono 
+derivada de la ejecución del contrato y de compensar las emisiones generadas 
+mediante proyectos de absorción o reducción de CO₂ debidamente 
+acreditados. 
+La valoración de los puntos asignados al precio, se repartirán conforme a la siguiente fórmula: 
+Puntos oferta X= PM (Oferta más baja/Oferta X) 
+Siendo PM la puntuación asignada a las condiciones económicas. 
+12ª.- VARIANTES 
+Exigible: No 
+13ª.- CONDICIONES DE PAGO 
+En un plazo de 60 días, y de conformidad con lo indicado en el presente pliego y la legislación 
+aplicable. 
+14ª.- PERIODICIDAD DE LA FACTURACIÓN 
+Periodicidad mensual, por los servicios solicitados y efectuados previa conformidad de RTVE. 
+Al menos con carácter anual y junto con la última factura, el contratista aportará a través de la 
+plataforma de facturación electrónica de RTVE, una declaración responsable según el modelo 
+publicado en: https://licitaciones.rtve.es/resources/normativa/facturacion/Anexo.pdf,en relación 
+al cumplimiento de determinadas obligaciones en materia de: protección de datos personales, 
+medio ambiente, igualdad entre hombres y mujeres, cumplimiento de los convenios colectivos 
+de aplicación y condiciones especiales de ejecución. 
+15ª.- REMISIÓN DEL RECIBO DE LIQUIDACIÓN DE COTIZACIONES (RLC) Y DE LA 
+RELACIÓN NOMINAL DE TRABAJADORES (RNT) 
+Exigible: Sí 
+Los certificados (RLC y RNT) se remitirán a través del sistema de facturación electrónica junto 
+con cada una de las facturas. 
+16ª.- SUBCONTRATACIÓN 
+El contratista deberá indicar en su oferta qué parte de la prestación tiene previsto subcontratar. 
+El contratista principal deberá notificar por escrito al órgano de contratación cualquier 
+modificación que sufra esta información durante la ejecución del contrato principal, y toda la 
+información necesaria sobre los nuevos subcontratistas. 
+17ª.- PLAZO DE GARANTÍA 
+A los efectos de lo dispuesto en la cláusula 19 ª de las Condiciones Generales, el plazo de garantía 

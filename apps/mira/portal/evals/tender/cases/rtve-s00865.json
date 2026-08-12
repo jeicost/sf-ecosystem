@@ -1,0 +1,25 @@
+{
+  "id": "rtve-s00865",
+  "description": "RTVE — Servicios postales y transporte de paquetería (expediente S/00865/2026). Pliego real del corpus de GTD. La estructura de puntuación está escrita de forma explícita, así que la extracción es objetivamente verificable: si el motor se inventa o se deja criterios, se ve.",
+  "fixture": "rtve-s00865-criterios.txt",
+  "expected": {
+    "expediente_contains": "S/00865/2026",
+    "total_points": 100,
+    "groups": {
+      "juicio_valor": { "count": 2, "points": 25 },
+      "automatico_tecnico": { "count": 3, "points": 25 },
+      "precio": { "count": 1, "points": 50 }
+    },
+    "criteria": [
+      { "match": "descripci|general del servicio", "group": "juicio_valor", "points": 15 },
+      { "match": "red de oficinas", "group": "juicio_valor", "points": 10 },
+      { "match": "sistema inform|solicitud y seguimiento", "group": "automatico_tecnico", "points": 15 },
+      { "match": "recogida", "group": "automatico_tecnico", "points": 4 },
+      { "match": "medioambiental", "group": "automatico_tecnico", "points": 6 },
+      { "match": "precio|econ", "group": "precio", "points": 50 }
+    ],
+    "must_not_invent": [
+      "El pliego NO fija plazo de presentación en este extracto: deadline debe ser null o ausente, nunca una fecha inventada."
+    ]
+  }
+}

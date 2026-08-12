@@ -16,18 +16,18 @@ interface RadarItem { id: string; expediente: string; title: string; org: string
 interface RadarMeta { total_found: number; scored: number; capped: boolean; pagesRead: number; stopReason: string }
 interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; memoria: Memoria | null }
 
-const STATUS_LABEL: Record<string, string> = { borrador: 'Borrador', preparando: 'Preparando', presentada: 'Presentada', ganada: 'Ganada', perdida: 'Perdida' }
+const STATUS_LABEL: Record<string, string> = { borrador: 'Draft', preparando: 'Preparing', presentada: 'Submitted', ganada: 'Won', perdida: 'Lost' }
 const STATUS_COLOR: Record<string, string> = { borrador: '#94A3B8', preparando: '#F59E0B', presentada: '#6366F1', ganada: '#10B981', perdida: '#EF4444' }
 
 const VERDICT_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
-  go: { bg: 'rgba(16,185,129,.14)', fg: '#10B981', label: 'Encaja' },
-  revisar: { bg: 'rgba(245,158,11,.14)', fg: '#F59E0B', label: 'Revisar' },
-  'no-go': { bg: 'rgba(148,163,184,.14)', fg: '#94A3B8', label: 'No encaja' },
+  go: { bg: 'rgba(16,185,129,.14)', fg: '#10B981', label: 'Good fit' },
+  revisar: { bg: 'rgba(245,158,11,.14)', fg: '#F59E0B', label: 'Review' },
+  'no-go': { bg: 'rgba(148,163,184,.14)', fg: '#94A3B8', label: 'No fit' },
 }
 const fmtEur = (n: number | null) => (n == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n))
 const daysLeft = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000) : null)
 
-const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Juicio de valor', automatico_tecnico: 'Automático técnico', precio: 'Precio' }
+const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Qualitative', automatico_tecnico: 'Automatic (technical)', precio: 'Price' }
 
 export default function LicitacionesPage() {
   const { activeClient } = useActiveClient()
@@ -83,11 +83,11 @@ export default function LicitacionesPage() {
         }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'No se pudo guardar'); return }
+      if (!res.ok) { setError(data.error || 'Could not save'); return }
       setCurrentId(data.id)
       setSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
       loadList()
-    } catch { setError('Fallo de red al guardar') } finally { setSaving(false) }
+    } catch { setError('Network error while saving') } finally { setSaving(false) }
   }
 
   const open = async (id: string) => {
@@ -95,12 +95,12 @@ export default function LicitacionesPage() {
     setError(null)
     try {
       const res = await fetch(`/api/tender/saved?id=${id}&clientId=${clientId}`)
-      if (!res.ok) { setError('No se pudo abrir'); return }
+      if (!res.ok) { setError('Could not open'); return }
       const t = await res.json()
       setCurrentId(t.id); setPliego(t.pliego_text || '')
       setCriteria(t.criteria || null); setMemoria(t.memoria || null); setSavedAt(null)
       window.scrollTo({ top: 0, behavior: 'smooth' })
-    } catch { setError('Fallo de red') }
+    } catch { setError('Network error') }
   }
 
   const startNew = () => {
@@ -115,9 +115,9 @@ export default function LicitacionesPage() {
     try {
       const res = await fetch('/api/tender/radar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId }) })
       const data = await res.json()
-      if (!res.ok) { setRadarError(data.error || 'Error al buscar concursos'); return }
+      if (!res.ok) { setRadarError(data.error || 'Could not fetch tenders'); return }
       setRadarItems(data.results || []); setRadarMeta(data.meta || null)
-    } catch { setRadarError('Fallo de red') } finally { setRadarLoading(false) }
+    } catch { setRadarError('Network error') } finally { setRadarLoading(false) }
   }
 
   const extract = async () => {
@@ -126,10 +126,10 @@ export default function LicitacionesPage() {
     try {
       const res = await fetch('/api/tender/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId }) })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Error al extraer criterios'); return }
+      if (!res.ok) { setError(data.error || 'Could not extract criteria'); return }
       setCriteria(data)
       save({ criteria: data, memoria: null })  // guarda el expediente en cuanto hay algo que perder
-    } catch { setError('Fallo de red') } finally { setStep('idle') }
+    } catch { setError('Network error') } finally { setStep('idle') }
   }
 
   const generate = async () => {
@@ -138,10 +138,10 @@ export default function LicitacionesPage() {
     try {
       const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId }) })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Error al generar la memoria'); return }
+      if (!res.ok) { setError(data.error || 'Could not generate the proposal'); return }
       setMemoria(data)
       save({ memoria: data, status: 'preparando' })  // la memoria nunca se pierde al recargar
-    } catch { setError('Fallo de red') } finally { setStep('idle') }
+    } catch { setError('Network error') } finally { setStep('idle') }
   }
 
   const copyMemoria = () => {
@@ -158,8 +158,8 @@ export default function LicitacionesPage() {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
         <FileText size={28} className="mx-auto mb-3 text-ink-muted" />
-        <h1 className="text-lg font-semibold text-ink">Licitaciones no está activo para {activeClient.name}</h1>
-        <p className="mt-2 text-sm text-ink-tertiary">Esta herramienta es para clientes que concurren a concursos públicos. Si {activeClient.name} debe usarla, avísanos y la activamos.</p>
+        <h1 className="text-lg font-semibold text-ink">Tenders is not enabled for {activeClient.name}</h1>
+        <p className="mt-2 text-sm text-ink-tertiary">This tool is for clients that bid on public tenders. If {activeClient.name} needs it, let us know and we will enable it.</p>
       </div>
     )
   }
@@ -168,20 +168,20 @@ export default function LicitacionesPage() {
     <div className="mx-auto max-w-5xl px-8 py-10">
       <div className="mb-6">
         <p className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-widest font-semibold" style={{ color: brand }}>
-          <FileText size={13} /> Licitaciones
+          <FileText size={13} /> Tenders
         </p>
-        <h1 className="text-2xl font-semibold text-ink">Del pliego a la memoria técnica</h1>
-        <p className="mt-1 text-sm text-ink-tertiary">Pega el pliego, extrae los criterios de puntuación y genera la memoria criterio a criterio, con el corpus de {activeClient?.name || 'tu empresa'}.</p>
+        <h1 className="text-2xl font-semibold text-ink">From tender documents to technical proposal</h1>
+        <p className="mt-1 text-sm text-ink-tertiary">Paste the tender documents, extract the scoring criteria and generate the proposal criterion by criterion, using the corpus of {activeClient?.name || 'your company'}.</p>
       </div>
 
       {/* Expedientes guardados */}
       {saved.length > 0 && (
         <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FolderOpen size={15} style={{ color: brand }} /> Vuestras licitaciones</h2>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FolderOpen size={15} style={{ color: brand }} /> Your tenders</h2>
             {(currentId || pliego) && (
               <button onClick={startNew} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink">
-                <Plus size={13} /> Nueva
+                <Plus size={13} /> New
               </button>
             )}
           </div>
@@ -198,8 +198,8 @@ export default function LicitacionesPage() {
                     <span className="block text-[11px] text-ink-muted">
                       {STATUS_LABEL[t.status] || t.status}
                       {t.expediente ? ` · Exp. ${t.expediente}` : ''}
-                      {d != null ? ` · ${d > 0 ? `${d} días` : 'vencida'}` : ''}
-                      {t.memoria ? ' · con memoria' : ''}
+                      {d != null ? ` · ${d > 0 ? `${d} days` : 'expired'}` : ''}
+                      {t.memoria ? ' · has proposal' : ''}
                     </span>
                   </span>
                 </button>
@@ -209,26 +209,26 @@ export default function LicitacionesPage() {
         </div>
       )}
 
-      {/* Radar de concursos (PLACSP, gratis) */}
+      {/* Tender radar (PLACSP, gratis) */}
       <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Radar size={15} style={{ color: brand }} /> Radar de concursos</h2>
-            <p className="mt-0.5 text-xs text-ink-tertiary">Concursos publicados en la PLACSP (últimos días), filtrados por vuestra actividad y puntuados con el Cerebro.</p>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Radar size={15} style={{ color: brand }} /> Tender radar</h2>
+            <p className="mt-0.5 text-xs text-ink-tertiary">Tenders published on PLACSP in the last few days, filtered by your activity and scored against the Brain.</p>
           </div>
           <button onClick={runRadar} disabled={radarLoading || !clientId}
             className="flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-            {radarLoading ? <><Loader2 size={16} className="animate-spin" /> Buscando…</> : <><Radar size={16} /> Buscar concursos</>}
+            {radarLoading ? <><Loader2 size={16} className="animate-spin" /> Searching…</> : <><Radar size={16} /> Find tenders</>}
           </button>
         </div>
         {radarError && <p className="mt-3 text-xs text-red-400">{radarError}</p>}
         {radarMeta && (
           <p className="mt-3 text-[11px] text-ink-muted">
-            {radarMeta.total_found} encontrados · {radarMeta.scored} valorados{radarMeta.capped ? ' (tope 24)' : ''} · {radarMeta.pagesRead} páginas del feed
+            {radarMeta.total_found} found · {radarMeta.scored} scored{radarMeta.capped ? ' (capped at 24)' : ''} · {radarMeta.pagesRead} feed pages
           </p>
         )}
         {radarItems && radarItems.length === 0 && !radarLoading && (
-          <p className="mt-3 text-xs text-ink-tertiary">Sin concursos recientes que encajen con vuestros CPV. Vuelve a mirar en unos días.</p>
+          <p className="mt-3 text-xs text-ink-tertiary">No recent tenders match your CPV codes. Check back in a few days.</p>
         )}
         {radarItems && radarItems.length > 0 && (
           <div className="mt-4 space-y-2.5">
@@ -240,7 +240,7 @@ export default function LicitacionesPage() {
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium text-ink">{it.title}</p>
-                      <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-ink-tertiary"><Building2 size={11} /> {it.org || 'Órgano no indicado'}</p>
+                      <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-ink-tertiary"><Building2 size={11} /> {it.org || 'Contracting body not stated'}</p>
                     </div>
                     {it.score && v && (
                       <span className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: v.bg, color: v.fg }}>
@@ -251,29 +251,29 @@ export default function LicitacionesPage() {
                   {it.score && <p className="mt-1.5 text-xs text-ink-secondary">{it.score.reason}</p>}
                   <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-muted">
                     <span>{fmtEur(it.amount)}</span>
-                    {d != null && <span className="flex items-center gap-1"><CalendarClock size={11} /> {d > 0 ? `${d} días` : 'vence hoy'}</span>}
+                    {d != null && <span className="flex items-center gap-1"><CalendarClock size={11} /> {d > 0 ? `${d} days` : 'due today'}</span>}
                     {it.expediente && <span>Exp. {it.expediente}</span>}
                     {it.cpv[0] && <span>CPV {it.cpv.slice(0, 2).join(', ')}</span>}
-                    {it.link && <a href={it.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-ink-secondary hover:text-ink"><ExternalLink size={11} /> Ver en PLACSP</a>}
-                    <button onClick={() => pliegoRef.current?.focus()} className="text-ink-secondary hover:text-ink underline-offset-2 hover:underline">Preparar memoria ↓</button>
+                    {it.link && <a href={it.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-ink-secondary hover:text-ink"><ExternalLink size={11} /> View on PLACSP</a>}
+                    <button onClick={() => pliegoRef.current?.focus()} className="text-ink-secondary hover:text-ink underline-offset-2 hover:underline">Draft proposal ↓</button>
                   </div>
                 </div>
               )
             })}
-            <p className="pt-1 text-[11px] text-ink-muted">Para preparar la oferta, abre el concurso en PLACSP, descarga el pliego y pégalo abajo.</p>
+            <p className="pt-1 text-[11px] text-ink-muted">To prepare the bid, open the tender on PLACSP, download the documents and paste them below.</p>
           </div>
         )}
       </div>
 
       {/* Paso 1: pliego */}
       <div className="rounded-2xl border border-line bg-surface p-5">
-        <label className="mb-2 flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><FileText size={13} /> 1 · Pega el pliego (PCAP + PPT + criterios)</label>
+        <label className="mb-2 flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><FileText size={13} /> 1 · Paste the tender documents (PCAP + PPT + criteria)</label>
         <textarea ref={pliegoRef} value={pliego} onChange={e => setPliego(e.target.value)} rows={7}
-          placeholder="Pega aquí el texto del pliego de la licitación…"
+          placeholder="Paste the tender document text here…"
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
         <button onClick={extract} disabled={pliego.trim().length < 200 || step !== 'idle' || !clientId}
           className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-          {step === 'extracting' ? <><Loader2 size={16} className="animate-spin" /> Analizando…</> : <><ListChecks size={16} /> Extraer criterios</>}
+          {step === 'extracting' ? <><Loader2 size={16} className="animate-spin" /> Analysing…</> : <><ListChecks size={16} /> Extract criteria</>}
         </button>
         {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
       </div>
@@ -282,13 +282,13 @@ export default function LicitacionesPage() {
       {criteria && (
         <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><ListChecks size={15} style={{ color: brand }} /> 2 · Criterios de puntuación {criteria.total_points ? `· ${criteria.total_points} pts` : ''}</h2>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><ListChecks size={15} style={{ color: brand }} /> 2 · Scoring criteria {criteria.total_points ? `· ${criteria.total_points} pts` : ''}</h2>
             <button onClick={generate} disabled={step !== 'idle'}
               className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-              {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generando…</> : <><Sparkles size={14} /> Generar memoria</>}
+              {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> Generate proposal</>}
             </button>
           </div>
-          {criteria.object && <p className="mb-3 text-xs text-ink-tertiary">{criteria.expediente ? `Exp. ${criteria.expediente} · ` : ''}{criteria.object}{criteria.deadline ? ` · límite ${criteria.deadline}` : ''}</p>}
+          {criteria.object && <p className="mb-3 text-xs text-ink-tertiary">{criteria.expediente ? `Exp. ${criteria.expediente} · ` : ''}{criteria.object}{criteria.deadline ? ` · due ${criteria.deadline}` : ''}</p>}
           <div className="grid gap-3 sm:grid-cols-3">
             {['juicio_valor', 'automatico_tecnico', 'precio'].map(g => byGroup(g).length > 0 && (
               <div key={g} className="rounded-xl border border-line-subtle bg-page p-3">
@@ -310,22 +310,22 @@ export default function LicitacionesPage() {
       {memoria && (
         <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FileText size={15} style={{ color: brand }} /> 3 · {memoria.titulo || 'Memoria técnica'}</h2>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FileText size={15} style={{ color: brand }} /> 3 · {memoria.titulo || 'Technical proposal'}</h2>
             <div className="flex items-center gap-2">
-              {savedAt && <span className="text-[11px] text-ink-muted">Guardado {savedAt}</span>}
+              {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
               <button onClick={() => save()} disabled={saving}
                 className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
-                {saving ? <><Loader2 size={13} className="animate-spin" /> Guardando</> : <><Save size={13} /> Guardar</>}
+                {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save</>}
               </button>
               <button onClick={copyMemoria} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
-                {copied ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
+                {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
               </button>
             </div>
           </div>
           {/* Estado del expediente: cerrar el ciclo (presentada → ganada/perdida) es
               lo que convierte esto en histórico útil para futuras memorias. */}
           <div className="mb-4 flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11px] text-ink-muted">Estado:</span>
+            <span className="mr-1 text-[11px] text-ink-muted">Status:</span>
             {Object.keys(STATUS_LABEL).map((st) => (
               <button key={st} onClick={() => setStatus(st)} disabled={saving}
                 className="rounded-full border px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
@@ -345,7 +345,7 @@ export default function LicitacionesPage() {
                 <p className="whitespace-pre-line text-sm text-ink-secondary leading-relaxed">{s.contenido}</p>
                 {s.datos_a_confirmar && s.datos_a_confirmar.length > 0 && (
                   <div className="mt-2 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-2">
-                    <p className="text-[10px] uppercase tracking-wider text-amber-500/80 mb-1">A confirmar antes de entregar</p>
+                    <p className="text-[10px] uppercase tracking-wider text-amber-500/80 mb-1">To confirm before submitting</p>
                     <ul className="list-disc pl-4 text-xs text-ink-tertiary">{s.datos_a_confirmar.map((d, j) => <li key={j}>{d}</li>)}</ul>
                   </div>
                 )}
@@ -356,13 +356,13 @@ export default function LicitacionesPage() {
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               {memoria.checklist_qa && memoria.checklist_qa.length > 0 && (
                 <div className="rounded-xl border border-line-subtle p-3">
-                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">Checklist QA</p>
+                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">QA checklist</p>
                   <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.checklist_qa.map((c, i) => <li key={i}>{c}</li>)}</ul>
                 </div>
               )}
               {memoria.data_gaps && memoria.data_gaps.length > 0 && (
                 <div className="rounded-xl border border-line-subtle p-3">
-                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">Huecos del corpus</p>
+                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">Corpus gaps</p>
                   <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.data_gaps.map((c, i) => <li key={i}>{c}</li>)}</ul>
                 </div>
               )}

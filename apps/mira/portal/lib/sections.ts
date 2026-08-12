@@ -114,49 +114,49 @@ export interface IdealSpace {
 
 export const IDEAL_SPACES: IdealSpace[] = [
   {
-    key: 'hoy', label: 'Hoy', icon: Home,
+    key: 'hoy', label: 'Today', icon: Home,
     items: [
-      { href: '/home',      label: 'Resumen',  icon: LayoutDashboard },
-      { href: '/approvals', label: 'Bandeja',  icon: CheckSquare },
+      { href: '/home',      label: 'Overview', icon: LayoutDashboard },
+      { href: '/approvals', label: 'Inbox',    icon: CheckSquare },
     ],
   },
   {
-    key: 'calendario', label: 'Calendario', icon: Calendar,
+    key: 'calendario', label: 'Calendar', icon: Calendar,
     items: [
-      { href: '/calendar', label: 'Calendario', icon: Calendar },
+      { href: '/calendar', label: 'Calendar', icon: Calendar },
     ],
   },
   {
-    key: 'biblioteca', label: 'Biblioteca', icon: Library,
+    key: 'biblioteca', label: 'Library', icon: Library,
     items: [
-      { href: '/toolkit',        label: 'Informes',      icon: Layers },
-      { href: '/licitaciones',   label: 'Licitaciones',  icon: Briefcase, requires: 'tender' },
-      { href: '/documents',      label: 'Documentos',    icon: FileText },
+      { href: '/toolkit',        label: 'Reports',       icon: Layers },
+      { href: '/licitaciones',   label: 'Tenders',       icon: Briefcase, requires: 'tender' },
+      { href: '/documents',      label: 'Documents',     icon: FileText },
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
-      { href: '/studio',         label: 'Estudio visual', icon: Image },
-      { href: '/questionnaires', label: 'Cuestionarios', icon: ClipboardList },
+      { href: '/studio',         label: 'Visual studio', icon: Image },
+      { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList },
     ],
   },
   {
-    key: 'equipo', label: 'Equipo', icon: Users,
+    key: 'equipo', label: 'Team', icon: Users,
     items: [
       { href: '/roster',    label: 'Marketing', icon: Target },
-      { href: '/comercial', label: 'Ventas',    icon: Kanban },
-      { href: '/strategy',  label: 'Dirección', icon: Map },
+      { href: '/comercial', label: 'Sales',     icon: Kanban },
+      { href: '/strategy',  label: 'Leadership', icon: Map },
     ],
   },
   {
-    key: 'cerebro', label: 'Cerebro', icon: Brain,
+    key: 'cerebro', label: 'Brain', icon: Brain,
     items: [
       { href: '/brand-brain',    label: 'Brand Brain', icon: Brain },
-      { href: '/project-memory', label: 'Memoria',     icon: Archive },
+      { href: '/project-memory', label: 'Memory',      icon: Archive },
     ],
   },
   {
-    key: 'resultados', label: 'Resultados', icon: BarChart3,
+    key: 'resultados', label: 'Results', icon: BarChart3,
     items: [
-      { href: '/performance', label: 'Rendimiento', icon: BarChart3 },
+      { href: '/performance', label: 'Performance', icon: BarChart3 },
     ],
   },
 ]
