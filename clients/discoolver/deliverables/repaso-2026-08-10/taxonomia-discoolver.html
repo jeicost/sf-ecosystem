@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taxonomía de Discoolver — lo que necesitamos en el CMS</title>
+<style>
+  /* Paleta: el magenta es el de la marca (#c426c4). Los neutros llevan un
+     sesgo violeta muy leve para que no lean a gris de plantilla. */
+  :root {
+    --papel:      #faf9fc;
+    --superficie: #ffffff;
+    --tinta:      #17141c;
+    --tinta-2:    #5d5670;
+    --linea:      #e5e1ec;
+    --acento:     #c426c4;
+    --acento-sv:  #f3e3f3;
+    --ok:         #1c7d5a;
+    --ok-sv:      #e2f3ec;
+    --aviso:      #8a5a00;
+    --aviso-sv:   #fbeed3;
+    --falta:      #a32222;
+    --falta-sv:   #fae3e3;
+    --sombra:     0 1px 2px rgba(23,20,28,.05), 0 8px 24px rgba(23,20,28,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papel:      #131118;
+      --superficie: #1b1823;
+      --tinta:      #eeebf3;
+      --tinta-2:    #a49bb8;
+      --linea:      #2e2939;
+      --acento:     #e878e8;
+      --acento-sv:  #35203a;
+      --ok:         #6fd7ac;
+      --ok-sv:      #16332a;
+      --aviso:      #e8bd6a;
+      --aviso-sv:   #3a2e14;
+      --falta:      #f0918f;
+      --falta-sv:   #3b1e1e;
+      --sombra:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --papel:      #131118;
+    --superficie: #1b1823;
+    --tinta:      #eeebf3;
+    --tinta-2:    #a49bb8;
+    --linea:      #2e2939;
+    --acento:     #e878e8;
+    --acento-sv:  #35203a;
+    --ok:         #6fd7ac;
+    --ok-sv:      #16332a;
+    --aviso:      #e8bd6a;
+    --aviso-sv:   #3a2e14;
+    --falta:      #f0918f;
+    --falta-sv:   #3b1e1e;
+    --sombra:     0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--papel);
+    color: var(--tinta);
+    font: 400 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  code, .mono {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    font-size: .88em;
+  }
+  code {
+    background: var(--acento-sv);
+    color: var(--acento);
+    padding: .12em .42em;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .envoltura { max-width: 940px; margin: 0 auto; padding: 56px 24px 96px; }
+
+  header.cab { margin-bottom: 40px; }
+  .sello {
+    font: 600 11.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .13em; text-transform: uppercase;
+    color: var(--acento); margin-bottom: 14px;
+  }
+  h1 {
+    font-size: clamp(30px, 4.4vw, 42px); line-height: 1.12;
+    letter-spacing: -.022em; margin: 0 0 16px; text-wrap: balance;
+  }
+  .entrada { font-size: 17px; color: var(--tinta-2); margin: 0; max-width: 62ch; }
+  .entrada strong { color: var(--tinta); font-weight: 600; }
+
+  .cifras {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px; margin: 32px 0 8px;
+  }
+  .cifra {
+    background: var(--superficie); border: 1px solid var(--linea);
+    border-radius: 10px; padding: 16px 18px; box-shadow: var(--sombra);
+  }
+  .cifra b {
+    display: block; font-size: 30px; line-height: 1.1; letter-spacing: -.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cifra span { font-size: 13px; color: var(--tinta-2); }
+  .cifra--acento b { color: var(--acento); }
+
+  .nota {
+    border-left: 3px solid var(--acento); background: var(--acento-sv);
+    padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 28px 0 0;
+    font-size: 15px; color: var(--tinta);
+  }
+
+  h2 {
+    font-size: 22px; letter-spacing: -.015em; margin: 52px 0 6px;
+    padding-top: 26px; border-top: 1px solid var(--linea);
+  }
+  h2 .num { color: var(--tinta-2); font-weight: 400; margin-right: .4em; }
+  h2 + p { margin: 0 0 20px; color: var(--tinta-2); font-size: 15px; max-width: 62ch; }
+
+  .tabla-scroll { overflow-x: auto; border-radius: 10px; }
+  table {
+    width: 100%; border-collapse: collapse; background: var(--superficie);
+    border: 1px solid var(--linea); border-radius: 10px; overflow: hidden;
+    font-size: 14.5px;
+  }
+  th, td { padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--linea); }
+  thead th {
+    font: 600 11.5px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-2);
+    background: var(--papel); white-space: nowrap;
+  }
+  tbody tr:last-child td, tbody tr:last-child th { border-bottom: 0; }
+  tbody th[scope="row"] { font-weight: 600; }
+  td.c, th.c { text-align: center; }
+
+  .chip {
+    display: inline-block; font: 600 11.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+  }
+  .chip--ok     { background: var(--ok-sv);    color: var(--ok); }
+  .chip--falta  { background: var(--falta-sv); color: var(--falta); }
+  .chip--nueva  { background: var(--acento-sv); color: var(--acento); }
+  .chip--parcial { background: var(--aviso-sv); color: var(--aviso); }
+  .chip--parcial code { background: none; color: inherit; padding: 0; }
+
+  .pendientes { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 9px; }
+  .pendientes li {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+    padding: 11px 14px; background: var(--superficie);
+    border: 1px solid var(--linea); border-radius: 8px;
+  }
+  .ciudad {
+    font: 600 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    text-transform: uppercase; letter-spacing: .08em;
+    min-width: 88px; color: var(--tinta-2);
+  }
+  .nada { color: var(--ok); font-size: 14px; }
+
+  .bloque { margin-top: 26px; }
+  .bloque h3 {
+    font-size: 16px; margin: 0 0 10px;
+    display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  .cuenta {
+    font: 500 11.5px/1.6 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--tinta-2); background: var(--papel);
+    border: 1px solid var(--linea); padding: 1px 8px; border-radius: 999px;
+  }
+  .cuenta--nueva { color: var(--acento); border-color: var(--acento); background: var(--acento-sv); }
+  tr.nueva td:first-child { font-weight: 600; }
+
+  .pide { display: grid; gap: 14px; margin-top: 22px; }
+  .pide article {
+    background: var(--superficie); border: 1px solid var(--linea);
+    border-radius: 10px; padding: 18px 20px; box-shadow: var(--sombra);
+  }
+  .pide h3 { margin: 0 0 8px; font-size: 16.5px; }
+  .pide p { margin: 0; color: var(--tinta-2); font-size: 15px; }
+  .pide p + p { margin-top: 8px; }
+
+  footer {
+    margin-top: 56px; padding-top: 22px; border-top: 1px solid var(--linea);
+    color: var(--tinta-2); font-size: 14px;
+  }
+  a { color: var(--acento); }
+  :focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; border-radius: 3px; }
+  @media (max-width: 620px) {
+    .envoltura { padding: 36px 16px 72px; }
+    .ciudad { min-width: 0; }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="envoltura">
+  <header class="cab">
+    <p class="sello">Discoolver · 12 de agosto de 2026</p>
+    <h1>La taxonomía de las guías, y qué falta en el CMS</h1>
+    <p class="entrada">
+      Ocho categorías y 113 subcategorías. De aquí salen las secciones de las
+      guías, las de la app y las del curador: es <strong>la misma estructura para
+      todo</strong>, así que hacen falta las mismas en cada ciudad que abramos.
+      Este documento está generado cruzando nuestra taxonomía contra
+      <strong>tu base de producción</strong>, con el usuario <code>curator</code>.
+    </p>
+
+    <div class="cifras">
+      <div class="cifra"><b>113</b><span>subcategorías en total</span></div>
+      <div class="cifra"><b>83</b><span>ya existen en tu catálogo</span></div>
+      <div class="cifra cifra--acento"><b>30</b><span>hay que crearlas</span></div>
+      <div class="cifra cifra--acento"><b>1</b><span>ligada a alguna ciudad</span></div>
+    </div>
+
+    <p class="nota">
+      Si una ciudad no tiene material para una sección, <strong>el editor la apaga al
+      montar la guía</strong> y desaparece también del índice. Que exista en el CMS no
+      obliga a usarla, así que no hace falta afinar ciudad por ciudad.
+    </p>
+  </header>
+
+  <h2><span class="num">1</span>Las ocho categorías</h2>
+  <p>Dónde pone un nombre en vez de «sí», esa ciudad tiene una categoría más
+     estrecha y las fichas caen ahí.</p>
+  <div class="tabla-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Categoría</th><th>RAW_ID</th>
+          <th class="c">madrid</th><th class="c">ronda</th><th class="c">barcelona</th><th class="c">bangkok</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Restaurantes y Cafés</th>
+          <td><code>restaurantes</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td>
+        </tr>
+        <tr>
+          <th scope="row">Vida nocturna</th>
+          <td><code>_nightlife</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--parcial"><code>fiesta</code></span></td><td class="c"><span class="chip chip--parcial"><code>fiesta</code></span></td><td class="c"><span class="chip chip--parcial"><code>fiesta</code></span></td>
+        </tr>
+        <tr>
+          <th scope="row">Arte y cultura</th>
+          <td><code>_arte_y_cultura</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--parcial"><code>museos</code></span></td><td class="c"><span class="chip chip--parcial"><code>museos</code></span></td><td class="c"><span class="chip chip--parcial"><code>museos</code></span></td>
+        </tr>
+        <tr>
+          <th scope="row">Experiencias y eventos</th>
+          <td><code>_experiencias_unicas</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--falta">no existe</span></td><td class="c"><span class="chip chip--parcial"><code>experiencias_y_actividades</code></span></td><td class="c"><span class="chip chip--parcial"><code>experiencias_y_actividades</code></span></td>
+        </tr>
+        <tr>
+          <th scope="row">Compras y moda</th>
+          <td><code>compras</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--falta">no existe</span></td><td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td>
+        </tr>
+        <tr>
+          <th scope="row">Alojamiento</th>
+          <td><code>alojamiento</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--ok">sí</span></td>
+        </tr>
+        <tr>
+          <th scope="row">Bienestar, salud y belleza</th>
+          <td><code>_wellness</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--falta">no existe</span></td><td class="c"><span class="chip chip--falta">no existe</span></td><td class="c"><span class="chip chip--falta">no existe</span></td>
+        </tr>
+        <tr>
+          <th scope="row">Naturaleza y aire libre</th>
+          <td><code>_naturaleza</code></td>
+          <td class="c"><span class="chip chip--ok">sí</span></td><td class="c"><span class="chip chip--parcial"><code>parques</code></span></td><td class="c"><span class="chip chip--parcial"><code>naturaleza</code></span></td><td class="c"><span class="chip chip--parcial"><code>parques</code></span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="margin-top:30px;font-size:15px">Categorías a añadir, ciudad a ciudad</h3>
+  <ul class="pendientes">
+          <li><span class="ciudad">madrid</span><span class="nada">está completa</span></li>
+          <li><span class="ciudad">ronda</span><code>_arte_y_cultura</code> <code>_experiencias_unicas</code> <code>_naturaleza</code> <code>_nightlife</code> <code>_wellness</code> <code>compras</code></li>
+          <li><span class="ciudad">barcelona</span><code>_arte_y_cultura</code> <code>_experiencias_unicas</code> <code>_naturaleza</code> <code>_nightlife</code> <code>_wellness</code></li>
+          <li><span class="ciudad">bangkok</span><code>_arte_y_cultura</code> <code>_experiencias_unicas</code> <code>_naturaleza</code> <code>_nightlife</code> <code>_wellness</code></li>
+  </ul>
+
+  <h2><span class="num">2</span>Las 113 subcategorías</h2>
+  <p>Las marcadas como <span class="chip chip--nueva">crear</span> no existen todavía
+     en tu catálogo. El resto ya están, pero casi ninguna ligada a una ciudad.</p>
+      <section class="bloque">
+        <h3>Restaurantes y Cafés <span class="cuenta">17</span> <span class="cuenta cuenta--nueva">4 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="nueva">
+              <td>Book cafés y cafés concepto</td>
+              <td><code>book-cafe</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Brunch</td>
+              <td><code>_brunch_restaurantes</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Cafés y Bares</td>
+              <td><code>_cafes_&amp;_bars</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Cervecerías artesanas</td>
+              <td><code>cerveceria-artesana</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Cocina local</td>
+              <td><code>_local_cuisine</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Especial delivery</td>
+              <td><code>_especial_delivery</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Exclusivo</td>
+              <td><code>_exclusivo</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Experiencias gastronómicas</td>
+              <td><code>_experiencias_gastronómicas</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Heladerías</td>
+              <td><code>heladerias</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Low Cost</td>
+              <td><code>_low_cost</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Michelin</td>
+              <td><code>_michelin</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Pastelerías y obradores</td>
+              <td><code>pastelerias</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Rooftops</td>
+              <td><code>_rooftops_restaurantes</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Streetfood y Foodtrucks</td>
+              <td><code>_streetfood_&amp;_foodtrucks_restaurantes</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Especial teletrabajo</td>
+              <td><code>_especial_teletrabajo_restaurantes</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Tradicional</td>
+              <td><code>_tradicional</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Trendy</td>
+              <td><code>_trendy</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Vida nocturna <span class="cuenta">15</span> <span class="cuenta cuenta--nueva">1 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="">
+              <td>Afterhours</td>
+              <td><code>_afterhours_nightlife</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Bares y Pubs</td>
+              <td><code>_bares_y_pubs</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Beachclubs</td>
+              <td><code>_beachclubs</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Asociaciones cannábicas</td>
+              <td><code>clubes-cannabis</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Coctelerías</td>
+              <td><code>_coctelerías</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Conciertos</td>
+              <td><code>_conciertos</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Discotecas y Clubs</td>
+              <td><code>_discotecas_&amp;_clubs</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Festivales</td>
+              <td><code>_festivales</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Fiestas populares locales</td>
+              <td><code>_fiestas_populares_locales</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Karaoke</td>
+              <td><code>_karaoke_nightlife</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Música en directo</td>
+              <td><code>_conciertos_y_live_music</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Salas de baile</td>
+              <td><code>_salas_de_baile</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Salas de conciertos</td>
+              <td><code>_salas_de_concierto</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Fiestas y sesiones de música</td>
+              <td><code>_fiestas_y_sesiones_de_musica</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Zonas de fiesta</td>
+              <td><code>_zonas_de_fiesta</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Arte y cultura <span class="cuenta">10</span> <span class="cuenta cuenta--nueva">2 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="">
+              <td>Arquitectura</td>
+              <td><code>_arquitectura</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Arte urbano</td>
+              <td><code>arte-urbano</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Barrios</td>
+              <td><code>_barrios</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Cool Places</td>
+              <td><code>_cool_places</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Escapadas</td>
+              <td><code>_escapadas</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Exposiciones</td>
+              <td><code>_exposiciones</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Librerías</td>
+              <td><code>_librerías</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Lugares de culto</td>
+              <td><code>lugares-de-culto</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Museos y galerías de arte</td>
+              <td><code>_museos_y_galerías_de_arte</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Plazas y monumentos</td>
+              <td><code>_plazas_y_monumentos</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Experiencias y eventos <span class="cuenta">16</span> <span class="cuenta cuenta--nueva">3 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="">
+              <td>Actividades de aventura</td>
+              <td><code>_actividades_de_aventura</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Boleras y salas recreativas</td>
+              <td><code>boleras-recreativos</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Cines y teatros</td>
+              <td><code>_cines_y_teatros</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Clases y talleres</td>
+              <td><code>_clases_y_talleres</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Escape rooms</td>
+              <td><code>escape-rooms</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Espectáculos</td>
+              <td><code>_espectáculos</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Eventos deportivos</td>
+              <td><code>_eventos_deportivos_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Excursiones y tours</td>
+              <td><code>_excursiones_y_tours</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Ferias y tradeshows</td>
+              <td><code>_ferias_y_tradeshows</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Más de 18</td>
+              <td><code>_más_de_18</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Mercadillos de temporada</td>
+              <td><code>_mercados</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Motor y karting</td>
+              <td><code>_motor_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Parques temáticos y atracciones</td>
+              <td><code>_parques_temáticos_y_atracciones</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Polideportivos y pistas</td>
+              <td><code>_polideportivos_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Deportes de raqueta</td>
+              <td><code>_raqueta_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Zoos y acuarios</td>
+              <td><code>zoo-acuarios</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Compras y moda <span class="cuenta">22</span> <span class="cuenta cuenta--nueva">15 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="nueva">
+              <td>Antigüedades y coleccionismo</td>
+              <td><code>antiguedades-coleccionismo</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Cosmética y perfumería</td>
+              <td><code>belleza-perfumeria</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Calzado y sneakers</td>
+              <td><code>calzado-sneakers</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Centros comerciales y outlets</td>
+              <td><code>_centros_comerciales</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Concept Stores</td>
+              <td><code>_concept_stores</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Coworkings</td>
+              <td><code>_coworkings_shopping</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Deporte y outdoor</td>
+              <td><code>deporte-outdoor</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Discos e instrumentos</td>
+              <td><code>discos-musica</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Eventos de moda</td>
+              <td><code>_eventos_de_moda</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Gourmet y alimentación</td>
+              <td><code>gourmet-alimentacion</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Hogar, decoración y plantas</td>
+              <td><code>hogar-decoracion</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Joyería, gafas y accesorios</td>
+              <td><code>joyeria-accesorios</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Jugueterías y juegos de mesa</td>
+              <td><code>juguetes-juegos</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Mascotas y animales</td>
+              <td><code>mascotas</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Mercados</td>
+              <td><code>_mercados_(callejeros_y_de_abastos)</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Moda y complementos</td>
+              <td><code>moda</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Papelería y manualidades</td>
+              <td><code>papeleria-manualidades</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Productos locales y artesanía</td>
+              <td><code>_productos_y_marcas_locales</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Tecnología y videojuegos</td>
+              <td><code>tecnologia-videojuegos</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Vinos y licorerías</td>
+              <td><code>vinos-licores</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Vintage y segunda mano</td>
+              <td><code>vintage-segunda-mano</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Zonas de compras</td>
+              <td><code>_zonas_de_compras</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Alojamiento <span class="cuenta">11</span> <span class="cuenta cuenta--nueva">1 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="">
+              <td>Naturaleza y rural</td>
+              <td><code>_naturaleza_y_rural</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Apartamentos</td>
+              <td><code>_apartamentos</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Camping y glamping</td>
+              <td><code>camping-glamping</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>5 estrellas</td>
+              <td><code>_5_estrellas</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Coliving</td>
+              <td><code>_coliving_alojamientos</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Hostal</td>
+              <td><code>_hostal</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Hotel</td>
+              <td><code>_hotel</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Hotel Boutique</td>
+              <td><code>_hotel_boutique</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Resorts</td>
+              <td><code>_resorts</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Villas</td>
+              <td><code>_villas</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Viviendas singulares</td>
+              <td><code>_viviendas_singulares</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Bienestar, salud y belleza <span class="cuenta">9</span> <span class="cuenta cuenta--nueva">1 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="nueva">
+              <td>Barberías</td>
+              <td><code>barberias</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Centros de belleza y peluquerías</td>
+              <td><code>_centros_belleza_y_peluquerías</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Gimnasios y fitness</td>
+              <td><code>_gimnasios_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Masajes</td>
+              <td><code>_masajes</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Piscinas</td>
+              <td><code>_piscinas_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Spas y centros de bienestar</td>
+              <td><code>_spas_and_wellness_centers</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Talleres y retiros</td>
+              <td><code>_talleres_y_retiros</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Estudios de tatuaje</td>
+              <td><code>_estudios_de_tatuaje</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Yoga, pilates y meditación</td>
+              <td><code>_gyms_and_yoga_studios</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+      <section class="bloque">
+        <h3>Naturaleza y aire libre <span class="cuenta">13</span> <span class="cuenta cuenta--nueva">3 por crear</span></h3>
+        <div class="tabla-scroll">
+          <table class="subs">
+            <thead><tr><th>Subcategoría</th><th>RAW_ID</th><th class="c">Estado</th></tr></thead>
+            <tbody>
+            <tr class="">
+              <td>Actividades al aire libre</td>
+              <td><code>_actividades_y_deportes_al_aire_libre</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Deportes acuáticos</td>
+              <td><code>deportes-acuaticos</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Escalada y rocódromos</td>
+              <td><code>_escalada_y_rocodromos_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Espacios naturales</td>
+              <td><code>espacios-naturales</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="nueva">
+              <td>Miradores</td>
+              <td><code>miradores</code></td>
+              <td class="c"><span class="chip chip--nueva">crear</span></td>
+            </tr>
+            <tr class="">
+              <td>Montaña</td>
+              <td><code>_montania_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Deportes de nieve</td>
+              <td><code>_deportes_de_nieve_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Parques y jardines</td>
+              <td><code>_parques_y_jardines</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Playas y zonas de costa</td>
+              <td><code>_playas_y_zonas_de_costa</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Running</td>
+              <td><code>_running_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Rutas de senderismo y ciclismo</td>
+              <td><code>_rutas_para_senderismo_y_ciclismo</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Skate</td>
+              <td><code>_skate_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            <tr class="">
+              <td>Surf y olas</td>
+              <td><code>_surf_y_olas_sports</code></td>
+              <td class="c"><span class="chip chip--ok">existe</span></td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+  <h2><span class="num">3</span>Lo que te pedimos</h2>
+  <div class="pide">
+    <article>
+      <h3>Crear las 30 subcategorías nuevas</h3>
+      <p>Compras y moda 15 · Restaurantes y Cafés 4 · Experiencias y eventos 3 · Naturaleza y aire libre 3 · Arte y cultura 2 · Vida nocturna 1 · Alojamiento 1 · Bienestar, salud y belleza 1.</p>
+      <p>La de Compras es con diferencia la más grande: hoy tienes <code>compras</code>
+         y <code>tiendas</code> como macro, pero sin ningún desglose por tipo de tienda.</p>
+    </article>
+    <article>
+      <h3>Ligar categorías y subcategorías a cada ciudad</h3>
+      <p>Es lo que nos dijiste: que una ciudad no la tenga solo significa que aún no
+         se le ha añadido. Ahora mismo, de las 83 subcategorías que ya existen,
+         <strong>solo una está ligada a alguna ciudad</strong>, así que no saldrían en
+         la navegación de ninguna.</p>
+    </article>
+    <article>
+      <h3>Dinos si alguna no encaja</h3>
+      <p>Si alguna no cuadra con cómo tenéis montada la app, la quitamos de la
+         taxonomía. Preferimos no tener una sección a tenerla vacía.</p>
+    </article>
+  </div>
+
+  <footer>
+    Si te viene mejor un <code>.sql</code> con los INSERT ya escritos, o un CSV,
+    dínoslo y te lo mandamos en un rato: lo tenemos en un YAML del que sale
+    cualquier formato.
+  </footer>
+</div>
+
+</body>
+</html>
