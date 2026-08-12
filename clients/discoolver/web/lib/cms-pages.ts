@@ -15,6 +15,11 @@ type CmsSections = Record<string, { type: string; data: SectionData }>;
  * ellas (`home` ya es de la tienda de guías; `app-home`, de la landing de la app).
  */
 export type PageSlug =
+  // `app-home` es la home del dominio desde el 12-ago-2026 (la plataforma);
+  // `home` es la tienda de guías, que se mudó a /guias. Los dos slugs venían
+  // de proyectos separados y se conservan tal cual para no re-sembrar el CMS.
+  | "app-home"
+  | "app-home-en"
   | "home"
   | "influencers"
   | "360-home"

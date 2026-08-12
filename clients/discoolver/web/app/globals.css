@@ -2803,3 +2803,23 @@ a.format-card--paper {
     justify-content: center;
   }
 }
+
+
+/* ── HOME DE LA APP (12-ago-2026) ──────────────────────────────────────
+   La landing de la app pasa a ser la home de discoolver.com y la tienda de
+   guías se muda a /guias. Las dos comparten sistema de diseño: de las 206
+   reglas de la app, 200 ya estaban aquí IDÉNTICAS byte a byte. Estas seis
+   son las únicas que faltaban. */
+.creator-values { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.bento__featured .bento__top { position: relative; z-index: 1; }
+.bento__featured::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(transparent 35%, rgba(0, 0, 0, 0.65));
+}
+.bento__color-1 .bento__count { color: color-mix(in oklab, var(--paper) 72%, transparent); }
+.exp:hover .exp__rating { color: var(--primary); }
+.testi__quote-mark { font-size: 96px; opacity: 0.25; }

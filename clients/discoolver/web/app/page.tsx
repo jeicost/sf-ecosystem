@@ -3,41 +3,59 @@ import { buildMetadata } from "@/lib/seo";
 import { faqJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
 import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { applyPlatformStats } from "@/lib/platform-stats";
 import { DraftBanner } from "@/components/DraftBanner";
-import { defaultHomeContent } from "@/lib/content/home";
-import { defaultHomeContent as defaultHomeContentEn } from "@/lib/content/en/home";
+import { defaultAppHomeContent } from "@/lib/content/app-home";
+import { defaultAppHomeContent as defaultAppHomeContentEn } from "@/lib/content/en/app-home";
 import type { Locale } from "@/lib/i18n";
-import { Nav } from "@/components/layout/Nav";
-import { Footer } from "@/components/layout/Footer";
-import { Hero } from "@/components/sections/Hero";
-import { Ticker } from "@/components/sections/Ticker";
-import { Guides } from "@/components/sections/Guides";
-import { Curation } from "@/components/sections/Curation";
-import { GuideObject } from "@/components/sections/GuideObject";
-import { CityAI } from "@/components/sections/CityAI";
-import { CreatorsBridge } from "@/components/sections/CreatorsBridge";
-import { Waitlist } from "@/components/sections/Waitlist";
-import { FAQ } from "@/components/sections/FAQ";
+import { Nav } from "@/components/app/Nav";
+import { Footer } from "@/components/app/Footer";
+import { Hero } from "@/components/app/Hero";
+import { Ticker } from "@/components/app/Ticker";
+import { Categories } from "@/components/app/Categories";
+import { TravelBrain } from "@/components/app/TravelBrain";
+import { HowItWorks } from "@/components/app/HowItWorks";
+import { Experiences } from "@/components/app/Experiences";
+import { MapSection } from "@/components/app/MapSection";
+import { ForCreators } from "@/components/app/ForCreators";
+import { AppComingSoon } from "@/components/app/AppComingSoon";
+import { Testimonials } from "@/components/app/Testimonials";
+import { FAQ } from "@/components/app/FAQ";
 import { Wordmark } from "@/components/sections/Wordmark";
-import { CTA } from "@/components/sections/CTA";
+import { CTA } from "@/components/app/CTA";
 
+/**
+ * La home de discoolver.com — la plataforma.
+ *
+ * Hasta el 12-ago-2026 esto era la tienda de guías, que vivía en la raíz. El
+ * CEO decidió que el dominio lo encabece el producto principal (la app) y que
+ * las guías pasen a `/guias`. Esta página es la que servía el proyecto
+ * `discoolver-app-landing`, traída aquí para que las dos vivan en el mismo
+ * dominio y compartan nav, footer, legales y sitemap.
+ *
+ * Sus componentes viven en `components/app/` a propósito: los nombres chocaban
+ * con los de la tienda (Hero, CTA, FAQ, Ticker) y son piezas distintas. Lo que
+ * NO se duplicó es el CSS: de las 206 reglas del proyecto viejo, 200 ya estaban
+ * aquí idénticas byte a byte —es el mismo sistema de diseño— y solo hubo que
+ * traer seis.
+ */
 export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Guías de viaje curadas de creadores",
+  title: "Discoolver — Descubre tu ciudad antes que el resto",
   description:
-    "Lo mejor del año en cada ciudad, editado en una guía que querrás guardar: curación humana de creadores, digital y papel, con IA para recorrer la ciudad.",
+    "Sitios recomendados por creadores locales reales, revisados por editores y potenciados por IA. Madrid, Barcelona y Málaga ya abiertas — entra hoy por la web.",
   path: "/",
 });
 
-export async function HomePage({ locale = "es" }: { locale?: Locale }) {
+export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
   // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
   // of the build-time bake when active; any failure falls back to the bake.
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("home-en" as const) : ("home" as const);
-  const fallback = locale === "en" ? defaultHomeContentEn : defaultHomeContent;
+  const slug = locale === "en" ? ("app-home-en" as const) : ("app-home" as const);
+  const fallback = locale === "en" ? defaultAppHomeContentEn : defaultAppHomeContent;
   const cms = isDraft ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug) : loadCmsSections(slug);
-  const content = mergeContent(fallback, section(cms, "content"));
+  const content = await applyPlatformStats(mergeContent(fallback, section(cms, "content")), locale);
 
-  const faqItems = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
+  const faqItems = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],
     answer: content[`faq_a${n}` as keyof typeof content],
   }));
@@ -47,21 +65,21 @@ export async function HomePage({ locale = "es" }: { locale?: Locale }) {
       {isDraft && <DraftBanner />}
       <Nav locale={locale} />
       <main>
-        <Hero content={content} locale={locale} />
+        <Hero content={content} />
         <Ticker content={content} />
-        <Guides content={content} locale={locale} />
-        <Curation content={content} />
-        <GuideObject content={content} />
-        <CityAI content={content} />
-        {/* El puente a creators va DESPUÉS del cierre B2C: en el punto de máxima
-            intención de compra estaba derivando el tráfico caliente a /influencers. */}
-        <Waitlist content={content} locale={locale} />
+        <Categories content={content} />
+        <TravelBrain content={content} />
+        <HowItWorks content={content} />
+        <Experiences content={content} />
+        <MapSection content={content} />
+        <ForCreators content={content} />
+        <AppComingSoon content={content} locale={locale} />
+        <Testimonials content={content} />
         <FAQ content={content} />
-        <CreatorsBridge content={content} locale={locale} />
         <Wordmark />
-        <CTA content={content} locale={locale} />
+        <CTA content={content} />
       </main>
-      <Footer locale={locale} brandDesc={content.footer_brand_desc} copyright={content.footer_copyright} />
+      <Footer brandDesc={content.footer_brand_desc} copyright={content.footer_copyright} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqItems)) }}
@@ -71,5 +89,5 @@ export async function HomePage({ locale = "es" }: { locale?: Locale }) {
 }
 
 export default function Page() {
-  return <HomePage locale="es" />;
+  return <AppHomePage locale="es" />;
 }

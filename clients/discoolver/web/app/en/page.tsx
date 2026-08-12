@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { HomePage } from "@/app/page";
+import { AppHomePage } from "@/app/page";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Travel guides curated from creators",
+  title: "Discoolver — Discover your city before everyone else",
   description:
-    "The best of the year in every city, edited into a guide you'll want to keep: human curation of creators, digital and print, with AI to walk the city.",
+    "Places recommended by real local creators, reviewed by editors and powered by AI. Madrid, Barcelona and Málaga now open — enter today on the web.",
   path: "/en",
   locale: "en",
 });
 
 export default function Page() {
-  return <HomePage locale="en" />;
+  return <AppHomePage locale="en" />;
 }

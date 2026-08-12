@@ -34,6 +34,11 @@ const HEADERS = { 'x-api-key': CMS_API_KEY }
 // y los slugs no se pueden repetir entre ellas (`home` ya es el de la tienda de
 // guías; `app-home` y `app-influencers`, los de la landing de la app).
 const PAGE_SLUGS = [
+  // `app-home` es la home del dominio desde el 12-ago-2026: la landing de la
+  // plataforma se mudó aquí y la tienda de guías pasó a /guias, que sigue
+  // usando el slug `home` de siempre para no re-sembrar el CMS.
+  'app-home',
+  'app-home-en',
   'home',
   'influencers',
   '360-home',

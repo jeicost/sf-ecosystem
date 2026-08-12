@@ -20,10 +20,10 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const isCreators = pathname?.includes("/influencers");
 
   const links = [
-    { href: withLocale("/#guias", locale), label: t.nav.guias },
-    { href: withLocale("/#curacion", locale), label: t.nav.curamos },
-    { href: withLocale("/#ia", locale), label: t.nav.ia },
-    { href: withLocale("/#faq", locale), label: t.nav.faq },
+    { href: withLocale("/guias#guias", locale), label: t.nav.guias },
+    { href: withLocale("/guias#curacion", locale), label: t.nav.curamos },
+    { href: withLocale("/guias#ia", locale), label: t.nav.ia },
+    { href: withLocale("/guias#faq", locale), label: t.nav.faq },
     { href: withLocale("/influencers", locale), label: t.nav.creators },
   ];
 
@@ -64,7 +64,7 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
               no a la tienda: es la página destino de los anuncios. */}
           {isCreators ? (
             <>
-              <Link href={withLocale("/#guias", locale)} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
+              <Link href={withLocale("/guias#guias", locale)} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
                 {t.nav.verGuias}
               </Link>
               <Link href="#form-guia" className="btn btn-primary" style={{ padding: "10px 18px" }}>
@@ -73,10 +73,10 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
             </>
           ) : (
             <>
-              <Link href={withLocale("/#waitlist", locale)} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
+              <Link href={withLocale("/guias#waitlist", locale)} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
                 {t.nav.avisame}
               </Link>
-              <Link href={withLocale("/#guias", locale)} className="btn btn-primary" style={{ padding: "10px 18px" }}>
+              <Link href={withLocale("/guias#guias", locale)} className="btn btn-primary" style={{ padding: "10px 18px" }}>
                 {t.nav.verGuias} <Icon name="arrow-up-right" size={14} />
               </Link>
             </>

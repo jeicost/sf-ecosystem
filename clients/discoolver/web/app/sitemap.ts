@@ -3,7 +3,12 @@ import { site } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
+    // La raíz es la plataforma desde el 12-ago-2026; la tienda de guías vive
+    // en /guias. Las dos con prioridad alta: son dos productos, no una página
+    // y su subpágina.
     { path: "", priority: 1 },
+    { path: "/guias", priority: 0.9 },
+    { path: "/en/guias", priority: 0.8 },
     { path: "/influencers", priority: 0.8 },
     // discoolver 360 — estrenada el 11-ago (agencias fuera: sigue noindex
     // hasta su piloto)
