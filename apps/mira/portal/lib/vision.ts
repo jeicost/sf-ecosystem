@@ -17,9 +17,15 @@ import { createMessageForClient } from '@/lib/anthropic-client'
  * a partir de ahí una foto entra en el índice de conocimiento exactamente igual
  * que un PDF: la ven los agentes, los informes y los documentos generados.
  *
- * Coste: Haiku, el mismo modelo que ya resume documentos en drive-sync. El
- * dedup por `content_hash` que ya existía hace que cada imagen se describa UNA
- * sola vez por mucho que se resincronice la carpeta.
+ * Coste: Haiku, el mismo modelo que ya resume documentos en drive-sync. Hasta
+ * el 2026-08-12 este comentario decía que el dedup por `content_hash` hacía que
+ * cada imagen se describiera UNA sola vez: era falso. Ese hash se calculaba
+ * sobre la descripción que devuelve esta función, y visión no escribe dos veces
+ * el mismo texto, así que el dedup no acertaba nunca y el cron nocturno volvía
+ * a pagar cada foto: 135 llamadas para 24 imágenes distintas. Ahora drive-sync
+ * guarda una huella estable de Drive (stableImageFingerprint) y sí se describe
+ * una sola vez; quien llame a esto desde otro sitio no tiene ese dedup y paga
+ * cada vez.
  */
 
 const VISION_MODEL = 'claude-haiku-4-5-20251001'

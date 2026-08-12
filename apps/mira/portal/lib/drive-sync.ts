@@ -50,6 +50,13 @@ interface DriveFileEntry {
   size?: string
   webViewLink?: string
   modifiedTime?: string
+  /**
+   * MD5 que da la propia API de Drive para ficheros binarios (no lo tienen los
+   * nativos de Google: Docs/Sheets). Es la única huella del CONTENIDO de una
+   * imagen que se consigue sin descargarla ni pagar visión — ver
+   * stableImageFingerprint().
+   */
+  md5Checksum?: string
   /** Relative path inside the connected folder, e.g. "Logos/logo.png" */
   path: string
 }
@@ -99,8 +106,12 @@ const IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
 
 // Tope propio para las imágenes, separado de MAX_DOCS_PER_SYNC: una carpeta con
 // cientos de fotos no debe monopolizar el sync ni disparar el coste de golpe.
-// Como el dedup por content_hash evita repetir, en 3-4 sincronizaciones una
-// carpeta grande queda descrita entera y a partir de ahí es gratis.
+// OJO: el recorte se hace SIEMPRE sobre las 25 más recientes por modifiedTime,
+// que en una carpeta estable son siempre las mismas 25. Las fotos por debajo
+// de ese corte no se describen nunca (en la carpeta de Salsa, 179 de 204
+// siguen siendo invisibles para los agentes) -- el dedup del 2026-08-12 hace
+// que las 25 de arriba salgan gratis, pero NO libera el cupo para las de
+// abajo. Rotarlo es una decisión de coste pendiente, no algo que ya ocurra.
 const MAX_IMAGES_PER_SYNC = 25
 
 // Hojas de cálculo añadidas el 2026-08-05: el CEO preguntó explícitamente si
@@ -411,7 +422,7 @@ async function listFolderChildren(
   try {
     const query = `'${folderId}' in parents and trashed=false`
     const response = await fetch(
-      `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&pageSize=100&fields=files(id,name,mimeType,size,webViewLink,modifiedTime)&supportsAllDrives=true&includeItemsFromAllDrives=true`,
+      `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(query)}&pageSize=100&fields=files(id,name,mimeType,size,webViewLink,modifiedTime,md5Checksum)&supportsAllDrives=true&includeItemsFromAllDrives=true`,
       {
         headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
       }
@@ -744,6 +755,31 @@ async function generateFolderMap(
   }
 }
 
+// ─── Dedup de imágenes ───────────────────────────────────────────
+
+/**
+ * Huella estable de una imagen, calculable ANTES de descargarla.
+ *
+ * Para un PDF o una hoja, el content_hash se calcula sobre el texto extraído y
+ * la extracción es barata. Para una imagen el "texto extraído" ES la
+ * descripción de visión, o sea justo lo caro — y además el modelo no devuelve
+ * dos veces exactamente la misma frase, así que hashear la descripción daba un
+ * hash distinto cada noche y el dedup NUNCA acertaba: 135 llamadas de visión
+ * para 24 imágenes distintas (5,6 pasadas por foto) en un cron que corre a
+ * diario sobre las mismas carpetas.
+ *
+ * Se usa el md5Checksum que da la propia API de Drive (cambia solo si cambia
+ * el fichero) y, si no viene, id + modifiedTime. Si no hay ninguno de los dos
+ * no hay clave estable: se devuelve null y esa imagen se vuelve a describir.
+ */
+function stableImageFingerprint(file: DriveFileEntry): string | null {
+  const key = file.md5Checksum || (file.modifiedTime ? `${file.id}:${file.modifiedTime}` : null)
+  if (!key) return null
+  // Prefijo de espacio de nombres: así una huella de imagen nunca puede
+  // colisionar con un hash de texto de otro camino de ingesta.
+  return createHash('sha256').update(`drive-image:${key}`).digest('hex')
+}
+
 // ─── Main sync ───────────────────────────────────────────────────
 
 /**
@@ -790,9 +826,9 @@ export async function syncDriveFolder(
   // Documentos e imágenes tienen presupuestos SEPARADOS a propósito: si
   // compartieran el tope de 20, una carpeta con cientos de fotos (Salsa tiene
   // 204) dejaría fuera el Excel del menú y los PDF de marca, que es justo el
-  // contenido con más valor. Además, gracias al dedup por content_hash, las
-  // imágenes ya descritas no vuelven a costar nada: en unas pocas
-  // sincronizaciones la carpeta queda descrita entera.
+  // contenido con más valor. Las imágenes ya descritas no vuelven a costar
+  // nada (dedup por huella estable, más abajo), pero siguen ocupando su hueco
+  // en el corte -- ver la nota de MAX_IMAGES_PER_SYNC.
   const docFiles = files
     .filter((f) => EXTRACTABLE_MIME_TYPES.includes(f.mimeType) && !IMAGE_MIME_TYPES.includes(f.mimeType))
     .sort(byNewest)
@@ -807,6 +843,10 @@ export async function syncDriveFolder(
   const otherFilesCount = files.length - files.filter((f) => EXTRACTABLE_MIME_TYPES.includes(f.mimeType)).length
 
   let filesSynced = 0
+  // Contador de ficheros que ya estaban en agent_documents sin cambios y no
+  // costaron ni una llamada a la IA. Se loguea al final para poder comprobar
+  // que el dedup previo al gasto está funcionando de verdad.
+  let skippedUnchanged = 0
   const docSummaries: Array<{ path: string; summary: string }> = []
   // Documentos con contenido nuevo/distinto desde el último sync (por
   // content_hash) -- son el lote que se pasa a la síntesis contra el Brand
@@ -815,13 +855,61 @@ export async function syncDriveFolder(
 
   for (const file of extractableFiles) {
     try {
+      // La consulta del duplicado va PRIMERO, antes de descargar y antes de
+      // cualquier llamada a la IA. Hasta el 2026-08-12 se hacía después de
+      // haber pagado ya la visión y el resumen con Haiku, así que el cron
+      // nocturno volvía a pagar lo mismo cada noche sobre las mismas carpetas:
+      // 135 llamadas de visión para 24 imágenes distintas.
+      // Dedup by client_id + source_metadata->>google_drive_file_id
+      const { data: existing } = await admin
+        .from('agent_documents')
+        .select('id, content_hash, analysis_summary')
+        .eq('client_id', clientId)
+        .eq('source_metadata->>google_drive_file_id', file.id)
+        .limit(1)
+      const existingRow = existing?.[0]
+
+      // En imágenes la huella se conoce sin descargar nada (md5 de Drive), así
+      // que una foto ya descrita ni siquiera se baja: es el caso que más dinero
+      // perdía. En documentos hay que extraer el texto para tener el hash, pero
+      // extraer no cuesta IA — lo caro (el resumen) queda detrás del if.
+      const imageFingerprint = IMAGE_MIME_TYPES.includes(file.mimeType)
+        ? stableImageFingerprint(file)
+        : null
+
+      if (existingRow && imageFingerprint && existingRow.content_hash === imageFingerprint) {
+        skippedUnchanged++
+        filesSynced++
+        // El mapa de carpeta se sigue construyendo con el resumen ya guardado:
+        // saltar el gasto no debe degradar lo que ven los agentes.
+        if (existingRow.analysis_summary) {
+          docSummaries.push({ path: file.path, summary: existingRow.analysis_summary })
+        }
+        continue
+      }
+
       const extraction = await downloadAndExtractText(token, file.id, file.mimeType, clientId, file.name, file.path)
       if (!extraction.success || !extraction.text) {
         console.warn(`Drive sync: could not extract "${file.path}": ${extraction.error}`)
         continue
       }
 
-      const contentHash = createHash('sha256').update(extraction.text).digest('hex')
+      // Para una imagen se guarda la huella estable de Drive, NO el hash de la
+      // descripción: hashear la descripción es lo que hacía que el dedup no
+      // acertara nunca (visión no devuelve dos veces el mismo texto).
+      const contentHash = imageFingerprint ?? createHash('sha256').update(extraction.text).digest('hex')
+
+      if (existingRow && existingRow.content_hash === contentHash) {
+        // Mismo contenido que la última vez: nos ahorramos el resumen con
+        // Haiku, la reescritura de la fila y la síntesis contra el Brand Brain.
+        skippedUnchanged++
+        filesSynced++
+        if (existingRow.analysis_summary) {
+          docSummaries.push({ path: file.path, summary: existingRow.analysis_summary })
+        }
+        continue
+      }
+
       const summary = await summarizeDocument(clientId, file.name, extraction.text)
       const sourceMetadata = {
         folder_id: folderRow.folder_id,
@@ -831,14 +919,6 @@ export async function syncDriveFolder(
         synced_at: new Date().toISOString(),
         path: file.path,
       }
-
-      // Upsert: dedup by client_id + source_metadata->>google_drive_file_id
-      const { data: existing } = await admin
-        .from('agent_documents')
-        .select('id, content_hash')
-        .eq('client_id', clientId)
-        .eq('source_metadata->>google_drive_file_id', file.id)
-        .limit(1)
 
       // Shape real de agent_documents (migración 0022 + columna source_metadata añadida en 0032):
       // NOT NULL: agent_role, document_type, title, analysis_status
@@ -863,10 +943,9 @@ export async function syncDriveFolder(
       }
 
       let documentId: string
-      const isNewOrChanged = !existing?.length || existing[0].content_hash !== contentHash
 
-      if (existing?.length) {
-        documentId = existing[0].id
+      if (existingRow) {
+        documentId = existingRow.id
         const { error: updateError } = await admin
           .from('agent_documents')
           .update(docRow)
@@ -890,30 +969,60 @@ export async function syncDriveFolder(
 
       filesSynced++
       docSummaries.push({ path: file.path, summary })
-      if (isNewOrChanged) {
-        // Las hojas de cálculo llevan un extracto mucho más largo hacia la
-        // síntesis del Brand Brain: 3.000 caracteres de un menú son 2-3
-        // recetas, así que el sintetizador proponía cambios sin haber visto
-        // ni la mitad de los precios. Una tabla ya viene comprimida (una fila
-        // = un hecho), así que el coste por carácter es mucho más rentable
-        // que en prosa.
-        const isTabular = extraction.text.startsWith('## Sheet:') || extraction.text.startsWith('Columns:')
-        changedDocs.push({
-          documentId,
-          path: file.path,
-          title: file.name,
-          summary,
-          excerpt: extraction.text.slice(0, isTabular ? 20000 : 3000),
-        })
-      }
+      // Todo lo que llega hasta aquí es nuevo o ha cambiado: lo que tenía el
+      // mismo content_hash ya salió por el `continue` de arriba sin gastar.
+      // Las hojas de cálculo llevan un extracto mucho más largo hacia la
+      // síntesis del Brand Brain: 3.000 caracteres de un menú son 2-3
+      // recetas, así que el sintetizador proponía cambios sin haber visto
+      // ni la mitad de los precios. Una tabla ya viene comprimida (una fila
+      // = un hecho), así que el coste por carácter es mucho más rentable
+      // que en prosa.
+      const isTabular = extraction.text.startsWith('## Sheet:') || extraction.text.startsWith('Columns:')
+      changedDocs.push({
+        documentId,
+        path: file.path,
+        title: file.name,
+        summary,
+        excerpt: extraction.text.slice(0, isTabular ? 20000 : 3000),
+      })
     } catch (fileError) {
       console.error(`Drive sync: unexpected error processing "${file.path}":`, fileError)
     }
   }
 
+  // Traza del ahorro: cuántos de los ficheros candidatos se saltaron por estar
+  // ya en agent_documents sin cambios (0 llamadas a la IA). En una carpeta ya
+  // sincronizada lo normal es que "skipped" sea casi el total; si sale 0 noche
+  // tras noche, el dedup ha vuelto a romperse.
+  console.log(
+    `Drive sync (folder ${folderRow.id}): ${extractableFiles.length} candidate files, ${skippedUnchanged} skipped as unchanged (no AI cost), ${changedDocs.length} new/updated`
+  )
+
   // 5. Folder map → project_memory (insight, dedup by tags [drive_map, folderRow.id])
   const folderName = folderRow.folder_name || 'Drive folder'
-  const mapSummary = await generateFolderMap(clientId, folderName, tree, docSummaries, otherFilesCount)
+
+  // El mapa de carpeta es OTRA llamada a Haiku por carpeta y noche, y hasta
+  // ahora se pagaba aunque el sync no hubiera tocado nada: con el cron diario
+  // sobre 12 carpetas son ~360 llamadas al mes (~4.000 tok in cada una) para
+  // reescribir un texto idéntico. Si no ha cambiado ningún documento NI el
+  // árbol de ficheros, el mapa que saldría es el que ya está guardado, así que
+  // se reutiliza. Cualquier alta, borrado o renombrado en Drive cambia `tree`
+  // (incluidos los ficheros no legibles, que no pasan por changedDocs) y
+  // vuelve a regenerarlo.
+  const { data: existingMemory } = await admin
+    .from('project_memory')
+    .select('id, summary, full_content')
+    .eq('client_id', clientId)
+    .contains('tags', ['drive_map', folderRow.id])
+    .limit(1)
+  const storedMap = existingMemory?.[0]
+  const storedTree = (storedMap?.full_content as { tree?: unknown } | null)?.tree
+  const treeUnchanged = JSON.stringify(storedTree ?? null) === JSON.stringify(tree)
+
+  const mapSummary =
+    changedDocs.length === 0 && treeUnchanged && storedMap?.summary
+      ? storedMap.summary
+      : await generateFolderMap(clientId, folderName, tree, docSummaries, otherFilesCount)
 
   // 5b. Síntesis real contra el Brand Brain (Fase 1) -- solo si hay documentos
   // nuevos/cambiados de verdad, el flag está activo, y el circuit-breaker del
@@ -984,15 +1093,10 @@ export async function syncDriveFolder(
       source_department: 'brand',
     }
 
-    const { data: existingMemory } = await admin
-      .from('project_memory')
-      .select('id')
-      .eq('client_id', clientId)
-      .contains('tags', ['drive_map', folderRow.id])
-      .limit(1)
-
-    const memoryResult = existingMemory?.length
-      ? await admin.from('project_memory').update(memoryPayload).eq('id', existingMemory[0].id)
+    // La fila ya se buscó arriba (para poder reutilizar el mapa guardado): no
+    // se vuelve a consultar.
+    const memoryResult = storedMap
+      ? await admin.from('project_memory').update(memoryPayload).eq('id', storedMap.id)
       : await admin.from('project_memory').insert(memoryPayload)
     if (memoryResult.error) {
       console.error('Drive sync: folder map write failed:', memoryResult.error.message)
