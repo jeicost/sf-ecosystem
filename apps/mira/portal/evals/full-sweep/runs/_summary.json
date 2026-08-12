@@ -1,0 +1,83 @@
+[
+  {
+    "surface": "report",
+    "id": "brand-briefing",
+    "ok": true,
+    "ms": 95782,
+    "inTok": 12879,
+    "outTok": 8365,
+    "usd": 0.27352,
+    "chars": 20327
+  },
+  {
+    "surface": "report",
+    "id": "marketing-audit",
+    "ok": true,
+    "ms": 70756,
+    "inTok": 14283,
+    "outTok": 5642,
+    "usd": 0.212465,
+    "chars": 14935
+  },
+  {
+    "surface": "report",
+    "id": "competitive-analysis",
+    "ok": true,
+    "ms": 57681,
+    "inTok": 12739,
+    "outTok": 4752,
+    "usd": 0.182495,
+    "chars": 11824
+  },
+  {
+    "surface": "report",
+    "id": "seo-audit",
+    "ok": true,
+    "ms": 75883,
+    "inTok": 14136,
+    "outTok": 6182,
+    "usd": 0.22523,
+    "chars": 16626
+  },
+  {
+    "surface": "report",
+    "id": "action-plan",
+    "ok": true,
+    "ms": 61035,
+    "inTok": 12830,
+    "outTok": 5005,
+    "usd": 0.189275,
+    "chars": 12010
+  },
+  {
+    "surface": "report",
+    "id": "brand-book",
+    "ok": true,
+    "ms": 122768,
+    "inTok": 14517,
+    "outTok": 10463,
+    "usd": 0.33416,
+    "chars": 26298
+  },
+  {
+    "surface": "report",
+    "id": "investor-deck",
+    "ok": true,
+    "ms": 70276,
+    "inTok": 13168,
+    "outTok": 6340,
+    "usd": 0.22434,
+    "chars": 15259
+  },
+  {
+    "surface": "report",
+    "id": "monthly-content-system",
+    "ok": false,
+    "ms": 243,
+    "inTok": 0,
+    "outTok": 0,
+    "usd": 0,
+    "chars": 0,
+    "error": "getToolkitPrompt devolvió null (slug desconocido)"
+  }
+]

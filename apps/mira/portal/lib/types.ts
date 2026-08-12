@@ -71,6 +71,16 @@ export interface ApprovalItem {
   reviewer_notes: string | null
   edited_copy: string | null
   edited_caption: string | null
+  /** 0068: dirección visual y pilar — NUNCA parte del texto publicable. */
+  production_notes?: string | null
+  /** 0068: avisos del validador de las reglas escritas de la propia marca. */
+  qa_flags?: QaFlagRow[] | null
+}
+
+export interface QaFlagRow {
+  rule: string
+  detail: string
+  severity: 'bloqueante' | 'aviso'
 }
 
 export interface Alert {

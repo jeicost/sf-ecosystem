@@ -6,6 +6,7 @@
 // motor interno con este mismo módulo.
 
 import type { adminClient } from '@/lib/supabase'
+import { validatePiece, type QaFlag } from '@/lib/content-engine/qa-validator'
 
 type Admin = ReturnType<typeof adminClient>
 
@@ -51,14 +52,27 @@ export function formatReelScript(script: NonNullable<GeneratedPost['reel_script'
 }
 
 /** Copy completo revisable en approval_queue (sin columna de metadata → el pilar va en el copy). */
-export function composeCopy(pillarName: string, post: GeneratedPost): string {
-  const parts: string[] = [`[Pilar: ${pillarName}]`]
+/**
+ * SOLO el texto publicable: lo que el cliente puede copiar y pegar tal cual.
+ *
+ * Antes esta función metía aquí dentro el pilar y la dirección visual, así que
+ * quien copiaba la pieza para publicarla se llevaba las instrucciones del
+ * diseñador a Instagram. Eso ahora vive en composeProductionNotes().
+ */
+export function composeCopy(_pillarName: string, post: GeneratedPost): string {
+  const parts: string[] = []
   if (post.hook && !post.copy.startsWith(post.hook)) parts.push(post.hook)
   parts.push(post.copy)
-  if (post.cta) parts.push(`CTA: ${post.cta}`)
-  if (post.visual_direction) parts.push(`🎨 Dirección visual: ${post.visual_direction}`)
-  if (post.reel_script?.scenes?.length) parts.push(formatReelScript(post.reel_script))
+  if (post.cta) parts.push(post.cta)
   return parts.filter(Boolean).join('\n\n')
+}
+
+/** Lo que necesita quien PRODUCE la pieza, separado de lo que se publica. */
+export function composeProductionNotes(pillarName: string, post: GeneratedPost): string | null {
+  const parts: string[] = [`Pilar: ${pillarName}`]
+  if (post.visual_direction) parts.push(`Dirección visual: ${post.visual_direction}`)
+  if (post.reel_script?.scenes?.length) parts.push(formatReelScript(post.reel_script))
+  return parts.length > 1 ? parts.join('\n\n') : parts[0]
 }
 
 export interface MaterializeItem {
@@ -99,6 +113,20 @@ export async function materializePosts(
   if (!items.length) return { inserted: 0 }
   const now = new Date().toISOString()
 
+  // Las reglas del propio cliente (qa_rules, banned_phrases, política de
+  // idiomas) se comprueban ANTES de que la pieza llegue a su bandeja: estaban
+  // escritas en el Cerebro y no las verificaba nadie.
+  let brandData: Record<string, unknown> | null = null
+  try {
+    const { data } = await db.from('brand_profiles').select('brand_data').eq('client_id', clientId).maybeSingle()
+    brandData = (data?.brand_data as Record<string, unknown>) ?? null
+  } catch {
+    /* sin Cerebro, se materializa igual pero sin validar */
+  }
+  const flagsByItem: QaFlag[][] = items.map(({ post }) =>
+    validatePiece(brandData, { copy: post.copy, caption: post.caption, hook: post.hook, hashtags: post.hashtags, cta: post.cta })
+  )
+
   // 1) post_history PRIMERO — con .select('id') para enlazar y etiquetado en
   //    performance.tags. Postgres devuelve las filas en orden de inserción, así
   //    que el índice i corresponde 1:1 con items[i]. Si el insert o el conteo
@@ -136,7 +164,11 @@ export async function materializePosts(
       hashtags: asStringArray(post.hashtags),
       status: 'pending_review',
       submitted_at: now,
-      tone_warning: false,
+      production_notes: composeProductionNotes(pillarName, post),
+      qa_flags: flagsByItem[i],
+      // tone_warning ya existía y nadie lo encendía nunca: ahora lo enciende el
+      // validador cuando la pieza rompe una regla escrita de la marca.
+      tone_warning: flagsByItem[i].length > 0,
       ...(scheduledTime ? { scheduled_time: scheduledTime } : {}),
       ...(assetUrl ? { asset_url: assetUrl } : {}),
     }

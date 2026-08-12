@@ -259,6 +259,33 @@ export default function ApprovalsPage() {
                       {item.hashtags && item.hashtags.length > 0 && (
                         <p className="text-xs text-ink-tertiary mt-2">{item.hashtags.join(' ')}</p>
                       )}
+
+                      {/* Notas de producción: van APARTE del copy a propósito —
+                          antes se colaban dentro y el cliente las publicaba. */}
+                      {item.production_notes && (
+                        <details className="mt-3 rounded-lg border border-line-subtle bg-page p-2.5">
+                          <summary className="cursor-pointer text-[11px] uppercase tracking-wider text-ink-muted">
+                            Production notes
+                          </summary>
+                          <p className="mt-2 whitespace-pre-line text-xs text-ink-tertiary">
+                            {item.production_notes}
+                          </p>
+                        </details>
+                      )}
+
+                      {/* Avisos del validador de las reglas de la propia marca. */}
+                      {item.qa_flags && item.qa_flags.length > 0 && (
+                        <div className="mt-3 rounded-lg border border-dashed border-amber-500/40 bg-amber-500/5 p-2.5">
+                          <p className="mb-1 text-[10px] uppercase tracking-wider text-amber-500/90">Brand rule check</p>
+                          <ul className="space-y-0.5">
+                            {item.qa_flags.map((f, i) => (
+                              <li key={i} className="text-xs text-ink-secondary">
+                                {f.severity === 'bloqueante' ? '🔴' : '🟠'} {f.detail}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
                     {isPending && editingId === item.id && (
                       <div className="mb-3">
