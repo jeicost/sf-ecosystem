@@ -4,3 +4,7 @@ node_modules/
 out/
 *.pack
 *.pack.gz
+
+# Bake del CMS: lo genera scripts/fetch-cms-content.mjs en cada build.
+# Commitearlo significaría publicar el copy congelado del día del commit.
+content/pages.json

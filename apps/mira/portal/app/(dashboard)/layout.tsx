@@ -6,6 +6,7 @@ import { clsx } from 'clsx'
 import SectionSwitcher from '@/components/section-switcher'
 import IdealSidebarNav from '@/components/ideal-sidebar-nav'
 import ClientSwitcher from '@/components/client-switcher'
+import SelfServeNavLink from '@/components/onboarding/SelfServeNavLink'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { ProjectProvider } from '@/lib/project-context'
@@ -159,6 +160,12 @@ useEffect(() => {
           </span>
         </Link>
       )}
+
+      {/* Alta autoservicio — fuera de los dos bloques de nav a propósito: es
+          la puerta de entrada del plan Starter y tiene que existir con el flag
+          de UI ideal encendido o apagado. Se auto-oculta salvo para un cliente
+          sin pilares que aún no ha terminado el alta (ver SelfServeNavLink). */}
+      <SelfServeNavLink path={path} isAgency={isSuperAdmin(user)} />
 
       {/* UI ideal (6 espacios) — solo con el flag. Nada se borra; la nav de
           siempre vive en el bloque !idealUI de abajo. */}

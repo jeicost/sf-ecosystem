@@ -2,10 +2,20 @@ import type { Metadata } from 'next'
 import Script from 'next/script'
 import { Analytics } from '@vercel/analytics/next'
 import CookieConsent from './cookie-consent'
+import { defaultHomeContent } from '@/lib/content/home'
 
 const GTM_ID = 'GTM-5QZTPDX5'
 const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.miralanding.com'
 
+/**
+ * Valores por defecto del sitio. Las dos homes los pisan con su propio
+ * buildHomeMetadata() —incluido el canonical y los hreflang—, así que esto solo
+ * lo heredan las páginas legales.
+ *
+ * NO hay `alternates.canonical` aquí a propósito: un canonical heredado apunta
+ * /privacy, /terms y /cookies a la home y le dice a Google que son duplicados
+ * de ella.
+ */
 export const metadata: Metadata = {
   metadataBase: new URL(DOMAIN),
   icons: {
@@ -13,29 +23,29 @@ export const metadata: Metadata = {
     shortcut: '/icon.svg',
     apple: '/icon.svg',
   },
-  title: 'MIRA — Stop Operating. Start Directing.',
-  description: 'MIRA is the AI team that knows your brand and runs your departments. 30 agents across Marketing, Sales, Strategy, Innovation, Admin and Finance. You direct, they execute.',
-  alternates: {
-    canonical: DOMAIN,
-  },
+  title: defaultHomeContent.meta_title,
+  description: defaultHomeContent.meta_description,
   openGraph: {
-    title: 'MIRA — Stop Operating. Start Directing.',
-    description: 'MIRA is the AI team that knows your brand and runs your departments. 30 agents across Marketing, Sales, Strategy, Innovation, Admin and Finance. You direct, they execute.',
+    title: defaultHomeContent.meta_title,
+    description: defaultHomeContent.meta_description,
     url: DOMAIN,
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'MIRA — Stop Operating. Start Directing.' }],
+    siteName: 'MIRA',
+    locale: 'es_ES',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: defaultHomeContent.meta_title }],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'MIRA — Stop Operating. Start Directing.',
-    description: 'MIRA is the AI team that knows your brand and runs your departments. 30 agents across Marketing, Sales, Strategy, Innovation, Admin and Finance. You direct, they execute.',
+    title: defaultHomeContent.meta_title,
+    description: defaultHomeContent.meta_description,
     images: ['/og-image.png'],
   },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    // El castellano es el idioma por defecto; /en lo corrige al cargar.
+    <html lang="es">
       <head>
         <Script id="gtm-head" strategy="beforeInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','${GTM_ID}');`}
