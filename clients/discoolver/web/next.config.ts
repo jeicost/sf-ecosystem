@@ -26,6 +26,29 @@ const nextConfig: NextConfig = {
       // devuelve al artículo. Si algún día se traduce, esto se quita.
       { source: "/en/blog", destination: "/blog", permanent: false },
       { source: "/en/blog/:slug", destination: "/blog/:slug", permanent: false },
+
+      // ── blog.discoolver.com ──────────────────────────────────────────────
+      // El subdominio del blog viejo apunta ahora aquí. Sus URLs no se tiran a
+      // la papelera: cada una aterriza en SU artículo. El blog usó dos formatos
+      // a lo largo de los años —plano y con fecha— y los dos siguen indexados.
+      {
+        source: "/blog/:y(\\d{4})/:m(\\d{2})/:d(\\d{2})/:slug",
+        has: [{ type: "host", value: "blog.discoolver.com" }],
+        destination: "https://discoolver.com/blog/:slug",
+        permanent: true,
+      },
+      {
+        source: "/:slug((?!blog$|blog/).*)",
+        has: [{ type: "host", value: "blog.discoolver.com" }],
+        destination: "https://discoolver.com/blog/:slug",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "blog.discoolver.com" }],
+        destination: "https://discoolver.com/blog",
+        permanent: true,
+      },
     ];
   },
   async headers() {
