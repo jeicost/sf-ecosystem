@@ -7,6 +7,20 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
   },
+  // Rutas de la web ANTIGUA de discoolver.com → sus equivalentes nuevas.
+  // Hoy son inofensivas (nadie llega con estas rutas a este proyecto);
+  // el día del corte de dominio son las que salvan el SEO acumulado.
+  async redirects() {
+    return [
+      { source: "/es", destination: "/", permanent: true },
+      { source: "/es/destinos", destination: "/360/destinos", permanent: true },
+      { source: "/es/alojamientos", destination: "/360/alojamientos", permanent: true },
+      { source: "/es/influencers", destination: "/influencers", permanent: true },
+      { source: "/es/:path*", destination: "/", permanent: true },
+      { source: "/en/destinos", destination: "/en/360/destinos", permanent: true },
+      { source: "/en/alojamientos", destination: "/en/360/alojamientos", permanent: true },
+    ];
+  },
   async headers() {
     return [
       {

@@ -1,6 +1,6 @@
 export const site = {
   name: "Discoolver",
-  url: "https://discoolver-landing.vercel.app",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://discoolver-landing.vercel.app",
   locale: "es_ES",
   description:
     "Guías de viaje que curan lo mejor del año en cada ciudad: recomendaciones de creadores editadas por humanos, en digital y papel, con IA para recorrer la ciudad.",
