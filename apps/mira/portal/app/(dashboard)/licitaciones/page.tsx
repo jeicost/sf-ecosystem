@@ -1,6 +1,7 @@
 'use client'
-import { useRef, useState } from 'react'
-import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { clsx } from 'clsx'
+import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { hasTenderTool } from '@/lib/entitlements'
 
@@ -13,6 +14,10 @@ interface Memoria { titulo?: string; resumen_ejecutivo?: string; secciones?: Sec
 interface RadarScore { fit: number; verdict: 'go' | 'revisar' | 'no-go'; reason: string }
 interface RadarItem { id: string; expediente: string; title: string; org: string; cpv: string[]; amount: number | null; deadline: string | null; link: string; score: RadarScore | null }
 interface RadarMeta { total_found: number; scored: number; capped: boolean; pagesRead: number; stopReason: string }
+interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; memoria: Memoria | null }
+
+const STATUS_LABEL: Record<string, string> = { borrador: 'Borrador', preparando: 'Preparando', presentada: 'Presentada', ganada: 'Ganada', perdida: 'Perdida' }
+const STATUS_COLOR: Record<string, string> = { borrador: '#94A3B8', preparando: '#F59E0B', presentada: '#6366F1', ganada: '#10B981', perdida: '#EF4444' }
 
 const VERDICT_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
   go: { bg: 'rgba(16,185,129,.14)', fg: '#10B981', label: 'Encaja' },
@@ -40,6 +45,69 @@ export default function LicitacionesPage() {
   const [radarMeta, setRadarMeta] = useState<RadarMeta | null>(null)
   const [radarError, setRadarError] = useState<string | null>(null)
   const pliegoRef = useRef<HTMLTextAreaElement>(null)
+  // Expediente persistido: sin esto, la memoria se perdía al recargar.
+  const [saved, setSaved] = useState<SavedTender[]>([])
+  const [currentId, setCurrentId] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
+  const [savedAt, setSavedAt] = useState<string | null>(null)
+
+  const loadList = useCallback(async () => {
+    if (!clientId) return
+    try {
+      const res = await fetch(`/api/tender/saved?clientId=${clientId}`)
+      if (!res.ok) return
+      const data = await res.json()
+      setSaved(data.tenders || [])
+    } catch { /* la lista es accesoria: si falla, la página sigue usable */ }
+  }, [clientId])
+
+  useEffect(() => { loadList() }, [loadList])
+
+  const save = async (patch?: { status?: string; criteria?: Criteria | null; memoria?: Memoria | null }) => {
+    // Los overrides permiten guardar inmediatamente después de generar, cuando el
+    // estado de React todavía no refleja el resultado recién recibido.
+    const crit = patch && 'criteria' in patch ? patch.criteria : criteria
+    const mem = patch && 'memoria' in patch ? patch.memoria : memoria
+    if (!clientId || (!crit && !pliego.trim())) return
+    setSaving(true)
+    try {
+      const res = await fetch('/api/tender/saved', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: currentId, clientId,
+          title: mem?.titulo || crit?.object || pliego.slice(0, 80),
+          expediente: crit?.expediente || null,
+          deadline: crit?.deadline || null,
+          pliego_text: pliego, criteria: crit, memoria: mem,
+          ...(patch?.status ? { status: patch.status } : {}),
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'No se pudo guardar'); return }
+      setCurrentId(data.id)
+      setSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
+      loadList()
+    } catch { setError('Fallo de red al guardar') } finally { setSaving(false) }
+  }
+
+  const open = async (id: string) => {
+    if (!clientId) return
+    setError(null)
+    try {
+      const res = await fetch(`/api/tender/saved?id=${id}&clientId=${clientId}`)
+      if (!res.ok) { setError('No se pudo abrir'); return }
+      const t = await res.json()
+      setCurrentId(t.id); setPliego(t.pliego_text || '')
+      setCriteria(t.criteria || null); setMemoria(t.memoria || null); setSavedAt(null)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } catch { setError('Fallo de red') }
+  }
+
+  const startNew = () => {
+    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setSavedAt(null); setError(null)
+  }
+
+  const setStatus = async (status: string) => { await save({ status }) }
 
   const runRadar = async () => {
     if (!clientId) return
@@ -60,6 +128,7 @@ export default function LicitacionesPage() {
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Error al extraer criterios'); return }
       setCriteria(data)
+      save({ criteria: data, memoria: null })  // guarda el expediente en cuanto hay algo que perder
     } catch { setError('Fallo de red') } finally { setStep('idle') }
   }
 
@@ -71,6 +140,7 @@ export default function LicitacionesPage() {
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Error al generar la memoria'); return }
       setMemoria(data)
+      save({ memoria: data, status: 'preparando' })  // la memoria nunca se pierde al recargar
     } catch { setError('Fallo de red') } finally { setStep('idle') }
   }
 
@@ -103,6 +173,41 @@ export default function LicitacionesPage() {
         <h1 className="text-2xl font-semibold text-ink">Del pliego a la memoria técnica</h1>
         <p className="mt-1 text-sm text-ink-tertiary">Pega el pliego, extrae los criterios de puntuación y genera la memoria criterio a criterio, con el corpus de {activeClient?.name || 'tu empresa'}.</p>
       </div>
+
+      {/* Expedientes guardados */}
+      {saved.length > 0 && (
+        <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
+          <div className="mb-3 flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FolderOpen size={15} style={{ color: brand }} /> Vuestras licitaciones</h2>
+            {(currentId || pliego) && (
+              <button onClick={startNew} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink">
+                <Plus size={13} /> Nueva
+              </button>
+            )}
+          </div>
+          <div className="space-y-1.5">
+            {saved.map((t) => {
+              const d = daysLeft(t.deadline)
+              return (
+                <button key={t.id} onClick={() => open(t.id)}
+                  className={clsx('flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors',
+                    t.id === currentId ? 'border-line bg-page' : 'border-line-subtle hover:bg-page')}>
+                  <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[t.status] || '#94A3B8' }} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm text-ink">{t.title}</span>
+                    <span className="block text-[11px] text-ink-muted">
+                      {STATUS_LABEL[t.status] || t.status}
+                      {t.expediente ? ` · Exp. ${t.expediente}` : ''}
+                      {d != null ? ` · ${d > 0 ? `${d} días` : 'vencida'}` : ''}
+                      {t.memoria ? ' · con memoria' : ''}
+                    </span>
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Radar de concursos (PLACSP, gratis) */}
       <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
@@ -206,9 +311,28 @@ export default function LicitacionesPage() {
         <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FileText size={15} style={{ color: brand }} /> 3 · {memoria.titulo || 'Memoria técnica'}</h2>
-            <button onClick={copyMemoria} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
-              {copied ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
-            </button>
+            <div className="flex items-center gap-2">
+              {savedAt && <span className="text-[11px] text-ink-muted">Guardado {savedAt}</span>}
+              <button onClick={() => save()} disabled={saving}
+                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
+                {saving ? <><Loader2 size={13} className="animate-spin" /> Guardando</> : <><Save size={13} /> Guardar</>}
+              </button>
+              <button onClick={copyMemoria} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
+                {copied ? <><Check size={13} /> Copiado</> : <><Copy size={13} /> Copiar</>}
+              </button>
+            </div>
+          </div>
+          {/* Estado del expediente: cerrar el ciclo (presentada → ganada/perdida) es
+              lo que convierte esto en histórico útil para futuras memorias. */}
+          <div className="mb-4 flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-[11px] text-ink-muted">Estado:</span>
+            {Object.keys(STATUS_LABEL).map((st) => (
+              <button key={st} onClick={() => setStatus(st)} disabled={saving}
+                className="rounded-full border px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+                style={{ borderColor: `${STATUS_COLOR[st]}55`, color: STATUS_COLOR[st] }}>
+                {STATUS_LABEL[st]}
+              </button>
+            ))}
           </div>
           {memoria.resumen_ejecutivo && <p className="mb-4 text-sm text-ink-secondary">{memoria.resumen_ejecutivo}</p>}
           <div className="space-y-4">
