@@ -58,3 +58,29 @@ export const CATALOGO: Record<Sku, Producto> = {
 
 /** El flip del lanzamiento: el botón de compra solo existe si está a "1". */
 export const CHECKOUT_ABIERTO = process.env.NEXT_PUBLIC_CHECKOUT === "1";
+
+/**
+ * Renuncia al desistimiento — obligatoria para vender la guía digital.
+ *
+ * El artículo 103.m del texto refundido de la Ley General para la Defensa de
+ * los Consumidores y Usuarios quita el derecho de desistimiento al contenido
+ * digital **solo si** se cumplen dos cosas ANTES de la compra:
+ *
+ *   1. el comprador consiente expresamente que la entrega empiece ya, y
+ *   2. reconoce que al hacerlo pierde el derecho a desistir.
+ *
+ * Si falta cualquiera de las dos, los 14 días siguen vigentes y quien se
+ * descargue la guía puede pedir el dinero de vuelta con la ley de su parte.
+ * Por eso esto no es una casilla decorativa: el servidor RECHAZA la compra de
+ * un producto digital si no llega, y la aceptación viaja a los metadatos de
+ * Stripe con su fecha, que es la prueba de que se dio y cuándo.
+ */
+export const RENUNCIA = {
+  es: "Quiero recibir la guía inmediatamente y entiendo que, al descargarla, pierdo el derecho de desistimiento de 14 días.",
+  en: "I want the guide delivered immediately and I understand that by downloading it I lose the 14-day right of withdrawal.",
+} as const;
+
+/** ¿Este producto necesita la renuncia? Solo lo digital; el papel conserva sus 14 días. */
+export function necesitaRenuncia(p: Producto): boolean {
+  return !p.envio;
+}

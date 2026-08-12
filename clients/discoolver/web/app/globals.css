@@ -3005,3 +3005,25 @@ a.format-card--paper {
   line-height: 1.6;
   color: var(--ink-2);
 }
+
+/* La casilla de renuncia al desistimiento. Va ANTES de los botones y con el de
+   la digital deshabilitado hasta marcarla: la ley pide consentimiento previo,
+   no una casilla que se lee después de pagar. */
+.renuncia {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.renuncia input {
+  margin-top: 2px;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.renuncia a { color: var(--primary-2); }
