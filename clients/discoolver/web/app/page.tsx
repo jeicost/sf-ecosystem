@@ -79,7 +79,7 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
         <Wordmark />
         <CTA content={content} />
       </main>
-      <Footer brandDesc={content.footer_brand_desc} copyright={content.footer_copyright} />
+      <Footer locale={locale} brandDesc={content.footer_brand_desc} copyright={content.footer_copyright} />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqItems)) }}

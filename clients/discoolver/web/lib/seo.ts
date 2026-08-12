@@ -11,6 +11,12 @@ interface SeoArgs {
   siteName?: string;
   /** "es" (raíz) o "en" (/en/*). Emite hreflang hacia el equivalente. */
   locale?: "es" | "en";
+  /**
+   * Corta el hreflang. Para páginas que solo existen en español: el blog es el
+   * rescate del blog viejo y no hay traducción. Declarar un `en` que redirige
+   * de vuelta al español le dice a Google que existe una versión que no existe.
+   */
+  soloEs?: boolean;
 }
 
 /** /360/x ↔ /en/360/x — mismo path sin el prefijo /en. */
@@ -26,6 +32,7 @@ export function buildMetadata({
   noindex,
   siteName,
   locale = "es",
+  soloEs,
 }: SeoArgs): Metadata {
   const url = `${site.url}${path}`;
   const ogImage = image ?? site.ogImage;
@@ -37,7 +44,7 @@ export function buildMetadata({
     description,
     alternates: {
       canonical: url,
-      languages: { es: esUrl, en: enUrl, "x-default": esUrl },
+      ...(soloEs ? {} : { languages: { es: esUrl, en: enUrl, "x-default": esUrl } }),
     },
     openGraph: {
       title,

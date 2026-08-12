@@ -1,6 +1,9 @@
 export const site = {
   name: "Discoolver",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "https://discoolver-landing.vercel.app",
+  // El fallback es el dominio real desde el corte del 12-ago-2026. Antes era la
+  // URL de .vercel.app, y si algún día faltara la variable de entorno la web
+  // habría empezado a emitir canonical y OG hacia el dominio viejo sin avisar.
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://discoolver.com",
   locale: "es_ES",
   description:
     "Guías de viaje que curan lo mejor del año en cada ciudad: recomendaciones de creadores editadas por humanos, en digital y papel, con IA para recorrer la ciudad.",

@@ -1,81 +1,187 @@
 import Image from "next/image";
 import Link from "next/link";
+import { withLocale, type Locale } from "@/lib/i18n";
+import { SOCIAL, WHATSAPP, waHref } from "@/lib/site";
+
+/**
+ * El pie del dominio. Tres arreglos del 12-ago-2026:
+ *
+ *  · **No enlazaba ni las guías, ni el blog, ni /360.** "Para empresas" era un
+ *    `mailto:` en vez de la página de la marca B2B, así que el pie de la home
+ *    no llevaba a ninguno de los tres productos.
+ *  · **De legales solo tenía privacidad.** Había un comentario diciendo que
+ *    términos y cookies se retiraban "hasta que haya páginas reales que
+ *    enlazar": ya las hay.
+ *  · **No era bilingüe.** La home en inglés servía este pie en español.
+ */
+const T = {
+  es: {
+    aria: "Pie de página",
+    home: "Discoolver — inicio",
+    brandDesc: "La plataforma para descubrir tu ciudad como nunca antes lo habías hecho.",
+    copyright: "Discoolver · Hecho con ♥ desde España",
+    producto: "Producto",
+    productoLinks: [
+      ["/guias", "Las guías"],
+      ["/#categorias", "Categorías"],
+      ["/#mapa", "Mapa"],
+      ["/#planes", "Planes"],
+    ],
+    descubrir: "Descubrir",
+    descubrirLinks: [
+      ["/blog", "Blog"],
+      ["/influencers", "Creators"],
+      ["/#faq", "Preguntas frecuentes"],
+    ],
+    empresa: "Empresa",
+    empresa360: "discoolver 360 · para empresas",
+    plataforma: "Entrar en la plataforma",
+    prensa: "Prensa",
+    contacto: "Contacto",
+    whatsapp: "Consultas por WhatsApp",
+    siguenos: "Síguenos",
+    avisoLegal: "Aviso legal",
+    terminos: "Términos",
+    privacidad: "Privacidad",
+    cookies: "Cookies",
+  },
+  en: {
+    aria: "Footer",
+    home: "Discoolver — home",
+    brandDesc: "The platform to discover your city like you never have before.",
+    copyright: "Discoolver · Made with ♥ in Spain",
+    producto: "Product",
+    productoLinks: [
+      ["/guias", "The guides"],
+      ["/#categorias", "Categories"],
+      ["/#mapa", "Map"],
+      ["/#planes", "Plans"],
+    ],
+    descubrir: "Discover",
+    descubrirLinks: [
+      ["/blog", "Blog"],
+      ["/influencers", "Creators"],
+      ["/#faq", "FAQ"],
+    ],
+    empresa: "Company",
+    empresa360: "discoolver 360 · for business",
+    plataforma: "Enter the platform",
+    prensa: "Press",
+    contacto: "Contact",
+    whatsapp: "Questions on WhatsApp",
+    siguenos: "Follow us",
+    avisoLegal: "Legal notice",
+    terminos: "Terms",
+    privacidad: "Privacy",
+    cookies: "Cookies",
+  },
+} as const;
 
 export function Footer({
-  brandDesc = "La plataforma para descubrir tu ciudad como nunca antes lo habías hecho.",
-  copyright = "Discoolver · Hecho con ♥ desde España",
+  locale = "es",
+  brandDesc,
+  copyright,
 }: {
+  locale?: Locale;
   brandDesc?: string;
   copyright?: string;
 }) {
+  const t = T[locale];
+  const legales = [
+    ["/aviso-legal", t.avisoLegal],
+    ["/terminos", t.terminos],
+    ["/privacidad", t.privacidad],
+    ["/cookies", t.cookies],
+  ] as const;
+
   return (
-    <footer className="foot" aria-label="Pie de página">
+    <footer className="foot" aria-label={t.aria}>
       <div className="container">
         <div className="foot__grid">
           <div className="foot__col foot__brand">
-            <Link aria-label="Discoolver — inicio" href="/">
-              <Image src="/assets/logo-white.png" alt="Discoolver" width={139} height={25} style={{ height: 25, width: "auto" }} />
+            <Link aria-label={t.home} href={locale === "en" ? "/en" : "/"}>
+              <Image
+                src="/assets/logo-white.png"
+                alt="Discoolver"
+                width={139}
+                height={25}
+                style={{ height: 25, width: "auto" }}
+              />
             </Link>
-            <p>{brandDesc}</p>
+            <p>{brandDesc ?? t.brandDesc}</p>
+            <ul className="foot__social" aria-label={t.siguenos}>
+              {SOCIAL.map((s) => (
+                <li key={s.name}>
+                  <a href={s.href} target="_blank" rel="noopener noreferrer me">
+                    {s.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
           </div>
-          <nav className="foot__col" aria-label="Producto">
-            <h4>Producto</h4>
+
+          <nav className="foot__col" aria-label={t.producto}>
+            <h4>{t.producto}</h4>
             <ul>
-              <li>
-                <Link href="/#categorias">Categorías</Link>
-              </li>
-              <li>
-                <Link href="/#planes">Planes</Link>
-              </li>
-              <li>
-                <Link href="/#mapa">Mapa</Link>
-              </li>
-              <li>
-                <Link href="/#creators">Curators</Link>
-              </li>
+              {t.productoLinks.map(([href, label]) => (
+                <li key={label}>
+                  <Link href={withLocale(href, locale)}>{label}</Link>
+                </li>
+              ))}
             </ul>
           </nav>
-          <nav className="foot__col" aria-label="Empresa">
-            <h4>Empresa</h4>
+
+          <nav className="foot__col" aria-label={t.descubrir}>
+            <h4>{t.descubrir}</h4>
             <ul>
-              <li>
-                <a href="mailto:info@discoolver.com">Para empresas</a>
-              </li>
-              <li>
-                <a href="mailto:hola@discoolver.com?subject=Prensa">Prensa</a>
-              </li>
-              <li>
-                <a href="mailto:hola@discoolver.com">Contacto</a>
-              </li>
+              {t.descubrirLinks.map(([href, label]) => (
+                <li key={label}>
+                  {/* El blog es solo español: no se le pone prefijo de idioma. */}
+                  <Link href={href === "/blog" ? "/blog" : withLocale(href, locale)}>{label}</Link>
+                </li>
+              ))}
             </ul>
           </nav>
-          <nav className="foot__col" aria-label="Recursos">
-            <h4>Recursos</h4>
+
+          <nav className="foot__col" aria-label={t.empresa}>
+            <h4>{t.empresa}</h4>
             <ul>
               <li>
-                <Link href="/#faq">Preguntas frecuentes</Link>
+                <Link href={withLocale("/360", locale)}>{t.empresa360}</Link>
               </li>
               <li>
-                <a href="https://app.discoolver.com">Entrar en la plataforma</a>
+                <a href="https://app.discoolver.com" target="_blank" rel="noopener noreferrer">
+                  {t.plataforma}
+                </a>
               </li>
               <li>
-                <Link href="/influencers">Creators</Link>
+                <a href="mailto:hola@discoolver.com?subject=Prensa">{t.prensa}</a>
+              </li>
+              <li>
+                <a href="mailto:hola@discoolver.com">{t.contacto}</a>
+              </li>
+              <li>
+                <a href={waHref()} target="_blank" rel="noopener noreferrer" title={WHATSAPP.display}>
+                  {t.whatsapp}
+                </a>
               </li>
             </ul>
           </nav>
         </div>
+
         <div className="foot__bottom">
-          <span>© {new Date().getFullYear()} {copyright}</span>
-          {/* Solo se enlaza lo que existe: Términos y Cookies apuntaban a "/"
-              y se retiran hasta que haya páginas reales que enlazar. */}
           <span>
-            <Link style={{ color: "var(--ink-2)" }} href="/privacidad">
-              Privacidad
-            </Link>{" "}
-            ·{" "}
-            <a style={{ color: "var(--ink-2)" }} href="mailto:hola@discoolver.com">
-              Contacto
-            </a>
+            © {new Date().getFullYear()} {copyright ?? t.copyright}
+          </span>
+          <span className="foot__legal">
+            {legales.map(([href, label], i) => (
+              <span key={href}>
+                {i > 0 && " · "}
+                <Link style={{ color: "var(--ink-2)" }} href={withLocale(href, locale)}>
+                  {label}
+                </Link>
+              </span>
+            ))}
           </span>
         </div>
       </div>

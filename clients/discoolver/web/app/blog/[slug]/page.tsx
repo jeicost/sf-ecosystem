@@ -5,7 +5,8 @@ import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { Nav } from "@/components/app/Nav";
 import { Footer } from "@/components/app/Footer";
-import { getAllPosts, getPostBySlug, getRelated, fechaLegible } from "@/lib/posts";
+import { getAllPosts, getPostBySlug, getRelated, fechaLegible, ciudadDelPost } from "@/lib/posts";
+import { BlogCTA } from "@/components/blog/BlogCTA";
 
 /**
  * Un artículo del blog.
@@ -29,11 +30,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
-  if (!post) return buildMetadata({ title: "Artículo no encontrado — Discoolver", description: "", path: `/blog/${slug}`, noindex: true });
+  if (!post) return buildMetadata({ title: "Artículo no encontrado — Discoolver", description: "", path: `/blog/${slug}`, soloEs: true, noindex: true });
   return buildMetadata({
     title: post.seoTitle || post.title,
     description: post.seoDescription || post.excerpt,
     path: `/blog/${post.slug}`,
+    soloEs: true,
     image: post.ogImage || undefined,
   });
 }
@@ -89,6 +91,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             className="prose blog-body"
             dangerouslySetInnerHTML={{ __html: post.contentHtml }}
           />
+
+          <BlogCTA ciudad={ciudadDelPost(post)} />
 
           {relacionados.length > 0 && (
             <section style={{ marginTop: 64, borderTop: "1px solid var(--line)", paddingTop: 32 }}>

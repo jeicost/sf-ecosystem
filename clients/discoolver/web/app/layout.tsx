@@ -3,6 +3,7 @@ import { Space_Grotesk, Geist, Geist_Mono } from "next/font/google";
 import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { organizationJsonLd, websiteJsonLd } from "@/lib/jsonld";
+import { Consent } from "@/components/ui/Consent";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Saltar al contenido
         </a>
         {children}
+        <Consent />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}

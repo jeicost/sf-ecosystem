@@ -18,6 +18,7 @@ export const metadata = buildMetadata({
   description:
     "Rutas, listas y secretos de las ciudades que curamos. Lo que cuentan quienes viven allí, editado por nuestro equipo.",
   path: "/blog",
+  soloEs: true,
 });
 
 export default function BlogPage() {

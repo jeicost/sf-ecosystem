@@ -20,6 +20,13 @@
  * correos. No hay HTML crudo a propósito — nada de dangerouslySetInnerHTML.
  */
 
+/**
+ * ¿Hay medición activada? De esto dependen DOS textos legales: la página de
+ * cookies y el apartado de cookies de la privacidad. Se resuelve en un sitio
+ * para que no puedan contradecirse entre sí.
+ */
+export const HAY_MEDICION = Boolean(process.env.NEXT_PUBLIC_GA_ID);
+
 export const TITULAR = {
   razonSocial: "Discoolverworld S.L.",
   nif: "B88394465",
@@ -436,7 +443,9 @@ const privacidadEs: LegalDoc = {
     {
       h: "Cookies",
       p: [
-        "Ninguna. No usamos analítica, ni publicidad, ni seguimiento, ni perfilado, ni decisiones automatizadas. El detalle está en la [política de cookies](/cookies).",
+        HAY_MEDICION
+          ? "Una sola cookie de medición, y solo si la aceptas: sin publicidad, sin seguimiento entre webs y sin perfilado. Si dices que no, no se carga. El detalle está en la [política de cookies](/cookies)."
+          : "Ninguna. No usamos analítica, ni publicidad, ni seguimiento, ni perfilado, ni decisiones automatizadas. El detalle está en la [política de cookies](/cookies).",
       ],
     },
     {
@@ -502,7 +511,9 @@ const privacidadEn: LegalDoc = {
     {
       h: "Cookies",
       p: [
-        "None. No analytics, no advertising, no tracking, no profiling, no automated decisions. The detail is in the [cookie policy](/en/cookies).",
+        HAY_MEDICION
+          ? "One measurement cookie, and only if you accept it: no advertising, no cross-site tracking, no profiling. Say no and it never loads. The detail is in the [cookie policy](/en/cookies)."
+          : "None. No analytics, no advertising, no tracking, no profiling, no automated decisions. The detail is in the [cookie policy](/en/cookies).",
       ],
     },
     {
@@ -538,10 +549,94 @@ const privacidadEn: LegalDoc = {
   ],
 };
 
+// ── cookies, la versión CON medición ────────────────────────────────────────
+// La página de arriba dice "no usamos ninguna", y es verdad mientras no haya
+// NEXT_PUBLIC_GA_ID. En cuanto se pone, esa frase pasa a ser mentira: la ruta
+// /cookies elige entre las dos según el interruptor, para que el texto legal no
+// dependa de que alguien se acuerde de reescribirlo.
+
+const cookiesGaEs: LegalDoc = {
+  ...cookiesEs,
+  description:
+    "Qué cookies usa discoolver.com, para qué, cuánto duran y cómo cambiar tu decisión cuando quieras.",
+  lead: "Una sola cookie, de medición, y solo si tú dices que sí.",
+  sections: [
+    {
+      h: "Qué usamos exactamente",
+      p: [
+        "Google Analytics, para saber qué páginas se leen y cuáles no. Nada más: ni publicidad, ni remarketing, ni seguimiento entre webs. Lo tenemos configurado con la IP anonimizada y con las señales de anuncios de Google desactivadas.",
+        "**No se carga hasta que aceptas.** Si dices que no, no se descarga ni el script. Y si no contestas, tampoco: el silencio no es un sí.",
+      ],
+      ul: [
+        "**_ga** — distingue visitantes de forma anónima. Dura 2 años.",
+        "**_ga_XXXXXXX** — mantiene el estado de la sesión. Dura 2 años.",
+      ],
+    },
+    {
+      h: "Cómo cambiar de opinión",
+      p: [
+        "Tu decisión se guarda en tu propio navegador. Para revocarla, borra los datos de sitio de discoolver.com desde los ajustes de tu navegador y volveremos a preguntarte.",
+      ],
+    },
+    {
+      h: "Cuando compres una guía",
+      p: [
+        "El pago lo procesa Stripe en sus propias páginas. Stripe usa cookies técnicas y antifraude mientras estás allí, bajo su propia política. Nosotros no recibimos esas cookies ni tus datos de tarjeta.",
+      ],
+    },
+    {
+      h: "Tus datos",
+      p: [
+        "Lo que recogemos cuando nos escribes en un formulario está explicado en la [política de privacidad](/privacidad).",
+      ],
+    },
+  ],
+};
+
+const cookiesGaEn: LegalDoc = {
+  ...cookiesEn,
+  description:
+    "Which cookies discoolver.com uses, what for, how long they last and how to change your mind.",
+  lead: "One cookie, for measurement, and only if you say yes.",
+  sections: [
+    {
+      h: "What we use, exactly",
+      p: [
+        "Google Analytics, to know which pages get read and which don't. Nothing else: no advertising, no remarketing, no cross-site tracking. It runs with IP anonymisation and Google's ad signals switched off.",
+        "**Nothing loads until you accept.** Say no and the script is never downloaded. Same if you don't answer at all: silence is not a yes.",
+      ],
+      ul: [
+        "**_ga** — tells visitors apart anonymously. Lasts 2 years.",
+        "**_ga_XXXXXXX** — keeps session state. Lasts 2 years.",
+      ],
+    },
+    {
+      h: "Changing your mind",
+      p: [
+        "Your choice is stored in your own browser. To revoke it, clear site data for discoolver.com in your browser settings and we'll ask again.",
+      ],
+    },
+    {
+      h: "When you buy a guide",
+      p: [
+        "Payment is handled by Stripe on their own pages. Stripe uses technical and anti-fraud cookies while you're there, under their own policy. We receive neither those cookies nor your card details.",
+      ],
+    },
+    {
+      h: "Your data",
+      p: [
+        "What we collect when you type into a form is explained in the [privacy policy](/en/privacidad).",
+      ],
+    },
+  ],
+};
+
 export const LEGAL = {
   aviso: { es: avisoEs, en: avisoEn },
   terminos: { es: terminosEs, en: terminosEn },
-  cookies: { es: cookiesEs, en: cookiesEn },
+  cookies: HAY_MEDICION
+    ? { es: cookiesGaEs, en: cookiesGaEn }
+    : { es: cookiesEs, en: cookiesEn },
   privacidad: { es: privacidadEs, en: privacidadEn },
 } as const;
 

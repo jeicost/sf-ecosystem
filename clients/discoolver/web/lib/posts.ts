@@ -93,3 +93,25 @@ export function fechaLegible(iso: string, locale: "es" | "en" = "es"): string {
     timeZone: "UTC",
   });
 }
+
+/**
+ * De qué ciudad habla un artículo.
+ *
+ * El blog rescatado es casi todo Madrid, con algún artículo de Barcelona y de
+ * Málaga. Se detecta del título y del cuerpo para poder ofrecer LA guía de esa
+ * ciudad al pie del artículo, en vez de un "ver las guías" genérico: quien
+ * acaba de leer sobre bares de Barcelona no quiere el catálogo entero.
+ */
+const CIUDADES: [string, RegExp][] = [
+  ["Barcelona", /barcelona/i],
+  ["Málaga", /m[áa]laga/i],
+  ["Madrid", /madrid/i],
+];
+
+export function ciudadDelPost(p: Post): string {
+  const donde = `${p.title} ${p.excerpt} ${p.contentHtml.slice(0, 2000)}`;
+  for (const [nombre, patron] of CIUDADES) {
+    if (patron.test(donde)) return nombre;
+  }
+  return "Madrid";                    // el blog nació siendo el blog de Madrid
+}

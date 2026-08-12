@@ -7,23 +7,36 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
 import { PLATFORM } from "@/lib/platform";
 
-// El email B2B canónico es info@ (decisión 2026-08-10); empresas@ se retira.
+/**
+ * El menú principal del dominio.
+ *
+ * Dos arreglos del 12-ago-2026, los dos de negocio, no de estilo:
+ *
+ *  · **Las guías estaban fuera del menú.** El producto que se vende se enlazaba
+ *    nueve veces desde el cuerpo de la home, pero quien llegaba y miraba el
+ *    menú no veía que existiera.
+ *  · **"Para empresas" apuntaba a discoolver-landing.vercel.app/360**, la URL
+ *    anterior al corte de dominio. Funcionaba por un redirect, pero cada carga
+ *    salía del dominio y volvía.
+ *
+ * El email B2B canónico es info@ (decisión 2026-08-10); empresas@ se retira.
+ */
 const LINKS = {
   es: [
     { href: "/#descubre", label: "Descubre" },
-    { href: "/#planes", label: "Planes" },
-    { href: "/#categorias", label: "Categorías" },
+    { href: "/guias", label: "Guías" },
     { href: "/#mapa", label: "Mapa" },
+    { href: "/blog", label: "Blog" },
     { href: "/influencers", label: "Creators" },
-    { href: "https://discoolver-landing.vercel.app/360", label: "Para empresas" },
+    { href: "/360", label: "Para empresas" },
   ],
   en: [
     { href: "/#descubre", label: "Discover" },
-    { href: "/#planes", label: "Plans" },
-    { href: "/#categorias", label: "Categories" },
+    { href: "/guias", label: "Guides" },
     { href: "/#mapa", label: "Map" },
+    { href: "/blog", label: "Blog" },
     { href: "/influencers", label: "Creators" },
-    { href: "https://discoolver-landing.vercel.app/en/360", label: "For business" },
+    { href: "/360", label: "For business" },
   ],
 } as const;
 

@@ -2903,3 +2903,92 @@ a.format-card--paper {
   .blog-grid { grid-template-columns: 1fr; gap: 20px; }
   .blog-body { font-size: 16px; }
 }
+
+/* ── CONSENTIMIENTO (12-ago-2026) ────────────────────────────────────────────
+   Solo aparece si hay NEXT_PUBLIC_GA_ID: si no hay nada que medir, no hay nada
+   que consentir. Los dos botones pesan lo mismo a propósito — el RGPD pide que
+   negar sea tan fácil como aceptar, así que nada de "Aceptar" gigante junto a
+   un "Rechazar" escondido. */
+.consent {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 16px;
+  z-index: 90;
+  margin: 0 auto;
+  max-width: 720px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  padding: 18px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .45);
+}
+.consent__texto {
+  margin: 0;
+  flex: 1 1 320px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.consent__texto a { color: var(--primary-2); }
+.consent__botones { display: flex; gap: 10px; flex: 0 0 auto; }
+.consent__botones .btn { padding: 9px 18px; font-size: 13.5px; }
+@media (max-width: 520px) {
+  .consent { flex-direction: column; align-items: stretch; }
+  .consent__botones .btn { flex: 1; }
+}
+
+/* ── CTA DEL BLOG (12-ago-2026) ──────────────────────────────────────────────
+   El blog eran 55 puertas de entrada por SEO sin un solo formulario: la gente
+   entraba, leía y se iba. Esto va al pie de cada artículo, con la guía de SU
+   ciudad y la misma promesa de aviso que el resto de la web. */
+.blog-cta {
+  margin-top: 56px;
+  padding: 30px 32px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--bg-soft);
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 28px 40px;
+  align-items: center;
+}
+.blog-cta__eyebrow {
+  margin: 0 0 8px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11.5px;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--primary-2);
+}
+.blog-cta__titulo { font-size: 23px; line-height: 1.25; margin: 0 0 10px; }
+.blog-cta__lead { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--ink-2); }
+.blog-cta__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13.5px;
+  color: var(--ink-2);
+}
+.blog-cta__fila { display: flex; gap: 8px; flex-wrap: wrap; }
+.blog-cta__fila input {
+  flex: 1 1 180px;
+  min-width: 0;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 14px;
+}
+.blog-cta__fila input:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.blog-cta__fila .btn { padding: 11px 20px; font-size: 14px; }
+.blog-cta__ok { margin: 0; font-size: 14.5px; color: var(--ink); }
+.blog-cta__error { margin: 10px 0 0; font-size: 13px; color: var(--primary-2); }
+@media (max-width: 720px) {
+  .blog-cta { grid-template-columns: 1fr; padding: 26px 22px; }
+}
