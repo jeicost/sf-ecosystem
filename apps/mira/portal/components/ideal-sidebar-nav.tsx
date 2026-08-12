@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { Zap, BookOpen } from 'lucide-react'
+import { Zap, BookOpen, CreditCard } from 'lucide-react'
 import { IDEAL_SPACES } from '@/lib/sections'
 import { useActiveClient } from '@/lib/client-context'
 import { hasTenderTool } from '@/lib/entitlements'
@@ -75,6 +75,11 @@ export default function IdealSidebarNav({
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/integrations') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
           <Zap size={13} /> Integraciones
+        </Link>
+        <Link href="/billing"
+          className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
+            isActive('/billing') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
+          <CreditCard size={13} /> Facturación
         </Link>
         <Link href="/resources"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',

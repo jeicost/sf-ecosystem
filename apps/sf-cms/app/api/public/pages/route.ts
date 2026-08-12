@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { captureError } from '@/lib/capture-error'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
+import { privateCache, noCache } from '@/lib/cache-headers'
 
 // Without this, Next/Vercel can statically optimize this route (no dynamic
 // APIs are called) and cache a response at the edge keyed by URL alone —
@@ -71,16 +72,10 @@ export async function GET(request: Request) {
         return Response.json({ error: 'Page not found' }, { status: 404 })
       }
 
-      return Response.json(page, {
-        headers: {
-          // Never cache preview responses at the edge/CDN — always fresh,
-          // and never shared across requests that didn't present the secret.
-          'Cache-Control': allowDraft
-            ? 'private, no-store'
-            : 'public, s-maxage=60, stale-while-revalidate=300',
-          'Content-Type': 'application/json',
-        },
-      })
+      // La caché es PRIVADA, nunca compartida: la api-key va en cabecera y la
+      // CDN indexa por URL, así que una respuesta pública se servía a quien no
+      // presentó clave. Ver lib/cache-headers.ts.
+      return Response.json(page, { headers: allowDraft ? noCache() : privateCache(60) })
     }
 
     // Fetch published pages, paginated (default generous enough that
@@ -101,12 +96,10 @@ export async function GET(request: Request) {
       return Response.json({ error: 'Database error' }, { status: 500 })
     }
 
-    return Response.json({ pages, total: count ?? pages?.length ?? 0, limit, offset }, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
-        'Content-Type': 'application/json',
-      },
-    })
+    return Response.json(
+      { pages, total: count ?? pages?.length ?? 0, limit, offset },
+      { headers: privateCache(60) }
+    )
   } catch (err) {
     await captureError(err, { route: 'GET /api/public/pages' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })

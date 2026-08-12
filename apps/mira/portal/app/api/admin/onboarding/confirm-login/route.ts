@@ -20,6 +20,15 @@ export async function POST(request: NextRequest) {
 
     const result = await createClientLoginAccess(clientId, email, plan || 'starter', role || 'owner')
 
+    // Sin asientos libres no es un error del sistema, es un tope de plan: 409
+    // para que la UI pueda ofrecer ampliar en vez de enseñar un fallo genérico.
+    if ('error' in result) {
+      return NextResponse.json(result, { status: result.reason === 'seats_full' ? 409 : 500 })
+    }
+
+    // El alta solo se da por terminada si el acceso se creó de verdad. Antes se
+    // marcaba 'completed' pasara lo que pasara, y la sesión quedaba cerrada
+    // sobre un cliente sin nadie que pudiera entrar.
     if (sessionId) {
       const db = adminClient()
       await db.from('onboarding_sessions').update({ status: 'completed', updated_at: new Date().toISOString() }).eq('id', sessionId)

@@ -10,6 +10,11 @@ interface ToolConnectionData {
 
 export function useToolConnections(clientId: string) {
   const [connectedTools, setConnectedTools] = useState<string[]>([])
+  // Integraciones que pone la plataforma (Claude, OpenAI, Apollo/Hunter vía el
+  // motor comercial). No son del cliente, así que no se pueden desconectar —
+  // pero SÍ están conectadas, y la página decía lo contrario.
+  const [platformTools, setPlatformTools] = useState<string[]>([])
+  const [platformNotes, setPlatformNotes] = useState<Record<string, string>>({})
   const [userSubscriptionPlan, setUserSubscriptionPlan] = useState<'free' | 'scale' | 'enterprise'>(
     'free'
   )
@@ -29,6 +34,8 @@ export function useToolConnections(clientId: string) {
 
         const data = await response.json()
         setConnectedTools(data.connectedTools || [])
+        setPlatformTools(data.platformTools || [])
+        setPlatformNotes(data.platformNotes || {})
         setUserSubscriptionPlan(data.userSubscriptionPlan || 'free')
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error'
@@ -104,6 +111,8 @@ export function useToolConnections(clientId: string) {
 
   return {
     connectedTools,
+    platformTools,
+    platformNotes,
     userSubscriptionPlan,
     isLoading,
     error,

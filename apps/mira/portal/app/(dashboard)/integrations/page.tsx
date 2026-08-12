@@ -13,7 +13,7 @@ export default function IntegrationsPage() {
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()
   const clientId = activeClient?.id
-  const { connectedTools, userSubscriptionPlan, isLoading, connectTool, disconnectTool } =
+  const { connectedTools, platformTools, platformNotes, userSubscriptionPlan, isLoading, connectTool, disconnectTool } =
     useToolConnections(clientId || '')
   const [mounted, setMounted] = useState(false)
   const [selectedToolId, setSelectedToolId] = useState<string | null>(null)
@@ -206,6 +206,8 @@ export default function IntegrationsPage() {
 
         <ToolsMarketplace
           connectedTools={driveConnected ? [...connectedTools, 'google-drive'] : connectedTools}
+          platformTools={platformTools}
+          platformNotes={platformNotes}
           userSubscriptionPlan={userSubscriptionPlan}
           onToolConnect={handleToolConnect}
           onToolDisconnect={handleToolDisconnect}

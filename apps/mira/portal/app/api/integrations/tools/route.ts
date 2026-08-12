@@ -2,6 +2,7 @@ import { createServiceClient } from '@/lib/supabase-admin'
 import { NextRequest, NextResponse } from 'next/server'
 import { encryptSecret } from '@/lib/crypto'
 import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
+import { platformIntegrations } from '@/lib/integrations/platform-status'
 
 interface ConnectToolRequest {
   clientId: string
@@ -49,8 +50,17 @@ export async function GET(request: NextRequest) {
     const user = await getSessionUser()
     const userSubscriptionPlan = (user?.user_metadata?.plan as string | undefined) || 'free'
 
+    // Las conexiones de PLATAFORMA (Claude, OpenAI, Apollo/Hunter vía el motor
+    // comercial) no viven en tool_connections porque no son de nadie en
+    // particular: las pone Startup Factory y valen para todos. Sin esto la
+    // página enseñaba "desconectado" sobre cinco integraciones que llevan
+    // meses funcionando.
+    const platform = platformIntegrations()
+
     return NextResponse.json({
       connectedTools: (connections || []).map((c) => c.tool_id),
+      platformTools: platform.filter((p) => p.connected).map((p) => p.toolId),
+      platformNotes: Object.fromEntries(platform.map((p) => [p.toolId, p.note])),
       userSubscriptionPlan,
     })
   } catch (error) {

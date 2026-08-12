@@ -28,6 +28,9 @@ export async function proxy(request: NextRequest) {
   // and will 401 if called without auth — they should NOT skip auth at the middleware layer.
   if (
     pathname.startsWith('/login') ||
+    pathname.startsWith('/signup') || // registro del cliente final: por definición aún no hay sesión
+    pathname.startsWith('/api/signup') || // la ruta que lo crea; se defiende sola con rate limit por IP
+    pathname.startsWith('/api/billing/webhook') || // Stripe firma con su secreto, no con una sesión
     pathname.startsWith('/reset-password') ||
     pathname.startsWith('/terms') ||
     pathname.startsWith('/privacy') ||

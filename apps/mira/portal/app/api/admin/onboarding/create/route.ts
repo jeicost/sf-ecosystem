@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
       if (!clientId || !email) return NextResponse.json({ error: 'Missing clientId or email' }, { status: 400 })
       const login = await createClientLoginAccess(clientId, email, typeof plan === 'string' ? plan : 'starter')
       return 'error' in login
-        ? NextResponse.json({ error: login.error }, { status: 500 })
+        ? NextResponse.json(login, { status: login.reason === 'seats_full' ? 409 : 500 })
         : NextResponse.json({ success: true, login })
     }
 

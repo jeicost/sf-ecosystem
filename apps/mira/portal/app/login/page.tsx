@@ -270,8 +270,17 @@ export default function LoginPage() {
             </button>
           </form>
 
+          {/* Crear cuenta — la landing vende autoservicio, así que la puerta
+              tiene que estar aquí y no en un mailto. */}
+          <p className="text-center text-[12px] mt-5" style={{ color: 'rgba(255,255,255,0.4)' }}>
+            ¿Aún no tienes cuenta?{' '}
+            <a href="/signup" className="font-semibold underline transition-colors" style={{ color: '#a5b4fc' }}>
+              Crea la tuya en dos minutos
+            </a>
+          </p>
+
           {/* Forgot password */}
-          <p className="text-center text-[11px] mt-4" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <p className="text-center text-[11px] mt-3" style={{ color: 'rgba(255,255,255,0.25)' }}>
             {resetSent ? (
               <span style={{ color: 'rgba(255,255,255,0.45)' }}>
                 If an account exists for that email, a reset link is on its way. Check your inbox.

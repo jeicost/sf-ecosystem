@@ -7,6 +7,10 @@ import { t } from '@/lib/i18n'
 
 interface ToolsMarketplaceProps {
   connectedTools: string[]
+  /** Integraciones que pone MIRA y valen para todos: no se conectan ni se desconectan. */
+  platformTools?: string[]
+  /** Por qué está incluida cada una, para decirlo en la tarjeta. */
+  platformNotes?: Record<string, string>
   userSubscriptionPlan?: 'free' | 'scale' | 'enterprise'
   onToolConnect?: (toolId: string) => Promise<void>
   onToolDisconnect?: (toolId: string) => Promise<void>
@@ -14,6 +18,8 @@ interface ToolsMarketplaceProps {
 
 export default function ToolsMarketplace({
   connectedTools,
+  platformTools = [],
+  platformNotes = {},
   userSubscriptionPlan = 'free',
   onToolConnect,
   onToolDisconnect,
@@ -39,7 +45,11 @@ export default function ToolsMarketplace({
   const criticalTools = MARKETPLACE_TOOLS.filter(
     (tool) => tool.isCritical && tool.status !== 'coming_soon'
   )
-  const connectedCritical = criticalTools.filter((tool) => connectedTools.includes(tool.id)).length
+  // Una integración cuenta como conectada si la ha conectado el cliente O si
+  // la pone la plataforma. Contar solo las primeras es lo que hacía que el
+  // marcador dijera 0% con Claude, OpenAI y el motor comercial funcionando.
+  const isLive = (id: string) => connectedTools.includes(id) || platformTools.includes(id)
+  const connectedCritical = criticalTools.filter((tool) => isLive(tool.id)).length
   const criticalPct =
     criticalTools.length > 0 ? Math.round((connectedCritical / criticalTools.length) * 100) : 100
 
@@ -53,6 +63,10 @@ export default function ToolsMarketplace({
       window.open(tool.setupUrl, '_blank')
       return
     }
+
+    // Las de plataforma no se tocan: no son del cliente y "desconectar" Claude
+    // desde aquí no significa nada.
+    if (platformTools.includes(tool.id)) return
 
     setConnectingTools((prev) => new Set(prev).add(tool.id))
 
@@ -138,8 +152,10 @@ export default function ToolsMarketplace({
       {/* Tools Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {filteredTools.map((tool) => {
-          const isConnected = connectedTools.includes(tool.id)
-          const isComingSoon = tool.status === 'coming_soon'
+          const isPlatform = platformTools.includes(tool.id)
+          const isConnected = connectedTools.includes(tool.id) || isPlatform
+          // Una integración que YA funciona no puede seguir diciendo "próximamente".
+          const isComingSoon = tool.status === 'coming_soon' && !isPlatform
           // 'paid' = el cliente paga directamente a la herramienta externa con
           // su propia key (BYO) -- Apollo, Hunter -- MIRA no cobra de más por
           // conectarla, así que nunca debe gatearse por plan. Bug real
@@ -190,9 +206,13 @@ export default function ToolsMarketplace({
               </div>
 
               {/* Description */}
-              <p className="text-sm text-ink-secondary mb-4">
+              <p className="text-sm text-ink-secondary mb-2">
                 {tr(`integrations.tool.${tool.id}.desc`, tool.description)}
               </p>
+              {platformNotes[tool.id] && (
+                <p className="text-xs mb-4 text-[#10B981]">{platformNotes[tool.id]}</p>
+              )}
+              {!platformNotes[tool.id] && <div className="mb-4" />}
 
               {/* Agents & Status */}
               <div className="space-y-3 mb-4 pb-4 border-t border-line">
@@ -250,11 +270,16 @@ export default function ToolsMarketplace({
               {/* Action Button */}
               <button
                 disabled={
-                  isComingSoon || (!isAccessible && !isConnected) || connectingTools.has(tool.id)
+                  isPlatform ||
+                  isComingSoon ||
+                  (!isAccessible && !isConnected) ||
+                  connectingTools.has(tool.id)
                 }
                 onClick={() => handleToolClick(tool)}
                 className={`w-full mt-4 px-4 py-2 rounded font-medium text-sm flex items-center justify-center gap-2 transition-all ${
-                  isComingSoon
+                  isPlatform
+                    ? 'bg-[#10B981]/20 border border-[#10B981]/40 text-[#10B981] cursor-default'
+                    : isComingSoon
                     ? 'bg-card border border-line text-ink-muted cursor-not-allowed'
                     : isConnected
                       ? 'bg-[#10B981] text-white hover:bg-[#059669]'
@@ -263,7 +288,12 @@ export default function ToolsMarketplace({
                         : 'bg-card border border-line text-ink-muted cursor-not-allowed'
                 }`}
               >
-                {isComingSoon ? (
+                {isPlatform ? (
+                  <>
+                    <CheckCircle size={16} />
+                    Incluido en tu plan
+                  </>
+                ) : isComingSoon ? (
                   <>
                     <Clock size={16} />
                     {t('integrations.coming-soon', locale)}
@@ -289,7 +319,7 @@ export default function ToolsMarketplace({
                     {t('integrations.upgrade-plan', locale)}
                   </>
                 )}
-                {!isComingSoon && !connectingTools.has(tool.id) && <ExternalLink size={14} />}
+                {!isPlatform && !isComingSoon && !connectingTools.has(tool.id) && <ExternalLink size={14} />}
               </button>
             </div>
           )

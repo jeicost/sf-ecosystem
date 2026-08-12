@@ -19,7 +19,7 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
-import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive, ClipboardList } from 'lucide-react'
+import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive, ClipboardList, CreditCard } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
 
@@ -258,6 +258,20 @@ useEffect(() => {
         )}>
         <Zap size={13} />
         <span>Integrations</span>
+      </Link>
+
+      {/* Billing — el cliente tiene que poder ver qué paga y darse de baja
+          solo. Va también en la navegación vieja, no solo en la IDEAL_UI:
+          media base sigue viendo esta. */}
+      <Link href="/billing"
+        className={clsx(
+          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+          path === '/billing'
+            ? 'bg-indigo-500/15 text-indigo-400'
+            : 'text-ink-tertiary hover:text-indigo-400 hover:bg-indigo-500/10'
+        )}>
+        <CreditCard size={13} />
+        <span>Billing</span>
       </Link>
 
       {/* Section switcher */}

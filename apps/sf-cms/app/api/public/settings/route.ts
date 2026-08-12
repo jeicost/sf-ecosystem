@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { captureError } from '@/lib/capture-error'
 import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
+import { privateCache } from '@/lib/cache-headers'
 
 /**
  * Public settings endpoint: GET /api/public/settings
@@ -54,12 +55,7 @@ export async function GET(request: Request) {
       // Add more fields here as needed (always with null fallback)
     }
 
-    return Response.json(normalizedSettings, {
-      headers: {
-        'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
-        'Content-Type': 'application/json',
-      },
-    })
+    return Response.json(normalizedSettings, { headers: privateCache(300) })
   } catch (err) {
     await captureError(err, { route: 'GET /api/public/settings' })
     return Response.json({ error: 'Internal server error' }, { status: 500 })

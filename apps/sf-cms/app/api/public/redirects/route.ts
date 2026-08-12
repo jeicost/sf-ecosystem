@@ -2,6 +2,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { captureError } from '@/lib/capture-error'
 import { verifyProjectApiKey } from '@/lib/auth/verify-api-key'
+import { privateCache } from '@/lib/cache-headers'
 
 /**
  * Public redirects endpoint: GET /api/public/redirects?project=<slug>
@@ -34,7 +35,7 @@ export async function GET(request: Request) {
 
     return Response.json(
       { redirects },
-      { headers: { 'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300' } },
+      { headers: privateCache(60) },
     )
   } catch (err) {
     await captureError(err, { route: 'GET /api/public/redirects' })
