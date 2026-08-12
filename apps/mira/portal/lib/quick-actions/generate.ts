@@ -4,6 +4,7 @@ import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { generateWithWebSearch } from '@/lib/grounding/web-research'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { getQuickAction } from '@/lib/quick-actions/registry'
+import { QUICK_ACTIONS } from '@/lib/quick-actions/registry'
 
 // Una acción produce imagen si lo declara el registry (editar_imagen_visual)
 // o si el usuario activó el toggle with_image (crear_post / crear_carousel).
@@ -224,15 +225,17 @@ export async function generateQuickAction(
       clientId,
       route: 'quick-actions',
       model: 'claude-opus-4-8',
-      maxTokens: 4000,
+      maxTokens: QUICK_ACTIONS.find((a) => a.id === actionType)?.maxTokens ?? 4000,
       userContent: imageBlocks.length
         ? [{ type: 'text' as const, text: prompt }, ...imageBlocks]
         : prompt,
     })
 
     if (message.stop_reason === 'max_tokens') {
+      // El límite es de SALIDA, no de entrada: decirle al usuario que acorte
+      // su brief le manda a arreglar algo que no ha roto él.
       await markFailed('Output truncated at max_tokens')
-      throw new QuickActionError('Output truncated — try a shorter input')
+      throw new QuickActionError('The answer did not fit in the output limit for this action. Try narrowing the scope, or report it so we can raise the limit.')
     }
 
     let output_data: Record<string, unknown> = text ? extractJson(text) : {}

@@ -43,6 +43,13 @@ export interface QAField {
 
 export interface QuickActionDef {
   id: string // == action_type (branch del prompt)
+  /**
+   * Techo de tokens de salida. Por defecto 4000, que vale para las acciones
+   * cortas. Las de formato largo (proyecciones, informes, roadmaps) se cortaban
+   * a la mitad y morían con "Output truncated" — 4 de las 19, verificado el
+   * 12-ago-2026 probando todas con Salsa Burgers.
+   */
+  maxTokens?: number
   department: 'marketing' | 'strategy' | 'comercial' | 'finanzas' | 'admin'
   titleKey: string
   descriptionKey: string
@@ -183,6 +190,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
   // ── STRATEGY ───────────────────────────────────────────────────────────
   {
     id: 'generar_reporte',
+    maxTokens: 12000,
     department: 'strategy',
     titleKey: 'actions.strategy.generar_reporte',
     descriptionKey: 'actions.strategy.generar_reporte.desc',
@@ -211,6 +219,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
   //  Históricos: unified-history renderiza action_type crudo, sin registry.)
   {
     id: 'analizar_tendencias',
+    maxTokens: 12000,
     department: 'strategy',
     titleKey: 'actions.strategy.tendencias_analisis',
     descriptionKey: 'actions.strategy.tendencias_analisis.desc',
@@ -229,6 +238,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
   },
   {
     id: 'roadmap_innovacion',
+    maxTokens: 12000,
     department: 'strategy',
     titleKey: 'actions.strategy.plan_innovacion',
     descriptionKey: 'actions.strategy.plan_innovacion.desc',
@@ -312,6 +322,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
   // ── FINANZAS ───────────────────────────────────────────────────────────
   {
     id: 'proyeccion_financiera',
+    maxTokens: 12000,
     department: 'finanzas',
     titleKey: 'actions.finanzas.proyeccion_financiera',
     descriptionKey: 'actions.finanzas.proyeccion_financiera.desc',
@@ -331,6 +342,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
   },
   {
     id: 'analisis_cashflow',
+    maxTokens: 8000,
     department: 'finanzas',
     titleKey: 'actions.finanzas.analisis_cash_flow',
     descriptionKey: 'actions.finanzas.analisis_cash_flow.desc',
@@ -345,6 +357,7 @@ export const QUICK_ACTIONS: QuickActionDef[] = [
   },
   {
     id: 'optimizar_costos',
+    maxTokens: 8000,
     department: 'finanzas',
     titleKey: 'actions.finanzas.optimizacion_costos',
     descriptionKey: 'actions.finanzas.optimizacion_costos.desc',
