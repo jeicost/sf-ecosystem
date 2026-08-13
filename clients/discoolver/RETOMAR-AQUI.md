@@ -1,137 +1,108 @@
 # Discoolver — dónde lo dejamos
 
-**Última sesión: 12 de agosto de 2026.** Este fichero es el punto de entrada:
+**Última sesión: 13 de agosto de 2026.** Este fichero es el punto de entrada:
 léelo antes de tocar nada y actualízalo al cerrar.
 
 ---
 
 ## En una frase
 
-El dominio está cortado y sirviendo, las tres landings unificadas en un solo
-proyecto, el blog rescatado y vivo, el cobro montado y probado en modo prueba.
-**Lo único que impide vender el 1 de septiembre no es código: son tres tareas
-de verificación pendientes en la cuenta de Stripe.**
+Auditoría de las seis superficies con seis agentes en paralelo y una fase de
+refutación —**49 hallazgos confirmados, 2 descartados**— y ejecución de casi
+todo el mismo día. **Lo único que impide vender el 1 de septiembre sigue sin
+ser código: son tres tareas de verificación en la cuenta de Stripe.**
+
+---
+
+## Lo que se destapó y no sabíamos
+
+**Los siete formularios llevaban horas devolviendo 502 y nadie se enteró.**
+Formsubmit rechazaba cada envío por dos motivos apilados: el `fetch` de Node no
+manda `Referer`, y el par (`carlos@discoolver.com`, `discoolver.com`) nunca se
+activó — la activación es **por par destino+dominio**, así que que la dirección
+estuviera activada desde creators-landing no valía.
+
+El arreglo no fue la cabecera: **se invirtió el orden**. Ahora el lead se
+escribe primero en la tabla `leads` (migración `017` de sf-cms) y el correo es
+el aviso. Si el aviso falla se responde 200 igual, y `notified: false` marca
+cuáles repescar. **Ningún tercero vuelve a ser el único destino de un lead.**
+
+La landing usa la **anon key**, no la service key: con RLS de solo-INSERT puede
+añadir leads y nada más. Y como anon no puede hacer UPDATE, `notified` se
+escribe en el INSERT — de ahí que el aviso vaya primero, con tope de 8 s.
 
 ---
 
 ## Qué hay en el aire ahora mismo
 
+Todo sale de **un solo proyecto**: `clients/discoolver/web` → Vercel
+`discoolver-landing`. Push a `main` despliega.
+
 | URL | Qué es |
 |---|---|
-| `discoolver.com` | La plataforma (era la landing huérfana de la app) |
-| `discoolver.com/guias` | La tienda de guías (estaba en la raíz hasta el 12-ago) |
-| `discoolver.com/360` | La marca B2B. No se movió |
-| `discoolver.com/blog` | 50 artículos rescatados del blog viejo |
-| `discoolver.com/influencers` | Captación de creators |
-| `discoolver.com/{aviso-legal,terminos,privacidad,cookies}` | Legales, ES+EN |
-| `discoolver.com/en/*` | Espejo en inglés (el blog **no**: es solo ES) |
-| `blog.discoolver.com` | 308 a `/blog/<slug>`, conservando el artículo |
+| `discoolver.com` | La plataforma. Puerta con correo **opcional**, las **8 categorías** de la taxonomía y la próxima ciudad (Bangkok) |
+| `discoolver.com/guias` | La tienda. Botones de compra apagados hasta que abra Stripe |
+| `discoolver.com/360` | B2B, con **tres** verticales: destinos, alojamientos y **agencias** |
+| `discoolver.com/blog` | 50 artículos como archivo 2016-2021, **filtrables por categoría** (7 rutas) |
+| `discoolver.com/influencers` | Captación de creadores |
+| `/aviso-legal` `/terminos` `/privacidad` `/cookies` | Legales, con modelo de desistimiento y encargados nombrados |
+| `discoolver.com/en/*` | Espejo inglés completo. **El blog no tiene espejo** |
 
-Todo sale de **un solo proyecto**: `clients/discoolver/web` → Vercel
-`discoolver-landing`. Git-connected: push a `main` despliega.
+Redirecciones: `blog.discoolver.com` → `/blog/`, los dos proyectos Vercel
+huérfanos → dominio, `/category/*` del blog viejo → `/blog`.
 
-`discoolver-app-landing` y `discoolver-creators-landing` siguen existiendo pero
-**redirigen** al dominio. Ojo: **no son git-connected**, se despliegan con
-`vercel --prod` desde su carpeta.
-
-De Diego, no nuestro: `app.` (la plataforma real), `cms.`, `ctrl.`, `api.`,
-`images.`.
+De Diego (CTO externo), no nuestro: `app.`, `cms.`, `ctrl.`, `api.`, `images.`.
 
 ---
 
 ## Lo que espera a Carlos
 
-### 1. Stripe — es lo único que bloquea el lanzamiento
+1. **Stripe** — las tres verificaciones. `charges_enabled: false`. **Tarda
+   días** y es lo único del camino crítico.
+2. **El enlace de activación de formsubmit** en `carlos@discoolver.com`
+   (remitente `noreply@formsubmit.co`, mirar spam). Ya no es crítico: sin él los
+   leads se guardan igual, pero no llega el aviso por correo.
+3. **El ID de GA4** — sin `NEXT_PUBLIC_GA_ID` no hay medición, ni banner de
+   consentimiento, ni la variante «con medición» de las tres legales.
+4. **`/360/agencias` sigue en `noindex` a propósito.** Los tres pendientes ya
+   están resueltos y redactados, pero son compromisos comerciales públicos ante
+   un comprador que incluye administración. Falta que Carlos los valide —
+   idealmente con **Diego Docavo**, dirección comercial. Abrirla = quitar
+   `noindex` de las dos versiones y añadirlas al sitemap.
+5. **Una foto de exterior** para «Naturaleza y aire libre», que hoy va con
+   portada tipográfica.
 
-La cuenta `acct_1EuMgUAPraLZBALb` **tiene los cobros pausados**. Lo confirma la
-API, no solo el banner rojo: `charges_enabled: false`. Es la cuenta de la
-Discoolver de 2019 y arrastra tres tareas de verificación sin completar.
+## Lo que espera a Diego (CTO)
 
-Hay que entrar al panel, pinchar **«View tasks»** y completarlas. Suele ser
-identidad del titular, datos fiscales y cuenta bancaria. **Tarda días, no
-minutos** — es lo que puede llegar tarde al 1 de septiembre.
+Mensaje listo para enviar en
+`deliverables/repaso-2026-08-10/MENSAJE_DIEGO_2026-08-13_API_Y_SESION.md`.
 
-Ya montado y **verificado en modo prueba**:
-- Clave de prueba y `STRIPE_WEBHOOK_SECRET` puestos en Vercel (production).
-- Webhook `we_1U3ZgoAPraLZBALbzfrZkZaT` → `/api/stripe-webhook`, evento
-  `checkout.session.completed`.
-- Probado que **rechaza una firma falsa** (400) y acepta la buena (200).
-- Renuncia al desistimiento montada y comprobada llamando al endpoint a mano.
-
-**`NEXT_PUBLIC_CHECKOUT` está SIN poner a propósito.** Con claves de prueba, si
-se encendieran los botones un visitante real llegaría a un checkout de mentira,
-creería haber comprado y no recibiría nada.
-
-Para pasar a real: cambiar la clave por la `sk_live_`, **recrear el webhook en
-modo real** (el secreto es distinto) y poner `NEXT_PUBLIC_CHECKOUT=1`.
-
-### 2. El ID de medición de GA4
-
-Un `G-XXXXXXX` en `NEXT_PUBLIC_GA_ID` y se enciende todo: aparece el banner de
-consentimiento y **las tres páginas legales cambian solas** al texto correcto.
-El mismo interruptor gobierna la página de cookies (ES y EN) y el apartado de
-cookies de la privacidad, para que no puedan contradecirse.
-
-Hoy no hay ninguna medición en ninguna página. Se lanza a ciegas.
-
-### 3. La compra de prueba
-
-Con la tarjeta `4242 4242 4242 4242`, cualquier fecha futura y cualquier CVC.
-Falta decidir si se hace con una URL de pago suelta o abriendo los botones en un
-despliegue de vista previa.
-
----
-
-## Lo que espera a Diego
-
-El mensaje completo está en
-`deliverables/repaso-2026-08-10/MENSAJE_DIEGO_2026-08-12_ESCRITURA.md`.
-
-1. **El `categoryRawId`** — la única duda que frena abrir la escritura al CMS.
-   Su catálogo usa `_restaurantes` (con guion bajo) y sus propias filas de la
-   cola usan `restaurantes` (sin él). Nosotros escribimos con guion bajo porque
-   casa con el catálogo, pero si su ingesta compara contra otra cosa las fichas
-   entrarían sin categoría. Está anotado en `app/bridge/cms_schema.py` del
-   curador.
-2. **JWKS, `iss`, `aud`, roles y dominio** para el acceso único. Con eso monto
-   el `/sso` del curador y se acaba el segundo login.
-3. **Cuándo activar `CMS_WRITE_ENABLED`** — mejor con él delante.
-4. **Las fotos caducan**: mandamos `urlMainPicture` con la URL de Google Maps y
-   esas expiran. Si su ingesta no las descarga, toda ficha que enviemos acabará
-   sin imagen.
-
-Su usuario `curator` ya está probado: `SELECT, INSERT, UPDATE` sobre
-`discoolver`, sin DELETE ni DROP. Contraseña en el `.env` del curador.
-
----
-
-## La auditoría del editor de guías
-
-Lanzada el 12-ago con ocho agentes en paralelo (recorrido, entradas, salidas,
-robustez, datos, seguridad, coste y producto), cada hallazgo grave verificado
-por un agente que intentaba refutarlo.
-
-Transcripción: `~/.claude/projects/-Users-carlosjacoste/9206f369-.../subagents/workflows/wf_21e50361-de3/`
-
-**Si no llegó a leerse el informe, está ahí.** Lo que se sabía al lanzarla: 93
-endpoints, entradas por Excel / Instagram / CMS / curador, salidas a PDF y web,
-y **cero tests propios**.
+1. **Un feed de recomendados curados.** El que hay devuelve los seis destacados
+   de cada ciudad marcados `"Sponsored"` —Reina Sofía, Thyssen, Park Güell…— y
+   publicarlos bajo la promesa de que nadie paga por entrar nos deja vendidos.
+   Bloquea la sección de recomendados por ciudad de la home.
+2. **Entrega de sesión** (enlace mágico o JWT) para que dejar el correo en el
+   hero deje al visitante dentro identificado. Mismo JWKS/`iss`/`aud` que ya
+   pedíamos para el `/sso` del curador.
+3. Sigue pendiente de antes: el `categoryRawId`, cuándo activar
+   `CMS_WRITE_ENABLED` y que las fotos de Google Maps caducan.
 
 ---
 
 ## Cosas que cuesta redescubrir
 
-- **La API del CMS cachea 60 s.** Tras sembrar o cambiar algo, un build
-  inmediato se trae lo anterior. Me pasó dos veces el mismo día.
-- **En las páginas de 360 el CMS pisa al código.** Tocar `lib/content/b360/**`
-  sin re-sembrar no cambia nada en producción.
-- **La tabla `posts` real** es bilingüe y tiene un `client_slug` NOT NULL que no
-  está en la migración; y el `UNIQUE(project_id, slug)` que la migración declara
-  **no existe en la base**, así que `on_conflict` da 42P10.
+- **Los tokens de color van al revés de su nombre**: `--paper` es el fondo casi
+  negro (`#0a0a0f`) y `--ink` el texto casi blanco. Una sección los usó «al
+  derecho» y servía el titular negro sobre negro.
+- **Un `fr` no baja de `min-content`.** El titular nuevo del hero aplastó la
+  columna del vídeo de 548 px a 91 px. Se arregla con `minmax(0, …)`.
+- **El CMS pisa al código** y `next dev` **no** lo demuestra: dev lee
+  `content/pages.json` horneado. Rehornear con `node scripts/fetch-cms-content.mjs`.
+- **`scripts/seed-cms-web.ts` no sembraba `app-home`** — por eso el copy viejo
+  seguía ganando por más que se corrigiera el código. Ya está incluida.
+- **La API del CMS cachea 60 s.** Tras sembrar, esperar antes de construir.
 - **Dos direcciones, las dos válidas**: Alfonso XII 62 es el domicilio social
-  (va en las legales); María de Molina 39 es la oficina (va en el copy de 360).
-  No unificarlas.
-- **El teléfono es tailandés y se enlaza por WhatsApp**, nunca con `tel:`.
-- **Un CNAME `_domainkey` con el proxy naranja de Cloudflare rompe el DKIM.**
-  Estuvo roto quién sabe cuánto.
-- El token de Cloudflare usado para el corte **caduca el 20 de agosto**.
+  (legales); María de Molina 39 es la oficina (copy de 360).
+- **Costa del Sol Tourism Hub es una aceleradora**, no un despliegue. Costa del
+  Sol es la comarca donde está Ronda, que sí es cliente de pago.
+- El token de Cloudflare del corte de dominio **caducó el 20 de agosto**.
