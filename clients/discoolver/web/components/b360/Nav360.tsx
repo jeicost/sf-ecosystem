@@ -13,6 +13,7 @@ export function Nav360({ locale = "es" }: { locale?: Locale }) {
         <nav className="b360-nav__links" aria-label={locale === "en" ? "discoolver 360 navigation" : "Navegación de discoolver 360"}>
           <Link href={withLocale("/360/destinos", locale)}>{t.destinos}</Link>
           <Link href={withLocale("/360/alojamientos", locale)}>{t.alojamientos}</Link>
+          <Link href={withLocale("/360/agencias", locale)}>{t.agencias}</Link>
           <Link href={`${base}#modulos`}>{t.modulos}</Link>
           <LangSwitch style={{ fontFamily: "var(--b-mono)", letterSpacing: "0.08em" }} />
           <Link href={withLocale("/360/demo", locale)} className="btn btn-1">

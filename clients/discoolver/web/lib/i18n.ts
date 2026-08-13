@@ -37,7 +37,7 @@ export const UI = {
   es: {
     nav: { guias: "Guías", curamos: "Cómo curamos", ia: "IA", faq: "FAQ", creators: "Creators", blog: "Blog", avisame: "Avísame", verGuias: "Ver las guías" },
     switcher: { label: "EN", aria: "Read in English" },
-    nav360: { destinos: "Destinos", alojamientos: "Alojamientos", modulos: "Módulos", demo: "Pedir demo" },
+    nav360: { destinos: "Destinos", alojamientos: "Alojamientos", agencias: "Agencias", modulos: "Módulos", demo: "Pedir demo" },
     heroForm: { city: "Tu ciudad", emailPlaceholder: "tu@correo.com", submit: "Avísame", ariaSubmit: "Avisarme cuando salga la guía", done: "Hecho. Te avisamos cuando la guía de tu ciudad entre en edición." },
     skip: "Saltar al contenido",
     // Home de la plataforma: lo que no es copy editable, sino etiquetas de la
@@ -83,7 +83,7 @@ export const UI = {
   en: {
     nav: { guias: "Guides", curamos: "How we curate", ia: "AI", faq: "FAQ", creators: "Creators", blog: "Blog", avisame: "Notify me", verGuias: "See the guides" },
     switcher: { label: "ES", aria: "Leer en español" },
-    nav360: { destinos: "Destinations", alojamientos: "Accommodation", modulos: "Modules", demo: "Book a demo" },
+    nav360: { destinos: "Destinations", alojamientos: "Accommodation", agencias: "Agencies", modulos: "Modules", demo: "Book a demo" },
     heroForm: { city: "Your city", emailPlaceholder: "you@email.com", submit: "Notify me", ariaSubmit: "Notify me when the guide is out", done: "Done. We'll email you when your city's guide goes into production." },
     skip: "Skip to content",
     home: {

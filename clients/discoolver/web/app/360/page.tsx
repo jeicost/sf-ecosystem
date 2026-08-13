@@ -38,6 +38,11 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
     href: c[`vert_${n}_cta_href` as keyof typeof c] as string,
   }));
 
+  // Una vertical cuyo texto sigue en [PENDIENTE] no se publica sola por estar
+  // en el array: hay que escribirle el texto a mano. Así fue como agencias
+  // estuvo fuera desde el 10-ago hasta que hubo propuesta de valor.
+  const publicables = VERTICALES.filter((v) => !isPending(v.texto));
+
   const FAQ = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({
     q: c[`faq_${n}_p` as keyof typeof c] as string,
     a: c[`faq_${n}_r` as keyof typeof c] as string,
@@ -203,11 +208,21 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
       {/* ---------- verticales ---------- */}
       <Section>
         <Head label={c.vert_eyebrow} title={c.vert_titulo} lead={c.vert_intro} />
-        {/* Una vertical con el texto en [PENDIENTE] no se publica — decisión del
-            CEO (2026-08-10): agencias queda fuera del nav y de este bloque hasta
-            tener modelo de canal y un piloto. El grid pasa a 2 columnas solo. */}
-        <div className="grid g-2" style={{ marginTop: 36 }}>
-          {VERTICALES.filter((v) => !isPending(v.texto)).map((v) => (
+        {/* Agencias entra en el bloque desde el 13-ago-2026: el CEO la abre para
+            revisarla con dirección comercial. Sigue el filtro por [PENDIENTE]
+            para cualquier vertical futura — una tarjeta sin texto aprobado no se
+            publica sola por estar en el array. El grid se adapta al número de
+            verticales que sobrevivan al filtro, que es lo que fallaba antes:
+            estaba fijado a dos y la tercera se quedaba sola con medio bloque en
+            blanco al lado. */}
+        <div
+          className="grid"
+          style={{
+            marginTop: 36,
+            gridTemplateColumns: `repeat(${Math.min(publicables.length, 3)}, minmax(0, 1fr))`,
+          }}
+        >
+          {publicables.map((v) => (
             <Link href={withLocale(v.href, locale)} className="card vert" key={v.etiqueta}>
               <span className="card__n">{v.etiqueta.toUpperCase()}</span>
               <h3 className="h-card" style={{ fontSize: 19 }}>{v.frase}</h3>

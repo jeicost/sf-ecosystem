@@ -117,7 +117,7 @@ export const defaultHome360Content = {
     "The project is also part of SEGITTUR and of the DTI Smart Tourism Destinations network, went through the Costa del Sol Tourism Hub acceleration program and has been presented at FITUR.",
   caso_cita:
     "“discoolver has been an essential part of our city's digital transformation.” — Turismo de Ronda (Ronda Tourism Board)",
-  vert_eyebrow: "Two ways in",
+  vert_eyebrow: "Three ways in",
   vert_titulo: "Tell us who you are and we will show you yours",
   vert_intro:
     "The platform is the same, but what it solves changes depending on who is contracting it.",
@@ -136,7 +136,7 @@ export const defaultHome360Content = {
   vert_3_etiqueta: "Agencies",
   vert_3_frase: "You produce and sell in-destination experiences for third parties.",
   vert_3_texto:
-    "[PENDIENTE: propuesta de valor, alcance y modelo de precio para agencias y receptivos. No existe material aprobado ni caso de referencia en esta vertical — CEO. No se publica esta tarjeta hasta tenerlo.]",
+    "The destination's experience product is scattered across hundreds of businesses with no listing, no published price and no way to book them. The job here is to digitise that catalogue and leave it in a state where it can actually be sold — which is the hard part, and the part already built and running in Ronda.",
   vert_3_cta_label: "See the platform for agencies",
   vert_3_cta_href: "/360/agencias",
   faq_titulo: "What everyone asks",

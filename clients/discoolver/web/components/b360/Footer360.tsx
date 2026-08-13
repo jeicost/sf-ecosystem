@@ -9,12 +9,12 @@ import { WHATSAPP, waHref } from "@/lib/site";
  * Ambassadors…). Aquí solo se lista lo que existe y tiene destino real.
  */
 const F = {
-  es: { verticales: "Verticales", destinos: "Destinos", alojamientos: "Alojamientos",
+  es: { verticales: "Verticales", destinos: "Destinos", alojamientos: "Alojamientos", agencias: "Agencias y DMC",
         plataforma: "Plataforma", modulos: "Los 7 módulos", ronda: "Caso Ronda", demo: "Pedir demo",
         marca: "La marca de viajero", app: "La app", privacidad: "Privacidad",
         avisoLegal: "Aviso legal", terminos: "Términos", cookies: "Cookies", whatsapp: "WhatsApp",
         claim: "La plataforma que convierte el tráfico turístico de un destino en ingreso para su tejido local." },
-  en: { verticales: "Verticals", destinos: "Destinations", alojamientos: "Accommodation",
+  en: { verticales: "Verticals", destinos: "Destinations", alojamientos: "Accommodation", agencias: "Agencies and DMCs",
         plataforma: "Platform", modulos: "The 7 modules", ronda: "Ronda case study", demo: "Book a demo",
         marca: "The traveller brand", app: "The app", privacidad: "Privacy",
         avisoLegal: "Legal notice", terminos: "Terms", cookies: "Cookies", whatsapp: "WhatsApp",
@@ -38,6 +38,7 @@ export function Footer360({ locale = "es" }: { locale?: Locale }) {
             <ul>
               <li><Link href={withLocale("/360/destinos", locale)}>{t.destinos}</Link></li>
               <li><Link href={withLocale("/360/alojamientos", locale)}>{t.alojamientos}</Link></li>
+              <li><Link href={withLocale("/360/agencias", locale)}>{t.agencias}</Link></li>
             </ul>
           </div>
           <div>
