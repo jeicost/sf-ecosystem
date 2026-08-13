@@ -34,6 +34,17 @@ export function CTA({ content, locale = "es" }: { content: AppHomeContent; local
             >
               {content.cta_secondary} <Icon name="arrow-right" size={14} />
             </Link>
+            {/* Los tres públicos del cierre, cada uno con su puerta: el viajero
+                entra en la plataforma, la empresa pide demo y el creador va a
+                su landing. El tercero faltaba, y era el único que no tenía
+                salida desde aquí. */}
+            <Link
+              href={locale === "en" ? "/en/influencers" : "/influencers"}
+              className="btn btn-ghost"
+              style={{ color: "var(--paper)", borderColor: "var(--paper)" }}
+            >
+              {content.cta_tertiary} <Icon name="arrow-right" size={14} />
+            </Link>
           </div>
         </Reveal>
         <div

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
-import { HeroForm } from "@/components/app/HeroForm";
+import { HeroEntrar } from "@/components/app/HeroEntrar";
 import type { Locale } from "@/lib/i18n";
 import type { AppHomeContent } from "@/lib/content/app-home";
 
@@ -37,7 +37,12 @@ export function Hero({ content, locale = "es" }: { content: AppHomeContent; loca
               </p>
             </Reveal>
             <Reveal delay={220}>
-              <HeroForm locale={locale} />
+              {/* Aquí había un formulario de email que pedía la ciudad y
+                  prometía avisar. La plataforma YA está abierta, así que el
+                  primer paso del hero es entrar en ella, no apuntarse a una
+                  lista. La captación de ciudades sigue viva en el bloque de
+                  la próxima ciudad y en /guias. */}
+              <HeroEntrar locale={locale} />
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18, fontSize: 13, color: "var(--ink-2)", flexWrap: "wrap" }}>
                 <div style={{ display: "flex", marginRight: 4 }} aria-hidden="true">
                   {AVATAR_COLORS.map((color, i) => (

@@ -131,8 +131,12 @@ function resolverEnlace(href: string, slugs: Set<string>): string | null {
   const ruta = u.pathname.replace(/\/+$/, "") || "/";
 
   if (host === "blog.discoolver.com") {
-    // No hay páginas de categoría en esta web: el índice del blog las lista,
-    // pero no filtra. El destino honesto de las 19 categorías es el índice.
+    // Desde el 13-ago sí hay páginas de categoría (/blog/categoria/<slug>),
+    // pero son las 7 de la taxonomía de hoy y estos enlaces traen las 19 del
+    // WordPress de 2016 ("restaurantes-en-madrid", "fiesta-en-malaga",
+    // "actualidad-discoolver"): emparejarlas una a una sería adivinar, y
+    // adivinar mal manda al lector a una lista que no es la que pidió. El
+    // destino honesto de las viejas sigue siendo el índice.
     if (ruta === "/" || ruta.startsWith("/category")) return "/blog";
     // Los adjuntos vivían en el hosting que se cayó; no están ni en el archivo.
     if (ruta.startsWith("/wp-content")) return null;
@@ -286,16 +290,65 @@ export function getPostSlugs(): string[] {
   return cargar().map((p) => p.slug);
 }
 
-/** Las categorías que existen de verdad, con cuántos artículos tiene cada una. */
-export function getCategories(): { nombre: string; total: number }[] {
-  const cuenta = new Map<string, number>();
+/* ── Categorías ───────────────────────────────────────────────────────────── */
+
+export interface Categoria {
+  nombre: string;
+  /** El de la URL: /blog/categoria/<slug>. */
+  slug: string;
+  total: number;
+}
+
+/**
+ * El slug de una categoría, calculado del nombre y no guardado.
+ *
+ * La categoría es un campo de texto del artículo en el CMS, no una entidad con
+ * ficha propia: si el slug viviera aparte habría que mantener dos cosas a mano
+ * y bastaría una errata para que una categoría se quedara sin página. Se
+ * transliteran acentos y ñ (NFD + fuera los diacríticos) para que "Con niños"
+ * sea /con-ninos y no una URL con %C3%B1 dentro, que es lo que se acaba
+ * pegando en un WhatsApp.
+ */
+export function categoriaSlug(nombre: string): string {
+  return (nombre ?? "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
+ * Las categorías que existen de verdad, con cuántos artículos tiene cada una.
+ *
+ * Se agrupa por SLUG y no por nombre porque el slug es lo que decide qué ve el
+ * lector: el día que entre por el CMS un "Comer y Beber" con mayúscula habría
+ * dos entradas en la lista contando 12 y 2, y las dos llevarían a la misma
+ * página con los 14. Agrupando por slug, el número de la lista y lo que hay
+ * dentro son siempre lo mismo. El desempate por nombre es para que dos
+ * categorías empatadas no bailen de sitio entre builds.
+ */
+export function getCategories(): Categoria[] {
+  const cuenta = new Map<string, Categoria>();
   for (const p of cargar()) {
-    if (!p.category) continue;
-    cuenta.set(p.category, (cuenta.get(p.category) ?? 0) + 1);
+    const slug = categoriaSlug(p.category);
+    if (!slug) continue;
+    const ya = cuenta.get(slug);
+    if (ya) ya.total += 1;
+    else cuenta.set(slug, { nombre: p.category, slug, total: 1 });
   }
-  return [...cuenta.entries()]
-    .map(([nombre, total]) => ({ nombre, total }))
-    .sort((a, b) => b.total - a.total);
+  return [...cuenta.values()].sort(
+    (a, b) => b.total - a.total || a.nombre.localeCompare(b.nombre, "es"),
+  );
+}
+
+export function getCategoriaBySlug(slug: string): Categoria | undefined {
+  return getCategories().find((c) => c.slug === slug);
+}
+
+/** Los artículos de una categoría, en el mismo orden que en el índice. */
+export function getPostsByCategoria(slug: string): Post[] {
+  return cargar().filter((p) => categoriaSlug(p.category) === slug);
 }
 
 /** Otros artículos para el pie de uno: misma categoría primero. */
@@ -346,9 +399,14 @@ export function esDeArchivo(p: Post): boolean {
  * Los años que cubre el archivo, sacados de las fechas reales. Calculado y no
  * escrito a mano para que el día que se publique algo nuevo el rótulo del
  * índice se mueva solo en vez de quedarse mintiendo.
+ *
+ * Acepta un subconjunto para poder fechar también una categoría con SUS
+ * artículos ("Compras · 2017-2019"): decirle al lector 2016-2021 en una lista
+ * donde no hay nada de 2016 sería exactamente la mentira que este rótulo
+ * existe para evitar.
  */
-export function periodoDelArchivo(): string {
-  const anios = cargar()
+export function periodoDelArchivo(posts: Post[] = cargar()): string {
+  const anios = posts
     .map((p) => p.date.slice(0, 4))
     .filter(Boolean)
     .sort();

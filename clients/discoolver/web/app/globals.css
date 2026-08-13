@@ -1172,8 +1172,13 @@ button {
 
 /* App coming soon --------------------------------------------------------- */
 .app-soon {
-  background: var(--ink);
-  color: var(--paper);
+  /* OJO: en este sistema los tokens van al revés de lo que sugiere su nombre
+     — `--paper` es el fondo casi negro (#0a0a0f) y `--ink` el texto casi
+     blanco. Esta regla los tenía cambiados, así que pintaba texto negro y,
+     como encima la sección lleva una foto con velo negro al 88%, el titular y
+     el contador quedaban negro sobre negro: ilegibles. */
+  background: var(--paper);
+  color: var(--ink);
   position: relative;
   overflow: hidden;
 }
@@ -1585,10 +1590,13 @@ button {
 .wordmark {
   font-family: var(--font-display);
   letter-spacing: -0.05em;
-  color: var(--ink);
+  /* En amarillo (--accent), como en el original. El degradado a transparente
+     por abajo es lo que hace que la palabra parezca hundirse en el borde de
+     la sección; el color se cambia en los dos topes o se pierde el efecto. */
+  color: var(--accent);
   text-align: center;
   user-select: none;
-  background: linear-gradient(180deg, var(--ink) 0%, var(--ink) 60%, transparent 100%);
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent) 60%, transparent 100%);
   -webkit-text-fill-color: transparent;
   -webkit-background-clip: text;
   background-clip: text;
@@ -3086,3 +3094,144 @@ a.format-card--paper {
 .aviso-datos strong { font-weight: 600; }
 .aviso-datos a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
 .aviso-datos a:hover { color: var(--accent); }
+
+/* Fila de botones del hero de la plataforma. Sustituye al formulario de email
+   que había: la plataforma ya está abierta, así que el primer paso es entrar. */
+.hero__cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+/* --------------------------------------------------------------------------
+   Puerta del hero (HeroEntrar). Sustituye al formulario de dos campos
+   obligatorios que había: la plataforma está abierta, así que el correo es
+   opcional y nunca bloquea la entrada.
+-------------------------------------------------------------------------- */
+.hero-entrar { margin-top: 32px; max-width: 520px; }
+.hero-entrar__row {
+  display: flex;
+  gap: 10px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+.hero-entrar__field {
+  flex: 1 1 240px;
+  display: flex;
+  background: var(--bg-card);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 0 16px;
+}
+.hero-entrar__field input {
+  width: 100%;
+  background: none;
+  border: 0;
+  outline: none;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 0;
+}
+.hero-entrar__field input::placeholder { color: var(--ink-2); }
+.hero-entrar__field:focus-within { border-color: var(--accent); }
+.hero-entrar__nota {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  max-width: 46ch;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ── FILTRO POR CATEGORÍA DEL BLOG (13-ago-2026) ──────────────────────────────
+   Las categorías eran una línea de texto plano bajo la entradilla y ahora son
+   las siete rutas de /blog/categoria/<slug>. No estrenan sistema: se visten con
+   el mismo mono en mayúsculas de las etiquetas del blog (.blog-card__meta,
+   .blog-card__falso span) y con el magenta de siempre, porque la fila es
+   metadato de la sección y tiene que leerse como la ficha de una tarjeta, no
+   como un widget pegado encima.
+-------------------------------------------------------------------------- */
+.blog-cats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 40px;
+}
+.blog-cats__link {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  /* La píldora repite la de .blog-card__falso span, que es la etiqueta que el
+     blog ya usa: mismo radio, mismo borde tenue, mismo aire. */
+  border: 1px solid color-mix(in oklab, var(--line) 16%, transparent);
+  border-radius: 999px;
+  padding: 7px 14px;
+  transition: color .2s ease, background-color .2s ease, border-color .2s ease;
+}
+.blog-cats__link:hover {
+  border-color: var(--primary);
+  color: var(--ink);
+}
+/* La activa cuelga del aria-current que el lector de pantalla ya necesita, en
+   vez de una clase paralela que alguien puede olvidarse de poner. Magenta
+   relleno con tinta blanca: el mismo par que .btn-primary lleva desde el
+   rescate del CSS original, así que no entra color nuevo en la paleta. */
+.blog-cats__link[aria-current="page"] {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.blog-cats__total { opacity: .6; }
+@media (max-width: 560px) {
+  .blog-cats { gap: 6px; margin-bottom: 28px; }
+  .blog-cats__link { padding: 6px 12px; }
+}
+
+/* La categoría de la cabecera del artículo pasó de <span> a enlace a su lista.
+   Mantiene el magenta de .blog-card__cat —no cambia de color por ser enlace, o
+   parecería otra cosa— y solo se subraya al pasar por encima, que es lo que
+   diferencia una etiqueta de un sitio al que se puede ir. */
+a.blog-card__cat:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --------------------------------------------------------------------------
+   Hero de la plataforma: que el titular no se coma la columna del vídeo.
+
+   `.hero__grid` (bloque recuperado, no se toca) usa `1.1fr 1fr`, y un `fr`
+   nunca baja de `min-content`. Con el claim nuevo —«Recomendaciones elegidas a
+   mano de las redes sociales.»— la primera línea es UNA palabra larguísima e
+   indivisible, así que su min-content desbordaba su reparto y aplastaba la
+   columna del vídeo: de 548 px a 91 px, medido. `minmax(0, …)` deja que la
+   columna baje de su contenido mínimo y cada una se queda con lo suyo.
+
+   El `clamp` de arriba se acota aquí, y solo dentro del hero de la plataforma,
+   porque el titular pasó de dos líneas cortas a tres largas: con el tamaño
+   original la palabra no cabe ni con el grid arreglado. No se toca
+   `.display-xl` global — ahí está la regla de oro del CLAUDE.md.
+-------------------------------------------------------------------------- */
+.hero__grid {
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+}
+.hero__grid h1.display-xl {
+  font-size: clamp(38px, 4.4vw, 74px);
+  text-wrap: balance;
+}
+@media (max-width: 980px) {
+  .hero__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

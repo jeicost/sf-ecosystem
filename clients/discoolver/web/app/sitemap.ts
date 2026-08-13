@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { site } from "@/lib/site";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, getCategories } from "@/lib/posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
@@ -49,6 +49,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     changeFrequency: "yearly" as const,
     priority: 0.5,
   }));
+  // Las listas por categoría. Son siete URLs indexables con título y
+  // descripción propios, no un filtro en cliente: si no entran aquí, Google
+  // solo llega a ellas rebotando desde el índice.
+  const categorias = getCategories().map((c) => ({
+    url: `${site.url}/blog/categoria/${c.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.6,
+  }));
+
   return [
     ...routes.map((route) => ({
       url: `${site.url}${route.path}`,
@@ -56,6 +66,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly" as const,
       priority: route.priority,
     })),
+    ...categorias,
     ...articulos,
   ];
 }

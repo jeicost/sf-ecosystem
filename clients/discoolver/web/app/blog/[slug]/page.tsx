@@ -9,6 +9,7 @@ import {
   getAllPosts,
   getPostBySlug,
   getRelated,
+  categoriaSlug,
   fechaLegible,
   ciudadDelPost,
   esDeArchivo,
@@ -54,6 +55,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
 
   const relacionados = getRelated(slug);
   const archivo = esDeArchivo(post);
+  const categoria = post.category;
+  const categoriaRuta = categoriaSlug(categoria);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -83,7 +86,20 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </Link>
           </p>
           <div className="blog-card__meta" style={{ marginBottom: 12 }}>
-            {post.category && <span className="blog-card__cat">{post.category}</span>}
+            {/* Aquí la categoría SÍ es un enlace —al revés que en la tarjeta del
+                índice, que ya va entera dentro de un <a>—: quien acaba de leer
+                un artículo de "Salir de noche" es exactamente quien quiere los
+                otros nueve, y este es el sitio donde le apetece pedirlos. Sin
+                slug (una categoría del CMS que se queda en nada al normalizar)
+                no hay página que enlazar: mejor etiqueta muerta que 404. */}
+            {categoria &&
+              (categoriaRuta ? (
+                <Link href={`/blog/categoria/${categoriaRuta}`} className="blog-card__cat">
+                  {categoria}
+                </Link>
+              ) : (
+                <span className="blog-card__cat">{categoria}</span>
+              ))}
             {post.date && <time dateTime={post.date}>{fechaLegible(post.date)}</time>}
             {/* Pegado a la fecha y no en un banner: lo primero que hay que saber
                 de un artículo de hace años es cuándo se escribió, y a esa altura

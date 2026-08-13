@@ -24,12 +24,14 @@
  */
 export const defaultAppHomeContent = {
   // Hero
-  hero_eyebrow: "Plataforma abierta · nuevas ciudades cada mes",
-  hero_title_line1: "Enjoy like a",
-  hero_title_highlight1: "local.",
-  hero_title_line2: "Discover like",
-  hero_title_line3: "an",
-  hero_title_highlight2: "animal.",
+  hero_eyebrow: "Plataforma abierta · Madrid, Barcelona y Málaga",
+  hero_cta_primary: "Entrar en la plataforma",
+  hero_cta_secondary: "Ver las guías",
+  hero_title_line1: "Recomendaciones",
+  hero_title_highlight1: "elegidas a mano",
+  hero_title_line2: "de las redes sociales.",
+  hero_title_line3: "",
+  hero_title_highlight2: "",
   hero_sub:
     "Los sitios que recomiendan quienes viven la ciudad, revisados uno a uno por editores antes de publicarse. Ya puedes usarlo en la web — mapa, rutas y calendario",
   hero_sub_strong: "desde hoy.",
@@ -84,11 +86,11 @@ export const defaultAppHomeContent = {
   cat_6_count: "237",
 
   // Travel brain (smart card)
-  travel_brain_eyebrow: "No es otra app de reseñas",
+  travel_brain_eyebrow: "Curación humana",
   travel_brain_badge: "◉ En vivo · app.discoolver.com",
-  travel_brain_title_1: "No somos otra app de reseñas.",
-  travel_brain_title_2: "Somos tu",
-  travel_brain_title_highlight: "cerebro viajero.",
+  travel_brain_title_1: "Recomendaciones",
+  travel_brain_title_2: "",
+  travel_brain_title_highlight: "curadas.",
   travel_brain_bullet_1: "Curamos lo mejor de blogs, redes y creadores — sin rankings de pago.",
   travel_brain_bullet_2: "La IA personaliza según tu ciudad, fechas y estilo de viaje.",
   travel_brain_bullet_3: "Te saltas las horas de búsqueda. Todo en un mapa, una ruta y un calendario.",
@@ -97,10 +99,10 @@ export const defaultAppHomeContent = {
 
   // How it works (steps) — cada paso enlaza a su contrapartida real
   how_it_works_eyebrow: "Tus armas secretas en la ciudad",
-  how_it_works_title_1: "Un mapa, una ruta, un calendario",
-  how_it_works_title_2: "y",
-  how_it_works_title_highlight: "alguien a quien preguntar.",
-  how_it_works_title_3: "Nada más.",
+  how_it_works_title_1: "Herramientas de IA",
+  how_it_works_title_2: "para",
+  how_it_works_title_highlight: "descubrir la ciudad.",
+  how_it_works_title_3: "",
   step_1_title: "Cool Map",
   step_1_desc:
     "Los sitios buenos, en un mapa sin ruido. Curado a mano, no clickbait — navega como local, no como turista. Ábrelo: está vivo.",
@@ -158,12 +160,12 @@ export const defaultAppHomeContent = {
   map_popup_desc: "Vistas 360º de la ciudad y un sunset que vale la entrada.",
 
   // For creators
-  creators_eyebrow: "Para creadores · por invitación",
-  creators_title_1: "Ni turista. Ni follower.",
-  creators_title_highlight: "Creador.",
+  creators_eyebrow: "Quién recomienda",
+  creators_title_1: "Accede a los mejores creadores",
+  creators_title_highlight: "y a sus recomendaciones.",
   creators_lead:
-    "No solo viajas: influyes en cómo viajan los demás. Tus recomendaciones, editadas y publicadas con tu firma — y cobras por lo que generan.",
-  creators_cta: "Quiero participar",
+    "Nada de lo que ves aquí lo ha escrito un algoritmo ni lo ha pagado nadie. Detrás de cada sitio hay un creador que conoce la ciudad y lo firma con su nombre.",
+  creators_cta: "Soy creador de contenidos",
   creator_value_1_title: "Monetizable",
   creator_value_1_desc: "Cobras por lo que tus recomendaciones generan. Con seguimiento real.",
   creator_value_2_title: "Personalizado",
@@ -174,22 +176,22 @@ export const defaultAppHomeContent = {
   creator_value_4_desc: "Llega a viajeros de todo el mundo y crece tu comunidad.",
 
   // Lanzamiento de ciudades (el contador vive en Countdown.tsx)
-  app_soon_eyebrow: "Lanzamiento por ciudades · otoño 2026",
-  app_soon_title_1: "Nuevas ciudades en",
+  app_soon_eyebrow: "La próxima ciudad",
+  app_soon_title_1: "Bangkok abre en",
   // El número lo pone el componente desde LAUNCH_DATE (ver Countdown.tsx).
   // No lo devuelvas a un campo del CMS: se queda congelado y contradice al
   // contador que tiene justo debajo.
   app_soon_title_2: "días.",
-  app_soon_title_3: "La plataforma ya está abierta.",
+  app_soon_title_3: "",
   app_soon_desc:
-    "Madrid, Barcelona y Málaga ya se pueden explorar en app.discoolver.com. Cada ciudad nueva se abre cuando sus sitios están revisados uno a uno — déjanos tu email y te avisamos el día que abra la tuya.",
+    "Será la primera ciudad fuera de España. Madrid, Barcelona y Málaga ya se pueden explorar hoy en app.discoolver.com — cada ciudad nueva abre cuando sus sitios están revisados uno a uno.",
   app_soon_cta: "Entrar en la plataforma",
   app_soon_sticker: "en {days} días",
   // Puente a la tienda de guías (componente GuiasBridge). La home no enlazaba
   // a ningún producto de pago en el cuerpo: ni a /guias ni a /360.
   shop_eyebrow: "Guías discoolver · Edición 2026",
-  shop_title_1: "La plataforma es gratis.",
-  shop_title_highlight: "La guía se compra.",
+  shop_title_1: "Consigue las guías de",
+  shop_title_highlight: "edición limitada de tu ciudad.",
   shop_lead:
     "Un año entero de recomendaciones de creadores, filtradas por editores y editadas en una guía por ciudad. Digital desde 14€, papel desde 29€ con el digital incluido, IVA incluido.",
   shop_cta: "Ver las guías",
@@ -237,6 +239,7 @@ export const defaultAppHomeContent = {
     "Madrid, Barcelona y Málaga ya están abiertas en app.discoolver.com. Cada sitio lo ha revisado una persona antes de publicarse — no damos por bueno lo que escupe un algoritmo. ¿Tu ciudad no está? Déjanos tu email y te avisamos cuando abra.",
   cta_primary: "Entrar en la plataforma",
   cta_secondary: "Para empresas",
+  cta_tertiary: "Para creadores",
   cta_cities: "Las ciudades abiertas, siempre al día en app.discoolver.com",
 
   // Footer

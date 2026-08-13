@@ -1,9 +1,10 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { Nav } from "@/components/app/Nav";
 import { Footer } from "@/components/app/Footer";
-import { getAllPosts, getCategories, fechaLegible, periodoDelArchivo } from "@/lib/posts";
+import { BlogCategorias } from "@/components/blog/BlogCategorias";
+import { BlogGrid } from "@/components/blog/BlogGrid";
+import { getAllPosts, getCategories, periodoDelArchivo } from "@/lib/posts";
 
 /**
  * El blog — índice.
@@ -59,61 +60,19 @@ export default function BlogPage() {
             hoy. Comprueba horarios antes de ir.
           </p>
 
-          {categorias.length > 0 && (
-            <p style={{ marginBottom: 40, fontSize: 13.5, color: "var(--ink-2)" }}>
-              {categorias.map((c, i) => (
-                <span key={c.nombre}>
-                  {i > 0 && " · "}
-                  {c.nombre} <span style={{ opacity: 0.6 }}>({c.total})</span>
-                </span>
-              ))}
-            </p>
-          )}
+          {/* Las categorías estaban aquí en texto plano: se leían, decían
+              cuántos artículos tenía cada una y no llevaban a ninguna parte.
+              Ahora son las siete rutas de /blog/categoria/<slug>, así que
+              además de filtrar, cada categoría es una página con su title y su
+              description en vez de una línea muerta. */}
+          <BlogCategorias categorias={categorias} total={posts.length} />
 
           {posts.length === 0 ? (
             <p className="section__lead">
               Estamos preparando los primeros artículos. Vuelve en unos días.
             </p>
           ) : (
-            <div className="blog-grid">
-              {posts.map((p) => (
-                <article key={p.slug} className="blog-card">
-                  <Link href={`/blog/${p.slug}`} className="blog-card__link">
-                    {p.ogImage ? (
-                      // Imágenes rescatadas del blog viejo, de tamaños dispares; el
-                      // optimizador de Vercel no aporta aquí y encarece el build. El
-                      // disable va pegado al <img> porque "next-line" es literal: con
-                      // la explicación en medio suprimía el comentario, no el aviso.
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img className="blog-card__img" src={p.ogImage} alt="" loading="lazy" />
-                    ) : (
-                      // 32 de los 50 artículos rescatados perdieron su foto con el
-                      // alojamiento viejo y no están en el archivo. Antes que inventar
-                      // una imagen con IA —que no correspondería al sitio del que habla
-                      // el artículo— se pone un fondo tipográfico por categoría: la
-                      // rejilla queda pareja y se lee como una decisión, no como un
-                      // hueco. El color sale de la categoría, así que es estable entre
-                      // renders y agrupa visualmente los temas.
-                      <div
-                        className="blog-card__img blog-card__falso"
-                        data-cat={p.category || "Ciudad"}
-                        aria-hidden="true"
-                      >
-                        <span>{p.category || "Discoolver"}</span>
-                      </div>
-                    )}
-                    <div className="blog-card__body">
-                      <div className="blog-card__meta">
-                        {p.category && <span className="blog-card__cat">{p.category}</span>}
-                        {p.date && <time dateTime={p.date}>{fechaLegible(p.date)}</time>}
-                      </div>
-                      <h2 className="blog-card__title">{p.title}</h2>
-                      {p.excerpt && <p className="blog-card__excerpt">{p.excerpt}</p>}
-                    </div>
-                  </Link>
-                </article>
-              ))}
-            </div>
+            <BlogGrid posts={posts} />
           )}
         </div>
       </main>
