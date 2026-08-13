@@ -12,7 +12,10 @@ export function Ticker({ content }: { content: AppHomeContent }) {
     content.ticker_8,
     content.ticker_9,
     content.ticker_10,
-  ];
+    // Las líneas que la plataforma no ha podido rellenar llegan vacías (ver
+    // `withPlatformStats`). Fuera: un hueco en blanco entre dos puntos deja
+    // el ticker con un salto raro y no aporta nada.
+  ].filter((linea) => typeof linea === "string" && linea.trim() !== "");
   const loop = [...items, ...items];
 
   return (

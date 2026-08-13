@@ -8,7 +8,7 @@ import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, Txt } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Concierge digital para alojamientos | discoolver 360",
+  title: "Concierge digital para alojamientos",
   description:
     "El concierge digital que entra en tu check-in, responde al huésped 24/7 y convierte tus recomendaciones en una línea de ingresos para el alojamiento.",
   path: "/360/alojamientos",

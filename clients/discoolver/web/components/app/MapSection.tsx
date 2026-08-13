@@ -1,6 +1,10 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { AppHomeContent } from "@/lib/content/app-home";
+import { localeFromPath, UI } from "@/lib/i18n";
 import { PLATFORM } from "@/lib/platform";
 
 const PINS = [
@@ -12,6 +16,10 @@ const PINS = [
 ];
 
 export function MapSection({ content }: { content: AppHomeContent }) {
+  // El mapa es una maqueta: los nombres salen del CMS, pero el cromo de la
+  // interfaz ("5 cerca de ti") y las etiquetas para lector de pantalla iban
+  // fijas en español también en /en.
+  const t = UI[localeFromPath(usePathname())].home;
   const pills = [1, 2, 3, 4, 5].map((n) => ({
     cat: content[`map_pin_${n}_cat` as keyof AppHomeContent],
     name: content[`map_pin_${n}_name` as keyof AppHomeContent],
@@ -36,11 +44,11 @@ export function MapSection({ content }: { content: AppHomeContent }) {
           </div>
         </Reveal>
         <Reveal delay={100}>
-          <div className="map" role="application" aria-label="Mapa interactivo de la ciudad">
-            <aside className="map__sidebar" aria-label="Puntos de interés cercanos">
+          <div className="map" role="application" aria-label={t.mapaAria}>
+            <aside className="map__sidebar" aria-label={t.puntosAria}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: "var(--ink-2)" }}>
-                  5 cerca de ti
+                  {t.cercaDeTi.replace("{n}", String(pills.length))}
                 </span>
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--ink-2)" }}>2 km</span>
               </div>

@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { withLocale, type Locale } from "@/lib/i18n";
+import { localeFromPath, withLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
+import { LangSwitch } from "@/components/layout/LangSwitch";
 import { PLATFORM } from "@/lib/platform";
 
 /**
@@ -42,7 +43,7 @@ const LINKS = {
 
 export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const pathname = usePathname();
-  const locale: Locale = localeProp ?? (pathname === "/en" || pathname?.startsWith("/en/") ? "en" : "es");
+  const locale: Locale = localeProp ?? localeFromPath(pathname);
   const links = LINKS[locale];
   return (
     <nav className="nav" role="navigation" aria-label={locale === "en" ? "Main navigation" : "Navegación principal"}>
@@ -56,13 +57,7 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
               {link.label}
             </Link>
           ))}
-          <Link
-            href={locale === "en" ? (pathname?.startsWith("/en") ? pathname.slice(3) || "/" : "/") : `/en${pathname === "/" ? "" : pathname ?? ""}`}
-            aria-label={locale === "en" ? "Leer en español" : "Read in English"}
-            style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }}
-          >
-            {locale === "en" ? "ES" : "EN"}
-          </Link>
+          <LangSwitch style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }} />
         </div>
         <div className="nav__cta">
           {/* Antes: un <button> muerto que decía "Tengo código". La puerta real

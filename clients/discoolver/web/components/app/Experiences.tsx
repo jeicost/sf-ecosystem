@@ -1,7 +1,11 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { AppHomeContent } from "@/lib/content/app-home";
+import { localeFromPath, UI } from "@/lib/i18n";
 import { PLATFORM } from "@/lib/platform";
 
 const IMAGES = ["/assets/img-owl.jpg", "/assets/img-fox.jpg", "/assets/img-koala-rome.jpg", "/assets/img-bear.jpg", "/assets/img-metro-kangaroo.jpg", "/assets/img-rabbit-cave.jpg"];
@@ -13,6 +17,9 @@ const IMAGES = ["/assets/img-owl.jpg", "/assets/img-fox.jpg", "/assets/img-koala
 // que no filtraban se retiran con ellos.
 
 export function Experiences({ content }: { content: AppHomeContent }) {
+  // Las tarjetas son copy del CMS, pero el remate ("ficha completa", "ver todo
+  // el catálogo") es interfaz y estaba escrito en español para las dos webs.
+  const t = UI[localeFromPath(usePathname())].home;
   const cards = [1, 2, 3, 4, 5, 6].map((n) => ({
     badge: content[`exp_${n}_badge` as keyof AppHomeContent],
     cat: content[`exp_${n}_cat` as keyof AppHomeContent],
@@ -32,14 +39,14 @@ export function Experiences({ content }: { content: AppHomeContent }) {
               </h2>
             </div>
             <a className="btn btn-ghost" href={PLATFORM.search}>
-              Ver todo el catálogo <Icon name="arrow-up-right" size={14} />
+              {t.verCatalogo} <Icon name="arrow-up-right" size={14} />
             </a>
           </div>
         </Reveal>
         <div className="exps">
           {cards.map((card, i) => (
             <Reveal delay={i * 60} key={card.title}>
-              <a href={PLATFORM.search} style={{ display: "block" }} aria-label={`${card.title} — ${card.cat}. Abrir en la plataforma`}>
+              <a href={PLATFORM.search} style={{ display: "block" }} aria-label={`${card.title} — ${card.cat}. ${t.abrirEnPlataforma}`}>
                 <article className="exp">
                   <div className="exp__media">
                     <span className="exp__badge" aria-hidden="true">
@@ -51,7 +58,7 @@ export function Experiences({ content }: { content: AppHomeContent }) {
                     <span className="exp__cat">{card.cat}</span>
                     <h3 className="exp__title">{card.title}</h3>
                     <div className="exp__meta">
-                      <span className="exp__rating">Ficha completa en la plataforma</span>
+                      <span className="exp__rating">{t.fichaCompleta}</span>
                       <span className="exp__price">
                         <Icon name="arrow-up-right" size={14} />
                       </span>

@@ -109,6 +109,16 @@ export async function applyPlatformStats(content: AppHomeContent, locale: Locale
 
   // Ticker: las líneas impares son ciudades — se regeneran con el dato vivo.
   // Las pares (sitios concretos) se quedan: son picks editoriales.
+  //
+  // Se VACÍAN todas las impares antes de escribir. Sin esto, si la API
+  // devuelve menos ciudades que huecos hay, el hueco sobrante conserva la
+  // ciudad estática y acaba contradiciendo a la viva: el 13-ago-2026 la home
+  // enseñaba «Ibiza · 51» (dato vivo, hueco 7) e «Ibiza · 50» (dato fósil,
+  // hueco 9) a la vez, y Ronda había desaparecido del ticker sin que nadie
+  // la quitara. El componente descarta las líneas vacías.
+  for (let i = 1; i <= 9; i += 2) {
+    out[`ticker_${i}` as keyof AppHomeContent] = "";
+  }
   cities.slice(0, 5).forEach((c, i) => {
     const key = `ticker_${i * 2 + 1}` as keyof AppHomeContent;
     out[key] = `${c.name} · ${nf.format(c.sitios)} ${locale === "en" ? "places published" : "sitios publicados"}`;

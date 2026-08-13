@@ -11,6 +11,14 @@ import path from "path";
  *
  * Se sirve estático a propósito: son artículos que cambian poco y que tienen
  * que cargar rápido y ser indexables. Nada de fetch en cliente.
+ *
+ * Lo que entra por `cargar()` viene del rescate del WordPress viejo y NO está
+ * limpio: enlaces a rutas que ya no existen, títulos cortados a media palabra
+ * por el import y metadatos repetidos entre artículos. Se sanea aquí, al leer,
+ * y no en el horneado, porque el `posts.json` que hay en disco puede venir de
+ * un build anterior o de un CMS caído: limpiando al leer se limpia siempre,
+ * venga de donde venga el fichero. Es una pasada sobre 50 artículos, cacheada
+ * en módulo, y el sitio es SSG: se paga una vez por build.
  */
 export interface Post {
   id: string;
@@ -31,14 +39,233 @@ const RUTA = path.join(process.cwd(), "content/posts.json");
 
 let cache: Post[] | null = null;
 
+/* ── Saneado del rescate ──────────────────────────────────────────────────── */
+
+/**
+ * El sufijo que el WordPress viejo pegaba al `<title>` de cada página. Un
+ * artículo lo trae dentro del título de verdad, así que salía en el H1 y en el
+ * `headline` del JSON-LD, no solo en la pestaña del navegador. El `[^|]*` es
+ * para pillarlo también cuando el import lo dejó cortado a la mitad
+ * ("… |Blog dis").
+ */
+const SUFIJO_BLOG_VIEJO = /\s*\|\s*blog\b[^|]*\|?\s*$/i;
+
+function limpiarTitulo(t: string): string {
+  return (t ?? "").replace(SUFIJO_BLOG_VIEJO, "").trim();
+}
+
+/**
+ * Recorta por palabra, nunca por carácter.
+ *
+ * El import del rescate cortó a pelo por longitud y dejó tres `<title>`
+ * partidos a media palabra ("…que han aparecido en Madr"). Un título más corto
+ * se lee; un título partido parece un fallo de la web. El "…" va dentro del
+ * presupuesto de caracteres, no encima.
+ */
+function recortar(texto: string, max: number): string {
+  const t = (texto ?? "").trim();
+  if (t.length <= max) return t;
+  const corte = t.slice(0, max - 1);
+  const espacio = corte.lastIndexOf(" ");
+  const cuerpo = espacio > 0 ? corte.slice(0, espacio) : corte;
+  return `${cuerpo.replace(/[\s,.;:–—-]+$/, "")}…`;
+}
+
+/** Texto plano del cuerpo, para cuando ni la description ni la entradilla sirven. */
+function textoPlano(html: string): string {
+  return (html ?? "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#8217;|&rsquo;/gi, "’")
+    .replace(/&[a-z#0-9]+;/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Los enlaces que el rescate arrastró del blog viejo.
+ *
+ * El cuerpo de cada artículo trae la barra lateral del WordPress entera, y con
+ * ella su vecindario de 2019: ~900 enlaces a /category/*, 322 a fichas de la
+ * plataforma vieja (/es/madrid/restaurantes/top/amazonico y compañía), 38 a las
+ * mismas fichas sin prefijo de idioma y 31 al espejo inglés que nunca se
+ * rescató. Ninguno lleva hoy a donde dice: los de /es rebotan a la portada —el
+ * lector pulsa "Amazónico" y aterriza en la home, que es peor que no enlazar—
+ * y el resto son 404.
+ *
+ * Aquí se resuelve lo que ve el lector dentro del artículo; en `next.config.ts`
+ * están los 308 equivalentes para lo que Google y los marcadores tienen
+ * indexado desde fuera. No es duplicar: son dos públicos distintos, y las
+ * reglas de los dos sitios se escribieron con las mismas formas para que no se
+ * separen.
+ *
+ * Conservador a propósito: los enlaces externos (webs de restaurantes,
+ * Wikipedia, mapas) no se tocan aunque hayan podido morir por su cuenta — eso
+ * no lo podemos verificar desde aquí y desenlazar de más borra información.
+ */
+const ANCLA = /<a\b([^>]*)>([\s\S]*?)<\/a>/gi;
+const HREF = /\shref\s*=\s*"([^"]*)"/i;
+
+/** `null` = este destino no existe, hay que desenlazar. */
+function resolverEnlace(href: string, slugs: Set<string>): string | null {
+  const bruto = (href ?? "").trim();
+  if (!bruto || bruto.startsWith("#") || /^(mailto:|tel:)/i.test(bruto)) return href;
+
+  // El rescate dejó algún href sin esquema ("parquedeatracciones.es/en"): el
+  // navegador lo resuelve contra la ruta del artículo y acaba en un 404 nuestro
+  // apuntando a una web ajena que sí existe. Se le pone el https.
+  if (!/^https?:\/\//i.test(bruto) && !bruto.startsWith("/")) {
+    return /^[a-z0-9-]+(\.[a-z0-9-]+)+([/?#]|$)/i.test(bruto) ? `https://${bruto}` : null;
+  }
+
+  let u: URL;
+  try {
+    u = new URL(bruto, "https://discoolver.com");
+  } catch {
+    return null;
+  }
+  const host = u.hostname.toLowerCase().replace(/^www\./, "");
+  if (host !== "discoolver.com" && host !== "blog.discoolver.com") return href;
+  const ruta = u.pathname.replace(/\/+$/, "") || "/";
+
+  if (host === "blog.discoolver.com") {
+    // No hay páginas de categoría en esta web: el índice del blog las lista,
+    // pero no filtra. El destino honesto de las 19 categorías es el índice.
+    if (ruta === "/" || ruta.startsWith("/category")) return "/blog";
+    // Los adjuntos vivían en el hosting que se cayó; no están ni en el archivo.
+    if (ruta.startsWith("/wp-content")) return null;
+    // El blog usó dos formatos de URL, plano (/slug) y con fecha
+    // (/2019/06/14/slug), y algún enlace arrastra un prefijo de ciudad: el
+    // último segmento es siempre el slug. Si el artículo no se rescató, el
+    // enlace se cae — mejor eso que mandar al lector a un 404.
+    const slug = ruta.split("/").filter(Boolean).pop() ?? "";
+    return slugs.has(slug) ? `/blog/${slug}` : null;
+  }
+
+  // discoolver.com = la plataforma vieja de fichas. Mismos prefijos que las
+  // reglas de next.config.ts: /es entero (esta web no tiene rutas /es), y /en
+  // y /madrid solo bajo la ciudad, porque /en/guias o /en/360/* sí son páginas
+  // reales de hoy y desenlazarlas sería el error contrario.
+  if (ruta === "/es" || ruta.startsWith("/es/")) return null;
+  if (ruta.startsWith("/en/madrid") || ruta === "/madrid" || ruta.startsWith("/madrid/")) return null;
+  return href;
+}
+
+function desenlazar(interior: string): string {
+  const limpio = interior.trim();
+  if (!limpio) return "";
+  // Si ya trae markup propio (<strong>, <img>) se desenvuelve tal cual: meterle
+  // otro <strong> encima o convertir una imagen en negrita no tiene sentido.
+  if (/<[a-z]/i.test(limpio)) return interior;
+  // La negrita es para etiquetas cortas ("Amazónico"), que es donde sustituye
+  // de verdad al enlace. Las tarjetas del widget de reservas traen un párrafo
+  // entero dentro del <a>: en negrita serían un muro.
+  return limpio.length <= 80 ? `<strong>${interior}</strong>` : interior;
+}
+
+function limpiarEnlaces(html: string, slugs: Set<string>): string {
+  return (html ?? "").replace(ANCLA, (entero, attrs: string, interior: string) => {
+    // El WordPress dejó 33 `<a>` sin contenido (miniaturas que perdieron su
+    // imagen con el hosting). No se ven, pero se rastrean y son enlaces sin
+    // nombre accesible: se van, apunten a donde apunten.
+    if (!interior.trim()) return "";
+    const m = attrs.match(HREF);
+    if (!m) return desenlazar(interior);
+    const destino = resolverEnlace(m[1], slugs);
+    if (destino === null) return desenlazar(interior);
+    if (destino === m[1]) return entero;
+    return `<a href="${destino}">${interior}</a>`;
+  });
+}
+
+/**
+ * El import del rescate rellenó `seo_title` y `seo_description` cortando a pelo
+ * el título y la entradilla por longitud: quedaron 3 títulos y 11 descriptions
+ * partidos a media palabra ("…aparecido en Madr", "…una mesa o una sección").
+ * Cuando el campo corto no es más que el largo cortado, se vuelve a recortar
+ * desde el largo —ahora por palabra—. Si alguien lo escribió a mano, o sea si
+ * no es prefijo del otro, se respeta: para eso está el campo.
+ */
+function reconstruir(corto: string, largo: string): string {
+  const c = (corto ?? "").trim();
+  return !c || largo.startsWith(c) ? largo : c;
+}
+
+function tituloSeo(seoTitle: string, titulo: string): string {
+  return recortar(reconstruir(limpiarTitulo(seoTitle), titulo), 60);
+}
+
+/**
+ * La meta description del artículo.
+ *
+ * Orden: la del CMS → la entradilla → las primeras frases del cuerpo. Un
+ * candidato se descarta si está vacío, si es un resto del import ("Hola") o si
+ * lo comparte con otro artículo. Lo segundo importa: tres posts del rescate
+ * llevan la MISMA description palabra por palabra (habla de los jueves en los
+ * de lunes y miércoles) y también la misma entradilla, así que la entradilla no
+ * salva a la description y hay que bajar al cuerpo. El cuerpo es distinto en
+ * cada artículo, es texto suyo —no inventado— y sale igual en cada build.
+ *
+ * Se reemplazan los tres, incluido aquel al que el texto sí le pega: si una
+ * description está en tres sitios, no es de ninguno, y elegir cuál se la queda
+ * sería adivinar.
+ */
+const MIN_DESCRIPCION = 60;
+
+function descripcionSeo(desc: string, entradilla: string, cuerpo: string): string {
+  if (desc) return recortar(reconstruir(desc, entradilla || desc), 160);
+  if (entradilla) return recortar(entradilla, 160);
+  return recortar(textoPlano(cuerpo), 160);
+}
+
+/** Sirve como texto de SEO, o es un resto del import ("Hola") que no dice nada. */
+function utilizable(t: string, repetido: boolean): string {
+  const s = (t ?? "").trim();
+  return !repetido && s.length >= MIN_DESCRIPCION ? s : "";
+}
+
+/* ── Lectura ──────────────────────────────────────────────────────────────── */
+
 function cargar(): Post[] {
   if (cache) return cache;
   try {
     const crudo = JSON.parse(fs.readFileSync(RUTA, "utf-8")) as Post[];
+    const vivos = crudo.filter((p) => p.slug && p.title);
+    const slugs = new Set(vivos.map((p) => p.slug));
+
+    // Cuántos artículos comparten cada texto. Se mira sobre el set entero antes
+    // de tocar nada, porque "repetido" solo se sabe con todos delante.
+    const repetidos = (campo: (p: Post) => string) => {
+      const cuenta = new Map<string, number>();
+      for (const p of vivos) {
+        const k = (campo(p) ?? "").trim().toLowerCase();
+        if (k) cuenta.set(k, (cuenta.get(k) ?? 0) + 1);
+      }
+      return (t: string) => (cuenta.get((t ?? "").trim().toLowerCase()) ?? 0) > 1;
+    };
+    const descRepetida = repetidos((p) => p.seoDescription);
+    const entradillaRepetida = repetidos((p) => p.excerpt);
+
     // Los más nuevos primero. Los que no tienen fecha van al final: sin fecha
     // no se puede ordenar, y colarlos arriba daría una portada aleatoria.
-    cache = crudo
-      .filter((p) => p.slug && p.title)
+    cache = vivos
+      .map((p) => {
+        const title = limpiarTitulo(p.title);
+        const contentHtml = limpiarEnlaces(p.contentHtml, slugs);
+        return {
+          ...p,
+          title,
+          contentHtml,
+          seoTitle: tituloSeo(p.seoTitle, title),
+          seoDescription: descripcionSeo(
+            utilizable(p.seoDescription, descRepetida(p.seoDescription)),
+            utilizable(p.excerpt, entradillaRepetida(p.excerpt)),
+            contentHtml,
+          ),
+        };
+      })
       .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
   } catch {
     // Sin fichero (o corrupto) el blog sale vacío, no revienta el build.
@@ -92,6 +319,43 @@ export function fechaLegible(iso: string, locale: "es" | "en" = "es"): string {
     year: "numeric",
     timeZone: "UTC",
   });
+}
+
+/**
+ * Si un artículo ya es archivo.
+ *
+ * El blog está congelado: el más nuevo es de diciembre de 2021 y dentro de los
+ * textos hay presentes y futuros que ya no se sostienen ("el 5 de enero los
+ * Tres Reyes llegarán…", "entrará en vigor el próximo noviembre de 2018"). A
+ * partir de dos años se avisa. No se despublica nada: siguen trayendo el
+ * tráfico correcto y borrarlos sería tirar años de posicionamiento. Decirlo
+ * también nos protege — recomendar a ciegas un sitio cerrado desgasta la marca;
+ * fechar el artículo, no.
+ */
+const DOS_ANIOS_MS = 2 * 31_557_600_000;
+
+// Sin segundo parámetro a propósito: `posts.filter(esDeArchivo)` le pasaría el
+// índice del array como "ahora" y todo saldría reciente.
+export function esDeArchivo(p: Post): boolean {
+  if (!p.date) return false;
+  const t = new Date(`${p.date}T00:00:00Z`).getTime();
+  return Number.isFinite(t) && Date.now() - t > DOS_ANIOS_MS;
+}
+
+/**
+ * Los años que cubre el archivo, sacados de las fechas reales. Calculado y no
+ * escrito a mano para que el día que se publique algo nuevo el rótulo del
+ * índice se mueva solo en vez de quedarse mintiendo.
+ */
+export function periodoDelArchivo(): string {
+  const anios = cargar()
+    .map((p) => p.date.slice(0, 4))
+    .filter(Boolean)
+    .sort();
+  if (anios.length === 0) return "";
+  const desde = anios[0];
+  const hasta = anios[anios.length - 1];
+  return desde === hasta ? desde : `${desde}-${hasta}`;
 }
 
 /**

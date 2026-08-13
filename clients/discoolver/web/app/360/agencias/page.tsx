@@ -9,7 +9,7 @@ import { Section, Head, Cta, Stat, Steps, Pending } from "@/components/b360/Bits
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Agencias, DMC y touroperadores receptivos | discoolver 360",
+  title: "Agencias, DMC y touroperadores receptivos",
   description:
     "Digitalizamos el catálogo local del destino y te damos marketplace y punto de venta para venderlo. Módulos desde 100 €/mes y comisión del 10-15%.",
   path: "/360/agencias",
@@ -35,9 +35,12 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
           <span className="label">{c.hero_label}</span>
           <h1 className="h-hero">{c.hero_title}</h1>
           <p className="lead">{c.hero_sub}</p>
+          {/* Las URLs vienen del CMS sin prefijo de idioma (son las mismas para
+              las dos versiones): el prefijo lo pone withLocale, o el inglés
+              acababa en el formulario de demo español. */}
           <div className="btns">
-            <Cta href={c.hero_cta_1_url}>{c.hero_cta_1}</Cta>
-            <Cta href={c.hero_cta_2_url} variant="2">{c.hero_cta_2}</Cta>
+            <Cta href={withLocale(c.hero_cta_1_url, locale)}>{c.hero_cta_1}</Cta>
+            <Cta href={withLocale(c.hero_cta_2_url, locale)} variant="2">{c.hero_cta_2}</Cta>
           </div>
           {/* La honestidad va en el hero a propósito: es la vertical con menos material
               y decirlo arriba vale más que descubrirlo abajo. */}
@@ -151,7 +154,7 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
           <h2 className="h-sec">{c.cta_title}</h2>
           <p className="lead">{c.cta_texto}</p>
           <div className="btns">
-            <Cta href={c.cta_boton_url}>{c.cta_boton}</Cta>
+            <Cta href={withLocale(c.cta_boton_url, locale)}>{c.cta_boton}</Cta>
           </div>
           <div style={{ marginTop: 22, display: "grid", gap: 8, justifyItems: "center" }}>
             <a href={`mailto:${c.cta_contacto_email}`} style={{ fontFamily: "var(--b-mono)", fontSize: 12.5, color: "var(--b-primary)" }}>

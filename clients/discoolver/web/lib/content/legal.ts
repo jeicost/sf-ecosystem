@@ -33,6 +33,14 @@ export const TITULAR = {
   domicilio: "C/ Alfonso XII 62, 28014 Madrid, España",
   emailB2C: "hola@discoolver.com",
   emailB2B: "info@discoolver.com",
+  /**
+   * Dónde se devuelven las guías en papel. Va aparte del domicilio aunque hoy
+   * coincidan: el art. 97.1.i del TRLGDCU obliga a designar una dirección de
+   * devolución, y quien recibe los paquetes puede no ser quien figura en el
+   * Registro. Si los devueltos deben ir a la oficina de María de Molina 39, se
+   * cambia AQUÍ y solo aquí — decisión de Carlos, no de código.
+   */
+  devoluciones: "C/ Alfonso XII 62, 28014 Madrid, España",
 } as const;
 
 /** Fecha de última revisión — se muestra al pie de cada documento. */
@@ -221,16 +229,38 @@ const terminosEs: LegalDoc = {
     {
       h: "Derecho de desistimiento",
       p: [
-        "**Guía en papel:** tienes 14 días naturales desde que la recibes para devolverla sin dar explicaciones. Escríbenos y te decimos cómo. Te devolvemos lo pagado en cuanto nos llegue; el coste de la devolución corre de tu cuenta salvo que el libro llegara defectuoso.",
+        "**Guía en papel:** tienes 14 días naturales desde que la recibes para desistir sin dar explicaciones. Basta con que nos lo comuniques antes de que venza el plazo, por cualquier medio inequívoco: un correo a " +
+          `[${T.emailB2C}](mailto:${T.emailB2C}) vale, y también el formulario que reproducimos más abajo, aunque usarlo es opcional.`,
+        `Una vez nos avises, tienes otros 14 días naturales para devolvernos el libro a **${T.devoluciones}**. Te reembolsamos todo lo pagado —incluidos los gastos de envío estándar— **como muy tarde 14 días naturales** desde que recibimos tu comunicación, con el mismo medio de pago que usaste y sin coste para ti; podemos esperar a que el libro nos llegue o a que nos enseñes que lo has enviado, lo que ocurra antes. El coste de devolverlo corre de tu cuenta, salvo que llegara defectuoso o equivocado, en cuyo caso lo pagamos nosotros.`,
         "**Guía digital:** al comprar te pedimos que confirmes expresamente que quieres recibirla ya y que aceptas que, al hacerlo, pierdes el derecho de desistimiento —es lo que prevé el artículo 103.m del texto refundido de la Ley General para la Defensa de los Consumidores y Usuarios para el contenido digital que se entrega al instante—. Si no marcas esa casilla, no hay descarga inmediata.",
         "Que no puedas desistir no significa que te aguantes: si el archivo no abre, está incompleto o no es lo que describimos, lo arreglamos o te devolvemos el dinero.",
+      ],
+    },
+    {
+      // El artículo 97.1.i del TRLGDCU obliga a facilitar este modelo, no solo
+      // a mencionar que existe el derecho. Usarlo es opcional para el cliente.
+      h: "Modelo de formulario de desistimiento",
+      p: [
+        "No hace falta que uses este modelo —cualquier declaración inequívoca sirve—, pero lo dejamos aquí por si te resulta más cómodo. Cópialo, rellénalo y envíanoslo:",
+      ],
+      ul: [
+        `A la atención de ${T.razonSocial}, ${T.devoluciones} · [${T.emailB2C}](mailto:${T.emailB2C})`,
+        "Por la presente le comunico que desisto de mi contrato de venta del siguiente bien:",
+        "Pedido el / recibido el:",
+        "Nombre del consumidor:",
+        "Domicilio del consumidor:",
+        "Firma del consumidor (solo si se presenta en papel):",
+        "Fecha:",
       ],
     },
     {
       h: "Si algo sale mal",
       p: [
         `Escríbenos a [${T.emailB2C}](mailto:${T.emailB2C}). Contestamos a todo, y lo normal es que sea en menos de 48 horas laborables.`,
-        "Como consumidor tienes las garantías legales del TRLGDCU. Si no llegamos a un acuerdo, puedes acudir a la plataforma europea de resolución de litigios en línea: [ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr).",
+        // La plataforma ODR europea dejó de funcionar el 20-jul-2025
+        // (Reglamento UE 2024/3228). Enlazarla era mandar al consumidor a una
+        // puerta cerrada.
+        "Como consumidor tienes las garantías legales del TRLGDCU. Si no llegamos a un acuerdo, puedes acudir a las juntas arbitrales de consumo o a los organismos de consumo de tu comunidad autónoma; en Madrid, a la [Dirección General de Comercio y Consumo](https://www.comunidad.madrid/servicios/consumo). El Centro Europeo del Consumidor ([cec.consumo.gob.es](https://cec.consumo.gob.es)) atiende las compras transfronterizas dentro de la UE.",
       ],
     },
     {
@@ -292,16 +322,33 @@ const terminosEn: LegalDoc = {
     {
       h: "Right of withdrawal",
       p: [
-        "**Print guide:** you have 14 calendar days from delivery to return it, no explanation needed. Write to us and we'll tell you how. We refund you once it arrives; return shipping is on you unless the book arrived faulty.",
+        "**Print guide:** you have 14 calendar days from delivery to withdraw, no explanation needed. Just tell us before the deadline, by any unambiguous means: an email to " +
+          `[${T.emailB2C}](mailto:${T.emailB2C}) is enough, and so is the form reproduced below, though using it is optional.`,
+        `Once you've told us, you have a further 14 calendar days to send the book back to **${T.devoluciones}**. We refund everything you paid — standard shipping included — **within 14 calendar days at the latest** of receiving your notice, using the same payment method you used and at no cost to you; we may wait until the book reaches us or until you show us you've sent it, whichever comes first. Return shipping is on you, unless the book arrived faulty or wasn't what you ordered, in which case we cover it.`,
         "**Digital guide:** at checkout we ask you to expressly confirm that you want it delivered immediately and that you accept losing the right of withdrawal by doing so — this is what article 103.m of the Spanish consumer protection act provides for digital content delivered instantly. If you don't tick that box, there is no immediate download.",
         "Losing the right to withdraw doesn't mean you're stuck: if the file won't open, is incomplete, or isn't what we described, we fix it or refund you.",
+      ],
+    },
+    {
+      h: "Model withdrawal form",
+      p: [
+        "You don't have to use this model — any unambiguous statement works — but here it is in case it's easier. Copy it, fill it in and send it to us:",
+      ],
+      ul: [
+        `To ${T.razonSocial}, ${T.devoluciones} · [${T.emailB2C}](mailto:${T.emailB2C})`,
+        "I hereby give notice that I withdraw from my contract of sale of the following goods:",
+        "Ordered on / received on:",
+        "Name of consumer:",
+        "Address of consumer:",
+        "Signature of consumer (only if this form is sent on paper):",
+        "Date:",
       ],
     },
     {
       h: "If something goes wrong",
       p: [
         `Write to [${T.emailB2C}](mailto:${T.emailB2C}). We answer everything, usually within 48 working hours.`,
-        "As a consumer you have the statutory guarantees of Spanish consumer law. If we can't reach an agreement, you can use the European online dispute resolution platform: [ec.europa.eu/consumers/odr](https://ec.europa.eu/consumers/odr).",
+        "As a consumer you have the statutory guarantees of Spanish consumer law. If we can't reach an agreement, you can go to the consumer arbitration boards or to the consumer authority of your region; in Madrid, the [Dirección General de Comercio y Consumo](https://www.comunidad.madrid/servicios/consumo). For cross-border purchases within the EU, the European Consumer Centre ([cec.consumo.gob.es](https://cec.consumo.gob.es)) can help.",
       ],
     },
     {
@@ -463,7 +510,24 @@ const privacidadEs: LegalDoc = {
     {
       h: "Con quién los compartimos",
       p: [
-        "Con nadie que no sea necesario para que esto funcione: el proveedor que aloja la web, el que nos entrega los correos de los formularios, y Stripe para cobrar. No vendemos ni cedemos tus datos a terceros.",
+        "Con nadie que no sea necesario para que esto funcione. **No vendemos ni cedemos tus datos a terceros**, y no los usamos para perfilarte ni para tomar decisiones automatizadas.",
+      ],
+      // Nombrar a cada encargado es obligatorio (art. 13.1.e RGPD) y además es
+      // lo único que permite al usuario comprobar dónde acaban sus datos. La
+      // lista genérica que había antes —«el proveedor que aloja la web»— no
+      // decía nada.
+      ul: [
+        "**Vercel Inc.** (EE. UU.) — aloja y sirve la web. Cláusulas contractuales tipo de la Comisión Europea.",
+        "**Supabase Inc.** (infraestructura en la UE, Fráncfort) — guarda lo que nos dejas en los formularios.",
+        "**FormSubmit** — nos avisa por correo de cada formulario nuevo. Recibe únicamente lo que has escrito en él.",
+        "**Stripe Payments Europe Ltd.** (Irlanda) — cobra las guías. Los datos de tu tarjeta van directos a Stripe y no pasan por nosotros.",
+      ],
+    },
+    {
+      h: "Cuánto tiempo los guardamos",
+      p: [
+        "Lo que nos dejas en un formulario, mientras siga teniendo sentido la razón por la que nos lo dejaste —el aviso de lanzamiento de tu ciudad, la candidatura de creador, la demo que pediste— y como mucho tres años desde el último contacto. Después se borra.",
+        "Los datos de un pedido se conservan seis años, que es lo que exige la normativa fiscal y mercantil.",
       ],
     },
     {
@@ -531,7 +595,20 @@ const privacidadEn: LegalDoc = {
     {
       h: "Who we share it with",
       p: [
-        "Nobody who isn't needed to make this work: the provider hosting the site, the one delivering form emails, and Stripe to take payment. We don't sell or hand your data to third parties.",
+        "Nobody who isn't needed to make this work. **We don't sell or hand your data to third parties**, and we don't use it to profile you or make automated decisions about you.",
+      ],
+      ul: [
+        "**Vercel Inc.** (USA) — hosts and serves the site. European Commission standard contractual clauses.",
+        "**Supabase Inc.** (EU infrastructure, Frankfurt) — stores what you leave in the forms.",
+        "**FormSubmit** — emails us when a new form comes in. It receives only what you typed into it.",
+        "**Stripe Payments Europe Ltd.** (Ireland) — takes payment for the guides. Card details go straight to Stripe and never pass through us.",
+      ],
+    },
+    {
+      h: "How long we keep it",
+      p: [
+        "Whatever you leave in a form, for as long as the reason you left it still stands — the launch notice for your city, your creator application, the demo you asked for — and at most three years from our last contact. After that it's deleted.",
+        "Order data is kept for six years, which is what Spanish tax and commercial law requires.",
       ],
     },
     {

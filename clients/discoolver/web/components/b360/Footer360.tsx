@@ -28,7 +28,7 @@ export function Footer360({ locale = "es" }: { locale?: Locale }) {
       <div className="wrap">
         <div className="b360-foot__grid">
           <div>
-            <Logo360 size={30} href={locale === "en" ? "/en/360" : "/360"} />
+            <Logo360 size={30} href={locale === "en" ? "/en/360" : "/360"} locale={locale} />
             <p className="small" style={{ marginTop: 14, maxWidth: "34ch" }}>
               {t.claim}
             </p>
@@ -51,10 +51,13 @@ export function Footer360({ locale = "es" }: { locale?: Locale }) {
           <div>
             <h5>discoolver</h5>
             <ul>
-              <li><Link href="/">La marca de viajero</Link></li>
+              {/* El diccionario ya traía `marca` y `app` traducidos, pero el JSX
+                  pintaba el castellano a pelo y encima mandaba a la home española:
+                  desde /en/360 se salía del inglés sin haberlo pedido. */}
+              <li><Link href={withLocale("/", locale)}>{t.marca}</Link></li>
               <li>
                 <a href="https://app.discoolver.com" target="_blank" rel="noopener noreferrer">
-                  La app
+                  {t.app}
                 </a>
               </li>
               <li><Link href={withLocale("/privacidad", locale)}>{t.privacidad}</Link></li>

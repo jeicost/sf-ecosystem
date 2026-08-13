@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Locale } from "@/lib/i18n";
 
 /**
  * Marca de discoolver 360.
@@ -40,16 +41,21 @@ export function Logo360({
   href = "/360",
   size = 34,
   className,
+  locale = "es",
 }: {
   href?: string;
   size?: number;
   className?: string;
+  locale?: Locale;
 }) {
   return (
     <Link
       href={href}
       className={`b360-logo ${className ?? ""}`.trim()}
-      aria-label="discoolver 360 — inicio"
+      // Lo único del lockup que cambia de idioma: el resto es la marca, que no
+      // se traduce. Iba fijo en español y era lo primero que leía un lector de
+      // pantalla en /en/360.
+      aria-label={locale === "en" ? "discoolver 360 — home" : "discoolver 360 — inicio"}
     >
       <Mark360 size={size} />
       <span className="b360-logo__wm">

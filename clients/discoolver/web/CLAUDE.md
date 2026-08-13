@@ -114,8 +114,12 @@ un `icons` explícito para el B2C y un `icons` explícito heredado gana a la con
 `public/assets/360/`. El OG de las cinco páginas es `/assets/360/og-360.png`, vía el parámetro
 `image` de `buildMetadata`.
 
-Mientras el banner "PROPUESTA EN REVISIÓN" siga en el layout, las cinco páginas llevan
-`noindex: true`. **Se quitan las dos cosas a la vez**, no una sin la otra.
+~~Mientras el banner "PROPUESTA EN REVISIÓN" siga en el layout, las cinco páginas llevan
+`noindex: true`.~~ **Desactualizado.** Comprobado en producción el 13-ago-2026: el banner ya no
+está y solo `/360/agencias` sigue en `noindex`; las otras cuatro son indexables y están en el
+sitemap. Agencias se mantiene capada a propósito hasta el piloto — y desde el 13-ago su espejo
+`/en/360/agencias` también, que se había quedado indexable con el `x-default` apuntando a una
+página bloqueada.
 
 ## Assets pesados
 

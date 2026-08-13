@@ -2,8 +2,9 @@ import type { Metadata } from "next";
 import { Space_Grotesk, Geist, Geist_Mono } from "next/font/google";
 import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
-import { organizationJsonLd, websiteJsonLd } from "@/lib/jsonld";
+import { organizationJsonLd } from "@/lib/jsonld";
 import { Consent } from "@/components/ui/Consent";
+import { HtmlShell } from "@/components/layout/HtmlShell";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -44,23 +45,16 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  // El <html> (idioma y salto al contenido) lo pinta HtmlShell: el layout raíz
+  // es servidor y no sabe si está sirviendo /guias o /en/guias.
   return (
-    <html lang="es" className={`${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable}`}>
-      <body>
-        <a href="#main-content" className="skip-link">
-          Saltar al contenido
-        </a>
-        {children}
-        <Consent />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd()) }}
-        />
-      </body>
-    </html>
+    <HtmlShell className={`${spaceGrotesk.variable} ${geist.variable} ${geistMono.variable}`}>
+      {children}
+      <Consent />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd()) }}
+      />
+    </HtmlShell>
   );
 }

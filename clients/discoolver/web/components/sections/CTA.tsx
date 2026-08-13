@@ -20,7 +20,10 @@ export function CTA({ content }: { content: HomeContent; locale?: Locale }) {
           </h2>
           <p className="cta__sub">{content.cta_sub}</p>
           <div className="cta__buttons">
-            <Link href="#guias" className="btn btn-primary">
+            {/* Llevaba a #guias —el catálogo— cuando el botón dice literalmente
+                «Avísame de Madrid» y el subtítulo pide el email. El visitante
+                que quería dejar su correo acababa donde había empezado. */}
+            <Link href="#waitlist" data-ciudad="Madrid" className="btn btn-primary">
               {content.cta_primary} <Icon name="arrow-right" size={14} />
             </Link>
             <Link href="#waitlist" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>

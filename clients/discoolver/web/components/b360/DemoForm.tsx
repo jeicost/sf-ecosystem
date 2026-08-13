@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Locale } from "@/lib/i18n";
+import { withLocale, type Locale } from "@/lib/i18n";
 
 /**
  * Formulario cualificado de /360/demo (y embebido en /360/destinos).
@@ -277,7 +277,9 @@ export function DemoForm({ defaultVertical = "", locale = "es" }: { defaultVerti
 
       <p className="small" style={{ margin: 0, color: "var(--b-slate)", fontSize: 13 }}>
         {t.legal1}{" "}
-        <a href="/privacidad" style={{ color: "var(--b-muted)", textDecoration: "underline" }}>
+        {/* La política existe traducida en /en/privacidad: el aviso de consentimiento
+            del formulario inglés no puede mandar a leerla en castellano. */}
+        <a href={withLocale("/privacidad", locale)} style={{ color: "var(--b-muted)", textDecoration: "underline" }}>
           {t.legal2}
         </a>
         .

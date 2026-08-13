@@ -10,7 +10,7 @@ import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Soluciones para destinos turísticos | discoolver 360",
+  title: "Soluciones para destinos turísticos",
   description:
     "Plataforma SaaS para ayuntamientos, patronatos y DMO: redistribuye el flujo de visitantes, da datos propios del destino y monetiza el comercio local.",
   path: "/360/destinos",

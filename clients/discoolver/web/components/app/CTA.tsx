@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
+import type { Locale } from "@/lib/i18n";
 import type { AppHomeContent } from "@/lib/content/app-home";
 import { PLATFORM } from "@/lib/platform";
 
-export function CTA({ content }: { content: AppHomeContent }) {
+export function CTA({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
   return (
     <section className="cta" id="empresas" aria-labelledby="cta-title">
       <div className="cta__bg" aria-hidden="true" />
@@ -23,9 +24,16 @@ export function CTA({ content }: { content: AppHomeContent }) {
             <a href={PLATFORM.home} className="btn btn-primary">
               {content.cta_primary} <Icon name="arrow-right" size={14} />
             </a>
-            <a href="mailto:info@discoolver.com" className="btn btn-ghost" style={{ color: "var(--paper)", borderColor: "var(--paper)" }}>
+            {/* Abría un mailto y se saltaba el formulario cualificado de ocho
+                campos que ya existe en /360/demo — el lead B2B llegaba como un
+                correo suelto sin organización, vertical ni volumen. */}
+            <Link
+              href={locale === "en" ? "/en/360/demo" : "/360/demo"}
+              className="btn btn-ghost"
+              style={{ color: "var(--paper)", borderColor: "var(--paper)" }}
+            >
               {content.cta_secondary} <Icon name="arrow-right" size={14} />
-            </a>
+            </Link>
           </div>
         </Reveal>
         <div

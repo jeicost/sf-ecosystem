@@ -205,7 +205,7 @@ export const defaultDestinos360Content = {
     "Demonstrable impact on the local economy: businesses integrated, points of sale live and sales through the destination's channel.",
   contratacion_publica_title: "On how it fits into public procurement",
   contratacion_publica_text:
-    "What we can tell you today, and we'll say all of it: it is operating expenditure on a subscription basis, not investment and not bespoke development — there is no technology asset to depreciate and no works deliverable to sign off. Our rates are published and the annual amount is calculable before you ask us for anything. We already work with public administration: Ronda is a client in force and there is a deployment at Costa del Sol Tourism Hub, plus agreements with SEGITTUR, ICEX and ITH. And we prepare the technical and financial documentation your procedure requires, working with your procurement department instead of sending you a PDF. What we won't tell you on a website is which specific route your procurement file should follow: that is determined by your contracting authority with the subject matter and the amount in front of it, and anyone who tells you otherwise on a landing page is selling you a problem.",
+    "What we can tell you today, and we'll say all of it: it is operating expenditure on a subscription basis, not investment and not bespoke development — there is no technology asset to depreciate and no works deliverable to sign off. Our rates are published and the annual amount is calculable before you ask us for anything. We already work with public administration: Ronda — on the Costa del Sol — is a client in force, and we hold agreements with SEGITTUR, ICEX and ITH. And we prepare the technical and financial documentation your procedure requires, working with your procurement department instead of sending you a PDF. What we won't tell you on a website is which specific route your procurement file should follow: that is determined by your contracting authority with the subject matter and the amount in front of it, and anyone who tells you otherwise on a landing page is selling you a problem.",
   faq_title: "Questions that always come up",
   faq_1_q: "Who owns the data the platform generates?",
   faq_1_a:
@@ -224,7 +224,7 @@ export const defaultDestinos360Content = {
     "No in-house development is needed. The point of sale software is integrated in 15 days by connecting it to the local product catalog, and the tourism team is trained to manage content without depending on the supplier.",
   faq_6_q: "Which other destinations have it deployed?",
   faq_6_a:
-    "Ronda, with more than 200 local businesses integrated, kiosks, QR signage and eight points of sale. And Costa del Sol and Málaga, with QR signage and marketplace integration inside the Costa del Sol Tourism Hub.",
+    "Ronda, on the Costa del Sol: more than 200 local businesses integrated, kiosks, QR signage and eight points of sale, under an active contract since 2022. It is our reference deployment and we show it running in the demo.",
   faq_7_q: "How does this fit into a public procurement procedure?",
   faq_7_a:
     "As an annual subscription billed monthly: operating expenditure with a published amount, calculable per financial year. The discoolver team supports the destination in preparing the technical and financial documentation its procedure requires — the specific route is determined by your contracting authority, and we send you in writing how it fits your procurement file after the demo.",

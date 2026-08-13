@@ -39,7 +39,7 @@ export function Hero({ content, locale = "es" }: { content: HomeContent; locale?
               </div>
             </Reveal>
             <Reveal delay={320}>
-              <ul className="hero-notes" aria-label="Cómo se hacen las guías">
+              <ul className="hero-notes" aria-label={locale === "en" ? "How the guides are made" : "Cómo se hacen las guías"}>
                 <li>{content.hero_note_1}</li>
                 <li>{content.hero_note_2}</li>
                 <li>{content.hero_note_3}</li>

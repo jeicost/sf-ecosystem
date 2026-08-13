@@ -57,7 +57,7 @@ export const defaultAppHomeContent = {
   ticker_7: "Málaga · 107 sitios publicados",
   ticker_8: "La Croquetta · Restaurantes",
   ticker_9: "Ibiza · 50 sitios publicados",
-  ticker_10: "Aranjuez · 64 sitios publicados",
+  ticker_10: "",
 
   // Categories (bento) — categorías reales con recuento real de tarjetas listas
   categories_eyebrow: "Categorías · 06",
@@ -185,29 +185,17 @@ export const defaultAppHomeContent = {
     "Madrid, Barcelona y Málaga ya se pueden explorar en app.discoolver.com. Cada ciudad nueva se abre cuando sus sitios están revisados uno a uno — déjanos tu email y te avisamos el día que abra la tuya.",
   app_soon_cta: "Entrar en la plataforma",
   app_soon_sticker: "en {days} días",
+  // Puente a la tienda de guías (componente GuiasBridge). La home no enlazaba
+  // a ningún producto de pago en el cuerpo: ni a /guias ni a /360.
+  shop_eyebrow: "Guías discoolver · Edición 2026",
+  shop_title_1: "La plataforma es gratis.",
+  shop_title_highlight: "La guía se compra.",
+  shop_lead:
+    "Un año entero de recomendaciones de creadores, filtradas por editores y editadas en una guía por ciudad. Digital desde 14€, papel desde 29€ con el digital incluido, IVA incluido.",
+  shop_cta: "Ver las guías",
+  shop_price: "Digital 14€ · Papel desde 29€",
 
-  // Testimonials
-  testimonials_eyebrow: "Lo que dicen los descubridores",
-  testimonials_title: "Llevan años en su ciudad.",
-  testimonials_title_highlight: "Y siguen descubriendo.",
-  testimonial_1_quote: "Llevo 12 años en Madrid y descubrí 3 sitios nuevos en una tarde. Brujería.",
-  testimonial_1_name: "Lucía M.",
-  testimonial_1_role: "Diseñadora · Madrid",
-  testimonial_2_quote: "Lo que necesitaba para no parecer turista en mi propia ciudad.",
-  testimonial_2_name: "Andrés P.",
-  testimonial_2_role: "Local · Madrid",
-  testimonial_3_quote: "Los planes son raros en el buen sentido — nada de cosas obvias de TripAdvisor.",
-  testimonial_3_name: "Marta G.",
-  testimonial_3_role: "Curator · BCN",
-  testimonial_4_quote: "Mi novio me pide que le sorprenda y siempre tiro de Discoolver. Sale el héroe yo.",
-  testimonial_4_name: "Iván R.",
-  testimonial_4_role: "Madrid",
-  testimonial_5_quote: "Curaduría real, no listicles. Eso vale oro.",
-  testimonial_5_name: "Sofía T.",
-  testimonial_5_role: "Periodista · Málaga",
-  testimonial_6_quote: "El mapa es adictivo. Salí a por el pan y volví con 4 fotos nuevas.",
-  testimonial_6_name: "Carmen L.",
-  testimonial_6_role: "Madrid",
+
 
   // FAQ
   faq_eyebrow: "Preguntas frecuentes",
@@ -227,16 +215,16 @@ export const defaultAppHomeContent = {
     "La plataforma web ya funciona en tu móvil, sin descargar nada. La app nativa llega después: apúntate a la lista y recibes el aviso el día que salga.",
   faq_q4: "¿En qué ciudades funciona?",
   faq_a4:
-    "Madrid, Barcelona y Málaga están abiertas, con más de 1.100 sitios revisados entre las tres. Ronda, Ibiza y Aranjuez entran a continuación, y Bangkok será la primera ciudad fuera de España. ¿La tuya no está? Apúntate y te avisamos el día que abra: el orden lo marca la lista.",
+    "Entra en app.discoolver.com y lo ves al momento: la lista de ciudades abiertas es la que enseña la plataforma, no una promesa de esta página. Vamos abriendo de una en una, cuando sus sitios están revisados uno a uno. ¿La tuya no está? Apúntate y te avisamos el día que abra: el orden lo marca la lista.",
   faq_q5: "¿Cuánto cuesta?",
   faq_a5:
-    "Usar Discoolver es gratis mientras abrimos ciudades. Si algún día una parte pasa a ser de pago, lo sabrás antes y sin sorpresas — nunca a mitad de viaje.",
+    "Son dos cosas distintas. La plataforma es gratis: entras en app.discoolver.com y exploras sin pagar. Las guías editoriales son un producto aparte, en digital desde 14€ y en papel desde 29€ con el digital incluido, IVA incluido. Si algún día una parte de la plataforma pasara a ser de pago, lo sabrías antes y sin sorpresas.",
   faq_q6: "Soy creador local, ¿cómo participo?",
   faq_a6:
     "Tenemos un programa de creadores por invitación: tus recomendaciones editadas y publicadas con tu firma, con seguimiento de lo que generan. Entra desde la sección de creadores y aplica.",
   faq_q7: "Soy negocio o ayuntamiento. ¿Hay algo para mí?",
   faq_a7:
-    "Sí: discoolver 360, nuestra plataforma para destinos, alojamientos y agencias. Escríbenos a info@discoolver.com y te enseñamos cómo funciona con tu caso delante.",
+    "Sí: discoolver 360, nuestra plataforma para destinos, alojamientos y agencias. Cuéntanos tu caso en el formulario de /360 y te enseñamos cómo funciona con tus datos delante, en media hora. Si prefieres escribir, info@discoolver.com.",
 
   // CTA
   cta_eyebrow: "Plataforma abierta · nuevas ciudades cada mes",
@@ -249,7 +237,7 @@ export const defaultAppHomeContent = {
     "Madrid, Barcelona y Málaga ya están abiertas en app.discoolver.com. Cada sitio lo ha revisado una persona antes de publicarse — no damos por bueno lo que escupe un algoritmo. ¿Tu ciudad no está? Déjanos tu email y te avisamos cuando abra.",
   cta_primary: "Entrar en la plataforma",
   cta_secondary: "Para empresas",
-  cta_cities: "Madrid · Barcelona · Málaga · Ronda · Ibiza · Aranjuez · Punta Cana · Santo Domingo · Bangkok próximamente",
+  cta_cities: "Las ciudades abiertas, siempre al día en app.discoolver.com",
 
   // Footer
   footer_brand_desc: "La plataforma para descubrir tu ciudad como nunca antes lo habías hecho.",

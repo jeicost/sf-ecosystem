@@ -9,7 +9,7 @@ import { DemoForm } from "@/components/b360/DemoForm";
 import { Section } from "@/components/b360/Bits";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Pedir una demo | discoolver 360",
+  title: "Pedir una demo",
   description:
     "Media hora con la plataforma funcionando y el despliegue de Ronda abierto. Salimos con una propuesta de por qué módulo empezar y qué cuesta.",
   path: "/360/demo",

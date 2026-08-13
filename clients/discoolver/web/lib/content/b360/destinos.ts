@@ -214,7 +214,7 @@ export const defaultDestinos360Content = {
     "Impacto en el tejido local demostrable: comercios integrados, puntos de venta activos y ventas por el canal del destino.",
   contratacion_publica_title: "Sobre el encaje en contratación pública",
   contratacion_publica_text:
-    "Lo que podemos decirte hoy, y lo decimos entero: es gasto corriente en modo suscripción, no inversión ni desarrollo a medida — no hay activo tecnológico que amortizar ni entregable de obra que recepcionar. Las tarifas son públicas y el importe anual es calculable antes de pedirnos nada. Ya operamos con administración pública: Ronda es cliente en vigor y hay despliegue en Costa del Sol Tourism Hub, además de acuerdos con SEGITTUR, ICEX e ITH. Y preparamos la documentación técnica y económica que requiera tu procedimiento, trabajando con tu servicio de contratación en lugar de mandarte un PDF. Lo que no vamos a decirte en una web es por qué vía concreta debe tramitarse tu expediente: eso lo determina tu órgano de contratación con el objeto y el importe delante, y quien te diga lo contrario en una landing te está vendiendo un problema.",
+    "Lo que podemos decirte hoy, y lo decimos entero: es gasto corriente en modo suscripción, no inversión ni desarrollo a medida — no hay activo tecnológico que amortizar ni entregable de obra que recepcionar. Las tarifas son públicas y el importe anual es calculable antes de pedirnos nada. Ya operamos con administración pública: Ronda —en la Costa del Sol— es cliente en vigor, y tenemos acuerdos con SEGITTUR, ICEX e ITH. Y preparamos la documentación técnica y económica que requiera tu procedimiento, trabajando con tu servicio de contratación en lugar de mandarte un PDF. Lo que no vamos a decirte en una web es por qué vía concreta debe tramitarse tu expediente: eso lo determina tu órgano de contratación con el objeto y el importe delante, y quien te diga lo contrario en una landing te está vendiendo un problema.",
   faq_title: "Preguntas que salen siempre",
   faq_1_q: "¿De quién son los datos que genera la plataforma?",
   faq_1_a:
@@ -233,7 +233,7 @@ export const defaultDestinos360Content = {
     "No hace falta desarrollo propio. El software de caja se integra en 15 días conectándolo al catálogo de producto local, y el equipo de turismo recibe formación para gestionar contenidos sin depender del proveedor.",
   faq_6_q: "¿Qué otros destinos lo tienen desplegado?",
   faq_6_a:
-    "Ronda, con más de 200 negocios locales integrados, tótems, señalética QR y ocho puntos de venta. Y Costa del Sol y Málaga, con señalética QR e integración de marketplace dentro del Costa del Sol Tourism Hub.",
+    "Ronda, en la Costa del Sol: más de 200 negocios locales integrados, tótems, señalética QR y ocho puntos de venta, con contrato en vigor desde 2022. Es nuestro despliegue de referencia y se enseña funcionando en la demo.",
   faq_7_q: "¿Cómo encaja esto en un procedimiento de contratación pública?",
   faq_7_a:
     "Como suscripción anual con facturación mensual: gasto corriente con importe público y calculable por ejercicio. El equipo de discoolver acompaña al destino en la preparación de la documentación técnica y económica que requiera su procedimiento — la vía concreta la determina tu órgano de contratación, y el encaje en tu expediente te lo mandamos por escrito tras la demo.",

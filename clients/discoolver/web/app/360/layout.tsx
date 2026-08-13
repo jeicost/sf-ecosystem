@@ -3,6 +3,10 @@ import { Brand360Shell } from "@/components/b360/Brand360Shell";
 
 export const metadata: Metadata = {
   title: {
+    // El `template` ya pone la marca en las subpáginas: sus títulos van SIN
+    // "| discoolver 360" o sale dos veces. Pasó, y con el sufijo duplicado seis
+    // de las ocho subpáginas se iban de 60 caracteres y Google las truncaba.
+    // Presupuesto para el título de una subpágina: 43 caracteres.
     default: "discoolver 360 — Plataforma para destinos, alojamientos y agencias",
     template: "%s — discoolver 360",
   },

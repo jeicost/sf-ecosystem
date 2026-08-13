@@ -1,11 +1,19 @@
+"use client";
+
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { AppHomeContent } from "@/lib/content/app-home";
+import { localeFromPath, withLocale } from "@/lib/i18n";
 
 const IMAGES = ["/assets/img-feat-monetizable.jpg", "/assets/img-feat-personalized.jpg", "/assets/img-feat-maps-calendar.jpg", "/assets/img-metro-kangaroo.jpg"];
 
 export function ForCreators({ content }: { content: AppHomeContent }) {
+  // El CTA de creators (en inglés, "I want in") llevaba fijo a /influencers:
+  // el creador que leía la home en inglés aterrizaba en la candidatura en
+  // español, que es justo el paso donde no se puede perder a nadie.
+  const locale = localeFromPath(usePathname());
   const values = [1, 2, 3, 4].map((n) => ({
     title: content[`creator_value_${n}_title` as keyof AppHomeContent],
     desc: content[`creator_value_${n}_desc` as keyof AppHomeContent],
@@ -26,7 +34,7 @@ export function ForCreators({ content }: { content: AppHomeContent }) {
               </h2>
               <p className="section__lead">{content.creators_lead}</p>
             </div>
-            <a className="btn btn-ink" href="/influencers">
+            <a className="btn btn-ink" href={withLocale("/influencers", locale)}>
               {content.creators_cta} <Icon name="arrow-up-right" size={14} />
             </a>
           </div>

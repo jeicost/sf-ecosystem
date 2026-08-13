@@ -80,7 +80,7 @@ export function Guides({ content, locale = "es" }: { content: HomeContent; local
                   </div>
                 </article>
               ) : (
-                <Link href="#waitlist" className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
+                <Link href="#waitlist" data-ciudad={guide.city} className="bookcard" aria-label={`${guide.city} — ${guide.cta}`}>
                   <div className="bookcard__stage book-scene">
                     <Book3D cover={guide.cover} spineText={guide.spineText} spineColor={guide.spineColor} />
                   </div>

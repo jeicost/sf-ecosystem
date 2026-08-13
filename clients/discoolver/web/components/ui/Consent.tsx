@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { localeFromPath } from "@/lib/i18n";
 
 /**
  * Consentimiento de cookies y medición, acoplados a propósito.
@@ -49,6 +51,11 @@ function cargarAnalitica(id: string) {
 
 export function Consent() {
   const [visible, setVisible] = useState(false);
+  // El banner lo monta el layout raíz, que sirve a los dos idiomas: sin esto
+  // salía en castellano —y enlazando a /cookies— también en las 13 páginas
+  // inglesas. Se derivará del path, igual que hace HtmlShell con el <html lang>.
+  const locale = localeFromPath(usePathname());
+  const es = locale === "es";
 
   useEffect(() => {
     if (!GA_ID) return;                       // nada que consentir
@@ -72,16 +79,26 @@ export function Consent() {
   return (
     <div className="consent" role="dialog" aria-live="polite" aria-label="Cookies">
       <p className="consent__texto">
-        Usamos una cookie de medición para saber qué se lee y qué no. Nada de publicidad
-        ni de seguimiento entre webs. Lo contamos entero en{" "}
-        <Link href="/cookies">la política de cookies</Link>.
+        {es ? (
+          <>
+            Usamos una cookie de medición para saber qué se lee y qué no. Nada de publicidad
+            ni de seguimiento entre webs. Lo contamos entero en{" "}
+            <Link href="/cookies">la política de cookies</Link>.
+          </>
+        ) : (
+          <>
+            We use one measurement cookie to know what gets read and what doesn&apos;t. No
+            advertising, no tracking across sites. It&apos;s all spelled out in our{" "}
+            <Link href="/en/cookies">cookie policy</Link>.
+          </>
+        )}
       </p>
       <div className="consent__botones">
         <button type="button" className="btn btn-ghost" onClick={() => decidir("no")}>
-          Rechazar
+          {es ? "Rechazar" : "Reject"}
         </button>
         <button type="button" className="btn btn-primary" onClick={() => decidir("si")}>
-          Aceptar
+          {es ? "Aceptar" : "Accept"}
         </button>
       </div>
     </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
+import { AvisoDatos } from "@/components/ui/AvisoDatos";
 import { Icon } from "@/components/ui/Icon";
 import type { InfluencersContent } from "@/lib/content/influencers";
 import type { Locale } from "@/lib/i18n";
@@ -88,9 +89,13 @@ function CreatorForm({ copy, successText, errorText, locale = "es" }: { copy: Fo
       ))}
 
       <button type="submit" className="btn btn-primary cform__submit" disabled={status === "loading" || status === "done"}>
-        {status === "loading" ? "Enviando…" : copy.submit} <Icon name="arrow-right" size={14} />
+        {status === "loading" ? (locale === "en" ? "Sending…" : "Enviando…") : copy.submit} <Icon name="arrow-right" size={14} />
       </button>
       <p className="cform__note">{copy.note}</p>
+      <AvisoDatos
+        locale={locale}
+        finalidad={locale === "es" ? "valorar tu candidatura y contestarte" : "assess your application and get back to you"}
+      />
 
       {status === "done" && (
         <p role="status" className="cform__status cform__status--ok">

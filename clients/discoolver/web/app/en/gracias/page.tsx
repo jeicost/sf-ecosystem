@@ -24,7 +24,7 @@ export default function Thanks() {
               Your guide is <span style={{ color: "var(--primary)" }}>on its way.</span>
             </h1>
             <p className="section__lead" style={{ maxWidth: "58ch" }}>
-              We've emailed you the receipt. The digital edition lands in that same inbox within
+              We’ve emailed you the receipt. The digital edition lands in that same inbox within
               minutes; if you ordered print, we print on demand and it ships in 5-8 working days
               with tracking.
             </p>
@@ -33,7 +33,7 @@ export default function Thanks() {
               <a href="mailto:hola@discoolver.com" style={{ color: "var(--primary-2)" }}>
                 hola@discoolver.com
               </a>{" "}
-              and we'll sort it.
+              and we’ll sort it.
             </p>
             <Link href="/en" className="btn btn-primary" style={{ marginTop: 12 }}>
               Back to the shop

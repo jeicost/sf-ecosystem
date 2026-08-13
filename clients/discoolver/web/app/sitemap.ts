@@ -11,8 +11,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/guias", priority: 0.9 },
     { path: "/en/guias", priority: 0.8 },
     { path: "/influencers", priority: 0.8 },
-    // discoolver 360 — estrenada el 11-ago (agencias fuera: sigue noindex
-    // hasta su piloto)
+    // discoolver 360 — estrenada el 11-ago. Fuera de la lista, a propósito:
+    // /360/agencias y /en/360/agencias (noindex hasta el piloto con una DMC) y
+    // /gracias + /en/gracias (noindex, son la pantalla de después del form).
+    // Sacar una ruta de aquí no la desindexa: lo que la desindexa es el
+    // `noindex: true` de su metadata. Van juntos o no sirve ninguno de los dos.
     { path: "/360", priority: 0.9 },
     { path: "/360/destinos", priority: 0.8 },
     { path: "/360/alojamientos", priority: 0.8 },

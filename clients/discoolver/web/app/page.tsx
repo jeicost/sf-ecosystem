@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
-import { faqJsonLd } from "@/lib/jsonld";
+import { faqJsonLd, websiteJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
 import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
 import { applyPlatformStats } from "@/lib/platform-stats";
@@ -18,8 +18,8 @@ import { HowItWorks } from "@/components/app/HowItWorks";
 import { Experiences } from "@/components/app/Experiences";
 import { MapSection } from "@/components/app/MapSection";
 import { ForCreators } from "@/components/app/ForCreators";
+import { GuiasBridge } from "@/components/app/GuiasBridge";
 import { AppComingSoon } from "@/components/app/AppComingSoon";
-import { Testimonials } from "@/components/app/Testimonials";
 import { FAQ } from "@/components/app/FAQ";
 import { Wordmark } from "@/components/sections/Wordmark";
 import { CTA } from "@/components/app/CTA";
@@ -65,21 +65,29 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
       {isDraft && <DraftBanner />}
       <Nav locale={locale} />
       <main>
-        <Hero content={content} />
+        <Hero content={content} locale={locale} />
         <Ticker content={content} />
-        <Categories content={content} />
+        <Categories content={content} locale={locale} />
         <TravelBrain content={content} />
         <HowItWorks content={content} />
         <Experiences content={content} />
         <MapSection content={content} />
+        <GuiasBridge content={content} locale={locale} />
         <ForCreators content={content} />
         <AppComingSoon content={content} locale={locale} />
-        <Testimonials content={content} />
         <FAQ content={content} />
         <Wordmark />
-        <CTA content={content} />
+        <CTA content={content} locale={locale} />
       </main>
       <Footer locale={locale} brandDesc={content.footer_brand_desc} copyright={content.footer_copyright} />
+      {/* El nodo WebSite describe el SITIO y por tanto lleva idioma. Vivía en
+          el layout raíz, que es compartido y no sabe qué ruta sirve: las 13
+          páginas de /en salían declarando `es-ES` mientras su og:locale decía
+          `en_US`. Va aquí, en la home de cada idioma. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd(locale)) }}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd(faqItems)) }}

@@ -16,8 +16,10 @@
  */
 import { defaultHomeContent } from "../lib/content/home";
 import { defaultInfluencersContent } from "../lib/content/influencers";
+import { defaultAppHomeContent } from "../lib/content/app-home";
 import { defaultHomeContent as homeEn } from "../lib/content/en/home";
 import { defaultInfluencersContent as influencersEn } from "../lib/content/en/influencers";
+import { defaultAppHomeContent as appHomeEn } from "../lib/content/en/app-home";
 
 const PROJECT_ID = "674dda33-f0dd-4d2f-8433-92aa86941caf";
 const SUPABASE_URL = process.env.SF_CMS_SUPABASE_URL;
@@ -35,11 +37,19 @@ const H = {
   "Content-Type": "application/json",
 };
 
+// `app-home` faltaba aquí y por eso el CMS seguía pisando la home de la
+// plataforma con el copy anterior: los seis testimonios inventados, la FAQ que
+// decía «usar Discoolver es gratis» junto a una tienda con precios, y una lista
+// de nueve ciudades de las que solo cuatro estaban abiertas. Sembrar solo
+// `home` no bastaba: son dos páginas distintas desde la reestructura del
+// 12-ago (la plataforma en la raíz, la tienda en /guias).
 const PAGES: { slug: string; data: Record<string, string> }[] = [
   { slug: "home", data: defaultHomeContent },
   { slug: "influencers", data: defaultInfluencersContent },
+  { slug: "app-home", data: defaultAppHomeContent },
   { slug: "home-en", data: homeEn },
   { slug: "influencers-en", data: influencersEn },
+  { slug: "app-home-en", data: appHomeEn },
 ];
 
 async function main() {

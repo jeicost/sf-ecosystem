@@ -5,7 +5,14 @@ import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
 import { Nav } from "@/components/app/Nav";
 import { Footer } from "@/components/app/Footer";
-import { getAllPosts, getPostBySlug, getRelated, fechaLegible, ciudadDelPost } from "@/lib/posts";
+import {
+  getAllPosts,
+  getPostBySlug,
+  getRelated,
+  fechaLegible,
+  ciudadDelPost,
+  esDeArchivo,
+} from "@/lib/posts";
 import { BlogCTA } from "@/components/blog/BlogCTA";
 
 /**
@@ -46,6 +53,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   if (!post) notFound();
 
   const relacionados = getRelated(slug);
+  const archivo = esDeArchivo(post);
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -77,6 +85,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           <div className="blog-card__meta" style={{ marginBottom: 12 }}>
             {post.category && <span className="blog-card__cat">{post.category}</span>}
             {post.date && <time dateTime={post.date}>{fechaLegible(post.date)}</time>}
+            {/* Pegado a la fecha y no en un banner: lo primero que hay que saber
+                de un artículo de hace años es cuándo se escribió, y a esa altura
+                el lector ya está mirando la fecha. La nota de abajo explica; esto
+                es lo que se ve de un vistazo. */}
+            {archivo && <span style={{ opacity: 0.7 }}>Archivo</span>}
           </div>
           <h1 className="display-lg" style={{ marginBottom: 24 }}>
             {post.title}
@@ -87,25 +100,22 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             </p>
           )}
 
-          {(() => {
-            // Aviso de antigüedad. El blog es el rescate de artículos de
-            // 2016-2021 sobre bares y tiendas concretos: muchos habrán cerrado.
-            // Se avisa en vez de despublicarlos, porque siguen trayendo el
-            // tráfico correcto y borrarlos sería tirar años de posicionamiento.
-            // Decirlo también nos protege: recomendar a ciegas un sitio cerrado
-            // desgasta la marca; avisar de la fecha, no.
-            const anios = post.date
-              ? (Date.now() - new Date(`${post.date}T00:00:00Z`).getTime()) / 31557600000
-              : 0;
-            if (anios < 2) return null;
-            return (
-              <p className="blog-viejo">
-                Este artículo se publicó en {post.date.slice(0, 4)}. Lo mantenemos porque
-                sigue siendo útil, pero comprueba horarios y si el sitio sigue abierto
-                antes de ir: los negocios cambian.
-              </p>
-            );
-          })()}
+          {/* Aviso de antigüedad. El blog es el rescate de artículos de 2016-2021
+              sobre bares y tiendas concretos: muchos habrán cerrado. Se avisa en
+              vez de despublicarlos, porque siguen trayendo el tráfico correcto y
+              borrarlos sería tirar años de posicionamiento. Decirlo también nos
+              protege: recomendar a ciegas un sitio cerrado desgasta la marca;
+              fechar el artículo, no. Y hace falta decir explícitamente que los
+              tiempos verbales son de entonces — hay textos en futuro ("el 5 de
+              enero los Tres Reyes llegarán…") que sin contexto se leen como una
+              web que no sabe en qué año vive. */}
+          {archivo && (
+            <p className="blog-viejo">
+              Publicado en {post.date.slice(0, 4)} y no actualizado desde entonces. Lo
+              mantenemos por lo que cuenta, pero las fechas, los horarios y los precios
+              son los de aquel momento: comprueba antes de ir que el sitio sigue abierto.
+            </p>
+          )}
 
           <div
             className="prose blog-body"

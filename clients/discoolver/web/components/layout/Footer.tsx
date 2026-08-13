@@ -28,6 +28,7 @@ const T = {
     col3Links: [
       ["/guias#faq", "FAQ"],
       ["/guias#waitlist", "Pide tu ciudad"],
+      ["/blog", "Blog"],
       ["/influencers", "Publica tu guía"],
       ["/360", "discoolver 360 · para empresas"],
     ],

@@ -59,7 +59,7 @@ export const defaultAppHomeContent = {
   ticker_7: "Málaga · 107 places published",
   ticker_8: "La Croquetta · Restaurants",
   ticker_9: "Ibiza · 50 places published",
-  ticker_10: "Aranjuez · 64 places published",
+  ticker_10: "",
 
   // Categories (bento) — categorías reales con recuento real de tarjetas listas
   categories_eyebrow: "Categories · 06",
@@ -187,29 +187,16 @@ export const defaultAppHomeContent = {
     "Madrid, Barcelona and Málaga can already be explored at app.discoolver.com. Each new city opens once its places have been reviewed one by one — leave us your email and we'll tell you the day yours opens.",
   app_soon_cta: "Enter the platform",
   app_soon_sticker: "in {days} days",
+  // Bridge to the guide shop (GuiasBridge component).
+  shop_eyebrow: "Discoolver guides · 2026 Edition",
+  shop_title_1: "The platform is free.",
+  shop_title_highlight: "The guide you buy.",
+  shop_lead:
+    "A whole year of creator recommendations, filtered by editors and edited into one guide per city. Digital from €14, print from €29 with the digital included, VAT included.",
+  shop_cta: "See the guides",
+  shop_price: "Digital €14 · Print from €29",
 
-  // Testimonials
-  testimonials_eyebrow: "What the discoverers say",
-  testimonials_title: "Years living in their own city.",
-  testimonials_title_highlight: "Still discovering it.",
-  testimonial_1_quote: "12 years in Madrid and I found 3 new places in one afternoon. Witchcraft.",
-  testimonial_1_name: "Lucía M.",
-  testimonial_1_role: "Designer · Madrid",
-  testimonial_2_quote: "Exactly what I needed to stop looking like a tourist in my own city.",
-  testimonial_2_name: "Andrés P.",
-  testimonial_2_role: "Local · Madrid",
-  testimonial_3_quote: "The plans are weird in the best way — none of the obvious TripAdvisor stuff.",
-  testimonial_3_name: "Marta G.",
-  testimonial_3_role: "Curator · BCN",
-  testimonial_4_quote: "My boyfriend asks me to surprise him and I always pull up Discoolver. I come out the hero.",
-  testimonial_4_name: "Iván R.",
-  testimonial_4_role: "Madrid",
-  testimonial_5_quote: "Real curation, not listicles. That's worth gold.",
-  testimonial_5_name: "Sofía T.",
-  testimonial_5_role: "Journalist · Málaga",
-  testimonial_6_quote: "The map is addictive. I went out for bread and came back with 4 new photos.",
-  testimonial_6_name: "Carmen L.",
-  testimonial_6_role: "Madrid",
+
 
   // FAQ
   faq_eyebrow: "Frequently asked questions",
@@ -229,16 +216,16 @@ export const defaultAppHomeContent = {
     "The web platform already works on your phone, with nothing to download. The native app comes later: join the list and you'll get the notice the day it lands.",
   faq_q4: "Which cities does it work in?",
   faq_a4:
-    "Madrid, Barcelona and Málaga are open, with more than 1,100 places reviewed between the three. Ronda, Ibiza and Aranjuez come next, and Bangkok will be the first city outside Spain. Yours isn't there? Sign up and we'll tell you the day it opens: the list sets the order.",
+    "Open app.discoolver.com and you'll see it right away: the list of open cities is whatever the platform shows, not a promise made on this page. We open one at a time, once its places have been reviewed one by one. Yours isn't there? Sign up and we'll tell you the day it opens: the list sets the order.",
   faq_q5: "How much does it cost?",
   faq_a5:
-    "Using Discoolver is free while we're opening cities. If some part of it ever goes paid, you'll know beforehand and with no surprises — never halfway through a trip.",
+    "They're two different things. The platform is free: go to app.discoolver.com and explore without paying. The editorial guides are a separate product — digital from €14 and print from €29 with the digital included, VAT included. If any part of the platform ever went paid, you'd know beforehand and with no surprises.",
   faq_q6: "I'm a local creator, how do I take part?",
   faq_a6:
     "We run an invitation-only creator program: your recommendations edited and published under your name, with tracking on what they generate. Go to the creators section and apply.",
   faq_q7: "I'm a business or a city council. Is there anything for me?",
   faq_a7:
-    "Yes: discoolver 360, our platform for destinations, accommodation and agencies. Write to us at info@discoolver.com and we'll show you how it works with your case in front of us.",
+    "Yes: discoolver 360, our platform for destinations, accommodation and agencies. Tell us about your case in the form at /360 and we'll show you how it works with your own data in front of you, in half an hour. If you'd rather write, info@discoolver.com.",
 
   // CTA
   cta_eyebrow: "Platform open · new cities every month",
@@ -251,7 +238,7 @@ export const defaultAppHomeContent = {
     "Madrid, Barcelona and Málaga are already open at app.discoolver.com. Every place has been reviewed by a person before it's published — we don't take whatever an algorithm spits out as good. Your city isn't there? Leave us your email and we'll tell you when it opens.",
   cta_primary: "Enter the platform",
   cta_secondary: "For business",
-  cta_cities: "Madrid · Barcelona · Málaga · Ronda · Ibiza · Aranjuez · Punta Cana · Santo Domingo · Bangkok coming soon",
+  cta_cities: "The open cities, always up to date at app.discoolver.com",
 
   // Footer
   footer_brand_desc: "The platform for discovering your city like you never have before.",

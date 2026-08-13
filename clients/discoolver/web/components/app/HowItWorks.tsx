@@ -1,11 +1,22 @@
+"use client";
+
+import { usePathname } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { AppHomeContent } from "@/lib/content/app-home";
+import { localeFromPath, UI } from "@/lib/i18n";
 import { PLATFORM } from "@/lib/platform";
 
 const STEP_ICONS = ["pin", "compass", "calendar", "buddy"] as const;
 
+/**
+ * El texto de los pasos viene del CMS y ya estaba traducido; lo que salía en
+ * español en /en era el enlace a la plataforma y sus aria-label, que no son
+ * copy editable y vivían escritos a mano aquí. El idioma se lee de la URL
+ * porque la home la comparten `/` y `/en` y el locale no baja hasta aquí.
+ */
 export function HowItWorks({ content }: { content: AppHomeContent }) {
+  const t = UI[localeFromPath(usePathname())].home;
   // Cada herramienta enlaza a su contrapartida REAL en la plataforma: la
   // landing promete, app.discoolver.com cumple. Mismo orden que los campos.
   const steps = [
@@ -32,7 +43,7 @@ export function HowItWorks({ content }: { content: AppHomeContent }) {
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <ol className="steps" aria-label="Cómo funciona Discoolver">
+          <ol className="steps" aria-label={t.comoFuncionaAria}>
             {steps.map((step, i) => (
               <li className="step" key={step.title}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
@@ -47,10 +58,10 @@ export function HowItWorks({ content }: { content: AppHomeContent }) {
                 <p className="step__desc">{step.desc}</p>
                 <a
                   href={step.href}
-                  aria-label={`Abrir ${step.title} en la plataforma`}
+                  aria-label={t.abrirAria.replace("{x}", step.title)}
                   style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: "auto", paddingTop: 16, fontWeight: 600, fontSize: 14 }}
                 >
-                  Ábrelo en la plataforma <Icon name="arrow-up-right" size={13} />
+                  {t.abrir} <Icon name="arrow-up-right" size={13} />
                 </a>
               </li>
             ))}

@@ -6,9 +6,18 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import { Countdown, daysUntilLaunch } from "@/components/ui/Countdown";
 import type { AppHomeContent } from "@/lib/content/app-home";
-import type { Locale } from "@/lib/i18n";
+import { UI, type Locale } from "@/lib/i18n";
 
+/**
+ * El bloque ya recibía `locale` para el contador, pero lo demás —formulario,
+ * botones de tienda, acuses de recibo y la pantalla dibujada en el móvil— seguía
+ * escrito en español. El mockup es decorativo, y aun así es lo que más se mira
+ * de la sección: enseñar la app en español dentro de la web inglesa contaba una
+ * versión del producto que no es la que hay.
+ */
 export function AppComingSoon({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+  const t = UI[locale];
+  const m = t.mockup;
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
   // El número del titular sale de la misma fecha que el contador, no de un
@@ -54,13 +63,13 @@ export function AppComingSoon({ content, locale = "es" }: { content: AppHomeCont
               </h2>
               <p style={{ marginTop: 20, fontSize: 17, color: "rgba(255,255,255,.7)", maxWidth: 520 }}>{content.app_soon_desc}</p>
               <Countdown locale={locale} />
-              <form className="app-soon__form" aria-label="Suscribirse al aviso de lanzamiento de la app" onSubmit={handleSubmit}>
+              <form className="app-soon__form" aria-label={t.app.formAria} onSubmit={handleSubmit}>
                 <input
                   type="email"
-                  placeholder="tu@correo.com"
+                  placeholder={t.heroForm.emailPlaceholder}
                   required
                   aria-required="true"
-                  aria-label="Tu email"
+                  aria-label={t.app.emailAria}
                   autoComplete="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -71,22 +80,22 @@ export function AppComingSoon({ content, locale = "es" }: { content: AppHomeCont
               </form>
               {status === "done" && (
                 <p role="status" style={{ marginTop: 12, fontSize: 13, color: "var(--accent)" }}>
-                  Listo — te avisaremos por email en cuanto lancemos.
+                  {t.app.done}
                 </p>
               )}
               {status === "error" && (
                 <p role="alert" style={{ marginTop: 12, fontSize: 13, color: "#ff8f7d" }}>
-                  No se pudo enviar la solicitud. Inténtalo de nuevo en unos minutos.
+                  {t.app.error}
                 </p>
               )}
               <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
-                <button className="btn btn-ghost" disabled aria-label="App Store — próximamente" style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
+                <button className="btn btn-ghost" disabled aria-label={t.app.storeAria} style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
                   <Icon name="app-store" size={16} />
-                  App Store · pronto
+                  {t.app.storeSoon}
                 </button>
-                <button className="btn btn-ghost" disabled aria-label="Google Play — próximamente" style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
+                <button className="btn btn-ghost" disabled aria-label={t.app.playAria} style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
                   <Icon name="google-play" size={16} />
-                  Google Play · pronto
+                  {t.app.playSoon}
                 </button>
               </div>
             </div>
@@ -103,10 +112,10 @@ export function AppComingSoon({ content, locale = "es" }: { content: AppHomeCont
                     <div className="phone-app__top">
                       <div>
                         <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, opacity: 0.6, letterSpacing: ".1em", textTransform: "uppercase" }}>
-                          Madrid · ahora
+                          {m.ciudadAhora}
                         </div>
                         <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, lineHeight: 1.1, marginTop: 2, color: "#fff" }}>
-                          Hola, <span style={{ color: "var(--primary)" }}>Lucía</span>
+                          {m.saludo} <span style={{ color: "var(--primary)" }}>{m.nombre}</span>
                         </div>
                       </div>
                       <div className="phone-app__avatar" />
@@ -114,31 +123,32 @@ export function AppComingSoon({ content, locale = "es" }: { content: AppHomeCont
                     <div className="phone-app__hero-card">
                       <Image src="/assets/phone-hero.jpg" alt="" width={280} height={210} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                       <div className="phone-app__hero-meta">
-                        <span className="phone-app__pill">Cool Map · 4 cerca</span>
+                        <span className="phone-app__pill">{m.mapPill}</span>
                         <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, color: "#fff" }}>
-                          Plan de hoy: <em style={{ color: "var(--accent)", fontStyle: "normal" }}>al sunset</em>
+                          {m.planHoy} <em style={{ color: "var(--accent)", fontStyle: "normal" }}>{m.planHoyEm}</em>
                         </span>
                       </div>
                     </div>
                     <div className="phone-app__row">
-                      <div className="phone-app__chip is-active">Todos</div>
-                      <div className="phone-app__chip">Gastro</div>
-                      <div className="phone-app__chip">Cultura</div>
-                      <div className="phone-app__chip">Aire libre</div>
+                      {m.chips.map((chip, i) => (
+                        <div className={`phone-app__chip${i === 0 ? " is-active" : ""}`} key={chip}>
+                          {chip}
+                        </div>
+                      ))}
                     </div>
                     <div className="phone-app__cards">
                       <div className="phone-app__card">
                         <Image src="/assets/phone-card-1.jpg" alt="" width={140} height={127} />
                         <div className="phone-app__card-body">
-                          <div style={{ fontSize: 11, opacity: 0.6 }}>Gastro</div>
-                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff", marginTop: 2 }}>Vermut &amp; vinilos</div>
+                          <div style={{ fontSize: 11, opacity: 0.6 }}>{m.card1Cat}</div>
+                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff", marginTop: 2 }}>{m.card1}</div>
                         </div>
                       </div>
                       <div className="phone-app__card">
                         <Image src="/assets/phone-card-2.jpg" alt="" width={140} height={127} />
                         <div className="phone-app__card-body">
-                          <div style={{ fontSize: 11, opacity: 0.6 }}>Aire libre</div>
-                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff", marginTop: 2 }}>Kayak al sunset</div>
+                          <div style={{ fontSize: 11, opacity: 0.6 }}>{m.card2Cat}</div>
+                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff", marginTop: 2 }}>{m.card2}</div>
                         </div>
                       </div>
                     </div>

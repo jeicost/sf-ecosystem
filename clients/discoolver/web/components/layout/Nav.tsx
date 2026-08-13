@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
-import { altPath, withLocale, UI, type Locale } from "@/lib/i18n";
+import { altPath, localeFromPath, withLocale, UI, type Locale } from "@/lib/i18n";
 
 /**
  * El locale se deriva del pathname (cliente), así que la Nav no necesita
@@ -15,7 +15,7 @@ import { altPath, withLocale, UI, type Locale } from "@/lib/i18n";
 export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const locale: Locale = localeProp ?? (pathname === "/en" || pathname?.startsWith("/en/") ? "en" : "es");
+  const locale: Locale = localeProp ?? localeFromPath(pathname);
   const t = UI[locale];
   const isCreators = pathname?.includes("/influencers");
 
@@ -25,6 +25,13 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
     { href: withLocale("/guias#ia", locale), label: t.nav.ia },
     { href: withLocale("/guias#faq", locale), label: t.nav.faq },
     { href: withLocale("/influencers", locale), label: t.nav.creators },
+    // El blog —50 artículos, la principal puerta de entrada orgánica— solo
+    // colgaba de la home de la plataforma: desde /guias, /influencers y /360
+    // no se llegaba por ningún sitio, porque conviven dos cabeceras distintas
+    // en el mismo dominio. Solo en español: no hay espejo inglés del blog y
+    // mandar a un lector inglés a 50 artículos en castellano sin avisar es
+    // peor que no ofrecérselo.
+    ...(locale === "es" ? [{ href: "/blog", label: t.nav.blog }] : []),
   ];
 
   // El menú se cierra al cambiar de página y con Escape

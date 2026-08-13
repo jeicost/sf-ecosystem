@@ -1,8 +1,9 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { Nav } from "@/components/app/Nav";
 import { Footer } from "@/components/app/Footer";
-import { getAllPosts, getCategories, fechaLegible } from "@/lib/posts";
+import { getAllPosts, getCategories, fechaLegible, periodoDelArchivo } from "@/lib/posts";
 
 /**
  * El blog — índice.
@@ -12,18 +13,29 @@ import { getAllPosts, getCategories, fechaLegible } from "@/lib/posts";
  * vivía en un WordPress cuyo alojamiento ya no existe: se recuperó del archivo
  * de Internet y se reimportó al CMS, así que a partir de aquí se edita como
  * cualquier otra cosa, sin WordPress de por medio.
+ *
+ * La sección se presenta como ARCHIVO, no como un blog vivo. No es cosmética:
+ * el artículo más nuevo es de diciembre de 2021 y dentro hay presentes y
+ * futuros que ya no se sostienen ("el 5 de enero los Tres Reyes llegarán…",
+ * "¡Feliz 2019!"). Prometer "lo que cuenta quien vive la ciudad" en presente,
+ * como decía esta portada, convertía un archivo perfectamente respetable en
+ * una web abandonada. Fechado es una decisión editorial; sin fechar, un
+ * descuido. Se retira el día que se publique con regularidad, no antes.
  */
-export const metadata = buildMetadata({
-  title: "Blog — Discoolver",
-  description:
-    "Rutas, listas y secretos de las ciudades que curamos. Lo que cuentan quienes viven allí, editado por nuestro equipo.",
-  path: "/blog",
-  soloEs: true,
-});
+export function generateMetadata(): Metadata {
+  const periodo = periodoDelArchivo();
+  return buildMetadata({
+    title: "Blog — Discoolver",
+    description: `El archivo del blog de discoolver${periodo ? ` (${periodo})` : ""}: rutas, listas y rincones de la ciudad que no salen en las guías de siempre.`,
+    path: "/blog",
+    soloEs: true,
+  });
+}
 
 export default function BlogPage() {
   const posts = getAllPosts();
   const categorias = getCategories();
+  const periodo = periodoDelArchivo();
 
   return (
     <>
@@ -31,12 +43,20 @@ export default function BlogPage() {
       <main className="section" style={{ paddingTop: 120 }}>
         <div className="container">
           <span className="eyebrow">Blog</span>
-          <h1 className="display-lg" style={{ marginBottom: 18 }}>
+          <h1 className="display-lg" style={{ marginBottom: 12 }}>
             Las ciudades, por dentro.
           </h1>
+          {periodo && (
+            // Mismo tratamiento tipográfico que la fecha de cada tarjeta: el
+            // rótulo se lee como el pie de foto de la sección, no como un aviso.
+            <p className="blog-card__meta" style={{ marginBottom: 16 }}>
+              Del archivo de discoolver · {periodo}
+            </p>
+          )}
           <p className="section__lead" style={{ maxWidth: "56ch", marginBottom: 20 }}>
-            Rutas, listas y rincones que no salen en las guías de siempre. Lo que cuenta
-            quien vive la ciudad, editado por nuestro equipo.
+            Rutas, listas y rincones que no salen en las guías de siempre. Lo mantenemos
+            publicado tal cual se escribió: por lo que cuenta, no por lo que siga abierto
+            hoy. Comprueba horarios antes de ir.
           </p>
 
           {categorias.length > 0 && (
@@ -60,9 +80,11 @@ export default function BlogPage() {
                 <article key={p.slug} className="blog-card">
                   <Link href={`/blog/${p.slug}`} className="blog-card__link">
                     {p.ogImage ? (
-                      // eslint-disable-next-line @next/next/no-img-element -- imágenes
-                      // rescatadas del blog viejo, de tamaños dispares; el optimizador
-                      // de Vercel no aporta aquí y encarece el build.
+                      // Imágenes rescatadas del blog viejo, de tamaños dispares; el
+                      // optimizador de Vercel no aporta aquí y encarece el build. El
+                      // disable va pegado al <img> porque "next-line" es literal: con
+                      // la explicación en medio suprimía el comentario, no el aviso.
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img className="blog-card__img" src={p.ogImage} alt="" loading="lazy" />
                     ) : (
                       // 32 de los 50 artículos rescatados perdieron su foto con el

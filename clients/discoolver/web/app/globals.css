@@ -3070,3 +3070,19 @@ a.format-card--paper {
 .blog-card__falso[data-cat="Con niños"]           { --tono: var(--cover-peach); }
 .blog-card__falso[data-cat="Planes"]              { --tono: var(--brand-magenta); }
 .blog-card__falso[data-cat="Ciudad"]              { --tono: var(--primary); }
+
+/* ---------------------------------------------------------------------------
+   Aviso de datos (capa 1) — el párrafo que va pegado a cada formulario.
+   Deliberadamente discreto: informa sin competir con el campo de email. Usa
+   los tokens ya existentes, no introduce color nuevo.
+--------------------------------------------------------------------------- */
+.aviso-datos {
+  margin: 12px 0 0;
+  max-width: 46ch;
+  font-size: 12px;
+  line-height: 1.5;
+  color: color-mix(in oklab, currentColor 62%, transparent);
+}
+.aviso-datos strong { font-weight: 600; }
+.aviso-datos a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.aviso-datos a:hover { color: var(--accent); }

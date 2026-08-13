@@ -117,6 +117,13 @@ async function main() {
   // estáticas. Si el CMS no responde, se conserva el posts.json anterior en vez
   // de dejar el blog vacío — un blog que desaparece en un deploy es peor que uno
   // con un artículo desactualizado.
+  //
+  // Aquí se copia lo que manda el CMS TAL CUAL, sin tocarlo. El saneado del
+  // rescate del WordPress viejo (enlaces muertos, títulos cortados a media
+  // palabra, meta descriptions repetidas) vive en lib/posts.ts, al leer, y no
+  // aquí: precisamente porque este bloque puede no llegar a correr —sin envs o
+  // con el CMS caído se conserva el posts.json de antes— y ese fichero también
+  // tiene que salir limpio.
   try {
     const data = await fetchJson(`${CMS_API_URL}/posts?project=${PROJECT_SLUG}&limit=200`)
     const crudos = Array.isArray(data?.posts) ? data.posts : Array.isArray(data) ? data : []

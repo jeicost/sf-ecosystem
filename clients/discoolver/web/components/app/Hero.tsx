@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
 import { HeroForm } from "@/components/app/HeroForm";
+import type { Locale } from "@/lib/i18n";
 import type { AppHomeContent } from "@/lib/content/app-home";
 
 const AVATAR_COLORS = ["#C9FF3F", "#C426C4", "#00D4D4", "#F2F0EA"];
 
-export function Hero({ content }: { content: AppHomeContent }) {
+export function Hero({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
   return (
     <header className="hero" id="main-content">
       <div className="container">
@@ -36,7 +37,7 @@ export function Hero({ content }: { content: AppHomeContent }) {
               </p>
             </Reveal>
             <Reveal delay={220}>
-              <HeroForm />
+              <HeroForm locale={locale} />
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 18, fontSize: 13, color: "var(--ink-2)", flexWrap: "wrap" }}>
                 <div style={{ display: "flex", marginRight: 4 }} aria-hidden="true">
                   {AVATAR_COLORS.map((color, i) => (

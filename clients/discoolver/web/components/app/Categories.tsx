@@ -1,10 +1,12 @@
 import Image from "next/image";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
+import type { Locale } from "@/lib/i18n";
 import type { AppHomeContent } from "@/lib/content/app-home";
 import { PLATFORM } from "@/lib/platform";
 
-export function Categories({ content }: { content: AppHomeContent }) {
+export function Categories({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+  const es = locale === "es";
   return (
     <section className="section" id="categorias" aria-labelledby="categories-title">
       <div className="container">
@@ -28,7 +30,7 @@ export function Categories({ content }: { content: AppHomeContent }) {
             <a href={PLATFORM.search} className="bento__card bento__featured" role="listitem" aria-label={`${content.cat_1_name} & ${content.cat_1_highlight} — ${content.cat_1_count}`}>
               <Image
                 src="/assets/img-feat-monetizable.jpg"
-                alt="Gastronomía y sabores — experiencias culinarias en la ciudad"
+                alt={es ? "Gastronomía y sabores — experiencias culinarias en la ciudad" : "Food and flavours — culinary experiences around the city"}
                 fill
                 sizes="(max-width: 1000px) 100vw, 50vw"
                 className="bento__bg"
@@ -73,7 +75,7 @@ export function Categories({ content }: { content: AppHomeContent }) {
             <a href={PLATFORM.search} className="bento__card bento__img-card" role="listitem" aria-label={`${content.cat_4_name}${content.cat_4_highlight} — ${content.cat_4_count}`}>
               <Image
                 src="/assets/img-tickets.jpg"
-                alt="Nightlife — vida nocturna y ocio urbano"
+                alt={es ? "Nightlife — vida nocturna y ocio urbano" : "Nightlife — after-dark plans around the city"}
                 fill
                 sizes="(max-width: 640px) 50vw, 25vw"
                 className="bento__bg"
