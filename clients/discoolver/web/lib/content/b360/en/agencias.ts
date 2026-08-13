@@ -19,7 +19,7 @@ export const defaultAgencias360Content = {
   hero_cta_2: "See modules and pricing",
   hero_cta_2_url: "#modulos",
   hero_honestidad:
-    "This is the newest vertical at discoolver 360. The modules have been running in destinations for years, with real deployments taking money on the ground. With agencies we don't have a closed case yet, and we'd rather say it here than in the second meeting.",
+    "The modules have been running in destinations for years, with real deployments taking money on the street. In Ronda the catalogue is already connected with agencies and selling to wholesalers through our own software. What changes with you is the scope, and that comes out of the first conversation, not out of this page.",
   perfiles_label: "Who it's for",
   perfiles_title: "If you sell a destination, local product is your inventory",
   perfiles_lead:
@@ -36,6 +36,8 @@ export const defaultAgencias360Content = {
   no_encaje_titulo: "When we're not your supplier",
   no_encaje_texto:
     "If what you need is a flight booking engine, an accounting back office or a connector to your ERP, that isn't us. discoolver 360 brings the digitized local catalog, the place to sell it and the point where you take payment. Everything else stays where it is.",
+  encaje_integracion:
+    "What we do make sure of is that the catalogue doesn't stay locked inside our platform: it can be consumed from your own systems and sold under your brand, so your customer buys without leaving your site. The exact scope of the integration is agreed in the demo, with your system in front of us.",
   que_damos_label: "What we bring",
   que_damos_title: "The part nobody wants to do, already done",
   que_damos_lead:
@@ -69,7 +71,7 @@ export const defaultAgencias360Content = {
   paso_4_texto:
     "With the data on what gets searched and what gets bought, you come to the contracting table with arguments, and you decide which local product you scale and which you let go.",
   encaje_pendiente:
-    "[PENDIENTE: producto y dirección deben definir si existe API, marca blanca o acceso al catálogo desde el sistema de reservas de la agencia. Hoy no hay documentación técnica que lo respalde, así que no se promete en esta página.]",
+    "",
   caso_label: "What's already deployed",
   caso_title: "Ronda",
   caso_texto:
@@ -81,9 +83,9 @@ export const defaultAgencias360Content = {
   caso_stat_3_valor: "4 years",
   caso_stat_3_label: "Of contract running in Ronda",
   caso_honestidad:
-    "Ronda is a destination, not an agency. What it proves is not that we already work with DMCs, but that the hard part is done and in production: digitizing two hundred local businesses, putting them on sale and actually taking money on the ground.",
+    "Ronda started out as a destination, but it is where the thing an agency cares about is already proven: the local catalogue is connected with agencies and sold to wholesalers through our own software. The hard part isn't in a slide deck — it is digitised, on sale and taking money.",
   caso_pendiente:
-    "[PENDIENTE: no existe todavía un caso con una agencia, DMC o receptivo. Cuando exista, sustituye a este bloque. No se simula ninguno mientras tanto.]",
+    "",
   modulos_label: "Applicable modules",
   modulos_title: "Contracted separately, on subscription",
   modulos_lead:
@@ -118,8 +120,10 @@ export const defaultAgencias360Content = {
     "Dashboard and reports with all the ecosystem's data. Included with the modules you contract.",
   modulos_stack:
     "The full stack of all seven modules comes to €1,845/month. A commission of 10-15% applies on marketplace sales.",
+  modulos_agencia:
+    "These prices are the reference rate. With an agency the set of modules is adapted to your problem — you don't all need the same things, or in the same order — so the scope and the final figure come out of the proposal, not out of this table.",
   modulos_pendiente:
-    "[PENDIENTE: dirección comercial debe confirmar si la tarifa de módulo se aplica igual a una agencia o si hay un paquete específico de canal, y qué se vende exactamente en el arranque mínimo.]",
+    "",
   cta_label: "Next step",
   cta_title: "A conversation, not a generic demo",
   cta_texto:

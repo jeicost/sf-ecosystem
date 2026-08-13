@@ -21,7 +21,7 @@ export const defaultAgencias360Content = {
   hero_cta_2: "Ver módulos y precios",
   hero_cta_2_url: "#modulos",
   hero_honestidad:
-    "Esta es la vertical más reciente de discoolver 360. Los módulos llevan años funcionando en destinos y hay despliegues reales con cobro en la calle. Con agencias todavía no tenemos un caso cerrado, y preferimos decirlo aquí antes que en la segunda reunión.",
+    "Los módulos llevan años funcionando en destinos, con despliegues reales y cobro en la calle. En Ronda el catálogo ya está conectado con agencias y vendiéndose a mayoristas con nuestro propio software. Lo que cambia contigo es el alcance, y eso sale de la primera conversación, no de esta página.",
   perfiles_label: "A quién sirve",
   perfiles_title: "Si vendes destino, el producto local es tu inventario",
   perfiles_lead:
@@ -38,6 +38,8 @@ export const defaultAgencias360Content = {
   no_encaje_titulo: "Cuándo no somos tu proveedor",
   no_encaje_texto:
     "Si buscas un motor de reservas de vuelos, un back office contable o un conector con tu ERP, no somos eso. discoolver 360 aporta el catálogo local digitalizado, el sitio donde venderlo y el punto donde cobrarlo. Lo demás se queda donde está.",
+  encaje_integracion:
+    "Lo que sí hacemos es que el catálogo no se quede encerrado en nuestra plataforma: se puede consumir desde tus propios sistemas y venderse bajo tu marca, para que tu cliente compre sin salir de tu web. El alcance concreto de la integración se define en la demo, con tu sistema delante.",
   que_damos_label: "Qué ponemos nosotros",
   que_damos_title: "La parte que nadie quiere hacer, ya hecha",
   que_damos_lead:
@@ -71,7 +73,7 @@ export const defaultAgencias360Content = {
   paso_4_texto:
     "Con el dato de qué se busca y qué se compra vas a la mesa de contratación con argumentos, y decides qué producto local escalas y cuál dejas caer.",
   encaje_pendiente:
-    "[PENDIENTE: producto y dirección deben definir si existe API, marca blanca o acceso al catálogo desde el sistema de reservas de la agencia. Hoy no hay documentación técnica que lo respalde, así que no se promete en esta página.]",
+    "",
   caso_label: "Lo que ya está desplegado",
   caso_title: "Ronda",
   caso_texto:
@@ -83,9 +85,9 @@ export const defaultAgencias360Content = {
   caso_stat_3_valor: "4 años",
   caso_stat_3_label: "De contrato en vigor en Ronda",
   caso_honestidad:
-    "Ronda es un destino, no una agencia. Lo que demuestra no es que ya trabajemos con DMC, sino que la parte difícil está hecha y en producción: digitalizar doscientos negocios locales, ponerlos a la venta y cobrar de verdad en la calle.",
+    "Ronda empezó siendo un destino, pero es donde está probado lo que le importa a una agencia: el catálogo local ya está conectado con agencias y se vende a mayoristas con nuestro propio software. La parte difícil no está en una presentación — está digitalizada, a la venta y cobrando.",
   caso_pendiente:
-    "[PENDIENTE: no existe todavía un caso con una agencia, DMC o receptivo. Cuando exista, sustituye a este bloque. No se simula ninguno mientras tanto.]",
+    "",
   modulos_label: "Módulos aplicables",
   modulos_title: "Se contratan por separado, en suscripción",
   modulos_lead:
@@ -120,8 +122,10 @@ export const defaultAgencias360Content = {
     "Cuadro de mando e informes con toda la data del ecosistema. Va incluido con los módulos contratados.",
   modulos_stack:
     "El stack completo de los siete módulos suma 1.845 €/mes. Sobre las ventas del marketplace se aplica una comisión del 10-15%.",
+  modulos_agencia:
+    "Estos precios son la tarifa de referencia. Con una agencia el conjunto de módulos se adapta a tu problemática —no todas necesitáis lo mismo, ni en el mismo orden—, así que el alcance y la cifra final salen de la propuesta y no de esta tabla.",
   modulos_pendiente:
-    "[PENDIENTE: dirección comercial debe confirmar si la tarifa de módulo se aplica igual a una agencia o si hay un paquete específico de canal, y qué se vende exactamente en el arranque mínimo.]",
+    "",
   cta_label: "Siguiente paso",
   cta_title: "Una conversación, no una demo genérica",
   cta_texto:

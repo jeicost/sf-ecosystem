@@ -103,9 +103,14 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
             }))}
           />
         </div>
-        <div style={{ marginTop: 20, maxWidth: 720 }}>
-          <Pending>{c.encaje_pendiente}</Pending>
-        </div>
+        {c.encaje_integracion && (
+          <p className="small" style={{ marginTop: 20, maxWidth: "72ch" }}>{c.encaje_integracion}</p>
+        )}
+        {c.encaje_pendiente && (
+          <div style={{ marginTop: 20, maxWidth: 720 }}>
+            <Pending>{c.encaje_pendiente}</Pending>
+          </div>
+        )}
       </Section>
 
       {/* ---------- caso Ronda ---------- */}
@@ -120,9 +125,11 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
             ))}
           </div>
           <p className="small" style={{ marginTop: 26 }}>{c.caso_honestidad}</p>
-          <div style={{ marginTop: 14 }}>
-            <Pending>{c.caso_pendiente}</Pending>
-          </div>
+          {c.caso_pendiente && (
+            <div style={{ marginTop: 14 }}>
+              <Pending>{c.caso_pendiente}</Pending>
+            </div>
+          )}
         </div>
       </Section>
 
@@ -142,9 +149,14 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
           ))}
         </div>
         <p className="small" style={{ marginTop: 20 }}>{c.modulos_stack}</p>
-        <div style={{ marginTop: 12 }}>
-          <Pending>{c.modulos_pendiente}</Pending>
-        </div>
+        {c.modulos_agencia && (
+          <p className="small" style={{ marginTop: 12, maxWidth: "72ch" }}>{c.modulos_agencia}</p>
+        )}
+        {c.modulos_pendiente && (
+          <div style={{ marginTop: 12 }}>
+            <Pending>{c.modulos_pendiente}</Pending>
+          </div>
+        )}
       </Section>
 
       {/* ---------- CTA ---------- */}
