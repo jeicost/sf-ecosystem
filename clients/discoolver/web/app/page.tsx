@@ -12,7 +12,7 @@ import { Nav } from "@/components/app/Nav";
 import { Footer } from "@/components/app/Footer";
 import { Hero } from "@/components/app/Hero";
 import { Ticker } from "@/components/app/Ticker";
-import { Categories } from "@/components/app/Categories";
+import { Categorias8 } from "@/components/app/Categorias8";
 import { TravelBrain } from "@/components/app/TravelBrain";
 import { HowItWorks } from "@/components/app/HowItWorks";
 import { Experiences } from "@/components/app/Experiences";
@@ -67,7 +67,7 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
       <main>
         <Hero content={content} locale={locale} />
         <Ticker content={content} />
-        <Categories content={content} locale={locale} />
+        <Categorias8 content={content} locale={locale} />
         <TravelBrain content={content} />
         <HowItWorks content={content} />
         <Experiences content={content} />
