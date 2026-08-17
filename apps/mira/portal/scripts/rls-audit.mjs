@@ -39,6 +39,9 @@ const SENSITIVE = [
   'brain_contradictions', 'client_documentation', 'lead_activities',
   // 0067: los expedientes de licitación llevan pliegos y memorias del cliente
   'tenders',
+  // 0071: Email Ops — correos operativos del cliente, adjuntos y correcciones
+  'email_inboxes', 'email_ops_settings', 'email_tickets', 'email_messages',
+  'email_corrections', 'email_training_examples',
 ]
 
 const anon = createClient(URL, KEY, { auth: { persistSession: false } })

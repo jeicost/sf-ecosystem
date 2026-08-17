@@ -1,0 +1,10 @@
+{
+  "id": "factura-otro",
+  "description": "Notificación de factura: no es un encargo",
+  "fixture": "factura-notificacion.txt",
+  "received_at": "2026-08-17T08:00:00+02:00",
+  "expected": {
+    "kind": "other",
+    "must_be_null": ["fecha", "recogida_direccion", "entrega_direccion", "bultos"]
+  }
+}

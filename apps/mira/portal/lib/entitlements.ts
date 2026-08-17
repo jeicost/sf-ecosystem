@@ -48,6 +48,34 @@ export function hasTenderTool(clientId?: string | null, isAgency = false): boole
 }
 
 /**
+ * Email Ops (bandeja operativa por correo). Los cuatro clientes del Grupo Aldea:
+ * reciben encargos de recogida/entrega por correo y los pasaban a mano a un
+ * Excel de operaciones. Ver lib/email-ops/.
+ */
+export const EMAIL_OPS_CLIENTS = new Set<string>([
+  '7bdfe0d0-c1d9-4282-9792-aed1075c048b', // Albasanz Express
+  '3949b629-feec-4497-9d73-91214027cca1', // GTD Mensajeros
+  'e664873b-034d-48cd-9a45-8631672ef375', // Dadybox
+  '1a093072-97fb-46e4-aea7-65c3eb9e1e29', // GLS Ciudad Lineal
+])
+
+/** ¿Este cliente tiene acceso a Email Ops? */
+export function hasEmailOpsTool(clientId?: string | null, isAgency = false): boolean {
+  return isAgency || (!!clientId && EMAIL_OPS_CLIENTS.has(clientId))
+}
+
+/** Herramientas verticales gateadas por cliente (clave usada en NavItem.requires). */
+export type Entitlement = 'tender' | 'email-ops'
+
+/** Comprobación genérica, para que la navegación no tenga un if por herramienta. */
+export function hasEntitlement(kind: Entitlement, clientId?: string | null, isAgency = false): boolean {
+  switch (kind) {
+    case 'tender': return hasTenderTool(clientId, isAgency)
+    case 'email-ops': return hasEmailOpsTool(clientId, isAgency)
+  }
+}
+
+/**
  * CPV por defecto cuando el cliente no tiene lista propia.
  * Vive aquí (módulo de datos puros) y no en placsp.ts para que la UI pueda
  * enseñar el criterio ANTES de buscar sin arrastrarse el parser del feed.

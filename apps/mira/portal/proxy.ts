@@ -17,6 +17,8 @@ const EXPENSIVE_API_PREFIXES = [
   '/api/brief',
   '/api/brand-brain/',
   '/api/sales-engine/',
+  // Email Ops: solo lo que llama a Claude (reprocesar); el listado no se limita.
+  '/api/email-ops/reprocess',
 ]
 
 export async function proxy(request: NextRequest) {

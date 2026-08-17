@@ -1,0 +1,14 @@
+{
+  "id": "respuesta-cambio-hora",
+  "description": "Respuesta en el hilo que solo cambia la ventana de recogida: el resto debe quedar null (lo fusiona el sistema)",
+  "fixture": "albasanz-respuesta-cambio-hora.txt",
+  "received_at": "2026-08-17T11:15:00+02:00",
+  "expected": {
+    "kind": "shipment_request",
+    "fields": {
+      "recogida_hora_inicio": "12:00",
+      "recogida_hora_fin": "13:00"
+    },
+    "must_be_null": ["recogida_direccion", "entrega_direccion", "bultos", "peso_kg"]
+  }
+}

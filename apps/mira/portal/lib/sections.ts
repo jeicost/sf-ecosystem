@@ -4,7 +4,9 @@ import {
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
   Search, MessageSquare, FileText,
   Home, Calendar, Brain, Library, ClipboardList, Layers, Archive, Image,
+  Truck, Mail,
 } from 'lucide-react'
+import type { Entitlement } from './entitlements'
 import { DEFAULT_SECTION_SLUG } from './constants'
 
 /** Flag de la UI consolidada del sistema ideal (6 espacios). Apagado por
@@ -19,7 +21,7 @@ export interface NavItem {
   label: string
   icon: LucideIcon
   /** Herramienta con acceso restringido por cliente (ver lib/entitlements). */
-  requires?: 'tender'
+  requires?: Entitlement
 }
 
 export interface MiraSection {
@@ -118,6 +120,14 @@ export const IDEAL_SPACES: IdealSpace[] = [
     items: [
       { href: '/home',      label: 'Overview', icon: LayoutDashboard },
       { href: '/approvals', label: 'Inbox',    icon: CheckSquare },
+    ],
+  },
+  {
+    // Operaciones del día a día del cliente (no confundir con /operations, el
+    // departamento de agentes). Solo aparece para clientes con la herramienta.
+    key: 'operaciones', label: 'Operations', icon: Truck,
+    items: [
+      { href: '/email-ops', label: 'Email Ops', icon: Mail, requires: 'email-ops' },
     ],
   },
   {

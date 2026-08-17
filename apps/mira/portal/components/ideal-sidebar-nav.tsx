@@ -4,7 +4,7 @@ import { clsx } from 'clsx'
 import { Zap, BookOpen, CreditCard } from 'lucide-react'
 import { IDEAL_SPACES } from '@/lib/sections'
 import { useActiveClient } from '@/lib/client-context'
-import { hasTenderTool } from '@/lib/entitlements'
+import { hasEntitlement, type Entitlement } from '@/lib/entitlements'
 
 // Navegación consolidada del sistema ideal: 6 espacios en vez de 27 rutas
 // sueltas (Fase 1). Se monta detrás del flag NEXT_PUBLIC_IDEAL_UI; con el flag
@@ -25,8 +25,8 @@ export default function IdealSidebarNav({
 
   // Herramientas restringidas por cliente (p. ej. Licitaciones): solo aparecen
   // para clientes con el entitlement, o para la agencia.
-  const canSee = (item: { requires?: 'tender' }) =>
-    item.requires !== 'tender' || hasTenderTool(activeClient?.id, isAgency)
+  const canSee = (item: { requires?: Entitlement }) =>
+    !item.requires || hasEntitlement(item.requires, activeClient?.id, isAgency)
 
   return (
     <nav className="flex-1 px-3 py-2 space-y-3 overflow-y-auto">
