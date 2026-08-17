@@ -68,6 +68,11 @@ export const SECTIONS: MiraSection[] = [
     icon: '🎯',
     navItems: [
       { href: '/roster',      label: 'My Team',      icon: Users },
+      // Objetivos del sistema (decisión CEO 17-ago: vive en Marketing). Sale
+      // como «coming soon» hasta que se encienda NEXT_PUBLIC_GOALS_ENABLED —
+      // así el cliente ve que existe y no lo busca en otra parte.
+      { href: '/goals',       label: 'Goals',        icon: Target,
+        ...(process.env.NEXT_PUBLIC_GOALS_ENABLED === '1' ? {} : { status: 'coming_soon' as const }) },
       { href: '/approvals',   label: 'Approvals',    icon: CheckSquare },
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
     ],

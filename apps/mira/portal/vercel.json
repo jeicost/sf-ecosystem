@@ -6,8 +6,21 @@
     "NODE_ENV": "production"
   },
   "crons": [
-    { "path": "/api/cron/drive-sync", "schedule": "0 5 * * *" },
-    { "path": "/api/cron/brain-lint", "schedule": "0 6 * * 0" },
-    { "path": "/api/cron/email-ops", "schedule": "*/10 * * * *" }
+    {
+      "path": "/api/cron/drive-sync",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/cron/brain-lint",
+      "schedule": "0 6 * * 0"
+    },
+    {
+      "path": "/api/cron/email-ops",
+      "schedule": "*/10 * * * *"
+    },
+    {
+      "path": "/api/cron/goals",
+      "schedule": "0 * * * *"
+    }
   ]
 }

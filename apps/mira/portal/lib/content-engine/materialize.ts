@@ -109,8 +109,8 @@ export async function materializePosts(
   db: Admin,
   clientId: string,
   items: MaterializeItem[]
-): Promise<{ inserted: number }> {
-  if (!items.length) return { inserted: 0 }
+): Promise<{ inserted: number; ids: string[] }> {
+  if (!items.length) return { inserted: 0, ids: [] }
   const now = new Date().toISOString()
 
   // Las reglas del propio cliente (qa_rules, banned_phrases, política de
@@ -174,8 +174,15 @@ export async function materializePosts(
     }
   })
 
-  const { error: queueError } = await db.from('approval_queue').insert(queueRows)
+  // Se piden los ids de vuelta: los objetivos del sistema (lib/goals) enlazan
+  // cada tarea con la fila exacta de la cola que generó, para que aprobarla
+  // dispare a sus hijas. Sin los ids, la única forma sería adivinar por
+  // timestamp — y dos piezas del mismo objetivo se insertan en el mismo ms.
+  const { data: inserted, error: queueError } = await db
+    .from('approval_queue')
+    .insert(queueRows)
+    .select('id')
   if (queueError) throw new Error(`approval_queue: ${queueError.message}`)
 
-  return { inserted: queueRows.length }
+  return { inserted: queueRows.length, ids: (inserted ?? []).map((r: { id: string }) => r.id) }
 }

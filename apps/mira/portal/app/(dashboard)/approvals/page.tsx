@@ -221,6 +221,12 @@ export default function ApprovalsPage() {
                     <div className="flex items-center gap-2 mb-0.5">
                       <p className="text-sm text-ink font-medium">{item.platform ?? item.tipo}</p>
                       <span className="text-[10px] text-ink-tertiary">· {item.tipo}</span>
+                      {/* De qué objetivo viene, si viene de uno: el ejecutor lo deja en
+                          reviewer_notes como «Goal: Semana 34». Así el cliente ve el
+                          hilo entre lo que pidió y lo que le llega. */}
+                      {typeof item.reviewer_notes === 'string' && item.reviewer_notes.startsWith('Goal: ') && (
+                        <a href="/goals" className="text-[10px] rounded-full px-2 py-0.5 bg-surface-hover text-ink-secondary hover:text-ink">🎯 {item.reviewer_notes.slice(6)}</a>
+                      )}
                     </div>
                     <p className="text-xs text-ink-muted truncate">{item.copy ?? item.caption ?? '—'}</p>
                   </div>

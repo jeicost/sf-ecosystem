@@ -1,6 +1,7 @@
 import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
+import { onDocumentCompleted } from '@/lib/goals/hooks'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { getDocumentPrompt, DOC_TYPES } from '@/lib/generation/document-prompts'
@@ -232,6 +233,8 @@ export async function POST(req: NextRequest) {
         })
         .eq('id', queueId)
       if (updateError) throw new Error(updateError.message)
+      // Si este documento era una tarea de un objetivo (un playbook), se da por hecha.
+      await onDocumentCompleted(admin, queueId)
 
       return NextResponse.json({ success: true, queue_id: queueId })
     } catch (error) {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { onQueueDecision } from '@/lib/goals/hooks'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
@@ -73,7 +74,12 @@ export async function POST(request: NextRequest) {
           .update({ status: QUEUE_TO_HISTORY[decision], approved_by: user.id })
           .eq('id', item.post_id)
       }
-      return NextResponse.json({ success: true, decision, linked: Boolean(item.post_id) })
+      // Objetivos del sistema: si esta pieza salió de un objetivo, la decisión
+      // mueve el árbol — aprobar dispara a las hijas, rechazar regenera con la
+      // nota. Nunca puede tumbar la aprobación (va con su propio try dentro).
+      const goal = await onQueueDecision(admin, queueId, decision === 'rejected' ? 'rejected' : 'approved',
+        typeof body.note === 'string' ? body.note : (typeof body.reviewer_notes === 'string' ? body.reviewer_notes : null))
+      return NextResponse.json({ success: true, decision, linked: Boolean(item.post_id), goal })
     }
 
     // ── Registrar uso real (marcar publicado/usado) ──
