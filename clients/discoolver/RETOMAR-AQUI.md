@@ -31,6 +31,18 @@ léelo antes de tocar nada y actualízalo al cerrar.
   + posters ligeros en los dos vivos; **ensayo de compra con 4242 aprobado**
   (renuncia grabada en metadata de Stripe con hora y texto, webhook entregado);
   higiene MIRA (_tmp_ fuera, scripts a scripts/).
+- **Fotos → R2 cerrado con Diego**: el curador sube la foto a `images/{rawId}/main.jpg`
+  en el bucket `discoolver` (su convención exacta, verificada: 18.499 fotos así)
+  y manda la URL de `images.discoolver.com`. Construido, 41 tests, desplegado.
+  Falta que Carlos pase las 4 llaves `DO_SPACES_*` para encenderlo.
+- **⚠️ HALLAZGO AL CERRAR: el dg-editor NUNCA ha desplegado por GitHub Actions.**
+  30 de 30 ejecuciones fallidas desde el commit inicial (mayo): el secreto
+  `DO_API_TOKEN` no existe (cero secretos en el repo) y la URL
+  `discoolver-guides-editor.ondigitalocean.app` da NXDOMAIN. La memoria decía
+  «sin URL pública» y se leyó como «desplegado». **Decisión pendiente para la
+  próxima sesión: llevar el editor a Railway junto al curador** (mismo patrón,
+  CI ya probado hoy) en vez de resucitar un DigitalOcean sin token ni URL. Las
+  variables del puente irían entonces en Railway, no en DO.
 - **Nota en el escritorio `DG-EDITOR_VARIABLES_DIGITALOCEAN.md`**: las dos
   variables del puente en DO + el token de Railway para GitHub. Es lo que
   Carlos tiene que pegar para cerrar el circuito en producción.
