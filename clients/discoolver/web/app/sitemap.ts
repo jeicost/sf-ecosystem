@@ -11,14 +11,15 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/guias", priority: 0.9 },
     { path: "/en/guias", priority: 0.8 },
     { path: "/influencers", priority: 0.8 },
-    // discoolver 360 — estrenada el 11-ago. Fuera de la lista, a propósito:
-    // /360/agencias y /en/360/agencias (noindex hasta el piloto con una DMC) y
-    // /gracias + /en/gracias (noindex, son la pantalla de después del form).
-    // Sacar una ruta de aquí no la desindexa: lo que la desindexa es el
-    // `noindex: true` de su metadata. Van juntos o no sirve ninguno de los dos.
+    // discoolver 360 — estrenada el 11-ago; agencias abierta el 17-ago tras
+    // validar dirección comercial sus tres afirmaciones. Siguen fuera SOLO
+    // /gracias + /en/gracias (noindex, pantalla de después del form). Sacar
+    // una ruta de aquí no la desindexa: lo que desindexa es el `noindex` de
+    // su metadata. Van juntos o no sirve ninguno de los dos.
     { path: "/360", priority: 0.9 },
     { path: "/360/destinos", priority: 0.8 },
     { path: "/360/alojamientos", priority: 0.8 },
+    { path: "/360/agencias", priority: 0.8 },
     { path: "/360/demo", priority: 0.7 },
     // inglés
     { path: "/en", priority: 0.9 },
@@ -26,6 +27,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/en/360", priority: 0.8 },
     { path: "/en/360/destinos", priority: 0.7 },
     { path: "/en/360/alojamientos", priority: 0.7 },
+    { path: "/en/360/agencias", priority: 0.7 },
     { path: "/en/360/demo", priority: 0.6 },
     // legales — prioridad baja pero indexables: Google penaliza una tienda
     // que no publica quién vende ni en qué condiciones.

@@ -10,10 +10,8 @@ export const metadata: Metadata = buildMetadata({
   image: "/assets/360/og-360.png",
   siteName: "discoolver 360",
   locale: "en",
-  // Espejo de /360/agencias, que sigue noindex hasta el piloto con una DMC.
-  // Faltaba aquí: quedarse fuera del sitemap no impide que Google la encuentre
-  // por un enlace, así que la versión inglesa era indexable y la española no.
-  noindex: true,
+  // Abierta a Google el 17-ago-2026, a la vez que la española: las dos
+  // versiones van siempre juntas o el x-default apunta a una página bloqueada.
 });
 
 export default function Page() {

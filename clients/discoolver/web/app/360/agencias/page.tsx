@@ -15,9 +15,9 @@ export const metadata: Metadata = buildMetadata({
   path: "/360/agencias",
   image: "/assets/360/og-360.png",
   siteName: "discoolver 360",
-  // Agencias sigue fuera del nav y sin indexar hasta que exista el piloto
-  // con una DMC (decisión CEO 11-ago). El resto de 360 ya se estrenó.
-  noindex: true,
+  // Abierta a Google el 17-ago-2026: dirección comercial (Docavo) validó las
+  // tres afirmaciones nuevas (acceso al catálogo desde sistemas de la agencia,
+  // módulos adaptados a la problemática, y la venta a mayoristas en Ronda).
 });
 
 export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
