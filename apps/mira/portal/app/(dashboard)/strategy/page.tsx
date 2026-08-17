@@ -13,6 +13,20 @@ import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import type { AgentStatus } from '@/lib/agent-meta'
+import PlanGate from '@/components/plan-gate'
+
+// Guard de plan al entrar: hasta ahora el candado del sidebar era lo único que
+// separaba a un plan sin este departamento de la página — por URL directa se
+// abría igual. PlanGate comprueba PLAN_SECTIONS y, si el plan no lo incluye,
+// enseña la portada bloqueada con el plan mínimo en vez de un redirect mudo.
+// El contenido real sigue intacto debajo, en StrategyPage.
+export default function StrategyPageGated() {
+  return (
+    <PlanGate section="strategy">
+      <StrategyPage />
+    </PlanGate>
+  )
+}
 
 // Agent metadata combining strategy + innovation
 const STRATEGY_META: Record<string, { produces: string }> = {
@@ -28,7 +42,7 @@ const PIPELINE_STEPS = STRATEGY_DEPT_AGENTS.map(a => ({
   color: a.color,
 }))
 
-export default function StrategyPage() {
+function StrategyPage() {
   const { locale } = useLocaleContext()
   const agentCount = STRATEGY_DEPT_AGENTS.length
   const { stats } = useDepartmentStats('strategy')

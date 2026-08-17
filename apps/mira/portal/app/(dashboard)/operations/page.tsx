@@ -13,6 +13,20 @@ import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import type { AgentStatus } from '@/lib/agent-meta'
+import PlanGate from '@/components/plan-gate'
+
+// Guard de plan al entrar: hasta ahora el candado del sidebar era lo único que
+// separaba a un plan sin este departamento de la página — por URL directa se
+// abría igual. PlanGate comprueba PLAN_SECTIONS y, si el plan no lo incluye,
+// enseña la portada bloqueada con el plan mínimo en vez de un redirect mudo.
+// El contenido real sigue intacto debajo, en AdminPage.
+export default function AdminPageGated() {
+  return (
+    <PlanGate section="operations">
+      <AdminPage />
+    </PlanGate>
+  )
+}
 
 // Keys must match the real OPERACIONES_DEPT_AGENTS ids (harbor/pulse/onboard) --
 // a previous version referenced agents from an older roster that no longer
@@ -29,7 +43,7 @@ const PIPELINE_STEPS = OPERACIONES_DEPT_AGENTS.map(a => ({
   color: a.color,
 }))
 
-export default function AdminPage() {
+function AdminPage() {
   const { locale } = useLocaleContext()
   const agentCount = OPERACIONES_DEPT_AGENTS.length
   const { stats } = useDepartmentStats('operations')

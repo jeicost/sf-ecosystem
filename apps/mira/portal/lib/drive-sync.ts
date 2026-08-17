@@ -12,10 +12,12 @@
 
 import { createHash } from 'crypto'
 import { createMessageForClient } from '@/lib/anthropic-client'
-import * as mammoth from 'mammoth'
 import { adminClient } from '@/lib/supabase'
 import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/brain-tools/drive-synthesis'
 import { extractPdfText } from '@/lib/pdf-extract'
+// DOCX y PPTX se extraen con los mismos helpers que los adjuntos de usuario
+// (lib/attachments.ts): un único lector por formato para todo el portal.
+import { extractDocxText, extractPptxText, DOCX_MIME, PPTX_MIME } from '@/lib/attachments'
 import { describeImage, isVisionReadableImage } from '@/lib/vision'
 
 /**
@@ -94,8 +96,8 @@ export function hasDriveWriteScope(
 
 const GOOGLE_DOC_MIME = 'application/vnd.google-apps.document'
 const GOOGLE_SHEET_MIME = 'application/vnd.google-apps.spreadsheet'
+const GOOGLE_SLIDES_MIME = 'application/vnd.google-apps.presentation'
 const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 
 // Imágenes que la API de Anthropic sabe leer por visión. Hasta el 2026-08-06
 // las imágenes del Drive solo se CONTABAN ("204 archivos no textuales") y su
@@ -119,6 +121,12 @@ const MAX_IMAGES_PER_SYNC = 25
 // históricos de ventas y listas de producto viven casi siempre en una hoja,
 // y hasta ahora esos ficheros solo aparecían como un nombre en el mapa de
 // carpeta -- su contenido era invisible para todos los agentes.
+//
+// Presentaciones (Google Slides y .pptx) añadidas el 2026-08-17: el CEO pidió
+// desde el editor de decks que se leyera material de su Drive y el sync
+// respondía literalmente "Unsupported MIME type for extraction". Los decks
+// son justo el material de referencia más habitual de un cliente (dossier,
+// pitch, propuesta comercial) y no entraban al Brain.
 const EXTRACTABLE_MIME_TYPES = [
   'application/pdf',
   'text/plain',
@@ -126,8 +134,10 @@ const EXTRACTABLE_MIME_TYPES = [
   'text/csv',
   GOOGLE_DOC_MIME,
   GOOGLE_SHEET_MIME,
+  GOOGLE_SLIDES_MIME,
   XLSX_MIME,
   DOCX_MIME,
+  PPTX_MIME,
   ...IMAGE_MIME_TYPES,
 ]
 
@@ -618,7 +628,12 @@ async function downloadAndExtractText(
 ): Promise<{ success: boolean; text?: string; error?: string }> {
   try {
     let downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`
-    if (mimeType === GOOGLE_DOC_MIME) {
+    if (mimeType === GOOGLE_DOC_MIME || mimeType === GOOGLE_SLIDES_MIME) {
+      // Google Slides exporta a text/plain igual que Docs: el texto de todas
+      // las slides seguido, sin marcar dónde acaba una y empieza la siguiente
+      // -- es lo que da el export de Drive, no una decisión del código. Si
+      // algún día hace falta la estructura por slide, la alternativa es
+      // exportar a .pptx y pasar por extractPptxText.
       downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/plain`
     } else if (mimeType === GOOGLE_SHEET_MIME) {
       // Los ficheros nativos de Google no se pueden descargar con alt=media,
@@ -644,7 +659,8 @@ async function downloadAndExtractText(
     } else if (
       mimeType === 'text/plain' ||
       mimeType === 'text/markdown' ||
-      mimeType === GOOGLE_DOC_MIME
+      mimeType === GOOGLE_DOC_MIME ||
+      mimeType === GOOGLE_SLIDES_MIME
     ) {
       text = await response.text()
     } else if (mimeType === 'text/csv' || mimeType === GOOGLE_SHEET_MIME) {
@@ -659,8 +675,12 @@ async function downloadAndExtractText(
       text = await extractXlsxText(buffer)
     } else if (mimeType === DOCX_MIME) {
       const buffer = Buffer.from(await response.arrayBuffer())
-      const result = await mammoth.extractRawText({ buffer })
-      text = result.value || ''
+      text = await extractDocxText(buffer)
+    } else if (mimeType === PPTX_MIME) {
+      // Un .pptx subido a mano a Drive (no un Google Slides): se lee como zip,
+      // slide a slide, con el mismo extractor que los adjuntos del editor.
+      const buffer = Buffer.from(await response.arrayBuffer())
+      text = await extractPptxText(buffer)
     } else if (IMAGE_MIME_TYPES.includes(mimeType) && isVisionReadableImage(mimeType, fileName)) {
       // Una imagen no tiene texto que extraer: se convierte en texto
       // describiéndola por visión, y a partir de ahí entra en agent_documents

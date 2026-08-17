@@ -218,7 +218,10 @@ export async function GET(req: NextRequest) {
       normalizeDocMode(searchParams.get('theme')) ??
       normalizeDocMode((queueData?.input_data as Record<string, unknown> | null)?.['_theme'])
 
-    const brand = { clientName, primaryColor: brandColor, logoUrl: clientRow?.logo_url || null }
+    // La tipografía del Cerebro viaja con la marca por el mismo camino que el
+    // color: sin esto los cuatro motores exportaban siempre en Inter/Arial.
+    const typography = brandData?.brand_data?.visual_identity?.typography ?? undefined
+    const brand = { clientName, primaryColor: brandColor, logoUrl: clientRow?.logo_url || null, typography }
 
     // ── Voice Guide A4 (brand-book) — one-pager imprimible ──
     if (format === 'voice-guide') {
@@ -231,6 +234,7 @@ export async function GET(req: NextRequest) {
       const buffer = await buildVoiceGuidePptx({
         brandName: clientName,
         primaryColor: brandColor,
+        typography,
         guide: result.voice_guide_onepager,
       })
       const vgFilename = `voice-guide_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pptx`
@@ -253,6 +257,7 @@ export async function GET(req: NextRequest) {
       const buffer = await buildMonthlyDeckPptx({
         brandName: clientName,
         primaryColor: brandColor,
+        typography,
         result: result as Record<string, any>,
       })
       const mdFilename = `sistema-contenidos_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pptx`

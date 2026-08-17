@@ -10,7 +10,9 @@ import SelfServeNavLink from '@/components/onboarding/SelfServeNavLink'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { ProjectProvider } from '@/lib/project-context'
-import { getActiveSectionFromPath, isIdealUI } from '@/lib/sections'
+import { getActiveSectionFromPath, isIdealUI, resolveNavItemStatus, minPlanForNavItem } from '@/lib/sections'
+import { UnavailableNavItem } from '@/components/nav-item-status'
+import GenerationCapNotice from '@/components/generation-cap-notice'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { canUseFeature } from '@/lib/plans'
 import { createClient } from '@/lib/supabase'
@@ -170,7 +172,7 @@ useEffect(() => {
       {/* UI ideal (6 espacios) — solo con el flag. Nada se borra; la nav de
           siempre vive en el bloque !idealUI de abajo. */}
       {idealUI && (
-        <IdealSidebarNav path={path} pendingCount={pendingCount} isAgency={isSuperAdmin(user)} />
+        <IdealSidebarNav path={path} pendingCount={pendingCount} isAgency={isSuperAdmin(user)} plan={user.plan} />
       )}
 
       {!idealUI && (<>
@@ -290,7 +292,20 @@ useEffect(() => {
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-1 space-y-0.5">
-        {navItems.map(({ href, label, icon: Icon }) => {
+        {navItems.map((item) => {
+          const { href, label, icon: Icon } = item
+          // El switcher de arriba ya pinta el candado del departamento; aquí se
+          // repite por item porque se puede llegar a un departamento bloqueado
+          // por URL directa y entonces esta lista es lo único que se ve.
+          const status = resolveNavItemStatus(item, user.plan)
+          if (status !== 'available') {
+            return (
+              <UnavailableNavItem key={href}
+                label={label} icon={Icon} status={status} locale={locale}
+                requiredPlan={minPlanForNavItem(item)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 text-ink-tertiary hover:text-ink hover:bg-surface" />
+            )
+          }
           const active = path === href || (href !== '/' && path.startsWith(href + '/'))
           const isApprovals = href === '/approvals'
           const showBadge   = isApprovals && pendingCount > 0
@@ -344,6 +359,11 @@ useEffect(() => {
         </Link>
       </div>
       </>)}
+
+      {/* Techo de generaciones/mes — solo se pinta si hay techo y quedan pocas.
+          Va fuera de los dos bloques de nav: tiene que verse con la UI ideal
+          encendida o apagada, igual que el alta autoservicio de arriba. */}
+      <GenerationCapNotice />
 
       {/* Tour button */}
       <div className="px-3 pb-1">

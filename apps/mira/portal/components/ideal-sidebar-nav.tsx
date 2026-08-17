@@ -2,9 +2,12 @@
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import { Zap, BookOpen, CreditCard } from 'lucide-react'
-import { IDEAL_SPACES } from '@/lib/sections'
+import { IDEAL_SPACES, resolveNavItemStatus, minPlanForNavItem } from '@/lib/sections'
 import { useActiveClient } from '@/lib/client-context'
+import { useLocaleContext } from '@/app/locale-provider'
 import { hasEntitlement, type Entitlement } from '@/lib/entitlements'
+import type { UserPlan } from '@/lib/plans'
+import { UnavailableNavItem } from '@/components/nav-item-status'
 
 // Navegación consolidada del sistema ideal: 6 espacios en vez de 27 rutas
 // sueltas (Fase 1). Se monta detrás del flag NEXT_PUBLIC_IDEAL_UI; con el flag
@@ -15,18 +18,31 @@ export default function IdealSidebarNav({
   path,
   pendingCount,
   isAgency,
+  plan,
 }: {
   path: string
   pendingCount: number
   isAgency: boolean
+  /** user_metadata.plan de quien mira: decide qué items salen con candado. */
+  plan: UserPlan
 }) {
   const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'))
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
 
   // Herramientas restringidas por cliente (p. ej. Licitaciones): solo aparecen
-  // para clientes con el entitlement, o para la agencia.
+  // para clientes con el entitlement, o para la agencia. Es distinto del
+  // candado por plan: lo que el cliente no tiene contratado como vertical no
+  // se enseña; lo que su PLAN no incluye sí se enseña, bloqueado (upsell).
   const canSee = (item: { requires?: Entitlement }) =>
     !item.requires || hasEntitlement(item.requires, activeClient?.id, isAgency)
+
+  const itemClass = (active: boolean) => clsx(
+    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+    active
+      ? 'bg-surface-hover text-ink font-medium'
+      : 'text-ink-tertiary hover:text-ink hover:bg-surface'
+  )
 
   return (
     <nav className="flex-1 px-3 py-2 space-y-3 overflow-y-auto">
@@ -42,17 +58,21 @@ export default function IdealSidebarNav({
             </span>
           </div>
           <div className="space-y-0.5">
-            {items.map(({ href, label, icon: Icon }) => {
+            {items.map((item) => {
+              const { href, label, icon: Icon } = item
+              const status = resolveNavItemStatus(item, plan)
+              if (status !== 'available') {
+                return (
+                  <UnavailableNavItem key={href}
+                    label={label} icon={Icon} status={status} locale={locale}
+                    requiredPlan={minPlanForNavItem(item)}
+                    className={itemClass(false)} />
+                )
+              }
               const active = isActive(href)
               const showBadge = href === '/approvals' && pendingCount > 0
               return (
-                <Link key={href} href={href}
-                  className={clsx(
-                    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
-                    active
-                      ? 'bg-surface-hover text-ink font-medium'
-                      : 'text-ink-tertiary hover:text-ink hover:bg-surface'
-                  )}>
+                <Link key={href} href={href} className={itemClass(active)}>
                   <Icon size={15} className={active ? 'text-ink' : 'text-ink-tertiary'} />
                   {label}
                   {showBadge && (

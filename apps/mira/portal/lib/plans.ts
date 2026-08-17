@@ -20,11 +20,28 @@ export const PLAN_SECTIONS: Record<UserPlan, string[]> = {
   consulta: ['operations'],
 }
 
-export function canAccessSection(plan: UserPlan, slug: string): boolean {
+export function canAccessSection(plan: UserPlan | string | null | undefined, slug: string): boolean {
   // plan llega tipado UserPlan pero en la práctica viene de un cast sin
   // validar sobre user_metadata.plan -- defensa en profundidad con el mismo
-  // Object.hasOwn que ya se usa en el resto de este fichero.
-  return (hasOwnKey(PLAN_SECTIONS, plan) ? PLAN_SECTIONS[plan] : undefined)?.includes(slug) ?? false
+  // Object.hasOwn que ya se usa en el resto de este fichero. Se admite string
+  // suelto/null porque los sidebars lo leen de localStorage (lib/auth) antes de
+  // que Supabase confirme la sesión; un plan desconocido o ausente NO abre nada.
+  if (typeof plan !== 'string') return false
+  return (hasOwnKey(PLAN_SECTIONS, plan) ? PLAN_SECTIONS[plan as UserPlan] : undefined)?.includes(slug) ?? false
+}
+
+/** Nombre comercial de cada plan tal y como se enseña en candados y avisos de upgrade. */
+export const PLAN_LABELS: Record<UserPlan, string> = {
+  super_admin: 'Agency',
+  admin: 'Admin',
+  scale: 'Scale',
+  growth: 'Growth',
+  starter: 'Starter',
+  consulta: 'Consulta',
+}
+
+export function planLabel(plan: UserPlan | string | null | undefined): string {
+  return typeof plan === 'string' && hasOwnKey(PLAN_LABELS, plan) ? PLAN_LABELS[plan as UserPlan] : String(plan ?? '')
 }
 
 // ─── Feature entitlements por plan (P5) ───────────────────────────────────

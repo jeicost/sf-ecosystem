@@ -14,7 +14,19 @@ interface AttachmentDropzoneProps {
   /** Restringe a imágenes (p.ej. editar_imagen_visual, donde la imagen origen ES el adjunto) */
   imagesOnly?: boolean
   disabled?: boolean
+  /**
+   * Carpeta dentro de brand-assets/{clientId}/ donde se guardan. Por defecto
+   * 'quick-actions' (el primer sitio que montó este componente); el editor de
+   * documentos usa 'documents'. Tiene que estar en ALLOWED_PREFIXES de
+   * app/api/attachments/upload o el servidor lo cambia a 'assets' en silencio.
+   */
+  prefix?: 'quick-actions' | 'business-reports' | 'onboarding' | 'documents' | 'assets'
 }
+
+// Lo que se puede subir. Tiene que coincidir con isAllowedMime() en
+// app/api/attachments/upload/route.ts: DOCX y PPTX entraron el 2026-08-17
+// (el CEO intentó adjuntar una presentación y el servidor devolvía 415).
+const ACCEPT_ALL = 'image/*,.pdf,.txt,.md,.csv,.docx,.pptx'
 
 export function AttachmentDropzone({
   clientId,
@@ -22,6 +34,7 @@ export function AttachmentDropzone({
   onChange,
   imagesOnly = false,
   disabled = false,
+  prefix = 'quick-actions',
 }: AttachmentDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
@@ -36,7 +49,7 @@ export function AttachmentDropzone({
     setUploading(true)
     setError(null)
     try {
-      const uploaded = await uploadFilesToBucket(clientId, accepted, 'quick-actions')
+      const uploaded = await uploadFilesToBucket(clientId, accepted, prefix)
       onChange([...attachments, ...uploaded])
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Upload failed')
@@ -72,7 +85,7 @@ export function AttachmentDropzone({
         type="file"
         multiple={!imagesOnly}
         hidden
-        accept={imagesOnly ? 'image/*' : 'image/*,.pdf,.txt,.md,.csv'}
+        accept={imagesOnly ? 'image/*' : ACCEPT_ALL}
         onChange={(e) => handleFiles(Array.from(e.target.files || []))}
       />
       {attachments.length > 0 && (

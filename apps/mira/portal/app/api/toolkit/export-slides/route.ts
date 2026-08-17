@@ -3,9 +3,8 @@ import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { getClientDriveAccessToken } from '@/lib/drive-sync'
 import { resolveClientDeliverablesFolder, uploadToClientDrive } from '@/lib/export/drive-upload'
-import { buildMonthlyDeckPptx } from '@/lib/export/monthly-pptx'
-import { buildVoiceGuidePptx } from '@/lib/export/voice-guide-pptx'
-import { verifyMonthlyDeck } from '@/lib/export/verify-deck'
+import { buildPptxFromQueueRow, resolvePptxArtifact, type PptxBrand } from '@/lib/export/pptx-from-queue'
+import { normalizeDocMode } from '@/lib/export/doc-theme'
 
 export const runtime = 'nodejs'
 export const maxDuration = 120
@@ -17,88 +16,149 @@ const GOOGLE_SLIDES = 'application/vnd.google-apps.presentation'
 // F4: entrega como Google Slides EDITABLE en el Drive del cliente — el equipo
 // trabaja el mes sobre la presentación, no sobre un HTML de solo lectura.
 // La conversión la hace Google en la subida (convertTo) con el scope
-// drive.file ya concedido. El deck mensual se verifica estructuralmente
-// (verify-deck) ANTES de subir: un deck a medias no llega al cliente.
+// drive.file ya concedido.
+//
+// Sirve para cualquier fila con PPTX (deck mensual, Voice Guide, decks del
+// Centro de Documentos y la vista "Presentación" de cualquier informe del
+// toolkit): la decisión de qué PPTX toca vive en lib/export/pptx-from-queue,
+// no aquí. Antes solo dos slugs pasaban y el resto moría en un 400 que la UI
+// ni mostraba.
+
+type Ctx = {
+  admin: ReturnType<typeof adminClient>
+  row: {
+    id: string
+    client_id: string
+    project_id: string | null
+    tool_slug: string
+    status: string
+    result_data: unknown
+    input_data: unknown
+  }
+}
+
+// Carga + autorización compartidas por GET (sonda) y POST (export). Devuelve
+// la respuesta de error ya montada para que cada handler solo haga `return`.
+async function loadRow(queueId: string): Promise<Ctx | NextResponse> {
+  const user = await getSessionUser()
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  const admin = adminClient()
+  const { data: row, error } = await admin
+    .from('generation_queue')
+    .select('id, client_id, project_id, tool_slug, status, result_data, input_data')
+    .eq('id', queueId)
+    .single()
+  if (error || !row) {
+    return NextResponse.json({ error: 'Report not found' }, { status: 404 })
+  }
+  if (!(await userCanAccessClient(user, row.client_id))) {
+    return NextResponse.json({ error: 'No access to this report' }, { status: 403 })
+  }
+  return { admin, row: row as Ctx['row'] }
+}
+
+// Misma resolución de marca que app/api/toolkit/export/route.ts: el deck que
+// sube a Slides tiene que ser el mismo que el usuario ve en el visor.
+async function loadBrand(admin: Ctx['admin'], clientId: string, result: unknown): Promise<PptxBrand> {
+  const [{ data: brandData }, { data: clientRow }] = await Promise.all([
+    admin.from('brand_profiles').select('name, brand_data').eq('client_id', clientId).single(),
+    admin.from('clients').select('name, primary_color, logo_url').eq('id', clientId).single(),
+  ])
+  const r = (result && typeof result === 'object' ? result : {}) as Record<string, any>
+  return {
+    clientName: brandData?.name || clientRow?.name || 'Cliente',
+    primaryColor:
+      r.brandColor ||
+      (brandData?.brand_data as any)?.visual_identity?.colors?.primary ||
+      clientRow?.primary_color ||
+      '#8B5CF6',
+    logoUrl: clientRow?.logo_url || null,
+    typography: (brandData?.brand_data as any)?.visual_identity?.typography ?? undefined,
+  }
+}
+
+const DRIVE_MESSAGES = {
+  not_connected:
+    'Your Google Drive is not connected. Go to Integrations → Connect Google Drive and try again.',
+  needs_reauth:
+    'Your Google Drive connection needs to be renewed. Go to Integrations and reconnect your Drive.',
+} as const
+
+// Sonda para la UI: ¿esta fila tiene PPTX y está el Drive listo? Permite
+// pintar el botón con el estado real (deshabilitado + motivo, o aviso de
+// "reconecta Drive") en vez de esperar al clic para descubrir el 409.
+// Consultar el token también sanea `is_authorized` cuando el refresh token
+// está muerto (getClientDriveAccessToken lo marca), así que las siguientes
+// sondas no vuelven a llamar a Google.
+export async function GET(req: NextRequest) {
+  try {
+    const queueId = new URL(req.url).searchParams.get('queue_id')
+    if (!queueId) {
+      return NextResponse.json({ error: 'Missing queue_id' }, { status: 400 })
+    }
+    const requested = new URL(req.url).searchParams.get('artifact')
+    const ctx = await loadRow(queueId)
+    if (ctx instanceof NextResponse) return ctx
+    const { admin, row } = ctx
+
+    const tokenResult = await getClientDriveAccessToken(row.client_id, admin)
+    const drive = 'token' in tokenResult ? 'connected' : tokenResult.error
+
+    if (row.status !== 'completed' || !row.result_data) {
+      return NextResponse.json({
+        available: false,
+        reason: 'This report is not finished yet',
+        tool_slug: row.tool_slug,
+        drive,
+      })
+    }
+    const resolution = resolvePptxArtifact(row, requested)
+    return NextResponse.json({
+      ...resolution,
+      tool_slug: row.tool_slug,
+      drive,
+      ...(drive !== 'connected' ? { driveMessage: DRIVE_MESSAGES[drive] } : {}),
+    })
+  } catch (error) {
+    console.error('Export-slides probe error:', error)
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Probe failed' },
+      { status: 500 }
+    )
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const { queue_id, artifact } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const { queue_id, artifact, theme } = body ?? {}
     if (!queue_id) {
       return NextResponse.json({ error: 'Missing queue_id' }, { status: 400 })
     }
 
-    const user = await getSessionUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
+    const ctx = await loadRow(queue_id)
+    if (ctx instanceof NextResponse) return ctx
+    const { admin, row } = ctx
 
-    const admin = adminClient()
-    const { data: row, error } = await admin
-      .from('generation_queue')
-      .select('id, client_id, project_id, tool_slug, status, result_data')
-      .eq('id', queue_id)
-      .single()
-
-    if (error || !row) {
-      return NextResponse.json({ error: 'Report not found' }, { status: 404 })
-    }
-    if (!(await userCanAccessClient(user, row.client_id))) {
-      return NextResponse.json({ error: 'No access to this report' }, { status: 403 })
-    }
     if (row.status !== 'completed' || !row.result_data) {
       return NextResponse.json({ error: 'This report is not finished yet' }, { status: 409 })
     }
 
-    const result = row.result_data as Record<string, any>
-    const { data: clientRow } = await admin
-      .from('clients')
-      .select('name, primary_color, logo_url')
-      .eq('id', row.client_id)
-      .single()
-    const brandName = clientRow?.name || 'Cliente'
-    const primaryColor = clientRow?.primary_color || '#22D3EE'
-    const dateStamp = new Date().toISOString().split('T')[0]
-
-    // ── Construcción del PPTX según artefacto ──
-    let buffer: Buffer
-    let fileName: string
-    let verification: Awaited<ReturnType<typeof verifyMonthlyDeck>> | null = null
-
-    const kind =
-      artifact ||
-      (row.tool_slug === 'monthly-content-system' ? 'monthly-deck' : row.tool_slug === 'brand-book' ? 'voice-guide' : null)
-
-    if (kind === 'monthly-deck') {
-      if (row.tool_slug !== 'monthly-content-system') {
-        return NextResponse.json({ error: 'monthly-deck is only available for monthly-content-system reports' }, { status: 400 })
-      }
-      buffer = await buildMonthlyDeckPptx({ brandName, primaryColor, result })
-      verification = await verifyMonthlyDeck(buffer, {
-        captions: Array.isArray(result.captions) ? result.captions.length : 0,
-        pillars: Array.isArray(result.pillars) ? result.pillars.length : 0,
-      })
-      if (!verification.ok) {
-        console.error('Monthly deck failed verification:', verification.issues)
-        return NextResponse.json(
-          {
-            error: `The deck failed its structural check: ${verification.issues.join(' · ')}`,
-            verification,
-          },
-          { status: 500 }
-        )
-      }
-      fileName = `Sistema de Contenidos — ${result.month_label || result.month || dateStamp}`
-    } else if (kind === 'voice-guide') {
-      if (!result.voice_guide_onepager) {
-        return NextResponse.json({ error: 'This report has no Voice Guide' }, { status: 400 })
-      }
-      buffer = await buildVoiceGuidePptx({
-        brandName,
-        primaryColor,
-        guide: result.voice_guide_onepager,
-      })
-      fileName = `Voice Guide — ${brandName}`
-    } else {
-      return NextResponse.json({ error: 'This artifact cannot be exported to Slides' }, { status: 400 })
+    // ── Construcción del PPTX ──
+    const brand = await loadBrand(admin, row.client_id, row.result_data)
+    const built = await buildPptxFromQueueRow({
+      row,
+      brand,
+      requested: artifact ?? null,
+      mode: normalizeDocMode(theme),
+    })
+    if (!built.ok) {
+      return NextResponse.json(
+        { error: built.error, ...(built.verification ? { verification: built.verification } : {}) },
+        { status: built.status }
+      )
     }
 
     // ── Drive del cliente + conversión a Google Slides ──
@@ -108,10 +168,7 @@ export async function POST(req: NextRequest) {
         {
           success: false,
           reason: tokenResult.error,
-          error:
-            tokenResult.error === 'not_connected'
-              ? 'Your Google Drive is not connected. Go to Integrations → Connect Google Drive and try again.'
-              : 'Your Google Drive connection needs to be renewed. Go to Integrations and reconnect your Drive.',
+          error: DRIVE_MESSAGES[tokenResult.error],
         },
         { status: 409 }
       )
@@ -126,8 +183,8 @@ export async function POST(req: NextRequest) {
     const upload = await uploadToClientDrive({
       token: tokenResult.token,
       folderId,
-      fileName,
-      content: buffer,
+      fileName: built.fileName,
+      content: built.buffer,
       mimeType: PPTX_MIME,
       convertTo: GOOGLE_SLIDES,
     })
@@ -141,10 +198,13 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      artifact: built.artifact,
       driveUrl: upload.webViewLink,
       fileId: upload.fileId,
-      filename: fileName,
-      ...(verification ? { verification: { slides: verification.slides, approveRows: verification.approveRows } } : {}),
+      filename: built.fileName,
+      ...(built.verification
+        ? { verification: { slides: built.verification.slides, approveRows: built.verification.approveRows } }
+        : {}),
     })
   } catch (error) {
     console.error('Export-slides error:', error)

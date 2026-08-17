@@ -20,7 +20,14 @@ import {
 const W = 13.33
 const H = 7.5
 
-const FONT = 'Inter'
+// La fuente ya no es una constante: sale de `DeckTheme.fonts`, que
+// buildDeckTheme resuelve desde la tipografía del Cerebro (o Inter si no
+// hay). Los helpers de abajo la reciben por el theme — es el mismo camino por
+// el que ya viajaba el color de marca. `HEADING`/`BODY` se fijan al arrancar
+// generateDeckPptx y los helpers leen la variable de módulo: pptxgenjs se
+// ejecuta en un solo hilo por petición, así que no hay carrera.
+let FONT = 'Inter'          // cuerpo
+let FONT_HEADING = 'Inter'  // titulares
 
 /** pptxgenjs wants hex without the leading '#' */
 function c(hex: string): string {
@@ -160,7 +167,7 @@ function buildCover(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme, imag
     y: 2.6,
     w: W - 1.6,
     h: 1.9,
-    fontFace: FONT,
+    fontFace: FONT_HEADING,
     fontSize: 44,
     bold: true,
     color: 'FFFFFF',
@@ -206,7 +213,7 @@ function buildSection(pptx: Pptx, s: DeckSlide, num: number, o: DeckOptions, t: 
     y: -0.5,
     w: 6.2,
     h: 4.2,
-    fontFace: FONT,
+    fontFace: FONT_HEADING,
     fontSize: 190,
     bold: true,
     color: c(mix(t.primary, t.accent, 0.28)),
@@ -229,7 +236,7 @@ function buildSection(pptx: Pptx, s: DeckSlide, num: number, o: DeckOptions, t: 
     y: 5.1,
     w: W - 2,
     h: 1.7,
-    fontFace: FONT,
+    fontFace: FONT_HEADING,
     fontSize: 40,
     bold: true,
     color: c(t.primaryInk),
@@ -248,7 +255,7 @@ function buildContent(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): v
     y: 0.95,
     w: W - 1.7,
     h: 1.1,
-    fontFace: FONT,
+    fontFace: FONT_HEADING,
     fontSize: 30,
     bold: true,
     color: c(t.accentDark),
@@ -306,7 +313,7 @@ function buildStats(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): voi
   }
   slide.addText(s.title, {
     x: 0.85, y: 1.35, w: W - 1.7, h: 1,
-    fontFace: FONT, fontSize: 30, bold: true, color: c(t.primaryInk), align: 'left', valign: 'top',
+    fontFace: FONT_HEADING, fontSize: 30, bold: true, color: c(t.primaryInk), align: 'left', valign: 'top',
   })
   if (s.body) {
     slide.addText(stripHtml(s.body), {
@@ -321,7 +328,7 @@ function buildStats(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): voi
       const x = 0.7 + i * cellW
       slide.addText(st.value, {
         x, y: 3.6, w: cellW, h: 1.5,
-        fontFace: FONT, fontSize: 48, bold: true, color: c(t.accent), align: 'center', valign: 'middle',
+        fontFace: FONT_HEADING, fontSize: 48, bold: true, color: c(t.accent), align: 'center', valign: 'middle',
       })
       slide.addText(st.label, {
         x: x + 0.15, y: 5.15, w: cellW - 0.3, h: 1,
@@ -344,7 +351,7 @@ function buildTimeline(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): 
   brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 1,
-    fontFace: FONT, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
+    fontFace: FONT_HEADING, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
   })
   if (s.subtitle) {
     slide.addText(s.subtitle, {
@@ -393,7 +400,7 @@ function buildComparison(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme)
   brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 1,
-    fontFace: FONT, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
+    fontFace: FONT_HEADING, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
   })
   const colY = 2.2
   const colH = H - colY - 0.7
@@ -539,7 +546,7 @@ function buildAgenda(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): vo
   brandLabel(slide, o.brand, c(t.contentInk))
   slide.addText(s.title, {
     x: 0.85, y: 0.95, w: W - 1.7, h: 1,
-    fontFace: FONT, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
+    fontFace: FONT_HEADING, fontSize: 30, bold: true, color: c(t.accentDark), align: 'left', valign: 'top',
   })
   const items = agendaStrings(s.items).slice(0, 8)
   const startY = 2.15
@@ -570,7 +577,7 @@ function buildClosing(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): v
   slide.addShape('rect', { x: 0, y: H - 0.09, w: W, h: 0.09, fill: { color: c(t.accent) } })
   slide.addText(s.title, {
     x: 0.8, y: 2.3, w: W - 1.6, h: 1.6,
-    fontFace: FONT, fontSize: 38, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle',
+    fontFace: FONT_HEADING, fontSize: 38, bold: true, color: 'FFFFFF', align: 'center', valign: 'middle',
   })
   if (s.subtitle) {
     slide.addText(s.subtitle, {
@@ -596,6 +603,10 @@ function buildClosing(pptx: Pptx, s: DeckSlide, o: DeckOptions, t: DeckTheme): v
 
 export async function generateDeckPptx(options: DeckOptions): Promise<Buffer> {
   const t = buildDeckTheme(options.brand, options.mode ?? 'light')
+  // Cerebro → theme → fuentes. En PPTX solo va el nombre (fontFace); si la
+  // máquina que abre el fichero no la tiene, Office la sustituye en silencio.
+  FONT = t.fonts.body
+  FONT_HEADING = t.fonts.heading
   const pptx = new PptxGenJS()
   pptx.defineLayout({ name: 'WIDE', width: W, height: H })
   pptx.layout = 'WIDE'

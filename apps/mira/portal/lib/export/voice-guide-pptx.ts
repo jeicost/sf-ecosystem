@@ -5,6 +5,7 @@
 // Tipografía Arial (regla QA-safe) y gate de geometría vertical: si el
 // contenido no cabe en UNA página A4, se recorta — nunca desborda.
 
+import { resolveBrandFonts, type BrandTypographyInput } from './brand-typography'
 import PptxGenJS from 'pptxgenjs'
 
 // A4 portrait en pulgadas
@@ -12,7 +13,12 @@ const W = 8.27
 const H = 11.69
 const MARGIN = 0.45
 const CONTENT_W = W - MARGIN * 2
-const FONT = 'Arial'
+// Antes `const FONT = 'Arial'` a fuego. Ahora sale de la tipografía del
+// Cerebro (opts.typography) con Arial de fallback — mismo camino que el
+// color de marca. Se fija al arrancar la generación; los helpers leen la
+// variable de módulo (un hilo por petición, sin carrera).
+let FONT = 'Arial'
+let FONT_HEADING = 'Arial'
 const MAX_ENTRIES = 7 // dos/donts por columna — límite del spec del one-pager
 
 export interface VoiceGuideEntry {
@@ -32,6 +38,8 @@ export interface VoiceGuideData {
 export interface VoiceGuideOptions {
   brandName: string
   primaryColor: string
+  /** Tipografía del Cerebro (brand_data.visual_identity.typography), tal cual. Opcional. */
+  typography?: BrandTypographyInput
   guide: VoiceGuideData
   versionNote?: string
 }
@@ -53,6 +61,10 @@ function assertFits(y: number, h: number, what: string): void {
 }
 
 export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buffer> {
+  // Cerebro → fuentes. Sin tipografía en el Cerebro sale en Arial, como siempre.
+  const fonts = resolveBrandFonts(opts.typography, { heading: 'Arial', body: 'Arial' })
+  FONT = fonts.body
+  FONT_HEADING = fonts.heading
   const { brandName, guide } = opts
   const accent = hex(opts.primaryColor)
 
@@ -72,7 +84,7 @@ export async function buildVoiceGuidePptx(opts: VoiceGuideOptions): Promise<Buff
   y += 0.34
   slide.addText('Voice Guide — One Pager', {
     x: MARGIN, y, w: CONTENT_W, h: 0.5,
-    fontFace: FONT, fontSize: 26, color: '111111', bold: true,
+    fontFace: FONT_HEADING, fontSize: 26, color: '111111', bold: true,
   })
   y += 0.62
 

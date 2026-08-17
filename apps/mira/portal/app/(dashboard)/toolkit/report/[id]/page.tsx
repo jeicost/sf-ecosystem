@@ -5,6 +5,7 @@ import { getTheme } from '@/lib/theme'
 import Link from 'next/link'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
+import OpenInSlidesButton from '@/components/OpenInSlidesButton'
 
 export default function ToolkitReportPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
@@ -23,8 +24,6 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   // P3: tema del documento — arranca con el tema del portal, conmutable
   const [docTheme, setDocTheme] = useState<'light' | 'dark'>('dark')
   useEffect(() => { setDocTheme(getTheme()) }, [])
-  const [slidesState, setSlidesState] = useState<'idle' | 'creating' | 'done' | 'error'>('idle')
-  const [slidesMsg, setSlidesMsg] = useState<string | null>(null)
   const [queueState, setQueueState] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
   // P3: Refinar el informe con una instrucción (misma ruta que los documentos)
   const [refineOpen, setRefineOpen] = useState(false)
@@ -55,24 +54,9 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   const [queueMsg, setQueueMsg] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
 
-  // F4: PPTX → Google Slides editable en el Drive del cliente
-  const createSlides = async () => {
-    setSlidesState('creating')
-    setSlidesMsg(null)
-    const res = await fetch('/api/toolkit/export-slides', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ queue_id: id }),
-    }).catch(() => null)
-    const data = await res?.json().catch(() => null)
-    if (res?.ok && data?.success) {
-      setSlidesState('done')
-      if (data.driveUrl) window.open(data.driveUrl, '_blank', 'noopener')
-    } else {
-      setSlidesState('error')
-      setSlidesMsg(data?.error || t('toolkit.report.slides-error-default', locale))
-    }
-  }
+  // F4: PPTX → Google Slides editable en el Drive del cliente. Vive en
+  // components/OpenInSlidesButton (estados, Drive KO, reintento); aquí solo
+  // se decide qué deck: en vista Presentación, el deck que se está viendo.
 
   // Portadas al materializar. El endpoint soportaba with_covers desde el
   // principio y la UI nunca lo mandaba: el flujo "mensual → cola" jamás
@@ -252,16 +236,13 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               {t('toolkit.report.voice-guide-button', locale)}
             </a>
           )}
-          {(toolSlug === 'monthly-content-system' || toolSlug === 'brand-book') && (
-            <button
-              onClick={createSlides}
-              disabled={slidesState === 'creating' || slidesState === 'done'}
-              className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
-              title={t('toolkit.report.slides-tooltip', locale)}
-            >
-              {slidesState === 'creating' ? t('toolkit.report.slides-creating', locale) : slidesState === 'done' ? t('toolkit.report.slides-done', locale) : t('toolkit.report.slides-create', locale)}
-            </button>
-          )}
+          {/* Cualquier informe completado tiene deck (el de la vista
+              Presentación); el botón decide solo si se pinta y por qué no. */}
+          <OpenInSlidesButton
+            queueId={id}
+            artifact={mode === 'deck' ? 'deck' : undefined}
+            theme={docTheme}
+          />
           {toolSlug === 'monthly-content-system' && (<>
             <label className="flex items-center gap-1.5 text-xs text-ink-secondary cursor-pointer select-none">
               <input type="checkbox" checked={withCovers} onChange={(e) => setWithCovers(e.target.checked)} className="accent-current" />
@@ -308,11 +289,6 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             {refineState === 'working' ? t('toolkit.report.refine-working', locale) : t('toolkit.report.refine-apply', locale)}
           </button>
           {refineState === 'error' && refineMsg && <span className="text-xs text-amber-400">{refineMsg}</span>}
-        </div>
-      )}
-      {slidesState === 'error' && slidesMsg && (
-        <div className="px-4 py-2 text-xs text-amber-400 bg-amber-500/10 border-b border-amber-500/20 shrink-0">
-          {slidesMsg}
         </div>
       )}
       {queueMsg && (

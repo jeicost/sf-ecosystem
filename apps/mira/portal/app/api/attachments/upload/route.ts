@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { adminClient } from '@/lib/supabase'
-import type { Attachment } from '@/lib/attachments'
+import { attachmentTypeFromMime, officeKindOf, DOCX_MIME, PPTX_MIME, type Attachment } from '@/lib/attachments'
 
 export const runtime = 'nodejs'
 export const maxDuration = 60
@@ -12,7 +12,8 @@ export const maxDuration = 60
 // así que la autorización se hace aquí con resolveRequestClient y escribe el
 // admin client, igual que el resto de rutas.
 
-const ALLOWED_PREFIXES = new Set(['quick-actions', 'assets', 'business-reports', 'onboarding'])
+// 'documents' = adjuntos del editor de documentos/decks (refine), 2026-08-17.
+const ALLOWED_PREFIXES = new Set(['quick-actions', 'assets', 'business-reports', 'onboarding', 'documents'])
 const MAX_FILES = 5
 // 4 MB, no 15. El límite de 15 era una promesa que la plataforma no puede
 // cumplir: en Vercel, el cuerpo de una petición a un route handler está
@@ -22,14 +23,36 @@ const MAX_FILES = 5
 // mensaje decente. Ahora se rechaza aquí, con una explicación.
 const MAX_BYTES = 4 * 1024 * 1024
 
-function isAllowedMime(mime: string): boolean {
+// DOCX y PPTX entraron el 2026-08-17: el CEO intentó adjuntar una presentación
+// al editor de decks y esto devolvía 415 ("Unsupported file type"). Los dos
+// formatos ya se sabían leer en drive-sync (Word con mammoth) y en el
+// verificador de decks (PowerPoint como zip); solo la puerta estaba cerrada.
+// La extracción vive en lib/attachments.ts (extractDocxText / extractPptxText).
+function isAllowedMime(mime: string, fileName: string): boolean {
   return (
     mime === 'application/pdf' ||
     mime.startsWith('image/') ||
     mime.startsWith('text/') ||
     mime === 'application/json' ||
-    mime === '' // algunos navegadores no informan mime en .md/.txt
+    mime === DOCX_MIME ||
+    mime === PPTX_MIME ||
+    mime === '' || // algunos navegadores no informan mime en .md/.txt
+    // En Windows un .docx/.pptx puede llegar como application/octet-stream:
+    // se decide por extensión en vez de rechazarlo.
+    (mime === 'application/octet-stream' && officeKindOf(mime, fileName) !== null)
   )
+}
+
+/**
+ * MIME que se guarda y se devuelve al cliente. Cuando el navegador no lo
+ * informa se deduce de la extensión, porque buildAttachmentBlocks decide el
+ * extractor por él: un .pptx guardado como text/plain se leería como texto.
+ */
+function resolveMime(file: File): string {
+  const kind = officeKindOf(file.type, file.name)
+  if (kind === 'docx') return DOCX_MIME
+  if (kind === 'pptx') return PPTX_MIME
+  return file.type || 'text/plain'
 }
 
 function sanitizeName(name: string): string {
@@ -65,32 +88,31 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         )
       }
-      if (!isAllowedMime(file.type)) {
+      if (!isAllowedMime(file.type, file.name)) {
         return NextResponse.json(
-          { error: `Unsupported file type: ${file.type || 'unknown'} (${file.name})` },
+          { error: `Unsupported file type: ${file.type || 'unknown'} (${file.name}). Accepted: images, PDF, text, DOCX and PPTX.` },
           { status: 415 }
         )
       }
 
+      const mimeType = resolveMime(file)
       // client_id SIEMPRE del acceso resuelto, nunca del body — un usuario no
       // puede escribir en la carpeta de otro cliente.
       const path = `${access.clientId}/${prefix}/${Date.now()}-${sanitizeName(file.name)}`
       const buffer = Buffer.from(await file.arrayBuffer())
       const { error } = await storage.upload(path, buffer, {
-        contentType: file.type || 'text/plain',
+        contentType: mimeType,
         upsert: true,
       })
       if (error) {
         return NextResponse.json({ error: `Could not upload "${file.name}": ${error.message}` }, { status: 500 })
       }
 
-      const type: Attachment['type'] =
-        file.type === 'application/pdf' ? 'pdf' : file.type.startsWith('image/') ? 'image' : 'text'
       uploaded.push({
-        type,
+        type: attachmentTypeFromMime(mimeType),
         name: file.name,
         url: `/api/brand-assets?path=${encodeURIComponent(path)}`,
-        mimeType: file.type || 'text/plain',
+        mimeType,
         path,
       })
     }

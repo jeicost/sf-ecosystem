@@ -14,6 +14,20 @@ import { useDepartmentStats } from '@/lib/use-department-stats'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import type { AgentStatus } from '@/lib/agent-meta'
+import PlanGate from '@/components/plan-gate'
+
+// Guard de plan al entrar: hasta ahora el candado del sidebar era lo único que
+// separaba a un plan sin este departamento de la página — por URL directa se
+// abría igual. PlanGate comprueba PLAN_SECTIONS y, si el plan no lo incluye,
+// enseña la portada bloqueada con el plan mínimo en vez de un redirect mudo.
+// El contenido real sigue intacto debajo, en ComercialPage.
+export default function ComercialPageGated() {
+  return (
+    <PlanGate section="comercial">
+      <ComercialPage />
+    </PlanGate>
+  )
+}
 
 const COMERCIAL_META: Record<string, { producesKey: string; href: string }> = {
   'lead-scout': { producesKey: 'comercial.agent-meta.lead-scout-produces',      href: '/comercial/discovery'  },
@@ -30,7 +44,7 @@ const PIPELINE_STEPS = COMERCIAL_DEPT_AGENTS.map(a => ({
 }))
 
 
-export default function ComercialPage() {
+function ComercialPage() {
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()
   const clientId = activeClient?.id

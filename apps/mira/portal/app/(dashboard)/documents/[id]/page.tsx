@@ -5,8 +5,11 @@ import { use, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import ChatThread from '@/components/chat/ChatThread'
+import { AttachmentDropzone } from '@/components/AttachmentDropzone'
+import type { Attachment } from '@/lib/attachments'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
+import OpenInSlidesButton from '@/components/OpenInSlidesButton'
 
 interface ChatMsg {
   role: 'user' | 'assistant'
@@ -39,6 +42,15 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   const [docError, setDocError] = useState<string | null>(null)
   const [stuck, setStuck] = useState(false)
   const [slides, setSlides] = useState<SlideOption[]>([])
+  // Adjuntos que acompañan a la SIGUIENTE instrucción de refinado (2026-08-17).
+  // El editor no tenía dropzone -- solo Quick Actions y Business Reports -- así
+  // que no había forma de darle al refinado un PDF, un deck viejo o una foto:
+  // el CEO se lo pidió en texto y acabó en un error de parseo. El clientId sale
+  // de la propia fila del documento (no del cliente activo en localStorage)
+  // porque la subida guarda en brand-assets/{clientId}/documents/ y la ruta de
+  // refine solo acepta adjuntos que cuelguen del cliente dueño del documento.
+  const [attachments, setAttachments] = useState<Attachment[]>([])
+  const [docClientId, setDocClientId] = useState<string | null>(null)
   const [canvaState, setCanvaState] = useState<'idle' | 'loading'>('idle')
   const [canvaError, setCanvaError] = useState<string | null>(null)
   const iframeRef = useRef<HTMLIFrameElement>(null)
@@ -51,11 +63,12 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
     async function loadDoc() {
       const { data } = await createClient()
         .from('generation_queue')
-        .select('tool_slug, result_data, status, error_message, created_at')
+        .select('tool_slug, result_data, status, error_message, created_at, client_id')
         .eq('id', id)
         .single()
       if (cancelled) return
       if (!data) { setDocStatus('missing'); return }
+      setDocClientId((data.client_id as string) || null)
 
       const status = String(data.status)
       setDocStatus(
@@ -131,10 +144,18 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
     if (!instruction || refining) return
     const slideNum = parseInt(slideTarget, 10)
     const hasSlideTarget = Number.isInteger(slideNum) && slideNum >= 1
+    // Se congela la lista de adjuntos de ESTE turno: el usuario puede seguir
+    // soltando ficheros mientras el modelo trabaja y esos serán del siguiente.
+    const turnAttachments = attachments
     setInput('')
     setMessages((m) => [
       ...m,
-      { role: 'user', content: hasSlideTarget ? `[Slide ${slideNum}] ${instruction}` : instruction },
+      {
+        role: 'user',
+        content:
+          (hasSlideTarget ? `[Slide ${slideNum}] ${instruction}` : instruction) +
+          (turnAttachments.length ? `\n📎 ${turnAttachments.map((a) => a.name).join(', ')}` : ''),
+      },
     ])
     setRefining(true)
     try {
@@ -145,11 +166,18 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
           queue_id: id,
           instruction,
           ...(hasSlideTarget ? { slide_index: slideNum - 1 } : {}),
+          // Mismo shape que Quick Actions (QuickActionButton → /api/quick-actions):
+          // los metadatos del adjunto, nunca el fichero; el servidor lo baja
+          // del bucket por `path`.
+          ...(turnAttachments.length ? { attachments: turnAttachments } : {}),
         }),
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Error')
       setMessages((m) => [...m, { role: 'assistant', content: `✅ ${t('docs.change-applied', locale)}` }])
+      // El adjunto era para este cambio: se limpia solo cuando se ha aplicado.
+      // Si falla se conserva para poder reintentar sin volver a subirlo.
+      setAttachments((current) => current.filter((a) => !turnAttachments.includes(a)))
       setIframeKey((k) => k + 1)
     } catch (e) {
       setMessages((m) => [
@@ -225,6 +253,18 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
             >
               {canvaState === 'loading' ? `⏳ ${t('docs.sending-to-canva', locale)}` : `🎨 ${t('docs.open-in-canva', locale)}`}
             </button>
+          )}
+          {/* Google Slides — el botón existía solo en dos informes del toolkit; el
+              editor de decks, que es donde el CEO lo buscó, solo tenía Canva (503 sin
+              credenciales). Ahora está aquí, con estado real: deshabilitado con motivo
+              si no hay PPTX, y aviso claro si el Drive del cliente no está conectado. */}
+          {isDeck && (
+            <OpenInSlidesButton
+              queueId={id}
+              artifact="deck"
+              theme={docTheme}
+              className="text-sm px-3 py-1.5 rounded bg-surface text-ink hover:bg-surface-hover transition-colors disabled:opacity-50"
+            />
           )}
         </div>
       </div>
@@ -342,6 +382,16 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                   </select>
                 </div>
               )}
+              {/* Adjuntos que viajan con la instrucción (PDF, imagen, texto,
+                  DOCX, PPTX). Mismo componente que Quick Actions; el prefix
+                  'documents' los separa en el bucket. */}
+              <AttachmentDropzone
+                clientId={docClientId}
+                attachments={attachments}
+                onChange={setAttachments}
+                prefix="documents"
+                disabled={refining || !docClientId}
+              />
               <div className="flex gap-2">
                 <input
                   value={input}

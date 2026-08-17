@@ -9,6 +9,19 @@
 // for fullscreen. Printing yields one landscape page per slide.
 
 import type { PlaybookBrand } from './playbook-template'
+import { resolveBrandFonts, googleFontsHrefs, type BrandFonts, type BrandTypographyInput } from '../brand-typography'
+
+/**
+ * Marca del deck = la del playbook + la tipografía del Cerebro. Va aquí y no
+ * en PlaybookBrand porque el color de marca ya llega por `brand.primaryColor`
+ * y la letra tiene que viajar por el MISMO camino (ruta → brand → theme):
+ * el llamador mete `typography: brand_data.visual_identity.typography` tal
+ * cual (objeto o texto, lo que haya) y resolveBrandFonts se encarga.
+ * Opcional: sin ella el deck sale en Inter, como siempre.
+ */
+export interface DeckBrand extends PlaybookBrand {
+  typography?: BrandTypographyInput
+}
 
 export interface DeckTimelineItem {
   label: string // e.g. "Q1", "Fase 1", "2026"
@@ -61,7 +74,7 @@ export interface DeckSlide {
 
 export interface DeckOptions {
   mode?: 'light' | 'dark'
-  brand: PlaybookBrand
+  brand: DeckBrand
   title: string
   subtitle?: string
   slides: DeckSlide[]
@@ -150,9 +163,16 @@ export interface DeckTheme {
   gradient: string // cover / closing background
   contentBg: string // superficie de las slides de contenido (P3: claro/oscuro)
   contentInk: string // texto sobre contentBg
+  /** Tipografía resuelta del Cerebro (o Inter/Inter si no hay): la consumen
+   *  el CSS del deck HTML y el fontFace del deck PPTX. */
+  fonts: BrandFonts
 }
 
-export function buildDeckTheme(brand: PlaybookBrand, mode: 'light' | 'dark' = 'light'): DeckTheme {
+// Lo que el deck llevaba a fuego antes de leer el Cerebro: sin tipografía de
+// marca, el resultado es byte a byte el de siempre.
+const DECK_DEFAULT_FONTS = { heading: 'Inter', body: 'Inter' }
+
+export function buildDeckTheme(brand: DeckBrand, mode: 'light' | 'dark' = 'light'): DeckTheme {
   const primary = brand.primaryColor
   const accent = brand.accentColor ?? mix(primary, '#FFFFFF', 0.55)
   const darkBase = luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.65)
@@ -172,6 +192,7 @@ export function buildDeckTheme(brand: PlaybookBrand, mode: 'light' | 'dark' = 'l
     // tinta clara; en claro, el look de siempre (blanco + ink de marca).
     contentBg: mode === 'dark' ? '#15151A' : '#FFFFFF',
     contentInk: mode === 'dark' ? '#F5F0E8' : (luminance(primary) < 0.55 ? primary : mix(primary, '#000000', 0.6)),
+    fonts: resolveBrandFonts(brand.typography, DECK_DEFAULT_FONTS),
   }
 }
 
@@ -217,6 +238,12 @@ function brandMark(brand: PlaybookBrand, heightEm: number, color: string): strin
 // ─────────────────────────────────────────────────────────────
 
 function buildCss(t: DeckTheme): string {
+  // Tipografía de marca (Cerebro → DeckTheme.fonts): el cuerpo hereda la de
+  // cuerpo desde <body>; los titulares, cifras grandes, cabeceras de
+  // comparación y la cita llevan la de títulos. La pila trae la de marca
+  // primero y detrás la de siempre, así que si el navegador no la consigue el
+  // deck se ve como antes, no roto.
+  const headingFont = `font-family: ${t.fonts.headingStack};`
   return `
 /* La fuente se carga con <link rel="preconnect"> + <link rel="stylesheet"> en
    el <head> (ver generateDeckHTML): un @import aquí dentro obliga al navegador
@@ -227,7 +254,7 @@ function buildCss(t: DeckTheme): string {
 
 html, body { height: 100%; }
 body {
-  font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-family: ${t.fonts.bodyStack};
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
   background: #0A0C10;
@@ -274,11 +301,13 @@ body {
 
 /* ── TYPOGRAPHY ────────────────────────────────────────────── */
 .slide-title {
+  ${headingFont}
   font-size: 4.6em; font-weight: 900; line-height: 1.08;
   letter-spacing: -0.02em; margin-bottom: 0.4em; color: ${t.accentDark};
 }
 .slide-title-onDark { color: #FFFFFF; }
 .slide-title-xl {
+  ${headingFont}
   font-size: 6.2em; font-weight: 900; line-height: 1.05;
   letter-spacing: -0.025em; margin-bottom: 0.35em; color: #FFFFFF;
 }
@@ -306,6 +335,7 @@ body {
 
 /* ── SECTION NUMBER ────────────────────────────────────────── */
 .section-num {
+  ${headingFont}
   position: absolute; top: 0.02em; right: 0.25em;
   font-size: 24em; font-weight: 900; line-height: 1;
   letter-spacing: -0.04em; color: ${t.accent}; opacity: 0.16;
@@ -320,6 +350,7 @@ body {
 }
 .stat-cell:last-child { border-right: none; }
 .stat-value {
+  ${headingFont}
   font-size: 6.4em; font-weight: 900; color: ${t.accent};
   line-height: 1; letter-spacing: -0.03em;
 }
@@ -370,7 +401,7 @@ body {
   flex: 1; border-radius: 1em; overflow: hidden;
   background: ${rgba(t.primary, 0.04)}; border: 1px solid ${rgba(t.primary, 0.1)};
 }
-.compare-head { padding: 1.1em 1.4em; font-size: 1.6em; font-weight: 800; letter-spacing: -0.01em; }
+.compare-head { ${headingFont} padding: 1.1em 1.4em; font-size: 1.6em; font-weight: 800; letter-spacing: -0.01em; }
 .compare-col.col-a .compare-head { background: ${t.primary}; color: ${t.primaryInk}; }
 .compare-col.col-b .compare-head { background: ${t.accent}; color: ${t.accentInk}; }
 .compare-col .bullet-list { margin: 0; padding: 1.2em 1.4em 1.4em; }
@@ -382,6 +413,7 @@ body {
   color: ${t.accent}; opacity: 0.55; font-family: Georgia, serif;
 }
 .quote-text {
+  ${headingFont}
   font-size: 3.1em; font-weight: 700; line-height: 1.38;
   color: #FFFFFF; max-width: 22em; letter-spacing: -0.015em;
 }

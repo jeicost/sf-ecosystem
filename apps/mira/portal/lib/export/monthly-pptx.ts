@@ -6,6 +6,7 @@
 // Gates de geometría como asserts: si algo no cabe, se RECORTA — nunca desborda.
 // La convención "PART N —" en los dividers es la que verifica verify-deck.ts.
 
+import { resolveBrandFonts, type BrandTypographyInput } from './brand-typography'
 import PptxGenJS from 'pptxgenjs'
 
 const W = 13.33
@@ -13,7 +14,12 @@ const H = 7.5
 const MARGIN = 0.55
 const FOOTER_Y = 7.06 // regla del spec: nada de contenido por debajo
 const CONTENT_W = W - MARGIN * 2
-const FONT = 'Arial'
+// Antes `const FONT = 'Arial'` a fuego. Ahora sale de la tipografía del
+// Cerebro (opts.typography) con Arial de fallback — mismo camino que el
+// color de marca. Se fija al arrancar la generación; los helpers leen la
+// variable de módulo (un hilo por petición, sin carrera).
+let FONT = 'Arial'
+let FONT_HEADING = 'Arial'
 const PLATE = '111111'
 const INK_SOFT = '555555'
 const PAPER = 'FFFFFF'
@@ -21,6 +27,8 @@ const PAPER = 'FFFFFF'
 export interface MonthlyDeckOptions {
   brandName: string
   primaryColor: string
+  /** Tipografía del Cerebro (brand_data.visual_identity.typography), tal cual. Opcional. */
+  typography?: BrandTypographyInput
   logoDataUri?: string | null
   result: Record<string, any>
 }
@@ -101,7 +109,7 @@ function divider(pptx: PptxGenJS, accent: string, brand: string, n: number, titl
   })
   slide.addText(title, {
     x: MARGIN, y: 2.75, w: CONTENT_W, h: 1.0,
-    fontFace: FONT, fontSize: 40, bold: true, color: 'FFFFFF',
+    fontFace: FONT_HEADING, fontSize: 40, bold: true, color: 'FFFFFF',
   })
   slide.addText(subtitle, {
     x: MARGIN, y: 3.85, w: CONTENT_W - 2, h: 0.8,
@@ -167,7 +175,7 @@ function coverSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   })
   slide.addText('Content System', {
     x: MARGIN, y: 2.5, w: CONTENT_W, h: 1.0,
-    fontFace: FONT, fontSize: 44, bold: true, color: PLATE,
+    fontFace: FONT_HEADING, fontSize: 44, bold: true, color: PLATE,
   })
   slide.addText(s(r.month_label || r.month, 40), {
     x: MARGIN, y: 3.55, w: CONTENT_W, h: 0.6,
@@ -500,7 +508,7 @@ function closingSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   slide.background = { color: PLATE }
   slide.addText('Open items', {
     x: MARGIN, y: 0.6, w: CONTENT_W, h: 0.6,
-    fontFace: FONT, fontSize: 28, bold: true, color: 'FFFFFF',
+    fontFace: FONT_HEADING, fontSize: 28, bold: true, color: 'FFFFFF',
   })
   slide.addText('Honest gaps — each one with an owner. A system with clear open items is worth more than a "complete" one padded with filler.', {
     x: MARGIN, y: 1.25, w: CONTENT_W - 2, h: 0.5,
@@ -524,6 +532,10 @@ function closingSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
 }
 
 export async function buildMonthlyDeckPptx(opts: MonthlyDeckOptions): Promise<Buffer> {
+  // Cerebro → fuentes. Sin tipografía en el Cerebro sale en Arial, como siempre.
+  const fonts = resolveBrandFonts(opts.typography, { heading: 'Arial', body: 'Arial' })
+  FONT = fonts.body
+  FONT_HEADING = fonts.heading
   const accent = hex(opts.primaryColor)
   const pptx = new PptxGenJS()
   pptx.defineLayout({ name: 'MIRA_WIDE', width: W, height: H })

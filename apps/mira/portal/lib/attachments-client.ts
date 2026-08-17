@@ -4,6 +4,9 @@ import type { Attachment } from '@/lib/attachments'
 // y devuelve los metadatos que las rutas server consumen vía buildAttachmentBlocks.
 // Extraído del chat de onboarding para que quick actions lo reutilice.
 
+// DOCX/PPTX también son 'text': el servidor decide el extractor por mimeType
+// (lib/attachments.ts, officeKindOf). Ese módulo arrastra el lector de PDF y
+// no debe entrar en el bundle del navegador, de ahí que aquí no se importe.
 export function attachmentTypeFromFile(file: File): Attachment['type'] {
   if (file.type.startsWith('image/')) return 'image'
   if (file.type === 'application/pdf') return 'pdf'

@@ -6,15 +6,117 @@ import { extractPdfText } from '@/lib/pdf-extract'
 // se extrajo aquí para que quick actions (form + chat guiado) lo reutilicen.
 
 export interface Attachment {
+  /**
+   * 'text' cubre también los documentos Office (DOCX/PPTX) desde el 2026-08-17:
+   * el CEO intentó adjuntar una presentación al editor de decks y la subida
+   * devolvía 415, porque el pipeline solo entendía PDF, imagen y texto plano.
+   * No se añadió un cuarto tipo a propósito: esta unión está copiada a mano en
+   * app/(dashboard)/admin/onboarding/chat/page.tsx (PendingAttachment) y
+   * ampliarla rompía ese fichero. Cuál extractor toca (Word, PowerPoint o UTF-8
+   * plano) se decide por mimeType/extensión al leer — ver officeKindOf().
+   */
   type: 'image' | 'pdf' | 'text'
   name: string
   url: string
+  /** Para 'text' es lo que distingue un .txt de un .docx o un .pptx (un zip
+   *  leído como UTF-8 sería basura en el prompt): guardarlo siempre. */
   mimeType?: string
   /** Path dentro de brand-assets (bucket privado) -- si está presente, se
    *  descarga directo por el service role en vez de fetch(url), porque url
    *  es un path relativo al proxy (/api/brand-assets?path=...) que no
    *  resuelve fuera de un navegador. */
   path?: string
+}
+
+// MIME oficiales de Office Open XML. Se exportan para que la ruta de subida
+// (app/api/attachments/upload) y drive-sync compartan la MISMA lista en vez
+// de que cada uno tenga su copia — es exactamente como se descoordinaron
+// antes: drive-sync aceptaba DOCX y la subida no.
+export const DOCX_MIME = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+export const PPTX_MIME = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+
+/**
+ * Word o PowerPoint, mirando primero el MIME y después la extensión. Los
+ * navegadores no siempre informan el MIME de un fichero Office (algunos mandan
+ * '' o application/octet-stream), y en Drive un .pptx subido a mano llega con
+ * su MIME real pero un Google Slides exportado no pasa por aquí. Null si no es
+ * ninguno de los dos.
+ */
+export function officeKindOf(mime: string | undefined, fileName = ''): 'docx' | 'pptx' | null {
+  const normalized = (mime || '').toLowerCase().split(';')[0].trim()
+  if (normalized === DOCX_MIME) return 'docx'
+  if (normalized === PPTX_MIME) return 'pptx'
+  const ext = fileName.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1]
+  if (ext === 'docx') return 'docx'
+  if (ext === 'pptx') return 'pptx'
+  return null
+}
+
+/** Texto de un .docx con mammoth (mismo camino que drive-sync y email-ops). */
+export async function extractDocxText(buffer: Buffer): Promise<string> {
+  // Import dinámico: mammoth solo carga cuando de verdad llega un Word, igual
+  // que hace lib/email-ops/pipeline.ts. Este módulo lo importan rutas que en
+  // el 99 % de las peticiones no ven ningún adjunto.
+  const mammoth = await import('mammoth')
+  const result = await mammoth.extractRawText({ buffer })
+  return result.value || ''
+}
+
+/**
+ * Entidades XML que aparecen en los runs de texto de DrawingML. Sin esto, un
+ * título como "Q3 &amp; Q4" llega al prompt con el ampersand escapado y el
+ * modelo lo copia tal cual al deck revisado.
+ */
+function decodeXmlEntities(s: string): string {
+  return s
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCodePoint(parseInt(dec, 10)))
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+}
+
+/**
+ * Texto de un .pptx sin librería nueva: el fichero es un zip y cada slide es
+ * ppt/slides/slideN.xml, con el texto en runs <a:t>. Es la misma lectura que
+ * hace lib/export/verify-deck.ts para comprobar los decks mensuales, aquí
+ * generalizada: se respetan los párrafos (<a:p>) para que un bullet no se
+ * pegue al siguiente, y se etiqueta cada slide con su número para que el
+ * modelo pueda decir "en la slide 4 del adjunto…" en vez de mezclar todo.
+ *
+ * Solo el cuerpo de las slides. Las notas del orador (ppt/notesSlides/) se
+ * numeran por relación y no por nombre de fichero, así que emparejarlas por
+ * el N del nombre podría atribuirlas a la slide equivocada; mejor no leerlas
+ * que leerlas mal.
+ */
+export async function extractPptxText(buffer: Buffer): Promise<string> {
+  const JSZip = (await import('jszip')).default
+  const zip = await JSZip.loadAsync(buffer)
+
+  const slideNames = Object.keys(zip.files)
+    .filter((n) => /^ppt\/slides\/slide\d+\.xml$/.test(n))
+    .sort((a, b) => Number(a.match(/\d+/)![0]) - Number(b.match(/\d+/)![0]))
+
+  const slides: string[] = []
+  for (const name of slideNames) {
+    const xml = await zip.files[name].async('string')
+    const paragraphs = xml
+      .split(/<\/a:p>/)
+      .map((chunk) =>
+        (chunk.match(/<a:t(?:\s[^>]*)?>([^<]*)<\/a:t>/g) || [])
+          .map((run) => decodeXmlEntities(run.replace(/<a:t(?:\s[^>]*)?>|<\/a:t>/g, '')))
+          .join('')
+          .trim()
+      )
+      .filter(Boolean)
+    if (paragraphs.length === 0) continue
+    const slideNumber = Number(name.match(/\d+/)![0])
+    slides.push(`--- Slide ${slideNumber} ---\n${paragraphs.join('\n')}`)
+  }
+
+  return slides.join('\n\n')
 }
 
 /**
@@ -151,7 +253,21 @@ export async function buildAttachmentBlocks(attachments: Attachment[]): Promise<
         textParts.push(attachmentTextBlock(att.name, text, share))
         remainingBudget -= Math.min(text.length, share)
       } else {
-        const text = buf.toString('utf-8')
+        // 'text': UTF-8 plano salvo que sea Office, que va por su extractor.
+        const office = officeKindOf(att.mimeType, att.name)
+        const text = office === 'pptx'
+          ? await extractPptxText(buf)
+          : office === 'docx'
+            ? await extractDocxText(buf)
+            : buf.toString('utf-8')
+        if (office && !text.trim()) {
+          // Un deck de solo imágenes o un Word vacío: el modelo debe saber que
+          // el adjunto existe pero no trae texto, no deducir que no se envió.
+          textParts.push(
+            `--- Attachment "${att.name}" was received but contains no extractable text (only images or empty slides). ---`
+          )
+          continue
+        }
         textParts.push(attachmentTextBlock(att.name, text, share))
         remainingBudget -= Math.min(text.length, share)
       }
@@ -163,7 +279,11 @@ export async function buildAttachmentBlocks(attachments: Attachment[]): Promise<
   return { contentBlocks, textContext: textParts.join('\n\n') }
 }
 
-/** Clasifica un MIME type en el tipo de Attachment que entiende el pipeline. */
+/**
+ * Clasifica un MIME type en el tipo de Attachment que entiende el pipeline.
+ * DOCX/PPTX caen en 'text' a propósito (ver el comentario de Attachment.type);
+ * lo que los distingue después es el mimeType guardado junto al adjunto.
+ */
 export function attachmentTypeFromMime(mime: string): Attachment['type'] {
   if (mime.startsWith('image/')) return 'image'
   if (mime === 'application/pdf') return 'pdf'

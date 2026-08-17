@@ -5,11 +5,46 @@ import { adminClient } from '@/lib/supabase'
 import { getFeedbackBlock } from '@/lib/feedback'
 import { userCanAccessClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
+import { fenceUntrusted } from '@/lib/grounding/untrusted'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 
 export const maxDuration = 300
 
+// Mismo tope que la subida (app/api/attachments/upload MAX_FILES).
+const MAX_ATTACHMENTS = 5
+
+/**
+ * Adjuntos del refinado, saneados. El body viene del navegador, así que se
+ * valida el shape y, sobre todo, la PROPIEDAD del path: buildAttachmentBlocks
+ * descarga `path` del bucket con el service role, y sin este filtro bastaría
+ * con mandar el path de otro cliente para leer sus ficheros. Los adjuntos
+ * subidos por /api/attachments/upload siempre traen path y siempre cuelgan de
+ * {clientId}/..., así que cualquier otra cosa se descarta sin ruido. Exigir
+ * path también cierra el camino fetch(url) del pipeline, que aquí no hace
+ * falta (el único emisor es AttachmentDropzone) y no queremos abrir a URLs
+ * arbitrarias desde el body.
+ */
+function sanitizeAttachments(raw: unknown, clientId: string): Attachment[] {
+  if (!Array.isArray(raw)) return []
+  const out: Attachment[] = []
+  for (const item of raw.slice(0, MAX_ATTACHMENTS)) {
+    if (!item || typeof item !== 'object') continue
+    const a = item as Record<string, unknown>
+    if (typeof a.name !== 'string' || typeof a.url !== 'string' || typeof a.path !== 'string') continue
+    if (a.type !== 'image' && a.type !== 'pdf' && a.type !== 'text') continue
+    if (a.path.includes('..') || !a.path.startsWith(`${clientId}/`)) continue
+    out.push({
+      type: a.type,
+      name: a.name,
+      url: a.url,
+      mimeType: typeof a.mimeType === 'string' ? a.mimeType : undefined,
+      path: a.path,
+    })
+  }
+  return out
+}
 
 function extractJson(text: string): Record<string, unknown> {
   const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/)
@@ -42,7 +77,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { queue_id, instruction, slide_index } = await req.json()
+    const body = await req.json()
+    const { queue_id, instruction, slide_index } = body
     if (!queue_id || !instruction) {
       return NextResponse.json({ error: 'Missing queue_id or instruction' }, { status: 400 })
     }
@@ -63,6 +99,33 @@ export async function POST(req: NextRequest) {
     }
 
     const { brandColor, _history, ...currentDoc } = row.result_data || {}
+
+    // ── Adjuntos del turno (2026-08-17) ──
+    // El editor no tenía forma de recibir material: el CEO pidió al refinado
+    // que usara un fichero de su Drive y el modelo, sin acceso a nada, contestó
+    // en prosa -- que aquí se convertía en "Could not parse revised document".
+    // Ahora un adjunto (PDF, imagen, texto, DOCX, PPTX) acompaña a la
+    // instrucción y entra al prompt por el mismo pipeline que Quick Actions.
+    const attachments = sanitizeAttachments(body.attachments, row.client_id)
+    const { contentBlocks: attachmentImageBlocks, textContext: attachmentText } =
+      attachments.length > 0
+        ? await buildAttachmentBlocks(attachments)
+        : { contentBlocks: [], textContext: '' }
+    // Los adjuntos van dentro de fenceUntrusted (mismo sobre que Business
+    // Reports): son DATOS para aplicar los cambios, no instrucciones. La
+    // instrucción del usuario sigue yendo tal cual, como hasta ahora.
+    const attachmentSection = attachmentText
+      ? `\n\nMaterial adjunto por el usuario para este cambio (fuente primaria: usa su contenido real, no lo resumas de memoria):\n${fenceUntrusted('USER ATTACHMENTS', attachmentText)}\n`
+      : attachmentImageBlocks.length > 0
+        ? '\n\nEl usuario adjunta imágenes (van con este mensaje): úsalas como referencia para el cambio.\n'
+        : ''
+
+    // Qué hacer cuando la instrucción NO se puede cumplir con lo que hay (un
+    // fichero de Drive, una URL, un dato que no está en el documento ni en los
+    // adjuntos). Antes el modelo lo explicaba en prosa y el usuario veía un
+    // error de parseo sin más; ahora esa prosa se le devuelve tal cual (ver
+    // más abajo), así que se le pide explícitamente que sea breve y concreta.
+    const CANNOT_APPLY_RULE = `Si NO puedes aplicar la instrucción con el documento y el material adjunto (por ejemplo, hace referencia a un fichero de Google Drive, a una URL o a datos que no tienes), NO devuelvas JSON: responde con una o dos frases en el idioma del usuario explicando qué falta y cómo puede proporcionarlo (adjuntándolo aquí mismo). Nunca inventes el contenido que falta.`
 
     // ── Modo slide único: regenerar SOLO una slide del deck ──
     const slides = Array.isArray(currentDoc.slides)
@@ -85,9 +148,11 @@ export async function POST(req: NextRequest) {
 ${JSON.stringify(slides![slide_index as number], null, 2)}
 \`\`\`
 
-Instrucción del usuario: "${instruction}"
+Instrucción del usuario: "${instruction}"${attachmentSection}
 
 Aplica SOLO los cambios pedidos a ESTA slide, conservando su layout y estructura de keys salvo que la instrucción pida cambiarlos (layouts válidos: cover, section, content, stats, closing, timeline, comparison, quote, image, chart, agenda). Mismo idioma. Devuelve SOLO el JSON de esta slide revisada (un único objeto), nada más.
+
+${CANNOT_APPLY_RULE}
 
 ${GROUNDING_CONTRACT}
 
@@ -98,9 +163,11 @@ ${EDITORIAL_CONTRACT}`
 ${JSON.stringify(currentDoc, null, 2)}
 \`\`\`
 
-Instrucción del usuario: "${instruction}"
+Instrucción del usuario: "${instruction}"${attachmentSection}
 ${await getFeedbackBlock(row.client_id, row.tool_slug)}
 Aplica SOLO los cambios pedidos, conservando todo lo demás intacto (misma estructura de keys, mismo idioma). Devuelve el JSON completo revisado, nada más.
+
+${CANNOT_APPLY_RULE}
 
 ${GROUNDING_CONTRACT}
 
@@ -109,7 +176,16 @@ ${EDITORIAL_CONTRACT}`
     const message = await createMessageForClient(row.client_id, 'documents/refine', {
       model: 'claude-opus-4-8',
       max_tokens: slideMode ? 4000 : 16000,
-      messages: [{ role: 'user', content: prompt }],
+      // Las imágenes adjuntas van como bloques de visión junto al prompt
+      // (mismo montaje que lib/quick-actions/generate.ts).
+      messages: [
+        {
+          role: 'user',
+          content: attachmentImageBlocks.length
+            ? [{ type: 'text' as const, text: prompt }, ...attachmentImageBlocks]
+            : prompt,
+        },
+      ],
     })
 
     if (message.stop_reason === 'max_tokens') {
@@ -120,7 +196,20 @@ ${EDITORIAL_CONTRACT}`
     const text = block && 'text' in block ? block.text : ''
     const revised = extractJson(text)
     if (Object.keys(revised).length === 0) {
-      return NextResponse.json({ error: 'Could not parse revised document' }, { status: 500 })
+      // Sin JSON en la respuesta. Casi siempre es el modelo explicando por qué
+      // no puede hacer el cambio (CANNOT_APPLY_RULE): eso es la respuesta útil
+      // para el usuario, no "Could not parse". Se le devuelve como mensaje del
+      // chat, acotado por si el modelo se ha extendido. 422 y no 500: la
+      // petición se entendió, es la instrucción la que no se puede cumplir.
+      const explanation = text.trim().replace(/\s+/g, ' ').slice(0, 600)
+      return NextResponse.json(
+        {
+          error: explanation
+            ? `No change applied — ${explanation}`
+            : 'Could not parse revised document',
+        },
+        { status: explanation ? 422 : 500 }
+      )
     }
 
     // Keep a short revision history inside result_data
@@ -129,6 +218,9 @@ ${EDITORIAL_CONTRACT}`
       instruction,
       at: new Date().toISOString(),
       ...(slideMode ? { slide_index } : {}),
+      // Solo nombres: trazabilidad de con qué material se hizo el cambio, sin
+      // duplicar paths ni blobs dentro de result_data.
+      ...(attachments.length ? { attachments: attachments.map((a) => a.name) } : {}),
     })
 
     // Campos que NUNCA debe decidir el modelo: son punteros a ficheros reales
