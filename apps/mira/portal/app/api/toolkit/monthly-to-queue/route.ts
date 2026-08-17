@@ -84,14 +84,31 @@ export async function POST(req: NextRequest) {
     // /approvals ya muestra vía asset_url. Off por defecto.
     if (with_covers === true) {
       const { generateAndStoreImage } = await import('@/lib/generation/openai-image')
+      // La portada se compone por el MISMO camino que el Estudio Visual, con
+      // la identidad visual del Cerebro y el pilar del propio item. Antes el
+      // prompt era `visual_direction + "Estilo coherente con la marca"` a
+      // secas — sin paleta, sin tipografía y sin pilar, la coherencia era un
+      // deseo, no una instrucción.
+      const { composeBrandImagePrompt } = await import('@/lib/generation/image-studio')
+      const { fetchBrandBrain } = await import('@/lib/brand-brain')
+      const brain = await fetchBrandBrain(row.client_id).catch(() => null)
       const COVER_CAP = 8
       let generated = 0
       for (const item of items) {
         if (generated >= COVER_CAP) break
         const vd = item.post.visual_direction
         if (!vd) continue
+        const pillar = brain?.pillars?.find(
+          (pi) => pi.name?.trim().toLowerCase() === item.pillarName?.trim().toLowerCase()
+        )
+        const prompt = composeBrandImagePrompt({
+          userPrompt: vd,
+          visualIdentity: brain?.visualIdentitySummary,
+          format: 'post',
+          pillar,
+        })
         const stored = await generateAndStoreImage(
-          `${vd}. Estilo coherente con la marca.`,
+          prompt,
           row.client_id,
           `monthly-cover-${row.id.slice(0, 8)}-${generated}`
         )

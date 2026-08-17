@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { Loader2, Sparkles, Image as ImageIcon, Download, Library } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
@@ -10,7 +10,7 @@ import { STUDIO_FORMATS } from '@/lib/generation/image-studio'
 // motor y el almacenamiento son los que ya existían; esto es la UI dedicada.
 const FORMAT_KEYS = Object.keys(STUDIO_FORMATS) as Array<keyof typeof STUDIO_FORMATS>
 
-interface Result { imageUrl: string; format: string; usedBrandIdentity: boolean; referencesUsed: number }
+interface Result { imageUrl: string; format: string; usedBrandIdentity: boolean; referencesUsed: number; usedPillar: string | null }
 
 export default function StudioPage() {
   const { activeClient } = useActiveClient()
@@ -25,6 +25,24 @@ export default function StudioPage() {
   // Referencias que se suben en el momento: mandan sobre las del corpus, porque
   // si alguien se molesta en dar un ejemplo es que quiere ESE look.
   const [refs, setRefs] = useState<{ name: string; dataUrl: string }[]>([])
+  // Pilares del Cerebro del cliente activo. La imagen puede (y suele deber)
+  // colgar de una línea editorial concreta — era la queja literal del CEO:
+  // pidió "la imagen del pilar cool pics" y el pilar nunca llegaba al prompt.
+  const [pillars, setPillars] = useState<string[]>([])
+  const [pillar, setPillar] = useState<string>('')
+
+  useEffect(() => {
+    setPillar('')
+    if (!clientId) { setPillars([]); return }
+    fetch(`/api/brand-brain?clientId=${clientId}`)
+      .then((r) => r.json())
+      .then((d) => setPillars(
+        (d.pillars ?? [])
+          .map((p: any) => p.pillar_name ?? p.name)
+          .filter((n: unknown): n is string => typeof n === 'string' && n.trim() !== '')
+      ))
+      .catch(() => setPillars([]))
+  }, [clientId])
 
   const addRefs = (files: FileList | null) => {
     if (!files) return
@@ -45,7 +63,7 @@ export default function StudioPage() {
       const res = await fetch('/api/studio/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt, format, clientId, referenceImages: refs.map(r => r.dataUrl) }),
+        body: JSON.stringify({ prompt, format, clientId, pillar: pillar || null, referenceImages: refs.map(r => r.dataUrl) }),
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not generate the image'); return }
@@ -87,6 +105,26 @@ export default function StudioPage() {
             placeholder="E.g. a gourmet burger on a dark background, soft smoke, editorial product style…"
             className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted"
           />
+
+          {pillars.length > 0 && (
+            <>
+              <label className="mb-2 mt-4 block text-xs font-medium text-ink-secondary">Content pillar</label>
+              <div className="flex flex-wrap gap-2">
+                <button onClick={() => setPillar('')}
+                  className={`rounded-lg px-3 py-1.5 text-xs transition-all ${pillar === '' ? 'text-white' : 'bg-page text-ink-secondary hover:text-ink'}`}
+                  style={pillar === '' ? { background: brand } : {}}>
+                  None
+                </button>
+                {pillars.map((name) => (
+                  <button key={name} onClick={() => setPillar(name)}
+                    className={`rounded-lg px-3 py-1.5 text-xs transition-all ${pillar === name ? 'text-white' : 'bg-page text-ink-secondary hover:text-ink'}`}
+                    style={pillar === name ? { background: brand } : {}}>
+                    {name}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
 
           <label className="mb-2 mt-4 block text-xs font-medium text-ink-secondary">Format</label>
           <div className="flex flex-wrap gap-2">
@@ -150,6 +188,7 @@ export default function StudioPage() {
               <div className="mt-3 flex items-center justify-between">
                 <span className="text-[11px] text-ink-tertiary">
                   {result.usedBrandIdentity ? '✓ Brand identity' : '⚠ No visual identity in the Brain'}
+                  {result.usedPillar && ` · ✓ Pillar: ${result.usedPillar}`}
                   {result.referencesUsed > 0 && ` · ✓ ${result.referencesUsed} real references`}
                 </span>
                 <a href={result.imageUrl} download className="inline-flex items-center gap-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">

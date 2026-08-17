@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
       userPrompt: prompt,
       format,
       userId: user.id,
+      pillarName: typeof body.pillar === 'string' ? body.pillar : null,
     })
     if (!result) {
       return NextResponse.json(

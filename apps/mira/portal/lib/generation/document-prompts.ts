@@ -1,11 +1,12 @@
 // Prompts del Centro de Documentos — 4 tipos de documento generados con Brand Brain.
 // Cada prompt devuelve JSON con el shape que consumen las plantillas de lib/export/templates.
 
-import { fetchBrandBrain } from '@/lib/brand-brain'
+import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { getFeedbackBlock } from '@/lib/feedback'
 import { retrieveAgentContext } from '@/lib/agent-context'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 
 // tone_of_voice may be a plain string or an object — never spread a string into chars
@@ -57,16 +58,13 @@ export async function getDocumentPrompt(
     getFeedbackBlock(clientId, docType),
   ])
 
-  const brandContext = brandBrain
-    ? `
-BRAND CONTEXT (source of truth — use this throughout the document):
-- Name: ${brandBrain.brandName}
-- Mission: ${brandBrain.mission}
-- Pillars: ${brandBrain.pillars.map((p) => `${p.name} (${p.description})`).join('; ')}
-- Tone of voice: ${formatTone(brandBrain.toneOfVoice)}
-- Audiences: ${brandBrain.audiences ? JSON.stringify(brandBrain.audiences) : 'Not defined'}
-`
-    : ''
+  // El Cerebro entra ENTERO (formatBrandBrainForPrompt: ~27 campos con
+  // vocabulario, frases prohibidas, golden rule, oferta, what_flopped…).
+  // Antes se recortaba a mano a 5 campos — el mismo bug que ya se corrigió en
+  // Quick Actions (PROMPTS_AUDIT_2026_07) y que aquí seguía vivo: los
+  // documentos, las piezas más caras del sistema, eran las que menos marca
+  // recibían.
+  const brandContext = brandBrain ? formatBrandBrainForPrompt(brandBrain) : ''
 
   const docText = docContext?.documents?.map((d: { excerpt?: string }) => d.excerpt).join('\n') || ''
   const allContext = [docText, brandContext, memoryContext, feedbackBlock].filter(Boolean).join('\n\n')
@@ -85,34 +83,34 @@ BRAND CONTEXT (source of truth — use this throughout the document):
   const scopeCheck = `\n\nIMPORTANT — scope of this document: this is ALWAYS an internal business artefact (operating guide, presentation, report or one-pager), NEVER the finished, ready-to-publish content piece. If the "Topic"/brief below clearly describes a specific piece to publish (a newsletter, a post, an article, a script) rather than a business process or strategy, add a short honest notice as the FIRST section of the document: that this is a guide on how to approach that content, not the content itself, and that to generate the ready-to-publish piece they should use Quick Actions (crear_newsletter/crear_post/etc.) in MIRA. Then carry on with the rest of the document anyway (the guide/strategy is still useful).`
 
   // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contratos de calidad (veracidad + redacción).
-  const input = `\nUSER BRIEF:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}${researchContext}\n\n${GROUNDING_CONTRACT}\n\n${EDITORIAL_CONTRACT}${scopeCheck}`
+  const input = `\nUSER BRIEF:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}${researchContext}\n\n${GROUNDING_CONTRACT}\n\n${EDITORIAL_CONTRACT}\n\n${REPORT_VOICE_CONTRACT}${scopeCheck}`
 
   switch (docType) {
     case 'doc-playbook':
       return `You are a senior consultant who writes premium operating playbooks. Produce a complete, actionable playbook specific to this brand (nothing generic). ${languageRule}
 ${input}
 
-Devuelve SOLO este JSON:
+Return ONLY this JSON:
 {
-  "title": "Título del playbook (corto y potente)",
-  "subtitle": "Subtítulo de una línea",
+  "title": "Playbook title (short and punchy)",
+  "subtitle": "One-line subtitle",
   "sections": [
     {
-      "title": "Nombre de la sección",
+      "title": "Section name",
       "body": "2-4 párrafos de contenido en HTML simple (<p>, <strong>)",
       "stats": [{"value": "", "label": ""}],
       "tips": ["Consejo accionable 1", "Consejo 2"],
       "steps": [{"title": "Paso 1: ...", "body": "Cómo ejecutarlo"}],
       "table": {"headers": [], "rows": []},
-      "tiers": [{"name": "Plan/tramo", "price": "€X/mes", "includes": ["Qué incluye 1", "Qué incluye 2"]}],
-      "funnel": [{"stage": "Nombre de la etapa", "description": "Qué pasa en esta etapa"}],
-      "timeline": [{"period": "Semana 1 / Mes 1 / Q1", "items": ["Qué ocurre en este periodo"]}],
+      "tiers": [{"name": "Plan/tier", "price": "€X/month", "includes": ["What it includes 1", "What it includes 2"]}],
+      "funnel": [{"stage": "Stage name", "description": "What happens at this stage"}],
+      "timeline": [{"period": "Week 1 / Month 1 / Q1", "items": ["What happens in this period"]}],
       "checklist": [{"item": "Tarea a verificar", "note": "Detalle opcional"}],
       "statusTable": {"headers": ["Columna 1", "Columna 2"], "rows": [{"cells": ["valor 1", "valor 2"], "status": "good"}]}
     }
   ]
 }
-Incluye 6-9 secciones: contexto/diagnóstico, estrategia, 3-5 secciones de ejecución con steps y tips, métricas de éxito con stats, y cierre con próximos pasos. Usa cada bloque SOLO donde el contenido encaje de forma natural (omite las keys que no uses en cada sección):
+Include 6-9 sections: context/diagnosis, strategy, 3-5 execution sections with steps and tips, success metrics with stats, and a closing with next steps. Use each block ONLY where the content fits naturally (omit unused keys per section):
 - "tiers" para presupuesto o planes por tramo (nunca inventes precios que no estén en el brief/contexto — usa '[MISSING: real data]' si falta el precio).
 - "funnel" para un proceso de conversión con etapas secuenciales (awareness → consideración → conversión, o similar).
 - "timeline" para un cronograma/calendario de ejecución con periodos.
@@ -123,20 +121,20 @@ Incluye 6-9 secciones: contexto/diagnóstico, estrategia, 3-5 secciones de ejecu
       return `You are an executive presentation consultant. Produce a 16:9 deck for this brand, ready to present to clients or investors. ${languageRule}
 ${input}
 
-Devuelve SOLO este JSON:
+Return ONLY this JSON:
 {
-  "title": "Título de la presentación",
-  "subtitle": "Subtítulo",
+  "title": "Presentation title",
+  "subtitle": "Subtitle",
   "slides": [
-    {"layout": "cover", "title": "", "subtitle": "", "image_prompt": "descripción visual para la imagen de fondo de portada (escena/concepto, sin texto)"},
+    {"layout": "cover", "title": "", "subtitle": "", "image_prompt": "visual description for la imagen de fondo de portada (escena/concepto, sin texto)"},
     {"layout": "agenda", "title": "Agenda", "items": ["Punto 1", "Punto 2", "Punto 3"]},
-    {"layout": "section", "title": "Nombre del bloque", "subtitle": "Qué cubre"},
-    {"layout": "content", "title": "", "body": "Párrafo breve en HTML simple", "bullets": ["punto 1", "punto 2"]},
+    {"layout": "section", "title": "Block name", "subtitle": "What it covers"},
+    {"layout": "content", "title": "", "body": "Short paragraph in simple HTML", "bullets": ["punto 1", "punto 2"]},
     {"layout": "stats", "title": "", "stats": [{"value": "", "label": ""}]},
     {"layout": "timeline", "title": "Roadmap", "items": [{"label": "Q1", "title": "Hito", "body": "1 frase"}]},
     {"layout": "comparison", "title": "Antes vs. Después", "left": {"title": "Opción A", "bullets": ["..."]}, "right": {"title": "Opción B", "bullets": ["..."]}},
     {"layout": "quote", "title": "", "quote": "Cita potente de 1-2 frases", "author": "Nombre, cargo"},
-    {"layout": "image", "title": "", "body": "Párrafo breve", "bullets": ["..."], "wants_image": true, "image_prompt": "descripción visual de la imagen (escena/concepto, sin texto)"},
+    {"layout": "image", "title": "", "body": "Short paragraph", "bullets": ["..."], "wants_image": true, "image_prompt": "descripción visual de la imagen (escena/concepto, sin texto)"},
     {"layout": "chart", "title": "", "subtitle": "", "chart": {"type": "bar", "labels": ["Ene", "Feb"], "data": [10, 20]}},
     {"layout": "closing", "title": "Cierre / CTA", "subtitle": ""}
   ]
@@ -150,8 +148,8 @@ Guía de layouts (usa cada uno con su shape exacto):
 - "timeline": fases/roadmap — 3-5 "items" con {"label", "title", "body"} (label = fase/fecha corta).
 - "comparison": dos columnas "left"/"right", cada una {"title", "bullets"} (2-4 bullets por lado).
 - "quote": cita destacada — "quote" (1-2 frases) + "author" opcional.
-- "image": imagen a un lado + texto al otro. Marca "wants_image": true y escribe "image_prompt" (descripción visual concreta, sin texto en la imagen). MÁXIMO 2 slides con wants_image en todo el deck.
-- "chart": un gráfico — "chart" con "type" (bar|line|doughnut), "labels" (strings) y "data" (números). Úsalo solo si tienes cifras reales o del brief.
+- "image": image on one side + text on the other. Set "wants_image": true and write "image_prompt" (visual description consistent with the brand).
+- "chart": a chart — "chart" with "type" (bar|line|doughnut), "labels" (strings) and "data" (números). Úsalo solo si tienes cifras reales o del brief.
 
 Genera 10-16 slides: cover, agenda, 3-4 bloques de sección con sus slides de contenido, al menos 2 slides de stats con cifras concretas, y closing con llamada a la acción. VARIEDAD OBLIGATORIA: incluye al menos 1 slide "timeline" o "comparison", y al menos 1 "quote" cuando el contenido lo permita. Máximo 4 bullets por slide, frases cortas de presentación (no párrafos largos).`
 
@@ -159,7 +157,7 @@ Genera 10-16 slides: cover, agenda, 3-4 bloques de sección con sus slides de co
       return `You are an analyst who writes periodic results reports. Produce a clear, honest results report for this brand using the data the user provides (when data is missing, leave the values as "—" and focus on the narrative structure). ${languageRule}
 ${input}
 
-Devuelve SOLO este JSON:
+Return ONLY this JSON:
 {
   "title": "Informe de Resultados — [periodo]",
   "subtitle": "Periodo cubierto",
@@ -178,9 +176,9 @@ Ajusta secciones al contenido real disponible; añade stats donde haya cifras. U
       return `You are a commercial strategist. Produce a ONE-page sales one-pager for this brand: dense with value, zero filler. ${languageRule}
 ${input}
 
-Devuelve SOLO este JSON:
+Return ONLY this JSON:
 {
-  "title": "Nombre de la marca / oferta",
+  "title": "Brand / offer name",
   "subtitle": "Propuesta de valor en una frase",
   "sections": [
     {"title": "El problema", "body": "<p>2-3 frases</p>"},

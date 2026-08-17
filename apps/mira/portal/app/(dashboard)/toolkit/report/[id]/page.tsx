@@ -74,6 +74,12 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
     }
   }
 
+  // Portadas al materializar. El endpoint soportaba with_covers desde el
+  // principio y la UI nunca lo mandaba: el flujo "mensual → cola" jamás
+  // generó una sola imagen, en silencio (hallazgo del 17-ago). Apagado por
+  // defecto: generar hasta 8 imágenes cuesta dinero y debe ser una decisión.
+  const [withCovers, setWithCovers] = useState(false)
+
   // F4: materializar las captions del mes a la Cola de Aprobación
   const sendToQueue = async () => {
     setQueueState('sending')
@@ -81,7 +87,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
     const res = await fetch('/api/toolkit/monthly-to-queue', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ queue_id: id }),
+      body: JSON.stringify({ queue_id: id, with_covers: withCovers }),
     }).catch(() => null)
     const data = await res?.json().catch(() => null)
     if (res?.ok && data?.success) {
@@ -256,7 +262,11 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
               {slidesState === 'creating' ? t('toolkit.report.slides-creating', locale) : slidesState === 'done' ? t('toolkit.report.slides-done', locale) : t('toolkit.report.slides-create', locale)}
             </button>
           )}
-          {toolSlug === 'monthly-content-system' && (
+          {toolSlug === 'monthly-content-system' && (<>
+            <label className="flex items-center gap-1.5 text-xs text-ink-secondary cursor-pointer select-none">
+              <input type="checkbox" checked={withCovers} onChange={(e) => setWithCovers(e.target.checked)} className="accent-current" />
+              Generate covers (max 8)
+            </label>
             <button
               onClick={sendToQueue}
               disabled={queueState === 'sending' || queueState === 'sent'}
@@ -265,7 +275,7 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             >
               {queueState === 'sending' ? t('toolkit.report.queue-sending', locale) : queueState === 'sent' ? t('toolkit.report.queue-done', locale) : t('toolkit.report.queue-send', locale)}
             </button>
-          )}
+          </>)}
           <button
             onClick={saveToDrive}
             disabled={driveState === 'saving' || driveState === 'saved'}

@@ -134,6 +134,39 @@ export default function BrandBrainEditor() {
   const { locale } = useLocaleContext()
   const [profile, setProfile] = useState<BrandProfile | null>(null)
   const [pillars, setPillars] = useState<any[]>([])
+  // Proponedor de pilares con IA. El endpoint existía desde el 11-ago y NINGÚN
+  // componente lo llamaba — mientras 4 clientes en producción seguían con cero
+  // pilares y el motor de contenido devolviéndoles 404. El flujo respeta el
+  // diseño del endpoint: propone, el humano revisa/edita aquí mismo, y solo
+  // Save escribe.
+  const [proposing, setProposing] = useState(false)
+  const [proposeMsg, setProposeMsg] = useState<string | null>(null)
+
+  const proposePillars = async () => {
+    if (!activeClient?.id || proposing) return
+    setProposing(true)
+    setProposeMsg(null)
+    try {
+      const res = await fetch('/api/content-engine/pillars/propose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId: activeClient.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setProposeMsg(data.error || 'Could not propose pillars'); return }
+      const existing = new Set((pillars || []).map((x: any) => (x.pillar_name || '').trim().toLowerCase()))
+      const fresh = (data.pillars || []).filter(
+        (x: any) => x.pillar_name && !existing.has(x.pillar_name.trim().toLowerCase())
+      )
+      if (fresh.length === 0) { setProposeMsg('No new pillars proposed — the current set already covers the Brain.'); return }
+      setPillars([...(pillars || []), ...fresh])
+      setProposeMsg(`${fresh.length} pillar${fresh.length > 1 ? 's' : ''} proposed — review, edit and Save to apply.`)
+    } catch {
+      setProposeMsg('Network error while proposing pillars')
+    } finally {
+      setProposing(false)
+    }
+  }
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
@@ -1349,15 +1382,27 @@ export default function BrandBrainEditor() {
             <div className="border-b border-line pb-4">
               <div className="flex items-center justify-between mb-3">
                 <h3 className="text-sm font-medium text-ink">Content pillars</h3>
-                <button
-                  type="button"
-                  onClick={() => setPillars([...(pillars || []), { pillar_name: '', description: '', claim: '', themes: [], examples: [] }])}
-                  className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors"
-                >
-                  + Add pillar
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={proposePillars}
+                    disabled={proposing}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
+                    title="Proposes pillars from this client's Brain. Nothing is saved until you review and hit Save."
+                  >
+                    {proposing ? 'Proposing…' : '✦ Propose with AI'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPillars([...(pillars || []), { pillar_name: '', description: '', claim: '', themes: [], examples: [] }])}
+                    className="text-xs px-3 py-1.5 rounded-lg bg-surface-hover text-ink hover:opacity-80 transition-colors"
+                  >
+                    + Add pillar
+                  </button>
+                </div>
               </div>
               <p className="text-xs text-ink-tertiary mb-3">Pillars feed the Monthly Content System, the content engine and the marketing quick actions. Each one: name, what it is, and its claim (the promise in one sentence).</p>
+              {proposeMsg && <p className="text-xs mb-3 text-ink-secondary">{proposeMsg}</p>}
               <div className="space-y-3">
                 {(pillars || []).map((p: any, i: number) => (
                   <div key={i} className="rounded-xl border border-line bg-surface p-4 space-y-2">

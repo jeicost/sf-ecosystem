@@ -76,9 +76,28 @@ export function composeBrandImagePrompt(opts: {
   visualIdentity?: string
   referencesBlock?: string
   format: StudioFormat
+  /** El pilar de contenido al que sirve esta imagen. Opcional: una imagen
+   *  suelta (un logo, un banner puntual) no tiene por qué colgar de uno. */
+  pillar?: { name: string; description?: string; exampleHooks?: string[] }
 }): string {
   const f = STUDIO_FORMATS[opts.format] ?? STUDIO_FORMATS.post
   const parts = [opts.userPrompt.trim(), `Output format: ${f.guidance} (${f.size}).`]
+  if (opts.pillar?.name?.trim()) {
+    // El bug que destapó el CEO (17-ago): pidió "la imagen del pilar cool
+    // pics" y el Estudio recibía los pilares del Cerebro… y los tiraba — esta
+    // función no tenía parámetro por el que pasarlos. El pilar entra como
+    // CONTEXTO OBLIGATORIO: la imagen debe poder leerse como una pieza de esa
+    // línea editorial, no como un encargo suelto.
+    const pilar = [
+      `CONTENT PILLAR — this image belongs to the brand's "${opts.pillar.name.trim()}" content line.`,
+      opts.pillar.description?.trim() ? `What this pillar is about: ${opts.pillar.description.trim()}` : '',
+      opts.pillar.exampleHooks?.length
+        ? `Tone reference from this pillar's own hooks: ${opts.pillar.exampleHooks.slice(0, 3).join(' · ')}`
+        : '',
+      'The image must visually fit this content line.',
+    ].filter(Boolean).join(' ')
+    parts.push(pilar)
+  }
   if (opts.visualIdentity?.trim()) {
     parts.push(`BRAND VISUAL IDENTITY — MANDATORY, apply exactly (palette hex, typography style): ${opts.visualIdentity.trim()}`)
   }
@@ -98,6 +117,8 @@ export interface StudioResult {
   format: StudioFormat
   usedBrandIdentity: boolean
   referencesUsed: number
+  /** Nombre del pilar aplicado, o null si no se pidió o no casó con ninguno. */
+  usedPillar: string | null
 }
 
 /**
@@ -164,6 +185,8 @@ export async function generateStudioImage(opts: {
   userId?: string | null
   /** Imágenes de referencia subidas en el momento (data URLs). */
   referenceImages?: string[]
+  /** Nombre del pilar de contenido elegido en la UI (opcional). */
+  pillarName?: string | null
 }): Promise<StudioResult | null> {
   const [brain, references, uploaded] = await Promise.all([
     fetchBrandBrain(opts.clientId),
@@ -171,6 +194,13 @@ export async function generateStudioImage(opts: {
     describeUploadedReferences(opts.clientId, opts.referenceImages ?? []),
   ])
   const visualIdentity = brain?.visualIdentitySummary
+  // El pilar se resuelve contra el Cerebro por nombre (case-insensitive): la
+  // UI manda el nombre y aquí se recuperan descripción y hooks. Si no casa
+  // con ninguno, se genera sin pilar — nunca se inventa uno.
+  const wanted = opts.pillarName?.trim().toLowerCase()
+  const pillar = wanted
+    ? brain?.pillars?.find((p) => p.name?.trim().toLowerCase() === wanted)
+    : undefined
   // Las subidas van primero: si el usuario se molesta en dar una referencia,
   // manda sobre las del corpus.
   const finalPrompt = composeBrandImagePrompt({
@@ -178,6 +208,7 @@ export async function generateStudioImage(opts: {
     visualIdentity,
     referencesBlock: [uploaded.block, references.block].filter(Boolean).join('\n\n'),
     format: opts.format,
+    pillar,
   })
 
   const actionId = randomUUID()
@@ -196,7 +227,7 @@ export async function generateStudioImage(opts: {
       ...(opts.userId ? { user_id: opts.userId } : {}),
       tool_slug: 'studio-visual',
       status: 'completed',
-      input_data: { prompt: opts.userPrompt, format: opts.format },
+      input_data: { prompt: opts.userPrompt, format: opts.format, pillar: pillar?.name ?? null },
       result_data: { image_path: stored.path, image_url: stored.signedUrl, prompt: opts.userPrompt, format: opts.format },
       completed_at: new Date().toISOString(),
     })
@@ -208,5 +239,6 @@ export async function generateStudioImage(opts: {
     format: opts.format,
     usedBrandIdentity: Boolean(visualIdentity?.trim()),
     referencesUsed: references.count + uploaded.count,
+    usedPillar: pillar?.name ?? null,
   }
 }
