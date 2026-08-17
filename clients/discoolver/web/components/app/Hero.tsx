@@ -93,6 +93,7 @@ export function Hero({ content, locale = "es" }: { content: AppHomeContent; loca
             <div className="hero__visual">
               <video
                 src="/assets/v-hero-owl.mp4"
+                poster="/assets/poster-hero-owl.jpg"
                 autoPlay
                 muted
                 loop

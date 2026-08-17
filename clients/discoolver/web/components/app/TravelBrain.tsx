@@ -14,6 +14,7 @@ export function TravelBrain({ content }: { content: AppHomeContent }) {
           <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", border: "1.5px solid rgba(255,255,255,.2)", aspectRatio: "4/5" }}>
             <video
               src="/assets/v-card-accommodations.mp4"
+              poster="/assets/poster-smart-card.jpg"
               autoPlay
               muted
               loop
