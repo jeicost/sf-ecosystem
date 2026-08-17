@@ -1,9 +1,30 @@
 # Discoolver — dónde lo dejamos
 
-**Última sesión: 13 de agosto de 2026.** Este fichero es el punto de entrada:
+**Última sesión: 17 de agosto de 2026.** Este fichero es el punto de entrada:
 léelo antes de tocar nada y actualízalo al cerrar.
 
 ---
+
+## Sesión del 17-ago — qué cambió
+
+- **Plan de acción por proyecto aprobado** (`~/.claude/plans/gentle-doodling-acorn.md`):
+  Studio (detector+curador+guías+CMS Diego), MIRA prelanzamiento, landings.
+- **Discoolver Studio, Fase 0**: red de 36 tests de caracterización, curador
+  **desplegado en Railway** (`discoolver-curator-production.up.railway.app`,
+  Postgres, API protegida) y **puente editor→curador construido y probado**
+  (`/v2/curator/sections`, `/v2/guides/{id}/curator/fill`).
+- **Taxonomía verificada contra la BD real de Diego**: 97/97 subcategorías ya
+  existen; quedan `_wellness` fuera de Madrid, Ronda sin experiencias/compras,
+  y las subcategorías por ciudad casi sin ligar (6/97 Madrid, 0 resto).
+- **Landings**: agencias abierta a Google (ES+EN+sitemap), **GA4 encendido**
+  (`G-D842FZSKQ5`, banner de consentimiento verificado, variante legal con
+  medición). Nada de vídeos ni ensayo de compra todavía.
+- **MIRA M1** en producción: Estudio Visual con pilar, portadas del mensual con
+  toggle, documentos con Cerebro completo + contrato de voz + esquemas en
+  inglés, proponedor de pilares cableado al editor del Cerebro. **Verificación
+  con generación real pendiente** (la URL de deploy lleva SSO de Vercel).
+- **Mensajes en el escritorio de Carlos**: Diego (cierre completo, 7 puntos) y
+  Alessandro (4 preguntas de la v1.1). Pendientes de enviar.
 
 ## En una frase
 
