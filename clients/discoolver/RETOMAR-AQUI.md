@@ -23,8 +23,17 @@ léelo antes de tocar nada y actualízalo al cerrar.
   toggle, documentos con Cerebro completo + contrato de voz + esquemas en
   inglés, proponedor de pilares cableado al editor del Cerebro. **Verificación
   con generación real pendiente** (la URL de deploy lleva SSO de Vercel).
-- **Mensajes en el escritorio de Carlos**: Diego (cierre completo, 7 puntos) y
-  Alessandro (4 preguntas de la v1.1). Pendientes de enviar.
+- **Mensajes a Diego y Alessandro: ENVIADOS por Carlos** (17-ago tarde).
+- **Segunda tanda del 17-ago**: clave `dg-editor` del curador probada contra
+  producción; workflow de CI del curador (36 tests en verde en GitHub, deploy
+  espera el secreto `RAILWAY_TOKEN`); **110 MB de vídeos muertos fuera del
+  repo** (solo 2 de 14 se usaban; copia en `~/Desktop/discoolver-videos-retirados`)
+  + posters ligeros en los dos vivos; **ensayo de compra con 4242 aprobado**
+  (renuncia grabada en metadata de Stripe con hora y texto, webhook entregado);
+  higiene MIRA (_tmp_ fuera, scripts a scripts/).
+- **Nota en el escritorio `DG-EDITOR_VARIABLES_DIGITALOCEAN.md`**: las dos
+  variables del puente en DO + el token de Railway para GitHub. Es lo que
+  Carlos tiene que pegar para cerrar el circuito en producción.
 
 ## En una frase
 
