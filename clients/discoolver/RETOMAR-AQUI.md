@@ -43,6 +43,11 @@ léelo antes de tocar nada y actualízalo al cerrar.
   próxima sesión: llevar el editor a Railway junto al curador** (mismo patrón,
   CI ya probado hoy) en vez de resucitar un DigitalOcean sin token ni URL. Las
   variables del puente irían entonces en Railway, no en DO.
+- **MIRA M2+M3 en producción** (`085b3e7`): adjuntos+Drive (el «error de
+  parse»), tipografía de marca en los 4 exportadores, Google Slides en el
+  editor de decks, gating real con PlanGate. **M4 (objetivos del sistema)
+  diseñado y cerrado** con las 6 decisiones del CEO — arranca cuando se
+  encienda `MAX_MONTHLY_GENERATIONS` (recomendado 300).
 - **Nota en el escritorio `DG-EDITOR_VARIABLES_DIGITALOCEAN.md`**: las dos
   variables del puente en DO + el token de Railway para GitHub. Es lo que
   Carlos tiene que pegar para cerrar el circuito en producción.
