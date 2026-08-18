@@ -32,8 +32,25 @@ export class GenerationCapExceededError extends Error {
  * unchanged for every existing client. Set the env var in Vercel only after
  * checking real usage_log volume per client -- see docs/MIRA-LANZAMIENTO-FASE2.md.
  */
+/**
+ * Clientes exentos del techo mensual (GENERATION_CAP_EXEMPT_CLIENTS, ids
+ * separados por comas). Existe para los espacios de PRUEBA de la agencia:
+ * el 18-ago, al encender MAX_MONTHLY_GENERATIONS=300, Salsa Burgers llevaba 506
+ * generaciones en agosto — todas pruebas nuestras del 5 al 13 — y quedaba
+ * bloqueada hasta el 1-sep, justo el cliente con el que se verifica todo. Los
+ * clientes reales iban por ≤82. La lista debe ser corta y conocida; no es una
+ * forma de regalar generaciones.
+ */
+export function isGenerationCapExempt(clientId: string | null | undefined): boolean {
+  if (!clientId) return false
+  const raw = process.env.GENERATION_CAP_EXEMPT_CLIENTS
+  if (!raw) return false
+  return raw.split(',').map(s => s.trim()).filter(Boolean).includes(clientId)
+}
+
 async function checkGenerationCap(clientId: string, usedClientKey: boolean): Promise<void> {
   if (usedClientKey) return
+  if (isGenerationCapExempt(clientId)) return
   const maxRaw = process.env.MAX_MONTHLY_GENERATIONS
   if (!maxRaw) return
   const max = Number(maxRaw)

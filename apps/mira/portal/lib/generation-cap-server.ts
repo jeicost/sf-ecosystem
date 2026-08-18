@@ -10,7 +10,7 @@
 
 import { NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-admin'
-import { GenerationCapExceededError } from '@/lib/anthropic-client'
+import { GenerationCapExceededError, isGenerationCapExempt } from '@/lib/anthropic-client'
 import { GENERATION_CAP_ERROR_CODE, type GenerationCapStatus } from '@/lib/generation-cap'
 
 /** MAX_MONTHLY_GENERATIONS parseado con las mismas reglas que checkGenerationCap; null = sin techo. */
@@ -45,7 +45,7 @@ export async function countPlatformGenerationsThisMonth(clientId: string): Promi
 export async function getGenerationCapStatus(clientId: string): Promise<GenerationCapStatus> {
   const month = startOfMonthUtc().toISOString().slice(0, 7)
   const limit = readMonthlyGenerationCap()
-  if (limit == null) {
+  if (limit == null || isGenerationCapExempt(clientId)) {
     return { enabled: false, limit: null, used: 0, remaining: null, month }
   }
   const used = await countPlatformGenerationsThisMonth(clientId)

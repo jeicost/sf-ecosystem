@@ -4,6 +4,7 @@ import { adminClient } from '@/lib/supabase'
 import { planGoal, GoalPlanningError } from '@/lib/goals/planner'
 import { goalsEnabled } from '@/lib/goals/types'
 import { readMonthlyGenerationCap, startOfMonthUtc } from '@/lib/generation-cap-server'
+import { isGenerationCapExempt } from '@/lib/anthropic-client'
 
 // POST /api/goals/plan — {clientId?, brief, period_start, period_end, timezone?}
 // Frase → plan. NO escribe: devuelve el plan para que el humano lo confirme.
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   // El techo, con lo ya consumido este mes por el cliente con la key de plataforma.
-  const cap = readMonthlyGenerationCap()
+  const cap = isGenerationCapExempt(access.clientId) ? null : readMonthlyGenerationCap()
   let used = 0
   if (cap != null) {
     const admin = adminClient()
