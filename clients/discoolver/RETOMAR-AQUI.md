@@ -80,7 +80,27 @@ léelo antes de tocar nada y actualízalo al cerrar.
   `coming_soon` hasta `NEXT_PUBLIC_GOALS_ENABLED=1`. Diseño con las 6
   decisiones del CEO en `docs/OBJETIVOS_DEL_SISTEMA_DISENO.md`. **Apagado
   hasta que Carlos encienda `MAX_MONTHLY_GENERATIONS=300` +
-  `ENFORCE_PLAN_LIMITS=true` y luego `GOALS_ENABLED=1`.**
+  `ENFORCE_PLAN_LIMITS=true` y luego `GOALS_ENABLED=1`.** → **ENCENDIDO
+  el 18-ago (ver abajo).**
+- **MIRA: los flags ENCENDIDOS en producción (18-ago, «dale a todo esto»)**:
+  `MAX_MONTHLY_GENERATIONS=300`, `ENFORCE_PLAN_LIMITS=true`, `GOALS_ENABLED=1`,
+  `NEXT_PUBLIC_GOALS_ENABLED=1`, **`NEXT_PUBLIC_IDEAL_UI=1`** (decisión tomada:
+  el punto 8 del CEO «llamar Tools a Library» solo existe en esa navegación).
+  Antes de encenderla: Goals añadido a Team→Marketing (no salía), Finance
+  visible con candado por plan (Scale lo paga), pie en inglés (`d8e378b`).
+  Verificado logueado en prod con Playwright: nav de 7 espacios, `/goals` con
+  Salsa OK, cron `/api/cron/goals` responde sin errores.
+  **`GENERATION_CAP_EXEMPT_CLIENTS`=Salsa** (`5927835`): al encender el techo,
+  Salsa llevaba 506 en agosto (todas pruebas nuestras) y quedaba a 0 hasta el
+  1-sep; los clientes reales van por ≤82. Salsa exenta; Dadybox 82/300 ✅.
+- **Drive de MIRA: NO había nada que reconectar.** Los 5 refresh tokens
+  responden VIVOS contra Google, y el cron `drive-sync` sincroniza las **11
+  carpetas** (`synced 11/11` lanzado a mano el 18-ago). El «4/5 caducados» del
+  17-ago era un diagnóstico viejo. Si vuelve a caer: comprobar primero que la
+  app OAuth sigue PUBLICADA (modo Testing = 7 días), no reconectar a ciegas.
+- **Llaves R2: NO están en ningún sitio del disco** (el `.env` del editor se
+  perdió al mover el repo; solo hay `.env.example`) ni hay token de Cloudflare.
+  Carlos tiene que crearlas en el panel de Cloudflare (ver nota escritorio).
 
 ## En una frase
 
