@@ -182,8 +182,15 @@ export const IDEAL_SPACES: IdealSpace[] = [
     key: 'equipo', label: 'Team', icon: Users,
     items: [
       { href: '/roster',    label: 'Marketing', icon: Target },
+      // Objetivos del sistema: viven en Marketing (decisión CEO 17-ago), así
+      // que van justo debajo, indentados en la UI. Mismo flag que en SECTIONS.
+      { href: '/goals',     label: 'Goals',     icon: Target, section: 'marketing',
+        ...(process.env.NEXT_PUBLIC_GOALS_ENABLED === '1' ? {} : { status: 'coming_soon' as const }) },
       { href: '/comercial', label: 'Sales',     icon: Kanban },
       { href: '/strategy',  label: 'Leadership', icon: Map },
+      // Finanzas se vende en Scale/Admin: no se esconde a quien lo paga; a quien
+      // no, le sale con candado (upsell), igual que en la navegación clásica.
+      { href: '/finanzas',  label: 'Finance',   icon: TrendingUp },
     ],
   },
   {

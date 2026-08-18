@@ -94,17 +94,17 @@ export default function IdealSidebarNav({
         <Link href="/integrations"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/integrations') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <Zap size={13} /> Integraciones
+          <Zap size={13} /> Integrations
         </Link>
         <Link href="/billing"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/billing') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <CreditCard size={13} /> Facturación
+          <CreditCard size={13} /> Billing
         </Link>
         <Link href="/resources"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/resources') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <BookOpen size={13} /> Recursos
+          <BookOpen size={13} /> Resources
         </Link>
       </div>
     </nav>
