@@ -1,6 +1,6 @@
 # Discoolver — dónde lo dejamos
 
-**Última sesión: 17 de agosto de 2026.** Este fichero es el punto de entrada:
+**Última sesión: 18 de agosto de 2026 (madrugada; sigue a la del 17).** Este fichero es el punto de entrada:
 léelo antes de tocar nada y actualízalo al cerrar.
 
 ---
@@ -48,9 +48,39 @@ léelo antes de tocar nada y actualízalo al cerrar.
   editor de decks, gating real con PlanGate. **M4 (objetivos del sistema)
   diseñado y cerrado** con las 6 decisiones del CEO — arranca cuando se
   encienda `MAX_MONTHLY_GENERATIONS` (recomendado 300).
-- **Nota en el escritorio `DG-EDITOR_VARIABLES_DIGITALOCEAN.md`**: las dos
-  variables del puente en DO + el token de Railway para GitHub. Es lo que
-  Carlos tiene que pegar para cerrar el circuito en producción.
+- **Nota en el escritorio `DG-EDITOR_VARIABLES_DIGITALOCEAN.md`**: YA SOLO
+  quedan las 4 llaves R2 (`DO_SPACES_*` → `R2_*` en el curador). Lo demás
+  se cerró en la sesión siguiente.
+
+## Sesión del 18-ago (madrugada) — el Studio existe en producción
+
+- **dg-editor DESPLEGADO EN RAILWAY por primera vez en su historia**
+  (`discoolver-editor-production.up.railway.app`, servicio `discoolver-editor`
+  con su `Postgres-nvLu` dentro del proyecto `discoolver-curator`). Dockerfile
+  nuevo (editor React + Python 3.11 + Chromium vía `playwright install
+  --with-deps`), alembic al arrancar contra Postgres (`_async_url()` en
+  `app/db/database.py` y en `migrations/env.py`; migración 005 troceada en
+  sentencias sueltas por asyncpg), 1 worker. **CI real**: `deploy.yml` → Railway
+  con `RAILWAY_TOKEN` (secreto puesto), `check ✅ deploy ✅` en el commit `4f03ad5`.
+- **Usuario de producción**: `editor@discoolver.com` (contraseña distinta a la
+  de dev, guardada en el 1Password/nota de Carlos, no en el repo). Se creó con
+  `EDITOR_BOOTSTRAP_EMAIL/PASSWORD` en el arranque (main.py, solo si no existe,
+  nunca sobrescribe); la contraseña de la variable ya está en blanco.
+  `railway run` NO sirve para esto (ejecuta en local y el host `.internal` no
+  resuelve) — de ahí el bootstrap por variable.
+- **Prueba de punta a punta EN PRODUCCIÓN**: login OK → `GET
+  /api/v2/curator/sections` desde el editor de Railway al curador de Railway →
+  **8 secciones** (restaurants… nature). Editor y curador se hablan fuera del
+  portátil. Vars del puente en Railway: `CURATOR_URL`, `CURATOR_API_KEY`
+  (scope dg-editor), `ANTHROPIC_API_KEY`, `APIFY_TOKEN`, `SECRET_KEY/JWT_SECRET`,
+  `ENVIRONMENT=production`.
+- **MIRA M4 (objetivos del sistema) EN PRODUCCIÓN** (`e5c823c`, deploy Ready):
+  migración `0072_client_goals` aplicada, planner/executor/hooks, cron
+  `/api/cron/goals` cada hora, página `/goals` y nav «Goals» como
+  `coming_soon` hasta `NEXT_PUBLIC_GOALS_ENABLED=1`. Diseño con las 6
+  decisiones del CEO en `docs/OBJETIVOS_DEL_SISTEMA_DISENO.md`. **Apagado
+  hasta que Carlos encienda `MAX_MONTHLY_GENERATIONS=300` +
+  `ENFORCE_PLAN_LIMITS=true` y luego `GOALS_ENABLED=1`.**
 
 ## En una frase
 
