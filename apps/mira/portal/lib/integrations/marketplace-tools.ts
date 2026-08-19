@@ -35,7 +35,14 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     departments: ['marketing', 'innovation'],
     isCritical: true,
     affiliateUrl: 'https://canva.com/affiliate',
-    status: 'disconnected',
+    // 'coming_soon' hasta que existan las credenciales: el flujo OAuth está
+    // escrito (lib/integrations/oauth-config.ts, con PKCE y Basic como pide
+    // Canva Connect) pero NEXT_PUBLIC_CANVA_CLIENT_ID / CANVA_CLIENT_SECRET no
+    // están definidas ni en local ni en Vercel, así que /start devolvía 503 y la
+    // tarjeta ofrecía un botón que no podía funcionar (auditoría 2026-08-19).
+    // Para reactivarlo: registrar la app en Canva Connect, añadir las dos vars
+    // en Vercel y volver a poner 'disconnected'.
+    status: 'coming_soon',
     authType: 'oauth',
   },
   {
