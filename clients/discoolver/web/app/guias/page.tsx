@@ -4,6 +4,7 @@ import { faqJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
 import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
 import { DraftBanner } from "@/components/DraftBanner";
+import { aplicarCifras } from "@/lib/platform-stats";
 import { defaultHomeContent } from "@/lib/content/home";
 import { defaultHomeContent as defaultHomeContentEn } from "@/lib/content/en/home";
 import type { Locale } from "@/lib/i18n";
@@ -35,7 +36,9 @@ export async function GuiasPage({ locale = "es" }: { locale?: Locale }) {
   const slug = locale === "en" ? ("home-en" as const) : ("home" as const);
   const fallback = locale === "en" ? defaultHomeContentEn : defaultHomeContent;
   const cms = isDraft ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug) : loadCmsSections(slug);
-  const content = mergeContent(fallback, section(cms, "content"));
+  // Las cifras de la tienda salen del mismo sitio que las de la home: decía
+  // «858 sitios» de Madrid mientras la home decía 1.099.
+  const content = await aplicarCifras(mergeContent(fallback, section(cms, "content")), locale);
 
   const faqItems = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],

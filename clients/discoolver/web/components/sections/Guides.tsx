@@ -14,16 +14,24 @@ import type { Locale } from "@/lib/i18n";
  */
 export function Guides({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
   // Paletas de la tanda de portadas aprobada por el CEO el 2026-08-11
-  // (una por ciudad: A Madrid, C Barcelona, E Ronda, G Málaga, F Ibiza, H Bangkok).
+  // (una por ciudad, en el orden de la colección de siete).
   // Las firmas son ficticias a propósito hasta que cada creador firme; el nombre
   // real sustituye al de ejemplo desde el CMS, sin tocar código.
+  // La colección son SIETE ciudades desde el 19-ago-2026 (decisión del CEO), en
+  // este orden. Ronda sale del catálogo: estaba aquí y no en la home, y las dos
+  // páginas se contradecían.
+  //
+  // Contraste comprobado en el par fondo/tinta de cada portada — el mínimo es
+  // 5,02:1 (Barcelona) y el más bajo del set anterior era un 2,86:1 que hubo
+  // que corregir. Si se cambia un color, medir antes.
   const PALETTES: { spineColor: string; bg: string; ink: string; accent: string }[] = [
-    { spineColor: "#22578a", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" }, // Madrid
-    { spineColor: "#8f004d", bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" }, // Barcelona
-    { spineColor: "#c47f3e", bg: "#c47f3e", ink: "#141414", accent: "#141414" }, // Ronda (crema sobre ocre daba 2,86:1)
-    { spineColor: "#141414", bg: "#c9ff3f", ink: "#141414", accent: "#c8006b" }, // Málaga
-    { spineColor: "#141414", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b" }, // Ibiza
-    { spineColor: "#8f004d", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a" }, // Bangkok
+    { spineColor: "#22578a", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" }, // Madrid   6,59:1
+    { spineColor: "#8f004d", bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f" }, // Barcelona 5,02:1
+    { spineColor: "#141414", bg: "#c9ff3f", ink: "#141414", accent: "#c8006b" }, // Málaga   15,67:1
+    { spineColor: "#6d2f5e", bg: "#6d2f5e", ink: "#f2f0ea", accent: "#f4b47a" }, // Valencia  8,31:1
+    { spineColor: "#141414", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b" }, // Ibiza    16,17:1
+    { spineColor: "#8f004d", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a" }, // Bangkok   8,10:1
+    { spineColor: "#2b3a6b", bg: "#2b3a6b", ink: "#f2f0ea", accent: "#e6c26a" }, // Dubái     9,60:1
   ];
   // Qué guías se venden ya (por ciudad). El resto sigue en "Avísame" hasta
   // que su edición cierre — añadir aquí una ciudad la pone a la venta.
@@ -31,7 +39,7 @@ export function Guides({ content, locale = "es" }: { content: HomeContent; local
     Madrid: { digital: "madrid-digital", papel: "madrid-papel" },
   };
 
-  const guides = [1, 2, 3, 4, 5, 6].map((n, i) => {
+  const guides = [1, 2, 3, 4, 5, 6, 7].map((n, i) => {
     const city = content[`guide_${n}_city` as keyof HomeContent];
     const sub = content[`guide_${n}_sub` as keyof HomeContent];
     const pal = PALETTES[i];

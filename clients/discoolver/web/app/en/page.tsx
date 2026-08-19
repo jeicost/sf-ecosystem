@@ -1,14 +1,27 @@
 import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
+import { getPlatformFacts, formatoMil } from "@/lib/platform-stats";
 import { AppHomePage } from "@/app/page";
 
-export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Discover your city before everyone else",
-  description:
-    "Places recommended by real local creators, reviewed by editors and powered by AI. Madrid, Barcelona and Málaga now open — enter today on the web.",
-  path: "/en",
-  locale: "en",
-});
+/**
+ * Same live source as the hero and the closing block — see the Spanish home for
+ * why: hand-written copy claimed a city with zero published places.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const hechos = await getPlatformFacts();
+  const ciudades = hechos.ciudadesLista;
+  const lista =
+    ciudades.length > 1 ? `${ciudades.slice(0, -1).join(", ")} and ${ciudades[ciudades.length - 1]}` : ciudades[0] ?? "";
+  const descripcion = hechos.ok
+    ? `Places handpicked by editors from what social media recommends. ${formatoMil(hechos.totalRedondeado, "en")} published in ${lista}, on a map, a route and a calendar.`
+    : "Places handpicked by editors from what social media recommends every day, on a map, a route and a calendar to walk the city.";
+  return buildMetadata({
+    title: "Discoolver — Handpicked recommendations from social media",
+    description: descripcion,
+    path: "/en",
+    locale: "en",
+  });
+}
 
 export default function Page() {
   return <AppHomePage locale="en" />;

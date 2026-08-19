@@ -50,7 +50,6 @@ export function MapSection({ content }: { content: AppHomeContent }) {
                 <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, letterSpacing: ".12em", textTransform: "uppercase", color: "var(--ink-2)" }}>
                   {t.cercaDeTi.replace("{n}", String(pills.length))}
                 </span>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--ink-2)" }}>2 km</span>
               </div>
               {pills.map((pill, i) => (
                 <button

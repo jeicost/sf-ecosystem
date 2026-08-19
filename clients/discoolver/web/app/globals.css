@@ -2655,15 +2655,15 @@ button {
    cierre era invisible. El magenta es el énfasis del resto de la página. */
 .cta__title em { color: var(--primary); }
 
-/* A2 · 7 ítems en 4 columnas dejaban una celda vacía de 283×518 abajo a la
-   derecha. A 3 columnas las dos filas quedan llenas, los libros crecen ~40%
-   y la tarjeta fantasma pasa a banda horizontal a todo el ancho. */
+/* A2 · Con SEIS guías + la tarjeta fantasma eran 7 ítems: en 4 columnas dejaban
+   una celda vacía de 283×518 abajo a la derecha, así que se bajó a 3 y la
+   fantasma pasó a banda horizontal.
+   19-ago-2026: la colección son SIETE guías, o sea 8 ítems con la fantasma, y
+   a 3 columnas Dubái se quedaba sola en una tercera fila. Con 4 columnas son
+   dos filas exactas y la fantasma vuelve a ser una tarjeta más. Si vuelve a
+   cambiar el número de guías, recontar antes de tocar esto. */
 @media (min-width: 1101px) {
-  .guides-grid { grid-template-columns: repeat(3, 1fr); gap: 64px 40px; }
-  .guides-grid > *:last-child { grid-column: 1 / -1; }
-  .bookcard--ghost { flex-direction: row; align-items: center; gap: 32px; }
-  .bookcard--ghost .bookcard__stage { flex: 0 0 150px; padding: 0; }
-  .bookcard--ghost .bookcard__meta { margin: 0; border-top: 0; }
+  .guides-grid { grid-template-columns: repeat(4, 1fr); gap: 56px 32px; }
 }
 
 /* A3 · La filete de la fantasma caía 42px por debajo de la de sus vecinas
@@ -3226,9 +3226,14 @@ a.blog-card__cat:hover {
 .hero__grid {
   grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
 }
+.hero__grid > div:first-child { container-type: inline-size; }
+/* El cuerpo del H1 lo fija el ANCHO DE SU COLUMNA, no el del viewport: la
+   columna es ~90% de la pantalla en móvil y ~55% en escritorio, así que un
+   único factor en vw no puede servir a los dos. `--hero-fit` lo pone el
+   componente y vale distinto en español y en inglés porque la línea más larga
+   es distinta ("Lo mejor de las redes," vs "Handpicked recommendations"). */
 .hero__grid h1.display-xl {
-  font-size: clamp(38px, 4.4vw, 74px);
-  text-wrap: balance;
+  font-size: min(clamp(28px, 4.4vw, 74px), var(--hero-fit, 9cqi));
 }
 @media (max-width: 980px) {
   .hero__grid {
@@ -3299,3 +3304,894 @@ a.blog-card__cat:hover {
   color: var(--ink-2);
   margin: 0;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   CAPA 2026-08-19 — reescritura del hero, el proceso y las herramientas.
+   Aditiva: no toca :root ni los bloques recuperados 1:1 del CSS original.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Hero ───────────────────────────────────────────────────────────── */
+
+/* El H1 parte SOLO por la coma, en todos los anchos. Si no cabe, encoge el
+   cuerpo (clamp de .display-xl); nunca se busca otro punto de salto: por eso
+   cada línea es un bloque y lleva `text-wrap: nowrap` en pantallas donde cabe
+   y `balance` en las que no. */
+.hero__titulo-linea {
+  display: block;
+  /* Regla dura del brief: el H1 parte SOLO por la coma. `nowrap` impide que el
+     navegador busque otro punto de salto; si no cabe, lo que cede es el cuerpo
+     de la letra (el clamp de abajo), nunca la maqueta de las dos líneas. */
+  white-space: nowrap;
+}
+.hero__titulo-linea--2 { color: var(--primary); }
+
+.hero__sub {
+  margin-top: 24px;
+  max-width: 34em;
+  font-size: 19px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+
+/* Un solo botón primario; lo demás son enlaces de texto. */
+.hero-entrar { margin-top: 32px; }
+.hero-entrar__nota {
+  margin-top: 10px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--ink-2);
+  max-width: 46em;
+}
+.hero-entrar__secundario {
+  /* Bloque, no inline: en línea con la salida de "¿tu ciudad no está?" los dos
+     enlaces se pegaban y se leían como una sola frase. */
+  display: block;
+  width: fit-content;
+  margin-top: 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-color: color-mix(in oklab, var(--primary) 60%, transparent);
+}
+.hero-entrar__secundario:hover { color: var(--primary); }
+
+/* La salida para quien no tiene ciudad no ocupa sitio hasta que se pide. */
+.hero-entrar__salida {
+  display: block;
+  margin-top: 18px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink-2);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.hero-entrar__salida:hover { color: var(--ink); }
+.hero-entrar__aviso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+  align-items: center;
+}
+.hero-entrar__aviso input {
+  flex: 1 1 160px;
+  min-width: 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--line) 34%, transparent);
+  background: var(--bg-card);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+}
+.hero-entrar__aviso-ok { margin-top: 18px; font-size: 14px; color: var(--accent); }
+.hero-entrar__aviso-error { flex: 1 0 100%; font-size: 13px; color: #ff8080; }
+
+/* La barra de datos: cuatro ítems, el número manda.
+   Los `stat__num` recuperados usan un clamp pensado para cifras cortas; con
+   "+1.300" y "Los 10 mejores" en la misma fila se salían de su columna y se
+   pisaban entre ellos. Aquí se acota el cuerpo y se permite que el texto largo
+   parta en dos líneas sin desbordar. */
+.hero__stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px 24px; }
+.hero__stats > div { min-width: 0; }
+.hero__stats .stat__num {
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(26px, 2.4vw, 40px);
+  line-height: 1.05;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+.hero__stats .stat__label { text-wrap: balance; }
+
+/* ── Bloque magenta (estructura original: media + bullets) ─────────── */
+
+.brain {
+  background: var(--primary);
+  color: #fff;
+  padding: 100px 0;
+  position: relative;
+  overflow: hidden;
+}
+.brain__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 64px;
+  align-items: center;
+}
+.brain__media {
+  position: relative;
+  border-radius: 24px;
+  overflow: hidden;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  aspect-ratio: 4 / 5;
+}
+.brain__media video,
+.brain__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.brain__badge {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.brain__eyebrow { color: rgba(255, 255, 255, 0.85); }
+.brain__titulo { margin-top: 16px; color: #fff; }
+.brain__acento { color: var(--accent); }
+.brain__lista {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.brain__lista li {
+  display: flex;
+  gap: 12px;
+  font-size: 16px;
+  line-height: 1.5;
+}
+.brain__lista strong { color: #fff; font-weight: 700; }
+.brain__lista a {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in oklab, var(--accent) 80%, transparent);
+}
+.brain__lista a:hover { color: var(--accent); }
+.brain__check {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--primary);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 980px) {
+  .brain { padding: 72px 0; }
+  .brain__grid { grid-template-columns: 1fr; gap: 36px; }
+  .brain__media { aspect-ratio: 16 / 10; }
+}
+
+/* ── Herramientas (capturas reales de la plataforma) ────────────────── */
+
+.herramientas__head { align-items: flex-end; }
+.herramientas__grid {
+  list-style: none;
+  margin: 48px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+.herramienta__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: 1px solid color-mix(in oklab, var(--line) 20%, transparent);
+  border-radius: 20px;
+  overflow: hidden;
+  background: var(--bg-card);
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+.herramienta__link:hover {
+  border-color: color-mix(in oklab, var(--primary) 55%, transparent);
+  transform: translateY(-3px);
+}
+.herramienta__shot {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--bg-soft);
+  border-bottom: 1px solid color-mix(in oklab, var(--line) 14%, transparent);
+}
+.herramienta__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+/* La cuarta herramienta no tiene captura: /wishlist pide login y enseñar una
+   pantalla de "inicia sesión" no es enseñar el producto. */
+.herramienta__shot--vacia {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(120% 100% at 50% 0%, color-mix(in oklab, var(--primary) 26%, transparent), transparent 70%),
+    var(--bg-soft);
+}
+.herramienta__candado {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in oklab, var(--primary) 24%, transparent);
+  color: var(--ink);
+}
+/* La etiqueta vive junto al número, no encima de la captura: sobre la imagen
+   se montaba con la propia interfaz de la plataforma. */
+.herramienta__meta { display: flex; align-items: center; gap: 10px; }
+.herramienta__etiqueta {
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--line) 28%, transparent);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.herramienta__etiqueta--cuenta {
+  border-color: color-mix(in oklab, var(--primary) 50%, transparent);
+  color: var(--primary);
+}
+.herramienta__texto { padding: 24px; display: flex; flex-direction: column; flex: 1; }
+.herramienta__num {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--primary);
+}
+.herramienta__titulo { margin-top: 8px; font-size: 22px; font-weight: 700; }
+.herramienta__desc {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.herramienta__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 18px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--primary);
+}
+
+@media (max-width: 880px) {
+  .herramientas__grid { grid-template-columns: 1fr; gap: 20px; }
+}
+
+/* ── Cierre: el campo de email que la sección prometía ──────────────── */
+
+.cta__aviso {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.cta__aviso input {
+  flex: 0 1 220px;
+  min-width: 0;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--paper) 28%, transparent);
+  background: color-mix(in oklab, var(--paper) 8%, transparent);
+  color: var(--paper);
+  font: inherit;
+  font-size: 15px;
+}
+.cta__aviso input::placeholder { color: color-mix(in oklab, var(--paper) 55%, transparent); }
+.cta__aviso .btn-dark {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--paper);
+  border-radius: 12px;
+  padding: 13px 22px;
+  font-weight: 600;
+}
+.cta__aviso-ok { margin-top: 22px; font-weight: 600; color: var(--paper); }
+.cta__aviso-error { flex: 1 0 100%; font-size: 13px; color: #7a1020; }
+.cta__otros {
+  margin-top: 26px;
+  font-size: 15px;
+  color: color-mix(in oklab, var(--paper) 72%, transparent);
+}
+.cta__otros a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cta__otros a:hover { color: var(--paper); }
+
+@media (max-width: 620px) {
+  .hero__stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px; }
+  .cta__aviso input { flex: 1 1 100%; }
+  .cta__aviso .btn-dark { width: 100%; }
+}
+
+/* Herramientas: descriptor en español junto al nombre de producto, y la línea
+   de gratuidad que separa la plataforma (gratis) de las guías (de pago). */
+.herramienta__descriptor {
+  font-weight: 500;
+  font-size: 0.72em;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.herramientas__pie {
+  margin-top: 28px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+/* Las mini-tarjetas del hero, reubicadas arriba: abajo-izquierda tapaban el
+   rótulo del vídeo ("Cool Map · …" se leía "ap · …"). */
+.hero__visual .hero__mini--bunny { top: -18px; left: -18px; bottom: auto; }
+.hero__visual .hero__mini--fox { top: -18px; right: -18px; }
+@media (max-width: 980px) {
+  .hero__visual .hero__mini--bunny { top: -14px; left: -14px; bottom: auto; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PORTALES DE CIUDAD — acordeón horizontal (sustituye al carrusel de sitios)
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.portales__fila {
+  display: flex;
+  gap: 14px;
+  margin-top: 48px;
+  min-height: 520px;
+}
+
+.portal {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--tono) 70%, #000) 0%, var(--tono) 100%);
+  border: 1px solid color-mix(in oklab, var(--line) 18%, transparent);
+  /* La tira se ENSANCHA empujando a las demás; nunca se superpone. */
+  transition: flex-grow 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+/* Un solo portal abierto a la vez: se lleva algo más de la mitad de la fila. */
+.portal.is-abierto { flex-grow: 4.2; }
+
+/* La ilustración va oscurecida y desaturada en reposo — el animal de la ciudad
+   se adivina entre la maleza — y recupera color al abrirse el portal. */
+.portal__ilustracion {
+  object-fit: cover;
+  z-index: -2;
+  filter: saturate(0.35) brightness(0.5);
+  transition: filter 460ms ease;
+}
+.portal.is-abierto .portal__ilustracion { filter: saturate(1) brightness(0.9); }
+.portal::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.8) 100%);
+  opacity: 0.65;
+  transition: opacity 460ms ease;
+}
+.portal.is-abierto::after { opacity: 0.2; }
+
+/* El disparador cubre la tira entera: en escritorio basta pasar por encima,
+   pero con teclado y en táctil hace falta un objetivo real y enfocable. */
+.portal__disparador {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.portal.is-abierto .portal__disparador { pointer-events: none; }
+.portal__disparador:focus-visible { outline: 2px solid var(--accent); outline-offset: -4px; }
+
+.portal__contador {
+  position: absolute;
+  top: 18px;
+  left: 20px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: color-mix(in oklab, var(--ink) 70%, transparent);
+}
+
+/* El nombre en vertical es lo único que se lee en reposo. */
+.portal__vertical {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(20px, 2vw, 30px);
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: opacity 260ms ease;
+}
+.portal.is-abierto .portal__vertical { opacity: 0; }
+
+.portal__contenido {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
+  opacity: 0;
+  transform: translateY(12px);
+  pointer-events: none;
+  transition: opacity 300ms ease 140ms, transform 380ms cubic-bezier(0.22, 1, 0.36, 1) 100ms;
+}
+.portal.is-abierto .portal__contenido { opacity: 1; transform: none; pointer-events: auto; }
+.portal__nombre { font-size: clamp(26px, 2.6vw, 40px); font-weight: 700; color: var(--ink); }
+.portal__sitios { font-size: 15px; color: color-mix(in oklab, var(--ink) 78%, transparent); }
+.portal__destacados {
+  font-size: 14px;
+  line-height: 1.5;
+  color: color-mix(in oklab, var(--ink) 66%, transparent);
+  text-wrap: balance;
+}
+.portal__cta { margin-top: 8px; }
+.portal__ok { font-size: 15px; color: var(--accent); }
+.portal__form { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; width: 100%; }
+.portal__form input {
+  flex: 1 1 140px;
+  min-width: 0;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 1px solid color-mix(in oklab, var(--ink) 24%, transparent);
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--ink);
+  font: inherit;
+  font-size: 15px;
+}
+.portal__error { flex: 1 0 100%; font-size: 13px; color: #ff8080; }
+
+/* La ciudad que no está: sin color y sin apertura al pasar por encima. */
+.portal--cerrada {
+  background: linear-gradient(180deg, #14141a 0%, #0c0c11 100%);
+  border-style: dashed;
+  border-color: color-mix(in oklab, var(--line) 30%, transparent);
+  flex-grow: 0.7;
+}
+.portal--cerrada.is-abierto { flex-grow: 3.4; }
+.portal--cerrada .portal__vertical { color: color-mix(in oklab, var(--ink) 62%, transparent); }
+
+@media (max-width: 1100px) {
+  .portales__fila { flex-wrap: wrap; min-height: 0; }
+  .portal { flex: 1 1 280px; min-height: 380px; }
+  .portal.is-abierto { flex-grow: 1; }
+}
+
+/* Móvil: nada de acordeón. Cada portal abierto a media altura y scroll normal
+   — en una pantalla estrecha, esconder el contenido tras un gesto lo entierra. */
+@media (max-width: 720px) {
+  .portales__fila { flex-direction: column; gap: 16px; }
+  .portal { flex: 1 1 auto; min-height: 300px; }
+  .portal__vertical { display: none; }
+  .portal__contenido {
+    position: static;
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+    padding: 24px;
+    justify-content: flex-end;
+    min-height: 300px;
+  }
+  .portal__disparador { display: none; }
+  .portal::after { opacity: 0.45; }
+  .portal__ilustracion { filter: saturate(0.9) brightness(0.75); }
+}
+
+/* Fondo de los portales mientras no existen las ilustraciones de ciudad-jungla:
+   un degradado radial que da profundidad y deja la tira legible por sí sola.
+   Cuando entren las imágenes, quedan por debajo y esto sigue de refuerzo. */
+.portal::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -3;
+  background:
+    radial-gradient(90% 60% at 50% 0%, color-mix(in oklab, var(--tono) 40%, var(--primary)) 0%, transparent 62%),
+    radial-gradient(70% 50% at 20% 100%, color-mix(in oklab, var(--tono) 60%, #000) 0%, transparent 70%);
+  opacity: 0.55;
+  transition: opacity 460ms ease;
+}
+.portal.is-abierto::before { opacity: 0.9; }
+.portal--cerrada::before { display: none; }
+
+/* ── Guías: el único bloque de pago de la home ──────────────────────────
+   El precio vive DEBAJO del botón y en la tarjeta; nunca dentro del CTA ni en
+   el subtítulo. La nota de "producto aparte" cierra el bloque para que nadie
+   asocie estos precios con el acceso a la plataforma, que es gratis. */
+.guias__accion { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.guias__apoyo { font-size: 13px; color: var(--ink-2); max-width: 26em; }
+.guias__ciudad {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+  margin-bottom: 4px;
+}
+.guias__precio { font-size: 14px; color: var(--ink-2); }
+.guias__cta-tarjeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--primary);
+}
+.guias__argumentos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  margin-top: 48px;
+  padding-top: 28px;
+  border-top: 1px solid color-mix(in oklab, var(--line) 16%, transparent);
+}
+.guias__argumentos p { font-size: 15px; line-height: 1.55; color: var(--ink-2); }
+.guias__argumentos strong { color: var(--ink); display: block; margin-bottom: 2px; }
+.guias__aparte {
+  margin-top: 26px;
+  font-size: 13px;
+  color: color-mix(in oklab, var(--ink-2) 88%, transparent);
+}
+@media (max-width: 760px) {
+  .guias__argumentos { grid-template-columns: 1fr; gap: 18px; }
+}
+
+/* ── Quién recomienda: caras, no argumentos de venta ────────────────────
+   La fila solo aparece cuando hay creadores publicables (foto propia, arroba
+   real y permiso por escrito). La salida al programa es una línea, no un
+   bloque: es otro público y tiene su propia landing. */
+.creadores__fila {
+  list-style: none;
+  margin: 44px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 28px;
+}
+.creador {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.creador__foto {
+  display: block;
+  aspect-ratio: 1;
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--bg-soft);
+}
+.creador__foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.creador__handle { font-weight: 700; font-size: 16px; }
+.creador__donde {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+.creador__frase { font-size: 14px; line-height: 1.5; color: var(--ink-2); text-wrap: balance; }
+.creadores__refuerzo { margin-top: 26px; font-size: 14px; color: var(--ink-2); }
+.creadores__salida {
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid color-mix(in oklab, var(--line) 16%, transparent);
+  font-size: 15px;
+  color: var(--ink-2);
+  text-wrap: balance;
+}
+.creadores__salida a {
+  color: var(--primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+/* Estado de cada guía en la home. Las que están en preparación se sirven
+   apagadas y sin precio: no hay ficha que ver ni nada que comprar todavía. */
+.guias__estado {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-bottom: 6px;
+}
+.guias__tarjeta { display: block; text-decoration: none; color: inherit; }
+.guias__tarjeta--pronto .book-scene { opacity: 0.62; filter: saturate(0.7); }
+.guias__tarjeta--pronto .guias__estado { color: color-mix(in oklab, var(--primary) 78%, transparent); }
+
+.guias__rejilla {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 30px 28px;
+  margin-top: 8px;
+  align-items: start;
+}
+.guias__tarjeta--pronto .book-scene { opacity: 0.72; filter: saturate(0.78); }
+.guias__cta-tarjeta { white-space: nowrap; }
+@media (max-width: 1100px) { .guias__rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .guias__rejilla { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 18px; } }
+
+
+/* ── Top content creators, por destino ──────────────────────────────────
+   Cada destino es un bloque con su recuento, y dentro una rejilla de avatares.
+   Quien no ha cedido foto sale con iniciales sobre un tono estable derivado de
+   su arroba: el bloque se ve variado sin ser aleatorio, y el día que llegue el
+   retrato entra en el mismo hueco. */
+.creadores__paises { margin-top: 44px; display: flex; flex-direction: column; gap: 44px; }
+
+.pais__nombre {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  padding-bottom: 12px;
+  border-bottom: 1px solid color-mix(in oklab, var(--line) 22%, transparent);
+}
+.pais__n {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--primary);
+}
+.pais__lista {
+  list-style: none;
+  margin: 22px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
+  gap: 26px 20px;
+}
+.creador {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  text-decoration: none;
+  color: inherit;
+}
+.creador__avatar {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 9px;
+  /* El anillo hace de marco común: fotos y avatares de iniciales se leen como
+     el mismo sistema aunque unas sean retrato y otros tipografía. */
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px color-mix(in oklab, var(--primary) 55%, transparent);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.creador__avatar--iniciales {
+  display: grid;
+  place-items: center;
+  /* El degradado baja solo hasta el 78% del tono: al 45% el pie del círculo se
+     iba a negro y las iniciales perdían contraste justo donde se apoyan. */
+  background: radial-gradient(120% 120% at 32% 22%, color-mix(in oklab, var(--tono) 88%, #fff), color-mix(in oklab, var(--tono) 78%, #000));
+  color: #0a0a0f;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+.creador:hover .creador__avatar {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--primary);
+}
+.creador__nombre { font-weight: 600; font-size: 14.5px; line-height: 1.25; text-wrap: balance; }
+.creador__handle { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2); }
+.creador__territorio {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  /* Mezclado con el papel, no transparente: sobre el fondo oscuro un 82% de
+     alfa dejaba el territorio casi ilegible. */
+  color: color-mix(in oklab, var(--primary) 72%, var(--ink));
+  margin-top: 4px;
+}
+@media (max-width: 620px) {
+  .pais__lista { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 22px 14px; }
+  .creador__avatar { width: 68px; height: 68px; }
+  .creador__avatar--iniciales { font-size: 21px; }
+}
+
+/* La ciudad concreta se conserva bajo cada creador aunque el bloque sea por
+   país: quien mira a Bangkok necesita distinguirlo de quien cubre Tailandia
+   entera. Y el aviso de "próximamente" va en la cabecera del país que todavía
+   no tiene catálogo abierto. */
+.creador__donde {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+  margin-top: 2px;
+}
+.pais__pronto {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--primary) 45%, transparent);
+  color: var(--primary);
+  font-weight: 400;
+}
+
+/* ── Próxima ciudad: estados de apertura en lugar del contador ───────────
+   El reloj se fue porque llegar a 00:00:00 sin abrir es un incumplimiento que
+   cualquiera comprueba. Esto dice lo mismo —hay trabajo en marcha— sin
+   comprometer un día, y usa el mismo código de color que los portales de
+   ciudad: con catálogo en color, sin catálogo en gris. */
+.app-soon__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: 56px;
+  align-items: center;
+}
+.app-soon__eyebrow { color: rgba(255, 255, 255, 0.8); }
+.app-soon__titulo { margin-top: 16px; color: #fff; }
+.app-soon__acento { color: var(--accent); }
+.app-soon__lead {
+  margin-top: 20px;
+  font-size: 17px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 34em;
+}
+.app-soon__form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 28px;
+  /* Anula la cápsula del formulario anterior, que era de un solo campo: con
+     dos campos y un botón dentro se veía un marco alrededor de otro marco. */
+  background: none;
+  border: 0;
+  padding: 0;
+  max-width: 560px;
+}
+.app-soon__form input {
+  flex: 1 1 190px;
+  min-width: 0;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  background: rgba(0, 0, 0, 0.35);
+  color: #fff;
+  font: inherit;
+  font-size: 15px;
+}
+.app-soon__form input::placeholder { color: rgba(255, 255, 255, 0.5); }
+.app-soon__nota { margin-top: 10px; font-size: 13px; color: rgba(255, 255, 255, 0.55); }
+.app-soon__ok { margin-top: 26px; font-size: 15px; color: var(--accent); }
+.app-soon__error { margin-top: 10px; font-size: 13px; color: #ff8f7d; }
+.app-soon__app {
+  display: inline-block;
+  margin-top: 22px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.82);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.app-soon__app:hover { color: #fff; }
+
+.estados { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.estado {
+  display: grid;
+  grid-template-columns: 10px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 17px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+.estado:last-child { border-bottom: 0; }
+.estado__punto { width: 9px; height: 9px; border-radius: 50%; }
+.estado--abierta .estado__punto { background: var(--accent); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 22%, transparent); }
+.estado--revision .estado__punto { border: 1.5px solid rgba(255, 255, 255, 0.55); }
+.estado--tuya .estado__punto { border: 1.5px dashed rgba(255, 255, 255, 0.4); }
+.estado__ciudad {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+}
+.estado--revision .estado__ciudad,
+.estado--tuya .estado__ciudad { color: rgba(255, 255, 255, 0.62); }
+.estado__dato { font-size: 13.5px; color: rgba(255, 255, 255, 0.68); text-align: right; }
+.estado--abierta .estado__dato { color: var(--accent); }
+
+@media (max-width: 980px) {
+  .app-soon__grid { grid-template-columns: 1fr; gap: 40px; }
+}
+
+/* Cierre: un solo botón grande. La línea de "sin cuenta, sin tarjeta" va
+   debajo del CTA, y la salida de ciudad cerrada solo se despliega si alguien
+   la pide — antes ocupaba sitio delante del botón principal. */
+.cta__nota {
+  margin-top: 12px;
+  font-size: 14px;
+  color: color-mix(in oklab, var(--paper) 68%, transparent);
+}
+.cta__aviso-abrir {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 14px;
+  color: color-mix(in oklab, var(--paper) 72%, transparent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.cta__aviso-abrir:hover { color: var(--paper); }
+.cta__otros { font-size: 13px; }

@@ -1,178 +1,157 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
-import { Countdown, daysUntilLaunch } from "@/components/ui/Countdown";
 import type { AppHomeContent } from "@/lib/content/app-home";
-import { UI, type Locale } from "@/lib/i18n";
+import type { Locale } from "@/lib/i18n";
+import { UI } from "@/lib/i18n";
 
 /**
- * El bloque ya recibía `locale` para el contador, pero lo demás —formulario,
- * botones de tienda, acuses de recibo y la pantalla dibujada en el móvil— seguía
- * escrito en español. El mockup es decorativo, y aun así es lo que más se mira
- * de la sección: enseñar la app en español dentro de la web inglesa contaba una
- * versión del producto que no es la que hay.
+ * La próxima ciudad — reescrita el 19-ago-2026 con el brief del CEO.
+ *
+ * FUERA EL CONTADOR, Y NO ES CUESTIÓN DE COPY. Un reloj que llega a 00:00:00
+ * sin apertura ese día es un incumplimiento público que cualquiera puede
+ * comprobar; y contradice el argumento de la casa —"abre cuando sus sitios
+ * están revisados"— que es una condición de calidad, no una fecha. Las
+ * aperturas dependen de revisión humana, justo lo que se retrasa.
+ *
+ * En su lugar va la LISTA DE ESTADOS, que dice lo mismo sin comprometer día:
+ * las abiertas con su recuento vivo, Bangkok en revisión y una fila para pedir
+ * la tuya.
+ *
+ * NO SE PROMETE VOTO. El brief daba dos redacciones según si el orden de
+ * apertura lo deciden de verdad los usuarios. No lo deciden: la colección de
+ * guías ya publica el orden (Madrid, Barcelona, Málaga, Valencia, Ibiza,
+ * Bangkok, Dubái) dos secciones más arriba en esta misma página. Prometer "la
+ * decidís vosotros" se contradiría con solo hacer scroll, así que se usa la
+ * alternativa: dejas el correo y entras el primer día.
+ *
+ * Los badges de App Store y Google Play también se van: imitaban a los
+ * oficiales, no llevaban a ninguna parte y su uso está sujeto a las guías de
+ * marca de Apple y Google. Un enlace de texto alimenta la misma lista.
  */
-export function AppComingSoon({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
-  const t = UI[locale];
-  const m = t.mockup;
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");
-  // El número del titular sale de la misma fecha que el contador, no de un
-  // campo del CMS: así no pueden volver a contradecirse.
-  const [days] = useState(daysUntilLaunch);
+export type EstadoCiudad = { nombre: string; sitios: number };
 
-  async function handleSubmit(e: React.FormEvent) {
+export function AppComingSoon({
+  content,
+  locale = "es",
+  abiertas,
+}: {
+  content: AppHomeContent;
+  locale?: Locale;
+  abiertas: EstadoCiudad[];
+}) {
+  const t = UI[locale].app;
+  const es = locale !== "en";
+  const [ciudad, setCiudad] = useState("");
+  const [email, setEmail] = useState("");
+  const [estado, setEstado] = useState<"" | "enviando" | "ok" | "error">("");
+  const mil = (n: number) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, es ? "." : ",");
+
+  async function pedir(e: React.FormEvent) {
     e.preventDefault();
-    setStatus("loading");
+    setEstado("enviando");
     try {
-      const res = await fetch("/api/waitlist", {
+      const r = await fetch("/api/waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, source: "app" }),
+        // `city` es lo que da valor a este formulario: sin saber QUÉ ciudad
+        // pide cada uno, la lista de correos no dice nada.
+        body: JSON.stringify({ email: email.trim(), city: ciudad.trim(), source: "proxima-ciudad", locale }),
       });
-      setStatus(res.ok ? "done" : "error");
+      setEstado(r.ok ? "ok" : "error");
     } catch {
-      setStatus("error");
+      setEstado("error");
     }
   }
 
   return (
-    <section className="section app-soon" id="app" aria-labelledby="app-soon-title" style={{ position: "relative" }}>
-      <div style={{ position: "absolute", inset: 0, zIndex: 0 }}>
-        <Image src="/assets/img-phone-mockup.jpg" alt="" fill sizes="100vw" style={{ objectFit: "cover" }} />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(10,10,15,.88)" }} />
-      </div>
-      <div className="container" style={{ position: "relative", zIndex: 2 }}>
-        <div className="app-soon__grid">
-          <Reveal delay={0}>
-            <div>
-              <span className="eyebrow" style={{ color: "var(--accent)" }}>
-                {content.app_soon_eyebrow}
-              </span>
-              <h2 className="display-lg" id="app-soon-title" style={{ marginTop: 16 }}>
-                {content.app_soon_title_1}{" "}
-                <span style={{ color: "var(--accent)" }} suppressHydrationWarning>
-                  {days}
-                </span>{" "}
-                {content.app_soon_title_2}
-                <br />
-                {content.app_soon_title_3}
-              </h2>
-              <p style={{ marginTop: 20, fontSize: 17, color: "rgba(255,255,255,.7)", maxWidth: 520 }}>{content.app_soon_desc}</p>
-              <Countdown locale={locale} />
-              <form className="app-soon__form" aria-label={t.app.formAria} onSubmit={handleSubmit}>
-                <input
-                  type="email"
-                  placeholder={t.heroForm.emailPlaceholder}
-                  required
-                  aria-required="true"
-                  aria-label={t.app.emailAria}
-                  autoComplete="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
-                <button type="submit" className="btn btn-primary" disabled={status === "loading"}>
-                  {content.app_soon_cta} <Icon name="arrow-right" size={14} />
-                </button>
-              </form>
-              {status === "done" && (
-                <p role="status" style={{ marginTop: 12, fontSize: 13, color: "var(--accent)" }}>
-                  {t.app.done}
-                </p>
-              )}
-              {status === "error" && (
-                <p role="alert" style={{ marginTop: 12, fontSize: 13, color: "#ff8f7d" }}>
-                  {t.app.error}
-                </p>
-              )}
-              <div style={{ display: "flex", gap: 10, marginTop: 18, flexWrap: "wrap" }}>
-                <button className="btn btn-ghost" disabled aria-label={t.app.storeAria} style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
-                  <Icon name="app-store" size={16} />
-                  {t.app.storeSoon}
-                </button>
-                <button className="btn btn-ghost" disabled aria-label={t.app.playAria} style={{ borderColor: "rgba(255,255,255,.3)", color: "rgba(255,255,255,.9)" }}>
-                  <Icon name="google-play" size={16} />
-                  {t.app.playSoon}
-                </button>
-              </div>
-            </div>
-          </Reveal>
-          <Reveal delay={140}>
-            <div className="app-soon__phone-wrap">
-              <div className="app-soon__sticker" aria-hidden="true" suppressHydrationWarning>
-                {content.app_soon_sticker.replace("{days}", String(days))}
-              </div>
-              <div className="phone-frame" aria-hidden="true">
-                <div className="phone-frame__notch" />
-                <div className="phone-frame__screen">
-                  <div className="phone-app">
-                    <div className="phone-app__top">
-                      <div>
-                        <div style={{ fontFamily: "var(--font-mono)", fontSize: 10, opacity: 0.6, letterSpacing: ".1em", textTransform: "uppercase" }}>
-                          {m.ciudadAhora}
-                        </div>
-                        <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 22, lineHeight: 1.1, marginTop: 2, color: "#fff" }}>
-                          {m.saludo} <span style={{ color: "var(--primary)" }}>{m.nombre}</span>
-                        </div>
-                      </div>
-                      <div className="phone-app__avatar" />
-                    </div>
-                    <div className="phone-app__hero-card">
-                      <Image src="/assets/phone-hero.jpg" alt="" width={280} height={210} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                      <div className="phone-app__hero-meta">
-                        <span className="phone-app__pill">{m.mapPill}</span>
-                        <span style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 18, color: "#fff" }}>
-                          {m.planHoy} <em style={{ color: "var(--accent)", fontStyle: "normal" }}>{m.planHoyEm}</em>
-                        </span>
-                      </div>
-                    </div>
-                    <div className="phone-app__row">
-                      {m.chips.map((chip, i) => (
-                        <div className={`phone-app__chip${i === 0 ? " is-active" : ""}`} key={chip}>
-                          {chip}
-                        </div>
-                      ))}
-                    </div>
-                    <div className="phone-app__cards">
-                      <div className="phone-app__card">
-                        <Image src="/assets/phone-card-1.jpg" alt="" width={140} height={127} />
-                        <div className="phone-app__card-body">
-                          <div style={{ fontSize: 11, opacity: 0.6 }}>{m.card1Cat}</div>
-                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff", marginTop: 2 }}>{m.card1}</div>
-                        </div>
-                      </div>
-                      <div className="phone-app__card">
-                        <Image src="/assets/phone-card-2.jpg" alt="" width={140} height={127} />
-                        <div className="phone-app__card-body">
-                          <div style={{ fontSize: 11, opacity: 0.6 }}>{m.card2Cat}</div>
-                          <div style={{ fontFamily: "var(--font-display)", fontWeight: 600, fontSize: 13, color: "#fff", marginTop: 2 }}>{m.card2}</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="phone-app__nav">
-                      <div className="phone-app__nav-item is-active">
-                        <Icon name="search" size={16} />
-                      </div>
-                      <div className="phone-app__nav-item">
-                        <Icon name="pin" size={16} />
-                      </div>
-                      <div className="phone-app__nav-item">
-                        <Icon name="calendar" size={16} />
-                      </div>
-                      <div className="phone-app__nav-item">
-                        <Icon name="heart" size={16} />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="app-soon__glow" />
-            </div>
-          </Reveal>
-        </div>
+    <section className="section app-soon" id="app" aria-labelledby="app-soon-title">
+      <div className="container app-soon__grid">
+        <Reveal delay={0}>
+          <div>
+            <span className="eyebrow app-soon__eyebrow">{content.app_soon_eyebrow}</span>
+            <h2 className="display-lg app-soon__titulo" id="app-soon-title">
+              {content.app_soon_title_1}{" "}
+              <span className="app-soon__acento">{content.app_soon_title_2}</span>
+            </h2>
+            <p className="app-soon__lead">{content.app_soon_desc}</p>
+
+            {estado === "ok" ? (
+              <p className="app-soon__ok" role="status">
+                {content.app_soon_ok}
+              </p>
+            ) : (
+              <>
+                <form className="app-soon__form" aria-label={t.formAria} onSubmit={pedir}>
+                  {/* Campo libre a propósito: un desplegable cerrado solo
+                      recoge las ciudades que ya habíamos pensado, y la señal
+                      que importa es justo la que no esperábamos. */}
+                  <input
+                    type="text"
+                    required
+                    placeholder={content.app_soon_ciudad}
+                    aria-label={content.app_soon_ciudad}
+                    value={ciudad}
+                    onChange={(e) => setCiudad(e.target.value)}
+                  />
+                  <input
+                    type="email"
+                    required
+                    autoComplete="email"
+                    placeholder={content.app_soon_email}
+                    aria-label={content.app_soon_email}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <button type="submit" className="btn btn-primary" disabled={estado === "enviando"}>
+                    {content.app_soon_cta} <Icon name="arrow-right" size={14} />
+                  </button>
+                </form>
+                <p className="app-soon__nota">{content.app_soon_nota}</p>
+              </>
+            )}
+            {estado === "error" && (
+              <p className="app-soon__error" role="alert">
+                {t.error}
+              </p>
+            )}
+
+            {/* Ni badge de App Store ni de Google Play mientras las apps no
+                existan: un enlace de texto a la misma lista. */}
+            <a className="app-soon__app" href="#app">
+              {content.app_soon_app} <span aria-hidden="true">→</span>
+            </a>
+          </div>
+        </Reveal>
+
+        <Reveal delay={140}>
+          {/* El espacio del reloj lo ocupa el estado real de cada ciudad. Las
+              abiertas y su recuento salen de la misma fuente que el hero y los
+              portales: si Diego abre una ciudad, aparece aquí sola. */}
+          <ul className="estados" aria-label={content.app_soon_estados_aria}>
+            {abiertas.map((c) => (
+              <li className="estado estado--abierta" key={c.nombre}>
+                <span className="estado__punto" aria-hidden="true" />
+                <span className="estado__ciudad">{c.nombre}</span>
+                <span className="estado__dato">
+                  {content.app_soon_abierta} · {mil(c.sitios)} {content.app_soon_sitios}
+                </span>
+              </li>
+            ))}
+            <li className="estado estado--revision">
+              <span className="estado__punto" aria-hidden="true" />
+              <span className="estado__ciudad">Bangkok</span>
+              <span className="estado__dato">{content.app_soon_revision}</span>
+            </li>
+            <li className="estado estado--tuya">
+              <span className="estado__punto" aria-hidden="true" />
+              <span className="estado__ciudad">{content.app_soon_tu_ciudad}</span>
+              <span className="estado__dato">{content.app_soon_pidela}</span>
+            </li>
+          </ul>
+        </Reveal>
       </div>
     </section>
   );

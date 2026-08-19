@@ -62,7 +62,7 @@ export const defaultInfluencersContent = {
   micro_step_2_text: "In the form just below. Reel, TikTok or YouTube — the format makes no difference to us.",
   micro_step_3_label: "If it's in, you get paid",
   micro_step_3_text:
-    "If it makes the annual guide for your city: your byline inside the guide, a curator badge, and commission on the sales and bookings your recommendation generates.",
+    "If it makes the annual guide for your city: your byline inside the guide, a guest editor badge, and commission on the sales and bookings your recommendation generates.",
   micro_criteria_title: "What the editors look for",
   micro_criteria_1: "One specific place, with a name and a neighborhood",
   micro_criteria_2: "A real opinion — yours",

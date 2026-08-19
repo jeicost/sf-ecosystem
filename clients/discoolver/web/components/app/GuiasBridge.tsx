@@ -19,12 +19,47 @@ import type { Locale } from "@/lib/i18n";
  * (`Book3D`), no capturas: así no hay imágenes que mantener y el bloque pesa
  * cero. Y NO llevan firma de autor — las que había eran nombres inventados y
  * se retiraron; las de verdad entran cuando los creadores firmen.
+ *
+ * REESCRITO 19-ago-2026 con el brief del CEO. Tres reglas que lo gobiernan:
+ *
+ *  · **Nada de escasez.** La producción es bajo demanda: no hay tirada
+ *    limitada, ni ejemplares numerados, ni "últimas unidades". Lo que hace
+ *    especial a la guía es que la edición es ANUAL y la selección editorial,
+ *    no que se acabe. "Edición limitada" era falso y está prohibido.
+ *  · **El precio aparece dos veces, no cinco.** Solo en la línea de apoyo del
+ *    CTA y en cada tarjeta. Fuera del subtítulo y fuera del botón.
+ *  · **La nota de gratuidad no es opcional.** La conversión principal de la
+ *    home es entrar en la plataforma, que es gratis; sin esa línea, quien pasa
+ *    en scroll rápido asocia estos 14€/29€ al acceso.
+ *
+ * ⚠️ "{n} sitios · {n} creadores" del brief queda fuera a propósito: ese dato
+ * es de la guía, no del catálogo de la plataforma, y vive en el dg-editor, al
+ * que esta web no tiene acceso. Poner aquí los 1.099 de Madrid sería enseñar
+ * el catálogo entero como si fuera el índice de la guía. Cuando el editor lo
+ * exponga, entra en `PORTADAS` y se pinta.
  */
 
+/**
+ * La colección, en el orden que fijó el CEO.
+ *
+ * `estado` no es decoración: **ninguna guía está a la venta todavía**. La
+ * tienda dice que Madrid sale el 1 de septiembre y el resto en otoño, así que
+ * una tarjeta que enseñe precio y un "ver la guía" sin más haría creer que se
+ * puede comprar hoy. Las que tienen fecha llevan precio y enlace; las que
+ * están en preparación llevan solo su estado — no hay ficha que ver.
+ *
+ * Las siete son las mismas, con los mismos colores y los mismos estados, aquí
+ * y en /guias: una guía no puede verse distinta según por dónde se llegue.
+ * Ronda salió de las dos el 19-ago-2026.
+ */
 const PORTADAS = [
-  { city: "Madrid", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a" },
-  { city: "Barcelona", bg: "#8a3d2f", ink: "#f4f1e8", accent: "#e9b44c" },
-  { city: "Ronda", bg: "#2f5d4a", ink: "#f2f0ea", accent: "#e0a458" },
+  { city: "Madrid", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a", estado: "fecha" },
+  { city: "Barcelona", bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f", estado: "otono" },
+  { city: "Málaga", bg: "#c9ff3f", ink: "#141414", accent: "#c8006b", estado: "otono" },
+  { city: "Valencia", bg: "#6d2f5e", ink: "#f2f0ea", accent: "#f4b47a", estado: "pronto" },
+  { city: "Ibiza", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b", estado: "otono" },
+  { city: "Bangkok", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a", estado: "pronto" },
+  { city: "Dubái", bg: "#2b3a6b", ink: "#f2f0ea", accent: "#e6c26a", estado: "pronto" },
 ] as const;
 
 export function GuiasBridge({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
@@ -45,28 +80,35 @@ export function GuiasBridge({ content, locale = "es" }: { content: AppHomeConten
               </h2>
               <p className="section__lead">{content.shop_lead}</p>
             </div>
-            <Link className="btn btn-ink" href={href}>
-              {content.shop_cta} <Icon name="arrow-up-right" size={14} />
-            </Link>
+            <div className="guias__accion">
+              <Link className="btn btn-primary" href={href}>
+                {content.shop_cta} <Icon name="arrow-right" size={14} />
+              </Link>
+              {/* El precio va DEBAJO del botón, nunca dentro: un botón que
+                  lleva cifra se lee como un pago inmediato. */}
+              <p className="guias__apoyo">{content.shop_price_line}</p>
+            </div>
           </div>
         </Reveal>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-            gap: 28,
-            marginTop: 8,
-          }}
-          role="list"
-        >
-          {PORTADAS.map((p, i) => (
-            <Reveal delay={i * 80} key={p.city}>
+        {/* Rejilla fija, no auto-fit: con siete portadas el auto-fit metía seis
+            arriba y dejaba a Dubái sola en una segunda fila. Cuatro y tres. */}
+        <div className="guias__rejilla" role="list">
+          {PORTADAS.map((p, i) => {
+            const enPreparacion = p.estado === "pronto";
+            const estado =
+              p.estado === "fecha"
+                ? content.shop_estado_fecha
+                : p.estado === "otono"
+                  ? content.shop_estado_otono
+                  : content.shop_estado_pronto;
+            return (
+            <Reveal delay={i * 60} key={p.city}>
               <Link
                 href={href}
                 role="listitem"
-                style={{ display: "block", textDecoration: "none", color: "inherit" }}
-                aria-label={`${p.city} — ${content.shop_cta}`}
+                className={`guias__tarjeta${enPreparacion ? " guias__tarjeta--pronto" : ""}`}
+                aria-label={`${p.city} — ${estado}`}
               >
                 <div className="book-scene" style={{ marginBottom: 14 }}>
                   <Book3D
@@ -82,22 +124,37 @@ export function GuiasBridge({ content, locale = "es" }: { content: AppHomeConten
                     spineColor={p.bg}
                   />
                 </div>
-                <h3
-                  style={{
-                    fontFamily: "var(--font-display)",
-                    fontWeight: 600,
-                    fontSize: 20,
-                    letterSpacing: "-0.02em",
-                    marginBottom: 4,
-                  }}
-                >
-                  {p.city}
-                </h3>
-                <p style={{ fontSize: 14, color: "var(--ink-2)" }}>{content.shop_price}</p>
+                {/* La ciudad y el año ya van impresos en la portada 3D; aquí
+                    se decían otra vez cada uno. Queda el nombre una sola vez. */}
+                <h3 className="guias__ciudad">{p.city}</h3>
+                <p className="guias__estado">{estado}</p>
+                {/* Sin fecha no hay precio ni "ver la guía": no hay nada que
+                    ver todavía y la cifra sugeriría que se puede comprar. */}
+                {!enPreparacion && (
+                  <>
+                    <p className="guias__precio">{content.shop_price}</p>
+                    <span className="guias__cta-tarjeta">
+                      {content.shop_card_cta.replace("{ciudad}", p.city)} <Icon name="arrow-right" size={12} />
+                    </span>
+                  </>
+                )}
               </Link>
             </Reveal>
-          ))}
+            );
+          })}
         </div>
+
+        <Reveal delay={240}>
+          <div className="guias__argumentos">
+            {[1, 2, 3].map((n) => (
+              <p key={n}>
+                <strong>{content[`shop_arg_${n}_title` as keyof AppHomeContent]}</strong>{" "}
+                {content[`shop_arg_${n}_desc` as keyof AppHomeContent]}
+              </p>
+            ))}
+          </div>
+          <p className="guias__aparte">{content.shop_aparte}</p>
+        </Reveal>
       </div>
     </section>
   );

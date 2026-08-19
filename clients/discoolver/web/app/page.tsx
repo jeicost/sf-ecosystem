@@ -3,7 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 import { faqJsonLd, websiteJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
 import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
-import { applyPlatformStats } from "@/lib/platform-stats";
+import { applyPlatformStats, getPlatformFacts, formatoMil } from "@/lib/platform-stats";
 import { DraftBanner } from "@/components/DraftBanner";
 import { defaultAppHomeContent } from "@/lib/content/app-home";
 import { defaultAppHomeContent as defaultAppHomeContentEn } from "@/lib/content/en/app-home";
@@ -15,7 +15,7 @@ import { Ticker } from "@/components/app/Ticker";
 import { Categorias8 } from "@/components/app/Categorias8";
 import { TravelBrain } from "@/components/app/TravelBrain";
 import { HowItWorks } from "@/components/app/HowItWorks";
-import { Experiences } from "@/components/app/Experiences";
+import { Ciudades } from "@/components/app/Ciudades";
 import { MapSection } from "@/components/app/MapSection";
 import { ForCreators } from "@/components/app/ForCreators";
 import { GuiasBridge } from "@/components/app/GuiasBridge";
@@ -39,12 +39,26 @@ import { CTA } from "@/components/app/CTA";
  * aquí idénticas byte a byte —es el mismo sistema de diseño— y solo hubo que
  * traer seis.
  */
-export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Descubre tu ciudad antes que el resto",
-  description:
-    "Sitios recomendados por creadores locales reales, revisados por editores y potenciados por IA. Madrid, Barcelona y Málaga ya abiertas — entra hoy por la web.",
-  path: "/",
-});
+/**
+ * La descripción de la home se construye con el MISMO dato que el hero y el
+ * cierre. Escrita a mano decía "Madrid, Barcelona y Málaga ya abiertas" — y
+ * Málaga no tiene ni un sitio publicado. Si la API no contesta, se sirve una
+ * descripción sin ciudades ni cifras en vez de una inventada.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const hechos = await getPlatformFacts();
+  const ciudades = hechos.ciudadesLista;
+  const lista =
+    ciudades.length > 1 ? `${ciudades.slice(0, -1).join(", ")} y ${ciudades[ciudades.length - 1]}` : ciudades[0] ?? "";
+  const descripcion = hechos.ok
+    ? `Sitios elegidos por editores entre lo que se recomienda en las redes. ${formatoMil(hechos.totalRedondeado)} publicados en ${lista}, con mapa, rutas y calendario.`
+    : "Sitios elegidos por editores entre lo que se recomienda cada día en las redes, con mapa, rutas y calendario para recorrer la ciudad.";
+  return buildMetadata({
+    title: "Discoolver — Lo mejor de las redes, elegido por editores",
+    description: descripcion,
+    path: "/",
+  });
+}
 
 export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
   // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
@@ -54,8 +68,12 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
   const fallback = locale === "en" ? defaultAppHomeContentEn : defaultAppHomeContent;
   const cms = isDraft ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug) : loadCmsSections(slug);
   const content = await applyPlatformStats(mergeContent(fallback, section(cms, "content")), locale);
+  // Los portales de ciudad se pintan con el dato vivo: nombres, recuentos y los
+  // tres sitios reales de cada una. Si la API no contesta, `ciudadesDatos` viene
+  // vacío y la sección se queda solo con la tira de "¿y tu ciudad?".
+  const hechos = await getPlatformFacts();
 
-  const faqItems = [1, 2, 3, 4, 5, 6, 7].map((n) => ({
+  const faqItems = [1, 2, 3, 4, 5, 6, 7, 8].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],
     answer: content[`faq_a${n}` as keyof typeof content],
   }));
@@ -70,11 +88,13 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
         <Categorias8 content={content} locale={locale} />
         <TravelBrain content={content} />
         <HowItWorks content={content} />
-        <Experiences content={content} />
+        <Ciudades content={content} ciudades={hechos.ciudadesDatos} locale={locale} />
         <MapSection content={content} />
         <GuiasBridge content={content} locale={locale} />
         <ForCreators content={content} />
-        <AppComingSoon content={content} locale={locale} />
+        {/* Los estados de apertura salen de la MISMA fuente que el hero y
+            los portales: una ciudad que abre aparece sola en los tres sitios. */}
+        <AppComingSoon content={content} locale={locale} abiertas={hechos.ciudadesDatos.map((c) => ({ nombre: c.nombre, sitios: c.sitios }))} />
         <FAQ content={content} />
         <Wordmark />
         <CTA content={content} locale={locale} />

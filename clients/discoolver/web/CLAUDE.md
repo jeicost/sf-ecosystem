@@ -37,6 +37,39 @@ fotos de stock haciendo de cara de quien firma un testimonio, y el campo **contr
 formulario de creators (la cuenta se crea al aprobar la candidatura).
 Cualquier prueba social debe ser verificable.
 
+## Reglas de copy — se comprueban solas
+
+`node scripts/revisar-copy.mjs` revisa `lib/content/**` y **devuelve 1 si algo incumple**. Pásalo
+antes de sembrar el CMS. Revisa solo los valores entre comillas, nunca los comentarios: el
+comentario que explica por qué una palabra está prohibida tiene que poder nombrarla.
+
+**Prohibidas en copy visible (ES)** — con su motivo, porque una prohibición sin motivo se salta en
+cuanto cambia quien escribe:
+
+| Palabra | Por qué |
+|---|---|
+| curado · curada · curación · curaduría · curamos · curator | calco de *curated*; no dice qué hace el editor. Se cuenta con verbos: revisamos, elegimos, publicamos |
+| vibra | calco de *vibe* |
+| elegido a mano | ya lo dice el hero, con verbos |
+| universos · armas secretas | vocabulario de marca vacío, y una metáfora bélica fuera del universo del club |
+| edición limitada · tirada limitada · ejemplares numerados | **falso**: la producción de las guías es bajo demanda |
+| monetizable · escalable | vocabulario de pitch a inversores, no la voz de la web |
+
+**Ninguna cifra a mano.** El total de sitios, los de cada ciudad y la lista de ciudades abiertas
+salen de `lib/platform-stats.ts`. En el copy se escriben como marcadores y los sustituye
+`applyPlatformStats` (home) o `aplicarCifras` (resto): `{sitios}`, `{sitios_ciudad}`, `{ciudades}`.
+El script bloquea `858`, `1.099`, `1.629`, `1.500` y «12 ciudades» escritos literalmente.
+
+**Los ocho territorios** son los nombres canónicos en toda la web: Restaurantes y cafés · Vida
+nocturna · Arte y cultura · Experiencias y eventos · Compras y moda · Alojamiento · Bienestar y
+belleza · Naturaleza y aire libre. Nada de «Fiesta», «Gastronomía», «Nightlife», «Aire libre» ni
+«Qué ver». **«Territorios» es solo la palabra de superficie en la home**: en `/search`, en la base
+de datos, en las guías y en las fichas se sigue diciendo «categorías» — no se renombra el modelo de
+datos ni la navegación de la plataforma.
+
+**El inglés no es una traducción.** Son dos copys hermanos que dicen lo mismo y suenan nativos cada
+uno en lo suyo. Un titular nunca se traduce literalmente.
+
 ## Regla de oro: los tokens recuperados no se tocan sin verificar
 
 `app/globals.css` contiene tokens y clases **recuperados 1:1** del CSS de producción original

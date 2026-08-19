@@ -25,6 +25,11 @@ const PROJECT_ID = "674dda33-f0dd-4d2f-8433-92aa86941caf";
 const SUPABASE_URL = process.env.SF_CMS_SUPABASE_URL;
 const SERVICE_KEY = process.env.SF_CMS_SUPABASE_SERVICE_KEY;
 const DRY = process.argv.includes("--dry");
+// Slugs sueltos como argumento: `npx tsx scripts/seed-cms-web.ts app-home app-home-en`.
+// La siembra REEMPLAZA el sections_json entero, así que sembrar las seis
+// páginas cuando solo se ha tocado una tira cualquier edición hecha desde el
+// CMS en las otras cinco. Al ir página a página, se siembra solo la que toca.
+const SOLO = process.argv.slice(2).filter((a) => !a.startsWith("--"));
 
 if (!SUPABASE_URL || !SERVICE_KEY) {
   console.error("✗ Faltan SF_CMS_SUPABASE_URL / SF_CMS_SUPABASE_SERVICE_KEY (ver apps/sf-cms/.env.local)");
@@ -53,8 +58,14 @@ const PAGES: { slug: string; data: Record<string, string> }[] = [
 ];
 
 async function main() {
+  const objetivo = SOLO.length ? PAGES.filter((p) => SOLO.includes(p.slug)) : PAGES;
+  if (SOLO.length && objetivo.length !== SOLO.length) {
+    const faltan = SOLO.filter((s) => !PAGES.some((p) => p.slug === s));
+    throw new Error(`slug desconocido: ${faltan.join(", ")}`);
+  }
   console.log(DRY ? "— simulacro —" : `Sembrando en ${SUPABASE_URL}`);
-  for (const page of PAGES) {
+  console.log(`Páginas: ${objetivo.map((p) => p.slug).join(", ")}`);
+  for (const page of objetivo) {
     const fields = Object.keys(page.data).length;
     if (DRY) {
       console.log(`· ${page.slug.padEnd(12)} UPDATE  ${fields} campos`);

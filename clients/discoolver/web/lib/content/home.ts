@@ -32,7 +32,7 @@ export const defaultHomeContent = {
   hero_book_sticker: "14€ de lanzamiento",
 
   // Marquee (brand claims)
-  marquee_1: "Curamos el año. Tú disfruta el viaje.",
+  marquee_1: "Un año de ciudad, en tus manos.",
   marquee_2: "Guías que se guardan, no se scrollean.",
   marquee_3: "De los reels a tu estantería.",
   marquee_4: "Papel para coleccionar. IA para callejear.",
@@ -52,14 +52,14 @@ export const defaultHomeContent = {
   guide_2_sub: "Edición 2026",
   guide_2_meta: "Digital 14€ · Papel desde 29€ · Otoño 2026",
   guide_2_cta: "Avísame el día que salga",
-  guide_3_city: "Ronda",
+  guide_3_city: "Málaga",
   guide_3_sub: "Edición 2026",
   guide_3_meta: "Digital 14€ · Papel desde 29€ · Otoño 2026",
   guide_3_cta: "Avísame el día que salga",
-  guide_4_city: "Málaga",
+  guide_4_city: "Valencia",
   guide_4_sub: "Edición 2026",
-  guide_4_meta: "Digital 14€ · Papel desde 29€ · Otoño 2026",
-  guide_4_cta: "Avísame el día que salga",
+  guide_4_meta: "En preparación",
+  guide_4_cta: "Avísame cuando entre",
   guide_5_city: "Ibiza",
   guide_5_sub: "Edición 2026",
   guide_5_meta: "Digital 14€ · Papel desde 29€ · Otoño 2026",
@@ -67,22 +67,26 @@ export const defaultHomeContent = {
   guide_6_city: "Bangkok",
   guide_6_sub: "Edición 2026",
   guide_6_meta: "En preparación · La primera ciudad de Tailandia",
-  guide_6_cta: "Avísame cuando abra",
+  guide_6_cta: "Avísame cuando entre",
+  guide_7_city: "Dubái",
+  guide_7_sub: "Edición 2026",
+  guide_7_meta: "En preparación",
+  guide_7_cta: "Avísame cuando entre",
   guides_ghost_city: "¿Otra ciudad?",
   guides_ghost_text: "Pide la próxima edición",
   guides_ghost_cta: "Avísame",
 
   // Curation (block 1, id="curacion")
-  curation_eyebrow: "Curación humana",
+  curation_eyebrow: "Cómo se elige",
   curation_title: "Deja de guardar reels que no vas a volver a mirar.",
   curation_text:
-    "Nosotros sí los miramos. Para la edición de Madrid pusimos sobre la mesa 858 sitios: lo que los creadores han contado de la ciudad este año, revisado por editores. En la guía entran unos 80. Descartar el resto es exactamente lo que estás comprando — eso, y que nadie paga por entrar: ni el restaurante, ni la agencia, ni nosotros a nadie por recomendarlo.",
+    "Nosotros sí los miramos. Para la edición de Madrid pusimos sobre la mesa {sitios_ciudad} sitios: lo que los creadores han contado de la ciudad este año, revisado por editores. En la guía entran unos 80. Descartar el resto es exactamente lo que estás comprando — eso, y que nadie paga por entrar: ni el restaurante, ni la agencia, ni nosotros a nadie por recomendarlo.",
   flow_1_label: "Redes",
   flow_1_text: "Recogemos lo que los creadores publican de la ciudad durante todo el año.",
   flow_2_label: "Filtro editorial",
   flow_2_text: "Un editor revisa ficha a ficha, contrasta y descarta. Nadie paga por entrar.",
   flow_3_label: "La guía",
-  flow_3_text: "De 858 sitios a unos 80. La escasez es el producto.",
+  flow_3_text: "De {sitios_ciudad} sitios a unos 80. Descartar es el trabajo.",
 
   // The object (block 2, id="objeto")
   object_eyebrow: "El objeto",
@@ -105,11 +109,11 @@ export const defaultHomeContent = {
   ai_title_1: "Papel para coleccionar.",
   ai_title_em: "IA para callejear.",
   ai_text:
-    "Dinos cuántos días tienes, qué vibra buscas y qué presupuesto llevas: tu guía se convierte en ruta. Cool Map, itinerarios en 10 segundos, un local buddy 24/7.",
+    "Dinos cuántos días tienes, a qué vienes y qué presupuesto llevas: tu guía se convierte en ruta. Cool Map, itinerarios en 10 segundos, un local buddy 24/7.",
   ai_feat_1_title: "Cool Map",
-  ai_feat_1_desc: "Todos los sitios de tu guía, en un mapa por zonas y vibras.",
+  ai_feat_1_desc: "Todos los sitios de tu guía, en un mapa por barrios y por territorio.",
   ai_feat_2_title: "Itinerarios en 10 segundos",
-  ai_feat_2_desc: "Días, presupuesto y vibra: tu ruta, lista antes de salir del hotel.",
+  ai_feat_2_desc: "Días, presupuesto y a qué vienes: tu ruta, lista antes de salir del hotel.",
   ai_feat_3_title: "Local buddy 24/7",
   ai_feat_3_desc: "Pregunta lo que sea, a la hora que sea, como a un amigo local.",
 
@@ -141,16 +145,16 @@ export const defaultHomeContent = {
     "La digital cuesta 14€ durante el lanzamiento y pasará a 19€: la llevas en el móvil desde el primer minuto y activa la capa de IA. La de papel, desde 29€, es la pieza para la estantería e incluye la digital. Mismas recomendaciones, dos formas de usarlas.",
   faq_q3: "¿Qué hace la IA de la guía?",
   faq_a3:
-    "Convierte la guía en ruta: dinos cuántos días tienes, qué vibra buscas y qué presupuesto llevas. Cool Map para ver los sitios en el mapa, itinerarios en 10 segundos y un local buddy 24/7 al que preguntarle lo que sea.",
+    "Convierte la guía en ruta: dinos cuántos días tienes, a qué vienes y qué presupuesto llevas. Cool Map para ver los sitios en el mapa, itinerarios en 10 segundos y un local buddy 24/7 al que preguntarle lo que sea.",
   faq_q4: "Si compro ahora, ¿se me queda vieja enseguida?",
   faq_a4:
     "No. La edición 2026 es la vigente durante un año entero, no hasta fin de año. La ciudad cambia y por eso cada temporada editamos una nueva — y cuando llegue la siguiente, la tuya no muere: se convierte en pieza de colección, y los cambios de verdad (horarios, cierres) los tendrás al día en la capa digital.",
   faq_q5: "¿Qué ciudades hay ahora mismo?",
   faq_a5:
-    "Madrid abre la colección el 1 de septiembre. Barcelona, Ronda, Málaga e Ibiza llegan en otoño, y Bangkok será la primera ciudad de Tailandia. Las firmas definitivas de cada edición se anuncian al cerrarse — y si tu ciudad no está, déjanosla en el formulario y te avisamos en cuanto entre en producción.",
+    "Madrid abre la colección el 1 de septiembre. Barcelona, Málaga e Ibiza llegan en otoño, y Bangkok será la primera ciudad de Tailandia. Las firmas definitivas de cada edición se anuncian al cerrarse — y si tu ciudad no está, déjanosla en el formulario y te avisamos en cuanto entre en producción.",
   faq_q6: "¿Cuándo puedo comprarlas?",
   faq_a6:
-    "Madrid sale a la venta el 1 de septiembre de 2026, en digital y en papel, y detrás vienen Barcelona y Ronda. Déjanos tu email y te avisamos esa mañana, con el precio de lanzamiento de 14€ activo. Un solo correo, sin spam.",
+    "Madrid sale a la venta el 1 de septiembre de 2026, en digital y en papel, y detrás vienen Barcelona, Málaga e Ibiza. Déjanos tu email y te avisamos esa mañana, con el precio de lanzamiento de 14€ activo. Un solo correo, sin spam.",
   faq_q7: "¿Cuánto tarda en llegarme el papel?",
   faq_a7:
     "Imprimimos bajo demanda: tu guía se imprime cuando la pides. En España llega en 5-8 días laborables; al resto de Europa, en 7-12. Los gastos de envío se calculan al pagar. La digital la tienes en el correo al momento, así que empiezas a usarla el mismo día.",
@@ -163,7 +167,7 @@ export const defaultHomeContent = {
 
   // CTA
   cta_eyebrow: "Guías discoolver · Edición 2026",
-  cta_title_1: "Curamos",
+  cta_title_1: "Elegimos",
   cta_title_1_em: "el año.",
   cta_title_2: "Tú disfruta",
   cta_title_2_em: "el viaje.",

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { localeFromPath, withLocale, type Locale } from "@/lib/i18n";
 import Link from "next/link";
@@ -45,15 +46,21 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const pathname = usePathname();
   const locale: Locale = localeProp ?? localeFromPath(pathname);
   const links = LINKS[locale];
+  // El menú de esta nav vivía escondido en móvil: el CSS oculta .nav__links por
+  // debajo de 880px y solo lo enseña con .is-open, clase que nadie ponía porque
+  // este componente no tenía hamburguesa (sí la tiene components/layout/Nav).
+  // Resultado: la home, /en y las cuatro rutas del blog se servían sin ninguna
+  // navegación en teléfono. Aquí se monta el mismo botón que la otra nav.
+  const [open, setOpen] = useState(false);
   return (
     <nav className="nav" role="navigation" aria-label={locale === "en" ? "Main navigation" : "Navegación principal"}>
       <div className="container nav__inner">
         <Link aria-label={locale === "en" ? "Discoolver — home" : "Discoolver — inicio"} href={locale === "en" ? "/en" : "/"}>
           <Image src="/assets/logo-white.png" alt="Discoolver" width={122} height={22} priority style={{ height: 22, width: "auto" }} />
         </Link>
-        <div className="nav__links" aria-label={locale === "en" ? "Navigation links" : "Links de navegación"}>
+        <div className={`nav__links${open ? " is-open" : ""}`} id="nav-links" aria-label={locale === "en" ? "Navigation links" : "Links de navegación"}>
           {links.map((link) => (
-            <Link key={link.href} href={withLocale(link.href, locale)}>
+            <Link key={link.href} href={withLocale(link.href, locale)} onClick={() => setOpen(false)}>
               {link.label}
             </Link>
           ))}
@@ -68,6 +75,16 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
           <a href={PLATFORM.home} className="btn btn-primary" style={{ padding: "10px 18px" }}>
             {locale === "en" ? "Enter" : "Entrar"} <Icon name="arrow-up-right" size={14} />
           </a>
+          <button
+            type="button"
+            className="nav__toggle"
+            aria-expanded={open}
+            aria-controls="nav-links"
+            aria-label={open ? (locale === "en" ? "Close menu" : "Cerrar menú") : locale === "en" ? "Open menu" : "Abrir menú"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            <Icon name={open ? "x" : "menu"} size={18} />
+          </button>
         </div>
       </div>
     </nav>

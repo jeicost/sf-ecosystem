@@ -78,7 +78,7 @@ export const defaultInfluencersContent = {
   micro_step_2_text: "En el formulario de aquí abajo. Reel, TikTok o YouTube: el formato nos da igual.",
   micro_step_3_label: "Si entra, cobras",
   micro_step_3_text:
-    "Si entra en la guía anual de tu ciudad: tu firma dentro de la guía, badge de curator y comisión por las ventas y reservas que genere tu recomendación.",
+    "Si entra en la guía anual de tu ciudad: tu firma dentro de la guía, distintivo de editor invitado y comisión por las ventas y reservas que genere tu recomendación.",
   micro_criteria_title: "Qué buscan los editores",
   micro_criteria_1: "Un sitio concreto, con nombre y barrio",
   micro_criteria_2: "Una opinión de verdad, la tuya",

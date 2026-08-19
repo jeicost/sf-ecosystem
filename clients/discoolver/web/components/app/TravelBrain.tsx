@@ -1,97 +1,72 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { VideoBajoDemanda } from "@/components/app/VideoBajoDemanda";
+import { PLATFORM } from "@/lib/platform";
+import type { Locale } from "@/lib/i18n";
 import type { AppHomeContent } from "@/lib/content/app-home";
 
-export function TravelBrain({ content }: { content: AppHomeContent }) {
-  const bullets = [content.travel_brain_bullet_1, content.travel_brain_bullet_2, content.travel_brain_bullet_3, content.travel_brain_bullet_4];
+/**
+ * El bloque magenta. Estructura original (eyebrow + H2 + cuatro bullets con
+ * check) — el CEO la mantiene a propósito; lo que cambió el 19-ago-2026 es el
+ * copy y tres cosas concretas:
+ *
+ *  · **Fuera la cita anónima** ("Sugerencias con criterio. Sitios de verdad.").
+ *    No la firmaba nadie y los testimonios van a tener sección propia.
+ *  · **Cada bullet abre con su beneficio en negrita.** Por eso son dos campos
+ *    por bullet (`_lead` y `_text`) y no marcado dentro de un campo: quien edite
+ *    desde el CMS no tiene que saber escribir asteriscos.
+ *  · **La bullet 2 enlaza a Plan My Trip**, que es la herramienta que la cumple.
+ *
+ * El vídeo pasa por VideoBajoDemanda: en móvil no se descarga (13 MB), se
+ * enseña el póster.
+ */
+export function TravelBrain({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+  const bullets = [1, 2, 3, 4].map((n) => ({
+    lead: content[`travel_brain_bullet_${n}_lead` as keyof AppHomeContent],
+    text: content[`travel_brain_bullet_${n}` as keyof AppHomeContent],
+    href: n === 2 ? PLATFORM.planMyTrip : null,
+  }));
 
   return (
-    <section
-      aria-labelledby="travel-brain-title"
-      style={{ background: "var(--primary)", color: "#fff", padding: "100px 0", position: "relative", overflow: "hidden" }}
-    >
-      <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 64, alignItems: "center" }}>
+    <section className="brain" aria-labelledby="travel-brain-title">
+      <div className="container brain__grid">
         <Reveal delay={0}>
-          <div style={{ position: "relative", borderRadius: 24, overflow: "hidden", border: "1.5px solid rgba(255,255,255,.2)", aspectRatio: "4/5" }}>
-            <video
+          <div className="brain__media">
+            <VideoBajoDemanda
               src="/assets/v-card-accommodations.mp4"
               poster="/assets/poster-smart-card.jpg"
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-              aria-label="Demo de Smart Card — funciones de planificación inteligente"
+              ancho={640}
+              alto={800}
+              etiqueta={
+                locale === "en"
+                  ? "Discoolver planning tools in use"
+                  : "Herramientas de planificación de Discoolver en uso"
+              }
             />
-            <div
-              style={{
-                position: "absolute",
-                left: 20,
-                top: 20,
-                background: "rgba(0,0,0,.5)",
-                backdropFilter: "blur(10px)",
-                WebkitBackdropFilter: "blur(10px)",
-                borderRadius: 999,
-                padding: "6px 14px",
-                color: "#fff",
-                fontFamily: "var(--font-mono)",
-                fontSize: 11,
-                letterSpacing: ".1em",
-                textTransform: "uppercase",
-              }}
-              aria-hidden="true"
-            >
+            <span className="brain__badge" aria-hidden="true">
               {content.travel_brain_badge}
-            </div>
+            </span>
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <span className="eyebrow" style={{ color: "rgba(255,255,255,.8)" }}>
-            {content.travel_brain_eyebrow}
-          </span>
-          <h2 className="display-lg" id="travel-brain-title" style={{ marginTop: 16, color: "#fff" }}>
-            {content.travel_brain_title_1}
-            <br />
-            {content.travel_brain_title_2} <span style={{ color: "var(--accent)" }}>{content.travel_brain_title_highlight}</span>
-          </h2>
-          <ul role="list" style={{ listStyle: "none", marginTop: 32, display: "flex", flexDirection: "column", gap: 14 }}>
-            {bullets.map((bullet, i) => (
-              <li key={i} style={{ display: "flex", gap: 12, fontSize: 16, lineHeight: 1.5 }}>
-                <span
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: "50%",
-                    background: "#fff",
-                    color: "var(--primary)",
-                    display: "grid",
-                    placeItems: "center",
-                    flexShrink: 0,
-                    fontSize: 13,
-                    fontWeight: 700,
-                  }}
-                  aria-hidden="true"
-                >
-                  ✓
-                </span>
-                <span>{bullet}</span>
-              </li>
-            ))}
-          </ul>
-          <blockquote
-            style={{
-              marginTop: 32,
-              padding: "16px 20px",
-              background: "rgba(0,0,0,.3)",
-              borderRadius: 16,
-              fontFamily: "var(--font-display)",
-              fontWeight: 600,
-              fontSize: 22,
-              border: "none",
-            }}
-          >
-            &ldquo;{content.travel_brain_quote}&rdquo;
-          </blockquote>
+          <div>
+            <span className="eyebrow brain__eyebrow">{content.travel_brain_eyebrow}</span>
+            <h2 className="display-lg brain__titulo" id="travel-brain-title">
+              {content.travel_brain_title_1}{" "}
+              <span className="brain__acento">{content.travel_brain_title_highlight}</span>
+            </h2>
+            <ul role="list" className="brain__lista">
+              {bullets.map((b, i) => (
+                <li key={i}>
+                  <span className="brain__check" aria-hidden="true">
+                    ✓
+                  </span>
+                  <span>
+                    <strong>{b.lead}</strong> {b.href ? <a href={b.href}>{b.text}</a> : b.text}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </Reveal>
       </div>
     </section>
