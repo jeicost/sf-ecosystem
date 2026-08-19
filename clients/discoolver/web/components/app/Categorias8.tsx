@@ -38,18 +38,21 @@ type Categoria = {
 };
 
 const CATEGORIAS: Categoria[] = [
-  { clave: "restaurantes", foto: "/assets/img-fox.jpg" },
-  // Vida nocturna se lleva el canguro (metro de noche, neón) y experiencias el
-  // oso (grada, palomitas: eso es un evento). Estaban al revés y experiencias
-  // usaba el segundo búho, así que salían dos búhos casi idénticos uno al lado
-  // del otro — la sección parecía repetida.
-  { clave: "nightlife", foto: "/assets/img-metro-kangaroo.jpg" },
-  { clave: "cultura", foto: "/assets/img-owl.jpg" },
-  { clave: "experiencias", foto: "/assets/img-bear.jpg" },
-  { clave: "compras", foto: "/assets/img-bunny.jpg" },
-  { clave: "alojamiento", foto: "/assets/img-koala-rome.jpg" },
-  { clave: "wellness", foto: "/assets/img-rabbit-cave.jpg" },
-  { clave: "naturaleza", foto: null, tono: "#1f4a3a" },
+  // 19-ago-2026: cada categoría con SU escena. Las seis primeras son
+  // fotogramas de los vídeos de marca —el universo real de los personajes, que
+  // estaba fuera del repo desde el 17-ago— y las dos últimas se generaron en el
+  // mismo registro porque no existía ninguna.
+  //
+  // Antes se repartían siete fotos entre ocho huecos y dos no pegaban:
+  // Alojamiento enseñaba el Coliseo y Bienestar un aeropuerto.
+  { clave: "restaurantes", foto: "/assets/categorias/restaurantes.jpg" },
+  { clave: "nightlife", foto: "/assets/categorias/nightlife.jpg" },
+  { clave: "cultura", foto: "/assets/categorias/cultura.jpg" },
+  { clave: "experiencias", foto: "/assets/categorias/experiencias.jpg" },
+  { clave: "compras", foto: "/assets/categorias/compras.jpg" },
+  { clave: "alojamiento", foto: "/assets/categorias/alojamiento.jpg" },
+  { clave: "wellness", foto: "/assets/categorias/wellness.jpg" },
+  { clave: "naturaleza", foto: "/assets/categorias/naturaleza.jpg" },
 ];
 
 export function Categorias8({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {

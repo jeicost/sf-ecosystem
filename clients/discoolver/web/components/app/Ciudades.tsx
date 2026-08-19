@@ -27,7 +27,14 @@ import type { AppHomeContent } from "@/lib/content/app-home";
  * se añade a ILUSTRACIONES y la tira la usa sin tocar nada más.
  */
 const ILUSTRACIONES: Record<string, string> = {
-  // madrid: "/assets/ciudades/madrid.webp",
+  madrid: "/assets/ciudades/portal-madrid.jpg",
+  barcelona: "/assets/ciudades/portal-barcelona.jpg",
+  malaga: "/assets/ciudades/portal-malaga.jpg",
+  ibiza: "/assets/ciudades/portal-ibiza.jpg",
+  // Listas para el día que abran: la tira las usa sola en cuanto la ciudad
+  // aparezca con catálogo en la API.
+  bangkok: "/assets/ciudades/portal-bangkok.jpg",
+  dubai: "/assets/ciudades/portal-dubai.jpg",
 };
 
 /** Tonos de reposo mientras no hay ilustración. Estables por ciudad. */
