@@ -41,7 +41,7 @@ export async function GuiasPage({ locale = "es" }: { locale?: Locale }) {
   // «858 sitios» de Madrid mientras la home decía 1.099.
   const content = await aplicarCifras(mergeContent(fallback, section(cms, "content")), locale);
 
-  const faqItems = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => ({
+  const faqItems = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({
     question: content[`faq_q${n}` as keyof typeof content],
     answer: content[`faq_a${n}` as keyof typeof content],
   }));

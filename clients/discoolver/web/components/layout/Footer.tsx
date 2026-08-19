@@ -13,14 +13,14 @@ const T = {
     col1: "Las guías",
     col1Links: [
       ["/guias#guias", "La colección"],
-      ["/guias#curacion", "Cómo curamos"],
+      ["/guias#como-se-elige", "Cómo se elige"],
       ["/guias#objeto", "Digital y papel"],
       ["/guias#ia", "IA para callejear"],
     ],
     col2: "Descubrir",
     col2Links: [
       ["/guias#guias", "Las guías"],
-      ["/guias#curacion", "Cómo curamos"],
+      ["/guias#como-se-elige", "Cómo se elige"],
       ["/guias#ia", "La IA de tu guía"],
     ],
     prensa: "Prensa",
@@ -49,14 +49,14 @@ const T = {
     col1: "The guides",
     col1Links: [
       ["/guias#guias", "The collection"],
-      ["/guias#curacion", "How we curate"],
+      ["/guias#como-se-elige", "How we choose"],
       ["/guias#objeto", "Digital & print"],
       ["/guias#ia", "AI for the streets"],
     ],
     col2: "Discover",
     col2Links: [
       ["/guias#guias", "The guides"],
-      ["/guias#curacion", "How we curate"],
+      ["/guias#como-se-elige", "How we choose"],
       ["/guias#ia", "Your guide's AI"],
     ],
     prensa: "Press",

@@ -4,13 +4,12 @@
 export const defaultHomeContent = {
   // Hero
   hero_eyebrow: "2026 Edition · Madrid on sale September 1",
-  hero_title_a: "The best of the year",
-  hero_title_a_em: "in every city.",
-  hero_title_b: "In one guide you'll want to",
-  hero_title_b_em: "keep.",
-  hero_sub:
-    "We watch thousands of creator recommendations on social, keep only the ones that hold up and edit them into one guide per destination — digital or print — with AI to walk the city at your own pace.",
-  hero_cta_primary: "See the guides",
+  hero_title_a: "Stop saving reels",
+  hero_title_a_em: "",
+  hero_title_b: "you're never going to",
+  hero_title_b_em: "open again.",
+  hero_sub: "We do open them. A whole year of local creators' recommendations, checked by editors and edited into one guide per city — digital or print, with AI to walk you through it.",
+  hero_cta_primary: "See the collection",
   hero_cta_secondary: "City not on the list? Notify me",
   hero_note_1: "An editor reviews every listing",
   hero_note_2: "One edition a year per destination",
@@ -19,16 +18,15 @@ export const defaultHomeContent = {
   hero_book_sticker: "€14 launch price",
 
   // Marquee (brand claims)
-  marquee_1: "We curate the year. You enjoy the trip.",
-  marquee_2: "Guides you keep, not scroll past.",
-  marquee_3: "From the reels to your bookshelf.",
-  marquee_4: "Print for the shelf. AI for the streets.",
-  marquee_5: "Every edition expires. That's exactly why it's worth it.",
-
+  marquee_1: "A year of the city, in your hands.",
+  marquee_2: "From reels to your bookshelf.",
+  marquee_3: "Print to collect. AI to wander.",
+  marquee_4: "Every edition expires. That's the point.",
+  marquee_5: "",
   // Guides (the star section, id="guias")
-  guides_eyebrow: "Guides by destination · Digital and print",
-  guides_title_1: "The",
-  guides_title_em: "2026 collection.",
+  guides_eyebrow: "The 2026 collection · Digital and print",
+  guides_title_1: "Two ways to have",
+  guides_title_em: "the city.",
   guides_lead: "One city, one year, one guide. Digital €14 launch price (€19 afterwards) · Print from €29 with the digital included. All prices include VAT; shipping for the print edition is calculated before you confirm the order.",
   guide_1_city: "Madrid",
   guide_1_sub: "2026 Edition",
@@ -89,23 +87,25 @@ export const defaultHomeContent = {
   format_2_desc: "For the shelf. When the next edition drops, yours becomes a collector's piece. VAT included; shipping calculated before you confirm.",
 
   // AI (block 3, id="ia")
-  ai_eyebrow: "The guide that answers back",
+  ai_eyebrow: "The AI in your guide",
   ai_title_1: "Print for the shelf.",
   ai_title_em: "AI for the streets.",
-  ai_text:
-    "Tell us how many days you have, what vibe you're after and what budget you're on: your guide turns into a route. Cool Map, itineraries in 10 seconds, a Local Buddy 24/7.",
-  ai_feat_1_title: "Cool Map",
+  ai_text: "Editors do the picking. The AI only helps you walk it: tell it how many days you have, what you came for and your budget, and your guide turns into a route.",
+  ai_feat_1_title: "Cool Map — the map",
   ai_feat_1_desc: "Every place in your guide, on one map by area and by vibe.",
-  ai_feat_2_title: "Itineraries in 10 seconds",
+  ai_feat_2_title: "Plan My Trip — your route",
   ai_feat_2_desc: "Days, budget and vibe: your route, ready before you leave the hotel.",
-  ai_feat_3_title: "Local Buddy 24/7",
-  ai_feat_3_desc: "Ask anything, at any hour, the way you'd ask a friend who lives there.",
-
+  ai_feat_3_title: "Smart Calendar — what's on",
+  ai_feat_3_desc: "What's happening in the city while you're there: gigs, fairs and neighbourhood festivals.",
   // Creators bridge (block 4, id="creators")
   creators_eyebrow: "For creators",
   creators_title: "A creator? This guide could carry your name.",
   creators_text: "Your content, our editorial team, revenue on every sale.",
   creators_cta: "Publish your guide",
+
+  faq_q10: "What's the difference between the city guide and an author guide?",
+  faq_a10:
+    "The city guide is picked by our editors: the best of the year across the eight territories. An author guide is signed by one person and it's their view of the city — their neighbourhood, their places, their judgement. Same format, same price; you choose whether you want the team's judgement or that of someone you already follow.",
 
   // Waitlist (id="waitlist")
   waitlist_eyebrow: "Launch list · No spam",

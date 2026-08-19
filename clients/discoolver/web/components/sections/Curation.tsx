@@ -11,7 +11,11 @@ export function Curation({ content }: { content: HomeContent }) {
   ];
 
   return (
-    <section className="section" id="curacion" aria-labelledby="curation-title">
+    <>
+      {/* El ancla vieja se conserva: había enlaces a #curacion por el pie y
+          por el menú, y romperlos no aporta nada. */}
+      <span id="curacion" aria-hidden="true" />
+      <section className="section" id="como-se-elige" aria-labelledby="curation-title">
       <div className="container">
         <Reveal delay={0}>
           <div className="section__head">
@@ -49,5 +53,6 @@ export function Curation({ content }: { content: HomeContent }) {
         <GuiaFoto src="/assets/guias/proceso.jpg" alt="Pruebas de página con marcas a lápiz y una pila de descartes" />
       </div>
     </section>
+    </>
   );
 }

@@ -17,13 +17,12 @@
 export const defaultHomeContent = {
   // Hero
   hero_eyebrow: "Edición 2026 · Madrid a la venta el 1 de septiembre",
-  hero_title_a: "Lo mejor del año",
-  hero_title_a_em: "en cada ciudad.",
-  hero_title_b: "En una guía que querrás",
-  hero_title_b_em: "guardar.",
-  hero_sub:
-    "Vemos miles de recomendaciones de creadores en redes, nos quedamos con las que valen y las editamos en guías por destino — digital o en papel — con IA para recorrer la ciudad a tu ritmo.",
-  hero_cta_primary: "Ver las guías",
+  hero_title_a: "Deja de guardar reels",
+  hero_title_a_em: "",
+  hero_title_b: "que no vas a volver a",
+  hero_title_b_em: "mirar.",
+  hero_sub: "Nosotros sí los miramos. Un año entero de recomendaciones de creadores, revisadas por editores y editadas en una guía por ciudad — digital o en papel, con IA para recorrerla.",
+  hero_cta_primary: "Ver la colección",
   hero_cta_secondary: "¿Tu ciudad no está? Avísame",
   hero_note_1: "Un editor revisa cada ficha",
   hero_note_2: "Edición anual por destino",
@@ -33,15 +32,14 @@ export const defaultHomeContent = {
 
   // Marquee (brand claims)
   marquee_1: "Un año de ciudad, en tus manos.",
-  marquee_2: "Guías que se guardan, no se scrollean.",
-  marquee_3: "De los reels a tu estantería.",
-  marquee_4: "Papel para coleccionar. IA para callejear.",
-  marquee_5: "Cada edición caduca. Por eso vale la pena.",
-
+  marquee_2: "De los reels a tu estantería.",
+  marquee_3: "Papel para coleccionar. IA para callejear.",
+  marquee_4: "Cada edición caduca. Por eso vale la pena.",
+  marquee_5: "",
   // Guides (the star section, id="guias")
-  guides_eyebrow: "Guías por destino · Digital y papel",
-  guides_title_1: "La colección",
-  guides_title_em: "2026.",
+  guides_eyebrow: "La colección 2026 · Digital y papel",
+  guides_title_1: "Dos formas de tener",
+  guides_title_em: "la ciudad.",
   guides_lead:
     "Una ciudad, un año, una guía. Digital 14€ de lanzamiento (después 19€) · Papel desde 29€ con el digital incluido. Precios con IVA incluido; los gastos de envío del papel se calculan antes de confirmar el pedido.",
   guide_1_city: "Madrid",
@@ -105,23 +103,25 @@ export const defaultHomeContent = {
     "Para la estantería. Cuando salga la siguiente edición, la tuya será pieza de colección. IVA incluido; envío aparte, calculado antes de confirmar.",
 
   // AI (block 3, id="ia")
-  ai_eyebrow: "La guía que responde",
+  ai_eyebrow: "La IA de tu guía",
   ai_title_1: "Papel para coleccionar.",
   ai_title_em: "IA para callejear.",
-  ai_text:
-    "Dinos cuántos días tienes, a qué vienes y qué presupuesto llevas: tu guía se convierte en ruta. Cool Map, itinerarios en 10 segundos, un local buddy 24/7.",
-  ai_feat_1_title: "Cool Map",
+  ai_text: "La selección la hacen editores. La IA solo te ayuda a recorrerla: dile cuántos días tienes, a qué vienes y qué presupuesto llevas, y tu guía se convierte en ruta.",
+  ai_feat_1_title: "Cool Map — el mapa",
   ai_feat_1_desc: "Todos los sitios de tu guía, en un mapa por barrios y por territorio.",
-  ai_feat_2_title: "Itinerarios en 10 segundos",
+  ai_feat_2_title: "Plan My Trip — tu ruta",
   ai_feat_2_desc: "Días, presupuesto y a qué vienes: tu ruta, lista antes de salir del hotel.",
-  ai_feat_3_title: "Local buddy 24/7",
-  ai_feat_3_desc: "Pregunta lo que sea, a la hora que sea, como a un amigo local.",
-
+  ai_feat_3_title: "Smart Calendar — la agenda",
+  ai_feat_3_desc: "Lo que pasa en la ciudad los días que estás: conciertos, ferias y fiestas de barrio.",
   // Creators bridge (block 4, id="creators")
   creators_eyebrow: "Para creadores",
   creators_title: "¿Creador? Esta guía puede llevar tu nombre.",
   creators_text: "Tu contenido, nuestro equipo editorial, ingresos por cada venta.",
   creators_cta: "Publica tu guía",
+
+  faq_q10: "¿Qué diferencia hay entre la guía de ciudad y una guía de autor?",
+  faq_a10:
+    "La guía de ciudad la eligen nuestros editores: lo mejor del año en los ocho territorios. Una guía de autor la firma una persona concreta y es su mirada de la ciudad — su barrio, sus sitios, su criterio. Mismo formato y mismo precio; eliges si quieres el criterio del equipo o el de alguien a quien ya sigues.",
 
   // Waitlist (id="waitlist")
   waitlist_eyebrow: "Lista de lanzamiento · Sin spam",
@@ -161,8 +161,7 @@ export const defaultHomeContent = {
   faq_a4:
     "No. La edición 2026 es la vigente durante un año entero, no hasta fin de año. La ciudad cambia y por eso cada temporada editamos una nueva — y cuando llegue la siguiente, la tuya no muere: se convierte en pieza de colección, y los cambios de verdad (horarios, cierres) los tendrás al día en la capa digital.",
   faq_q5: "¿Qué ciudades hay ahora mismo?",
-  faq_a5:
-    "Madrid abre la colección el 1 de septiembre. Barcelona, Málaga e Ibiza llegan en otoño, y Bangkok será la primera ciudad de Tailandia. Las firmas definitivas de cada edición se anuncian al cerrarse — y si tu ciudad no está, déjanosla en el formulario y te avisamos en cuanto entre en producción.",
+  faq_a5: "Las que ves en la colección de aquí arriba: esa rejilla es la lista, no una promesa aparte. Madrid abre el 1 de septiembre y detrás vienen las demás, cada una cuando su ciudad está revisada. ¿La tuya no está? Pídela en el formulario: el orden lo marca la demanda.",
   faq_q6: "¿Cuándo puedo comprarlas?",
   faq_a6:
     "Madrid sale a la venta el 1 de septiembre de 2026, en digital y en papel, y detrás vienen Barcelona, Málaga e Ibiza. Déjanos tu email y te avisamos esa mañana, con el precio de lanzamiento de 14€ activo. Un solo correo, sin spam.",
