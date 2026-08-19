@@ -12,8 +12,11 @@
  * y la UI los pinta como aviso en vez de publicarlos como si fueran copy bueno.
  */
 export const defaultHome360Content = {
-  hero_eyebrow: "discoolver 360 · plataforma B2B para turismo",
-  hero_title: "Vende el destino. Entiende al visitante. Quédate con los datos.",
+  hero_badge: "Nuevo",
+  hero_title_2: "Quédate con los datos.",
+  hero_avales_titulo: "Con destinos y organismos que ya trabajan así",
+  hero_eyebrow: "Plataforma B2B para turismo",
+  hero_title: "Vende el destino.",
   hero_sub:
     "discoolver 360 es la plataforma SaaS todo-en-uno para destinos, alojamientos y agencias que quieren digitalizar, personalizar y monetizar la experiencia del viajero sin desarrollar tecnología propia. Siete módulos que se contratan por separado y funcionan sobre la web que ya tienes.",
   hero_cta_primary_label: "Pedir una demo",

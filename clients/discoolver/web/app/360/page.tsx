@@ -7,6 +7,7 @@ import { defaultHome360Content as defaultHome360ContentEn } from "@/lib/content/
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending } from "@/components/b360/Bits";
+import { Hero360 } from "@/components/b360/Hero360";
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
@@ -50,18 +51,27 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
 
   return (
     <>
-      {/* ---------- hero ---------- */}
-      <section className="hero">
+      {/* ---------- hero ----------
+           Estructura del componente de 21st.dev que pasó el CEO, traducida a
+           los tokens de 360. El titular se parte en dos para que la segunda
+           mitad se lleve el degradado de marca: en una sola línea de 82 px
+           el gradiente no se lee. */}
+      <Hero360
+        locale={locale}
+        badge={c.hero_badge}
+        eyebrow={c.hero_eyebrow}
+        titulo={c.hero_title}
+        tituloLinea2={c.hero_title_2}
+        sub={c.hero_sub}
+        ctaPrimario={c.hero_cta_primary_label}
+        ctaPrimarioHref={c.hero_cta_primary_href}
+        ctaSecundario={c.hero_cta_secondary_label}
+        ctaSecundarioHref={c.hero_cta_secondary_href}
+        avalesTitulo={c.hero_avales_titulo}
+      />
+
+      <section className="section">
         <div className="wrap">
-          <span className="label">{c.hero_eyebrow}</span>
-          <h1 className="h-hero">{c.hero_title}</h1>
-          <p className="lead">{c.hero_sub}</p>
-          <div className="btns">
-            <Cta href={withLocale(c.hero_cta_primary_href, locale)}>{c.hero_cta_primary_label}</Cta>
-            <Cta href={c.hero_cta_secondary_href} variant="2">
-              {c.hero_cta_secondary_label}
-            </Cta>
-          </div>
           <p className="small" style={{ marginTop: 30, maxWidth: "60ch" }}>
             {c.hero_note}
           </p>
