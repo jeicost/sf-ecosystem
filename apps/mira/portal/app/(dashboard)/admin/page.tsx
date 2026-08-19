@@ -101,6 +101,9 @@ export default function SuperAdminPage() {
           <Link href="/admin/users" className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
             👥 Users
           </Link>
+          <Link href="/admin/tools" className="rounded-lg border border-line px-3 py-2 text-ink-secondary hover:bg-surface-hover">
+            🧰 Tools
+          </Link>
           <Link href="/admin/facturacion" className="rounded-lg border border-line px-3 py-2 text-ink-tertiary hover:bg-surface-hover">
             💶 Billing
           </Link>

@@ -216,6 +216,9 @@ export async function generateStudioImage(opts: {
     size: (STUDIO_FORMATS[opts.format] ?? STUDIO_FORMATS.post).size,
     pathPrefix: 'studio',
     route: 'studio:image',
+    // En el Estudio la imagen es el entregable: si no hay cupo, el usuario tiene
+    // que verlo y poder comprar el pack, no recibir un "no se pudo generar".
+    onExhausted: 'throw',
   })
   if (!stored) return null
 

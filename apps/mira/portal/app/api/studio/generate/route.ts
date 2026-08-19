@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser, resolveRequestClient } from '@/lib/resolve-client'
 import { generateStudioImage, STUDIO_FORMATS, type StudioFormat } from '@/lib/generation/image-studio'
+import { imageQuotaErrorResponse } from '@/lib/image-quota-server'
 
 export const maxDuration = 120
 
@@ -36,6 +37,10 @@ export async function POST(req: NextRequest) {
     }
     return NextResponse.json(result)
   } catch (error) {
+    // Cupo de imágenes agotado: 429 con código, para que la UI ofrezca el pack
+    // en vez de enseñar "generation failed".
+    const capped = imageQuotaErrorResponse(error)
+    if (capped) return capped
     console.error('studio/generate error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Generation failed' },

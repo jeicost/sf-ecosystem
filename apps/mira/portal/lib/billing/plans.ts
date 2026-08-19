@@ -119,6 +119,13 @@ export const BILLING_ADDONS = {
   diagnosis: { name: 'Diagnóstico de Marca', eur: 490, recurring: false },
 } as const
 
+/**
+ * Imágenes que da el pack de `BILLING_ADDONS.image_pack`. Vive como número
+ * aparte porque el 100 estaba SOLO dentro del nombre ('100 imágenes más') y
+ * el código que suma cupo no puede leer un rótulo comercial.
+ */
+export const IMAGE_PACK_SIZE = 100
+
 /** Planes desconocidos caen a Starter: nunca damos más de lo pagado por un valor raro en BD. */
 export function billingPlan(id: unknown): BillingPlan {
   return typeof id === 'string' && id in BILLING_PLANS

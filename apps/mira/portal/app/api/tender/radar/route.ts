@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resolveRequestClient } from '@/lib/resolve-client'
+import { requireTool } from '@/lib/tools/access'
 import { fetchPlacspCandidates } from '@/lib/tender-radar/placsp'
 import { scoreTenderFit } from '@/lib/tender-radar/score'
 import { CLIENT_CPV } from '@/lib/entitlements'
 
+// Guarda de entitlement: hasta ahora estas rutas solo comprobaban que la persona
+// tuviera acceso al CLIENTE, no que el cliente tuviera contratada Licitaciones —
+// una asimetría ya documentada en lib/email-ops/auth.ts. Con el catálogo en BD
+// (client_tools, 0073) se cierra: requireTool hace las dos comprobaciones.
 export const maxDuration = 300
 
 // Radar v0: busca concursos recientes en la PLACSP (open data gratis), filtra por
@@ -12,7 +16,7 @@ export const maxDuration = 300
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => ({}))
-    const access = await resolveRequestClient(body.clientId ?? null)
+    const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
 
     const { candidates, pagesRead, stopReason } = await fetchPlacspCandidates({

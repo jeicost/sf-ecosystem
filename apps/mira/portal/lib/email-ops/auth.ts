@@ -1,8 +1,12 @@
 // Guardas de las rutas de Email Ops: sesión + cliente + ENTITLEMENT.
-// (Licitaciones no comprueba el entitlement en la API; aquí sí, en todas.)
+//
+// Desde la 0073 el entitlement se lee de client_tools, no de la allowlist de
+// código: dar acceso a un cliente es un clic en /admin/tools, no un deploy.
+// Se conserva esta función en vez de usar requireTool() directamente por el
+// código de error, que la UI de Email Ops ya reconoce.
 
 import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
-import { hasEmailOpsTool } from '@/lib/entitlements'
+import { hasToolAccess } from '@/lib/tools/access'
 
 export type EmailOpsAccess =
   | { ok: true; userId: string; clientId: string; isAgency: boolean }
@@ -13,7 +17,7 @@ export async function requireEmailOps(requestedClientId: string | null): Promise
   if (!access.ok) return access
   const user = await getSessionUser()
   const isAgency = user?.user_metadata?.plan === 'super_admin'
-  if (!hasEmailOpsTool(access.clientId, isAgency)) {
+  if (!(await hasToolAccess('email-ops', access.clientId, isAgency))) {
     return { ok: false, status: 403, error: 'email_ops_not_enabled' }
   }
   return { ok: true, userId: access.userId, clientId: access.clientId, isAgency }

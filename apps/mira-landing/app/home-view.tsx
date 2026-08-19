@@ -478,15 +478,25 @@ export default function HomeView({ content, locale }: { content: Content; locale
       </section>
 
       {/* ── HERRAMIENTAS ── */}
+      {/* Dos bloques, no una lista: lo que trae toda suscripción y los módulos
+          que se montan por operativa. Es la misma estructura que ve el cliente
+          dentro, en la sección Tools del portal. */}
       <section id="tools" style={{ background: '#0c0c14', padding: '84px 24px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto' }}>
           <Head eyebrow={c.tools_eyebrow} title={c.tools_title} center />
-          <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-            {[1, 2, 3, 4].map((n, i) => {
-              const color = ['#8B5CF6', '#a78bfa', '#6366F1', '#c4b5fd'][i]
+          <p style={{ fontSize: 15.5, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, maxWidth: 680, margin: '-18px auto 40px', textAlign: 'center' }}>
+            {c.tools_lead}
+          </p>
+
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#8B5CF6', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
+            {c.tools_included_label}
+          </p>
+          <div className="grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 14, marginBottom: 44 }}>
+            {[1, 2, 3].map((n, i) => {
+              const color = ['#8B5CF6', '#a78bfa', '#6366F1'][i]
               return (
                 <div key={n} style={{
-                  padding: '30px 30px 32px', borderRadius: 18,
+                  padding: '30px 26px 32px', borderRadius: 18,
                   border: `1px solid ${color}22`,
                   background: `linear-gradient(160deg, ${color}0d 0%, rgba(10,10,15,0) 65%)`,
                 }}>
@@ -498,6 +508,34 @@ export default function HomeView({ content, locale }: { content: Content; locale
                 </div>
               )
             })}
+          </div>
+
+          <p style={{ fontSize: 11, fontWeight: 700, color: '#c4b5fd', textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 16 }}>
+            {c.tools_modules_label}
+          </p>
+          <div className="grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 20 }}>
+            {[4, 5].map((n, i) => {
+              const color = ['#c4b5fd', '#818cf8'][i]
+              return (
+                <div key={n} style={{
+                  padding: '30px 30px 32px', borderRadius: 18,
+                  border: `1px solid ${color}22`,
+                  background: `linear-gradient(160deg, ${color}0d 0%, rgba(10,10,15,0) 65%)`,
+                }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em', color: '#f4f4f8', marginBottom: 10 }}>{f(`tools_${n}_title`)}</h3>
+                  <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7 }}>{f(`tools_${n}_text`)}</p>
+                </div>
+              )
+            })}
+          </div>
+
+          <div style={{
+            padding: 'clamp(24px,3.5vw,34px)', borderRadius: 18,
+            border: '1px dashed rgba(196,181,253,0.28)',
+            background: 'linear-gradient(150deg, rgba(124,58,237,0.07) 0%, rgba(10,10,15,0) 70%)',
+          }}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, letterSpacing: '-0.02em', color: '#f4f4f8', marginBottom: 10 }}>{c.tools_custom_title}</h3>
+            <p style={{ fontSize: 13.5, color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, maxWidth: 760 }}>{c.tools_custom_text}</p>
           </div>
         </div>
       </section>

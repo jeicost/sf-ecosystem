@@ -3,8 +3,8 @@ import {
   Users, LayoutDashboard, CheckSquare, BarChart3,
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
   Search, MessageSquare, FileText,
-  Home, Calendar, Brain, Library, ClipboardList, Layers, Archive, Image,
-  Truck, Mail,
+  Home, Calendar, Brain, ClipboardList, Layers, Archive, Image,
+  Mail, Wrench, LayoutGrid,
 } from 'lucide-react'
 import type { Entitlement } from './entitlements'
 import { canAccessSection, minPlanForSection, type UserPlan } from './plans'
@@ -133,7 +133,7 @@ export const SECTIONS: MiraSection[] = [
 
 // ── UI ideal: 6 espacios (Fase 1 del plan) ──────────────────────────────────
 // Reorganización SIN pérdida: cada espacio apunta a rutas que ya existen. Lo que
-// no aparece aquí (Operaciones/Finanzas como departamentos, marketplace) queda
+// no aparece aquí (Operaciones/Finanzas como departamentos) queda
 // CONGELADO — la ruta sigue viva por URL, solo sale de la navegación. Reversible
 // apagando el flag. Los 8 informes, el módulo comercial y todo lo demás siguen.
 export interface IdealSpace {
@@ -154,28 +154,26 @@ export const IDEAL_SPACES: IdealSpace[] = [
     ],
   },
   {
-    // Operaciones del día a día del cliente (no confundir con /operations, el
-    // departamento de agentes). Solo aparece para clientes con la herramienta.
-    key: 'operaciones', label: 'Operations', icon: Truck,
-    items: [
-      { href: '/email-ops', label: 'Email Ops', icon: Mail, requires: 'email-ops' },
-    ],
-  },
-  {
     key: 'calendario', label: 'Calendar', icon: Calendar,
     items: [
       { href: '/calendar', label: 'Calendar', icon: Calendar },
     ],
   },
   {
-    key: 'biblioteca', label: 'Library', icon: Library,
+    // Tools (antes «Library»): TODO lo que la marca tiene contratado, junto.
+    // Las tres primeras entran con cualquier plan de pago; las de operativa se
+    // habilitan marca a marca (client_tools, migración 0073) y quien no las
+    // tiene las ve en el marketplace de /tools, no escondidas como antes.
+    key: 'tools', label: 'Tools', icon: Wrench,
     items: [
+      { href: '/tools',          label: 'All tools',     icon: LayoutGrid },
       { href: '/toolkit',        label: 'Reports',       icon: Layers },
-      { href: '/licitaciones',   label: 'Tenders',       icon: Briefcase, requires: 'tender' },
       { href: '/documents',      label: 'Documents',     icon: FileText },
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
       { href: '/studio',         label: 'Visual Studio', icon: Image },
+      { href: '/licitaciones',   label: 'Tenders',       icon: Briefcase, requires: 'tender' },
+      { href: '/email-ops',      label: 'Email Ops',     icon: Mail, requires: 'email-ops' },
     ],
   },
   {

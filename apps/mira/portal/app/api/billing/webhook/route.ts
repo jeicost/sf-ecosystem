@@ -55,6 +55,32 @@ async function syncSubscription(sub: Stripe.Subscription) {
   if (error) console.error('billing/webhook: could not update client', target, error.message)
 }
 
+/**
+ * Concede un pack de imágenes tras un pago único. Idempotente por
+ * stripe_session_id (UNIQUE en la 0073): Stripe reintenta eventos, y sin eso
+ * cada reintento regalaría otras 100 imágenes.
+ */
+async function grantImagePack(session: Stripe.Checkout.Session) {
+  const clientId = session.metadata?.mira_client_id
+  const images = Number(session.metadata?.mira_images)
+  if (!clientId || !Number.isFinite(images) || images <= 0) {
+    console.error('billing/webhook: image pack without client or size', session.id)
+    return
+  }
+  const db = adminClient()
+  const { error } = await db.from('image_packs').insert({
+    client_id: clientId,
+    images,
+    source: 'stripe',
+    stripe_session_id: session.id,
+  })
+  // 23505 = ya concedido en un intento anterior. No es un fallo.
+  if (error && error.code !== '23505') {
+    console.error('billing/webhook: could not grant image pack', session.id, error.message)
+    throw new Error(error.message)
+  }
+}
+
 export async function POST(req: NextRequest) {
   const stripe = getStripe()
   const secret = process.env.STRIPE_WEBHOOK_SECRET
@@ -80,6 +106,11 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
+        // Pago único: hoy solo el pack de imágenes. No toca la suscripción.
+        if (session.mode === 'payment' && session.metadata?.mira_purchase === 'image_pack') {
+          await grantImagePack(session)
+          break
+        }
         if (session.subscription && typeof session.subscription === 'string') {
           const sub = await stripe.subscriptions.retrieve(session.subscription)
           // La sesión sabe el plan; la suscripción recién creada puede no

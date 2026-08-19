@@ -94,20 +94,36 @@ export const defaultHomeContent = {
     "Plan estratégico, análisis de competencia, innovación e informes para inversores.",
 
   // ── Herramientas ──────────────────────────────────────────────────────────
+  // Cuenta el modelo, no una lista: tres herramientas que trae toda suscripción,
+  // más los módulos que se montan por operativa. Es lo mismo que ve el cliente
+  // dentro del portal en la sección Tools, para que fuera y dentro coincidan.
   tools_eyebrow: "Lo que hay dentro",
-  tools_title: "Herramientas, no juguetes",
-  tools_1_title: "8 informes de negocio",
+  tools_title: "Una herramienta estándar, y los módulos de tu negocio",
+  tools_lead:
+    "Toda marca empieza con las mismas tres herramientas, incluidas en la cuota. Encima montamos los módulos que pide vuestra forma de trabajar.",
+
+  tools_included_label: "Siempre incluido",
+  tools_1_title: "Informes de negocio",
   tools_1_text:
-    "Briefing de marca, auditoría de marketing, análisis de competencia, auditoría SEO, plan de acción, brand book, deck de inversión y sistema de contenido mensual.",
-  tools_2_title: "19 acciones rápidas",
+    "Briefing de marca, auditoría de marketing, análisis de competencia, auditoría SEO, plan de acción, brand book, deck de inversión y sistema de contenido mensual. Más 19 acciones rápidas para el día a día.",
+  tools_2_title: "Documentos",
   tools_2_text:
-    "Posts, newsletters, carruseles, briefs de vídeo, campañas, respuesta a objeciones, proyecciones financieras y más.",
+    "Presentaciones, playbooks y one-pagers escritos desde tu marca, y tu biblioteca de documentos dentro: lo que subes lo leen todos los agentes.",
   tools_3_title: "Visual Studio",
   tools_3_text:
-    "Imágenes con la identidad de tu marca: tus colores, tus tipografías y tu estilo. Puedes subir referencias y manda lo que subas.",
+    "Imágenes con la identidad de tu marca: tus colores, tus tipografías y tu estilo. Con las imágenes al mes que incluya tu plan, contadas a la vista.",
+
+  tools_modules_label: "Módulos para tu operativa",
   tools_4_title: "Licitaciones",
   tools_4_text:
     "Del pliego a la memoria técnica, criterio a criterio, con tu corpus real. Y un radar que vigila los concursos públicos que encajan contigo.",
+  tools_5_title: "Email Ops",
+  tools_5_text:
+    "Los encargos que llegan por correo se convierten solos en fichas operativas, con sus fechas, direcciones y bultos. Se acabó copiarlos a mano al Excel.",
+
+  tools_custom_title: "¿Y si tu negocio necesita otra cosa?",
+  tools_custom_text:
+    "Construimos el módulo para vuestro modelo de negocio: logística, gestión de operaciones, turnos, lo que haga falta. Nos contáis cómo trabajáis y lo montamos dentro de MIRA, con vuestro Cerebro detrás. Se cotiza caso a caso.",
 
   // ── Licitaciones (destacado) ──────────────────────────────────────────────
   tender_eyebrow: "El vertical que se paga solo",

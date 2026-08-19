@@ -43,6 +43,15 @@ export function priceIdFor(plan: BillingPlanId): string | null {
   return process.env[PRICE_ENV[plan]] || null
 }
 
+/**
+ * El precio del pack de 100 imágenes (pago único). Null = todavía no se puede
+ * comprar con tarjeta; la UI entonces ofrece el contacto en vez de un botón que
+ * no cobraría.
+ */
+export function imagePackPriceId(): string | null {
+  return process.env.STRIPE_PRICE_IMAGE_PACK || null
+}
+
 /** Qué planes se pueden cobrar HOY con la configuración que hay. */
 export function billablePlans(): BillingPlanId[] {
   if (!stripeEnabled()) return []

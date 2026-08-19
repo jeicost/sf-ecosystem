@@ -7,8 +7,7 @@ import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase'
-import { getUser, isSuperAdmin } from '@/lib/auth'
-import { hasEmailOpsTool } from '@/lib/entitlements'
+import { useClientTools } from '@/lib/hooks/useClientTools'
 import type { TicketRow } from '@/lib/email-ops/types'
 import TicketTable from '@/components/email-ops/TicketTable'
 import InboxSetupPanel from '@/components/email-ops/InboxSetupPanel'
@@ -24,9 +23,9 @@ interface Counts { open: number; closed: number; other: number; incomplete: numb
 export default function EmailOpsPage() {
   const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
+  const { tools, isLoading: toolsLoading } = useClientTools(activeClient?.id)
   const clientId = activeClient?.id
   const brand = activeClient?.primaryColor || '#6366F1'
-  const isAgency = isSuperAdmin(getUser())
 
   const [tab, setTab] = useState<Tab>('open')
   const [incomplete, setIncomplete] = useState(false)
@@ -76,7 +75,7 @@ export default function EmailOpsPage() {
   const todayIso = new Date().toISOString().slice(0, 10)
   const todayCount = tickets.filter((x) => x.service_date === todayIso && x.status === 'open').length
 
-  if (activeClient && !hasEmailOpsTool(activeClient.id, isAgency)) {
+  if (activeClient && !toolsLoading && !tools.some((t) => t.id === 'email-ops' && t.enabled)) {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
         <Mail size={28} className="mx-auto mb-3 text-ink-muted" />

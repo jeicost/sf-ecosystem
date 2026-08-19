@@ -94,19 +94,32 @@ export const defaultHomeContent: Record<keyof HomeContent, string> = {
 
   // ── Herramientas ──────────────────────────────────────────────────────────
   tools_eyebrow: "What's inside",
-  tools_title: "Tools, not toys",
-  tools_1_title: "8 business reports",
+  tools_title: "One standard tool, plus the modules your business runs on",
+  tools_lead:
+    "Every brand starts with the same three tools, included in the fee. On top of that we build the modules your way of working actually needs.",
+
+  tools_included_label: "Always included",
+  tools_1_title: "Business reports",
   tools_1_text:
-    "Brand briefing, marketing audit, competitive analysis, SEO audit, action plan, brand book, investor deck and monthly content system.",
-  tools_2_title: "19 quick actions",
+    "Brand briefing, marketing audit, competitive analysis, SEO audit, action plan, brand book, investor deck and monthly content system. Plus 19 quick actions for the day-to-day.",
+  tools_2_title: "Documents",
   tools_2_text:
-    "Posts, newsletters, carousels, video briefs, campaigns, objection handling, financial projections and more.",
+    "Decks, playbooks and one-pagers written from your brand, with your document library inside: whatever you upload, every agent reads.",
   tools_3_title: "Visual Studio",
   tools_3_text:
-    "Images in your brand's identity: your colors, your typefaces, your style. You can upload references, and what you upload wins.",
+    "Images in your brand's identity: your colors, your typefaces, your style. With the monthly images your plan includes, counted in plain sight.",
+
+  tools_modules_label: "Modules for how you operate",
   tools_4_title: "Tenders",
   tools_4_text:
     "From the tender spec to the technical proposal, criterion by criterion, using your real corpus. Plus a radar watching the public contracts that fit you.",
+  tools_5_title: "Email Ops",
+  tools_5_text:
+    "Orders that arrive by email turn themselves into operational tickets, with their dates, addresses and parcel counts. No more copying them into the Excel by hand.",
+
+  tools_custom_title: "And if your business needs something else?",
+  tools_custom_text:
+    "We build the module your business model needs: logistics, operations management, staff scheduling, whatever it takes. Tell us how you work and we build it inside MIRA, with your Brand Brain behind it. Scoped and priced case by case.",
 
   // ── Licitaciones (destacado) ──────────────────────────────────────────────
   tender_eyebrow: "The vertical that pays for itself",

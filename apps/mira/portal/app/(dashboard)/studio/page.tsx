@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { Loader2, Sparkles, Image as ImageIcon, Download, Library } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { STUDIO_FORMATS } from '@/lib/generation/image-studio'
+import { useLocaleContext } from '@/app/locale-provider'
+import ImageQuotaBar from '@/components/tools/ImageQuotaBar'
 
 // Estudio Visual v1 — generación de imagen guiada por la marca (identidad visual
 // del Brand Brain aplicada automáticamente: escala a cualquier cliente). El
@@ -14,8 +16,11 @@ interface Result { imageUrl: string; format: string; usedBrandIdentity: boolean;
 
 export default function StudioPage() {
   const { activeClient } = useActiveClient()
+  const { locale } = useLocaleContext()
   const clientId = activeClient?.id
   const brand = activeClient?.primaryColor || '#8B5CF6'
+  // Se remonta la barra tras cada generación para que el contador baje a la vista.
+  const [quotaTick, setQuotaTick] = useState(0)
 
   const [prompt, setPrompt] = useState('')
   const [format, setFormat] = useState<string>('post')
@@ -68,6 +73,7 @@ export default function StudioPage() {
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not generate the image'); return }
       setResult(data)
+      setQuotaTick((n) => n + 1)
     } catch {
       setError('Network error while generating')
     } finally {
@@ -93,6 +99,12 @@ export default function StudioPage() {
           <Library size={14} /> Gallery
         </Link>
       </div>
+
+      {clientId && (
+        <div className="mb-6">
+          <ImageQuotaBar key={quotaTick} clientId={clientId} brand={brand} locale={locale} />
+        </div>
+      )}
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Panel de generación */}

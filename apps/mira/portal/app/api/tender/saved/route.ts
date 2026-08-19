@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resolveRequestClient } from '@/lib/resolve-client'
+import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
 
 // Expediente de licitación persistido: listar, guardar (crear o actualizar) y
@@ -9,10 +9,14 @@ import { adminClient } from '@/lib/supabase'
 const COLS = 'id,client_id,title,expediente,organo,deadline,source_url,criteria,memoria,status,created_at,updated_at'
 
 /** Listado del cliente activo. Con ?id= devuelve uno solo, con su pliego. */
+// Guarda de entitlement: hasta ahora estas rutas solo comprobaban que la persona
+// tuviera acceso al CLIENTE, no que el cliente tuviera contratada Licitaciones —
+// una asimetría ya documentada en lib/email-ops/auth.ts. Con el catálogo en BD
+// (client_tools, 0073) se cierra: requireTool hace las dos comprobaciones.
 export async function GET(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id')
-    const access = await resolveRequestClient(req.nextUrl.searchParams.get('clientId'))
+    const access = await requireTool('tenders', req.nextUrl.searchParams.get('clientId'))
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const db = adminClient()
 
@@ -38,7 +42,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    const access = await resolveRequestClient(body.clientId ?? null)
+    const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const db = adminClient()
 
@@ -79,7 +83,7 @@ export async function DELETE(req: NextRequest) {
   try {
     const id = req.nextUrl.searchParams.get('id')
     if (!id) return NextResponse.json({ error: 'Falta id' }, { status: 400 })
-    const access = await resolveRequestClient(req.nextUrl.searchParams.get('clientId'))
+    const access = await requireTool('tenders', req.nextUrl.searchParams.get('clientId'))
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const { error } = await adminClient().from('tenders').delete().eq('id', id).eq('client_id', access.clientId)
     if (error) throw error

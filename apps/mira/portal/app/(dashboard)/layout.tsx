@@ -21,7 +21,7 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
-import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive, ClipboardList, CreditCard } from 'lucide-react'
+import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive, ClipboardList, CreditCard, Wrench } from 'lucide-react'
 import MiraLogo from '@/components/mira-logo'
 import { ErrorBoundary } from '@/components/error-boundary'
 
@@ -220,6 +220,20 @@ useEffect(() => {
         <span>Questionnaires</span>
       </Link>
 
+      {/* Tools — el hub de módulos. Con NEXT_PUBLIC_IDEAL_UI apagado esta es la
+          ÚNICA entrada de menú al Estudio Visual, Licitaciones y Email Ops: sin
+          ella solo se llega por URL. */}
+      <Link href="/tools"
+        className={clsx(
+          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
+          path === '/tools'
+            ? 'bg-violet-500/15 text-violet-400'
+            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/10'
+        )}>
+        <Wrench size={13} />
+        <span>Tools</span>
+      </Link>
+
       {/* Toolkit — global link (oculto para el plan 'consulta': sin toolkit) */}
       {canUseFeature(user.plan, 'toolkitGenerate') && (
         <Link href="/toolkit"
@@ -259,7 +273,7 @@ useEffect(() => {
             : 'text-ink-tertiary hover:text-pink-400 hover:bg-pink-500/10'
         )}>
         <Zap size={13} />
-        <span>Integrations</span>
+        <span>Connections</span>
       </Link>
 
       {/* Billing — el cliente tiene que poder ver qué paga y darse de baja

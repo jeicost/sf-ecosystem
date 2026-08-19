@@ -3,7 +3,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
 import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
-import { hasTenderTool, cpvFor, CPV_LABEL } from '@/lib/entitlements'
+import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
+import { useClientTools } from '@/lib/hooks/useClientTools'
 
 // Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
 // el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
@@ -31,6 +32,7 @@ const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Qualitative', autom
 
 export default function LicitacionesPage() {
   const { activeClient } = useActiveClient()
+  const { tools, isLoading: toolsLoading } = useClientTools(activeClient?.id)
   const clientId = activeClient?.id
   const brand = activeClient?.primaryColor || '#6366F1'
 
@@ -161,7 +163,11 @@ export default function LicitacionesPage() {
 
   // Guard suave: la herramienta solo aplica a clientes que licitan. Si se llega por
   // URL con un cliente sin entitlement, se explica en vez de operar en vano.
-  if (activeClient && !hasTenderTool(activeClient.id)) {
+  //
+  // Se espera a que cargue: antes esto llamaba a hasTenderTool(id) SIN isAgency,
+  // así que la propia agencia veía "no está habilitada" en su herramienta. El
+  // estado viene de /api/tools, que ya resuelve el caso agencia en el servidor.
+  if (activeClient && !toolsLoading && !tools.some((t) => t.id === 'tenders' && t.enabled)) {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
         <FileText size={28} className="mx-auto mb-3 text-ink-muted" />

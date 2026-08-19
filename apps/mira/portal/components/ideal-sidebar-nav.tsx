@@ -6,6 +6,8 @@ import { IDEAL_SPACES, resolveNavItemStatus, minPlanForNavItem } from '@/lib/sec
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { hasEntitlement, type Entitlement } from '@/lib/entitlements'
+import { useClientTools } from '@/lib/hooks/useClientTools'
+import { ENTITLEMENT_TO_TOOL_ID } from '@/lib/tools/catalog'
 import type { UserPlan } from '@/lib/plans'
 import { UnavailableNavItem } from '@/components/nav-item-status'
 
@@ -29,13 +31,21 @@ export default function IdealSidebarNav({
   const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'))
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()
+  // Qué módulos tiene abiertos la marca, según la BD (client_tools). Mientras
+  // carga se usa la allowlist de código, que es exactamente lo que sembró la
+  // 0073: así los clientes de siempre no ven su herramienta parpadear.
+  const { tools, isLoading } = useClientTools(activeClient?.id)
 
   // Herramientas restringidas por cliente (p. ej. Licitaciones): solo aparecen
   // para clientes con el entitlement, o para la agencia. Es distinto del
   // candado por plan: lo que el cliente no tiene contratado como vertical no
   // se enseña; lo que su PLAN no incluye sí se enseña, bloqueado (upsell).
-  const canSee = (item: { requires?: Entitlement }) =>
-    !item.requires || hasEntitlement(item.requires, activeClient?.id, isAgency)
+  const canSee = (item: { requires?: Entitlement }) => {
+    if (!item.requires) return true
+    if (isLoading) return hasEntitlement(item.requires, activeClient?.id, isAgency)
+    const toolId = ENTITLEMENT_TO_TOOL_ID[item.requires] ?? item.requires
+    return tools.some((t) => t.id === toolId && t.enabled)
+  }
 
   const itemClass = (active: boolean) => clsx(
     'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
@@ -94,7 +104,7 @@ export default function IdealSidebarNav({
         <Link href="/integrations"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/integrations') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <Zap size={13} /> Integrations
+          <Zap size={13} /> Connections
         </Link>
         <Link href="/billing"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',

@@ -4,6 +4,7 @@
 import { createServiceClient } from '@/lib/supabase-admin'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 import { logUsage } from '@/lib/anthropic-client'
+import { hasImageQuota, ImageQuotaExceededError, getImageQuotaStatus } from '@/lib/image-quota-server'
 
 const VISUAL_BUCKET = 'generated-assets'
 const SIGNED_URL_EXPIRATION = 3600 * 24 * 7 // 7 days
@@ -24,6 +25,23 @@ export interface GenerateImageOptions {
   pathPrefix?: string
   /** Ruta para la telemetría de consumo. */
   route?: string
+  /**
+   * Qué hacer cuando la marca ha agotado las imágenes del mes.
+   *
+   *   'skip'  (por defecto) → devuelve null, igual que cualquier otro fallo de
+   *           generación. Es lo correcto cuando la imagen es un ACCESORIO de un
+   *           entregable mayor (portada de un deck, imagen de una quick action,
+   *           imagen suelta en el chat): quedarse sin cupo no puede tumbar la
+   *           generación del documento entero. Todos esos llamadores ya tratan
+   *           el null.
+   *   'throw' → lanza ImageQuotaExceededError para que la ruta devuelva un 429
+   *           con código y la UI ofrezca el pack. Se usa donde la imagen ES el
+   *           producto (Estudio Visual): ahí un null silencioso sería mentirle
+   *           al usuario sobre por qué no ha salido nada.
+   *
+   * En los dos casos NO se genera la imagen: el tope se aplica siempre.
+   */
+  onExhausted?: 'skip' | 'throw'
 }
 
 export async function generateAndStoreImage(
@@ -35,6 +53,18 @@ export async function generateAndStoreImage(
   const size = opts.size ?? '1024x1024'
   const pathPrefix = opts.pathPrefix ?? 'quick-actions'
   const route = opts.route ?? 'quick-actions:image'
+
+  // Tope de imágenes del mes. Se comprueba ANTES de llamar a OpenAI: pasado el
+  // cupo no se genera nada por ninguna vía.
+  if (!(await hasImageQuota(clientId))) {
+    if (opts.onExhausted === 'throw') {
+      const { limit } = await getImageQuotaStatus(clientId)
+      throw new ImageQuotaExceededError(limit ?? 0)
+    }
+    console.warn('[openai-image] cupo de imágenes agotado para', clientId, '- imagen omitida')
+    return null
+  }
+
   // Key del cliente (Integraciones → OpenAI) con fallback a la key de plataforma
   const apiKey = await getClientApiKey(clientId, 'openai', process.env.OPENAI_API_KEY)
   if (!apiKey) return null

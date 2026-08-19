@@ -42,6 +42,8 @@ const SENSITIVE = [
   // 0071: Email Ops — correos operativos del cliente, adjuntos y correcciones
   'email_inboxes', 'email_ops_settings', 'email_tickets', 'email_messages',
   'email_corrections', 'email_training_examples',
+  // 0073: Tools — qué módulos tiene contratado cada marca, sus peticiones y sus packs
+  'client_tools', 'tool_requests', 'image_packs',
 ]
 
 const anon = createClient(URL, KEY, { auth: { persistSession: false } })
