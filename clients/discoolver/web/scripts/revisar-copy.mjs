@@ -15,7 +15,12 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 
-const RAIZ = "lib/content";
+const RAICES = [
+  "lib/content",
+  // Los metadatos viven en las páginas, no en el copy, y son lo que enseña
+  // Google: dos títulos llevaban «curadas» y este script no los veía.
+  "app",
+];
 
 /**
  * Prohibidas en copy visible en español. El motivo va al lado porque una
@@ -45,9 +50,10 @@ const CIFRAS = /\b(858|1\.099|1\.629|1\.500|12 ciudades)\b/;
 async function ficheros(dir) {
   const salida = [];
   for (const entrada of await readdir(dir, { withFileTypes: true })) {
+    if (entrada.name === "node_modules" || entrada.name.startsWith(".")) continue;
     const ruta = path.join(dir, entrada.name);
     if (entrada.isDirectory()) salida.push(...(await ficheros(ruta)));
-    else if (entrada.name.endsWith(".ts")) salida.push(ruta);
+    else if (entrada.name.endsWith(".ts") || entrada.name.endsWith(".tsx")) salida.push(ruta);
   }
   return salida;
 }
@@ -58,7 +64,8 @@ function valores(linea) {
 }
 
 let fallos = 0;
-for (const fichero of await ficheros(RAIZ)) {
+const todos = (await Promise.all(RAICES.map((r) => ficheros(r)))).flat();
+for (const fichero of todos) {
   const lineas = (await readFile(fichero, "utf8")).split("\n");
   let enComentario = false;
   lineas.forEach((linea, i) => {

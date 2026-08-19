@@ -32,7 +32,7 @@ export const viewport: Viewport = { themeColor: "#C426C4" };
 
 export const metadata: Metadata = {
   ...buildMetadata({
-    title: "Discoolver — Guías de viaje curadas de creadores",
+    title: "Discoolver — Guías de viaje escritas por quien vive la ciudad",
     description: site.description,
     path: "/",
   }),

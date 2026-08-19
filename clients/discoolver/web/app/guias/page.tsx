@@ -23,9 +23,9 @@ import { Wordmark } from "@/components/sections/Wordmark";
 import { CTA } from "@/components/sections/CTA";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Guías de viaje curadas de creadores",
+  title: "Discoolver — Guías de viaje escritas por quien vive la ciudad",
   description:
-    "Lo mejor del año en cada ciudad, editado en una guía que querrás guardar: curación humana de creadores, digital y papel, con IA para recorrer la ciudad.",
+    "Lo mejor del año en cada ciudad, elegido por editores entre lo que recomiendan los creadores locales. Digital y papel, con IA para recorrer la ciudad.",
   path: "/guias",
 });
 
