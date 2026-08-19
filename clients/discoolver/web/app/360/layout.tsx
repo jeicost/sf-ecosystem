@@ -1,5 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Brand360Shell } from "@/components/b360/Brand360Shell";
+
+/** El color de la barra del navegador. Va en `viewport` y no en `metadata`:
+ *  Next 16 lo ignora en metadata y avisa en cada build. */
+export const viewport: Viewport = { themeColor: "#FF00C8" };
 
 export const metadata: Metadata = {
   title: {
@@ -12,9 +16,8 @@ export const metadata: Metadata = {
   },
   // El root layout declara los iconos del B2C. 360 es otra marca: se sobrescriben
   // aquí para todo el segmento.
+  manifest: "/manifest-360.webmanifest",
   icons: {
-    // Juego completo: el .ico manda en la pestaña de escritorio, los PNG en
-    // Android/PWA y el apple-icon lleva fondo sólido (iOS no respeta el alfa).
     icon: [
       { url: "/assets/360/favicon.ico", sizes: "16x16 32x32 48x48" },
       { url: "/assets/360/icon-192.png", sizes: "192x192", type: "image/png" },

@@ -1,0 +1,28 @@
+{
+  "name": "discoolver 360",
+  "short_name": "discoolver 360",
+  "description": "Plataforma para destinos, alojamientos y agencias",
+  "start_url": "/360",
+  "scope": "/360",
+  "display": "standalone",
+  "background_color": "#0A0A16",
+  "theme_color": "#FF00C8",
+  "icons": [
+    {
+      "src": "/assets/360/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/360/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/360/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

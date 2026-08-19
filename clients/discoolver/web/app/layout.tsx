@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Geist, Geist_Mono } from "next/font/google";
 import { buildMetadata } from "@/lib/seo";
 import { site } from "@/lib/site";
@@ -25,6 +25,10 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   display: "swap",
 });
+
+/** El color de la barra del navegador. Va en `viewport` y no en `metadata`:
+ *  Next 16 lo ignora en metadata y avisa en cada build. */
+export const viewport: Viewport = { themeColor: "#C426C4" };
 
 export const metadata: Metadata = {
   ...buildMetadata({
