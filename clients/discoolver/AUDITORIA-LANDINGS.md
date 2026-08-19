@@ -455,6 +455,30 @@ ncglobalassets 200 · **adriangrooves.com sin resolver (DNS vacío)**. No lo cau
 commit no toca ni un fichero de ese cliente— y su deploy responde 200 en
 `adrian-grooves.vercel.app`: es el dominio, que no apunta a ninguna parte. Anotado, no tocado.
 
+## Encargo abierto — `/360` (19-ago, al cierre)
+
+Tres cosas pedidas por el CEO. **Una hecha, dos con hallazgo previo:**
+
+**1. El logo de 360 — HECHO** (`2e55c44`). El contrapunzón de la D estaba **pintado de blanco**, no
+calado: sobre papel se lee como hueco, sobre el nav casi negro es una mancha blanca que a 34 px se
+come el dibujo. La versión calada pone ese blanco a alfa 0 con borde progresivo — **no se redibuja
+nada**, cada píxel del trazo se conserva. El original queda intacto para papel y fondos claros.
+
+**2. Los heroes desde 21st.dev — pendiente.** No empezado: es un rediseño y merece sesión propia.
+
+**3. Fotografía de destino — hallazgo importante.** Discoolver **sí tiene fotos reales propias** y
+son públicas, pero no se pueden usar en bloque:
+
+- La ruta es `https://images.discoolver.com/images/{slug}/{id}.jpg` (200 OK). Se llega desde
+  `main_post[].gallery[]` de la API, que redirige 302 a esa URL.
+- **⚠️ Algunas llevan marca de agua de banco de imágenes.** Confirmado en
+  `catedral_de_la_almudena/14558.jpg`. Otras tres comprobadas están limpias, así que hay que
+  revisarlas una a una.
+- **⚠️ El proxy de imagen de Cloudflare devuelve 404** en `discoolver.com/cdn-cgi/image/...`. Eso
+  explica los recuadros vacíos que enseña `/plan-my-trip` en la propia plataforma: es un fallo en
+  producción de Diego, no de la landing.
+- Calidad desigual: las hay de 512 px y de aficionado.
+
 ## Lo que sigue abierto
 
 1. **Enlace mágico: el producto no lo tiene.** El brief pedía "Entrar sin contraseña" y "te
