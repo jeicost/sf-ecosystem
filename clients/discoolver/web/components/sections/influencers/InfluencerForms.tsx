@@ -30,7 +30,7 @@ interface FormCopy {
   featured?: boolean;
 }
 
-function CreatorForm({ copy, successText, errorText, locale = "es" }: { copy: FormCopy; successText: string; errorText: string; locale?: Locale }) {
+function CreatorForm({ copy, successText, errorText, locale = "es", ciudadesAbiertas }: { copy: FormCopy; successText: string; errorText: string; locale?: Locale; ciudadesAbiertas?: string }) {
   const [status, setStatus] = useState<Status>("idle");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -60,7 +60,7 @@ function CreatorForm({ copy, successText, errorText, locale = "es" }: { copy: Fo
     { key: "name", label: copy.labels.name, type: "text", autoComplete: "name", placeholder: locale === "en" ? "First and last name" : "Nombre y apellido", required: true },
     { key: "email", label: copy.labels.email, type: "email", autoComplete: "email", placeholder: locale === "en" ? "you@email.com" : "tu@correo.com", required: true },
     { key: "handle", label: copy.labels.handle, type: "text", autoComplete: "off", placeholder: locale === "en" ? "@yourhandle" : "@tuhandle", required: true },
-    { key: "city", label: copy.labels.city, type: "text", autoComplete: "address-level2", placeholder: locale === "en" ? "Madrid, Bangkok, Lisbon…" : "Madrid, Bilbao, Bangkok…", required: true },
+    { key: "city", label: copy.labels.city, type: "text", autoComplete: "address-level2", placeholder: locale === "en" ? "Madrid, Bangkok, Lisbon…" : "Madrid, Bilbao, Bangkok…", required: true, ayuda: ciudadesAbiertas },
     { key: "link", label: copy.labels.link, type: "url", autoComplete: "off", placeholder: "https://…", required: true },
   ] as const;
 
@@ -85,6 +85,7 @@ function CreatorForm({ copy, successText, errorText, locale = "es" }: { copy: Fo
             autoComplete={field.autoComplete}
             placeholder={field.placeholder}
           />
+          {"ayuda" in field && field.ayuda && <p className="cform__ayuda">{field.ayuda}</p>}
         </div>
       ))}
 
@@ -111,7 +112,7 @@ function CreatorForm({ copy, successText, errorText, locale = "es" }: { copy: Fo
   );
 }
 
-export function InfluencerForms({ content, locale = "es" }: { content: InfluencersContent; locale?: Locale }) {
+export function InfluencerForms({ content, locale = "es" , ciudadesAbiertas }: { content: InfluencersContent; locale?: Locale; ciudadesAbiertas?: string }) {
   const forms: FormCopy[] = [
     {
       id: "form-guia",
@@ -163,7 +164,7 @@ export function InfluencerForms({ content, locale = "es" }: { content: Influence
         <div className="forms-grid">
           {forms.map((copy, i) => (
             <Reveal delay={i * 120} key={copy.id}>
-              <CreatorForm locale={locale} copy={copy} successText={content.form_success} errorText={content.form_error} />
+              <CreatorForm ciudadesAbiertas={ciudadesAbiertas} locale={locale} copy={copy} successText={content.form_success} errorText={content.form_error} />
             </Reveal>
           ))}
         </div>

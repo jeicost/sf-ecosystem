@@ -4195,3 +4195,42 @@ a.blog-card__cat:hover {
 }
 .cta__aviso-abrir:hover { color: var(--paper); }
 .cta__otros { font-size: 13px; }
+
+/* La etiqueta de requisito de cada vía: no es un CTA, es quién encaja. Antes
+   llevaba flecha y se leía como un botón. */
+.track-card__req {
+  display: inline-block;
+  margin-top: auto;
+  padding-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+/* «Quién está dentro»: la prueba que le faltaba a /influencers. Los números
+   salen de la API; un ítem sin dato no se pinta en vez de inventarse. */
+.dentro__grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); gap: 56px; align-items: center; }
+.dentro__cifras {
+  list-style: none; margin: 34px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 20px;
+}
+.dentro__cifras li { display: flex; flex-direction: column; gap: 3px; }
+.dentro__n {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(30px, 3vw, 44px); line-height: 1; letter-spacing: -0.03em;
+  color: var(--primary); font-variant-numeric: tabular-nums;
+}
+.dentro__t { font-size: 14px; color: var(--ink-2); text-wrap: balance; }
+.dentro__foto { border-radius: 20px; overflow: hidden; border: 1px solid color-mix(in oklab, var(--line) 20%, transparent); }
+.dentro__foto img { display: block; width: 100%; height: auto; }
+.cform__ayuda { margin-top: 6px; font-size: 12.5px; line-height: 1.45; color: var(--ink-2); }
+@media (max-width: 900px) { .dentro__grid { grid-template-columns: 1fr; gap: 32px; } }
+
+/* El H1 de /influencers parte tras el punto y solo tras el punto. `nowrap`
+   impide que el navegador busque otro sitio; el cuerpo se ata al ancho de la
+   columna, igual que en la home. */
+.hero-creators__copy { container-type: inline-size; }
+.hero-title--dos { font-size: min(clamp(30px, 5vw, 68px), 6.4cqi); }
+.hero-title--dos span { display: block; white-space: nowrap; }

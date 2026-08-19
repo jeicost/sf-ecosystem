@@ -16,7 +16,7 @@ export function TrackMicro({ content }: { content: InfluencersContent }) {
   const criteria = [content.micro_criteria_1, content.micro_criteria_2, content.micro_criteria_3];
 
   return (
-    <section className="section band-card" id="tu-video" aria-labelledby="micro-title">
+    <section className="section band-card" id="recomendadores" aria-labelledby="micro-title">
       <div className="container">
         <Reveal delay={0}>
           <div className="section__head">

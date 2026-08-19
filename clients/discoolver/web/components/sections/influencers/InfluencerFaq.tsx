@@ -10,7 +10,7 @@ import type { InfluencersContent } from "@/lib/content/influencers";
  */
 export function InfluencerFaq({ content }: { content: InfluencersContent }) {
   const [openIndex, setOpenIndex] = useState<number>(0);
-  const items = [1, 2, 3, 4, 5].map((n) => ({
+  const items = [1, 2, 3, 4, 5, 6].map((n) => ({
     q: content[`faq_q${n}` as keyof InfluencersContent],
     a: content[`faq_a${n}` as keyof InfluencersContent],
   }));

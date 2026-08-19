@@ -17,7 +17,11 @@ export function TrackTop({ content }: { content: InfluencersContent }) {
   ];
 
   return (
-    <section className="section" id="guia-propia" aria-labelledby="top-title">
+    <>
+      {/* Dos anclas para la misma sección: el menú del creador entra por
+          «cómo funciona» y el hero por la vía concreta. */}
+      <span id="como-funciona" aria-hidden="true" />
+      <section className="section" id="tu-guia" aria-labelledby="top-title">
       <div className="container">
         <Reveal delay={0}>
           <div className="section__head">
@@ -55,7 +59,8 @@ export function TrackTop({ content }: { content: InfluencersContent }) {
         <div className="object-grid" style={{ marginTop: 96 }}>
           <Reveal delay={0}>
             <div>
-              <p className="track-quote">{content.top_quote}</p>
+              {/* La primera frase de este bloque («Un reel vive 48 horas») subió
+                  al H1. La segunda se queda sola y aguanta perfectamente. */}
               <p className="track-note">{content.top_note}</p>
               <a href="#form-guia" className="btn btn-primary" style={{ marginTop: 32 }}>
                 {content.top_cta} <Icon name="arrow-right" size={14} />
@@ -78,5 +83,6 @@ export function TrackTop({ content }: { content: InfluencersContent }) {
         </div>
       </div>
     </section>
+    </>
   );
 }

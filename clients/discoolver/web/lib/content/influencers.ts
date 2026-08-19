@@ -28,38 +28,34 @@
 export const defaultInfluencersContent = {
   // Hero
   hero_kicker: "Programa de creators · Candidaturas abiertas",
-  hero_line_1: "Tu guía.",
-  hero_line_2: "Tu marca.",
-  hero_line_3: "Tus ingresos.",
-  hero_sub_a:
-    "Si mueves audiencia, editamos contigo tu propia guía de ciudad y la vendes con tu nombre: te llevas parte de cada venta y comisión por cada reserva.",
-  hero_sub_b:
-    "Si estás empezando, envíanos tu mejor recomendación en vídeo — las mejores entran en la guía del año. Y cobran.",
-
+  hero_line_1: "Un reel vive 48 horas.",
+  hero_line_2: "Tu guía vive todo el año.",
+  hero_line_3: "",
+  hero_sub_a: "Buscamos a quien sabe de su ciudad. Da igual si tienes 500.000 seguidores o ninguno: si conoces un sitio y sabes contarlo, hay una vía para ti. Elige la tuya:",
+  hero_sub_b: "",
   // Track picker (two cards, right under the hero)
-  picker_a_kicker: "Tengo audiencia",
+  picker_a_kicker: "Tienes comunidad",
   picker_a_title: "Quiero mi guía",
-  picker_a_text: "Editamos contigo tu guía de ciudad. Sale con tu nombre y te llevas parte de cada venta.",
-  picker_a_cta: "Ver cómo funciona",
-  picker_b_kicker: "Tengo recomendaciones",
-  picker_b_title: "Envío mi vídeo",
-  picker_b_text: "Mándanos tu mejor sitio en vídeo. Si entra en la guía del año, firmas dentro y cobras.",
-  picker_b_cta: "Ver cómo funciona",
-
+  picker_a_text: "Editamos contigo la guía de tu ciudad. Sale con tu nombre y cobras por cada venta y cada reserva.",
+  picker_a_cta: "Desde 10.000 seguidores en una ciudad",
+  picker_b_kicker: "Tienes los sitios",
+  picker_b_title: "Monetiza mis recomendaciones",
+  picker_b_text: "Mándanos tus vídeos. Si tu criterio encaja, entras como recomendador y cobras por lo que generen tus sitios.",
+  picker_b_cta: "Sin audiencia mínima",
   // Track TOP — creators with audience
-  top_eyebrow: "Track 1 · Creadores con audiencia",
+  top_eyebrow: "Tienes comunidad",
   top_title_1: "Nosotros la editamos.",
   top_title_em: "Tú la firmas y cobras.",
   top_lead:
     "Llevas años contando tu ciudad en redes. Nosotros la editamos contigo y la convertimos en un objeto que se compra, se guarda y sigue vendiendo todo el año.",
-  top_step_1_label: "Importamos tus spots",
+  top_step_1_label: "Importamos tus sitios",
   top_step_1_text: "De tus propios posts. La IA hace el trabajo sucio: los saca, los ordena y los sitúa en el mapa.",
   top_step_2_label: "La editamos contigo",
   top_step_2_text: "Nuestros editores montan la guía a tu lado: tu nombre, tu criterio, nuestro formato.",
   top_step_3_label: "La vendes y cobras",
   top_step_3_text:
     "Digital desde 14€ y papel desde 29€, a tu audiencia. Cobras por cada venta que salga de tus canales y por cada reserva que entre desde tus páginas. Dos vías, y las dos siguen corriendo mientras la guía viva. Los números, por escrito antes de que firmes.",
-  top_quote: "Un reel vive 48 horas. Tu guía vive todo el año.",
+  top_quote: "",
   top_note: "No nos importan tus likes; nos importa que sepas dónde se come de verdad.",
   top_mock_city: "Tu ciudad",
   top_mock_sub: "según tú",
@@ -67,24 +63,31 @@ export const defaultInfluencersContent = {
   top_cta: "Quiero mi guía",
 
   // Track MICRO — starting out
-  micro_eyebrow: "Track 2 · Estás empezando",
-  micro_title_1: "Envíanos",
-  micro_title_em: "tu vídeo.",
-  micro_lead:
-    "No hace falta tener una audiencia enorme para entrar en una guía. Hace falta saber de un sitio y contarlo bien.",
-  micro_step_1_label: "Graba tu recomendación",
-  micro_step_1_text: "Como ya la grabas: un sitio, por qué merece la pena, sin postureo.",
-  micro_step_2_label: "Pega el link",
-  micro_step_2_text: "En el formulario de aquí abajo. Reel, TikTok o YouTube: el formato nos da igual.",
-  micro_step_3_label: "Si entra, cobras",
-  micro_step_3_text:
-    "Si entra en la guía anual de tu ciudad: tu firma dentro de la guía, distintivo de editor invitado y comisión por las ventas y reservas que genere tu recomendación.",
+  micro_eyebrow: "Tienes los sitios",
+  micro_title_1: "Monetiza lo que",
+  micro_title_em: "ya recomiendas.",
+  micro_lead: "Mándanos tus vídeos. Si tu criterio nos encaja, entras como recomendador de discoolver: tus sitios se publican firmados con tu nombre y cobras por lo que generen. Sin audiencia mínima.",
+  micro_step_1_label: "Manda tus recomendaciones",
+  micro_step_1_text: "Como ya las grabas: un sitio, por qué merece la pena, sin postureo. Reel, TikTok o YouTube — el formato nos da igual.",
+  micro_step_2_label: "Un editor las revisa",
+  micro_step_2_text: "Si tu criterio encaja, entras. Y si no, te decimos por qué: puedes volver con otros sitios.",
+  micro_step_3_label: "Publicas y cobras",
+  micro_step_3_text: "Tus sitios salen en discoolver firmados contigo, y cobras comisión por cada reserva que generen. Mientras el sitio siga publicado, sigue contando.",
   micro_criteria_title: "Qué buscan los editores",
   micro_criteria_1: "Un sitio concreto, con nombre y barrio",
   micro_criteria_2: "Una opinión de verdad, la tuya",
   micro_criteria_3: "Cero publi encubierta",
-  micro_ladder: "Las mejores firmas de cada edición pueden acabar con guía propia.",
-  micro_cta: "Enviar mi vídeo",
+  micro_ladder: "Los recomendadores que mejor funcionan son los primeros a los que llamamos para editar una guía propia.",
+  micro_cta: "Enviar mis vídeos",
+  // Bloque de prueba. Las cifras NO son copy: las pone la página desde la API.
+  dentro_eyebrow: "Quién está dentro",
+  dentro_titulo: "Esto es lo que hay publicado hoy.",
+  dentro_lead:
+    "Sin testimonios de relleno: los números del catálogo, tal y como están ahora mismo. Cuando haya creadores firmando con nombre y cara, estarán aquí.",
+  dentro_sitios: "sitios publicados",
+  dentro_creadores: "creadores firmando",
+  dentro_ciudades: "ciudades abiertas",
+  dentro_pagadas: "recomendaciones pagadas",
 
   // FAQ
   faq_eyebrow: "Preguntas frecuentes",
@@ -109,10 +112,17 @@ export const defaultInfluencersContent = {
   faq_a5:
     "Sí, así funciona esto. Las firmas que mejor funcionan en cada edición son las primeras a las que llamamos para editar una guía propia.",
 
+  // OBLIGATORIA según el brief: sin ella, quien vea también la home —donde el
+  // hero dice «0 recomendaciones patrocinadas»— puede concluir que nos
+  // contradecimos. Con ella, la transparencia pasa a ser el argumento.
+  faq_q6: "¿Cómo funciona la comisión?",
+  faq_a6:
+    "Nadie paga por aparecer en discoolver: los sitios entran porque un editor los aprueba, no porque alguien los compre. La comisión se genera después, cuando alguien reserva a través de tu recomendación, mediante nuestro sistema de atribución. Publicar es gratis y editorial; cobrar depende de lo que la gente haga con lo que recomiendas.",
+
   // Application forms
   forms_eyebrow: "Candidaturas abiertas",
-  forms_title_1: "Cuéntanos",
-  forms_title_em: "quién eres.",
+  forms_title_1: "Tu guía. Tu firma.",
+  forms_title_em: "Tus ingresos.",
   forms_lead: "Dos formularios, dos caminos. Elige el tuyo; no hace falta que rellenes los dos.",
   form_top_title: "Quiero mi guía",
   form_top_sub: "Para creadores con audiencia en una ciudad.",
@@ -131,7 +141,7 @@ export const defaultInfluencersContent = {
   form_micro_city: "Ciudad",
   form_micro_link: "Link a tu vídeo (Reel, TikTok o YouTube)",
   form_micro_submit: "Enviar mi vídeo",
-  form_micro_note: "Si entra en la guía, te escribimos. Si no, también — con el porqué.",
+  form_micro_note: "Si encajas, te escribimos. Si no, también — con el porqué.",
   forms_fine_print: "Tu contenido sigue siendo tuyo. Sin exclusividad, sin letra pequeña.",
   form_success: "Recibido. Te escribimos al email que nos has dejado.",
   form_error: "No se pudo enviar. Inténtalo de nuevo en unos minutos.",

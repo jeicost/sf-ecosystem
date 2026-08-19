@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
+import { PLATFORM } from "@/lib/platform";
 import { altPath, localeFromPath, withLocale, UI, type Locale } from "@/lib/i18n";
 
 /**
@@ -19,7 +20,16 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const t = UI[locale];
   const isCreators = pathname?.includes("/influencers");
 
-  const links = [
+  // /influencers tenía el menú de la tienda: los cuatro enlaces iban a
+  // /guias#… y no había salida ni a la home ni a la plataforma. Un creador que
+  // llega desde Instagram no podía ver el producto al que se le pide sumarse.
+  const links = isCreators
+    ? [
+        { href: "#como-funciona", label: t.nav.comoFunciona },
+        { href: withLocale("/guias", locale), label: t.nav.lasGuias },
+        ...(locale === "es" ? [{ href: "/blog", label: t.nav.blog }] : []),
+      ]
+    : [
     { href: withLocale("/guias#guias", locale), label: t.nav.guias },
     { href: withLocale("/guias#curacion", locale), label: t.nav.curamos },
     { href: withLocale("/guias#ia", locale), label: t.nav.ia },
@@ -71,11 +81,13 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
               no a la tienda: es la página destino de los anuncios. */}
           {isCreators ? (
             <>
-              <Link href={withLocale("/guias#guias", locale)} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
-                {t.nav.verGuias}
-              </Link>
-              <Link href="#form-guia" className="btn btn-primary" style={{ padding: "10px 18px" }}>
-                {locale === "en" ? "I want my guide" : "Quiero mi guía"} <Icon name="arrow-up-right" size={14} />
+              {/* La salida al producto: sin esto, la página pide sumarse a algo
+                  que no se puede ni mirar. */}
+              <a href={PLATFORM.home} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
+                {t.nav.verPlataforma}
+              </a>
+              <Link href="#candidaturas" className="btn btn-primary" style={{ padding: "10px 18px" }}>
+                {t.nav.quieroEntrar} <Icon name="arrow-up-right" size={14} />
               </Link>
             </>
           ) : (
