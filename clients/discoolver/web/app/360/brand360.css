@@ -563,3 +563,59 @@
 
 /* B5 · El copyright iba en el slate ilegible contra un enlace muted. */
 .b360-foot__bar span { color: var(--b-muted); }
+
+/* ---------- menú en móvil (19-ago-2026) ----------
+   No había ninguna regla responsive: a 390 px la fila se desbordaba 149 px,
+   «EN» se cortaba y «Pedir demo» quedaba fuera de la pantalla. Por debajo de
+   900 px los enlaces se pliegan y en la barra se quedan el logo, el CTA y la
+   hamburguesa. El CTA NO entra en el menú: es la conversión de la página. */
+.b360-nav__acciones { display: flex; align-items: center; gap: 10px; }
+.b360-nav__toggle { display: none; }
+
+@media (max-width: 900px) {
+  .b360-nav { position: sticky; }
+  .b360-nav__in { gap: 12px; }
+  .b360-nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    background: transparent;
+    border: 1px solid var(--b-line-soft);
+    border-radius: 10px;
+    color: var(--b-text);
+    cursor: pointer;
+  }
+  .b360-nav__toggle:hover { border-color: var(--b-primary, #ff00c8); }
+  .b360-nav .btn { padding: 9px 15px; font-size: 13.5px; white-space: nowrap; }
+  /* El lockup entero mide ~250 px y con el CTA (140) y la hamburguesa (42) no
+     cabe en 390: la fila se partía en dos. Se encoge el lockup, no se esconde
+     el wordmark — «discoolver 360» es la marca y en la nav es lo que ancla. */
+  .b360-nav__in { flex-wrap: nowrap; }
+  .b360-nav .b360-logo { gap: 7px; min-width: 0; }
+  .b360-nav .b360-logo img { height: 22px; width: auto; }
+  .b360-nav .b360-logo__wm { font-size: 15.5px; white-space: nowrap; }
+  .b360-nav__links {
+    display: none;
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin-left: 0;
+    padding: 6px 20px 16px;
+    background: var(--b-bg, #0a0a16);
+    border-bottom: 1px solid var(--b-line-soft);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  }
+  .b360-nav__links.is-open { display: flex; }
+  .b360-nav__links a {
+    padding: 14px 2px;
+    font-size: 16px;
+    border-bottom: 1px solid var(--b-line-soft);
+  }
+  .b360-nav__links a:last-child { border-bottom: 0; }
+}
