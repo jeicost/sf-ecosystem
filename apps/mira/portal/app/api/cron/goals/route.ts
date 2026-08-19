@@ -19,7 +19,11 @@ export async function GET(req: NextRequest) {
   if (!goalsEnabled()) return NextResponse.json({ skipped: true, reason: 'GOALS_ENABLED is off' })
 
   const admin = adminClient()
-  const run = await runDueTasks(admin, { limit: 40 })
+  // Este es el único sitio con tiempo para generar documentos: maxDuration=300.
+  // El presupuesto de 210s corta el ARRANQUE de documentos nuevos con margen
+  // para que el que esté en curso termine y para cerrar objetivos después; lo
+  // que no entre se queda 'pending' y lo coge la pasada siguiente.
+  const run = await runDueTasks(admin, { limit: 40, inlineDocuments: true, budgetMs: 210_000 })
 
   // Cerrar objetivos vencidos sin trabajo pendiente.
   const today = new Date().toISOString().slice(0, 10)

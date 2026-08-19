@@ -15,6 +15,7 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { generateQuickAction } from '@/lib/quick-actions/generate'
+import { generateDocument } from '@/lib/generation/document'
 import { materializePosts, type GeneratedPost } from '@/lib/content-engine/materialize'
 import { GOAL_KINDS, type GoalKind, type TaskRow } from './types'
 
@@ -25,6 +26,8 @@ export interface RunResult {
   queued: number
   failed: number
   waiting: number
+  /** Documentos que no se generaron aquí: esperan al cron, que tiene tiempo. */
+  deferred: number
   errors: Array<{ task: string; error: string }>
 }
 
@@ -100,7 +103,7 @@ function toGeneratedPost(kind: GoalKind, out: Record<string, unknown>, platform:
   }
 }
 
-async function runOne(admin: Admin, task: TaskRow, goal: { title: string; created_by: string | null }): Promise<'queued' | 'failed' | 'waiting'> {
+async function runOne(admin: Admin, task: TaskRow, goal: { title: string; created_by: string | null }, allowInlineDocs: boolean): Promise<'queued' | 'failed' | 'waiting' | 'deferred'> {
   // ¿Es hija? Solo se genera con la madre aprobada.
   let material: string | null = null
   if (task.depends_on) {
@@ -116,6 +119,12 @@ async function runOne(admin: Admin, task: TaskRow, goal: { title: string; create
     }
     material = await parentMaterial(admin, parent as TaskRow)
   }
+
+  // Documentos sin presupuesto de tiempo: se aplazan al cron ANTES de reclamar
+  // la fila. Si se comprobara después, la tarea se quedaría en 'generating'
+  // —estado que bloquea el cierre del objetivo— y cada aplazamiento gastaría un
+  // intento hasta agotarlos sin haber intentado nada.
+  if (GOAL_KINDS[task.kind].via === 'document' && !allowInlineDocs) return 'deferred'
 
   // Reclamar la fila. Si otro proceso la cogió, no hacemos nada.
   const { data: claimed } = await admin
@@ -156,21 +165,39 @@ async function runOne(admin: Admin, task: TaskRow, goal: { title: string; create
       return 'queued'
     }
 
-    // Documentos (playbook, one-pager): se encola en generation_queue y se
-    // deja que la ruta de documentos la procese como una petición normal.
+    // Documentos (playbook, one-pager). Antes se insertaba una fila en
+    // generation_queue con status 'pending' esperando que alguien la recogiera.
+    // Dos cosas fallaban a la vez: nadie consume 'pending' en todo el repo, y
+    // 'pending' NI SIQUIERA es un valor válido — el CHECK de generation_queue
+    // solo admite queued/processing/completed/failed (0013/0015), así que el
+    // insert reventaba siempre y la tarea moría con un error de constraint que
+    // nadie leía. La rama de documentos de Goals nunca llegó a funcionar
+    // (auditoría 2026-08-19).
+    //
+    // Ahora se genera de verdad, pero SOLO donde hay presupuesto de tiempo: un
+    // documento tarda entre uno y tres minutos (búsqueda web + Opus 16k +
+    // imágenes) y estas tareas se disparan también desde /api/approvals/decide,
+    // que no declara maxDuration, y desde /api/goals/confirm, que declara 120s.
+    // Generar ahí cortaría la petición a mitad y dejaría la fila en
+    // 'processing' y la tarea en 'queued' para siempre: el mismo síntoma que
+    // veníamos a arreglar. Sin presupuesto, la tarea se queda 'pending' y la
+    // recoge el cron horario, que sí declara 300s (el aplazamiento se decide
+    // arriba, antes de reclamar la fila).
     const inputData: Record<string, unknown> = {
       topic: task.params.topic || (material ? 'Playbook for the approved piece below' : `Playbook · ${pillar ?? goal.title}`),
       ...(material ? { source_material: material } : {}),
       ...(task.reject_note ? { revision_note: task.reject_note } : {}),
       output_language: 'English',
     }
-    const { data: q, error } = await admin.from('generation_queue').insert({
-      client_id: task.client_id, user_id: userId, tool_slug: def.action, status: 'pending', input_data: inputData,
-    }).select('id').single()
-    if (error) throw new Error(error.message)
+    const { queueId } = await generateDocument({
+      clientId: task.client_id, userId, docType: def.action, inputData,
+    })
+    // El ejecutor cierra su propia tarea en vez de esperar a onDocumentCompleted:
+    // el hook busca por result_ref con status 'queued', y aquí ya sabemos cuál es
+    // la tarea. Evita depender del orden de escritura y de un ciclo de imports.
     await admin.from('goal_tasks').update({
-      status: 'queued', result_kind: 'generation_queue', result_ref: q.id,
-      generated_at: new Date().toISOString(), last_error: null,
+      status: 'approved', result_kind: 'generation_queue', result_ref: queueId,
+      generated_at: new Date().toISOString(), decided_at: new Date().toISOString(), last_error: null,
     }).eq('id', task.id)
     return 'queued'
   } catch (e) {
@@ -185,7 +212,17 @@ async function runOne(admin: Admin, task: TaskRow, goal: { title: string; create
 
 /** Corre lo que toca. Lo llama el cron; también el hook de aprobación (con
  *  `onlyGoal` para no recorrer todo el mundo cada vez que alguien aprueba). */
-export async function runDueTasks(admin: Admin, opts: { onlyGoal?: string; limit?: number; now?: Date } = {}): Promise<RunResult> {
+/**
+ * @param opts.inlineDocuments  Generar los documentos (playbook, one-pager) en
+ *   esta misma ejecución. Solo lo pide el cron horario, que declara 300s. Desde
+ *   una petición de usuario se deja en false y la tarea espera al cron: generar
+ *   un documento tarda minutos y cortaría la petición a mitad.
+ * @param opts.budgetMs  Tope de tiempo para EMPEZAR documentos nuevos. Al
+ *   superarlo se dejan 'pending' para la siguiente pasada en vez de arriesgarse
+ *   a que la función muera a mitad de generación.
+ */
+export async function runDueTasks(admin: Admin, opts: { onlyGoal?: string; limit?: number; now?: Date; inlineDocuments?: boolean; budgetMs?: number } = {}): Promise<RunResult> {
+  const startedAt = Date.now()
   const now = (opts.now ?? new Date()).toISOString()
   let q = admin.from('goal_tasks').select('*, client_goals!inner(title, created_by, status)')
     .in('status', ['pending', 'waiting'])
@@ -197,12 +234,15 @@ export async function runDueTasks(admin: Admin, opts: { onlyGoal?: string; limit
   const { data: rows, error } = await q
   if (error) throw new Error(`goal_tasks: ${error.message}`)
 
-  const res: RunResult = { picked: rows?.length ?? 0, queued: 0, failed: 0, waiting: 0, errors: [] }
+  const res: RunResult = { picked: rows?.length ?? 0, queued: 0, failed: 0, waiting: 0, deferred: 0, errors: [] }
   for (const row of rows ?? []) {
     const goal = (row as any).client_goals as { title: string; created_by: string | null }
     const task = row as unknown as TaskRow
+    // El presupuesto solo corta documentos nuevos; las quick actions son rápidas
+    // y siguen ejecutándose hasta agotar el lote.
+    const withinBudget = opts.budgetMs == null || Date.now() - startedAt < opts.budgetMs
     try {
-      const r = await runOne(admin, task, goal)
+      const r = await runOne(admin, task, goal, (opts.inlineDocuments ?? false) && withinBudget)
       res[r]++
     } catch (e) {
       res.failed++
