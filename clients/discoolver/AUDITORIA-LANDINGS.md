@@ -479,6 +479,40 @@ son públicas, pero no se pueden usar en bloque:
   producción de Diego, no de la landing.
 - Calidad desigual: las hay de 512 px y de aficionado.
 
+## Sistema de imagen — 19-ago, segunda mitad
+
+**41 imágenes nuevas**, generadas con Mystic (Magnific/Freepik) y en producción. Guiones en
+`web/scripts/`, con la dirección de arte escrita dentro.
+
+| Tanda | Qué | Dónde |
+|---|---|---|
+| 18 ciudades del mundo | 16:9, revelado común y hora/encuadre distintos | `assets/ciudades/` — **sin colocar todavía** |
+| 6 portales ciudad-jungla | verticales, monumento reconocible + personaje de marca | sección de ciudades de la home |
+| 8 categorías | 6 son fotogramas de los vídeos de marca, 2 generadas | bento de la home |
+| 8 escenas de 360 | 4 heroes, 3 verticales y Ronda | las cinco páginas de `/360` |
+| 2 tarjetas de compartir | una por marca, renderizadas con el navegador | OG de todo el sitio |
+
+**Tres direcciones de arte distintas, a propósito.** Las ciudades limpias son fotografía editorial
+de viaje. Los portales son el universo del B2C —jungla, personajes, neón magenta—. Y 360 es
+fotografía profesional de negocio, con el magenta y el cian como **luz práctica** de pantallas, no
+como filtro. Mezclarlas habría sido el error fácil.
+
+**Lo que se aprendió peleándose con la API** (todo anotado en los guiones):
+`portrait_2_3` se ignora en silencio y devuelve 16:9 · el modelo `super_real` **ignora el
+aspect_ratio sea cual sea**; con `realism` o `magnific_sparkle` sí se respeta · las URL del CDN van
+firmadas y caducan, hay que descargar en el momento · `creative_detailing` por encima de 40 inventa
+textura y las fachadas dejan de parecer fotografía.
+
+**Dos tropiezos de especificidad CSS, el mismo dos veces.** `.b360 .hero > *` (0,2,0) imponía
+`position: relative` a todos los hijos y colapsaba el velo de la foto a altura cero: el eyebrow
+magenta caía a **2,07:1** sobre el cielo cian. Con el velo funcionando sube a 5,66:1. La `<img>` no
+lo sufría porque `next/image` posiciona con estilo en línea. Lo mismo con `.b360 .card` y el padding
+de las tarjetas verticales. **Moraleja: en 360, cualquier elemento que posicione por clase dentro
+del hero o de una tarjeta necesita ganar a esos dos selectores.**
+
+Barrido final en producción: 11 rutas, todas 200, con menú en móvil, 0 px de desbordamiento y 0
+imágenes sin `alt`. `/blog` sigue siendo la más pesada con 576 KB.
+
 ## Lo que sigue abierto
 
 1. **Enlace mágico: el producto no lo tiene.** El brief pedía "Entrar sin contraseña" y "te
