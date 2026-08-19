@@ -57,7 +57,7 @@ export function Nav() {
     <nav className={`nav ${scrolled ? 'scrolled' : ''}${menuOpen ? ' menu-open' : ''}`}>
       <div className="container nav-inner">
         <Link href="/" className="logo" onClick={close}>
-          <img src="/logo-mark-gold.jpg" alt="NC Global Assets" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
+          <img src="/assets/logo-mark-gold.jpg" alt="NC Global Assets" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
           <span className="logo-word">NC Global Assets</span>
         </Link>
         <div className="nav-links">
