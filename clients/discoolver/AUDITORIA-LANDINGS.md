@@ -429,6 +429,32 @@ salida de ciudad cerrada solo se despliega si alguien la pide. Fuera el párrafo
 palabra por palabra. **La frecuencia sale del eyebrow**: nadie ha comprometido «una ciudad al mes»
 y prometerlo en el cierre era justo el tipo de promesa que este repaso ha estado quitando.
 
+## Desplegado — 19-ago-2026, commit `252c462`
+
+52 ficheros, +3.796/−1.056, acotado a `clients/discoolver` con pathspec. `verify-project-links` en
+ALL PASS antes de empujar; los tres workflows de CI en verde.
+
+**El CMS ya estaba sembrado** —se hizo tras cada sección—, así que el push solo tenía que hornearlo.
+Ojo con una confusión que costó un rato: la web servía el H1 nuevo pero el título y la FAQ viejos.
+No era un deploy a medias: era el build de `144b1fd` (un commit de MIRA de otra sesión, de 2,5 h
+antes) que ya había horneado el CMS nuevo. **El bake congela el copy en el momento del build**, así
+que sembrar sin desplegar deja la web en un estado mixto hasta el siguiente push de cualquiera.
+
+Verificado en producción con navegador: título y descripción nuevos · FAQ **8 preguntas y 8 en el
+JSON-LD** · 47 creadores en 3 países · 6 estados de apertura · 7 guías · un solo botón en el cierre
+· cero apariciones de «Ronda», «edición limitada», «curad», «vibra» y del contador. En móvil: menú
+de 7 enlaces y **0,29 MB** (eran 25,9).
+
+**La fuente única se estrenó sola el primer día.** Diego publicó Málaga entre el commit y el
+deploy, y la web la incorporó sin tocar una línea: el hero pasó a «Madrid · Barcelona · Málaga ·
+Ibiza — ya abiertas», el total a 1.500 y los estados a cuatro ciudades. Es exactamente lo que antes
+había que ir cambiando a mano en cinco sitios.
+
+**Los cuatro proyectos hermanos tras el push**: salsaburgers 200 · startupsfactory 200 ·
+ncglobalassets 200 · **adriangrooves.com sin resolver (DNS vacío)**. No lo causa este push —el
+commit no toca ni un fichero de ese cliente— y su deploy responde 200 en
+`adrian-grooves.vercel.app`: es el dominio, que no apunta a ninguna parte. Anotado, no tocado.
+
 ## Lo que sigue abierto
 
 1. **Enlace mágico: el producto no lo tiene.** El brief pedía "Entrar sin contraseña" y "te
