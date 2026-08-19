@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "The digital concierge that joins your check-in, answers guests 24/7 and turns your recommendations into a revenue line for your property.",
   path: "/en/360/alojamientos",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
   locale: "en",
 });

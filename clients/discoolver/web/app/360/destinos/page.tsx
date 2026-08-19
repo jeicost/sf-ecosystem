@@ -14,7 +14,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Plataforma SaaS para ayuntamientos, patronatos y DMO: redistribuye el flujo de visitantes, da datos propios del destino y monetiza el comercio local.",
   path: "/360/destinos",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
 });
 

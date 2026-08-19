@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Marketplace, point of sale, routes, events, voice assistant, signage and Business Intelligence for destinations, accommodation and agencies. Modules from €100/month.",
   path: "/en/360",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
   locale: "en",
 });

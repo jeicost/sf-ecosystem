@@ -14,7 +14,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Marketplace, punto de venta, rutas, eventos, asistente de voz, señalética y business intelligence para destinos, alojamientos y agencias. Módulos desde 100 €/mes.",
   path: "/360",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
 });
 

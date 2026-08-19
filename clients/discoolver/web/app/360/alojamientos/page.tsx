@@ -12,7 +12,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "El concierge digital que entra en tu check-in, responde al huésped 24/7 y convierte tus recomendaciones en una línea de ingresos para el alojamiento.",
   path: "/360/alojamientos",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
 });
 

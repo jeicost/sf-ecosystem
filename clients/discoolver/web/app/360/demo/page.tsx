@@ -13,7 +13,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Media hora con la plataforma funcionando y el despliegue de Ronda abierto. Salimos con una propuesta de por qué módulo empezar y qué cuesta.",
   path: "/360/demo",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
 });
 

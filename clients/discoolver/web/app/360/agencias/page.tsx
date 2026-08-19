@@ -13,7 +13,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "Digitalizamos el catálogo local del destino y te damos marketplace y punto de venta para venderlo. Módulos desde 100 €/mes y comisión del 10-15%.",
   path: "/360/agencias",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
   // Abierta a Google el 17-ago-2026: dirección comercial (Docavo) validó las
   // tres afirmaciones nuevas (acceso al catálogo desde sistemas de la agencia,

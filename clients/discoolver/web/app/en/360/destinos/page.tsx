@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "SaaS platform for city councils, tourism boards and DMOs: redistribute visitor flow, own your destination's data and monetize local commerce.",
   path: "/en/360/destinos",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
   locale: "en",
 });

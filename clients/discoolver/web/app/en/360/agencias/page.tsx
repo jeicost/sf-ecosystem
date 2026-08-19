@@ -7,7 +7,7 @@ export const metadata: Metadata = buildMetadata({
   description:
     "We digitize the destination's local catalog and give you a marketplace and point of sale to sell it. Net rates for the trade channel.",
   path: "/en/360/agencias",
-  image: "/assets/360/og-360.png",
+  image: "/assets/360/og-360.jpg",
   siteName: "discoolver 360",
   locale: "en",
   // Abierta a Google el 17-ago-2026, a la vez que la española: las dos
