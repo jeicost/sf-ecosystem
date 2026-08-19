@@ -137,7 +137,6 @@ export const defaultHomeContent = {
   autor_lead:
     "Estamos editando las primeras. Esto es el formato: misma edición, mismo papel, otra mirada. La firma la pone quien la escribe.",
   autor_etiqueta: "Ejemplo de formato",
-  autor_firma_hueco: "según [tu nombre]",
   autor_pie: "Una guía de {ciudad} firmada por quien la vive: su barrio, sus sitios, su criterio.",
   autor_cta: "¿Quieres que sea la tuya?",
 

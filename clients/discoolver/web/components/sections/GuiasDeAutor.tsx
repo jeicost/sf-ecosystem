@@ -7,29 +7,44 @@ import type { Locale } from "@/lib/i18n";
 /**
  * Guías de autor — el bloque de muestra.
  *
- * REGLA INNEGOCIABLE DEL BRIEF, y la razón de que este componente exista tal
- * y como está: las muestras tienen que ser IDENTIFICABLES COMO MUESTRA a
- * primera vista. Sin etiqueta, en una página donde se cobra, son publicidad
- * engañosa.
+ * REGLA INNEGOCIABLE DEL BRIEF: las muestras tienen que ser IDENTIFICABLES
+ * COMO MUESTRA a primera vista. Sin etiqueta, en una página donde se cobra,
+ * son publicidad engañosa. Por eso la etiqueta va SIEMPRE visible, en el flujo
+ * y encima de la portada — no superpuesta: encima taparía la mancheta
+ * `discoolver`, que es justo lo que hace reconocible a la publicación.
  *
- * Por eso aquí NO hay:
- *  · caras de personas, ni reales ni generadas — los avatares son personajes
- *    de la marca, que nadie puede confundir con una firma real;
- *  · handles plausibles de Instagram — los nombres son de personaje;
- *  · precio ni botón de compra — el único CTA lleva a /influencers.
+ * QUÉ CAMBIÓ (19-ago-2026, decisión de Carlos). Antes esto eran tres tarjetas
+ * de color plano con un hueco «según [tu nombre]» y avatares de animales de
+ * marca. No enseñaba el producto: quien llega no entiende qué compra. Ahora
+ * son portadas de verdad, montadas con el MISMO motor que las guías reales
+ * (`design/24-portada-star.html` de `~/Developer/discoolver-dg-editor`, el
+ * sistema WIRED documentado en `design/inspiracion-portadas/README.md`).
  *
- * Toda la web se sostiene sobre «nadie paga por aparecer, cada firma es real».
- * Que alguien descubriera que estas firmas son inventadas destruiría justo el
- * activo que se está construyendo.
+ * Se regeneran con `scripts/portadas-autor.py` (retrato con Freepik Mystic →
+ * recorte con rembg → render de la plantilla con Playwright). Ese script
+ * guarda los parámetros exactos de cada portada: paleta, cita y desplazamiento.
  *
- * SUSTITUCIÓN: en cuanto haya una guía de autor real, entra con foto, arroba y
- * CTA. Con dos reales, este bloque de muestras se elimina entero — convivir
- * con ejemplos cuando ya hay producto real resta en vez de sumar.
+ * LO QUE SIGUE PROHIBIDO, y por qué esto no lo incumple: las personas de las
+ * portadas son ficticias y generadas, así que NO llevan arroba de Instagram,
+ * ni número de seguidores, ni testimonio, ni precio, ni botón de compra. Una
+ * cara inventada dentro de una maqueta rotulada «Ejemplo de formato» es una
+ * maqueta; esa misma cara con un @ y una cifra de seguidores sería prueba
+ * social falsa, que es lo que la web no puede permitirse.
+ *
+ * SUSTITUCIÓN: en cuanto haya una guía de autor real, entra con su foto, su
+ * arroba y su CTA. Con dos reales, este bloque de muestras se elimina entero.
  */
+/* Las siete de la colección, en el mismo orden que el bloque de producto de
+   arriba, y con su misma paleta: los dos bloques tienen que leerse como una
+   sola familia, no como dos sistemas distintos. */
 const MUESTRAS = [
-  { slug: "autor-zorro", ciudad: "Madrid", tono: "#22578a" },
-  { slug: "autor-buho", ciudad: "Barcelona", tono: "#8f004d" },
-  { slug: "autor-flamenco", ciudad: "Málaga", tono: "#c47f3e" },
+  { slug: "madrid", ciudad: "Madrid" },
+  { slug: "barcelona", ciudad: "Barcelona" },
+  { slug: "malaga", ciudad: "Málaga" },
+  { slug: "valencia", ciudad: "Valencia" },
+  { slug: "ibiza", ciudad: "Ibiza" },
+  { slug: "bangkok", ciudad: "Bangkok" },
+  { slug: "dubai", ciudad: "Dubái" },
 ] as const;
 
 export function GuiasDeAutor({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
@@ -51,23 +66,25 @@ export function GuiasDeAutor({ content, locale = "es" }: { content: HomeContent;
 
         <ul className="autor__rejilla" role="list">
           {MUESTRAS.map((m, i) => (
-            <Reveal delay={i * 80} key={m.slug}>
+            <Reveal delay={Math.min(i, 3) * 70} key={m.slug}>
               <li className="autor__card">
                 <span className="autor__etiqueta">{content.autor_etiqueta}</span>
-                <div className="autor__portada" style={{ ["--tono" as string]: m.tono }}>
-                  <span className="autor__ciudad">{m.ciudad}</span>
-                  <span className="autor__firma">{content.autor_firma_hueco}</span>
-                </div>
-                <div className="autor__pie">
+                <div className="autor__portada">
                   <Image
-                    className="autor__avatar"
-                    src={`/assets/guias/${m.slug}.jpg`}
-                    alt=""
-                    width={80}
-                    height={80}
+                    src={`/assets/guias/portada-guia-${m.slug}.webp`}
+                    /* El alt dice que la persona es inventada: la etiqueta lo
+                       resuelve para quien ve, y esto para quien escucha. */
+                    alt={
+                      es
+                        ? `Portada de ejemplo de una guía de ${m.ciudad}, firmada por un creador ficticio`
+                        : `Sample cover of a ${m.ciudad} guide, signed by a fictional creator`
+                    }
+                    width={720}
+                    height={1018}
+                    sizes="(max-width: 560px) 92vw, (max-width: 860px) 46vw, (max-width: 1180px) 31vw, 23vw"
                   />
-                  <p>{content.autor_pie.replace("{ciudad}", m.ciudad)}</p>
                 </div>
+                <p className="autor__pie">{content.autor_pie.replace("{ciudad}", m.ciudad)}</p>
               </li>
             </Reveal>
           ))}

@@ -121,7 +121,6 @@ export const defaultHomeContent = {
   autor_lead:
     "We're editing the first ones. This is the format: same edition, same paper, a different pair of eyes. The signature belongs to whoever writes it.",
   autor_etiqueta: "Format example",
-  autor_firma_hueco: "by [your name]",
   autor_pie: "A {ciudad} guide signed by someone who lives there: their neighbourhood, their places, their judgement.",
   autor_cta: "Want it to be yours?",
 

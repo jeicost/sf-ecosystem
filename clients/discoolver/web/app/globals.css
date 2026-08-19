@@ -4250,32 +4250,25 @@ a.blog-card__cat:hover {
 @media (max-width: 760px) { .guia-foto { height: calc(var(--alto, 420px) * .62); margin-top: 30px; } }
 
 /* Guías de autor: bloque de muestra. La etiqueta es obligatoria y va SIEMPRE
-   visible — sin ella, en una página donde se cobra, esto es engañoso. */
-.autor__rejilla { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 26px; }
-.autor__card { position: relative; display: flex; flex-direction: column; }
+   visible — sin ella, en una página donde se cobra, esto es engañoso. Va en el
+   flujo y ENCIMA de la portada, no superpuesta: superpuesta taparía la
+   mancheta «discoolver», que es lo que hace reconocible a la publicación. */
+.autor__rejilla { list-style: none; margin: 44px 0 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 22px; }
+.autor__card { display: flex; flex-direction: column; align-items: flex-start; }
 .autor__etiqueta {
-  position: absolute; top: 12px; left: 12px; z-index: 2;
-  padding: 5px 11px; border-radius: 999px;
-  background: rgba(10, 10, 15, 0.82); backdrop-filter: blur(8px);
+  margin-bottom: 12px; padding: 5px 11px; border-radius: 999px;
+  background: rgba(10, 10, 15, 0.82);
   border: 1px solid color-mix(in oklab, var(--accent) 55%, transparent);
   color: var(--accent);
   font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase;
 }
-.autor__portada {
-  /* El padding superior deja sitio a la etiqueta: iba encima del nombre de la
-     ciudad y las dos se leían a medias. */
-  aspect-ratio: 3 / 4; border-radius: 14px; padding: 62px 22px 26px;
-  display: flex; flex-direction: column; justify-content: space-between;
-  background: linear-gradient(165deg, color-mix(in oklab, var(--tono) 88%, #fff) 0%, var(--tono) 62%, color-mix(in oklab, var(--tono) 70%, #000) 100%);
-  box-shadow: 0 22px 44px rgba(0, 0, 0, 0.4);
-}
-.autor__ciudad { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 2.4vw, 38px); line-height: .95; letter-spacing: -.03em; color: #fff; text-transform: uppercase; }
-/* El hueco de la firma es el punto del bloque: se ve dónde va el nombre. */
-.autor__firma { font-size: 14px; color: rgba(255,255,255,.82); border-top: 1px dashed rgba(255,255,255,.45); padding-top: 10px; }
-.autor__pie { display: flex; gap: 12px; align-items: flex-start; margin-top: 16px; }
-.autor__avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; flex: none; }
-.autor__pie p { font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+/* La portada es la imagen entera: mancheta a sangre, coverline, bloque de
+   edición y QR ya vienen dentro del render del motor de portadas. */
+.autor__portada { width: 100%; aspect-ratio: 3 / 4; border-radius: 14px; overflow: hidden; background: #14101a; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.4); }
+.autor__portada img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.autor__pie { margin-top: 16px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
 .autor__cta { margin-top: 34px; font-size: 15px; }
 .autor__cta a { color: var(--primary); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+@media (max-width: 1180px) { .autor__rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 860px) { .autor__rejilla { grid-template-columns: 1fr 1fr; gap: 18px; } }
 @media (max-width: 560px) { .autor__rejilla { grid-template-columns: 1fr; } }
