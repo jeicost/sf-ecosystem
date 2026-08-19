@@ -619,3 +619,62 @@
   }
   .b360-nav__links a:last-child { border-bottom: 0; }
 }
+
+/* ---------- fotografía en las secciones (19-ago-2026) ----------
+   360 no tenía una sola imagen en sus cinco páginas. El velo doble no es
+   decoración: sin él, el texto blanco sobre un cielo claro baja del mínimo de
+   contraste, que es exactamente como se rompen estas secciones. */
+.b360-escena { position: relative; isolation: isolate; overflow: hidden; }
+.b360-escena .b360-escena__img { object-fit: cover; z-index: 0; }
+/* El selector lleva `span` a propósito: `.b360 .hero > *` (0,2,0) impone
+   `position: relative` a todos los hijos del hero y colapsaba el velo a un
+   span de altura cero — la foto salía sin velo y el texto perdía contraste.
+   Con la clase + el tipo (0,2,1) gana esta. La <img> no sufría el problema
+   porque next/image posiciona con estilo en línea. */
+.b360-escena > span.b360-escena__velo {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(180deg, rgba(10,10,22,.72) 0%, rgba(10,10,22,.86) 55%, rgba(10,10,22,.97) 100%),
+    radial-gradient(65% 55% at 12% 20%, rgba(255,0,200,.20) 0%, transparent 66%),
+    radial-gradient(55% 50% at 88% 30%, rgba(0,212,255,.14) 0%, transparent 62%);
+}
+/* `alta` lleva además un lavado HORIZONTAL desde la izquierda, que es donde
+   vive el texto. Sin él, medido sobre el hero de /360: el eyebrow magenta caía
+   a 2,07:1 sobre el cielo cian y la bajada a 3,71:1 — por debajo del mínimo.
+   Con el lavado suben a 8,4:1 y 7,1:1 sin apagar la fotografía por la derecha. */
+.b360-escena > span.b360-escena__velo--alta {
+  background:
+    linear-gradient(90deg, rgba(8,8,18,.94) 0%, rgba(8,8,18,.88) 46%, rgba(8,8,18,.34) 78%, rgba(8,8,18,.18) 100%),
+    linear-gradient(180deg, rgba(10,10,22,.55) 0%, rgba(10,10,22,.66) 55%, rgba(10,10,22,.95) 100%),
+    radial-gradient(58% 46% at 6% 18%, rgba(255,0,200,.20) 0%, transparent 66%);
+}
+.b360-marco {
+  position: relative;
+  width: 100%;
+  height: var(--alto, 460px);
+  border-radius: var(--b-r-lg);
+  overflow: hidden;
+  border: 1px solid var(--b-line-soft);
+  background: var(--b-bg-2);
+}
+@media (max-width: 900px) { .b360-marco { height: calc(var(--alto, 460px) * .68); } }
+.caso__foto { margin: 22px 0 30px; }
+
+/* Las tres verticales son las tres puertas del negocio y eran tres rectángulos
+   de texto idénticos: ahora cada una entra por su fotografía. */
+/* `.b360 .card` (0,2,0) gana a `.vert--foto` (0,1,0) y la foto quedaba metida
+   con el padding de la tarjeta. Mismo tropiezo que con el velo del hero. */
+.b360 .card.vert--foto { padding: 0; overflow: hidden; display: flex; flex-direction: column; }
+.b360 .vert--foto .vert__media { position: relative; display: block; height: 176px; flex: none; }
+.vert__media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(10,10,22,.12) 0%, rgba(10,10,22,.82) 100%);
+}
+.b360 .vert--foto .card__n { padding: 18px 22px 0; }
+.b360 .vert--foto .h-card,
+.b360 .vert--foto p { padding-inline: 22px; }
+.b360 .vert--foto .vert__go { padding: 0 22px 22px; }

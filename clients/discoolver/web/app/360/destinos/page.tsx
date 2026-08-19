@@ -7,6 +7,7 @@ import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
+import { FondoEscena } from "@/components/b360/Escena360";
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
@@ -28,7 +29,8 @@ export async function Destinos360({ locale = "es" }: { locale?: Locale }) {
   return (
     <>
       {/* ---------- hero ---------- */}
-      <section className="hero">
+      <section className="hero b360-escena">
+        <FondoEscena src="/assets/360/escenas/hero-destinos.jpg" alt="Oficina de turismo con pantallas de mapas y cuadros de mando" prioridad intensidad="alta" />
         <div className="wrap">
           <span className="label">{c.hero_eyebrow}</span>
           <h1 className="h-hero">{c.hero_title}</h1>

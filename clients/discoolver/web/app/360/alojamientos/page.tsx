@@ -6,6 +6,7 @@ import { defaultAlojamientos360Content as defaultAlojamientos360ContentEn } from
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, Txt } from "@/components/b360/Bits";
+import { FondoEscena } from "@/components/b360/Escena360";
 
 export const metadata: Metadata = buildMetadata({
   title: "Concierge digital para alojamientos",
@@ -26,7 +27,8 @@ export async function Alojamientos360({ locale = "es" }: { locale?: Locale }) {
   return (
     <>
       {/* ---------- hero ---------- */}
-      <section className="hero">
+      <section className="hero b360-escena">
+        <FondoEscena src="/assets/360/escenas/hero-alojamientos.jpg" alt="Recepción de un hotel boutique de noche con una tablet sobre el mostrador" prioridad intensidad="alta" />
         <div className="wrap">
           <span className="label">{c.hero_eyebrow}</span>
           <h1 className="h-hero">{c.hero_title}</h1>

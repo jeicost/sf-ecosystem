@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { buildMetadata } from "@/lib/seo";
 import { draftMode } from "next/headers";
@@ -7,6 +8,7 @@ import { defaultHome360Content as defaultHome360ContentEn } from "@/lib/content/
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending } from "@/components/b360/Bits";
+import { FondoEscena, MarcoEscena } from "@/components/b360/Escena360";
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
@@ -30,7 +32,10 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
     precio: c[`modulo_${n}_precio` as keyof typeof c] as string,
   }));
 
+  // La foto de cada vertical va por posición, igual que el resto de sus campos.
+  const FOTO_VERT = ["vert-destinos", "vert-alojamientos", "vert-agencias"];
   const VERTICALES = [1, 2, 3].map((n) => ({
+    foto: FOTO_VERT[n - 1],
     etiqueta: c[`vert_${n}_etiqueta` as keyof typeof c] as string,
     frase: c[`vert_${n}_frase` as keyof typeof c] as string,
     texto: c[`vert_${n}_texto` as keyof typeof c] as string,
@@ -51,7 +56,8 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
   return (
     <>
       {/* ---------- hero ---------- */}
-      <section className="hero">
+      <section className="hero b360-escena">
+        <FondoEscena src="/assets/360/escenas/hero-360.jpg" alt="Un destino mediterráneo a hora azul con una capa de datos sobre los tejados" prioridad intensidad="alta" />
         <div className="wrap">
           <span className="label">{c.hero_eyebrow}</span>
           <h1 className="h-hero">{c.hero_title}</h1>
@@ -167,6 +173,14 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
         <div className="caso">
           <span className="label label--accent">{c.caso_eyebrow}</span>
           <h2 className="h-sec">{c.caso_titulo}</h2>
+          {/* El caso de Ronda es la única prueba real que tiene 360 y se
+              contaba sin enseñar el sitio. */}
+          <MarcoEscena
+            src="/assets/360/escenas/ronda.jpg"
+            alt="Ronda a hora dorada: el Puente Nuevo sobre el Tajo y las casas al borde del acantilado"
+            alto={380}
+            className="caso__foto"
+          />
           <div className="split" style={{ marginTop: 8 }}>
             <div>
               <p>{c.caso_contexto}</p>
@@ -223,7 +237,17 @@ export async function Home360({ locale = "es" }: { locale?: Locale }) {
           }}
         >
           {publicables.map((v) => (
-            <Link href={withLocale(v.href, locale)} className="card vert" key={v.etiqueta}>
+            <Link href={withLocale(v.href, locale)} className="card vert vert--foto" key={v.etiqueta}>
+              <span className="vert__media">
+                <Image
+                  src={`/assets/360/escenas/${v.foto}.jpg`}
+                  alt=""
+                  fill
+                  sizes="(max-width: 900px) 100vw, 33vw"
+                  quality={78}
+                  style={{ objectFit: "cover" }}
+                />
+              </span>
               <span className="card__n">{v.etiqueta.toUpperCase()}</span>
               <h3 className="h-card" style={{ fontSize: 19 }}>{v.frase}</h3>
               <p style={{ fontSize: 14.5, margin: 0 }}>{v.texto}</p>

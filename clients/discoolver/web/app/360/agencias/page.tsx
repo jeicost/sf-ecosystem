@@ -6,6 +6,7 @@ import { defaultAgencias360Content as defaultAgencias360ContentEn } from "@/lib/
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent } from "@/lib/cms-pages";
 import { Section, Head, Cta, Stat, Steps, Pending } from "@/components/b360/Bits";
+import { FondoEscena } from "@/components/b360/Escena360";
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
@@ -30,7 +31,8 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
   return (
     <>
       {/* ---------- hero ---------- */}
-      <section className="hero">
+      <section className="hero b360-escena">
+        <FondoEscena src="/assets/360/escenas/hero-agencias.jpg" alt="Dos personas planificando un itinerario sobre una pantalla con un mapa" prioridad intensidad="alta" />
         <div className="wrap">
           <span className="label">{c.hero_label}</span>
           <h1 className="h-hero">{c.hero_title}</h1>
