@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { GuiaFoto } from "@/components/ui/GuiaFoto";
 import { Icon } from "@/components/ui/Icon";
 import type { HomeContent } from "@/lib/content/home";
 
@@ -41,6 +42,9 @@ export function CityAI({ content }: { content: HomeContent }) {
             ))}
           </div>
         </div>
+      </div>
+          <div className="container">
+        <GuiaFoto src="/assets/guias/ia-calle.jpg" alt="Una mano con el móvil abierto en el mapa, caminando por una calle al anochecer" />
       </div>
     </section>
   );

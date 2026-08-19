@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/ui/Reveal";
+import { GuiaFoto } from "@/components/ui/GuiaFoto";
 import type { HomeContent } from "@/lib/content/home";
 
 /** Block 1 — human curation: from saved reels to an edited guide. */
@@ -43,6 +44,9 @@ export function Curation({ content }: { content: HomeContent }) {
             </Reveal>
           ))}
         </div>
+      </div>
+          <div className="container">
+        <GuiaFoto src="/assets/guias/proceso.jpg" alt="Pruebas de página con marcas a lápiz y una pila de descartes" />
       </div>
     </section>
   );

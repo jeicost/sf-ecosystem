@@ -130,6 +130,17 @@ export const defaultHomeContent = {
   waitlist_text:
     "Déjanos tu email y tu ciudad. Te escribimos dos veces como mucho: el día que tu guía salga a la venta, con el precio de lanzamiento de 14€ activo, y cuando entre en edición si todavía no existe. Nada más.",
 
+  // Guías de autor — bloque de MUESTRA. Ver el comentario de GuiasDeAutor.tsx:
+  // nada aquí puede sugerir que estas guías existen o que se pueden comprar.
+  autor_eyebrow: "Guías de autor",
+  autor_titulo: "Así queda cuando la firma alguien.",
+  autor_lead:
+    "Estamos editando las primeras. Esto es el formato: misma edición, mismo papel, otra mirada. La firma la pone quien la escribe.",
+  autor_etiqueta: "Ejemplo de formato",
+  autor_firma_hueco: "según [tu nombre]",
+  autor_pie: "Una guía de {ciudad} firmada por quien la vive: su barrio, sus sitios, su criterio.",
+  autor_cta: "¿Quieres que sea la tuya?",
+
   // FAQ
   faq_eyebrow: "Preguntas frecuentes",
   faq_title_1: "Antes de que nos",

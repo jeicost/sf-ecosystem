@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { GuiaFoto } from "@/components/ui/GuiaFoto";
 import { Reveal } from "@/components/ui/Reveal";
 import type { HomeContent } from "@/lib/content/home";
 import { localeFromPath, UI } from "@/lib/i18n";
@@ -47,6 +48,9 @@ export function GuideObject({ content }: { content: HomeContent }) {
             </Reveal>
           </div>
         </div>
+      </div>
+          <div className="container">
+        <GuiaFoto src="/assets/guias/objeto.jpg" alt="La guía impresa abierta sobre una mesa, con un café al lado" />
       </div>
     </section>
   );

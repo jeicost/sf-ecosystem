@@ -14,6 +14,7 @@ import { Hero } from "@/components/sections/Hero";
 import { Ticker } from "@/components/sections/Ticker";
 import { Guides } from "@/components/sections/Guides";
 import { Curation } from "@/components/sections/Curation";
+import { GuiasDeAutor } from "@/components/sections/GuiasDeAutor";
 import { GuideObject } from "@/components/sections/GuideObject";
 import { CityAI } from "@/components/sections/CityAI";
 import { CreatorsBridge } from "@/components/sections/CreatorsBridge";
@@ -53,6 +54,8 @@ export async function GuiasPage({ locale = "es" }: { locale?: Locale }) {
         <Hero content={content} locale={locale} />
         <Ticker content={content} />
         <Guides content={content} locale={locale} />
+        <GuiasDeAutor content={content} locale={locale} />
+
         <Curation content={content} />
         <GuideObject content={content} />
         <CityAI content={content} />
