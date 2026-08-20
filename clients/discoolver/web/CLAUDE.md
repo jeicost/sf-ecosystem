@@ -156,10 +156,13 @@ página bloqueada.
 
 ## Assets pesados
 
-`public/assets/` tiene ~550MB (varios PNG de 20-35MB sin comprimir + vídeos mp4/mov). Antes de un
-deploy real: comprimir con `sips` (ver `~/.claude/skills/loop-diseno/learnings.md`, sección
-"Compresión de imágenes para web") y decidir si los vídeos se sirven desde Vercel o un CDN externo
-— 550MB en el repo/deploy no es sostenible.
+`public/assets/` son **40MB** (medido el 20-ago-2026). Estuvo en ~550MB hasta que se comprimió el
+19-ago con `sips` — ver `~/.claude/skills/loop-diseno/learnings.md`, sección "Compresión de imágenes
+para web". Ya no es un problema aquí.
+
+**Donde sí pesa ahora es en `clients/discoolver/app-landing`**: tres vídeos de 13-14MB
+(`v-card-shopping.mp4`, `v-hero-owl.mp4`, `v-hero-donkey-bus.mp4`). Si esa landing se retoma, decidir
+antes si los vídeos se sirven desde Vercel o desde un CDN externo.
 
 ## Waitlist (formsubmit.co)
 
@@ -189,8 +192,7 @@ ncglobalassets, adrian-grooves). Comprobar los cuatro tras un push.
 
 **EN PRODUCCIÓN desde 2026-08-05** (commits `4cf6f32` home + `5b5309e` creators, deploy READY y
 verificado en vivo). Las tres páginas de sf-cms están `published` con los campos nuevos.
-Pendiente aún: comprimir los assets pesados de `public/assets/` (~550MB, ver sección anterior) y
-definir `WAITLIST_FORWARD_EMAIL` en Vercel si el destino no es `carlos@discoolver.com`.
+Pendiente aún: definir `WAITLIST_FORWARD_EMAIL` en Vercel si el destino no es `carlos@discoolver.com`.
 
 ## No tocar
 
