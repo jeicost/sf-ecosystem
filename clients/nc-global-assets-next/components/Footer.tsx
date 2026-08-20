@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { guardarLead } from '@/lib/lead'
 import Link from 'next/link'
 import { Arrow, LinkedInIcon } from '@/lib/constants'
 
@@ -35,12 +36,14 @@ export function Footer() {
           source: 'Footer newsletter (Stay up to date)',
         }),
       })
-      // FormSubmit responde HTTP 200 con success:"false" cuando rechaza (por
-      // ejemplo si el par destino/dominio no está activado), así que `|| res.ok`
-      // convertía cada rechazo en un «You're on the list» y el correo se perdía
-      // sin dejar rastro (auditoría 20-ago-2026). Solo vale el success del cuerpo.
+      // FormSubmit responde HTTP 200 con success:"false" cuando rechaza, así que
+      // `|| res.ok` convertía cada rechazo en un «You're on the list» y el correo
+      // se perdía sin dejar rastro (auditoría 20-ago-2026).
       const data = (await res.json().catch(() => null)) as { success?: string | boolean } | null
-      if (data?.success === true || data?.success === 'true') {
+      const avisado = data?.success === true || data?.success === 'true'
+      // El aviso es best-effort; el destino real del dato es la base.
+      const guardado = await guardarLead({ source: 'newsletter', email, locale: 'en', notified: avisado })
+      if (guardado || avisado) {
         setStatus('done')
       } else {
         setErrorMsg(`Something went wrong. Email us directly at ${CONFIG.email}`)

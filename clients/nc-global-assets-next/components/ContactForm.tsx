@@ -2,10 +2,12 @@
 
 import { useState } from 'react'
 import { Arrow, ChatIcon, Eyebrow, openChat } from '@/lib/constants'
+import { guardarLead } from '@/lib/lead'
 
 // Ported from clients/nc-global-assets/src/App.jsx ContactForm (L1332-1426)
 export function ContactForm({ embedded }: { embedded?: boolean }) {
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState(false)
   const [form, setForm] = useState({ name: '', company: '', email: '', web: '', country: '', sector: '', looking: '' })
   const [touched, setTouched] = useState<Record<string, boolean>>({})
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }))
@@ -15,12 +17,34 @@ export function ContactForm({ embedded }: { embedded?: boolean }) {
     e.preventDefault()
     setTouched({ name: true, email: true, company: true })
     if (!valid) return
-    await fetch('https://formspree.io/f/xqewnrwl', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify(form),
+    // La base de datos es el destino; Formspree es el aviso. Antes esto marcaba
+    // `submitted` incondicionalmente, sin mirar la respuesta y sin guardar en
+    // ninguna parte: un rechazo —o agotar la cuota gratuita de 50 envíos al
+    // mes— pintaba «Thank you, {nombre}» y el lead dejaba de existir. Y este es
+    // el único camino de conversión que le queda al sitio, porque los CTA de
+    // Calendly están caídos (auditoría 20-ago-2026).
+    //
+    // El aviso va primero porque anon no puede hacer UPDATE: `notified` hay que
+    // escribirlo en el propio INSERT o no se escribe nunca.
+    let avisado = false
+    try {
+      const res = await fetch('https://formspree.io/f/xqewnrwl', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(form),
+        signal: AbortSignal.timeout(8000),
+      })
+      avisado = res.ok
+    } catch { /* el aviso es best-effort */ }
+
+    const { email, ...resto } = form
+    const guardado = await guardarLead({
+      source: 'contact', email, locale: 'en', payload: resto, notified: avisado,
     })
-    setSubmitted(true)
+
+    // Solo se da las gracias si el dato está en algún sitio recuperable.
+    if (guardado || avisado) { setSubmitted(true); return }
+    setError(true)
   }
 
   const formContent = submitted ? (
@@ -83,6 +107,13 @@ export function ContactForm({ embedded }: { embedded?: boolean }) {
           placeholder="Tell us about your brand, goals or timeline…"
           value={form.web} onChange={(e) => update('web', e.target.value)} rows={3} />
       </div>
+      {error && (
+        <p role="alert" style={{ color: '#c0392b', fontSize: 14, lineHeight: 1.6, marginTop: 8 }}>
+          We couldn&apos;t send your message. Please email us at{' '}
+          <a href="mailto:contact@ncglobalassets.com" style={{ textDecoration: 'underline' }}>contact@ncglobalassets.com</a>
+          {' '}and we&apos;ll get back to you.
+        </p>
+      )}
       <div className="simple-form__footer">
         <p className="simple-form__legal">We never share your details. You&apos;ll hear from us within 24h.</p>
         <button type="submit" className="btn btn--primary btn--lg" disabled={!valid}

@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { guardarLead } from '@/lib/lead'
 import type { HomeContent } from '@/lib/content/home'
 import { UI, altPath, type Locale } from '@/lib/i18n'
 
@@ -658,25 +659,47 @@ export default function HomeView({ content, locale }: { content: Content; locale
             onSubmit={async (e) => {
               e.preventDefault()
               const data = new FormData(e.currentTarget)
-              // Antes esto era un try/finally que redirigía a /thank-you PASE LO
-              // QUE PASE, sin mirar la respuesta. Con el destino sin activar en
-              // formsubmit eso significaba perder el 100% de los leads mientras
-              // el usuario veía una página de gracias (auditoría 20-ago-2026).
-              // formsubmit responde 200 aunque rechace, así que no basta res.ok:
-              // hay que leer el `success` del cuerpo.
+              // La base de datos es el destino; el correo es el aviso. Antes
+              // esto era un try/finally que redirigía a /thank-you PASE LO QUE
+              // PASE, sin mirar la respuesta y sin guardar nada: con el destino
+              // de formsubmit sin activar, eso era perder el 100% de los leads
+              // mientras el usuario leía «gracias» (auditoría 20-ago-2026).
+              //
+              // El aviso va PRIMERO porque anon no puede hacer UPDATE: el flag
+              // `notified` hay que escribirlo en el propio INSERT o no se
+              // escribe nunca. Con tope de tiempo, para que un formsubmit lento
+              // no deje al visitante mirando el botón.
+              const campos = Object.fromEntries(
+                Array.from(data.entries())
+                  .filter(([k, v]) => typeof v === 'string' && !k.startsWith('_'))
+                  .map(([k, v]) => [k, String(v)])
+              )
+              let avisado = false
               try {
                 const res = await fetch(FORM_ENDPOINT, {
                   method: 'POST', headers: { Accept: 'application/json' }, body: data,
+                  signal: AbortSignal.timeout(8000),
                 })
+                // formsubmit responde 200 aunque rechace: hay que leer el cuerpo.
                 const body = await res.json().catch(() => null)
-                if (res.ok && (body?.success === true || body?.success === 'true')) {
-                  window.location.href = '/thank-you'
-                  return
-                }
-                setFormError(true)
-              } catch {
-                setFormError(true)
+                avisado = res.ok && (body?.success === true || body?.success === 'true')
+              } catch { /* el aviso es best-effort */ }
+
+              const { email: _e, ...resto } = campos
+              const guardado = await guardarLead({
+                source: 'landing-cta',
+                email: String(campos.email ?? ''),
+                locale: String(campos.locale ?? 'es'),
+                payload: resto,
+                notified: avisado,
+              })
+
+              // Solo se agradece si el dato está en algún sitio recuperable.
+              if (guardado || avisado) {
+                window.location.href = '/thank-you'
+                return
               }
+              setFormError(true)
             }}
             style={{ display: 'flex', gap: 8, maxWidth: 460, margin: '0 auto 18px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <input type="hidden" name="_subject" value={t.form.subject} />

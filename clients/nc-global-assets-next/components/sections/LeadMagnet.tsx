@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { guardarLead } from '@/lib/lead'
 import { Eyebrow, Arrow } from '@/lib/constants'
 import { LEAD_MAGNET_DEFAULTS } from '@/lib/section-defaults'
 
@@ -27,9 +28,11 @@ export function LeadMagnet({ data = LEAD_MAGNET_DEFAULTS }: { data?: typeof LEAD
       })
       // Mismo bug que en Footer.tsx: FormSubmit devuelve 200 con success:"false"
       // al rechazar, así que `|| res.ok` daba por bueno todo rechazo y el lead
-      // desaparecía en silencio (auditoría 20-ago-2026).
+      // desaparecía en silencio (auditoría 20-ago-2026). Ahora además se guarda.
       const data = (await res.json().catch(() => null)) as { success?: string | boolean } | null
-      setStatus(data?.success === true || data?.success === 'true' ? 'done' : 'error')
+      const avisado = data?.success === true || data?.success === 'true'
+      const guardado = await guardarLead({ source: 'checklist', email, locale: 'en', payload: { name }, notified: avisado })
+      setStatus(guardado || avisado ? 'done' : 'error')
     } catch {
       setStatus('error')
     }
