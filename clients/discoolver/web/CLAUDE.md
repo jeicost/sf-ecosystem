@@ -175,7 +175,7 @@ whitelist (`EXTRA_FIELDS`): añadir uno nuevo al form obliga a añadirlo tambié
 
 - **Destino**: env `WAITLIST_FORWARD_EMAIL`; fallback `carlos@discoolver.com`, la dirección que
   `clients/discoolver/creators-landing` usa en producción vía formsubmit (o sea, ya activada).
-- **Gotcha formsubmit**: si cambias el destino a otra dirección (p. ej. `hola@discoolver.com`),
+- **Gotcha formsubmit**: si cambias el destino a otra dirección (p. ej. `hello@discoolver.com`),
   el primer envío dispara el email de activación y TODO fallará (502) hasta que ese buzón
   confirme. Hacer un envío de prueba real tras cambiarlo.
 - El endpoint nunca finge éxito: si formsubmit no confirma, responde 502 y los tres forms

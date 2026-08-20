@@ -30,8 +30,8 @@ export default function Thanks() {
             </p>
             <p className="section__lead" style={{ maxWidth: "58ch" }}>
               Anything odd? Write to{" "}
-              <a href="mailto:hola@discoolver.com" style={{ color: "var(--primary-2)" }}>
-                hola@discoolver.com
+              <a href="mailto:hello@discoolver.com" style={{ color: "var(--primary-2)" }}>
+                hello@discoolver.com
               </a>{" "}
               and we’ll sort it.
             </p>

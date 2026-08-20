@@ -125,7 +125,7 @@ export function Footer({
                 </li>
               ))}
               <li>
-                <a href="mailto:hola@discoolver.com?subject=Prensa">{t.prensa}</a>
+                <a href="mailto:hello@discoolver.com?subject=Prensa">{t.prensa}</a>
               </li>
             </ul>
           </nav>
@@ -138,7 +138,7 @@ export function Footer({
                 </li>
               ))}
               <li>
-                <a href="mailto:hola@discoolver.com">{t.contacto}</a>
+                <a href="mailto:hello@discoolver.com">{t.contacto}</a>
               </li>
               <li>
                 <a
@@ -174,7 +174,7 @@ export function Footer({
               </span>
             ))}
             {" · "}
-            <a style={{ color: "var(--ink-2)" }} href="mailto:hola@discoolver.com">
+            <a style={{ color: "var(--ink-2)" }} href="mailto:hello@discoolver.com">
               {t.contacto}
             </a>
           </span>

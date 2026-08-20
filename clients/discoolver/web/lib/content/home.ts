@@ -147,7 +147,7 @@ export const defaultHomeContent = {
   faq_title_1: "Antes de que nos",
   faq_title_highlight: "preguntes.",
   faq_lead_pre: "Si no encuentras tu respuesta, escríbenos a",
-  faq_lead_email: "hola@discoolver.com",
+  faq_lead_email: "hello@discoolver.com",
   faq_lead_post: ". Te contestamos en 24-48 h laborables.",
   faq_q1: "¿Qué es exactamente una guía discoolver?",
   faq_a1:

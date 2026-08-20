@@ -31,7 +31,7 @@ export const TITULAR = {
   razonSocial: "Discoolverworld S.L.",
   nif: "B88394465",
   domicilio: "C/ Alfonso XII 62, 28014 Madrid, España",
-  emailB2C: "hola@discoolver.com",
+  emailB2C: "hello@discoolver.com",
   emailB2B: "info@discoolver.com",
   /**
    * Dónde se devuelven las guías en papel. Va aparte del domicilio aunque hoy

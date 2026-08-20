@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
  * Destino: env `WAITLIST_FORWARD_EMAIL`, con fallback `carlos@discoolver.com`
  * — la dirección que creators-landing usa en producción vía formsubmit, es
  * decir, la única de Discoolver ya ACTIVADA en formsubmit.co. Si se cambia el
- * destino (p. ej. a hola@discoolver.com), el primer envío dispara el email de
+ * destino (p. ej. a hello@discoolver.com), el primer envío dispara el email de
  * activación de formsubmit y los envíos fallarán (502 aquí, error visible en
  * el form) hasta que ese buzón confirme la activación — hacer un envío de
  * prueba real tras cambiarlo.

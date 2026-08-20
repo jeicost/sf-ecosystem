@@ -155,10 +155,10 @@ export function Footer({
                 </a>
               </li>
               <li>
-                <a href="mailto:hola@discoolver.com?subject=Prensa">{t.prensa}</a>
+                <a href="mailto:hello@discoolver.com?subject=Prensa">{t.prensa}</a>
               </li>
               <li>
-                <a href="mailto:hola@discoolver.com">{t.contacto}</a>
+                <a href="mailto:hello@discoolver.com">{t.contacto}</a>
               </li>
               <li>
                 <a href={waHref()} target="_blank" rel="noopener noreferrer" title={WHATSAPP.display}>

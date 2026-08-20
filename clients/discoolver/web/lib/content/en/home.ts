@@ -131,7 +131,7 @@ export const defaultHomeContent = {
   faq_title_1: "Before you",
   faq_title_highlight: "ask.",
   faq_lead_pre: "If your answer isn't here, write to us at",
-  faq_lead_email: "hola@discoolver.com",
+  faq_lead_email: "hello@discoolver.com",
   faq_lead_post: ". We reply within 24-48 working hours.",
   faq_q1: "What exactly is a Discoolver guide?",
   faq_a1:

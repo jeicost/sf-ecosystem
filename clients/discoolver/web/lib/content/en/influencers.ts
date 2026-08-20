@@ -78,7 +78,7 @@ export const defaultInfluencersContent = {
   faq_title_1: "The questions",
   faq_title_highlight: "everyone asks.",
   faq_lead_pre: "Still missing something? Write to us at",
-  faq_lead_email: "hola@discoolver.com",
+  faq_lead_email: "hello@discoolver.com",
   faq_lead_post: " and a person will answer.",
   faq_q1: "Who owns my content?",
   faq_a1:

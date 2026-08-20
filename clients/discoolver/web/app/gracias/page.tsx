@@ -29,8 +29,8 @@ export default function Gracias() {
             </p>
             <p className="section__lead" style={{ maxWidth: "58ch" }}>
               ¿Algo raro? Escríbenos a{" "}
-              <a href="mailto:hola@discoolver.com" style={{ color: "var(--primary-2)" }}>
-                hola@discoolver.com
+              <a href="mailto:hello@discoolver.com" style={{ color: "var(--primary-2)" }}>
+                hello@discoolver.com
               </a>{" "}
               y lo resolvemos.
             </p>

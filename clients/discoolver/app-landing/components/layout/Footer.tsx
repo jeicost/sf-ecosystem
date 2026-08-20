@@ -42,10 +42,10 @@ export function Footer({
                 <a href="mailto:info@discoolver.com">Para empresas</a>
               </li>
               <li>
-                <a href="mailto:hola@discoolver.com?subject=Prensa">Prensa</a>
+                <a href="mailto:hello@discoolver.com?subject=Prensa">Prensa</a>
               </li>
               <li>
-                <a href="mailto:hola@discoolver.com">Contacto</a>
+                <a href="mailto:hello@discoolver.com">Contacto</a>
               </li>
             </ul>
           </nav>
@@ -73,7 +73,7 @@ export function Footer({
               Privacidad
             </Link>{" "}
             ·{" "}
-            <a style={{ color: "var(--ink-2)" }} href="mailto:hola@discoolver.com">
+            <a style={{ color: "var(--ink-2)" }} href="mailto:hello@discoolver.com">
               Contacto
             </a>
           </span>

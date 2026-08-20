@@ -44,7 +44,7 @@ export default function PrivacidadPage() {
               <p>
                 discoolver, con domicilio en [dirección fiscal] y NIF [NIF]. Para
                 cualquier cosa relacionada con tus datos:{" "}
-                <a href="mailto:hola@discoolver.com">hola@discoolver.com</a>.
+                <a href="mailto:hello@discoolver.com">hello@discoolver.com</a>.
               </p>
             </section>
 
@@ -105,7 +105,7 @@ export default function PrivacidadPage() {
               <p>
                 Puedes acceder, rectificar, borrar, oponerte, limitar el
                 tratamiento y llevarte tus datos. Escríbenos a{" "}
-                <a href="mailto:hola@discoolver.com">hola@discoolver.com</a> y lo
+                <a href="mailto:hello@discoolver.com">hello@discoolver.com</a> y lo
                 resolvemos. Si algo no te cuadra, puedes reclamar ante la Agencia
                 Española de Protección de Datos (aepd.es).
               </p>

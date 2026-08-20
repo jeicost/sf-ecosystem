@@ -259,7 +259,7 @@ export const defaultAppHomeContent = {
   faq_title_1: "Before you",
   faq_title_highlight: "ask.",
   faq_lead_pre: "Can't find your answer? Write to us at",
-  faq_lead_email: "hola@discoolver.com",
+  faq_lead_email: "hello@discoolver.com",
   faq_lead_post: ". We reply within 24-48 working hours.",
   faq_q1: "What is discoolver?",
   faq_a1:

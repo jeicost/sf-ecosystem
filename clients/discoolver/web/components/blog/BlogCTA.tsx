@@ -80,7 +80,7 @@ export function BlogCTA({ ciudad }: { ciudad: string }) {
             </div>
             {estado === "error" && (
               <p role="alert" className="blog-cta__error">
-                No se pudo enviar. Prueba otra vez o escribe a hola@discoolver.com.
+                No se pudo enviar. Prueba otra vez o escribe a hello@discoolver.com.
               </p>
             )}
           </form>
