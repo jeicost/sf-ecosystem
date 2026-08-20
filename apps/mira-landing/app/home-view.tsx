@@ -704,10 +704,7 @@ export default function HomeView({ content, locale }: { content: Content; locale
               color: '#ffb4a8', background: 'rgba(255,80,60,0.08)',
               border: '1px solid rgba(255,120,100,0.25)', borderRadius: 8, padding: '10px 14px',
             }}>
-              No hemos podido enviar el formulario. Escríbenos a{' '}
-              <a href="mailto:info@startupsfactory.es" style={{ color: '#ffd0c7', textDecoration: 'underline' }}>
-                info@startupsfactory.es
-              </a>{' '}y te contestamos igual.
+              {c.cta_error}
             </p>
           )}
 

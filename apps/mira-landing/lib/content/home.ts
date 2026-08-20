@@ -243,6 +243,9 @@ export const defaultHomeContent = {
   cta_button: "Empezar por 99 €/mes",
   cta_secondary: "Hablar con nosotros",
   cta_note: "¿Dudas sobre qué plan? Escríbenos y te decimos cuál encaja — también si es ninguno.",
+  // Se enseña solo si el envío del formulario falla de verdad. Antes no existía:
+  // el formulario redirigía a /thank-you pasara lo que pasara (auditoría 20-ago-2026).
+  cta_error: "No hemos podido enviar el formulario. Escríbenos a info@startupsfactory.es y te contestamos igual.",
 
   footer_tagline: "MIRA es un producto de Startup Factory.",
 } as const;

@@ -173,11 +173,18 @@ el aviso por destino de la home (`Waitlist.tsx`) y los dos de `/influencers` (`I
 `creator-guide` (track "quiero mi guía") y `creator-video` (track "envío mi vídeo"). Los campos admitidos van en
 whitelist (`EXTRA_FIELDS`): añadir uno nuevo al form obliga a añadirlo también ahí o se pierde.
 
-- **Destino**: env `WAITLIST_FORWARD_EMAIL`; fallback `carlos@discoolver.com`, la dirección que
-  `clients/discoolver/creators-landing` usa en producción vía formsubmit (o sea, ya activada).
-- **Gotcha formsubmit**: si cambias el destino a otra dirección (p. ej. `hello@discoolver.com`),
-  el primer envío dispara el email de activación y TODO fallará (502) hasta que ese buzón
-  confirme. Hacer un envío de prueba real tras cambiarlo.
+- **Tres destinos según quién contesta** (decisión del CEO, 2026-08-20), en `ROUTING` del propio
+  route: `info@discoolver.com` para los cuatro formularios de 360 (B2B) · `mk@discoolver.com` para
+  creadores e influencers · `hello@discoolver.com` para todo lo demás, incluida la tienda de guías
+  del `stripe-webhook`. Se pueden sobreescribir con `LEADS_EMAIL_B2B`, `LEADS_EMAIL_CREATORS` y
+  `LEADS_EMAIL_GENERAL`. **`WAITLIST_FORWARD_EMAIL` ya no existe** — se borró de Vercel el 20-ago
+  porque apuntaba a `carlos@` y habría ganado sobre el reparto.
+- **Gotcha formsubmit**: la activación es por par (destino, dominio). Los cuatro buzones en uso
+  están activados y verificados con envío real el 20-ago-2026. Añadir un destino nuevo dispara su
+  propio email de activación y ese buzón fallará hasta que alguien pulse el enlace — el lead sigue
+  a salvo en la tabla `leads`, que es justo el motivo de guardar antes de avisar.
+- **formsubmit responde HTTP 200 aunque rechace**, con `success:"false"` en el cuerpo. Nunca
+  comprobar solo `res.ok`: en NC Global ese error tuvo dos formularios tragándose leads en silencio.
 - El endpoint nunca finge éxito: si formsubmit no confirma, responde 502 y los tres forms
   muestran error visible. No reintroducir el stub `{ok:true}`.
 

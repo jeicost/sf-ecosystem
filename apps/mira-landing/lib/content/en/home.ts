@@ -239,6 +239,7 @@ export const defaultHomeContent: Record<keyof HomeContent, string> = {
   cta_button: "Start at €99/month",
   cta_secondary: "Talk to us",
   cta_note: "Not sure which plan? Write to us and we'll tell you which one fits — including if none of them does.",
+  cta_error: "We couldn't send the form. Email us at info@startupsfactory.es and we'll get back to you anyway.",
 
   footer_tagline: "MIRA is a Startup Factory product.",
 };
