@@ -1,16 +1,6 @@
 'use client'
 
-export const MARKET_STATS_DEFAULTS = {
-  sup: 'Why Thailand · Why now',
-  headline_top: 'The numbers that make ',
-  headline_gold: 'Bangkok the move',
-  stats: [
-    { num: "80M+", label: "Consumers in Southeast Asia's growth corridor" },
-    { num: "#1", label: "Bangkok ranked for F&B delivery density in Southeast Asia" },
-    { num: "20%+", label: "Annual growth rate in Thailand's consumer market" },
-    { num: "4–8", label: "Weeks to your first market test using our infrastructure" },
-  ],
-}
+import { MARKET_STATS_DEFAULTS } from '@/lib/section-defaults'
 
 export function MarketStats({ data = MARKET_STATS_DEFAULTS }: { data?: typeof MARKET_STATS_DEFAULTS }) {
   const stats = data.stats

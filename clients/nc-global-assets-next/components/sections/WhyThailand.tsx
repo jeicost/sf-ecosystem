@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import { Eyebrow } from '@/lib/constants'
+import { WHY_THAILAND_DEFAULTS } from '@/lib/section-defaults'
 
 interface ImgCardProps {
   src: string
@@ -17,24 +18,6 @@ function ImgCard({ src, alt, caption, className = "" }: ImgCardProps) {
       {caption && <span className="caption">{caption}</span>}
     </div>
   )
-}
-
-export const WHY_THAILAND_DEFAULTS = {
-  eyebrow: 'Why Thailand',
-  headline_top: 'Bangkok first',
-  headline_accent: 'Southeast Asia',
-  headline_suffix: ' next',
-  lede: 'Bangkok offers a unique combination of scale, creativity and openness to international concepts — the ideal testing ground before expanding across the region.',
-  subheading_pre: 'A market built for brands that know how to ',
-  subheading_accent: 'show up well',
-  subheading_suffix: '.',
-  bullets: [
-    "One of SEA's fastest-growing F&B and lifestyle markets",
-    "Strong delivery ecosystem and digital adoption",
-    "High concentration of international consumers and tourism",
-    "Strategic gateway to the rest of Southeast Asia",
-    "A market genuinely open to new concepts and experiences",
-  ],
 }
 
 export function WhyThailand({ data = WHY_THAILAND_DEFAULTS }: { data?: typeof WHY_THAILAND_DEFAULTS }) {

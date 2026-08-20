@@ -1,24 +1,10 @@
 'use client'
 
 import { Eyebrow, Arrow, Calendar, ChatIcon } from '@/lib/constants'
+import { FINAL_CTA_DEFAULTS } from '@/lib/section-defaults'
 
 const CONFIG = {
   calendlyUrl: 'https://calendly.com/nc-global-assets/discover-call',
-}
-
-export const FINAL_CTA_DEFAULTS = {
-  ready_eyebrow: 'Next Step',
-  ready_headline_line1: 'Your brand',
-  ready_headline_line2: 'Bangkok',
-  ready_headline_gold: "Let's build it",
-  ready_lede: "Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.",
-  ready_note1: 'Limited spots per quarter',
-  ready_note2: 'Transparent model · Pricing shared in the first call',
-  notready_eyebrow: 'Still exploring?',
-  notready_headline_top: "Let's talk",
-  notready_headline_gold: 'before you decide',
-  notready_lede: "Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.",
-  notready_footer: 'We reply from Bangkok within 24 hours.',
 }
 
 export function FinalCTA({ data = FINAL_CTA_DEFAULTS }: { data?: typeof FINAL_CTA_DEFAULTS }) {

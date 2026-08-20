@@ -2,33 +2,7 @@
 
 import Image from 'next/image'
 import { Eyebrow } from '@/lib/constants'
-
-export const TESTIMONIALS_DEFAULTS = {
-  eyebrow: 'Founder Perspectives',
-  headline_accent: 'Founder',
-  headline_suffix: ' perspectives',
-  lede: 'From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.',
-  testimonials: [
-    {
-      q: "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
-      name: "Carlos Jacoste",
-      role: "Founder · Salsa Burgers",
-      img: "/assets/carlos-dark.jpg",
-    },
-    {
-      q: "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
-      name: "Founder",
-      role: "The Padel Society · Sport & Lifestyle",
-      img: null,
-    },
-    {
-      q: "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
-      name: "Founder",
-      role: "Souji · Food & Wellness",
-      img: null,
-    },
-  ],
-}
+import { TESTIMONIALS_DEFAULTS } from '@/lib/section-defaults'
 
 export function Testimonials({ data = TESTIMONIALS_DEFAULTS }: { data?: typeof TESTIMONIALS_DEFAULTS }) {
   const testimonials = data.testimonials

@@ -3,31 +3,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Eyebrow, Arrow, LinkedInIcon } from '@/lib/constants'
-
-export const TEAM_DEFAULTS = {
-  eyebrow: 'The Team',
-  headline_top: 'Led by operators entrepreneurs and ',
-  headline_gold: 'market builders',
-  team: [
-    {
-      name: "Carlos Jacoste",
-      role: "Founder & Operating Partner",
-      bio: "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
-      img: "/assets/carlos-dark.jpg",
-      linkedin: "https://th.linkedin.com/in/carlosjacoste",
-    },
-    {
-      name: "Nirada Kritsanaseranee",
-      role: "Director of Marketing",
-      bio: "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
-      img: "/assets/nirada-dark.jpg",
-      linkedin: "https://th.linkedin.com/in/nirada-k",
-    },
-  ],
-  closing_pre: 'Together, the team combines international business vision with ',
-  closing_gold: 'local execution capacity',
-  closing_suffix: ' in Thailand.',
-}
+import { TEAM_DEFAULTS } from '@/lib/section-defaults'
 
 export function Team({ data = TEAM_DEFAULTS }: { data?: typeof TEAM_DEFAULTS }) {
   const team = data.team

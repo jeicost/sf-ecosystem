@@ -2,16 +2,7 @@
 
 import Image from 'next/image'
 import { CONFIG, Arrow, Eyebrow, Calendar } from '@/lib/constants'
-
-export const INTRO_DEFAULTS = {
-  eyebrow: 'The Opportunity',
-  badge_city: 'Bangkok',
-  badge_label: "Southeast Asia's fastest-growing market",
-  heading: "Thailand is one of Southeast Asia's fastest-growing consumer markets — and most international brands never make it past the planning stage. Not because the opportunity isn't there. Because they try to build everything",
-  heading_accent: 'from scratch, alone.',
-  lede: "We built the infrastructure so you don't have to. Cloud kitchen. Office. Showroom. Local team. Distribution channels. Everything you need to enter Thailand is already running — waiting for your brand.",
-  cta_label: 'See how it works',
-}
+import { INTRO_DEFAULTS } from '@/lib/section-defaults'
 
 export function Intro({ data = INTRO_DEFAULTS }: { data?: typeof INTRO_DEFAULTS }) {
   return (

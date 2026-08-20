@@ -1,19 +1,7 @@
 'use client'
 
 import { Eyebrow } from '@/lib/constants'
-
-export const OUR_MODEL_DEFAULTS = {
-  eyebrow: 'Our Model',
-  headline_top: 'A partnership built around ',
-  headline_gold: 'shared growth',
-  lede: 'We combine operational capacity with long-term alignment. Our commercial agreements are structured around the specific needs of each brand and project.',
-  quote: 'We aim to be the local partner that makes your brand grow in Thailand.',
-  blocks: [
-    { ttl: "Operational Setup", body: "Local infrastructure, kitchen capacity and channel activation — ready from day one." },
-    { ttl: "Local Execution", body: "Hands-on management of operations, sales, brand and customer experience in Bangkok." },
-    { ttl: "Shared Growth", body: "Aligned commercial models — fixed structures, performance-based, revenue share or equity." },
-  ],
-}
+import { OUR_MODEL_DEFAULTS } from '@/lib/section-defaults'
 
 export function OurModel({ data = OUR_MODEL_DEFAULTS }: { data?: typeof OUR_MODEL_DEFAULTS }) {
   const blocks = data.blocks

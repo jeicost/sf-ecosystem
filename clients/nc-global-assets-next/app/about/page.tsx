@@ -1,16 +1,11 @@
 import type { Metadata } from 'next'
 import { Eyebrow } from '@/lib/constants'
-import {
-  AboutStory, ABOUT_STORY_DEFAULTS,
-  AboutManifesto, ABOUT_MANIFESTO_DEFAULTS,
-  AboutNumbers, ABOUT_NUMBERS_DEFAULTS,
-  AboutValues, ABOUT_VALUES_DEFAULTS,
-  AboutApproach, ABOUT_APPROACH_DEFAULTS,
-} from '@/components/sections/AboutSections'
-import { Team, TEAM_DEFAULTS } from '@/components/sections/Team'
-import { Testimonials, TESTIMONIALS_DEFAULTS } from '@/components/sections/Testimonials'
+import { AboutStory, ABOUT_STORY_DEFAULTS, AboutManifesto, ABOUT_MANIFESTO_DEFAULTS, AboutNumbers, ABOUT_NUMBERS_DEFAULTS, AboutValues, ABOUT_VALUES_DEFAULTS, AboutApproach, ABOUT_APPROACH_DEFAULTS } from '@/components/sections/AboutSections'
+import { Team } from '@/components/sections/Team'
+import { Testimonials } from '@/components/sections/Testimonials'
 import { CtaBanner } from '@/components/CtaBanner'
 import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
+import { TEAM_DEFAULTS, TESTIMONIALS_DEFAULTS } from '@/lib/section-defaults'
 
 export const metadata: Metadata = {
   title: 'About — NC Global Assets',

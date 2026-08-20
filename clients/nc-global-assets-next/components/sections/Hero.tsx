@@ -1,22 +1,7 @@
 'use client'
 
 import { Eyebrow } from '@/lib/constants'
-
-export const HERO_DEFAULTS = {
-  eyebrow: 'Bangkok · Local Operating Partner',
-  headline_line1: 'Enter Thailand.',
-  headline_line2: 'Skip the ',
-  headline_line2_gold: 'hard part.',
-  headline_line3_gold: 'Your brand live in weeks.',
-  hidden_heading: 'Premium Real Estate & Investment Management in Bangkok',
-  body: 'We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.',
-  spaces_label: "What's ready for your brand",
-  spaces: [
-    { icon: '◈', label: 'Showroom', desc: 'Present your brand to buyers & partners' },
-    { icon: '⬡', label: 'Offices', desc: 'Local team base & brand management' },
-    { icon: '◎', label: 'Cloud Kitchen', desc: 'Production-ready, live on delivery apps' },
-  ],
-}
+import { HERO_DEFAULTS } from '@/lib/section-defaults'
 
 export function Hero({ data = HERO_DEFAULTS }: { data?: typeof HERO_DEFAULTS }) {
   return (

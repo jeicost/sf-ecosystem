@@ -2,24 +2,7 @@
 
 import { useState } from 'react'
 import { Eyebrow, Arrow } from '@/lib/constants'
-
-export const LEAD_MAGNET_DEFAULTS = {
-  eyebrow: 'Free Resource',
-  headline_line1: 'The Bangkok',
-  headline_gold: 'Brand Entry',
-  headline_line3: 'Checklist.',
-  lede: 'Everything you need to validate, plan and launch your brand in Thailand — in a single practical guide. Used internally by every brand we onboard.',
-  points: [
-    'Market validation checklist before you commit',
-    'The 5 setup mistakes foreign brands make in Bangkok',
-    'Platform activation guide: GrabFood, Foodpanda & Lineman',
-    'Local partner evaluation framework',
-    '90-day launch timeline template',
-  ],
-  form_label: 'Get the free checklist',
-  success_title: "You're on the list.",
-  success_sub: "Check your inbox — we'll send the checklist shortly. Or download it directly below.",
-}
+import { LEAD_MAGNET_DEFAULTS } from '@/lib/section-defaults'
 
 export function LeadMagnet({ data = LEAD_MAGNET_DEFAULTS }: { data?: typeof LEAD_MAGNET_DEFAULTS }) {
   const [email, setEmail] = useState('')

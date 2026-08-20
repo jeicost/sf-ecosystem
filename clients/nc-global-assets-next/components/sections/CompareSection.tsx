@@ -1,6 +1,7 @@
 'use client'
 
 import { Eyebrow } from '@/lib/constants'
+import { COMPARE_DEFAULTS } from '@/lib/section-defaults'
 
 const CHECK = "check"
 const PARTIAL = "partial"
@@ -10,14 +11,6 @@ function Icon({ type }: { type: string }) {
   if (type === CHECK) return <span className="compare-check">✓</span>
   if (type === PARTIAL) return <span className="compare-partial">~</span>
   return <span className="compare-cross">✗</span>
-}
-
-export const COMPARE_DEFAULTS = {
-  eyebrow: 'How We Compare',
-  headline_top: 'Four ways to enter',
-  headline_gold: 'Thailand',
-  lede: 'Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.',
-  footer_note: 'We onboard a limited number of brands per quarter.',
 }
 
 export function CompareSection({ data = COMPARE_DEFAULTS }: { data?: typeof COMPARE_DEFAULTS }) {

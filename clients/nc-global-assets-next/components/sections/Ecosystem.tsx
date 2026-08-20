@@ -2,14 +2,7 @@
 
 import Image from 'next/image'
 import { Eyebrow } from '@/lib/constants'
-
-export const ECOSYSTEM_DEFAULTS = {
-  eyebrow: 'Ecosystem',
-  headline_pre: 'A ',
-  headline_accent: 'trusted',
-  headline_suffix: ' local ecosystem',
-  lede: 'We collaborate with selected partners across food innovation, entrepreneurship, marketing, business development and international expansion.',
-}
+import { ECOSYSTEM_DEFAULTS } from '@/lib/section-defaults'
 
 export function Ecosystem({ data = ECOSYSTEM_DEFAULTS }: { data?: typeof ECOSYSTEM_DEFAULTS }) {
   const partners = [

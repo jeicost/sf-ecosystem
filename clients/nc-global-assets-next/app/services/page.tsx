@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
 import { Arrow, Eyebrow } from '@/lib/constants'
-import { CompareSection, COMPARE_DEFAULTS } from '@/components/sections/CompareSection'
-import { FinalCTA, FINAL_CTA_DEFAULTS } from '@/components/sections/FinalCTA'
+import { CompareSection } from '@/components/sections/CompareSection'
+import { FinalCTA } from '@/components/sections/FinalCTA'
 import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
+import { COMPARE_DEFAULTS, FINAL_CTA_DEFAULTS } from '@/lib/section-defaults'
 
 export const metadata: Metadata = {
   title: 'Services — Brand Launch, F&B Operations — NC Global Assets',

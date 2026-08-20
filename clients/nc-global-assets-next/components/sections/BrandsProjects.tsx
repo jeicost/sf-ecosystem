@@ -3,13 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { Eyebrow, Arrow } from '@/lib/constants'
-
-export const BRANDS_PROJECTS_DEFAULTS = {
-  eyebrow: 'Brands & Projects',
-  headline_top: 'Brands in our ',
-  headline_gold: 'network',
-  lede: 'A curated portfolio across F&B, sustainability, sport, lifestyle and digital innovation — each with a real story and a real ambition.',
-}
+import { BRANDS_PROJECTS_DEFAULTS } from '@/lib/section-defaults'
 
 export function BrandsProjects({ data = BRANDS_PROJECTS_DEFAULTS }: { data?: typeof BRANDS_PROJECTS_DEFAULTS }) {
   const brands = [
