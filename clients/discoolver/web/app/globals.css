@@ -3997,16 +3997,39 @@ a.blog-card__cat:hover {
   font-variant-numeric: tabular-nums;
   color: var(--primary);
 }
+/* Carril horizontal, uno por país. Con 21 cuentas en Tailandia, desplegarlas
+   todas dejaba un muro de caras y obligaba a hacer scroll vertical para pasar
+   de un país al siguiente. Así cada país ocupa una fila y se recorre con el
+   dedo o con el trackpad. */
 .pais__lista {
   list-style: none;
   margin: 24px 0 0;
-  padding: 0;
-  display: grid;
-  /* Casillas más estrechas que antes (158px): con 47 caras, cuantas más caben
-     por fila más corta queda la fila incompleta del final, que era lo que
-     dejaba el bloque con pinta de descuadrado. */
-  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
-  gap: 30px 16px;
+  padding: 4px 2px 16px;
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.pais__lista::-webkit-scrollbar { display: none; }
+/* Ancho fijo: es lo que hace que la última ficha visible quede cortada por la
+   mitad, que es la única señal de "hay más" que se entiende sin explicarla. */
+.pais__lista > li { flex: 0 0 auto; width: 118px; scroll-snap-align: start; }
+/* El degradado del borde derecho refuerza esa señal sin tapar nada: va sobre
+   el carril, no dentro, para que no se desplace con él. */
+.pais { position: relative; }
+.pais::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 16px;
+  width: 56px;
+  height: 168px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, var(--paper) 82%);
 }
 .creador {
   display: flex;
@@ -4016,30 +4039,24 @@ a.blog-card__cat:hover {
   gap: 2px;
   text-decoration: none;
   color: inherit;
-  /* Las fichas se estiran a la altura de la fila para que las fotos de la
-     siguiente arranquen todas a la misma altura. */
-  height: 100%;
 }
-.pais__lista > li { display: flex; }
-/* Cuadrado redondeado y no círculo: la foto respira más dentro del mismo
-   ancho, y el conjunto se lee como una colección de fichas en vez de como una
-   lista de contactos. */
+/* Círculo, no cuadrado redondeado. En cuadrado se veía el recorte de las fotos
+   de perfil —que ya vienen recortadas de origen— y varias quedaban con la cara
+   pegada al borde. El círculo las centra y disimula el encuadre ajeno. */
 .creador__avatar {
-  width: 100%;
-  max-width: 116px;
-  aspect-ratio: 1;
-  height: auto;
-  border-radius: 18px;
+  width: 106px;
+  height: 106px;
+  border-radius: 50%;
   object-fit: cover;
   margin-bottom: 11px;
-  border: 1px solid color-mix(in oklab, var(--line) 40%, transparent);
+  border: 1px solid color-mix(in oklab, var(--line) 45%, transparent);
   transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
 }
 .creador__avatar--iniciales {
   display: grid;
   place-items: center;
-  /* El degradado baja solo hasta el 78% del tono: al 45% el pie se iba a negro
-     y las iniciales perdían contraste justo donde se apoyan. */
+  /* El degradado baja solo hasta el 78% del tono: al 45% el pie del círculo se
+     iba a negro y las iniciales perdían contraste justo donde se apoyan. */
   background: radial-gradient(120% 120% at 32% 22%, color-mix(in oklab, var(--tono) 88%, #fff), color-mix(in oklab, var(--tono) 78%, #000));
   color: #0a0a0f;
   font-family: var(--font-display);
@@ -4054,9 +4071,9 @@ a.blog-card__cat:hover {
 }
 .creador__nombre { font-weight: 600; font-size: 14px; line-height: 1.25; text-wrap: balance; }
 .creador__handle { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); }
-/* Ciudad y territorio iban en dos líneas y con el territorio en versales largas
-   ("NATURALEZA Y AIRE LIBRE") que partían en tres. Juntos en una sola línea
-   con punto medio: misma información, un tercio del ruido. */
+/* Ciudad y territorio en una línea con punto medio, recortadas a dos: en dos
+   líneas separadas y con versales largas ("NATURALEZA Y AIRE LIBRE") partían
+   en tres y descuadraban la altura de las fichas del carril. */
 .creador__meta {
   margin-top: 5px;
   font-family: var(--font-mono);
@@ -4065,19 +4082,21 @@ a.blog-card__cat:hover {
   text-transform: uppercase;
   line-height: 1.4;
   color: color-mix(in oklab, var(--primary) 68%, var(--ink));
-  /* Dos líneas como mucho. Territorios largos ("Naturaleza y aire libre")
-     se partían en tres y dejaban las fichas de la misma fila con alturas
-     distintas, que es lo que hacía ver la rejilla descuadrada. */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 @media (max-width: 620px) {
-  .pais__lista { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 24px 12px; }
-  .creador__avatar { max-width: 92px; border-radius: 14px; }
-  .creador__avatar--iniciales { font-size: 24px; }
-  .creador__meta { font-size: 9px; }
+  .pais__lista { gap: 18px; }
+  .pais__lista > li { width: 96px; }
+  .creador__avatar { width: 88px; height: 88px; }
+  .creador__avatar--iniciales { font-size: 25px; }
+  .pais::after { width: 34px; height: 150px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pais__lista { scroll-behavior: auto; }
+  .creador:hover .creador__avatar { transform: none; }
 }
 
 /* La ciudad concreta se conserva bajo cada creador aunque el bloque sea por
