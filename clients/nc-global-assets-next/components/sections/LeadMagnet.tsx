@@ -25,8 +25,11 @@ export function LeadMagnet({ data = LEAD_MAGNET_DEFAULTS }: { data?: typeof LEAD
           source: 'Bangkok Brand Entry Checklist',
         }),
       })
-      const data = (await res.json()) as { success?: string }
-      setStatus(data.success === 'true' || res.ok ? 'done' : 'error')
+      // Mismo bug que en Footer.tsx: FormSubmit devuelve 200 con success:"false"
+      // al rechazar, así que `|| res.ok` daba por bueno todo rechazo y el lead
+      // desaparecía en silencio (auditoría 20-ago-2026).
+      const data = (await res.json().catch(() => null)) as { success?: string | boolean } | null
+      setStatus(data?.success === true || data?.success === 'true' ? 'done' : 'error')
     } catch {
       setStatus('error')
     }

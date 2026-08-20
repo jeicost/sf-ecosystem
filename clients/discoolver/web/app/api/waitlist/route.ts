@@ -28,7 +28,41 @@ import { NextRequest, NextResponse } from "next/server";
  * necesita saber que no ha quedado registrado.
  */
 
-const FORWARD_EMAIL = (process.env.WAITLIST_FORWARD_EMAIL || "carlos@discoolver.com").trim();
+/**
+ * Tres buzones según a quién le toca contestar (decisión de Carlos, 20-ago-2026).
+ * Antes todo caía en uno solo y había que triar a mano por el asunto.
+ *
+ *   info@   → B2B: los cuatro formularios de discoolver 360.
+ *   mk@     → creadores e influencers.
+ *   hello@  → todo lo demás: landing, ciudades, blog y la tienda de guías.
+ *
+ * ⚠️ formsubmit se activa por par (destino, dominio): cada uno de los tres
+ * buzones necesita su PROPIO enlace de activación pulsado desde discoolver.com.
+ * Añadir un buzón nuevo aquí sin activarlo tira sus leads al correo — aunque el
+ * lead sigue a salvo en la tabla `leads`, que es el motivo de que se guarde antes.
+ */
+const EMAIL_B2B = (process.env.LEADS_EMAIL_B2B || "info@discoolver.com").trim();
+const EMAIL_CREATORS = (process.env.LEADS_EMAIL_CREATORS || "mk@discoolver.com").trim();
+// OJO: aquí NO se usa el viejo WAITLIST_FORWARD_EMAIL a propósito. Sigue
+// definido en Vercel apuntando a carlos@discoolver.com y, si se dejara en la
+// cadena, ganaría sobre la decisión de repartir en tres buzones. Borrar esa
+// variable del proyecto cuando se despliegue esto.
+const EMAIL_GENERAL = (process.env.LEADS_EMAIL_GENERAL || "hello@discoolver.com").trim();
+
+/** A qué buzón va cada `source`. Lo que no esté aquí cae en EMAIL_GENERAL. */
+const ROUTING: Record<string, string> = {
+  "360-demo": EMAIL_B2B,
+  "360-destinos": EMAIL_B2B,
+  "360-alojamientos": EMAIL_B2B,
+  "360-agencias": EMAIL_B2B,
+  influencer: EMAIL_CREATORS,
+  "creator-guide": EMAIL_CREATORS,
+  "creator-video": EMAIL_CREATORS,
+};
+
+function destinoPara(source: string): string {
+  return ROUTING[source] ?? EMAIL_GENERAL;
+}
 
 /** El sitio canónico: formsubmit exige un Referer con pinta de web real. */
 const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://discoolver.com").replace(/\/$/, "");
@@ -117,9 +151,9 @@ async function guardar(lead: Record<string, unknown>): Promise<boolean> {
 }
 
 /** Aviso por email. Best-effort: su fallo no invalida el lead. */
-async function avisar(payload: Record<string, string>): Promise<boolean> {
+async function avisar(payload: Record<string, string>, destino: string): Promise<boolean> {
   try {
-    const res = await fetch(`https://formsubmit.co/ajax/${FORWARD_EMAIL}`, {
+    const res = await fetch(`https://formsubmit.co/ajax/${destino}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -189,7 +223,8 @@ export async function POST(req: NextRequest) {
   // visitante mirando el botón— y después el guardado, que así puede anotar en
   // la propia fila si el aviso salió o no. Anon no puede hacer UPDATE, de modo
   // que `notified` hay que escribirlo en el INSERT o no se escribe nunca.
-  const avisado = await avisar(payload);
+  const destino = destinoPara(source);
+  const avisado = await avisar(payload, destino);
   const guardado = await guardar({
     site: "discoolver",
     source: source || "unknown",
@@ -205,7 +240,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "forward_failed" }, { status: 502 });
   }
   if (!avisado) {
-    console.warn("[waitlist] lead guardado pero SIN aviso por email", { source, email });
+    console.warn("[waitlist] lead guardado pero SIN aviso por email", { source, email, destino });
   }
   return NextResponse.json({ ok: true });
 }

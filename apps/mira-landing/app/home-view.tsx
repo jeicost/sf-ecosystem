@@ -24,7 +24,10 @@ import { UI, altPath, type Locale } from '@/lib/i18n'
  */
 
 const PORTAL_URL = 'https://mira.startupsfactory.es/login'
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/jacostech@gmail.com'
+// Buzón de la agencia, no el personal (decisión de Carlos, 20-ago-2026).
+// ⚠️ formsubmit se activa por par (destino, dominio): este buzón necesita su
+// propio enlace de activación pulsado desde el dominio de esta landing.
+const FORM_ENDPOINT = 'https://formsubmit.co/ajax/info@startupsfactory.es'
 
 /** Todas las claves del copy, ya con los valores del CMS aplicados. */
 type Content = Record<keyof HomeContent, string>
@@ -175,6 +178,7 @@ function Head({ eyebrow, title, lead, center, accent }: {
 }
 
 export default function HomeView({ content, locale }: { content: Content; locale: Locale }) {
+  const [formError, setFormError] = useState(false)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
   const [activeTeam, setActiveTeam] = useState(0)
   const c = content
@@ -654,10 +658,24 @@ export default function HomeView({ content, locale }: { content: Content; locale
             onSubmit={async (e) => {
               e.preventDefault()
               const data = new FormData(e.currentTarget)
+              // Antes esto era un try/finally que redirigía a /thank-you PASE LO
+              // QUE PASE, sin mirar la respuesta. Con el destino sin activar en
+              // formsubmit eso significaba perder el 100% de los leads mientras
+              // el usuario veía una página de gracias (auditoría 20-ago-2026).
+              // formsubmit responde 200 aunque rechace, así que no basta res.ok:
+              // hay que leer el `success` del cuerpo.
               try {
-                await fetch(FORM_ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body: data })
-              } finally {
-                window.location.href = '/thank-you'
+                const res = await fetch(FORM_ENDPOINT, {
+                  method: 'POST', headers: { Accept: 'application/json' }, body: data,
+                })
+                const body = await res.json().catch(() => null)
+                if (res.ok && (body?.success === true || body?.success === 'true')) {
+                  window.location.href = '/thank-you'
+                  return
+                }
+                setFormError(true)
+              } catch {
+                setFormError(true)
               }
             }}
             style={{ display: 'flex', gap: 8, maxWidth: 460, margin: '0 auto 18px', flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -677,6 +695,21 @@ export default function HomeView({ content, locale }: { content: Content; locale
               cursor: 'pointer', fontFamily: 'inherit',
             }}>{c.cta_secondary} →</button>
           </form>
+
+          {/* El envío falló: se dice, y se da una salida real en vez de una
+              página de gracias que miente. */}
+          {formError && (
+            <p role="alert" style={{
+              fontSize: 13.5, lineHeight: 1.6, maxWidth: 460, margin: '0 auto 14px',
+              color: '#ffb4a8', background: 'rgba(255,80,60,0.08)',
+              border: '1px solid rgba(255,120,100,0.25)', borderRadius: 8, padding: '10px 14px',
+            }}>
+              No hemos podido enviar el formulario. Escríbenos a{' '}
+              <a href="mailto:info@startupsfactory.es" style={{ color: '#ffd0c7', textDecoration: 'underline' }}>
+                info@startupsfactory.es
+              </a>{' '}y te contestamos igual.
+            </p>
+          )}
 
           <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.25)', lineHeight: 1.6 }}>{c.cta_note}</p>
         </div>

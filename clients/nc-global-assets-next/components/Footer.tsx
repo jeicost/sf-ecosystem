@@ -35,8 +35,12 @@ export function Footer() {
           source: 'Footer newsletter (Stay up to date)',
         }),
       })
-      const data = (await res.json()) as { success?: string }
-      if (data.success === 'true' || res.ok) {
+      // FormSubmit responde HTTP 200 con success:"false" cuando rechaza (por
+      // ejemplo si el par destino/dominio no está activado), así que `|| res.ok`
+      // convertía cada rechazo en un «You're on the list» y el correo se perdía
+      // sin dejar rastro (auditoría 20-ago-2026). Solo vale el success del cuerpo.
+      const data = (await res.json().catch(() => null)) as { success?: string | boolean } | null
+      if (data?.success === true || data?.success === 'true') {
         setStatus('done')
       } else {
         setErrorMsg(`Something went wrong. Email us directly at ${CONFIG.email}`)
