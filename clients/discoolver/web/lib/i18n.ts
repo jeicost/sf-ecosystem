@@ -10,16 +10,51 @@
  * `altPath` calcula la URL equivalente en el otro idioma para el switcher y
  * para los hreflang de lib/seo.ts.
  */
-export type Locale = "es" | "en";
+/**
+ * Los idiomas del sitio, en un solo sitio. TODO lo demás se deriva de aquí:
+ * el tipo, el despeje del prefijo, el switcher y los hreflang.
+ *
+ * Antes esto era `type Locale = "es" | "en"` y cada función tenía su propio
+ * ternario `locale === "en" ? … : …`, con la rama `else` asumiendo español. Un
+ * mapeo del 20-ago-2026 encontró **172 sitios en 73 ficheros** que dependen del
+ * idioma, y 89 de ellos caían al español SIN dar error. Añadir un idioma con
+ * ese diseño era garantizar fallos mudos, así que primero se cambia el modelo:
+ * de «uno u otro» a «el por defecto y los demás».
+ *
+ * El orden importa: DEFAULT_LOCALE vive en la raíz (`/guias`) y los demás bajo
+ * su prefijo (`/en/guias`).
+ */
+export const LOCALES = ["es", "en"] as const;
+export type Locale = (typeof LOCALES)[number];
+export const DEFAULT_LOCALE: Locale = "es";
 
+/** Valida lo que venga de una URL, del CMS o de un body: nada de `as Locale`. */
+export function isLocale(x: unknown): x is Locale {
+  return typeof x === "string" && (LOCALES as readonly string[]).includes(x);
+}
+
+/**
+ * Quita el prefijo de idioma y devuelve la ruta canónica (la del idioma por
+ * defecto). Es la pieza que antes estaba duplicada: existía aquí y otra vez en
+ * lib/seo.ts con el nombre `stripEn` — y el nombre ya delataba que el diseño
+ * solo contemplaba dos idiomas.
+ */
+export function stripLocale(path: string): string {
+  const m = path.match(/^\/([a-z]{2})(?=\/|$)/);
+  if (m && isLocale(m[1]) && m[1] !== DEFAULT_LOCALE) return path.slice(3) || "/";
+  return path;
+}
+
+/** La misma ruta en otro idioma. Sirve para el switcher y para los hreflang. */
 export function altPath(path: string, to: Locale): string {
-  const clean = path.startsWith("/en/") ? path.slice(3) : path === "/en" ? "/" : path;
-  return to === "en" ? (clean === "/" ? "/en" : `/en${clean}`) : clean || "/";
+  const clean = stripLocale(path);
+  if (to === DEFAULT_LOCALE) return clean || "/";
+  return clean === "/" || clean === "" ? `/${to}` : `/${to}${clean}`;
 }
 
 export function withLocale(path: string, locale: Locale): string {
   if (!path.startsWith("/")) return path; // anchors (#x), mailto:, tel:, querys
-  return locale === "en" ? altPath(path, "en") : path;
+  return locale === DEFAULT_LOCALE ? path : altPath(path, locale);
 }
 
 /**
@@ -30,7 +65,21 @@ export function withLocale(path: string, locale: Locale): string {
  * manera —ya había tres variantes distintas del mismo `startsWith("/en")`—.
  */
 export function localeFromPath(path: string | null | undefined): Locale {
-  return path === "/en" || path?.startsWith("/en/") ? "en" : "es";
+  const seg = path?.split("/")[1];
+  return isLocale(seg) && seg !== DEFAULT_LOCALE ? seg : DEFAULT_LOCALE;
+}
+
+/**
+ * Las cadenas de UI del idioma pedido, con respaldo al por defecto.
+ *
+ * Existe para que los nueve ficheros que hoy hacen `UI[locale].loQueSea` dejen
+ * de indexar en crudo: si un día llega un locale sin bloque en `UI`, indexar
+ * devuelve `undefined` y el acceso encadenado revienta en render — y el primer
+ * sitio donde pasaría es HtmlShell, que es la raíz del árbol: caería la página
+ * entera, no un componente.
+ */
+export function t(locale: Locale): (typeof UI)[Locale] {
+  return UI[locale] ?? UI[DEFAULT_LOCALE];
 }
 
 export const UI = {
@@ -123,3 +172,15 @@ export const UI = {
     guias: { formatoAria: "{x} — join the launch list" },
   },
 } as const;
+
+/**
+ * Red de seguridad en tiempo de COMPILACIÓN: si mañana se añade un idioma a
+ * LOCALES y se olvida su bloque en UI, esto no compila. Antes no había nada que
+ * lo impidiera y el olvido se descubría en render, con un TypeError en la raíz
+ * del árbol que tumbaba la página entera.
+ *
+ * Se hace con esta línea y no tipando UI directamente para no perder los tipos
+ * literales que ya infiere `as const` ni tocar el objeto.
+ */
+const _todosLosIdiomasTienenUI: Record<Locale, unknown> = UI;
+void _todosLosIdiomasTienenUI;
