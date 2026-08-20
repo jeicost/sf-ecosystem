@@ -13,8 +13,10 @@
  */
 export const defaultDestinos360Content = {
   hero_eyebrow: "Para ayuntamientos, patronatos de turismo y DMO",
-  hero_title:
-    "El flujo se concentra en cuatro calles y el dato del visitante no es tuyo",
+  // Eran 73 caracteres y SEIS líneas en móvil: un párrafo, no un titular.
+  // El segundo golpe —que el dato no es suyo— baja al subtítulo, que ya lo
+  // dice y donde ese nivel de detalle se lee.
+  hero_title: "Cuatro calles se llevan todo el flujo.",
   hero_sub:
     "discoolver es la plataforma SaaS que un ayuntamiento, un patronato o una DMO contrata por módulos para redistribuir el flujo de visitantes, tener datos propios del viajero y convertir el tráfico turístico en ingresos para el tejido local. Se integra en la web que ya tienes. Sin desarrollo propio. Sin app obligatoria.",
   hero_cta_label: "Solicitar una demo de 30 minutos",

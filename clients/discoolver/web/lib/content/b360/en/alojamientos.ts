@@ -15,7 +15,7 @@
  */
 export const defaultAlojamientos360Content = {
   hero_eyebrow: "Hotels · Hostels · Apartment networks",
-  hero_title: "Your digital concierge. And a revenue line on every recommendation.",
+  hero_title: "Your digital concierge. And a revenue line.",
   hero_sub:
     "discoolver plugs into the check-in you already run, answers your guest at any hour, and gives you back a share of what they book outside the property.",
   hero_cta_primary: "Book a demo",

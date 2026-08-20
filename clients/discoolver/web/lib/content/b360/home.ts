@@ -13,7 +13,9 @@
  */
 export const defaultHome360Content = {
   hero_eyebrow: "discoolver 360 · plataforma B2B para turismo",
-  hero_title: "Vende el destino. Entiende al visitante. Quédate con los datos.",
+  // 63 caracteres se iban a 5 líneas en móvil a 38px. "Entiende al
+  // visitante" no se pierde: es literalmente lo que promete el subtítulo.
+  hero_title: "Vende el destino. Quédate con el dato.",
   hero_sub:
     "discoolver 360 es la plataforma SaaS todo-en-uno para destinos, alojamientos y agencias que quieren digitalizar, personalizar y monetizar la experiencia del viajero sin desarrollar tecnología propia. Siete módulos que se contratan por separado y funcionan sobre la web que ya tienes.",
   hero_cta_primary_label: "Pedir una demo",

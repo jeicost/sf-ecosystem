@@ -5,7 +5,7 @@
 export const defaultDestinos360Content = {
   hero_eyebrow: "For city councils, tourism boards and DMOs",
   hero_title:
-    "Footfall concentrates in four streets and the visitor data isn't yours",
+    "Four streets take all the footfall.",
   hero_sub:
     "discoolver is the SaaS platform a city council, a tourism board or a DMO buys module by module to redistribute visitor flow, own its traveler data and turn tourist traffic into revenue for the local economy. It plugs into the website you already have. No in-house development. No mandatory app.",
   hero_cta_label: "Request a 30-minute demo",

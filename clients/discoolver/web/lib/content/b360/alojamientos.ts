@@ -13,7 +13,9 @@
  */
 export const defaultAlojamientos360Content = {
   hero_eyebrow: "Hoteles · Hostales · Redes de apartamentos",
-  hero_title: "Tu concierge digital. Y una línea de ingreso por cada recomendación.",
+  // 68 caracteres, 5 líneas. "Por cada recomendación" lo desarrolla el
+  // subtítulo; en el titular solo alargaba.
+  hero_title: "Tu concierge digital. Y una línea de ingreso.",
   hero_sub:
     "discoolver entra en el check-in que ya tienes, responde a tu huésped a cualquier hora y te devuelve parte de lo que reserva fuera del alojamiento.",
   hero_cta_primary: "Agendar una demo",
