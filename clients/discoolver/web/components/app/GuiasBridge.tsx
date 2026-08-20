@@ -52,14 +52,27 @@ import type { Locale } from "@/lib/i18n";
  * y en /guias: una guía no puede verse distinta según por dónde se llegue.
  * Ronda salió de las dos el 19-ago-2026.
  */
-const PORTADAS = [
+/** Una portada por ciudad. `cityEn` solo donde el nombre cambia en inglés. */
+type Portada = {
+  city: string;
+  cityEn?: string;
+  bg: string;
+  ink: string;
+  accent: string;
+  estado: "fecha" | "otono" | "pronto";
+};
+
+const PORTADAS: Portada[] = [
   { city: "Madrid", bg: "#22578a", ink: "#f2f0ea", accent: "#f4b47a", estado: "fecha" },
   { city: "Barcelona", bg: "#c8006b", ink: "#f2f0ea", accent: "#c9ff3f", estado: "otono" },
   { city: "Málaga", bg: "#c9ff3f", ink: "#141414", accent: "#c8006b", estado: "otono" },
   { city: "Valencia", bg: "#6d2f5e", ink: "#f2f0ea", accent: "#f4b47a", estado: "pronto" },
   { city: "Ibiza", bg: "#f2f0ea", ink: "#141414", accent: "#c8006b", estado: "otono" },
   { city: "Bangkok", bg: "#8f004d", ink: "#f2f0ea", accent: "#f4b47a", estado: "pronto" },
-  { city: "Dubái", bg: "#2b3a6b", ink: "#f2f0ea", accent: "#e6c26a", estado: "pronto" },
+  // `cityEn` solo donde el nombre cambia: las demás se escriben igual en
+  // los dos idiomas. Sin esto, /en enseñaba «Dubái» en el lomo, en la cubierta
+  // y en el título de la tarjeta (encontrado el 20-ago-2026).
+  { city: "Dubái", cityEn: "Dubai", bg: "#2b3a6b", ink: "#f2f0ea", accent: "#e6c26a", estado: "pronto" },
 ] as const;
 
 export function GuiasBridge({ content, locale }: { content: AppHomeContent; locale: Locale }) {
@@ -96,6 +109,7 @@ export function GuiasBridge({ content, locale }: { content: AppHomeContent; loca
         <div className="guias__rejilla" role="list">
           {PORTADAS.map((p, i) => {
             const enPreparacion = p.estado === "pronto";
+            const ciudad = es ? p.city : (p.cityEn ?? p.city);
             const estado =
               p.estado === "fecha"
                 ? content.shop_estado_fecha
@@ -108,25 +122,26 @@ export function GuiasBridge({ content, locale }: { content: AppHomeContent; loca
                 href={href}
                 role="listitem"
                 className={`guias__tarjeta${enPreparacion ? " guias__tarjeta--pronto" : ""}`}
-                aria-label={`${p.city} — ${estado}`}
+                aria-label={`${ciudad} — ${estado}`}
               >
                 <div className="book-scene" style={{ marginBottom: 14 }}>
                   <Book3D
                     cover={{
                       kind: "typo",
-                      city: p.city,
+                      city: ciudad,
                       sub: es ? "Edición 2026" : "2026 Edition",
                       bg: p.bg,
                       ink: p.ink,
                       accent: p.accent,
+                      chip: es ? undefined : "Discoolver Guide · 2026",
                     }}
-                    spineText={p.city}
+                    spineText={ciudad}
                     spineColor={p.bg}
                   />
                 </div>
                 {/* La ciudad y el año ya van impresos en la portada 3D; aquí
                     se decían otra vez cada uno. Queda el nombre una sola vez. */}
-                <h3 className="guias__ciudad">{p.city}</h3>
+                <h3 className="guias__ciudad">{ciudad}</h3>
                 <p className="guias__estado">{estado}</p>
                 {/* Sin fecha no hay precio ni "ver la guía": no hay nada que
                     ver todavía y la cifra sugeriría que se puede comprar. */}
