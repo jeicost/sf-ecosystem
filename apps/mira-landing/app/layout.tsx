@@ -5,7 +5,11 @@ import CookieConsent from './cookie-consent'
 import { defaultHomeContent } from '@/lib/content/home'
 
 const GTM_ID = 'GTM-5QZTPDX5'
-const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.miralanding.com'
+// El dominio real de hoy. Antes el respaldo era 'https://www.miralanding.com',
+// un dominio que NO ESTÁ REGISTRADO: el canónico, el OG, robots.txt y el sitemap
+// apuntaban a una dirección inexistente (auditoría 20-ago-2026). Cuando haya
+// dominio propio, se cambia NEXT_PUBLIC_SITE_URL en Vercel y no hace falta tocar esto.
+const DOMAIN = process.env.NEXT_PUBLIC_SITE_URL || 'https://mira-landing-chi.vercel.app'
 
 /**
  * Valores por defecto del sitio. Las dos homes los pisan con su propio
