@@ -43,6 +43,13 @@ export interface NavItem {
   /** Solo 'coming_soon' tiene sentido declararlo aquí; ver NavItemStatus. */
   status?: NavItemStatus
   /**
+   * La ruta existe y pertenece a esta sección, pero NO se pinta en el menú.
+   * Sirve para que getActiveSectionFromPath la siga mapeando —de ahí sale el
+   * gating por plan de proxy.ts— sin ocupar un hueco en la navegación. Lo usa
+   * /goals, que se alcanza desde la landing de Marketing.
+   */
+  hidden?: boolean
+  /**
    * Sección de PLAN_SECTIONS que gatea el item cuando no se deduce de la ruta.
    * Por defecto se deduce con getActiveSectionFromPath(href) (p. ej. /roster →
    * marketing, /comercial → comercial), que es lo que ya usa proxy.ts.
@@ -68,11 +75,12 @@ export const SECTIONS: MiraSection[] = [
     icon: '🎯',
     navItems: [
       { href: '/roster',      label: 'My Team',      icon: Users },
-      // Objetivos del sistema (decisión CEO 17-ago: vive en Marketing). Sale
-      // como «coming soon» hasta que se encienda NEXT_PUBLIC_GOALS_ENABLED —
-      // así el cliente ve que existe y no lo busca en otra parte.
-      { href: '/goals',       label: 'Goals',        icon: Target,
-        ...(process.env.NEXT_PUBLIC_GOALS_ENABLED === '1' ? {} : { status: 'coming_soon' as const }) },
+      // Objetivos: ya NO son un item de menú (decisión CEO 20-ago). Viven dentro
+      // de la landing de Marketing, encima del chat (components/goals/GoalsSection).
+      // El href se queda declarado —sin label visible no serviría— porque
+      // getActiveSectionFromPath necesita saber que /goals pertenece a marketing:
+      // de ahí sale el gating por plan de proxy.ts. Lo oculta 'hidden'.
+      { href: '/goals',       label: 'Goals',        icon: Target, hidden: true },
       { href: '/approvals',   label: 'Approvals',    icon: CheckSquare },
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
     ],
@@ -180,10 +188,8 @@ export const IDEAL_SPACES: IdealSpace[] = [
     key: 'equipo', label: 'Team', icon: Users,
     items: [
       { href: '/roster',    label: 'Marketing', icon: Target },
-      // Objetivos del sistema: viven en Marketing (decisión CEO 17-ago), así
-      // que van justo debajo, indentados en la UI. Mismo flag que en SECTIONS.
-      { href: '/goals',     label: 'Goals',     icon: Target, section: 'marketing',
-        ...(process.env.NEXT_PUBLIC_GOALS_ENABLED === '1' ? {} : { status: 'coming_soon' as const }) },
+      // Goals ya no sale aquí: es una sección de la propia landing de Marketing
+      // (decisión CEO 20-ago). Se llega desde ahí, no desde el menú.
       { href: '/comercial', label: 'Sales',     icon: Kanban },
       { href: '/strategy',  label: 'Leadership', icon: Map },
       // Finanzas se vende en Scale/Admin: no se esconde a quien lo paga; a quien

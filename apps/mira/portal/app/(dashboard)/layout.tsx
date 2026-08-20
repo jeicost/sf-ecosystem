@@ -34,7 +34,9 @@ function SidebarContent() {
   const [theme, setThemeState]  = useState<Theme>('dark')
   const [pendingCount, setPending] = useState(0)
   const activeSection = getActiveSectionFromPath(path)
-  const navItems = activeSection?.navItems ?? []
+  // Los items 'hidden' existen solo para que la ruta mapee a su sección (gating
+  // por plan); no se pintan. Ver NavItem.hidden en lib/sections.
+  const navItems = (activeSection?.navItems ?? []).filter((i) => !i.hidden)
   const idealUI = isIdealUI() // flag: si off, la navegación es la de siempre
 
 useEffect(() => {

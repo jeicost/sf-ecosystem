@@ -2,6 +2,7 @@
 import { MARKETING_DEPT_AGENTS } from '@/lib/agent-meta'
 import AgentPipelineHeader from '@/components/agent-pipeline-header'
 import DepartmentChatPanel from '@/components/department-chat-panel'
+import GoalsSection from '@/components/goals/GoalsSection'
 import RelevantToolsSection from '@/components/relevant-tools-section'
 import PageHeader from '@/components/ui/PageHeader'
 import StatRow from '@/components/ui/StatRow'
@@ -64,6 +65,10 @@ export default function RosterPage() {
         finalOutput="Published content"
         accentColor="#8B5CF6"
       />
+
+      {/* Objetivos, encima del chat: es lo que el sistema se ha comprometido a
+          producir esta semana, así que se lee antes de ponerse a pedir cosas. */}
+      <GoalsSection />
 
       <DepartmentChatPanel slug="marketing" quickActionsDepartment="marketing" />
 

@@ -40,7 +40,10 @@ export default function IdealSidebarNav({
   // para clientes con el entitlement, o para la agencia. Es distinto del
   // candado por plan: lo que el cliente no tiene contratado como vertical no
   // se enseña; lo que su PLAN no incluye sí se enseña, bloqueado (upsell).
-  const canSee = (item: { requires?: Entitlement }) => {
+  const canSee = (item: { requires?: Entitlement; hidden?: boolean }) => {
+    // 'hidden': la ruta pertenece a la sección para el gating, pero no se pinta
+    // en el menú. Ver NavItem.hidden en lib/sections.
+    if (item.hidden) return false
     if (!item.requires) return true
     if (isLoading) return hasEntitlement(item.requires, activeClient?.id, isAgency)
     const toolId = ENTITLEMENT_TO_TOOL_ID[item.requires] ?? item.requires
