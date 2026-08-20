@@ -35,11 +35,11 @@ export type EstadoCiudad = { nombre: string; sitios: number };
 
 export function AppComingSoon({
   content,
-  locale = "es",
+  locale,
   abiertas,
 }: {
   content: AppHomeContent;
-  locale?: Locale;
+  locale: Locale;
   abiertas: EstadoCiudad[];
 }) {
   const t = UI[locale].app;

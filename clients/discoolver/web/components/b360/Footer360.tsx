@@ -21,7 +21,7 @@ const F = {
         claim: "The platform that turns a destination's tourist traffic into revenue for its local businesses." },
 } as const;
 
-export function Footer360({ locale = "es" }: { locale?: Locale }) {
+export function Footer360({ locale }: { locale: Locale }) {
   const t = F[locale];
   return (
     <footer className="b360-foot">

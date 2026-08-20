@@ -23,7 +23,7 @@ import type { AppHomeContent } from "@/lib/content/app-home";
  *  · El "+" solo lo lleva el primer ítem, y su número va redondeado a la baja
  *    al centenar para que no envejezca cada día.
  */
-export function Hero({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+export function Hero({ content, locale }: { content: AppHomeContent; locale: Locale }) {
   const stats = [
     { num: content.hero_stat1_num, label: content.hero_stat1_label },
     { num: content.hero_stat2_num, label: content.hero_stat2_label },

@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/Footer";
 export default function NotFound() {
   return (
     <>
-      <Nav />
+      <Nav locale="es" />
       <main>
         <section className="section" style={{ textAlign: "center" }}>
           <div className="container">
@@ -22,7 +22,7 @@ export default function NotFound() {
           </div>
         </section>
       </main>
-      <Footer />
+      <Footer locale="es" />
     </>
   );
 }

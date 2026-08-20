@@ -5,7 +5,7 @@ import type { HomeContent } from "@/lib/content/home";
 import { withLocale, type Locale } from "@/lib/i18n";
 
 /** Block 4 — bridge to the creators program (/influencers). */
-export function CreatorsBridge({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
+export function CreatorsBridge({ content, locale }: { content: HomeContent; locale: Locale }) {
   return (
     <section className="creators-band" id="creators" aria-labelledby="creators-title">
       <div className="container">

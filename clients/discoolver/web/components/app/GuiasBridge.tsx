@@ -62,7 +62,7 @@ const PORTADAS = [
   { city: "Dubái", bg: "#2b3a6b", ink: "#f2f0ea", accent: "#e6c26a", estado: "pronto" },
 ] as const;
 
-export function GuiasBridge({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+export function GuiasBridge({ content, locale }: { content: AppHomeContent; locale: Locale }) {
   const es = locale === "es";
   const href = es ? "/guias" : "/en/guias";
 

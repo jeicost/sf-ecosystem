@@ -19,7 +19,12 @@ import type { AppHomeContent } from "@/lib/content/app-home";
  * El vídeo pasa por VideoBajoDemanda: en móvil no se descarga (13 MB), se
  * enseña el póster.
  */
-export function TravelBrain({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+// `locale` es OBLIGATORIO a propósito. Con `locale = "es"` por defecto, la home
+// lo montaba sin pasarlo y el texto alternativo del vídeo salía en castellano
+// dentro de /en — un fallo mudo que llevaba ahí desde siempre y que solo se vio
+// al mapear el sitio para el tercer idioma (20-ago-2026). Sin valor por defecto,
+// el compilador no deja repetirlo.
+export function TravelBrain({ content, locale }: { content: AppHomeContent; locale: Locale }) {
   const bullets = [1, 2, 3, 4].map((n) => ({
     lead: content[`travel_brain_bullet_${n}_lead` as keyof AppHomeContent],
     text: content[`travel_brain_bullet_${n}` as keyof AppHomeContent],

@@ -14,7 +14,7 @@ import type { Locale } from "@/lib/i18n";
  * presta al pulsar «enviar» con el aviso a la vista, y una casilla más no
  * mejora la información — solo añade fricción a un formulario de dos campos.
  */
-export function AvisoDatos({ locale = "es", finalidad }: { locale?: Locale; finalidad?: string }) {
+export function AvisoDatos({ locale, finalidad }: { locale: Locale; finalidad?: string }) {
   const es = locale === "es";
   const href = es ? "/privacidad" : "/en/privacidad";
   const proposito = finalidad ?? (es ? "responderte" : "get back to you");

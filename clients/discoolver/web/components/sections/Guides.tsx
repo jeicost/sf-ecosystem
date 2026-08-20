@@ -12,7 +12,7 @@ import type { Locale } from "@/lib/i18n";
  * (flat color + big type — no invented photos). Cover palettes riff on the
  * real cover art (blue + peach) plus the discoolver print magenta #C8006B.
  */
-export function Guides({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
+export function Guides({ content, locale }: { content: HomeContent; locale: Locale }) {
   // Paletas de la tanda de portadas aprobada por el CEO el 2026-08-11
   // (una por ciudad, en el orden de la colección de siete).
   // Las firmas son ficticias a propósito hasta que cada creador firme; el nombre

@@ -76,7 +76,7 @@ export default function BlogPage() {
           )}
         </div>
       </main>
-      <Footer />
+      <Footer locale="es" />
     </>
   );
 }

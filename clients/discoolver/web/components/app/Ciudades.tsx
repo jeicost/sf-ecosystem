@@ -45,11 +45,11 @@ export type CiudadPortal = { slug: string; nombre: string; sitios: number; desta
 export function Ciudades({
   content,
   ciudades,
-  locale = "es",
+  locale,
 }: {
   content: AppHomeContent;
   ciudades: CiudadPortal[];
-  locale?: Locale;
+  locale: Locale;
 }) {
   const es = locale !== "en";
   // "cerrada" es el índice de la tira de la ciudad que no está.

@@ -45,7 +45,9 @@ type Creador = {
 
 const CREADORES: Creador[] = [];
 
-export function ForCreators({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+// `locale` OBLIGATORIO: ver TravelBrain. La home lo montaba sin pasarlo, así que
+// TODO este bloque —incluidos los nombres de país— salía en español dentro de /en.
+export function ForCreators({ content, locale }: { content: AppHomeContent; locale: Locale }) {
   const es = locale !== "en";
   const grupos = creadoresPorPais();
   const PAISES: Record<string, { es: string; en: string }> = {

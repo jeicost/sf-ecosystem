@@ -113,7 +113,7 @@ const T = {
 
 type State = "idle" | "sending" | "ok" | "error";
 
-export function DemoForm({ defaultVertical = "", locale = "es" }: { defaultVertical?: string; locale?: Locale }) {
+export function DemoForm({ defaultVertical = "", locale }: { defaultVertical?: string; locale: Locale }) {
   const t = T[locale];
   const [state, setState] = useState<State>("idle");
   const [mods, setMods] = useState<string[]>([]);

@@ -29,7 +29,7 @@ const spaceMono = Space_Mono({
   weight: ["400", "700"],
 });
 
-export function Brand360Shell({ children, locale = "es" }: { children: React.ReactNode; locale?: Locale }) {
+export function Brand360Shell({ children, locale }: { children: React.ReactNode; locale: Locale }) {
   return (
     <div className={`b360 ${poppins.variable} ${inter.variable} ${spaceMono.variable}`}>
       <Nav360 locale={locale} />

@@ -6,7 +6,7 @@ import type { AppHomeContent } from "@/lib/content/app-home";
 import { PLATFORM } from "@/lib/platform";
 import { CTAAviso } from "@/components/app/CTAAviso";
 
-export function CTA({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+export function CTA({ content, locale }: { content: AppHomeContent; locale: Locale }) {
   return (
     <section className="cta" id="empresas" aria-labelledby="cta-title">
       <div className="cta__bg" aria-hidden="true" />

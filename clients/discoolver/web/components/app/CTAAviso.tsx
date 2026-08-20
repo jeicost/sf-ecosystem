@@ -29,7 +29,7 @@ const T = {
   },
 } as const;
 
-export function CTAAviso({ locale = "es", etiqueta }: { locale?: Locale; etiqueta: string }) {
+export function CTAAviso({ locale, etiqueta }: { locale: Locale; etiqueta: string }) {
   const [abierto, setAbierto] = useState(false);
   const t = T[locale === "en" ? "en" : "es"];
   const [ciudad, setCiudad] = useState("");

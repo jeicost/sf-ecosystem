@@ -6,7 +6,7 @@ import { Book3D } from "@/components/ui/Book3D";
 import type { HomeContent } from "@/lib/content/home";
 import type { Locale } from "@/lib/i18n";
 
-export function Hero({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
+export function Hero({ content, locale }: { content: HomeContent; locale: Locale }) {
   return (
     <header className="hero" id="main-content">
       <span className="hero-wordmark" aria-hidden="true">

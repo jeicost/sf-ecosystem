@@ -30,7 +30,7 @@ interface FormCopy {
   featured?: boolean;
 }
 
-function CreatorForm({ copy, successText, errorText, locale = "es", ciudadesAbiertas }: { copy: FormCopy; successText: string; errorText: string; locale?: Locale; ciudadesAbiertas?: string }) {
+function CreatorForm({ copy, successText, errorText, locale, ciudadesAbiertas }: { copy: FormCopy; successText: string; errorText: string; locale: Locale; ciudadesAbiertas?: string }) {
   const [status, setStatus] = useState<Status>("idle");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -112,7 +112,7 @@ function CreatorForm({ copy, successText, errorText, locale = "es", ciudadesAbie
   );
 }
 
-export function InfluencerForms({ content, locale = "es" , ciudadesAbiertas }: { content: InfluencersContent; locale?: Locale; ciudadesAbiertas?: string }) {
+export function InfluencerForms({ content, locale , ciudadesAbiertas }: { content: InfluencersContent; locale: Locale; ciudadesAbiertas?: string }) {
   const forms: FormCopy[] = [
     {
       id: "form-guia",

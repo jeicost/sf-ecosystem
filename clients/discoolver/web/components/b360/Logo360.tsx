@@ -50,12 +50,12 @@ export function Logo360({
   href = "/360",
   size = 34,
   className,
-  locale = "es",
+  locale,
 }: {
   href?: string;
   size?: number;
   className?: string;
-  locale?: Locale;
+  locale: Locale;
 }) {
   return (
     <Link

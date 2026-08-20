@@ -86,12 +86,12 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
         <Hero content={content} locale={locale} />
         <Ticker content={content} />
         <Categorias8 content={content} locale={locale} />
-        <TravelBrain content={content} />
+        <TravelBrain content={content} locale={locale} />
         <HowItWorks content={content} />
         <Ciudades content={content} ciudades={hechos.ciudadesDatos} locale={locale} />
         <MapSection content={content} />
         <GuiasBridge content={content} locale={locale} />
-        <ForCreators content={content} />
+        <ForCreators content={content} locale={locale} />
         {/* Los estados de apertura salen de la MISMA fuente que el hero y
             los portales: una ciudad que abre aparece sola en los tres sitios. */}
         <AppComingSoon content={content} locale={locale} abiertas={hechos.ciudadesDatos.map((c) => ({ nombre: c.nombre, sitios: c.sitios }))} />

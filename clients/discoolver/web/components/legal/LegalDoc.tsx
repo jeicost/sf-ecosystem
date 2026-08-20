@@ -48,7 +48,7 @@ function inline(text: string, keyBase: string): ReactNode[] {
   return out;
 }
 
-export function LegalDoc({ doc, locale = "es" }: { doc: Doc; locale?: Locale }) {
+export function LegalDoc({ doc, locale }: { doc: Doc; locale: Locale }) {
   return (
     <main className="section" style={{ paddingTop: 120 }}>
       <div className="container" style={{ maxWidth: 760 }}>

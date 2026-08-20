@@ -55,7 +55,7 @@ const CATEGORIAS: Categoria[] = [
   { clave: "naturaleza", foto: "/assets/categorias/naturaleza.jpg" },
 ];
 
-export function Categorias8({ content, locale = "es" }: { content: AppHomeContent; locale?: Locale }) {
+export function Categorias8({ content, locale }: { content: AppHomeContent; locale: Locale }) {
   const es = locale === "es";
 
   return (

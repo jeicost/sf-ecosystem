@@ -24,7 +24,7 @@ import { Icon } from "./Icon";
  * envolverla en un Suspense y a renderizarla bajo demanda. Un click delegado
  * no cuesta nada y funciona con ambos.
  */
-export function HeroForm({ locale = "es" }: { locale?: Locale }) {
+export function HeroForm({ locale }: { locale: Locale }) {
   const [city, setCity] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");

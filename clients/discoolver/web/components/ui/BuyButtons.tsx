@@ -45,11 +45,11 @@ const T = {
 export function BuyButtons({
   digital,
   papel,
-  locale = "es",
+  locale,
 }: {
   digital: Sku;
   papel: Sku;
-  locale?: Locale;
+  locale: Locale;
 }) {
   const [busy, setBusy] = useState<Sku | null>(null);
   const [error, setError] = useState<null | "red" | "renuncia">(null);

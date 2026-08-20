@@ -161,7 +161,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
           )}
         </article>
       </main>
-      <Footer />
+      <Footer locale="es" />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </>
   );

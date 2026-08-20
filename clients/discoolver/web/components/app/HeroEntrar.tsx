@@ -53,7 +53,7 @@ const T = {
   },
 } as const;
 
-export function HeroEntrar({ locale = "es" }: { locale?: Locale }) {
+export function HeroEntrar({ locale }: { locale: Locale }) {
   const t = T[locale === "en" ? "en" : "es"];
   const [email, setEmail] = useState("");
   const [enviando, setEnviando] = useState(false);

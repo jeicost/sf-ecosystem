@@ -78,11 +78,11 @@ const T = {
 } as const;
 
 export function Footer({
-  locale = "es",
+  locale,
   brandDesc,
   copyright,
 }: {
-  locale?: Locale;
+  locale: Locale;
   brandDesc?: string;
   copyright?: string;
 }) {

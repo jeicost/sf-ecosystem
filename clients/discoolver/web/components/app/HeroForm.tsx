@@ -18,7 +18,7 @@ const CITIES = [
   "Otra ciudad",
 ];
 
-export function HeroForm({ locale = "es" }: { locale?: Locale }) {
+export function HeroForm({ locale }: { locale: Locale }) {
   const [cityIndex, setCityIndex] = useState(0);
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done" | "error">("idle");

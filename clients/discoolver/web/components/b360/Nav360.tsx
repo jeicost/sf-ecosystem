@@ -21,7 +21,7 @@ import { withLocale, UI, type Locale } from "@/lib/i18n";
  * menú a propósito — es a lo que viene la página, y esconderlo tras un gesto lo
  * entierra.
  */
-export function Nav360({ locale = "es" }: { locale?: Locale }) {
+export function Nav360({ locale }: { locale: Locale }) {
   const t = UI[locale].nav360;
   const base = locale === "en" ? "/en/360" : "/360";
   const [abierto, setAbierto] = useState(false);

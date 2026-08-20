@@ -47,7 +47,7 @@ const MUESTRAS = [
   { slug: "dubai", ciudad: "Dubái" },
 ] as const;
 
-export function GuiasDeAutor({ content, locale = "es" }: { content: HomeContent; locale?: Locale }) {
+export function GuiasDeAutor({ content, locale }: { content: HomeContent; locale: Locale }) {
   const es = locale !== "en";
   return (
     <section className="section autor" id="guias-de-autor" aria-labelledby="autor-title">

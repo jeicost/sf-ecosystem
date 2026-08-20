@@ -121,7 +121,7 @@ export default async function CategoriaPage({ params }: { params: Promise<{ slug
           <BlogGrid posts={posts} />
         </div>
       </main>
-      <Footer />
+      <Footer locale="es" />
     </>
   );
 }
