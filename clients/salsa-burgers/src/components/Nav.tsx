@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
+import { LangSwitcher } from "@/components/LangSwitcher";
 import { useOrder } from "@/context/OrderContext";
 
 export function Nav() {
@@ -87,6 +88,11 @@ export function Nav() {
 
           {/* Right Side */}
           <div className="flex items-center gap-4">
+            {/* En móvil no cabe junto al botón de pedir: va dentro del menú. */}
+            <div className="hidden sm:block">
+              <LangSwitcher />
+            </div>
+
             <button
               onClick={openOrder}
               className="flex text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-black uppercase tracking-wider transition-opacity hover:opacity-90"
@@ -156,6 +162,17 @@ export function Nav() {
             >
               {t.nav.orderNow}
             </motion.button>
+
+            {/* El idioma, al final del menú móvil. No cierra el menú al pulsar:
+                se ve el cambio al momento y se puede probar otro. */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: (navLinks.length + 2) * 0.07 }}
+              className="mt-2"
+            >
+              <LangSwitcher size="lg" />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
