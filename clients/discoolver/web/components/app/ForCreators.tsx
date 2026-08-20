@@ -21,15 +21,14 @@ import type { Locale } from "@/lib/i18n";
  * QUÉ ES AHORA. Una fila de creadores reales, con cara, arroba, ciudad y
  * territorio. Y una salida discreta al programa de creadores al final.
  *
- * ⚠️ LA LISTA ESTÁ VACÍA A PROPÓSITO. Hoy no existe ni un creador publicable:
- * la plataforma los lista como "Influencer 1 … Influencer 10" y en el repo solo
- * hay fotos de banco haciendo de persona — exactamente lo que el CLAUDE.md
- * prohíbe usar como cara de quien firma algo. Mientras `CREADORES` esté vacío,
- * la sección se sirve sin la fila: enseña el argumento, no una prueba falsa.
+ * ENCENDIDA EL 20-AGO-2026 (decisión del CEO). Son 43 fotos de perfil públicas
+ * traídas con Apify. El encuadre es «cuentas que nos gustan», no «creadores que
+ * trabajan con nosotros»: por eso el copy dice explícitamente que no trabajan
+ * con discoolver ni pagan por estar. Las 4 sin foto (cuentas que ya no existen)
+ * caen solas en las iniciales de color.
  *
- * Para encenderla hace falta, por creador: foto propia, arroba real, ciudad,
- * territorio y **permiso por escrito**. La frase en primera persona es
- * opcional — si no la ha dicho, no se escribe por él.
+ * NO metas aquí una frase en primera persona sin habérsela oído: enseñar una
+ * foto de perfil pública y atribuir palabras a alguien no son lo mismo.
  */
 type Creador = {
   /** Ruta de su foto en public/assets/creadores/. Nunca banco de imágenes. */
@@ -108,8 +107,8 @@ export function ForCreators({ content, locale = "es" }: { content: AppHomeConten
                             className="creador__avatar"
                             src={c.foto}
                             alt={es ? `${c.nombre}, creador en ${c.donde}` : `${c.nombre}, creator in ${c.donde}`}
-                            width={112}
-                            height={112}
+                            width={232}
+                            height={232}
                           />
                         ) : (
                           <span
@@ -122,8 +121,10 @@ export function ForCreators({ content, locale = "es" }: { content: AppHomeConten
                         )}
                         <span className="creador__nombre">{c.nombre}</span>
                         <span className="creador__handle">@{c.handle}</span>
-                        <span className="creador__donde">{c.donde}</span>
-                        {c.territorio && <span className="creador__territorio">{c.territorio}</span>}
+                        <span className="creador__meta">
+                          {c.donde}
+                          {c.territorio ? ` · ${c.territorio}` : ""}
+                        </span>
                       </a>
                     </li>
                   ))}

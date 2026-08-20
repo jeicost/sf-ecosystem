@@ -3999,64 +3999,85 @@ a.blog-card__cat:hover {
 }
 .pais__lista {
   list-style: none;
-  margin: 22px 0 0;
+  margin: 24px 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(158px, 1fr));
-  gap: 26px 20px;
+  /* Casillas más estrechas que antes (158px): con 47 caras, cuantas más caben
+     por fila más corta queda la fila incompleta del final, que era lo que
+     dejaba el bloque con pinta de descuadrado. */
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  gap: 30px 16px;
 }
 .creador {
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 3px;
+  gap: 2px;
   text-decoration: none;
   color: inherit;
+  /* Las fichas se estiran a la altura de la fila para que las fotos de la
+     siguiente arranquen todas a la misma altura. */
+  height: 100%;
 }
+.pais__lista > li { display: flex; }
+/* Cuadrado redondeado y no círculo: la foto respira más dentro del mismo
+   ancho, y el conjunto se lee como una colección de fichas en vez de como una
+   lista de contactos. */
 .creador__avatar {
-  width: 84px;
-  height: 84px;
-  border-radius: 50%;
+  width: 100%;
+  max-width: 116px;
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 18px;
   object-fit: cover;
-  margin-bottom: 9px;
-  /* El anillo hace de marco común: fotos y avatares de iniciales se leen como
-     el mismo sistema aunque unas sean retrato y otros tipografía. */
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px color-mix(in oklab, var(--primary) 55%, transparent);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  margin-bottom: 11px;
+  border: 1px solid color-mix(in oklab, var(--line) 40%, transparent);
+  transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
 }
 .creador__avatar--iniciales {
   display: grid;
   place-items: center;
-  /* El degradado baja solo hasta el 78% del tono: al 45% el pie del círculo se
-     iba a negro y las iniciales perdían contraste justo donde se apoyan. */
+  /* El degradado baja solo hasta el 78% del tono: al 45% el pie se iba a negro
+     y las iniciales perdían contraste justo donde se apoyan. */
   background: radial-gradient(120% 120% at 32% 22%, color-mix(in oklab, var(--tono) 88%, #fff), color-mix(in oklab, var(--tono) 78%, #000));
   color: #0a0a0f;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 26px;
+  font-size: 30px;
   letter-spacing: -0.02em;
 }
 .creador:hover .creador__avatar {
-  transform: translateY(-2px);
-  box-shadow: 0 0 0 2px var(--paper), 0 0 0 3.5px var(--primary);
+  transform: translateY(-3px);
+  border-color: var(--primary);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, .45);
 }
-.creador__nombre { font-weight: 600; font-size: 14.5px; line-height: 1.25; text-wrap: balance; }
-.creador__handle { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-2); }
-.creador__territorio {
+.creador__nombre { font-weight: 600; font-size: 14px; line-height: 1.25; text-wrap: balance; }
+.creador__handle { font-family: var(--font-mono); font-size: 11px; color: var(--ink-2); }
+/* Ciudad y territorio iban en dos líneas y con el territorio en versales largas
+   ("NATURALEZA Y AIRE LIBRE") que partían en tres. Juntos en una sola línea
+   con punto medio: misma información, un tercio del ruido. */
+.creador__meta {
+  margin-top: 5px;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  font-size: 9.5px;
+  letter-spacing: .07em;
   text-transform: uppercase;
-  /* Mezclado con el papel, no transparente: sobre el fondo oscuro un 82% de
-     alfa dejaba el territorio casi ilegible. */
-  color: color-mix(in oklab, var(--primary) 72%, var(--ink));
-  margin-top: 4px;
+  line-height: 1.4;
+  color: color-mix(in oklab, var(--primary) 68%, var(--ink));
+  /* Dos líneas como mucho. Territorios largos ("Naturaleza y aire libre")
+     se partían en tres y dejaban las fichas de la misma fila con alturas
+     distintas, que es lo que hacía ver la rejilla descuadrada. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 @media (max-width: 620px) {
-  .pais__lista { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 22px 14px; }
-  .creador__avatar { width: 68px; height: 68px; }
-  .creador__avatar--iniciales { font-size: 21px; }
+  .pais__lista { grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 24px 12px; }
+  .creador__avatar { max-width: 92px; border-radius: 14px; }
+  .creador__avatar--iniciales { font-size: 24px; }
+  .creador__meta { font-size: 9px; }
 }
 
 /* La ciudad concreta se conserva bajo cada creador aunque el bloque sea por

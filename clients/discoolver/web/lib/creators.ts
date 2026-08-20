@@ -1,18 +1,22 @@
 /**
  * El listado de creadores, tal y como lo pasó el CEO el 19-ago-2026.
  *
- * QUÉ SE PUEDE PUBLICAR Y QUÉ NO. Estar en esta lista no basta para salir en la
- * web. Hay dos permisos distintos y se confunden con facilidad:
+ * QUÉ PUBLICA ESTA SECCIÓN — decisión del CEO, 20-ago-2026. Es una lista de
+ * **cuentas públicas que nos gustan** en cada destino, con su foto de perfil y
+ * un enlace a su perfil. Recomendación editorial, no relación comercial: el
+ * copy no puede sugerir en ningún momento que trabajen con discoolver, que
+ * cobren, ni que hayan firmado nada.
  *
- *  · **Citar a alguien como fuente** (nombre + arroba + enlace a su perfil) es
- *    atribución editorial. Se puede, y es lo que hace `estado: "verificado"`.
- *  · **Usar su foto y su cara** en una página comercial necesita permiso por
- *    escrito: hay derechos de imagen y, además, la fotografía tiene su propio
- *    autor. Bajarla de Instagram no da ninguno de los dos.
+ * Las 43 fotos son la imagen de perfil pública de cada cuenta, obtenida con el
+ * actor `apify~instagram-profile-scraper` (coste 0,11 $) y normalizada a un
+ * cuadrado de 224 px por `scripts/fotos-creadores.mjs`.
  *
- * Por eso `foto` y `frase` solo se rellenan cuando existe ese permiso, y el
- * componente enseña retratos únicamente si los hay. Sin permiso se sirve la
- * atribución, que ya es cierta y ya es útil.
+ * Si alguien pide salir de aquí, se le quita y punto — sin discutirlo. Esa es
+ * la contrapartida de mencionar a gente sin pedirle permiso antes.
+ *
+ * `frase` sigue vacío a propósito: una cita en primera persona SÍ hay que
+ * habérsela oído. Atribuir palabras a alguien no es lo mismo que enseñar su
+ * foto de perfil.
  *
  * El `estado` viene del documento del CEO y se respeta tal cual:
  *  · verificado — arroba comprobada. Las 27 que venían de rankings de terceros
@@ -47,64 +51,64 @@ export type Creador = {
 
 export const CREADORES: Creador[] = [
   // ── España ────────────────────────────────────────────────────────────
-  { nombre: "Pablo Cabezali", handle: "cenandoconpablo", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Nacho Pla", handle: "nachopla12", mercado: "es", donde: "Madrid", territorio: "Vida nocturna", estado: "verificado", esPersona: true,
+  { nombre: "Pablo Cabezali", handle: "cenandoconpablo", foto: "/assets/creadores/cenandoconpablo.jpg", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Nacho Pla", handle: "nachopla12", foto: "/assets/creadores/nachopla12.jpg", mercado: "es", donde: "Madrid", territorio: "Vida nocturna", estado: "verificado", esPersona: true,
     aviso: "Representado por Go Talents: el contacto va por agencia y con tarifa." },
-  { nombre: "Plan Madrid", handle: "planmadrid", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false,
+  { nombre: "Plan Madrid", handle: "planmadrid", foto: "/assets/creadores/planmadrid.jpg", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false,
     aviso: "Es un estudio, no una persona: no puede firmar una recomendación." },
-  { nombre: "Planea en Madrid", handle: "planeaenmadrid", mercado: "es", donde: "Madrid", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
-  { nombre: "Alfonso Ortega", handle: "cocituber", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Peldanyos", handle: "peldanyos", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Nicanor García", handle: "nicanorgarcia", mercado: "es", donde: "Barcelona", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
-  { nombre: "Kike Arnaiz", handle: "kikearnaiz", mercado: "es", donde: "España", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
-  { nombre: "Ariane Hoyos", handle: "arianehoyos", mercado: "es", donde: "Bizkaia", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
-  { nombre: "Rachel Bernabeu", handle: "rachelbernabeu", mercado: "es", donde: "Barcelona", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
+  { nombre: "Planea en Madrid", handle: "planeaenmadrid", foto: "/assets/creadores/planeaenmadrid.jpg", mercado: "es", donde: "Madrid", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
+  { nombre: "Alfonso Ortega", handle: "cocituber", foto: "/assets/creadores/cocituber.jpg", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Peldanyos", handle: "peldanyos", foto: "/assets/creadores/peldanyos.jpg", mercado: "es", donde: "Madrid", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Nicanor García", handle: "nicanorgarcia", foto: "/assets/creadores/nicanorgarcia.jpg", mercado: "es", donde: "Barcelona", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
+  { nombre: "Kike Arnaiz", handle: "kikearnaiz", foto: "/assets/creadores/kikearnaiz.jpg", mercado: "es", donde: "España", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
+  { nombre: "Ariane Hoyos", handle: "arianehoyos", foto: "/assets/creadores/arianehoyos.jpg", mercado: "es", donde: "Bizkaia", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
+  { nombre: "Rachel Bernabeu", handle: "rachelbernabeu", foto: "/assets/creadores/rachelbernabeu.jpg", mercado: "es", donde: "Barcelona", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
   { nombre: "Danna Ponce", handle: "dannaponce", mercado: "es", donde: "España", territorio: "Alojamiento", estado: "verificado", esPersona: true },
-  { nombre: "Miriam Iniesta", handle: "miriaminiesta", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
-  { nombre: "Buscando a Cere", handle: "buscandoacere", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
-  { nombre: "Sergio Castillo", handle: "sergiocastillo.180", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
-  { nombre: "Paul Lee", handle: "impaullee", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
+  { nombre: "Miriam Iniesta", handle: "miriaminiesta", foto: "/assets/creadores/miriaminiesta.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
+  { nombre: "Buscando a Cere", handle: "buscandoacere", foto: "/assets/creadores/buscandoacere.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
+  { nombre: "Sergio Castillo", handle: "sergiocastillo.180", foto: "/assets/creadores/sergiocastillo.180.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
+  { nombre: "Paul Lee", handle: "impaullee", foto: "/assets/creadores/impaullee.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
 
   // ── Tailandia ─────────────────────────────────────────────────────────
-  { nombre: "Travis Leon Price", handle: "travisleon1", mercado: "th", donde: "Bangkok", territorio: "Vida nocturna", estado: "verificado", esPersona: true,
+  { nombre: "Travis Leon Price", handle: "travisleon1", foto: "/assets/creadores/travisleon1.jpg", mercado: "th", donde: "Bangkok", territorio: "Vida nocturna", estado: "verificado", esPersona: true,
     aviso: "Prioridad nº1 del CEO. Contacto directo: travisprice09@gmail.com" },
-  { nombre: "Phol Tantasatien", handle: "pholfoodmafia", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Chef Pam", handle: "chefpam", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Bangkok Foodies", handle: "bangkokfoodies", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false },
-  { nombre: "Chin Chinawut", handle: "chinchinawut", mercado: "th", donde: "Tailandia", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
-  { nombre: "I Roam Alone", handle: "i_roamalone", mercado: "th", donde: "Tailandia", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
-  { nombre: "Dome Pakorn Lam", handle: "domepakornlam", mercado: "th", donde: "Tailandia", territorio: "Alojamiento", estado: "verificado", esPersona: true },
-  { nombre: "Neung Yutthaphum", handle: "iamneung", mercado: "th", donde: "Tailandia", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
+  { nombre: "Phol Tantasatien", handle: "pholfoodmafia", foto: "/assets/creadores/pholfoodmafia.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Chef Pam", handle: "chefpam", foto: "/assets/creadores/chefpam.jpg", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Bangkok Foodies", handle: "bangkokfoodies", foto: "/assets/creadores/bangkokfoodies.jpg", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false },
+  { nombre: "Chin Chinawut", handle: "chinchinawut", foto: "/assets/creadores/chinchinawut.jpg", mercado: "th", donde: "Tailandia", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
+  { nombre: "I Roam Alone", handle: "i_roamalone", foto: "/assets/creadores/i_roamalone.jpg", mercado: "th", donde: "Tailandia", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
+  { nombre: "Dome Pakorn Lam", handle: "domepakornlam", foto: "/assets/creadores/domepakornlam.jpg", mercado: "th", donde: "Tailandia", territorio: "Alojamiento", estado: "verificado", esPersona: true },
+  { nombre: "Neung Yutthaphum", handle: "iamneung", foto: "/assets/creadores/iamneung.jpg", mercado: "th", donde: "Tailandia", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
   { nombre: "Mai Phed Mai Aroi", handle: "maiphedmaiaroi", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Army Palakorn", handle: "armypalakorn", mercado: "th", donde: "Bangkok", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
-  { nombre: "Starvingtime", handle: "starvingtime", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: false },
-  { nombre: "Mark Wiens", handle: "migrationology", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true,
+  { nombre: "Army Palakorn", handle: "armypalakorn", foto: "/assets/creadores/armypalakorn.jpg", mercado: "th", donde: "Bangkok", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
+  { nombre: "Starvingtime", handle: "starvingtime", foto: "/assets/creadores/starvingtime.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: false },
+  { nombre: "Mark Wiens", handle: "migrationology", foto: "/assets/creadores/migrationology.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true,
     aviso: "Audiencia global, no local: comprobar si su público está en Bangkok." },
-  { nombre: "Peach Eat Laek", handle: "peach_eat_laek", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true },
-  { nombre: "Bangkok Foodie", handle: "bangkok.foodie", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: false },
-  { nombre: "Chopstick Travel", handle: "chopsticktravel", mercado: "th", donde: "Asia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true },
-  { nombre: "Foodie Girl Kinkakoi", handle: "foodiegirl.kinkakoi", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true },
-  { nombre: "Foodie Munchies", handle: "foodie.munchies", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: false },
-  { nombre: "Gin Carb BKK", handle: "gincarb.bkk", mercado: "th", donde: "Bangkok", territorio: null, estado: "aportado", esPersona: false,
+  { nombre: "Peach Eat Laek", handle: "peach_eat_laek", foto: "/assets/creadores/peach_eat_laek.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true },
+  { nombre: "Bangkok Foodie", handle: "bangkok.foodie", foto: "/assets/creadores/bangkok.foodie.jpg", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: false },
+  { nombre: "Chopstick Travel", handle: "chopsticktravel", foto: "/assets/creadores/chopsticktravel.jpg", mercado: "th", donde: "Asia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true },
+  { nombre: "Foodie Girl Kinkakoi", handle: "foodiegirl.kinkakoi", foto: "/assets/creadores/foodiegirl.kinkakoi.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: true },
+  { nombre: "Foodie Munchies", handle: "foodie.munchies", foto: "/assets/creadores/foodie.munchies.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "aportado", esPersona: false },
+  { nombre: "Gin Carb BKK", handle: "gincarb.bkk", foto: "/assets/creadores/gincarb.bkk.jpg", mercado: "th", donde: "Bangkok", territorio: null, estado: "aportado", esPersona: false,
     aviso: "Confirmar si es coctelería: si lo es, cubre el hueco de vida nocturna." },
-  { nombre: "Go Eat Go Drink", handle: "goeatgodrink", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: false,
+  { nombre: "Go Eat Go Drink", handle: "goeatgodrink", foto: "/assets/creadores/goeatgodrink.jpg", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: false,
     aviso: "Confirmar si cubre bebida y bares." },
-  { nombre: "Emily Srichala", handle: "emilysrichala.blog", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: true },
-  { nombre: "Sam Zack Tyler", handle: "samzacktyler", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: true },
+  { nombre: "Emily Srichala", handle: "emilysrichala.blog", foto: "/assets/creadores/emilysrichala.blog.jpg", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: true },
+  { nombre: "Sam Zack Tyler", handle: "samzacktyler", foto: "/assets/creadores/samzacktyler.jpg", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: true },
 
   // ── Emiratos ──────────────────────────────────────────────────────────
-  { nombre: "Mr. Taster", handle: "mr.taster", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Mr. Taster", handle: "mr.taster", foto: "/assets/creadores/mr.taster.jpg", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
   { nombre: "Moayad Alsawaf", handle: "moayadalsawaf", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
   { nombre: "Ahmed Rashid", handle: "ahmedrashid", mercado: "ae", donde: "Dubái", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
-  { nombre: "Latifa Shamsi", handle: "latifashamsi", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
-  { nombre: "WhereMyFoodAt", handle: "wheremyfoodat", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false },
-  { nombre: "Frying Pan Adventures", handle: "fryingpanadventures", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: false },
+  { nombre: "Latifa Shamsi", handle: "latifashamsi", foto: "/assets/creadores/latifashamsi.jpg", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
+  { nombre: "WhereMyFoodAt", handle: "wheremyfoodat", foto: "/assets/creadores/wheremyfoodat.jpg", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false },
+  { nombre: "Frying Pan Adventures", handle: "fryingpanadventures", foto: "/assets/creadores/fryingpanadventures.jpg", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: false },
   { nombre: "FooDiva", handle: "foodivadubai", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "My Fash Diary", handle: "myfashdiary", mercado: "ae", donde: "Dubái", territorio: "Compras y moda", estado: "verificado", esPersona: true },
-  { nombre: "Lavina Israni", handle: "lavinaisrani", mercado: "ae", donde: "Dubái", territorio: "Bienestar y belleza", estado: "verificado", esPersona: true },
-  { nombre: "Ascia", handle: "ascia", mercado: "ae", donde: "Kuwait", territorio: "Compras y moda", estado: "verificado", esPersona: true,
+  { nombre: "My Fash Diary", handle: "myfashdiary", foto: "/assets/creadores/myfashdiary.jpg", mercado: "ae", donde: "Dubái", territorio: "Compras y moda", estado: "verificado", esPersona: true },
+  { nombre: "Lavina Israni", handle: "lavinaisrani", foto: "/assets/creadores/lavinaisrani.jpg", mercado: "ae", donde: "Dubái", territorio: "Bienestar y belleza", estado: "verificado", esPersona: true },
+  { nombre: "Ascia", handle: "ascia", foto: "/assets/creadores/ascia.jpg", mercado: "ae", donde: "Kuwait", territorio: "Compras y moda", estado: "verificado", esPersona: true,
     aviso: "Reside en Kuwait: cubre Dubái en visitas, no vive allí." },
-  { nombre: "Lovin Dubai", handle: "lovindubai", mercado: "ae", donde: "Dubái", territorio: "Experiencias y eventos", estado: "verificado", esPersona: false,
+  { nombre: "Lovin Dubai", handle: "lovindubai", foto: "/assets/creadores/lovindubai.jpg", mercado: "ae", donde: "Dubái", territorio: "Experiencias y eventos", estado: "verificado", esPersona: false,
     aviso: "Es un medio, no un creador: canal de distribución, no firma." },
 ];
 

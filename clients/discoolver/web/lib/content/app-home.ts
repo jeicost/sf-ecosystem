@@ -241,12 +241,12 @@ export const defaultAppHomeContent = {
   //
   // `creators_refuerzo` solo se pinta cuando exista el dato real de cuántos
   // creadores publican y en cuántas ciudades. Vacío = no se enseña.
-  creators_eyebrow: "Top content creators por destinos",
-  creators_title_1: "Ellos recomiendan,",
-  creators_title_highlight: "tú disfrutas.",
+  creators_eyebrow: "A quién seguimos en cada destino",
+  creators_title_1: "Our favourite",
+  creators_title_highlight: "content creators.",
   creators_lead:
-    "Los mejores creadores de contenido de cada destino. Nadie paga por aparecer, y nadie recomienda un sitio en el que no ha estado.",
-  creators_refuerzo: "Sus recomendaciones ya están publicadas. Cada ficha dice de quién viene.",
+    "Las cuentas que miramos para saber qué está pasando en cada ciudad. No trabajan con nosotros ni pagan por estar aquí: nos gusta lo que publican y lo decimos.",
+  creators_refuerzo: "",
   creators_salida:
     "¿Creas contenido sobre tu ciudad? Trabajamos por invitación — cuéntanos qué recomiendas.",
   creators_cta: "Programa de creadores",

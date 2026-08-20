@@ -199,12 +199,12 @@ export const defaultAppHomeContent = {
   // Creators — CEO copy (2026-08-19). The home page belongs to the TRAVELLER:
   // this section shows who is behind the places, it does not recruit. Every
   // monetisation argument moved to /influencers, which is its landing page.
-  creators_eyebrow: "Top content creators by destination",
-  creators_title_1: "They recommend,",
-  creators_title_highlight: "you enjoy.",
+  creators_eyebrow: "Who we follow in each destination",
+  creators_title_1: "Our favourite",
+  creators_title_highlight: "content creators.",
   creators_lead:
-    "The best content creators in every destination. Nobody pays to be listed, and nobody recommends a place they haven't been to.",
-  creators_refuerzo: "Their recommendations are already published. Every entry says who it came from.",
+    "The accounts we check to know what's going on in each city. They don't work with us and nobody pays to be here — we like what they post, so we say so.",
+  creators_refuerzo: "",
   creators_salida:
     "Do you make content about your city? We work by invitation — tell us what you'd recommend.",
   creators_cta: "Creator programme",
