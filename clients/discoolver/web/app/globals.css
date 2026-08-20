@@ -4267,7 +4267,9 @@ a.blog-card__cat:hover {
 .autor__portada { width: 100%; aspect-ratio: 3 / 4; border-radius: 14px; overflow: hidden; background: #14101a; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.4); }
 .autor__portada img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .autor__pie { margin-top: 16px; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
-.autor__cta { margin-top: 34px; font-size: 15px; }
+/* Aclaración, no alerta: mismo tono que el pie, sin acento ni caja. */
+.autor__nota { margin-top: 30px; max-width: 62ch; font-size: 14px; line-height: 1.5; color: var(--ink-2); }
+.autor__cta { margin-top: 18px; font-size: 15px; }
 .autor__cta a { color: var(--primary); font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
 @media (max-width: 1180px) { .autor__rejilla { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 @media (max-width: 860px) { .autor__rejilla { grid-template-columns: 1fr 1fr; gap: 18px; } }

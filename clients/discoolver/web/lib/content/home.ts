@@ -138,6 +138,8 @@ export const defaultHomeContent = {
     "Estamos editando las primeras. Esto es el formato: misma edición, mismo papel, otra mirada. La firma la pone quien la escribe.",
   autor_etiqueta: "Ejemplo de formato",
   autor_pie: "Una guía de {ciudad} firmada por quien la vive: su barrio, sus sitios, su criterio.",
+  autor_nota:
+    "Las personas de estas portadas son ficticias: el formato es real, la firma la pones tú.",
   autor_cta: "¿Quieres que sea la tuya?",
 
   // FAQ

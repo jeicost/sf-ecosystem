@@ -90,7 +90,15 @@ export function GuiasDeAutor({ content, locale = "es" }: { content: HomeContent;
           ))}
         </ul>
 
-        <Reveal delay={280}>
+        <Reveal delay={240}>
+          {/* La etiqueta de cada portada dice que es una muestra; esto dice que
+              la persona tampoco es real. Hace falta desde que las portadas
+              llevan caras: el pie habla de «quien la vive» y, con un retrato
+              realista al lado, esa frase parecía describir a esa persona. */}
+          <p className="autor__nota">{content.autor_nota}</p>
+        </Reveal>
+
+        <Reveal delay={300}>
           {/* Único CTA del bloque, y no es de compra: convierte la muestra en
               captación de creadores en vez de en relleno de catálogo. */}
           <p className="autor__cta">
