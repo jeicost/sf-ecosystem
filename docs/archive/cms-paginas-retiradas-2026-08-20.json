@@ -1,0 +1,363 @@
+[
+ {
+  "id": "423ad59e-fee9-41a5-a415-c8f6179f45e9",
+  "client_slug": "startupsfactory",
+  "section_id": "page-about-30bd68c6",
+  "title": "About",
+  "slug": "about",
+  "content_es": null,
+  "content_en": null,
+  "content_th": null,
+  "metadata": {},
+  "created_at": "2026-05-20T14:33:21.235751",
+  "updated_at": "2026-05-20T14:33:21.235751",
+  "sections_json": [
+   {
+    "id": "hero",
+    "type": "hero",
+    "headline_line1": "Built from the ground up",
+    "headline_line2": "in Bangkok."
+   },
+   {
+    "id": "story",
+    "lede": "NC Global Assets was founded by entrepreneurs who understood firsthand how hard it is to bring an international brand into a new market — especially one as dynamic and nuanced as Thailand.",
+    "type": "story",
+    "image": "/assets-placeholder.jpg",
+    "headline": "Our Story",
+    "image_alt": "NC Global Assets Bangkok operations",
+    "body_para1": "We saw brilliant brands fail not because their product was wrong, but because they tried to build everything from scratch, alone, without local knowledge or operational infrastructure. We decided to build that infrastructure ourselves.",
+    "body_para2": "Today, our Bangkok building — with its cloud kitchen, offices and showroom — is the operational base from which we help international brands test, launch and grow across Thailand and Southeast Asia. Not as consultants. As partners with skin in the game.",
+    "stat_label": "Years operating in Bangkok",
+    "stat_value": "2+"
+   },
+   {
+    "id": "values",
+    "type": "values-grid",
+    "items": [
+     {
+      "title": "Real Skin in the Game",
+      "description": "We're not advisors. We share the upside and downside of your launch. Your success is our success."
+     },
+     {
+      "title": "Local Expertise + Global Perspective",
+      "description": "Deep Thailand knowledge combined with international brand experience. The best of both worlds."
+     },
+     {
+      "title": "Execution First",
+      "description": "We move fast. Talk less, build more. Real revenue from day one, not roadmaps in 18 months."
+     },
+     {
+      "title": "Long-Term Partner",
+      "description": "We invest in your growth across Thailand and Southeast Asia. Think in years, not campaigns."
+     }
+    ],
+    "headline": "Our Values"
+   },
+   {
+    "id": "team",
+    "body": "The NC Global Assets team brings 15+ years of combined experience in brand launches, F&B operations, and Southeast Asian market entry across tech, hospitality, and FMCG sectors.",
+    "type": "team",
+    "members": [
+     {
+      "bio": "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
+      "name": "Nirada Kritsanaseranee",
+      "role": "Founder & Operating Partner",
+      "image": "/team-nirada.jpg"
+     },
+     {
+      "bio": "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
+      "name": "Carlos Jacoste",
+      "role": "Co-Founder & Strategic Partner",
+      "image": "/team-carlos.jpg"
+     }
+    ],
+    "headline": "Our Team"
+   },
+   {
+    "id": "testimonials",
+    "type": "testimonials",
+    "items": [
+     {
+      "name": "Salsa Burgers Founder",
+      "image": "/testimonial-1.jpg",
+      "quote": "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
+      "title": "Food & Beverage"
+     },
+     {
+      "name": "The Padel Society",
+      "image": "/testimonial-2.jpg",
+      "quote": "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
+      "title": "Lifestyle & Sports"
+     },
+     {
+      "name": "Souji Founder",
+      "image": "/testimonial-3.jpg",
+      "quote": "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
+      "title": "Premium Brand"
+     }
+    ],
+    "headline": "What Our Partners Say"
+   },
+   {
+    "id": "cta",
+    "cta": "Schedule a Consultation",
+    "type": "cta-banner",
+    "cta_url": "https://calendly.com/ncglobalassets/intro",
+    "headline": "Ready to launch your brand in Thailand?"
+   }
+  ],
+  "seo_title": "About NC Global Assets — Bangkok Operating Partner",
+  "seo_description": "Learn about NC Global Assets team, values, and operational infrastructure in Bangkok. Built from the ground up for brand launches in Thailand.",
+  "og_image_url": "/og-about.jpg",
+  "project_id": "b25f71f0-05f4-470a-8c51-463e92e41855",
+  "status": "published",
+  "canonical_url": null,
+  "pixels": {}
+ },
+ {
+  "id": "dfcc00a0-5ad1-48ca-b6bc-2d766dc338fc",
+  "client_slug": "startupsfactory",
+  "section_id": "page-contact-0c4172b4",
+  "title": "Contact",
+  "slug": "contact",
+  "content_es": null,
+  "content_en": null,
+  "content_th": null,
+  "metadata": {},
+  "created_at": "2026-05-20T14:33:21.235751",
+  "updated_at": "2026-05-20T14:33:21.235751",
+  "sections_json": [
+   {
+    "id": "hero",
+    "type": "hero",
+    "headline_line1": "Let's talk",
+    "headline_line2": "about your brand."
+   },
+   {
+    "id": "contact-methods",
+    "type": "contact-methods",
+    "methods": [
+     {
+      "cta": "Book via Calendly",
+      "body": "We review your brand, understand your goals and outline how we can support your Thailand entry. 30 minutes.",
+      "label": "Quick Call",
+      "title": "Book a consultation",
+      "cta_url": "https://calendly.com/ncglobalassets/intro"
+     },
+     {
+      "cta": "Jump to form",
+      "body": "Tell us about your brand and what you're looking to achieve. We'll get back to you within 24 hours from Bangkok.",
+      "label": "Send Message",
+      "title": "Use the form below",
+      "cta_url": "#form"
+     },
+     {
+      "email": "contact@ncglobalassets.com",
+      "hours": "Mon–Sat, 10:00–18:00 (ICT)",
+      "label": "Direct Contact",
+      "phone": "+66 82 536 6653",
+      "title": "Get in touch"
+     }
+    ]
+   },
+   {
+    "id": "contact-form",
+    "type": "contact-form",
+    "fields": [
+     {
+      "name": "fullName",
+      "type": "text",
+      "label": "Full Name",
+      "required": true,
+      "placeholder": "Your name"
+     },
+     {
+      "name": "email",
+      "type": "email",
+      "label": "Email",
+      "required": true,
+      "placeholder": "you@brand.com"
+     },
+     {
+      "name": "brand",
+      "type": "text",
+      "label": "Brand / Company",
+      "required": true,
+      "placeholder": "Your brand name"
+     },
+     {
+      "name": "country",
+      "type": "text",
+      "label": "Country / Based in",
+      "required": false,
+      "placeholder": "Where are you based?"
+     },
+     {
+      "name": "looking",
+      "type": "radio",
+      "label": "What brings you to Thailand?",
+      "options": [
+       "Test my brand in Thailand",
+       "Launch operations",
+       "Find local partners",
+       "Explore F&B market",
+       "Other"
+      ],
+      "required": false
+     },
+     {
+      "name": "message",
+      "type": "textarea",
+      "label": "Tell us more about your brand (optional)",
+      "required": false,
+      "placeholder": "What's your brand story? What are your goals? Timeline?"
+     }
+    ],
+    "headline": "Tell us about your brand",
+    "disclaimer": "We never share your details. You'll hear from us within 24 hours.",
+    "submitLabel": "Send Message"
+   },
+   {
+    "id": "office-info",
+    "note": "Our building includes a cloud kitchen, offices and showroom. Schedule a tour when you book your call.",
+    "type": "office-info",
+    "hours": {
+     "note": "Closed Sundays & Thai holidays",
+     "time": "10:00–18:00 (ICT)",
+     "weekday": "Monday–Saturday"
+    },
+    "address": {
+     "city": "Bangkok 10120",
+     "street": "507/10 Sathu Pradit Road",
+     "country": "Thailand",
+     "district": "Chong Nonsi, Yan Nawa"
+    },
+    "headline": "Our Bangkok Office"
+   }
+  ],
+  "seo_title": "Contact — NC Global Assets Bangkok",
+  "seo_description": "Get in touch with NC Global Assets. Book a call, send a message or visit our Bangkok office. We reply within 24 hours.",
+  "og_image_url": "/og-contact.jpg",
+  "project_id": "b25f71f0-05f4-470a-8c51-463e92e41855",
+  "status": "published",
+  "canonical_url": null,
+  "pixels": {}
+ },
+ {
+  "id": "6e57a9bc-de6d-4919-88a1-280d155dbbba",
+  "client_slug": "startupsfactory",
+  "section_id": "page-services-5f8cadbe",
+  "title": "Services",
+  "slug": "services",
+  "content_es": null,
+  "content_en": null,
+  "content_th": null,
+  "metadata": {},
+  "created_at": "2026-05-20T14:33:21.235751",
+  "updated_at": "2026-05-20T14:33:21.235751",
+  "sections_json": [
+   {
+    "id": "hero",
+    "type": "hero",
+    "headline_line1": "What we do",
+    "headline_line2": "to help you succeed."
+   },
+   {
+    "id": "services",
+    "type": "services-detail",
+    "items": [
+     {
+      "body": "We run real sales pilots using our existing infrastructure. Gather authentic customer feedback, validate product-market fit and understand local demand before committing to a full launch.",
+      "title": "Market Entry",
+      "number": "01",
+      "bullets": [
+       "4–8 week market validation pilot",
+       "Real sales channels and customer feedback",
+       "Product adaptation recommendations",
+       "Pricing and positioning strategy"
+      ],
+      "headline": "Validate your product in Bangkok"
+     },
+     {
+      "body": "Use our operational base and market connections to launch your brand from concept to revenue in weeks. We handle infrastructure, activation and operations so you can focus on product.",
+      "title": "Brand Launch",
+      "number": "02",
+      "bullets": [
+       "Cloud kitchen and operational setup",
+       "Delivery platform activation (GrabFood, Foodpanda, Lineman)",
+       "Local team and day-to-day operations",
+       "Real revenue from week one"
+      ],
+      "headline": "Go live in weeks, not months"
+     },
+     {
+      "body": "Our cloud kitchen is equipped and ready for your concept. We manage production, quality, delivery logistics and platform relationships so you stay focused on brand growth.",
+      "title": "F&B Operations",
+      "number": "03",
+      "bullets": [
+       "Production-ready cloud kitchen",
+       "Menu localization and adaptation",
+       "Delivery logistics and fulfillment",
+       "Quality control and customer experience"
+      ],
+      "headline": "End-to-end kitchen and delivery management"
+     },
+     {
+      "body": "Once validated in Bangkok, we help you scale — additional locations, new platforms, and expansion into neighbouring SEA markets with the same operational rigor.",
+      "title": "Scale & Growth",
+      "number": "04",
+      "bullets": [
+       "Multi-location operations",
+       "Regional expansion strategy",
+       "Platform and channel optimization",
+       "Southeast Asia market entry"
+      ],
+      "headline": "Expand across Bangkok and Southeast Asia"
+     }
+    ],
+    "headline": "Our Services"
+   },
+   {
+    "id": "how-it-works",
+    "type": "how-it-works",
+    "steps": [
+     {
+      "title": "Discovery Call",
+      "number": "1",
+      "description": "We learn about your brand, goals and timeline. You understand our operating model and infrastructure."
+     },
+     {
+      "title": "Partnership Agreement",
+      "number": "2",
+      "description": "We structure the partnership around your needs — fixed fee, performance-based, revenue share or equity."
+     },
+     {
+      "title": "Operational Setup",
+      "number": "3",
+      "description": "Our team integrates your brand into our infrastructure — kitchen, team, platforms, customer experience."
+     },
+     {
+      "title": "Launch & Grow",
+      "number": "4",
+      "description": "Go live with real sales. We manage operations while you focus on product and brand growth."
+     }
+    ],
+    "headline": "How It Works"
+   },
+   {
+    "id": "cta",
+    "cta": "Schedule a Consultation",
+    "type": "cta-banner",
+    "cta_url": "https://calendly.com/ncglobalassets/intro",
+    "headline": "Ready to launch your brand in Thailand?"
+   }
+  ],
+  "seo_title": "Services — NC Global Assets Bangkok",
+  "seo_description": "Market entry, brand launch, F&B operations and SEA expansion services for international brands. Real infrastructure, hands-on execution, proven results.",
+  "og_image_url": "/og-services.jpg",
+  "project_id": "b25f71f0-05f4-470a-8c51-463e92e41855",
+  "status": "published",
+  "canonical_url": null,
+  "pixels": {}
+ }
+]

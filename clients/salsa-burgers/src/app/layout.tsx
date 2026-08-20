@@ -6,7 +6,6 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import { OrderProvider } from "@/context/OrderContext";
 import { OrderModal } from "@/components/OrderModal";
 import { ChatBot } from "@/components/ChatBot";
-import { Analytics } from "@vercel/analytics/next";
 
 const DOMAIN = "https://www.salsaburgers.com";
 
@@ -224,8 +223,12 @@ export default function RootLayout({
           </OrderProvider>
         </LanguageProvider>
 
-        {/* Vercel Analytics */}
-        <Analytics />
+        {/* Vercel Analytics FUERA (20-ago-2026). El componente estaba puesto
+            pero Web Analytics no está activado en el proyecto de Vercel, así que
+            `/{hash}/script.js` devolvía 404 en cada visita: no medía nada y
+            fallaba en silencio. La web ya mide con GA4, GTM, Meta, TikTok y
+            Google Ads (IDs en los settings del CMS). Si algún día se quiere,
+            hay que activarlo en Vercel ANTES de volver a poner <Analytics />. */}
 
         {/* Google Analytics 4 + Google Ads — injected from CMS settings.
             Un solo gtag.js sirve para ambos: se carga con el primer ID
