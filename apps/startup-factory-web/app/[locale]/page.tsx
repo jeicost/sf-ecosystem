@@ -1140,6 +1140,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
                   <img
                     src={c.logo}
                     alt={c.name}
+                    /* Los logos de clientes están muy por debajo del pliegue y
+                       se pintan a 80px de alto. Sin `lazy` se pedían los 17 en
+                       la carga inicial, compitiendo con el hero. */
+                    loading="lazy"
+                    decoding="async"
                     className="h-20 w-auto max-w-[220px] object-contain group-hover:scale-105 transition-transform duration-300"
                     style={(c as typeof c & { logoFilter?: string }).logoFilter ? { filter: (c as typeof c & { logoFilter?: string }).logoFilter } : undefined}
                   />
