@@ -8,6 +8,9 @@
  * limitada» en páginas que ya se habían corregido meses antes. Una lista en un
  * chat no la cumple nadie; un script que devuelve 1 sí.
  *
+ * Las reglas inglesas solo se aplican a los ficheros bajo `en/`: un texto en
+ * castellano puede contener «curation» dentro de una palabra sin ser el calco.
+ *
  * Revisa SOLO los ficheros de copy (`lib/content/**`), y dentro de ellos solo
  * los valores, nunca los comentarios: el comentario que explica por qué una
  * palabra está prohibida tiene que poder nombrarla.
@@ -44,6 +47,21 @@ const PROHIBIDAS = [
   ["escalable", "íd."],
 ];
 
+/**
+ * Prohibidas en el copy INGLÉS. La regla se escribió solo para el castellano y
+ * por eso el concepto sobrevivió entero en `/en`: el título de /en/guias decía
+ * «curated», el eyebrow «Human curation» y el CTA «We curate», mientras sus
+ * hermanos españoles ya decían «Cómo se elige» y «Elegimos». El inglés no es
+ * una traducción, pero sí tiene que cumplir las mismas reglas.
+ */
+const PROHIBIDAS_EN = [
+  ["curated", "el sustantivo vago que se retiró en castellano; se cuenta con verbos: we choose, we review, we publish"],
+  ["curation", "íd."],
+  ["we curate", "íd."],
+  ["handpicked", "íd.: lo dice el hero con verbos"],
+  ["limited edition", "falso: la producción es bajo demanda"],
+];
+
 /** Cifras que deben salir de base de datos, nunca escritas en el copy. */
 const CIFRAS = /\b(858|1\.099|1\.629|1\.500|12 ciudades)\b/;
 
@@ -78,7 +96,10 @@ for (const fichero of todos) {
     if (limpia.startsWith("//") || limpia.startsWith("*")) return;
     for (const texto of valores(linea)) {
       const bajo = texto.toLowerCase();
-      for (const [palabra, motivo] of PROHIBIDAS) {
+      // El inglés vive en `lib/content/en/` y en `app/en/`.
+      const esIngles = /(^|[/\\])en[/\\]/.test(fichero);
+      const lista = esIngles ? [...PROHIBIDAS, ...PROHIBIDAS_EN] : PROHIBIDAS;
+      for (const [palabra, motivo] of lista) {
         if (bajo.includes(palabra)) {
           console.log(`✗ ${fichero}:${i + 1}  «${palabra}» — ${motivo}`);
           fallos++;

@@ -13,10 +13,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const lista =
     ciudades.length > 1 ? `${ciudades.slice(0, -1).join(", ")} and ${ciudades[ciudades.length - 1]}` : ciudades[0] ?? "";
   const descripcion = hechos.ok
-    ? `Places handpicked by editors from what social media recommends. ${formatoMil(hechos.totalRedondeado, "en")} published in ${lista}, on a map, a route and a calendar.`
-    : "Places handpicked by editors from what social media recommends every day, on a map, a route and a calendar to walk the city.";
+    ? `Places picked by editors from what social media recommends. ${formatoMil(hechos.totalRedondeado, "en")} published in ${lista}, on a map, a route and a calendar.`
+    : "Places picked by editors from what social media recommends every day, on a map, a route and a calendar to walk the city.";
   return buildMetadata({
-    title: "Discoolver — Handpicked recommendations from social media",
+    title: "Discoolver — The best of social media, picked by editors",
     description: descripcion,
     path: "/en",
     locale: "en",

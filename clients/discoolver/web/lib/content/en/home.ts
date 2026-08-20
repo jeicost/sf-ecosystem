@@ -61,7 +61,7 @@ export const defaultHomeContent = {
   guides_ghost_cta: "Notify me",
 
   // Curation (block 1, id="curacion")
-  curation_eyebrow: "Human curation",
+  curation_eyebrow: "How we choose",
   curation_title: "Stop saving reels you're never going to open again.",
   curation_text:
     "We do open them. For the Madrid edition we put {sitios_ciudad} places on the table: everything creators said about the city this year, reviewed by editors. Around 80 make it into the guide. Cutting the rest is exactly what you're paying for — that, and the fact that nobody pays to get in: not the restaurant, not the agency, and not us paying anyone to recommend it.",
@@ -163,7 +163,7 @@ export const defaultHomeContent = {
 
   // CTA
   cta_eyebrow: "Discoolver guides · 2026 Edition",
-  cta_title_1: "We curate",
+  cta_title_1: "We choose",
   cta_title_1_em: "the year.",
   cta_title_2: "You enjoy",
   cta_title_2_em: "the trip.",

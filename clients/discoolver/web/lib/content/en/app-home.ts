@@ -30,8 +30,8 @@ export const defaultAppHomeContent = {
   // with live data; what's here is the emergency value. {sitios} in hero_sub is
   // replaced by the same master number shown in the stats bar.
   hero_eyebrow: "Madrid · Barcelona · Ibiza — now live",
-  hero_title_line1: "Handpicked recommendations",
-  hero_title_line2: "from social media.",
+  hero_title_line1: "The best of social media,",
+  hero_title_line2: "picked by editors.",
   hero_sub:
     "The internet finds them. Our editors pick them. Thousands of places get hyped online every day — we check them one by one and publish the ones worth your time. Over {sitios} so far, on a map, a route and a calendar.",
   hero_stat1_num: "+1,300",

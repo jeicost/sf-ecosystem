@@ -11,7 +11,8 @@ Mismo registro que el ES: afilado, editorial, directo, cero corporativismo.
 
 ## Términos canónicos
 - sitios → places · fichas → listings · guía → guide · edición → edition
-- "Edición 2026" → "2026 Edition" · creador → creator · curador → curator (solo en badge)
+- "Edición 2026" → "2026 Edition" · creador → creator · **«curator/curated/curation» NO se usan**: igual que en
+  castellano, se cuenta con verbos (we choose, we review, we publish)
 - destino (B2B) → destination · alojamiento → accommodation (vertical) / property (establecimiento)
 - patronato/DMO → tourism board / DMO · señalética → signage · tótems → interactive kiosks
 - punto de venta / POS → point of sale (POS) · cuadro de mando → dashboard

@@ -3,9 +3,9 @@ import { buildMetadata } from "@/lib/seo";
 import { GuiasPage } from "@/app/guias/page";
 
 export const metadata: Metadata = buildMetadata({
-  title: "Discoolver — Travel guides curated from creators",
+  title: "Discoolver — Travel guides written by people who live there",
   description:
-    "The best of the year in every city, edited into a guide you'll want to keep: human curation of creators, digital and print, with AI to walk the city.",
+    "The best of the year in every city, picked by editors from what local creators recommend. Digital and print, with AI to walk the city.",
   path: "/en/guias",
   locale: "en",
 });
