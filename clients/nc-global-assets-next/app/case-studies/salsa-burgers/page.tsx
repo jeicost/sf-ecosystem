@@ -1,3 +1,4 @@
+import { CALENDLY_URL } from '@/lib/constants'
 import type { Metadata } from 'next'
 
 const DOMAIN = 'https://www.ncglobalassets.com'
@@ -181,7 +182,7 @@ export default function SalsaBurgersCaseStudy() {
       <section className="cta-banner section" style={{ backgroundColor: 'var(--accent-dark)', color: 'white' }}>
         <div className="container" style={{ textAlign: 'center' }}>
           <h2>Ready to launch your brand in Thailand?</h2>
-          <a href="https://calendly.com/ncglobalassets/intro" target="_blank" rel="noopener" className="btn btn--primary">
+          <a href={CALENDLY_URL} target="_blank" rel="noopener" className="btn btn--primary">
             Schedule a Consultation →
           </a>
         </div>

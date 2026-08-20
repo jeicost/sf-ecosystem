@@ -1,5 +1,14 @@
+/**
+ * El único sitio donde vive el enlace de reserva. Estaba copiado en SEIS
+ * ficheros con DOS handles distintos, y los dos daban 404: el CTA principal del
+ * sitio —navegación, pie, banner, cierre, intro, contacto, blog y caso de
+ * éxito— no llevaba a ninguna parte y nadie se enteró (auditoría 20-ago-2026).
+ * Si cambia el calendario, se cambia aquí y ya está.
+ */
+export const CALENDLY_URL = 'https://calendly.com/jacostech'
+
 export const CONFIG = {
-  calendlyUrl: "https://calendly.com/ncglobalassets/intro",
+  calendlyUrl: CALENDLY_URL,
   whatsappNumber: "66825366653",
   lineId: "@ncglobalassets",
   phone: "+66825366653",

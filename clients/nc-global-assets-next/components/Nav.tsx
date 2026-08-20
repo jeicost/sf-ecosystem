@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Arrow, Calendar, ChatIcon } from '@/lib/constants'
+import { Arrow, Calendar, ChatIcon, CALENDLY_URL} from '@/lib/constants'
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', exact: true },
@@ -14,7 +14,7 @@ const NAV_LINKS = [
 ]
 
 const CONFIG = {
-  calendlyUrl: 'https://calendly.com/nc-global-assets/discover-call',
+  calendlyUrl: CALENDLY_URL,
 }
 
 export function Nav() {

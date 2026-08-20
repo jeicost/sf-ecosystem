@@ -3,10 +3,10 @@
 import { useState } from 'react'
 import { guardarLead } from '@/lib/lead'
 import Link from 'next/link'
-import { Arrow, LinkedInIcon } from '@/lib/constants'
+import { Arrow, LinkedInIcon, CALENDLY_URL} from '@/lib/constants'
 
 const CONFIG = {
-  calendlyUrl: 'https://calendly.com/nc-global-assets/discover-call',
+  calendlyUrl: CALENDLY_URL,
   phone: '+66825366653',
   phoneDisplay: '082 536 6653',
   email: 'contact@ncglobalassets.com',

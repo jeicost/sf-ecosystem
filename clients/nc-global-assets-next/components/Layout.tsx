@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { ChatWithUsModal, FloatingChat } from '@/components/ChatWidget'
-import { openChat } from '@/lib/constants'
+import { openChat, CALENDLY_URL} from '@/lib/constants'
 import { Footer } from '@/components/Footer'
 
 const NAV_LINKS = [
@@ -16,7 +16,7 @@ const NAV_LINKS = [
 ]
 
 const CONFIG = {
-  calendlyUrl: 'https://calendly.com/ncglobalassets/intro',
+  calendlyUrl: CALENDLY_URL,
   whatsappNumber: '66825366653',
   lineId: '@ncglobalassets',
   phone: '+66825366653',

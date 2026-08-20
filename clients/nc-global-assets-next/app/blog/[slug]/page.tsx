@@ -1,3 +1,4 @@
+import { CALENDLY_URL } from '@/lib/constants'
 import type { Metadata } from 'next'
 import { getPostBySlug, getPostSlugs } from '@/lib/posts'
 
@@ -78,7 +79,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
         <div className="blog-post-cta">
           <p>Ready to enter Thailand?</p>
-          <a href="https://calendly.com/ncglobalassets/intro" target="_blank" rel="noopener noreferrer" className="btn btn-primary">
+          <a href={CALENDLY_URL} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
             Book a Call
           </a>
         </div>
