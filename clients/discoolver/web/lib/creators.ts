@@ -67,9 +67,9 @@ export const CREADORES: Creador[] = [
   { nombre: "Miriam Iniesta", handle: "miriaminiesta", foto: "/assets/creadores/miriaminiesta.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
   { nombre: "Buscando a Cere", handle: "buscandoacere", foto: "/assets/creadores/buscandoacere.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
   { nombre: "Sergio Castillo", handle: "sergiocastillo.180", foto: "/assets/creadores/sergiocastillo.180.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
-  { nombre: "Paul Lee", handle: "impaullee", foto: "/assets/creadores/impaullee.jpg", mercado: "es", donde: "España", territorio: null, estado: "aportado", esPersona: true },
 
   // ── Tailandia ─────────────────────────────────────────────────────────
+  { nombre: "Paul Lee", handle: "impaullee", foto: "/assets/creadores/impaullee.jpg", mercado: "th", donde: "Tailandia", territorio: null, estado: "aportado", esPersona: true },
   { nombre: "Travis Leon Price", handle: "travisleon1", foto: "/assets/creadores/travisleon1.jpg", mercado: "th", donde: "Bangkok", territorio: "Vida nocturna", estado: "verificado", esPersona: true,
     aviso: "Prioridad nº1 del CEO. Contacto directo: travisprice09@gmail.com" },
   { nombre: "Phol Tantasatien", handle: "pholfoodmafia", foto: "/assets/creadores/pholfoodmafia.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
