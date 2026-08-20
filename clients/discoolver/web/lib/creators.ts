@@ -212,3 +212,22 @@ export function tonoAvatar(handle: string): string {
   for (const ch of handle) n = (n + ch.charCodeAt(0)) % 997;
   return TONOS_AVATAR[n % TONOS_AVATAR.length];
 }
+
+/**
+ * Los lugares que se escriben distinto en inglés. `donde` es texto libre y a
+ * veces es ciudad (Madrid, Bangkok) y a veces país (España, Tailandia): las
+ * ciudades se escriben igual en los dos idiomas y solo hay que traducir las
+ * que cambian. Sin esto, la web inglesa enseñaba «España» y «Tailandia» en las
+ * fichas de creadores — 22 apariciones, encontrado el 20-ago-2026 al revisar
+ * qué caía al español dentro de /en.
+ */
+export const LUGAR_EN: Record<string, string> = {
+  "España": "Spain",
+  "Tailandia": "Thailand",
+  "Dubái": "Dubai",
+};
+
+/** El lugar de un creador en el idioma pedido. */
+export function lugar(donde: string, locale: string): string {
+  return locale === "es" ? donde : (LUGAR_EN[donde] ?? donde);
+}

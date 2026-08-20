@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
-import { creadoresPorPais, iniciales, rotar, tonoAvatar } from "@/lib/creators";
+import { creadoresPorPais, iniciales, lugar, rotar, tonoAvatar } from "@/lib/creators";
 import type { AppHomeContent } from "@/lib/content/app-home";
 import type { Locale } from "@/lib/i18n";
 
@@ -108,7 +108,7 @@ export function ForCreators({ content, locale }: { content: AppHomeContent; loca
                           <Image
                             className="creador__avatar"
                             src={c.foto}
-                            alt={es ? `${c.nombre}, creador en ${c.donde}` : `${c.nombre}, creator in ${c.donde}`}
+                            alt={es ? `${c.nombre}, creador en ${c.donde}` : `${c.nombre}, creator in ${lugar(c.donde, locale)}`}
                             width={232}
                             height={232}
                           />
@@ -124,7 +124,7 @@ export function ForCreators({ content, locale }: { content: AppHomeContent; loca
                         <span className="creador__nombre">{c.nombre}</span>
                         <span className="creador__handle">@{c.handle}</span>
                         <span className="creador__meta">
-                          {c.donde}
+                          {lugar(c.donde, locale)}
                           {c.territorio ? ` · ${c.territorio}` : ""}
                         </span>
                       </a>
