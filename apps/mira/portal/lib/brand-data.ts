@@ -158,5 +158,9 @@ export function normalizeFlopped(
 ): Array<{ format: string; theory?: string }> {
   if (!value) return []
   if (typeof value === 'string') return value.trim() ? [{ format: value.trim() }] : []
-  return value.filter((f) => f && typeof f.format === 'string' && f.format.trim())
+  // Los items sueltos en texto (seeds, escrituras de agentes) contaban como
+  // basura y se descartaban: eran flops reales que desaparecían de la pantalla.
+  return value
+    .map((f) => (typeof f === 'string' ? { format: f } : f))
+    .filter((f) => f && typeof f.format === 'string' && f.format.trim())
 }

@@ -28,6 +28,7 @@ import {
   Loader2,
   Sparkles,
 } from 'lucide-react'
+import LinesField from '@/components/ui/LinesField'
 import { useActiveClient } from '@/lib/client-context'
 import type { BrainGap } from '@/lib/brain-gaps'
 import {
@@ -70,13 +71,15 @@ const ASK_STEPS: Array<{ step: 1 | 2 | 3; title: string; blurb: string }> = [
 const inputBase =
   'w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-1 focus:ring-violet-500/40'
 
-/** Las listas se editan como texto, una por línea: es lo único que se rellena rápido en un móvil. */
-function linesToText(lines: string[]): string {
-  return lines.join('\n')
-}
-function textToLines(text: string): string[] {
-  return text.split('\n').map((l) => l.trim()).filter(Boolean)
-}
+/**
+ * Las listas se editan como texto, una por línea: es lo único que se rellena
+ * rápido en un móvil. Pero se editan con <LinesField>, NO derivando el texto
+ * del array en cada pulsación: ese patrón (`value={list.join('\n')}` +
+ * `onChange={v.split('\n').filter(Boolean)}`) se come el Intro, porque la
+ * línea en blanco recién creada se filtra en el mismo keystroke y React
+ * repinta el texto sin el salto. Era el "no me deja pasar de línea" reportado
+ * en el alta. Ver lib/hooks/useDraftSync.
+ */
 
 function ProgressBar({ percent }: { percent: number }) {
   return (
@@ -753,13 +756,11 @@ function FieldEditor({
         {field.linePattern ? ` One per line: ${field.linePattern}.` : ''}
       </p>
       {field.kind === 'list' ? (
-        <textarea
-          rows={Math.min(6, Math.max(2, (value as string[]).length + 1))}
-          value={linesToText(value as string[])}
-          onChange={(e) =>
-            setDraft((prev) => ({ ...prev, [field.id]: textToLines(e.target.value) }))
-          }
-          className={`${inputBase} resize-y`}
+        <LinesField
+          value={value as string[]}
+          onChange={(list) => setDraft((prev) => ({ ...prev, [field.id]: list }))}
+          minRows={2}
+          maxRows={12}
         />
       ) : field.kind === 'paragraph' ? (
         <textarea
@@ -838,11 +839,11 @@ function PillarEditor({
             className={`${inputBase} mb-2 resize-y`}
             placeholder="What belongs in this pillar, and why anyone would care"
           />
-          <textarea
-            rows={3}
-            value={linesToText(pillar.themes)}
-            onChange={(e) => update(i, { themes: textToLines(e.target.value) })}
-            className={`${inputBase} resize-y`}
+          <LinesField
+            value={pillar.themes}
+            onChange={(themes) => update(i, { themes })}
+            minRows={3}
+            maxRows={10}
             placeholder="Themes, one per line"
           />
         </div>

@@ -430,6 +430,7 @@ export default function AgentPage() {
               messages={messages}
               isLoading={isLoading}
               error={error}
+              chatKey={`agent:${role}`}
               thinkingLabel={`${agent.name} is thinking…`}
               onSelectOption={(opt) => handleSendMessage(opt)}
               onFeedback={(idx, value) => sendFeedback(idx, value)}
@@ -466,6 +467,7 @@ export default function AgentPage() {
               isLoading={isLoading}
               clientId={activeClient?.id}
               accent={agent.color}
+              chatKey={`agent:${role}`}
               placeholder="Ask something…"
             />
           </div>

@@ -1,7 +1,60 @@
 'use client'
 
+import { isValidElement, useState, type ReactNode } from 'react'
+import { Check, Copy } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+
+/** Aplana los hijos de un nodo de markdown a texto plano, para copiarlo. */
+function toText(node: ReactNode): string {
+  if (node == null || typeof node === 'boolean') return ''
+  if (typeof node === 'string' || typeof node === 'number') return String(node)
+  if (Array.isArray(node)) return node.map(toText).join('')
+  if (isValidElement(node)) return toText((node.props as { children?: ReactNode }).children)
+  return ''
+}
+
+/**
+ * Bloque de código con cabecera: lenguaje a la izquierda, copiar a la derecha.
+ * Es el patrón de VS Code y de cualquier editor moderno, y aquí importa porque
+ * los agentes devuelven JSON, briefs y snippets pensados para pegar en otro
+ * sitio: sin botón había que seleccionarlos a mano dentro de una burbuja con
+ * scroll horizontal.
+ */
+function CodeBlock({ language, children }: { language?: string; children: ReactNode }) {
+  const [copied, setCopied] = useState(false)
+  const text = toText(children)
+
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch { /* sin portapapeles no hay nada que hacer */ }
+  }
+
+  return (
+    <div className="my-2 overflow-hidden rounded-lg border border-line bg-surface">
+      <div className="flex items-center justify-between border-b border-line/60 px-3 py-1">
+        <span className="font-mono text-[10px] uppercase tracking-wide text-ink-tertiary">
+          {language || 'code'}
+        </span>
+        <button
+          type="button"
+          onClick={copy}
+          aria-label="Copy code"
+          className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] text-ink-tertiary transition-colors hover:text-ink"
+        >
+          {copied ? <Check size={11} className="text-green-500" /> : <Copy size={11} />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-3 text-xs font-mono leading-relaxed text-ink">
+        <code>{children}</code>
+      </pre>
+    </div>
+  )
+}
 
 /**
  * ─── RENDERIZADO DE MENSAJES ─────────────────────────────────────────────
@@ -57,17 +110,15 @@ export default function ChatMarkdown({ content }: { content: string }) {
 
           code: ({ className, children }) => {
             // react-markdown v10 no pasa `inline`: un bloque de código llega
-            // con className `language-*`, uno en línea no lleva ninguna.
-            const isBlock = Boolean(className)
-            if (isBlock) {
-              return (
-                <code className="block my-2 p-3 rounded-lg bg-surface border border-line text-xs font-mono overflow-x-auto whitespace-pre">
-                  {children}
-                </code>
-              )
-            }
+            // con className `language-*`, uno en línea no lleva ninguna. El
+            // segundo criterio cubre el fence SIN lenguaje, que hasta ahora se
+            // pintaba como código en línea y perdía todos los saltos de línea.
+            const language = /language-(\w+)/.exec(className || '')?.[1]
+            const isBlock = Boolean(className) || toText(children).includes('\n')
+            if (isBlock) return <CodeBlock language={language}>{children}</CodeBlock>
             return <code className="px-1.5 py-0.5 rounded bg-surface-hover text-[0.85em] font-mono">{children}</code>
           },
+          // CodeBlock ya trae su propio <pre>: aquí solo se deja pasar el hijo.
           pre: ({ children }) => <>{children}</>,
 
           a: ({ href, children }) => (

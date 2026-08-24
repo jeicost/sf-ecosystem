@@ -272,7 +272,8 @@ export default function ToolRunnerPage({
                   value={formData[field.name] || ''}
                   onChange={(e) => handleChange(field.name, e.target.value)}
                   placeholder={field.placeholder}
-                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-none h-24"
+                  rows={4}
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-y min-h-[96px] leading-5"
                   required={field.required}
                 />
               )}
@@ -366,7 +367,8 @@ export default function ToolRunnerPage({
                   value={formData.contexto_adicional || ''}
                   onChange={(e) => handleChange('contexto_adicional', e.target.value)}
                   placeholder="Notes, data, current context..."
-                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-none h-24"
+                  rows={4}
+                  className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-y min-h-[96px] leading-5"
                 />
               </div>
               <AttachmentDropzone

@@ -5,6 +5,15 @@ import { adminClient } from '@/lib/supabase'
 
 // Resolve which client the user may act on. super_admin can target any client
 // (the active workspace); regular users only clients they have a grant for.
+//
+// ⚠️ Un cliente pedido y DENEGADO devuelve null (403), nunca "el primer grant
+// del usuario". Ese fallback silencioso era una bomba: el editor mandaba el
+// cliente en `clientId` y aquí se leía `client_id`, así que en un cliente sin
+// Brain todavía llegaba vacío, caía a este fallback y el PUT escribía el Brand
+// Brain EN OTRO CLIENTE distinto del que había en pantalla. Solo la unique
+// constraint `brand_profiles_client_id_key` lo convirtió en un 500 en vez de
+// en una sobreescritura silenciosa. Redirigir una escritura a otro cliente
+// nunca es la respuesta correcta.
 async function resolveClientId(
   admin: ReturnType<typeof adminClient>,
   user: { id: string; user_metadata?: Record<string, unknown> },
@@ -20,9 +29,10 @@ async function resolveClientId(
       .eq('user_id', user.id)
       .eq('project_id', requestedClientId)
       .limit(1)
-    if (grant?.length) return requestedClientId
+    return grant?.length ? requestedClientId : null
   }
 
+  // Sin cliente pedido: el único destino defendible es el del propio usuario.
   const { data: accessData } = await admin
     .from('mira_project_access')
     .select('project_id')
@@ -32,6 +42,15 @@ async function resolveClientId(
 
   if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {
     return user.user_metadata.client_id
+  }
+  return null
+}
+
+/** El cliente puede venir como `clientId` o `client_id`; '' cuenta como ausente. */
+function requestedClient(body: Record<string, unknown>): string | null {
+  for (const key of ['clientId', 'client_id']) {
+    const v = body[key]
+    if (typeof v === 'string' && v.trim()) return v.trim()
   }
   return null
 }
@@ -76,6 +95,9 @@ export async function GET(req: NextRequest) {
     ])
 
     if (profileError) {
+      // Un fallo real de consulta se registraba como "todavía no hay Brain":
+      // la pantalla salía en blanco con el Brain lleno en la base de datos.
+      console.error('Brand brain GET profile error:', clientId, profileError)
       return NextResponse.json({ data: null, message: 'No brand profile yet' }, { status: 200 })
     }
 
@@ -110,20 +132,20 @@ export async function PUT(req: NextRequest) {
     }
 
     const admin = adminClient()
-    const clientId = await resolveClientId(
-      admin,
-      user,
-      typeof body.client_id === 'string' ? body.client_id : null
-    )
+    const clientId = await resolveClientId(admin, user, requestedClient(body))
     if (!clientId) {
       return NextResponse.json({ error: 'No client access' }, { status: 403 })
     }
 
-    // If no ID, create new profile
+    // Sin id: el Brain todavía no existe en pantalla. Se hace UPSERT por
+    // client_id en vez de INSERT a ciegas — si la fila sí existía (GET fallido,
+    // pestaña vieja, dos ventanas abiertas), un insert reventaba con
+    // "duplicate key ... brand_profiles_client_id_key" y el usuario perdía todo
+    // lo que acababa de escribir sin ninguna forma de recuperarlo.
     if (!id) {
       const { data: newProfile, error: insertError } = await admin
         .from('brand_profiles')
-        .insert({
+        .upsert({
           client_id: clientId,
           name: name || '',
           mission: mission || '',
@@ -131,7 +153,7 @@ export async function PUT(req: NextRequest) {
           values: values || [],
           description: description || '',
           brand_data: brand_data || {},
-        })
+        }, { onConflict: 'client_id' })
         .select()
         .single()
 

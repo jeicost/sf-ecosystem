@@ -5,6 +5,7 @@ import { use, useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import ChatThread from '@/components/chat/ChatThread'
+import ChatComposer from '@/components/chat/ChatComposer'
 import { AttachmentDropzone } from '@/components/AttachmentDropzone'
 import type { Attachment } from '@/lib/attachments'
 import { t } from '@/lib/i18n'
@@ -27,7 +28,6 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
   const { locale } = useLocaleContext()
   const [chatOpen, setChatOpen] = useState(false)
   const [messages, setMessages] = useState<ChatMsg[]>([])
-  const [input, setInput] = useState('')
   const [slideTarget, setSlideTarget] = useState('') // 1-based; empty = todo el documento
   const [refining, setRefining] = useState(false)
   const [iframeKey, setIframeKey] = useState(0)
@@ -139,15 +139,14 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
     }
   }
 
-  async function handleRefine() {
-    const instruction = input.trim()
+  async function handleRefine(text: string) {
+    const instruction = text.trim()
     if (!instruction || refining) return
     const slideNum = parseInt(slideTarget, 10)
     const hasSlideTarget = Number.isInteger(slideNum) && slideNum >= 1
     // Se congela la lista de adjuntos de ESTE turno: el usuario puede seguir
     // soltando ficheros mientras el modelo trabaja y esos serán del siguiente.
     const turnAttachments = attachments
-    setInput('')
     setMessages((m) => [
       ...m,
       {
@@ -358,6 +357,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
             </div>
             <ChatThread
               className="flex-1 min-h-0"
+              chatKey={`doc-refine:${id}`}
               messages={messages}
               isLoading={refining}
               thinkingLabel="Applying your changes…"
@@ -392,24 +392,20 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                 prefix="documents"
                 disabled={refining || !docClientId}
               />
-              <div className="flex gap-2">
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
-                  placeholder={t('docs.instruction-placeholder', locale)}
-                  disabled={refining}
-                  className="flex-1 px-3 py-2 rounded-lg bg-page border border-line text-ink text-xs focus:border-amber-500 outline-none"
-                />
-                <button
-                  onClick={handleRefine}
-                  disabled={refining || !input.trim()}
-                  className="px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:bg-surface disabled:text-ink-muted text-black text-xs font-semibold transition"
-                >
-                  →
-                </button>
-              </div>
             </div>
+
+            {/* Composer compartido (2026-08-24): era un <input> de una línea en
+                el que Enter enviaba sin Shift+Enter posible, así que una
+                instrucción de dos frases no se podía ni escribir. */}
+            <ChatComposer
+              chatKey={`doc-refine:${id}`}
+              onSend={(text) => handleRefine(text)}
+              isLoading={refining}
+              allowAttachments={false}
+              accent="#F59E0B"
+              hideHints
+              placeholder={t('docs.instruction-placeholder', locale)}
+            />
           </div>
         )}
       </div>

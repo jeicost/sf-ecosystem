@@ -1,9 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import ChatThread from '@/components/chat/ChatThread'
+import ChatComposer from '@/components/chat/ChatComposer'
 import { useRouter } from 'next/navigation'
-import { Paperclip, Send, Loader2, CheckCircle2, UserPlus } from 'lucide-react'
+import { Paperclip, Loader2, CheckCircle2, UserPlus } from 'lucide-react'
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -32,7 +33,6 @@ export default function AdminOnboardingPage() {
   const [clientId, setClientId] = useState<string | null>(null)
   const [slug, setSlug] = useState<string | null>(null)
   const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [input, setInput] = useState('')
   const [pendingAttachments, setPendingAttachments] = useState<PendingAttachment[]>([])
   const [uploading, setUploading] = useState(false)
   const [sending, setSending] = useState(false)
@@ -41,15 +41,12 @@ export default function AdminOnboardingPage() {
   const [loginResult, setLoginResult] = useState<{ recoveryLink: string | null } | null>(null)
   const [creatingLogin, setCreatingLogin] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
 
   // P7-fix (2026-07-29): la sesión (y el cliente borrador) se crean SOLO al
   // enviar el primer mensaje — abrir la página ya no deja huérfanos
   // "Nuevo cliente sin nombre" en la BD.
-
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
-  }, [messages, sending])
+  //
+  // El autoscroll lo gestiona ChatThread.
 
   async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files || [])
@@ -102,8 +99,8 @@ export default function AdminOnboardingPage() {
     }
   }
 
-  async function sendMessage() {
-    if ((!input.trim() && pendingAttachments.length === 0) || sending) return
+  async function sendMessage(text: string) {
+    if ((!text.trim() && pendingAttachments.length === 0) || sending) return
     let sid = sessionId
     let cid = clientId
     if (!sid) {
@@ -120,13 +117,12 @@ export default function AdminOnboardingPage() {
         return
       }
     }
-    const userMessage = input.trim()
+    const userMessage = text.trim()
     const attachments = pendingAttachments
     setMessages((prev) => [
       ...prev,
       { role: 'user', text: userMessage || `(${attachments.length} attachment(s))` },
     ])
-    setInput('')
     setPendingAttachments([])
     setSending(true)
     setError(null)
@@ -190,10 +186,12 @@ export default function AdminOnboardingPage() {
       )}
 
       <ChatThread
-            className="flex-1 min-h-0"
-            messages={messages.map((m) => ({ role: m.role, content: m.text }))}
-            isLoading={sending}
-          />
+        className="flex-1 min-h-0"
+        chatKey="admin-onboarding"
+        messages={messages.map((m) => ({ role: m.role, content: m.text, options: m.chips }))}
+        isLoading={sending}
+        onSelectOption={(chip) => sendMessage(chip)}
+      />
 
       {pendingAttachments.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-1.5">
@@ -205,38 +203,30 @@ export default function AdminOnboardingPage() {
         </div>
       )}
 
-      <div className="mt-3 flex items-end gap-2">
+      {/* El botón de adjuntar es propio, no el del composer: aquí un fichero
+          cuyo nombre contiene "logo" va a /api/brand-assets/logo en vez de al
+          bucket de adjuntos, y hace falta el clientId de la sesión. */}
+      <div className="mt-3">
         <input ref={fileInputRef} type="file" multiple hidden onChange={handleFileSelect} accept="image/*,.pdf,.txt,.md" />
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={uploading || !clientId}
-          className="rounded-lg border border-line p-2.5 text-ink-tertiary transition hover:bg-surface-hover disabled:opacity-50"
-          title="Attach file"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1 text-[11px] text-ink-tertiary transition hover:bg-surface-hover hover:text-ink disabled:opacity-50"
+          title={clientId ? 'Attach file' : 'Send your first message to start the session'}
         >
-          {uploading ? <Loader2 size={16} className="animate-spin" /> : <Paperclip size={16} />}
-        </button>
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              sendMessage()
-            }
-          }}
-          placeholder="Paste all the client information…"
-          rows={2}
-          className="flex-1 resize-none rounded-lg border border-line bg-surface px-3 py-2.5 text-sm text-ink placeholder-ink-tertiary focus:border-violet-500 focus:outline-none"
-        />
-        <button
-          onClick={sendMessage}
-          disabled={sending || (!input.trim() && pendingAttachments.length === 0)}
-          aria-label="Send message"
-          className="rounded-lg bg-violet-600 p-2.5 text-white transition hover:bg-violet-500 disabled:opacity-50"
-        >
-          <Send size={16} />
+          {uploading ? <Loader2 size={12} className="animate-spin" /> : <Paperclip size={12} />}
+          Attach file
         </button>
       </div>
+
+      <ChatComposer
+        chatKey="admin-onboarding"
+        onSend={(text) => sendMessage(text)}
+        isLoading={sending}
+        allowAttachments={false}
+        accent="#7C3AED"
+        placeholder="Paste all the client information…"
+      />
     </div>
   )
 }

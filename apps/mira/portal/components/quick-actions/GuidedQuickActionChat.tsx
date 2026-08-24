@@ -1,11 +1,10 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import ChatThread from '@/components/chat/ChatThread'
-import { Paperclip, Send, Loader2, CheckCircle2 } from 'lucide-react'
+import ChatComposer from '@/components/chat/ChatComposer'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
-import { uploadFilesToBucket } from '@/lib/attachments-client'
 import type { Attachment } from '@/lib/attachments'
 import type { QuickActionDef } from '@/lib/quick-actions/registry'
 
@@ -34,38 +33,15 @@ export function GuidedQuickActionChat({ action, clientId, projectId, onSubmitted
   const [conversation, setConversation] = useState<unknown[]>([])
   const [fields, setFields] = useState<Record<string, unknown>>({})
   const [sessionAttachments, setSessionAttachments] = useState<Attachment[]>([])
-  const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([])
-  const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
-  const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const scrollRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
-  }, [messages, sending])
-
-  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = Array.from(e.target.files || [])
-    if (files.length === 0 || !clientId) return
-    setUploading(true)
-    setError(null)
-    try {
-      const uploaded = await uploadFilesToBucket(clientId, files, 'quick-actions')
-      setPendingAttachments((prev) => [...prev, ...uploaded])
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Upload failed')
-    } finally {
-      setUploading(false)
-      if (fileInputRef.current) fileInputRef.current.value = ''
-    }
-  }
-
-  async function sendMessage() {
-    if ((!input.trim() && pendingAttachments.length === 0) || sending) return
-    const userMessage = input.trim()
-    const turnAttachments = pendingAttachments
+  // El autoscroll y los adjuntos los gestiona el par ChatThread/ChatComposer
+  // compartido. Este chat tenía su propio textarea sin historial, sin poder
+  // parar la generación y sin arrastrar-y-soltar; ahora hereda todo eso.
+  async function sendMessage(text: string, turnAttachments: Attachment[] = []) {
+    if ((!text.trim() && turnAttachments.length === 0) || sending) return
+    const userMessage = text.trim()
     setMessages((prev) => [
       ...prev,
       {
@@ -74,8 +50,6 @@ export function GuidedQuickActionChat({ action, clientId, projectId, onSubmitted
         attachments: turnAttachments.map((a) => a.name),
       },
     ])
-    setInput('')
-    setPendingAttachments([])
     setSending(true)
     setError(null)
 
@@ -122,61 +96,25 @@ export function GuidedQuickActionChat({ action, clientId, projectId, onSubmitted
   return (
     <div className="flex flex-col h-[420px]">
       <ChatThread
-            className="max-h-72"
-            messages={messages.map((m) => ({ role: m.role === 'bot' ? ('assistant' as const) : ('user' as const), content: m.text }))}
-            isLoading={sending}
-          />
+        className="flex-1 min-h-0"
+        chatKey={`qa-guided:${action.id}`}
+        messages={messages.map((m) => ({
+          role: m.role === 'bot' ? ('assistant' as const) : ('user' as const),
+          content: m.text,
+          options: m.chips,
+        }))}
+        isLoading={sending}
+        error={error}
+        onSelectOption={(chip) => sendMessage(chip)}
+      />
 
-      {pendingAttachments.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-2">
-          {pendingAttachments.map((a, i) => (
-            <span key={i} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-surface text-[11px] text-ink-secondary">
-              <Paperclip size={10} /> {a.name}
-            </span>
-          ))}
-        </div>
-      )}
-      {error && <p className="text-xs text-red-400 pt-1">{error}</p>}
-
-      <div className="flex items-end gap-2 pt-3">
-        <button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading || sending}
-          className="p-2 rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors disabled:opacity-50"
-        >
-          {uploading ? <Loader2 size={16} className="animate-spin" /> : <Paperclip size={16} />}
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          multiple
-          hidden
-          accept="image/*,.pdf,.txt,.md,.csv"
-          onChange={handleFileSelect}
-        />
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-              e.preventDefault()
-              sendMessage()
-            }
-          }}
-          placeholder={t('qa.chat.placeholder', locale)}
-          rows={1}
-          className="flex-1 px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-sm resize-none"
-        />
-        <button
-          type="button"
-          onClick={sendMessage}
-          disabled={sending || (!input.trim() && pendingAttachments.length === 0)}
-          className="p-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition-colors disabled:opacity-50"
-        >
-          <Send size={16} />
-        </button>
-      </div>
+      <ChatComposer
+        chatKey={`qa-guided:${action.id}`}
+        onSend={(text, attachments) => sendMessage(text, attachments ?? [])}
+        isLoading={sending}
+        clientId={clientId ?? undefined}
+        placeholder={t('qa.chat.placeholder', locale)}
+      />
     </div>
   )
 }

@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Send, Upload, Loader2, Check, AlertCircle, X } from 'lucide-react'
+import { Upload, Loader2, Check, AlertCircle, X } from 'lucide-react'
 import { useAgentChat } from '@/lib/hooks/useAgentChat'
 import ChatThread from '@/components/chat/ChatThread'
+import ChatComposer from '@/components/chat/ChatComposer'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
@@ -31,7 +32,6 @@ export default function AgentWorkspace({
   placeholder,
   quickPrompts,
 }: AgentWorkspaceProps) {
-  const [input, setInput] = useState('')
   const [showQuickPrompts, setShowQuickPrompts] = useState(true)
   const [documents, setDocuments] = useState<any[]>([])
   const [uploading, setUploading] = useState(false)
@@ -41,7 +41,7 @@ export default function AgentWorkspace({
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()
 
-  const { messages, isLoading, sendMessage } = useAgentChat({
+  const { messages, isLoading, sendMessage, cancel } = useAgentChat({
     role,
     clientId: activeClient?.id || '',
   })
@@ -67,19 +67,13 @@ export default function AgentWorkspace({
   // arrastra al usuario al final si ha subido a leer mientras el modelo
   // escribe).
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim() || isLoading) return
-
-    const message = input
-    setInput('')
+  const handleSendMessage = async (message: string) => {
     setShowQuickPrompts(false)
     await sendMessage(message)
   }
 
   const handleQuickPrompt = async (prompt: string) => {
     setShowQuickPrompts(false)
-    setInput('')
     await sendMessage(prompt)
   }
 
@@ -146,6 +140,7 @@ export default function AgentWorkspace({
       <ChatThread
         messages={messages}
         isLoading={isLoading}
+        chatKey={`agent-workspace:${role}`}
         onSelectOption={(opt) => handleQuickPrompt(opt)}
         emptyState={
           showQuickPrompts ? (
@@ -214,50 +209,47 @@ export default function AgentWorkspace({
         </div>
       )}
 
-      {/* Input + Upload */}
-      <div className="px-4 py-4 border-t border-line space-y-2 bg-surface">
+      {/* Subida a la BIBLIOTECA del agente (agent_documents, conocimiento
+          persistente). Es una función distinta de adjuntar una imagen a un
+          mensaje suelto, así que se mantiene aparte del composer. */}
+      <div className="px-4 pt-3 space-y-2 bg-surface">
         {docError && (
           <div className="flex items-center gap-2 text-xs text-red-400 bg-red-500/10 px-2 py-1 rounded">
             <AlertCircle size={14} />
             {docError}
           </div>
         )}
-        <form onSubmit={handleSendMessage} className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={`${placeholder} ${t('agent-workspace.input-hint', locale)}`}
-            disabled={isLoading}
-            className="flex-1 px-3 py-2 bg-surface-hover border border-line rounded-lg text-sm text-ink placeholder-ink-tertiary focus:border-ink-muted focus:outline-none transition-colors disabled:opacity-50"
-          />
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50 bg-surface-hover border border-line hover:border-ink-muted"
-            title={t('agent-workspace.upload-tooltip', locale)}
-          >
-            {uploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            onChange={handleDocumentUpload}
-            disabled={uploading}
-            className="hidden"
-            accept=".pdf,.doc,.docx,.txt,.md,.csv,.png,.jpg,.jpeg,.gif,.webp"
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !input.trim()}
-            className="px-3 py-2 rounded-lg font-medium transition-all disabled:opacity-50"
-            style={{ background: color, color: 'white' }}
-          >
-            <Send size={16} />
-          </button>
-        </form>
+        <button
+          type="button"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={uploading}
+          className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface-hover px-2.5 py-1 text-[11px] text-ink-secondary transition-colors hover:border-ink-muted hover:text-ink disabled:opacity-50"
+          title={t('agent-workspace.upload-tooltip', locale)}
+        >
+          {uploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+          {t('agent-workspace.upload-tooltip', locale)}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          onChange={handleDocumentUpload}
+          disabled={uploading}
+          className="hidden"
+          accept=".pdf,.doc,.docx,.txt,.md,.csv,.png,.jpg,.jpeg,.gif,.webp"
+        />
       </div>
+
+      {/* Composer compartido (2026-08-24): era un <input> de una línea, sin
+          historial, sin Shift+Enter y sin poder parar la generación. */}
+      <ChatComposer
+        onSend={(text) => handleSendMessage(text)}
+        onCancel={cancel}
+        isLoading={isLoading}
+        allowAttachments={false}
+        accent={color}
+        chatKey={`agent-workspace:${role}`}
+        placeholder={`${placeholder} ${t('agent-workspace.input-hint', locale)}`}
+      />
     </div>
   )
 }

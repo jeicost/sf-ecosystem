@@ -55,6 +55,7 @@ export default function DepartmentChatPanel({ slug, quickActionsDepartment }: De
       </div>
 
       <ChatThread
+        chatKey={`dept:${slug}`}
         className="h-[420px]"
         messages={messages}
         isLoading={isLoading}
@@ -77,6 +78,7 @@ export default function DepartmentChatPanel({ slug, quickActionsDepartment }: De
       </div>
 
       <ChatComposer
+        chatKey={`dept:${slug}`}
         onSend={sendMessage}
         onCancel={cancel}
         isLoading={isLoading}

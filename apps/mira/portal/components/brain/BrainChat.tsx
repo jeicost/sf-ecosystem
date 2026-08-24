@@ -109,6 +109,7 @@ export default function BrainChat({ isAgency }: { isAgency: boolean }) {
               así que las listas y negritas que devuelve el modelo salían con
               los asteriscos a la vista. */}
           <ChatThread
+            chatKey="brain"
             className="max-h-72"
             messages={messages}
             isLoading={sending}
@@ -121,6 +122,7 @@ export default function BrainChat({ isAgency }: { isAgency: boolean }) {
             }
           />
           <ChatComposer
+            chatKey="brain"
             onSend={(text) => send(text)}
             isLoading={sending}
             clientId={clientId}

@@ -141,6 +141,7 @@ export default function GuidedDocumentChat({ docType, docLabel, clientId, onCanc
 
       {/* components/chat (2026-08-06): markdown + autoscroll compartidos. */}
       <ChatThread
+        chatKey={`doc-guided:${docType}`}
         className="max-h-80"
         messages={messages}
         isLoading={sending || generating}
@@ -153,6 +154,7 @@ export default function GuidedDocumentChat({ docType, docLabel, clientId, onCanc
       )}
 
       <ChatComposer
+        chatKey={`doc-guided:${docType}`}
         onSend={(text) => send(text)}
         isLoading={sending || generating}
         disabled={generating}

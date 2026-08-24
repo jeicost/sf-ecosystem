@@ -1,27 +1,80 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Save, Loader2, Check, AlertCircle, Upload } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import BrandBrainSuggestions from './BrandBrainSuggestions'
 import DriveFoldersPanel from './DriveFoldersPanel'
 import BrandBrainIndexView from './BrandBrainIndexView'
+import LinesField from './ui/LinesField'
+import RowsField, { type Row } from './ui/RowsField'
+import TagsField from './ui/TagsField'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
 // Tipo canónico compartido (lib/brand-data.ts) — antes vivía duplicado aquí.
-import { normalizeVocab, normalizeFlopped, type BrandData, type VocabEntry } from '@/lib/brand-data'
+import { normalizeVocab, normalizeFlopped, type BrandData, type BrandDataChannel, type VocabEntry } from '@/lib/brand-data'
 
-// Parsers línea-a-estructura con el separador 🔹 (mismo UX que voice_principles)
-function parseVocabLines(v: string): VocabEntry[] {
-  return v.split('\n').filter((l) => l.trim()).map((line) => {
-    const [phrase, why] = line.split('🔹').map((s) => s.trim())
-    return why ? { phrase, why } : { phrase }
-  })
+/**
+ * ─── ADAPTADORES FILA ⇄ OBJETO ───────────────────────────────────────────
+ *
+ * Sustituyen a los parsers del separador `🔹`. Ocho campos de este editor se
+ * rellenaban escribiendo `parte 🔹 parte 🔹 parte` en un textarea, y el rombo
+ * no está en ningún teclado: para añadir una fila había que copiarlo y pegarlo
+ * de otra línea. Ahora cada parte es su propio input (ver RowsField) y estos
+ * adaptadores solo traducen entre la fila de la UI y la forma guardada.
+ *
+ * `__rest` conserva las claves que el editor NO pinta. Sin eso, editar una
+ * audiencia borraba en silencio su `percent`, su `incentive` y su
+ * `language_behaviour`, porque el textarea reemplazaba el array entero por
+ * objetos `{segment, need, message}` recién construidos.
+ */
+const REST_KEY = '__rest'
+
+function toRow(source: unknown, cols: Row): Row {
+  const row: Row = { ...cols }
+  if (source && typeof source === 'object') {
+    const rest: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(source as Record<string, unknown>)) {
+      if (!(k in cols)) rest[k] = v
+    }
+    if (Object.keys(rest).length) row[REST_KEY] = JSON.stringify(rest)
+  }
+  return row
 }
-function vocabToLines(list?: Array<string | VocabEntry>): string {
-  return normalizeVocab(list).map((e) => (e.why ? `${e.phrase} 🔹 ${e.why}` : e.phrase)).join('\n')
+
+function fromRow<T = Record<string, unknown>>(row: Row): T {
+  const { [REST_KEY]: packed, ...cols } = row
+  let extra: Record<string, unknown> = {}
+  if (packed) { try { extra = JSON.parse(packed) } catch { extra = {} } }
+  const out: Record<string, unknown> = { ...extra }
+  for (const [k, v] of Object.entries(cols)) out[k] = v
+  return out as T
 }
+
+/** Quita del objeto guardado las claves opcionales que quedaron en blanco. */
+function dropEmpty<T>(obj: T, optional: string[]): T {
+  const out = { ...obj } as Record<string, unknown>
+  optional.forEach((k) => { if (!String(out[k] ?? '').trim()) delete out[k] })
+  return out as T
+}
+
+/**
+ * Un item de lista puede llegar como string suelto en vez de como objeto: los
+ * seeds y las escrituras de los agentes lo hacen constantemente (Salsa tiene
+ * `channels: ["Instagram", "TikTok"]`). Leerlo con `c.channel` daba undefined
+ * y la fila salía EN BLANCO — el canal existía en el Brain y no se veía.
+ */
+function primary(value: unknown, key: string): string {
+  if (typeof value === 'string') return key === 'channel' || key === 'name' || key === 'phrase' ? value : ''
+  const v = (value as Record<string, unknown> | null)?.[key]
+  return typeof v === 'string' ? v : typeof v === 'number' ? String(v) : ''
+}
+
+const vocabToRows = (list?: Array<string | VocabEntry>): Row[] =>
+  normalizeVocab(list).map((e) => toRow(e, { phrase: e.phrase ?? '', why: e.why ?? '' }))
+const rowsToVocab = (rows: Row[]): VocabEntry[] =>
+  rows.map((r) => dropEmpty(fromRow<VocabEntry>(r), ['why']))
 
 interface BrandProfile {
   id: string
@@ -327,8 +380,14 @@ export default function BrandBrainEditor() {
     setError(null)
 
     try {
+      // El servidor lee `client_id`. Mandar solo `clientId` (camelCase) dejaba
+      // el destino a merced del `client_id: ''` que trae el perfil vacío de un
+      // cliente sin Brain, y con eso el PUT acababa escribiendo en otro cliente.
       const body = { ...profile, pillars } as any
-      if (activeClient?.id) body.clientId = activeClient.id
+      if (activeClient?.id) {
+        body.clientId = activeClient.id
+        body.client_id = activeClient.id
+      }
       const res = await fetch('/api/brand-brain', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -636,18 +695,11 @@ export default function BrandBrainEditor() {
                 los 6 clientes los tenían escritos y sin forma de verlos. */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-4">Brand Values</h3>
-              <label className="block text-xs text-ink-secondary mb-2">One per line</label>
-              <TextareaInput
+              <LinesField
+                countLabel="values"
                 value={(Array.isArray(profile.brand_data?.values) ? profile.brand_data.values : [])
-                  .filter((v): v is string => typeof v === 'string')
-                  .join('\n')}
-                onChange={(v) => setProfile({
-                  ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    values: v.split('\n').map((s) => s.trim()).filter(Boolean),
-                  }
-                })}
+                  .filter((v): v is string => typeof v === 'string')}
+                onChange={(values) => setProfile({ ...profile, brand_data: { ...profile.brand_data, values } })}
                 placeholder={'Ingredient obsession\nQuality over volume\nDelivery reliability'}
               />
             </div>
@@ -677,24 +729,28 @@ export default function BrandBrainEditor() {
           <div className="space-y-6">
             <div>
               <h3 className="text-sm font-medium text-ink mb-3">Primary Audiences (6 Segments)</h3>
-              <p className="text-xs text-ink-secondary mb-4">Format: Segment 🔹 Need 🔹 Key Message (one per line)</p>
-              <TextareaInput
+              <RowsField
+                hint="One row per segment. Who they are, what they need from you, and the message that lands."
+                addLabel="Add segment"
+                emptyHint="No segments yet — add the first one."
+                columns={[
+                  { key: 'segment', label: 'Segment', placeholder: 'Emerging e-commerce', grow: 2 },
+                  { key: 'need', label: 'Need', placeholder: 'Tidy up operations', grow: 2 },
+                  { key: 'message', label: 'Key message', placeholder: 'Validate and grow without the mess', grow: 3 },
+                ]}
                 value={(profile.brand_data?.audiences || []).map((a: any) =>
                   typeof a === 'string'
-                    ? a
-                    : `${audienceField(a, ['segment', 'name'])} 🔹 ${audienceField(a, ['need', 'pain_point'])} 🔹 ${audienceField(a, ['message'])}`
-                ).join('\n')}
-                onChange={(v) => setProfile({
+                    ? { segment: a, need: '', message: '' }
+                    : toRow(a, {
+                        segment: audienceField(a, ['segment', 'name']),
+                        need: audienceField(a, ['need', 'pain_point']),
+                        message: audienceField(a, ['message']),
+                      })
+                )}
+                onChange={(rows) => setProfile({
                   ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    audiences: v.split('\n').filter(l => l.trim()).map(line => {
-                      const [segment, need, message] = line.split('🔹').map(s => s.trim())
-                      return { segment, need, message }
-                    })
-                  }
+                  brand_data: { ...profile.brand_data, audiences: rows.map(fromRow) },
                 })}
-                placeholder="Emerging e-commerce 🔹 Tidy up operations 🔹 Validate and grow without the mess&#10;Growing e-commerce 🔹 Handle volume 🔹 Campaigns without chaos&#10;..."
               />
               <div className="border-t border-line pt-4 mt-4">
                 <h4 className="text-xs font-semibold text-ink-secondary mb-3">Preview:</h4>
@@ -725,18 +781,16 @@ export default function BrandBrainEditor() {
             <div className="border-t border-line pt-6">
               <h3 className="text-sm font-medium text-ink mb-1">Open Questions</h3>
               <p className="text-xs text-ink-secondary mb-2">Known contradictions, undecided calls, things you suspect are broken (one per line). Reports surface them with a recommendation instead of resolving them silently.</p>
-              <TextareaInput
+              <LinesField
+                countLabel="open questions"
                 value={[
                   ...(profile.brand_data?.open_questions?.contradictions || []),
                   ...(profile.brand_data?.open_questions?.undecided || []),
                   ...(profile.brand_data?.open_questions?.suspected_broken || []),
-                ].join('\n')}
-                onChange={(v) => setProfile({
+                ]}
+                onChange={(contradictions) => setProfile({
                   ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    open_questions: { contradictions: v.split('\n').map((s) => s.trim()).filter(Boolean) }
-                  }
+                  brand_data: { ...profile.brand_data, open_questions: { contradictions } },
                 })}
                 placeholder={'The deck says a June launch and the ops summary says March\nNobody has decided whether the handle is @brand.city or @brand_city'}
               />
@@ -770,42 +824,58 @@ export default function BrandBrainEditor() {
               })}
               <TextareaInput label="Full offer (note)" value={profile.brand_data?.offer?.full_list_note || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, full_list_note: v } } })} placeholder="Where the full menu/catalogue lives, price ranges…" />
               <TextInput label="Promo mechanics" value={profile.brand_data?.offer?.promo_mechanics || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, promo_mechanics: v } } })} placeholder="Code, discount, channels, whether it is time-boxed" />
-              <TextInput label="Where to buy" value={(profile.brand_data?.offer?.purchase_channels || []).join(', ')} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, purchase_channels: v.split(',').map((s) => s.trim()).filter(Boolean) } } })} placeholder="web, Grab, marketplace, local... (comma-separated)" />
+              <TagsField
+                label="Where to buy"
+                value={profile.brand_data?.offer?.purchase_channels || []}
+                onChange={(purchase_channels) => setProfile({ ...profile, brand_data: { ...profile.brand_data, offer: { ...profile.brand_data?.offer, purchase_channels } } })}
+                placeholder="web, Grab, marketplace, local…"
+              />
             </div>
 
             {/* Channels — un canal sin trabajo asignado es un canal que se abandona */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-1">Channels</h3>
-              <p className="text-xs text-ink-secondary mb-2">Format: channel 🔹 job 🔹 owner (one per line)</p>
-              <TextareaInput
-                value={(profile.brand_data?.channels || []).map((c) => [c.channel, c.job, c.owner].filter(Boolean).join(' 🔹 ')).join('\n')}
-                onChange={(v) => setProfile({
+              <p className="text-xs text-ink-secondary mb-2">A channel without a job gets abandoned. One row per channel.</p>
+              <RowsField
+                addLabel="Add channel"
+                emptyHint="No channels yet."
+                columns={[
+                  { key: 'channel', label: 'Channel', placeholder: 'Instagram', grow: 2 },
+                  { key: 'job', label: 'Job — what it is for', placeholder: 'craving and brand', grow: 3 },
+                  { key: 'owner', label: 'Owner', placeholder: 'Natalia', grow: 1 },
+                ]}
+                value={(profile.brand_data?.channels || []).map((c) =>
+                  toRow(c, { channel: primary(c, 'channel'), job: primary(c, 'job'), owner: primary(c, 'owner') })
+                )}
+                onChange={(rows) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
-                    channels: v.split('\n').filter((l) => l.trim()).map((line) => {
-                      const [channel, job, owner] = line.split('🔹').map((s) => s.trim())
-                      return { channel, job: job || undefined, owner: owner || undefined }
-                    })
-                  }
+                    channels: rows.map((r) => dropEmpty(fromRow<BrandDataChannel>(r), ['job', 'owner'])),
+                  },
                 })}
-                placeholder={'Instagram 🔹 craving and brand 🔹 Natalia\nLinkedIn 🔹 B2B and authority 🔹 Carlos'}
               />
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Channels to AVOID (channel 🔹 why)</label>
-              <TextareaInput
-                value={(profile.brand_data?.channels_to_avoid || []).map((c) => `${c.channel} 🔹 ${c.why}`).join('\n')}
-                onChange={(v) => setProfile({
-                  ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    channels_to_avoid: v.split('\n').filter((l) => l.trim()).map((line) => {
-                      const [channel, why] = line.split('🔹').map((s) => s.trim())
-                      return { channel, why: why || '' }
-                    })
-                  }
-                })}
-                placeholder={'X/Twitter 🔹 the audience is not there and it steals focus'}
-              />
+              <div className="mt-4">
+                <RowsField
+                  label="Channels to AVOID"
+                  hint="Deliberately not used — and the reason, so nobody reopens the debate every quarter."
+                  addLabel="Add channel to avoid"
+                  columns={[
+                    { key: 'channel', label: 'Channel', placeholder: 'X/Twitter', grow: 1 },
+                    { key: 'why', label: 'Why not', placeholder: 'the audience is not there and it steals focus', grow: 3 },
+                  ]}
+                  value={(profile.brand_data?.channels_to_avoid || []).map((c) =>
+                    toRow(c, { channel: primary(c, 'channel'), why: primary(c, 'why') })
+                  )}
+                  onChange={(rows) => setProfile({
+                    ...profile,
+                    brand_data: {
+                      ...profile.brand_data,
+                      channels_to_avoid: rows.map((r) => fromRow<{ channel: string; why: string }>(r)),
+                    },
+                  })}
+                />
+              </div>
             </div>
 
             {/* Constraints — lo que salva de un cease-and-desist */}
@@ -820,20 +890,23 @@ export default function BrandBrainEditor() {
             {/* What flopped — la teoría del fracaso vale más que el fracaso */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-1">What Flopped</h3>
-              <p className="text-xs text-ink-secondary mb-2">Format: format/series 🔹 theory of why it did not work</p>
-              <TextareaInput
-                value={normalizeFlopped(profile.brand_data?.what_flopped).map((f) => (f.theory ? `${f.format} 🔹 ${f.theory}` : f.format)).join('\n')}
-                onChange={(v) => setProfile({
+              <p className="text-xs text-ink-secondary mb-2">The theory of the failure is worth more than the failure.</p>
+              <RowsField
+                addLabel="Add a flop"
+                columns={[
+                  { key: 'format', label: 'Format / series', placeholder: 'Generic memes', grow: 1 },
+                  { key: 'theory', label: 'Theory of why it did not work', placeholder: 'no connection to the product, empty engagement', grow: 3 },
+                ]}
+                value={normalizeFlopped(profile.brand_data?.what_flopped).map((f) =>
+                  toRow(f, { format: f.format ?? '', theory: f.theory ?? '' })
+                )}
+                onChange={(rows) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
-                    what_flopped: v.split('\n').filter((l) => l.trim()).map((line) => {
-                      const [format, theory] = line.split('🔹').map((s) => s.trim())
-                      return { format, theory: theory || undefined }
-                    })
-                  }
+                    what_flopped: rows.map((r) => dropEmpty(fromRow<{ format: string; theory?: string }>(r), ['theory'])),
+                  },
                 })}
-                placeholder={'Generic memes 🔹 no connection to the product, empty engagement'}
               />
             </div>
           </div>
@@ -896,15 +969,10 @@ export default function BrandBrainEditor() {
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">{t('bb.banned-phrases', locale)}</h3>
               <p className="text-xs text-ink-secondary mb-3">{t('bb.banned-phrases-hint', locale)}</p>
-              <TextareaInput
-                value={(profile.brand_data?.banned_phrases || []).join('\n')}
-                onChange={(v) => setProfile({
-                  ...profile,
-                  brand_data: {
-                    ...profile.brand_data,
-                    banned_phrases: v.split('\n').map(s => s.trim()).filter(Boolean)
-                  }
-                })}
+              <LinesField
+                countLabel="banned phrases"
+                value={profile.brand_data?.banned_phrases || []}
+                onChange={(banned_phrases) => setProfile({ ...profile, brand_data: { ...profile.brand_data, banned_phrases } })}
                 placeholder={'"revolutionary"\n"the best on the market"\n"synergy"'}
               />
             </div>
@@ -912,57 +980,71 @@ export default function BrandBrainEditor() {
             {/* Voice Principles */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">5 Voice Principles</h3>
-              <p className="text-xs text-ink-secondary mb-3">Format: Principle 🔹 Example (one per line)</p>
-              <TextareaInput
-                value={(profile.brand_data?.voice_principles || []).map((p: any) => `${p.name} 🔹 ${p.example}`).join('\n')}
-                onChange={(v) => setProfile({
+              <p className="text-xs text-ink-secondary mb-3">A principle without a real example is decoration. Write the sentence you would actually publish.</p>
+              <RowsField
+                addLabel="Add principle"
+                max={7}
+                columns={[
+                  { key: 'name', label: 'Principle', placeholder: 'Clear', grow: 1 },
+                  { key: 'example', label: 'Example', placeholder: 'Control stock, orders and returns from a single panel.', grow: 3, multiline: true },
+                ]}
+                value={(profile.brand_data?.voice_principles || []).map((pr: any) =>
+                  toRow(pr, { name: primary(pr, 'name'), example: primary(pr, 'example') })
+                )}
+                onChange={(rows) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
-                    voice_principles: v.split('\n').filter(l => l.trim()).map(line => {
-                      const [name, example] = line.split('🔹').map(s => s.trim())
-                      return { name, example }
-                    })
-                  }
+                    voice_principles: rows.map((r) => fromRow<{ name: string; example: string }>(r)),
+                  },
                 })}
-                placeholder="Clear 🔹 Control stock, orders and returns from a single panel.&#10;Practical 🔹 If your inventory is not up to date, your marketing sells problems.&#10;..."
               />
             </div>
 
             {/* Vocabulary */}
             <div className="border-b border-line pb-4">
               <h3 className="text-sm font-medium text-ink mb-3">Vocabulary Rules</h3>
-              <p className="text-xs text-ink-secondary mb-2">Format: phrase 🔹 why (one per line). The why is the lesson — a rule without a reason gets ignored.</p>
-              <label className="block text-xs font-medium text-ink-secondary mb-2">✅ We say (and why)</label>
-              <TextareaInput
-                value={vocabToLines(profile.brand_data?.voice_vocabulary?.do)}
-                onChange={(v) => setProfile({
+              <p className="text-xs text-ink-secondary mb-3">The why is the lesson — a rule without a reason gets ignored.</p>
+              <RowsField
+                label="✅ We say (and why)"
+                addLabel="Add phrase"
+                columns={[
+                  { key: 'phrase', label: 'Phrase', placeholder: 'stock under control', grow: 1 },
+                  { key: 'why', label: 'Why', placeholder: 'concrete and operational, it is what the client buys', grow: 2 },
+                ]}
+                value={vocabToRows(profile.brand_data?.voice_vocabulary?.do)}
+                onChange={(rows) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
                     voice_vocabulary: {
                       ...profile.brand_data?.voice_vocabulary,
-                      do: parseVocabLines(v)
+                      do: rowsToVocab(rows)
                     }
                   }
                 })}
-                placeholder={'stock under control 🔹 concrete and operational, it is what the client buys\nfrictionless orders 🔹 promises the outcome, not the technology'}
               />
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-4">❌ We never say (and why)</label>
-              <TextareaInput
-                value={vocabToLines(profile.brand_data?.voice_vocabulary?.dont)}
-                onChange={(v) => setProfile({
+              <div className="mt-4">
+              <RowsField
+                label="❌ We never say (and why)"
+                addLabel="Add phrase"
+                columns={[
+                  { key: 'phrase', label: 'Phrase', placeholder: 'revolutionary', grow: 1 },
+                  { key: 'why', label: 'Why', placeholder: 'everyone says it, it does not differentiate', grow: 2 },
+                ]}
+                value={vocabToRows(profile.brand_data?.voice_vocabulary?.dont)}
+                onChange={(rows) => setProfile({
                   ...profile,
                   brand_data: {
                     ...profile.brand_data,
                     voice_vocabulary: {
                       ...profile.brand_data?.voice_vocabulary,
-                      dont: parseVocabLines(v)
+                      dont: rowsToVocab(rows)
                     }
                   }
                 })}
-                placeholder={'revolutionary 🔹 everyone says it, it does not differentiate\nbest on the market 🔹 unproven claim, costs credibility'}
               />
+              </div>
             </div>
 
             {/* Golden rule — la frase que permite a cualquiera autoevaluarse */}
@@ -988,19 +1070,22 @@ export default function BrandBrainEditor() {
                 <TextInput label="Manual / documents" value={profile.brand_data?.languages?.manual || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, manual: v } } })} placeholder="ES / EN" />
                 <TextInput label="Captions / content" value={profile.brand_data?.languages?.captions || ''} onChange={(v) => setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, captions: v } } })} placeholder="market language (e.g. TH, ES)" />
               </div>
-              <label className="block text-xs font-medium text-ink-secondary mb-2 mt-3">Per channel (channel: language, one per line)</label>
-              <TextareaInput
-                value={Object.entries(profile.brand_data?.languages?.per_channel || {}).map(([c, l]) => `${c}: ${l}`).join('\n')}
-                onChange={(v) => {
-                  const per_channel: Record<string, string> = {}
-                  v.split('\n').forEach((line) => {
-                    const idx = line.indexOf(':')
-                    if (idx > 0) per_channel[line.slice(0, idx).trim()] = line.slice(idx + 1).trim()
-                  })
-                  setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, per_channel } } })
-                }}
-                placeholder={'Instagram: TH + EN\nLinkedIn: EN'}
-              />
+              <div className="mt-3">
+                <RowsField
+                  label="Per channel"
+                  addLabel="Add channel"
+                  columns={[
+                    { key: 'channel', label: 'Channel', placeholder: 'Instagram', grow: 1 },
+                    { key: 'language', label: 'Language', placeholder: 'TH + EN', grow: 1 },
+                  ]}
+                  value={Object.entries(profile.brand_data?.languages?.per_channel || {}).map(([channel, language]) => ({ channel, language: String(language) }))}
+                  onChange={(rows) => {
+                    const per_channel: Record<string, string> = {}
+                    rows.forEach((r) => { if (r.channel?.trim()) per_channel[r.channel.trim()] = r.language ?? '' })
+                    setProfile({ ...profile, brand_data: { ...profile.brand_data, languages: { ...profile.brand_data?.languages, per_channel } } })
+                  }}
+                />
+              </div>
             </div>
 
             {/* Status Badge */}
@@ -1434,7 +1519,7 @@ export default function BrandBrainEditor() {
                       placeholder="Claim — the promise in one sentence (e.g. No sauce without a story)"
                       className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink italic placeholder-ink-tertiary outline-none focus:border-purple-500"
                     />
-                    <input
+                    <TagsField
                       value={
                         Array.isArray(p.themes)
                           ? p.themes
@@ -1444,12 +1529,10 @@ export default function BrandBrainEditor() {
                                   : (theme as { name?: string })?.name ?? ''
                               )
                               .filter(Boolean)
-                              .join(', ')
-                          : ''
+                          : []
                       }
-                      onChange={(e) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, themes: e.target.value.split(',').map((t: string) => t.trim()).filter(Boolean) } : x))}
-                      placeholder="Topics, comma-separated (optional)"
-                      className="w-full bg-page border border-line rounded-lg px-3 py-2 text-xs text-ink-secondary placeholder-ink-tertiary outline-none focus:border-purple-500"
+                      onChange={(themes) => setPillars(pillars.map((x: any, j: number) => j === i ? { ...x, themes } : x))}
+                      placeholder="Topics (optional)"
                     />
                   </div>
                 ))}
@@ -1491,17 +1574,15 @@ export default function BrandBrainEditor() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-ink-secondary mb-2">7-Point QA Checklist (one per line)</label>
-                  <TextareaInput
-                    value={(profile.brand_data?.qa_rules?.checklist || []).join('\n')}
-                    onChange={(v) => setProfile({
+                  <label className="block text-xs font-medium text-ink-secondary mb-2">7-Point QA Checklist</label>
+                  <LinesField
+                    countLabel="checks"
+                    value={profile.brand_data?.qa_rules?.checklist || []}
+                    onChange={(checklist) => setProfile({
                       ...profile,
                       brand_data: {
                         ...profile.brand_data,
-                        qa_rules: {
-                          ...profile.brand_data?.qa_rules,
-                          checklist: v.split('\n').filter(l => l.trim())
-                        }
+                        qa_rules: { ...profile.brand_data?.qa_rules, checklist }
                       }
                     })}
                     placeholder="Does it add something useful or just fill the calendar?&#10;Is the problem framed from the client's view?&#10;Does it connect with control, margin, experience or scale?&#10;Is there a real lesson even if it is creative?&#10;Does the CTA match the funnel stage?&#10;Does the design respect colours, hierarchy and legibility?&#10;Are legal claims verified?"
@@ -1509,20 +1590,17 @@ export default function BrandBrainEditor() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-ink-secondary mb-2">What to AVOID (comma-separated)</label>
-                  <TextareaInput
-                    value={(profile.brand_data?.qa_rules?.what_to_avoid || []).join(', ')}
-                    onChange={(v) => setProfile({
+                  <label className="block text-xs font-medium text-ink-secondary mb-2">What to AVOID</label>
+                  <TagsField
+                    value={profile.brand_data?.qa_rules?.what_to_avoid || []}
+                    onChange={(what_to_avoid) => setProfile({
                       ...profile,
                       brand_data: {
                         ...profile.brand_data,
-                        qa_rules: {
-                          ...profile.brand_data?.qa_rules,
-                          what_to_avoid: v.split(',').map(s => s.trim()).filter(s => s)
-                        }
+                        qa_rules: { ...profile.brand_data?.qa_rules, what_to_avoid }
                       }
                     })}
-                    placeholder="Posts with no takeaway, unproven claims, talking about magic without explaining, inconsistent visual styles, only talking about the brand..."
+                    placeholder="Posts with no takeaway, unproven claims…"
                   />
                 </div>
               </div>
@@ -1708,15 +1786,31 @@ function TextInput({ label, value, onChange, placeholder }: { label?: string; va
   )
 }
 
+/**
+ * Textarea de prosa. Antes tenía `h-32 resize-none`: 128px fijos e imposibles
+ * de agrandar para campos que contienen el tono de voz entero o el ritmo
+ * editorial de la semana. Ahora crece con el contenido (hasta 480px) y además
+ * se puede arrastrar a mano.
+ */
 function TextareaInput({ label, value, onChange, placeholder }: { label?: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+  const ref = useRef<HTMLTextAreaElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(Math.max(el.scrollHeight, 96), 480)}px`
+  }, [value])
+
   return (
     <div>
       {label && <label className="block text-sm font-medium text-ink mb-2">{label}</label>}
       <textarea
+        ref={ref}
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors h-32 resize-none text-sm"
+        className="w-full px-4 py-3 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary focus:border-purple-500 focus:outline-none transition-colors resize-y text-sm leading-5"
       />
     </div>
   )

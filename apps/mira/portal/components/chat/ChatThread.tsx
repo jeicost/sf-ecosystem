@@ -1,9 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { ArrowDown, Paperclip, RefreshCw, ThumbsDown, ThumbsUp } from 'lucide-react'
+import { ArrowDown, Check, Copy, Paperclip, Pencil, RefreshCw, ThumbsDown, ThumbsUp } from 'lucide-react'
 import ChatMarkdown from './ChatMarkdown'
 import type { Attachment } from '@/lib/attachments'
+import { loadIntoComposer } from '@/lib/chat-bus'
 
 export interface ChatThreadMessage {
   role: 'user' | 'assistant'
@@ -25,6 +26,8 @@ interface Props {
   onRetry?: () => void
   onFeedback?: (index: number, value: 'helpful' | 'not_helpful') => void
   thinkingLabel?: string
+  /** Misma clave que el ChatComposer de al lado: habilita "editar mensaje". */
+  chatKey?: string
 }
 
 /**
@@ -49,9 +52,22 @@ export default function ChatThread({
   onRetry,
   onFeedback,
   thinkingLabel = 'Thinking…',
+  chatKey,
 }: Props) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [stickToBottom, setStickToBottom] = useState(true)
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null)
+
+  // Copiar la respuesta es la acción más frecuente de todas: es contenido que
+  // se va a pegar en Instagram, en un email o en un doc. No había forma de
+  // hacerlo sin seleccionar a mano y arrastrar sobre las burbujas.
+  const copy = async (index: number, text: string) => {
+    try {
+      await navigator.clipboard.writeText(text)
+      setCopiedIndex(index)
+      setTimeout(() => setCopiedIndex((i) => (i === index ? null : i)), 1500)
+    } catch { /* sin permiso de portapapeles no hay nada que hacer */ }
+  }
 
   // "Pegado al final" con margen de 80px: los navegadores no siempre dan un
   // scrollTop exacto y un pixel de diferencia no debe desactivar el seguimiento.
@@ -147,8 +163,34 @@ export default function ChatThread({
                 </div>
               )}
 
+              {msg.content && !isStreamingThis && (
+                <div className={`mt-1 flex items-center gap-1 px-1 ${isUser ? 'flex-row-reverse' : ''}`}>
+                  <button
+                    type="button"
+                    onClick={() => copy(idx, msg.content)}
+                    aria-label="Copy message"
+                    title="Copy"
+                    className="p-1 rounded text-ink-tertiary opacity-40 transition-opacity hover:opacity-100"
+                  >
+                    {copiedIndex === idx ? <Check size={13} className="text-green-500" /> : <Copy size={13} />}
+                  </button>
+
+                  {isUser && chatKey && (
+                    <button
+                      type="button"
+                      onClick={() => loadIntoComposer(chatKey, msg.content)}
+                      aria-label="Edit and resend"
+                      title="Edit and resend"
+                      className="p-1 rounded text-ink-tertiary opacity-40 transition-opacity hover:opacity-100"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                  )}
+                </div>
+              )}
+
               {!isUser && msg.content && !isStreamingThis && onFeedback && (
-                <div className="mt-1 flex items-center gap-1 px-1">
+                <div className="-mt-1 flex items-center gap-1 px-1">
                   <button
                     type="button"
                     aria-label="Helpful"
