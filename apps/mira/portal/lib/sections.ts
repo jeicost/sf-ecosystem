@@ -1,18 +1,23 @@
 import {
   Briefcase,
   Users, LayoutDashboard, CheckSquare, BarChart3,
-  Kanban, Target, Zap, LucideIcon, Map, Lightbulb, Settings, TrendingUp,
+  Kanban, Target, Zap, LucideIcon, Map, Lightbulb, TrendingUp,
   Search, MessageSquare, FileText,
   Home, Calendar, Brain, ClipboardList, Layers, Archive, Image,
   Mail, Wrench, LayoutGrid,
 } from 'lucide-react'
 import type { Entitlement } from './entitlements'
 import { canAccessSection, minPlanForSection, type UserPlan } from './plans'
-import { DEFAULT_SECTION_SLUG } from './constants'
 
-/** Flag de la UI consolidada del sistema ideal (6 espacios). Apagado por
- *  defecto: sin él, la navegación es exactamente la de hoy. Encenderlo en
- *  Vercel (NEXT_PUBLIC_IDEAL_UI=1 + redeploy) muestra la nueva sin borrar nada. */
+/**
+ * Flag de la UI de 6 espacios. YA NO GOBIERNA LA NAVEGACIÓN: la clásica se
+ * borró el 26-ago-2026 tras comprobar en producción que la ideal llevaba días
+ * siendo la única que ven los clientes, así que el sidebar se pinta siempre.
+ *
+ * Sigue vivo porque tiene otros dos consumidores que NO son navegación y sí
+ * gatean contenido de página: la tarjeta de informe semanal en /home y la de
+ * valor en /performance.
+ */
 export function isIdealUI(): boolean {
   return process.env.NEXT_PUBLIC_IDEAL_UI === '1'
 }
@@ -148,8 +153,6 @@ export interface IdealSpace {
   key: string
   label: string
   icon: LucideIcon
-  /** Solo super_admin/agencia lo ve (p. ej. Resultados de agencia). */
-  agencyOnly?: boolean
   items: NavItem[]
 }
 
@@ -217,9 +220,6 @@ export const IDEAL_SPACES: IdealSpace[] = [
   },
 ]
 
-export function getSectionBySlug(slug: string): MiraSection | undefined {
-  return SECTIONS.find(s => s.slug === slug)
-}
 
 export function getActiveSectionFromPath(pathname: string): MiraSection | undefined {
   // Match the pathname against each section's navItem hrefs — the longest

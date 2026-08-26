@@ -3,15 +3,13 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { clsx } from 'clsx'
-import SectionSwitcher from '@/components/section-switcher'
 import IdealSidebarNav from '@/components/ideal-sidebar-nav'
 import ClientSwitcher from '@/components/client-switcher'
 import SelfServeNavLink from '@/components/onboarding/SelfServeNavLink'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
 import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { ProjectProvider } from '@/lib/project-context'
-import { getActiveSectionFromPath, isIdealUI, resolveNavItemStatus, minPlanForNavItem } from '@/lib/sections'
-import { UnavailableNavItem } from '@/components/nav-item-status'
+import { getActiveSectionFromPath } from '@/lib/sections'
 import GenerationCapNotice from '@/components/generation-cap-notice'
 import { getUser, clearUser, isSuperAdmin, type MiraUser } from '@/lib/auth'
 import { canUseFeature } from '@/lib/plans'
@@ -33,11 +31,6 @@ function SidebarContent() {
   const [user, setUser]         = useState<MiraUser | null>(null)
   const [theme, setThemeState]  = useState<Theme>('dark')
   const [pendingCount, setPending] = useState(0)
-  const activeSection = getActiveSectionFromPath(path)
-  // Los items 'hidden' existen solo para que la ruta mapee a su sección (gating
-  // por plan); no se pintan. Ver NavItem.hidden en lib/sections.
-  const navItems = (activeSection?.navItems ?? []).filter((i) => !i.hidden)
-  const idealUI = isIdealUI() // flag: si off, la navegación es la de siempre
 
 useEffect(() => {
     const stored = getUser()
@@ -171,210 +164,13 @@ useEffect(() => {
           sin pilares que aún no ha terminado el alta (ver SelfServeNavLink). */}
       <SelfServeNavLink path={path} isAgency={isSuperAdmin(user)} />
 
-      {/* UI ideal (6 espacios) — solo con el flag. Nada se borra; la nav de
-          siempre vive en el bloque !idealUI de abajo. */}
-      {idealUI && (
-        <IdealSidebarNav path={path} pendingCount={pendingCount} isAgency={isSuperAdmin(user)} plan={user.plan} />
-      )}
+      {/* La navegación del portal. Antes iba condicionada a NEXT_PUBLIC_IDEAL_UI
+          y debajo vivía la clásica como respaldo; esa se borró el 26-ago-2026
+          tras comprobar que la ideal llevaba días siendo la única que ven los
+          clientes en producción. Sin respaldo, condicionarla sería dejar el
+          portal sin menú el día que alguien toque el flag. */}
+      <IdealSidebarNav path={path} pendingCount={pendingCount} isAgency={isSuperAdmin(user)} plan={user.plan} />
 
-      {!idealUI && (<>
-      {/* Home */}
-      <Link href="/home"
-        className={clsx(
-          'mx-3 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          isSuperAdmin(user) ? 'mt-2' : 'mt-3',
-          path === '/home'
-            ? 'bg-surface-hover text-ink'
-            : 'text-ink-tertiary hover:text-ink hover:bg-surface'
-        )}>
-        <Home size={13} />
-        Home
-      </Link>
-
-      {/* Brand Brain — global link */}
-      <Link href="/brand-brain"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path === '/brand-brain'
-            ? 'bg-violet-500/15 text-violet-400'
-            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/10'
-        )}>
-        <Brain size={13} />
-        <span>Brand Brain</span>
-        <span className="ml-auto text-[8px] px-1.5 py-0.5 rounded-full font-bold"
-          style={{ background: 'rgba(167,139,250,0.15)', color: 'rgba(167,139,250,0.7)' }}>
-          CORE
-        </span>
-      </Link>
-
-      {/* Cuestionarios — global link (todos los planes, incluido 'consulta').
-          Va pegado al Brand Brain a propósito: es la forma de rellenar sus
-          huecos, no una herramienta suelta (mismo criterio que el espacio
-          'cerebro' de IDEAL_SPACES). */}
-      <Link href="/questionnaires"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path.startsWith('/questionnaires')
-            ? 'bg-sky-500/15 text-sky-400'
-            : 'text-ink-tertiary hover:text-sky-400 hover:bg-sky-500/10'
-        )}>
-        <ClipboardList size={13} />
-        <span>Questionnaires</span>
-      </Link>
-
-      {/* Tools — el hub de módulos. Con NEXT_PUBLIC_IDEAL_UI apagado esta es la
-          ÚNICA entrada de menú al Estudio Visual, Licitaciones y Email Ops: sin
-          ella solo se llega por URL. */}
-      <Link href="/tools"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path === '/tools'
-            ? 'bg-violet-500/15 text-violet-400'
-            : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/10'
-        )}>
-        <Wrench size={13} />
-        <span>Tools</span>
-      </Link>
-
-      {/* Toolkit — global link (oculto para el plan 'consulta': sin toolkit) */}
-      {canUseFeature(user.plan, 'toolkitGenerate') && (
-        <Link href="/toolkit"
-          className={clsx(
-            'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-            path === '/toolkit' || path.startsWith('/toolkit/')
-              ? 'bg-violet-500/15 text-violet-400'
-              : 'text-ink-tertiary hover:text-violet-400 hover:bg-violet-500/10'
-          )}>
-          <Layers size={13} />
-          <span>Business Reports</span>
-        </Link>
-      )}
-
-      {/* Documentos — global link */}
-      <Link href="/documents"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path.startsWith('/documents')
-            ? 'bg-amber-500/15 text-amber-400'
-            : 'text-ink-tertiary hover:text-amber-400 hover:bg-amber-500/10'
-        )}>
-        <span className="text-sm">📄</span>
-        <span>Documents</span>
-        <span className="ml-auto text-[8px] px-1.5 py-0.5 rounded-full font-bold"
-          style={{ background: 'rgba(251,191,36,0.15)', color: 'rgba(251,191,36,0.7)' }}>
-          NEW
-        </span>
-      </Link>
-
-      {/* Integrations */}
-      <Link href="/integrations"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path === '/integrations'
-            ? 'bg-pink-500/15 text-pink-400'
-            : 'text-ink-tertiary hover:text-pink-400 hover:bg-pink-500/10'
-        )}>
-        <Zap size={13} />
-        <span>Connections</span>
-      </Link>
-
-      {/* Billing — el cliente tiene que poder ver qué paga y darse de baja
-          solo. Va también en la navegación vieja, no solo en la IDEAL_UI:
-          media base sigue viendo esta. */}
-      <Link href="/billing"
-        className={clsx(
-          'mx-3 mt-2 flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all',
-          path === '/billing'
-            ? 'bg-indigo-500/15 text-indigo-400'
-            : 'text-ink-tertiary hover:text-indigo-400 hover:bg-indigo-500/10'
-        )}>
-        <CreditCard size={13} />
-        <span>Billing</span>
-      </Link>
-
-      {/* Section switcher */}
-      <div className="mt-2">
-        <SectionSwitcher activeSlug={activeSection?.slug ?? ''} userPlan={user.plan} />
-      </div>
-
-      {/* Section label */}
-      {activeSection && (
-        <div className="px-4 pt-3 pb-1">
-          <p className="text-[9px] uppercase tracking-widest font-medium" style={{ color: activeSection.color }}>
-            {activeSection.shortName}
-          </p>
-        </div>
-      )}
-
-      {/* Nav */}
-      <nav className="flex-1 px-3 py-1 space-y-0.5">
-        {navItems.map((item) => {
-          const { href, label, icon: Icon } = item
-          // El switcher de arriba ya pinta el candado del departamento; aquí se
-          // repite por item porque se puede llegar a un departamento bloqueado
-          // por URL directa y entonces esta lista es lo único que se ve.
-          const status = resolveNavItemStatus(item, user.plan)
-          if (status !== 'available') {
-            return (
-              <UnavailableNavItem key={href}
-                label={label} icon={Icon} status={status} locale={locale}
-                requiredPlan={minPlanForNavItem(item)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150 text-ink-tertiary hover:text-ink hover:bg-surface" />
-            )
-          }
-          const active = path === href || (href !== '/' && path.startsWith(href + '/'))
-          const isApprovals = href === '/approvals'
-          const showBadge   = isApprovals && pendingCount > 0
-          return (
-            <Link key={href} href={href}
-              className={clsx(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-150',
-                active
-                  ? 'bg-surface-hover text-ink font-medium'
-                  : 'text-ink-tertiary hover:text-ink hover:bg-surface'
-              )}
-            >
-              <Icon size={15} className={active ? 'text-ink' : 'text-ink-tertiary'} />
-              {label}
-              {showBadge && (
-                <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse"
-                  style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24' }}>
-                  {pendingCount}
-                </span>
-              )}
-            </Link>
-          )
-        })}
-      </nav>
-
-      {/* Project Memory — insights/decisions saved from Quick Actions results */}
-      <div className="px-3 pb-1">
-        <Link href="/project-memory"
-          className={clsx(
-            'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium transition-all',
-            path.startsWith('/project-memory')
-              ? 'bg-surface-hover text-ink'
-              : 'text-ink-tertiary hover:text-ink hover:bg-surface'
-          )}>
-          <Archive size={13} />
-          <span>{t('nav.project-memory', locale)}</span>
-        </Link>
-      </div>
-
-      {/* Resources */}
-      <div className="px-3 pb-1">
-        <Link href="/resources"
-          className={clsx(
-            'w-full flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-medium transition-all',
-            path.startsWith('/resources')
-              ? 'bg-surface-hover text-ink'
-              : 'text-ink-tertiary hover:text-ink hover:bg-surface'
-          )}>
-          <BookOpen size={13} />
-          <span>Resources</span>
-        </Link>
-      </div>
-      </>)}
 
       {/* Techo de generaciones/mes — solo se pinta si hay techo y quedan pocas.
           Va fuera de los dos bloques de nav: tiene que verse con la UI ideal
