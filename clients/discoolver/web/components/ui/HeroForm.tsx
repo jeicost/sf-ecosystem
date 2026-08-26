@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { UI, type Locale } from "@/lib/i18n";
+import { UI, type Locale, t } from "@/lib/i18n";
 import { AvisoDatos } from "./AvisoDatos";
 import { Icon } from "./Icon";
 
@@ -63,7 +63,7 @@ export function HeroForm({ locale }: { locale: Locale }) {
     >
       <div className="search__field">
         <label htmlFor="waitlist-city" className="search__label">
-          {UI[locale].heroForm.city}
+          {t(locale).heroForm.city}
         </label>
         <input
           id="waitlist-city"
@@ -85,7 +85,7 @@ export function HeroForm({ locale }: { locale: Locale }) {
           id="hero-email"
           type="email"
           className="search__input"
-          placeholder={UI[locale].heroForm.emailPlaceholder}
+          placeholder={t(locale).heroForm.emailPlaceholder}
           required
           aria-required="true"
           autoComplete="email"
@@ -93,15 +93,15 @@ export function HeroForm({ locale }: { locale: Locale }) {
           onChange={(e) => setEmail(e.target.value)}
         />
       </div>
-      <button type="submit" className="search__btn" aria-label={UI[locale].heroForm.ariaSubmit} disabled={status === "loading"}>
-        {UI[locale].heroForm.submit} <Icon name="arrow-right" />
+      <button type="submit" className="search__btn" aria-label={t(locale).heroForm.ariaSubmit} disabled={status === "loading"}>
+        {t(locale).heroForm.submit} <Icon name="arrow-right" />
       </button>
       <div style={{ gridColumn: "1 / -1", padding: "0 22px 14px" }}>
         <AvisoDatos locale={locale} finalidad={es ? "avisarte cuando salga esa guía" : "let you know when that guide is out"} />
       </div>
       {status === "done" && (
         <span role="status" style={{ gridColumn: "1 / -1", padding: "0 22px 14px", fontSize: 13, color: "var(--accent)" }}>
-          {UI[locale].heroForm.done}
+          {t(locale).heroForm.done}
         </span>
       )}
       {status === "error" && (

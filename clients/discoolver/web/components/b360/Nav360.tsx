@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Logo360 } from "@/components/b360/Logo360";
 import { LangSwitch } from "@/components/layout/LangSwitch";
 import { Icon } from "@/components/ui/Icon";
-import { withLocale, UI, type Locale } from "@/lib/i18n";
+import { withLocale, UI, type Locale, t } from "@/lib/i18n";
 
 /**
  * El menú de discoolver 360.
@@ -22,7 +22,7 @@ import { withLocale, UI, type Locale } from "@/lib/i18n";
  * entierra.
  */
 export function Nav360({ locale }: { locale: Locale }) {
-  const t = UI[locale].nav360;
+  const txt = t(locale).nav360;
   const base = locale === "en" ? "/en/360" : "/360";
   const [abierto, setAbierto] = useState(false);
   const cerrar = () => setAbierto(false);
@@ -37,22 +37,22 @@ export function Nav360({ locale }: { locale: Locale }) {
           aria-label={locale === "en" ? "discoolver 360 navigation" : "Navegación de discoolver 360"}
         >
           <Link href={withLocale("/360/destinos", locale)} onClick={cerrar}>
-            {t.destinos}
+            {txt.destinos}
           </Link>
           <Link href={withLocale("/360/alojamientos", locale)} onClick={cerrar}>
-            {t.alojamientos}
+            {txt.alojamientos}
           </Link>
           <Link href={withLocale("/360/agencias", locale)} onClick={cerrar}>
-            {t.agencias}
+            {txt.agencias}
           </Link>
           <Link href={`${base}#modulos`} onClick={cerrar}>
-            {t.modulos}
+            {txt.modulos}
           </Link>
           <LangSwitch style={{ fontFamily: "var(--b-mono)", letterSpacing: "0.08em" }} />
         </nav>
         <div className="b360-nav__acciones">
           <Link href={withLocale("/360/demo", locale)} className="btn btn-1">
-            {t.demo}
+            {txt.demo}
           </Link>
           <button
             type="button"

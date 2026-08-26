@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { withLocale, type Locale } from "@/lib/i18n";
+import { withLocale, type Locale, pick } from "@/lib/i18n";
 
 /**
  * Formulario cualificado de /360/demo (y embebido en /360/destinos).
@@ -114,7 +114,7 @@ const T = {
 type State = "idle" | "sending" | "ok" | "error";
 
 export function DemoForm({ defaultVertical = "", locale }: { defaultVertical?: string; locale: Locale }) {
-  const t = T[locale];
+  const t = pick(T, locale);
   const [state, setState] = useState<State>("idle");
   const [mods, setMods] = useState<string[]>([]);
 

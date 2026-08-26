@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { localeFromPath, withLocale, type Locale } from "@/lib/i18n";
+import { localeFromPath, withLocale, type Locale, pick } from "@/lib/i18n";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Icon } from "@/components/ui/Icon";
@@ -45,7 +45,7 @@ const LINKS = {
 export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const pathname = usePathname();
   const locale: Locale = localeProp ?? localeFromPath(pathname);
-  const links = LINKS[locale];
+  const links = pick(LINKS, locale);
   // El menú de esta nav vivía escondido en móvil: el CSS oculta .nav__links por
   // debajo de 880px y solo lo enseña con .is-open, clase que nadie ponía porque
   // este componente no tenía hamburguesa (sí la tiene components/layout/Nav).

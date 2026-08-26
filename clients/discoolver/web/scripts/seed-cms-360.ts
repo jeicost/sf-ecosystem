@@ -137,6 +137,49 @@ const PAGES: Seed[] = [
       "Half an hour with the platform running and the Ronda deployment open. You leave with a proposal: which module to start with and what it costs.",
     data: demo360En,
   },
+  // TAILANDÉS (26-ago-2026): partida en inglés, para que Nirada traduzca desde
+  // el CMS. Nada de tailandés de máquina; las rutas /th van con noindex hasta
+  // que ella las apruebe.
+  {
+    slug: "360-home-th",
+    title: "360 — Home (TH)",
+    seoTitle: "discoolver 360 — the platform for tourist destinations",
+    seoDescription:
+      "Marketplace, point of sale, routes, events, voice assistant, signage and Business Intelligence for destinations, accommodation and agencies. Modules from \u20ac100/month.",
+    data: home360En,
+  },
+  {
+    slug: "360-destinos-th",
+    title: "360 — Destinations (TH)",
+    seoTitle: "Solutions for tourist destinations | discoolver 360",
+    seoDescription:
+      "SaaS platform for city councils, tourism boards and DMOs: redistribute visitor flow, own your destination's data and monetize local commerce.",
+    data: destinos360En,
+  },
+  {
+    slug: "360-alojamientos-th",
+    title: "360 — Accommodation (TH)",
+    seoTitle: "Digital concierge for accommodation | discoolver 360",
+    seoDescription:
+      "The digital concierge that joins your check-in, answers guests 24/7 and turns your recommendations into a revenue line for your property.",
+    data: alojamientos360En,
+  },
+  {
+    slug: "360-agencias-th",
+    title: "360 — Agencies (TH)",
+    seoTitle: "Agencies, DMCs and inbound operators | discoolver 360",
+    seoDescription:
+      "We digitize the destination's local catalog and give you a marketplace and point of sale to sell it. Net rates for the trade channel.",
+    data: agencias360En,
+  },
+  {
+    slug: "360-demo-th",
+    title: "360 — Book a demo (TH)",
+    seoTitle: "Book a demo | discoolver 360",
+    seoDescription:
+      "Half an hour with the platform running and the Ronda deployment open. You leave with a proposal: which module to start with and what it costs.",
+    data: demo360En,
+  },
 ];
 
 async function findPage(slug: string): Promise<{ id: string } | null> {

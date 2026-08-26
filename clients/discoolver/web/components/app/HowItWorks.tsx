@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { AppHomeContent } from "@/lib/content/app-home";
-import { localeFromPath, UI } from "@/lib/i18n";
+import { localeFromPath, UI, t } from "@/lib/i18n";
 import { PLATFORM } from "@/lib/platform";
 
 /**
@@ -35,7 +35,7 @@ const HERRAMIENTAS = [
 
 export function HowItWorks({ content }: { content: AppHomeContent }) {
   const locale = localeFromPath(usePathname());
-  const t = UI[locale].home;
+  const txt = t(locale).home;
   const es = locale !== "en";
   // Cada herramienta lleva su descriptor en español al lado del nombre de
   // producto (regla de marca: ningún nombre en inglés viaja solo) y su propio
@@ -66,12 +66,12 @@ export function HowItWorks({ content }: { content: AppHomeContent }) {
           </div>
         </Reveal>
         <Reveal delay={120}>
-          <ol className="herramientas__grid" aria-label={t.comoFuncionaAria}>
+          <ol className="herramientas__grid" aria-label={txt.comoFuncionaAria}>
             {steps.map((step, i) => {
               const h = HERRAMIENTAS[i];
               return (
                 <li className="herramienta" key={step.title}>
-                  <a href={h.href} className="herramienta__link" aria-label={t.abrirAria.replace("{x}", step.title)}>
+                  <a href={h.href} className="herramienta__link" aria-label={txt.abrirAria.replace("{x}", step.title)}>
                     <div className={`herramienta__shot${h.img ? "" : " herramienta__shot--vacia"}`}>
                       {h.img ? (
                         <Image

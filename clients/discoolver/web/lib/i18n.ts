@@ -24,7 +24,7 @@
  * El orden importa: DEFAULT_LOCALE vive en la raíz (`/guias`) y los demás bajo
  * su prefijo (`/en/guias`).
  */
-export const LOCALES = ["es", "en"] as const;
+export const LOCALES = ["es", "en", "th"] as const;
 export type Locale = (typeof LOCALES)[number];
 export const DEFAULT_LOCALE: Locale = "es";
 
@@ -79,8 +79,67 @@ export function localeFromPath(path: string | null | undefined): Locale {
  * entera, no un componente.
  */
 export function t(locale: Locale): (typeof UI)[Locale] {
-  return UI[locale] ?? UI[DEFAULT_LOCALE];
+  return pick(UI, locale);
 }
+
+/**
+ * Elige la rama de un objeto indexado por idioma, con respaldo AL INGLÉS.
+ *
+ * Por qué al inglés y no al español: cuando se añadió el tailandés (26-ago-2026)
+ * el compilador enumeró 17 ficheros con su propio objeto `{es, en}` — navs,
+ * pies, formularios. Escribir tailandés de máquina en todos ellos era
+ * exactamente lo que no queríamos publicar, y caer al español dejaría a un
+ * tailandés leyendo castellano. El inglés es el respaldo razonable mientras
+ * Nirada revisa: el copy de PÁGINA sí sale del CMS y ahí sí estará en tailandés.
+ *
+ * Cuando un idioma tenga su rama, `pick` la usa sin tocar nada más.
+ */
+export function pick<T extends Record<string, unknown>>(mapa: T, locale: Locale): T[keyof T] {
+  return (mapa[locale] ?? mapa.en ?? mapa[DEFAULT_LOCALE]) as T[keyof T];
+}
+
+const UI_EN = {
+    nav: { guias: "Guides", curamos: "How it\u2019s edited", ia: "The AI in your guide", faq: "FAQ", creators: "Creators", blog: "Blog", avisame: "Notify me", verGuias: "See the guides", comoFunciona: "How it works", lasGuias: "The guides", verPlataforma: "See the platform", quieroEntrar: "I\u2019m in" },
+    switcher: { label: "ES", aria: "Leer en español" },
+    nav360: { destinos: "Destinations", alojamientos: "Accommodation", agencias: "Agencies", modulos: "Modules", demo: "Book a demo" },
+    heroForm: { city: "Your city", emailPlaceholder: "you@email.com", submit: "Notify me", ariaSubmit: "Notify me when the guide is out", done: "Done. We'll email you when your city's guide goes into production." },
+    skip: "Skip to content",
+    home: {
+      comoFuncionaAria: "How Discoolver works",
+      abrir: "Open it in the platform",
+      abrirAria: "Open {x} in the platform",
+      abrirEnPlataforma: "Open in the platform",
+      verCatalogo: "See the whole catalogue",
+      fichaCompleta: "Full listing in the platform",
+      mapaAria: "City map preview",
+      puntosAria: "Published places in the neighbourhood",
+      cercaDeTi: "{n} places in this neighbourhood",
+    },
+    app: {
+      formAria: "Sign up for the app launch alert",
+      emailAria: "Your email",
+      storeSoon: "App Store · soon",
+      storeAria: "App Store — coming soon",
+      playSoon: "Google Play · soon",
+      playAria: "Google Play — coming soon",
+      done: "Done — we'll email you the moment we launch.",
+      error: "We couldn't send your request. Try again in a few minutes.",
+    },
+    mockup: {
+      ciudadAhora: "Madrid · now",
+      saludo: "Hi,",
+      nombre: "Lucía",
+      mapPill: "Cool Map · 4 nearby",
+      planHoy: "Today's plan:",
+      planHoyEm: "at sunset",
+      chips: ["All", "Food", "Culture", "Outdoors"],
+      card1Cat: "Food",
+      card1: "Vermouth & vinyl",
+      card2Cat: "Outdoors",
+      card2: "Kayak at sunset",
+    },
+    guias: { formatoAria: "{x} — join the launch list" },
+} as const;
 
 export const UI = {
   es: {
@@ -129,48 +188,19 @@ export const UI = {
     },
     guias: { formatoAria: "{x} — apuntarme a la lista de lanzamiento" },
   },
-  en: {
-    nav: { guias: "Guides", curamos: "How it\u2019s edited", ia: "The AI in your guide", faq: "FAQ", creators: "Creators", blog: "Blog", avisame: "Notify me", verGuias: "See the guides", comoFunciona: "How it works", lasGuias: "The guides", verPlataforma: "See the platform", quieroEntrar: "I\u2019m in" },
-    switcher: { label: "ES", aria: "Leer en español" },
-    nav360: { destinos: "Destinations", alojamientos: "Accommodation", agencias: "Agencies", modulos: "Modules", demo: "Book a demo" },
-    heroForm: { city: "Your city", emailPlaceholder: "you@email.com", submit: "Notify me", ariaSubmit: "Notify me when the guide is out", done: "Done. We'll email you when your city's guide goes into production." },
-    skip: "Skip to content",
-    home: {
-      comoFuncionaAria: "How Discoolver works",
-      abrir: "Open it in the platform",
-      abrirAria: "Open {x} in the platform",
-      abrirEnPlataforma: "Open in the platform",
-      verCatalogo: "See the whole catalogue",
-      fichaCompleta: "Full listing in the platform",
-      mapaAria: "City map preview",
-      puntosAria: "Published places in the neighbourhood",
-      cercaDeTi: "{n} places in this neighbourhood",
-    },
-    app: {
-      formAria: "Sign up for the app launch alert",
-      emailAria: "Your email",
-      storeSoon: "App Store · soon",
-      storeAria: "App Store — coming soon",
-      playSoon: "Google Play · soon",
-      playAria: "Google Play — coming soon",
-      done: "Done — we'll email you the moment we launch.",
-      error: "We couldn't send your request. Try again in a few minutes.",
-    },
-    mockup: {
-      ciudadAhora: "Madrid · now",
-      saludo: "Hi,",
-      nombre: "Lucía",
-      mapPill: "Cool Map · 4 nearby",
-      planHoy: "Today's plan:",
-      planHoyEm: "at sunset",
-      chips: ["All", "Food", "Culture", "Outdoors"],
-      card1Cat: "Food",
-      card1: "Vermouth & vinyl",
-      card2Cat: "Outdoors",
-      card2: "Kayak at sunset",
-    },
-    guias: { formatoAria: "{x} — join the launch list" },
-  },
+  en: UI_EN,
+  /**
+   * TAILANDÉS — pendiente de Nirada.
+   *
+   * Es una copia del inglés a propósito. Estas son las cadenas de CHROME (nav,
+   * pie, formularios) y NO están en el CMS, así que traducirlas a máquina sería
+   * publicar tailandés sin revisar — justo lo que se decidió no hacer. Caer al
+   * español dejaría a un tailandés leyendo castellano, que es peor.
+   *
+   * El copy de PÁGINA sí sale del CMS y ahí sí estará en tailandés: es lo que
+   * Nirada edita. Cuando además revise el chrome, se sustituye este bloque.
+   */
+  th: UI_EN,
 } as const;
 
 /**

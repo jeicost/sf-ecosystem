@@ -55,6 +55,14 @@ const PAGES: { slug: string; data: Record<string, string> }[] = [
   { slug: "home-en", data: homeEn },
   { slug: "influencers-en", data: influencersEn },
   { slug: "app-home-en", data: appHomeEn },
+  // TAILANDÉS (26-ago-2026): se siembra con el contenido INGLÉS a propósito,
+  // como punto de partida para que Nirada traduzca desde el CMS. No se siembra
+  // tailandés de máquina: publicar una traducción sin revisar en hostelería y
+  // turismo es exactamente lo que se decidió no hacer. Mientras tanto las rutas
+  // /th van con noindex, así que Google no ve páginas a medias.
+  { slug: "home-th", data: homeEn },
+  { slug: "influencers-th", data: influencersEn },
+  { slug: "app-home-th", data: appHomeEn },
 ];
 
 async function main() {

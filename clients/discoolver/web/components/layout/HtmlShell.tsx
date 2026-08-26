@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { localeFromPath, UI } from "@/lib/i18n";
+import { localeFromPath, UI, t } from "@/lib/i18n";
 import { LegalLangSwitch } from "@/components/layout/LegalLangSwitch";
 
 /**
@@ -28,7 +28,7 @@ export function HtmlShell({
     <html lang={locale} className={className}>
       <body>
         <a href="#main-content" className="skip-link">
-          {UI[locale].skip}
+          {t(locale).skip}
         </a>
         <LegalLangSwitch />
         {children}

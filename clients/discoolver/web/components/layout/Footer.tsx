@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { withLocale, type Locale } from "@/lib/i18n";
+import { withLocale, type Locale, pick } from "@/lib/i18n";
 import { SOCIAL, WHATSAPP, waHref } from "@/lib/site";
 
 const T = {
@@ -86,7 +86,7 @@ export function Footer({
   brandDesc?: string;
   copyright?: string;
 }) {
-  const t = T[locale];
+  const t = pick(T, locale);
   return (
     <footer className="foot" aria-label={t.aria}>
       <div className="container">

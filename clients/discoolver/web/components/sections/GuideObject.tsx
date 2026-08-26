@@ -4,13 +4,13 @@ import { usePathname } from "next/navigation";
 import { GuiaFoto } from "@/components/ui/GuiaFoto";
 import { Reveal } from "@/components/ui/Reveal";
 import type { HomeContent } from "@/lib/content/home";
-import { localeFromPath, UI } from "@/lib/i18n";
+import { localeFromPath, UI, t } from "@/lib/i18n";
 
 /** Block 2 — the object: digital vs print formats, real price ranges only. */
 export function GuideObject({ content }: { content: HomeContent }) {
   // Los precios y los nombres vienen del CMS traducidos; la etiqueta que oye
   // un lector de pantalla al llegar a la tarjeta, no: iba escrita en español.
-  const t = UI[localeFromPath(usePathname())].guias;
+  const txt = t(localeFromPath(usePathname())).guias;
   return (
     <section className="section" id="objeto" aria-labelledby="object-title">
       <div className="container">
@@ -28,7 +28,7 @@ export function GuideObject({ content }: { content: HomeContent }) {
             {/* Las tarjetas de precio son el momento de decisión y no llevaban
                 ninguna acción: ahora las dos van a la lista de lanzamiento. */}
             <Reveal delay={120}>
-              <a href="#waitlist" className="format-card" aria-label={t.formatoAria.replace("{x}", content.format_1_name)}>
+              <a href="#waitlist" className="format-card" aria-label={txt.formatoAria.replace("{x}", content.format_1_name)}>
                 <div className="format-card__top">
                   <h3 className="format-card__name">{content.format_1_name}</h3>
                 </div>
@@ -37,7 +37,7 @@ export function GuideObject({ content }: { content: HomeContent }) {
               </a>
             </Reveal>
             <Reveal delay={220}>
-              <a href="#waitlist" className="format-card format-card--paper" aria-label={t.formatoAria.replace("{x}", content.format_2_name)}>
+              <a href="#waitlist" className="format-card format-card--paper" aria-label={txt.formatoAria.replace("{x}", content.format_2_name)}>
                 <div className="format-card__top">
                   <h3 className="format-card__name">{content.format_2_name}</h3>
                   <span className="format-card__chip">{content.format_2_chip}</span>

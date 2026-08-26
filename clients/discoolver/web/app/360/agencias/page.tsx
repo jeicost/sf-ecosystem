@@ -4,7 +4,7 @@ import { draftMode } from "next/headers";
 import { defaultAgencias360Content } from "@/lib/content/b360/agencias";
 import { defaultAgencias360Content as defaultAgencias360ContentEn } from "@/lib/content/b360/en/agencias";
 import { withLocale, type Locale } from "@/lib/i18n";
-import { pageContent } from "@/lib/cms-pages";
+import { pageContent, slugFor } from "@/lib/cms-pages";
 import { Section, Head, Cta, Stat, Steps, Pending } from "@/components/b360/Bits";
 import { FondoEscena } from "@/components/b360/Escena360";
 import { waHref } from "@/lib/site";
@@ -23,8 +23,8 @@ export const metadata: Metadata = buildMetadata({
 
 export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("360-agencias-en" as const) : ("360-agencias" as const);
-  const fallback = locale === "en" ? defaultAgencias360ContentEn : defaultAgencias360Content;
+  const slug = slugFor("360-agencias", locale);
+  const fallback = locale === "es" ? defaultAgencias360Content : defaultAgencias360ContentEn;
   const c = await pageContent(slug, fallback, isDraft);
   const K = (k: string) => c[k as keyof typeof c] as string;
 

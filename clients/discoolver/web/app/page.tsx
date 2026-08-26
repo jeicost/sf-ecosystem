@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { faqJsonLd, websiteJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
-import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { loadCmsSections, loadCmsSectionsLive, section, mergeContent, slugFor } from "@/lib/cms-pages";
 import { applyPlatformStats, getPlatformFacts, formatoMil } from "@/lib/platform-stats";
 import { DraftBanner } from "@/components/DraftBanner";
 import { defaultAppHomeContent } from "@/lib/content/app-home";
@@ -64,8 +64,8 @@ export async function AppHomePage({ locale = "es" }: { locale?: Locale }) {
   // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
   // of the build-time bake when active; any failure falls back to the bake.
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("app-home-en" as const) : ("app-home" as const);
-  const fallback = locale === "en" ? defaultAppHomeContentEn : defaultAppHomeContent;
+  const slug = slugFor("app-home", locale);
+  const fallback = locale === "es" ? defaultAppHomeContent : defaultAppHomeContentEn;
   const cms = isDraft ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug) : loadCmsSections(slug);
   const content = await applyPlatformStats(mergeContent(fallback, section(cms, "content")), locale);
   // Los portales de ciudad se pintan con el dato vivo: nombres, recuentos y los

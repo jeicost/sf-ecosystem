@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Logo360 } from "@/components/b360/Logo360";
-import { withLocale, type Locale } from "@/lib/i18n";
+import { withLocale, type Locale, pick } from "@/lib/i18n";
 import { WHATSAPP, waHref } from "@/lib/site";
 
 /**
@@ -22,7 +22,7 @@ const F = {
 } as const;
 
 export function Footer360({ locale }: { locale: Locale }) {
-  const t = F[locale];
+  const t = pick(F, locale);
   return (
     <footer className="b360-foot">
       <div className="wrap">

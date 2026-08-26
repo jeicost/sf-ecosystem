@@ -5,7 +5,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { Icon } from "@/components/ui/Icon";
 import type { AppHomeContent } from "@/lib/content/app-home";
 import type { Locale } from "@/lib/i18n";
-import { UI } from "@/lib/i18n";
+import { UI, t } from "@/lib/i18n";
 
 /**
  * La próxima ciudad — reescrita el 19-ago-2026 con el brief del CEO.
@@ -42,7 +42,7 @@ export function AppComingSoon({
   locale: Locale;
   abiertas: EstadoCiudad[];
 }) {
-  const t = UI[locale].app;
+  const txt = t(locale).app;
   const es = locale !== "en";
   const [ciudad, setCiudad] = useState("");
   const [email, setEmail] = useState("");
@@ -84,7 +84,7 @@ export function AppComingSoon({
               </p>
             ) : (
               <>
-                <form className="app-soon__form" aria-label={t.formAria} onSubmit={pedir}>
+                <form className="app-soon__form" aria-label={txt.formAria} onSubmit={pedir}>
                   {/* Campo libre a propósito: un desplegable cerrado solo
                       recoge las ciudades que ya habíamos pensado, y la señal
                       que importa es justo la que no esperábamos. */}
@@ -114,7 +114,7 @@ export function AppComingSoon({
             )}
             {estado === "error" && (
               <p className="app-soon__error" role="alert">
-                {t.error}
+                {txt.error}
               </p>
             )}
 

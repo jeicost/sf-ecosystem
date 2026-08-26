@@ -3,7 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 import { getPlatformFacts, formatoMil } from "@/lib/platform-stats";
 import { faqJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
-import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { loadCmsSections, loadCmsSectionsLive, section, mergeContent, slugFor } from "@/lib/cms-pages";
 import { DraftBanner } from "@/components/DraftBanner";
 import { defaultInfluencersContent } from "@/lib/content/influencers";
 import { defaultInfluencersContent as defaultInfluencersContentEn } from "@/lib/content/en/influencers";
@@ -26,8 +26,8 @@ export const metadata: Metadata = buildMetadata({
 
 export async function InfluencersPage({ locale = "es" }: { locale?: Locale }) {
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("influencers-en" as const) : ("influencers" as const);
-  const fallback = locale === "en" ? defaultInfluencersContentEn : defaultInfluencersContent;
+  const slug = slugFor("influencers", locale);
+  const fallback = locale === "es" ? defaultInfluencersContent : defaultInfluencersContentEn;
   const cms = isDraft
     ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug)
     : loadCmsSections(slug);

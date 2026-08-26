@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import Link from "next/link";
 import { RENUNCIA, type Sku } from "@/lib/checkout";
-import type { Locale } from "@/lib/i18n";
+import { pick, type Locale } from "@/lib/i18n";
 
 /**
  * Los botones de compra de una guía. Solo se montan cuando la tienda está
@@ -54,7 +54,7 @@ export function BuyButtons({
   const [busy, setBusy] = useState<Sku | null>(null);
   const [error, setError] = useState<null | "red" | "renuncia">(null);
   const [renuncia, setRenuncia] = useState(false);
-  const t = T[locale];
+  const t = pick(T, locale);
   const idCasilla = useId();
 
   async function buy(sku: Sku) {
@@ -96,7 +96,7 @@ export function BuyButtons({
           }}
         />
         <span>
-          {RENUNCIA[locale]}{" "}
+          {pick(RENUNCIA, locale)}{" "}
           <Link href={locale === "en" ? "/en/terminos" : "/terminos"}>{t.verTerminos}</Link>
         </span>
       </label>

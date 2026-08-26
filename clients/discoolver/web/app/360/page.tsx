@@ -6,7 +6,7 @@ import { draftMode } from "next/headers";
 import { defaultHome360Content } from "@/lib/content/b360/home";
 import { defaultHome360Content as defaultHome360ContentEn } from "@/lib/content/b360/en/home";
 import { withLocale, type Locale } from "@/lib/i18n";
-import { pageContent } from "@/lib/cms-pages";
+import { pageContent, slugFor } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending } from "@/components/b360/Bits";
 import { FondoEscena, MarcoEscena } from "@/components/b360/Escena360";
 import { waHref } from "@/lib/site";
@@ -22,8 +22,8 @@ export const metadata: Metadata = buildMetadata({
 
 export async function Home360({ locale = "es" }: { locale?: Locale }) {
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("360-home-en" as const) : ("360-home" as const);
-  const fallback = locale === "en" ? defaultHome360ContentEn : defaultHome360Content;
+  const slug = slugFor("360-home", locale);
+  const fallback = locale === "es" ? defaultHome360Content : defaultHome360ContentEn;
   const c = await pageContent(slug, fallback, isDraft);
 
   const MODULOS = [1, 2, 3, 4, 5, 6, 7].map((n) => ({

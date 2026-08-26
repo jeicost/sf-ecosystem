@@ -4,7 +4,7 @@ import { draftMode } from "next/headers";
 import { defaultDestinos360Content } from "@/lib/content/b360/destinos";
 import { defaultDestinos360Content as defaultDestinos360ContentEn } from "@/lib/content/b360/en/destinos";
 import { withLocale, type Locale } from "@/lib/i18n";
-import { pageContent } from "@/lib/cms-pages";
+import { pageContent, slugFor } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
 import { FondoEscena } from "@/components/b360/Escena360";
@@ -21,8 +21,8 @@ export const metadata: Metadata = buildMetadata({
 
 export async function Destinos360({ locale = "es" }: { locale?: Locale }) {
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("360-destinos-en" as const) : ("360-destinos" as const);
-  const fallback = locale === "en" ? defaultDestinos360ContentEn : defaultDestinos360Content;
+  const slug = slugFor("360-destinos", locale);
+  const fallback = locale === "es" ? defaultDestinos360Content : defaultDestinos360ContentEn;
   const c = await pageContent(slug, fallback, isDraft);
   const K = (k: string) => c[k as keyof typeof c] as string;
 

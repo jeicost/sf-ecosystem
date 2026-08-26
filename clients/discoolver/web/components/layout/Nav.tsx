@@ -6,7 +6,8 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Icon } from "@/components/ui/Icon";
 import { PLATFORM } from "@/lib/platform";
-import { altPath, localeFromPath, withLocale, UI, type Locale } from "@/lib/i18n";
+import { LangSwitch } from "@/components/layout/LangSwitch";
+import { altPath, localeFromPath, withLocale, type Locale, t } from "@/lib/i18n";
 
 /**
  * El locale se deriva del pathname (cliente), así que la Nav no necesita
@@ -17,7 +18,7 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const locale: Locale = localeProp ?? localeFromPath(pathname);
-  const t = UI[locale];
+  const txt = t(locale);
   const isCreators = pathname?.includes("/influencers");
 
   // /influencers tenía el menú de la tienda: los cuatro enlaces iban a
@@ -25,23 +26,23 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
   // llega desde Instagram no podía ver el producto al que se le pide sumarse.
   const links = isCreators
     ? [
-        { href: "#como-funciona", label: t.nav.comoFunciona },
-        { href: withLocale("/guias", locale), label: t.nav.lasGuias },
-        ...(locale === "es" ? [{ href: "/blog", label: t.nav.blog }] : []),
+        { href: "#como-funciona", label: txt.nav.comoFunciona },
+        { href: withLocale("/guias", locale), label: txt.nav.lasGuias },
+        ...(locale === "es" ? [{ href: "/blog", label: txt.nav.blog }] : []),
       ]
     : [
-    { href: withLocale("/guias#guias", locale), label: t.nav.guias },
-    { href: withLocale("/guias#como-se-elige", locale), label: t.nav.curamos },
-    { href: withLocale("/guias#ia", locale), label: t.nav.ia },
-    { href: withLocale("/guias#faq", locale), label: t.nav.faq },
-    { href: withLocale("/influencers", locale), label: t.nav.creators },
+    { href: withLocale("/guias#guias", locale), label: txt.nav.guias },
+    { href: withLocale("/guias#como-se-elige", locale), label: txt.nav.curamos },
+    { href: withLocale("/guias#ia", locale), label: txt.nav.ia },
+    { href: withLocale("/guias#faq", locale), label: txt.nav.faq },
+    { href: withLocale("/influencers", locale), label: txt.nav.creators },
     // El blog —50 artículos, la principal puerta de entrada orgánica— solo
     // colgaba de la home de la plataforma: desde /guias, /influencers y /360
     // no se llegaba por ningún sitio, porque conviven dos cabeceras distintas
     // en el mismo dominio. Solo en español: no hay espejo inglés del blog y
     // mandar a un lector inglés a 50 artículos en castellano sin avisar es
     // peor que no ofrecérselo.
-    ...(locale === "es" ? [{ href: "/blog", label: t.nav.blog }] : []),
+    ...(locale === "es" ? [{ href: "/blog", label: txt.nav.blog }] : []),
   ];
 
   // El menú se cierra al cambiar de página y con Escape
@@ -66,14 +67,11 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
               {link.label}
             </Link>
           ))}
-          <Link
-            href={altPath(pathname ?? "/", locale === "en" ? "es" : "en")}
-            aria-label={t.switcher.aria}
+          {/* Un enlace por idioma distinto del actual. Antes era un ternario
+              binario que con un tercer idioma habría mandado al equivocado. */}
+          <LangSwitch
             style={{ fontFamily: "var(--font-mono)", letterSpacing: "0.08em" }}
-            onClick={() => setOpen(false)}
-          >
-            {t.switcher.label}
-          </Link>
+          />
         </div>
 
         <div className="nav__cta">
@@ -84,10 +82,10 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
               {/* La salida al producto: sin esto, la página pide sumarse a algo
                   que no se puede ni mirar. */}
               <a href={PLATFORM.home} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
-                {t.nav.verPlataforma}
+                {txt.nav.verPlataforma}
               </a>
               <Link href="#candidaturas" className="btn btn-primary" style={{ padding: "10px 18px" }}>
-                {t.nav.quieroEntrar} <Icon name="arrow-up-right" size={14} />
+                {txt.nav.quieroEntrar} <Icon name="arrow-up-right" size={14} />
               </Link>
             </>
           ) : (
@@ -95,10 +93,10 @@ export function Nav({ locale: localeProp }: { locale?: Locale } = {}) {
               {/* Quien descubre discoolver por la tienda no podía ver que hay
                   un producto gratis detrás. */}
               <a href={PLATFORM.home} className="btn btn-ghost" style={{ padding: "10px 18px" }}>
-                {t.nav.verPlataforma}
+                {txt.nav.verPlataforma}
               </a>
               <Link href={withLocale("/guias#guias", locale)} className="btn btn-primary" style={{ padding: "10px 18px" }}>
-                {t.nav.verGuias} <Icon name="arrow-up-right" size={14} />
+                {txt.nav.verGuias} <Icon name="arrow-up-right" size={14} />
               </Link>
             </>
           )}

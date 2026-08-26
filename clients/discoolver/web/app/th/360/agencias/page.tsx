@@ -1,0 +1,22 @@
+import type { Metadata } from "next";
+import { buildMetadata } from "@/lib/seo";
+import { Agencias360 } from "@/app/360/agencias/page";
+
+export const metadata: Metadata = buildMetadata({
+  // NOINDEX hasta que Nirada revise el tailandés en el CMS: no se indexa
+  // una página a medio traducir. Quitar esta línea al aprobarla.
+  noindex: true,
+  title: "Agencies, DMCs and inbound operators",
+  description:
+    "We digitize the destination's local catalog and give you a marketplace and point of sale to sell it. Net rates for the trade channel.",
+  path: "/th/360/agencias",
+  image: "/assets/360/og-360.jpg",
+  siteName: "discoolver 360",
+  locale: "th",
+  // Abierta a Google el 17-ago-2026, a la vez que la española: las dos
+  // versiones van siempre juntas o el x-default apunta a una página bloqueada.
+});
+
+export default function Page() {
+  return <Agencias360 locale="th" />;
+}

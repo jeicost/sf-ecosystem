@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { buildMetadata } from "@/lib/seo";
 import { faqJsonLd } from "@/lib/jsonld";
 import { draftMode } from "next/headers";
-import { loadCmsSections, loadCmsSectionsLive, section, mergeContent } from "@/lib/cms-pages";
+import { loadCmsSections, loadCmsSectionsLive, section, mergeContent, slugFor } from "@/lib/cms-pages";
 import { DraftBanner } from "@/components/DraftBanner";
 import { aplicarCifras } from "@/lib/platform-stats";
 import { defaultHomeContent } from "@/lib/content/home";
@@ -34,8 +34,8 @@ export async function GuiasPage({ locale = "es" }: { locale?: Locale }) {
   // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
   // of the build-time bake when active; any failure falls back to the bake.
   const { isEnabled: isDraft } = await draftMode();
-  const slug = locale === "en" ? ("home-en" as const) : ("home" as const);
-  const fallback = locale === "en" ? defaultHomeContentEn : defaultHomeContent;
+  const slug = slugFor("home", locale);
+  const fallback = locale === "es" ? defaultHomeContent : defaultHomeContentEn;
   const cms = isDraft ? (await loadCmsSectionsLive(slug)) ?? loadCmsSections(slug) : loadCmsSections(slug);
   // Las cifras de la tienda salen del mismo sitio que las de la home: decía
   // «858 sitios» de Madrid mientras la home decía 1.099.

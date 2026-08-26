@@ -26,7 +26,7 @@ interface SeoArgs {
 }
 
 /** El código OpenGraph de cada idioma. Una entrada por LOCALES. */
-const OG_LOCALE: Record<Locale, string> = { es: site.locale, en: "en_US" };
+const OG_LOCALE: Record<Locale, string> = { es: site.locale, en: "en_US", th: "th_TH" };
 
 export function buildMetadata({
   title,

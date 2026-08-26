@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 import { defaultDemo360Content } from "@/lib/content/b360/demo";
 import { defaultDemo360Content as defaultDemo360ContentEn } from "@/lib/content/b360/en/demo";
 import { withLocale, type Locale } from "@/lib/i18n";
-import { pageContent } from "@/lib/cms-pages";
+import { pageContent, slugFor } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
 import { Section } from "@/components/b360/Bits";
 
@@ -33,8 +33,8 @@ export async function Demo360({
   const { isEnabled: isDraft } = await draftMode();
   const { v } = await searchParams;
   const defaultVertical = VERTICAL_LABELS[v ?? ""] ?? "";
-  const slug = locale === "en" ? ("360-demo-en" as const) : ("360-demo" as const);
-  const fallback = locale === "en" ? defaultDemo360ContentEn : defaultDemo360Content;
+  const slug = slugFor("360-demo", locale);
+  const fallback = locale === "es" ? defaultDemo360Content : defaultDemo360ContentEn;
   const c = await pageContent(slug, fallback, isDraft);
   const K = (k: string) => c[k as keyof typeof c] as string;
 

@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, type Locale } from "./i18n";
 /**
  * CMS pages helper — reads content/pages.json (baked at build time by
  * scripts/fetch-cms-content.mjs) and merges CMS overrides over the hardcoded
@@ -34,7 +35,29 @@ export type PageSlug =
   | "360-destinos-en"
   | "360-alojamientos-en"
   | "360-agencias-en"
-  | "360-demo-en";
+  | "360-demo-en"
+  // Tailandés (26-ago-2026). Mismo modelo flat-fields, sufijo -th. Las páginas
+  // se siembran en el CMS copiando el inglés para que Nirada tenga de dónde
+  // partir; hasta que las revise, las rutas /th van con noindex.
+  | "app-home-th"
+  | "home-th"
+  | "influencers-th"
+  | "360-home-th"
+  | "360-destinos-th"
+  | "360-alojamientos-th"
+  | "360-agencias-th"
+  | "360-demo-th";
+
+/**
+ * El slug de una página en un idioma. El idioma por defecto va sin sufijo
+ * (`home`), los demás con el suyo (`home-en`, `home-th`). Sustituye a los
+ * ternarios `locale === "en" ? "home-en" : "home"` que había en las 8 páginas:
+ * con un tercer idioma todos caían al slug español y se servía el contenido
+ * equivocado sin dar error.
+ */
+export function slugFor(base: string, locale: Locale): PageSlug {
+  return (locale === DEFAULT_LOCALE ? base : `${base}-${locale}`) as PageSlug;
+}
 
 export function loadCmsSections(pageSlug: PageSlug): CmsSections {
   try {
