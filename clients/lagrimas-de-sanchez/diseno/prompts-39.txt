@@ -1,0 +1,294 @@
+LÁGRIMAS DE SÁNCHEZ · LOS 39 PROMPTS
+========================================================================
+
+Cada prompt ya lleva el estilo maestro y el negative prompt dentro.
+Copia y pega tal cual, uno por uno. Marca los que vayas cerrando.
+
+El texto NUNCA se genera: la IA hace solo el pictograma y la palabra
+se compone después en tipografía. Por eso el negativo lleva 'lettering'.
+
+
+========================================================================
+BLOQUE A · APODOS
+========================================================================
+
+[ ] 01 · GALGO DE PAIPORTA
+     objeto: Galgo corriendo
+
+a running greyhound in full stride, side view, elongated slender body, deep chest, arched back, long thin tail, small pointed head, legs extended, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 02 · CHEPAS
+     objeto: Espalda encorvada de espaldas
+
+a hunched human back seen from behind, anonymous, no head visible, strongly curved rounded shoulders forming a single smooth arch, simple silhouette, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 03 · CHIRIMOYAS
+     objeto: Chirimoya
+
+a cherimoya custard apple fruit, heart shaped, with its characteristic scaled overlapping skin pattern, small stem on top, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 04 · CHIQUI
+     objeto: Boca con lengua fuera
+
+an open mouth with the tongue sticking out, lips and tongue only, no face, no head, no chin, isolated graphic symbol, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 05 · PILI JUERGA
+     objeto: Copa con llavero de hotel
+
+a coupe champagne glass, and a hotel room key fob with a small tag hanging from the stem on a short chain, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 06 · LA NIÑA DE LA CURVA
+     objeto: Señal de curva peligrosa
+
+a triangular road warning sign containing a winding curve arrow, standard european road sign geometry, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 07 · CATEDRÁTICA
+     objeto: Sello de goma estampando
+
+a rubber stamp with a wooden handle pressed down onto a surface, side view, small impact marks around the base, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 08 · GRACITA BOLAÑOS
+     objeto: Mandil con campanilla
+
+a waist apron tied with a bow, hanging empty with no body wearing it, with a small hand service bell tucked in the front pocket, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 09 · EL PORTERO
+     objeto: Segurata
+
+a heavy set nightclub bouncer standing with arms crossed, broad shoulders, short hair, a coiled earpiece cable at the ear, full body silhouette, no facial features, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 10 · CEJAS
+     objeto: Ceja de rombos
+
+a single thick eyebrow shape composed of a row of diamond rhombus shapes, isolated, no eye, no face, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 11 · LA CAJERA
+     objeto: Código de barras
+
+a barcode, vertical bars of varying thickness in a rectangular block, no numbers underneath, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 12 · TUCÁN
+     objeto: Tucán con cazadora
+
+a toucan bird with a very large curved beak, wearing an open bomber jacket, standing, no logos or markings on the jacket, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 13 · CHARO
+     objeto: Mujer de gafas y pelo corto
+
+a bust silhouette of a woman with a short bob haircut and large round glasses, seen from the front, no facial features at all, glasses drawn as two simple circles, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 14 · MARLASKONA
+     objeto: Mazo de juez con goma de borrar
+
+a judge gavel where the head of the hammer is a pencil eraser instead of wood, resting at an angle, with its round sound block, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 15 · FELPUDO
+     objeto: Felpudo
+
+a rectangular doormat seen in slight perspective, with a bristled textured surface and a plain border, empty, no writing on it, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+========================================================================
+BLOQUE B · FRASES
+========================================================================
+
+[ ] 16 · SINCRONIZADA
+     objeto: Metrónomo
+
+a mechanical pyramid metronome, front view, with its swinging pendulum rod and sliding weight, the rod tilted to one side, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 17 · LA BANDA DEL PEUGEOT
+     objeto: Coche con 4 cabezas
+
+a generic 1990s family saloon car in side view with four anonymous round heads visible through the windows, absolutely no brand badge, no grille detail, no logo, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 18 · FANGO
+     objeto: Goteo
+
+a thick horizontal band of viscous liquid with four heavy drops dripping down from its lower edge, drops rounded and teardrop shaped, mud like, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 19 · BULOS
+     objeto: Triángulo de aviso
+
+an equilateral warning triangle with a bold exclamation mark inside it, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 20 · TELEPEDRO
+     objeto: Televisor con antena
+
+a vintage boxy television set with two rabbit ear antennas on top, front view, the screen area left completely empty and flat for text to be placed inside later, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 21 · SAUNAS
+     objeto: Vapor
+
+three parallel wavy vertical lines rising like steam, evenly spaced, thick uniform stroke, the middle one taller, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 22 · EL PUTO AMO
+     objeto: Corona
+
+a simple three pointed crown with a small ball on each point and a straight base band, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 23 · EL UNO
+     objeto: Dedo índice levantado
+
+a hand with the index finger pointing straight up and the other fingers closed into a fist, seen from the side, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 24 · A DEDO
+     objeto: Dedo índice señalando
+
+a hand with the index finger pointing horizontally forward, other fingers closed, seen from the side, sleeve cuff visible, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 25 · LA CARTA
+     objeto: Sobre cerrado
+
+a sealed rectangular envelope seen from the front, flap closed, with the diagonal seam lines of the flap visible, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 26 · CINCO DÍAS
+     objeto: Calendario de 5 casillas
+
+a small calendar page showing a single row of five empty square boxes, with a binding strip and two rings at the top, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 27 · AMNISTÍA
+     objeto: Goma de borrar
+
+a rectangular pencil eraser tilted at an angle, with a few small rubbing crumbs trailing behind it, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 28 · LA TRAMA
+     objeto: Telaraña
+
+a symmetrical circular spider web with radial threads and concentric rings, no spider, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 29 · CORDÓN SANITARIO
+     objeto: Cordón entre dos postes
+
+a velvet rope barrier hanging in a catenary curve between two short stanchion posts, with a knot tied in the middle of the rope, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 30 · FALCON
+     objeto: Jet privado
+
+a generic private business jet in side view, sleek fuselage, swept wings, two rear mounted engines, no markings, no windows detail, no livery, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 31 · MÁQUINA DEL FANGO
+     objeto: Máquina con manivela
+
+a boxy industrial machine on short legs with a large hand crank on its side and a wide output chute at the front, thick viscous substance coming out of the chute, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 32 · CABALGAR CONTRADICCIONES
+     objeto: Caballo
+
+a horse in mid gallop, side view, all four legs off the ground, mane and tail flowing, riderless, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 33 · IZQUIERDA CAVIAR
+     objeto: Lata de caviar abierta
+
+an open round caviar tin seen from above at a slight angle, the lid peeled half back, small round beads filling the tin, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 34 · PUERTA GIRATORIA
+     objeto: Puerta giratoria en planta
+
+a revolving door seen from directly above as a floor plan, a circle with four straight partition blades radiating from the centre, two curved wall segments at the sides, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 35 · CHIRINGUITO
+     objeto: Sombrilla de playa
+
+a beach parasol with a scalloped canopy of alternating panels, planted on a straight pole, seen from the front, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 36 · ENCHUFADO
+     objeto: Enchufe con clavija
+
+an electrical plug with two round prongs and a trailing cable curling behind it, european schuko style, seen from the front, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 37 · SIN COMENTARIOS
+     objeto: Bocadillo vacío
+
+an empty rounded speech bubble with a pointed tail at the lower left, completely blank inside, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+========================================================================
+BLOQUE C · ANCLA
+========================================================================
+
+[ ] 38 · PUCHERAZO
+     objeto: Urna con papeleta
+
+a ballot box, a plain rectangular box with a slot on the top and a folded ballot paper being inserted into the slot, the front face left flat and empty for text, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
+
+[ ] 39 · CONTIENE LÁGRIMAS
+     objeto: Gota grande
+
+a single large teardrop, pointed at the top and round at the bottom, solid filled, perfectly symmetrical, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail --no gradients, shadows, 3d render, photorealism, texture, noise, multiple colours, grey tones, thin hairlines, intricate fine detail, human face, portrait, likeness of a real person, brand logo, trademark, watermark, lettering, words, background scenery, perspective, drop shadow
+
+------------------------------------------------------------------------
