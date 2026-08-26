@@ -26,9 +26,11 @@
   --b-line: rgba(255, 0, 200, 0.15);
   --b-line-soft: rgba(153, 153, 187, 0.16);
 
-  --b-display: var(--font-poppins), "Helvetica Neue", sans-serif;
-  --b-body: var(--font-inter), system-ui, sans-serif;
-  --b-mono: var(--font-space-mono), ui-monospace, monospace;
+  /* El tailandés DESPUÉS de la fuente de marca: el navegador resuelve glifo a
+     glifo, así que el latino lo pone la marca y solo el tailandés cae aquí. */
+  --b-display: var(--font-poppins), var(--font-thai), "Helvetica Neue", sans-serif;
+  --b-body: var(--font-inter), var(--font-thai), system-ui, sans-serif;
+  --b-mono: var(--font-space-mono), var(--font-thai), ui-monospace, monospace;
 
   --b-r: 14px;
   --b-r-lg: 20px;

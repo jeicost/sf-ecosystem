@@ -24,9 +24,12 @@
   --container: 1280px;
   --motion: 1;
 
-  --font-display: var(--font-space-grotesk), "Helvetica Neue", sans-serif;
-  --font-body: var(--font-geist), "Helvetica Neue", system-ui, sans-serif;
-  --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, monospace;
+  /* var(--font-thai) va DESPUÉS de la fuente de marca a propósito: el navegador
+     resuelve glifo a glifo, así que el latino lo pone la marca y solo el
+     tailandés —que ninguna de estas fuentes tiene— cae en Noto Sans Thai. */
+  --font-display: var(--font-space-grotesk), var(--font-thai), "Helvetica Neue", sans-serif;
+  --font-body: var(--font-geist), var(--font-thai), "Helvetica Neue", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), var(--font-thai), "JetBrains Mono", ui-monospace, monospace;
 }
 
 *,
