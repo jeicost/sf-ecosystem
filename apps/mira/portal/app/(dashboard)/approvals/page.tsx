@@ -43,6 +43,13 @@ export default function ApprovalsPage() {
   // Edición antes de aprobar: el botón existía sin handler (auditoría 08-10).
   const [editingId, setEditingId] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  // Rechazo con motivo. La ruta /api/approvals/decide SIEMPRE aceptó `note` y
+  // toda la cadena existía —se guarda en reject_note, entra en el prompt de la
+  // v2 como revision_note y va a project_memory— pero esta pantalla mandaba
+  // solo {queueId, decision}. Resultado: el sistema regeneraba A CIEGAS y el
+  // segundo rechazo no dejaba memoria. Auditoría 19-ago-2026.
+  const [rejectingId, setRejectingId] = useState<string | null>(null)
+  const [rejectNote, setRejectNote] = useState('')
 
   useEffect(() => {
     if (!clientId) {
@@ -76,14 +83,16 @@ export default function ApprovalsPage() {
   // El raíl (fase 0): la decisión va por /api/approvals/decide (server-side),
   // que además PROPAGA el estado a post_history — antes se actualizaba solo
   // approval_queue desde el navegador y el historial quedaba en 'draft'.
-  const updateStatus = async (id: string, status: 'approved' | 'rejected') => {
+  const updateStatus = async (id: string, status: 'approved' | 'rejected', note?: string) => {
     const res = await fetch('/api/approvals/decide', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ queueId: id, decision: status }),
+      body: JSON.stringify({ queueId: id, decision: status, ...(note?.trim() ? { note: note.trim() } : {}) }),
     })
     if (!res.ok) return
     setItems(prev => prev.map(i => i.id === id ? { ...i, status } : i))
+    setRejectingId(null)
+    setRejectNote('')
   }
 
   // Guarda el copy editado y aprueba en el mismo gesto (approved_with_edits).
@@ -234,6 +243,38 @@ export default function ApprovalsPage() {
                     {item.tone_warning && isPending && (
                       <span className="text-[10px] bg-amber-500/15 text-amber-400 px-2 py-0.5 rounded-full">⚠ {t('approvals.review-tone', locale)}</span>
                     )}
+                    {isPending && rejectingId === item.id && (
+                      <div className="space-y-2">
+                        <label htmlFor={`motivo-${item.id}`} className="block text-xs text-ink-secondary">
+                          {t('approvals.reject-why', locale)}
+                        </label>
+                        <input
+                          id={`motivo-${item.id}`}
+                          autoFocus
+                          value={rejectNote}
+                          onChange={e => setRejectNote(e.target.value)}
+                          onKeyDown={e => { if (e.key === 'Enter' && rejectNote.trim()) updateStatus(item.id, 'rejected', rejectNote) }}
+                          placeholder={t('approvals.reject-placeholder', locale)}
+                          className="w-full px-3 py-2 bg-surface border border-line rounded-lg text-ink placeholder-ink-tertiary text-xs"
+                        />
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => updateStatus(item.id, 'rejected', rejectNote)}
+                            className="flex-1 py-2.5 text-xs rounded-lg bg-red-500/15 text-red-400 hover:bg-red-500/25 transition-colors font-semibold flex items-center justify-center gap-1.5"
+                          >
+                            <X size={13} /> {t('approvals.reject-send', locale)}
+                          </button>
+                          <button
+                            onClick={() => setRejectingId(null)}
+                            className="flex-1 py-2.5 text-xs rounded-lg bg-surface text-ink-secondary hover:text-ink transition-colors"
+                          >
+                            {t('approvals.cancel', locale)}
+                          </button>
+                        </div>
+                        {/* Se puede rechazar sin motivo: obligar a escribir haría
+                            que la gente ponga «no» y perderíamos la señal igual. */}
+                      </div>
+                    )}
                     {isApproved && !isPublished && (
                       <span className="text-[10px] bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded-full">✓ {t('approvals.approved-badge', locale)}</span>
                     )}
@@ -319,7 +360,7 @@ export default function ApprovalsPage() {
                         </div>
                       </div>
                     )}
-                    {isPending && editingId !== item.id && (
+                    {isPending && editingId !== item.id && rejectingId !== item.id && (
                       <div className="flex gap-2">
                         <button
                           onClick={() => updateStatus(item.id, 'approved')}
@@ -334,8 +375,9 @@ export default function ApprovalsPage() {
                           <Edit3 size={13} /> {t('approvals.edit', locale)}
                         </button>
                         <button
-                          onClick={() => updateStatus(item.id, 'rejected')}
+                          onClick={() => { setRejectingId(item.id); setRejectNote('') }}
                           className="px-4 py-2.5 text-xs rounded-lg bg-surface text-ink-tertiary hover:text-red-400 transition-colors"
+                          aria-label={t('approvals.reject', locale)}
                         >
                           <X size={13} />
                         </button>
