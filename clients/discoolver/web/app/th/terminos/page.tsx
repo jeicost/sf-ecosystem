@@ -5,9 +5,6 @@ import { buildMetadata } from "@/lib/seo";
 const doc = LEGAL.terminos.en;
 
 export const metadata = buildMetadata({
-  // NOINDEX hasta que Nirada revise el tailandés en el CMS: no se indexa
-  // una página a medio traducir. Quitar esta línea al aprobarla.
-  noindex: true,
   title: doc.title,
   description: doc.description,
   path: "/th/terminos",

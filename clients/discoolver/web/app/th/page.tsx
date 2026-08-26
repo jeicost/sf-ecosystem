@@ -16,9 +16,6 @@ export async function generateMetadata(): Promise<Metadata> {
     ? `Places picked by editors from what social media recommends. ${formatoMil(hechos.totalRedondeado, "en")} published in ${lista}, on a map, a route and a calendar.`
     : "Places picked by editors from what social media recommends every day, on a map, a route and a calendar to walk the city.";
   return buildMetadata({
-  // NOINDEX hasta que Nirada revise el tailandés en el CMS: no se indexa
-  // una página a medio traducir. Quitar esta línea al aprobarla.
-  noindex: true,
     title: "Discoolver — The best of social media, picked by editors",
     description: descripcion,
     path: "/th",

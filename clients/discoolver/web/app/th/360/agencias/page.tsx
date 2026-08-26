@@ -3,9 +3,6 @@ import { buildMetadata } from "@/lib/seo";
 import { Agencias360 } from "@/app/360/agencias/page";
 
 export const metadata: Metadata = buildMetadata({
-  // NOINDEX hasta que Nirada revise el tailandés en el CMS: no se indexa
-  // una página a medio traducir. Quitar esta línea al aprobarla.
-  noindex: true,
   title: "Agencies, DMCs and inbound operators",
   description:
     "We digitize the destination's local catalog and give you a marketplace and point of sale to sell it. Net rates for the trade channel.",

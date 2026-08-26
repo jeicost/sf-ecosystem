@@ -9,7 +9,6 @@ export const metadata: Metadata = buildMetadata({
   description: "Your order is confirmed.",
   path: "/th/gracias",
   locale: "th",
-  noindex: true,
 });
 
 export default function Thanks() {
