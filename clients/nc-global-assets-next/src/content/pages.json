@@ -1,1 +1,1762 @@
-{}
+{
+  "contact-th": {
+    "title": "contact (TH)",
+    "seoTitle": "Contact — NC Global Assets Bangkok",
+    "seoDescription": "Get in touch with NC Global Assets. Book a call, send a message or visit our Bangkok office. We reply within 24 hours.",
+    "ogImage": "",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "sub": "Tell us about your brand, goals, and expansion plans. Our team will get back to you shortly with clear next steps.",
+          "eyebrow": "Get in touch",
+          "headline_top": "Let's build your",
+          "headline_gold": "Thailand growth"
+        }
+      },
+      "office": {
+        "type": "office",
+        "data": {
+          "hours": "Mon–Sat · 10:00–18:00 (ICT)",
+          "address": "507/10 Sathu Pradit Rd, Chong Nonsi, Yan Nawa, Bangkok 10120, Thailand"
+        }
+      },
+      "form-aside": {
+        "type": "form-aside",
+        "data": {
+          "body": "Fill in the form and we'll come back with a clear view of how NC Global Assets can support your brand's entry into Thailand — infrastructure, timeline and commercial model included.",
+          "chat_cta": "Book a Call",
+          "chat_label": "Prefer a direct chat?",
+          "trust_items": [
+            "We reply within one business day from Bangkok",
+            "No commitment required for a first conversation",
+            "We work with a limited number of brands per quarter",
+            "English, Spanish and Thai spoken"
+          ]
+        }
+      }
+    },
+    "updatedAt": "2026-08-26T08:23:18.316487"
+  },
+  "services-th": {
+    "title": "services (TH)",
+    "seoTitle": "Services — NC Global Assets Bangkok",
+    "seoDescription": "Market entry, brand launch, F&B operations and SEA expansion services for international brands. Real infrastructure, hands-on execution, proven results.",
+    "ogImage": "",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "sub": "Whether you need market clarity, an operational base or a commercial team on the ground — we have the infrastructure and the people to make it happen in Thailand.",
+          "pills": [
+            "Strategy & Roadmap",
+            "Cloud Kitchen Operations",
+            "Commercial & Distribution"
+          ],
+          "eyebrow": "Our Services",
+          "headline_top": "Three ways we",
+          "headline_gold": "work with you"
+        }
+      },
+      "at-a-glance": {
+        "type": "at-a-glance",
+        "data": {
+          "lede": "Three complementary services — from strategy to full operations. You can engage with one or combine all three depending on your stage and goals.",
+          "eyebrow": "At a glance",
+          "headline_pre": "What's ",
+          "headline_gold": "included"
+        }
+      },
+      "services": {
+        "type": "services",
+        "data": {
+          "items": [
+            {
+              "img": "/assets/gallery-cafe.webp",
+              "num": "01",
+              "tag": "Strategy · Go-to-Market",
+              "body": "We become your official brand representative in Thailand. Before you commit a single baht to local operations, we do the groundwork — market research, competitive mapping, brand adaptation and a full go-to-market roadmap built around your specific product, price point and audience.",
+              "title": "Brand Representation & Action Plan",
+              "outcome": "You leave with a validated plan and a local partner — not a deck.",
+              "tagline": "Enter the market with a clear roadmap — not guesswork.",
+              "features": [
+                {
+                  "desc": "Deep dive into local behaviour, pricing benchmarks and category dynamics.",
+                  "label": "Thai market research & consumer insights"
+                },
+                {
+                  "desc": "We adapt your messaging, visual identity and offer for the Thai market without losing your brand DNA.",
+                  "label": "Brand positioning and local adaptation"
+                },
+                {
+                  "desc": "A structured plan covering channels, milestones and commercial targets for your first 90 days.",
+                  "label": "Go-to-market strategy and launch roadmap"
+                },
+                {
+                  "desc": "We map the right distributors, retailers and platforms for your category from day one.",
+                  "label": "Local partner and channel identification"
+                },
+                {
+                  "desc": "A named person on the ground representing your brand in every meeting and conversation.",
+                  "label": "Dedicated local point of contact"
+                }
+              ],
+              "highlight": false,
+              "cardFeatures": [
+                "Thai market research & consumer insights",
+                "Brand positioning and local adaptation",
+                "Go-to-market strategy and launch roadmap",
+                "Local partner and channel identification",
+                "Dedicated local point of contact"
+              ]
+            },
+            {
+              "img": "/assets/ops-kitchen.webp",
+              "num": "02",
+              "tag": "F&B · Operations · Bangkok",
+              "body": "Operate your food brand from our fully equipped Bangkok building — cloud kitchen, office and showroom included. No Thai company registration required. No setup from scratch. We manage production, logistics and platform activation so you generate real revenue from week one.",
+              "title": "Cloud Kitchen Operations",
+              "outcome": "From brief to first delivery order in under two weeks.",
+              "tagline": "Your food brand live in Bangkok in under two weeks.",
+              "features": [
+                {
+                  "desc": "Production-ready kitchen with Thai food safety certification, equipment and operating team.",
+                  "label": "Fully equipped cloud kitchen in central Bangkok"
+                },
+                {
+                  "desc": "We activate your brand on Thailand's top delivery platforms and manage your store from day one.",
+                  "label": "Live on GrabFood, Foodpanda & Lineman in days"
+                },
+                {
+                  "desc": "Operate legally under our structure — no legal setup, no bureaucracy, no wasted months.",
+                  "label": "No Thai company registration required"
+                },
+                {
+                  "desc": "Use our Bangkok base for your local team, partner meetings and brand presentations.",
+                  "label": "Office and showroom space available"
+                },
+                {
+                  "desc": "We handle procurement, production scheduling, quality control and daily ops.",
+                  "label": "Full operations management and logistics"
+                },
+                {
+                  "desc": "Weekly reporting with order volume, customer ratings and product performance data.",
+                  "label": "Real sales data and customer feedback from day one"
+                }
+              ],
+              "highlight": true,
+              "cardFeatures": [
+                "Fully equipped cloud kitchen in central Bangkok",
+                "Office and showroom space available",
+                "No Thai company registration required",
+                "Live on GrabFood, Foodpanda & Lineman in days",
+                "Full operations management and logistics",
+                "Real sales data and customer feedback from day one"
+              ]
+            },
+            {
+              "img": "/assets/freepik_majestic-bangkok-skyline-_2861587919.webp",
+              "num": "03",
+              "tag": "Sales · Distribution · Local Team",
+              "body": "Our local commercial team works your accounts every day — opening channels, building relationships and growing your brand's revenue footprint across Bangkok and Thailand. We activate retail, HORECA and B2B partnerships that take most foreign brands years to develop alone.",
+              "title": "Commercial & Distribution Services",
+              "outcome": "Real accounts. Real revenue. A commercial team that grows with you.",
+              "tagline": "Open doors that would otherwise take years to build.",
+              "features": [
+                {
+                  "desc": "Dedicated sales professionals who represent your brand in Thai — not translators, real operators.",
+                  "label": "Local commercial team working your accounts"
+                },
+                {
+                  "desc": "We open doors to supermarkets, specialty retailers, hotels, restaurants and corporate buyers.",
+                  "label": "Retail, HORECA and corporate channel development"
+                },
+                {
+                  "desc": "We plug your brand into existing logistics and cold chain networks across Bangkok and beyond.",
+                  "label": "Supplier and distribution network activation"
+                },
+                {
+                  "desc": "Strategic alliances with importers, co-packers and complementary brands for faster scale.",
+                  "label": "B2B partnership development"
+                },
+                {
+                  "desc": "Monthly commercial dashboards covering pipeline, conversion, channel mix and revenue.",
+                  "label": "Sales performance tracking and reporting"
+                }
+              ],
+              "highlight": false,
+              "cardFeatures": [
+                "Local commercial team working your accounts",
+                "Retail, HORECA and corporate channel development",
+                "Supplier and distribution network activation",
+                "B2B partnership development",
+                "Sales performance tracking and reporting"
+              ]
+            }
+          ]
+        }
+      },
+      "compare": {
+        "type": "compare",
+        "data": {
+          "lede": "Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.",
+          "eyebrow": "How We Compare",
+          "footer_note": "We onboard a limited number of brands per quarter.",
+          "headline_top": "Four ways to enter",
+          "headline_gold": "Thailand"
+        }
+      },
+      "final-cta": {
+        "type": "final-cta",
+        "data": {
+          "ready_lede": "Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.",
+          "ready_note1": "Limited spots per quarter",
+          "ready_note2": "Transparent model · Pricing shared in the first call",
+          "notready_lede": "Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.",
+          "ready_eyebrow": "Next Step",
+          "notready_footer": "We reply from Bangkok within 24 hours.",
+          "notready_eyebrow": "Still exploring?",
+          "ready_headline_gold": "Let's build it",
+          "ready_headline_line1": "Your brand",
+          "ready_headline_line2": "Bangkok",
+          "notready_headline_top": "Let's talk",
+          "notready_headline_gold": "before you decide"
+        }
+      }
+    },
+    "updatedAt": "2026-08-26T08:23:17.915698"
+  },
+  "about-th": {
+    "title": "about (TH)",
+    "seoTitle": "About NC Global Assets — Bangkok Operating Partner",
+    "seoDescription": "Learn about NC Global Assets team, values, and operational infrastructure in Bangkok. Built from the ground up for brand launches in Thailand.",
+    "ogImage": "",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "body": "We combine deep local knowledge, hands-on execution and long-term commercial alignment to help international brands enter, operate and grow in Thailand.",
+          "creds": [
+            {
+              "val": "BKK",
+              "label": "Operating base"
+            },
+            {
+              "val": "15+",
+              "label": "Years exp."
+            },
+            {
+              "val": "6+",
+              "label": "Years digital mktg"
+            },
+            {
+              "val": "SEA",
+              "label": "Reach"
+            }
+          ],
+          "eyebrow": "About NC Global Assets",
+          "headline_top": "A local operating partner",
+          "headline_gold": "international brands"
+        }
+      },
+      "story": {
+        "type": "story",
+        "data": {
+          "lede": "NC Global Assets was founded by entrepreneurs who understood firsthand how hard it is to bring an international brand into a new market — especially one as dynamic and nuanced as Thailand.",
+          "eyebrow": "Our Story",
+          "body_para1": "We saw brilliant brands fail not because their product was wrong, but because they tried to build everything from scratch, alone, without local knowledge or operational infrastructure. We decided to build that infrastructure ourselves.",
+          "body_para2": "Today, our Bangkok building — with its cloud kitchen, offices and showroom — is the operational base from which we help international brands test, launch and grow across Thailand and Southeast Asia. Not as consultants. As partners with skin in the game.",
+          "stat_value": "2+",
+          "headline_top": "Built from the ground up",
+          "headline_gold": "Bangkok.",
+          "stat_label_line1": "Years operating",
+          "stat_label_line2": "in Bangkok",
+          "headline_line2_pre": "in "
+        }
+      },
+      "manifesto": {
+        "type": "manifesto",
+        "data": {
+          "sub": "Most market-entry firms hand you a report and move on. We stay — managing operations, tracking results and adjusting alongside your brand until the numbers work.",
+          "eyebrow": "What makes us different",
+          "pillars": [
+            {
+              "num": "01",
+              "desc": "We operate from our own building in Bangkok — cloud kitchen, offices and showroom. No setup time. No rental risk. Everything is already running from day one.",
+              "icon": "◈",
+              "label": "Real infrastructure"
+            },
+            {
+              "num": "02",
+              "desc": "A bilingual team on the ground that speaks Thai, knows the market and executes alongside your brand every single day — not a remote advisor team.",
+              "icon": "⬡",
+              "label": "Local execution"
+            },
+            {
+              "num": "03",
+              "desc": "Structured as partners, not service providers. Our commercial agreements are tied to your results — we grow when you grow.",
+              "icon": "◎",
+              "label": "Long-term alignment"
+            }
+          ],
+          "headline_top": "We don't advise",
+          "headline_gold": "We operate"
+        }
+      },
+      "numbers": {
+        "type": "numbers",
+        "data": {
+          "stats": [
+            {
+              "label": "Years of founder & operator experience in startups and international expansion",
+              "value": "15+"
+            },
+            {
+              "label": "Years of Digital Marketing expertise driving brands in the Thai market",
+              "value": "6+"
+            },
+            {
+              "label": "From brief to first revenue using our Bangkok infrastructure",
+              "value": "4–8w"
+            },
+            {
+              "label": "Strategic gateway — Thailand as your launchpad for Southeast Asia",
+              "value": "SEA"
+            }
+          ]
+        }
+      },
+      "values": {
+        "type": "values",
+        "data": {
+          "lede": "These aren't wall posters. They are the criteria we use to decide who we work with, how we price our services and whether a partnership is working.",
+          "values": [
+            {
+              "desc": "Every decision starts from a deep understanding of Thailand — its consumers, its culture and its business dynamics.",
+              "label": "Local first"
+            },
+            {
+              "desc": "We don't write strategies that gather dust. We implement them, track them and improve them on the ground.",
+              "label": "Execution over advice"
+            },
+            {
+              "desc": "We tell you what will work and what won't. No overselling, no generic playbooks — just clear, honest guidance.",
+              "label": "Honest partnership"
+            },
+            {
+              "desc": "Our commercial models are tied to your performance. If you don't win, we don't win. That keeps us focused.",
+              "label": "Shared accountability"
+            }
+          ],
+          "eyebrow": "Our Values",
+          "headline_top": "How we show ",
+          "headline_gold": "up every day"
+        }
+      },
+      "approach": {
+        "type": "approach",
+        "data": {
+          "lede": "We don't hand off deliverables and disappear. We work alongside your brand through every step — from first conversation to full commercial operation.",
+          "phases": [
+            {
+              "num": "01",
+              "desc": "We start by learning your brand deeply — product, positioning, goals and real constraints. We do market mapping, competitive research and consumer analysis specific to your category in Thailand. No generic playbooks. No assumptions.",
+              "time": "Week 1–2",
+              "label": "Understand"
+            },
+            {
+              "num": "02",
+              "desc": "We run a real market pilot in Bangkok using our existing infrastructure. Your product reaches real customers through our cloud kitchen and delivery channels. We collect data, ratings and feedback before you commit to full scale.",
+              "time": "Week 3–6",
+              "label": "Test"
+            },
+            {
+              "num": "03",
+              "desc": "Once validated, we build the full operational foundation — local team, sales channels, distribution partners and commercial systems. We grow your brand's footprint across Bangkok and into Southeast Asia with clear performance milestones.",
+              "time": "Month 2–6",
+              "label": "Build"
+            }
+          ],
+          "eyebrow": "How We Work",
+          "headline_top": "Three phases",
+          "headline_gold": "One team"
+        }
+      },
+      "team": {
+        "type": "team",
+        "data": {
+          "team": [
+            {
+              "bio": "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder & Operating Partner",
+              "linkedin": "https://th.linkedin.com/in/carlosjacoste"
+            },
+            {
+              "bio": "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
+              "img": "/assets/nirada-dark.jpg",
+              "name": "Nirada Kritsanaseranee",
+              "role": "Director of Marketing",
+              "linkedin": "https://th.linkedin.com/in/nirada-k"
+            }
+          ],
+          "eyebrow": "The Team",
+          "closing_pre": "Together, the team combines international business vision with ",
+          "closing_gold": "local execution capacity",
+          "headline_top": "Led by operators entrepreneurs and ",
+          "headline_gold": "market builders",
+          "closing_suffix": " in Thailand."
+        }
+      },
+      "testimonials": {
+        "type": "testimonials",
+        "data": {
+          "lede": "From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.",
+          "eyebrow": "Founder Perspectives",
+          "testimonials": [
+            {
+              "q": "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder · Salsa Burgers"
+            },
+            {
+              "q": "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
+              "img": null,
+              "name": "Founder",
+              "role": "The Padel Society · Sport & Lifestyle"
+            },
+            {
+              "q": "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
+              "img": null,
+              "name": "Founder",
+              "role": "Souji · Food & Wellness"
+            }
+          ],
+          "headline_accent": "Founder",
+          "headline_suffix": " perspectives"
+        }
+      }
+    },
+    "updatedAt": "2026-08-26T08:23:17.509621"
+  },
+  "home-th": {
+    "title": "home (TH)",
+    "seoTitle": "NC Global Assets — Bangkok Operating Partner for Brand Launch",
+    "seoDescription": "International brands use our Bangkok infrastructure to test, launch and operate in Thailand. Cloud kitchen, offices, team. Real revenue from day one.",
+    "ogImage": "",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "body": "We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.",
+          "spaces": [
+            {
+              "desc": "Present your brand to buyers & partners",
+              "icon": "◈",
+              "label": "Showroom"
+            },
+            {
+              "desc": "Local team base & brand management",
+              "icon": "⬡",
+              "label": "Offices"
+            },
+            {
+              "desc": "Production-ready, live on delivery apps",
+              "icon": "◎",
+              "label": "Cloud Kitchen"
+            }
+          ],
+          "eyebrow": "Bangkok · Local Operating Partner",
+          "spaces_label": "What's ready for your brand",
+          "headline_line1": "Enter Thailand.",
+          "headline_line2": "Skip the ",
+          "hidden_heading": "Premium Real Estate & Investment Management in Bangkok",
+          "headline_line2_gold": "hard part.",
+          "headline_line3_gold": "Your brand live in weeks."
+        }
+      },
+      "intro": {
+        "type": "intro",
+        "data": {
+          "lede": "We built the infrastructure so you don't have to. Cloud kitchen. Office. Showroom. Local team. Distribution channels. Everything you need to enter Thailand is already running — waiting for your brand.",
+          "eyebrow": "The Opportunity",
+          "heading": "Thailand is one of Southeast Asia's fastest-growing consumer markets — and most international brands never make it past the planning stage. Not because the opportunity isn't there. Because they try to build everything",
+          "cta_label": "See how it works",
+          "badge_city": "Bangkok",
+          "badge_label": "Southeast Asia's fastest-growing market",
+          "heading_accent": "from scratch, alone."
+        }
+      },
+      "market-stats": {
+        "type": "market-stats",
+        "data": {
+          "sup": "Why Thailand · Why now",
+          "stats": [
+            {
+              "num": "80M+",
+              "label": "Consumers in Southeast Asia's growth corridor"
+            },
+            {
+              "num": "#1",
+              "label": "Bangkok ranked for F&B delivery density in Southeast Asia"
+            },
+            {
+              "num": "20%+",
+              "label": "Annual growth rate in Thailand's consumer market"
+            },
+            {
+              "num": "4–8",
+              "label": "Weeks to your first market test using our infrastructure"
+            }
+          ],
+          "headline_top": "The numbers that make ",
+          "headline_gold": "Bangkok the move"
+        }
+      },
+      "what-we-do": {
+        "type": "what-we-do",
+        "data": {
+          "lede": "Three phases. One local partner. From your first product test in Bangkok to a fully operating brand across Southeast Asia — we manage the entire journey with you.",
+          "cards": [
+            {
+              "idx": "01",
+              "body": "Validate real demand in Bangkok before committing — pilot your product, collect customer feedback and confirm product-market fit using our infrastructure.",
+              "title": "Test the Market"
+            },
+            {
+              "idx": "02",
+              "body": "Adapt your brand for the Thai market, design your go-to-market strategy and activate the right local channels, partners and platforms from day one.",
+              "title": "Build the Launch"
+            },
+            {
+              "idx": "03",
+              "body": "Run daily operations from our Bangkok base and grow your footprint across Thailand and Southeast Asia with a local team directly invested in your results.",
+              "title": "Operate & Scale"
+            }
+          ],
+          "eyebrow": "How It Works",
+          "headline_top": "From market test to ",
+          "headline_gold": "full operation"
+        }
+      },
+      "operating-partner": {
+        "type": "operating-partner",
+        "data": {
+          "body": "Under one roof: a fully equipped cloud kitchen, working offices and a branded showroom. Your brand gets a real operational home in Bangkok from the moment we start working together.",
+          "lede": "We operate from our own building in Bangkok — a dedicated space built for international brands entering Thailand. No rental risk. No setup delays. Everything is already running.",
+          "spaces": [
+            {
+              "desc": "Fully equipped production kitchen for F&B brands — ready to operate from day one.",
+              "label": "Cloud Kitchen"
+            },
+            {
+              "desc": "Working space for brand management, local team coordination and partner meetings.",
+              "label": "Offices"
+            },
+            {
+              "desc": "Presentation space to showcase your brand to retail buyers, distributors and local partners.",
+              "label": "Showroom"
+            }
+          ],
+          "eyebrow": "Our Base",
+          "headline_top": "Our Bangkok building",
+          "headline_gold": "Your operational base",
+          "pullquote_pre": "Built for ",
+          "pullquote_post": "not theory",
+          "pullquote_accent": "execution"
+        }
+      },
+      "why-thailand": {
+        "type": "why-thailand",
+        "data": {
+          "lede": "Bangkok offers a unique combination of scale, creativity and openness to international concepts — the ideal testing ground before expanding across the region.",
+          "bullets": [
+            "One of SEA's fastest-growing F&B and lifestyle markets",
+            "Strong delivery ecosystem and digital adoption",
+            "High concentration of international consumers and tourism",
+            "Strategic gateway to the rest of Southeast Asia",
+            "A market genuinely open to new concepts and experiences"
+          ],
+          "eyebrow": "Why Thailand",
+          "headline_top": "Bangkok first",
+          "subheading_pre": "A market built for brands that know how to ",
+          "headline_accent": "Southeast Asia",
+          "headline_suffix": " next",
+          "subheading_accent": "show up well",
+          "subheading_suffix": "."
+        }
+      },
+      "infrastructure": {
+        "type": "infrastructure",
+        "data": {
+          "lede": "Our Bangkok-based operating infrastructure lets brands enter the market efficiently — without building everything from scratch on day one.",
+          "blocks": [
+            {
+              "num": "01",
+              "body": "Local food preparation, product adaptation and operational setup from day one.",
+              "title": "Production"
+            },
+            {
+              "num": "02",
+              "body": "Activation across delivery platforms, retail and selected commercial partners.",
+              "title": "Sales Channels"
+            },
+            {
+              "num": "03",
+              "body": "Real customer insights, sales performance data and continuous product validation.",
+              "title": "Market Feedback"
+            },
+            {
+              "num": "04",
+              "body": "On-the-ground management, local coordination and growth execution.",
+              "title": "Daily Operations"
+            }
+          ],
+          "eyebrow": "Infrastructure",
+          "headline_top": "Real infrastructure",
+          "headline_gold": "Real",
+          "headline_suffix": " market entry"
+        }
+      },
+      "who-we-work-with": {
+        "type": "who-we-work-with",
+        "data": {
+          "lede": "We work with a curated number of brands at a time — ensuring each partnership gets real attention, local expertise and hands-on execution.",
+          "items": [
+            {
+              "idx": "01",
+              "sub": "Concepts with a distinct product and a real story to tell in Thailand.",
+              "ttl": "F&B Thailand"
+            },
+            {
+              "idx": "02",
+              "sub": "Teams with track record ready to scale their model internationally.",
+              "ttl": "Proven Operators"
+            },
+            {
+              "idx": "03",
+              "sub": "Builders committed to a thoughtful, long-term regional expansion.",
+              "ttl": "Ambitious Founders"
+            },
+            {
+              "idx": "04",
+              "sub": "Ventures aligned with Thailand's lifestyle and innovation landscape.",
+              "ttl": "Strategic Projects"
+            }
+          ],
+          "eyebrow": "Who We Work With",
+          "headline_top": "Selected brands with ",
+          "headline_gold": "real potential"
+        }
+      },
+      "our-model": {
+        "type": "our-model",
+        "data": {
+          "lede": "We combine operational capacity with long-term alignment. Our commercial agreements are structured around the specific needs of each brand and project.",
+          "quote": "We aim to be the local partner that makes your brand grow in Thailand.",
+          "blocks": [
+            {
+              "ttl": "Operational Setup",
+              "body": "Local infrastructure, kitchen capacity and channel activation — ready from day one."
+            },
+            {
+              "ttl": "Local Execution",
+              "body": "Hands-on management of operations, sales, brand and customer experience in Bangkok."
+            },
+            {
+              "ttl": "Shared Growth",
+              "body": "Aligned commercial models — fixed structures, performance-based, revenue share or equity."
+            }
+          ],
+          "eyebrow": "Our Model",
+          "headline_top": "A partnership built around ",
+          "headline_gold": "shared growth"
+        }
+      },
+      "compare": {
+        "type": "compare",
+        "data": {
+          "lede": "Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.",
+          "eyebrow": "How We Compare",
+          "footer_note": "We onboard a limited number of brands per quarter.",
+          "headline_top": "Four ways to enter",
+          "headline_gold": "Thailand"
+        }
+      },
+      "ecosystem": {
+        "type": "ecosystem",
+        "data": {
+          "lede": "We collaborate with selected partners across food innovation, entrepreneurship, marketing, business development and international expansion.",
+          "eyebrow": "Ecosystem",
+          "headline_pre": "A ",
+          "headline_accent": "trusted",
+          "headline_suffix": " local ecosystem"
+        }
+      },
+      "brands-projects": {
+        "type": "brands-projects",
+        "data": {
+          "lede": "A curated portfolio across F&B, sustainability, sport, lifestyle and digital innovation — each with a real story and a real ambition.",
+          "eyebrow": "Brands & Projects",
+          "headline_top": "Brands in our ",
+          "headline_gold": "network"
+        }
+      },
+      "testimonials": {
+        "type": "testimonials",
+        "data": {
+          "lede": "From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.",
+          "eyebrow": "Founder Perspectives",
+          "testimonials": [
+            {
+              "q": "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder · Salsa Burgers"
+            },
+            {
+              "q": "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
+              "img": null,
+              "name": "Founder",
+              "role": "The Padel Society · Sport & Lifestyle"
+            },
+            {
+              "q": "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
+              "img": null,
+              "name": "Founder",
+              "role": "Souji · Food & Wellness"
+            }
+          ],
+          "headline_accent": "Founder",
+          "headline_suffix": " perspectives"
+        }
+      },
+      "team": {
+        "type": "team",
+        "data": {
+          "team": [
+            {
+              "bio": "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder & Operating Partner",
+              "linkedin": "https://th.linkedin.com/in/carlosjacoste"
+            },
+            {
+              "bio": "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
+              "img": "/assets/nirada-dark.jpg",
+              "name": "Nirada Kritsanaseranee",
+              "role": "Director of Marketing",
+              "linkedin": "https://th.linkedin.com/in/nirada-k"
+            }
+          ],
+          "eyebrow": "The Team",
+          "closing_pre": "Together, the team combines international business vision with ",
+          "closing_gold": "local execution capacity",
+          "headline_top": "Led by operators entrepreneurs and ",
+          "headline_gold": "market builders",
+          "closing_suffix": " in Thailand."
+        }
+      },
+      "faq": {
+        "type": "faq",
+        "data": {
+          "lede": "Everything you need to know about working with NC Global Assets and entering the Thai market.",
+          "items": [
+            {
+              "a": "We focus exclusively on Thailand, with Bangkok as our primary operating base. From Bangkok, brands can build a foundation for a wider Southeast Asian expansion.",
+              "q": "What markets do you focus on?"
+            },
+            {
+              "a": "F&B is our strongest vertical, but we work with selected brands across lifestyle, sustainability, sport and digital platforms. The key criterion is whether your brand has a differentiated product and a real ambition to grow in Thailand.",
+              "q": "Do you only work with F&B brands?"
+            },
+            {
+              "a": "We work alongside brands as a local operating partner — not an external consultant. Agreements are structured as fixed models, performance-based fees, revenue share or equity participation depending on the project.",
+              "q": "How does the partnership model work?"
+            },
+            {
+              "a": "Absolutely. Market validation is one of the first phases we support. We run real sales pilots, gather customer feedback and validate product-market fit in Bangkok before scaling.",
+              "q": "Can I test the market before fully committing?"
+            },
+            {
+              "a": "A focused market test can be set up in 4–8 weeks using our existing infrastructure. A full market launch typically takes 3–6 months depending on the complexity of your product and model.",
+              "q": "How long does it take to launch in Thailand?"
+            },
+            {
+              "a": "Book a call or send us a brief through the contact form. We will review your brand, understand your goals and come back with a clear view of how we can support your Thailand entry.",
+              "q": "How do I get started?"
+            }
+          ],
+          "eyebrow": "FAQ",
+          "headline_top": "Frequently asked ",
+          "headline_gold": "questions"
+        }
+      },
+      "lead-magnet": {
+        "type": "lead-magnet",
+        "data": {
+          "lede": "Everything you need to validate, plan and launch your brand in Thailand — in a single practical guide. Used internally by every brand we onboard.",
+          "points": [
+            "Market validation checklist before you commit",
+            "The 5 setup mistakes foreign brands make in Bangkok",
+            "Platform activation guide: GrabFood, Foodpanda & Lineman",
+            "Local partner evaluation framework",
+            "90-day launch timeline template"
+          ],
+          "eyebrow": "Free Resource",
+          "form_label": "Get the free checklist",
+          "success_sub": "Check your inbox — we'll send the checklist shortly. Or download it directly below.",
+          "headline_gold": "Brand Entry",
+          "success_title": "You're on the list.",
+          "headline_line1": "The Bangkok",
+          "headline_line3": "Checklist."
+        }
+      },
+      "final-cta": {
+        "type": "final-cta",
+        "data": {
+          "ready_lede": "Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.",
+          "ready_note1": "Limited spots per quarter",
+          "ready_note2": "Transparent model · Pricing shared in the first call",
+          "notready_lede": "Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.",
+          "ready_eyebrow": "Next Step",
+          "notready_footer": "We reply from Bangkok within 24 hours.",
+          "notready_eyebrow": "Still exploring?",
+          "ready_headline_gold": "Let's build it",
+          "ready_headline_line1": "Your brand",
+          "ready_headline_line2": "Bangkok",
+          "notready_headline_top": "Let's talk",
+          "notready_headline_gold": "before you decide"
+        }
+      }
+    },
+    "updatedAt": "2026-08-26T08:23:17.029621"
+  },
+  "services": {
+    "title": "Services",
+    "seoTitle": "Services — NC Global Assets Bangkok",
+    "seoDescription": "Market entry, brand launch, F&B operations and SEA expansion services for international brands. Real infrastructure, hands-on execution, proven results.",
+    "ogImage": "/og-services.jpg",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "sub": "Whether you need market clarity, an operational base or a commercial team on the ground — we have the infrastructure and the people to make it happen in Thailand.",
+          "pills": [
+            "Strategy & Roadmap",
+            "Cloud Kitchen Operations",
+            "Commercial & Distribution"
+          ],
+          "eyebrow": "Our Services",
+          "headline_top": "Three ways we",
+          "headline_gold": "work with you"
+        }
+      },
+      "at-a-glance": {
+        "type": "at-a-glance",
+        "data": {
+          "lede": "Three complementary services — from strategy to full operations. You can engage with one or combine all three depending on your stage and goals.",
+          "eyebrow": "At a glance",
+          "headline_pre": "What's ",
+          "headline_gold": "included"
+        }
+      },
+      "services": {
+        "type": "services",
+        "data": {
+          "items": [
+            {
+              "img": "/assets/gallery-cafe.webp",
+              "num": "01",
+              "tag": "Strategy · Go-to-Market",
+              "body": "We become your official brand representative in Thailand. Before you commit a single baht to local operations, we do the groundwork — market research, competitive mapping, brand adaptation and a full go-to-market roadmap built around your specific product, price point and audience.",
+              "title": "Brand Representation & Action Plan",
+              "outcome": "You leave with a validated plan and a local partner — not a deck.",
+              "tagline": "Enter the market with a clear roadmap — not guesswork.",
+              "features": [
+                {
+                  "desc": "Deep dive into local behaviour, pricing benchmarks and category dynamics.",
+                  "label": "Thai market research & consumer insights"
+                },
+                {
+                  "desc": "We adapt your messaging, visual identity and offer for the Thai market without losing your brand DNA.",
+                  "label": "Brand positioning and local adaptation"
+                },
+                {
+                  "desc": "A structured plan covering channels, milestones and commercial targets for your first 90 days.",
+                  "label": "Go-to-market strategy and launch roadmap"
+                },
+                {
+                  "desc": "We map the right distributors, retailers and platforms for your category from day one.",
+                  "label": "Local partner and channel identification"
+                },
+                {
+                  "desc": "A named person on the ground representing your brand in every meeting and conversation.",
+                  "label": "Dedicated local point of contact"
+                }
+              ],
+              "highlight": false,
+              "cardFeatures": [
+                "Thai market research & consumer insights",
+                "Brand positioning and local adaptation",
+                "Go-to-market strategy and launch roadmap",
+                "Local partner and channel identification",
+                "Dedicated local point of contact"
+              ]
+            },
+            {
+              "img": "/assets/ops-kitchen.webp",
+              "num": "02",
+              "tag": "F&B · Operations · Bangkok",
+              "body": "Operate your food brand from our fully equipped Bangkok building — cloud kitchen, office and showroom included. No Thai company registration required. No setup from scratch. We manage production, logistics and platform activation so you generate real revenue from week one.",
+              "title": "Cloud Kitchen Operations",
+              "outcome": "From brief to first delivery order in under two weeks.",
+              "tagline": "Your food brand live in Bangkok in under two weeks.",
+              "features": [
+                {
+                  "desc": "Production-ready kitchen with Thai food safety certification, equipment and operating team.",
+                  "label": "Fully equipped cloud kitchen in central Bangkok"
+                },
+                {
+                  "desc": "We activate your brand on Thailand's top delivery platforms and manage your store from day one.",
+                  "label": "Live on GrabFood, Foodpanda & Lineman in days"
+                },
+                {
+                  "desc": "Operate legally under our structure — no legal setup, no bureaucracy, no wasted months.",
+                  "label": "No Thai company registration required"
+                },
+                {
+                  "desc": "Use our Bangkok base for your local team, partner meetings and brand presentations.",
+                  "label": "Office and showroom space available"
+                },
+                {
+                  "desc": "We handle procurement, production scheduling, quality control and daily ops.",
+                  "label": "Full operations management and logistics"
+                },
+                {
+                  "desc": "Weekly reporting with order volume, customer ratings and product performance data.",
+                  "label": "Real sales data and customer feedback from day one"
+                }
+              ],
+              "highlight": true,
+              "cardFeatures": [
+                "Fully equipped cloud kitchen in central Bangkok",
+                "Office and showroom space available",
+                "No Thai company registration required",
+                "Live on GrabFood, Foodpanda & Lineman in days",
+                "Full operations management and logistics",
+                "Real sales data and customer feedback from day one"
+              ]
+            },
+            {
+              "img": "/assets/freepik_majestic-bangkok-skyline-_2861587919.webp",
+              "num": "03",
+              "tag": "Sales · Distribution · Local Team",
+              "body": "Our local commercial team works your accounts every day — opening channels, building relationships and growing your brand's revenue footprint across Bangkok and Thailand. We activate retail, HORECA and B2B partnerships that take most foreign brands years to develop alone.",
+              "title": "Commercial & Distribution Services",
+              "outcome": "Real accounts. Real revenue. A commercial team that grows with you.",
+              "tagline": "Open doors that would otherwise take years to build.",
+              "features": [
+                {
+                  "desc": "Dedicated sales professionals who represent your brand in Thai — not translators, real operators.",
+                  "label": "Local commercial team working your accounts"
+                },
+                {
+                  "desc": "We open doors to supermarkets, specialty retailers, hotels, restaurants and corporate buyers.",
+                  "label": "Retail, HORECA and corporate channel development"
+                },
+                {
+                  "desc": "We plug your brand into existing logistics and cold chain networks across Bangkok and beyond.",
+                  "label": "Supplier and distribution network activation"
+                },
+                {
+                  "desc": "Strategic alliances with importers, co-packers and complementary brands for faster scale.",
+                  "label": "B2B partnership development"
+                },
+                {
+                  "desc": "Monthly commercial dashboards covering pipeline, conversion, channel mix and revenue.",
+                  "label": "Sales performance tracking and reporting"
+                }
+              ],
+              "highlight": false,
+              "cardFeatures": [
+                "Local commercial team working your accounts",
+                "Retail, HORECA and corporate channel development",
+                "Supplier and distribution network activation",
+                "B2B partnership development",
+                "Sales performance tracking and reporting"
+              ]
+            }
+          ]
+        }
+      },
+      "compare": {
+        "type": "compare",
+        "data": {
+          "lede": "Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.",
+          "eyebrow": "How We Compare",
+          "footer_note": "We onboard a limited number of brands per quarter.",
+          "headline_top": "Four ways to enter",
+          "headline_gold": "Thailand"
+        }
+      },
+      "final-cta": {
+        "type": "final-cta",
+        "data": {
+          "ready_lede": "Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.",
+          "ready_note1": "Limited spots per quarter",
+          "ready_note2": "Transparent model · Pricing shared in the first call",
+          "notready_lede": "Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.",
+          "ready_eyebrow": "Next Step",
+          "notready_footer": "We reply from Bangkok within 24 hours.",
+          "notready_eyebrow": "Still exploring?",
+          "ready_headline_gold": "Let's build it",
+          "ready_headline_line1": "Your brand",
+          "ready_headline_line2": "Bangkok",
+          "notready_headline_top": "Let's talk",
+          "notready_headline_gold": "before you decide"
+        }
+      }
+    },
+    "updatedAt": "2026-05-21T05:34:23.024667"
+  },
+  "about": {
+    "title": "About",
+    "seoTitle": "About NC Global Assets — Bangkok Operating Partner",
+    "seoDescription": "Learn about NC Global Assets team, values, and operational infrastructure in Bangkok. Built from the ground up for brand launches in Thailand.",
+    "ogImage": "/og-about.jpg",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "body": "We combine deep local knowledge, hands-on execution and long-term commercial alignment to help international brands enter, operate and grow in Thailand.",
+          "creds": [
+            {
+              "val": "BKK",
+              "label": "Operating base"
+            },
+            {
+              "val": "15+",
+              "label": "Years exp."
+            },
+            {
+              "val": "6+",
+              "label": "Years digital mktg"
+            },
+            {
+              "val": "SEA",
+              "label": "Reach"
+            }
+          ],
+          "eyebrow": "About NC Global Assets",
+          "headline_top": "A local operating partner",
+          "headline_gold": "international brands"
+        }
+      },
+      "story": {
+        "type": "story",
+        "data": {
+          "lede": "NC Global Assets was founded by entrepreneurs who understood firsthand how hard it is to bring an international brand into a new market — especially one as dynamic and nuanced as Thailand.",
+          "eyebrow": "Our Story",
+          "body_para1": "We saw brilliant brands fail not because their product was wrong, but because they tried to build everything from scratch, alone, without local knowledge or operational infrastructure. We decided to build that infrastructure ourselves.",
+          "body_para2": "Today, our Bangkok building — with its cloud kitchen, offices and showroom — is the operational base from which we help international brands test, launch and grow across Thailand and Southeast Asia. Not as consultants. As partners with skin in the game.",
+          "stat_value": "2+",
+          "headline_top": "Built from the ground up",
+          "headline_gold": "Bangkok.",
+          "stat_label_line1": "Years operating",
+          "stat_label_line2": "in Bangkok",
+          "headline_line2_pre": "in "
+        }
+      },
+      "manifesto": {
+        "type": "manifesto",
+        "data": {
+          "sub": "Most market-entry firms hand you a report and move on. We stay — managing operations, tracking results and adjusting alongside your brand until the numbers work.",
+          "eyebrow": "What makes us different",
+          "pillars": [
+            {
+              "num": "01",
+              "desc": "We operate from our own building in Bangkok — cloud kitchen, offices and showroom. No setup time. No rental risk. Everything is already running from day one.",
+              "icon": "◈",
+              "label": "Real infrastructure"
+            },
+            {
+              "num": "02",
+              "desc": "A bilingual team on the ground that speaks Thai, knows the market and executes alongside your brand every single day — not a remote advisor team.",
+              "icon": "⬡",
+              "label": "Local execution"
+            },
+            {
+              "num": "03",
+              "desc": "Structured as partners, not service providers. Our commercial agreements are tied to your results — we grow when you grow.",
+              "icon": "◎",
+              "label": "Long-term alignment"
+            }
+          ],
+          "headline_top": "We don't advise",
+          "headline_gold": "We operate"
+        }
+      },
+      "numbers": {
+        "type": "numbers",
+        "data": {
+          "stats": [
+            {
+              "label": "Years of founder & operator experience in startups and international expansion",
+              "value": "15+"
+            },
+            {
+              "label": "Years of Digital Marketing expertise driving brands in the Thai market",
+              "value": "6+"
+            },
+            {
+              "label": "From brief to first revenue using our Bangkok infrastructure",
+              "value": "4–8w"
+            },
+            {
+              "label": "Strategic gateway — Thailand as your launchpad for Southeast Asia",
+              "value": "SEA"
+            }
+          ]
+        }
+      },
+      "values": {
+        "type": "values",
+        "data": {
+          "lede": "These aren't wall posters. They are the criteria we use to decide who we work with, how we price our services and whether a partnership is working.",
+          "values": [
+            {
+              "desc": "Every decision starts from a deep understanding of Thailand — its consumers, its culture and its business dynamics.",
+              "label": "Local first"
+            },
+            {
+              "desc": "We don't write strategies that gather dust. We implement them, track them and improve them on the ground.",
+              "label": "Execution over advice"
+            },
+            {
+              "desc": "We tell you what will work and what won't. No overselling, no generic playbooks — just clear, honest guidance.",
+              "label": "Honest partnership"
+            },
+            {
+              "desc": "Our commercial models are tied to your performance. If you don't win, we don't win. That keeps us focused.",
+              "label": "Shared accountability"
+            }
+          ],
+          "eyebrow": "Our Values",
+          "headline_top": "How we show ",
+          "headline_gold": "up every day"
+        }
+      },
+      "approach": {
+        "type": "approach",
+        "data": {
+          "lede": "We don't hand off deliverables and disappear. We work alongside your brand through every step — from first conversation to full commercial operation.",
+          "phases": [
+            {
+              "num": "01",
+              "desc": "We start by learning your brand deeply — product, positioning, goals and real constraints. We do market mapping, competitive research and consumer analysis specific to your category in Thailand. No generic playbooks. No assumptions.",
+              "time": "Week 1–2",
+              "label": "Understand"
+            },
+            {
+              "num": "02",
+              "desc": "We run a real market pilot in Bangkok using our existing infrastructure. Your product reaches real customers through our cloud kitchen and delivery channels. We collect data, ratings and feedback before you commit to full scale.",
+              "time": "Week 3–6",
+              "label": "Test"
+            },
+            {
+              "num": "03",
+              "desc": "Once validated, we build the full operational foundation — local team, sales channels, distribution partners and commercial systems. We grow your brand's footprint across Bangkok and into Southeast Asia with clear performance milestones.",
+              "time": "Month 2–6",
+              "label": "Build"
+            }
+          ],
+          "eyebrow": "How We Work",
+          "headline_top": "Three phases",
+          "headline_gold": "One team"
+        }
+      },
+      "team": {
+        "type": "team",
+        "data": {
+          "team": [
+            {
+              "bio": "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder & Operating Partner",
+              "linkedin": "https://th.linkedin.com/in/carlosjacoste"
+            },
+            {
+              "bio": "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
+              "img": "/assets/nirada-dark.jpg",
+              "name": "Nirada Kritsanaseranee",
+              "role": "Director of Marketing",
+              "linkedin": "https://th.linkedin.com/in/nirada-k"
+            }
+          ],
+          "eyebrow": "The Team",
+          "closing_pre": "Together, the team combines international business vision with ",
+          "closing_gold": "local execution capacity",
+          "headline_top": "Led by operators entrepreneurs and ",
+          "headline_gold": "market builders",
+          "closing_suffix": " in Thailand."
+        }
+      },
+      "testimonials": {
+        "type": "testimonials",
+        "data": {
+          "lede": "From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.",
+          "eyebrow": "Founder Perspectives",
+          "testimonials": [
+            {
+              "q": "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder · Salsa Burgers"
+            },
+            {
+              "q": "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
+              "img": null,
+              "name": "Founder",
+              "role": "The Padel Society · Sport & Lifestyle"
+            },
+            {
+              "q": "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
+              "img": null,
+              "name": "Founder",
+              "role": "Souji · Food & Wellness"
+            }
+          ],
+          "headline_accent": "Founder",
+          "headline_suffix": " perspectives"
+        }
+      }
+    },
+    "updatedAt": "2026-05-21T05:34:23.024667"
+  },
+  "contact": {
+    "title": "Contact",
+    "seoTitle": "Contact — NC Global Assets Bangkok",
+    "seoDescription": "Get in touch with NC Global Assets. Book a call, send a message or visit our Bangkok office. We reply within 24 hours.",
+    "ogImage": "/og-contact.jpg",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "sub": "Tell us about your brand, goals, and expansion plans. Our team will get back to you shortly with clear next steps.",
+          "eyebrow": "Get in touch",
+          "headline_top": "Let's build your",
+          "headline_gold": "Thailand growth"
+        }
+      },
+      "office": {
+        "type": "office",
+        "data": {
+          "hours": "Mon–Sat · 10:00–18:00 (ICT)",
+          "address": "507/10 Sathu Pradit Rd, Chong Nonsi, Yan Nawa, Bangkok 10120, Thailand"
+        }
+      },
+      "form-aside": {
+        "type": "form-aside",
+        "data": {
+          "body": "Fill in the form and we'll come back with a clear view of how NC Global Assets can support your brand's entry into Thailand — infrastructure, timeline and commercial model included.",
+          "chat_cta": "Book a Call",
+          "chat_label": "Prefer a direct chat?",
+          "trust_items": [
+            "We reply within one business day from Bangkok",
+            "No commitment required for a first conversation",
+            "We work with a limited number of brands per quarter",
+            "English, Spanish and Thai spoken"
+          ]
+        }
+      }
+    },
+    "updatedAt": "2026-05-21T05:34:23.024667"
+  },
+  "home": {
+    "title": "Home",
+    "seoTitle": "NC Global Assets — Bangkok Operating Partner for Brand Launch",
+    "seoDescription": "International brands use our Bangkok infrastructure to test, launch and operate in Thailand. Cloud kitchen, offices, team. Real revenue from day one.",
+    "ogImage": "/og-home.jpg",
+    "keywords": "",
+    "schema": {
+      "type": "ProfessionalService",
+      "name": "NC Global Assets",
+      "description": "",
+      "telephone": "",
+      "address": "",
+      "city": "Bangkok",
+      "country": "TH",
+      "sameAs": ""
+    },
+    "sections": {
+      "hero": {
+        "type": "hero",
+        "data": {
+          "body": "We give international brands the infrastructure, the local team and the operational base to enter Thailand. No setup from scratch. Real revenue from day one.",
+          "spaces": [
+            {
+              "desc": "Present your brand to buyers & partners",
+              "icon": "◈",
+              "label": "Showroom"
+            },
+            {
+              "desc": "Local team base & brand management",
+              "icon": "⬡",
+              "label": "Offices"
+            },
+            {
+              "desc": "Production-ready, live on delivery apps",
+              "icon": "◎",
+              "label": "Cloud Kitchen"
+            }
+          ],
+          "eyebrow": "Bangkok · Local Operating Partner",
+          "spaces_label": "What's ready for your brand",
+          "headline_line1": "Enter Thailand.",
+          "headline_line2": "Skip the ",
+          "hidden_heading": "Premium Real Estate & Investment Management in Bangkok",
+          "headline_line2_gold": "hard part.",
+          "headline_line3_gold": "Your brand live in weeks."
+        }
+      },
+      "intro": {
+        "type": "intro",
+        "data": {
+          "lede": "We built the infrastructure so you don't have to. Cloud kitchen. Office. Showroom. Local team. Distribution channels. Everything you need to enter Thailand is already running — waiting for your brand.",
+          "eyebrow": "The Opportunity",
+          "heading": "Thailand is one of Southeast Asia's fastest-growing consumer markets — and most international brands never make it past the planning stage. Not because the opportunity isn't there. Because they try to build everything",
+          "cta_label": "See how it works",
+          "badge_city": "Bangkok",
+          "badge_label": "Southeast Asia's fastest-growing market",
+          "heading_accent": "from scratch, alone."
+        }
+      },
+      "market-stats": {
+        "type": "market-stats",
+        "data": {
+          "sup": "Why Thailand · Why now",
+          "stats": [
+            {
+              "num": "80M+",
+              "label": "Consumers in Southeast Asia's growth corridor"
+            },
+            {
+              "num": "#1",
+              "label": "Bangkok ranked for F&B delivery density in Southeast Asia"
+            },
+            {
+              "num": "20%+",
+              "label": "Annual growth rate in Thailand's consumer market"
+            },
+            {
+              "num": "4–8",
+              "label": "Weeks to your first market test using our infrastructure"
+            }
+          ],
+          "headline_top": "The numbers that make ",
+          "headline_gold": "Bangkok the move"
+        }
+      },
+      "what-we-do": {
+        "type": "what-we-do",
+        "data": {
+          "lede": "Three phases. One local partner. From your first product test in Bangkok to a fully operating brand across Southeast Asia — we manage the entire journey with you.",
+          "cards": [
+            {
+              "idx": "01",
+              "body": "Validate real demand in Bangkok before committing — pilot your product, collect customer feedback and confirm product-market fit using our infrastructure.",
+              "title": "Test the Market"
+            },
+            {
+              "idx": "02",
+              "body": "Adapt your brand for the Thai market, design your go-to-market strategy and activate the right local channels, partners and platforms from day one.",
+              "title": "Build the Launch"
+            },
+            {
+              "idx": "03",
+              "body": "Run daily operations from our Bangkok base and grow your footprint across Thailand and Southeast Asia with a local team directly invested in your results.",
+              "title": "Operate & Scale"
+            }
+          ],
+          "eyebrow": "How It Works",
+          "headline_top": "From market test to ",
+          "headline_gold": "full operation"
+        }
+      },
+      "operating-partner": {
+        "type": "operating-partner",
+        "data": {
+          "body": "Under one roof: a fully equipped cloud kitchen, working offices and a branded showroom. Your brand gets a real operational home in Bangkok from the moment we start working together.",
+          "lede": "We operate from our own building in Bangkok — a dedicated space built for international brands entering Thailand. No rental risk. No setup delays. Everything is already running.",
+          "spaces": [
+            {
+              "desc": "Fully equipped production kitchen for F&B brands — ready to operate from day one.",
+              "label": "Cloud Kitchen"
+            },
+            {
+              "desc": "Working space for brand management, local team coordination and partner meetings.",
+              "label": "Offices"
+            },
+            {
+              "desc": "Presentation space to showcase your brand to retail buyers, distributors and local partners.",
+              "label": "Showroom"
+            }
+          ],
+          "eyebrow": "Our Base",
+          "headline_top": "Our Bangkok building",
+          "headline_gold": "Your operational base",
+          "pullquote_pre": "Built for ",
+          "pullquote_post": "not theory",
+          "pullquote_accent": "execution"
+        }
+      },
+      "why-thailand": {
+        "type": "why-thailand",
+        "data": {
+          "lede": "Bangkok offers a unique combination of scale, creativity and openness to international concepts — the ideal testing ground before expanding across the region.",
+          "bullets": [
+            "One of SEA's fastest-growing F&B and lifestyle markets",
+            "Strong delivery ecosystem and digital adoption",
+            "High concentration of international consumers and tourism",
+            "Strategic gateway to the rest of Southeast Asia",
+            "A market genuinely open to new concepts and experiences"
+          ],
+          "eyebrow": "Why Thailand",
+          "headline_top": "Bangkok first",
+          "subheading_pre": "A market built for brands that know how to ",
+          "headline_accent": "Southeast Asia",
+          "headline_suffix": " next",
+          "subheading_accent": "show up well",
+          "subheading_suffix": "."
+        }
+      },
+      "infrastructure": {
+        "type": "infrastructure",
+        "data": {
+          "lede": "Our Bangkok-based operating infrastructure lets brands enter the market efficiently — without building everything from scratch on day one.",
+          "blocks": [
+            {
+              "num": "01",
+              "body": "Local food preparation, product adaptation and operational setup from day one.",
+              "title": "Production"
+            },
+            {
+              "num": "02",
+              "body": "Activation across delivery platforms, retail and selected commercial partners.",
+              "title": "Sales Channels"
+            },
+            {
+              "num": "03",
+              "body": "Real customer insights, sales performance data and continuous product validation.",
+              "title": "Market Feedback"
+            },
+            {
+              "num": "04",
+              "body": "On-the-ground management, local coordination and growth execution.",
+              "title": "Daily Operations"
+            }
+          ],
+          "eyebrow": "Infrastructure",
+          "headline_top": "Real infrastructure",
+          "headline_gold": "Real",
+          "headline_suffix": " market entry"
+        }
+      },
+      "who-we-work-with": {
+        "type": "who-we-work-with",
+        "data": {
+          "lede": "We work with a curated number of brands at a time — ensuring each partnership gets real attention, local expertise and hands-on execution.",
+          "items": [
+            {
+              "idx": "01",
+              "sub": "Concepts with a distinct product and a real story to tell in Thailand.",
+              "ttl": "F&B Thailand"
+            },
+            {
+              "idx": "02",
+              "sub": "Teams with track record ready to scale their model internationally.",
+              "ttl": "Proven Operators"
+            },
+            {
+              "idx": "03",
+              "sub": "Builders committed to a thoughtful, long-term regional expansion.",
+              "ttl": "Ambitious Founders"
+            },
+            {
+              "idx": "04",
+              "sub": "Ventures aligned with Thailand's lifestyle and innovation landscape.",
+              "ttl": "Strategic Projects"
+            }
+          ],
+          "eyebrow": "Who We Work With",
+          "headline_top": "Selected brands with ",
+          "headline_gold": "real potential"
+        }
+      },
+      "our-model": {
+        "type": "our-model",
+        "data": {
+          "lede": "We combine operational capacity with long-term alignment. Our commercial agreements are structured around the specific needs of each brand and project.",
+          "quote": "We aim to be the local partner that makes your brand grow in Thailand.",
+          "blocks": [
+            {
+              "ttl": "Operational Setup",
+              "body": "Local infrastructure, kitchen capacity and channel activation — ready from day one."
+            },
+            {
+              "ttl": "Local Execution",
+              "body": "Hands-on management of operations, sales, brand and customer experience in Bangkok."
+            },
+            {
+              "ttl": "Shared Growth",
+              "body": "Aligned commercial models — fixed structures, performance-based, revenue share or equity."
+            }
+          ],
+          "eyebrow": "Our Model",
+          "headline_top": "A partnership built around ",
+          "headline_gold": "shared growth"
+        }
+      },
+      "compare": {
+        "type": "compare",
+        "data": {
+          "lede": "Most paths to Thailand require years of groundwork, legal setup and local trial-and-error. NC Global is the only model where your brand is operational from week one.",
+          "eyebrow": "How We Compare",
+          "footer_note": "We onboard a limited number of brands per quarter.",
+          "headline_top": "Four ways to enter",
+          "headline_gold": "Thailand"
+        }
+      },
+      "ecosystem": {
+        "type": "ecosystem",
+        "data": {
+          "lede": "We collaborate with selected partners across food innovation, entrepreneurship, marketing, business development and international expansion.",
+          "eyebrow": "Ecosystem",
+          "headline_pre": "A ",
+          "headline_accent": "trusted",
+          "headline_suffix": " local ecosystem"
+        }
+      },
+      "brands-projects": {
+        "type": "brands-projects",
+        "data": {
+          "lede": "A curated portfolio across F&B, sustainability, sport, lifestyle and digital innovation — each with a real story and a real ambition.",
+          "eyebrow": "Brands & Projects",
+          "headline_top": "Brands in our ",
+          "headline_gold": "network"
+        }
+      },
+      "testimonials": {
+        "type": "testimonials",
+        "data": {
+          "lede": "From the brands that have been through it — testing, launching and operating in Bangkok with NC Global as their local partner.",
+          "eyebrow": "Founder Perspectives",
+          "testimonials": [
+            {
+              "q": "We went from brief to live on GrabFood in under two weeks. NC Global gave us the kitchen, the team and the delivery activation — we focused entirely on the product. Real orders from day one.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder · Salsa Burgers"
+            },
+            {
+              "q": "What sets them apart is that they operate, not just advise. We had a local team representing our brand in Bangkok from the first week — that changes the entire dynamic of entering a new market.",
+              "img": null,
+              "name": "Founder",
+              "role": "The Padel Society · Sport & Lifestyle"
+            },
+            {
+              "q": "NC Global already had the infrastructure, the platforms and the relationships in place. We walked into a running system instead of building one from zero. That's months of groundwork we didn't have to do.",
+              "img": null,
+              "name": "Founder",
+              "role": "Souji · Food & Wellness"
+            }
+          ],
+          "headline_accent": "Founder",
+          "headline_suffix": " perspectives"
+        }
+      },
+      "team": {
+        "type": "team",
+        "data": {
+          "team": [
+            {
+              "bio": "Entrepreneur and founder of Startups Factory — 15+ years in startups, open innovation, digital growth and international expansion. Worked with ICEX, Playtomic and other innovation-driven ventures.",
+              "img": "/assets/carlos-dark.jpg",
+              "name": "Carlos Jacoste",
+              "role": "Founder & Operating Partner",
+              "linkedin": "https://th.linkedin.com/in/carlosjacoste"
+            },
+            {
+              "bio": "Digital marketing director with 6+ years of experience leading paid media, brand activation and go-to-market strategies for companies entering new markets. Deep understanding of the Thai consumer — connecting strategy, content and local execution.",
+              "img": "/assets/nirada-dark.jpg",
+              "name": "Nirada Kritsanaseranee",
+              "role": "Director of Marketing",
+              "linkedin": "https://th.linkedin.com/in/nirada-k"
+            }
+          ],
+          "eyebrow": "The Team",
+          "closing_pre": "Together, the team combines international business vision with ",
+          "closing_gold": "local execution capacity",
+          "headline_top": "Led by operators entrepreneurs and ",
+          "headline_gold": "market builders",
+          "closing_suffix": " in Thailand."
+        }
+      },
+      "faq": {
+        "type": "faq",
+        "data": {
+          "lede": "Everything you need to know about working with NC Global Assets and entering the Thai market.",
+          "items": [
+            {
+              "a": "We focus exclusively on Thailand, with Bangkok as our primary operating base. From Bangkok, brands can build a foundation for a wider Southeast Asian expansion.",
+              "q": "What markets do you focus on?"
+            },
+            {
+              "a": "F&B is our strongest vertical, but we work with selected brands across lifestyle, sustainability, sport and digital platforms. The key criterion is whether your brand has a differentiated product and a real ambition to grow in Thailand.",
+              "q": "Do you only work with F&B brands?"
+            },
+            {
+              "a": "We work alongside brands as a local operating partner — not an external consultant. Agreements are structured as fixed models, performance-based fees, revenue share or equity participation depending on the project.",
+              "q": "How does the partnership model work?"
+            },
+            {
+              "a": "Absolutely. Market validation is one of the first phases we support. We run real sales pilots, gather customer feedback and validate product-market fit in Bangkok before scaling.",
+              "q": "Can I test the market before fully committing?"
+            },
+            {
+              "a": "A focused market test can be set up in 4–8 weeks using our existing infrastructure. A full market launch typically takes 3–6 months depending on the complexity of your product and model.",
+              "q": "How long does it take to launch in Thailand?"
+            },
+            {
+              "a": "Book a call or send us a brief through the contact form. We will review your brand, understand your goals and come back with a clear view of how we can support your Thailand entry.",
+              "q": "How do I get started?"
+            }
+          ],
+          "eyebrow": "FAQ",
+          "headline_top": "Frequently asked ",
+          "headline_gold": "questions"
+        }
+      },
+      "lead-magnet": {
+        "type": "lead-magnet",
+        "data": {
+          "lede": "Everything you need to validate, plan and launch your brand in Thailand — in a single practical guide. Used internally by every brand we onboard.",
+          "points": [
+            "Market validation checklist before you commit",
+            "The 5 setup mistakes foreign brands make in Bangkok",
+            "Platform activation guide: GrabFood, Foodpanda & Lineman",
+            "Local partner evaluation framework",
+            "90-day launch timeline template"
+          ],
+          "eyebrow": "Free Resource",
+          "form_label": "Get the free checklist",
+          "success_sub": "Check your inbox — we'll send the checklist shortly. Or download it directly below.",
+          "headline_gold": "Brand Entry",
+          "success_title": "You're on the list.",
+          "headline_line1": "The Bangkok",
+          "headline_line3": "Checklist."
+        }
+      },
+      "final-cta": {
+        "type": "final-cta",
+        "data": {
+          "ready_lede": "Book a call with our team. We'll assess your brand and outline exactly how to enter Thailand — infrastructure, timeline and commercial model included.",
+          "ready_note1": "Limited spots per quarter",
+          "ready_note2": "Transparent model · Pricing shared in the first call",
+          "notready_lede": "Not sure if Thailand is the right move yet? No pressure. We're happy to have an honest conversation about your brand, your goals and what market entry could realistically look like.",
+          "ready_eyebrow": "Next Step",
+          "notready_footer": "We reply from Bangkok within 24 hours.",
+          "notready_eyebrow": "Still exploring?",
+          "ready_headline_gold": "Let's build it",
+          "ready_headline_line1": "Your brand",
+          "ready_headline_line2": "Bangkok",
+          "notready_headline_top": "Let's talk",
+          "notready_headline_gold": "before you decide"
+        }
+      }
+    },
+    "updatedAt": "2026-05-21T05:34:23.024667"
+  }
+}

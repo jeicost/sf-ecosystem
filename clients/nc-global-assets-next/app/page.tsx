@@ -23,6 +23,7 @@ import { LeadMagnet } from '@/components/sections/LeadMagnet'
 import { FinalCTA } from '@/components/sections/FinalCTA'
 import { draftMode } from 'next/headers'
 import { loadCmsSections, loadCmsSectionsLive, mergeCms } from '@/lib/cms-pages'
+import { slugFor, type Locale } from '@/lib/i18n'
 import { DraftBanner } from '@/components/DraftBanner'
 import { BRANDS_PROJECTS_DEFAULTS, COMPARE_DEFAULTS, ECOSYSTEM_DEFAULTS, FAQ_DEFAULTS, FINAL_CTA_DEFAULTS, HERO_DEFAULTS, INFRASTRUCTURE_DEFAULTS, INTRO_DEFAULTS, LEAD_MAGNET_DEFAULTS, MARKET_STATS_DEFAULTS, OPERATING_PARTNER_DEFAULTS, OUR_MODEL_DEFAULTS, TEAM_DEFAULTS, TESTIMONIALS_DEFAULTS, WHAT_WE_DO_DEFAULTS, WHO_WE_WORK_WITH_DEFAULTS, WHY_THAILAND_DEFAULTS } from '@/lib/section-defaults'
 
@@ -36,11 +37,11 @@ export const metadata = {
   },
 }
 
-export default async function HomePage() {
+export async function HomePage({ locale }: { locale: Locale }) {
   // Draft Mode (EDUX-N4 preview): live-fetch (possibly unpublished) instead
   // of the build-time bake when active; any failure falls back to the bake.
   const { isEnabled: isDraft } = await draftMode()
-  const cms = isDraft ? (await loadCmsSectionsLive('home')) ?? loadCmsSections('home') : loadCmsSections('home')
+  const cms = isDraft ? (await loadCmsSectionsLive(slugFor('home', locale))) ?? loadCmsSections(slugFor('home', locale)) : loadCmsSections(slugFor('home', locale))
 
   return (
     <>
@@ -71,4 +72,9 @@ export default async function HomePage() {
       <FinalCTA data={mergeCms(FINAL_CTA_DEFAULTS, cms['final-cta']?.data)} />
     </>
   )
+}
+
+/** La raíz es el inglés. El tailandés vive en app/th/ y monta este mismo componente. */
+export default function Page() {
+  return <HomePage locale="en" />
 }

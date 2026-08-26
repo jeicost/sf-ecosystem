@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Arrow, Calendar, CONFIG, Eyebrow } from '@/lib/constants'
 import { ContactForm } from '@/components/ContactForm'
 import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
+import { slugFor, type Locale } from '@/lib/i18n'
 
 export const metadata: Metadata = {
   title: 'Contact — NC Global Assets',
@@ -38,8 +39,8 @@ const FORM_ASIDE_DEFAULTS = {
   chat_cta: 'Book a Call',
 }
 
-export default function ContactPage() {
-  const cms = loadCmsSections('contact')
+export function ContactPage({ locale }: { locale: Locale }) {
+  const cms = loadCmsSections(slugFor('contact', locale))
   const hero = mergeCms(HERO_DEFAULTS, cms['hero']?.data)
   const office = mergeCms(OFFICE_DEFAULTS, cms['office']?.data)
   const formAside = mergeCms(FORM_ASIDE_DEFAULTS, cms['form-aside']?.data)
@@ -158,4 +159,9 @@ export default function ContactPage() {
       </section>
     </>
   )
+}
+
+/** La raíz es el inglés. El tailandés vive en app/th/ y monta este mismo componente. */
+export default function Page() {
+  return <ContactPage locale="en" />
 }

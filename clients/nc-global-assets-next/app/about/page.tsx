@@ -5,6 +5,7 @@ import { Team } from '@/components/sections/Team'
 import { Testimonials } from '@/components/sections/Testimonials'
 import { CtaBanner } from '@/components/CtaBanner'
 import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
+import { slugFor, type Locale } from '@/lib/i18n'
 import { TEAM_DEFAULTS, TESTIMONIALS_DEFAULTS } from '@/lib/section-defaults'
 
 export const metadata: Metadata = {
@@ -31,8 +32,8 @@ const HERO_DEFAULTS = {
   ],
 }
 
-export default function AboutPage() {
-  const cms = loadCmsSections('about')
+export function AboutPage({ locale }: { locale: Locale }) {
+  const cms = loadCmsSections(slugFor('about', locale))
   const hero = mergeCms(HERO_DEFAULTS, cms['hero']?.data)
   const story = mergeCms(ABOUT_STORY_DEFAULTS, cms['story']?.data)
   const manifesto = mergeCms(ABOUT_MANIFESTO_DEFAULTS, cms['manifesto']?.data)
@@ -78,4 +79,9 @@ export default function AboutPage() {
       <CtaBanner text="Ready to explore working together?" cta="Book a Call" />
     </>
   )
+}
+
+/** La raíz es el inglés. El tailandés vive en app/th/ y monta este mismo componente. */
+export default function Page() {
+  return <AboutPage locale="en" />
 }

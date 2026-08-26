@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Arrow, Calendar, ChatIcon, CALENDLY_URL} from '@/lib/constants'
+import { LangSwitch } from '@/components/LangSwitch'
 
 const NAV_LINKS = [
   { to: '/', label: 'Home', exact: true },
@@ -60,6 +61,7 @@ export function Nav() {
           )}
         </div>
         <div className="nav-right">
+          <LangSwitch className="nav-link" />
           <a href={CONFIG.calendlyUrl} target="_blank" rel="noopener" className="btn btn--primary nav-cta">
             Book a Call <Arrow />
           </a>
@@ -81,6 +83,8 @@ export function Nav() {
                 ? <a key={l.to} href={l.to} onClick={close}>{l.label}</a>
                 : <Link key={l.to} href={l.to} onClick={close} className={isActive(l) ? 'active' : ''}>{l.label}</Link>
             )}
+            {/* El idioma, con el resto de enlaces del menú móvil. */}
+            <LangSwitch onNavigate={close} />
           </div>
           <div className="nav-mobile-cta">
             <a href={CONFIG.calendlyUrl} target="_blank" rel="noopener" className="btn btn--primary" onClick={close}>

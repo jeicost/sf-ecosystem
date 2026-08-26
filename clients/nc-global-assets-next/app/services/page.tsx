@@ -3,6 +3,7 @@ import { Arrow, Eyebrow } from '@/lib/constants'
 import { CompareSection } from '@/components/sections/CompareSection'
 import { FinalCTA } from '@/components/sections/FinalCTA'
 import { loadCmsSections, mergeCms } from '@/lib/cms-pages'
+import { slugFor, type Locale } from '@/lib/i18n'
 import { COMPARE_DEFAULTS, FINAL_CTA_DEFAULTS } from '@/lib/section-defaults'
 
 export const metadata: Metadata = {
@@ -113,8 +114,8 @@ const SERVICES_DEFAULTS = {
   items: SERVICES_DEFAULT_ITEMS,
 }
 
-export default function ServicesPage() {
-  const cms = loadCmsSections('services')
+export function ServicesPage({ locale }: { locale: Locale }) {
+  const cms = loadCmsSections(slugFor('services', locale))
   const hero = mergeCms(HERO_DEFAULTS, cms['hero']?.data)
   const atAGlance = mergeCms(AT_A_GLANCE_DEFAULTS, cms['at-a-glance']?.data)
   const servicesData = mergeCms(SERVICES_DEFAULTS, cms['services']?.data)
@@ -224,4 +225,9 @@ export default function ServicesPage() {
       <FinalCTA data={finalCta} />
     </>
   )
+}
+
+/** La raíz es el inglés. El tailandés vive en app/th/ y monta este mismo componente. */
+export default function Page() {
+  return <ServicesPage locale="en" />
 }
