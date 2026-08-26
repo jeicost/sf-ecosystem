@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { runDueTasks } from '@/lib/goals/executor'
+import { onGoalClosed } from '@/lib/goals/hooks'
 import { goalsEnabled } from '@/lib/goals/types'
 
 // El latido de los objetivos del sistema: cada hora, lo que tocaba generar se
@@ -26,14 +27,28 @@ export async function GET(req: NextRequest) {
   const run = await runDueTasks(admin, { limit: 40, inlineDocuments: true, budgetMs: 210_000 })
 
   // Cerrar objetivos vencidos sin trabajo pendiente.
+  //
+  // 'queued' SIGUE bloqueando, y es deliberado: significa «en la cola de
+  // aprobación, esperando decisión». Se probó a quitarlo y una revisión
+  // adversarial encontró el agujero: al cerrarse el objetivo, si el cliente
+  // rechaza más tarde una de esas piezas, la tarea vuelve a 'pending' para
+  // regenerarse… y nadie la ejecuta nunca, porque tanto el hook como el cron
+  // solo miran objetivos 'active'. Un rechazo tardío se perdía en silencio
+  // (26-ago-2026).
   const today = new Date().toISOString().slice(0, 10)
-  const { data: vencidos } = await admin.from('client_goals').select('id').eq('status', 'active').lt('period_end', today)
+  const { data: vencidos } = await admin
+    .from('client_goals')
+    .select('id, client_id, title, brief, period_start, period_end')
+    .eq('status', 'active').lt('period_end', today)
   let closed = 0
   for (const g of vencidos ?? []) {
     const { count } = await admin.from('goal_tasks').select('id', { count: 'exact', head: true })
       .eq('goal_id', g.id).in('status', ['pending', 'waiting', 'generating', 'queued'])
     if (!count) {
       await admin.from('client_goals').update({ status: 'done' }).eq('id', g.id)
+      // Resumen a la memoria del proyecto: lo de esta semana es contexto de la
+      // siguiente. El doc de diseño lo prometía y nunca se escribió.
+      await onGoalClosed(admin, g)
       closed++
     }
   }

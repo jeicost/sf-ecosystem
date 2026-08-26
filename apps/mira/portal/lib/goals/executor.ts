@@ -195,6 +195,10 @@ async function runOne(admin: Admin, task: TaskRow, goal: { title: string; create
     // El ejecutor cierra su propia tarea en vez de esperar a onDocumentCompleted:
     // el hook busca por result_ref con status 'queued', y aquí ya sabemos cuál es
     // la tarea. Evita depender del orden de escritura y de un ciclo de imports.
+    // 'approved' directo: un documento no pasa por la cola de aprobación. Que
+    // el cliente lo vea se resuelve en la pantalla (el enlace «Open» se pinta
+    // también para las aprobadas), no dejando la tarea esperando un clic —eso
+    // bloqueaba a sus hijas y con ellas el cierre del objetivo.
     await admin.from('goal_tasks').update({
       status: 'approved', result_kind: 'generation_queue', result_ref: queueId,
       generated_at: new Date().toISOString(), decided_at: new Date().toISOString(), last_error: null,

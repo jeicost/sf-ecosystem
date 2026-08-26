@@ -256,7 +256,12 @@ export default function GoalsPage() {
                   {t.status === 'queued' && t.result_kind === 'approval_queue' && (
                     <a href="/approvals" className="text-xs underline text-ink-secondary hover:text-ink">Review</a>
                   )}
-                  {t.status === 'queued' && t.result_kind === 'generation_queue' && t.result_ref && (
+                  {/* El enlace al documento se pinta en 'queued' Y en 'approved'.
+                      Antes solo en 'queued', y como los documentos se aprueban
+                      solos al generarse, la condición no se cumplía nunca: el
+                      cliente jamás veía el enlace a su playbook. Ese era el bug
+                      —una condición de pantalla— y no la máquina de estados. */}
+                  {(t.status === 'queued' || t.status === 'approved') && t.result_kind === 'generation_queue' && t.result_ref && (
                     <a href={`/documents/${t.result_ref}`} className="text-xs underline text-ink-secondary hover:text-ink">Open</a>
                   )}
                 </li>
