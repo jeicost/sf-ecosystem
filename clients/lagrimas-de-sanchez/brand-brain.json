@@ -1,0 +1,120 @@
+{
+  "client_name": "Lágrimas de Sánchez",
+  "slug": "lagrimas-de-sanchez",
+  "tagline": "La botella no se recicla. Se guarda.",
+  "tagline_alt": "67 motivos para llorar. Uno por pieza.",
+  "industry": "Vino y objeto de regalo · D2C",
+  "founded": "2026",
+  "website": "lagrimasdesanchez.com",
+  "contact": "hola@lagrimasdesanchez.com",
+  "mission": "Convertir la hemeroteca política española en un objeto que la gente quiere tener en la estantería, no en un chiste que se tira.",
+  "positioning": "No es un negocio de vino: es un negocio de regalo con vino dentro. La competencia no son las bodegas, son los productos de regalo con gracia. El diferencial no es el humor político, que lo tiene cualquier camiseta: es que la botella es objeto de colección y se queda después de bebida.",
+  "business_model": "Un solo SKU de vidrio serigrafiado, tres presentaciones. La botella vacía es el margen y el volumen (77% bruto, cero fricción regulatoria, envío mundial, publicidad pagada abierta). El vino es la prensa y la credibilidad (56% bruto, alta carga regulatoria). Tirada de vidrio por lotes, etiqueta y estuche bajo demanda.",
+  "awards": [],
+  "case_studies": [],
+  "partners": [],
+  "audience_primary": {
+    "name": "El que regala",
+    "role": "Comprador de regalo, 30-55",
+    "age": "30-55",
+    "location": "España, principalmente Madrid y grandes ciudades",
+    "pain": "Necesita un detalle que no sea otra botella de vino más ni otra taza con frase",
+    "desire": "Que el que lo recibe se ría y además le parezca un buen producto",
+    "channels": "Instagram, X, prensa política, boca a boca"
+  },
+  "audience_secondary": {
+    "name": "El coleccionista de actualidad",
+    "role": "Consumidor de política como entretenimiento",
+    "age": "25-60",
+    "location": "España y diáspora española",
+    "pain": "Consume actualidad todo el día y no tiene dónde materializarla",
+    "desire": "Un objeto que resuma la década y que se pueda enseñar",
+    "channels": "X, podcasts de actualidad, YouTube"
+  },
+  "brand_voice": [
+    "Deadpan: la marca nunca se ríe de su propio chiste",
+    "Seca y breve, casi notarial",
+    "El humor vive en el vidrio; la web y el packaging son sobrios",
+    "Cero exclamaciones, cero emojis, cero lenguaje de tienda online",
+    "Español de España"
+  ],
+  "brand_values": [
+    "La cita antes que la caricatura",
+    "El objeto antes que el chiste",
+    "Nada de caras: lo dice el texto",
+    "Producto real, no souvenir con líquido dentro",
+    "Numerado a mano, no serie limitada de mentira"
+  ],
+  "differentiator": "Serigrafía cerámica vitrificada a 600 °C cubriendo la botella entera, sin etiqueta frontal. No se despega, aguanta lavavajillas y convierte el envase en el producto. Y ni una sola cara: toda la sátira la cargan 67 piezas tipográficas, lo que la hace registrable, exportable y vendible en retail.",
+  "products": [
+    { "name": "La botella", "price": "22 €", "desc": "Vacía y rellenable, con cierre y caja. Numerada a mano. Coste 4,60 €, margen bruto 75%" },
+    { "name": "El estuche completo", "price": "39 €", "desc": "Una vacía y una con vino. La que mejor explica el concepto" },
+    { "name": "Pack de tres vinos", "price": "69 €", "desc": "Tinto DO Vinos de Madrid. Coste 24,86 €, margen bruto 56%" }
+  ],
+  "competitors": [
+    "El Xitxarel·lo (Penedès) — referencia estructural: palabrario serigrafiado",
+    "Matsu (Toro) — marca construida sobre la etiqueta",
+    "Gran Cerdo (Rioja) — vino irreverente con carga política",
+    "Merchandising político y regalo de humor en general"
+  ],
+  "content_pillars": [
+    "La hemeroteca: cada pieza tiene su historia",
+    "El proceso: vidrio, horno a 600 grados, numeración a mano",
+    "Las dos vidas de la botella: llena y rellenable",
+    "El vino de Madrid: DO Arganda, a 50 km de Sol",
+    "Coleccionismo: la edición numerada"
+  ],
+  "channels": [
+    "Web propia D2C (lagrimasdesanchez.com)",
+    "Instagram y X orgánico",
+    "Prensa y podcasts de actualidad política",
+    "Prescriptores de medios políticos (no de vino)",
+    "Marketplaces para la botella vacía"
+  ],
+  "campaigns_active": [],
+  "month1_weeks": [
+    "Semana 1: presupuestos de serigrafía y vidrio, llamadas a bodegas, registro de marca en OEPM",
+    "Semana 2: elección de vino y de acabado de boca con precios reales en la mano",
+    "Semana 3: ilustrador contratado con cesión de derechos, revisión legal del pack de 67 antes de arte final",
+    "Semana 4-6: producción del vidrio y montaje de la web"
+  ],
+  "influencer_tiers": [
+    "Prescriptores de medios políticos y podcasts de actualidad — el núcleo",
+    "Cuentas de humor y memes de actualidad española",
+    "NO influencers de vino: el producto no compite ahí"
+  ],
+  "paid_media": [
+    "BLOQUEADO para el vino: Meta y Google prohíben publicidad de alcohol combinada con contenido político",
+    "ABIERTO parcialmente para la botella vacía: Meta exige autorización previa y aviso de responsabilidad para contenido político, y solo en el país donde te autorices",
+    "Estrategia forzosa: orgánico, PR y prescriptor. Coste de adquisición cercano a cero si la pieza es buena; sin palanca que comprar si no prende"
+  ],
+  "kpis": [
+    "Botellas vendidas del primer lote de 1.000",
+    "Reparto vacía / vino (define la compra del segundo lote)",
+    "Coste de adquisición orgánico por pedido",
+    "Ticket medio (objetivo: que gane el estuche completo de 39 €)",
+    "Menciones en prensa y podcasts"
+  ],
+  "action_items": [
+    "Registrar la marca en la OEPM (~125 €) — único punto donde un tercero puede adelantarse",
+    "Cerrar presupuestos: 4 serigrafistas, 4 vidrieros, 3 bodegas",
+    "Decidir acabado de boca: corcho vs cierre mecánico, con precios en la mano",
+    "Confirmar con el Consejo Regulador de Vinos de Madrid si admite cierre mecánico",
+    "Contratar ilustrador para las 67 piezas en SVG (1.500-3.000 €)",
+    "Revisión legal del pack completo antes de arte final (600-1.500 €)"
+  ],
+  "colors": {
+    "primary": "#7A4A18",
+    "secondary": "#4E2C0B",
+    "accent": "#B4342A",
+    "bg": "#14100B",
+    "text": "#F6F1E6",
+    "text_muted": "#A0702E"
+  },
+  "fonts": {
+    "display": "Serif de alto contraste, editorial",
+    "body": "Grotesca condensada, peso 700, mayúsculas",
+    "mono": "Monoespaciada para datos, precios y ficha técnica"
+  },
+  "budget_monthly": "Inversión inicial estimada 11.000-15.000 € para 1.000 botellas. Sin presupuesto mensual recurrente definido."
+}

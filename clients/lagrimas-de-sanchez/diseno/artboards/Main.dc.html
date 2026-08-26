@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    a { color: #A0702E; } a:hover { color: #F6F1E6; }
+
+    .glass {
+      position: relative; width: 252px; height: 830px;
+      clip-path: path('M 4,828 L 4,352 C 4,276 82,312 82,208 L 82,34 C 82,22 76,18 76,8 L 76,2 L 176,2 L 176,8 C 176,18 170,22 170,34 L 170,208 C 170,312 248,276 248,352 L 248,828 Z');
+      background: linear-gradient(100deg,#3F2308 0%,#7A4A18 17%,#A0702E 47%,#7A4A18 79%,#3F2308 100%);
+    }
+    .cap {
+      position: absolute; left: 74px; top: 0; width: 104px; height: 116px;
+      background: linear-gradient(100deg,#0B0906 0%,#39312A 42%,#0B0906 100%);
+    }
+    .capline { position: absolute; left: 72px; top: 104px; width: 108px; height: 3px; background: #0B0906; }
+
+    .wrap {
+      position: absolute; left: 0; top: 196px; right: 0; bottom: 26px;
+      padding: 0 15px; display: flex; flex-direction: column;
+      justify-content: space-between; color: #F6F1E6;
+    }
+    .band { display: flex; align-items: flex-end; justify-content: space-between; gap: 6px; width: 100%; }
+    .band.c { justify-content: center; }
+    .p { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .t { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-weight: 700;
+         line-height: .92; text-align: center; letter-spacing: .02em; }
+    .xl { font-size: 30px; }
+    .lg { font-size: 20px; }
+    .md { font-size: 13px; }
+    .sm { font-size: 9px; letter-spacing: .06em; }
+    .box { background: #F6F1E6; color: #7A4A18; padding: 2px 7px 3px; border-radius: 3px; }
+    .seal { border: 1.5px solid #F6F1E6; border-radius: 50%; width: 42px; height: 42px;
+            display: flex; align-items: center; justify-content: center; }
+    .ico { display: block; }
+
+    .lock { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0; }
+    .lock .stars { font-family: "Barlow Condensed", sans-serif; font-size: 10px; letter-spacing: 8px; }
+    .lock .n1 { font-family: "DM Serif Display", Georgia, serif; font-size: 31px; line-height: .96; letter-spacing: .01em; }
+    .lock .n2 { font-family: "DM Serif Display", Georgia, serif; font-size: 20px; line-height: 1; letter-spacing: .1em; }
+    .lock .rule { width: 96px; height: 1px; background: #F6F1E6; margin: 3px 0 2px; }
+    .lock .do { font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 9px; letter-spacing: .34em; }
+  </style>
+</helmet>
+
+<div style="min-height: 1040px; background: #14100B; display: flex; align-items: center; justify-content: center; gap: 72px; padding: 56px 64px; box-sizing: border-box;">
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 22px;">
+    <div class="glass">
+      <div class="wrap">
+
+        <div class="band">
+          <div class="p"><div class="t sm">CONVIVENCIA</div></div>
+          <div class="p"><div class="t sm">RELATO</div></div>
+          <div class="p"><div class="t sm">LAWFARE</div></div>
+        </div>
+
+        <div class="band">
+          <div class="p">
+            <svg class="ico" width="16" height="14" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 L22 20 L2 20Z"/><path d="M12 9.5 L12 14"/><circle cx="12" cy="17.2" r=".9" fill="#F6F1E6" stroke="none"/></svg>
+            <div class="t md">BULOS</div>
+          </div>
+          <div class="p"><div class="t md" style="letter-spacing:.1em">SANCHISMO</div></div>
+          <div class="p">
+            <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.8" stroke-linecap="round"><path d="M12 21 L12 9"/><path d="M9 12 L12 8.6 L15 12"/><path d="M7 4.5 L17 4.5"/></svg>
+            <div class="t sm">A DEDO</div>
+          </div>
+        </div>
+
+        <div class="band c"><div class="t xl" style="letter-spacing:-.01em">ULTRADERECHA</div></div>
+
+        <div class="lock">
+          <div class="stars">✦✦✦</div>
+          <div class="n1">LÁGRIMAS</div>
+          <div class="n2">DE SÁNCHEZ</div>
+          <div class="rule"></div>
+          <div class="do">VINOS DE MADRID</div>
+        </div>
+
+        <div class="band">
+          <div class="p"><div class="t lg box">FANGO</div></div>
+          <div class="p">
+            <svg class="ico" width="17" height="14" viewBox="0 0 24 20" fill="none" stroke="#F6F1E6" stroke-width="1.7"><rect x="2" y="3" width="20" height="14" rx="1.5"/><path d="M2 5 L12 12 L22 5"/></svg>
+            <div class="t md">LA CARTA</div>
+          </div>
+        </div>
+
+        <div class="band c"><div class="t lg" style="font-size:17px">NO DORMIRÍA TRANQUILO</div></div>
+
+        <div class="band">
+          <div class="p" style="position:relative">
+            <svg class="ico" width="46" height="34" viewBox="0 0 60 44" fill="none">
+              <path d="M13 12 L21 3 M35 12 L27 3" stroke="#F6F1E6" stroke-width="1.8"/>
+              <rect x="2" y="12" width="56" height="30" rx="3" fill="#F6F1E6"/>
+              <text x="30" y="32" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="15" letter-spacing=".4" fill="#7A4A18">TELEPEDRO</text>
+            </svg>
+          </div>
+          <div class="p">
+            <svg class="ico" width="30" height="12" viewBox="0 0 40 16" fill="#F6F1E6"><path d="M2 13 L9 3 L16 6 L23 3 L31 5 L38 13 L30 9 L23 7 L16 10 L9 8 Z"/></svg>
+            <div class="t md">CEJAS</div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="p"><div class="t md">HEMEROTECA</div></div>
+          <div class="p">
+            <svg class="ico" width="14" height="16" viewBox="0 0 20 24" fill="#F6F1E6"><path d="M10 2 C10 8 3 11 3 15.6 A7 7 0 0 0 17 15.6 C17 11 10 8 10 2Z"/></svg>
+            <div class="t sm">CONTIENE<br>LÁGRIMAS</div>
+          </div>
+          <div class="p"><div class="t sm">ME QUEDO</div></div>
+        </div>
+
+        <div class="band c"><div class="t lg" style="font-size:16px">ESPAÑA VA COMO UN COHETE</div></div>
+
+        <div class="band">
+          <div class="p">
+            <svg class="ico" width="17" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.7"><path d="M12 3 C18 5 21 10 19 16 C17 21 12 22 9 21 C4 19 3 13 5 9 C6.5 5.5 9 3.5 12 3Z"/><path d="M8 8 L11.5 11 M12.5 8 L16 11 M7 13.5 L10.5 16.5"/></svg>
+            <div class="t sm">CHIRIMOYAS</div>
+          </div>
+          <div class="p"><div class="seal"><div class="t sm" style="font-size:8px">EL<br>PUTO<br>AMO</div></div></div>
+          <div class="p">
+            <svg class="ico" width="14" height="16" viewBox="0 0 20 24" fill="none" stroke="#F6F1E6" stroke-width="1.7" stroke-linecap="round"><path d="M10 21 L10 7"/><path d="M6.5 10.5 L10 6.4 L13.5 10.5"/></svg>
+            <div class="t sm">EL UNO</div>
+          </div>
+        </div>
+
+        <div class="band">
+          <div class="p"><div class="t sm">FACHA</div></div>
+          <div class="p"><div class="t sm" style="letter-spacing:.14em">★</div></div>
+          <div class="p"><div class="t sm">POR 7 VOTOS</div></div>
+          <div class="p"><div class="t sm" style="border:1px solid #F6F1E6;padding:1px 5px;border-radius:2px">EDICIÓN Nº</div></div>
+        </div>
+
+      </div>
+      <div class="cap"></div>
+      <div class="capline"></div>
+    </div>
+
+    <div style="font-size: 10px; letter-spacing: .16em; color: #6D6353; text-transform: uppercase;">Vista frontal · el halo del lockup</div>
+  </div>
+
+  <div style="width: 292px; display: flex; flex-direction: column; gap: 26px; color: #F6F1E6;">
+    <div>
+      <div style="font-family:'DM Serif Display',Georgia,serif; font-size: 34px; line-height: 1.04;">Lágrimas<br>de Sánchez</div>
+      <div style="font-size: 11px; letter-spacing: .12em; color: #A0702E; margin-top: 10px; text-transform: uppercase;">Serigrafía cerámica · una tinta</div>
+    </div>
+
+    <div style="font-family:'Barlow Condensed','Arial Narrow',sans-serif; font-weight:600; font-size: 19px; line-height: 1.24; letter-spacing:.01em;">
+      La botella no se recicla.<br>Se guarda.
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 0; border-top: 1px solid #3A3125;">
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">FORMATO</span><span>Borgoña 750 ml</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">VIDRIO</span><span>Ámbar · 500 g</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">PERÍMETRO</span><span>275 mm · Ø 87,5</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">TINTA</span><span>Blanco vitrificado</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">HORNO</span><span>600 °C</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">TRAZO MÍN.</span><span>0,8 mm</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; border-bottom: 1px solid #3A3125; font-size: 11px;"><span style="color:#6D6353;">PIEZAS</span><span>65</span></div>
+      <div style="display:flex; justify-content:space-between; gap:14px; padding: 9px 0; font-size: 11px;"><span style="color:#6D6353;">HALO LOCKUP</span><span>15 mm libres</span></div>
+    </div>
+
+    <div style="font-size: 11px; line-height: 1.62; color: #6D6353;">
+      Sin etiqueta frontal. Todo va horneado en el vidrio y es permanente. Lo legal vive en la contraetiqueta adhesiva de la trasera.
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

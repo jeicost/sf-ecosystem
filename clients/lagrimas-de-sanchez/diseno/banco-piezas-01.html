@@ -1,0 +1,297 @@
+<title>Banco de Piezas Lágrimas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#f1ede4; --panel:#fbf9f4; --line:#d8d1c2;
+  --text:#2a241c; --text-2:#6d6353; --reg:#b4342a; --ok:#4a7c46;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14100b; --panel:#1d1810; --line:#3a3125;
+    --text:#eee7d9; --text-2:#9c907c; --reg:#e0685c; --ok:#8ab585;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14100b; --panel:#1d1810; --line:#3a3125;
+  --text:#eee7d9; --text-2:#9c907c; --reg:#e0685c; --ok:#8ab585;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--text);
+  font-family:"Barlow",system-ui,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:30px 22px 90px;display:flex;flex-direction:column;gap:36px}
+
+header.head{border:1.5px solid var(--text);background:var(--panel);display:grid;grid-template-columns:1fr auto auto}
+header.head > div{padding:14px 16px;border-right:1px solid var(--line)}
+header.head > div:last-child{border-right:0}
+.k{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-2);margin-bottom:5px}
+.v{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500;white-space:nowrap}
+.h-main .v{font-family:"DM Serif Display",Georgia,serif;font-size:26px;line-height:1.05}
+.h-main .sub{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--text-2);margin-top:5px}
+@media (max-width:620px){header.head{grid-template-columns:1fr}header.head>div{border-right:0;border-bottom:1px solid var(--line)}}
+
+.rail{display:flex;flex-wrap:wrap;gap:4px}
+.rail i{width:15px;height:15px;border:1px solid var(--line);border-radius:2px;font-style:normal;
+  font-family:"IBM Plex Mono",monospace;font-size:8px;display:grid;place-items:center;color:var(--text-2)}
+.rail i.now{border-color:var(--reg);color:var(--reg);box-shadow:inset 0 0 0 1px var(--reg)}
+
+.sec-h{display:flex;align-items:baseline;gap:12px;border-bottom:1.5px solid var(--text);padding-bottom:8px;margin-bottom:16px}
+.sec-n{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--reg);letter-spacing:.1em}
+.sec-t{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:22px;letter-spacing:.03em;text-transform:uppercase;margin:0}
+.sec-d{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--text-2)}
+p.note{max-width:66ch;color:var(--text-2);margin:0}
+p.note strong{color:var(--text);font-weight:600}
+
+.vars{display:grid;grid-template-columns:repeat(auto-fit,minmax(258px,1fr));gap:20px}
+.var{border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column}
+.var-stage{background:#7a4a18;background-image:linear-gradient(100deg,#5d3610,#a0702e 46%,#63390f);
+  padding:26px 18px;display:grid;place-items:center;min-height:210px}
+.var-stage svg{width:100%;max-width:200px;height:auto;color:#f6f1e6}
+.var-b{padding:13px 15px;display:flex;flex-direction:column;gap:5px;flex:1}
+.var-tag{display:flex;align-items:baseline;gap:8px}
+.var-l{font-family:"DM Serif Display",Georgia,serif;font-size:19px;line-height:1}
+.var-n{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.05em}
+.var-d{font-size:13.5px;color:var(--text-2);line-height:1.5}
+.var-f{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--text-2);border-top:1px solid var(--line);padding:8px 15px;letter-spacing:.03em}
+.var-f.pri{color:var(--reg)}
+
+.realsize{border:1px solid var(--line);background:var(--panel);padding:20px}
+.real-row{display:flex;flex-wrap:wrap;gap:26px;align-items:flex-end}
+.real-one{display:flex;flex-direction:column;gap:8px;align-items:center}
+.real-box{background:#7a4a18;background-image:linear-gradient(100deg,#5d3610,#a0702e 50%,#63390f);
+  display:grid;place-items:center;padding:3px}
+.real-box svg{color:#f6f1e6;display:block}
+.real-cap{font-family:"IBM Plex Mono",monospace;font-size:9.5px;color:var(--text-2);letter-spacing:.06em}
+
+.sys{border:1px solid var(--line);background:var(--panel)}
+.sys ol{margin:0;padding:0;list-style:none}
+.sys li{display:grid;grid-template-columns:30px 1fr;gap:12px;padding:10px 15px;border-bottom:1px solid var(--line);font-size:14px}
+.sys li:last-child{border-bottom:0}
+.sys .n{font-family:"DM Serif Display",Georgia,serif;font-size:17px;color:var(--reg);line-height:1.3}
+.sys b{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:15.5px;letter-spacing:.04em;text-transform:uppercase;display:block}
+.sys span{color:var(--text-2);font-size:13.5px}
+
+footer{border-top:1px solid var(--line);padding-top:16px;font-family:"IBM Plex Mono",monospace;
+  font-size:10.5px;color:var(--text-2);line-height:1.8}
+</style>
+
+<div class="wrap">
+
+<header class="head">
+  <div class="h-main">
+    <div class="k">Banco de piezas</div>
+    <div class="v">01 · Galgo</div>
+    <div class="sub">Bloque A · apodos · clase L · 36 × 24 mm</div>
+  </div>
+  <div><div class="k">Estado</div><div class="v">3 propuestas<br>sin aprobar</div></div>
+  <div><div class="k">Avance</div><div class="v">0 / 45<br>aprobadas</div></div>
+</header>
+
+<section>
+  <div class="sec-h"><span class="sec-n">01</span><h2 class="sec-t">Tres tratamientos</h2><span class="sec-d">elige uno · define el sistema</span></div>
+  <div class="vars">
+
+    <div class="var">
+      <div class="var-stage">
+        <svg viewBox="0 0 130 104" fill="none" aria-label="Galgo, silueta plena">
+          <g fill="currentColor">
+            <path d="M40 34 C46 21 80 20 88 31 C86 42 71 46 58 44 C48 43 42 40 40 34Z"/>
+            <path d="M42 33 L27 23 L13 20 L8 24 L17 28 L22 33 L36 37Z"/>
+            <path d="M25 22 L31 15 L33 24Z"/>
+          </g>
+          <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round" fill="none">
+            <path d="M88 31 C99 26 108 31 103 40"/>
+            <path d="M48 42 L41 58 L33 63"/>
+            <path d="M56 44 L58 58 L50 63"/>
+            <path d="M79 41 L88 52 L81 63"/>
+            <path d="M86 38 L98 49 L101 63"/>
+          </g>
+          <text x="65" y="95" text-anchor="middle" font-family="Barlow Condensed, sans-serif"
+            font-weight="700" font-size="26" letter-spacing="1.6" fill="currentColor">GALGO</text>
+        </svg>
+      </div>
+      <div class="var-b">
+        <div class="var-tag"><span class="var-l">A</span><span class="var-n">Silueta plena</span></div>
+        <p class="var-d">Mancha maciza y palabra debajo. El tratamiento base: el que mejor aguanta la reducción y el que más se parece a los animales de la referencia.</p>
+      </div>
+      <div class="var-f pri">Mi recomendación para arrancar</div>
+    </div>
+
+    <div class="var">
+      <div class="var-stage">
+        <svg viewBox="0 0 120 120" fill="none" aria-label="Galgo, sello circular">
+          <defs><path id="arc" d="M60 60 m-44 0 a44 44 0 1 1 88 0" fill="none"/></defs>
+          <circle cx="60" cy="60" r="55" stroke="currentColor" stroke-width="2.6"/>
+          <circle cx="60" cy="60" r="48" stroke="currentColor" stroke-width="1.3"/>
+          <g transform="translate(60,68) scale(.62) translate(-65,-42)">
+            <g fill="currentColor">
+              <path d="M40 34 C46 21 80 20 88 31 C86 42 71 46 58 44 C48 43 42 40 40 34Z"/>
+              <path d="M42 33 L27 23 L13 20 L8 24 L17 28 L22 33 L36 37Z"/>
+              <path d="M25 22 L31 15 L33 24Z"/>
+            </g>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round">
+              <path d="M88 31 C99 26 108 31 103 40"/>
+              <path d="M48 42 L41 58 L33 63"/><path d="M56 44 L58 58 L50 63"/>
+              <path d="M79 41 L88 52 L81 63"/><path d="M86 38 L98 49 L101 63"/>
+            </g>
+          </g>
+          <text font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="15"
+            letter-spacing="4.5" fill="currentColor">
+            <textPath href="#arc" startOffset="50%" text-anchor="middle">GALGO</textPath>
+          </text>
+          <path d="M60 102 l3.2 6.6 7.2 1-5.2 5.1 1.2 7.2-6.4-3.4-6.4 3.4 1.2-7.2-5.2-5.1 7.2-1Z"
+            fill="currentColor" transform="translate(0,-8) scale(1)"/>
+        </svg>
+      </div>
+      <div class="var-b">
+        <div class="var-tag"><span class="var-l">B</span><span class="var-n">Sello circular</span></div>
+        <p class="var-d">Insignia con el texto curvado y una estrella al pie. Da empaque y jerarquía, pero come mucho sitio: solo puede usarse en 5 o 6 piezas de las 45.</p>
+      </div>
+      <div class="var-f">Reservar para las anclas</div>
+    </div>
+
+    <div class="var">
+      <div class="var-stage">
+        <svg viewBox="0 0 140 100" fill="none" aria-label="Galgo, caja invertida">
+          <g transform="translate(70,4) scale(.52) translate(-58,0)">
+            <g fill="currentColor">
+              <path d="M40 34 C46 21 80 20 88 31 C86 42 71 46 58 44 C48 43 42 40 40 34Z"/>
+              <path d="M42 33 L27 23 L13 20 L8 24 L17 28 L22 33 L36 37Z"/>
+              <path d="M25 22 L31 15 L33 24Z"/>
+            </g>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round">
+              <path d="M88 31 C99 26 108 31 103 40"/>
+              <path d="M48 42 L41 58 L33 63"/><path d="M56 44 L58 58 L50 63"/>
+              <path d="M79 41 L88 52 L81 63"/><path d="M86 38 L98 49 L101 63"/>
+            </g>
+          </g>
+          <rect x="12" y="56" width="116" height="36" rx="7" fill="currentColor"/>
+          <text x="70" y="82" text-anchor="middle" font-family="Barlow Condensed, sans-serif"
+            font-weight="700" font-size="27" letter-spacing="2.2" fill="#7a4a18">GALGO</text>
+        </svg>
+      </div>
+      <div class="var-b">
+        <div class="var-tag"><span class="var-l">C</span><span class="var-n">Caja invertida</span></div>
+        <p class="var-d">Mancha blanca maciza con la palabra calada en ámbar. Es lo que en la referencia hace <em>GARRI</em>. Pega un puñetazo visual: por eso solo valen 4 o 5 en toda la botella.</p>
+      </div>
+      <div class="var-f">Reservar para el contraste</div>
+    </div>
+
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">02</span><h2 class="sec-t">A tamaño real</h2><span class="sec-d">36 × 24 mm sobre vidrio</span></div>
+  <div class="realsize">
+    <div class="real-row">
+      <div class="real-one">
+        <div class="real-box" style="width:136px;height:91px">
+          <svg viewBox="0 0 130 104" width="126" height="85" fill="none">
+            <g fill="currentColor">
+              <path d="M40 34 C46 21 80 20 88 31 C86 42 71 46 58 44 C48 43 42 40 40 34Z"/>
+              <path d="M42 33 L27 23 L13 20 L8 24 L17 28 L22 33 L36 37Z"/>
+              <path d="M25 22 L31 15 L33 24Z"/>
+            </g>
+            <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round">
+              <path d="M88 31 C99 26 108 31 103 40"/>
+              <path d="M48 42 L41 58 L33 63"/><path d="M56 44 L58 58 L50 63"/>
+              <path d="M79 41 L88 52 L81 63"/><path d="M86 38 L98 49 L101 63"/>
+            </g>
+            <text x="65" y="95" text-anchor="middle" font-family="Barlow Condensed, sans-serif"
+              font-weight="700" font-size="26" letter-spacing="1.6" fill="currentColor">GALGO</text>
+          </svg>
+        </div>
+        <span class="real-cap">A · silueta</span>
+      </div>
+      <div class="real-one">
+        <div class="real-box" style="width:91px;height:91px">
+          <svg viewBox="0 0 120 120" width="85" height="85" fill="none">
+            <defs><path id="arc2" d="M60 60 m-44 0 a44 44 0 1 1 88 0" fill="none"/></defs>
+            <circle cx="60" cy="60" r="55" stroke="currentColor" stroke-width="2.6"/>
+            <circle cx="60" cy="60" r="48" stroke="currentColor" stroke-width="1.3"/>
+            <g transform="translate(60,68) scale(.62) translate(-65,-42)">
+              <g fill="currentColor">
+                <path d="M40 34 C46 21 80 20 88 31 C86 42 71 46 58 44 C48 43 42 40 40 34Z"/>
+                <path d="M42 33 L27 23 L13 20 L8 24 L17 28 L22 33 L36 37Z"/>
+                <path d="M25 22 L31 15 L33 24Z"/>
+              </g>
+              <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round">
+                <path d="M88 31 C99 26 108 31 103 40"/>
+                <path d="M48 42 L41 58 L33 63"/><path d="M56 44 L58 58 L50 63"/>
+                <path d="M79 41 L88 52 L81 63"/><path d="M86 38 L98 49 L101 63"/>
+              </g>
+            </g>
+            <text font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="15"
+              letter-spacing="4.5" fill="currentColor">
+              <textPath href="#arc2" startOffset="50%" text-anchor="middle">GALGO</textPath>
+            </text>
+          </svg>
+        </div>
+        <span class="real-cap">B · sello</span>
+      </div>
+      <div class="real-one">
+        <div class="real-box" style="width:136px;height:91px">
+          <svg viewBox="0 0 140 100" width="126" height="90" fill="none">
+            <g transform="translate(70,4) scale(.52) translate(-58,0)">
+              <g fill="currentColor">
+                <path d="M40 34 C46 21 80 20 88 31 C86 42 71 46 58 44 C48 43 42 40 40 34Z"/>
+                <path d="M42 33 L27 23 L13 20 L8 24 L17 28 L22 33 L36 37Z"/>
+                <path d="M25 22 L31 15 L33 24Z"/>
+              </g>
+              <g stroke="currentColor" stroke-width="3.4" stroke-linecap="round">
+                <path d="M88 31 C99 26 108 31 103 40"/>
+                <path d="M48 42 L41 58 L33 63"/><path d="M56 44 L58 58 L50 63"/>
+                <path d="M79 41 L88 52 L81 63"/><path d="M86 38 L98 49 L101 63"/>
+              </g>
+            </g>
+            <rect x="12" y="56" width="116" height="36" rx="7" fill="currentColor"/>
+            <text x="70" y="82" text-anchor="middle" font-family="Barlow Condensed, sans-serif"
+              font-weight="700" font-size="27" letter-spacing="2.2" fill="#7a4a18">GALGO</text>
+          </svg>
+        </div>
+        <span class="real-cap">C · caja</span>
+      </div>
+    </div>
+    <p class="note" style="margin-top:18px">Este es el tamaño al que va a verse en la botella. Si a esta escala no se lee de un vistazo, no vale — y aquí es donde el sello <strong>B</strong> empieza a sufrir: el texto curvado a 15 mm de diámetro pierde el trazo mínimo de 0,8 mm.</p>
+  </div>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">03</span><h2 class="sec-t">El sistema que sale de aquí</h2><span class="sec-d">6 tratamientos · 45 piezas</span></div>
+  <div class="sys">
+    <ol>
+      <li><span class="n">1</span><div><b>Palabra desnuda</b><span>Solo tipografía, sin icono ni caja. Debe ser el tratamiento de ~20 piezas: es lo que da respiración y lo que más se parece a la referencia.</span></div></li>
+      <li><span class="n">2</span><div><b>Silueta + palabra</b><span>El tratamiento A. Unas 12 piezas, las que tienen un objeto claro que dibujar.</span></div></li>
+      <li><span class="n">3</span><div><b>Caja invertida</b><span>El tratamiento C. Máximo 5. Son los acentos: se colocan repartidos, nunca dos juntos.</span></div></li>
+      <li><span class="n">4</span><div><b>Sello circular</b><span>El tratamiento B. Máximo 4, y solo en piezas de nombre corto. Los sellos institucionales del pie.</span></div></li>
+      <li><span class="n">5</span><div><b>Banderín</b><span>Palabra sobre cinta o gallardete. 2 o 3 piezas, para romper la horizontalidad.</span></div></li>
+      <li><span class="n">6</span><div><b>Escala vertical</b><span>Pieza única: el lagrimómetro. Ocupa una columna entera y ancla el lateral.</span></div></li>
+    </ol>
+  </div>
+  <p class="note" style="margin-top:14px">Elegir aquí no es elegir el galgo: es fijar <strong>cuántas piezas de cada tipo</strong> habrá en la botella. Ese reparto es lo que hace que el conjunto se lea como la referencia y no como una nube de pegatinas.</p>
+</section>
+
+<section>
+  <div class="sec-h"><span class="sec-n">04</span><h2 class="sec-t">Las 45</h2><span class="sec-d">1 aprobada = 1 casilla marcada</span></div>
+  <div class="rail" id="rail"></div>
+</section>
+
+<footer>
+  Banco de piezas · rev. A — 24 de agosto de 2026<br>
+  Trazado de trabajo para decidir tratamiento y escala. El arte final lo vectoriza el ilustrador en SVG de una tinta, trazo mínimo 0,8 mm.
+</footer>
+</div>
+
+<script>
+const NOMS=['GALGO','COLETA','CHIRIMOYA','CHIQUI','PILI JUERGA','LA NIÑA DE LA CURVA','RUFIÁN',
+'ECO-RESILIENCIA','SOLO SÍ ES SÍ','MARLASKIN','EL DE LAS GAFAS','EL PORTERO','RETRASO','CEJAS',
+'ULTRADERECHA','BULOS','FANGO','YO ESTOY BIEN','ESPAÑA VA COMO UN COHETE','SINCRONIZADA','TELEPEDRO',
+'NO DORMIRÍA TRANQUILO','NO ES NO','EL PUTO AMO','EL UNO','SAUNAS','LA BANDA DEL PEUGEOT','HEMEROTECA',
+'POLTRONA','URNA','EL VENTILADOR','SIN PREGUNTAS','TELEPROMPTER','VELETA','DECRETAZO','LAS CUENTAS',
+'RECORTES','EL MALETÍN','LEGISLATURA','A FLOTE','PAÑUELO','CONTIENE LÁGRIMAS','PRODUCTO DE ESPAÑA',
+'DO VINOS DE MADRID','EDICIÓN Nº'];
+document.getElementById('rail').innerHTML =
+  NOMS.map((n,i)=>`<i class="${i===0?'now':''}" title="${String(i+1).padStart(2,'0')} · ${n}">${i+1}</i>`).join('');
+</script>

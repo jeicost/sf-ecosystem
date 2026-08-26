@@ -1,0 +1,624 @@
+<title>Lámina Lágrimas de Sánchez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --glass:#7a4a18;
+  --glass-lo:#5d3610;
+  --glass-hi:#a06e2c;
+  --ink:#f6f1e6;
+  --paper:#f1ede4;
+  --panel:#fbf9f4;
+  --line:#d8d1c2;
+  --text:#2a241c;
+  --text-2:#6d6353;
+  --reg:#b4342a;
+  --rule:#c9c1af;
+  --shadow:0 1px 2px rgba(42,36,28,.07), 0 8px 24px rgba(42,36,28,.06);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#14100b;
+    --panel:#1d1810;
+    --line:#3a3125;
+    --text:#eee7d9;
+    --text-2:#9c907c;
+    --rule:#453b2c;
+    --reg:#e0685c;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#14100b;
+  --panel:#1d1810;
+  --line:#3a3125;
+  --text:#eee7d9;
+  --text-2:#9c907c;
+  --rule:#453b2c;
+  --reg:#e0685c;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 28px rgba(0,0,0,.35);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--text);
+  font-family:"Barlow",system-ui,-apple-system,sans-serif;
+  font-size:15px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 24px 96px;display:flex;flex-direction:column;gap:40px}
+
+/* ── title block ─────────────────────────────── */
+.titleblock{
+  border:1.5px solid var(--text);
+  background:var(--panel);
+  display:grid;
+  grid-template-columns:1.6fr 1fr 1fr 1fr;
+}
+.titleblock > div{padding:14px 16px;border-right:1px solid var(--line)}
+.titleblock > div:last-child{border-right:0}
+.tb-k{
+  font-family:"IBM Plex Mono",monospace;
+  font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-2);margin-bottom:5px;
+}
+.tb-v{font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:500}
+.tb-main .tb-v{font-family:"DM Serif Display",Georgia,serif;font-size:27px;line-height:1.05;letter-spacing:-.01em}
+.tb-main .tb-sub{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--text-2);margin-top:6px}
+
+@media (max-width:760px){ .titleblock{grid-template-columns:1fr 1fr} .titleblock > div{border-bottom:1px solid var(--line)} }
+
+/* ── section headers ──────────────────────────── */
+.sec{display:flex;flex-direction:column;gap:16px}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-bottom:1.5px solid var(--text);padding-bottom:8px}
+.sec-n{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--reg);letter-spacing:.1em}
+.sec-t{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:23px;letter-spacing:.03em;text-transform:uppercase}
+.sec-d{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--text-2);letter-spacing:.04em}
+p.note{max-width:66ch;color:var(--text-2);font-size:14.5px;margin:0}
+p.note strong{color:var(--text);font-weight:600}
+
+/* ── controls ─────────────────────────────────── */
+.ctrls{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button.c{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  background:var(--panel);color:var(--text);border:1px solid var(--line);
+  padding:8px 13px;cursor:pointer;border-radius:2px;transition:border-color .15s,color .15s;
+}
+button.c:hover{border-color:var(--text)}
+button.c[aria-pressed="true"]{border-color:var(--reg);color:var(--reg);box-shadow:inset 0 0 0 1px var(--reg)}
+button.c:focus-visible{outline:2px solid var(--reg);outline-offset:2px}
+.seedtag{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--text-2);margin-left:4px}
+
+/* ── artwork panels ───────────────────────────── */
+.scroller{overflow-x:auto;border:1px solid var(--line);background:var(--panel);padding:26px}
+.scroller svg{display:block}
+.mock{display:grid;grid-template-columns:1fr 300px;gap:28px;align-items:start}
+@media (max-width:860px){ .mock{grid-template-columns:1fr} }
+.mockstage{border:1px solid var(--line);background:var(--panel);padding:24px 12px;display:flex;justify-content:center}
+
+/* ── spec list ────────────────────────────────── */
+.spec{border:1px solid var(--line);background:var(--panel)}
+.spec dl{margin:0;display:grid;grid-template-columns:auto 1fr}
+.spec dt,.spec dd{padding:9px 14px;border-bottom:1px solid var(--line);margin:0;font-family:"IBM Plex Mono",monospace;font-size:11.5px}
+.spec dt{color:var(--text-2);letter-spacing:.04em;text-transform:uppercase;font-size:10px;white-space:nowrap;border-right:1px solid var(--line)}
+.spec dd{font-weight:500;font-variant-numeric:tabular-nums}
+.spec dl > :nth-last-child(1),.spec dl > :nth-last-child(2){border-bottom:0}
+
+/* ── inventory ────────────────────────────────── */
+.blocks{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:22px}
+.blk{border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column}
+.blk-h{padding:12px 14px;border-bottom:1.5px solid var(--text);display:flex;align-items:baseline;gap:9px}
+.blk-l{font-family:"DM Serif Display",Georgia,serif;font-size:21px;line-height:1}
+.blk-t{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:.07em}
+.blk-c{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--text-2)}
+ol.items{list-style:none;margin:0;padding:0}
+ol.items li{display:grid;grid-template-columns:26px 22px 1fr auto;gap:9px;align-items:center;padding:7px 14px;border-bottom:1px solid var(--line);font-size:13px}
+ol.items li:last-child{border-bottom:0}
+.i-n{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--text-2);font-variant-numeric:tabular-nums}
+.i-g{color:var(--text);display:flex}
+.i-g svg{width:18px;height:18px}
+.i-t{font-family:"Barlow Condensed",sans-serif;font-weight:600;font-size:14.5px;letter-spacing:.02em;text-transform:uppercase;line-height:1.15}
+.i-c{font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.08em;color:var(--text-2);border:1px solid var(--line);padding:1px 5px;border-radius:2px}
+li.flag .i-t{color:var(--reg)}
+li.flag .i-c{border-color:var(--reg);color:var(--reg)}
+
+/* ── supplier table ───────────────────────────── */
+.tblwrap{overflow-x:auto;border:1px solid var(--line);background:var(--panel)}
+table{border-collapse:collapse;width:100%;min-width:620px;font-size:13.5px}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-2);border-bottom:1.5px solid var(--text)}
+tbody tr:last-child td{border-bottom:0}
+td.mono{font-family:"IBM Plex Mono",monospace;font-size:11.5px;white-space:nowrap}
+td.name{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:16px;letter-spacing:.02em}
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9px;letter-spacing:.08em;padding:2px 6px;border:1px solid var(--line);border-radius:2px;color:var(--text-2)}
+.pill.pri{border-color:var(--reg);color:var(--reg)}
+
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--text-2)}
+.legend span{display:flex;align-items:center;gap:7px}
+.sw{width:15px;height:11px;border:1px solid var(--rule);display:inline-block}
+.sw.reg{border-color:var(--reg);background:repeating-linear-gradient(45deg,transparent,transparent 2px,var(--reg) 2px,var(--reg) 3px)}
+.sw.glass{background:#7a4a18;border-color:#5d3610}
+.sw.ink{background:#f6f1e6;border-color:#b8ad97}
+
+footer{border-top:1px solid var(--line);padding-top:18px;font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--text-2);line-height:1.8}
+</style>
+
+<div class="wrap">
+
+<div class="titleblock">
+  <div class="tb-main">
+    <div class="tb-k">Proyecto</div>
+    <div class="tb-v">Lágrimas de Sánchez</div>
+    <div class="tb-sub">Desarrollo plano · serigrafía cerámica</div>
+  </div>
+  <div>
+    <div class="tb-k">Envase</div>
+    <div class="tb-v">Borgoña 750 ml<br>ámbar · 500 g</div>
+  </div>
+  <div>
+    <div class="tb-k">Tintas</div>
+    <div class="tb-v">1 · blanco<br>vitrificado 600 °C</div>
+  </div>
+  <div>
+    <div class="tb-k">Lámina</div>
+    <div class="tb-v">01 · rev. A<br>45 piezas</div>
+  </div>
+</div>
+
+<section class="sec">
+  <div class="sec-h">
+    <span class="sec-n">01</span>
+    <h2 class="sec-t">Desarrollo plano</h2>
+    <span class="sec-d">275 × 195 mm · escala 1:2,5</span>
+  </div>
+  <p class="note">La banda decorable desplegada. Los <strong>45 elementos</strong> están colocados sobre la superficie real de la botella, respetando el halo del lockup y la reserva de contraetiqueta. Pulsa <strong>Redistribuir</strong> para ver otras composiciones: el reparto de masas cambia, la retícula no.</p>
+  <div class="ctrls">
+    <button class="c" id="reshuffle">↻ Redistribuir</button>
+    <button class="c" id="tCotas" aria-pressed="true">Cotas y zonas</button>
+    <button class="c" id="tContra" aria-pressed="true">Reserva contraetiqueta</button>
+    <span class="seedtag" id="seedtag"></span>
+  </div>
+  <div class="scroller"><svg id="flat" width="1155" height="860" viewBox="0 0 1155 860" role="img" aria-label="Desarrollo plano de la serigrafía"></svg></div>
+  <div class="legend">
+    <span><i class="sw glass"></i> vidrio ámbar</span>
+    <span><i class="sw ink"></i> tinta blanca</span>
+    <span><i class="sw reg"></i> zona sin tinta</span>
+    <span id="fitreport"></span>
+  </div>
+</section>
+
+<section class="sec">
+  <div class="sec-h">
+    <span class="sec-n">02</span>
+    <h2 class="sec-t">Simulación sobre botella</h2>
+    <span class="sec-d">proyección cilíndrica real · R = 43,8 mm</span>
+  </div>
+  <div class="mock">
+    <div class="mockstage"><svg id="bottles" width="640" height="520" viewBox="0 0 640 520" role="img" aria-label="Tres botellas mostrando el envolvente"></svg></div>
+    <div class="spec">
+      <dl>
+        <dt>Banda decorable</dt><dd>275 × 195 mm</dd>
+        <dt>Circunferencia</dt><dd>275 mm · Ø 87,5 mm</dd>
+        <dt>Zona cónica</dt><dd>45 mm sup. — desarrollo en cono</dd>
+        <dt>Zona muerta boca</dt><dd>20 mm sin tinta</dd>
+        <dt>Zona muerta base</dt><dd>7 mm · pinza de máquina</dd>
+        <dt>Halo del lockup</dt><dd>130 × 88 mm libres</dd>
+        <dt>Lockup</dt><dd>100 × 58 mm</dd>
+        <dt>Contraetiqueta</dt><dd>80 × 58 mm · solo vino</dd>
+        <dt>Trazo mínimo</dt><dd>0,8 mm</dd>
+        <dt>Altura carácter mín.</dt><dd>1,2 mm legal</dd>
+        <dt>Entregable</dt><dd>SVG vectorial, 1 tinta</dd>
+      </dl>
+    </div>
+  </div>
+  <p class="note">La proyección es la real de un cilindro de 275 mm de perímetro, así que lo que ves comprimido en los cantos es lo que se comprime en la botella. La botella central muestra el lockup; la de la izquierda, el <strong>lagrimómetro</strong>.</p>
+</section>
+
+<section class="sec">
+  <div class="sec-h">
+    <span class="sec-n">03</span>
+    <h2 class="sec-t">Inventario de piezas</h2>
+    <span class="sec-d">45 · para el ilustrador</span>
+  </div>
+  <div class="blocks" id="inv"></div>
+  <p class="note">En rojo, las dos piezas que aluden a causas judiciales abiertas: van sin nombres propios, pero son las que un abogado marcará en la revisión previa a arte final. <strong>XL</strong> son las tres anclas de composición, <strong>S</strong> el relleno que da densidad.</p>
+</section>
+
+<section class="sec">
+  <div class="sec-h">
+    <span class="sec-n">04</span>
+    <h2 class="sec-t">A quién enviar esta lámina</h2>
+    <span class="sec-d">decoradores de vidrio · España</span>
+  </div>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th>Empresa</th><th>Dónde</th><th>Contacto</th><th>Por qué</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="name">Ibicrom <span class="pill pri">1ª llamada</span></td>
+          <td class="mono">Ibi, Alicante</td>
+          <td class="mono">965 552 846<br>ibicrom@ibicrom.es</td>
+          <td>40 años en serigrafía sobre vidrio. Mínimo declarado ~600 uds, que es el único que encaja con tu tirada.</td>
+        </tr>
+        <tr>
+          <td class="name">Serijerez</td>
+          <td class="mono">Jerez, Cádiz</td>
+          <td class="mono">serijerez@serijerez.com</td>
+          <td>Referencia ibérica, 30+ años. Hasta 8 tintas y vitrificado en horno. Pide su mínimo: no lo publican.</td>
+        </tr>
+        <tr>
+          <td class="name">Serigrafía Portal</td>
+          <td class="mono">Montcada i Reixac<br>Barcelona</td>
+          <td class="mono">937 152 562<br>serigrafia.portal@<br>serigrafiaportal.com</td>
+          <td>Cubre todas las técnicas: serigrafía, matizado, stamping, tampografía. Vienen de perfumería, así que acabado fino y precio acorde.</td>
+        </tr>
+        <tr>
+          <td class="name">Vitriglass</td>
+          <td class="mono">Cádiz</td>
+          <td class="mono">956 353 385</td>
+          <td>Personalizan <strong>desde 12 unidades</strong>. No para la tirada, sí para prototipos y las muestras de influencers.</td>
+        </tr>
+        <tr>
+          <td class="name">Ramon Clemente</td>
+          <td class="mono">Barcelona</td>
+          <td class="mono">rclemente.net</td>
+          <td>Fabricante y decorador a la vez: pintura y decoración de envase propio. Útil si el vidrio estándar no te convence.</td>
+        </tr>
+        <tr>
+          <td class="name">PCM Grupo</td>
+          <td class="mono">España</td>
+          <td class="mono">pcmgrupo.com</td>
+          <td>Cuarto presupuesto para tener rango de precio. Sin él no sabes si te están cobrando bien.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Manda a los cuatro primeros el mismo correo: esta lámina, cantidades a <strong>600 / 1.000 / 3.000</strong>, una tinta blanca, cobertura 360° con zona cónica de hombro, y pide expresamente la <strong>declaración de conformidad para contacto alimentario</strong> del vidrio y el <strong>certificado de tintas cerámicas</strong> con límites de plomo y cadmio. Si no los pides, no te los mandan.</p>
+</section>
+
+<footer>
+  Lámina 01 · rev. A — 24 de agosto de 2026<br>
+  Composición generada para validación de masas y reservas. No es arte final: los 45 pictogramas los dibuja el ilustrador en SVG vectorial de una tinta.
+</footer>
+
+</div>
+
+<script>
+/* ── glifos: 24×24, trazo blanco ─────────────────────────────────── */
+const G = {
+galgo:'<path d="M2 16 L6 12 L11 11 L16 12 L19 9 L22 10 L21 13 L17 14 L15 17 L15 21 M8 14 L7 21 M12 15 L11 21 M17 14 L18 20"/>',
+coleta:'<circle cx="9" cy="8" r="4"/><path d="M12.5 9 C18 9.5 20 14 18 20 C17.3 21.8 14.6 21.6 14.6 19.6"/><rect x="11.4" y="10.4" width="3.2" height="2.6" rx="1"/>',
+chirimoya:'<path d="M12 3 C18 5 21 10 19 16 C17 21 12 22 9 21 C4 19 3 13 5 9 C6.5 5.5 9 3.5 12 3Z"/><path d="M8 8 L11.5 11 M12.5 8 L16 11 M7 13.5 L10.5 16.5 M12 13.5 L15.5 16.5"/>',
+hucha:'<ellipse cx="11" cy="14" rx="8" ry="5.6"/><circle cx="18.2" cy="12.8" r="2.2"/><path d="M9 8.6 L13 8.6 M6.5 19 L6.5 21.4 M15 19 L15 21.4 M11 3 L11 6"/>',
+copa:'<path d="M6 4 L18 4 L13 12.5 L11 12.5Z M12 12.5 L12 19 M8.2 20.4 L15.8 20.4"/><circle cx="7.6" cy="2.2" r="1"/><circle cx="16.4" cy="1.8" r="1"/>',
+faros:'<ellipse cx="7" cy="11.5" rx="3.6" ry="4.2"/><ellipse cx="17" cy="11.5" rx="3.6" ry="4.2"/><path d="M2 21 C7 18.6 17 18.6 22 21"/>',
+chandal:'<path d="M8.5 5.5 L5 9 L7.2 11.2 L8.4 10 L8.4 21 L15.6 21 L15.6 10 L16.8 11.2 L19 9 L15.5 5.5Z"/><path d="M10.4 13.4 L10.4 21 M13.6 13.4 L13.6 21"/>',
+birrete:'<path d="M2 9 L12 4.8 L22 9 L12 13.2Z"/><path d="M6 11 L6 16 C6 18.2 18 18.2 18 16 L18 11"/><path d="M20.8 9.6 L20.8 16"/><circle cx="20.8" cy="17.6" r="1.5"/>',
+casilla:'<rect x="3" y="5.5" width="13" height="13" rx="2"/><path d="M6.5 12.5 L9.6 15.6 L20.5 4.5"/>',
+balanza:'<path d="M12 3.4 L12 20 M6.5 20 L17.5 20 M4 8.4 L20 6.2"/><path d="M1.2 8.8 L6.8 8.1 M1.2 8.8 C1.6 12.6 7.2 11.9 6.8 8.1"/><path d="M17.2 6.5 L22.8 5.8 M17.2 6.5 C17.6 10.3 23.2 9.6 22.8 5.8"/>',
+gafas:'<circle cx="6.6" cy="13" r="4.6"/><circle cx="17.4" cy="13" r="4.6"/><path d="M11.2 12.6 L12.8 12.6 M2.2 11 L1 7.6 M21.8 11 L23 7.6"/>',
+cordon:'<path d="M5 7.4 L5 21 M19 7.4 L19 21"/><circle cx="5" cy="5" r="2.2"/><circle cx="19" cy="5" r="2.2"/><path d="M5 8.6 C8 16.6 16 16.6 19 8.6"/>',
+tren:'<rect x="4" y="4" width="16" height="13" rx="4"/><rect x="7" y="7" width="4" height="4"/><rect x="13" y="7" width="4" height="4"/><path d="M7.6 17 L5.6 21 M16.4 17 L18.4 21 M8 14.2 L16 14.2"/>',
+cejas:'<path d="M2.4 12.6 C5 6.4 9.6 6.2 10.8 10.4" stroke-width="3.2"/><path d="M13.2 10.4 C14.4 6.2 19 6.4 21.6 12.6" stroke-width="3.2"/>',
+aviso:'<path d="M12 3 L22 20 L2 20Z"/><path d="M12 9.4 L12 14.2"/><circle cx="12" cy="17.2" r=".9" fill="currentColor" stroke="none"/>',
+goteo:'<path d="M7 3.4 C7 9 3.6 10 3.6 13.8 A3.4 3.4 0 0 0 10.4 13.8 C10.4 10 7 9 7 3.4Z"/><path d="M16.4 8 C16.4 12 13.8 12.8 13.8 15.4 A2.6 2.6 0 0 0 19 15.4 C19 12.8 16.4 12 16.4 8Z"/>',
+sonrisa:'<circle cx="12" cy="12" r="9"/><circle cx="9" cy="10" r="1.1" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="1.1" fill="currentColor" stroke="none"/><path d="M7.4 14.4 C9.6 17.6 14.4 17.6 16.6 14.4"/>',
+cohete:'<path d="M12 2 C15.6 5.2 17 9.2 17 13 L17 16.8 L7 16.8 L7 13 C7 9.2 8.4 5.2 12 2Z"/><circle cx="12" cy="9.6" r="2.1"/><path d="M7 13.8 L3.2 18 L6.4 18 M17 13.8 L20.8 18 L17.6 18"/><path d="M10 16.8 L10 20.6 M12 16.8 L12 22 M14 16.8 L14 20.6"/>',
+engranes:'<circle cx="8.6" cy="12" r="5.2"/><circle cx="15.4" cy="12" r="5.2"/>',
+tele:'<rect x="2" y="8" width="20" height="13" rx="2"/><path d="M7.4 8 L11 3 M16.6 8 L13 3"/><rect x="4.8" y="10.8" width="10" height="7.4"/><circle cx="18.8" cy="13" r="1"/><circle cx="18.8" cy="16.6" r="1"/>',
+almohada:'<path d="M3 8.4 C3 6.2 5 5 8 5 L16 5 C19 5 21 6.2 21 8.4 L21 15.6 C21 17.8 19 19 16 19 L8 19 C5 19 3 17.8 3 15.6Z"/><path d="M7 8.6 C9 11.4 9 12.6 7 15.4"/>',
+stop:'<path d="M8.6 2.6 L15.4 2.6 L21.4 8.6 L21.4 15.4 L15.4 21.4 L8.6 21.4 L2.6 15.4 L2.6 8.6Z"/>',
+corona:'<path d="M3 17.6 L3 7.6 L8 11.8 L12 5 L16 11.8 L21 7.6 L21 17.6Z"/><path d="M3 20.4 L21 20.4"/>',
+uno:'<circle cx="12" cy="12" r="9.4"/><path d="M9.8 9.2 L13 6.8 L13 17 M10.4 17 L15.6 17"/>',
+vapor:'<path d="M6 20.4 C6 16.4 9 16.4 9 12.4 C9 8.4 6 8.4 6 4.4"/><path d="M12 20.4 C12 16.4 15 16.4 15 12.4 C15 8.4 12 8.4 12 4.4"/><path d="M18 20.4 C18 17.4 20.4 17.4 20.4 14.4"/>',
+coche:'<path d="M2 16 L2 11.8 L5 11.8 L8 6.8 L16 6.8 L19 11.8 L22 11.8 L22 16Z"/><circle cx="7" cy="16.6" r="2.6"/><circle cx="17" cy="16.6" r="2.6"/>',
+archivo:'<rect x="2" y="6" width="20" height="15" rx="1.6"/><path d="M2 10.2 L22 10.2"/><path d="M8 6 L8 3 L16 3 L16 6"/><path d="M6.6 14 L17.4 14 M6.6 17.4 L14 17.4"/>',
+sillon:'<path d="M5.4 10.4 L5.4 7.2 C5.4 5.2 7.6 4 12 4 C16.4 4 18.6 5.2 18.6 7.2 L18.6 10.4"/><path d="M3 11.6 A2 2 0 0 1 7 11.6 L7 15.8 L17 15.8 L17 11.6 A2 2 0 0 1 21 11.6 L21 18 L3 18Z"/><path d="M5.4 18 L5.4 21 M18.6 18 L18.6 21"/>',
+urna:'<path d="M4 8.4 L20 8.4 L20 21 L4 21Z"/><path d="M8 8.4 L8 5.6 L16 5.6 L16 8.4"/><rect x="9" y="10.4" width="6" height="1.6"/><path d="M12 1.4 L12 5.2"/>',
+ventilador:'<circle cx="12" cy="12" r="2.6"/><path d="M12 9.4 C12 4.8 8.8 2 5.8 4.2 C3.2 6.2 6.4 9 12 9.4Z"/><path d="M14.2 13.4 C18.2 10.8 22.2 12.4 21.2 15.9 C20.2 19 16.2 17.4 14.2 13.4Z"/><path d="M9.8 13.4 C7.8 17.4 3.8 19 2.8 15.9 C1.8 12.4 5.8 10.8 9.8 13.4Z"/>',
+micro:'<rect x="9" y="3" width="6" height="10.6" rx="3"/><path d="M5.6 12 C5.6 16.8 18.4 16.8 18.4 12 M12 16.8 L12 20.6 M8.2 20.6 L15.8 20.6"/><path d="M3.4 3.4 L20.6 20.6"/>',
+prompter:'<rect x="3" y="4" width="18" height="10.6" rx="1.6"/><path d="M12 14.6 L12 18.4 M6 20.8 L18 20.8 M12 18.4 L6.4 20.8 M12 18.4 L17.6 20.8"/><path d="M6.4 7.4 L14 7.4 M6.4 10.8 L11 10.8"/>',
+veleta:'<path d="M12 3 L12 21 M4.4 12.4 L19.6 12.4"/><path d="M12 4 L18.4 7.2 L12 10.4Z"/>',
+decreto:'<path d="M6.4 4.4 L18 4.4 L18 17.6 L6.4 17.6Z"/><path d="M6.4 4.4 C4.4 4.4 4.4 7.4 6.4 7.4 M18 17.6 C20 17.6 20 20.6 18 20.6 L8.4 20.6"/><circle cx="15" cy="14.6" r="2.4"/><path d="M9 9.2 L15 9.2 M9 12 L13.6 12"/>',
+calculadora:'<rect x="4.4" y="2.4" width="15.2" height="19.2" rx="2"/><rect x="7.2" y="5.2" width="9.6" height="3.8"/><circle cx="8.2" cy="13" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="13" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.8" cy="13" r="1.1" fill="currentColor" stroke="none"/><circle cx="8.2" cy="17.4" r="1.1" fill="currentColor" stroke="none"/><circle cx="12" cy="17.4" r="1.1" fill="currentColor" stroke="none"/><circle cx="15.8" cy="17.4" r="1.1" fill="currentColor" stroke="none"/>',
+tijeras:'<circle cx="6" cy="18" r="2.8"/><circle cx="18" cy="18" r="2.8"/><path d="M8.2 15.8 L18 3 M15.8 15.8 L6 3"/>',
+maletin:'<rect x="2" y="7" width="20" height="13" rx="2"/><path d="M9 7 L9 4.4 L15 4.4 L15 7"/><path d="M2 13 L22 13"/><rect x="10.2" y="11.4" width="3.6" height="3.2"/>',
+reloj:'<path d="M6 3 L18 3 M6 21 L18 21"/><path d="M7.4 3 L7.4 7 L12 12 L7.4 17 L7.4 21 M16.6 3 L16.6 7 L12 12 L16.6 17 L16.6 21"/>',
+flotador:'<circle cx="12" cy="12" r="9.4"/><circle cx="12" cy="12" r="4"/><path d="M5.4 5.4 L9.2 9.2 M18.6 5.4 L14.8 9.2 M5.4 18.6 L9.2 14.8 M18.6 18.6 L14.8 14.8"/>',
+panuelo:'<rect x="3" y="11" width="18" height="10" rx="1.6"/><path d="M9 11 C9 5.8 12.4 3 15.2 5.2 C17.6 7 15 9.6 12.6 11"/>',
+lagrima:'<path d="M12 1.8 C12 8 4 11.2 4 16 A8 8 0 0 0 20 16 C20 11.2 12 8 12 1.8Z"/>',
+sello:'<circle cx="12" cy="12" r="8.4"/><circle cx="12" cy="12" r="5.8"/><path d="M12 1.4 L12.9 4 M12 22.6 L11.1 20 M1.4 12 L4 11.1 M22.6 12 L20 12.9 M4.5 4.5 L6.4 6.4 M19.5 19.5 L17.6 17.6 M4.5 19.5 L6.4 17.6 M19.5 4.5 L17.6 6.4"/>',
+escudo:'<path d="M12 2 L21 5 L21 12 C21 17 16.4 21 12 22.4 C7.6 21 3 17 3 12 L3 5Z"/><path d="M12 8 L12 15.4 M8.6 11 L15.4 11"/>',
+edicion:'<rect x="2" y="6.4" width="20" height="11.2" rx="1.6"/><path d="M6 14 L18 14 M6 10 L9.4 10"/>'
+};
+
+/* ── piezas ───────────────────────────────────────────────────────── */
+const S = .86;
+const RAW = [
+ [1,'A','GALGO','galgo',36,24,'L'],[2,'A','COLETA','coleta',24,18,'M'],
+ [3,'A','CHIRIMOYA','chirimoya',27,19,'M'],[4,'A','CHIQUI','hucha',24,18,'M'],
+ [5,'A','PILI JUERGA','copa',27,19,'M'],[6,'A','LA NIÑA DE LA CURVA','faros',42,25,'L'],
+ [7,'A','RUFIÁN','chandal',24,18,'M'],[8,'A','ECO-RESILIENCIA','birrete',36,22,'L'],
+ [9,'A','SOLO SÍ ES SÍ','casilla',28,19,'M'],[10,'A','MARLASKIN','balanza',27,19,'M'],
+ [11,'A','EL DE LAS GAFAS','gafas',34,21,'L'],[12,'A','EL PORTERO','cordon',30,20,'M'],
+ [13,'A','RETRASO','tren',24,19,'M'],[14,'A','CEJAS','cejas',30,21,'L'],
+ [15,'B','ULTRADERECHA',null,78,14,'XL'],[16,'B','BULOS','aviso',22,18,'M'],
+ [17,'B','FANGO','goteo',32,22,'L'],[18,'B','YO ESTOY BIEN','sonrisa',28,19,'M'],
+ [19,'B','ESPAÑA VA COMO UN COHETE','cohete',48,31,'XL'],[20,'B','SINCRONIZADA','engranes',28,19,'M'],
+ [21,'B','TELEPEDRO','tele',24,20,'M'],[22,'B','NO DORMIRÍA TRANQUILO','almohada',44,25,'L'],
+ [23,'B','NO ES NO','stop',22,20,'M'],[24,'B','EL PUTO AMO','corona',26,19,'M'],
+ [25,'B','EL UNO','uno',18,16,'S'],[26,'B','SAUNAS','vapor',20,17,'S',1],
+ [27,'B','LA BANDA DEL PEUGEOT','coche',40,23,'L',1],[28,'B','HEMEROTECA','archivo',26,19,'M'],
+ [29,'C','POLTRONA','sillon',20,17,'S'],[30,'C','URNA','urna',18,16,'S'],
+ [31,'C','EL VENTILADOR','ventilador',26,19,'M'],[32,'C','SIN PREGUNTAS','micro',28,19,'M'],
+ [33,'C','TELEPROMPTER','prompter',26,19,'M'],[34,'C','VELETA','veleta',18,16,'S'],
+ [35,'C','DECRETAZO','decreto',22,18,'S'],[36,'C','LAS CUENTAS','calculadora',24,18,'M'],
+ [37,'C','RECORTES','tijeras',20,17,'S'],[38,'C','EL MALETÍN','maletin',20,17,'S'],
+ [39,'C','LEGISLATURA','reloj',22,18,'S'],[40,'C','A FLOTE','flotador',18,16,'S'],
+ [41,'C','PAÑUELO','panuelo',18,16,'S'],[42,'C','CONTIENE LÁGRIMAS','lagrima',30,24,'L'],
+ [43,'C','PRODUCTO DE ESPAÑA','sello',26,22,'M'],[44,'C','DO VINOS DE MADRID','escudo',26,21,'M'],
+ [45,'C','EDICIÓN Nº','edicion',22,16,'S']
+];
+const P = RAW.map(r=>({id:r[0],b:r[1],t:r[2],g:r[3],w:r[4]*S,h:r[5]*S,c:r[6],flag:!!r[7]}));
+
+/* ── geometría de la lámina (mm) ──────────────────────────────────── */
+const W=275, H=195, PX=4, PAD=8, PADX=13;
+const LOCK={x:135,y:52,w:100,h:58};
+const HALO={x:120,y:38,w:130,h:88};
+const CONTRA={x:8,y:62,w:80,h:58};
+const LAGR={x:94,y:46,w:26,h:90};
+const DEAD_T=5, DEAD_B=188;
+
+const m=v=>v*PX;
+let seed=7;
+function rnd(){seed=(seed*1664525+1013904223)%4294967296;return seed/4294967296}
+const hit=(a,b,p)=>!(a.x+a.w+p<=b.x||b.x+b.w+p<=a.x||a.y+a.h+p<=b.y||b.y+b.h+p<=a.y);
+
+function pack(showContra){
+  const fixed=[{...HALO},{...LAGR}];
+  if(showContra) fixed.push({...CONTRA});
+  const placed=[], missed=[];
+  const order=[...P].sort((a,b)=>(b.w*b.h)-(a.w*a.h));
+  for(const pc of order){
+    let ok=false;
+    for(let attempt=0;attempt<3 && !ok;attempt++){
+      const k=1-attempt*0.09;
+      const rot = pc.c==='S' && rnd()<0.16;
+      const w=(rot?pc.h:pc.w)*k, h=(rot?pc.w:pc.h)*k;
+      for(let i=0;i<900;i++){
+        const x=1+rnd()*(W-w-2), y=DEAD_T+rnd()*(DEAD_B-DEAD_T-h);
+        const r={x,y,w,h};
+        let clash=false;
+        for(const f of fixed) if(hit(r,f,1.2)){clash=true;break}
+        if(!clash) for(const q of placed) if(hit(r,q,2.4)){clash=true;break}
+        if(!clash){placed.push({...pc,...r,rot});ok=true;break}
+      }
+    }
+    if(!ok) missed.push(pc);
+  }
+  return {placed,missed};
+}
+
+/* ── render de una pieza ──────────────────────────────────────────── */
+function piece(p){
+  const w=m(p.w), h=m(p.h);
+  const hasG=!!p.g;
+  const words=p.t.split(' ');
+  let lines=[p.t];
+  if(p.t.length>11 && words.length>1){
+    let best=1e9,cut=1;
+    for(let i=1;i<words.length;i++){
+      const a=words.slice(0,i).join(' ').length, b=words.slice(i).join(' ').length;
+      if(Math.abs(a-b)<best){best=Math.abs(a-b);cut=i}
+    }
+    lines=[words.slice(0,cut).join(' '),words.slice(cut).join(' ')];
+  }
+  const maxLen=Math.max(...lines.map(l=>l.length));
+  const gs=hasG?Math.min(h*0.52,w*0.42):0;
+  const textH=h-gs-(hasG?h*0.09:0);
+  let fs=Math.min(textH/lines.length*0.88, w/(maxLen*0.46));
+  fs=Math.max(fs,3.6);
+  let s='';
+  let cy=0;
+  if(hasG){
+    s+=`<g transform="translate(${(w-gs)/2},0) scale(${gs/24})" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${G[p.g]||''}</g>`;
+    cy=gs+h*0.09;
+  }
+  const lh=fs*1.02;
+  const blockH=lh*lines.length;
+  const startY=cy+(h-cy-blockH)/2+fs*0.8;
+  lines.forEach((l,i)=>{
+    s+=`<text x="${w/2}" y="${startY+i*lh}" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="${fs}" letter-spacing="${fs*0.02}">${l}</text>`;
+  });
+  return s;
+}
+
+function lagrimometro(){
+  const w=m(LAGR.w), h=m(LAGR.h);
+  const marks=['SEQUÍA','MOQUEO','LLORERA','MOCO TENDIDO','DILUVIO'];
+  let s=`<text x="${w/2}" y="9" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="9" letter-spacing=".6">LAGRIMÓMETRO</text>`;
+  s+=`<path d="M${w*0.34} 16 L${w*0.34} ${h-6}" stroke="currentColor" stroke-width="1.1" fill="none"/>`;
+  const top=22, bot=h-12, step=(bot-top)/(marks.length-1);
+  marks.forEach((mk,i)=>{
+    const y=top+i*step;
+    s+=`<path d="M${w*0.34} ${y} L${w*0.34+7} ${y}" stroke="currentColor" stroke-width="1.1"/>`;
+    s+=`<text x="${w*0.34+10}" y="${y+2.6}" font-family="Barlow Condensed, sans-serif" font-weight="600" font-size="6.6" letter-spacing=".3">${mk}</text>`;
+    for(let j=1;j<4 && i<marks.length-1;j++){
+      const yy=y+step*j/4;
+      s+=`<path d="M${w*0.34} ${yy} L${w*0.34+3.6} ${yy}" stroke="currentColor" stroke-width=".8"/>`;
+    }
+  });
+  s+=`<rect x="${w*0.34-3.4}" y="${bot-step*1.2}" width="3" height="${step*1.2+4}" fill="currentColor"/>`;
+  return s;
+}
+
+function lockup(){
+  const w=m(LOCK.w), h=m(LOCK.h);
+  let s='';
+  s+=`<text x="${w/2}" y="${h*0.20}" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="600" font-size="9" letter-spacing="4">✦ ✦ ✦</text>`;
+  s+=`<text x="${w/2}" y="${h*0.55}" text-anchor="middle" font-family="DM Serif Display, Georgia, serif" font-size="${h*0.30}" letter-spacing="1">LÁGRIMAS</text>`;
+  s+=`<text x="${w/2}" y="${h*0.80}" text-anchor="middle" font-family="DM Serif Display, Georgia, serif" font-size="${h*0.20}" letter-spacing="2.4">DE SÁNCHEZ</text>`;
+  s+=`<path d="M${w*0.30} ${h*0.885} L${w*0.70} ${h*0.885}" stroke="currentColor" stroke-width="1"/>`;
+  s+=`<text x="${w/2}" y="${h*0.985}" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="600" font-size="8.4" letter-spacing="3">VINOS DE MADRID</text>`;
+  return s;
+}
+
+/* ── lámina ───────────────────────────────────────────────────────── */
+let cotas=true, contra=true, result=null;
+const OX=28, OY=34;
+
+function drawFlat(){
+  result=pack(contra);
+  const svg=document.getElementById('flat');
+  const gw=m(W), gh=m(H);
+  let s='';
+  s+=`<defs>
+    <linearGradient id="gl" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4e2c0b"/><stop offset=".14" stop-color="#7a4a18"/>
+      <stop offset=".5" stop-color="#a0702e"/><stop offset=".86" stop-color="#7a4a18"/>
+      <stop offset="1" stop-color="#4e2c0b"/>
+    </linearGradient>
+    <pattern id="hatch" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+      <line x1="0" y1="0" x2="0" y2="7" stroke="#e0685c" stroke-width="1.4"/>
+    </pattern>
+  </defs>`;
+  s+=`<g transform="translate(${OX},${OY})">`;
+  s+=`<rect width="${gw}" height="${gh}" fill="url(#gl)"/>`;
+  s+=`<g fill="#f6f1e6" stroke="none">`;
+  s+=`<g transform="translate(${m(LOCK.x)},${m(LOCK.y)})" fill="#f6f1e6" stroke="none">${lockup()}</g>`;
+  s+=`<g transform="translate(${m(LAGR.x)},${m(LAGR.y)})" fill="#f6f1e6" stroke="none">${lagrimometro()}</g>`;
+  for(const p of result.placed){
+    const w=m(p.w),h=m(p.h);
+    const tr=p.rot?`translate(${m(p.x)+w},${m(p.y)}) rotate(90)`:`translate(${m(p.x)},${m(p.y)})`;
+    s+=`<g transform="${tr}" color="#f6f1e6" fill="#f6f1e6">${piece({...p,w:p.rot?p.h:p.w,h:p.rot?p.w:p.h})}</g>`;
+  }
+  s+=`</g>`;
+  if(contra){
+    s+=`<rect x="${m(CONTRA.x)}" y="${m(CONTRA.y)}" width="${m(CONTRA.w)}" height="${m(CONTRA.h)}" fill="url(#hatch)" opacity=".5" stroke="#e0685c" stroke-width="1.2" stroke-dasharray="5 4"/>`;
+    s+=`<text x="${m(CONTRA.x+CONTRA.w/2)}" y="${m(CONTRA.y+CONTRA.h/2)}" text-anchor="middle" fill="#ffd9d4" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1">CONTRAETIQUETA</text>`;
+    s+=`<text x="${m(CONTRA.x+CONTRA.w/2)}" y="${m(CONTRA.y+CONTRA.h/2)+15}" text-anchor="middle" fill="#ffd9d4" font-family="IBM Plex Mono, monospace" font-size="9" letter-spacing=".5" opacity=".8">80 × 58 mm · solo vino</text>`;
+  }
+  if(cotas){
+    s+=`<rect x="${m(HALO.x)}" y="${m(HALO.y)}" width="${m(HALO.w)}" height="${m(HALO.h)}" fill="none" stroke="#e0685c" stroke-width="1.2" stroke-dasharray="3 5"/>`;
+    s+=`<text x="${m(HALO.x)+5}" y="${m(HALO.y)-6}" fill="#e0685c" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing=".6">HALO 130 × 88 — LIBRE DE TINTA</text>`;
+    s+=`<rect x="0" y="${m(DEAD_B)}" width="${gw}" height="${gh-m(DEAD_B)}" fill="url(#hatch)" opacity=".55"/>`;
+    s+=`<rect x="0" y="0" width="${gw}" height="${m(DEAD_T)}" fill="url(#hatch)" opacity=".55"/>`;
+    s+=`<path d="M0 ${m(45)} L${gw} ${m(45)}" stroke="#e0685c" stroke-width="1" stroke-dasharray="9 6" opacity=".9"/>`;
+    s+=`<text x="8" y="${m(45)-7}" fill="#e0685c" font-family="IBM Plex Mono, monospace" font-size="9.5" letter-spacing=".6">↑ HOMBRO CÓNICO · 45 mm</text>`;
+  }
+  s+=`<rect width="${gw}" height="${gh}" fill="none" stroke="#2a241c" stroke-width="1.5"/>`;
+  s+=`</g>`;
+
+  if(cotas){
+    const c='#e0685c';
+    s+=`<g stroke="${c}" fill="${c}" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing=".6">`;
+    s+=`<path d="M${OX} ${OY-16} L${OX+gw} ${OY-16}" stroke-width="1"/>`;
+    s+=`<path d="M${OX} ${OY-21} L${OX} ${OY-11} M${OX+gw} ${OY-21} L${OX+gw} ${OY-11}" stroke-width="1"/>`;
+    s+=`<rect x="${OX+gw/2-42}" y="${OY-25}" width="84" height="18" fill="#f1ede4" stroke="none"/>`;
+    s+=`<text x="${OX+gw/2}" y="${OY-12}" text-anchor="middle" stroke="none">275 mm</text>`;
+    s+=`<path d="M${OX-16} ${OY} L${OX-16} ${OY+gh}" stroke-width="1"/>`;
+    s+=`<path d="M${OX-21} ${OY} L${OX-11} ${OY} M${OX-21} ${OY+gh} L${OX-11} ${OY+gh}" stroke-width="1"/>`;
+    s+=`<g transform="translate(${OX-12},${OY+gh/2}) rotate(-90)"><rect x="-40" y="-9" width="80" height="18" fill="#f1ede4" stroke="none"/><text text-anchor="middle" y="4" stroke="none">195 mm</text></g>`;
+    s+=`</g>`;
+  }
+  svg.innerHTML=s;
+  document.getElementById('seedtag').textContent='distribución #'+String(seedShown).padStart(3,'0');
+  const fr=document.getElementById('fitreport');
+  fr.textContent = result.missed.length
+    ? '⚠ '+result.missed.length+' sin colocar: '+result.missed.map(p=>p.t).join(', ')
+    : '✓ 45/45 colocadas · ocupación '+Math.round(P.reduce((a,p)=>a+p.w*p.h,0)/(W*H)*100)+' %';
+  drawBottles();
+}
+
+/* ── botellas ─────────────────────────────────────────────────────── */
+const BOT='M 8,290 L 8,176 C 8,146 30,138 30,110 L 30,30 C 30,24 28,22 28,15 L 28,7 L 62,7 L 62,15 C 62,22 60,24 60,30 L 60,110 C 60,138 82,146 82,176 L 82,290 Z';
+const R=W/(2*Math.PI);
+
+function bottleAt(centerX,idx){
+  const items=[];
+  const all=[...result.placed.map(p=>({...p,kind:'p'})),
+             {...LOCK,kind:'lock'},{...LAGR,kind:'lagr'}];
+  for(const p of all){
+    const w=p.rot?p.h:p.w, h=p.rot?p.w:p.h;
+    for(const off of [-W,0,W]){
+      const cx=p.x+w/2+off;
+      let th=(cx-centerX)/R;
+      if(Math.abs(th)>1.15) continue;
+      const sx=R*Math.sin(th), k=Math.cos(th);
+      if(k<0.34) continue;
+      items.push({p,w,h,sx,k,th});
+    }
+  }
+  items.sort((a,b)=>Math.abs(b.th)-Math.abs(a.th));
+  let s='';
+  for(const it of items){
+    const {p,w,h,sx,k}=it;
+    const bx=43.5+sx*(37/R), by=(p.y/H)*168+112;
+    const scale=(37/R)*k*(1/PX)*PX;
+    let inner;
+    if(p.kind==='lock') inner=`<g transform="scale(${1/PX})">${lockup()}</g>`;
+    else if(p.kind==='lagr') inner=`<g transform="scale(${1/PX})">${lagrimometro()}</g>`;
+    else inner=`<g transform="scale(${1/PX})">${piece({...p,w,h})}</g>`;
+    const sy=168/H;
+    s+=`<g transform="translate(${bx},${by}) scale(${(k*37/R).toFixed(4)},${sy.toFixed(4)})" opacity="${(0.46+0.54*k).toFixed(2)}"><g transform="translate(${-w/2},0)">${inner}</g></g>`;
+  }
+  return s;
+}
+
+function drawBottles(){
+  const svg=document.getElementById('bottles');
+  const centers=[LAGR.x+LAGR.w/2, LOCK.x+LOCK.w/2, LOCK.x+LOCK.w/2+80];
+  let s=`<defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3f2308"/><stop offset=".16" stop-color="#7e4d19"/>
+      <stop offset=".46" stop-color="#b07f39"/><stop offset=".78" stop-color="#7e4d19"/>
+      <stop offset="1" stop-color="#3f2308"/>
+    </linearGradient>
+    <linearGradient id="cap" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#14100b"/><stop offset=".4" stop-color="#3b332a"/><stop offset="1" stop-color="#14100b"/>
+    </linearGradient>
+    <clipPath id="cb"><path d="${BOT}"/></clipPath>
+  </defs>`;
+  const xs=[16,208,400], scale=1.62;
+  centers.forEach((c,i)=>{
+    s+=`<g transform="translate(${xs[i]},14) scale(${scale})">`;
+    s+=`<path d="${BOT}" fill="url(#bg2)"/>`;
+    s+=`<g clip-path="url(#cb)" fill="#f6f1e6" color="#f6f1e6" stroke="none">${bottleAt(c,i)}</g>`;
+    s+=`<path d="M28,7 L62,7 L62,15 C62,22 60,24 60,30 L30,30 C30,24 28,22 28,15 Z" fill="url(#cap)"/>`;
+    s+=`<path d="M27,7 L63,7 L63,10 L27,10 Z" fill="#0d0a06"/>`;
+    s+=`<path d="${BOT}" fill="none" stroke="#2a1a08" stroke-width=".9"/>`;
+    s+=`</g>`;
+  });
+  svg.innerHTML=s;
+}
+
+/* ── inventario ───────────────────────────────────────────────────── */
+(function(){
+  const meta={A:['A','Apodos','14'],B:['B','Frases','14'],C:['C','Relleno','17']};
+  const host=document.getElementById('inv');
+  let out='';
+  for(const k of ['A','B','C']){
+    const list=P.filter(p=>p.b===k);
+    out+=`<div class="blk"><div class="blk-h"><span class="blk-l">${meta[k][0]}</span><span class="blk-t">${meta[k][1]}</span><span class="blk-c">${k==='C'?'17':'14'} piezas</span></div><ol class="items">`;
+    if(k==='C') out+=`<li><span class="i-n">00</span><span class="i-g"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M8 3 L8 21 M8 6 L15 6 M8 11 L18 11 M8 16 L15 16"/></svg></span><span class="i-t">Lagrimómetro</span><span class="i-c">XL</span></li>`;
+    for(const p of list){
+      out+=`<li class="${p.flag?'flag':''}"><span class="i-n">${String(p.id).padStart(2,'0')}</span><span class="i-g">${p.g?`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${G[p.g]}</svg>`:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12 L21 12"/></svg>'}</span><span class="i-t">${p.t}</span><span class="i-c">${p.c}</span></li>`;
+    }
+    out+='</ol></div>';
+  }
+  host.innerHTML=out;
+})();
+
+/* ── controles ────────────────────────────────────────────────────── */
+let seedShown=1;
+document.getElementById('reshuffle').addEventListener('click',()=>{seed=(seed*31+97)%99991;seedShown++;drawFlat()});
+const tc=document.getElementById('tCotas'), tk=document.getElementById('tContra');
+tc.addEventListener('click',()=>{cotas=!cotas;tc.setAttribute('aria-pressed',cotas);drawFlat()});
+tk.addEventListener('click',()=>{contra=!contra;tk.setAttribute('aria-pressed',contra);drawFlat()});
+drawFlat();
+</script>

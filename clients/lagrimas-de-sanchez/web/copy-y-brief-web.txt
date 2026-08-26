@@ -1,0 +1,202 @@
+Diseña la web de LÁGRIMAS DE SÁNCHEZ. Mobile first, alto impacto.
+Dominios: lagrimasdesanchez.com y .es
+
+=== QUÉ ES ===
+Una botella de cristal ámbar de 750 ml serigrafiada por completo en el
+propio vidrio, con 67 piezas tipográficas del vocabulario político español
+de la última década. Tinta cerámica blanca vitrificada a 600 °C: no es una
+etiqueta, es parte del cristal y no se va nunca. La misma botella se vende
+vacía y rellenable, o llena de tinto de la DO Vinos de Madrid.
+
+=== ARQUITECTURA - IMPORTANTE ===
+La HOME vende la BOTELLA VACÍA. No es una decisión estética: una home que
+vende alcohol necesita verificación de edad y no se puede anunciar en Meta
+ni en Google. Con la botella vacía en portada, la home queda limpia y
+anunciable, y el vino vive en una página interior /vino con su verificación
+de edad. Esto vale miles de euros en captación, así que respétalo.
+
+  /            la botella vacía. Sin alcohol, sin puerta de edad
+  /vino        el vino y los packs. Con verificación de edad
+  /estampado   las 67 piezas, una a una
+  /envios      envíos y devoluciones
+  /legal       aviso legal, privacidad, cookies
+
+=== TONO ===
+Deadpan. La marca nunca se ríe de su propio chiste: el humor está en el
+vidrio, la web es seca, breve y casi notarial. Frases cortas. Cero
+exclamaciones, cero emojis, cero "¡descubre!". Español de España.
+
+=== PALETA CERRADA - no uses ningún otro color ===
+  ámbar vidrio  #7A4A18    sombra vidrio #4E2C0B    brillo vidrio #A0702E
+  blanco tinta  #F6F1E6    negro cálido  #14100B    rojo registro #B4342A
+Fondo dominante oscuro. El ámbar es la única fuente de calor de la página.
+El rojo, solo para acentos mínimos: un precio, una cifra, un subrayado.
+Nunca de fondo, nunca en un botón grande.
+
+=== TIPOGRAFÍA - TRES ROLES, NI UNO MÁS ===
+  1. Serif de alto contraste, editorial -> titulares y el nombre de marca
+  2. Grotesca condensada en mayúsculas, peso 700 -> etiquetas y las piezas
+  3. Monoespaciada -> precios, ficha técnica, datos, numeración
+
+
+═══════════════════════════════════════════════
+COPY - ESTO ES LITERAL, ÚSALO TAL CUAL
+═══════════════════════════════════════════════
+
+--- HOME / HERO ---
+
+LÁGRIMAS DE SÁNCHEZ
+
+Sesenta y siete motivos para llorar, horneados en el vidrio a 600 grados.
+No es una etiqueta. No se despega.
+
+[ Ver la botella · 22 € ]
+
+(La botella ocupa casi toda la pantalla, cortada por el borde inferior,
+sobre negro. Un solo botón.)
+
+
+--- HOME / EL ESTAMPADO ---
+
+67 piezas. Ni una sola cara.
+
+Apodos, frases y pictogramas de la última década, compuestos en doce bandas
+alrededor de la botella. Todo lo dice el texto. Es más difícil y es más
+gracioso.
+
+(Carrusel horizontal arrastrable con las piezas en blanco sobre ámbar, cada
+una con su nombre debajo. En móvil se arrastra con el pulgar.)
+
+[ Verlas todas ]
+
+
+--- HOME / LAS DOS VIDAS ---
+
+La botella no se recicla. Se guarda.
+
+Se vende vacía. La llenas de agua en la mesa, de vino a granel, o de lo que
+te salga. La serigrafía es cerámica vitrificada: aguanta el lavavajillas
+mil veces y sigue ahí.
+
+Y si la quieres estrenar llena, hay tinto dentro.
+
+(Bloque partido en dos: la botella vacía con agua en una mesa / la botella
+con vino. Misma botella, dos usos.)
+
+
+--- HOME / COMPRAR ---
+
+Tres maneras
+
+LA BOTELLA · 22 €
+Vacía y rellenable, con su cierre y su caja. Numerada a mano.
+
+EL ESTUCHE COMPLETO · 39 €
+Una vacía y una con vino. La misma botella, sus dos vidas.
+(Destacada, sin gritar. Es la que mejor explica el concepto.)
+
+TRES VINOS · 69 €
+Tinto de la DO Vinos de Madrid. El chiste va por fuera.
+
+
+--- HOME / NUMERACIÓN ---
+
+Numerada a mano, una por una.
+
+No es una serie limitada de mentira. Cada botella lleva su número escrito
+a mano en el hueco que la serigrafía deja para eso.
+
+
+--- HOME / FICHA TÉCNICA ---
+
+(Tratada como una tabla de especificación real, monoespaciada, sin adornos.)
+
+CAPACIDAD          750 ml
+VIDRIO             Ámbar, 500 g
+DECORACIÓN         Serigrafía cerámica vitrificada a 600 °C
+TINTA              Una, blanca
+PIEZAS             67
+LAVAVAJILLAS       Sí
+ETIQUETA FRONTAL   Ninguna
+NUMERACIÓN         A mano
+ORIGEN             [POR CONFIRMAR]
+
+
+--- PÁGINA /VINO ---
+
+Tinto de Madrid. El chiste va por fuera.
+
+DO Vinos de Madrid, subzona de Arganda, a cincuenta kilómetros de la Puerta
+del Sol. Lo hace [BODEGA POR CONFIRMAR], que lleva [AÑOS POR CONFIRMAR]
+haciendo vino ahí.
+
+Es un tinto de verdad, no un souvenir con líquido dentro. Si la botella no
+tuviera nada escrito, seguiría siendo un vino que te bebes.
+
+VARIEDAD           [POR CONFIRMAR]
+AÑADA              [POR CONFIRMAR]
+GRADO              [POR CONFIRMAR]
+CRIANZA            [POR CONFIRMAR]
+
+
+--- PREGUNTAS FRECUENTES ---
+
+¿Se despega el dibujo?
+No. Es tinta cerámica horneada a 600 grados. Forma parte del vidrio.
+
+¿Puedo meterla en el lavavajillas?
+Sí. Las veces que quieras.
+
+¿La botella de 22 € trae algo dentro?
+No. Viene vacía a propósito. La llenas tú.
+
+¿Por qué no hay ninguna cara?
+Porque no hace falta.
+
+¿Está numerada de verdad?
+Sí, a mano, una por una.
+
+¿Enviáis fuera de España?
+La botella vacía, a todo el mundo. El vino, a España y a la Unión Europea.
+[CONFIRMAR PAÍSES]
+
+¿Y si llega rota?
+Te mandamos otra. El vidrio viaja bien embalado, pero pasa.
+
+
+--- PIE ---
+
+Consumo responsable. Venta de bebidas alcohólicas solo a mayores de 18 años.
+
+[Aviso legal] [Privacidad] [Cookies] [Contacto]
+
+hola@lagrimasdesanchez.com
+
+
+═══════════════════════════════════════════════
+
+=== PANTALLAS QUE NECESITO (artboards de 390 x 844) ===
+ 1. Home / hero
+ 2. Home / el estampado, con el carrusel
+ 3. Home / las dos vidas
+ 4. Home / comprar, las tres tarjetas
+ 5. Home / ficha técnica y numeración
+ 6. Página de producto de la botella vacía
+ 7. Página /vino con la verificación de edad
+ 8. Carrito y checkout
+ 9. Preguntas frecuentes y pie
+10. Lámina de sistema: paleta, escala tipográfica, botones, tarjeta de
+    producto, estados
+
+=== RESTRICCIONES INNEGOCIABLES ===
+- Ni una cara, ni un retrato, ni una caricatura de persona real. Requisito
+  legal, no estético.
+- Ninguna marca ajena: coches, ropa, hoteles, aviones. Objetos genéricos.
+- Nada de viñedos, copas al atardecer, uvas, barricas ni manos sosteniendo
+  vino. Ni una.
+- Nada de degradados morados o azules, ni cream con serif y terracota, ni
+  tarjetas redondeadas con barrita de acento lateral. Si parece plantilla,
+  está mal.
+- Móvil primero de verdad: una columna, pulgar, tipografía grande, el
+  precio siempre visible, área táctil nunca menor de 44 px.
+- No inventes datos. Donde pone [POR CONFIRMAR], déjalo marcado a la vista.

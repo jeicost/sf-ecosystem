@@ -1,0 +1,120 @@
+Diseña el sistema de producto de LÁGRIMAS DE SÁNCHEZ, una marca española de
+botella de cristal serigrafiada y vino de la DO Vinos de Madrid.
+
+=== EL PRODUCTO ===
+Una única botella borgoña de 750 ml en vidrio ámbar, serigrafiada en blanco
+cerámico vitrificado a 600 °C, cubierta de arriba abajo con 65 piezas
+tipográficas: apodos, frases y pictogramas del vocabulario político español de
+la última década. Sin etiqueta frontal: todo va horneado en el vidrio, es
+permanente y apto para lavavajillas.
+Referencia estructural exacta: el vino "El Xitxarel·lo" del Penedès. Palabras e
+iconos en una sola tinta blanca sobre vidrio ámbar, muy densos, con un bloque de
+marca sereno en el centro. Esa es la densidad y ese es el registro.
+
+El mismo vidrio se vende de tres formas:
+  A - La botella vacía, rellenable: tapón mecánico de acero y goma, colgante de
+      cartón atado al cuello con hilo de algodón, caja individual - 22 EUR
+  B - El vino: corcho, cápsula negra mate, contraetiqueta legal atrás de
+      70 x 50 mm, estuche de 3 - 69 EUR
+  C - El estuche completo: 1 vino + 1 botella vacía - 39 EUR
+
+=== TONO ===
+Deadpan. La marca nunca se ríe de su propio chiste. El humor está en el vidrio;
+todo lo demás (caja, colgante, contraetiqueta) es seco, breve y casi notarial.
+Nada de exclamaciones, nada de emojis. Español de España.
+
+Frases aprobadas para packaging y colgante:
+  - La botella no se recicla. Se guarda.
+  - Rellénala con agua. O con lo que te salga.
+  - 65 motivos para llorar. Uno por pieza.
+  - Numerada a mano, una por una.
+  - Contiene lágrimas.
+
+=== PALETA CERRADA ===
+No uses ningún otro color.
+  ámbar vidrio  #7A4A18    sombra vidrio #4E2C0B    brillo vidrio #A0702E
+  blanco tinta  #F6F1E6    negro cálido  #14100B    rojo registro #B4342A
+El rojo solo para acentos mínimos: precios, una cifra, un subrayado. Nunca de
+fondo, nunca en un botón grande.
+
+=== TIPOGRAFÍA: TRES ROLES ===
+  1. Serif de alto contraste, editorial -> el lockup de marca y los titulares.
+     Es el único momento elegante del proyecto.
+  2. Grotesca condensada en mayúsculas, peso 700 -> las 65 piezas del estampado
+     y todas las etiquetas.
+  3. Monoespaciada -> datos, precios, ficha técnica, numeración, cotas.
+No mezclar roles. No añadir una cuarta.
+
+=== EL LOCKUP ===
+Centrado en la cara frontal, con 15 mm de aire libre alrededor donde no entra
+ninguna pieza. Ese halo de calma en medio del caos es el diseño entero.
+
+        *   *   *
+       LÁGRIMAS
+      DE SÁNCHEZ
+    ---------------
+     vinos de madrid
+
+=== EL ESTAMPADO: 65 PIEZAS ===
+Estructura: 11 a 13 BANDAS HORIZONTALES de altura variable, con los elementos
+alineados a línea base dentro de cada banda y justificados de lado a lado. NO es
+un esparcido aleatorio: se lee como un periódico maquetado. Huecos de 1 a 3 mm.
+Ocupación objetivo del 75 %.
+Superficie: banda desarrollada de 275 x 195 mm. Zona muerta de 20 mm bajo la
+boca y 7 mm sobre la base. Los 45 mm superiores son cónicos (hombro).
+
+Siete tratamientos, con este reparto exacto:
+  1. Palabra desnuda: solo tipografía, ~26 piezas. Es lo que da respiración.
+  2. Silueta + palabra: ~18 piezas, un solo objeto cada una.
+  3. Texto dentro del objeto: 4 piezas (televisor, urna, pantalla).
+  4. Caja invertida: blanco macizo con texto calado en ámbar. Máximo 5,
+     repartidas, nunca dos juntas. Son los acentos.
+  5. Sello circular: máximo 4, solo nombres cortos.
+  6. Banderín o cinta: 2 o 3, para romper la horizontalidad.
+  7. Escala vertical: pieza única, el LAGRIMÓMETRO, columna entera en el
+     lateral, con seis marcas: OJO SECO / SE ME EMPAÑA / MOQUEO / LLORERA /
+     MOCO TENDIDO / DESEMBALSE.
+
+Contraste de escala brutal: 3 o 4 palabras enormes por cara visible ocupando
+casi todo el ancho, y el resto pequeño. Nada de gradación suave.
+
+Remates que se repiten por toda la retícula cerrando huecos: estrella de cinco
+puntas, asterisco, flecha corta, manita señalando, pulgar hacia abajo, corazón,
+comillas, puntos suspensivos, signo de interrogación, gota pequeña.
+
+Piezas grandes de referencia para la composición: DESJUDICIALIZAR y AL MENOS NO
+GOBIERNA LA ULTRADERECHA cruzan la botella. ULTRADERECHA, ESPAÑA VA COMO UN
+COHETE y NO DORMIRÍA TRANQUILO son las otras anclas.
+
+=== FICHA TÉCNICA REAL ===
+Borgoña 750 ml / vidrio ámbar 500 g / diámetro 87,5 mm / perímetro 275 mm
+Serigrafía cerámica, una tinta blanca, vitrificada a 600 °C
+Trazo mínimo 0,8 mm / altura de carácter mínima 1,2 mm en menciones legales
+Apta para lavavajillas / numerada a mano
+
+=== QUÉ NECESITO QUE DISEÑES ===
+ 1. Botella, vista frontal: el lockup y su halo.
+ 2. Botella, vista lateral: el lagrimómetro anclando la columna.
+ 3. Desarrollo plano de la retícula, 275 x 195 mm, con las bandas visibles.
+ 4. Producto A: la botella vacía con tapón mecánico y colgante de cartón.
+ 5. Producto B: el vino, con corcho, cápsula negra mate y contraetiqueta atrás.
+ 6. Producto C: el pack de 3 en su estuche.
+ 7. Producto D: el estuche completo, 1 vino + 1 botella vacía.
+ 8. La contraetiqueta legal a tamaño real, 70 x 50 mm, con todo lo obligatorio
+    maquetado: grado, volumen, lote, sulfitos, embotellador, kcal y QR.
+ 9. La caja individual: desarrollo plano del troquel, una tinta.
+10. El colgante de cuello, las dos caras.
+11. Lámina de sistema: paleta, escalas tipográficas, los siete tratamientos.
+
+=== RESTRICCIONES INNEGOCIABLES ===
+- Ni una cara, ni un retrato, ni una caricatura de ninguna persona real.
+  Solo palabras, apodos y objetos. Es requisito legal, no estético.
+- Ninguna marca ajena: ni logos de coches, ni de ropa, ni de hoteles, ni de
+  aviones. Todos los objetos genéricos.
+- En el vidrio NO va ninguna mención legal, de origen, de grado, de lote ni de
+  denominación de origen. Solo marca y creatividad. Todo lo legal vive en la
+  contraetiqueta adhesiva, que es lo que permite llenar la misma botella con
+  vino de Madrid hoy y de otra DO mañana, o venderla vacía.
+- Nada de viñedos, copas al atardecer, uvas, barricas ni manos sosteniendo vino.
+- Nada de degradados morados o azules, ni cream con serif y terracota, ni
+  tarjetas redondeadas con barrita de acento. Si parece plantilla, está mal.

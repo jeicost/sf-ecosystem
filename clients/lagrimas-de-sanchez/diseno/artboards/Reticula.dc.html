@@ -1,0 +1,331 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    a { color: #A0702E; } a:hover { color: #F6F1E6; }
+
+    .flat { position: relative; width: 1100px; height: 780px; box-sizing: border-box;
+      background: linear-gradient(90deg,#3F2308 0%,#7A4A18 13%,#A0702E 50%,#7A4A18 87%,#3F2308 100%);
+      padding: 20px 8px 28px; display: flex; flex-direction: column; gap: 5px;
+      color: #F6F1E6; outline: 1.5px solid #14100B; }
+    .band { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+    .p { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .t { font-family: "Barlow Condensed","Arial Narrow",sans-serif; font-weight: 700;
+      line-height: .9; letter-spacing: .02em; text-align: center; white-space: nowrap; }
+    .xl { font-size: 47px; letter-spacing: -.005em; }
+    .lg { font-size: 27px; }
+    .md { font-size: 16px; }
+    .sm { font-size: 11px; letter-spacing: .05em; }
+    .xs { font-size: 8.5px; letter-spacing: .1em; }
+    .box { background:#F6F1E6; color:#7A4A18; padding: 3px 9px 4px; border-radius: 3px; }
+    .seal { border: 1.6px solid #F6F1E6; border-radius: 50%; width: 52px; height: 52px;
+      display: flex; align-items: center; justify-content: center; }
+    .sup { font-size: 8px; letter-spacing: .1em; font-weight: 600; opacity: .9; }
+    .vert { writing-mode: vertical-rl; }
+    .mid { display: flex; align-items: stretch; gap: 10px; height: 352px; }
+    .rsv { border: 1.4px dashed #E0685C; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 5px; color: #FFD9D4;
+      background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(224,104,92,.30) 5px, rgba(224,104,92,.30) 7px); }
+    .rsvl { font-size: 10.5px; letter-spacing: .14em; }
+    .halo { border: 1.4px dashed #E0685C; width: 520px; display: flex; align-items: center; justify-content: center; }
+    .lock { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .lock .stars { font-family:"Barlow Condensed",sans-serif; font-size: 14px; letter-spacing: 12px; }
+    .lock .n1 { font-family:"DM Serif Display",Georgia,serif; font-size: 55px; line-height: .95; }
+    .lock .n2 { font-family:"DM Serif Display",Georgia,serif; font-size: 33px; line-height: 1; letter-spacing: .1em; }
+    .lock .rule { width: 172px; height: 1.4px; background:#F6F1E6; margin: 6px 0 4px; }
+    .lock .do { font-family:"Barlow Condensed",sans-serif; font-weight:600; font-size: 13px; letter-spacing: .36em; }
+    .gcol { display: flex; flex-direction: column; justify-content: space-between; width: 104px;
+      position: relative; padding-left: 3px; }
+    .gspine { position: absolute; left: 0; top: 18px; bottom: 0; width: 1.6px; background:#F6F1E6; }
+    .grow { display: flex; align-items: center; gap: 6px; }
+    .gt { width: 15px; height: 1.6px; background:#F6F1E6; flex: none; }
+    .gt.mini { width: 7px; height: 1px; }
+    .gl { font-family:"Barlow Condensed",sans-serif; font-weight: 600; font-size: 9.5px; letter-spacing: .07em; }
+    .col { display: flex; flex-direction: column; justify-content: space-between; align-items: center; }
+    .dead { background: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(224,104,92,.34) 5px, rgba(224,104,92,.34) 7px); }
+  </style>
+</helmet>
+
+<div style="min-height: 980px; background:#14100B; padding: 48px 40px; box-sizing: border-box; display:flex; flex-direction:column; gap: 26px; align-items: flex-start;">
+
+  <div style="display:flex; align-items:baseline; gap: 16px; color:#F6F1E6; width: 1100px;">
+    <span style="font-family:'DM Serif Display',Georgia,serif; font-size: 27px;">Desarrollo plano</span>
+    <span style="font-size: 11px; letter-spacing:.12em; color:#B4342A;">275 × 195 MM · 67 PIEZAS · 12 BANDAS</span>
+    <span style="margin-left:auto; font-size: 11px; letter-spacing:.1em; color:#6D6353;">ESCALA 1:2,5</span>
+  </div>
+
+  <div class="flat">
+
+    <div class="band">
+      <div class="p"><div class="t xs">CONVIVENCIA</div></div>
+      <div class="p"><div class="t xs">DIÁLOGO</div></div>
+      <div class="p"><div class="t xs">REGENERACIÓN</div></div>
+      <div class="p"><div class="t xs">MAYORÍA PROGRESISTA</div></div>
+      <div class="p"><div class="t xs">LAWFARE</div></div>
+      <div class="p"><div class="t xs">PSEUDOMEDIOS</div></div>
+      <div class="p"><div class="t xs">FISCAL SOPLÓN</div></div>
+    </div>
+
+    <div class="band">
+      <div class="p"><div class="t md">RELATO</div></div>
+      <div class="p">
+        <svg width="18" height="16" viewBox="0 0 24 22" fill="none" stroke="#F6F1E6" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 L22 20 L2 20Z"/><path d="M12 9.5 L12 14"/><circle cx="12" cy="17.2" r=".9" fill="#F6F1E6" stroke="none"/></svg>
+        <div class="t sm">BULOS</div>
+      </div>
+      <div class="p"><div class="t md" style="letter-spacing:.09em">SANCHISMO</div></div>
+      <div class="p">
+        <svg width="16" height="18" viewBox="0 0 20 24" fill="none" stroke="#F6F1E6" stroke-width="1.8" stroke-linecap="round"><path d="M10 21 L10 8"/><path d="M6.4 11.4 L10 7.2 L13.6 11.4"/><path d="M4 4 L16 4"/></svg>
+        <div class="t sm">A DEDO</div>
+      </div>
+      <div class="p"><div class="t md">ECOLOGETAS</div></div>
+      <div class="p"><div class="t sm">RESISTIRÉ</div></div>
+      <div class="p"><div class="t sm">NO HAY DINERO PÚBLICO</div></div>
+    </div>
+
+    <div class="band" style="justify-content:center; padding: 2px 0 4px;">
+      <div class="t xl">AL MENOS NO GOBIERNA LA ULTRADERECHA</div>
+    </div>
+
+    <div class="mid">
+      <div class="rsv" style="width: 320px;">
+        <div class="rsvl">CONTRAETIQUETA</div>
+        <div class="rsvl" style="font-size:9px; opacity:.85;">80 × 58 MM · SOLO VINO</div>
+      </div>
+
+      <div class="gcol">
+        <div class="gspine"></div>
+        <div>
+          <div class="t" style="font-size:10px; letter-spacing:.1em; text-align:left; margin-bottom:7px;">LAGRIMÓMETRO</div>
+          <div class="grow"><div class="gt"></div><div class="gl">OJO SECO</div></div>
+        </div>
+        <div class="grow"><div class="gt mini"></div></div>
+        <div class="grow"><div class="gt"></div><div class="gl">SE ME EMPAÑA</div></div>
+        <div class="grow"><div class="gt mini"></div></div>
+        <div class="grow"><div class="gt"></div><div class="gl">MOQUEO</div></div>
+        <div class="grow"><div class="gt mini"></div></div>
+        <div class="grow"><div class="gt"></div><div class="gl">LLORERA</div></div>
+        <div class="grow"><div class="gt mini"></div></div>
+        <div class="grow"><div class="gt"></div><div class="gl">MOCO TENDIDO</div></div>
+        <div class="grow"><div class="gt mini"></div></div>
+        <div class="grow"><div class="gt"></div><div class="gl" style="font-size:11px">DESEMBALSE</div></div>
+      </div>
+
+      <div class="col" style="flex:1;">
+        <div class="p"><div class="t md">CHEPAS</div></div>
+        <div class="p"><div class="t sm">FELPUDO</div></div>
+        <div class="p"><div class="t sm">CHARO</div></div>
+        <div class="p"><div class="t xs">★</div></div>
+      </div>
+
+      <div class="halo">
+        <div class="lock">
+          <div class="stars">✦✦✦</div>
+          <div class="n1">LÁGRIMAS</div>
+          <div class="n2">DE SÁNCHEZ</div>
+          <div class="rule"></div>
+          <div class="do">VINOS DE MADRID</div>
+        </div>
+      </div>
+
+      <div class="col" style="flex:1;">
+        <div class="p">
+          <svg width="42" height="15" viewBox="0 0 40 16" fill="#F6F1E6"><path d="M2 13 L9 3 L16 6 L23 3 L31 5 L38 13 L30 9 L23 7 L16 10 L9 8 Z"/></svg>
+          <div class="t sm">CEJAS</div>
+        </div>
+        <div class="p"><div class="t sm">JAVIERITO</div></div>
+        <div class="p"><div class="t sm">OSCARGUTÁN</div></div>
+        <div class="p"><div class="t xs">✱</div></div>
+      </div>
+    </div>
+
+    <div class="band" style="align-items:center;">
+      <div class="p"><div class="t xl" style="font-size:41px">ULTRADERECHA</div></div>
+      <div class="p"><div class="t lg box">FANGO</div></div>
+      <div class="p"><div class="t sm">ME QUEDO</div></div>
+    </div>
+
+    <div class="band" style="align-items:center;">
+      <div class="p"><div class="t lg" style="font-size:23px">NO DORMIRÍA TRANQUILO</div></div>
+      <div class="p">
+        <svg width="96" height="44" viewBox="0 0 120 56" fill="none">
+          <path d="M28 16 L42 3 M74 16 L60 3" stroke="#F6F1E6" stroke-width="2.2"/>
+          <rect x="4" y="16" width="112" height="38" rx="4" fill="#F6F1E6"/>
+          <text x="60" y="42" text-anchor="middle" font-family="Barlow Condensed, sans-serif" font-weight="700" font-size="21" letter-spacing=".5" fill="#7A4A18">TELEPEDRO</text>
+        </svg>
+      </div>
+      <div class="p">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.7"><path d="M6 21 C6 16.6 9.4 16.6 9.4 12.2 C9.4 7.8 6 7.8 6 3.4"/><path d="M12 21 C12 16.6 15.4 16.6 15.4 12.2 C15.4 7.8 12 7.8 12 3.4"/><path d="M18.4 21 C18.4 17.6 21 17.6 21 14.2"/></svg>
+        <div class="t sm">SAUNAS</div>
+      </div>
+    </div>
+
+    <div class="band" style="align-items:center;">
+      <div class="p">
+        <svg width="46" height="26" viewBox="0 0 56 32" fill="#F6F1E6"><path d="M14 15 C18 6 36 6 41 12 C40 19 32 22 25 21 C19 20 15 18 14 15Z"/><path d="M15 14 L7 9 L1 8 L0 11 L4 13 L7 16 L13 18Z"/><path d="M41 12 C47 9 52 12 49 18"/><path d="M20 20 L16 30 M25 21 L26 30 M36 19 L41 28 M39 17 L46 27" stroke="#F6F1E6" stroke-width="2.4" stroke-linecap="round"/></svg>
+        <div class="t sm">CABALGAR CONTRADICCIONES</div>
+      </div>
+      <div class="p"><div class="t lg" style="letter-spacing:.05em">DESJUDICIALIZAR</div></div>
+      <div class="p"><div class="t sm">CINCO DÍAS</div></div>
+    </div>
+
+    <div class="band" style="align-items:center;">
+      <div class="p"><div class="t lg" style="font-size:22px">ESPAÑA VA COMO UN COHETE</div></div>
+      <div class="p">
+        <svg width="24" height="18" viewBox="0 0 24 20" fill="none" stroke="#F6F1E6" stroke-width="1.7"><rect x="2" y="3" width="20" height="14" rx="1.5"/><path d="M2 5 L12 12 L22 5"/></svg>
+        <div class="t sm">LA CARTA</div>
+      </div>
+      <div class="p">
+        <svg width="20" height="18" viewBox="0 0 24 22" fill="none" stroke="#F6F1E6" stroke-width="1.7"><path d="M9 19 L21 7 L17 3 L5 15 L5 19Z"/><path d="M3 19 L21 19"/></svg>
+        <div class="t sm">AMNISTÍA</div>
+      </div>
+      <div class="p"><div class="t sm">YO ESTOY BIEN</div></div>
+    </div>
+
+    <div class="band">
+      <div class="p">
+        <svg width="42" height="22" viewBox="0 0 56 32" fill="#F6F1E6"><path d="M14 15 C18 6 36 6 41 12 C40 19 32 22 25 21 C19 20 15 18 14 15Z"/><path d="M15 14 L7 9 L1 8 L0 11 L4 13 L7 16 L13 18Z"/><path d="M41 12 C47 9 52 12 49 18"/><path d="M20 20 L16 30 M25 21 L26 30 M36 19 L41 28 M39 17 L46 27" stroke="#F6F1E6" stroke-width="2.2" stroke-linecap="round"/></svg>
+        <div class="t md">GALGO DE PAIPORTA</div>
+      </div>
+      <div class="p"><div class="t md">HERMANÍSIMO</div></div>
+      <div class="p">
+        <svg width="17" height="19" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.7"><path d="M12 3 C18 5 21 10 19 16 C17 21 12 22 9 21 C4 19 3 13 5 9 C6.5 5.5 9 3.5 12 3Z"/><path d="M8 8 L11.5 11 M12.5 8 L16 11 M7 13.5 L10.5 16.5"/></svg>
+        <div class="t sm">CHIRIMOYAS</div>
+      </div>
+      <div class="p">
+        <svg width="22" height="16" viewBox="0 0 28 20" fill="none" stroke="#F6F1E6" stroke-width="1.7"><path d="M3 8 C7 4 21 4 25 8 C21 12 7 12 3 8Z"/><path d="M14 11 C14 15 12 18 14 19"/></svg>
+        <div class="t sm">CHIQUI</div>
+      </div>
+      <div class="p">
+        <svg width="17" height="20" viewBox="0 0 22 26" fill="none" stroke="#F6F1E6" stroke-width="1.6"><path d="M4 3 L18 3 L12.6 12 L9.4 12Z"/><path d="M11 12 L11 19 M7 20.6 L15 20.6"/><path d="M15 19 L19 22 M19 22 L19 25"/></svg>
+        <div class="t sm">PILI JUERGA</div>
+      </div>
+      <div class="p">
+        <svg width="19" height="17" viewBox="0 0 24 22" fill="none" stroke="#F6F1E6" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 L22 20 L2 20Z"/><path d="M8 16 C9.5 12 13 12 16 15"/></svg>
+        <div class="t sm">LA NIÑA DE LA CURVA</div>
+      </div>
+      <div class="p"><div class="sup">s. m.</div><div class="t md">RUFIÁN</div></div>
+    </div>
+
+    <div class="band">
+      <div class="p">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.7"><rect x="7" y="2" width="10" height="7" rx="1.4"/><path d="M12 9 L12 14"/><rect x="4" y="14" width="16" height="4" rx="1"/><path d="M6 21 L18 21"/></svg>
+        <div class="t sm">CATEDRÁTICA</div>
+      </div>
+      <div class="p">
+        <svg width="17" height="19" viewBox="0 0 22 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><path d="M5 4 L17 4 L18 15 C18 19 4 19 4 15Z"/><path d="M8 4 L8 1.6 L14 1.6 L14 4"/><circle cx="15.4" cy="20" r="2.2"/></svg>
+        <div class="t sm">GRACITA BOLAÑOS</div>
+      </div>
+      <div class="p">
+        <svg width="16" height="19" viewBox="0 0 20 24" fill="#F6F1E6"><circle cx="10" cy="4.6" r="3.4"/><path d="M4 22 L4 12 C4 9.4 6 8.4 10 8.4 C14 8.4 16 9.4 16 12 L16 22Z"/><path d="M1 13 L6.6 13 L6.6 16 L1 16Z"/><path d="M13.4 13 L19 13 L19 16 L13.4 16Z"/></svg>
+        <div class="t sm">EL PORTERO</div>
+      </div>
+      <div class="p">
+        <svg width="24" height="17" viewBox="0 0 30 20" fill="#F6F1E6"><rect x="1" y="2" width="2" height="16"/><rect x="5" y="2" width="1" height="16"/><rect x="8" y="2" width="3" height="16"/><rect x="13" y="2" width="1.5" height="16"/><rect x="17" y="2" width="2.5" height="16"/><rect x="21" y="2" width="1" height="16"/><rect x="24" y="2" width="3" height="16"/></svg>
+        <div class="t sm">LA CAJERA</div>
+      </div>
+      <div class="p">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.7" stroke-linecap="round"><path d="M8 16 L4 20"/><rect x="9" y="3" width="12" height="6" rx="1.6" transform="rotate(45 15 6)"/><path d="M13.4 11.4 L19.6 5.2"/></svg>
+        <div class="t sm">MARLASKONA</div>
+      </div>
+      <div class="p"><div class="t lg box">TUCÁN</div></div>
+      <div class="p">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><rect x="3" y="8" width="18" height="13" rx="1.4"/><path d="M8 8 L8 5.4 L16 5.4 L16 8"/><rect x="9.4" y="11" width="5.2" height="1.6" fill="#F6F1E6" stroke="none"/></svg>
+        <div class="t sm">PUCHERAZO</div>
+      </div>
+    </div>
+
+    <div class="band">
+      <div class="p">
+        <svg width="34" height="18" viewBox="0 0 40 22" fill="#F6F1E6"><path d="M2 15 L14 13 L22 5 L26 6 L23 12 L36 11 L38 14 L22 19 L4 18Z"/></svg>
+        <div class="t sm">FALCON</div>
+      </div>
+      <div class="p">
+        <svg width="19" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><rect x="3" y="7" width="14" height="12" rx="1.4"/><circle cx="20" cy="10" r="2.6"/><path d="M20 12.6 L20 19"/><path d="M6 19 L6 21.6 M14 19 L14 21.6"/></svg>
+        <div class="t sm">MÁQUINA DEL FANGO</div>
+      </div>
+      <div class="p">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.3"><path d="M12 2 L12 22 M2 12 L22 12 M4.9 4.9 L19.1 19.1 M19.1 4.9 L4.9 19.1"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="9.5"/></svg>
+        <div class="t sm">LA TRAMA</div>
+      </div>
+      <div class="p">
+        <svg width="20" height="16" viewBox="0 0 26 20" fill="none" stroke="#F6F1E6" stroke-width="1.7"><path d="M4 6 L4 18 M22 6 L22 18"/><circle cx="4" cy="3.4" r="2"/><circle cx="22" cy="3.4" r="2"/><path d="M4 7 C8 15 18 15 22 7"/></svg>
+        <div class="t sm">CORDÓN SANITARIO</div>
+      </div>
+      <div class="p">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><circle cx="12" cy="12" r="9.4"/><path d="M12 2.6 L12 21.4 M2.6 12 L21.4 12"/></svg>
+        <div class="t sm">PUERTA GIRATORIA</div>
+      </div>
+      <div class="p">
+        <svg width="19" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><path d="M2 13 C6 6 18 6 22 13Z" fill="#F6F1E6"/><path d="M12 13 L12 22"/><path d="M8 22 L16 22"/></svg>
+        <div class="t sm">CHIRINGUITO</div>
+      </div>
+      <div class="p">
+        <svg width="16" height="18" viewBox="0 0 20 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><rect x="4" y="9" width="12" height="10" rx="2"/><path d="M8 9 L8 4 M12 9 L12 4"/><path d="M10 19 L10 23"/></svg>
+        <div class="t sm">ENCHUFADO</div>
+      </div>
+    </div>
+
+    <div class="band" style="align-items:center;">
+      <div class="p"><div class="seal"><div class="t xs" style="font-size:9px">EL<br>PUTO<br>AMO</div></div></div>
+      <div class="p">
+        <svg width="15" height="18" viewBox="0 0 20 24" fill="none" stroke="#F6F1E6" stroke-width="1.7" stroke-linecap="round"><path d="M10 21 L10 7"/><path d="M6.5 10.5 L10 6.4 L13.5 10.5"/></svg>
+        <div class="t sm">EL UNO</div>
+      </div>
+      <div class="p"><div class="t sm">POR 7 VOTOS</div></div>
+      <div class="p"><div class="t md">FACHA</div></div>
+      <div class="p">
+        <svg width="20" height="15" viewBox="0 0 26 18" fill="none" stroke="#F6F1E6" stroke-width="1.6"><rect x="3" y="5" width="20" height="10" rx="1.4"/><path d="M3 8 L23 8"/><path d="M8 5 L8 2.6 L18 2.6 L18 5"/></svg>
+        <div class="t sm">IZQUIERDA CAVIAR</div>
+      </div>
+      <div class="p">
+        <svg width="19" height="16" viewBox="0 0 24 20" fill="none" stroke="#F6F1E6" stroke-width="1.6"><path d="M3 3 L21 3 L21 13 L9 13 L4 18 L4 13 L3 13Z"/></svg>
+        <div class="t sm">SIN COMENTARIOS</div>
+      </div>
+      <div class="p">
+        <svg width="17" height="20" viewBox="0 0 20 24" fill="#F6F1E6"><path d="M10 2 C10 8 3 11 3 15.6 A7 7 0 0 0 17 15.6 C17 11 10 8 10 2Z"/></svg>
+        <div class="t sm">CONTIENE LÁGRIMAS</div>
+      </div>
+      <div class="p"><div class="t xs" style="border:1px solid #F6F1E6; padding: 2px 7px; border-radius:2px;">EDICIÓN Nº ____</div></div>
+      <div class="p">
+        <svg width="40" height="14" viewBox="0 0 46 16" fill="none" stroke="#F6F1E6" stroke-width="1.6"><path d="M2 12 L2 9 L7 9 L11 3 L26 3 L31 9 L44 9 L44 12Z"/><circle cx="11" cy="12.6" r="2.4"/><circle cx="34" cy="12.6" r="2.4"/></svg>
+        <div class="t sm">LA BANDA DEL PEUGEOT</div>
+      </div>
+    </div>
+
+    <div class="dead" style="height: 18px; margin: 2px -8px -28px; display:flex; align-items:center; padding-left: 10px;">
+      <span style="font-size: 8.5px; letter-spacing:.14em; color:#FFD9D4;">ZONA MUERTA · 7 MM · PINZA DE MÁQUINA</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 40px; width: 1100px; color:#9C907C; font-size: 11px; line-height: 1.7;">
+    <div style="flex:1;">
+      <div style="color:#F6F1E6; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; letter-spacing:.08em; margin-bottom:6px;">ESTRUCTURA</div>
+      12 bandas horizontales de altura variable, elementos alineados a línea base dentro de cada banda y justificados de lado a lado. Ocupación 75 %. Huecos de 1 a 3 mm.
+    </div>
+    <div style="flex:1;">
+      <div style="color:#F6F1E6; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; letter-spacing:.08em; margin-bottom:6px;">RESERVAS</div>
+      El halo del lockup (130 × 88 mm) y la contraetiqueta (80 × 58 mm) no admiten tinta. Los 45 mm superiores son cónicos: el decorador los desarrolla en cono aparte.
+    </div>
+    <div style="flex:1;">
+      <div style="color:#F6F1E6; font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:15px; letter-spacing:.08em; margin-bottom:6px;">ANCLAS</div>
+      AL MENOS NO GOBIERNA LA ULTRADERECHA y ULTRADERECHA cruzan la lámina. DESJUDICIALIZAR y el lagrimómetro sostienen el centro.
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

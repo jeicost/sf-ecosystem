@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=DM+Serif+Display&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Mono", ui-monospace, monospace; }
+    a { color: #A0702E; } a:hover { color: #F6F1E6; }
+    .glass {
+      position: relative; width: 252px; height: 830px;
+      clip-path: path('M 4,828 L 4,352 C 4,276 82,312 82,208 L 82,34 C 82,22 76,18 76,8 L 76,2 L 176,2 L 176,8 C 176,18 170,22 170,34 L 170,208 C 170,312 248,276 248,352 L 248,828 Z');
+      background: linear-gradient(100deg,#3F2308 0%,#7A4A18 17%,#A0702E 47%,#7A4A18 79%,#3F2308 100%);
+    }
+    .cap { position: absolute; left: 74px; top: 0; width: 104px; height: 116px;
+      background: linear-gradient(100deg,#0B0906 0%,#39312A 42%,#0B0906 100%); }
+    .capline { position: absolute; left: 72px; top: 104px; width: 108px; height: 3px; background: #0B0906; }
+    .wrap { position: absolute; left: 0; top: 196px; right: 0; bottom: 26px;
+      padding: 0 15px; display: flex; gap: 10px; color: #F6F1E6; }
+    .col { display: flex; flex-direction: column; justify-content: space-between; }
+    .t { font-family: "Barlow Condensed", "Arial Narrow", sans-serif; font-weight: 700;
+      line-height: .92; letter-spacing: .02em; }
+    .sm { font-size: 9px; letter-spacing: .06em; }
+    .md { font-size: 13px; }
+    .lg { font-size: 19px; }
+    .p { display: flex; flex-direction: column; gap: 2px; }
+    .box { background: #F6F1E6; color: #7A4A18; padding: 2px 6px 3px; border-radius: 3px; }
+    .vert { writing-mode: vertical-rl; text-orientation: mixed; }
+
+    .gauge { display: flex; flex-direction: column; justify-content: space-between; height: 100%; }
+    .gtitle { font-family: "Barlow Condensed", sans-serif; font-weight: 700; font-size: 9px; letter-spacing: .1em; margin-bottom: 6px; }
+    .grow { display: flex; align-items: center; gap: 5px; }
+    .gtick { width: 13px; height: 1.5px; background: #F6F1E6; flex: none; }
+    .gtick.mini { width: 6px; height: 1px; }
+    .glabel { font-family: "Barlow Condensed", sans-serif; font-weight: 600; font-size: 8px; letter-spacing: .07em; }
+    .gspine { position: absolute; left: 0; top: 16px; bottom: 0; width: 1.5px; background: #F6F1E6; }
+    .gfill { position: absolute; left: -4px; bottom: 0; width: 4px; height: 74px; background: #F6F1E6; }
+  </style>
+</helmet>
+
+<div style="min-height: 1040px; background: #14100B; display: flex; align-items: center; justify-content: center; gap: 72px; padding: 56px 64px; box-sizing: border-box;">
+
+  <div style="display: flex; flex-direction: column; align-items: center; gap: 22px;">
+    <div class="glass">
+      <div class="wrap">
+
+        <div class="col" style="position: relative; width: 92px; padding-top: 4px;">
+          <div class="gspine"></div>
+          <div class="gfill"></div>
+          <div class="gauge">
+            <div>
+              <div class="gtitle">LAGRIMÓMETRO</div>
+              <div class="grow"><div class="gtick"></div><div class="glabel">OJO SECO</div></div>
+            </div>
+            <div class="grow"><div class="gtick mini"></div></div>
+            <div class="grow"><div class="gtick"></div><div class="glabel">SE ME EMPAÑA</div></div>
+            <div class="grow"><div class="gtick mini"></div></div>
+            <div class="grow"><div class="gtick"></div><div class="glabel">MOQUEO</div></div>
+            <div class="grow"><div class="gtick mini"></div></div>
+            <div class="grow"><div class="gtick"></div><div class="glabel">LLORERA</div></div>
+            <div class="grow"><div class="gtick mini"></div></div>
+            <div class="grow"><div class="gtick"></div><div class="glabel">MOCO TENDIDO</div></div>
+            <div class="grow"><div class="gtick mini"></div></div>
+            <div class="grow"><div class="gtick"></div><div class="glabel" style="font-size:9px">DESEMBALSE</div></div>
+          </div>
+        </div>
+
+        <div class="col" style="flex: 1; align-items: flex-start;">
+          <div class="p"><div class="t sm">REGENERACIÓN</div></div>
+          <div class="p"><div class="t sm">PSEUDOMEDIOS</div></div>
+
+          <div class="p">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.7" stroke-linecap="round"><path d="M12 3 L12 15"/><circle cx="12" cy="18.5" r="2.6"/><path d="M12 3 L18 6.6"/><path d="M6 21.4 L18 21.4"/></svg>
+            <div class="t sm">SINCRONIZADA</div>
+          </div>
+
+          <div class="p"><div class="t lg box">TUCÁN</div></div>
+
+          <div class="p">
+            <svg width="34" height="12" viewBox="0 0 46 16" fill="none" stroke="#F6F1E6" stroke-width="1.6"><path d="M2 12 L2 9 L7 9 L11 3 L26 3 L31 9 L44 9 L44 12Z"/><circle cx="11" cy="12.6" r="2.4"/><circle cx="34" cy="12.6" r="2.4"/></svg>
+            <div class="t sm">LA BANDA DEL<br>PEUGEOT</div>
+          </div>
+
+          <div class="p"><div class="t md">CHEPAS</div></div>
+
+          <div class="p">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F6F1E6" stroke-width="1.6"><rect x="3" y="8" width="18" height="13" rx="1.4"/><path d="M8 8 L8 5.4 L16 5.4 L16 8"/><rect x="9.4" y="11" width="5.2" height="1.6" fill="#F6F1E6" stroke="none"/></svg>
+            <div class="t sm">PUCHERAZO</div>
+          </div>
+
+          <div class="p"><div class="t md">ECOLOGETAS</div></div>
+
+          <div class="p">
+            <svg width="30" height="16" viewBox="0 0 40 22" fill="#F6F1E6"><path d="M2 15 L14 13 L22 5 L26 6 L23 12 L36 11 L38 14 L22 19 L4 18Z"/></svg>
+            <div class="t sm">FALCON</div>
+          </div>
+
+          <div class="p"><div class="t sm">IZQUIERDA CAVIAR</div></div>
+        </div>
+
+        <div class="col" style="width: 22px; align-items: center;">
+          <div class="t sm vert" style="letter-spacing:.18em">DESJUDICIALIZAR</div>
+          <div class="t sm vert" style="letter-spacing:.14em">GALGO DE PAIPORTA</div>
+          <div class="t sm">★</div>
+        </div>
+
+      </div>
+      <div class="cap"></div>
+      <div class="capline"></div>
+    </div>
+    <div style="font-size: 10px; letter-spacing: .16em; color: #6D6353; text-transform: uppercase;">Vista lateral · el lagrimómetro ancla la columna</div>
+  </div>
+
+  <div style="width: 292px; display: flex; flex-direction: column; gap: 24px; color: #F6F1E6;">
+    <div style="font-family:'DM Serif Display',Georgia,serif; font-size: 30px; line-height: 1.06;">El lagrimómetro</div>
+    <div style="font-size: 11.5px; line-height: 1.7; color: #9C907C;">
+      Escala vertical de seis marcas ocupando una columna entera del lateral. Es el equivalente al <em>trompímetre</em> de la referencia: la pieza que ancla la composición y la que la gente fotografía.
+    </div>
+    <div style="display:flex; flex-direction:column; border-top:1px solid #3A3125;">
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #3A3125; font-size:11px;"><span style="color:#6D6353;">1</span><span>OJO SECO</span></div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #3A3125; font-size:11px;"><span style="color:#6D6353;">2</span><span>SE ME EMPAÑA</span></div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #3A3125; font-size:11px;"><span style="color:#6D6353;">3</span><span>MOQUEO</span></div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #3A3125; font-size:11px;"><span style="color:#6D6353;">4</span><span>LLORERA</span></div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #3A3125; font-size:11px;"><span style="color:#6D6353;">5</span><span>MOCO TENDIDO</span></div>
+      <div style="display:flex; justify-content:space-between; padding:8px 0; font-size:11px;"><span style="color:#6D6353;">6</span><span style="color:#B4342A;">DESEMBALSE</span></div>
+    </div>
+    <div style="font-size: 11px; line-height: 1.62; color: #6D6353;">
+      Las piezas en vertical del canto derecho son las kilométricas: DESJUDICIALIZAR y GALGO DE PAIPORTA. Rompen la horizontalidad de las bandas.
+    </div>
+  </div>
+
+</div>
+</x-dc>
+<script data-dc-script data-props='{}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
