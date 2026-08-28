@@ -29,6 +29,15 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 
 ## RETOMAR AQUÍ
 
+### Documentos listos para enviar
+- `proveedores/correo-serigrafia.txt` — 4 decoradores de vidrio
+- `proveedores/correo-vidrio.txt` — 4 vidrieros, con las dos opciones de cierre
+- `proveedores/correo-bodegas.txt` — 6 bodegas de la DO Vinos de Madrid
+- `proveedores/correo-cierres.txt` — corcho, cabeza de zamak y cápsulas
+- `proveedores/correo-ilustrador.txt` — el arte final de las 57 piezas
+- `diseno/briefing-ilustrador.md` — briefing completo que acompaña a ese correo
+- `producto/inventario.md` — las 57 piezas, generado desde `web/lib/piezas.ts`
+
 ### Lo que bloquea todo — es tuyo, no mío
 1. **Registrar la marca en la OEPM.** ~125 €. Único punto donde un tercero puede
    adelantarse y quedarse con el nombre. Ver `legal/checklist-legal.md`
@@ -53,8 +62,20 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 
 ### La web — revisada a fondo 26/27-ago
 EN PRODUCCIÓN: https://lagrimas-de-sanchez.vercel.app
-Dominios .com/.es añadidos y verificados en Vercel — FALTA apuntar el DNS en
-IONOS (registros A/CNAME, ver conversación; NO cambiar nameservers).
+DNS (28-ago): los cuatro hosts están añadidos y VERIFICADOS en Vercel, con
+los redirects 308 ya puestos hacia el apex .com. Falta lo único que no puedo
+hacer yo: crear los registros en IONOS. Todo está en `dns/`:
+
+- `dns/INSTRUCCIONES-IONOS.md` — los registros exactos, campo a campo
+- `dns/vigilar.mjs` — espera a que propague y hace el último paso solo
+  (cambia NEXT_PUBLIC_SITE_URL y redespliega). `--solo-mirar` para solo informar
+
+⛔ NO cambiar los nameservers a los de Vercel. Los dos dominios tienen correo
+IONOS activo (MX + SPF) y mover la zona lo tira. Es además lo que dejó huérfano
+a startupsfactory.es en mayo. Solo se tocan el A de `@` y el CNAME de `www`.
+
+`NEXT_PUBLIC_SITE_URL` apunta a propósito al `.vercel.app` hasta que propague,
+para que Stripe no devuelva a los compradores a un dominio muerto.
 
 Dos rondas de revisión multi-agente ejecutadas (dirección de arte + copy +
 código + conversión, con síntesis verificada contra el código):
@@ -70,7 +91,7 @@ código + conversión, con síntesis verificada contra el código):
 - Decisiones del dueño aplicadas: tirada de 1.000 publicada, banda de
   prelanzamiento, eyebrow «Aranjuez, Madrid · Edición numerada», estuche
   «El chiste completo» + línea de regalo.
-- Inventario: 78 piezas (bloque D de aforismos añadido).
+- Inventario: 57 piezas (recortado desde 78 con la hoja de Carlos del 27-ago).
 
 Para ABRIR la tienda: claves de Stripe (cuenta Discoolverworld SL) en Vercel
 + datos fiscales en /legal + activar el correo de formsubmit + quitar la banda

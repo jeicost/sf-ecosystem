@@ -73,6 +73,10 @@ body {
   line-height: 0.94;
 }
 
+/* El SVG incrustado hereda la familia condensada pero NO su tracking: el
+   letter-spacing ya viene calculado en cada <text>, y sumarlo desbordaría. */
+svg.u-cond { letter-spacing: normal; text-transform: none; }
+
 .u-mono {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;

@@ -4,6 +4,7 @@ import { Glifo, GLIFO_POR_PIEZA } from "@/components/Glifos";
 import { PIEZAS, BLOQUES, CON_PICTOGRAMA, type Bloque } from "@/lib/piezas";
 import { Recorrido } from "@/components/Recorrido";
 import { rutaIcono } from "@/lib/iconos";
+import { PiezaArte } from "@/components/PiezaArte";
 
 export const metadata: Metadata = {
   alternates: { canonical: "/estampado" },
@@ -100,10 +101,10 @@ export default function Estampado() {
                           }}
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={arte}
-                            alt={`${p.texto} — pieza del estampado`}
-                            className="absolute inset-0 h-full w-full object-contain p-[11%]"
+                          <PiezaArte
+                            n={p.n}
+                            texto={p.texto}
+                            className="absolute inset-0 flex items-center justify-center p-[11%] [&>svg]:h-full [&>svg]:w-full [&>svg]:object-contain"
                           />
                           <span className="u-mono absolute left-3 top-2.5 text-[0.6rem] text-[#F6F1E6]/60">
                             {String(p.n).padStart(2, "0")}

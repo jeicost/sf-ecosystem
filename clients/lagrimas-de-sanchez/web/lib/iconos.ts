@@ -20,6 +20,34 @@ export const ICONO_DE: Record<number, string> = {
   11: "11-la-cajera",
   12: "12-tucan",
   13: "13-charo",
+
+  // ── Piezas de solo texto ──────────────────────────────────────────────
+  // Compuestas en vector, no generadas: con la tipografía del sistema ya
+  // nacen unificadas entre sí, que es el trabajo caro de la unificación
+  // posterior. Y no consumen créditos de generación.
+  16: "t-hermanisimo",
+  20: "t-mema",
+  21: "t-patxi-verguenza-ajena",
+  22: "t-al-menos-no-gobierna-la-ultraderecha",
+  23: "t-no-dormiria-tranquilo",
+  24: "t-espana-va-como-un-cohete",
+  25: "t-son-las-5-y-no-he-comido",
+  26: "t-facha",
+  27: "t-yo-estoy-bien",
+  28: "t-por-7-votos",
+  29: "t-fiscal-soplon",
+  30: "t-ecologetas",
+  31: "t-soy-feminista-porque-soy-socialista",
+  44: "t-alma-socialista-mente-de-tiburon",
+  45: "t-transversal-como-el-iva",
+  46: "t-horizonte-2030-legislatura-2027",
+  47: "t-compromiso-firme-hasta-nueva-orden",
+  48: "t-escucha-activa-decision-tomada",
+  49: "t-resiliente-o-sea-que-aguantas",
+  50: "t-transparencia-total-previa-cita",
+  51: "t-el-pueblo-primero-despues-de-mi",
+  52: "t-cambio-de-opinion-no-de-sueldo",
+  53: "t-vocacion-de-servicio-nomina-de-por-vida",
 };
 
 export const rutaIcono = (n: number): string | null =>
