@@ -4,8 +4,10 @@ import { fenceUntrusted } from '@/lib/grounding/untrusted'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
-import { getFeedbackBlock } from '@/lib/feedback'
+import { getFeedbackBlock, getSelfCritiqueBlock } from '@/lib/feedback'
 import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
+import { JUDGMENT_CONTRACT } from '@/lib/grounding/judgment-contract'
+import { DERIVED_ECONOMICS_CONTRACT } from '@/lib/grounding/economics-contract'
 
 /**
  * Feedback del cliente sobre informes anteriores de ESTE tool (B4): las
@@ -117,7 +119,7 @@ export async function getToolkitPrompt(
 ): Promise<string | null> {
   const { clientId, inputData, siteFactsBlock, sourcesBlock, projectId, attachmentText } = params
 
-  const [brandBrain, memoryContext, docContext, toolkitDeps, feedbackBlock] = await Promise.all([
+  const [brandBrain, memoryContext, docContext, toolkitDeps, feedbackBlock, selfCritiqueBlock] = await Promise.all([
     fetchBrandBrain(clientId),
     getClientMemoryContext(clientId, projectId ?? null),
     retrieveAgentContext({
@@ -128,6 +130,7 @@ export async function getToolkitPrompt(
     }),
     getToolkitDependencies(clientId, toolSlug, projectId ?? null),
     getDocumentFeedbackBlock(clientId, toolSlug),
+    getSelfCritiqueBlock(clientId, toolSlug),
   ])
 
   // Brand Brain completo (formato F0: golden rule, vocabulario con porqués,
@@ -168,9 +171,27 @@ export async function getToolkitPrompt(
     ? [siteFactsBlock, sourcesBlock].filter(Boolean).join('\n\n')
     : ''
 
+  // Herramientas que manejan cifras de negocio: se les exige cruzar los números
+  // antes de redactar. Ver lib/grounding/economics-contract.ts — el plan de
+  // acción tenía precio, presupuesto y objetivo delante y no los multiplicó.
+  const ECONOMICS_TOOLS = [
+    'action-plan',
+    'investor-deck',
+    'marketing-campaign-generator',
+    'community-growth-blueprint',
+    'marketing-audit',
+    'content-pack',
+  ]
+
   // Shared context for ALL tool prompts: client docs/dependencies, injected grounding
   // blocks (when available for this tool), client feedback on previous reports,
-  // and the anti-hallucination contract.
+  // and the contracts.
+  //
+  // Los tres contratos van SIEMPRE y en este orden, que es su orden de
+  // precedencia: qué puedes afirmar (grounding) → qué te toca decidir a ti
+  // (judgement) → cómo se escribe (voice). Antes el de voz llegaba solo a
+  // brand-book y brandbook-content-system: los otros nueve informes se
+  // generaban sin la regla que prohíbe el relleno consultor.
   const fullContext = [
     attachmentText
       ? `\n\nUSER ATTACHMENTS (primary source — use their actual content):\n${fenceUntrusted('USER ATTACHMENTS', attachmentText)}`
@@ -178,13 +199,42 @@ export async function getToolkitPrompt(
     allContext ? `\n\nCLIENT DOCUMENTATION & DEPENDENCIES:\n${allContext}` : '',
     groundingBlocks ? `\n\n${groundingBlocks}` : '',
     feedbackBlock,
+    selfCritiqueBlock,
     `\n\n${GROUNDING_CONTRACT}`,
+    `\n\n${JUDGMENT_CONTRACT}`,
+    ECONOMICS_TOOLS.includes(toolSlug) ? `\n\n${DERIVED_ECONOMICS_CONTRACT}` : '',
+    `\n\n${REPORT_VOICE_CONTRACT}`,
   ].join('')
 
   // Prompts específicos por herramienta
   switch (toolSlug) {
     case 'brand-briefing':
-      return `You are a brand strategist creating the SOURCE OF TRUTH for this brand.
+      return `You are the brand strategist writing the document every other deliverable will be checked against. Everything downstream inherits your precision or your vagueness.
+
+METHOD:
+
+1. THE ENEMY BEFORE THE PROMISE. A positioning that names no enemy positions
+   nothing. State what this brand is AGAINST — the default behaviour, the lazy
+   alternative, the category convention it refuses. If the context does not
+   support one, say so rather than inventing a strawman.
+
+2. SPECIFICITY TEST ON EVERY LINE. For each value, trait and pillar, ask: "would
+   a direct competitor in this category claim the opposite?" If no competitor
+   would claim the opposite, the line is not positioning, it is wallpaper.
+   "Calidad", "cercanía" and "innovación" fail this test almost always. Replace
+   or delete.
+
+3. VOICE NEEDS EXAMPLES, NOT ADJECTIVES. Every voice trait carries a real
+   sentence this brand would say and one it would not, drawn from the context.
+   A trait without an example cannot be applied by anyone.
+
+4. NAME THE TENSIONS. Where the client's own inputs contradict each other
+   (premium positioning with discount tactics, mass reach with niche craft),
+   surface it in \`tensions\` instead of smoothing it over. The tension is
+   usually the most valuable thing in the document.
+
+5. WHAT YOU COULD NOT ESTABLISH is a section, not an omission. It tells the
+   client exactly what the next conversation is about.
 
 ⚠️ CRITICAL: This is TIER 1. You are defining canonical brand data that will be referenced by ALL other toolkits.
 - Brand pillars you define here MUST be used exactly by Content Pack, Marketing Audit, and Brandbook.
@@ -515,7 +565,29 @@ Generate marketing audit JSON (EXACT STRUCTURE — card titles below are generic
 }`
 
     case 'content-pack':
-      return `You are a content strategist building content strategy aligned with Brand Briefing.
+      return `You are the content lead who has to publish this calendar with the team and budget this brand actually has.
+
+METHOD:
+
+1. CAPACITY BEFORE CALENDAR. Read the brand's real editorial rhythm and team
+   from the context. A calendar the client cannot produce is worse than no
+   calendar: it guarantees failure and blames them for it. If the volume you are
+   proposing exceeds what the context says they sustain, either cut it or say
+   plainly what extra resource it needs.
+
+2. EVERY PIECE EARNS ITS PLACE. Each item states which pillar it serves and what
+   it is trying to move (reach, trust, consideration, conversion). A piece that
+   cannot name its job is filler — delete it and publish fewer, better.
+
+3. FORMAT FOLLOWS THE ASSET THEY HAVE. Do not propose formats that require
+   footage, talent or production the context gives no evidence of. Build from
+   what they can actually make on a normal week.
+
+4. REPURPOSING IS A PLAN, NOT A NOTE. If one piece becomes three, say which
+   three and what changes between them.
+
+5. THE FIRST TWO WEEKS IN DETAIL, the rest as structure. A fully specified
+   twelve months is fiction; the client abandons it in week three.
 
 ⚠️ TIER 3: CONTENT STRATEGY TOOLKIT
 - CRITICAL: Load Brand Briefing pillars from dependencies
@@ -557,7 +629,45 @@ Generate a COMPREHENSIVE content pack JSON with ALL sections:
 }`
 
     case 'action-plan':
-      return `You are a strategy consultant orchestrating 30/60/90 day execution aligned with Brand Briefing mission.
+      return `You are the operator this brand would hire to run the next 90 days — not a consultant describing what could be done, but the person who has to make it happen with THIS budget, THIS team and THIS calendar.
+
+METHOD — work in this order. The order is the value; a plan assembled section by section reads like a template.
+
+STEP 1 — ECONOMICS FIRST. Do the DERIVED ECONOMICS work below before anything
+else. Everything downstream depends on whether the goal is arithmetically
+plausible. If it is not, the plan's job is to fix the arithmetic, not to
+schedule activity around a target that cannot land.
+
+STEP 2 — CAPACITY. Read \`equipo_roles\` and \`recursos_actuales\` literally.
+Name real people from the input as owners — never "Marketing" or "the team".
+If a task has no plausible owner in the roster, that is a finding: say so and
+put it in data_gaps. Estimate effort with the JUDGEMENT CONTRACT rules: commit
+to a value, never "unknown".
+
+STEP 3 — THE BINDING CONSTRAINT. Every plan has ONE thing that, if it slips,
+makes everything else pointless. Usually it is in \`desafios_criticos\`. Name it
+explicitly in \`binding_constraint\` and sequence the whole plan around it. A
+plan where all six actions matter equally is a plan that has not been thought
+about.
+
+STEP 4 — SEQUENCE WITH REASONS. For each action say what it unblocks or what
+must precede it. Order that reflects real dependency, not calendar tidiness.
+If two workstreams compete for the same person, say which one yields.
+
+STEP 5 — THE BET AND THE ROAD NOT TAKEN. State in \`the_bet\` the single
+non-obvious call this plan makes, and in \`rejected_alternatives\` at least two
+credible options you considered and dropped, each with the reason. A specialist
+is recognised by what they chose NOT to do. Generic plans skip this.
+
+STEP 6 — KILL CRITERIA. For each horizon, state what result would mean "stop
+and rethink", with the number and the date. Vague exit thresholds are the
+easiest place to be useless.
+
+ANTI-GENERIC TEST — before emitting, reread every action and ask: "could this
+sentence appear unchanged in a plan for a different client in a different
+industry?" If yes, it is filler. Either make it specific to this brand's
+context or delete it. "Configurar tracking", "crear contenido de calidad" and
+"lanzar campañas" fail this test.
 
 ⚠️ TIER 4: OPERATIONAL PLANNING TOOLKIT
 - CRITICAL: Load Brand Briefing mission/vision, Marketing Audit gaps, Content Pack calendar
@@ -581,19 +691,23 @@ Generate a COMPREHENSIVE action plan JSON:
   "content_pack_id": "uuid",
   "dependencies": {"brand_briefing": "", "marketing_audit": "", "content_pack": ""},
   "mission_alignment": {"okr_1": "aligned|warning", "okr_2": "aligned|warning"},
-  "executive_summary": "",
+  "executive_summary": "Lead with the economics verdict, then the binding constraint, then the bet. Not a description of the document.",
+  "derived_economics": {"figures_used": [], "calculations": [], "verdict": "plausible|tight|implausible", "verdict_reasoning": "", "what_would_change_it": []},
+  "binding_constraint": {"what": "the one thing that makes everything else pointless if it slips", "why": "", "how_the_plan_handles_it": ""},
+  "the_bet": {"call": "the single non-obvious decision this plan makes", "reasoning": "", "what_makes_it_wrong": "the signal that would prove this call wrong"},
+  "rejected_alternatives": [{"option": "", "why_rejected": "", "when_it_would_be_right": ""}],
   "quarterly_okrs": [{"q": 1, "objectives": [{"objective": "", "key_results": ["string, not an object"], "alignment": "aligned|warning", "alignment_note": ""}]}],
-  "30_day_sprint": {"focus": "", "weekly_milestones": ["string"], "actions": [{"title": "", "owner": "", "effort": "", "metric": ""}]},
-  "60_day_push": {"focus": "", "weekly_milestones": ["string"], "actions": [{"title": "", "owner": "", "effort": "", "metric": ""}]},
-  "90_day_vision": {"focus": "", "actions": [{"title": "", "owner": "", "effort": "", "metric": ""}]},
-  "success_definition": {"criteria": ["string"], "exit_thresholds": ["string"]},
+  "30_day_sprint": {"focus": "", "weekly_milestones": ["string"], "actions": [{"title": "", "owner": "real person from equipo_roles", "effort": "commit to a value — NEVER unknown", "effort_rationale": "[JUDGEMENT] one line", "unblocks": "what this makes possible", "metric": ""}]},
+  "60_day_push": {"focus": "", "weekly_milestones": ["string"], "actions": [{"title": "", "owner": "", "effort": "", "effort_rationale": "", "unblocks": "", "metric": ""}]},
+  "90_day_vision": {"focus": "", "actions": [{"title": "", "owner": "", "effort": "", "effort_rationale": "", "unblocks": "", "metric": ""}]},
+  "success_definition": {"criteria": ["string"], "exit_thresholds": ["KILL CRITERIA: each one needs a number AND a date — 'si el día 45 hay menos de N, se para X'. A threshold without both is useless."]},
   "resource_requirements": {"team": ["string"], "budget": "", "tools": ["string"]},
   "team_capacity": {"roles": [], "fte": "", "hiring_plan": []},
   "budget_breakdown": {"engineering": "", "marketing": "", "ops": "", "contingency": ""},
   "kpis": [{"metric": "", "target": "", "tracking": ""}],
   "learning_loops": {"weekly_reviews": "", "monthly_retros": "", "iteration_cadence": ""},
   "stakeholder_communication": {"audience": [], "cadence": "", "format": ""},
-  "risk_mitigation": [{"risk": "", "probability": "", "impact": "", "mitigation": ""}],
+  "risk_mitigation": [{"risk": "", "probability": "alta|media|baja — JUDGEMENT field, never unknown", "impact": "alto|medio|bajo — never unknown", "mitigation": "", "early_warning": "the signal that tells you this is happening, before it has happened"}],
   "escalation_procedures": {"decision_framework": "", "approval_levels": []},
   "data_gaps": ["every budget or headcount figure that was null because it was not provided in presupuesto_disponible/equipo_roles"]
 }`
@@ -776,8 +890,6 @@ INPUT (user notes):
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
 
-${REPORT_VOICE_CONTRACT}
-
 Generate the audit JSON:
 {
   "meta": {"brand": "", "mode": "audit", "one_line_essence": "the essence of the brand in one sentence"},
@@ -805,8 +917,6 @@ VOICE GUIDE ONE-PAGER: a distilled A4 the whole team can pin on the wall. Golden
 INPUT (user notes):
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
-
-${REPORT_VOICE_CONTRACT}
 
 Generate the COMPLETE brand book JSON:
 {
@@ -878,7 +988,34 @@ Generate COMPREHENSIVE brandbook JSON that REFERENCES (not re-defines) all sourc
 }`
 
     case 'marketing-campaign-generator':
-      return `You are a marketing strategist. Generate a comprehensive 30-day marketing campaign for this brand.
+      return `You are the media buyer and strategist who will personally answer for this campaign's numbers at the end of the 30 days.
+
+METHOD — in this order:
+
+1. ECONOMICS FIRST (see DERIVED ECONOMICS below). Budget ÷ target = what you can
+   afford to pay per acquisition. Compare that to the unit price. If the campaign
+   cannot pay for itself at the stated target, say so in week 1 and design the
+   campaign to FIND that out cheaply rather than to spend the whole budget.
+
+2. ONE JOB. A 30-day campaign that pursues awareness, engagement AND conversion
+   does none of them. State \`campaign_job\` as a single sentence: what this
+   specific month is for. Everything else serves it.
+
+3. SPEND SHAPE, NOT SPEND SPLIT. Do not distribute the budget evenly across four
+   weeks. Real campaigns front-load testing and back-load the winner. State in
+   \`spend_logic\` why the money moves the way it does across the weeks.
+
+4. WHAT YOU ARE TESTING. Week 1 is a set of hypotheses, not "activities". Name
+   the variables under test (hook, audience, format, offer) and what result would
+   settle each one. If the budget is small, say how many meaningful tests it
+   actually buys — a budget that funds two tests should not be described as if
+   it funds ten.
+
+5. THE KILL RULE. State the number and date at which this campaign gets paused.
+
+ANTI-GENERIC TEST: if an activity could appear unchanged in any other brand's
+campaign, it is filler. "Crear contenido atractivo" and "optimizar creatividades"
+fail. Use the brand's actual pillars, actual channels and actual audience.
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -891,6 +1028,12 @@ Choose the channels in channel_distribution based on this brand's actual audienc
 Provide the campaign in this exact JSON format:
 {
   "campaign_overview": "1-2 sentence summary",
+  "campaign_job": "the ONE thing this month is for, in one sentence",
+  "derived_economics": {"figures_used": [], "calculations": [], "verdict": "plausible|tight|implausible", "verdict_reasoning": "", "what_would_change_it": []},
+  "spend_logic": "why the money moves the way it does across the four weeks — never an even split by default",
+  "hypotheses": [{"variable": "hook|audience|format|offer", "test": "", "settled_by": "the result that decides it", "budget": ""}],
+  "tests_the_budget_buys": "[JUDGEMENT] how many meaningful tests this budget actually funds, and the reasoning",
+  "kill_rule": {"metric": "", "threshold": "", "date": "", "action": "what gets paused or changed"},
   "week_1": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
   "week_2": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
   "week_3": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},

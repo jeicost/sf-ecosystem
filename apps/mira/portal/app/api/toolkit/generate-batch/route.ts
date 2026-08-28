@@ -5,6 +5,7 @@ import { createMessageForClient, estimateCostUsd } from '@/lib/anthropic-client'
 import { TOOLKIT_TOOLS as TOOLKIT_TOOL_DEFS } from '@/lib/toolkit-tools'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { getSessionUser } from '@/lib/resolve-client'
+import { critiqueAndRevise } from '@/lib/generation/report-pipeline'
 import { canUseFeature } from '@/lib/plans'
 
 // Long-running generation: allow up to 800s on Vercel (fluid compute)
@@ -163,6 +164,20 @@ async function generateToolReport(
     if (Object.keys(result).length === 0) {
       throw new Error(lastError || 'Generation produced empty result')
     }
+
+    // Borrador listo → crítica y revisión. Degrada al borrador ante cualquier
+    // fallo, así que no puede tumbar un informe ya generado.
+    const reviewed = await critiqueAndRevise({
+      clientId, toolSlug, prompt, model: MODEL, maxTokens: MAX_OUTPUT_TOKENS, draft: result,
+    })
+    result = reviewed.data
+    result._pipeline = {
+      stages: reviewed.stages,
+      findings_count: reviewed.findings.length,
+      findings: reviewed.findings.map((f) => ({ severity: f.severity, kind: f.kind, where: f.where })),
+      ...(reviewed.degradedReason ? { degraded: reviewed.degradedReason } : {}),
+    }
+    console.log(`[${toolSlug}] pipeline: ${reviewed.stages} etapas, ${reviewed.findings.length} hallazgos`)
 
     // Fetch brand color
     let brandColor = '#8B5CF6'

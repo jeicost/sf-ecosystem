@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getToolkitPrompt, type ToolPromptParams } from '@/lib/generation/toolkit-prompts'
 import { generateJsonReport } from '@/lib/generation/robust-json'
+import { runReportPipeline } from '@/lib/generation/report-pipeline'
 import { getSessionUser, resolveRequestClient } from '@/lib/resolve-client'
 import { canUseFeature } from '@/lib/plans'
 import {
@@ -343,17 +344,32 @@ export async function POST(req: NextRequest) {
     // Generación con REINTENTO ante truncación/JSON inválido (E8). Antes,
     // stop_reason===max_tokens o un JSON roto marcaban el job "failed" sin más;
     // ahora se reintenta una vez con más presupuesto. Ver lib/generation/robust-json.
+    // Los modos rápidos/baratos (radar competitivo, auditoría de brand-book) se
+    // quedan en una pasada: su valor es la velocidad, no la profundidad.
+    const wantsCritique =
+      !isQuickCompetitive && !isBrandBookAudit && body.critique !== false
+
     try {
-      const { data } = await generateJsonReport({
+      const pipeline = await runReportPipeline({
         clientId,
-        route: 'toolkit/generate',
+        toolSlug: tool_slug,
+        prompt,
         model: isQuickCompetitive ? 'claude-sonnet-4-6' : 'claude-opus-4-8',
         maxTokens: isQuickCompetitive ? 8000 : isBrandBookAudit ? 8000 : 16000,
         userContent: attachmentImageBlocks.length
           ? [...attachmentImageBlocks, { type: 'text' as const, text: prompt }]
           : prompt,
+        critique: wantsCritique,
       })
-      result = data
+      result = pipeline.data
+      // Trazabilidad: cuántas pasadas se hicieron y qué cazó el crítico. Sin
+      // esto no hay forma de saber si la revisión está aportando algo.
+      result._pipeline = {
+        stages: pipeline.stages,
+        findings_count: pipeline.findings.length,
+        findings: pipeline.findings.map((f) => ({ severity: f.severity, kind: f.kind, where: f.where })),
+        ...(pipeline.degradedReason ? { degraded: pipeline.degradedReason } : {}),
+      }
     } catch (err) {
       const errorMessage =
         err instanceof ExtractJsonError
