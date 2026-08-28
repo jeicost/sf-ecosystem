@@ -73,7 +73,7 @@ export const CREADORES: Creador[] = [
   { nombre: "Travis Leon Price", handle: "travisleon1", foto: "/assets/creadores/travisleon1.jpg", mercado: "th", donde: "Bangkok", territorio: "Vida nocturna", estado: "verificado", esPersona: true,
     aviso: "Prioridad nº1 del CEO. Contacto directo: travisprice09@gmail.com" },
   { nombre: "Phol Tantasatien", handle: "pholfoodmafia", foto: "/assets/creadores/pholfoodmafia.jpg", mercado: "th", donde: "Tailandia", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Chef Pam", handle: "chefpam", foto: "/assets/creadores/chefpam.jpg", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
+  { nombre: "Chef Pam", handle: "chef.pam", foto: "/assets/creadores/chefpam.jpg", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
   { nombre: "Bangkok Foodies", handle: "bangkokfoodies", foto: "/assets/creadores/bangkokfoodies.jpg", mercado: "th", donde: "Bangkok", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false },
   { nombre: "Chin Chinawut", handle: "chinchinawut", foto: "/assets/creadores/chinchinawut.jpg", mercado: "th", donde: "Tailandia", territorio: "Naturaleza y aire libre", estado: "verificado", esPersona: true },
   { nombre: "I Roam Alone", handle: "i_roamalone", foto: "/assets/creadores/i_roamalone.jpg", mercado: "th", donde: "Tailandia", territorio: "Experiencias y eventos", estado: "verificado", esPersona: true },
@@ -98,7 +98,7 @@ export const CREADORES: Creador[] = [
   // ── Emiratos ──────────────────────────────────────────────────────────
   { nombre: "Mr. Taster", handle: "mr.taster", foto: "/assets/creadores/mr.taster.jpg", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
   { nombre: "Moayad Alsawaf", handle: "moayad.alsawaf", foto: "/assets/creadores/moayad.alsawaf.jpg", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: true },
-  { nombre: "Latifa Shamsi", handle: "latifashamsi", foto: "/assets/creadores/latifashamsi.jpg", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
+  { nombre: "Latifa Shamsi", handle: "latifalshamsi", foto: "/assets/creadores/latifashamsi.jpg", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: true },
   { nombre: "WhereMyFoodAt", handle: "wheremyfoodat", foto: "/assets/creadores/wheremyfoodat.jpg", mercado: "ae", donde: "Dubái", territorio: "Restaurantes y cafés", estado: "verificado", esPersona: false },
   { nombre: "Frying Pan Adventures", handle: "fryingpanadventures", foto: "/assets/creadores/fryingpanadventures.jpg", mercado: "ae", donde: "Dubái", territorio: "Arte y cultura", estado: "verificado", esPersona: false },
   { nombre: "My Fash Diary", handle: "myfashdiary", foto: "/assets/creadores/myfashdiary.jpg", mercado: "ae", donde: "Dubái", territorio: "Compras y moda", estado: "verificado", esPersona: true },

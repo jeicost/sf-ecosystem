@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 168">
+  <mask id="t"><rect width="100" height="168" fill="#fff"/><rect x="8" y="118" width="84" height="17" rx="1" fill="#000"/></mask>
+  <path d="M38 26 L64 2 L76 13 L46 33 Z" fill="#F6F1E6"/>
+  <g transform="translate(0 36)"><path d="M50 6 C50 46 14 64 14 94 a36 36 0 0 0 72 0 C86 64 50 46 50 6 Z" fill="#F6F1E6" mask="url(#t)"/></g>
+</svg>

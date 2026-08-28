@@ -92,6 +92,11 @@ const REGISTRY = [
     projectId: 'prj_SoMU6F5A7bvp85cfPIFimYo5B2jP',
   },
   {
+    folder: 'clients/lagrimas-de-sanchez/web',
+    projectName: 'lagrimas-de-sanchez',
+    projectId: 'prj_sBGzG5owgbhBQQkrelgcjrJhM8c2',
+  },
+  {
     folder: 'clients/discoolver/web',
     projectName: 'discoolver-landing',
     projectId: 'prj_fxRmmDp5z9FBUPmZurgb43GsN5Ep',

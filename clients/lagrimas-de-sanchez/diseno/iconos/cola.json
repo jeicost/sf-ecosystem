@@ -1,0 +1,284 @@
+{
+  "fuente": "lagrimas-prompts-ilustraciones con mejoras.numbers (27-ago)",
+  "cola": [
+    {
+      "n": 1,
+      "bloque": "A",
+      "pieza": "GALGO DE PAIPORTA",
+      "slug": "galgo-de-paiporta",
+      "objeto": "Galgo corriendo",
+      "prompt": "a running greyhound in full stride, side view, elongated slender body, deep chest, arched back, long thin tail, small pointed head, legs extended, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "generado"
+    },
+    {
+      "n": 2,
+      "bloque": "A",
+      "pieza": "CHEPAS",
+      "slug": "chepas",
+      "objeto": "Espalda encorvada de espaldas",
+      "prompt": "side profile silhouette of a hunched walking figure as one solid white shape, a huge exaggerated rounded hump on the upper back, head jutting forward, no face. The word \"CHEPAS\" in bold ultra-condensed uppercase sans-serif letters arched OVER the hump, following its curve, integrated into the composition as a single lockup",
+      "estado": "generado"
+    },
+    {
+      "n": 3,
+      "bloque": "A",
+      "pieza": "CHIRIMOYAS",
+      "slug": "chirimoyas",
+      "objeto": "Chirimoya",
+      "prompt": "a cherimoya custard apple fruit, heart shaped with a short stem, one solid white flat shape with the scale pattern cut out as bold black negative space lines. A horizontal band crosses the middle of the fruit with the word \"CHIRIMOYAS\" in bold ultra-condensed uppercase sans-serif letters cut out in black inside the band, like a label printed across the fruit, single lockup",
+      "estado": "generado"
+    },
+    {
+      "n": 4,
+      "bloque": "A",
+      "pieza": "CHIQUI",
+      "slug": "chiqui",
+      "objeto": "Boca con lengua fuera",
+      "prompt": "a pair of open lips with a short round tongue sticking out, only mouth and tongue floating as an isolated symbol, no face, no head, absolutely no teeth — the mouth interior is solid black. BELOW the mouth, clearly separated with empty space, the complete word \"CHIQUI\" — six letters, C H I Q U I — in bold ultra-condensed uppercase sans-serif, the whole word fully visible inside the canvas with margin on both sides, nothing cropped",
+      "estado": "generado"
+    },
+    {
+      "n": 5,
+      "bloque": "A",
+      "pieza": "PILI JUERGA",
+      "slug": "pili-juerga",
+      "objeto": "Copa con llavero de hotel",
+      "prompt": "a coupe champagne glass with a hotel room key fob hanging from the stem on a short chain, bold flat white shapes with thick black negative space details, no text, no letters, no words, just the glass and keys, centered",
+      "estado": "generado"
+    },
+    {
+      "n": 6,
+      "bloque": "A",
+      "pieza": "LA NIÑA DE LA CURVA",
+      "slug": "la-nina-de-la-curva",
+      "objeto": "Señal de curva peligrosa",
+      "prompt": "a triangular road warning sign with a winding curve arrow inside, thick rounded border, bold flat white with black negative space, no text, no letters, no words, just the sign, centered",
+      "estado": "generado"
+    },
+    {
+      "n": 7,
+      "bloque": "A",
+      "pieza": "CATEDRÁTICA",
+      "slug": "catedratica",
+      "objeto": "Sello de goma estampando",
+      "prompt": "a rubber stamp with wooden handle lifted at an angle having just stamped the word below it: the exact word \"CATEDRATICA\" in bold uppercase letters C-A-T-E-D-R-A-T-I-C-A with slightly inky stamped edges, bold flat white shapes, the word complete and horizontal, spelled exactly as given",
+      "estado": "generado"
+    },
+    {
+      "n": 8,
+      "bloque": "A",
+      "pieza": "GRACITA BOLAÑOS",
+      "slug": "gracita-bolanos",
+      "objeto": "Mandil con campanilla",
+      "prompt": "a waist apron tied with a bow at the back, hanging empty with no body wearing it, a small round service bell peeking out of the front pocket, bold flat white shapes with thick black negative space details, no text, no letters, centered",
+      "estado": "generado"
+    },
+    {
+      "n": 9,
+      "bloque": "A",
+      "pieza": "EL PORTERO",
+      "slug": "el-portero",
+      "objeto": "Segurata",
+      "prompt": "a nightclub bouncer silhouette seen from the front, wearing a tight black t-shirt and black trousers, arms crossed over a broad chest, shaved head as a simple solid shape with absolutely no facial features — the head is a blank solid form — coiled earpiece wire at the ear, one bold flat white silhouette with black negative space for the clothes, no text, no signature, centered",
+      "estado": "generado"
+    },
+    {
+      "n": 10,
+      "bloque": "A",
+      "pieza": "CEJAS",
+      "slug": "cejas",
+      "objeto": "Ceja de rombos",
+      "prompt": "a single thick arched eyebrow made of five diamond rhombus shapes in a row, floating alone as an isolated symbol — there is NO eye below it, no face, nothing else — and under it the exact word \"CEJAS\", letters C-E-J-A-S, bold ultra-condensed uppercase, no frame, no border, pure black background",
+      "estado": "generado"
+    },
+    {
+      "n": 11,
+      "bloque": "A",
+      "pieza": "LA CAJERA",
+      "slug": "la-cajera",
+      "objeto": "Código de barras",
+      "prompt": "a barcode block, vertical white bars of varying thickness forming a clean rectangle, slightly playful with one bar bent, bold flat white on black, no text, no numbers, no letters, centered",
+      "estado": "generado"
+    },
+    {
+      "n": 12,
+      "bloque": "A",
+      "pieza": "TUCÁN",
+      "slug": "tucan",
+      "objeto": "Tucán con cazadora",
+      "prompt": "a toucan bird with a huge curved beak wearing an open bomber jacket with no logos, bold flat white shapes with thick black negative space, standing proud, and below it the exact word \"TUCAN\" — letters T-U-C-A-N — in bold ultra-condensed uppercase, complete, spelled exactly",
+      "estado": "generado"
+    },
+    {
+      "n": 13,
+      "bloque": "A",
+      "pieza": "CHARO",
+      "slug": "charo",
+      "objeto": "Mujer de gafas y pelo corto",
+      "prompt": "a bust silhouette of a woman with a short bob haircut and large round glasses drawn as two circles, absolutely no facial features besides the glasses, bold flat white shape, and below the exact word \"CHARO\" — letters C-H-A-R-O — in bold ultra-condensed uppercase, complete, spelled exactly",
+      "estado": "generado"
+    },
+    {
+      "n": 14,
+      "bloque": "A",
+      "pieza": "MARLASKONA",
+      "slug": "marlaskona",
+      "objeto": "Mazo de juez con goma de borrar",
+      "prompt": "a judge gavel at an angle where the striking head is clearly a pink-style rectangular PENCIL ERASER with bevelled worn edges instead of a wooden head, drawn flat white with black negative space, resting on its round block, and below the exact word \"MARLASKONA\", letters M-A-R-L-A-S-K-O-N-A, bold ultra-condensed uppercase, no frame, flat, no engraving shading",
+      "estado": "sin-creditos"
+    },
+    {
+      "n": 15,
+      "bloque": "A",
+      "pieza": "FELPUDO VI",
+      "slug": "felpudo-vi",
+      "objeto": "Felpudo VI",
+      "prompt": "a rectangular doormat seen in slight perspective, with a bristled textured surface and a plain border, empty, no writing on it, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 16,
+      "bloque": "B",
+      "pieza": "SINCRONIZADA",
+      "slug": "sincronizada",
+      "objeto": "Metrónomo",
+      "prompt": "a mechanical pyramid metronome, front view, with its swinging pendulum rod and sliding weight, the rod tilted to one side, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 17,
+      "bloque": "B",
+      "pieza": "LA BANDA DEL PEUGEOT",
+      "slug": "la-banda-del-peugeot",
+      "objeto": "Coche con 4 cabezas",
+      "prompt": "a generic 1990s family saloon car in side view with four anonymous round heads visible through the windows, absolutely no brand badge, no grille detail, no logo, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 18,
+      "bloque": "B",
+      "pieza": "FANGO",
+      "slug": "fango",
+      "objeto": "Goteo",
+      "prompt": "a thick horizontal band of viscous liquid with four heavy drops dripping down from its lower edge, drops rounded and teardrop shaped, mud like, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 19,
+      "bloque": "B",
+      "pieza": "BULOS",
+      "slug": "bulos",
+      "objeto": "Triángulo de aviso",
+      "prompt": "an equilateral warning triangle with a bold exclamation mark inside it, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 20,
+      "bloque": "B",
+      "pieza": "TELEPEDRO",
+      "slug": "telepedro",
+      "objeto": "Televisor con antena",
+      "prompt": "a vintage boxy television set with two rabbit ear antennas on top, front view, the screen area left completely empty and flat for text to be placed inside later, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 21,
+      "bloque": "B",
+      "pieza": "SAUNAS",
+      "slug": "saunas",
+      "objeto": "Vapor",
+      "prompt": "three parallel wavy vertical lines rising like steam, evenly spaced, thick uniform stroke, the middle one taller, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 22,
+      "bloque": "B",
+      "pieza": "EL PUTO AMO",
+      "slug": "el-puto-amo",
+      "objeto": "Corona",
+      "prompt": "a simple three pointed crown with a small ball on each point and a straight base band, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 23,
+      "bloque": "B",
+      "pieza": "EL UNO",
+      "slug": "el-uno",
+      "objeto": "Dedo índice levantado",
+      "prompt": "a hand with the index finger pointing straight up and the other fingers closed into a fist, seen from the side, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 30,
+      "bloque": "B",
+      "pieza": "FALCON",
+      "slug": "falcon",
+      "objeto": "Jet privado",
+      "prompt": "a generic private business jet in side view, sleek fuselage, swept wings, two rear mounted engines, no markings, no windows detail, no livery, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 31,
+      "bloque": "B",
+      "pieza": "MÁQUINA DEL FANGO",
+      "slug": "maquina-del-fango",
+      "objeto": "Máquina con manivela",
+      "prompt": "a boxy industrial machine on short legs with a large hand crank on its side and a wide output chute at the front, thick viscous substance coming out of the chute, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 32,
+      "bloque": "B",
+      "pieza": "CABALGAR CONTRADICCIONES",
+      "slug": "cabalgar-contradicciones",
+      "objeto": "Caballo",
+      "prompt": "a horse in mid gallop, side view, all four legs off the ground, mane and tail flowing, riderless, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 33,
+      "bloque": "B",
+      "pieza": "IZQUIERDA CAVIAR",
+      "slug": "izquierda-caviar",
+      "objeto": "Lata de caviar abierta",
+      "prompt": "an open round caviar tin seen from above at a slight angle, the lid peeled half back, small round beads filling the tin, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 38,
+      "bloque": "C",
+      "pieza": "PUCHERAZO",
+      "slug": "pucherazo",
+      "objeto": "Urna con papeleta",
+      "prompt": "a ballot box, a plain rectangular box with a slot on the top and a folded ballot paper being inserted into the slot, the front face left flat and empty for text, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    },
+    {
+      "n": 39,
+      "bloque": "C",
+      "pieza": "CONTIENE LÁGRIMAS",
+      "slug": "contiene-lagrimas",
+      "objeto": "Gota grande",
+      "prompt": "a single large teardrop, pointed at the top and round at the bottom, solid filled, perfectly symmetrical, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
+      "estado": "pendiente"
+    }
+  ],
+  "sin_prompt": [
+    {
+      "pieza": "MEMA",
+      "nota": "(sin prompt aún)"
+    },
+    {
+      "pieza": "SOY FEMINISITA PORQUE SOY SOCIALISTA",
+      "nota": "(sin prompt aún)"
+    },
+    {
+      "pieza": "Patxi vergüenza ajena",
+      "nota": "Todo en texto"
+    },
+    {
+      "pieza": "PSOE",
+      "nota": "Icono del PSOE en el que se cambia la O por el logo de playboy"
+    }
+  ]
+}
