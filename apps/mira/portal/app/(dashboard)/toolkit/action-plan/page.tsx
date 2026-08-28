@@ -2,6 +2,7 @@
 
 import ToolRunnerPage from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { getStoredClientId } from '@/lib/client-context'
 import { getActionPlanConfig } from './tool-config'
 import { useLocaleContext } from '@/app/locale-provider'
 import { ActionPlanResult } from './action-plan-result'
@@ -20,6 +21,7 @@ export default function ActionPlanPage() {
         input_data: formData,
         attachments,
         project_id: getStoredProjectId(),
+        clientId: getStoredClientId(),
       }),
     })
 

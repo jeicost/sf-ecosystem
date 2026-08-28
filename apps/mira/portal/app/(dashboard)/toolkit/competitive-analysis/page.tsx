@@ -3,6 +3,7 @@
 import ToolRunnerPage from '@/components/ToolRunnerPage'
 import { getCompetitiveConfig } from './tool-config'
 import { getStoredProjectId } from '@/lib/project-context'
+import { getStoredClientId } from '@/lib/client-context'
 import { CompetitiveAnalysisResult } from './competitive-analysis-result'
 import { useLocaleContext } from '@/app/locale-provider'
 
@@ -19,6 +20,7 @@ export default function CompetitiveAnalysisPage() {
         input_data: formData,
         attachments,
         project_id: getStoredProjectId(),
+        clientId: getStoredClientId(),
       }),
     })
 

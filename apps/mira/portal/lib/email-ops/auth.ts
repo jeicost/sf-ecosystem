@@ -10,7 +10,7 @@ import { hasToolAccess } from '@/lib/tools/access'
 
 export type EmailOpsAccess =
   | { ok: true; userId: string; clientId: string; isAgency: boolean }
-  | { ok: false; status: 401 | 403; error: string }
+  | { ok: false; status: 400 | 401 | 403; error: string }
 
 export async function requireEmailOps(requestedClientId: string | null): Promise<EmailOpsAccess> {
   const access = await resolveRequestClient(requestedClientId)

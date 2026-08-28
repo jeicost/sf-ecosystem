@@ -2,6 +2,7 @@
 
 import ToolRunnerPage, { ToolConfig } from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { getStoredClientId } from '@/lib/client-context'
 import { t, type Locale } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 import { SeoAuditResult } from './seo-audit-result'
@@ -80,6 +81,7 @@ export default function SeoAuditPage() {
         input_data: formData,
         attachments,
         project_id: getStoredProjectId(),
+        clientId: getStoredClientId(),
       }),
     })
 

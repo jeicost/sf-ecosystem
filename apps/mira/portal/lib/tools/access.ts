@@ -69,7 +69,7 @@ export async function hasEntitlementServer(
 
 export type ToolAccess =
   | { ok: true; userId: string; clientId: string; isAgency: boolean }
-  | { ok: false; status: 401 | 403; error: string }
+  | { ok: false; status: 400 | 401 | 403; error: string }
 
 /**
  * Guarda de ruta: sesión + acceso al cliente + herramienta habilitada. Es la

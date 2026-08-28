@@ -3,6 +3,76 @@
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
+/**
+ * Bullet lists in these reports are declared as bare `[]` in the prompt, so the
+ * model returns strings in one run and objects in the next. Never hand a raw
+ * object to JSX — that is React #31 and it blanks the entire report.
+ */
+function asText(v: any): string {
+  if (v == null) return ''
+  if (typeof v !== 'object') return String(v)
+  const pick = v.title ?? v.name ?? v.objective ?? v.role ?? v.text ?? v.description
+  return pick != null ? String(pick) : JSON.stringify(v)
+}
+
+/**
+ * An OKR objective arrives either as a plain string or as an object. The prompt
+ * only declares `"objectives": []` while asking the model to flag mission
+ * alignment, so it legitimately returns
+ * `{objective, key_results[], alignment, alignment_note}`. Rendering that object
+ * straight into JSX threw React #31 and blanked the whole report, so this
+ * narrows the shape instead of assuming a string.
+ */
+function Objective({ obj }: { obj: any }) {
+  if (obj == null) return null
+
+  if (typeof obj !== 'object') {
+    return <span>• {String(obj)}</span>
+  }
+
+  const title = obj.objective ?? obj.title ?? obj.name
+  const keyResults: any[] = Array.isArray(obj.key_results) ? obj.key_results : []
+  const alignment = typeof obj.alignment === 'string' ? obj.alignment : null
+  const note = typeof obj.alignment_note === 'string' ? obj.alignment_note : null
+
+  // Unknown object shape: show it rather than dropping it silently.
+  if (title == null && !keyResults.length && !alignment && !note) {
+    return <span className="text-ink-tertiary">• {JSON.stringify(obj)}</span>
+  }
+
+  const warn = alignment === 'warning'
+
+  return (
+    <div>
+      <div className="flex items-start gap-2">
+        <span>•</span>
+        <div className="flex-1">
+          {title != null && <span className="text-ink">{String(title)}</span>}
+          {alignment && (
+            <span
+              className="ml-2 text-[10px] font-bold uppercase px-1.5 py-0.5 rounded align-middle"
+              style={{
+                color: warn ? '#ffb300' : '#00e676',
+                backgroundColor: warn ? 'rgba(255,179,0,0.12)' : 'rgba(0,230,118,0.12)',
+              }}
+            >
+              {alignment}
+            </span>
+          )}
+        </div>
+      </div>
+      {keyResults.length > 0 && (
+        <ul className="mt-1 ml-5 space-y-0.5 text-xs text-ink-tertiary">
+          {keyResults.map((kr: any, i: number) => (
+            <li key={i}>– {typeof kr === 'object' ? JSON.stringify(kr) : String(kr)}</li>
+          ))}
+        </ul>
+      )}
+      {note && <div className="mt-1 ml-5 text-xs italic text-ink-tertiary">{note}</div>}
+    </div>
+  )
+}
+
 export function ActionPlanResult({ data }: { data?: any }) {
   const { locale } = useLocaleContext()
   if (!data) return <div className="text-ink-secondary">{t('toolkit.results.no-data', locale)}</div>
@@ -36,10 +106,12 @@ export function ActionPlanResult({ data }: { data?: any }) {
               {data.quarterly_okrs.map((q: any, qidx: number) => (
                 <div key={qidx} className="border p-4 rounded" style={{borderColor: 'rgba(77,124,255,0.3)', backgroundColor: 'rgba(77,124,255,0.05)'}}>
                   <div className="text-xs font-bold mb-2" style={{color: '#4d7cff'}}>Q{q.q}</div>
-                  {q.objectives && (
-                    <ul className="text-sm text-ink-secondary space-y-1">
-                      {q.objectives.map((obj: string, oidx: number) => (
-                        <li key={oidx}>• {obj}</li>
+                  {Array.isArray(q.objectives) && (
+                    <ul className="text-sm text-ink-secondary space-y-3">
+                      {q.objectives.map((obj: any, oidx: number) => (
+                        <li key={oidx}>
+                          <Objective obj={obj} />
+                        </li>
                       ))}
                     </ul>
                   )}
@@ -63,8 +135,8 @@ export function ActionPlanResult({ data }: { data?: any }) {
               {data['30_day_sprint'].weekly_milestones && data['30_day_sprint'].weekly_milestones.length > 0 && (
                 <div className="border border-line bg-surface p-4 rounded">
                   <div className="text-xs text-ink-secondary font-bold mb-2">{t('toolkit.action-plan.weekly-milestones', locale)}</div>
-                  {data['30_day_sprint'].weekly_milestones.map((m: string, idx: number) => (
-                    <div key={idx} className="text-xs text-ink-secondary mb-1">{t('toolkit.action-plan.week', locale)} {idx + 1}: {m}</div>
+                  {data['30_day_sprint'].weekly_milestones.map((m: any, idx: number) => (
+                    <div key={idx} className="text-xs text-ink-secondary mb-1">{t('toolkit.action-plan.week', locale)} {idx + 1}: {asText(m)}</div>
                   ))}
                 </div>
               )}
@@ -118,8 +190,13 @@ export function ActionPlanResult({ data }: { data?: any }) {
               <p className="text-ink-secondary text-sm">{data['90_day_vision'].focus}</p>
               {data['90_day_vision'].actions && data['90_day_vision'].actions.length > 0 && (
                 <ul className="mt-3 text-sm text-ink-secondary space-y-1">
-                  {data['90_day_vision'].actions.map((a: string, idx: number) => (
-                    <li key={idx}>• {a}</li>
+                  {data['90_day_vision'].actions.map((a: any, idx: number) => (
+                    <li key={idx}>
+                      • {asText(a)}
+                      {a && typeof a === 'object' && a.metric && (
+                        <span className="text-xs text-ink-tertiary"> — {asText(a.metric)}</span>
+                      )}
+                    </li>
                   ))}
                 </ul>
               )}
@@ -137,8 +214,8 @@ export function ActionPlanResult({ data }: { data?: any }) {
                   <div className="text-xs text-ink-secondary font-bold mb-2">{t('toolkit.action-plan.team', locale)}</div>
                   {Array.isArray(data.resource_requirements.team) ? (
                     <ul className="text-xs text-ink-secondary space-y-1">
-                      {data.resource_requirements.team.map((t: string, idx: number) => (
-                        <li key={idx}>• {t}</li>
+                      {data.resource_requirements.team.map((member: any, idx: number) => (
+                        <li key={idx}>• {asText(member)}</li>
                       ))}
                     </ul>
                   ) : (

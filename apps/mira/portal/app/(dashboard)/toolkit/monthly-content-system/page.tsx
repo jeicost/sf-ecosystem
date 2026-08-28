@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 import ToolRunnerPage from '@/components/ToolRunnerPage'
 import { getStoredProjectId } from '@/lib/project-context'
+import { getStoredClientId } from '@/lib/client-context'
 import { getMonthlyConfig } from './tool-config'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
@@ -55,6 +56,7 @@ export default function MonthlyContentSystemPage() {
         input_data: formData,
         attachments,
         project_id: getStoredProjectId(),
+        clientId: getStoredClientId(),
       }),
     })
 

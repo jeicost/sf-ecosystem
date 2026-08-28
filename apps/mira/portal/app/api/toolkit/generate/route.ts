@@ -154,9 +154,11 @@ export async function POST(req: NextRequest) {
       input_data._attachments = attachments.map((a: Attachment) => ({ name: a.name, type: a.type, url: a.url }))
     }
 
-    // Multi-empresa: clientId del body validado por grant; sin él, primer grant.
-    // (Mismo patrón que quick-actions / project-memory — nunca el primer grant a ciegas.)
-    const access = await resolveRequestClient(body.clientId ?? null)
+    // Multi-empresa: el clientId del workspace activo es OBLIGATORIO aquí.
+    // Esta ruta escribe (generation_queue + project_memory) y carga el Brand Brain
+    // del cliente: adivinarlo produce un informe redactado contra la marca
+    // equivocada y guardado en el inquilino equivocado. strict → 400, no fallback.
+    const access = await resolveRequestClient(body.clientId ?? null, { strict: true })
 
     let clientId: string
     let userId: string

@@ -6,7 +6,7 @@ import AgentWorkspace from '@/components/agent-workspace'
 import ToolRunnerPage from '@/components/ToolRunnerPage'
 import { createClient } from '@/lib/supabase'
 import { getStoredProjectId } from '@/lib/project-context'
-import { useActiveClient } from '@/lib/client-context'
+import { getStoredClientId, useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t, Locale } from '@/lib/i18n'
 import { getActionPlanConfig } from '../../toolkit/action-plan/tool-config'
@@ -95,6 +95,7 @@ export default function StrategyPlanPage() {
           input_data: formData,
           attachments,
           project_id: getStoredProjectId(),
+          clientId: getStoredClientId(),
         }),
       })
       if (!res.ok) {
