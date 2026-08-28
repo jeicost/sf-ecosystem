@@ -16,7 +16,7 @@
 | Tintas | Una, blanca |
 | Cobertura | 360°, banda de 275 × 195 mm, de la base al arranque del hombro |
 | Cuello | **No se decora** |
-| Piezas | 67, en 12 bandas horizontales justificadas. Ocupación 75 % |
+| Piezas | 57, en 12 bandas horizontales justificadas. Ocupación 75 % |
 | Trazo mínimo | 0,8 mm |
 | Zona muerta | 20 mm bajo el labio · 7 mm sobre la base |
 | Halo del lockup | 130 × 88 mm libres |

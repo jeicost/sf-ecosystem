@@ -27,7 +27,7 @@ El Supremo ha venido entendiendo que la excepción de caricatura **no ampara la
 explotación puramente comercial**. La misma viñeta en un medio está protegida;
 pegada en una botella que vendes, no necesariamente.
 
-**Por eso las 67 piezas son apodos, palabras y objetos, sin un solo rostro.**
+**Por eso las 57 piezas son apodos, palabras y objetos, sin un solo rostro.**
 Sin imagen, el art. 7.6 no entra. La alusión es discurso protegido, es más
 barata de producir, es registrable y es vendible en retail y en marketplaces.
 

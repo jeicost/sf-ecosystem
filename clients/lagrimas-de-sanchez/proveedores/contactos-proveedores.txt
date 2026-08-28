@@ -87,7 +87,7 @@ Bodegas y Viñedos Pedro García      Colmenar de Oreja
   tel    918 943 278
 
 
-== CIERRES Y CÁPSULAS ==   (correo pendiente de escribir)
+== CIERRES Y CÁPSULAS ==   (correo listo: correo-cierres.txt)
 
 Corcho con cabeza de zamak o inox:  Amorim (gama Top Series), Diam
                                     Bouchage, Cork Supply
@@ -98,6 +98,6 @@ Cierre mecánico:                    preguntar primero al vidriero, suelen
                                     suministrarlo montado
 
 
-== ILUSTRADOR ==   (pendiente)
-67 piezas en SVG vectorial de una tinta. Presupuesto orientativo
+== ILUSTRADOR ==   (correo listo: correo-ilustrador.txt)
+57 piezas en SVG vectorial de una tinta. Presupuesto orientativo
 1.500-3.000 €. Pedir a tres.

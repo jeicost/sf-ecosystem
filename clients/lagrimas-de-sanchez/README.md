@@ -10,7 +10,7 @@ Dominios en propiedad: `lagrimasdesanchez.com` y `.es`
 ## El producto en una frase
 
 Una botella borgoña de 750 ml en vidrio ámbar, serigrafiada por completo en el
-propio cristal con **67 piezas tipográficas** del vocabulario político español de
+propio cristal con **57 piezas tipográficas** del vocabulario político español de
 la última década. Tinta cerámica blanca vitrificada a 600 °C: no es una etiqueta,
 es parte del vidrio. Sin etiqueta frontal. Ni una sola cara.
 
@@ -46,7 +46,7 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
    - Serigrafía → Ibicrom, Serijerez, Todoglass, Serigrafía Portal
    - Vidrio → Juvasa, Estal, Verallia, Vidrala
    - Bodegas → Vinícola de Arganda, Jeromín, Pablo Morate
-3. **Contratar ilustrador** para las 67 piezas en SVG de una tinta. 1.500-3.000 €.
+3. **Contratar ilustrador** para las 57 piezas en SVG de una tinta. 1.500-3.000 €.
    Sin arte final no hay serigrafía
 
 ### Decisiones abiertas
@@ -91,7 +91,11 @@ código + conversión, con síntesis verificada contra el código):
 - Decisiones del dueño aplicadas: tirada de 1.000 publicada, banda de
   prelanzamiento, eyebrow «Aranjuez, Madrid · Edición numerada», estuche
   «El chiste completo» + línea de regalo.
-- Inventario: 57 piezas (recortado desde 78 con la hoja de Carlos del 27-ago).
+- Inventario: **57 piezas**. La cifra fue 78 → 67 → 57. La ÚNICA fuente válida
+  es `web/lib/piezas.ts` (`PIEZAS.length`); `producto/inventario.md` se genera
+  desde ahí. Si vuelve a cambiar, hay que barrer también README, brand-brain.json,
+  copy-web-y-brief.txt, producto/ y proveedores/ — el 67 se quedó pegado en nueve
+  ficheros, dos de ellos correos que iban a salir hacia proveedores.
 
 Para ABRIR la tienda: claves de Stripe (cuenta Discoolverworld SL) en Vercel
 + datos fiscales en /legal + activar el correo de formsubmit + quitar la banda
@@ -102,13 +106,13 @@ de prelanzamiento en `web/components/Nav.tsx`.
 y `clients/discoolver/web`. `npm run dev`.
 
 **Ocho páginas, todas estáticas y sin desbordes en móvil:**
-`/` · `/botella` · `/vino` (con puerta de edad) · `/estampado` (las 67, una a
+`/` · `/botella` · `/vino` (con puerta de edad) · `/estampado` (las 57, una a
 una) · `/envios` · `/legal` · `/gracias` · 404.
 
 Sistema visual: Bodoni Moda + Barlow Condensed + IBM Plex Mono sobre la paleta
 de seis. La botella va dibujada y su estampado es **texto real en el DOM**:
 indexable y legible por lector de pantalla. Catálogo en `lib/catalogo.ts`
-(precios en céntimos, países permitidos por producto); las 67 piezas en
+(precios en céntimos, países permitidos por producto); las 57 piezas en
 `lib/piezas.ts`. Puente al SF-CMS en `scripts/fetch-cms-content.mjs` — override
 de copy que nunca bloquea el build.
 
@@ -139,7 +143,7 @@ checkout propio que calcule el porte tras conocer el país.
 
 ### Hecho
 - Concepto, tono y arquitectura de producto
-- Las 67 piezas con nombre, tratamiento e icono → `producto/inventario-67-piezas.txt`
+- Las 57 piezas con nombre, tratamiento e icono → `producto/inventario.md`
 - Estructura de la retícula: 12 bandas justificadas, 75 % de ocupación
 - Modelo de costes de los dos productos → `producto/costes.md`
 - Checklist legal completo → `legal/checklist-legal.md`
@@ -168,7 +172,7 @@ vive en `/vino`. Es una decisión de arquitectura con valor económico directo.
 ## Estructura
 
 ```
-producto/    inventario de las 67 piezas · ficha técnica · costes
+producto/    inventario de las 57 piezas · ficha técnica · costes
 proveedores/ contactos verificados + los tres correos listos para enviar
 legal/       checklist completo: marca, imagen, IIEE, etiquetado, publicidad
 web/         copy completo y brief para Claude Design

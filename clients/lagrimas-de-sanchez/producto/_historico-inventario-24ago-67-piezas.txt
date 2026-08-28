@@ -1,3 +1,8 @@
+=== HISTÓRICO — NO USAR ===
+Inventario del 24-ago-2026, ANTES del recorte a 57 piezas.
+El vigente es producto/inventario.md, generado desde web/lib/piezas.ts.
+Se conserva solo como registro de lo que se descartó.
+
 LÁGRIMAS DE SÁNCHEZ - LAS 67 PIEZAS DEL ESTAMPADO
 
 Reglas comunes a todas:

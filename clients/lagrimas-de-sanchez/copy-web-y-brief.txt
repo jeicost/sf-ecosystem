@@ -3,7 +3,7 @@ Dominios: lagrimasdesanchez.com y .es
 
 === QUÉ ES ===
 Una botella de cristal ámbar de 750 ml serigrafiada por completo en el
-propio vidrio, con 67 piezas tipográficas del vocabulario político español
+propio vidrio, con 57 piezas tipográficas del vocabulario político español
 de la última década. Tinta cerámica blanca vitrificada a 600 °C: no es una
 etiqueta, es parte del cristal y no se va nunca. La misma botella se vende
 vacía y rellenable, o llena de tinto de la DO Vinos de Madrid.
@@ -17,7 +17,7 @@ de edad. Esto vale miles de euros en captación, así que respétalo.
 
   /            la botella vacía. Sin alcohol, sin puerta de edad
   /vino        el vino y los packs. Con verificación de edad
-  /estampado   las 67 piezas, una a una
+  /estampado   las 57 piezas, una a una
   /envios      envíos y devoluciones
   /legal       aviso legal, privacidad, cookies
 
@@ -58,7 +58,7 @@ sobre negro. Un solo botón.)
 
 --- HOME / EL ESTAMPADO ---
 
-67 piezas. Ni una sola cara.
+57 piezas. Ni una sola cara.
 
 Apodos, frases y pictogramas de la última década, compuestos en doce bandas
 alrededor de la botella. Todo lo dice el texto. Es más difícil y es más
@@ -115,7 +115,7 @@ CAPACIDAD          750 ml
 VIDRIO             Ámbar, 500 g
 DECORACIÓN         Serigrafía cerámica vitrificada a 600 °C
 TINTA              Una, blanca
-PIEZAS             67
+PIEZAS             57
 LAVAVAJILLAS       Sí
 ETIQUETA FRONTAL   Ninguna
 NUMERACIÓN         A mano

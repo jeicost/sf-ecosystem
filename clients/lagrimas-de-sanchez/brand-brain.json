@@ -2,7 +2,7 @@
   "client_name": "Lágrimas de Sánchez",
   "slug": "lagrimas-de-sanchez",
   "tagline": "La botella no se recicla. Se guarda.",
-  "tagline_alt": "67 motivos para llorar. Uno por pieza.",
+  "tagline_alt": "57 motivos para llorar. Uno por pieza.",
   "industry": "Vino y objeto de regalo · D2C",
   "founded": "2026",
   "website": "lagrimasdesanchez.com",
@@ -45,7 +45,7 @@
     "Producto real, no souvenir con líquido dentro",
     "Numerado a mano, no serie limitada de mentira"
   ],
-  "differentiator": "Serigrafía cerámica vitrificada a 600 °C cubriendo la botella entera, sin etiqueta frontal. No se despega, aguanta lavavajillas y convierte el envase en el producto. Y ni una sola cara: toda la sátira la cargan 67 piezas tipográficas, lo que la hace registrable, exportable y vendible en retail.",
+  "differentiator": "Serigrafía cerámica vitrificada a 600 °C cubriendo la botella entera, sin etiqueta frontal. No se despega, aguanta lavavajillas y convierte el envase en el producto. Y ni una sola cara: toda la sátira la cargan 57 piezas tipográficas, lo que la hace registrable, exportable y vendible en retail.",
   "products": [
     { "name": "La botella", "price": "22 €", "desc": "Vacía y rellenable, con cierre y caja. Numerada a mano. Coste 4,60 €, margen bruto 75%" },
     { "name": "El estuche completo", "price": "39 €", "desc": "Una vacía y una con vino. La que mejor explica el concepto" },
@@ -75,7 +75,7 @@
   "month1_weeks": [
     "Semana 1: presupuestos de serigrafía y vidrio, llamadas a bodegas, registro de marca en OEPM",
     "Semana 2: elección de vino y de acabado de boca con precios reales en la mano",
-    "Semana 3: ilustrador contratado con cesión de derechos, revisión legal del pack de 67 antes de arte final",
+    "Semana 3: ilustrador contratado con cesión de derechos, revisión legal del pack de 57 antes de arte final",
     "Semana 4-6: producción del vidrio y montaje de la web"
   ],
   "influencer_tiers": [
@@ -100,7 +100,7 @@
     "Cerrar presupuestos: 4 serigrafistas, 4 vidrieros, 3 bodegas",
     "Decidir acabado de boca: corcho vs cierre mecánico, con precios en la mano",
     "Confirmar con el Consejo Regulador de Vinos de Madrid si admite cierre mecánico",
-    "Contratar ilustrador para las 67 piezas en SVG (1.500-3.000 €)",
+    "Contratar ilustrador para las 57 piezas en SVG (1.500-3.000 €)",
     "Revisión legal del pack completo antes de arte final (600-1.500 €)"
   ],
   "colors": {

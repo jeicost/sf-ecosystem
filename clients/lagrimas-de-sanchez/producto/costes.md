@@ -39,7 +39,7 @@ ganar en ticket medio.
 | Vidrio y serigrafía | ~2.250 |
 | Cierres y cápsulas | ~700 |
 | Estuches y embalaje | 2.200 |
-| Ilustración de las 67 piezas | 1.500 – 3.000 |
+| Ilustración de las 57 piezas | 1.500 – 3.000 |
 | Registro de marca OEPM | 125 |
 | Revisión legal del pack | 600 – 1.500 |
 | **Total** | **11.000 – 15.000** |

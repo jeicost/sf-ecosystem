@@ -49,7 +49,7 @@ medio. Arregla el desequilibrio actual de la lámina, que con un solo medidor
 queda coja de un lado. Recupera el concepto VELETA, que se había descartado
 como pieza suelta.
 
-**Si entra: 68 piezas en vez de 67**, y desplaza 3 o 4 piezas pequeñas del
+**Si entra: 58 piezas en vez de 57**, y desplaza 3 o 4 piezas pequeñas del
 flanco derecho a las bandas inferiores.
 
 **No llevan fecha, así que son vocabulario y no citas: nada que verificar en
