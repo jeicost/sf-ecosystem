@@ -185,3 +185,35 @@ diseno/      briefs, la lámina del desarrollo plano, el banco de piezas,
 vidrio topacio, sin etiqueta, con lockup sereno en el centro. Es la densidad y
 el registro a igualar: 60-80 piezas, bandas horizontales justificadas, dos
 tercios de las piezas puramente tipográficas.
+
+## ⚠️ DECISIÓN ABIERTA — el repositorio es público (30-ago-2026)
+
+`jeicost/sf-ecosystem` está en PÚBLICO. Verificado a mano, no supuesto:
+
+    curl https://raw.githubusercontent.com/jeicost/sf-ecosystem/main/\
+      clients/lagrimas-de-sanchez/producto/costes.md          → HTTP 200
+
+Cualquiera lee sin autenticarse el margen del 75 % (botella vacía) y del 56 %
+(vino), las cinco cartas de negociación sin enviar y la lista de proveedores a
+los que se les va a pedir precio. Un proveedor puede ver el margen del comprador
+antes de responder al presupuesto. Afecta igual a discoolver, salsa-burgers,
+nc-global-assets, adrian-grooves, dadybox, lidar-home y startup-factory.
+
+**NO hay credenciales filtradas.** Comprobado: ni claves de Stripe, ni de
+Supabase, ni tokens. Lo que aparece en `.claude/settings.json` es un comando que
+LEE un token, no el token. El riesgo es comercial, no de accesos.
+
+Se le planteó a Carlos el 28-ago y **no lo decidió**. Queda abierto.
+
+La opción recomendada es una línea, reversible:
+
+    gh repo edit jeicost/sf-ecosystem --visibility private \
+      --accept-visibility-change-consequences
+
+Comprobado antes de proponerla: los 8 proyectos de Vercel que despliegan desde
+este repo usan la GitHub App, que funciona igual con repos privados. Nada en el
+código depende de URLs públicas del repo. No se rompe ningún despliegue.
+
+Si tuviera que seguir público, entonces no basta con borrar los ficheros en un
+commit nuevo: los SHA antiguos siguen sirviéndose. Habría que purgar con
+`git filter-repo`, force-push, y abrir ticket a GitHub Support.
