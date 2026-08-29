@@ -8,6 +8,7 @@ import { retrieveAgentContext } from '@/lib/agent-context'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
+import { JUDGMENT_CONTRACT } from '@/lib/grounding/judgment-contract'
 
 // tone_of_voice may be a plain string or an object — never spread a string into chars
 function formatTone(tone: unknown): string {
@@ -83,7 +84,7 @@ export async function getDocumentPrompt(
   const scopeCheck = `\n\nIMPORTANT — scope of this document: this is ALWAYS an internal business artefact (operating guide, presentation, report or one-pager), NEVER the finished, ready-to-publish content piece. If the "Topic"/brief below clearly describes a specific piece to publish (a newsletter, a post, an article, a script) rather than a business process or strategy, add a short honest notice as the FIRST section of the document: that this is a guide on how to approach that content, not the content itself, and that to generate the ready-to-publish piece they should use Quick Actions (crear_newsletter/crear_post/etc.) in MIRA. Then carry on with the rest of the document anyway (the guide/strategy is still useful).`
 
   // Contexto común de los 4 tipos de documento: brief + contexto de cliente + contratos de calidad (veracidad + redacción).
-  const input = `\nUSER BRIEF:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}${researchContext}\n\n${GROUNDING_CONTRACT}\n\n${EDITORIAL_CONTRACT}\n\n${REPORT_VOICE_CONTRACT}${scopeCheck}`
+  const input = `\nUSER BRIEF:\n${JSON.stringify(inputData, null, 2)}\n${fullContext}${researchContext}\n\n${GROUNDING_CONTRACT}\n\n${JUDGMENT_CONTRACT}\n\n${EDITORIAL_CONTRACT}\n\n${REPORT_VOICE_CONTRACT}${scopeCheck}`
 
   switch (docType) {
     case 'doc-playbook':

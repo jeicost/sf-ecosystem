@@ -429,7 +429,28 @@ Generate SEO audit JSON (EXACT STRUCTURE — field examples below are generic pl
 }`
 
     case 'marketing-audit':
-      return `You are a marketing auditor validating that current marketing ALIGNS with Brand Briefing.
+      return `You are the auditor who has to tell this client something they will not enjoy hearing, and be right about it.
+
+METHOD:
+
+1. WHAT IS THE MONEY DOING. Run the DERIVED ECONOMICS below on whatever spend
+   and return figures exist. An audit that never touches the arithmetic is a
+   description, not an audit.
+
+2. SEVERITY IS A JUDGEMENT, NOT A DECORATION. Every finding is ranked by what it
+   COSTS, not by how easy it is to spot. A missing meta description and a funnel
+   that leaks 80% of traffic are not both "medium". Order the findings by damage.
+
+3. THE ONE THING. Name in \`single_biggest_leak\` the one problem that, fixed
+   alone, moves the most. An audit that returns 24 equally-weighted findings has
+   pushed the prioritisation work back onto the client.
+
+4. WHAT IS WORKING STAYS WORKING. Say explicitly what NOT to touch. Audits that
+   only list problems get clients to break things that were fine.
+
+5. NO FINDING WITHOUT A CONSEQUENCE. Each one states what it is costing now —
+   in traffic, conversion, trust or time. A finding with no consequence attached
+   is an observation, and observations do not get acted on.
 
 ⚠️ TIER 2: VALIDATION TOOLKIT
 - Load Brand Briefing from dependencies (if available)
@@ -541,6 +562,9 @@ Generate marketing audit JSON (EXACT STRUCTURE — card titles below are generic
       ]
     }
   ],
+  "single_biggest_leak": {"what": "the one problem that, fixed alone, moves the most", "what_it_costs_now": "", "why_this_one": "[JUDGEMENT] "},
+  "do_not_touch": ["what is currently working and must not be changed"],
+  "derived_economics": {"figures_used": [], "calculations": [], "verdict": "plausible|tight|implausible", "verdict_reasoning": "", "what_would_change_it": []},
   "quickWins": [
     {
       "id": 1,
@@ -713,7 +737,31 @@ Generate a COMPREHENSIVE action plan JSON:
 }`
 
     case 'investor-deck':
-      return `You are a fundraising expert synthesizing all brand + market + operations data into coherent investor narrative.
+      return `You are the operator who will be in the room when an investor asks the question this deck is trying to avoid.
+
+METHOD:
+
+1. THE NUMBER THEY WILL CHECK FIRST. Do the DERIVED ECONOMICS below and put the
+   result where they will see it. An investor reads unit economics before the
+   vision. If the economics do not work yet, say what has to become true — that
+   is a stronger deck than one that hides it.
+
+2. WHY NOW, NOT WHAT. Every deck explains what the company does. The ones that
+   raise explain why this is possible now and was not three years ago. If the
+   context does not support a real "why now", say so rather than inventing a
+   trend.
+
+3. THE OBJECTION YOU CANNOT DUCK. State in \`hardest_question\` the single
+   question a sharp investor will ask that this company answers worst, and the
+   honest answer. A deck without it looks naive; a deck with it looks like
+   people who have thought about their own business.
+
+4. TRACTION IS EVIDENCE, NOT ADJECTIVES. Only what actually happened, with its
+   number. "Fuerte crecimiento" is not traction. If there is no traction, the
+   deck says what will count as traction and by when.
+
+5. THE ASK CONNECTS TO THE PLAN. The amount has to map to what it buys and what
+   milestone it reaches. An ask with no milestone attached reads as a guess.
 
 ⚠️ TIER 7: EXTERNAL STAKEHOLDER TOOLKIT
 - CRITICAL: Load Brand Briefing mission, Competitive Analysis market data, Action Plan OKRs, Marketing Audit traction
@@ -743,6 +791,9 @@ Generate COMPREHENSIVE investor deck JSON:
   "marketing_audit_id": "uuid",
   "seo_audit_id": "uuid",
   "narrative_coherence": "verified|contradictions_found",
+  "derived_economics": {"figures_used": [], "calculations": [], "verdict": "plausible|tight|implausible", "verdict_reasoning": "", "what_would_change_it": []},
+  "why_now": {"claim": "", "evidence": "from context, or say plainly there is none"},
+  "hardest_question": {"question": "the one a sharp investor asks that this company answers worst", "honest_answer": "", "what_would_settle_it": ""},
   "conflicts": [],
   "title_slide": {"company": "", "tagline": "", "mission": ""},
   "executive_summary": {"problem_solution_market": "", "why_now": ""},
@@ -939,7 +990,28 @@ Generate the COMPLETE brand book JSON:
     }
 
     case 'brandbook-content-system':
-      return `You are a brand strategist creating the LIVING OPERATIONAL MANUAL for this brand.
+      return `You are writing the manual the team will actually open on a Tuesday afternoon with a deadline — not the PDF that decorates the shared drive.
+
+METHOD:
+
+1. EVERY RULE NAMES THE MISTAKE IT PREVENTS. "El logo nunca se estira (evita:
+   deformarlo al ajustarlo a un banner)". A rule without its failure is ignored
+   the first time someone is in a hurry. Use what the Brand Brain records in
+   what_flopped and open_questions.
+
+2. DECIDABLE, NOT DESCRIPTIVE. Each section must let someone settle an argument
+   without asking anyone. "Tono cercano" settles nothing. "Tuteamos siempre,
+   incluso en el email de facturación" settles it.
+
+3. SHOW THE WRONG VERSION. For the rules that matter most, include the version
+   that breaks them. People learn a boundary faster from the counter-example.
+
+4. WHAT THE BRAND ALREADY DOES vs WHAT YOU PROPOSE — labelled, never blurred.
+   Presenting a proposal as established practice is the fastest way to lose the
+   client's trust in the whole manual.
+
+5. OPEN ITEMS ARE A SECTION. Numbered, with an owner (cliente or agencia) and
+   what each one unblocks. Six honest open items beat six invented answers.
 
 ⚠️ TIER 6: MASTER ORCHESTRATOR TOOLKIT
 - CRITICAL: Load ALL previous toolkit outputs (Brand Briefing, Content Pack, Marketing Audit, etc.)
@@ -1053,7 +1125,29 @@ Provide the campaign in this exact JSON format:
 }`
 
     case 'community-growth-blueprint':
-      return `You are a community strategist. Generate a comprehensive 90-day community growth blueprint for this brand.
+      return `You are the person who will personally be in the community every day for the next 90 days, with this brand's actual team and time.
+
+METHOD:
+
+1. WHO SHOWS UP, AND WHEN. Read the team from the context. A community needs a
+   named human answering within hours, and if nobody in this brand can do that,
+   the honest blueprint says so and proposes something smaller that survives.
+   Run the DERIVED ECONOMICS on time as well as money: hours per week is the
+   binding resource here, not budget.
+
+2. THE FIRST 50 BEFORE THE FIRST 5.000. Growth tactics for a community that does
+   not exist yet are fiction. Say where the first fifty real people come from,
+   by name of channel, and what makes them stay the second week.
+
+3. THE RITUAL. Every community that works has one repeating thing people show up
+   for. Name it in \`signature_ritual\`, with its cadence and its owner. A
+   blueprint that lists "engagement activities" has no ritual.
+
+4. FAILURE MODE FIRST. State what will most likely kill this community — usually
+   founder attention, not strategy — and what the plan does about it.
+
+5. WHAT SUCCESS LOOKS LIKE AT DAY 90, with a number that can be checked, and
+   what result means "stop, this is not working".
 
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
@@ -1066,6 +1160,12 @@ Derive every metric target (target_members, engagement_rate, retention_rate, ref
 Provide the blueprint in this exact JSON format:
 {
   "strategy_summary": "2-3 sentence overview of the growth strategy",
+  "derived_economics": {"figures_used": [], "calculations": [], "verdict": "plausible|tight|implausible", "verdict_reasoning": "", "what_would_change_it": []},
+  "who_shows_up": {"owner": "named human from the context", "hours_per_week": "[JUDGEMENT] commit to a number", "if_nobody_can": "the smaller plan that survives"},
+  "first_fifty": {"where_from": [], "why_they_stay": ""},
+  "signature_ritual": {"what": "", "cadence": "", "owner": ""},
+  "failure_mode": {"what_kills_this": "", "what_the_plan_does": ""},
+  "day_90_success": {"metric": "", "target": "", "stop_if": "result that means this is not working"},
   "month_1_foundation": {
     "theme": "Foundation & Activation",
     "focus": "...",

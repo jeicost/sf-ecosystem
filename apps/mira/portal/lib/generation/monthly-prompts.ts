@@ -12,6 +12,7 @@
 
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { REPORT_VOICE_CONTRACT } from '@/lib/grounding/report-voice-contract'
+import { JUDGMENT_CONTRACT } from '@/lib/grounding/judgment-contract'
 
 export interface MonthlyPromptParams {
   month: string // 'YYYY-MM'
@@ -41,6 +42,7 @@ function sharedContext(p: MonthlyPromptParams): string {
     p.approvedExamplesBlock || '',
     p.feedbackBlock || '',
     GROUNDING_CONTRACT,
+    JUDGMENT_CONTRACT,
     REPORT_VOICE_CONTRACT,
   ]
     .filter(Boolean)
