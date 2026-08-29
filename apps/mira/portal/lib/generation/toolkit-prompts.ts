@@ -1106,6 +1106,7 @@ Provide the campaign in this exact JSON format:
   "hypotheses": [{"variable": "hook|audience|format|offer", "test": "", "settled_by": "the result that decides it", "budget": ""}],
   "tests_the_budget_buys": "[JUDGEMENT] how many meaningful tests this budget actually funds, and the reasoning",
   "kill_rule": {"metric": "", "threshold": "", "date": "", "action": "what gets paused or changed"},
+  "rejected_alternatives": [{"option": "the channel mix or approach you considered and dropped", "why_rejected": "", "when_it_would_be_right": ""}],
   "week_1": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
   "week_2": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
   "week_3": {"focus": "...", "activities": ["..."], "budget_allocation": "..."},
