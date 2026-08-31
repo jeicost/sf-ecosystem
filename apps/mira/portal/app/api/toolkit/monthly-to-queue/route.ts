@@ -9,6 +9,10 @@ import { daysInMonth } from '@/lib/business-reports/monthly-calendar'
 // Single source of truth (el deck), mitad de coste (no se regenera nada) y
 // respeta la regla "nothing is produced until it is green".
 // Idempotente: result_data.materialized_at marca el envío — repetir no duplica.
+// 8 covers secuenciales a ~30-90s/imagen no caben en el default de Vercel:
+// la función moría a mitad con las imágenes ya pagadas y sin materializar.
+export const maxDuration = 300
+
 export async function POST(req: NextRequest) {
   try {
     const { queue_id, force, with_covers } = await req.json()
@@ -42,13 +46,23 @@ export async function POST(req: NextRequest) {
     }
 
     const result = row.result_data as Record<string, any>
-    if (result.materialized_at && force !== true) {
-      return NextResponse.json({
-        success: true,
-        already: true,
-        materialized_at: result.materialized_at,
-        message: 'These captions were already sent to the Approval Queue — nothing was duplicated.',
-      })
+    if (result.materialized_at) {
+      if (force !== true) {
+        return NextResponse.json({
+          success: true,
+          already: true,
+          materialized_at: result.materialized_at,
+          message: 'These captions were already sent to the Approval Queue — nothing was duplicated.',
+        })
+      }
+      // force sobre un informe ya materializado DUPLICARÍA todas las captions:
+      // materializePosts inserta plano en approval_queue y post_history, sin
+      // ninguna deduplicación. Hasta que exista un borrado fiable de las filas
+      // del envío anterior, se rechaza en vez de duplicar en silencio.
+      return NextResponse.json(
+        { error: 'Already materialized — re-sending would duplicate every caption in the Approval Queue. Delete the previous rows from the queue first.' },
+        { status: 409 }
+      )
     }
 
     const captions: any[] = Array.isArray(result.captions) ? result.captions : []
@@ -112,8 +126,11 @@ export async function POST(req: NextRequest) {
           row.client_id,
           `monthly-cover-${row.id.slice(0, 8)}-${generated}`
         )
-        if (stored?.signedUrl) {
-          ;(item as any).assetUrl = stored.signedUrl
+        if (stored?.path) {
+          // Path por el proxy, no la signed URL: la firmada caduca a los 7
+          // días y la imagen se rompía en la bandeja a la semana. El proxy
+          // /api/assets emite una firma fresca en cada carga.
+          ;(item as any).assetUrl = `/api/assets?path=${encodeURIComponent(stored.path)}`
           generated++
         }
       }

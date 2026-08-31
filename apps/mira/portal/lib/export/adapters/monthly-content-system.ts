@@ -68,6 +68,11 @@ function styleBlock(): string {
   .mcs-cal-item { font-size:10px; line-height:1.35; color:var(--cream-dim); margin-bottom:3px; }
   .mcs-cal-hero { color:var(--primary); }
   .mcs-cal-more { font-size:9px; font-style:italic; color:var(--cream-dim); }
+  .mcs-refs { display:flex; flex-wrap:wrap; gap:10px; margin:8px 0 4px; }
+  .mcs-ref { margin:0; width:150px; }
+  .mcs-ref img { width:150px; height:130px; object-fit:cover; display:block; border:1px solid var(--cream-faint); }
+  .mcs-ref figcaption { font-size:10px; line-height:1.4; color:var(--cream-dim); margin-top:5px; }
+  .mcs-hero-cover { width:100%; max-height:280px; object-fit:cover; display:block; border:1px solid var(--cream-faint); margin:10px 0 14px; }
 </style>`
 }
 
@@ -261,6 +266,37 @@ function funnelSection(r: Record<string, any>): Section | null {
   }
 }
 
+// ── Visuales (result_data.visuals, escritos por /api/toolkit/monthly-visuals)
+// Siempre paths del bucket servidos por el proxy /api/assets (firma fresca en
+// cada carga). En HTML descargado/Drive el proxy relativo no resuelve: onerror
+// oculta la imagen y el texto que la acompaña se queda — degradación limpia,
+// jamás un icono roto.
+function imgTag(path: unknown, alt: string, cls: string): string {
+  const p = asStr(path)
+  if (!p) return ''
+  return `<img class="${cls}" src="/api/assets?path=${encodeURIComponent(p)}" alt="${esc(alt)}" loading="lazy" onerror="this.style.display='none'">`
+}
+
+function pillarRefsFor(r: Record<string, any>, pillarName: string) {
+  try {
+    const refs = asArr(r?.visuals?.pillar_references).filter(isPlainObject)
+    const mine = refs.find((pr: any) => asStr(pr.pillar_name) === pillarName)
+    return asArr(mine?.items).filter(isPlainObject)
+  } catch {
+    return []
+  }
+}
+
+function heroCoverFor(r: Record<string, any>, briefIndex: number): string {
+  try {
+    const covers = asArr(r?.visuals?.hero_covers).filter(isPlainObject)
+    const mine = covers.find((c: any) => asNum(c.brief_index) === briefIndex)
+    return mine ? asStr(mine.image_path) : ''
+  } catch {
+    return ''
+  }
+}
+
 // 04 — Pilares como tarjetas: badge de estado, promesa, DO/DON'T, semillas
 function pillarsSection(r: Record<string, any>): Section | null {
   const pillars = asArr(r.pillars).filter(isPlainObject)
@@ -279,6 +315,19 @@ function pillarsSection(r: Record<string, any>): Section | null {
     }
     const audience = asStr(p.audience)
     if (audience) body += `<p style="margin-top:10px;font-style:italic;">Speaks to: ${esc(audience)}</p>`
+    // OWN REFERENCES — el rasgo del deck manual de la agencia: creatividades
+    // reales de la marca por colección, no mockups.
+    const refs = pillarRefsFor(r, asStr(p.name))
+    if (refs.length) {
+      body += miniLabel('Own references — real creatives')
+      body += `<div class="mcs-refs">${refs
+        .slice(0, 4)
+        .map((it: any) => {
+          const cap = clip(it.caption, 78)
+          return `<figure class="mcs-ref">${imgTag(it.thumb_path, cap || 'brand reference', 'mcs-ref-img')}<figcaption>${chip(it.collection)}${cap ? `<span>${esc(cap)}</span>` : ''}</figcaption></figure>`
+        })
+        .join('')}</div>`
+    }
     return { title: asStr(p.name) || `Pillar ${i + 1}`, body }
   })
   // active_pillar_judgment: la justificación de cuántos pilares corren este
@@ -350,6 +399,9 @@ function heroBriefsSection(r: Record<string, any>): Section | null {
   if (!heroes.length) return null
   const phases: PhaseItem[] = heroes.map((h, i): PhaseItem => {
     let body = `<div style="margin-bottom:8px;">${chip(h.platform, 'accent')}${chip(h.pillar)}</div>`
+    // Cover generada (visuals.hero_covers) — el visual del brief, si existe.
+    const cover = heroCoverFor(r, i)
+    if (cover) body += imgTag(cover, `${asStr(h.title) || 'hero'} — cover`, 'mcs-hero-cover')
     const hook = asStr(h.hook)
     if (hook) body += `${miniLabel('Hook')}<p><strong>${esc(hook)}</strong></p>`
     const objective = asStr(h.objective)
@@ -725,6 +777,7 @@ export const adapter: ToolAdapter = (result) => {
       'materialized_at',
       'materialized_count',
       '_pipeline',
+      'visuals',
       'active_pillar_judgment', // pintado como nota de apertura en Content Pillars
       'caption_allocation', // pintado como cabecera de Ready to Publish
       'pillars',

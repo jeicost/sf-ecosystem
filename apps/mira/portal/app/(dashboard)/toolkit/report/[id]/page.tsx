@@ -64,6 +64,34 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
   // defecto: generar hasta 8 imágenes cuesta dinero y debe ser una decisión.
   const [withCovers, setWithCovers] = useState(false)
 
+  // Visuales del informe (referencias reales por pilar + hero covers): paso
+  // posterior a la generación — el monthly ya roza el maxDuration por sí solo.
+  const [visualsState, setVisualsState] = useState<'idle' | 'working' | 'done' | 'error'>('idle')
+  const [visualsMsg, setVisualsMsg] = useState<string | null>(null)
+  const generateVisuals = async () => {
+    setVisualsState('working')
+    setVisualsMsg(null)
+    const res = await fetch('/api/toolkit/monthly-visuals', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ queue_id: id }),
+    }).catch(() => null)
+    const data = await res?.json().catch(() => null)
+    if (res?.ok && data?.success) {
+      setVisualsState('done')
+      setVisualsMsg(
+        data.already
+          ? 'Visuals already generated for this report.'
+          : `${data.hero_covers ?? 0} hero covers · ${data.references ?? 0} brand references placed.`
+      )
+      // Recarga el iframe para que el informe pinte las imágenes nuevas.
+      if (iframeRef.current) iframeRef.current.src = iframeRef.current.src
+    } else {
+      setVisualsState('error')
+      setVisualsMsg(data?.error || 'Visuals generation failed')
+    }
+  }
+
   // F4: materializar las captions del mes a la Cola de Aprobación
   const sendToQueue = async () => {
     setQueueState('sending')
@@ -253,6 +281,14 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             >
               Download PPTX
             </a>
+            <button
+              onClick={generateVisuals}
+              disabled={visualsState === 'working' || visualsState === 'done'}
+              className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors disabled:opacity-60"
+              title="Real brand references per pillar + hero covers, into the report"
+            >
+              {visualsState === 'working' ? 'Generating visuals…' : visualsState === 'done' ? 'Visuals ready' : 'Generate visuals'}
+            </button>
             <label className="flex items-center gap-1.5 text-xs text-ink-secondary cursor-pointer select-none">
               <input type="checkbox" checked={withCovers} onChange={(e) => setWithCovers(e.target.checked)} className="accent-current" />
               Generate covers (max 8)
@@ -303,6 +339,11 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
       {queueMsg && (
         <div className={`px-4 py-2 text-xs border-b shrink-0 ${queueState === 'error' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'}`}>
           {queueMsg}
+        </div>
+      )}
+      {visualsMsg && (
+        <div className={`px-4 py-2 text-xs border-b shrink-0 ${visualsState === 'error' ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'}`}>
+          {visualsMsg}
         </div>
       )}
       {/* Feedback al diseñador de documentos */}
