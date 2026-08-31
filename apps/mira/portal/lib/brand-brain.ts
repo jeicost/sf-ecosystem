@@ -35,7 +35,14 @@ export interface BrandBrainContext {
   languages?: { manual?: string; captions?: string; per_channel?: Record<string, string> }
   channels?: BrandDataChannel[]
   channelsToAvoid?: Array<{ channel: string; why: string }>
-  constraints?: { legal_ip?: string; category_rules?: string; self_imposed?: string; sequencing_rule?: string }
+  /**
+   * Dos formas reales en producción: el objeto tipado del template, o un ARRAY
+   * de reglas sueltas (así lo escribió el intake de Salsa: 4 restricciones
+   * críticas — "producto real, nunca stock/IA", paleta, "no delicious", "iconos
+   * propios" — que desaparecían enteras del prompt porque el formatter solo
+   * leía las claves del objeto. Verificado 31-ago-2026).
+   */
+  constraints?: { legal_ip?: string; category_rules?: string; self_imposed?: string; sequencing_rule?: string } | string[]
   whatFlopped?: Array<{ format: string; theory?: string }>
   openQuestions?: string[]
   /**
@@ -131,21 +138,29 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
     // que el cuestionario de intake escribe en visual_identity.notes y
     // colors.notes -- información que el cliente había dado a mano y que
     // desaparecía sin dejar rastro. Ahora se incluyen.
+    // asPromptText y no `${v}`: typography.hierarchy es un objeto anidado y
+    // salía como "hierarchy: [object Object]" en todos los prompts.
     if (vi.colors && typeof vi.colors === 'object') {
-      const colorsList = Object.entries(vi.colors)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(', ')
+      const colorsList = asPromptText(vi.colors, 1)
       if (colorsList) visualIdentitySummary += `Colors: ${colorsList}. `
     }
     if (vi.typography && typeof vi.typography === 'object') {
-      const typeList = Object.entries(vi.typography)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(', ')
+      const typeList = asPromptText(vi.typography, 1)
       if (typeList) visualIdentitySummary += `Typography: ${typeList}. `
     }
     if (vi.imagery_style) visualIdentitySummary += `Imagery style: ${asPromptText(vi.imagery_style)}. `
     if (vi.notes) visualIdentitySummary += `Notes: ${asPromptText(vi.notes)}. `
-    if (vi.status) visualIdentitySummary += `Status: ${vi.status}.`
+    if (vi.status) visualIdentitySummary += `Status: ${vi.status}. `
+    // El resto de secciones visuales (logo, packaging, own_motifs, photography,
+    // social_grid, crew_riders…) se descartaban en silencio aunque el cliente
+    // las tuviera escritas. Se emiten en genérico.
+    const KNOWN_VI = new Set(['colors', 'typography', 'imagery_style', 'notes', 'status'])
+    for (const [k, v] of Object.entries(vi as Record<string, unknown>)) {
+      if (KNOWN_VI.has(k) || v == null) continue
+      const text = asPromptText(v, 1)
+      if (text) visualIdentitySummary += `${k.replace(/_/g, ' ')}: ${text}. `
+    }
+    visualIdentitySummary = visualIdentitySummary.trim()
   }
 
   return {
@@ -183,9 +198,28 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
       ? { do: normalizeVocab(brandData.voice_vocabulary.do), dont: normalizeVocab(brandData.voice_vocabulary.dont) }
       : undefined,
     signatureRitual: brandData.identity?.signature_ritual || undefined,
-    offer: brandData.offer && typeof brandData.offer === 'object' ? (brandData.offer as BrandData['offer']) : undefined,
+    // offer.hero_items y channels tienen dos formas reales en producción:
+    // objetos tipados ({name, price} / {channel, job, owner}) o ARRAYS DE
+    // STRINGS (así los escribió el intake de Salsa). El código asumía la
+    // primera y el prompt recibía "Hero items: undefined · undefined" y
+    // "- undefined" por canal (verificado 31-ago-2026). Se normalizan ambas.
+    offer: (() => {
+      const o = brandData.offer
+      if (!o || typeof o !== 'object' || Array.isArray(o)) return undefined
+      const heroRaw = (o as Record<string, unknown>).hero_items
+      const hero_items = Array.isArray(heroRaw)
+        ? heroRaw
+            .map((h: any) => (typeof h === 'string' ? { name: h } : h && typeof h === 'object' && h.name ? h : null))
+            .filter(Boolean)
+        : undefined
+      return { ...(o as BrandDataOffer), ...(hero_items ? { hero_items } : {}) }
+    })(),
     languages: brandData.languages && typeof brandData.languages === 'object' ? brandData.languages : undefined,
-    channels: Array.isArray(brandData.channels) ? brandData.channels : undefined,
+    channels: Array.isArray(brandData.channels)
+      ? ((brandData.channels as unknown[])
+          .map((c: any) => (typeof c === 'string' ? { channel: c } : c && typeof c === 'object' && c.channel ? c : null))
+          .filter(Boolean) as BrandDataChannel[])
+      : undefined,
     channelsToAvoid: Array.isArray(brandData.channels_to_avoid) ? brandData.channels_to_avoid : undefined,
     constraints: brandData.constraints && typeof brandData.constraints === 'object' ? brandData.constraints : undefined,
     whatFlopped: (() => { const f = normalizeFlopped(brandData.what_flopped); return f.length ? f : undefined })(),
@@ -226,15 +260,23 @@ export async function fetchBrandBrain(clientId: string): Promise<BrandBrainConte
   }
 }
 
-export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
+export function formatBrandBrainForPrompt(
+  brain: BrandBrainContext,
+  // omitContentPillars: el monthly-content-system ya inyecta los pilares
+  // registrados con más detalle en su propio pillarsBlock — sin esto llegaban
+  // DUPLICADOS (una vez aquí con un "(100%)" inventado y otra allí).
+  opts?: { omitContentPillars?: boolean }
+): string {
   // Todo este bloque estaba escrito en español ("**Misión:**", "**Pilares de
   // contenido:**"...) y se inyecta en TODOS los prompts del sistema -- agentes,
   // quick actions, informes y documentos. Era el ancla de idioma más fuerte que
   // había: aunque el brief viniera en inglés, el modelo veía un contexto
   // íntegramente en español y respondía en español (verificado con el deck de
   // Salsa del 2026-08-05, pedido en inglés y generado entero en español).
+  // weight viene hardcodeado a 1 desde fetchBrandBrain: emitir "(100%)" en
+  // cada pilar era una cifra inventada delante de un contrato que las prohíbe.
   const pillarsStr = brain.pillars
-    .map(p => `- ${p.name} (${Math.round(p.weight * 100)}%): ${p.description}`)
+    .map(p => `- ${p.name}${p.weight !== 1 ? ` (${Math.round(p.weight * 100)}%)` : ''}: ${p.description}`)
     .join('\n')
 
   let result = `
@@ -247,9 +289,7 @@ export function formatBrandBrainForPrompt(brain: BrandBrainContext): string {
 **Brand personality:** ${brain.brandPersonality.join(', ')}
 
 ${brain.bannedPhrases.length ? `**Banned phrases (NEVER use them):** ${brain.bannedPhrases.join(', ')}` : ''}
-
-**Content pillars:**
-${pillarsStr}
+${opts?.omitContentPillars ? '' : `\n**Content pillars:**\n${pillarsStr}`}
 `.trim()
 
   // Cuenta de secciones REALES rellenas. Antes se contaban los `\n\n**` del
@@ -287,11 +327,19 @@ ${pillarsStr}
         // 'segment' es la clave que usa la forma de objeto; 'name', la del array.
         const label = a?.name ?? a?.segment
         if (typeof a === 'object' && label) {
+          // Tercera forma real (Salsa, 31-ago-2026): segment/behaviour/
+          // pain_point/age/geography/share_of_mix. Solo se leían las claves de
+          // las dos primeras formas y 514 chars de audiencias quedaban en 43.
           const extras = [
             a.description,
             a.pains ? `pains: ${a.pains}` : null,
+            a.pain_point ? `pain: ${a.pain_point}` : null,
             a.wants ? `wants: ${a.wants}` : null,
             a.need ? `need: ${a.need}` : null,
+            a.behaviour ? `behaviour: ${a.behaviour}` : null,
+            a.age ? `age: ${a.age}` : null,
+            a.geography ? `geo: ${a.geography}` : null,
+            a.share_of_mix ? `share of mix: ${a.share_of_mix}` : null,
             a.message ? `message: ${a.message}` : null,
             a.incentive ? `incentive: ${a.incentive}` : null,
             a.language_behaviour ? `language: ${a.language_behaviour}` : null,
@@ -345,7 +393,11 @@ ${pillarsStr}
     section(`\n\n**Channels to avoid:**\n${brain.channelsToAvoid.map((c) => `- ${c.channel} — ${c.why}`).join('\n')}`)
   }
 
-  if (brain.constraints) {
+  if (Array.isArray(brain.constraints)) {
+    // Forma array (intake): cada regla es un bullet tal cual.
+    const cons = brain.constraints.filter((c): c is string => typeof c === 'string' && c.trim().length > 0)
+    if (cons.length) section(`\n\n**Constraints:**\n${cons.map((c) => `- ${c.trim()}`).join('\n')}`)
+  } else if (brain.constraints) {
     const cons: string[] = []
     if (brain.constraints.legal_ip) cons.push(`Legal/IP: ${brain.constraints.legal_ip}`)
     if (brain.constraints.category_rules) cons.push(`Category rules: ${brain.constraints.category_rules}`)

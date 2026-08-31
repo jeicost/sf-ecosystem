@@ -22,7 +22,23 @@ export interface MonthlyOperatingContext {
 
 function asStringArray(v: unknown): string[] {
   if (!Array.isArray(v)) return []
-  return v.filter((x): x is string => typeof x === 'string')
+  // Dos formas reales en content_pillars: strings, u objetos {name, focus}
+  // (así sembró los temas el alta de Salsa del 13-jul). El filtro por string
+  // descartaba los objetos y esos pilares llegaban al prompt SIN TEMAS
+  // (verificado 31-ago-2026: 4 de los 9 pilares de Salsa).
+  return v
+    .map((x) => {
+      if (typeof x === 'string') return x
+      if (x && typeof x === 'object') {
+        const o = x as Record<string, unknown>
+        const name = typeof o.name === 'string' ? o.name : ''
+        const focus = typeof o.focus === 'string' ? o.focus : ''
+        if (name && focus) return `${name} — ${focus}`
+        return name || focus
+      }
+      return ''
+    })
+    .filter(Boolean)
 }
 
 /** Rango [inicio, fin) del mes anterior a 'YYYY-MM'. */
