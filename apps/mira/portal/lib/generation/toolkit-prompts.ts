@@ -866,6 +866,52 @@ Generate a COMPACT competitive radar JSON — every list capped, no filler:
 MARKET INTELLIGENCE TOOLKIT
 Analyze competitive landscape based on user input and generate actionable competitive intelligence.
 
+METHOD — work in this order. The order is the value: sort the evidence before
+you judge, judge each competitor before you pick the gap, pick the gap before
+you validate the positioning.
+
+STEP 0 — SORT THE EVIDENCE. Before writing anything, split what you know into
+two piles: VERIFIED (it appears in VERIFIED SITE FACTS or SOURCES and carries
+its citation) and COMPETITIVE INFERENCE (pattern knowledge, user input,
+industry priors — prefixed '[ASSUMPTION]'). Every comparative claim in this
+report belongs to exactly one pile and is labelled accordingly. An analysis
+that does not distinguish what it SAW from what it SUPPOSES is noise dressed
+as intelligence.
+
+STEP 1 — ONE VERDICT PER COMPETITOR. The deliverable for each competitor is a
+DECISION, not a profile: [JUDGEMENT] the one axis where we beat them TODAY
+(with the evidence), and the one axis where we should never try to compete
+(and why fighting there loses). Both go inside that competitor's
+\`competitive_matrix\` entry. If you cannot name either axis you have written
+a Wikipedia card — go back to the evidence, or log what is missing in
+\`data_gaps\`.
+
+STEP 2 — PLAY THEIR NEXT MOVE. For every relevant competitor ask: "if we
+executed our plan, what would THEY do?" Write their most probable countermove
+and our prepared answer into \`swot_vs_competitors.threats\` — at least one
+anticipated move per relevant competitor, with the actor and the trigger
+named. "Increased competition" is not a threat, it is the absence of one.
+
+STEP 3 — THE GAP AND THE BET. In \`winning_strategy.differentiation\`, name
+the hole in the market NOBODY currently covers, why THIS brand can credibly
+own it (capability from the context, not enthusiasm), and at least one
+attractive-looking gap you deliberately REJECT pursuing, with the reason. A
+gap map without a rejected option has not made a choice.
+
+STEP 4 — VALIDATE THE POSITIONING LAST. Set \`positioning_validation\` only
+now, so it FOLLOWS from steps 1-3: "verified" when the competitor verdicts
+land on the axis the brand already claims; "at_risk" when the anticipated
+moves erode that axis; "needs_adjustment" when the gap analysis points
+somewhere else — and \`recommended_adjustments\` then says what changes AND
+what stays.
+
+ANTI-GENERIC TEST — before emitting, reread every comparative sentence.
+"Strong social media presence", "well-established brand" and "competitive
+pricing" are banned unless followed by the number, the quote or the
+'[ASSUMPTION]' tag. If a sentence survives with the competitor's name swapped
+for another, it carries no information — replace it with the datum or delete
+it.
+
 ${sharedRules}
 
 INPUT:
@@ -876,7 +922,7 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
 {
   "positioning_validation": "verified|at_risk|needs_adjustment",
   "recommended_adjustments": ["adjustment 1", "adjustment 2"],
-  "executive_summary": "2-3 paragraph overview of competitive landscape and positioning",
+  "executive_summary": "2-3 paragraphs: the state of the field, the axis where this brand wins today, and the STEP 3 bet — a verdict, not a description of the document",
   "market_landscape": {
     "size": "figure with source URL, or '[ASSUMPTION] ...', or 'unknown'",
     "growth_rate": "figure with source URL, or '[ASSUMPTION] ...', or 'unknown'",
@@ -886,7 +932,7 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
   "competitive_matrix": [
     {
       "name": "competitor name",
-      "positioning": "how they position themselves (from SOURCES/input, else '[ASSUMPTION] ...')",
+      "positioning": "how they position themselves (from SOURCES/input, else '[ASSUMPTION] ...') — close with the STEP 1 verdict: '[JUDGEMENT] we beat them today on X because ...; never compete on Y because ...'",
       "strengths": ["strength 1", "strength 2"],
       "weaknesses": ["weakness 1", "weakness 2"],
       "pricing_model": "from SOURCES with URL, or '[ASSUMPTION] ...', or 'unknown'",
@@ -900,10 +946,10 @@ Generate COMPETITIVE ANALYSIS JSON with these core sections:
     "strengths": ["your strength 1", "your strength 2"],
     "weaknesses": ["weakness vs competitors"],
     "opportunities": ["market opportunity"],
-    "threats": ["competitive threat"]
+    "threats": ["STEP 2 anticipated move: 'if we execute X, <competitor> most likely responds with Y — our answer is Z'. At least one per relevant competitor; no actor-less threats"]
   },
   "winning_strategy": {
-    "differentiation": "how to differentiate from competitors",
+    "differentiation": "STEP 3: the gap nobody covers + why THIS brand can credibly own it + the gap we deliberately reject and why",
     "gtm_strategy": "go-to-market strategy",
     "marketing_angles": ["angle 1", "angle 2"]
   },
@@ -953,6 +999,51 @@ Generate the audit JSON:
 
       return `You are a senior brand consultant writing the OPERATIONAL BRAND BOOK for this brand — the manual the team actually uses, not a decorative PDF. Reference structure: a professional agency brand manual (story → identity → voice → visual system → applications → governance).
 
+METHOD — work in this order. The order is the value: harvest the real
+failures first, write every rule against one of them, then test each line for
+teeth.
+
+STEP 1 — HARVEST THE FAILURES. Before writing a single rule, mine the Brand
+Brain for what has actually gone wrong or stays unresolved: what_flopped,
+open_questions, and contradictions between brain and site. These are the raw
+material of the manual. Every "prevents"/"avoid"/"why" in this document
+points back to one of them — or to a concrete failure mode of this industry,
+labelled as such. A rule that does not prevent a real, named failure is
+decoration, and decoration gets ignored by week two.
+
+STEP 2 — VOICE FROM THE RECORD, NOT FROM THE GENRE. Build tone_of_voice and
+the one-pager out of vocabulary that exists in the context: phrases the brand
+actually says (brain we-say, site copy, attachments) and phrases it has
+banned (we-never-say, what_flopped). Every voice trait ships with one
+sentence the brand WOULD say and one it would NEVER say — lifted or minimally
+adapted from that record. Generic invented examples ("Dear valued customer")
+are the failure this step exists to prevent.
+
+STEP 3 — DECLARE THE HIERARCHY. Rules collide in real use: golden rule vs a
+channel's format, tone vs a promo deadline. State explicitly which rule wins
+when two conflict — default order golden rule > tone principles > channel
+format, unless the brain dictates otherwise — and write it into
+\`tone_of_voice.golden_rule\` and \`voice_series_governance.approval_flow\`.
+A manual that leaves collisions implicit gets resolved ad hoc by whoever is
+closest to the deadline.
+
+STEP 4 — LABEL WHAT EXISTS VS WHAT YOU PROPOSE. Everything presented as a
+system — colors, typography, series, rituals — is either ALREADY_RUNNING
+(evidenced in brain/site/attachments) or PROPOSED (your derivation). Never
+present a proposal as something the team already does: the reader must know
+what to keep and what to adopt, or they will trust neither.
+
+STEP 5 — RUN THE CONSISTENCY AUDIT LAST, with the finished manual in front of
+you, so the findings test the rules you just wrote against the brand as it
+actually ships — not the abstract brand.
+
+SPECIFICITY TEST — before emitting, read every rule and voice line and ask:
+"would a direct competitor claim the opposite?" No competitor says "we are
+NOT close to our customers", so a line like that excludes nothing and rules
+nothing. Rewrite it with this brand's actual words, enemies and numbers, or
+delete it. This test is the difference between the manual the team opens on
+Tuesday and the PDF nobody opens twice.
+
 RULES OF CONSTRUCTION:
 - The Brand Brain below is the PRIMARY SOURCE. Site facts, attachments and previous reports complete it. User notes (notas_diseno) override style decisions.
 - COLORS: only give a hex when you have evidence for it (brain visual identity, site facts, attachments). Mark each palette entry status: "ALREADY_RUNNING" (evidenced) or "PROPOSED" (your proposal derived from the evidenced ones). NEVER write rgb or cmyk values — they are computed deterministically after you.
@@ -975,13 +1066,13 @@ Generate the COMPLETE brand book JSON:
   "written_summary_md": "executive summary in markdown, 200-300 words: what defines this brand and the 5 key decisions in this manual",
   "story": {"origin": "", "why_exists": "", "signature_ritual": "from the brain if it exists, otherwise omit"},
   "mission_vision_promise": {"mission": "", "vision": "", "promise": "the promise the customer is entitled to demand"},
-  "tone_of_voice": {"golden_rule": "", "principles": [{"principle": "", "why": "", "avoid": "the concrete failure it prevents"}], "sound_like": "", "never_sound_like": ""},
+  "tone_of_voice": {"golden_rule": "the one rule that wins every collision (STEP 3)", "principles": [{"principle": "the trait + one sentence the brand WOULD say, from the recorded we-say vocabulary", "why": "", "avoid": "the concrete failure it prevents (named from what_flopped/open_questions when possible) + one sentence the brand would NEVER say"}], "sound_like": "", "never_sound_like": ""},
   "logo": {"usage_rules": [{"rule": "", "prevents": ""}], "clearspace": "", "min_size": "", "misuse": ["concrete mistakes to avoid"], "background_rules": ""},
   "colors": {"palette": [{"name": "", "hex": "#RRGGBB only with evidence", "role": "primary|secondary|accent|neutral", "status": "ALREADY_RUNNING|PROPOSED", "usage": "", "prevents": ""}], "combinations_to_avoid": []},
   "typography": {"primary": {"family": "", "usage": "", "status": "ALREADY_RUNNING|PROPOSED"}, "secondary": {"family": "", "usage": "", "status": "ALREADY_RUNNING|PROPOSED"}, "qa_safe_fallback": "", "hierarchy": [{"level": "H1|H2|body|caption", "spec": ""}]},
   "imagery": {"style": "", "dos": [{"rule": "", "why": ""}], "donts": [{"rule": "", "why": ""}]},
   "applications": [{"surface": "", "rules": ["short, actionable rules"]}],
-  "voice_series_governance": {"series": [{"name": "", "status": "ALREADY_RUNNING|PROPOSED", "cadence": "", "owner": "", "description": ""}], "approval_flow": "who approves what before publishing"},
+  "voice_series_governance": {"series": [{"name": "", "status": "ALREADY_RUNNING|PROPOSED", "cadence": "", "owner": "", "description": ""}], "approval_flow": "who approves what before publishing + which rule outranks which when two collide (STEP 3)"},
   "consistency_findings": [{"finding": "", "evidence": "literal quote + source", "resolution": "", "severity": "alta|media|baja"}],
   "voice_guide_onepager": {"golden_rule": "", "dos": [{"phrase": "", "why": ""}], "donts": [{"phrase": "", "why": ""}], "sound_like": "", "never_sound_like": "", "example_rewrite": {"before": "", "after": "", "why": ""}},
   "open_items": [{"n": 1, "item": "", "owner": "client|agency", "needed_for": ""}],
