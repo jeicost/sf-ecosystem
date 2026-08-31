@@ -17,8 +17,9 @@ import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { enrichPaletteCmyk } from '@/lib/export/color-utils'
 import { generateMonthlySystem } from '@/lib/generation/monthly-generate'
 
-// Single-tool generation with opus can take minutes; el monthly son 3
-// llamadas secuenciales — mismo techo que el content-engine (fluid compute)
+// Single-tool generation with opus can take minutes; el monthly son 3 fases
+// secuenciales + crítica/revisión de la fase 2 (la crítica corre en paralelo
+// con la fase 3) — mismo techo que el content-engine (fluid compute)
 export const maxDuration = 800
 
 // Tools grounded with a live site snapshot (deterministic SEO checks apply)
@@ -293,7 +294,11 @@ export async function POST(req: NextRequest) {
     let result: Record<string, unknown>
 
     if (tool_slug === 'monthly-content-system') {
-      // ── Monthly Content System: 2 llamadas secuenciales + merge (F4) ──
+      // ── Monthly Content System: 3 fases + crítica de la fase 2 + merge (F4).
+      // El resultado ya trae _pipeline dentro (monthly-generate.ts) — esta
+      // rama no pasa por runReportPipeline ni por el bloque result._pipeline
+      // de abajo, así que los metadatos de la crítica viajan en el propio
+      // objeto que se persiste como result_data. ──
       try {
         result = await generateMonthlySystem({
           clientId,

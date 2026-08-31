@@ -1,11 +1,20 @@
-// Monthly Content System — orquestación de las 2 llamadas (F4).
+// Monthly Content System — orquestación de las 3 fases (F4).
 // El route de generate delega aquí cuando tool_slug === 'monthly-content-system':
-// contexto operativo → fase 1 estrategia → fase 2 producción → merge +
-// calendario computado en TS. Lanza Error con mensaje legible si algo falla
-// (el route lo persiste en error_message).
+// contexto operativo → fase 1 estrategia → fase 2 producción → crítica de la
+// fase 2 (en paralelo con la fase 3 idea bank) → merge + calendario computado
+// en TS. Lanza Error con mensaje legible si algo falla (el route lo persiste
+// en error_message).
+//
+// La crítica (31-ago-2026, punto 2.4 del plan de excelencia) va SOLO sobre la
+// fase 2: es donde vive lo que el cliente ve (captions y briefs) y el
+// presupuesto es maxDuration=800 con 3 llamadas ya en vuelo. El informe de
+// julio de Salsa (d7c8e889) salió con 10/18 captions con [COMPLETAR:],
+// 0 caracteres thai pese al «non-negotiable» del Brain y registro
+// rioplatense — nadie lo releyó antes de entregarlo.
 
 import { generateWithWebSearch } from '@/lib/grounding/web-research'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
+import { critiqueAndRevise } from '@/lib/generation/report-pipeline'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { getDocumentFeedbackBlock } from '@/lib/generation/toolkit-prompts'
 import { getApprovedExamplesBlock } from '@/lib/generation/approved-examples'
@@ -110,7 +119,11 @@ export async function generateMonthlySystem(params: {
     postsPorPilar: Math.min(Math.max(Number(inputData.posts_por_pilar) || 4, 1), 5),
     plataformas: plataformas.length ? plataformas : ['instagram'],
     includeReels: inputData.include_reels !== 'no',
-    brainBlock: brain ? formatBrandBrainForPrompt(brain) : '',
+    // omitContentPillars: los pilares ya viajan en pillarsBlock (los
+    // registrados en content_pillars, la fuente operativa) — con el brain
+    // completo aparecían DOS veces y con listas distintas (14 en el brain de
+    // Salsa vs 9 registrados buenos), y el modelo mezclaba ambas.
+    brainBlock: brain ? formatBrandBrainForPrompt(brain, { omitContentPillars: true }) : '',
     pillarsBlock: ctx.pillarsBlock,
     previousBoardBlock: ctx.previousBoardBlock,
     ...(attachmentText ? { attachmentText } : {}),
@@ -133,31 +146,92 @@ export async function generateMonthlySystem(params: {
   // Fase 2 — producción, con la estrategia ya decidida como contrato.
   // 14k: con 8 pilares registrados la fase truncaba en 12k (build real Salsa).
   const strategyJson = JSON.stringify(strategy, null, 1)
-  const production = await callAndParse(
+  const productionPrompt = buildMonthlyProductionPrompt(promptParams, strategyJson)
+  const draftProduction = await callAndParse(
     clientId,
-    buildMonthlyProductionPrompt(promptParams, strategyJson),
+    productionPrompt,
     14000,
     [],
     'fase 2 (producción)'
   )
 
-  // Fase 3 — idea bank en llamada propia (no compite con briefs+captions)
-  const ideaBank = await callAndParse(
-    clientId,
-    buildMonthlyIdeaBankPrompt(promptParams, strategyJson),
-    6000,
-    [],
-    'fase 3 (idea bank)'
-  )
+  // Crítica de la fase 2 + fase 3 en PARALELO: no comparten dependencias
+  // (la fase 3 solo necesita la estrategia), así que la crítica no añade
+  // tiempo de pared salvo la revisión, que solo se dispara si el crítico
+  // encuentra hallazgos que la ameritan. critiqueAndRevise NUNCA empeora:
+  // ante cualquier fallo de crítico o revisor devuelve el borrador
+  // (principio del pipeline, ver report-pipeline.ts).
+  const [critiqued, ideaBank] = await Promise.all([
+    critiqueAndRevise({
+      clientId,
+      toolSlug: 'monthly-content-system',
+      prompt: productionPrompt,
+      model: 'claude-opus-4-8',
+      maxTokens: 14000,
+      draft: draftProduction,
+    }),
+    callAndParse(
+      clientId,
+      buildMonthlyIdeaBankPrompt(promptParams, strategyJson),
+      6000,
+      [],
+      'fase 3 (idea bank)'
+    ),
+  ])
+  const production = critiqued.data as Record<string, any>
 
   // Merge + open items renumerados + calendario determinista
   const openItems = [
     ...(Array.isArray(strategy.open_items) ? strategy.open_items : []),
     ...(Array.isArray(production.open_items) ? production.open_items : []),
     ...(Array.isArray(ideaBank.open_items) ? ideaBank.open_items : []),
-  ].map((o, i) => ({ ...(o && typeof o === 'object' ? o : { item: String(o) }), n: i + 1 }))
+  ]
+    .map((o) => (o && typeof o === 'object' ? o : { item: String(o) }))
+    // Dedupe: las 3 fases repiten los mismos huecos con palabras distintas
+    // (el informe de sept-2026 salió con 23 open items, la mitad duplicados
+    // — hallazgo del juez). Clave laxa: primeras ~8 palabras normalizadas.
+    .filter((() => {
+      const seen = new Set<string>()
+      return (o: any) => {
+        const key = String(o.item || '')
+          .toLowerCase()
+          .replace(/[^\p{L}\p{N}\s]/gu, '')
+          .split(/\s+/)
+          .slice(0, 8)
+          .join(' ')
+        if (!key || seen.has(key)) return false
+        seen.add(key)
+        return true
+      }
+    })())
+    .map((o, i) => ({ ...o, n: i + 1 }))
 
   const captions = Array.isArray(production.captions) ? production.captions : []
+
+  // Aritmética del ratio promo — misma filosofía que el economics-contract:
+  // el modelo CLASIFICA cada pieza (is_promo, un juicio) y TS hace la cuenta,
+  // que así no se puede esquivar. El juez del 31-ago cazó el ratio declarado
+  // como "22% [JUDGEMENT]" con la cuenta real (5/17 = 29%) sin hacer, y la
+  // decisión de adyacencia delegada al cliente en un open_item.
+  const promoDays = captions
+    .filter((c: any) => c?.is_promo === true)
+    .map((c: any) => Number(c.suggested_day))
+    .filter((d: number) => Number.isFinite(d))
+    .sort((a: number, b: number) => a - b)
+  const adjacent: number[][] = []
+  for (let i = 1; i < promoDays.length; i++) {
+    if (promoDays[i] - promoDays[i - 1] <= 1) adjacent.push([promoDays[i - 1], promoDays[i]])
+  }
+  const promoRatioComputed = captions.length
+    ? {
+        promo_captions: promoDays.length,
+        total_captions: captions.length,
+        promo_pct_actual: Math.round((promoDays.length / captions.length) * 100),
+        promo_days: promoDays,
+        adjacent_promo_days: adjacent,
+        source: 'computed from per-caption is_promo marks',
+      }
+    : undefined
   const heroTitles = (Array.isArray(production.hero_briefs) ? production.hero_briefs : [])
     .map((h: any) => String(h?.hook || h?.title || ''))
     .filter(Boolean)
@@ -173,8 +247,28 @@ export async function generateMonthlySystem(params: {
     month,
     month_label: monthLabel(month),
     open_items: openItems,
+    // El ratio declarado por la fase 3 (el objetivo) convive con la cuenta
+    // real: promo_ratio.computed confronta al modelo con su propia mezcla.
+    ...(promoRatioComputed
+      ? {
+          promo_ratio: {
+            ...(ideaBank.promo_ratio && typeof ideaBank.promo_ratio === 'object' ? ideaBank.promo_ratio : {}),
+            computed: promoRatioComputed,
+          },
+        }
+      : {}),
     calendar_entries: computeCalendarEntries(month, captions, heroTitles),
     previous_month_stats: ctx.previousStats,
-    generated_with: { phases: 3, calendar: 'computed' },
+    generated_with: { phases: 3, calendar: 'computed', critique: 'fase-2' },
+    // Trazabilidad del pipeline — mismo shape que persiste la ruta no-monthly
+    // (route.ts, result._pipeline): la rúbrica lee result_data._pipeline.stages.
+    // Aquí viaja dentro del propio result porque el route guarda este objeto
+    // tal cual como result_data.
+    _pipeline: {
+      stages: critiqued.stages,
+      findings_count: critiqued.findings.length,
+      findings: critiqued.findings.map((f) => ({ severity: f.severity, kind: f.kind, where: f.where })),
+      ...(critiqued.degradedReason ? { degraded: critiqued.degradedReason } : {}),
+    },
   }
 }

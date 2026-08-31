@@ -38,11 +38,18 @@ export const PIPELINE_TOOLS = new Set([
   'marketing-campaign-generator',
   'content-pack',
   'community-growth-blueprint',
+  // El monthly NO pasa por runReportPipeline (su rama del route llama a
+  // generateMonthlySystem directo): monthly-generate.ts invoca
+  // critiqueAndRevise SOLO sobre la fase 2 (producción) — es donde vive lo
+  // que el cliente ve. Añadido 31-ago-2026: el informe de julio de Salsa
+  // (d7c8e889) entregó 10/18 captions con [COMPLETAR:] y 0 líneas thai sin
+  // que nadie lo releyera.
+  'monthly-content-system',
 ])
 
 export interface CritiqueFinding {
   severity: 'high' | 'medium' | 'low'
-  kind: 'generic' | 'uncomputed' | 'dodged' | 'unsupported' | 'inconsistent' | 'missing'
+  kind: 'generic' | 'uncomputed' | 'dodged' | 'unsupported' | 'inconsistent' | 'missing' | 'unpublishable'
   where: string
   problem: string
   fix: string
@@ -61,7 +68,7 @@ const CRITIC_SYSTEM = `You are the client's most skeptical adviser, reading a dr
 that your own agency produced. You are not being paid to be encouraging. You are being paid to
 catch what would embarrass the agency in the meeting.
 
-You look for exactly five failure modes, in this order of importance:
+You look for exactly six failure modes, in this order of importance:
 
 1. GENERIC — sentences that could appear unchanged in a deliverable for a different client in a
    different industry. This is the most common and most damaging failure. "Configurar tracking",
@@ -82,6 +89,17 @@ You look for exactly five failure modes, in this order of importance:
 5. INCONSISTENT — two parts of the document that contradict each other, or a recommendation that
    contradicts the brand context.
 
+6. UNPUBLISHABLE — only for deliverables that contain ready-to-publish copy (captions, scripts,
+   posts): a piece the client could NOT copy-paste and publish today. Four signatures, all seen
+   in real deliverables: (a) a bracketed blank — "[COMPLETAR: …]", "[INSERT …]", "___",
+   "add X here"; (b) copy in a language that contradicts the brand context's language rules;
+   (c) a mandatory per-piece language line (e.g. "every caption carries a Thai line") that is
+   simply absent; (d) a dialect register the brand never uses (voseo, regional slang) when the
+   declared tone shows none. For content deliverables this failure mode outranks the five above —
+   one unpublishable caption breaks the promise of the whole document, so it is always severity
+   high. Quote the piece. The fix is either the publishable version written in full (in the
+   right language), or moving the piece to open_items with an owner — never a half-filled blank.
+
 Rules:
 - Be specific. "The plan is vague" is useless. Quote the text and name the section.
 - Every finding carries a 'fix' concrete enough to apply without further thought.
@@ -95,7 +113,7 @@ Rules:
 Return ONLY a JSON object:
 {
   "verdict": "ship" | "revise",
-  "findings": [{"severity":"high|medium|low","kind":"generic|uncomputed|dodged|unsupported|inconsistent|missing","where":"section or json path","problem":"quote the text and say what is wrong","fix":"exactly what to write instead"}],
+  "findings": [{"severity":"high|medium|low","kind":"generic|uncomputed|dodged|unsupported|inconsistent|missing|unpublishable","where":"section or json path","problem":"quote the text and say what is wrong","fix":"exactly what to write instead"}],
   "keep": ["the specific things that are good and must survive the rewrite"]
 }`
 
@@ -193,14 +211,24 @@ export async function critiqueAndRevise(opts: {
   try {
     const msg = await createMessageForClient(clientId, `toolkit/${toolSlug}/critique`, {
       model,
-      max_tokens: 4000,
+      // 8000, no 4000: criticando el monthly de Salsa (16 captions bilingües,
+      // 31-ago-2026) el JSON del crítico se truncó a media lista de findings
+      // y toda la crítica degradó al borrador. El crítico cita texto — con
+      // entregables largos 4k no le llega para cerrar el objeto.
+      max_tokens: 8000,
       messages: [
         {
           role: 'user',
           content: `${CRITIC_SYSTEM}
 
 The deliverable is a "${toolSlug}". This is the brief and context it was written from:
-${prompt.slice(0, 20000)}
+${
+  // 28k y no 20k (31-ago-2026): el prompt de producción del monthly lleva el
+  // JSON de la estrategia + el brain entero, y la sección Languages del brain
+  // va casi al final — con 20k el crítico podía quedarse sin las reglas de
+  // idioma que precisamente tiene que verificar (modo UNPUBLISHABLE).
+  prompt.slice(0, 28000)
+}
 
 This is the draft to critique:
 ${JSON.stringify(draft, null, 2)}`,
