@@ -3,3 +3,6 @@
 .env.local.bak-*
 check_gen.js
 check_gen*.js
+
+# Scratch de evals — material de sesión, nunca al repo
+evals/_scratch/

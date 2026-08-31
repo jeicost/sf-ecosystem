@@ -13,11 +13,16 @@ function MonthlyResult({ data, locale }: { data?: any; locale: Locale }) {
   if (!data) return null
   const pillars = Array.isArray(data.pillars) ? data.pillars.length : 0
   const captions = Array.isArray(data.captions) ? data.captions.length : 0
+  // El generador escribe month_label en la RAÍZ del result; el ?.meta era de un
+  // contrato anterior y hacía que el título con mes no saliera nunca. Se aceptan
+  // ambos, y solo strings (un objeto aquí renderizado directo = React #31).
+  const rawMonthLabel = data.month_label ?? data.meta?.month_label
+  const monthLabel = typeof rawMonthLabel === 'string' ? rawMonthLabel : ''
   return (
     <div className="card p-6 space-y-3">
       <h3 className="text-lg font-semibold text-ink">
-        {data.meta?.month_label
-          ? t('toolkit.monthly-content-system.result.title-with-month', locale).replace('{month}', data.meta.month_label)
+        {monthLabel
+          ? t('toolkit.monthly-content-system.result.title-with-month', locale).replace('{month}', monthLabel)
           : t('toolkit.monthly-content-system.result.title-default', locale)}
       </h3>
       <p className="text-sm text-ink-secondary">

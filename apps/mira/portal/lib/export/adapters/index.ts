@@ -13,6 +13,7 @@ import { adapter as brandbookContentSystem } from './brandbook-content-system'
 import { adapter as brandBook } from './brand-book'
 import { adapter as marketingCampaignGenerator } from './marketing-campaign-generator'
 import { adapter as communityGrowthBlueprint } from './community-growth-blueprint'
+import { adapter as monthlyContentSystem } from './monthly-content-system'
 
 const ADAPTERS: Record<string, ToolAdapter> = {
   'seo-audit': seoAudit,
@@ -26,6 +27,7 @@ const ADAPTERS: Record<string, ToolAdapter> = {
   'brand-book': brandBook,
   'marketing-campaign-generator': marketingCampaignGenerator,
   'community-growth-blueprint': communityGrowthBlueprint,
+  'monthly-content-system': monthlyContentSystem,
 }
 
 export function getAdapter(toolSlug: string): ToolAdapter {

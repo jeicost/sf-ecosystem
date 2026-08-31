@@ -244,6 +244,15 @@ export default function ToolkitReportPage({ params }: { params: Promise<{ id: st
             theme={docTheme}
           />
           {toolSlug === 'monthly-content-system' && (<>
+            {/* El deck PPTX bueno del mensual (?format=monthly-deck) solo era
+                alcanzable vía Google Slides; este enlace lo hace descargable. */}
+            <a
+              href={`/api/toolkit/export?queue_id=${id}&format=monthly-deck`}
+              className="text-sm px-4 py-1.5 rounded bg-surface-hover text-ink hover:opacity-80 transition-colors"
+              title="Monthly content deck (PowerPoint)"
+            >
+              Download PPTX
+            </a>
             <label className="flex items-center gap-1.5 text-xs text-ink-secondary cursor-pointer select-none">
               <input type="checkbox" checked={withCovers} onChange={(e) => setWithCovers(e.target.checked)} className="accent-current" />
               Generate covers (max 8)

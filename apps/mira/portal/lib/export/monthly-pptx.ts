@@ -383,6 +383,14 @@ function captionSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   }
 }
 
+/** Guarda: weekday resoluble (0=domingo…6=sábado); si falta, se computa desde date. */
+function weekdayOf(e: any): number | null {
+  const w = Number(e?.weekday)
+  if (Number.isFinite(w) && w >= 0 && w <= 6) return w
+  const d = new Date(`${s(e?.date, 20)}T00:00:00Z`)
+  return isNaN(d.getTime()) ? null : d.getUTCDay()
+}
+
 function calendarSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   const entries = arr(o.result.calendar_entries)
   if (!entries.length) return
@@ -400,13 +408,36 @@ function calendarSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
     })
   })
   const gridY = headY + 0.3
-  const firstOffset = (entries[0].weekday + 6) % 7 // lunes=0
-  const totalCells = firstOffset + entries.length
+  // Antes: `entries[0].weekday` a pelo — si un informe refinado pierde weekday,
+  // todo se posicionaba en NaN y el calendario desaparecía en silencio. Ahora se
+  // busca el primer día anclable (weekday o date) y sin ancla se omite el grid
+  // con una nota honesta en vez de una slide vacía.
+  const anchor = entries.find((e: any) => weekdayOf(e) !== null && Number.isFinite(Number(e?.day)))
+  if (!anchor) {
+    slide.addText('Calendar data is missing weekday/date info — grid omitted for this month.', {
+      x: MARGIN, y: gridY + 0.2, w: CONTENT_W, h: 0.5,
+      fontFace: FONT, fontSize: 11, italic: true, color: INK_SOFT,
+    })
+    footer(slide, o.brandName, 'Monthly calendar')
+    return
+  }
+  const anchorDay = Number(anchor.day)
+  // Columna (lunes=0) en la que cae el día 1, deducida del día ancla.
+  const firstOffset = ((((weekdayOf(anchor) as number) - (anchorDay - 1)) % 7) + 7 + 6) % 7
+  // Filas desde el día MÁS ALTO (no desde entries.length): con entradas
+  // dispersas, contar longitudes dibujaría celdas por debajo del footer.
+  const maxDay = entries.reduce((m: number, e: any) => {
+    const d = Number(e?.day)
+    return Number.isFinite(d) && d > m && d <= 31 ? d : m
+  }, 1)
+  const totalCells = firstOffset + maxDay
   const rows = Math.ceil(totalCells / 7)
   const cellH = Math.min(0.84, (FOOTER_Y - gridY - 0.1) / rows)
   gate(gridY, rows * cellH, 'grid calendario')
   entries.forEach((e: any) => {
-    const idx = firstOffset + e.day - 1
+    const day = Number(e?.day)
+    if (!Number.isFinite(day) || day < 1 || day > maxDay) return // sin día válido no hay celda posicionable
+    const idx = firstOffset + day - 1
     const cx = MARGIN + (idx % 7) * colW
     const cy = gridY + Math.floor(idx / 7) * cellH
     const items = arr(e.items)
@@ -415,7 +446,7 @@ function calendarSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
       fill: { color: items.length ? 'FFFFFF' : 'FAFAFA' },
       line: { color: items.length ? accent : 'E3E3E3', width: items.length ? 1 : 0.5 },
     })
-    const runs: PptxGenJS.TextProps[] = [{ text: `${e.day}\n`, options: { fontSize: 8, bold: true, color: items.length ? '111111' : 'BBBBBB' } }]
+    const runs: PptxGenJS.TextProps[] = [{ text: `${day}\n`, options: { fontSize: 8, bold: true, color: items.length ? '111111' : 'BBBBBB' } }]
     for (const it of items.slice(0, 2)) {
       runs.push({ text: `${it.is_hero ? '★ ' : ''}${s(it.platform, 2) ? s(it.platform, 12).slice(0, 2).toUpperCase() + ' · ' : ''}${s(it.title, 26)}\n`, options: { fontSize: 6.8, color: '333333' } })
     }

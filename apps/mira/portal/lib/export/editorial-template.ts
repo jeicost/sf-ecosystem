@@ -46,6 +46,11 @@ export interface Section {
   chart?: ChartSpec
   // Free-form HTML fallback / additional body below structured content
   content?: string
+  // Nota de apertura en HTML, ANTES del contenido estructurado (aditivo
+  // 2026-08-31: `content` siempre pinta al final y algunos adaptadores
+  // necesitan abrir la sección con un aviso/cabecera antes de las cards).
+  // Sin valor no cambia nada del render existente.
+  intro?: string
 }
 
 export interface ReportOptions {
@@ -187,6 +192,7 @@ export function generateEditorialHTML(options: ReportOptions): string {
   const sectionsHTML = resolved
     .map((s) => {
       let body = ''
+      if (s.intro) body += `<div class="section-body reveal reveal-delay-2">${s.intro}</div>`
       if (s.stats?.length) body += renderStats(s.stats)
       if (s.chart) body += renderChart(s.chart, `chart-${chartCount++}`, brandColor)
       if (s.cards?.length) body += renderCards(s.cards)

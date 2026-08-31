@@ -29,6 +29,17 @@ function asArray(v: unknown): unknown[] {
   return Array.isArray(v) ? v : []
 }
 
+// Coerción defensiva a texto: estos valores vienen del modelo y se renderizan
+// DIRECTOS en componentes React (ArchitectArchetype) — un objeto ahí lanza el
+// error React #31 y un `as string` no protege nada en runtime. Un array se une
+// legible; un objeto se descarta (mejor vacío que "[object Object]").
+function asText(v: unknown): string {
+  if (typeof v === 'string') return v
+  if (typeof v === 'number' || typeof v === 'boolean') return String(v)
+  if (Array.isArray(v)) return v.map((x) => asText(x)).filter(Boolean).join(' · ')
+  return ''
+}
+
 // content-strategist, social-media-manager: real Monthly Content System
 // output (pillars + weekly board), one template per past generation.
 async function fetchMonthlyArchitect(
@@ -54,20 +65,21 @@ async function fetchMonthlyArchitect(
       if (board.length === 0) return null
       const steps: ArchitectStep[] = board.map((week, idx) => {
         const rows = asArray(week.rows) as RowLike[]
-        const summary = rows.map((r) => r.working_title).filter(Boolean).join(' · ')
+        // working_title puede venir objeto → sin asText saldría "[object Object]"
+        const summary = rows.map((r) => asText(r.working_title)).filter(Boolean).join(' · ')
         return {
           id: `${row.id}-w${idx}`,
           number: idx + 1,
-          title: (week.theme as string) || `Week ${(week.week as number) ?? idx + 1}`,
+          title: asText(week.theme) || `Week ${(week.week as number) ?? idx + 1}`,
           description: summary || '',
           isCompleted: false,
         }
       })
       return {
         id: row.id as string,
-        name: `Month ${result?.month ?? ''}`.trim(),
+        name: `Month ${asText(result?.month)}`.trim(),
         emoji: '📆',
-        description: (result?.dormant_note as string) || '',
+        description: asText(result?.dormant_note) || '',
         createdAt: row.created_at as string,
         reportUrl: `/toolkit/report/${row.id}`,
         steps,
@@ -110,12 +122,12 @@ async function fetchActionPlanArchitect(
       const steps: ArchitectStep[] = phaseKeys.map((key, idx) => {
         const phase = result[key] as RowLike
         const actions = asArray(phase?.actions) as RowLike[]
-        const actionSummary = actions.map((a) => a.title).filter(Boolean).join(' · ')
+        const actionSummary = actions.map((a) => asText(a.title)).filter(Boolean).join(' · ')
         return {
           id: `${row.id}-${key}`,
           number: idx + 1,
           title: key.replace(/_/g, ' '),
-          description: (phase?.focus as string) || actionSummary || '',
+          description: asText(phase?.focus) || actionSummary || '',
           isCompleted: false,
         }
       })
@@ -158,13 +170,13 @@ async function fetchProposalArchitect(
   const templates: ArchitectTemplate[] = data
     .map((row): ArchitectTemplate | null => {
       const out = row.output_data as RowLike | null
-      const summary = out?.executive_summary as string | undefined
+      const summary = asText(out?.executive_summary)
       if (!summary) return null // rows with empty output_data (early test runs) are skipped
-      const nextSteps = asArray(out?.next_steps) as string[]
+      const nextSteps = asArray(out?.next_steps)
       const steps: ArchitectStep[] = nextSteps.map((s, idx) => ({
         id: `${row.id}-step${idx}`,
         number: idx + 1,
-        title: s,
+        title: asText(s),
         description: '',
         isCompleted: false,
       }))
@@ -208,8 +220,8 @@ async function fetchFinancialArchitect(
       const steps: ArchitectStep[] = months.map((m, idx) => ({
         id: `${row.id}-m${idx}`,
         number: idx + 1,
-        title: (m.month as string) || `Month ${idx + 1}`,
-        description: (m.revenue as string) || (m.summary as string) || '',
+        title: asText(m.month) || `Month ${idx + 1}`,
+        description: asText(m.revenue) || asText(m.summary) || '',
         isCompleted: false,
       }))
       return {
