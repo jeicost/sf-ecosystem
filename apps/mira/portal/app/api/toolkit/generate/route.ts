@@ -299,12 +299,49 @@ export async function POST(req: NextRequest) {
       // rama no pasa por runReportPipeline ni por el bloque result._pipeline
       // de abajo, así que los metadatos de la crítica viajan en el propio
       // objeto que se persiste como result_data. ──
+      // Checkpoint de un intento anterior MUERTO (failed, o processing
+      // colgado >12 min — la firma de que Vercel mató la función en el
+      // maxDuration): las fases ya pagadas se reutilizan en vez de repagarse
+      // (2.7 del plan de excelencia). Solo se acepta si es del mismo mes —
+      // eso lo valida generateMonthlySystem contra checkpoint.month.
+      let checkpoint = null
+      try {
+        const { data: priors } = await admin
+          .from('generation_queue')
+          .select('id, status, created_at, result_data')
+          .eq('client_id', clientId)
+          .eq('tool_slug', 'monthly-content-system')
+          .neq('id', queueId)
+          .gte('created_at', new Date(Date.now() - 24 * 3600 * 1000).toISOString())
+          .order('created_at', { ascending: false })
+          .limit(5)
+        for (const prior of priors || []) {
+          const stale =
+            prior.status === 'processing' &&
+            Date.now() - new Date(prior.created_at).getTime() > 12 * 60 * 1000
+          if (stale) {
+            // Sin esto la fila queda «processing» para siempre en la UI.
+            await admin
+              .from('generation_queue')
+              .update({ status: 'failed', error_message: 'Función terminada sin cerrar (maxDuration) — sustituida por un intento nuevo' })
+              .eq('id', prior.id)
+          }
+          const cp = (prior.result_data as any)?._checkpoint
+          if ((prior.status === 'failed' || stale) && cp && !checkpoint) checkpoint = cp
+        }
+      } catch { /* buscar checkpoint nunca bloquea la generación */ }
+
       try {
         result = await generateMonthlySystem({
           clientId,
           inputData: input_data,
           ...(attachmentText ? { attachmentText } : {}),
           attachmentImageBlocks,
+          queueId,
+          checkpoint,
+          saveCheckpoint: async (qid, cp) => {
+            await admin.from('generation_queue').update({ result_data: { _checkpoint: cp } }).eq('id', qid)
+          },
         })
       } catch (err) {
         const msg = err instanceof Error ? err.message : 'Monthly generation failed'

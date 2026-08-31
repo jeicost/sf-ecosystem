@@ -43,13 +43,15 @@ async function callAndParse(
   prompt: string,
   maxTokens: number,
   imageBlocks: any[],
-  phase: string
+  phase: string,
+  toolLoops = 2
 ): Promise<Record<string, any>> {
   // web_search disponible como tool -- Claude decide si la necesita (huecos
   // de tendencias/datos del sector que ni el brand brain ni la memoria
-  // tienen), no una búsqueda forzada. maxToolLoops=2 (no el default 3): son
-  // 3 fases secuenciales dentro de maxDuration=800, conviene no arriesgar el
-  // presupuesto de tiempo por fase. Ver lib/grounding/web-research.ts.
+  // tienen), no una búsqueda forzada. La fase 1 (estrategia) admite 2 loops;
+  // las fases 2-3 van con 1: la corrida real del 31-ago tardó 854s de pared
+  // — POR ENCIMA del maxDuration=800 del route — y el grueso eran vueltas de
+  // búsqueda en fases que ya tienen todo el contexto que necesitan.
   const CONCISE =
     '\n\nIMPORTANT: your entire response MUST be a single COMPLETE valid JSON object. ' +
     'If you are running long, shorten descriptions rather than leaving the JSON unclosed.'
@@ -59,7 +61,7 @@ async function callAndParse(
 
   const run = (mt: number, content: any) => generateWithWebSearch({
     clientId, route: 'toolkit/generate', model: 'claude-opus-4-8',
-    maxTokens: mt, userContent: content, maxToolLoops: 2,
+    maxTokens: mt, userContent: content, maxToolLoops: toolLoops,
   })
 
   let { message, text } = await run(maxTokens, baseContent)
@@ -89,13 +91,30 @@ async function callAndParse(
   }
 }
 
+/** Checkpoint por fase (2.7 del plan de excelencia): lo que ya se pagó no se
+ *  repaga. La corrida real del 31-ago tardó 854s de pared con maxDuration=800:
+ *  si Vercel mata la función a mitad, el siguiente intento reanuda desde la
+ *  última fase completada en vez de regenerar desde cero. */
+export interface MonthlyCheckpoint {
+  v: 1
+  month: string
+  strategy?: Record<string, any>
+  draft_production?: Record<string, any>
+}
+
 export async function generateMonthlySystem(params: {
   clientId: string
   inputData: Record<string, any>
   attachmentText?: string
   attachmentImageBlocks: any[]
+  /** Fila de generation_queue donde persistir checkpoints (opcional). */
+  queueId?: string
+  /** Checkpoint de un intento anterior muerto, si el route lo encontró. */
+  checkpoint?: MonthlyCheckpoint | null
+  /** Persiste el checkpoint en la fila; inyectado por el route (adminClient). */
+  saveCheckpoint?: (queueId: string, cp: MonthlyCheckpoint) => Promise<void>
 }): Promise<Record<string, unknown>> {
-  const { clientId, inputData, attachmentText, attachmentImageBlocks } = params
+  const { clientId, inputData, attachmentText, attachmentImageBlocks, queueId, saveCheckpoint } = params
 
   const month =
     typeof inputData.mes === 'string' && /^\d{4}-\d{2}$/.test(inputData.mes)
@@ -134,26 +153,39 @@ export async function generateMonthlySystem(params: {
     ...(approvedExamplesBlock ? { approvedExamplesBlock } : {}),
   }
 
+  // El checkpoint solo vale si es del MISMO mes; guardar nunca rompe la
+  // generación (best-effort).
+  const resume = params.checkpoint && params.checkpoint.v === 1 && params.checkpoint.month === month
+    ? params.checkpoint
+    : null
+  const persist = async (cp: MonthlyCheckpoint) => {
+    if (!queueId || !saveCheckpoint) return
+    try { await saveCheckpoint(queueId, cp) } catch { /* nunca romper por telemetría */ }
+  }
+
   // Fase 1 — estrategia (los adjuntos de imagen entran aquí: moodboards, refs)
-  const strategy = await callAndParse(
+  const strategy = resume?.strategy ?? await callAndParse(
     clientId,
     buildMonthlyStrategyPrompt(promptParams),
     9000,
     attachmentImageBlocks,
     'fase 1 (estrategia)'
   )
+  if (!resume?.strategy) await persist({ v: 1, month, strategy })
 
   // Fase 2 — producción, con la estrategia ya decidida como contrato.
   // 14k: con 8 pilares registrados la fase truncaba en 12k (build real Salsa).
   const strategyJson = JSON.stringify(strategy, null, 1)
   const productionPrompt = buildMonthlyProductionPrompt(promptParams, strategyJson)
-  const draftProduction = await callAndParse(
+  const draftProduction = resume?.draft_production ?? await callAndParse(
     clientId,
     productionPrompt,
     14000,
     [],
-    'fase 2 (producción)'
+    'fase 2 (producción)',
+    1
   )
+  if (!resume?.draft_production) await persist({ v: 1, month, strategy, draft_production: draftProduction })
 
   // Crítica de la fase 2 + fase 3 en PARALELO: no comparten dependencias
   // (la fase 3 solo necesita la estrategia), así que la crítica no añade
@@ -175,7 +207,8 @@ export async function generateMonthlySystem(params: {
       buildMonthlyIdeaBankPrompt(promptParams, strategyJson),
       6000,
       [],
-      'fase 3 (idea bank)'
+      'fase 3 (idea bank)',
+      1
     ),
   ])
   const production = critiqued.data as Record<string, any>
