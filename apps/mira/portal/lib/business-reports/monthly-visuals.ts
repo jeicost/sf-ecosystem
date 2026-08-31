@@ -55,11 +55,39 @@ interface ImageDoc {
   source_metadata: Record<string, any> | null
 }
 
-/** La «colección» del deck = la carpeta de Drive, legible. */
+/** La «colección» del deck = la CARPETA de Drive, legible. El path puede
+ *  terminar en el propio fichero (Nachos Salsa 2.png): en ese caso, la
+ *  carpeta es el segmento anterior. */
 function collectionOf(doc: ImageDoc): string {
   const path = String(doc.source_metadata?.path ?? '')
   const parts = path.split('/').filter(Boolean)
-  return parts[parts.length - 1] || 'References'
+  let last = parts[parts.length - 1] || ''
+  if (/\.[a-z0-9]{2,5}$/i.test(last) && parts.length > 1) last = parts[parts.length - 2]
+  return last || 'References'
+}
+
+/** La descripción por visión llega con cabecera técnica («[IMAGE] foo.png #
+ *  Image Description: foo.png **What it is:** …») — al cliente le llega solo
+ *  la frase descriptiva. */
+function cleanCaption(text: string): string {
+  // Los describers han usado varios formatos («**What it is:**…»,
+  // «Contents: …», «# Nombre - Product Photo This is…»): se toma la frase
+  // descriptiva del que haya y se barren cabeceras y nombres de fichero.
+  const what = /\*\*What it is:?\*\*\s*([^*]+)/i.exec(text)
+  const contents = /Contents:\s*([^]+)/i.exec(text)
+  let t = what?.[1] ?? contents?.[1] ?? text
+  t = t
+    .replace(/\[IMAGE\]/gi, ' ')
+    .replace(/\bImage Description:\s*/gi, ' ')
+    .replace(/\S+\.(png|jpe?g|webp|gif)\b/gi, ' ')
+    .replace(/\*\*/g, ' ')
+    .replace(/\bType:\s*[^.]{0,60}?(?=\bContents:|This is|A |An |\.)/i, ' ')
+    .replace(/^[\s#:·—-]+/, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  // «Dusted Fries # Dusted Fries This is…» → «Dusted Fries — This is…»
+  t = t.replace(/^(.{2,45}?)\s*#\s*\1\s*/i, '$1 — ').replace(/^(.{2,45}?)\s*#\s*/, '$1 — ')
+  return t
 }
 
 /**
@@ -240,7 +268,7 @@ export async function buildMonthlyVisuals(opts: {
           doc_id: doc.id,
           thumb_path: thumb,
           collection: collectionOf(doc),
-          caption: String(doc.extracted_text ?? '').replace(/\s+/g, ' ').slice(0, 110),
+          caption: cleanCaption(String(doc.extracted_text ?? '')).slice(0, 110),
         })
       }
       if (items.length) pillar_references.push({ pillar_name: pillar.name, items })
