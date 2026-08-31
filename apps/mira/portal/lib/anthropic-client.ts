@@ -78,15 +78,23 @@ async function checkGenerationCap(clientId: string, usedClientKey: boolean): Pro
 }
 
 /** Resolve the Anthropic client for a MIRA client (their key or platform fallback). */
+// Sin timeout explícito, el SDK LANZA en vez de llamar cuando max_tokens
+// implica >10 min sin streaming (~21k para Opus). Descubierto el 31-ago-2026:
+// el reintento anti-truncación del monthly (E8) sube la fase 2 a 22k y moría
+// aquí con «Streaming is strongly recommended…» — el reintento era una píldora
+// envenenada también en producción. 13 min: por encima del peor caso real y
+// por debajo del maxDuration=800s de las rutas que generan.
+const SDK_TIMEOUT_MS = 13 * 60 * 1000
+
 export async function getClaudeForClient(clientId: string | null | undefined): Promise<ClientClaude> {
   const platformKey = process.env.ANTHROPIC_API_KEY || ''
   if (!clientId) {
-    return { client: new Anthropic({ apiKey: platformKey }), usedClientKey: false }
+    return { client: new Anthropic({ apiKey: platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey: false }
   }
   const key = await getClientApiKey(clientId, 'anthropic', platformKey)
   const usedClientKey = !!key && key !== platformKey
   await checkGenerationCap(clientId, usedClientKey)
-  return { client: new Anthropic({ apiKey: key || platformKey }), usedClientKey }
+  return { client: new Anthropic({ apiKey: key || platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey }
 }
 
 /**
