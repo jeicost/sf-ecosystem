@@ -147,7 +147,20 @@ export default function ToolkitHub() {
   // ─── Derived data ──────────────────────────────────────────
   const completed = generations.filter((g) => g.status === 'completed')
   const inProgress = generations.filter((g) => g.status === 'queued' || g.status === 'processing')
-  const failed = generations.filter((g) => g.status === 'failed')
+  // Un fallo solo se muestra mientras sea el estado vigente de su herramienta:
+  // si una corrida posterior completó, la tarjeta roja ya no informa de nada
+  // (el monthly de Salsa del 29-07 seguía en rojo en septiembre con dos
+  // corridas completadas después). La fila queda en la BD como historial.
+  const failed = generations.filter(
+    (g) =>
+      g.status === 'failed' &&
+      !generations.some(
+        (c) =>
+          c.status === 'completed' &&
+          c.tool_slug === g.tool_slug &&
+          new Date(c.created_at).getTime() > new Date(g.created_at).getTime()
+      )
+  )
 
   // Latest completed per tool_slug (generations already sorted desc) + older versions
   const latestByTool = new Map<string, { latest: Generation; history: Generation[] }>()
