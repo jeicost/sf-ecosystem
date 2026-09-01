@@ -78,7 +78,10 @@ export default function ToolkitHub() {
   const [landings, setLandings] = useState<ClientLanding[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [showGenerate, setShowGenerate] = useState(false)
+  // Generar Nuevo abierto de serie y arriba del todo: es la acción principal
+  // del hub (antes vivía plegado al fondo y había que hacer scroll + clic).
+  const [showGenerate, setShowGenerate] = useState(true)
+  const [showDeliverables, setShowDeliverables] = useState(true)
 
   const fetchGenerations = useCallback(async () => {
     if (!clientId) return
@@ -279,15 +282,71 @@ export default function ToolkitHub() {
         </div>
       )}
 
-      {/* ─── Deliverables grid ────────────────────────────── */}
+      {/* ─── Generar Nuevo (arriba y desplegado: la acción principal) ── */}
+      <div className="relative z-10 mb-10">
+        <button
+          onClick={() => setShowGenerate((v) => !v)}
+          className="flex w-full items-center justify-between rounded-xl border border-line bg-surface px-5 py-4 transition-colors hover:bg-surface-hover"
+        >
+          <span className="flex items-center gap-3">
+            <span className="text-lg">⚡</span>
+            <span className={`text-sm font-bold text-ink ${syne.className}`}>{t('toolkit.hub.generate-new', locale)}</span>
+            <span className="font-mono text-[10px] text-ink-tertiary">
+              {t('toolkit.hub.reports-available', locale).replace('{n}', String(getVisibleTools().length))}
+            </span>
+          </span>
+          {showGenerate ? (
+            <ChevronUp size={16} className="text-ink-secondary" />
+          ) : (
+            <ChevronDown size={16} className="text-ink-secondary" />
+          )}
+        </button>
+
+        {showGenerate && (
+          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
+            {getVisibleTools().map((tool) => (
+              <Link
+                key={tool.slug}
+                href={tool.href}
+                className="card cursor-pointer border-l-4 p-3.5 transition-all hover:bg-surface-hover"
+                style={{ borderLeftColor: tool.color }}
+              >
+                <p className="mb-1.5 text-xl">{tool.icon}</p>
+                <p className="text-xs font-semibold leading-snug text-ink">{tool.name}</p>
+                <p className="mt-1 font-mono text-[9px] text-ink-tertiary">{tool.time}</p>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* ─── Informes generados (acordeón) ────────────────── */}
       <div className="relative z-10">
-        {loading ? (
-          <div className="card flex items-center justify-center gap-3 p-10">
+        <button
+          onClick={() => setShowDeliverables((v) => !v)}
+          className="flex w-full items-center justify-between rounded-xl border border-line bg-surface px-5 py-4 transition-colors hover:bg-surface-hover"
+        >
+          <span className="flex items-center gap-3">
+            <span className="text-lg">📁</span>
+            <span className={`text-sm font-bold text-ink ${syne.className}`}>{t('toolkit.hub.generated-title', locale)}</span>
+            <span className="font-mono text-[10px] text-ink-tertiary">
+              {t('toolkit.hub.generated-count', locale).replace('{n}', String(deliverables.length))}
+            </span>
+          </span>
+          {showDeliverables ? (
+            <ChevronUp size={16} className="text-ink-secondary" />
+          ) : (
+            <ChevronDown size={16} className="text-ink-secondary" />
+          )}
+        </button>
+
+        {showDeliverables && (loading ? (
+          <div className="card mt-4 flex items-center justify-center gap-3 p-10">
             <Loader2 size={20} className="animate-spin text-ink-secondary" />
             <p className="text-ink-secondary">{t('toolkit.hub.loading-deliverables', locale)}</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+          <div className="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
             {/* Featured: full toolkit overview */}
             <Link
               href="/toolkit/overview"
@@ -350,7 +409,7 @@ export default function ToolkitHub() {
               </div>
             )}
           </div>
-        )}
+        ))}
       </div>
 
       {/* ─── Failed generations ───────────────────────────── */}
@@ -382,44 +441,6 @@ export default function ToolkitHub() {
       {/* ─── Landings activas ─────────────────────────────── */}
       <div className="relative z-10">
         <LandingsSection landings={landings} brandColor={brandColor} titleFontClass={syne.className} />
-      </div>
-
-      {/* ─── Generar Nuevo (collapsible, compact) ─────────── */}
-      <div className="relative z-10 mt-12">
-        <button
-          onClick={() => setShowGenerate((v) => !v)}
-          className="flex w-full items-center justify-between rounded-xl border border-line bg-surface px-5 py-4 transition-colors hover:bg-surface-hover"
-        >
-          <span className="flex items-center gap-3">
-            <span className="text-lg">⚡</span>
-            <span className={`text-sm font-bold text-ink ${syne.className}`}>{t('toolkit.hub.generate-new', locale)}</span>
-            <span className="font-mono text-[10px] text-ink-tertiary">
-              {t('toolkit.hub.reports-available', locale).replace('{n}', String(getVisibleTools().length))}
-            </span>
-          </span>
-          {showGenerate ? (
-            <ChevronUp size={16} className="text-ink-secondary" />
-          ) : (
-            <ChevronDown size={16} className="text-ink-secondary" />
-          )}
-        </button>
-
-        {showGenerate && (
-          <div className="mt-4 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
-            {getVisibleTools().map((tool) => (
-              <Link
-                key={tool.slug}
-                href={tool.href}
-                className="card cursor-pointer border-l-4 p-3.5 transition-all hover:bg-surface-hover"
-                style={{ borderLeftColor: tool.color }}
-              >
-                <p className="mb-1.5 text-xl">{tool.icon}</p>
-                <p className="text-xs font-semibold leading-snug text-ink">{tool.name}</p>
-                <p className="mt-1 font-mono text-[9px] text-ink-tertiary">{tool.time}</p>
-              </Link>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* ─── Footer meta ──────────────────────────────────── */}

@@ -1651,6 +1651,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'toolkit.hub.unknown-error': 'Error desconocido',
     'toolkit.hub.generate-new': 'Generar Nuevo',
     'toolkit.hub.reports-available': '{n} reports disponibles',
+    'toolkit.hub.generated-title': 'Informes generados',
+    'toolkit.hub.generated-count': '{n} entregables',
     'toolkit.hub.footer': 'Preparado por Startup Factory · Confidencial · Solo para uso del cliente',
 
     // ── Tools: el escaparate de módulos (antes «Library») ──────────────────
@@ -3684,6 +3686,8 @@ const translations: Record<Locale, Record<string, string>> = {
     'toolkit.hub.unknown-error': 'Unknown error',
     'toolkit.hub.generate-new': 'Generate New',
     'toolkit.hub.reports-available': '{n} reports available',
+    'toolkit.hub.generated-title': 'Generated reports',
+    'toolkit.hub.generated-count': '{n} deliverables',
     'toolkit.hub.footer': 'Prepared by Startup Factory · Confidential · For client use only',
 
     // ── Tools: the business-module storefront (formerly «Library») ─────────
