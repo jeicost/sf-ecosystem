@@ -7,9 +7,12 @@
 // crezca, migrar a un flag por cliente en BD; de momento, explícito y revisable.
 
 // Decisión go-live (01-sep, Carlos): Licitaciones y Email Ops quedan SOLO para
-// el grupo Aldea (GTD + Albasanz + GLS, un NIF) — al resto se le ocultan hasta
-// que tengan uso real. La verdad viva es client_tools (ya actualizada); estas
-// Sets son la semilla/fallback y deben reflejar lo mismo.
+// el grupo Aldea — al resto se le ocultan hasta que tengan uso real. Grupo
+// Aldea = las marcas de la familia Aldea (ver reference_gtd_albasanz_grupo_aldea):
+// GTD Mensajeros + Albasanz Express + GLS Ciudad Lineal (NIF B79467866) y
+// TAMBIÉN Dadybox (Noel y Natalia Aldea eran admins de Dadybox antes que de
+// nada). La verdad viva es client_tools (ya actualizada); estas Sets son la
+// semilla/fallback y deben reflejar lo mismo.
 export const TENDER_CLIENTS = new Set<string>([
   '3949b629-feec-4497-9d73-91214027cca1', // GTD Mensajeros (concursos públicos: RTVE, biosanitario, mensajería)
   '1a093072-97fb-46e4-aea7-65c3eb9e1e29', // GLS Ciudad Lineal (mutuas, semipúblico)
@@ -58,6 +61,7 @@ export function hasTenderTool(clientId?: string | null, isAgency = false): boole
 export const EMAIL_OPS_CLIENTS = new Set<string>([
   '7bdfe0d0-c1d9-4282-9792-aed1075c048b', // Albasanz Express
   '3949b629-feec-4497-9d73-91214027cca1', // GTD Mensajeros
+  'e664873b-034d-48cd-9a45-8631672ef375', // Dadybox (familia Aldea)
   '1a093072-97fb-46e4-aea7-65c3eb9e1e29', // GLS Ciudad Lineal
 ])
 
