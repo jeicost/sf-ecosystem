@@ -154,13 +154,43 @@ Fuga de lectura anónima cerrada (0064: `brand_profiles`, `generation_queue`, `c
 
 ## MIRA — técnico pendiente (por prioridad)
 
-1. **ENFORCE_PLAN_LIMITS**: sin bloqueantes; CEO preguntó qué era el 2026-08-03 — explicado, decisión aún abierta (antes de activar: comprobar plan de cada cliente real vs. lo que usa).
-2. **Stripe**: CEO confirmó GO el 2026-08-03 — esperando 3 respuestas para arrancar el build-out: ¿cuenta Stripe creada?, ¿suscripción por plan o factura por proyecto?, ¿moneda (EUR/THB/USD)?
-3. **Canva**: OAuth completo en código; faltan registro de app + review + envs `NEXT_PUBLIC_CANVA_CLIENT_ID`/`CANVA_CLIENT_SECRET` (DEBT l).
-4. **Imágenes — mejoras reales** (`images.edit` de OpenAI con referencia real en vez de solo texto, carousel multi-imagen, tamaños 4:5/9:16): ligado a Track B de Visual Production Foundation — no elegir modelo/endpoint final hasta que se resuelva (ver sección arriba).
-5. **Drive — mejoras**: watch/push de cambios (hoy sync diario), toggle de auto_sync por carpeta en el panel (columna ya existe).
-6. **Publicación en redes**: FUERA del producto por decisión CEO (2026-07-28). Si algún día se retoma: puente n8n contra los webhooks dormidos (`/api/webhook/queue-post|alert|agent-activity`, protegidos por `WEBHOOK_SECRET`) — no reconstruir desde cero.
-7. **Tablas `visual_jobs` (0028) sin rutas**: decisión ligada a Visual Production Foundation, no una ronda de higiene aparte.
+> **Actualizado 2026-09-01 tras el sprint go-live** (commits `01a897d..7bf49d1`, en
+> prod y verificado E2E con cuenta real). Lo que esta lista decía antes está
+> CERRADO en código: el gate de suscripción existe (trial caducado/cancelado →
+> `/billing?blocked=`, gestionados exentos), pagar sincroniza el plan de
+> secciones (`lib/billing/plan-sync.ts`), el techo devuelve 429 explicable, las
+> fugas multi-tenant de Drive están cerradas, `/billing` y `/signup` van en
+> ES+EN, `/pricing` existe, el PPTX del monthly lleva las imágenes del visor, y
+> los módulos vacíos quedaron solo para el grupo Aldea (GTD+Albasanz+GLS+Dadybox,
+> `client_tools`). Decisión comercial vigente: los 14 clientes actuales son
+> cuentas gestionadas (nunca se bloquean); Stripe y trial de 14 días aplican
+> solo a altas nuevas por la web.
+
+**Lo que queda es EXTERNO (CEO), por impacto:**
+
+1. **Sentry**: crear proyecto y pegar `NEXT_PUBLIC_SENTRY_DSN` en Vercel. El
+   código está listo desde el 03-ago; producción sigue CIEGA a errores.
+2. **Stripe**: cuenta + productos (STARTER 99 €, STARTER_MULTI 179 €,
+   IMAGE_PACK) + registrar el webhook (5 eventos del switch) + claves en
+   Vercel. El código de cobro está completo y probado en seco.
+3. **Vercel env**: `MIRA_ENCRYPTION_KEY` (sin ella el guardado de API keys BYO
+   ahora FALLA a propósito), `NEXT_PUBLIC_APP_URL=https://mira.startupsfactory.es`,
+   `NEXT_PUBLIC_GOALS_ENABLED=1`, y verificar a ojo el valor de
+   `ENFORCE_PLAN_LIMITS` y `MAX_MONTHLY_GENERATIONS` (existen, valor ilegible por CLI).
+4. **Resend**: cuenta + dominio + 3 env — enciende Email Ops (extracción probada
+   3/3) y la verificación de email del signup.
+5. **Canva**: registro de app + review + envs (DEBT l). Las otras 5 tarjetas
+   coming_soon del marketplace quedaron ocultas el 01-sep.
+6. **Crédito Anthropic en auto-recarga** (el 30-ago se agotó y tumbó la generación).
+
+**Decisiones abiertas:** Landings del toolkit (migración 0035 sin aplicar —
+explicado al CEO el 01-sep, sin decidir) · migración cliente a cliente de los
+14 gestionados al plan de pago (los irá pasando el CEO uno a uno).
+
+**Deuda anotada (no bloquea):** techo de gasto por LLAMADAS, no por € ·
+PLAN_SECTIONS no gatea `/api/*` (guard de UX) · CSP estricta por evaluar ·
+imágenes `images.edit`/carousel (Track B) · Drive watch/push · publicación en
+redes FUERA por decisión CEO (webhooks dormidos) · `visual_jobs` (0028) sin rutas.
 
 ## Resto del ecosistema
 

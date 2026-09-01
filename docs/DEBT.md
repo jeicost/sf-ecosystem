@@ -966,3 +966,44 @@ Señal de que la extracción es buena y no inventada: `banned_phrases` salió co
 **Commits:** `acbdc51`, `46272c3`. Backup previo de Salsa en el scratchpad de la sesión (`salsa-backup-2026-08-07.json`).
 
 **Sin verificar en UI de producción:** el portal está detrás del SSO de Vercel y no hay dominio propio (el registro dice "vercel.app only"), así que la verificación fue a nivel de base de datos + build + typecheck. Falta abrir `/brand-brain` con la cuenta real y confirmar visualmente las pestañas.
+
+---
+
+## 2026-09-01 · Sprint go-live: cobrar deja de ser opcional
+
+Auditoría go-live (2 agentes + sondas vivas contra prod y Supabase) → plan
+aprobado por el CEO → ejecutado entero el mismo día. Commits
+`01a897d..7bf49d1` (portal) + landing, **en prod y verificado E2E con una
+cuenta real creada por /signup** (RLS aislada, nav de cliente limpio, trial
+caducado forzado → `/billing?blocked=trial_ended`, cuenta de test borrada).
+
+- **Gate de suscripción** en `proxy.ts`: trial caducado (+7d gracia) /
+  `canceled`/`paused` → redirect a /billing con motivo. Cookie HttpOnly 5 min,
+  fail-open, gestionados (`assisted` sin sub de Stripe) y super_admin exentos.
+- **`lib/billing/plan-sync.ts`**: el único puente `clients.plan` →
+  `user_metadata.plan`; lo invoca el webhook al activar. Invitados de equipo
+  heredan el plan de la marca (era `'growth'` hardcodeado — el becario de un
+  Starter veía más que el dueño).
+- **429 del techo** cableado en las 12 rutas caras (antes solo 1: el usuario
+  veía un 500 "Generation failed" al topar un límite comercial).
+- **Fugas multi-tenant**: `brand-brain/drive/{folders,folders/sync,authorize}`
+  y `analyze-document` al patrón canónico de `resolve-client` (denegado=403;
+  authorize NI SESIÓN comprobaba con clientId explícito).
+- **`lib/crypto.ts` fail-closed** en producción (guardar keys BYO en claro con
+  un warn era el incidente esperando) · security headers + `poweredByHeader:
+  false` · signup pagina `listUsers` (>1000 usuarios permitía duplicados).
+- **i18n**: `/billing` y `/signup` enteras a ES+EN · **`/pricing` nueva**
+  (cerraba "precio invisible dentro de la app", FASE2 C.5).
+- **PPTX del monthly CON imágenes** (`lib/export/monthly-deck-assets.ts` +
+  slides de referencias por pilar y hero covers; la ruta Google Slides
+  recupera typography y logo). Verificado con dd0440c8: 18 imágenes embebidas.
+- **Módulos por decisión CEO**: Licitaciones+Email Ops solo grupo Aldea
+  (GTD+Albasanz+GLS+**Dadybox** — ojo: Dadybox ES familia Aldea, se corrigió
+  en `7bf49d1`; Discoolver 360 fuera de tenders). Cuestionarios `agencyOnly`
+  en nav + tarjeta de respuesta en el /toolkit del cliente. Marketplace
+  oculta 5 coming_soon (Canva queda). CTAs de la landing → `/signup`.
+- Higiene: fuera `FASE_B_MIGRATIONS_TO_APPLY.md`, `GIT_INTEGRATION_TEST.md`,
+  `E2E_TESTING_CHECKLIST.md` (obsoletos); `.env.local.example` completo.
+
+**Pendiente tras esto: SOLO tareas externas del CEO** (Sentry DSN, Stripe,
+Resend, Canva, envs) — ver NEXT_STEPS.md, sección MIRA, actualizada hoy.
