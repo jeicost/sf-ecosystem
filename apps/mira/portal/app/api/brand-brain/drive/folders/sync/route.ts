@@ -1,43 +1,15 @@
-import { createServerComponentClient } from '@sf/supabase'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { syncDriveFolder, type DriveFolderRow } from '@/lib/drive-sync'
 
 export const runtime = 'nodejs'
 export const maxDuration = 300
 
-// Same authorization pattern as app/api/brand-brain/route.ts
-async function resolveClientId(
-  admin: ReturnType<typeof adminClient>,
-  user: { id: string; user_metadata?: Record<string, unknown> },
-  requestedClientId: string | null
-): Promise<string | null> {
-  const isSuperAdmin = user.user_metadata?.plan === 'super_admin'
-
-  if (requestedClientId) {
-    if (isSuperAdmin) return requestedClientId
-    const { data: grant } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .eq('project_id', requestedClientId)
-      .limit(1)
-    if (grant?.length) return requestedClientId
-  }
-
-  const { data: accessData } = await admin
-    .from('mira_project_access')
-    .select('project_id')
-    .eq('user_id', user.id)
-    .limit(1)
-  if (accessData?.length) return accessData[0].project_id
-
-  if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {
-    return user.user_metadata.client_id
-  }
-  return null
-}
+// Autorización por lib/resolve-client: el tenant sale de la FILA de
+// drive_folders, así que se lee primero y se valida contra su client_id. La
+// copia local de resolveClientId que vivía aquí arrastraba el fallback-bomba
+// (denegado → primer grant) ya desactivado en brand-brain/route.ts.
 
 /**
  * POST /api/brand-brain/drive/folders/sync
@@ -54,17 +26,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 })
     }
 
-    const cookieStore = await cookies()
-    const supabase = createServerComponentClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        getAll: () => cookieStore.getAll(),
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
+    const user = await getSessionUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -80,9 +43,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Carpeta no encontrada' }, { status: 404 })
     }
 
-    // Verify the folder's client is accessible by this user
-    const accessibleClientId = await resolveClientId(admin, user, folderRow.client_id)
-    if (accessibleClientId !== folderRow.client_id) {
+    if (!(await userCanAccessClient(user, folderRow.client_id))) {
       return NextResponse.json({ error: 'No client access' }, { status: 403 })
     }
 

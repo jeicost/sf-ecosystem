@@ -1,7 +1,6 @@
-import { createServerComponentClient } from '@sf/supabase'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient, getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import {
   extractDriveFolderId,
   getClientAccessToken,
@@ -13,51 +12,12 @@ export const runtime = 'nodejs'
 
 const VALID_PURPOSES = ['references', 'brand', 'logos', 'deliverables', 'training', 'other']
 
-// Resolve which client the user may act on. super_admin can target any client
-// (the active workspace); regular users only clients they have a grant for.
-// Same pattern as app/api/brand-brain/route.ts
-async function resolveClientId(
-  admin: ReturnType<typeof adminClient>,
-  user: { id: string; user_metadata?: Record<string, unknown> },
-  requestedClientId: string | null
-): Promise<string | null> {
-  const isSuperAdmin = user.user_metadata?.plan === 'super_admin'
-
-  if (requestedClientId) {
-    if (isSuperAdmin) return requestedClientId
-    const { data: grant } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .eq('project_id', requestedClientId)
-      .limit(1)
-    if (grant?.length) return requestedClientId
-  }
-
-  const { data: accessData } = await admin
-    .from('mira_project_access')
-    .select('project_id')
-    .eq('user_id', user.id)
-    .limit(1)
-  if (accessData?.length) return accessData[0].project_id
-
-  if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {
-    return user.user_metadata.client_id
-  }
-  return null
-}
-
-async function getAuthedUser() {
-  const cookieStore = await cookies()
-  const supabase = createServerComponentClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-    { getAll: () => cookieStore.getAll() }
-  )
-  const { data: { user }, error } = await supabase.auth.getUser()
-  if (error || !user) return null
-  return user
-}
+// Autorización por lib/resolve-client (el patrón canónico). La copia local que
+// vivía aquí tenía la bomba que brand-brain/route.ts ya había desactivado: un
+// clientId DENEGADO no devolvía null — caía al «primer grant del usuario», así
+// que pedir la carpeta de un cliente ajeno respondía con datos de otro cliente
+// en vez de 403. En un fichero con POST y DELETE sobre drive_folders, eso era
+// una escritura cross-tenant esperando a ocurrir.
 
 /**
  * GET /api/brand-brain/drive/folders?clientId=
@@ -65,20 +25,12 @@ async function getAuthedUser() {
  */
 export async function GET(req: NextRequest) {
   try {
-    const user = await getAuthedUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const access = await resolveRequestClient(new URL(req.url).searchParams.get('clientId'))
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
-
     const admin = adminClient()
-    const clientId = await resolveClientId(
-      admin,
-      user,
-      new URL(req.url).searchParams.get('clientId')
-    )
-    if (!clientId) {
-      return NextResponse.json({ error: 'No client access' }, { status: 403 })
-    }
+    const clientId = access.clientId
 
     let query = admin
       .from('drive_folders')
@@ -130,20 +82,17 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { link, purpose, projectId } = body
 
-    const user = await getAuthedUser()
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const admin = adminClient()
-    const clientId = await resolveClientId(
-      admin,
-      user,
-      typeof body.clientId === 'string' ? body.clientId : null
+    // strict: conectar una carpeta ESCRIBE la asignación carpeta→cliente de la
+    // que depende todo el aislamiento del Brain — sin clientId explícito, 400.
+    const access = await resolveRequestClient(
+      typeof body.clientId === 'string' ? body.clientId : null,
+      { strict: true }
     )
-    if (!clientId) {
-      return NextResponse.json({ error: 'No client access' }, { status: 403 })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
+    const admin = adminClient()
+    const clientId = access.clientId
 
     if (!link || typeof link !== 'string') {
       return NextResponse.json({ error: 'The Google Drive folder link is missing' }, { status: 400 })
@@ -286,7 +235,7 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 })
     }
 
-    const user = await getAuthedUser()
+    const user = await getSessionUser()
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
@@ -302,9 +251,8 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Folder not found' }, { status: 404 })
     }
 
-    // Verify the row's client is accessible by this user
-    const accessibleClientId = await resolveClientId(admin, user, row.client_id)
-    if (accessibleClientId !== row.client_id) {
+    // El tenant sale de la fila: autorizar contra su client_id, sin resolver nada
+    if (!(await userCanAccessClient(user, row.client_id))) {
       return NextResponse.json({ error: 'No client access' }, { status: 403 })
     }
 

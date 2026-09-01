@@ -1,7 +1,5 @@
-import { createServerComponentClient } from '@sf/supabase'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
-import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
 import type { AuthorizeRequest, AuthorizeResponse } from '@/lib/drive-connection.types'
 
 /**
@@ -31,33 +29,19 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const cookieStore = await cookies()
-    const supabase = createServerComponentClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      { getAll: () => cookieStore.getAll() }
+    // Autorización canónica (lib/resolve-client). La versión anterior tenía el
+    // peor agujero de este grupo de rutas: con clientId explícito en el body NO
+    // se comprobaba ni la sesión — cualquiera podía arrancar un OAuth cuyo
+    // callback guardaba la conexión de Drive bajo el cliente que quisiera.
+    // El callback confía en el clientId del state, así que el state solo puede
+    // nacer autorizado.
+    const access = await resolveRequestClient(
+      typeof explicitClientId === 'string' && explicitClientId ? explicitClientId : null
     )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    let clientId: string
-    if (explicitClientId) {
-      clientId = explicitClientId
-    } else if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    } else {
-      const admin = adminClient()
-      const { data: accessData } = await admin
-        .from('mira_project_access')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .limit(1)
-
-      if (!accessData?.length) {
-        return NextResponse.json({ error: 'No client access' }, { status: 403 })
-      }
-      clientId = accessData[0].project_id
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
+    const clientId = access.clientId
 
     // Validate required environment variables for Google OAuth
     const googleClientId = process.env.GOOGLE_OAUTH_CLIENT_ID

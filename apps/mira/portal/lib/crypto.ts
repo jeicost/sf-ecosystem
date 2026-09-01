@@ -38,13 +38,22 @@ export function isEncrypted(value: string | null | undefined): boolean {
 }
 
 /**
- * Cifra un secreto. Sin clave configurada devuelve el texto plano tal cual
- * (dev), avisando una vez — nunca lanza, para no bloquear el guardado.
+ * Cifra un secreto. Sin clave configurada: en producción LANZA (fail-closed);
+ * en dev devuelve el texto plano avisando, para no bloquear el trabajo local.
  */
 export function encryptSecret(plaintext: string): string {
   const key = getKey()
   if (!key) {
-    console.warn('MIRA_ENCRYPTION_KEY no configurada: el secreto se guarda sin cifrar')
+    // Guardar la API key de un cliente EN CLARO con solo un console.warn era
+    // un incidente esperando a ocurrir: nadie lee los logs de Vercel y el
+    // cliente cree que su clave está protegida. Mejor un 500 visible que un
+    // secreto expuesto en silencio (auditoría go-live 01-sep).
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error(
+        'MIRA_ENCRYPTION_KEY is not configured — refusing to store a client secret unencrypted'
+      )
+    }
+    console.warn('MIRA_ENCRYPTION_KEY no configurada: el secreto se guarda sin cifrar (solo dev)')
     return plaintext
   }
   const iv = randomBytes(12)

@@ -54,6 +54,25 @@ const nextConfig: NextConfig = {
       { source: '/marketing', destination: '/roster', permanent: true },
     ]
   },
+  // Hasta la auditoría go-live (01-sep) producción servía SOLO
+  // strict-transport-security (de Vercel) y anunciaba x-powered-by. CSP
+  // estricta queda fuera a propósito: con inline styles/scripts de Next y
+  // assets de Supabase, una CSP mal calibrada rompe el portal entero — se
+  // evaluará aparte, medida contra las URLs reales.
+  poweredByHeader: false,
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          { key: 'X-Frame-Options', value: 'DENY' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ]
+  },
 }
 
 // Sentry (2026-08-03): @sentry/nextjs v10 con soporte Turbopack nativo.

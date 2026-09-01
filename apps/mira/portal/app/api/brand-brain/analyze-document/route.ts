@@ -1,9 +1,9 @@
-import { createServerComponentClient } from '@sf/supabase'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,45 +14,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing document_id' }, { status: 400 })
     }
 
-    // Authorization: verify user has access to this client
-    const cookieStore = await cookies()
-    const supabase = createServerComponentClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      { getAll: () => cookieStore.getAll() }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    const admin = adminClient()
-    let clientId: string
-
-    if (authError || !user) {
+    const user = await getSessionUser()
+    if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    } else {
-      const { data: accessData } = await admin
-        .from('mira_project_access')
-        .select('project_id')
-        .eq('user_id', user.id)
-        .limit(1)
-
-      if (!accessData?.length) {
-        return NextResponse.json({ error: 'No client access' }, { status: 403 })
-      }
-      clientId = accessData[0].project_id
     }
 
-    // Get the document (verify ownership)
+    // El tenant sale del DOCUMENTO, no del usuario: la versión anterior cogía
+    // «el primer grant» (limit(1) sin ORDER BY) como clientId — para un usuario
+    // de agencia con varios grants, un cliente arbitrario que podía cambiar
+    // entre peticiones (el mismo fallo del 28-ago documentado en
+    // lib/resolve-client.ts) y que además hacía 404 sobre documentos legítimos
+    // de sus otros clientes.
+    const admin = adminClient()
     const { data: doc, error: docError } = await admin
       .from('brand_documents')
       .select('*')
       .eq('id', document_id)
-      .eq('client_id', clientId)
       .single()
 
     if (docError || !doc) {
       return NextResponse.json({ error: 'Document not found or access denied' }, { status: 404 })
     }
+
+    if (!(await userCanAccessClient(user, doc.client_id))) {
+      return NextResponse.json({ error: 'Document not found or access denied' }, { status: 404 })
+    }
+
+    const clientId: string = doc.client_id
 
     // Mark as processing
     await admin
@@ -231,6 +219,8 @@ ${GROUNDING_CONTRACT}`
       message: 'Document analyzed. Review suggested updates.',
     }, { status: 200 })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('Document analysis error:', error)
 
     return NextResponse.json(

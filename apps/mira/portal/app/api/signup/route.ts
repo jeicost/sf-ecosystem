@@ -87,8 +87,19 @@ export async function POST(req: NextRequest) {
     // ¿Ya existe esa persona? Aquí sí se revela: en un registro, "ese correo ya
     // está" es la única respuesta útil, y el atacante lo averigua igual
     // intentando registrarse. En el LOGIN es donde no se revela nunca.
-    const { data: authList } = await db.auth.admin.listUsers({ perPage: 1000 })
-    if (authList?.users.some((u) => u.email?.toLowerCase() === email)) {
+    //
+    // Paginado: el listUsers({perPage:1000}) de antes dejaba de detectar
+    // duplicados EN SILENCIO a partir del usuario 1001 (el Admin API no filtra
+    // por email). Se recorre hasta agotar; con <1000 usuarios sigue siendo una
+    // sola llamada.
+    let emailExists = false
+    for (let page = 1; page <= 50 && !emailExists; page++) {
+      const { data: authList } = await db.auth.admin.listUsers({ page, perPage: 1000 })
+      const users = authList?.users ?? []
+      if (users.some((u) => u.email?.toLowerCase() === email)) emailExists = true
+      if (users.length < 1000) break
+    }
+    if (emailExists) {
       return NextResponse.json(
         { error: 'There is already an account with that email. Sign in instead.', existing: true },
         { status: 409 }
