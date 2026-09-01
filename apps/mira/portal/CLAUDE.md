@@ -50,3 +50,21 @@ Alias real: https://mira.startupsfactory.es
 
 `evals/_scratch/` está en .gitignore — scripts de un solo uso y volcados de
 sesión. No committear; no asumir que sobrevive.
+
+## ⚠️ Créditos: Claude Code sí, Claude Platform solo para el producto
+
+**Modelo de trabajo (Carlos, 01-sep-2026, para todos los proyectos):**
+trabajando desde Claude Code **no se gastan créditos de Claude Platform**
+(la clave de API del proyecto). Es pagar dos veces por el mismo razonamiento.
+
+- ¿Probar si un prompt produce buen resultado, comparar tonos, evaluar
+  calidad, diagnosticar? **Lo escribe y lo juzga Claude Code**, leyendo el
+  prompt real del repo. Solo cuando convence, se corre una vez en Platform.
+- ¿Prueba de integración del producto en su interfaz, o proceso masivo de
+  producción (extraer miles de posts, escribir cientos de fichas)? Ahí sí
+  Platform — con Batches API cuando aplique (50%).
+- Regla de bolsillo: si el resultado lo va a leer un humano para DECIDIR, lo
+  produce Claude Code; si lo consume el producto o el cliente, va por Platform.
+
+El saldo de Platform se agotó dos veces (30-ago y 01-sep) bloqueando trabajo
+real de producción. Esto lo evita.
