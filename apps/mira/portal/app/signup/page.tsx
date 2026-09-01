@@ -21,12 +21,15 @@ import { setUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
 import MiraLogo from '@/components/mira-logo'
 import { Eye, EyeOff, Check } from 'lucide-react'
+import { useLocaleContext } from '@/app/locale-provider'
+import { t } from '@/lib/i18n'
 
-const INCLUDED = [
-  'Tu Cerebro de Marca, construido contigo en minutos',
-  'Equipo de agentes, bandeja de aprobación y calendario',
-  '8 informes de negocio y 19 acciones rápidas',
-  '30 imágenes al mes y Google Drive conectado',
+// Claves i18n de la lista del panel izquierdo (la primera es el tagline).
+const INCLUDED_KEYS = [
+  'signup.tagline',
+  'signup.included.agents',
+  'signup.included.reports',
+  'signup.included.images',
 ]
 
 const FIELD_BG = 'rgba(255,255,255,0.05)'
@@ -34,6 +37,7 @@ const FIELD_BG_FOCUS = 'rgba(255,255,255,0.07)'
 
 export default function SignupPage() {
   const router = useRouter()
+  const { locale } = useLocaleContext()
   const [fullName, setFullName] = useState('')
   const [brandName, setBrandName] = useState('')
   const [website, setWebsite] = useState('')
@@ -152,16 +156,16 @@ export default function SignupPage() {
             <MiraLogo size={64} variant="icon" glow />
           </div>
           <h1 style={{ fontSize: '40px', fontWeight: 800, color: '#fff', letterSpacing: '-0.045em', lineHeight: 1.05 }}>
-            Empieza por tu marca
+            {t('signup.left-title', locale)}
           </h1>
           <p className="mt-4 leading-relaxed" style={{ fontSize: '15px', color: 'rgba(255,255,255,0.5)' }}>
-            MIRA aprende cómo hablas, qué vendes y a quién, y a partir de ahí trabaja tu marca todos los días.
-            Los primeros <span style={{ color: '#fff', fontWeight: 600 }}>14 días son de prueba</span>: entra,
-            constrúyelo y decide después.
+            {t('signup.left-desc-1', locale)}
+            <span style={{ color: '#fff', fontWeight: 600 }}>{t('signup.left-desc-strong', locale)}</span>
+            {t('signup.left-desc-2', locale)}
           </p>
 
           <ul className="mt-10 space-y-3.5">
-            {INCLUDED.map((line) => (
+            {INCLUDED_KEYS.map((key) => t(key, locale)).map((line) => (
               <li key={line} className="flex items-start gap-3">
                 <span
                   className="mt-0.5 w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0"
@@ -175,7 +179,7 @@ export default function SignupPage() {
           </ul>
 
           <p className="mt-10" style={{ fontSize: '12px', color: 'rgba(255,255,255,0.3)' }}>
-            Plan Starter · 99 €/mes al terminar la prueba · Sin permanencia · Sin tarjeta ahora
+            {t('signup.left-footer', locale)}
           </p>
         </div>
 
@@ -202,10 +206,10 @@ export default function SignupPage() {
 
           <div className="mb-7">
             <h2 style={{ fontSize: '24px', fontWeight: 700, color: '#ffffff', letterSpacing: '-0.02em' }}>
-              Crea tu cuenta
+              {t('signup.form-title', locale)}
             </h2>
             <p className="mt-1.5 text-sm" style={{ color: 'rgba(255,255,255,0.45)' }}>
-              Dos minutos y estás dentro
+              {t('signup.form-subtitle', locale)}
             </p>
           </div>
 
@@ -213,7 +217,7 @@ export default function SignupPage() {
             <div className="rounded-xl transition-all duration-200" style={field('name')}>
               <input
                 type="text"
-                placeholder="Tu nombre"
+                placeholder={t('signup.name-placeholder', locale)}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 onFocus={() => setFocused('name')}
@@ -227,7 +231,7 @@ export default function SignupPage() {
             <div className="rounded-xl transition-all duration-200" style={field('brand')}>
               <input
                 type="text"
-                placeholder="Nombre de tu marca"
+                placeholder={t('signup.brand-placeholder', locale)}
                 value={brandName}
                 onChange={(e) => setBrandName(e.target.value)}
                 onFocus={() => setFocused('brand')}
@@ -242,7 +246,7 @@ export default function SignupPage() {
             <div className="rounded-xl transition-all duration-200" style={field('web')}>
               <input
                 type="text"
-                placeholder="Tu web (opcional — la leemos para arrancar)"
+                placeholder={t('signup.web-placeholder', locale)}
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 onFocus={() => setFocused('web')}
@@ -256,7 +260,7 @@ export default function SignupPage() {
             <div className="rounded-xl transition-all duration-200" style={field('email')}>
               <input
                 type="email"
-                placeholder="Email de trabajo"
+                placeholder={t('signup.email-placeholder', locale)}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onFocus={() => setFocused('email')}
@@ -271,7 +275,7 @@ export default function SignupPage() {
             <div className="rounded-xl transition-all duration-200 flex items-center" style={field('password')}>
               <input
                 type={showPwd ? 'text' : 'password'}
-                placeholder="Contraseña (mínimo 8 caracteres)"
+                placeholder={t('signup.password-placeholder', locale)}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onFocus={() => setFocused('password')}
@@ -303,7 +307,7 @@ export default function SignupPage() {
                   <>
                     {' '}
                     <Link href="/login" className="underline" style={{ color: '#fca5a5', fontSize: '12px' }}>
-                      Ir al inicio de sesión
+                      {t('signup.go-login', locale)}
                     </Link>
                   </>
                 )}
@@ -326,22 +330,22 @@ export default function SignupPage() {
                     className="w-4 h-4 rounded-full border-2 animate-spin"
                     style={{ borderColor: 'rgba(255,255,255,0.2)', borderTopColor: 'rgba(255,255,255,0.8)' }}
                   />
-                  Creando tu cuenta…
+                  {t('signup.creating', locale)}
                 </span>
               ) : (
-                'Crear cuenta y empezar'
+                t('signup.submit', locale)
               )}
             </button>
           </form>
 
           <p className="text-center text-[11px] mt-5 leading-relaxed" style={{ color: 'rgba(255,255,255,0.28)' }}>
-            Al crear la cuenta aceptas los{' '}
-            <a href="/terms" className="underline">términos</a> y la{' '}
-            <a href="/privacy" className="underline">privacidad</a>.
+            {t('signup.accept-1', locale)}
+            <a href="/terms" className="underline">{t('signup.terms', locale)}</a>{t('signup.accept-2', locale)}
+            <a href="/privacy" className="underline">{t('signup.privacy', locale)}</a>.
             <br />
-            ¿Ya tienes cuenta?{' '}
+            {t('signup.have-account', locale)}{' '}
             <Link href="/login" className="underline" style={{ color: 'rgba(255,255,255,0.5)' }}>
-              Inicia sesión
+              {t('signup.login-link', locale)}
             </Link>
           </p>
         </div>
