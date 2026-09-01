@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { adminClient } from '@/lib/supabase'
 import { getSeatUsage, canAddSeat } from '@/lib/seats'
+import { billingPlan } from '@/lib/billing/plans'
+import { sectionPlanForBilling } from '@/lib/billing/plan-sync'
 
 // Equipo de una marca: ver quién tiene acceso, invitar y quitar.
 //
@@ -76,10 +78,21 @@ export async function POST(req: NextRequest) {
 
     let invited = false
     if (!user) {
+      // El invitado hereda el plan de secciones que corresponde a lo que la
+      // marca PAGA (clients.plan → sectionPlanForBilling). Antes iba 'growth'
+      // hardcodeado: el invitado de una marca Starter veía Comercial y
+      // Estrategia mientras el titular no — con enforcement encendido, el
+      // becario tenía más portal que el dueño.
+      const { data: clientRow } = await db
+        .from('clients')
+        .select('plan')
+        .eq('id', access.clientId)
+        .maybeSingle()
+      const sectionPlan = sectionPlanForBilling(billingPlan(clientRow?.plan).id)
       const { data: created, error: createErr } = await db.auth.admin.createUser({
         email,
         email_confirm: false,
-        user_metadata: { plan: 'growth', client_id: access.clientId },
+        user_metadata: { plan: sectionPlan, client_id: access.clientId },
       })
       if (createErr || !created?.user) {
         return NextResponse.json({ error: createErr?.message || 'Could not create the user' }, { status: 500 })

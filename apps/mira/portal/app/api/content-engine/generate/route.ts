@@ -7,6 +7,7 @@ import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { materializePosts, asStringArray, type GeneratedPost } from '@/lib/content-engine/materialize'
 import { formatHardRules } from '@/lib/content-engine/qa-validator'
 import { VALID_PLATFORMS, buildPillarPrompt, parsePosts, type Platform, type PillarRow } from '@/lib/content-engine/pillar-prompt'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 export const maxDuration = 800
 
@@ -158,6 +159,8 @@ export async function POST(req: NextRequest) {
       message: `${generated} posts generated and sent to the Approval Queue`,
     })
   } catch (err) {
+    const capped = generationCapErrorResponse(err)
+    if (capped) return capped
     console.error('Content Engine API error:', err)
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Unexpected error' },

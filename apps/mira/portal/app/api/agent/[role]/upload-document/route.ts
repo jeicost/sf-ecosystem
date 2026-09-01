@@ -9,6 +9,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { hasOwnKey } from '@/lib/safe-lookup'
 import { extractPdfText } from '@/lib/pdf-extract'
 import { describeImage, isVisionReadableImage } from '@/lib/vision'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 // Imágenes añadidas el 2026-08-06. Antes esta lista era solo PDF/DOCX/TXT y
 // devolvía `400 File type not allowed. Got: image/png` — era la causa exacta
@@ -254,6 +255,8 @@ ${text.slice(0, 5000)}${text.length > 5000 ? '...' : ''}`,
       fileName: file.name,
     })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('Upload document error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },

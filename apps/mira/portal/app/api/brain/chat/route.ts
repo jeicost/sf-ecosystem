@@ -7,6 +7,7 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 export const maxDuration = 120
 
@@ -149,6 +150,8 @@ Always reply in English, warm and brief.`,
 
     return NextResponse.json({ reply: assistantText.trim(), proposals, origin })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('brain/chat error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Brand Brain chat failed' },

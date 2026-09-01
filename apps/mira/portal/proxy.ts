@@ -108,6 +108,31 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  // ─── Gate de suscripción: trial caducado / cancelado ───────────────────
+  // Hasta ahora `subscription_status` y `trial_ends_at` se escribían (webhook
+  // de Stripe, signup) y se PINTABAN (/billing), pero nada los leía para
+  // denegar: el trial caducado y el 'canceled' eran idénticos a 'active' —
+  // cobrar era opcional. Este gate cierra eso a nivel de PÁGINA (el nivel del
+  // trial honesto); las rutas /api quedan bajo rate limit + cap de
+  // generaciones, no bajo este gate.
+  //
+  // Exentos: super_admin y cuentas gestionadas (alta asistida sin suscripción
+  // de Stripe — los 14 clientes históricos con condiciones acordadas fuera de
+  // la plataforma; decisión de Carlos 01-sep: a ellos no se les corta nunca).
+  // 'past_due' tampoco corta: la gracia es el ciclo de reintentos de Stripe,
+  // que degrada a 'canceled' él solo si los cobros no entran.
+  if (!pathname.startsWith('/api/') && !pathname.startsWith('/billing')) {
+    const gate = await checkSubscriptionGate(request, user)
+    if (gate.blocked) {
+      const billingUrl = new URL('/billing', request.url)
+      billingUrl.searchParams.set('blocked', gate.reason)
+      const redirect = NextResponse.redirect(billingUrl)
+      if (gate.cacheValue) setGateCookie(redirect, gate.cacheValue)
+      return redirect
+    }
+    if (gate.cacheValue) setGateCookie(response, gate.cacheValue)
+  }
+
   // Enforce section-level plan access. DISABLED by default (ENFORCE_PLAN_LIMITS
   // unset) so this is a no-op for every existing beta client until explicitly
   // turned on in Vercel — before doing that, check each real client's plan
@@ -132,6 +157,111 @@ export async function proxy(request: NextRequest) {
   }
 
   return response
+}
+
+// ─── Suscripción: helper del gate ────────────────────────────────────────
+//
+// Consulta la fila del cliente por PostgREST con la service key (RLS fuera:
+// el middleware autoriza por el JWT ya validado arriba, no por políticas) y
+// cachea el veredicto 5 min en una cookie HttpOnly para no pagar una consulta
+// por navegación. Consecuencia asumida: tras pagar, el desbloqueo puede
+// tardar hasta 5 min en las páginas — /billing nunca pasa por aquí, así que
+// la pantalla de pago siempre responde.
+//
+// Fail-open deliberado: si la consulta falla, el portal NO se cae por culpa
+// del gate (misma filosofía que checkGenerationCap). El fallo queda en logs.
+
+const GATE_COOKIE = 'mira_subgate'
+const GATE_TTL_MS = 5 * 60 * 1000
+
+interface GateVerdict {
+  blocked: boolean
+  reason: 'trial_ended' | 'canceled' | ''
+  /** Valor a cachear en cookie; null = no cachear (fallo de consulta). */
+  cacheValue: string | null
+}
+
+function setGateCookie(res: NextResponse, value: string) {
+  res.cookies.set(GATE_COOKIE, value, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+    maxAge: Math.floor(GATE_TTL_MS / 1000),
+  })
+}
+
+async function checkSubscriptionGate(
+  request: NextRequest,
+  user: { id: string; user_metadata?: Record<string, unknown> }
+): Promise<GateVerdict> {
+  const ok: GateVerdict = { blocked: false, reason: '', cacheValue: null }
+
+  const plan = user.user_metadata?.plan
+  if (plan === 'super_admin' || plan === 'admin') return ok
+
+  // Sin client_id en metadata no hay marca que facturar (usuarios de agencia
+  // históricos): el gate no aplica.
+  const clientId = user.user_metadata?.client_id
+  if (typeof clientId !== 'string' || !clientId) return ok
+
+  // Cookie fresca del mismo cliente → veredicto cacheado.
+  const cached = request.cookies.get(GATE_COOKIE)?.value
+  if (cached) {
+    const [cid, verdict, reason, expires] = cached.split('|')
+    if (cid === clientId && Number(expires) > Date.now()) {
+      return verdict === 'blocked'
+        ? { blocked: true, reason: (reason as GateVerdict['reason']) || 'canceled', cacheValue: cached }
+        : ok
+    }
+  }
+
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!url || !key) return ok
+
+  try {
+    const res = await fetch(
+      `${url}/rest/v1/clients?id=eq.${encodeURIComponent(clientId)}&select=subscription_status,trial_ends_at,stripe_subscription_id,onboarding_mode`,
+      { headers: { apikey: key, authorization: `Bearer ${key}` } }
+    )
+    if (!res.ok) return ok
+    const rows: Array<{
+      subscription_status: string | null
+      trial_ends_at: string | null
+      stripe_subscription_id: string | null
+      onboarding_mode: string | null
+    }> = await res.json()
+    const client = rows[0]
+    if (!client) return ok
+
+    // Cuenta gestionada (los 14 históricos): mismas condiciones que
+    // managedAccount en /api/billing/status — jamás se bloquea.
+    if (client.onboarding_mode === 'assisted' && !client.stripe_subscription_id) {
+      return { ...ok, cacheValue: gateCookieValue(clientId, 'ok', '') }
+    }
+
+    const status = client.subscription_status
+    let reason: GateVerdict['reason'] = ''
+    if (status === 'canceled' || status === 'paused') {
+      reason = 'canceled'
+    } else if (status === 'trialing' && client.trial_ends_at) {
+      const graceMs = 7 * 86_400_000 // 7 días de gracia tras caducar la prueba
+      if (Date.now() > new Date(client.trial_ends_at).getTime() + graceMs) reason = 'trial_ended'
+    }
+
+    if (reason) {
+      return { blocked: true, reason, cacheValue: gateCookieValue(clientId, 'blocked', reason) }
+    }
+    return { ...ok, cacheValue: gateCookieValue(clientId, 'ok', '') }
+  } catch (err) {
+    console.error('subscription gate: lookup failed (fail-open):', err instanceof Error ? err.message : err)
+    return ok
+  }
+}
+
+function gateCookieValue(clientId: string, verdict: 'ok' | 'blocked', reason: string): string {
+  return `${clientId}|${verdict}|${reason}|${Date.now() + GATE_TTL_MS}`
 }
 
 export const config = {

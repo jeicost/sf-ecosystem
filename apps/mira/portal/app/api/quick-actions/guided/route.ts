@@ -14,6 +14,7 @@ import {
   missingRequiredFields,
 } from '@/lib/quick-actions/guided-tools'
 import { t, type Locale } from '@/lib/i18n'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 // Modo "Cuéntamelo": un entrevistador conversacional rellena el formulario de
 // la quick action (con adjuntos y autofill) y dispara la MISMA generación que
@@ -278,6 +279,8 @@ ${brandBlock}${memoryBlock ? `\n\n${memoryBlock}` : ''}${leadsBlock}${capturedBl
       action_id: actionId,
     })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('guided quick action error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Guided chat failed' },

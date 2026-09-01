@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, resolveRequestClient, userCanAccessClient } from '@/lib/resolve-client'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 // GET: List documents for client
 // Multi-empresa: honra ?clientId= validando grant; sin él, primer grant.
@@ -84,6 +85,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ data, success: true })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('Document upload error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unknown error' },

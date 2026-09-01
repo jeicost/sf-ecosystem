@@ -14,6 +14,7 @@ import { computeSeoChecks, deriveScore, type SeoCheck } from '@/lib/grounding/se
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 import { enrichPaletteCmyk } from '@/lib/export/color-utils'
 import { generateMonthlySystem } from '@/lib/generation/monthly-generate'
 
@@ -344,11 +345,16 @@ export async function POST(req: NextRequest) {
           },
         })
       } catch (err) {
+        // Techo mensual: 429 con código estable, no un 500 críptico — el
+        // usuario tiene que saber que topó un límite comercial, no creer que
+        // el producto está roto.
+        const capped = generationCapErrorResponse(err)
         const msg = err instanceof Error ? err.message : 'Monthly generation failed'
         await admin
           .from('generation_queue')
           .update({ status: 'failed', error_message: msg })
           .eq('id', queueId)
+        if (capped) return capped
         return NextResponse.json({ error: msg }, { status: 500 })
       }
     } else {
@@ -413,14 +419,17 @@ export async function POST(req: NextRequest) {
         ...(pipeline.degradedReason ? { degraded: pipeline.degradedReason } : {}),
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof ExtractJsonError
+      const capped = generationCapErrorResponse(err)
+      const errorMessage = capped
+        ? (err as Error).message
+        : err instanceof ExtractJsonError
           ? `Could not extract JSON from the model response: ${err.message}`
           : `JSON extraction failed: ${err instanceof Error ? err.message : String(err)}`
       await admin
         .from('generation_queue')
         .update({ status: 'failed', error_message: errorMessage })
         .eq('id', queueId)
+      if (capped) return capped
       return NextResponse.json({ error: errorMessage }, { status: 500 })
     }
 
@@ -560,6 +569,8 @@ export async function POST(req: NextRequest) {
       generation_time_ms: generationTime,
     })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('Generation endpoint error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Generation failed' },

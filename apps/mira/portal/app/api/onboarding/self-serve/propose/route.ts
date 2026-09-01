@@ -10,6 +10,7 @@ import {
   EMPTY_ANSWERS,
   type SelfServeAnswers,
 } from '@/lib/onboarding/self-serve'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 // Opus tarda: mismo maxDuration que las rutas de toolkit y de cuestionarios.
 export const maxDuration = 300
@@ -103,6 +104,8 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('onboarding/self-serve/propose error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Could not draft your Brand Brain' },

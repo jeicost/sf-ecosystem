@@ -6,6 +6,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { DOC_TYPES } from '@/lib/generation/document-prompts'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 /**
  * ─── ENTREVISTA PREVIA A GENERAR UN DOCUMENTO ────────────────────────────
@@ -250,6 +251,8 @@ ${brandBlock}${memoryBlock ? `\n\n${memoryBlock}` : ''}${gapsBlock}${capturedBlo
       conversation,
     })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('documents/guided error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Error' },

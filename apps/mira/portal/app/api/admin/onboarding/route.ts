@@ -7,6 +7,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { ONBOARDING_TOOLS, executeOnboardingTool } from '@/lib/onboarding/tools'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 export const maxDuration = 300
 
@@ -188,6 +189,8 @@ export async function POST(request: NextRequest) {
       pendingLogin,
     })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     console.error('admin/onboarding error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Onboarding chat failed' },

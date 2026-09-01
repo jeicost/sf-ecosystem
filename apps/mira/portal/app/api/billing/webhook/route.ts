@@ -3,6 +3,7 @@ import type Stripe from 'stripe'
 import { adminClient } from '@/lib/supabase'
 import { getStripe, mapSubscriptionStatus } from '@/lib/billing/stripe'
 import { billingPlan, type BillingPlanId } from '@/lib/billing/plans'
+import { syncSectionPlanForClient } from '@/lib/billing/plan-sync'
 
 // POST /api/billing/webhook — la única fuente de verdad sobre quién ha pagado.
 //
@@ -53,6 +54,18 @@ async function syncSubscription(sub: Stripe.Subscription) {
 
   const { error } = await db.from('clients').update(update).eq('id', target)
   if (error) console.error('billing/webhook: could not update client', target, error.message)
+
+  // Pagar tiene que ABRIR lo pagado: el plan de facturación se traduce al de
+  // secciones para todas las personas de la marca. Solo cuando Stripe dice qué
+  // plan es Y la suscripción está viva — un 'canceled' no toca las secciones
+  // (el corte lo hace el gate de suscripción del proxy, no una degradación de
+  // metadata que habría que revertir si el cliente vuelve).
+  if (planId && !error && (sub.status === 'active' || sub.status === 'trialing')) {
+    const synced = await syncSectionPlanForClient(target, planId)
+    if (synced.failed > 0) {
+      console.error('billing/webhook: plan sync incomplete for', target, synced)
+    }
+  }
 }
 
 /**

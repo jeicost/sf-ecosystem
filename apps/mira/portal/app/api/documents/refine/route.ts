@@ -9,6 +9,7 @@ import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { fenceUntrusted } from '@/lib/grounding/untrusted'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
+import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 
 export const maxDuration = 300
 
@@ -274,6 +275,8 @@ ${EDITORIAL_CONTRACT}`
 
     return NextResponse.json({ success: true, queue_id })
   } catch (error) {
+    const capped = generationCapErrorResponse(error)
+    if (capped) return capped
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Refine failed' },
       { status: 500 }
