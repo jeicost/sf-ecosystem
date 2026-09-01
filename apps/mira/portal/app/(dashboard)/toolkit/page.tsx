@@ -76,6 +76,12 @@ export default function ToolkitHub() {
 
   const [generations, setGenerations] = useState<Generation[]>([])
   const [landings, setLandings] = useState<ClientLanding[]>([])
+  // Cuestionarios enviados sin terminar: el cliente ya no tiene sección propia
+  // de cuestionarios (decisión go-live 01-sep: son herramienta de agencia) —
+  // cuando se le envía uno, aparece AQUÍ, en su sección de informes.
+  const [pendingQuestionnaires, setPendingQuestionnaires] = useState<
+    Array<{ id: string; title: string; status: string }>
+  >([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   // Generar Nuevo abierto de serie y arriba del todo: es la acción principal
@@ -128,6 +134,28 @@ export default function ToolkitHub() {
 
     return () => clearInterval(interval)
   }, [clientId, fetchGenerations])
+
+  // Cuestionarios pendientes de responder (status sent/in_progress). El API ya
+  // limita a no-agencia los estados visibles; fallo aquí = sin tarjeta, nunca
+  // romper el hub.
+  useEffect(() => {
+    if (!clientId) return
+    fetch(`/api/questionnaires?clientId=${clientId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        const rows = Array.isArray(json?.questionnaires) ? json.questionnaires : Array.isArray(json) ? json : []
+        setPendingQuestionnaires(
+          rows
+            .filter((q: { status?: string }) => q?.status === 'sent' || q?.status === 'in_progress')
+            .map((q: { id: string; title?: string; status: string }) => ({
+              id: q.id,
+              title: q.title || 'Questionnaire',
+              status: q.status,
+            }))
+        )
+      })
+      .catch(() => {})
+  }, [clientId])
 
   // Landings del cliente — desactivado a propósito, no es código muerto por
   // descuido.
@@ -319,6 +347,31 @@ export default function ToolkitHub() {
           </div>
         )}
       </div>
+
+      {/* ─── Cuestionarios pendientes (se responden desde aquí) ── */}
+      {pendingQuestionnaires.length > 0 && (
+        <div className="relative z-10 mb-6 space-y-2">
+          {pendingQuestionnaires.map((q) => (
+            <Link
+              key={q.id}
+              href={`/questionnaires/${q.id}`}
+              className="card flex items-center gap-3 border-l-4 p-4 transition-colors hover:bg-surface-hover"
+              style={{ borderLeftColor: brandColor }}
+            >
+              <span className="text-lg">📋</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-semibold text-ink">{t('toolkit.hub.questionnaire-title', locale)}</p>
+                <p className="truncate text-xs text-ink-secondary">
+                  {t('toolkit.hub.questionnaire-desc', locale).replace('{name}', q.title)}
+                </p>
+              </div>
+              <span className="flex-shrink-0 text-xs font-semibold" style={{ color: brandColor }}>
+                {t('toolkit.hub.questionnaire-cta', locale)}
+              </span>
+            </Link>
+          ))}
+        </div>
+      )}
 
       {/* ─── Informes generados (acordeón) ────────────────── */}
       <div className="relative z-10">

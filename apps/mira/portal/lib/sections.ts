@@ -55,6 +55,13 @@ export interface NavItem {
    */
   hidden?: boolean
   /**
+   * Solo la agencia (super_admin/admin) lo ve en el menú. La ruta sigue viva
+   * para quien llegue con enlace: los cuestionarios se ENVÍAN al cliente y él
+   * los responde desde la tarjeta de su sección de informes, no desde una
+   * sección propia (decisión go-live 01-sep).
+   */
+  agencyOnly?: boolean
+  /**
    * Sección de PLAN_SECTIONS que gatea el item cuando no se deduce de la ruta.
    * Por defecto se deduce con getActiveSectionFromPath(href) (p. ej. /roster →
    * marketing, /comercial → comercial), que es lo que ya usa proxy.ts.
@@ -85,6 +92,10 @@ export const SECTIONS: MiraSection[] = [
       // El href se queda declarado —sin label visible no serviría— porque
       // getActiveSectionFromPath necesita saber que /goals pertenece a marketing:
       // de ahí sale el gating por plan de proxy.ts. Lo oculta 'hidden'.
+      // 01-sep: se decidió ENCENDER Goals (flag NEXT_PUBLIC_GOALS_ENABLED=1 en
+      // Vercel) — pero el hidden se queda: encender es el flag, no un item de
+      // menú. La superficie de Goals sigue siendo GoalsSection en la landing
+      // de Marketing, como decidió el CEO el 20-ago.
       { href: '/goals',       label: 'Goals',        icon: Target, hidden: true },
       { href: '/approvals',   label: 'Approvals',    icon: CheckSquare },
       { href: '/performance', label: 'Performance',  icon: BarChart3 },
@@ -208,7 +219,7 @@ export const IDEAL_SPACES: IdealSpace[] = [
       // rellenar los huecos del Cerebro (sus respuestas se ingestan en
       // brand_profiles, content_pillars y project_memory). Por eso viven aquí,
       // junto al Cerebro y a la Memoria que alimentan.
-      { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList },
+      { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList, agencyOnly: true },
       { href: '/project-memory', label: 'Memory',         icon: Archive },
     ],
   },

@@ -12,6 +12,14 @@ export interface MarketplaceTool {
   affiliateUrl?: string
   // 'coming_soon': tarjeta visible pero conexión deshabilitada (OAuth aún no implementado — el endpoint responde 503)
   status: 'connected' | 'disconnected' | 'locked' | 'coming_soon'
+  /**
+   * Fuera del marketplace (decisión go-live 01-sep): las tarjetas coming_soon
+   * sin nada detrás (ni OAuth escrito ni credenciales previstas) no se
+   * enseñan. Canva se queda visible porque su flujo está construido y solo
+   * faltan las credenciales. La entrada se conserva para reactivar sin
+   * arqueología.
+   */
+  hidden?: boolean
   authType: 'api-key' | 'oauth' | 'native'
 }
 
@@ -47,6 +55,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   },
   {
     id: 'figma',
+    hidden: true,
     name: 'Figma',
     emoji: '🖌️',
     category: 'Design',
@@ -93,6 +102,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   // Sales & CRM Tools
   {
     id: 'linkedin-navigator',
+    hidden: true,
     name: 'LinkedIn Sales Navigator',
     emoji: '🔍',
     category: 'Sales',
@@ -107,6 +117,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   },
   {
     id: 'salesforce',
+    hidden: true,
     name: 'Salesforce',
     emoji: '💼',
     category: 'CRM',
@@ -151,6 +162,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   // Communication & Productivity
   {
     id: 'slack',
+    hidden: true,
     name: 'Slack',
     emoji: '💬',
     category: 'Communication',
@@ -165,6 +177,7 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
   },
   {
     id: 'google-workspace',
+    hidden: true,
     name: 'Google Workspace',
     emoji: '📊',
     category: 'Productivity',

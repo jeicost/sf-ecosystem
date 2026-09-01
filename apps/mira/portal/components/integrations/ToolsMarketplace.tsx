@@ -34,15 +34,19 @@ export default function ToolsMarketplace({
     return value === key ? fallback : value
   }
 
-  const categories = Array.from(new Set(MARKETPLACE_TOOLS.map((tool) => tool.category)))
+  // hidden fuera en TODA la vista (ver MarketplaceTool.hidden): tarjetas
+  // coming_soon sin nada construido detrás no se enseñan como escaparate.
+  const visibleTools = MARKETPLACE_TOOLS.filter((tool) => !tool.hidden)
+
+  const categories = Array.from(new Set(visibleTools.map((tool) => tool.category)))
 
   const filteredTools = selectedCategory
-    ? MARKETPLACE_TOOLS.filter((tool) => tool.category === selectedCategory)
-    : MARKETPLACE_TOOLS
+    ? visibleTools.filter((tool) => tool.category === selectedCategory)
+    : visibleTools
 
   // Las tools "coming soon" no cuentan en el denominador de operatividad:
   // aún no se pueden conectar, así que no penalizan la métrica.
-  const criticalTools = MARKETPLACE_TOOLS.filter(
+  const criticalTools = visibleTools.filter(
     (tool) => tool.isCritical && tool.status !== 'coming_soon'
   )
   // Una integración cuenta como conectada si la ha conectado el cliente O si

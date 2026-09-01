@@ -24,7 +24,11 @@ import { UI, altPath, type Locale } from '@/lib/i18n'
  * de dónde sale el texto y qué secciones hay.
  */
 
+// Dos destinos y no uno: el botón de COMPRAR lleva al alta (/signup existe
+// desde el 13-ago y estas CTAs seguían estrellando al comprador contra un
+// formulario de contraseña); «Sign in» sigue siendo el login.
 const PORTAL_URL = 'https://mira.startupsfactory.es/login'
+const SIGNUP_URL = 'https://mira.startupsfactory.es/signup'
 // Buzón de la agencia, no el personal (decisión de Carlos, 20-ago-2026).
 // ⚠️ formsubmit se activa por par (destino, dominio): este buzón necesita su
 // propio enlace de activación pulsado desde el dominio de esta landing.
@@ -263,7 +267,7 @@ export default function HomeView({ content, locale }: { content: Content; locale
       </div>
 
       <a
-        href={p.selfServe ? PORTAL_URL : '#contact'}
+        href={p.selfServe ? SIGNUP_URL : '#contact'}
         onClick={p.selfServe ? undefined : goToForm(planValue(p))}
         style={{
           display: 'block', textAlign: 'center', padding: '12px', borderRadius: 12, fontSize: 14,
@@ -370,7 +374,7 @@ export default function HomeView({ content, locale }: { content: Content; locale
           <p style={{ fontSize: 'clamp(15px,1.7vw,19px)', color: 'rgba(255,255,255,0.45)', maxWidth: 660, margin: '24px auto 40px', lineHeight: 1.7 }}>{c.hero_sub}</p>
 
           <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 20 }}>
-            <a href={PORTAL_URL} style={{
+            <a href={SIGNUP_URL} style={{
               fontSize: 15, fontWeight: 700, color: '#fff', textDecoration: 'none', padding: '14px 32px', borderRadius: 12,
               background: 'linear-gradient(135deg,#7c3aed,#5b21b6)', boxShadow: '0 0 36px rgba(124,58,237,0.45)',
               display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -645,7 +649,7 @@ export default function HomeView({ content, locale }: { content: Content; locale
           <h2 style={{ fontSize: 'clamp(30px,4.6vw,56px)', fontWeight: 800, letterSpacing: '-0.05em', lineHeight: 1.05, marginBottom: 18 }}>{c.cta_title}</h2>
           <p style={{ fontSize: 17, color: 'rgba(255,255,255,0.42)', marginBottom: 34, lineHeight: 1.6 }}>{c.cta_lead}</p>
 
-          <a href={PORTAL_URL} style={{
+          <a href={SIGNUP_URL} style={{
             fontSize: 15, fontWeight: 700, color: '#fff', textDecoration: 'none', padding: '15px 34px', borderRadius: 12,
             background: 'linear-gradient(135deg,#7c3aed,#5b21b6)', boxShadow: '0 0 40px rgba(124,58,237,0.45)',
             display: 'inline-flex', alignItems: 'center', gap: 8, marginBottom: 40,
@@ -768,7 +772,7 @@ export default function HomeView({ content, locale }: { content: Content; locale
         @keyframes strokeBrighten { 0%,100%{stroke-opacity:0.65} 50%{stroke-opacity:1} }
         @keyframes pupilGlow { 0%,100%{r:2;fill-opacity:0.7} 50%{r:3;fill-opacity:1} }
 
-        a[href="${PORTAL_URL}"], .plan-card a { transition: transform 0.18s, box-shadow 0.18s; }
+        a[href="${PORTAL_URL}"], a[href="${SIGNUP_URL}"], .plan-card a { transition: transform 0.18s, box-shadow 0.18s; }
         .plan-card a:hover { transform: translateY(-1px); }
         .nav-link:hover, footer a:hover { color: rgba(255,255,255,0.8) !important; }
 
