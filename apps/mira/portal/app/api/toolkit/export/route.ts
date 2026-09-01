@@ -10,6 +10,7 @@ import { generateDeckPptx } from '@/lib/export/templates/deck-pptx'
 import { getAdapter } from '@/lib/export/adapters'
 import { buildVoiceGuidePptx } from '@/lib/export/voice-guide-pptx'
 import { buildMonthlyDeckPptx } from '@/lib/export/monthly-pptx'
+import { resolveMonthlyDeckImages, resolveLogoDataUri } from '@/lib/export/monthly-deck-assets'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 
 const DOC_TITLES: Record<string, string> = {
@@ -254,10 +255,19 @@ export async function GET(req: NextRequest) {
       if (toolSlug !== 'monthly-content-system') {
         return NextResponse.json({ error: 'monthly-deck is only available for monthly-content-system reports' }, { status: 400 })
       }
+      // Las imágenes que el visor web ya enseña (visuals) viajan también al
+      // deck: el cliente descargaba un PPTX sin una sola imagen — ni logo —
+      // mientras la web tenía 17/17 cargando (feedback CEO 31-ago).
+      const [monthlyImages, logoDataUri] = await Promise.all([
+        resolveMonthlyDeckImages(result as Record<string, unknown>),
+        resolveLogoDataUri(clientRow?.logo_url),
+      ])
       const buffer = await buildMonthlyDeckPptx({
         brandName: clientName,
         primaryColor: brandColor,
         typography,
+        logoDataUri,
+        images: monthlyImages,
         result: result as Record<string, any>,
       })
       const mdFilename = `sistema-contenidos_${clientName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.pptx`

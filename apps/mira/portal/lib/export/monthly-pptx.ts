@@ -7,6 +7,7 @@
 // La convención "PART N —" en los dividers es la que verifica verify-deck.ts.
 
 import { resolveBrandFonts, type BrandTypographyInput } from './brand-typography'
+import type { MonthlyDeckImages } from './monthly-deck-assets'
 import PptxGenJS from 'pptxgenjs'
 
 const W = 13.33
@@ -30,6 +31,8 @@ export interface MonthlyDeckOptions {
   /** Tipografía del Cerebro (brand_data.visual_identity.typography), tal cual. Opcional. */
   typography?: BrandTypographyInput
   logoDataUri?: string | null
+  /** Imágenes ya resueltas a data URI (lib/export/monthly-deck-assets.ts). */
+  images?: MonthlyDeckImages
   result: Record<string, any>
 }
 
@@ -254,7 +257,76 @@ function pillarSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
       })
     }
     footer(slide, o.brandName, `Pillar · ${s(p.name, 40)}`)
+    pillarReferencesSlide(pptx, o, accent, s(p.name, 60))
   }
+}
+
+/**
+ * Referencias REALES de la marca por pilar («OWN REFERENCES» del deck manual):
+ * las creatividades del cliente que Drive sync clasificó bajo este pilar. Una
+ * slide por pilar con referencias, justo después de su slide de sistema — el
+ * feedback del CEO (31-ago) era exactamente que el visor las tenía y el PPTX
+ * no.
+ */
+function pillarReferencesSlide(
+  pptx: PptxGenJS,
+  o: MonthlyDeckOptions,
+  accent: string,
+  pillarName: string
+) {
+  const refs = o.images?.pillarReferences.find(
+    (p) => p.pillarName.trim().toLowerCase() === pillarName.trim().toLowerCase()
+  )
+  if (!refs?.items.length) return
+  const slide = pptx.addSlide()
+  slide.background = { color: PAPER }
+  const y = titleBar(slide, accent, 'Part 1 · Own references', s(pillarName, 60))
+  const items = refs.items.slice(0, 4)
+  const gapX = 0.25
+  const imgW = (CONTENT_W - gapX * (items.length - 1)) / items.length
+  const imgH = Math.min(3.6, FOOTER_Y - y - 1.0)
+  gate(y, imgH + 0.8, 'referencias pilar')
+  items.forEach((it, i) => {
+    const x = MARGIN + i * (imgW + gapX)
+    try {
+      slide.addImage({ data: it.data, x, y: y + 0.1, w: imgW, h: imgH, sizing: { type: 'contain', w: imgW, h: imgH } })
+    } catch { /* una imagen corrupta no tumba el deck */ }
+    if (it.caption) {
+      slide.addText(s(it.caption, 90), {
+        x, y: y + 0.2 + imgH, w: imgW, h: 0.6,
+        fontFace: FONT, fontSize: 8, color: INK_SOFT, valign: 'top', lineSpacingMultiple: 1.05,
+      })
+    }
+  })
+  footer(slide, o.brandName, `Own references · ${s(pillarName, 40)}`)
+}
+
+/** Covers generadas de los hero briefs, en una sola slide tras el divider de Part 4. */
+function heroCoversSlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
+  const covers = o.images?.heroCovers ?? []
+  if (!covers.length) return
+  const briefs = arr(o.result.hero_briefs)
+  const slide = pptx.addSlide()
+  slide.background = { color: PAPER }
+  const y = titleBar(slide, accent, 'Part 4 · Covers', 'Hero covers')
+  const gapX = 0.3
+  const imgW = (CONTENT_W - gapX * (covers.length - 1)) / covers.length
+  const imgH = Math.min(3.9, FOOTER_Y - y - 0.9)
+  gate(y, imgH + 0.7, 'hero covers')
+  covers.forEach((c, i) => {
+    const x = MARGIN + i * (imgW + gapX)
+    try {
+      slide.addImage({ data: c.data, x, y: y + 0.1, w: imgW, h: imgH, sizing: { type: 'contain', w: imgW, h: imgH } })
+    } catch { /* cover corrupta: se omite */ }
+    const title = s(briefs[c.briefIndex]?.title, 70)
+    if (title) {
+      slide.addText(title, {
+        x, y: y + 0.2 + imgH, w: imgW, h: 0.5,
+        fontFace: FONT, fontSize: 9, bold: true, color: '333333', valign: 'top',
+      })
+    }
+  })
+  footer(slide, o.brandName, 'Hero covers')
 }
 
 function weeklyBoardSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
@@ -308,6 +380,7 @@ function prioritySlide(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
 
 function heroBriefSlides(pptx: PptxGenJS, o: MonthlyDeckOptions, accent: string) {
   divider(pptx, accent, o.brandName, 4, 'Hero Briefs', 'The hero pieces, ready to shoot: shot by shot, with timings and on-screen text.')
+  heroCoversSlide(pptx, o, accent)
   for (const h of arr(o.result.hero_briefs).slice(0, 4)) {
     const slide = pptx.addSlide()
     slide.background = { color: PAPER }

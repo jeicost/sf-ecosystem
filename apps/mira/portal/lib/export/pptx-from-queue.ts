@@ -20,6 +20,7 @@ import type { Section } from './editorial-template'
 import { generateDeckPptx } from './templates/deck-pptx'
 import type { DeckSlide } from './templates/deck-template'
 import { buildMonthlyDeckPptx } from './monthly-pptx'
+import { resolveMonthlyDeckImages, resolveLogoDataUri } from './monthly-deck-assets'
 import { buildVoiceGuidePptx } from './voice-guide-pptx'
 import { verifyMonthlyDeck, type DeckVerification } from './verify-deck'
 import { normalizeDocMode, type DocMode } from './doc-theme'
@@ -182,9 +183,19 @@ export async function buildPptxFromQueueRow(params: {
   const dateStamp = new Date().toISOString().split('T')[0]
 
   if (resolution.artifact === 'monthly-deck') {
+    // typography/logo/imágenes: esta ruta ("Abrir en Google Slides") salía en
+    // Arial y sin una sola imagen mientras la descarga directa llevaba las
+    // fuentes — y ninguna de las dos llevaba las creatividades del visor.
+    const [monthlyImages, logoDataUri] = await Promise.all([
+      resolveMonthlyDeckImages(result),
+      resolveLogoDataUri(brand.logoUrl),
+    ])
     const buffer = await buildMonthlyDeckPptx({
       brandName: brand.clientName,
       primaryColor: brand.primaryColor,
+      typography: brand.typography,
+      logoDataUri,
+      images: monthlyImages,
       result,
     })
     const verification = await verifyMonthlyDeck(buffer, {
