@@ -241,10 +241,72 @@ export default function BrandBrainEditor() {
   const [suggestions, setSuggestions] = useState<Record<string, any> | null>(null)
   const [analyzing, setAnalyzing] = useState<string | null>(null)
   const [logoUploading, setLogoUploading] = useState(false)
+  const [styleImporting, setStyleImporting] = useState(false)
+  const [styleNotice, setStyleNotice] = useState<string | null>(null)
 
   // Sube el logo vía /api/brand-assets/logo (bucket brand-assets privado,
   // misma convención logos/{clientId} que el onboarding), lo fija en
   // brand_data como URL de proxy firmado y espeja clients.logo_url.
+  // Estilo desde un .pptx de la empresa (nota del CEO de julio). La ruta solo
+  // EXTRAE (tema del PPTX → colores/fuentes); aplicar es rellenar los campos
+  // de este editor y que el usuario guarde por la vía normal — así lo ve antes
+  // de que toque el Brain.
+  const handleStyleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !activeClient?.id || !profile) return
+    setStyleImporting(true)
+    setStyleNotice(null)
+    setError(null)
+    try {
+      const form = new FormData()
+      form.append('clientId', activeClient.id)
+      form.append('file', file)
+      const res = await fetch('/api/brand-brain/extract-style', { method: 'POST', body: form })
+      const data = await res.json().catch(() => null)
+      if (!res.ok || !data?.style) throw new Error(data?.error || t('bb.style-import-error', locale))
+      const style = data.style as {
+        themeName: string | null
+        fonts: { heading: string | null; body: string | null }
+        colors: { primary: string | null; secondary: string | null; accent: string | null; neutral: string | null }
+        looksLikeOfficeDefault: boolean
+      }
+      const vi = (profile.brand_data?.visual_identity as any) ?? {}
+      const filled: string[] = []
+      const colors = { ...vi.colors }
+      for (const role of ['primary', 'secondary', 'accent', 'neutral'] as const) {
+        if (style.colors[role]) {
+          colors[role] = style.colors[role]
+          filled.push(`${role} ${style.colors[role]}`)
+        }
+      }
+      const typography = { ...vi.typography }
+      if (style.fonts.heading) {
+        typography.heading_font = style.fonts.heading
+        filled.push(`heading ${style.fonts.heading}`)
+      }
+      if (style.fonts.body) {
+        typography.body_font = style.fonts.body
+        filled.push(`body ${style.fonts.body}`)
+      }
+      setProfile({
+        ...profile,
+        brand_data: {
+          ...profile.brand_data,
+          visual_identity: { ...vi, colors, typography },
+        },
+      })
+      const notice = t('bb.style-imported', locale)
+        .replace('{name}', style.themeName || file.name)
+        .replace('{summary}', filled.join(', ') || '—')
+      setStyleNotice(style.looksLikeOfficeDefault ? `${notice} ${t('bb.style-office-default', locale)}` : notice)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('bb.style-import-error', locale))
+    } finally {
+      setStyleImporting(false)
+      e.target.value = ''
+    }
+  }
+
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file || !activeClient?.id || !profile) return
@@ -1143,6 +1205,26 @@ export default function BrandBrainEditor() {
                   />
                 </label>
               </div>
+            </div>
+
+            {/* Importar estilo desde un .pptx de la empresa: el tema del
+                fichero rellena colores y tipografías de abajo — nada se guarda
+                hasta que el usuario pulse Save. */}
+            <div className="border-b border-line pb-4">
+              <h3 className="text-sm font-medium text-ink mb-1">{t('bb.style-import', locale)}</h3>
+              <p className="text-xs text-ink-tertiary mb-3">{t('bb.style-import-hint', locale)}</p>
+              <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium text-ink bg-surface hover:bg-surface-hover transition-colors cursor-pointer">
+                {styleImporting ? <Loader2 size={13} className="animate-spin" /> : <Upload size={13} />}
+                {t('bb.style-import', locale)}
+                <input
+                  type="file"
+                  hidden
+                  accept=".pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                  onChange={handleStyleImport}
+                  disabled={styleImporting}
+                />
+              </label>
+              {styleNotice && <p className="text-xs text-emerald-400 mt-2">{styleNotice}</p>}
             </div>
 
             {/* Colors Section */}

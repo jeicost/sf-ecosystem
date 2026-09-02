@@ -391,6 +391,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                 onChange={setAttachments}
                 prefix="documents"
                 disabled={refining || !docClientId}
+                driveEnabled
               />
             </div>
 
