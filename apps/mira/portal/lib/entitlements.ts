@@ -16,6 +16,7 @@
 export const TENDER_CLIENTS = new Set<string>([
   '3949b629-feec-4497-9d73-91214027cca1', // GTD Mensajeros (concursos públicos: RTVE, biosanitario, mensajería)
   '1a093072-97fb-46e4-aea7-65c3eb9e1e29', // GLS Ciudad Lineal (mutuas, semipúblico)
+  '91abb051-cae5-462d-b1fa-8e50a299e3b3', // Discoolver 360 (reactivado 07-sep: ayuntamientos y patronatos licitan)
 ])
 
 /**
