@@ -133,6 +133,21 @@ export const defaultAgencias360Content = {
   cta_contacto_email: "info@discoolver.com",
   cta_contacto_telefono: "Questions on WhatsApp · (+66) 83 829 1723",
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
+
+  // --- Mockups del producto (2026-09-09): capturas reales en marca blanca ---
+  prod_eyebrow: "The platform, on screen",
+  prod_title: "The group's trip, on a single screen",
+  prod_lead: "The operator console and the trip-leader app, under your brand. What operations prepares is exactly what the leader opens on the ground — no forwarded PDFs, no lost WhatsApp threads.",
+  prod_url: "console.discoolver.app/your-tour-brand",
+  prod_f1_title: "The operator console",
+  prod_f1_text: "Every group on the road, what needs attention today, and which departures still lack a leader or prep.",
+  prod_f2_title: "The leader app",
+  prod_f2_text: "The group's day: timed stops, group broadcasts, travel kit and per-stop stories — under the operator's brand.",
+  prod_f3_title: "One single story",
+  prod_f3_text: "Change a stop in the console and the leader sees it instantly. The whole group hears the same plan.",
+  prod_cap_1: "Day 3 for the group: briefing, timeline and quick actions.",
+  prod_cap_2: "Per-stop stories: the leader records, the brand publishes.",
+  prod_cap_3: "The day's travel kit: PDF, mini guide and phrases, ready for the group.",
 } as const;
 
 export type Agencias360Content = { -readonly [K in keyof typeof defaultAgencias360Content]: string };

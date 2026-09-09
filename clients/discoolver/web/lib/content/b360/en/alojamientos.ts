@@ -217,6 +217,21 @@ export const defaultAlojamientos360Content = {
     "A 30-minute demo, no strings attached. Get in touch and someone from the team will answer your questions.",
   cta_contacto:
     "info@discoolver.com · Questions on WhatsApp · (+66) 83 829 1723 · C/ María de Molina 39, 28006 Madrid",
+
+  // --- Mockups del producto (2026-09-09): capturas reales en marca blanca ---
+  prod_eyebrow: "The platform, on screen",
+  prod_title: "A QR on every door, your hotel on every phone",
+  prod_lead: "The guest app under your brand plus the hotel console. The room's code opens the app with the stay already loaded: requests, schedules, check-in and what to do nearby.",
+  prod_url: "console.discoolver.app/your-hotel",
+  prod_f1_title: "Rooms & QR",
+  prod_f1_text: "Every door carries a permanent code that opens the app with the room loaded. The console knows which signs remain to print and where each one hangs.",
+  prod_f2_title: "Online check-in",
+  prod_f2_text: "Five minutes from the phone, zero queue at the desk. Guest requests reach the console tagged with their room.",
+  prod_f3_title: "Recommendations that sell",
+  prod_f3_text: "What's nearby, curated by the hotel, with partner offers under your brand — every click attributed.",
+  prod_cap_1: "The hotel's pulse: scans, online check-ins and occupancy.",
+  prod_cap_2: "Services booked by time slot, from the guest's phone.",
+  prod_cap_3: "The online check-in that kills the 3pm queue.",
 } as const;
 
 export type Alojamientos360Content = { -readonly [K in keyof typeof defaultAlojamientos360Content]: string };

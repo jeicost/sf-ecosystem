@@ -250,6 +250,21 @@ export const defaultDestinos360Content = {
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
   cta_pendiente_telefono:
     "Consultas por WhatsApp · (+66) 83 829 1723",
+
+  // --- Mockups del producto (2026-09-09): capturas reales en marca blanca ---
+  prod_eyebrow: "La plataforma, en pantalla",
+  prod_title: "Así se ve tu destino en discoolver",
+  prod_lead: "App del visitante con tu marca y consola para tu equipo. Eliges qué fichas salen y en qué rutas, imprimes los QR y el cuadro de mando aprende de cada escaneo — sin desarrollo propio.",
+  prod_url: "consola.discoolver.app/tu-destino",
+  prod_f1_title: "Pasaporte con medallas",
+  prod_f1_text: "Cada visita se marca con el QR del monumento. El visitante colecciona medallas y tu equipo ve el recorrido real, sin cookies ni analítica de terceros.",
+  prod_f2_title: "Bono turístico",
+  prod_f2_text: "El bono se presenta y se canjea desde la app; precio, condiciones y qué incluye se editan desde la consola.",
+  prod_f3_title: "QR permanentes",
+  prod_f3_text: "El cartel impreso no caduca: si la ficha cambia, el código sigue funcionando. La consola avisa de qué falta por imprimir y dónde está pegado cada uno.",
+  prod_cap_1: "Rutas: tu equipo las compone y ordena; la app del visitante las estrena al momento.",
+  prod_cap_2: "El bono turístico en el móvil del visitante, con tu marca.",
+  prod_cap_3: "Info, consejos y FAQs editables por la oficina de turismo.",
 } as const;
 
 export type Destinos360Content = { -readonly [K in keyof typeof defaultDestinos360Content]: string };

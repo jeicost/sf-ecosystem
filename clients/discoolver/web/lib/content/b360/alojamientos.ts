@@ -217,6 +217,21 @@ export const defaultAlojamientos360Content = {
     "Demo de 30 minutos, sin compromiso. Contacta con nosotros y un miembro del equipo resolverá tus dudas.",
   cta_contacto:
     "info@discoolver.com · Consultas por WhatsApp · (+66) 83 829 1723 · C/ María de Molina 39, 28006 Madrid",
+
+  // --- Mockups del producto (2026-09-09): capturas reales en marca blanca ---
+  prod_eyebrow: "La plataforma, en pantalla",
+  prod_title: "Un QR en cada puerta, un hotel en cada móvil",
+  prod_lead: "La app del huésped con tu marca y la consola del hotel. El código de la habitación abre la app con la estancia ya cargada: peticiones, horarios, check-in y qué hacer cerca.",
+  prod_url: "consola.discoolver.app/tu-hotel",
+  prod_f1_title: "Habitaciones y QR",
+  prod_f1_text: "Cada puerta lleva un código permanente que abre la app con la habitación cargada. La consola sabe qué carteles faltan por imprimir y dónde está pegado cada uno.",
+  prod_f2_title: "Check-in online",
+  prod_f2_text: "Cinco minutos desde el móvil, cero cola en recepción. Las peticiones del huésped llegan a la consola con su habitación.",
+  prod_f3_title: "Recomendaciones que venden",
+  prod_f3_text: "Qué hay cerca, curado por el hotel, con ofertas de partners bajo tu marca — cada clic queda atribuido.",
+  prod_cap_1: "El pulso del hotel: escaneos, check-ins online y ocupación.",
+  prod_cap_2: "Servicios con reserva por franjas, desde el móvil del huésped.",
+  prod_cap_3: "El check-in online que ahorra la cola de las 15:00.",
 } as const;
 
 export type Alojamientos360Content = { -readonly [K in keyof typeof defaultAlojamientos360Content]: string };

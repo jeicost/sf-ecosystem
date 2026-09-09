@@ -135,6 +135,21 @@ export const defaultAgencias360Content = {
   cta_contacto_email: "info@discoolver.com",
   cta_contacto_telefono: "Consultas por WhatsApp · (+66) 83 829 1723",
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
+
+  // --- Mockups del producto (2026-09-09): capturas reales en marca blanca ---
+  prod_eyebrow: "La plataforma, en pantalla",
+  prod_title: "El viaje del grupo, en una sola pantalla",
+  prod_lead: "La consola del operador y la app del trip leader, con tu marca. Lo que operaciones prepara es exactamente lo que el líder abre sobre el terreno — sin PDFs reenviados ni grupos de WhatsApp perdidos.",
+  prod_url: "consola.discoolver.app/tu-operadora",
+  prod_f1_title: "La consola del operador",
+  prod_f1_text: "Todos los grupos en marcha, qué necesita atención hoy y qué salidas siguen sin líder o sin preparar.",
+  prod_f2_title: "La app del líder",
+  prod_f2_text: "El día del grupo: paradas con horario, avisos al grupo, travel kit y stories por parada — con la marca del operador.",
+  prod_f3_title: "Un solo relato",
+  prod_f3_text: "Cambia una parada en la consola y el líder lo ve al momento. El grupo entero cuenta la misma historia.",
+  prod_cap_1: "El día 3 del grupo: briefing, timeline y acciones rápidas.",
+  prod_cap_2: "Stories por parada: el líder graba, la marca publica.",
+  prod_cap_3: "El travel kit del día: PDF, mini guía y frases, listo para el grupo.",
 } as const;
 
 export type Agencias360Content = { -readonly [K in keyof typeof defaultAgencias360Content]: string };

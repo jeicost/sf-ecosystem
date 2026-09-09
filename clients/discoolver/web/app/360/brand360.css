@@ -680,3 +680,59 @@
 .b360 .vert--foto .h-card,
 .b360 .vert--foto p { padding-inline: 22px; }
 .b360 .vert--foto .vert__go { padding: 0 22px 22px; }
+
+/* ============ Mockups del producto (componentes b360/Producto) ============ */
+.b360 .prod-stage { position: relative; margin-top: 40px; }
+.b360 .prod-stage--con-phone { padding-bottom: 56px; }
+.b360 .prod-browser {
+  margin: 0;
+  border: 1px solid var(--b-line-soft);
+  border-radius: var(--b-r-lg);
+  overflow: hidden;
+  background: var(--b-bg-3);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+.b360 .prod-browser img { display: block; width: 100%; height: auto; }
+.b360 .prod-browser__bar {
+  display: flex; align-items: center; gap: 7px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--b-line-soft);
+  background: var(--b-bg-2);
+}
+.b360 .prod-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--b-slate); opacity: .55; }
+.b360 .prod-url {
+  margin-left: 10px; padding: 3px 12px;
+  border-radius: 99px; border: 1px solid var(--b-line-soft);
+  font-family: var(--b-mono); font-size: 11px; color: var(--b-muted);
+}
+.b360 .prod-phone {
+  margin: 0; width: 100%; max-width: 240px;
+  border: 1px solid var(--b-line-soft);
+  border-radius: 30px; overflow: hidden; position: relative;
+  background: #000;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+.b360 .prod-phone img { display: block; width: 100%; height: auto; }
+.b360 .prod-phone__notch {
+  position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+  width: 74px; height: 5px; border-radius: 99px;
+  background: rgba(255, 255, 255, 0.22);
+}
+.b360 .prod-stage__phone {
+  position: absolute; right: clamp(8px, 4vw, 48px); bottom: -56px;
+  width: clamp(150px, 18vw, 240px);
+}
+.b360 .prod-galeria {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 18px; margin-top: 84px; align-items: start;
+}
+.b360 .prod-mini .prod-phone { margin: 0 auto; }
+.b360 .prod-caption {
+  margin-top: 12px; font-size: 13.5px; line-height: 1.5;
+  color: var(--b-muted); text-align: center;
+}
+@media (max-width: 860px) {
+  .b360 .prod-stage--con-phone { padding-bottom: 0; }
+  .b360 .prod-stage__phone { display: none; }
+  .b360 .prod-galeria { grid-template-columns: 1fr; margin-top: 40px; }
+}

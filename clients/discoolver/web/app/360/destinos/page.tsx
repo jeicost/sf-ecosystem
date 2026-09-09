@@ -6,6 +6,7 @@ import { defaultDestinos360Content as defaultDestinos360ContentEn } from "@/lib/
 import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent, slugFor } from "@/lib/cms-pages";
 import { DemoForm } from "@/components/b360/DemoForm";
+import { EscenarioProducto, GaleriaProducto } from "@/components/b360/Producto";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, isPending, Txt } from "@/components/b360/Bits";
 import { FondoEscena } from "@/components/b360/Escena360";
 import { waHref } from "@/lib/site";
@@ -92,6 +93,33 @@ export async function Destinos360({ locale = "es" }: { locale?: Locale }) {
           ))}
         </div>
       </Section>
+
+      {/* ---------- el producto, en pantalla (mockups marca blanca) ---------- */}
+      <Section id="producto">
+        <Head label={c.prod_eyebrow} title={c.prod_title} lead={c.prod_lead} />
+        <EscenarioProducto
+          url={c.prod_url}
+          consola={{ src: "destino-consola-resumen.webp", alt: "Consola del destino: visitas por día, pasaportes en marcha y bonos vendidos" }}
+          telefono={{ src: "destino-app-pasaporte.webp", alt: "App del visitante: pasaporte con medallas" }}
+        />
+        <div className="grid g-3" style={{ marginTop: 72 }}>
+          {[1, 2, 3].map((n) => (
+            <div className="card" key={n}>
+              <h3 className="h-card">{K(`prod_f${n}_title`)}</h3>
+              <p style={{ fontSize: 14.5, margin: 0 }}>{K(`prod_f${n}_text`)}</p>
+            </div>
+          ))}
+        </div>
+        <GaleriaProducto
+          columnas="1.7fr 1fr 1fr"
+          items={[
+            { src: "destino-consola-rutas.webp", alt: "Consola del destino: composición de rutas", caption: c.prod_cap_1 },
+            { src: "destino-app-bono.webp", alt: "App del visitante: bono turístico", caption: c.prod_cap_2, tipo: "phone" },
+            { src: "destino-app-info.webp", alt: "App del visitante: información y FAQs", caption: c.prod_cap_3, tipo: "phone" },
+          ]}
+        />
+      </Section>
+
 
       {/* ---------- módulos ---------- */}
       <Section id="modulos" alt>

@@ -7,6 +7,7 @@ import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent, slugFor } from "@/lib/cms-pages";
 import { Section, Head, Cta, Stat, Steps, Pending } from "@/components/b360/Bits";
 import { FondoEscena } from "@/components/b360/Escena360";
+import { EscenarioProducto, GaleriaProducto } from "@/components/b360/Producto";
 import { waHref } from "@/lib/site";
 
 export const metadata: Metadata = buildMetadata({
@@ -93,6 +94,32 @@ export async function Agencias360({ locale = "es" }: { locale?: Locale }) {
         <div style={{ marginTop: 12 }}>
         </div>
       </Section>
+
+      {/* ---------- el producto, en pantalla (mockups marca blanca) ---------- */}
+      <Section id="producto">
+        <Head label={c.prod_eyebrow} title={c.prod_title} lead={c.prod_lead} />
+        <EscenarioProducto
+          url={c.prod_url}
+          consola={{ src: "operador-consola-hoy.webp", alt: "Consola del operador: grupos en marcha y lo que necesita atención hoy" }}
+        />
+        <div className="grid g-3" style={{ marginTop: 72 }}>
+          {[1, 2, 3].map((n) => (
+            <div className="card" key={n}>
+              <h3 className="h-card">{K(`prod_f${n}_title`)}</h3>
+              <p style={{ fontSize: 14.5, margin: 0 }}>{K(`prod_f${n}_text`)}</p>
+            </div>
+          ))}
+        </div>
+        <GaleriaProducto
+          columnas="1fr 1fr"
+          items={[
+            { src: "leader-app-home.webp", alt: "App del líder: el día del grupo con briefing y timeline", caption: c.prod_cap_1 },
+            { src: "leader-app-story.webp", alt: "App del líder: stories por parada", caption: c.prod_cap_2 },
+            { src: "leader-app-kit.webp", alt: "App del líder: travel kit del día", caption: c.prod_cap_3 },
+          ]}
+        />
+      </Section>
+
 
       {/* ---------- cómo encaja ---------- */}
       <Section alt>

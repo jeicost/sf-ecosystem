@@ -7,6 +7,7 @@ import { withLocale, type Locale } from "@/lib/i18n";
 import { pageContent, slugFor } from "@/lib/cms-pages";
 import { Section, Head, Cta, Faq, Stat, Steps, Pending, Txt } from "@/components/b360/Bits";
 import { FondoEscena } from "@/components/b360/Escena360";
+import { EscenarioProducto, GaleriaProducto } from "@/components/b360/Producto";
 
 export const metadata: Metadata = buildMetadata({
   title: "Concierge digital para alojamientos",
@@ -68,6 +69,33 @@ export async function Alojamientos360({ locale = "es" }: { locale?: Locale }) {
           ))}
         </div>
       </Section>
+
+      {/* ---------- el producto, en pantalla (mockups marca blanca) ---------- */}
+      <Section id="producto">
+        <Head label={c.prod_eyebrow} title={c.prod_title} lead={c.prod_lead} />
+        <EscenarioProducto
+          url={c.prod_url}
+          consola={{ src: "hotel-consola-habitaciones.webp", alt: "Consola del hotel: habitaciones con su QR permanente y dónde está colocado cada cartel" }}
+          telefono={{ src: "hotel-app-home.webp", alt: "App del huésped: tu estancia hoy" }}
+        />
+        <div className="grid g-3" style={{ marginTop: 72 }}>
+          {[1, 2, 3].map((n) => (
+            <div className="card" key={n}>
+              <h3 className="h-card">{K(`prod_f${n}_title`)}</h3>
+              <p style={{ fontSize: 14.5, margin: 0 }}>{K(`prod_f${n}_text`)}</p>
+            </div>
+          ))}
+        </div>
+        <GaleriaProducto
+          columnas="1.7fr 1fr 1fr"
+          items={[
+            { src: "hotel-consola-resumen.webp", alt: "Consola del hotel: escaneos, check-ins y ocupación", caption: c.prod_cap_1 },
+            { src: "hotel-app-servicios.webp", alt: "App del huésped: servicios con reserva", caption: c.prod_cap_2, tipo: "phone" },
+            { src: "hotel-app-checkin.webp", alt: "App del huésped: check-in online", caption: c.prod_cap_3, tipo: "phone" },
+          ]}
+        />
+      </Section>
+
 
       {/* ---------- check-in ---------- */}
       <Section id="check-in" alt>

@@ -239,6 +239,21 @@ export const defaultDestinos360Content = {
   cta_contacto_direccion: "C/ María de Molina 39, 28006 Madrid",
   cta_pendiente_telefono:
     "Questions on WhatsApp · (+66) 83 829 1723",
+
+  // --- Mockups del producto (2026-09-09): capturas reales en marca blanca ---
+  prod_eyebrow: "The platform, on screen",
+  prod_title: "This is your destination on discoolver",
+  prod_lead: "A visitor app under your brand and a console for your team. Pick which places appear and on which routes, print the QR codes, and the dashboard learns from every scan — no in-house development.",
+  prod_url: "console.discoolver.app/your-destination",
+  prod_f1_title: "Passport with medals",
+  prod_f1_text: "Every visit is checked in with the monument's QR. Visitors collect medals and your team sees the real journey — no cookies, no third-party analytics.",
+  prod_f2_title: "Tourist pass",
+  prod_f2_text: "The pass is shown and redeemed from the app; price, conditions and contents are edited from the console.",
+  prod_f3_title: "Permanent QR codes",
+  prod_f3_text: "A printed sign never expires: if the listing changes, the code keeps working. The console tells you what is left to print and where each sign hangs.",
+  prod_cap_1: "Routes: your team composes and orders them; the visitor app shows them instantly.",
+  prod_cap_2: "The tourist pass on the visitor's phone, under your brand.",
+  prod_cap_3: "Tips and FAQs edited by the tourism office.",
 } as const;
 
 export type Destinos360Content = { -readonly [K in keyof typeof defaultDestinos360Content]: string };
