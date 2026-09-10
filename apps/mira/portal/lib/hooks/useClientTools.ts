@@ -22,16 +22,28 @@ export function useClientTools(clientId: string | undefined) {
   const [error, setError] = useState<string | null>(null)
 
   const load = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      // Sin marca activa NO se sale de aquí: /api/tools resuelve la marca por la
-      // sesión (resolveRequestClient), igual que el resto de rutas. Salir antes
-      // dejaba la página en "Loading tools…" para siempre y, peor, pintaba todo
-      // el catálogo como bloqueado — al super_admin en el primer render, antes
-      // de que el contexto restaure su cliente de localStorage.
+    // Sin marca activa NO se sale de aquí: /api/tools resuelve la marca por la
+    // sesión (resolveRequestClient), igual que el resto de rutas. Salir antes
+    // dejaba la página en "Loading tools…" para siempre y, peor, pintaba todo
+    // el catálogo como bloqueado — al super_admin en el primer render, antes
+    // de que el contexto restaure su cliente de localStorage.
+    const fetchOnce = async () => {
       const res = await fetch(clientId ? `/api/tools?clientId=${clientId}` : '/api/tools')
       if (!res.ok) throw new Error('Failed to load tools')
-      const data = await res.json()
+      return res.json()
+    }
+    try {
+      setIsLoading(true)
+      let data
+      try {
+        data = await fetchOnce()
+      } catch {
+        // Un fallo aquí apaga media UI (el menú esconde herramientas y las
+        // páginas dicen «not enabled»): antes de rendirnos, un reintento. Un
+        // blip de red o una carrera de sesión no deben pintar el portal roto.
+        await new Promise((r) => setTimeout(r, 1200))
+        data = await fetchOnce()
+      }
       setTools(data.tools || [])
       setQuota(data.quota ?? null)
       setCustomRequested(!!data.customRequested)

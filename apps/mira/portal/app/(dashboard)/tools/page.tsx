@@ -65,9 +65,37 @@ export default function ToolsPage() {
     )
   }
 
+  // Fallo de carga ≠ «no tienes marca»: antes los dos casos pintaban el mismo
+  // empty state y un blip de /api/tools parecía un portal sin herramientas
+  // (visto con el grupo Aldea, 10-sep). El error se dice y se puede reintentar.
+  if (error) {
+    return (
+      <div className="max-w-6xl">
+        <PageHeader
+          eyebrow={activeClient?.name || ''}
+          title={t('tools.title', locale)}
+          subtitle={t('tools.subtitle', locale)}
+          eyebrowColor={brand}
+        />
+        <div className="rounded-2xl border border-line bg-surface p-8 text-center">
+          <Wrench size={24} className="mx-auto mb-3 text-ink-muted" />
+          <h2 className="text-sm font-semibold text-ink">{t('tools.error.title', locale)}</h2>
+          <p className="mt-1.5 text-xs text-ink-tertiary">{t('tools.error.desc', locale)}</p>
+          <button
+            onClick={() => reload()}
+            className="mt-4 text-xs font-medium px-4 py-2 rounded-lg transition-opacity hover:opacity-90"
+            style={{ background: brand, color: '#fff' }}
+          >
+            {t('tools.error.retry', locale)}
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // Sin marca resuelta no se puede decir qué tiene contratada: pintar el catálogo
   // entero con candado sería MENTIR (diría "no lo tienes" de cosas que sí tiene).
-  if (error || tools.length === 0) {
+  if (tools.length === 0) {
     return (
       <div className="max-w-6xl">
         <PageHeader

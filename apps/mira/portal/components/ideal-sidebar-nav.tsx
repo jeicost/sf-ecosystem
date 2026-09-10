@@ -6,6 +6,7 @@ import { IDEAL_SPACES, resolveNavItemStatus, minPlanForNavItem } from '@/lib/sec
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { hasEntitlement, type Entitlement } from '@/lib/entitlements'
+import { t } from '@/lib/i18n'
 import { useClientTools } from '@/lib/hooks/useClientTools'
 import { ENTITLEMENT_TO_TOOL_ID } from '@/lib/tools/catalog'
 import type { UserPlan } from '@/lib/plans'
@@ -53,8 +54,10 @@ export default function IdealSidebarNav({
     return tools.some((t) => t.id === toolId && t.enabled)
   }
 
-  const itemClass = (active: boolean) => clsx(
-    'flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-150',
+  const itemClass = (active: boolean, child = false) => clsx(
+    'flex items-center gap-3 py-2 rounded-lg text-sm transition-all duration-150',
+    // Sub-item (p. ej. el calendario bajo Marketing): indentado, mismo gesto.
+    child ? 'pl-8 pr-3' : 'px-3',
     active
       ? 'bg-surface-hover text-ink font-medium'
       : 'text-ink-tertiary hover:text-ink hover:bg-surface'
@@ -70,26 +73,27 @@ export default function IdealSidebarNav({
           <div className="flex items-center gap-1.5 px-2 mb-1">
             <space.icon size={12} className="text-ink-muted" />
             <span className="text-[9px] uppercase tracking-widest font-semibold text-ink-muted">
-              {space.label}
+              {space.labelKey ? t(space.labelKey, locale) : space.label}
             </span>
           </div>
           <div className="space-y-0.5">
             {items.map((item) => {
-              const { href, label, icon: Icon } = item
+              const { href, icon: Icon } = item
+              const label = item.labelKey ? t(item.labelKey, locale) : item.label
               const status = resolveNavItemStatus(item, plan)
               if (status !== 'available') {
                 return (
                   <UnavailableNavItem key={href}
                     label={label} icon={Icon} status={status} locale={locale}
                     requiredPlan={minPlanForNavItem(item)}
-                    className={itemClass(false)} />
+                    className={itemClass(false, item.child)} />
                 )
               }
               const active = isActive(href)
               const showBadge = href === '/approvals' && pendingCount > 0
               return (
-                <Link key={href} href={href} className={itemClass(active)}>
-                  <Icon size={15} className={active ? 'text-ink' : 'text-ink-tertiary'} />
+                <Link key={href} href={href} className={itemClass(active, item.child)}>
+                  <Icon size={item.child ? 13 : 15} className={active ? 'text-ink' : 'text-ink-tertiary'} />
                   {label}
                   {showBadge && (
                     <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse"
@@ -110,17 +114,17 @@ export default function IdealSidebarNav({
         <Link href="/integrations"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/integrations') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <Zap size={13} /> Connections
+          <Zap size={13} /> {t('sidebar.item.connections', locale)}
         </Link>
         <Link href="/billing"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/billing') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <CreditCard size={13} /> Billing
+          <CreditCard size={13} /> {t('sidebar.item.billing', locale)}
         </Link>
         <Link href="/resources"
           className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
             isActive('/resources') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <BookOpen size={13} /> Resources
+          <BookOpen size={13} /> {t('sidebar.item.resources', locale)}
         </Link>
       </div>
     </nav>

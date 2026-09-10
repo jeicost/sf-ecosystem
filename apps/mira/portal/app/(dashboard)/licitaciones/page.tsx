@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
 import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X } from 'lucide-react'
-import { useActiveClient } from '@/lib/client-context'
+import { useActiveClient, type ActiveClient } from '@/lib/client-context'
 import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
 import { useClientTools } from '@/lib/hooks/useClientTools'
 
@@ -31,7 +31,7 @@ const daysLeft = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime
 const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Qualitative', automatico_tecnico: 'Automatic (technical)', precio: 'Price' }
 
 export default function LicitacionesPage() {
-  const { activeClient } = useActiveClient()
+  const { activeClient, setActiveClient } = useActiveClient()
   const { tools, isLoading: toolsLoading } = useClientTools(activeClient?.id)
   const clientId = activeClient?.id
   const brand = activeClient?.primaryColor || '#6366F1'
@@ -167,12 +167,15 @@ export default function LicitacionesPage() {
   // Se espera a que cargue: antes esto llamaba a hasTenderTool(id) SIN isAgency,
   // así que la propia agencia veía "no está habilitada" en su herramienta. El
   // estado viene de /api/tools, que ya resuelve el caso agencia en el servidor.
-  if (activeClient && !toolsLoading && !tools.some((t) => t.id === 'tenders' && t.enabled)) {
+  const notEnabled = !!activeClient && !toolsLoading && !tools.some((t) => t.id === 'tenders' && t.enabled)
+
+  if (notEnabled && activeClient) {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
         <FileText size={28} className="mx-auto mb-3 text-ink-muted" />
         <h1 className="text-lg font-semibold text-ink">Tenders is not enabled for {activeClient.name}</h1>
         <p className="mt-2 text-sm text-ink-tertiary">This tool is for clients that bid on public tenders. If {activeClient.name} needs it, let us know and we will enable it.</p>
+        <TenderBrandSwitch activeClientId={activeClient.id} onSwitch={setActiveClient} />
       </div>
     )
   }
@@ -428,6 +431,65 @@ export default function LicitacionesPage() {
           )}
         </div>
       )}
+    </div>
+  )
+}
+
+// La trampa real del multi-marca (vista con Noel/grupo Aldea, 10-sep): entras
+// con la marca por defecto (la primera alfabética), Licitaciones no está para
+// ella y la pantalla parece un fallo — cuando la herramienta SÍ está en otra
+// de tus marcas. Aquí se comprueba y se ofrece el cambio con un clic, en vez
+// de exigir descubrir el switcher.
+interface GrantedBrand { id: string; name: string; slug: string; logo_url: string | null; primary_color: string | null }
+
+function TenderBrandSwitch({ activeClientId, onSwitch }: { activeClientId: string; onSwitch: (c: ActiveClient) => void }) {
+  const [brands, setBrands] = useState<GrantedBrand[]>([])
+
+  useEffect(() => {
+    let alive = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/me/clients')
+        if (!res.ok) return
+        const json = await res.json()
+        const others: GrantedBrand[] = (Array.isArray(json?.clients) ? json.clients : [])
+          .filter((c: GrantedBrand) => c.id !== activeClientId)
+        // La agencia ve todos los clientes y /api/tools le devuelve todo
+        // abierto: sondear aquí no informa de nada. Y con muchas marcas no
+        // disparamos una ráfaga de peticiones por una pista.
+        if (json?.super_admin || others.length === 0 || others.length > 8) return
+        const withTool = await Promise.all(others.map(async (c) => {
+          try {
+            const r = await fetch(`/api/tools?clientId=${c.id}`)
+            if (!r.ok) return null
+            const d = await r.json()
+            return d.tools?.some((t: { id: string; enabled: boolean }) => t.id === 'tenders' && t.enabled) ? c : null
+          } catch { return null }
+        }))
+        if (alive) setBrands(withTool.filter((c): c is GrantedBrand => !!c))
+      } catch { /* la pista es opcional: sin ella la pantalla base sigue siendo válida */ }
+    })()
+    return () => { alive = false }
+  }, [activeClientId])
+
+  if (brands.length === 0) return null
+
+  return (
+    <div className="mt-6">
+      <p className="mb-2 text-xs text-ink-tertiary">
+        It <span className="font-medium text-ink-secondary">is</span> enabled for {brands.length === 1 ? 'another of your brands' : 'other brands of yours'}:
+      </p>
+      <div className="flex flex-wrap justify-center gap-2">
+        {brands.map((b) => (
+          <button
+            key={b.id}
+            onClick={() => onSwitch({ id: b.id, name: b.name, slug: b.slug, logoUrl: b.logo_url, primaryColor: b.primary_color })}
+            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-page"
+          >
+            Switch to {b.name}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }

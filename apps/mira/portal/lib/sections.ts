@@ -42,7 +42,14 @@ export type NavItemStatus = 'available' | 'coming_soon' | 'locked'
 export interface NavItem {
   href: string
   label: string
+  /** Clave i18n del label (sidebar ideal). Sin ella, se pinta `label` tal cual. */
+  labelKey?: string
   icon: LucideIcon
+  /**
+   * Sub-item visual: se pinta indentado bajo el item anterior. Solo afecta a la
+   * sangría — el gating (requires/plan) funciona igual que en cualquier item.
+   */
+  child?: boolean
   /** Herramienta con acceso restringido por cliente (ver lib/entitlements). */
   requires?: Entitlement
   /** Solo 'coming_soon' tiene sentido declararlo aquí; ver NavItemStatus. */
@@ -163,22 +170,20 @@ export const SECTIONS: MiraSection[] = [
 export interface IdealSpace {
   key: string
   label: string
+  /** Clave i18n del título del espacio. Sin ella, se pinta `label` tal cual. */
+  labelKey?: string
   icon: LucideIcon
   items: NavItem[]
 }
 
 export const IDEAL_SPACES: IdealSpace[] = [
   {
-    key: 'hoy', label: 'Today', icon: Home,
+    key: 'hoy', label: 'Today', labelKey: 'sidebar.space.today', icon: Home,
     items: [
-      { href: '/home',      label: 'Overview', icon: LayoutDashboard },
-      { href: '/approvals', label: 'Inbox',    icon: CheckSquare },
-    ],
-  },
-  {
-    key: 'calendario', label: 'Calendar', icon: Calendar,
-    items: [
-      { href: '/calendar', label: 'Calendar', icon: Calendar },
+      { href: '/home',      label: 'Overview',  labelKey: 'sidebar.item.overview',  icon: LayoutDashboard },
+      // «Inbox» no decía qué había dentro; el badge cuenta aprobaciones, así
+      // que el item se llama como lo que es.
+      { href: '/approvals', label: 'Approvals', labelKey: 'sidebar.item.approvals', icon: CheckSquare },
     ],
   },
   {
@@ -186,47 +191,52 @@ export const IDEAL_SPACES: IdealSpace[] = [
     // Las tres primeras entran con cualquier plan de pago; las de operativa se
     // habilitan marca a marca (client_tools, migración 0073) y quien no las
     // tiene las ve en el marketplace de /tools, no escondidas como antes.
-    key: 'tools', label: 'Tools', icon: Wrench,
+    key: 'tools', label: 'Tools', labelKey: 'sidebar.space.tools', icon: Wrench,
     items: [
-      { href: '/tools',          label: 'All tools',     icon: LayoutGrid },
-      { href: '/toolkit',        label: 'Reports',       icon: Layers },
-      { href: '/documents',      label: 'Documents',     icon: FileText },
+      { href: '/tools',          label: 'All tools',     labelKey: 'sidebar.item.all-tools',     icon: LayoutGrid },
+      { href: '/toolkit',        label: 'Reports',       labelKey: 'sidebar.item.reports',       icon: Layers },
+      { href: '/documents',      label: 'Documents',     labelKey: 'sidebar.item.documents',     icon: FileText },
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
-      { href: '/studio',         label: 'Visual Studio', icon: Image },
-      { href: '/licitaciones',   label: 'Tenders',       icon: Briefcase, requires: 'tender' },
-      { href: '/email-ops',      label: 'Email Ops',     icon: Mail, requires: 'email-ops' },
+      { href: '/studio',         label: 'Visual Studio', labelKey: 'sidebar.item.visual-studio', icon: Image },
+      { href: '/licitaciones',   label: 'Tenders',       labelKey: 'sidebar.item.tenders',       icon: Briefcase, requires: 'tender' },
+      { href: '/email-ops',      label: 'Email Ops',     labelKey: 'sidebar.item.email-ops',     icon: Mail, requires: 'email-ops' },
     ],
   },
   {
-    key: 'equipo', label: 'Team', icon: Users,
+    // «Team» sugería un roster de personas; son los departamentos del sistema.
+    key: 'equipo', label: 'Departments', labelKey: 'sidebar.space.departments', icon: Users,
     items: [
-      { href: '/roster',    label: 'Marketing', icon: Target },
+      { href: '/roster',    label: 'Marketing', labelKey: 'sidebar.item.marketing', icon: Target },
+      // El calendario de contenidos es un artefacto DE Marketing (decisión
+      // Carlos 10-sep): vive indentado bajo su departamento, no como espacio
+      // propio del menú. La ruta no cambia.
+      { href: '/calendar',  label: 'Content calendar', labelKey: 'sidebar.item.content-calendar', icon: Calendar, child: true },
       // Goals ya no sale aquí: es una sección de la propia landing de Marketing
       // (decisión CEO 20-ago). Se llega desde ahí, no desde el menú.
-      { href: '/comercial', label: 'Sales',     icon: Kanban },
-      { href: '/strategy',  label: 'Leadership', icon: Map },
+      { href: '/comercial', label: 'Sales',     labelKey: 'sidebar.item.sales',     icon: Kanban },
+      { href: '/strategy',  label: 'Strategy',  labelKey: 'sidebar.item.strategy',  icon: Map },
       // Finanzas se vende en Scale/Admin: no se esconde a quien lo paga; a quien
       // no, le sale con candado (upsell), igual que en la navegación clásica.
-      { href: '/finanzas',  label: 'Finance',   icon: TrendingUp },
+      { href: '/finanzas',  label: 'Finance',   labelKey: 'sidebar.item.finance',   icon: TrendingUp },
     ],
   },
   {
-    key: 'cerebro', label: 'Brain', icon: Brain,
+    key: 'cerebro', label: 'Brain', labelKey: 'sidebar.space.brain', icon: Brain,
     items: [
-      { href: '/brand-brain',    label: 'Brand Brain',    icon: Brain },
+      { href: '/brand-brain',    label: 'Brand Brain',    labelKey: 'sidebar.item.brand-brain',    icon: Brain },
       // Los cuestionarios NO son una herramienta de biblioteca: son la forma de
       // rellenar los huecos del Cerebro (sus respuestas se ingestan en
       // brand_profiles, content_pillars y project_memory). Por eso viven aquí,
       // junto al Cerebro y a la Memoria que alimentan.
-      { href: '/questionnaires', label: 'Questionnaires', icon: ClipboardList, agencyOnly: true },
-      { href: '/project-memory', label: 'Memory',         icon: Archive },
+      { href: '/questionnaires', label: 'Questionnaires', labelKey: 'sidebar.item.questionnaires', icon: ClipboardList, agencyOnly: true },
+      { href: '/project-memory', label: 'Memory',         labelKey: 'sidebar.item.memory',         icon: Archive },
     ],
   },
   {
-    key: 'resultados', label: 'Results', icon: BarChart3,
+    key: 'resultados', label: 'Results', labelKey: 'sidebar.space.results', icon: BarChart3,
     items: [
-      { href: '/performance', label: 'Performance', icon: BarChart3 },
+      { href: '/performance', label: 'Performance', labelKey: 'sidebar.item.performance', icon: BarChart3 },
     ],
   },
 ]
