@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { ChevronDown, Check } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
+import BrandName from '@/components/ui/BrandName'
 import { clsx } from 'clsx'
 
 interface ClientRow {
@@ -104,7 +105,9 @@ export default function ClientSwitcher() {
           active
         />
         <div className="flex-1 min-w-0">
-          <p className="text-[11px] font-medium text-ink truncate leading-tight">{display}</p>
+          <p className="text-[11px] font-medium text-ink truncate leading-tight">
+            <BrandName>{display}</BrandName>
+          </p>
           <p className="text-[9px] text-ink-muted leading-none mt-0.5">Active workspace</p>
         </div>
         {clients.length > 1 && (
@@ -141,9 +144,9 @@ export default function ClientSwitcher() {
                   size="sm"
                   active={isActive}
                 />
-                <span className={clsx('text-[11px] flex-1 truncate', isActive ? 'text-ink font-medium' : 'text-ink-tertiary')}>
+                <BrandName className={clsx('text-[11px] flex-1 truncate', isActive ? 'text-ink font-medium' : 'text-ink-tertiary')}>
                   {c.name}
-                </span>
+                </BrandName>
                 {isActive && (
                   <Check
                     size={10}

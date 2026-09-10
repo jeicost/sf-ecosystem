@@ -7,6 +7,7 @@ import IdealSidebarNav from '@/components/ideal-sidebar-nav'
 import ClientSwitcher from '@/components/client-switcher'
 import SelfServeNavLink from '@/components/onboarding/SelfServeNavLink'
 import LanguageSwitcher from '@/components/LanguageSwitcher'
+import BrandName from '@/components/ui/BrandName'
 import { ClientProvider, useActiveClient } from '@/lib/client-context'
 import { ProjectProvider } from '@/lib/project-context'
 import { getActiveSectionFromPath } from '@/lib/sections'
@@ -107,7 +108,7 @@ useEffect(() => {
               }}
             />
             <div className="min-w-0">
-              <span
+              <BrandName
                 style={{
                   fontSize: '13px',
                   fontWeight: 700,
@@ -117,7 +118,7 @@ useEffect(() => {
                 className="block truncate"
               >
                 {activeClient.name}
-              </span>
+              </BrandName>
               <p className="text-[9px] text-ink-muted leading-none mt-0.5">powered by MIRA</p>
             </div>
           </Link>

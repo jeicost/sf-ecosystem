@@ -9,6 +9,7 @@ import { MIRA_TOOLS, CUSTOM_TOOL_ID, type MiraTool } from '@/lib/tools/catalog'
 import PageHeader from '@/components/ui/PageHeader'
 import EmptyState from '@/components/ui/EmptyState'
 import ToolCard from '@/components/tools/ToolCard'
+import BrandName from '@/components/ui/BrandName'
 import RequestToolModal from '@/components/tools/RequestToolModal'
 import { t } from '@/lib/i18n'
 
@@ -72,7 +73,7 @@ export default function ToolsPage() {
     return (
       <div className="max-w-6xl">
         <PageHeader
-          eyebrow={activeClient?.name || ''}
+          eyebrow={<BrandName>{activeClient?.name || ''}</BrandName>}
           title={t('tools.title', locale)}
           subtitle={t('tools.subtitle', locale)}
           eyebrowColor={brand}
@@ -99,7 +100,7 @@ export default function ToolsPage() {
     return (
       <div className="max-w-6xl">
         <PageHeader
-          eyebrow={activeClient?.name || ''}
+          eyebrow={<BrandName>{activeClient?.name || ''}</BrandName>}
           title={t('tools.title', locale)}
           subtitle={t('tools.subtitle', locale)}
           eyebrowColor={brand}
@@ -117,7 +118,7 @@ export default function ToolsPage() {
   return (
     <div className="max-w-6xl">
       <PageHeader
-        eyebrow={activeClient?.name || ''}
+        eyebrow={<BrandName>{activeClient?.name || ''}</BrandName>}
         title={t('tools.title', locale)}
         subtitle={t('tools.subtitle', locale)}
         eyebrowColor={brand}

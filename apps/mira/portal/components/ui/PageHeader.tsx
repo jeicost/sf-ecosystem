@@ -1,7 +1,9 @@
 import React, { ReactNode } from 'react'
 
 interface PageHeaderProps {
-  eyebrow: string
+  /** Texto o nodo: las páginas que ponen aquí el nombre del cliente pasan un
+   *  <BrandName>, que lo protege del traductor del navegador. */
+  eyebrow: ReactNode
   title: string
   subtitle?: string | ReactNode
   eyebrowColor?: string

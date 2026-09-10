@@ -11,6 +11,7 @@ import { useClientTools } from '@/lib/hooks/useClientTools'
 import type { TicketRow } from '@/lib/email-ops/types'
 import TicketTable from '@/components/email-ops/TicketTable'
 import InboxSetupPanel from '@/components/email-ops/InboxSetupPanel'
+import { withBrandName } from '@/components/ui/BrandName'
 
 // Bandeja de Email Ops: tickets del cliente activo con pestañas, filtros y
 // orden por prioridad. Se refresca sola (realtime sobre email_tickets).
@@ -79,8 +80,8 @@ export default function EmailOpsPage() {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
         <Mail size={28} className="mx-auto mb-3 text-ink-muted" />
-        <h1 className="text-lg font-semibold text-ink">{t('emailops.not-enabled.title', locale).replace('{name}', activeClient.name)}</h1>
-        <p className="mt-2 text-sm text-ink-tertiary">{t('emailops.not-enabled.desc', locale).replace(/\{name\}/g, activeClient.name)}</p>
+        <h1 className="text-lg font-semibold text-ink">{withBrandName(t('emailops.not-enabled.title', locale), activeClient.name)}</h1>
+        <p className="mt-2 text-sm text-ink-tertiary">{withBrandName(t('emailops.not-enabled.desc', locale), activeClient.name)}</p>
       </div>
     )
   }

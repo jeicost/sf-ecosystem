@@ -5,6 +5,7 @@ import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLi
 import { useActiveClient, type ActiveClient } from '@/lib/client-context'
 import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
 import { useClientTools } from '@/lib/hooks/useClientTools'
+import BrandName from '@/components/ui/BrandName'
 
 // Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
 // el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
@@ -173,8 +174,8 @@ export default function LicitacionesPage() {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
         <FileText size={28} className="mx-auto mb-3 text-ink-muted" />
-        <h1 className="text-lg font-semibold text-ink">Tenders is not enabled for {activeClient.name}</h1>
-        <p className="mt-2 text-sm text-ink-tertiary">This tool is for clients that bid on public tenders. If {activeClient.name} needs it, let us know and we will enable it.</p>
+        <h1 className="text-lg font-semibold text-ink">Tenders is not enabled for <BrandName>{activeClient.name}</BrandName></h1>
+        <p className="mt-2 text-sm text-ink-tertiary">This tool is for clients that bid on public tenders. If <BrandName>{activeClient.name}</BrandName> needs it, let us know and we will enable it.</p>
         <TenderBrandSwitch activeClientId={activeClient.id} onSwitch={setActiveClient} />
       </div>
     )
@@ -486,7 +487,7 @@ function TenderBrandSwitch({ activeClientId, onSwitch }: { activeClientId: strin
             onClick={() => onSwitch({ id: b.id, name: b.name, slug: b.slug, logoUrl: b.logo_url, primaryColor: b.primary_color })}
             className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-page"
           >
-            Switch to {b.name}
+            Switch to <BrandName>{b.name}</BrandName>
           </button>
         ))}
       </div>

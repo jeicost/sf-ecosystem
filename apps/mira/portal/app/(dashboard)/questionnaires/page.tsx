@@ -7,6 +7,7 @@ import { useActiveClient } from '@/lib/client-context'
 import { getUser, type MiraUser } from '@/lib/auth'
 import { createClient } from '@/lib/supabase'
 import type { UserPlan } from '@/lib/plans'
+import BrandName from '@/components/ui/BrandName'
 
 interface QuestionnaireListItem {
   id: string
@@ -189,7 +190,7 @@ export default function QuestionnairesPage() {
     <div className="mx-auto max-w-3xl space-y-6 px-6 py-10">
       <div>
         <p className="mb-1 font-mono text-[10px] uppercase tracking-[0.25em] text-sky-400">
-          Brain · {activeClient.name}
+          Brain · <BrandName>{activeClient.name}</BrandName>
         </p>
         <h1 className="text-2xl font-bold tracking-tight text-ink">Questionnaires</h1>
         <p className="mt-1.5 max-w-xl text-sm text-ink-secondary">

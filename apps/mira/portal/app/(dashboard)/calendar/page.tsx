@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, Loader2, X, Check, CheckSquare } from 'lucid
 import { createClient } from '@/lib/supabase'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
+import { withBrandName } from '@/components/ui/BrandName'
 import { t } from '@/lib/i18n'
 
 type ItemStatus = 'pending_review' | 'approved' | 'rejected' | 'draft'
@@ -187,9 +188,10 @@ export default function CalendarPage() {
         <div>
           <h1 className="text-2xl font-semibold text-ink">{t('calendar.title', locale)}</h1>
           <p className="text-ink-tertiary mt-1 text-sm">
-            {t('calendar.subtitle', locale)
-              .replace('{name}', activeClient?.name ?? t('calendar.your-brand', locale))
-              .replace('{count}', String(monthCount))}
+            {withBrandName(
+              t('calendar.subtitle', locale).replace('{count}', String(monthCount)),
+              activeClient?.name ?? t('calendar.your-brand', locale)
+            )}
           </p>
         </div>
         <div className="flex items-center gap-3">
