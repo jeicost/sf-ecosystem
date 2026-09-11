@@ -1,7 +1,8 @@
 'use client'
 import Link from 'next/link'
+import { useEffect, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
-import { Zap, BookOpen, CreditCard } from 'lucide-react'
+import { Zap, BookOpen, CreditCard, ChevronDown } from 'lucide-react'
 import { IDEAL_SPACES, resolveNavItemStatus, minPlanForNavItem } from '@/lib/sections'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
@@ -11,6 +12,9 @@ import { useClientTools } from '@/lib/hooks/useClientTools'
 import { ENTITLEMENT_TO_TOOL_ID } from '@/lib/tools/catalog'
 import type { UserPlan } from '@/lib/plans'
 import { UnavailableNavItem } from '@/components/nav-item-status'
+
+/** Qué sección del acordeón dejó abierta el usuario, en ESTE navegador. */
+const OPEN_SPACE_KEY = 'mira_sidebar_open_space'
 
 // Navegación consolidada del sistema ideal: 6 espacios en vez de 27 rutas
 // sueltas (Fase 1). Se monta detrás del flag NEXT_PUBLIC_IDEAL_UI; con el flag
@@ -54,6 +58,51 @@ export default function IdealSidebarNav({
     return tools.some((t) => t.id === toolId && t.enabled)
   }
 
+  // ── Acordeón: una sección abierta cada vez ────────────────────────────────
+  // 20 items en una barra de 224px obligaban a hacer scroll para llegar a
+  // Facturación o Recursos. Con el acordeón sólo se ve el bloque en el que
+  // estás trabajando (decisión Carlos 11-sep: «más claro y limpio»).
+  //
+  // Tres reglas para que plegar no se convierta en esconder:
+  //  · La sección de la página actual se abre sola al navegar — nunca pierdes
+  //    de vista dónde estás.
+  //  · La elección del usuario manda hasta que navega a otra sección, y se
+  //    recuerda en este navegador.
+  //  · Si una sección plegada tiene aprobaciones pendientes, el contador sube
+  //    a su cabecera (más abajo).
+  const [chosen, setChosen] = useState<string | null>(null)
+
+  const activeSpaceKey = useMemo(
+    () => IDEAL_SPACES.find((s) => s.items.some((i) => isActive(i.href)))?.key ?? null,
+    // isActive depende de `path`, que es lo que de verdad cambia
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [path]
+  )
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(OPEN_SPACE_KEY)
+      if (stored !== null) setChosen(stored)
+    } catch { /* navegador sin almacenamiento: el acordeón sigue funcionando */ }
+  }, [])
+
+  // Al cambiar de sección por navegación, esa pasa a ser la abierta.
+  useEffect(() => {
+    if (!activeSpaceKey) return
+    setChosen(activeSpaceKey)
+    try { localStorage.setItem(OPEN_SPACE_KEY, activeSpaceKey) } catch {}
+  }, [activeSpaceKey])
+
+  // Antes de leer localStorage (y en el render del servidor) manda la sección
+  // activa: así no hay parpadeo ni desajuste de hidratación.
+  const openKey = chosen ?? activeSpaceKey ?? IDEAL_SPACES[0]?.key ?? ''
+  const isOpen = (key: string) => openKey === key
+  const toggle = (key: string) => {
+    const next = isOpen(key) ? '' : key
+    setChosen(next)
+    try { localStorage.setItem(OPEN_SPACE_KEY, next) } catch {}
+  }
+
   const itemClass = (active: boolean, child = false) => clsx(
     'flex items-center gap-3 py-2 rounded-lg text-sm transition-all duration-150',
     // Sub-item (p. ej. el calendario bajo Marketing): indentado, mismo gesto.
@@ -68,15 +117,38 @@ export default function IdealSidebarNav({
       {IDEAL_SPACES.map((space) => {
         const items = space.items.filter(canSee)
         if (items.length === 0) return null
+        const open = isOpen(space.key)
+        // Un aviso que no se ve no sirve: si la sección de Aprobaciones está
+        // plegada, el contador sube a su cabecera.
+        const hiddenBadge = !open && pendingCount > 0 && items.some((i) => i.href === '/approvals')
         return (
         <div key={space.key}>
-          <div className="flex items-center gap-1.5 px-2 mb-1">
-            <space.icon size={12} className="text-ink-muted" />
+          <button
+            type="button"
+            onClick={() => toggle(space.key)}
+            aria-expanded={open}
+            className="w-full flex items-center gap-1.5 px-2 mb-1 rounded transition-colors hover:text-ink-tertiary group"
+          >
+            <space.icon size={12} className="text-ink-muted shrink-0" />
             <span className="text-[9px] uppercase tracking-widest font-semibold text-ink-muted">
               {space.labelKey ? t(space.labelKey, locale) : space.label}
             </span>
-          </div>
-          <div className="space-y-0.5">
+            {hiddenBadge && (
+              <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold"
+                style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24' }}>
+                {pendingCount}
+              </span>
+            )}
+            <ChevronDown
+              size={11}
+              className={clsx(
+                'shrink-0 text-ink-muted transition-transform duration-200',
+                hiddenBadge ? 'ml-1.5' : 'ml-auto',
+                open ? 'opacity-0 group-hover:opacity-100' : 'opacity-60 -rotate-90'
+              )}
+            />
+          </button>
+          <div className={clsx('space-y-0.5', !open && 'hidden')}>
             {items.map((item) => {
               const { href, icon: Icon } = item
               const label = item.labelKey ? t(item.labelKey, locale) : item.label

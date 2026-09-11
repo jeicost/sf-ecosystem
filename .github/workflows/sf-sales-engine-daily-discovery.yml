@@ -25,18 +25,54 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Los secretos SF_SALES_ENGINE_* nunca se llegaron a crear en el repo, así
+      # que este cron falló en rojo todos los días desde que existe (verificado
+      # el 11-sep-2026: 8+ ejecuciones seguidas, todas muertas en ~20s con
+      # "missing_env var=TAVILY_API_KEY"). Un correo de fallo diario por algo que
+      # nunca estuvo configurado enseña a ignorar los correos de fallo — y el día
+      # que se rompa algo de verdad, nadie mirará.
+      #
+      # En vez de apagar el cron (que habría que acordarse de reencender), el job
+      # comprueba las credenciales y se SALTA el trabajo con un aviso si faltan.
+      # El día que se añadan los 6 secretos en Settings → Secrets → Actions,
+      # empieza a funcionar solo, sin tocar este fichero.
+      - name: Check credentials
+        id: creds
+        env:
+          SUPABASE_URL: ${{ secrets.SF_SALES_ENGINE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SF_SALES_ENGINE_SUPABASE_SERVICE_KEY }}
+          ANTHROPIC_API_KEY: ${{ secrets.SF_SALES_ENGINE_ANTHROPIC_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.SF_SALES_ENGINE_TAVILY_API_KEY }}
+        run: |
+          missing=""
+          for var in SUPABASE_URL SUPABASE_SERVICE_KEY ANTHROPIC_API_KEY TAVILY_API_KEY; do
+            if [ -z "${!var}" ]; then missing="$missing SF_SALES_ENGINE_$var"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Discovery SKIPPED — missing repo secrets:$missing. Add them in Settings → Secrets and variables → Actions and this job starts running on its own."
+            echo "### ⏭️ Discovery skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "Missing repo secrets:\`$missing\`" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Install uv
+        if: steps.creds.outputs.ready == 'true'
         uses: astral-sh/setup-uv@v4
         with:
           version: "latest"
 
       - name: Set up Python
+        if: steps.creds.outputs.ready == 'true'
         run: uv python install 3.12
 
       - name: Install dependencies
+        if: steps.creds.outputs.ready == 'true'
         run: uv sync --all-packages --all-extras
 
       - name: Run discovery
+        if: steps.creds.outputs.ready == 'true'
         run: uv run python scripts/discover_leads.py
         env:
           SUPABASE_URL: ${{ secrets.SF_SALES_ENGINE_SUPABASE_URL }}

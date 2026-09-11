@@ -223,9 +223,12 @@ export async function generateStudioImage(opts: {
   if (!stored) return null
 
   // Aparece en la galería (que lee generation_queue completadas con image_path).
+  // El fallo se REGISTRA: este insert llevaba desde agosto rebotando contra el
+  // CHECK de tool_slug (la 0051 no incluía 'studio-visual', lo arregla la 0074)
+  // y el catch mudo dejó la galería vacía un mes sin un solo error a la vista.
   try {
     const db = createServiceClient()
-    await db.from('generation_queue').insert({
+    const { error } = await db.from('generation_queue').insert({
       client_id: opts.clientId,
       ...(opts.userId ? { user_id: opts.userId } : {}),
       tool_slug: 'studio-visual',
@@ -234,7 +237,11 @@ export async function generateStudioImage(opts: {
       result_data: { image_path: stored.path, image_url: stored.signedUrl, prompt: opts.userPrompt, format: opts.format },
       completed_at: new Date().toISOString(),
     })
-  } catch { /* el registro en galería no debe tumbar la generación */ }
+    if (error) console.error('[studio] la imagen no entró en la galería:', error.message)
+  } catch (e) {
+    // El registro en galería no debe tumbar la generación — pero tiene que verse.
+    console.error('[studio] la imagen no entró en la galería:', e instanceof Error ? e.message : e)
+  }
 
   return {
     imagePath: stored.path,
