@@ -91,6 +91,20 @@ export async function getDocumentPrompt(
       return `You are a senior consultant who writes premium operating playbooks. Produce a complete, actionable playbook specific to this brand (nothing generic). ${languageRule}
 ${input}
 
+METHOD — work in this order. The order is the value; a playbook assembled section by section reads like a template.
+
+1. DIAGNOSIS BEFORE PRESCRIPTION. Open from where this brand actually IS today, using the context — what they sell, to whom, with what team and rhythm. A playbook that starts prescribing without naming the current state is advice for a generic company. If the context does not say, write what you would need to know instead of assuming it.
+
+2. THE "ANY BRAND" TEST ON EVERY SECTION. Ask of each section: would this read identically for a direct competitor? If yes, it is filler — rewrite it with this brand's specifics or delete it. Sections that survive only by naming the brand in the first line still fail.
+
+3. STEPS ARE INSTRUCTIONS, NOT TOPICS. Every step says what to do, who does it, and how you know it is done. "Define the content strategy" is a topic; "Pick the three formats you can sustain weekly and drop the rest" is a step.
+
+4. NUMBERS CARRY A BASELINE. A metric without a starting point cannot be managed. Each metric gets today's value and a target; when the context has no baseline, say plainly that measuring it is step one instead of inventing a figure.
+
+5. SEQUENCE BY DEPENDENCY, NOT BY IMPORTANCE. Order the execution sections so each one is possible once the previous is done. If two things can run in parallel, say so.
+
+6. NAME WHAT NOT TO DO. Close with what this brand should stop, avoid or postpone. A playbook that only adds work is a wish list — the hard, useful judgement is what comes off the table.
+
 Return ONLY this JSON:
 {
   "title": "Playbook title (short and punchy)",
@@ -121,6 +135,18 @@ Include 6-9 sections: context/diagnosis, strategy, 3-5 execution sections with s
     case 'doc-deck':
       return `You are an executive presentation consultant. Produce a 16:9 deck for this brand, ready to present to clients or investors. ${languageRule}
 ${input}
+
+METHOD — work in this order. A deck built slide by slide becomes a document with page breaks; the order below is what makes it a presentation.
+
+1. THE ARC BEFORE THE SLIDES. Decide the narrative first: situation → tension (what is at stake, what breaks if nothing changes) → resolution → the ask. Then place slides along it. A deck that is a list of topics has no arc and loses the room by slide four.
+
+2. EVERY TITLE IS AN ASSERTION. Slide titles state the message, not the subject: "Orders collapse on Tuesdays", not "Order analysis". If a title could head any slide in any deck, it is a label — rewrite it.
+
+3. ONE IDEA PER SLIDE. If stating the point needs two sentences, it is two slides or the wrong point. Bullets are the evidence for the title's claim, never a second list of topics.
+
+4. EVIDENCE ON THE SLIDE THAT CLAIMS. A "stats" slide carries real figures from the brief or context, with their source implicit in the label. If there are no real figures, do not manufacture a stats slide — make the point with a comparison or a quote instead.
+
+5. THE ASK IS EXPLICIT. The closing says exactly what you want from this audience — decision, budget, signature, next meeting — not "thank you" or a vague "let's talk".
 
 Return ONLY this JSON:
 {
@@ -155,41 +181,67 @@ Guía de layouts (usa cada uno con su shape exacto):
 Genera 10-16 slides: cover, agenda, 3-4 bloques de sección con sus slides de contenido, al menos 2 slides de stats con cifras concretas, y closing con llamada a la acción. VARIEDAD OBLIGATORIA: incluye al menos 1 slide "timeline" o "comparison", y al menos 1 "quote" cuando el contenido lo permita. Máximo 4 bullets por slide, frases cortas de presentación (no párrafos largos).`
 
     case 'doc-results':
-      return `You are an analyst who writes periodic results reports. Produce a clear, honest results report for this brand using the data the user provides (when data is missing, leave the values as "—" and focus on the narrative structure). ${languageRule}
+      return `You are an analyst who writes periodic results reports. Produce a clear, honest report of the period for this brand, built on the data the user provides. ${languageRule}
 ${input}
 
-Return ONLY this JSON:
+METHOD — work in this order. A results report that describes instead of judging is a dashboard printed on paper.
+
+1. A FIGURE ALONE MEANS NOTHING. Every number goes next to what it is being measured against — the target, the previous period, or the baseline. "1,200 visits" is data; "1,200 visits against a target of 2,000, up from 900" is a result. If there is nothing to compare against, say so in that line.
+
+2. THE HONEST HEADLINE. The executive summary opens with one sentence saying whether the period went well or badly, and why. A summary that lists activity without a verdict forces the reader to do the judging — which is the job you were given.
+
+3. CAUSES, NOT ADJECTIVES. "What did not work" explains WHY it did not: what was tried, what the mechanism was, what the evidence says. "Engagement was low" is a restatement; "the two posts without a product shot took 70% fewer saves" is a cause you can act on.
+
+4. MISSING MEASUREMENT IS ITSELF A FINDING. Where a figure should exist and does not, write '[MISSING: real data]' in the value AND name in the narrative what is not being measured and what it costs to keep flying blind. Never invent a number, and never quietly drop the line.
+
+5. THE PLAN INHERITS FROM THE LEARNINGS. Every item in the next period's plan traces back to something in "what worked", "what did not" or "learnings". A plan that ignores the period it follows is a new plan, not a conclusion.
+
+6. BAD NEWS FIRST AND PLAINLY. If the period went badly, the report says so in the first section. Softening it costs the client the one thing a results report is for.
+
+Return ONLY this JSON (the keys stay exactly as written; the section titles below are placeholders — write them in the output language):
 {
-  "title": "Informe de Resultados — [periodo]",
-  "subtitle": "Periodo cubierto",
+  "title": "Results report — [period]",
+  "subtitle": "Period covered",
   "sections": [
-    {"title": "Resumen Ejecutivo", "body": "<p>...</p>", "stats": [{"value": "", "label": ""}]},
-    {"title": "Resultados por Área", "statusTable": {"headers": ["Área", "Objetivo", "Resultado"], "rows": [{"cells": ["", "", ""], "status": "good"}]}},
-    {"title": "Lo que funcionó", "tips": []},
-    {"title": "Lo que no funcionó", "tips": []},
-    {"title": "Aprendizajes", "body": ""},
-    {"title": "Plan del próximo periodo", "timeline": [{"period": "", "items": []}]}
+    {"title": "Executive summary", "body": "<p>...</p>", "stats": [{"value": "", "label": ""}]},
+    {"title": "Results by area", "statusTable": {"headers": ["Area", "Target", "Result"], "rows": [{"cells": ["", "", ""], "status": "good"}]}},
+    {"title": "What worked", "tips": []},
+    {"title": "What did not work", "tips": []},
+    {"title": "Learnings", "body": ""},
+    {"title": "Next period's plan", "timeline": [{"period": "", "items": []}]}
   ]
 }
-Ajusta secciones al contenido real disponible; añade stats donde haya cifras. Usa "status": "good" cuando el área alcanzó o superó el objetivo, "warning" si quedó cerca, "critical" si quedó lejos — nunca lo dejes en blanco si hay un resultado y un objetivo con los que compararlo.`
+Adjust the sections to the real content available and add "stats" wherever there are figures. Use "status": "good" when the area met or beat its target, "warning" when it came close, "critical" when it fell well short — never leave it blank when there is a result and a target to compare.`
 
     case 'doc-onepager':
       return `You are a commercial strategist. Produce a ONE-page sales one-pager for this brand: dense with value, zero filler. ${languageRule}
 ${input}
 
-Return ONLY this JSON:
+METHOD — work in this order. One page is a brutal constraint: it is won by cutting, not by summarising.
+
+1. THE PROBLEM IN THE BUYER'S WORDS. Open with the pain as the customer would describe it out loud — not as the category describes it. "Nobody picks up the phone at 8pm and the order is lost" beats "suboptimal customer service coverage". Take the phrasing from the brand's own vocabulary in the context.
+
+2. ONE PROMISE, NOT FIVE. The solution makes a single claim the reader can repeat to a colleague from memory. Five benefits of equal weight mean the reader remembers none. Pick the one this brand wins on and let the bullets support it.
+
+3. PROOF BEATS CLAIM. Every assertion that could be doubted carries evidence: a figure, a named reference, a guarantee, a mechanism. Where there is no proof in the brief or context, do NOT invent one — write '[MISSING: real data]' and, in the brief, say which proof would close the sale.
+
+4. EVERY WORD PAYS RENT. Delete adjectives that survive without changing the meaning ("innovative", "leading", "comprehensive"). If a sentence would still sell with three fewer words, it has three too many.
+
+5. ONE NEXT STEP, NOT A MENU. Close with a single action and how to take it. Offering three ways to get in touch is offering none.
+
+Return ONLY this JSON (the keys stay exactly as written; the section titles below are placeholders — write them in the output language):
 {
   "title": "Brand / offer name",
-  "subtitle": "Propuesta de valor en una frase",
+  "subtitle": "Value proposition in one sentence",
   "sections": [
-    {"title": "El problema", "body": "<p>2-3 frases</p>"},
-    {"title": "La solución", "body": "<p>2-3 frases</p>", "tips": ["Beneficio 1", "Beneficio 2", "Beneficio 3"]},
-    {"title": "Cifras clave", "stats": [{"value": "", "label": ""}]},
-    {"title": "Servicios / Planes", "tiers": [{"name": "", "price": "", "includes": []}]},
-    {"title": "Siguiente paso", "body": "<p>CTA claro con contacto</p>"}
+    {"title": "The problem", "body": "<p>2-3 sentences</p>"},
+    {"title": "The solution", "body": "<p>2-3 sentences</p>", "tips": ["Benefit 1", "Benefit 2", "Benefit 3"]},
+    {"title": "Key numbers", "stats": [{"value": "", "label": ""}]},
+    {"title": "Services / Plans", "tiers": [{"name": "", "price": "", "includes": []}]},
+    {"title": "Next step", "body": "<p>Clear CTA with contact details</p>"}
   ]
 }
-Máximo 5 secciones, textos cortos: todo debe caber en una página impresa. Usa "tiers" para Servicios/Planes cuando haya precios o paquetes diferenciados; si no los hay, usa "table" en su lugar. Nunca inventes un precio que no esté en el brief — usa '[MISSING: real data]'.`
+Five sections maximum, short copy: everything must fit on one printed page. Use "tiers" for Services/Plans when there are prices or differentiated packages; when there are none, use "table" instead. Never invent a price that is not in the brief — use '[MISSING: real data]'.`
 
     default:
       return null

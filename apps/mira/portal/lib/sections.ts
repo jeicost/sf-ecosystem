@@ -195,7 +195,9 @@ export const IDEAL_SPACES: IdealSpace[] = [
     items: [
       { href: '/tools',          label: 'All tools',     labelKey: 'sidebar.item.all-tools',     icon: LayoutGrid },
       { href: '/toolkit',        label: 'Reports',       labelKey: 'sidebar.item.reports',       icon: Layers },
-      { href: '/documents',      label: 'Documents',     labelKey: 'sidebar.item.documents',     icon: FileText },
+      // «Presentaciones» (antes Documents): los cuatro formatos que produce —
+      // playbook, presentación, one pager e informe (decisión Carlos 11-sep).
+      { href: '/documents',      label: 'Presentations', labelKey: 'sidebar.item.documents',     icon: FileText },
       // Estudio Visual v1: genera imágenes guiadas por la marca. La galería
       // (/gallery) es su biblioteca de assets, enlazada desde el propio Estudio.
       { href: '/studio',         label: 'Visual Studio', labelKey: 'sidebar.item.visual-studio', icon: Image },

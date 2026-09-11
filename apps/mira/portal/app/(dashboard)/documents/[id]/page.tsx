@@ -311,7 +311,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                     a narrower topic.
                   </p>
                   <a href="/documents" className="inline-block text-xs px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
-                    Back to Documents
+                    Back to Presentations
                   </a>
                 </>
               )}
@@ -339,7 +339,7 @@ export default function DocumentViewPage({ params }: { params: Promise<{ id: str
                     It may belong to a different client than the one selected.
                   </p>
                   <a href="/documents" className="inline-block text-xs px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 text-white transition-colors">
-                    Back to Documents
+                    Back to Presentations
                   </a>
                 </>
               )}

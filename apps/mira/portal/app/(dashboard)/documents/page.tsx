@@ -9,7 +9,9 @@ import GuidedDocumentChat from '@/components/documents/GuidedDocumentChat'
 import { t } from '@/lib/i18n'
 import { useLocaleContext } from '@/app/locale-provider'
 
-// name / desc hold i18n keys, resolved with t() at render time
+// name / desc hold i18n keys, resolved with t() at render time.
+// El orden es el que decidió Carlos (11-sep) y el que se pinta en la página:
+// playbook · presentación · one pager · informe.
 const DOC_TYPE_META: Record<string, { name: string; icon: string; desc: string }> = {
   'doc-playbook': {
     name: 'docs.type-playbook-name',
@@ -21,15 +23,15 @@ const DOC_TYPE_META: Record<string, { name: string; icon: string; desc: string }
     icon: '🎬',
     desc: 'docs.type-deck-desc',
   },
-  'doc-results': {
-    name: 'docs.type-results-name',
-    icon: '📈',
-    desc: 'docs.type-results-desc',
-  },
   'doc-onepager': {
     name: 'docs.type-onepager-name',
     icon: '📄',
     desc: 'docs.type-onepager-desc',
+  },
+  'doc-results': {
+    name: 'docs.type-results-name',
+    icon: '📈',
+    desc: 'docs.type-results-desc',
   },
 }
 
