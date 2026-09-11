@@ -53,6 +53,18 @@ const EXPECT: Record<string, Crit[]> = {
   'brandbook-content-system':     ['judgment', 'specificity', 'rigor'],
   'monthly-content-system':       ['judgment', 'specificity', 'rigor'],
   'content-engine':               ['judgment', 'specificity', 'rigor'],
+  // Presentaciones (playbook · presentación · one pager · informe): sus esquemas
+  // no tienen campos de juicio (effort/impact/priority) — un playbook lleva
+  // pasos y métricas, no una matriz de esfuerzo. Sin esta línea caían en el
+  // DEFAULT, se les exigía 'judgment' y sacaban 1/2 fijo por un campo que no
+  // existe en su esquema: el mismo sesgo que esta rúbrica documenta arriba con
+  // el seo-audit. Medido el 11-sep: los cuatro topaban en 83% sacando 2/2 en
+  // todo lo que sí les aplica. Si algún día el playbook lleva effort/impact en
+  // sus pasos, 'judgment' vuelve a esta lista.
+  'doc-playbook':                 ['specificity', 'rigor'],
+  'doc-deck':                     ['specificity', 'rigor'],
+  'doc-onepager':                 ['specificity', 'rigor'],
+  'doc-results':                  ['specificity', 'rigor'],
 }
 const DEFAULT_EXPECT: Crit[] = ['judgment', 'specificity', 'rigor']
 
