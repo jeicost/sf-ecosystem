@@ -372,6 +372,11 @@ body {
   page-break-inside: avoid;
   break-inside: avoid;
 }
+.label-chip {
+  display: inline-block; font-size: 7.5pt; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; padding: 1px 6px; border-radius: 999px; vertical-align: 1px;
+  background: rgba(255,255,255,.10); color: rgba(255,255,255,.72); margin-right: 2px;
+}
 .tip-box-label {
   font-size: 7.5pt; font-weight: 800; text-transform: uppercase;
   letter-spacing: 1.5px; color: ${t.accent}; margin-bottom: 7px;
@@ -637,13 +642,34 @@ function renderStats(stats: { value: string; label: string }[]): string {
   return rows.join('')
 }
 
+/**
+ * Los contratos de calidad (lib/grounding/*) obligan a etiquetar la frase donde
+ * MIRA decide en vez de medir: '[JUDGEMENT]', '[ASSUMPTION]',
+ * '[RECOMMENDATION]', '[MISSING: real data]'. La intención es buena —el lector
+ * distingue el criterio del dato— pero el corchete en medio de un párrafo
+ * parece un marcador interno que se olvidaron de quitar, y así llevaba desde
+ * agosto en TODO lo que lee el cliente. Aquí se convierte en distintivo: el
+ * texto no cambia, solo deja de parecer un descuido.
+ */
+const CONTRACT_LABELS: Record<string, string> = {
+  JUDGEMENT: 'criterio',
+  JUDGMENT: 'criterio',
+  ASSUMPTION: 'supuesto',
+  RECOMMENDATION: 'recomendación',
+  'MISSING: real data': 'falta el dato',
+}
+export function labelChips(html: string): string {
+  return html.replace(/\[(JUDGEMENT|JUDGMENT|ASSUMPTION|RECOMMENDATION|MISSING: real data)\]\s*/g,
+    (_m, key: string) => `<span class="label-chip">${CONTRACT_LABELS[key] ?? key.toLowerCase()}</span> `)
+}
+
 function renderTips(tips: string[], clientName: string): string {
   return tips
     .map(
       (tip) => `
     <div class="tip-box">
       <div class="tip-box-label">Tip ${esc(clientName)}</div>
-      <div class="tip-box-content">${esc(tip)}</div>
+      <div class="tip-box-content">${labelChips(esc(tip))}</div>
     </div>`
     )
     .join('')
@@ -657,7 +683,7 @@ function renderSteps(steps: { title: string; body: string }[]): string {
       <div class="step-num">${String(i + 1).padStart(2, '0')}</div>
       <div>
         <div class="step-title">${esc(step.title)}</div>
-        <div class="step-text">${step.body}</div>
+        <div class="step-text">${labelChips(step.body)}</div>
       </div>
     </div>`
     )
@@ -783,7 +809,7 @@ function renderSection(sec: PlaybookSection, num: number, o: PlaybookOptions, t:
     <div class="opener-num">${String(num).padStart(2, '0')}</div>
   </div>
   <div class="page-body">
-    ${sec.body ? `<div class="body-text">${sec.body}</div>` : ''}
+    ${sec.body ? `<div class="body-text">${labelChips(sec.body)}</div>` : ''}
     ${sec.stats ? renderStats(sec.stats) : ''}
     ${sec.tiers && sec.tiers.length > 0 ? renderTiers(sec.tiers) : ''}
     ${sec.funnel && sec.funnel.length > 0 ? renderFunnel(sec.funnel) : ''}
@@ -824,7 +850,7 @@ function renderCompactPage(o: PlaybookOptions, t: PlaybookTheme): string {
       (sec) => `
     <div class="compact-section">
       <div class="compact-section-title">${esc(sec.title)}</div>
-      ${sec.body ? `<div class="body-text">${sec.body}</div>` : ''}
+      ${sec.body ? `<div class="body-text">${labelChips(sec.body)}</div>` : ''}
       ${sec.stats ? renderStats(sec.stats) : ''}
       ${sec.tiers && sec.tiers.length > 0 ? renderTiers(sec.tiers) : ''}
       ${sec.funnel && sec.funnel.length > 0 ? renderFunnel(sec.funnel) : ''}

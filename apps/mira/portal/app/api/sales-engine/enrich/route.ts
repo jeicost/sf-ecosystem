@@ -52,9 +52,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'The discovery engine is unavailable' }, { status: 503 })
     }
 
+    // Clave del cliente (BYO) o la de la plataforma, como en /discover.
     const [apolloKey, hunterKey] = await Promise.all([
-      getClientApiKey(clientId, 'apollo'),
-      getClientApiKey(clientId, 'hunter'),
+      getClientApiKey(clientId, 'apollo', process.env.APOLLO_API_KEY),
+      getClientApiKey(clientId, 'hunter', process.env.HUNTER_API_KEY),
     ])
     if (!apolloKey || !hunterKey) {
       return NextResponse.json({ error: 'apollo_hunter_not_connected' }, { status: 400 })

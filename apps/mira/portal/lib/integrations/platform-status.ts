@@ -32,14 +32,18 @@ export function platformIntegrations(): PlatformIntegration[] {
   // (apps/sf-sales-engine), que es quien tiene las claves. Si el motor está
   // configurado, el cliente tiene descubrimiento y verificación de correos.
   const salesEngine = Boolean(process.env.SALES_ENGINE_API_URL && process.env.SALES_ENGINE_API_KEY)
+  // Que el motor esté cableado no basta para prometer prospección: el portal le
+  // pasa las claves en cada llamada, así que sin ellas la tarjeta decía
+  // «incluido» y la herramienta devolvía apollo_hunter_not_connected.
+  const prospecting = salesEngine && Boolean(process.env.APOLLO_API_KEY && process.env.HUNTER_API_KEY)
   const freepik = Boolean(process.env.FREEPIK_API_KEY)
   const drive = Boolean(process.env.GOOGLE_OAUTH_CLIENT_ID && process.env.GOOGLE_OAUTH_CLIENT_SECRET)
 
   return [
     { toolId: 'anthropic', connected: anthropic, note: 'Incluido en tu plan — no necesitas cuenta propia' },
     { toolId: 'openai', connected: openai, note: 'Incluido en tu plan — no necesitas cuenta propia' },
-    { toolId: 'apollo', connected: salesEngine, note: 'A través del motor comercial de MIRA' },
-    { toolId: 'hunter', connected: salesEngine, note: 'A través del motor comercial de MIRA' },
+    { toolId: 'apollo', connected: prospecting, note: 'A través del motor comercial de MIRA' },
+    { toolId: 'hunter', connected: prospecting, note: 'A través del motor comercial de MIRA' },
     { toolId: 'freepik', connected: freepik, note: 'Incluido — escalado y mejora de imágenes' },
     { toolId: 'magnific', connected: freepik, note: 'Incluido — usa la misma cuenta que Freepik' },
     // Drive es la excepción: la plataforma tiene el OAuth montado, pero la

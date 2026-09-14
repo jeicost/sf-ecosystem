@@ -48,9 +48,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'The discovery engine is unavailable' }, { status: 503 })
     }
 
+    // Clave del cliente si la trajo (BYO), y si no la de la plataforma — el
+    // mismo patrón que Anthropic. Sin el fallback esto era una promesa rota:
+    // el marketplace anuncia Apollo y Hunter como «incluidos a través del motor
+    // comercial» (lib/integrations/platform-status.ts) mientras la ruta exigía
+    // una clave POR CLIENTE que, por ese mismo diseño, nadie iba a añadir nunca.
+    // En producción devolvía apollo_hunter_not_connected a todo el mundo
+    // (verificado el 11-sep-2026 con tool_connections vacía).
     const [apolloKey, hunterKey] = await Promise.all([
-      getClientApiKey(clientId, 'apollo'),
-      getClientApiKey(clientId, 'hunter'),
+      getClientApiKey(clientId, 'apollo', process.env.APOLLO_API_KEY),
+      getClientApiKey(clientId, 'hunter', process.env.HUNTER_API_KEY),
     ])
     if (!apolloKey || !hunterKey) {
       return NextResponse.json({ error: 'apollo_hunter_not_connected' }, { status: 400 })
