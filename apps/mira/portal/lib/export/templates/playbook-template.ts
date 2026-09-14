@@ -624,13 +624,13 @@ function renderStats(stats: { value: string; label: string }[]): string {
   if (stats.length === 0) return ''
   const box = (s: { value: string; label: string }) => `
     <div class="stat-box">
-      <div class="stat-value">${esc(s.value)}</div>
-      <div class="stat-label">${esc(s.label)}</div>
+      <div class="stat-value">${labelChips(esc(s.value))}</div>
+      <div class="stat-label">${labelChips(esc(s.label))}</div>
     </div>`
   if (stats.length === 1) {
     return `<div class="stat-box solo">
-      <div class="stat-value">${esc(stats[0].value)}</div>
-      <div class="stat-label">${esc(stats[0].label)}</div>
+      <div class="stat-value">${labelChips(esc(stats[0].value))}</div>
+      <div class="stat-label">${labelChips(esc(stats[0].label))}</div>
     </div>`
   }
   // Chunk into rows of two; an odd trailing stat spans the full width.
@@ -682,7 +682,7 @@ function renderSteps(steps: { title: string; body: string }[]): string {
     <div class="step-item">
       <div class="step-num">${String(i + 1).padStart(2, '0')}</div>
       <div>
-        <div class="step-title">${esc(step.title)}</div>
+        <div class="step-title">${labelChips(esc(step.title))}</div>
         <div class="step-text">${labelChips(step.body)}</div>
       </div>
     </div>`
@@ -694,7 +694,7 @@ function renderSteps(steps: { title: string; body: string }[]): string {
 function renderTable(table: { headers: string[]; rows: string[][] }): string {
   const head = table.headers.map((h) => `<th>${esc(h)}</th>`).join('')
   const body = table.rows
-    .map((row) => `<tr>${row.map((cell) => `<td>${esc(cell)}</td>`).join('')}</tr>`)
+    .map((row) => `<tr>${row.map((cell) => `<td>${labelChips(esc(cell))}</td>`).join('')}</tr>`)
     .join('')
   return `<table class="data-table"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`
 }
@@ -709,7 +709,7 @@ function renderTiers(tiers: { name: string; price: string; includes?: string[] }
       <div class="tier-price">${esc(tier.price)}</div>
       ${
         tier.includes && tier.includes.length > 0
-          ? `<ul class="tier-includes">${tier.includes.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>`
+          ? `<ul class="tier-includes">${tier.includes.map((i) => `<li>${labelChips(esc(i))}</li>`).join('')}</ul>`
           : ''
       }
     </div>`
@@ -728,7 +728,7 @@ function renderFunnel(stages: { stage: string; description?: string }[]): string
       return `
     <div class="funnel-stage" style="width:${width}%">
       <div class="funnel-stage-title">${esc(s.stage)}</div>
-      ${s.description ? `<div class="funnel-stage-desc">${esc(s.description)}</div>` : ''}
+      ${s.description ? `<div class="funnel-stage-desc">${labelChips(esc(s.description))}</div>` : ''}
     </div>`
     })
     .join('')
@@ -742,7 +742,7 @@ function renderTimeline(periods: { period: string; items: string[] }[]): string 
       (p) => `
     <div class="timeline-col">
       <div class="timeline-period">${esc(p.period)}</div>
-      <ul class="timeline-items">${(p.items || []).map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+      <ul class="timeline-items">${(p.items || []).map((i) => `<li>${labelChips(esc(i))}</li>`).join('')}</ul>
     </div>`
     )
     .join('')
@@ -757,8 +757,8 @@ function renderChecklist(items: { item: string; note?: string }[]): string {
     <div class="checklist-item">
       <div class="checklist-box"></div>
       <div>
-        <div class="checklist-text">${esc(it.item)}</div>
-        ${it.note ? `<div class="checklist-note">${esc(it.note)}</div>` : ''}
+        <div class="checklist-text">${labelChips(esc(it.item))}</div>
+        ${it.note ? `<div class="checklist-note">${labelChips(esc(it.note))}</div>` : ''}
       </div>
     </div>`
     )
@@ -783,8 +783,8 @@ function renderStatusTable(table: {
       const cells = row.cells
         .map((cell, i) =>
           i === 0
-            ? `<td><span class="status-dot" style="background:${color}"></span>${esc(cell)}</td>`
-            : `<td>${esc(cell)}</td>`
+            ? `<td><span class="status-dot" style="background:${color}"></span>${labelChips(esc(cell))}</td>`
+            : `<td>${labelChips(esc(cell))}</td>`
         )
         .join('')
       return `<tr>${cells}</tr>`
