@@ -1,5 +1,7 @@
+import { randomUUID } from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveRequestClient } from '@/lib/resolve-client'
+import { adminClient } from '@/lib/supabase'
 import type { AuthorizeRequest, AuthorizeResponse } from '@/lib/drive-connection.types'
 
 /**
@@ -63,7 +65,26 @@ export async function POST(req: NextRequest) {
       'https://www.googleapis.com/auth/drive.readonly',
       'https://www.googleapis.com/auth/drive.file',
     ]
-    const state = Buffer.from(JSON.stringify({ clientId, timestamp: Date.now(), returnTo: typeof returnTo === 'string' ? returnTo : undefined })).toString('base64')
+    // El state es un token OPACO: la marca, el usuario y el destino de vuelta
+    // viven en `oauth_sessions`, no en un base64 que el navegador puede reescribir.
+    // Antes el callback leía el clientId del propio parámetro, así que bastaba
+    // editarlo para quedarse con la conexión de Drive de cualquier otra marca
+    // (ver 0075). El patrón es el mismo que ya usa /api/integrations/oauth.
+    const state = randomUUID()
+    const { error: stateError } = await adminClient()
+      .from('oauth_sessions')
+      .insert({
+        state,
+        tool: 'google-drive',
+        client_id: clientId,
+        user_id: access.userId,
+        return_to: typeof returnTo === 'string' && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : null,
+        expires_at: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      })
+    if (stateError) {
+      console.error('drive authorize: no se pudo guardar el state:', stateError.message)
+      return NextResponse.json({ error: 'No se pudo iniciar la conexión con Drive' }, { status: 500 })
+    }
 
     const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth')
     authUrl.searchParams.set('client_id', googleClientId)

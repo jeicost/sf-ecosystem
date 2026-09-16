@@ -2,6 +2,7 @@ import { createServerComponentClient } from '@sf/supabase'
 import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { userCanAccessClient } from '@/lib/resolve-client'
 
 /**
  * POST /api/brand-brain/drive/callback
@@ -33,19 +34,8 @@ export async function GET(req: NextRequest) {
   if (oauthError) return backTo(`error&reason=${encodeURIComponent(oauthError)}`)
   if (!code || !state) return backTo('error&reason=missing_code')
 
-  let clientId: string
   try {
-    const decoded = JSON.parse(Buffer.from(state, 'base64').toString('utf-8'))
-    clientId = decoded.clientId
-    if (typeof decoded.returnTo === 'string' && decoded.returnTo.startsWith('/')) returnPath = decoded.returnTo
-    if (Date.now() - decoded.timestamp > 600000) return backTo('error&reason=state_expired')
-  } catch {
-    return backTo('error&reason=bad_state')
-  }
-  if (!clientId) return backTo('error&reason=no_client')
-
-  try {
-    // La tabla exige user_id: lo tomamos de la sesión del navegador que vuelve de Google
+    // La sesión del navegador que vuelve de Google.
     const cookieStore = await cookies()
     const supabase = createServerComponentClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL || '',
@@ -58,6 +48,37 @@ export async function GET(req: NextRequest) {
     if (!user) return backTo('error&reason=no_session')
 
     const admin = adminClient()
+
+    // La marca sale de la FILA de oauth_sessions, nunca del parámetro.
+    //
+    // Antes esto decodificaba un base64 sin firmar y se creía el clientId que
+    // trajera: cualquiera con sesión podía editar el state, poner el UUID de
+    // otra marca, dar consentimiento con SU cuenta de Google y quedarse con la
+    // conexión de Drive de ese cliente — sus entregables subiéndose al Drive del
+    // atacante y el sync alimentando su Brand Brain. El state es ahora opaco y
+    // la fila la escribió /authorize, que sí autoriza (ver 0075).
+    const { data: session } = await admin
+      .from('oauth_sessions')
+      .select('client_id, user_id, return_to, expires_at')
+      .eq('state', state)
+      .eq('tool', 'google-drive')
+      .maybeSingle()
+
+    if (!session) return backTo('error&reason=bad_state')
+    // De un solo uso: gastado el state, la fila desaparece pase lo que pase.
+    await admin.from('oauth_sessions').delete().eq('state', state)
+
+    if (new Date(session.expires_at) < new Date()) return backTo('error&reason=state_expired')
+    // El destino de vuelta también sale de la fila: como input del navegador
+    // permitía '//evil.com', que pasa el filtro startsWith('/') y new URL()
+    // resuelve como otro dominio — un open redirect desde un enlace legítimo.
+    if (session.return_to) returnPath = session.return_to
+
+    // Quien vuelve tiene que ser quien empezó, y seguir teniendo acceso a la marca.
+    if (session.user_id && session.user_id !== user.id) return backTo('error&reason=wrong_user')
+    const clientId: string = session.client_id
+    if (!(await userCanAccessClient(user, clientId))) return backTo('error&reason=no_access')
+
     const tokens = await exchangeCodeForTokens(code)
     if (!tokens.success || !tokens.accessToken) return backTo('error&reason=token_exchange')
 
