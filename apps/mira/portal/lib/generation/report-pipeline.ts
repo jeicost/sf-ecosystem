@@ -45,6 +45,10 @@ export const PIPELINE_TOOLS = new Set([
   // (d7c8e889) entregó 10/18 captions con [COMPLETAR:] y 0 líneas thai sin
   // que nadie lo releyera.
   'monthly-content-system',
+  // Añadido 17-sep-2026: era la ÚNICA herramienta de informe fuera del crítico
+  // Y sin METHOD — seguía con la configuración de julio. Con la rúbrica
+  // endurecida puntuaba 6/9 mientras sus hermanas de la misma tanda daban 6/6.
+  'seo-audit',
 ])
 
 export interface CritiqueFinding {

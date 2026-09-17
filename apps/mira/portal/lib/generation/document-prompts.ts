@@ -105,23 +105,23 @@ METHOD — work in this order. The order is the value; a playbook assembled sect
 
 6. NAME WHAT NOT TO DO. Close with what this brand should stop, avoid or postpone. A playbook that only adds work is a wish list — the hard, useful judgement is what comes off the table.
 
-Return ONLY this JSON:
+Return ONLY this JSON (the keys stay exactly as written; the example values below are placeholders — write all content in the output language):
 {
   "title": "Playbook title (short and punchy)",
   "subtitle": "One-line subtitle",
   "sections": [
     {
       "title": "Section name",
-      "body": "2-4 párrafos de contenido en HTML simple (<p>, <strong>)",
+      "body": "2-4 paragraphs of simple HTML (<p>, <strong>)",
       "stats": [{"value": "", "label": ""}],
-      "tips": ["Consejo accionable 1", "Consejo 2"],
-      "steps": [{"title": "Paso 1: ...", "body": "Cómo ejecutarlo"}],
+      "tips": ["Actionable tip 1", "Tip 2"],
+      "steps": [{"title": "Step 1: ...", "body": "How to execute it"}],
       "table": {"headers": [], "rows": []},
       "tiers": [{"name": "Plan/tier", "price": "€X/month", "includes": ["What it includes 1", "What it includes 2"]}],
       "funnel": [{"stage": "Stage name", "description": "What happens at this stage"}],
       "timeline": [{"period": "Week 1 / Month 1 / Q1", "items": ["What happens in this period"]}],
-      "checklist": [{"item": "Tarea a verificar", "note": "Detalle opcional"}],
-      "statusTable": {"headers": ["Columna 1", "Columna 2"], "rows": [{"cells": ["valor 1", "valor 2"], "status": "good"}]}
+      "checklist": [{"item": "Task to verify", "note": "Optional detail"}],
+      "statusTable": {"headers": ["Column 1", "Column 2"], "rows": [{"cells": ["value 1", "value 2"], "status": "good"}]}
     }
   ]
 }
@@ -148,22 +148,22 @@ METHOD — work in this order. A deck built slide by slide becomes a document wi
 
 5. THE ASK IS EXPLICIT. The closing says exactly what you want from this audience — decision, budget, signature, next meeting — not "thank you" or a vague "let's talk".
 
-Return ONLY this JSON:
+Return ONLY this JSON (the keys stay exactly as written; the example values below are placeholders — write all content in the output language):
 {
   "title": "Presentation title",
   "subtitle": "Subtitle",
   "slides": [
-    {"layout": "cover", "title": "", "subtitle": "", "image_prompt": "visual description for la imagen de fondo de portada (escena/concepto, sin texto)"},
-    {"layout": "agenda", "title": "Agenda", "items": ["Punto 1", "Punto 2", "Punto 3"]},
+    {"layout": "cover", "title": "", "subtitle": "", "image_prompt": "visual description for the cover background image (scene/concept, no text)"},
+    {"layout": "agenda", "title": "Agenda", "items": ["Item 1", "Item 2", "Item 3"]},
     {"layout": "section", "title": "Block name", "subtitle": "What it covers"},
-    {"layout": "content", "title": "", "body": "Short paragraph in simple HTML", "bullets": ["punto 1", "punto 2"]},
+    {"layout": "content", "title": "", "body": "Short paragraph in simple HTML", "bullets": ["bullet 1", "bullet 2"]},
     {"layout": "stats", "title": "", "stats": [{"value": "", "label": ""}]},
-    {"layout": "timeline", "title": "Roadmap", "items": [{"label": "Q1", "title": "Hito", "body": "1 frase"}]},
-    {"layout": "comparison", "title": "Antes vs. Después", "left": {"title": "Opción A", "bullets": ["..."]}, "right": {"title": "Opción B", "bullets": ["..."]}},
-    {"layout": "quote", "title": "", "quote": "Cita potente de 1-2 frases", "author": "Nombre, cargo"},
-    {"layout": "image", "title": "", "body": "Short paragraph", "bullets": ["..."], "wants_image": true, "image_prompt": "descripción visual de la imagen (escena/concepto, sin texto)"},
-    {"layout": "chart", "title": "", "subtitle": "", "chart": {"type": "bar", "labels": ["Ene", "Feb"], "data": [10, 20]}},
-    {"layout": "closing", "title": "Cierre / CTA", "subtitle": ""}
+    {"layout": "timeline", "title": "Roadmap", "items": [{"label": "Q1", "title": "Milestone", "body": "1 sentence"}]},
+    {"layout": "comparison", "title": "Before vs. After", "left": {"title": "Option A", "bullets": ["..."]}, "right": {"title": "Option B", "bullets": ["..."]}},
+    {"layout": "quote", "title": "", "quote": "Striking 1-2 sentence quote", "author": "Name, role"},
+    {"layout": "image", "title": "", "body": "Short paragraph", "bullets": ["..."], "wants_image": true, "image_prompt": "visual description of the image (scene/concept, no text)"},
+    {"layout": "chart", "title": "", "subtitle": "", "chart": {"type": "bar", "labels": ["Jan", "Feb"], "data": [10, 20]}},
+    {"layout": "closing", "title": "Closing / CTA", "subtitle": ""}
   ]
 }
 Guía de layouts (usa cada uno con su shape exacto):

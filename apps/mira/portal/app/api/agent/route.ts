@@ -10,6 +10,7 @@ import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { AGENT_DISPLAY_NAMES, AGENT_METADATA } from '@/lib/agent-meta'
 import { safeLookup } from '@/lib/safe-lookup'
 import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
+import { CHAT_METHOD_CONTRACT } from '@/lib/grounding/chat-method-contract'
 import { CHAT_OPTIONS_CONTRACT } from '@/lib/chat-options'
 import { searchWeb, formatSourcesForPrompt, WEB_SEARCH_TOOL } from '@/lib/grounding/web-research'
 import {
@@ -193,7 +194,10 @@ export async function POST(req: NextRequest) {
 
     // Enriquecer con Brand Brain + project_memory + agent documents si aplica
     const dateCtx = `\n\nFecha actual: ${today}` + autonomyCtx + toneCtx + projectCtx + feedbackCtx
-    let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE + CHAT_OPTIONS_CONTRACT
+    // CHAT_METHOD_CONTRACT: el chat solo llevaba la variante ligera de
+    // grounding — la mitad que prohíbe inventar sin la mitad que obliga a
+    // decidir y a cruzar los números que ya tiene delante (auditoría 16-sep).
+    let fullSystem = systemPrompt + dateCtx + AGENT_CHAT_GROUNDING_NOTE + CHAT_METHOD_CONTRACT + CHAT_OPTIONS_CONTRACT
 
     const memoryContext = await getClientMemoryContext(resolvedClientId, projectId ?? null)
     // Conocimiento unificado (P2): Drive + subidas + referencias para TODOS

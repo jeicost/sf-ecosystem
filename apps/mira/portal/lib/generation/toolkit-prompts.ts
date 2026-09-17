@@ -192,6 +192,15 @@ export async function getToolkitPrompt(
   // (judgement) → cómo se escribe (voice). Antes el de voz llegaba solo a
   // brand-book y brandbook-content-system: los otros nueve informes se
   // generaban sin la regla que prohíbe el relleno consultor.
+  // El idioma del informe era la única regla que nadie escribió: los prompts
+  // están en inglés, el REPORT_VOICE_CONTRACT en español con ejemplos en
+  // español, y el Brand Brain en cualquiera de los dos — el modelo deducía.
+  // Quick actions, documentos y monthly ya llevaban su regla; los informes no
+  // (auditoría de calidad 16-sep). Mismo default que documents: inglés.
+  const reportLanguage =
+    (typeof inputData.output_language === 'string' && inputData.output_language.trim()) || 'English'
+  const languageRule = `\n\nLANGUAGE: write every prose value of the JSON in ${reportLanguage}. The JSON keys and the enum values (status, severity, priority, verdict, intent…) stay exactly as written in the schema — only the prose is translated. Do not mix languages inside the document. Where the brand context states a publishing language for audience-facing copy, any ready-to-use copy inside this report follows THAT language, not this one.`
+
   const fullContext = [
     attachmentText
       ? `\n\nUSER ATTACHMENTS (primary source — use their actual content):\n${fenceUntrusted('USER ATTACHMENTS', attachmentText)}`
@@ -200,6 +209,7 @@ export async function getToolkitPrompt(
     groundingBlocks ? `\n\n${groundingBlocks}` : '',
     feedbackBlock,
     selfCritiqueBlock,
+    languageRule,
     `\n\n${GROUNDING_CONTRACT}`,
     `\n\n${JUDGMENT_CONTRACT}`,
     ECONOMICS_TOOLS.includes(toolSlug) ? `\n\n${DERIVED_ECONOMICS_CONTRACT}` : '',
@@ -269,11 +279,49 @@ Generate a COMPREHENSIVE brand briefing JSON with ALL these sections:
   "brand_values_in_practice": [{"value": "", "example": ""}],
   "brand_evolution": {"2_year_roadmap": "", "potential_expansions": []},
   "success_metrics": {"kpis": [{"name": "", "target": "", "tracking": ""}], "health_dashboard": ""},
+  "the_enemy": {"what_this_brand_is_against": "the default behaviour, lazy alternative or category convention it refuses — from the context, never a strawman", "why_it_matters": "[JUDGEMENT] "},
+  "tensions": [{"tension": "where the client's own inputs contradict each other", "evidence_a": "", "evidence_b": "", "how_to_resolve": "the conversation or decision that settles it"}],
+  "could_not_establish": [{"what": "", "why_it_blocks": "", "next_conversation": ""}],
+  "data_gaps": ["every data point you needed but could not find in the context"],
   "data_coherence": {"conflicts_detected": false, "warnings": []}
-}`
+}
+The METHOD steps above land in these fields: the enemy in "the_enemy", the named tensions in "tensions", and what you could not establish in "could_not_establish" — a step that produces no field content did not happen.`
 
     case 'seo-audit':
       return `You are an SEO expert analyzing a website's organic search execution based on VERIFIED SITE FACTS.
+
+METHOD — work in this order. A checklist with equal weights is a description;
+you are being paid for the ranking.
+
+1. WHAT DOES A BUYER SEARCH FOR HERE. State in one line the query someone about
+   to buy from this business would type. The whole audit is ordered by distance
+   to that query: a weak H1 on the page that closes the sale outweighs ten empty
+   alt attributes on the blog.
+
+2. WHAT IT COSTS, NOT WHAT IT LOOKS LIKE. Every finding says what traffic,
+   query or conversion is being lost TODAY because of it. A finding without a
+   consequence is an observation, and observations do not get executed.
+
+3. THE SINGLE BIGGEST GAP. Name in \`single_biggest_gap\` the one problem that,
+   fixed alone, moves the most. Six equally-weighted actions hand the client
+   back the prioritisation work they paid you to do.
+
+4. EVERY KEYWORD GETS A PAGE. Map each keyword to the URL that should win it
+   (\`target_url\`), or mark it "page to create". A list with no destination is
+   a glossary, not a strategy. Intent rules; volume here is "unknown" and you
+   know it.
+
+5. WHAT WORKS STAYS UNTOUCHED. Say explicitly in \`do_not_touch\` what is
+   already well solved. Audits that only list problems make clients break what
+   was working.
+
+6. EFFORT AND OWNER ARE YOUR CALL (see JUDGEMENT CONTRACT): commit to a value
+   and justify it in one line. \`owner\` is an executable role ("whoever
+   maintains the website", "the blog writer") — never "the team".
+
+ANTI-GENERIC TEST: if a recommendation would apply to any website on earth
+("improve site speed", "optimise meta descriptions"), either land it on the
+concrete element you saw in VERIFIED SITE FACTS, or delete it.
 
 ⚠️ TIER 5: TECHNICAL VALIDATION TOOLKIT
 - If Content Pack topics/keywords appear in dependencies, VALIDATE that target keywords align with content pillars/topics
@@ -378,7 +426,8 @@ Generate SEO audit JSON (EXACT STRUCTURE — field examples below are generic pl
           "volume": "unknown unless real data provided",
           "intent": "Transactional|Commercial|Informational|Branded",
           "priority": "#1|#2|Quick win|Blog topic",
-          "current_rank": "unknown unless real data provided"
+          "current_rank": "unknown unless real data provided",
+          "target_url": "the URL on this site that should win it, or 'page to create: <what>'"
         }
       ]
     },
@@ -420,10 +469,17 @@ Generate SEO audit JSON (EXACT STRUCTURE — field examples below are generic pl
       "severity_tag": "critical|warning|info",
       "impact": "[RECOMMENDATION] qualitative expected impact — no invented percentages",
       "effort": "estimate in hours or days",
-      "owner": "team role",
+      "effort_rationale": "[JUDGEMENT] one line on why that estimate",
+      "owner": "concrete executable role — never 'the team'",
       "expected_roi": "high|medium|low"
     }
   ],
+  "single_biggest_gap": {
+    "what": "the one problem that, fixed alone, moves the most",
+    "what_it_costs_now": "the traffic/query/conversion being lost today",
+    "why_this_one": "[JUDGEMENT] why this outranks everything else on the list"
+  },
+  "do_not_touch": ["what is already well solved and should be left alone, with the verified fact that proves it"],
   "data_gaps": ["every data point you needed but could not find in the context"],
   "generatedAt": "just now"
 }`
@@ -633,11 +689,11 @@ Generate a COMPREHENSIVE content pack JSON with ALL sections:
   "pillar_alignment": "exact_match|mismatch|warning",
   "dependencies": {"brand_briefing": "", "marketing_audit": ""},
   "content_pillars": [{"name": "", "description": "", "content_types": [], "monthly_volume": ""}],
-  "blog_content_hub": [{"title": "", "outline": [], "seo_keywords": [], "target_audience": "", "word_count": ""}],
+  "blog_content_hub": [{"title": "", "outline": [], "seo_keywords": [], "target_audience": "", "word_count": "", "pillar": "which content pillar this serves", "job": "reach|trust|consideration|conversion"}],
   "social_media_strategy": {
-    "instagram": [{"type": "", "script": "", "visual_notes": ""}],
-    "tiktok": [{"script": "", "duration": "", "audio": ""}],
-    "linkedin": [{"angle": "", "copy": ""}]
+    "instagram": [{"type": "", "script": "", "visual_notes": "", "pillar": "", "job": "reach|trust|consideration|conversion"}],
+    "tiktok": [{"script": "", "duration": "", "audio": "", "pillar": "", "job": "reach|trust|consideration|conversion"}],
+    "linkedin": [{"angle": "", "copy": "", "pillar": "", "job": "reach|trust|consideration|conversion"}]
   },
   "email_sequences": [{"name": "", "subject": "", "body_outline": [], "cta": "", "send_timing": ""}],
   "video_content_briefs": [{"type": "", "script_outline": "", "visuals": ""}],
@@ -649,8 +705,15 @@ Generate a COMPREHENSIVE content pack JSON with ALL sections:
   "brand_aligned_checklist": {"voice_check": "", "visual_check": "", "messaging_check": ""},
   "ugc_strategy": {"hashtags": [], "testimonial_program": "", "community_content": ""},
   "content_calendar": {"12_month_rolling": []},
+  "capacity_verdict": {
+    "pieces_per_week_proposed": "",
+    "what_the_context_says_they_sustain": "from the brand's editorial rhythm/team in the context, or 'unknown'",
+    "verdict": "sustainable|needs_resource",
+    "what_it_would_take": "if needs_resource: the concrete extra resource, plainly"
+  },
   "data_gaps": ["UGC/community assets if activos_ugc_comunidad was empty, plus any other unsupported specifics"]
-}`
+}
+METHOD step 1 lands in "capacity_verdict", and every publishable item carries its "pillar" and its "job" — a piece that cannot name its job is filler and gets cut.`
 
     case 'action-plan':
       return `You are the operator this brand would hire to run the next 90 days — not a consultant describing what could be done, but the person who has to make it happen with THIS budget, THIS team and THIS calendar.

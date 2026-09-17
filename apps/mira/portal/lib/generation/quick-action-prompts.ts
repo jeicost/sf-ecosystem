@@ -4,6 +4,49 @@ import { getClientMemoryContext } from '@/lib/client-memory'
 import { getFeedbackBlock } from '@/lib/feedback'
 import { getApprovedExamplesBlock } from '@/lib/generation/approved-examples'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { JUDGMENT_CONTRACT } from '@/lib/grounding/judgment-contract'
+import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
+
+/**
+ * Acciones con campos de JUICIO (effort/impact/relevance/risk…): reciben el
+ * contrato que obliga a decidir. Las quick actions solo llevaban el de
+ * grounding — exactamente la configuración que en agosto producía informes
+ * llenos de «unknown»: prohibición de inventar sin la contraparte que obliga
+ * a mojarse en lo que el cliente paga por decidir (auditoría 16-sep).
+ */
+const QA_JUDGMENT_ACTIONS = new Set([
+  'analisis_cashflow', 'optimizar_costos', 'roadmap_innovacion',
+  'analizar_tendencias', 'proyeccion_financiera', 'preparar_llamada',
+])
+
+/**
+ * MÉTODO compartido de las piezas sociales — la doctrina que ya tenían
+ * crear_newsletter y crear_video_brief, extendida a las acciones de más
+ * volumen, que eran prompts de dos líneas («You are a social media
+ * strategist. Generate social media content.»).
+ */
+const SOCIAL_CRAFT_METHOD = `
+METHOD — in this order:
+
+1. THE FIRST LINE IS THE POST. Write it before anything else and judge it on
+   its own: if it gives no reason to keep reading (a number, a contradiction, a
+   concrete scene from THIS business), the rest does not exist. Never open with
+   the brand's name, with "At [brand] we know that…" or with a generic
+   rhetorical question ("Did you know…?").
+2. ONE IDEA PER PIECE. If the copy argues two things, keep the one that moves
+   the decision and cut the other. Four equally-weighted benefits leave none.
+3. PROOF BEFORE ADJECTIVE. Anything doubtable travels with its evidence from
+   the context (a Brand Brain fact, a real detail of the offer). If there is no
+   proof, state the concrete fact that IS on record — never substitute
+   "quality", "authentic" or "unique".
+4. THE SWAP TEST. Re-read the copy with a competitor's name in place of this
+   brand's. If it still works, it says nothing: rewrite it with the brand's
+   "we say / we never say" vocabulary.
+5. THE CTA IS ONE CONCRETE ACTION, NOT A GOODBYE. "Book for Tuesday night"
+   yes; "DM us!" or a bare "link in bio", no.
+6. HASHTAGS SOMEONE ACTUALLY FOLLOWS (niche, city, category) — never #love
+   #instagood — respecting whatever count the brand rules set.
+`
 
 
 // B4: los ❤ del cliente por fin se usan — los últimos outputs que marcó como
@@ -110,7 +153,9 @@ OPTIONAL FIELDS LEFT BLANK: if a non-required form field arrives empty, do not l
     (approvedBlock ? `\n\n${approvedBlock}` : '') +
     languageRule +
     optionalFieldsRule +
-    `\n\n${GROUNDING_CONTRACT}`
+    `\n\n${GROUNDING_CONTRACT}` +
+    `\n\n${EDITORIAL_CONTRACT}` +
+    (QA_JUDGMENT_ACTIONS.has(actionType) ? `\n\n${JUDGMENT_CONTRACT}` : '')
 
   // Prompts específicos por acción
   // ADMIN
@@ -250,8 +295,8 @@ Return ONLY valid JSON (no markdown):
     // with_image (toggle del formulario): añade el prompt de generación de
     // imagen al schema — generate.ts lo convierte en imagen real vía OpenAI.
     const withImage = Boolean(inputData.with_image)
-    return `You are a social media strategist. Generate social media content.
-
+    return `You are a social media strategist writing a post that has to stop a thumb, for this brand and no other.
+${SOCIAL_CRAFT_METHOD}
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
@@ -311,8 +356,8 @@ Generate brief JSON:
 
   if (actionType === 'crear_carousel') {
     const withImage = Boolean(inputData.with_image)
-    return `You are a social content designer. Generate a carousel concept.
-
+    return `You are a social content designer building a carousel that earns every swipe. The method below applies to every slide; slide 1 is the hook and gets judged alone.
+${SOCIAL_CRAFT_METHOD}
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
@@ -331,8 +376,8 @@ Generate carousel JSON:
   }
 
   if (actionType === 'crear_campaña_ads') {
-    return `You are a performance marketer. Generate a paid ad campaign.
-
+    return `You are a performance marketer building a paid campaign with this brand's own money — every euro of the structure has to be defensible. The method below applies to every ad variant's copy.
+${SOCIAL_CRAFT_METHOD}
 INPUT:
 ${JSON.stringify(inputData, null, 2)}
 ${fullContext}
