@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { userCanAccessClient } from '@/lib/resolve-client'
+import { encryptSecret } from '@/lib/crypto'
 
 /**
  * POST /api/brand-brain/drive/callback
@@ -91,8 +92,10 @@ export async function GET(req: NextRequest) {
 
     const row = {
       user_id: user.id,
-      access_token: tokens.accessToken,
-      refresh_token: tokens.refreshToken || null,
+      // Cifrado en reposo (mismo esquema que tool_connections); los lectores
+      // pasan por decryptSecret, que respeta el texto plano de filas legacy.
+      access_token: encryptSecret(tokens.accessToken),
+      refresh_token: tokens.refreshToken ? encryptSecret(tokens.refreshToken) : null,
       token_expires_at: tokenExpiresAt,
       is_authorized: true,
       // Google returns the space-delimited scopes it actually granted (may be

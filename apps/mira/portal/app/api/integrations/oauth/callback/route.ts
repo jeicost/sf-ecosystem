@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOAuthConfig, getOAuthRedirectUri } from '@/lib/integrations/oauth-config'
 import { createServiceClient } from '@/lib/supabase-admin'
+import { encryptSecret } from '@/lib/crypto'
 
 export async function GET(request: NextRequest) {
   // Next 15 exige URLs absolutas en redirect(); relativas lanzan TypeError.
@@ -111,8 +112,13 @@ export async function GET(request: NextRequest) {
     }
 
     const tokenData = await tokenResponse.json()
-    const accessToken = tokenData.access_token
-    const refreshToken = tokenData.refresh_token || null
+    // Cifrado en reposo, como las BYO API keys de esta MISMA tabla: la F1 de
+    // agosto cifró tool_connections en /api/integrations/tools pero este
+    // callback siguió guardando los tokens OAuth en claro — media tabla
+    // protegida y media no (auditoría 16-sep). Los lectores usan
+    // decryptSecret(), que deja pasar el texto plano legacy intacto.
+    const accessToken = encryptSecret(tokenData.access_token)
+    const refreshToken = tokenData.refresh_token ? encryptSecret(tokenData.refresh_token) : null
     const expiresAt = tokenData.expires_in
       ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
       : null

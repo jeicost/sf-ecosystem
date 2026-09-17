@@ -1,50 +1,14 @@
-import { createServerComponentClient } from '@sf/supabase'
-import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
+import { resolveRequestClient } from '@/lib/resolve-client'
 
-// Resolve which client the user may act on. super_admin can target any client
-// (the active workspace); regular users only clients they have a grant for.
-//
-// ⚠️ Un cliente pedido y DENEGADO devuelve null (403), nunca "el primer grant
-// del usuario". Ese fallback silencioso era una bomba: el editor mandaba el
-// cliente en `clientId` y aquí se leía `client_id`, así que en un cliente sin
-// Brain todavía llegaba vacío, caía a este fallback y el PUT escribía el Brand
-// Brain EN OTRO CLIENTE distinto del que había en pantalla. Solo la unique
-// constraint `brand_profiles_client_id_key` lo convirtió en un 500 en vez de
-// en una sobreescritura silenciosa. Redirigir una escritura a otro cliente
-// nunca es la respuesta correcta.
-async function resolveClientId(
-  admin: ReturnType<typeof adminClient>,
-  user: { id: string; user_metadata?: Record<string, unknown> },
-  requestedClientId: string | null
-): Promise<string | null> {
-  const isSuperAdmin = user.user_metadata?.plan === 'super_admin'
-
-  if (requestedClientId) {
-    if (isSuperAdmin) return requestedClientId
-    const { data: grant } = await admin
-      .from('mira_project_access')
-      .select('project_id')
-      .eq('user_id', user.id)
-      .eq('project_id', requestedClientId)
-      .limit(1)
-    return grant?.length ? requestedClientId : null
-  }
-
-  // Sin cliente pedido: el único destino defendible es el del propio usuario.
-  const { data: accessData } = await admin
-    .from('mira_project_access')
-    .select('project_id')
-    .eq('user_id', user.id)
-    .limit(1)
-  if (accessData?.length) return accessData[0].project_id
-
-  if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {
-    return user.user_metadata.client_id
-  }
-  return null
-}
+// La resolución de cliente es la CANÓNICA (lib/resolve-client). Esta ruta tenía
+// una copia privada que se quedó atrás: sin ORDER BY en el fallback (la
+// elección de tenant era la fila que Postgres quisiera devolver) y sin el
+// guard multi-grant. Era la única de las cuatro copias divergentes que escribía
+// el Brand Brain — exactamente la clase de deriva que causó el incidente del
+// 28-ago. Cuatro implementaciones de «¿de qué marca es esta petición?» son
+// tres de más; las demás copias se migran igual (auditoría 16-sep-2026).
 
 /** El cliente puede venir como `clientId` o `client_id`; '' cuenta como ausente. */
 function requestedClient(body: Record<string, unknown>): string | null {
@@ -57,30 +21,12 @@ function requestedClient(body: Record<string, unknown>): string | null {
 
 export async function GET(req: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const supabase = createServerComponentClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        getAll: () => cookieStore.getAll(),
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const access = await resolveRequestClient(new URL(req.url).searchParams.get('clientId'))
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
-
+    const clientId = access.clientId
     const admin = adminClient()
-    const clientId = await resolveClientId(
-      admin,
-      user,
-      new URL(req.url).searchParams.get('clientId')
-    )
-    if (!clientId) {
-      return NextResponse.json({ error: 'No client access' }, { status: 403 })
-    }
 
     const [{ data: profileData, error: profileError }, { data: pillarsData, error: pillarsError }] = await Promise.all([
       admin
@@ -95,10 +41,14 @@ export async function GET(req: NextRequest) {
     ])
 
     if (profileError) {
-      // Un fallo real de consulta se registraba como "todavía no hay Brain":
-      // la pantalla salía en blanco con el Brain lleno en la base de datos.
+      // Un fallo real de consulta NO es «todavía no hay Brain»: devolver 200
+      // con data:null pintaba el editor VACÍO con el Brain lleno en la BD, y
+      // si el usuario pulsaba Guardar sobre ese formulario en blanco, el PUT
+      // (rama sin id → upsert por client_id) machacaba la fila real con
+      // vacíos. El check verde decía «Guardado». Es el fallo silencioso más
+      // destructivo del sistema: se devuelve 500 y el editor enseña el error.
       console.error('Brand brain GET profile error:', clientId, profileError)
-      return NextResponse.json({ data: null, message: 'No brand profile yet' }, { status: 200 })
+      return NextResponse.json({ error: 'Could not load the Brand Brain — try again' }, { status: 500 })
     }
 
     return NextResponse.json({ data: profileData, pillars: pillarsData || [] }, { status: 200 })
@@ -116,26 +66,14 @@ export async function PUT(req: NextRequest) {
     const body = await req.json()
     const { id, brand_data, name, mission, tone_of_voice, values, description, pillars } = body
 
-    const cookieStore = await cookies()
-    const supabase = createServerComponentClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-      {
-        getAll: () => cookieStore.getAll(),
-      }
-    )
-
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    // Escritura del activo más valioso del cliente: tenant SIEMPRE explícito
+    // (strict). Con varios grants y sin clientId, adivinar aquí es corromper.
+    const access = await resolveRequestClient(requestedClient(body), { strict: true })
+    if (!access.ok) {
+      return NextResponse.json({ error: access.error }, { status: access.status })
     }
-
+    const clientId = access.clientId
     const admin = adminClient()
-    const clientId = await resolveClientId(admin, user, requestedClient(body))
-    if (!clientId) {
-      return NextResponse.json({ error: 'No client access' }, { status: 403 })
-    }
 
     // Sin id: el Brain todavía no existe en pantalla. Se hace UPSERT por
     // client_id en vez de INSERT a ciegas — si la fila sí existía (GET fallido,
@@ -143,6 +81,32 @@ export async function PUT(req: NextRequest) {
     // "duplicate key ... brand_profiles_client_id_key" y el usuario perdía todo
     // lo que acababa de escribir sin ninguna forma de recuperarlo.
     if (!id) {
+      // Guardia contra la sobrescritura con vacíos: sin id + upsert por
+      // client_id significa «el editor cree que no hay Brain». Si además el
+      // body llega SIN contenido significativo, el caso más probable no es un
+      // alta nueva: es un GET fallido que pintó el formulario en blanco y un
+      // usuario que pulsó Guardar. Machacar la fila real con vacíos destruye
+      // el activo más caro del cliente sin dejar rastro. Un alta real siempre
+      // trae al menos el nombre.
+      const meaningful =
+        (typeof name === 'string' && name.trim()) ||
+        (typeof mission === 'string' && mission.trim()) ||
+        (typeof description === 'string' && description.trim()) ||
+        (Array.isArray(values) && values.length > 0) ||
+        (brand_data && typeof brand_data === 'object' && Object.keys(brand_data).length > 0)
+      if (!meaningful) {
+        const { data: existing } = await admin
+          .from('brand_profiles')
+          .select('id')
+          .eq('client_id', clientId)
+          .maybeSingle()
+        if (existing) {
+          return NextResponse.json(
+            { error: 'Refusing to overwrite the existing Brand Brain with an empty profile — reload the page and try again' },
+            { status: 409 }
+          )
+        }
+      }
       const { data: newProfile, error: insertError } = await admin
         .from('brand_profiles')
         .upsert({

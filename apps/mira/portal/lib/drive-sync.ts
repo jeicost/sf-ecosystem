@@ -13,6 +13,7 @@
 import { createHash } from 'crypto'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { adminClient } from '@/lib/supabase'
+import { decryptSecret, encryptSecret } from '@/lib/crypto'
 import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/brain-tools/drive-synthesis'
 import { extractPdfText } from '@/lib/pdf-extract'
 // DOCX y PPTX se extraen con los mismos helpers que los adjuntos de usuario
@@ -310,15 +311,18 @@ export async function getClientAccessToken(
     return { error: `Google Drive is not authorized for this client, and the agency service account is unavailable: ${fallback.error}` }
   }
 
-  let accessToken: string | null = connection.access_token
+  // Cifrados en reposo desde el 17-sep-2026; decryptSecret devuelve tal cual
+  // el texto plano de las conexiones anteriores a esa fecha.
+  let accessToken: string | null = decryptSecret(connection.access_token)
+  const storedRefreshToken = decryptSecret(connection.refresh_token)
 
   if (connection.token_expires_at && new Date(connection.token_expires_at) < new Date()) {
-    if (!connection.refresh_token) {
+    if (!storedRefreshToken) {
       await markConnectionNeedsReauth(admin, connection.id)
       return { error: 'Google Drive access expired and there is no refresh token. Reconnect Google Drive.' }
     }
 
-    const refreshResult = await refreshAccessToken(connection.refresh_token)
+    const refreshResult = await refreshAccessToken(storedRefreshToken)
     if (!refreshResult.success || !refreshResult.accessToken) {
       // Sin esto, `is_authorized` se quedaba en true con el token muerto: la
       // tarjeta de Integraciones y el panel de carpetas seguían diciendo
@@ -336,7 +340,7 @@ export async function getClientAccessToken(
     await admin
       .from('drive_connections')
       .update({
-        access_token: accessToken,
+        access_token: encryptSecret(accessToken),
         token_expires_at: refreshResult.expiresAt,
       })
       .eq('id', connection.id)

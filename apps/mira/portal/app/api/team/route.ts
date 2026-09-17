@@ -1,6 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { resolveRequestClient } from '@/lib/resolve-client'
+import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
 import { adminClient } from '@/lib/supabase'
+
+/**
+ * Repartir y quitar accesos exige ser admin de la marca (o agencia). El campo
+ * `role` se ESCRIBÍA al invitar y se ENSEÑABA en el listado, pero nunca se
+ * LEÍA para autorizar: un member recién invitado podía invitar a terceros y
+ * expulsar al dueño de la cuenta para liberar su asiento (auditoría 16-sep).
+ */
+async function requireBrandAdmin(clientId: string, userId: string): Promise<boolean> {
+  const user = await getSessionUser()
+  if (user?.user_metadata?.plan === 'super_admin') return true
+  const { data, error } = await adminClient()
+    .from('mira_project_access')
+    .select('role')
+    .eq('project_id', clientId)
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (error) {
+    console.error('team: role lookup failed:', error.message)
+    return false
+  }
+  return data?.role === 'admin'
+}
 import { getSeatUsage, canAddSeat } from '@/lib/seats'
 import { billingPlan } from '@/lib/billing/plans'
 import { sectionPlanForBilling } from '@/lib/billing/plan-sync'
@@ -59,8 +81,12 @@ export async function POST(req: NextRequest) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
       return NextResponse.json({ error: 'Enter a valid email address' }, { status: 400 })
     }
-    const access = await resolveRequestClient(body.clientId ?? null)
+    // strict: invitar escribe un grant — el destino no se adivina jamás.
+    const access = await resolveRequestClient(body.clientId ?? null, { strict: true })
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    if (!(await requireBrandAdmin(access.clientId, access.userId))) {
+      return NextResponse.json({ error: 'Only a brand admin can invite people' }, { status: 403 })
+    }
 
     const db = adminClient()
 
@@ -149,8 +175,11 @@ export async function DELETE(req: NextRequest) {
   try {
     const userId = req.nextUrl.searchParams.get('userId')
     if (!userId) return NextResponse.json({ error: 'Missing userId' }, { status: 400 })
-    const access = await resolveRequestClient(req.nextUrl.searchParams.get('clientId'))
+    const access = await resolveRequestClient(req.nextUrl.searchParams.get('clientId'), { strict: true })
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    if (!(await requireBrandAdmin(access.clientId, access.userId))) {
+      return NextResponse.json({ error: 'Only a brand admin can remove people' }, { status: 403 })
+    }
 
     // Nadie se quita a sí mismo: dejaría la cuenta sin dueño por accidente.
     if (userId === access.userId) {

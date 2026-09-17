@@ -111,18 +111,37 @@ export async function resolveRequestClient(
     return { ok: false, status: 403, error: 'No access to this client' }
   }
 
-  // No explicit client: use the user's first granted client.
-  // ORDER BY created_at so "first" means the oldest grant and not whatever row
-  // Postgres happened to return — an unstable pick here silently moves a user
-  // between tenants across requests.
-  const { data: accessData } = await admin
+  // No explicit client: the guess is only allowed when it is UNAMBIGUOUS.
+  //
+  // Un usuario con UN grant no puede acabar en el tenant equivocado: se usa
+  // ese. Un usuario con VARIOS grants y sin clientId explícito es exactamente
+  // el escenario del incidente del 28-ago (plan de acción de Adrian Grooves
+  // escrito contra el Brain de Jeicost): antes se elegía «el grant más
+  // antiguo», que acierta solo por casualidad. Ahora se rechaza con el mismo
+  // mensaje accionable que strict — la UI debe mandar la marca activa. Solo
+  // 3 de 98 rutas de escritura pasaban strict; este guard protege a las
+  // otras 95 sin tocarlas una a una (auditoría 16-sep-2026).
+  const { data: accessData, error: grantsError } = await admin
     .from('mira_project_access')
     .select('project_id')
     .eq('user_id', user.id)
     .order('created_at', { ascending: true })
-    .limit(1)
-  if (accessData?.length) {
+    .limit(2)
+  // Denegar y no-poder-comprobar son cosas distintas: un parpadeo de BD aquí
+  // se veía como «sin acceso» en todo el portal a la vez, sin una sola traza.
+  if (grantsError) {
+    console.error('resolve-client: grants lookup failed:', grantsError.message)
+    return { ok: false, status: 403, error: 'Could not verify client access — try again' }
+  }
+  if (accessData?.length === 1) {
     return { ok: true, userId: user.id, clientId: accessData[0].project_id }
+  }
+  if ((accessData?.length ?? 0) > 1) {
+    return {
+      ok: false,
+      status: 400,
+      error: 'No active workspace: pick a client in the switcher and try again',
+    }
   }
 
   if (isSuperAdmin && typeof user.user_metadata?.client_id === 'string') {

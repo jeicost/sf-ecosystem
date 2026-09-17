@@ -599,11 +599,17 @@ export default function BrandBrainEditor() {
       setProfile({ ...profile, brand_data: newBrandData })
       setSuggestions(null)
 
-      // Auto-save
+      // Auto-save — con la marca EXPLÍCITA, igual que el guardado principal:
+      // la ruta es estricta y este era el único PUT que no mandaba clientId.
+      const autoBody = { ...profile, brand_data: newBrandData } as Record<string, unknown>
+      if (activeClient?.id) {
+        autoBody.clientId = activeClient.id
+        autoBody.client_id = activeClient.id
+      }
       const res = await fetch('/api/brand-brain', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...profile, brand_data: newBrandData }),
+        body: JSON.stringify(autoBody),
       })
 
       if (!res.ok) {

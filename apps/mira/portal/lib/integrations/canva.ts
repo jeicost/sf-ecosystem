@@ -6,6 +6,7 @@
 
 import { createServiceClient } from '@/lib/supabase-admin'
 import { getOAuthConfig } from '@/lib/integrations/oauth-config'
+import { decryptSecret, encryptSecret } from '@/lib/crypto'
 
 const CANVA_TOOL_ID = 'canva'
 const CANVA_API_BASE = 'https://api.canva.com/rest/v1'
@@ -47,7 +48,9 @@ export async function getCanvaToken(clientId: string): Promise<string | null> {
   if (!connection || connection.status !== 'connected') return null
 
   const metadata: CanvaTokenMetadata = (connection.metadata as CanvaTokenMetadata) || {}
-  const accessToken = metadata.access_token || connection.auth_token || null
+  // Los tokens se guardan cifrados desde el 17-sep-2026 (mismo esquema que las
+  // BYO keys); decryptSecret deja pasar el texto plano de filas anteriores.
+  const accessToken = decryptSecret(metadata.access_token || connection.auth_token || null)
   if (!accessToken) return null
 
   const expiresAt = metadata.expires_at ? new Date(metadata.expires_at).getTime() : null
@@ -55,7 +58,7 @@ export async function getCanvaToken(clientId: string): Promise<string | null> {
   if (!isExpired) return accessToken
 
   // Expired → refresh (Canva rotates refresh tokens: always persist the new one)
-  const refreshToken = metadata.refresh_token
+  const refreshToken = decryptSecret(metadata.refresh_token)
   if (!refreshToken) return null
 
   const config = getOAuthConfig(CANVA_TOOL_ID)
@@ -91,14 +94,16 @@ export async function getCanvaToken(clientId: string): Promise<string | null> {
       ? new Date(Date.now() + tokenData.expires_in * 1000).toISOString()
       : null
 
+    const encAccess = encryptSecret(tokenData.access_token)
+    const encRefresh = encryptSecret(tokenData.refresh_token || refreshToken)
     await db
       .from('tool_connections')
       .update({
-        auth_token: tokenData.access_token,
+        auth_token: encAccess,
         metadata: {
           ...metadata,
-          access_token: tokenData.access_token,
-          refresh_token: tokenData.refresh_token || refreshToken,
+          access_token: encAccess,
+          refresh_token: encRefresh,
           expires_at: newExpiresAt,
         },
         updated_at: new Date().toISOString(),

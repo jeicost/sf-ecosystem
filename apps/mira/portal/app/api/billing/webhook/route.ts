@@ -52,15 +52,24 @@ async function syncSubscription(sub: Stripe.Subscription) {
   // dejaría un aviso de "te quedan 3 días" a alguien que ya es cliente.
   if (sub.status === 'active') update.trial_ends_at = null
 
-  const { error } = await db.from('clients').update(update).eq('id', target)
-  if (error) console.error('billing/webhook: could not update client', target, error.message)
+  // El pago NUNCA se confirma sin haberse aplicado. Antes: el error se
+  // logueaba y se seguía hasta el {received:true} final → Stripe daba el
+  // evento por entregado y NO REINTENTABA jamás; el cliente pagaba y seguía
+  // bloqueado, sin alerta en ningún sitio. Peor aún: un update() que no
+  // encuentra fila (mira_client_id de los metadatos apuntando a un cliente
+  // borrado) no es error en supabase-js — con .select() contamos filas y un
+  // 0 también lanza. El throw sube al catch del handler, que devuelve 500 y
+  // hace que Stripe reintente (auditoría 16-sep-2026).
+  const { data: updated, error } = await db.from('clients').update(update).eq('id', target).select('id')
+  if (error) throw new Error(`could not update client ${target}: ${error.message}`)
+  if (!updated?.length) throw new Error(`subscription points to a client that does not exist: ${target}`)
 
   // Pagar tiene que ABRIR lo pagado: el plan de facturación se traduce al de
   // secciones para todas las personas de la marca. Solo cuando Stripe dice qué
   // plan es Y la suscripción está viva — un 'canceled' no toca las secciones
   // (el corte lo hace el gate de suscripción del proxy, no una degradación de
   // metadata que habría que revertir si el cliente vuelve).
-  if (planId && !error && (sub.status === 'active' || sub.status === 'trialing')) {
+  if (planId && (sub.status === 'active' || sub.status === 'trialing')) {
     const synced = await syncSectionPlanForClient(target, planId)
     if (synced.failed > 0) {
       console.error('billing/webhook: plan sync incomplete for', target, synced)
@@ -146,10 +155,11 @@ export async function POST(req: NextRequest) {
         const invoice = event.data.object
         if (typeof invoice.customer === 'string') {
           const db = adminClient()
-          await db
+          const { error: pastDueErr } = await db
             .from('clients')
             .update({ subscription_status: 'past_due' })
             .eq('stripe_customer_id', invoice.customer)
+          if (pastDueErr) throw new Error(`could not mark past_due: ${pastDueErr.message}`)
         }
         break
       }
