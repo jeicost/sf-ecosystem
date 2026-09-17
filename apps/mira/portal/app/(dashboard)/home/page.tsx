@@ -314,6 +314,29 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* PRIMER USO: un cliente sin ningún entregable veía OCHO CEROS y doce
+          destinos — un espejo de que no ha hecho nada, no una instrucción
+          (auditoría de activación 16-sep). Hasta el primer entregable, la home
+          es UNA tarjeta con UN botón que lanza el informe que no pide nada:
+          el Brand Briefing (0 campos obligatorios, lee la web y el Brain).
+          Todo lo demás aparece en cuanto exista el primer entregable. */}
+      {data.stats.reports_total === 0 && data.stats.documents_total === 0 ? (
+        <div className="rounded-2xl border border-line bg-surface p-10 text-center"
+          style={{ background: `linear-gradient(135deg, ${brand}0d, transparent 60%)` }}>
+          <p className="text-2xl">✨</p>
+          <h2 className="mt-3 text-xl font-semibold text-ink">{t('home.first-use.title', locale)}</h2>
+          <p className="mx-auto mt-2 max-w-lg text-sm text-ink-tertiary">
+            {t('home.first-use.desc', locale)}
+          </p>
+          <Link href="/toolkit/brand-briefing"
+            className="mt-6 inline-block rounded-xl px-6 py-3 text-sm font-semibold text-white transition-all hover:opacity-90"
+            style={{ background: brand, boxShadow: `0 8px 24px ${brand}40` }}>
+            {t('home.first-use.cta', locale)}
+          </Link>
+          <p className="mt-4 text-xs text-ink-muted">{t('home.first-use.hint', locale)}</p>
+        </div>
+      ) : (
+      <>
       {/* Parte Semanal — Fase 2. En el espacio "Hoy" del sistema ideal; se
           muestra con la UI consolidada (mismo bundle reversible). */}
       {isIdealUI() && <WeeklyReportCard clientId={data.client.id} brand={brand} />}
@@ -445,6 +468,8 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+      </>
+      )}
     </div>
   )
 }

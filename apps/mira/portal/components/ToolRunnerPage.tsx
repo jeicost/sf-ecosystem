@@ -66,6 +66,11 @@ export default function ToolRunnerPage({
   const [success, setSuccess] = useState(false)
   const [resultData, setResultData] = useState<any>(null)
   const [pollingQueueId, setPollingQueueId] = useState<string | null>(null)
+  // El id del informe SOBREVIVE al fin del polling: el bloque de Descargar /
+  // Abrir informe estaba condicionado a pollingQueueId, que el propio polling
+  // pone a null al completar — los botones aparecían y se borraban solos a los
+  // dos segundos, con el usuario moviendo el ratón hacia Descargar.
+  const [lastQueueId, setLastQueueId] = useState<string | null>(null)
   const [attachments, setAttachments] = useState<Attachment[]>([])
 
   // El prefill del Brand Brain se eliminó (F1 Business Reports): sus claves
@@ -91,6 +96,7 @@ export default function ToolRunnerPage({
           const parsed = typeof data.result_data === 'string' ? JSON.parse(data.result_data) : data.result_data
           setResultData(parsed)
           setSuccess(true)
+          setLastQueueId(resultQueueId)
         } else if (data.status === 'failed') {
           setError(data.error_message || 'Generation failed')
         } else {
@@ -154,6 +160,7 @@ export default function ToolRunnerPage({
       if (data?.queue_id) {
         // Start polling for result
         setPollingQueueId(data.queue_id)
+        setLastQueueId(data.queue_id)
         // If result is already available, use it immediately
         if (data?.result) {
           const parsed = typeof data.result === 'string' ? JSON.parse(data.result) : data.result
@@ -211,14 +218,17 @@ export default function ToolRunnerPage({
         </div>
       )}
 
-      {/* Loading State - Waiting for Result */}
-      {pollingQueueId && isLoading && (
+      {/* Loading State — visible durante TODA la generación (la versión
+          anterior dependía de pollingQueueId, que solo se asigna cuando la
+          respuesta ya llegó: la tarjeta no se pintó nunca). Con el tiempo
+          honesto: los informes grandes tardan 2-4 minutos. */}
+      {isLoading && (
         <div className="card p-4 border-blue-500/20 mb-6">
           <div className="flex items-start gap-3">
             <Loader2 size={20} className="animate-spin" style={{ color: '#3B82F6' }} />
             <div>
-              <p className="font-semibold text-blue-400">Generating...</p>
-              <p className="text-sm text-ink-secondary mt-1">Claude is analyzing your request (this can take 30-60 seconds)</p>
+              <p className="font-semibold text-blue-400">Generating your report…</p>
+              <p className="text-sm text-ink-secondary mt-1">This usually takes 2-4 minutes ({config.timing}). Keep this tab open — the report will also appear under Reports when it finishes, even if you navigate away.</p>
             </div>
           </div>
         </div>
@@ -381,6 +391,9 @@ export default function ToolRunnerPage({
           )}
 
           {/* Submit Button */}
+          <p className="text-xs text-ink-tertiary -mb-2">
+            Anything you leave blank is covered by your Brand Brain or listed as an open item in the report — you can always refine it afterwards.
+          </p>
           <button
             type="submit"
             disabled={isLoading || externalLoading}
@@ -404,15 +417,22 @@ export default function ToolRunnerPage({
       ) : ResultComponent ? (
         <div className="space-y-6">
           <ResultComponent data={resultData} />
-          {pollingQueueId && (
+          {lastQueueId && (
             <div className="flex gap-3 pt-6 border-t border-line-subtle">
+              <a
+                href={`/toolkit/report/${lastQueueId}`}
+                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white text-center transition-opacity hover:opacity-90 text-sm"
+                style={{ background: 'var(--client-primary, #8B5CF6)' }}
+              >
+                Open full report →
+              </a>
               <button
                 onClick={() => {
-                  if (pollingQueueId) {
-                    window.location.href = `/api/toolkit/export?queue_id=${pollingQueueId}`
+                  if (lastQueueId) {
+                    window.location.href = `/api/toolkit/export?queue_id=${lastQueueId}`
                   }
                 }}
-                className="flex-1 px-6 py-3 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors text-sm"
+                className="px-6 py-3 rounded-lg font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors text-sm"
               >
                 📥 Download HTML
               </button>

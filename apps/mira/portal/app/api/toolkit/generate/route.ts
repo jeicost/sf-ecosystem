@@ -518,6 +518,30 @@ export async function POST(req: NextRequest) {
       console.error('Update error:', updateError)
     }
 
+    // El monthly alimenta la cola de aprobaciones AL COMPLETARSE, sin esperar
+    // a que el cliente encuentre el botón «Send to Queue»: la ruptura nº 1 de
+    // las dos auditorías del 16-sep era el informe con 12 piezas y la cola con
+    // cero objetos — y todo el bucle de retorno (aprobaciones, calendario,
+    // badge) cuelga de esa tabla. Idempotente por materialized_at; el botón
+    // manual sigue existiendo para los informes antiguos. Nunca tumba la
+    // generación: un fallo aquí se registra y el informe sale igual.
+    if (tool_slug === 'monthly-content-system' && !updateError) {
+      try {
+        const { extractMonthlyItems, materializeMonthlyReport } = await import(
+          '@/lib/business-reports/monthly-materialize'
+        )
+        const items = extractMonthlyItems(resultWithBrandColor as Record<string, any>)
+        const sent = await materializeMonthlyReport(
+          admin,
+          { id: queueId, client_id: clientId, result_data: resultWithBrandColor as Record<string, any> },
+          items
+        )
+        if (sent > 0) console.log(`[monthly] ${sent} captions materialized to the approval queue`)
+      } catch (e) {
+        console.error('[monthly] auto-materialize failed (report saved anyway):', e instanceof Error ? e.message : e)
+      }
+    }
+
     // Auto-log to project memory (fire and forget, non-blocking). Dedup: la
     // misma tool en <24h para el mismo cliente/proyecto actualiza en vez de
     // duplicar (evita que regeneraciones desplacen memorias valiosas).

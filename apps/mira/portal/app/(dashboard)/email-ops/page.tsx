@@ -1,5 +1,5 @@
 'use client'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
 import { Mail, Loader2, Download, Settings2, Search, Filter } from 'lucide-react'
@@ -33,6 +33,14 @@ export default function EmailOpsPage() {
   const [department, setDepartment] = useState('')
   const [delivery, setDelivery] = useState('')
   const [search, setSearch] = useState('')
+  // El buscador espera 300 ms de silencio antes de pedir: sin esto, cada
+  // tecla era una petición de 100 filas Y una resuscripción del canal
+  // realtime (load estaba en las deps del efecto del canal).
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  useEffect(() => {
+    const id = setTimeout(() => setDebouncedSearch(search), 300)
+    return () => clearTimeout(id)
+  }, [search])
   const [sort, setSort] = useState<'priority' | 'recent'>('priority')
   const [tickets, setTickets] = useState<TicketRow[]>([])
   const [counts, setCounts] = useState<Counts>({ open: 0, closed: 0, other: 0, incomplete: 0 })
@@ -47,7 +55,7 @@ export default function EmailOpsPage() {
     if (incomplete) params.set('incomplete', '1')
     if (department) params.set('department', department)
     if (delivery) params.set('delivery_type', delivery)
-    if (search.trim()) params.set('q', search.trim())
+    if (debouncedSearch.trim()) params.set('q', debouncedSearch.trim())
     const res = await fetch(`/api/email-ops/tickets?${params}`)
     const data = await res.json()
     if (!res.ok) { setError(data.error || 'Error'); setLoading(false); return }
@@ -57,20 +65,25 @@ export default function EmailOpsPage() {
     setTotal(data.total || 0)
     setLoading(false)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientId, tab, sort, incomplete, department, delivery, search])
+  }, [clientId, tab, sort, incomplete, department, delivery, debouncedSearch])
 
   useEffect(() => { load() }, [load])
 
-  // Realtime: cualquier cambio en los tickets del cliente → recargar (barato: es una lista corta).
+  // Realtime: cualquier cambio en los tickets del cliente → recargar. El canal
+  // se suscribe UNA vez por cliente; con `load` en las deps se desuscribía y
+  // resuscribía en cada tecla del buscador. El ref siempre apunta a la última
+  // versión de load sin re-crear la suscripción.
+  const loadRef = useRef(load)
+  useEffect(() => { loadRef.current = load }, [load])
   useEffect(() => {
     if (!clientId) return
     const db = createClient()
     const channel = db
       .channel(`email-ops-${clientId}`)
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'email_tickets', filter: `client_id=eq.${clientId}` }, () => { load() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'email_tickets', filter: `client_id=eq.${clientId}` }, () => { loadRef.current() })
       .subscribe()
     return () => { db.removeChannel(channel) }
-  }, [clientId, load])
+  }, [clientId])
 
   const departments = useMemo(() => Array.from(new Set(tickets.map((x) => x.department).filter((d): d is string => !!d))).sort(), [tickets])
   const todayIso = new Date().toISOString().slice(0, 10)
