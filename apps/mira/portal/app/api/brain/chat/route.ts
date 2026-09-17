@@ -89,6 +89,11 @@ Always reply in English, warm and brief.`,
       knowledgeCtx || '',
       GROUNDING_CONTRACT,
     ].filter(Boolean).join('\n\n---\n\n')
+    // Cacheado: el bucle de tool-use de abajo reenvía este system (con el
+    // Brain entero) hasta 4 veces por mensaje. Ojo: knowledgeCtx se re-rankea
+    // con la última pregunta, así que la caché acierta DENTRO del bucle, no
+    // entre turnos — suficiente: es donde está la repetición.
+    const systemBlocks = [{ type: 'text' as const, text: system, cache_control: { type: 'ephemeral' as const } }]
 
     const admin = adminClient()
     const proposals: Array<{ id: string; summary: string; changes: unknown }> = []
@@ -99,7 +104,7 @@ Always reply in English, warm and brief.`,
       const response = await createMessageForClient(clientId, 'brain/chat', {
         model: 'claude-sonnet-4-6',
         max_tokens: 1500,
-        system,
+        system: systemBlocks,
         tools: [PROPOSE_TOOL],
         messages: conversation,
       })

@@ -161,7 +161,10 @@ ${brandBlock}${memoryBlock ? `\n\n${memoryBlock}` : ''}${leadsBlock}${capturedBl
         // generación real (lib/quick-actions/generate.ts) se queda en Opus.
         model: 'claude-sonnet-4-6',
         max_tokens: 1024,
-        system: systemPrompt,
+        // System cacheado: el bucle de tool-use reenvía este mismo system en
+        // cada vuelta (hasta 8 llamadas por mensaje del usuario) con el Brand
+        // Brain entero dentro — la entrada es ~90% del coste de esta ruta.
+        system: [{ type: 'text' as const, text: systemPrompt, cache_control: { type: 'ephemeral' as const } }],
         messages: conversation,
         tools: buildGuidedTools(def),
       })

@@ -1,5 +1,5 @@
 import { createServiceClient } from '@/lib/supabase-admin'
-import { estimateCostUsd } from '@/lib/anthropic-client'
+import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 
 // Informe de Valor mensual (Fase 2.2 del plan). La "factura emocional" que
 // justifica la cuota: qué se produjo y USÓ este mes, más el coste real de IA y
@@ -45,15 +45,15 @@ export async function getValueReport(clientId: string, locale: 'es' | 'en' = 'es
       .eq('client_id', clientId).eq('status', 'published').gte('posted_at', since).then((r) => r.count ?? 0),
     db.from('leads').select('id', { count: 'exact', head: true })
       .eq('client_id', clientId).gte('created_at', since).then((r) => r.count ?? 0),
-    db.from('mira_usage_log').select('model, input_tokens, output_tokens')
+    db.from('mira_usage_log').select('model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens')
       .eq('client_id', clientId).gte('created_at', since).then((r) => r.data ?? []),
     db.from('post_history').select('platform, performance')
       .eq('client_id', clientId).eq('status', 'published').gte('posted_at', since)
       .order('posted_at', { ascending: false }).limit(6).then((r) => r.data ?? []),
   ])
 
-  const aiCostUsd = (usage as Array<{ model: string; input_tokens: number; output_tokens: number }>)
-    .reduce((sum, u) => sum + estimateCostUsd(u.model, u.input_tokens ?? 0, u.output_tokens ?? 0), 0)
+  const aiCostUsd = (usage as Array<{ model: string; input_tokens: number; output_tokens: number; cache_creation_tokens?: number; cache_read_tokens?: number }>)
+    .reduce((sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens ?? 0, u.output_tokens ?? 0, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0), 0)
 
   const produced = reports + qa
   const hoursSavedEst = Math.round(

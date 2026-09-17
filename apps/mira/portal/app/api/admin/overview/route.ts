@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
-import { estimateCostUsd } from '@/lib/anthropic-client'
+import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 
 // Panel Super Admin: visión agregada de todos los clientes.
 export async function GET() {
@@ -25,7 +25,7 @@ export async function GET() {
       admin.from('drive_folders').select('client_id, sync_status, files_synced'),
       admin
         .from('mira_usage_log')
-        .select('client_id, model, input_tokens, output_tokens, used_client_key')
+        .select('client_id, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
         .gte('created_at', monthStart.toISOString()),
     ])
 
@@ -42,7 +42,7 @@ export async function GET() {
       const driveRows = drive.filter((d) => d.client_id === c.id)
       const clientUsage = usage.filter((u) => u.client_id === c.id)
       const costUsd = clientUsage.reduce(
-        (sum, u) => sum + estimateCostUsd(u.model, u.input_tokens, u.output_tokens),
+        (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
         0
       )
       return {

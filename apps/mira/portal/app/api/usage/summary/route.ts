@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
-import { estimateCostUsd } from '@/lib/anthropic-client'
+import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 
 // Pricing de modelos de imagen (USD). Token-based si hay tokens registrados;
 // si la fila no trae tokens, coste plano por generación.
@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const admin = adminClient()
     const { data: rows } = await admin
       .from('mira_usage_log')
-      .select('model, input_tokens, output_tokens, used_client_key')
+      .select('model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
       .eq('client_id', clientId)
       .gte('created_at', monthStart.toISOString())
 
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     const inputTokens = usage.reduce((s, u) => s + u.input_tokens, 0)
     const outputTokens = usage.reduce((s, u) => s + u.output_tokens, 0)
     const costUsd = usage.reduce(
-      (s, u) => s + estimateCostUsd(u.model, u.input_tokens, u.output_tokens),
+      (s, u) => s + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
       0
     )
 

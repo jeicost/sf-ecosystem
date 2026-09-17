@@ -158,6 +158,29 @@ export const MODEL_PRICING: Record<string, { in: number; out: number }> = {
   'gpt-image-1': { in: 5, out: 40 },
 }
 
+/**
+ * Coste con caché: una escritura de caché cuesta 1,25× la entrada normal y
+ * una lectura 0,1×. Las columnas cache_* de mira_usage_log se escribían desde
+ * agosto pero NADIE las leía: los cuatro paneles de coste calculaban con
+ * input/output a secas, así que el ahorro real del chat era invisible y el
+ * coste mostrado estaba mal en ambas direcciones (auditoría 16-sep-2026).
+ */
+export function estimateCostUsdWithCache(
+  model: string,
+  inputTokens: number,
+  outputTokens: number,
+  cacheWriteTokens = 0,
+  cacheReadTokens = 0
+): number {
+  const p = MODEL_PRICING[model] || { in: 3, out: 15 }
+  return (
+    (inputTokens / 1_000_000) * p.in +
+    (cacheWriteTokens / 1_000_000) * p.in * 1.25 +
+    (cacheReadTokens / 1_000_000) * p.in * 0.1 +
+    (outputTokens / 1_000_000) * p.out
+  )
+}
+
 export function estimateCostUsd(model: string, inputTokens: number, outputTokens: number): number {
   const p = MODEL_PRICING[model] || { in: 3, out: 15 }
   return (inputTokens * p.in + outputTokens * p.out) / 1_000_000

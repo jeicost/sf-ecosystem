@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
-import { estimateCostUsd } from '@/lib/anthropic-client'
+import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 
 // Home del cliente: analíticas clave + últimos entregables + últimos documentos + proyectos.
 export async function GET(req: NextRequest) {
@@ -55,7 +55,7 @@ export async function GET(req: NextRequest) {
         .eq('status', 'pending_review'),
       admin
         .from('mira_usage_log')
-        .select('model, input_tokens, output_tokens')
+        .select('model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens')
         .eq('client_id', clientId)
         .gte('created_at', monthStart.toISOString()),
       admin
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
 
     const usage = usageRes.data || []
     const usageCost = usage.reduce(
-      (sum, u) => sum + estimateCostUsd(u.model, u.input_tokens, u.output_tokens),
+      (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
       0
     )
 

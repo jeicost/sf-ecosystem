@@ -121,12 +121,25 @@ Return ONLY a JSON object:
   "keep": ["the specific things that are good and must survive the rewrite"]
 }`
 
-function reviserPrompt(
-  originalPrompt: string,
+/**
+ * Punto de corte de la caché de prompts. Las tres etapas del pipeline —
+ * borrador, crítico y revisor— comparten el MISMO primer bloque de contenido
+ * (el prompt completo: Cerebro + contratos + METHOD + esquema, lo más grande
+ * y estable de la llamada), marcado como cacheable. La primera llamada lo
+ * escribe (1,25×) y las dos siguientes lo LEEN (0,1×) en vez de repagarlo
+ * entero — antes el crítico reenviaba prompt.slice(0,28000) y el revisor el
+ * prompt íntegro, las dos retransmisiones más caras y gratuitas del sistema
+ * (auditoría de coste 16-sep-2026). El texto que ve el modelo en el borrador
+ * es byte a byte el mismo de antes: el corte no cambia el contenido.
+ */
+const CACHE_BREAKPOINT = { type: 'ephemeral' as const }
+
+/** La parte del prompt del revisor DESPUÉS del prompt original (2º bloque). */
+function reviserSuffix(
   draft: Record<string, unknown>,
   critique: { findings: CritiqueFinding[]; keep?: string[] }
 ): string {
-  return `${originalPrompt}
+  return `
 
 ────────────────────────────────────────────────────────
 YOU ARE REVISING, NOT STARTING OVER.
@@ -178,12 +191,24 @@ export async function runReportPipeline(opts: {
   const { clientId, toolSlug, prompt, model, maxTokens, userContent, critique = true } = opts
 
   // ── 1. REDACTOR ────────────────────────────────────────────────────────────
+  // El prompt viaja como bloque cacheable: mismo texto, y el crítico y el
+  // revisor lo leerán de caché en vez de repagarlo (ver CACHE_BREAKPOINT).
+  const draftContent =
+    typeof userContent === 'string'
+      ? [{ type: 'text' as const, text: userContent, cache_control: CACHE_BREAKPOINT }]
+      : Array.isArray(userContent)
+        ? userContent.map((b: any, i: number) =>
+            i === userContent.length - 1 && b?.type === 'text'
+              ? { ...b, cache_control: CACHE_BREAKPOINT }
+              : b
+          )
+        : userContent
   const { data: draft } = await generateJsonReport({
     clientId,
     route: `toolkit/${toolSlug}/draft`,
     model,
     maxTokens,
-    userContent,
+    userContent: draftContent,
   })
 
   return critiqueAndRevise({ clientId, toolSlug, prompt, model, maxTokens, draft, critique })
@@ -223,19 +248,27 @@ export async function critiqueAndRevise(opts: {
       messages: [
         {
           role: 'user',
-          content: `${CRITIC_SYSTEM}
+          // Bloque 1: el prompt COMPLETO, leído de caché (antes: un slice de
+          // 28k porque reenviarlo entero era caro — la caché elimina el
+          // trade-off y el crítico ya no puede quedarse sin las reglas de
+          // idioma del final del brain, el problema del 31-ago).
+          content: [
+            { type: 'text' as const, text: prompt, cache_control: CACHE_BREAKPOINT },
+            {
+              type: 'text' as const,
+              text: `
 
-The deliverable is a "${toolSlug}". This is the brief and context it was written from:
-${
-  // 28k y no 20k (31-ago-2026): el prompt de producción del monthly lleva el
-  // JSON de la estrategia + el brain entero, y la sección Languages del brain
-  // va casi al final — con 20k el crítico podía quedarse sin las reglas de
-  // idioma que precisamente tiene que verificar (modo UNPUBLISHABLE).
-  prompt.slice(0, 28000)
-}
+────────────────────────────────────────────────────────
+Everything ABOVE this line is the full brief and context the deliverable was written from.
 
-This is the draft to critique:
-${JSON.stringify(draft, null, 2)}`,
+${CRITIC_SYSTEM}
+
+The deliverable is a "${toolSlug}". This is the draft to critique:
+${JSON.stringify(draft, null, 2)}
+
+Return ONLY the JSON object specified above.`,
+            },
+          ],
         },
       ],
     })
@@ -271,7 +304,12 @@ ${JSON.stringify(draft, null, 2)}`,
       route: `toolkit/${toolSlug}/revise`,
       model,
       maxTokens,
-      userContent: reviserPrompt(prompt, draft, { findings, keep }),
+      // Bloque 1 = el prompt original leído de caché; bloque 2 = borrador +
+      // hallazgos. El texto total es idéntico al reviserPrompt de siempre.
+      userContent: [
+        { type: 'text' as const, text: prompt, cache_control: CACHE_BREAKPOINT },
+        { type: 'text' as const, text: reviserSuffix(draft, { findings, keep }) },
+      ],
     })
 
     // Guardarraíl: una revisión que se queda notablemente más pobre que el
