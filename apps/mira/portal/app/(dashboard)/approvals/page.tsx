@@ -202,9 +202,27 @@ export default function ApprovalsPage() {
           {filtered.length === 0 && (
             <div className="card py-14 text-center">
               <CheckSquare size={24} className="text-ink-muted mx-auto mb-3" />
-              <p className="text-sm text-ink-tertiary">
-                {filter === 'pending' ? t('approvals.empty-pending', locale) : t('approvals.empty-category', locale)}
-              </p>
+              {/* «Nada pendiente. Todo al día.» a alguien que nunca ha generado
+                  contenido le confirma que no hace falta volver. Si NUNCA ha
+                  habido nada en cola, la pantalla explica qué es esto y da la
+                  salida; el «todo al día» se reserva para quien ya produjo. */}
+              {items.length === 0 ? (
+                <>
+                  <p className="text-sm text-ink-secondary font-medium">{t('approvals.first-use.title', locale)}</p>
+                  <p className="mx-auto mt-1.5 max-w-md text-sm text-ink-tertiary">{t('approvals.first-use.desc', locale)}</p>
+                  <Link
+                    href="/toolkit/monthly-content-system"
+                    className="mt-5 inline-block rounded-lg px-4 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+                    style={{ background: 'var(--client-primary, #8B5CF6)' }}
+                  >
+                    {t('approvals.first-use.cta', locale)}
+                  </Link>
+                </>
+              ) : (
+                <p className="text-sm text-ink-tertiary">
+                  {filter === 'pending' ? t('approvals.empty-pending', locale) : t('approvals.empty-category', locale)}
+                </p>
+              )}
             </div>
           )}
           {filtered.map(item => {

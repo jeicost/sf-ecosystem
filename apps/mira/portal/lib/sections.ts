@@ -4,7 +4,7 @@ import {
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, TrendingUp,
   Search, MessageSquare, FileText,
   Home, Calendar, Brain, ClipboardList, Layers, Archive, Image,
-  Mail, Wrench, LayoutGrid,
+  Mail, Wrench, LayoutGrid, LifeBuoy,
 } from 'lucide-react'
 import type { Entitlement } from './entitlements'
 import { canAccessSection, minPlanForSection, type UserPlan } from './plans'
@@ -218,6 +218,10 @@ export const IDEAL_SPACES: IdealSpace[] = [
       // (decisión CEO 20-ago). Se llega desde ahí, no desde el menú.
       { href: '/comercial', label: 'Sales',     labelKey: 'sidebar.item.sales',     icon: Kanban },
       { href: '/strategy',  label: 'Strategy',  labelKey: 'sidebar.item.strategy',  icon: Map },
+      // Operations estaba en TODOS los planes y en la home («cinco equipos»),
+      // pero nunca se añadió a esta lista: la ruta existía y el menú no la
+      // enseñaba. Lo detectó la auditoría AS-IS de Alessandro (16-sep).
+      { href: '/operations', label: 'Operations', labelKey: 'sidebar.item.operations', icon: LifeBuoy },
       // Finanzas se vende en Scale/Admin: no se esconde a quien lo paga; a quien
       // no, le sale con candado (upsell), igual que en la navegación clásica.
       { href: '/finanzas',  label: 'Finance',   labelKey: 'sidebar.item.finance',   icon: TrendingUp },

@@ -16,7 +16,12 @@ export function SeoAuditResult({ data }: { data?: any }) {
 
   // Brand color mapping (from Brand Brain)
   const brandColor = data?.brandColor || '#8B5CF6'
-  const scoreColor = data?.overall_score >= 80 ? '#10b981' : data?.overall_score >= 60 ? '#f59e0b' : '#ef4444'
+  // Sin nota real NO se inventa una: el || 62 que había aquí enseñaba un 62 a
+  // pantalla completa con color de semáforo como si fuera la nota SEO del
+  // cliente cada vez que el score llegaba null (p. ej. informes generados en
+  // lote, que no pasan por el cálculo determinista de la ruta individual).
+  const hasScore = typeof data?.overall_score === 'number'
+  const scoreColor = !hasScore ? 'var(--text-tertiary)' : data.overall_score >= 80 ? '#10b981' : data.overall_score >= 60 ? '#f59e0b' : '#ef4444'
 
   return (
     <div className="w-full bg-page">
@@ -25,7 +30,7 @@ export function SeoAuditResult({ data }: { data?: any }) {
         <h1 className="text-5xl md:text-6xl font-black text-ink mb-3 tracking-tight">{t('toolkit.seo.result-title', locale)}</h1>
         <p className="text-ink-secondary max-w-2xl text-sm leading-relaxed mb-8">{t('toolkit.seo.result-desc', locale)}</p>
         <div className="flex items-baseline gap-3">
-          <div className="text-7xl font-black" style={{color: scoreColor}}>{data?.overall_score || 62}</div>
+          <div className="text-7xl font-black" style={{color: scoreColor}}>{hasScore ? data.overall_score : '—'}</div>
           <div className="text-sm font-semibold text-ink-secondary">{data?.scoreLabel || t('toolkit.seo.overall-score', locale)}</div>
         </div>
       </div>

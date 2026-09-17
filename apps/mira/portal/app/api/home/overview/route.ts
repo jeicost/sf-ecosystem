@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
     monthStart.setDate(1)
     monthStart.setHours(0, 0, 0, 0)
 
-    const [clientRes, queueRes, approvalsRes, usageRes, projectsRes] = await Promise.all([
+    const [clientRes, queueRes, approvalsRes, usageRes, projectsRes, queueCountRes] = await Promise.all([
       // NB: sin 'settings' — la columna no existe aún en prod (migración 0035 pendiente)
       admin
         .from('clients')
@@ -65,6 +65,14 @@ export async function GET(req: NextRequest) {
         .neq('status', 'archived')
         .order('created_at', { ascending: false })
         .limit(12),
+      // Recuento REAL: los totales de arriba salían de contar las filas traídas
+      // por la consulta con limit(120), así que un cliente con más de 120
+      // generaciones veía su contador congelado ahí para siempre.
+      admin
+        .from('generation_queue')
+        .select('id', { count: 'exact', head: true })
+        .eq('client_id', clientId)
+        .eq('status', 'completed'),
     ])
 
     if (clientRes.error || !clientRes.data) {
@@ -99,7 +107,10 @@ export async function GET(req: NextRequest) {
         primary_color: clientRes.data.primary_color,
       },
       stats: {
-        reports_total: reports.length,
+        // Total real de la BD; el desglose informes/documentos usa las filas
+        // traídas (exacto mientras haya <120; el error queda en el desglose
+        // fino y no en el total que ve el cliente).
+        reports_total: (queueCountRes.count ?? queue.length) - documents.length,
         reports_month: reports.filter((r) => r.created_at >= monthIso).length,
         documents_total: documents.length,
         pending_approvals: approvalsRes.count ?? 0,

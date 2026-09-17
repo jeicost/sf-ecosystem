@@ -54,10 +54,24 @@ export async function countPackImagesThisMonth(clientId: string): Promise<number
 export async function getImageQuotaStatus(clientId: string): Promise<ImageQuotaStatus> {
   const month = startOfMonthUtc().toISOString().slice(0, 7)
   const db = createServiceClient()
-  const { data: client } = await db.from('clients').select('plan').eq('id', clientId).maybeSingle()
+  const { data: client, error: clientError } = await db
+    .from('clients')
+    .select('plan, onboarding_mode, stripe_subscription_id')
+    .eq('id', clientId)
+    .maybeSingle()
+  // Un fallo de lectura NO puede degradar a Starter en silencio: caía a
+  // billingPlan(undefined) = 30 imágenes y el cliente veía un tope que nadie
+  // contrató. Se lanza y hasImageQuota() (fail-open documentado) deja pasar.
+  if (clientError) throw new Error(`client plan read failed: ${clientError.message}`)
   const planImages = billingPlan(client?.plan).images
 
-  if (isGenerationCapExempt(clientId)) {
+  // Cuenta gestionada (alta asistida sin suscripción de Stripe): exenta, el
+  // MISMO criterio que el gate de suscripción del proxy y que managedAccount
+  // en /api/billing/status. Sin esta exención, la 0069 dejó a los 14 clientes
+  // históricos con plan='starter' por defecto y por tanto capados a 30
+  // imágenes/mes que nadie contrató (verificado en prod el 16-sep-2026).
+  const managed = client?.onboarding_mode === 'assisted' && !client?.stripe_subscription_id
+  if (managed || isGenerationCapExempt(clientId)) {
     return { enabled: false, limit: null, used: 0, remaining: null, planImages, packImages: 0, month }
   }
 
