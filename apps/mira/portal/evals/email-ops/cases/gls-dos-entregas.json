@@ -1,0 +1,21 @@
+{
+  "id": "gls-dos-entregas",
+  "description": "Una recogida con dos entregas: como el operador de GLS, entrega null y las dos direcciones resumidas en observaciones",
+  "fixture": "gls-dos-entregas.txt",
+  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "received_at": "2026-08-27T09:22:00Z",
+  "expected": {
+    "kind": "shipment_request",
+    "fields": {
+      "fecha": "2026-08-27",
+      "tipo_entrega": "local",
+      "recogida_hora_inicio": "11:00",
+      "recogida_hora_fin": "17:00"
+    },
+    "contains": {
+      "recogida_direccion": "Obispo",
+      "observaciones": "Gabriel Lobo"
+    },
+    "must_be_null": ["entrega_direccion", "destinatario", "peso_kg", "medidas"]
+  }
+}

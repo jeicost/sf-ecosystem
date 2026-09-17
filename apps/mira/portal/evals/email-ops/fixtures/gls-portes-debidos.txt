@@ -1,0 +1,30 @@
+De: Promociones Trenova <promociones@trenova-example.es>
+Para: local@glslocal.example.es
+Asunto: RECOGIDA Y ENVÍO INTERRAIL VERANO JOVEN 28 AGOSTO
+
+Buenos días,
+
+adjunto documentación para recogida y envío de 7 sobres de Interrail. Envío urgente, a pagar por el destinatario a la entrega.
+
+Por favor, indicadle esta ubicación a la persona que venga, pasadle la imagen, el complejo es muy grande y a veces no saben dónde localizarnos. Hay justo un cartel azul grande en el que pone PLAZA NORTE.
+
+Un saludo,
+Ramiro Peña
+
+--- ADJUNTOS ---
+--- Adjunto: RECOGIDA-ENVIO_INTERRAIL_VERANO_JOVEN_2026-08-28.xlsx ---
+[Hoja: Hoja1]
+NOMBRE CLIENTE | TRENOVA
+CODIGO DE CLIENTE | 3200
+DIRECCION DE RECOGIDA: | CALLTEC (TRENOVA) – OFICINA: RONDA DE LA COMUNICACION S/N EDIFICIO NORTE 2  28050 MADRID
+RESPONSABLE DE ENVIOS | RAMIRO PEÑA - 600777888
+HORARIO DE RECOGIDAS: | 10:00 – 16:00 H (LLAMAR AL TELEFONO 600777888 CUANDO ESTE ABAJO NOSOTROS BAJAMOS)
+MANIFIESTO DE EMISION DE ENVIOS PARA EL DÍA SIGUIENTE
+CODIGO CLIENTE | TIPO DE ENVÍO | EMPRESA DESTINO | DIRECCION DE ENTREGA | C. P. | POBLACION | PROVINCIA | TFNO. | CONTACTO | TIPO SERV. | BULTOS | OBSERVACIONES
+Envío urgente | Andrés Cortés | Pañeda Nueva 61B | 33189 | Siero, Asturias | 600000001 | — | 14 h | 1 | 1 SOBRE
+Envío urgente | Yannick Hamers | Avenida de la Vista, 34 | 29639 | Benalmádena | 600000002 | — | 14 h | 1 | 1 SOBRE
+Envío urgente | Unai Gallardo | Calle Adalid 17 | 29639 | Benalmadena | 600000003 | — | 14 h | 1 | 1 SOBRE
+Envío urgente | Unai Gallardo | Calle Adalid 17 | 29639 | Benalmadena | 600000003 | — | 14 h | 1 | 1 SOBRE
+Envío urgente | Manel Hidalgo | Avenida Joan XXIII 20-22, 4º 3ª | 08930 | SANT ADRIA DE BESOS | 600000004 | — | 14 h | 1 | 1 SOBRE
+Envío urgente | Martina Albert | Carrer de la Rufaca, 1 | 17538 | Escadarcs | 600000005 | — | 14 h | 1 | 1 SOBRE
+Envío urgente | Marta Oroz | Calle Luis Morondo 13 1B | 31006 | Pamplona | 600000006 | — | 14 h | 1 | 1 SOBRE

@@ -1,0 +1,24 @@
+{
+  "id": "gls-portes-debidos",
+  "description": "Manifiesto adjunto con 7 envíos: entrega null + resumen en observaciones, portes debidos, urgente",
+  "fixture": "gls-portes-debidos.txt",
+  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "received_at": "2026-08-28T08:00:00Z",
+  "expected": {
+    "kind": "shipment_request",
+    "urgency_min": 4,
+    "fields": {
+      "fecha": "2026-08-28",
+      "portes": "debidos",
+      "bultos": 7,
+      "recogida_hora_inicio": "10:00",
+      "recogida_hora_fin": "16:00"
+    },
+    "contains": {
+      "recogida_direccion": "Ronda de la Comunicacion",
+      "servicio": "14",
+      "observaciones": "7"
+    },
+    "must_be_null": ["entrega_direccion", "destinatario"]
+  }
+}

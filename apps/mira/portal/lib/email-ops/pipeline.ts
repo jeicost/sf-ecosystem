@@ -99,6 +99,27 @@ interface AttachmentBundle {
   images: Anthropic.ImageBlockParam[]
 }
 
+/** Volcado legible de un .xlsx: por hoja, una línea por fila con las celdas no vacías. */
+async function extractXlsxText(buffer: Buffer): Promise<string> {
+  const ExcelJS = (await import('exceljs')).default
+  const wb = new ExcelJS.Workbook()
+  await wb.xlsx.load(buffer as unknown as ArrayBuffer)
+  const parts: string[] = []
+  wb.eachSheet((sheet) => {
+    const lines: string[] = []
+    sheet.eachRow({ includeEmpty: false }, (row) => {
+      const cells: string[] = []
+      row.eachCell({ includeEmpty: false }, (cell) => {
+        const v = String(cell.text ?? '').trim()
+        if (v !== '') cells.push(v)
+      })
+      if (cells.length) lines.push(cells.join(' | '))
+    })
+    if (lines.length) parts.push(`[Hoja: ${sheet.name}]\n${lines.slice(0, 200).join('\n')}`)
+  })
+  return parts.join('\n\n') || '[Excel sin contenido legible]'
+}
+
 async function ingestAttachments(
   db: SupabaseClient,
   msg: MessageRow,
@@ -152,6 +173,13 @@ async function ingestAttachments(
         }
       } else if (ct.startsWith('text/') || ct === 'message/rfc822' || lower.endsWith('.eml') || lower.endsWith('.txt') || lower.endsWith('.csv')) {
         extracted = buffer.toString('utf-8')
+      } else if (ct.includes('spreadsheetml') || lower.endsWith('.xlsx')) {
+        extracted = await extractXlsxText(buffer)
+      } else if (lower.endsWith('.xls') || ct === 'application/vnd.ms-excel') {
+        // BIFF antiguo (y a menudo cifrado con la clave por defecto de Excel):
+        // exceljs no lo lee. Los manifiestos en .xls llegan también como texto
+        // en el cuerpo o en pantallazo; avisamos en vez de fallar en silencio.
+        extracted = '[Excel antiguo (.xls) no legible automáticamente: pedir el archivo como .xlsx o revisar a mano]'
       } else {
         extracted = `[adjunto ${ct} no procesado]`
       }

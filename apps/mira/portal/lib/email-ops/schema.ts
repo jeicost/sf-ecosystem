@@ -56,8 +56,40 @@ export const COURIER_V1_FIELDS: readonly FieldDef[] = [
     hint: 'Quién recibe: empresa y/o persona de contacto, teléfono si aparece.' },
 ]
 
+// Variante GLS (departamento local): muchas órdenes son RECOGIDAS para la red
+// del courier — el cliente pide "recoged en mi almacén" y el destino lo ponen
+// los bultos al llegar a plataforma. Destino/destinatario/bultos dejan de ser
+// obligatorios, y aparecen la modalidad de servicio, los portes y las
+// observaciones que su TMS captura como campos propios.
+const GLS_OVERRIDES: Record<string, Partial<FieldDef>> = {
+  recogida_hora_inicio: { required: false },
+  entrega_direccion: {
+    required: false,
+    hint: 'Dirección completa de entrega. Copia literal, no la completes. En recogidas para la red del courier el correo NO trae destino: déjalo null, no es un error. Si hay varias entregas, la principal aquí y el resto en observaciones.',
+  },
+  destinatario: {
+    required: false,
+    hint: 'Quién recibe: empresa y/o persona de contacto, teléfono si aparece. En recogidas sin destino declarado, null.',
+  },
+  bultos: {
+    required: false,
+    hint: 'Número entero de bultos/paquetes/palets SOLO si el correo da la cifra. "Varios bultos" o "unas cajas" = null, nunca inventes un número.',
+  },
+}
+
+export const COURIER_GLS_V1_FIELDS: readonly FieldDef[] = [
+  ...COURIER_V1_FIELDS.map((f) => (GLS_OVERRIDES[f.key] ? { ...f, ...GLS_OVERRIDES[f.key] } : f)),
+  { key: 'servicio', type: 'text', required: false, labels: { es: 'Servicio', en: 'Service' }, excelHeader: 'Servicio',
+    hint: 'Modalidad pedida con las palabras del correo: urgente/directo, 14h, económico, internacional, recogida para red… Null si no se dice.' },
+  { key: 'portes', type: 'enum', enum: ['pagados', 'debidos'] as const, required: false, labels: { es: 'Portes', en: 'Freight terms' }, excelHeader: 'Portes',
+    hint: '"portes debidos" = paga el destinatario; "portes pagados" = paga el remitente. Solo si el correo lo dice.' },
+  { key: 'observaciones', type: 'text', required: false, labels: { es: 'Observaciones', en: 'Remarks' }, excelHeader: 'Observaciones',
+    hint: 'Instrucciones operativas del encargo: referencia del cliente, entregas adicionales, mercancía delicada, acceso, "preguntar por…". Breve, sin repetir los otros campos.' },
+]
+
 export const SCHEMAS: Record<string, readonly FieldDef[]> = {
   courier_v1: COURIER_V1_FIELDS,
+  courier_gls_v1: COURIER_GLS_V1_FIELDS,
 }
 
 export const DEFAULT_SCHEMA_KEY = 'courier_v1'

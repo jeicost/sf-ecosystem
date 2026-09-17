@@ -1,0 +1,11 @@
+{
+  "id": "gls-no-encargo",
+  "description": "Reenvío de marketing sin encargo de transporte: kind = other, nada inventado",
+  "fixture": "gls-no-encargo.txt",
+  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "received_at": "2026-07-30T08:22:00Z",
+  "expected": {
+    "kind": "other",
+    "must_be_null": ["fecha", "recogida_direccion", "entrega_direccion", "bultos"]
+  }
+}

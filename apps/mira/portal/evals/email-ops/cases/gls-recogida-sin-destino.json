@@ -1,0 +1,13 @@
+{
+  "id": "gls-recogida-sin-destino",
+  "description": "Recogida para la red: sin destino, dirección de la firma, 'varios bultos' NO es una cifra",
+  "fixture": "gls-recogida-sin-destino.txt",
+  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "received_at": "2026-08-28T07:10:00Z",
+  "expected": {
+    "kind": "shipment_request",
+    "fields": { "fecha": "2026-08-28" },
+    "contains": { "recogida_direccion": "Albasanz" },
+    "must_be_null": ["entrega_direccion", "destinatario", "bultos", "peso_kg", "tipo_entrega"]
+  }
+}

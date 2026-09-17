@@ -1,0 +1,25 @@
+De: Librería Editorial Campus <libreria@campus-example.es>
+Para: local@glslocal.example.es
+Asunto: Retirada paquete 27-08-2026
+
+Buenos días,
+
+Adjunto la relación de paquetes que tienen que recoger hoy de la Librería Editorial Campus, calle Bravo Murillo, 28 de Madrid.
+
+Saludos
+
+Negociado de Librería
+Sección de Gestión Económica
+C/ Bravo Murillo n.º 38
+28015 Madrid
+Tfno. 910 000 002
+libreria@campus-example.es
+
+--- ADJUNTOS ---
+--- Adjunto: GLS_27-08-2026.xlsx ---
+[Hoja: Hoja1]
+Fecha Desde: 27/08/2026
+Fecha Hasta: 27/08/2026
+Relación de Envíos Nacionales
+DESTINATARIO | Dirección | C.P. | Ciudad | Descrip | Bultos | Kgs | Teléfono | Email
+CARMEN SOLER NAVARRO | AVENIDA JOSE MARTÍNEZ GONZÁLEZ, 74 | 03600 | ELDA | 92092 | 1 | 1.4 | 600999888 | CARMENSOLER@EXAMPLE.COM
