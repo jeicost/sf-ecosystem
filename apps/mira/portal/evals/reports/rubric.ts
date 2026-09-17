@@ -32,7 +32,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
-type Crit = 'economics' | 'judgment' | 'specificity' | 'rigor' | 'owners' | 'kill' | 'bet'
+type Crit = 'economics' | 'judgment' | 'specificity' | 'rigor' | 'owners' | 'kill' | 'bet' | 'method'
 
 /**
  * Qué se le exige a cada herramienta. Un criterio ausente no puntúa NI resta:
@@ -40,15 +40,15 @@ type Crit = 'economics' | 'judgment' | 'specificity' | 'rigor' | 'owners' | 'kil
  * ECONOMICS_TOOLS en toolkit-prompts.ts y los esquemas de cada case).
  */
 const EXPECT: Record<string, Crit[]> = {
-  'action-plan':                  ['economics', 'judgment', 'specificity', 'rigor', 'owners', 'kill', 'bet'],
-  'marketing-campaign-generator': ['economics', 'judgment', 'specificity', 'rigor', 'kill', 'bet'],
-  'investor-deck':                ['economics', 'judgment', 'specificity', 'rigor'],
-  'marketing-audit':              ['economics', 'judgment', 'specificity', 'rigor'],
-  'content-pack':                 ['economics', 'judgment', 'specificity', 'rigor'],
-  'community-growth-blueprint':   ['economics', 'judgment', 'specificity', 'rigor'],
-  'brand-briefing':               ['judgment', 'specificity', 'rigor'],
-  'competitive-analysis':         ['judgment', 'specificity', 'rigor'],
-  'seo-audit':                    ['judgment', 'specificity', 'rigor', 'owners'],
+  'action-plan':                  ['economics', 'judgment', 'specificity', 'rigor', 'owners', 'kill', 'bet', 'method'],
+  'marketing-campaign-generator': ['economics', 'judgment', 'specificity', 'rigor', 'kill', 'bet', 'method'],
+  'investor-deck':                ['economics', 'judgment', 'specificity', 'rigor', 'method'],
+  'marketing-audit':              ['economics', 'judgment', 'specificity', 'rigor', 'method'],
+  'content-pack':                 ['economics', 'judgment', 'specificity', 'rigor', 'method'],
+  'community-growth-blueprint':   ['economics', 'judgment', 'specificity', 'rigor', 'method'],
+  'brand-briefing':               ['judgment', 'specificity', 'rigor', 'method'],
+  'competitive-analysis':         ['judgment', 'specificity', 'rigor', 'method'],
+  'seo-audit':                    ['judgment', 'specificity', 'rigor', 'owners', 'method'],
   'brand-book':                   ['judgment', 'specificity', 'rigor'],
   'brandbook-content-system':     ['judgment', 'specificity', 'rigor'],
   'monthly-content-system':       ['judgment', 'specificity', 'rigor'],
@@ -73,13 +73,42 @@ const JUDGEMENT_FIELDS = ['effort', 'probability', 'impact', 'priority', 'severi
 const DODGE_VALUES = ['unknown', 'tbd', 'n/a', 'por definir', 'to be defined', 'desconocido', '']
 
 /** Relleno consultor. Cada acierto es una frase que valdría para cualquier marca. */
+// Endurecida el 17-sep-2026: los patrones eran SOLO en español mientras los
+// prompts de informes están en inglés — un informe en inglés sacaba 2/2
+// automáticos en el único criterio que mide la promesa del METHOD.
 const FILLER = [
   /\ben el mundo actual\b/i, /\bcabe destacar\b/i, /\bes importante (mencionar|destacar|señalar)\b/i,
   /\bcontenido de (alta )?calidad\b/i, /\boptimizar la estrategia\b/i, /\bmejorar la presencia\b/i,
   /\bcrear contenido atractivo\b/i, /\baumentar el engagement\b/i, /\bhoy en d[ií]a\b/i,
   /\bconfigurar el tracking\b/i, /\bbest practices\b/i, /\baprovechar las sinergias\b/i,
+  /\bin today'?s (fast[- ]paced |digital )?world\b/i, /\bit'?s important to (note|mention|remember)\b/i,
+  /\bhigh[- ]quality content\b/i, /\boptimi[sz]e (the|your) strategy\b/i,
+  /\bimprove (the |your )?(online )?presence\b/i, /\bengaging content\b/i,
+  /\bboost engagement\b/i, /\bset up tracking\b/i, /\bleverage synergies\b/i,
+  /\bcutting[- ]edge\b/i, /\bseamless(ly)?\b/i, /\brobust solution\b/i,
 ]
-const VAGUE_OWNER = /^(el |the )?(equipo|team|marketing|agencia|agency|todos|tbd|n\/a|-)?$/i
+// Sin anclar: el patrón anclado (^…$) cazaba "equipo" pero dejaba pasar
+// "Marketing team", "el equipo de marketing" y "agencia externa".
+const VAGUE_OWNER = /\b(equipo|team|marketing|agencia|agency|todos|everyone|tbd|n\/a)\b/i
+
+/**
+ * Campos del METHOD por herramienta — el único criterio que mide la palanca
+ * medida del proyecto (27-56% → 91-100% al añadir el METHOD). Sin esto, una
+ * herramienta podía dejar de emitir single_biggest_leak, do_not_touch o
+ * the_bet y seguir en 100%: la nota se sacaba cumpliendo la forma.
+ * 2 = todos presentes y no vacíos · 1 = falta uno · 0 = faltan dos o más.
+ */
+const METHOD_FIELDS: Record<string, string[]> = {
+  'action-plan': ['binding_constraint', 'the_bet', 'rejected_alternatives'],
+  'marketing-audit': ['single_biggest_leak', 'do_not_touch'],
+  'investor-deck': ['why_now', 'hardest_question'],
+  'competitive-analysis': ['positioning_validation', 'winning_strategy'],
+  'brand-briefing': ['tensions', 'the_enemy', 'could_not_establish'],
+  'content-pack': ['capacity_verdict'],
+  'marketing-campaign-generator': ['campaign_job', 'spend_logic', 'hypotheses', 'kill_rule'],
+  'community-growth-blueprint': ['signature_ritual', 'first_fifty', 'failure_mode'],
+  'seo-audit': ['single_biggest_gap', 'do_not_touch'],
+}
 
 interface Score { crit: Crit; name: string; got: number; max: number; note: string }
 
@@ -114,7 +143,7 @@ function scoreReport(r: Record<string, any>, toolSlug: string) {
     if (v == null || DODGE_VALUES.includes(s)) { dodged++; where.push(p) }
   })
   all.push({ crit: 'judgment', name: 'Criterio asumido', max: 2,
-    got: judged === 0 ? 1 : dodged === 0 ? 2 : dodged / judged < 0.3 ? 1 : 0,
+    got: judged === 0 ? 0 : dodged === 0 ? 2 : dodged / judged < 0.3 ? 1 : 0,
     note: judged ? `${dodged}/${judged} esquivados${dodged ? ' → ' + where.slice(0, 2).join(', ') : ''}` : 'sin campos de juicio' })
 
   const hits = FILLER.reduce((n, re) => n + (text.match(new RegExp(re, 'gi'))?.length ?? 0), 0)
@@ -126,7 +155,7 @@ function scoreReport(r: Record<string, any>, toolSlug: string) {
   const gaps = Array.isArray(r.data_gaps) ? r.data_gaps.length : 0
   const labels = (text.match(/\[(ASSUMPTION|RECOMMENDATION|MISSING: real data|JUDGEMENT)\]/g) || []).length
   all.push({ crit: 'rigor', name: 'Rigor de fuentes', max: 2,
-    got: gaps > 0 && labels > 0 ? 2 : gaps > 0 || labels > 0 ? 1 : 0,
+    got: gaps > 0 && labels >= 3 ? 2 : gaps > 0 || labels > 0 ? 1 : 0,
     note: `${gaps} data_gaps · ${labels} etiquetas` })
 
   const owners: string[] = []
@@ -150,6 +179,22 @@ function scoreReport(r: Record<string, any>, toolSlug: string) {
   all.push({ crit: 'bet', name: 'Apuesta explícita', max: 2,
     got: bet && rejected >= 2 ? 2 : bet || rejected ? 1 : 0,
     note: bet ? `apuesta declarada · ${rejected} descartada(s)` : 'sin apuesta ni descartes' })
+
+  const wanted = METHOD_FIELDS[toolSlug] ?? []
+  if (wanted.length) {
+    const present = wanted.filter((f) => {
+      const v = (r as Record<string, unknown>)[f]
+      if (v == null) return false
+      if (typeof v === 'string') return v.trim().length > 0
+      if (Array.isArray(v)) return v.length > 0
+      if (typeof v === 'object') return Object.keys(v).length > 0
+      return true
+    })
+    const missing = wanted.filter((f) => !present.includes(f))
+    all.push({ crit: 'method', name: 'Campos del METHOD', max: 2,
+      got: missing.length === 0 ? 2 : missing.length === 1 ? 1 : 0,
+      note: missing.length ? `faltan: ${missing.join(', ')}` : `${present.length}/${wanted.length} presentes` })
+  }
 
   const scores = all.filter((s) => expect.includes(s.crit))
   const skipped = all.filter((s) => !expect.includes(s.crit)).map((s) => s.name)
@@ -186,6 +231,8 @@ async function main() {
     .eq('status', 'completed').order('created_at', { ascending: false })
   if (id) q = q.eq('id', id)
   if (tool) q = q.eq('tool_slug', tool)
+  // Las filas del Estudio Visual son imágenes de la galería, no informes.
+  q = q.neq('tool_slug', 'studio-visual')
   const { data, error } = await q.limit(id ? 1 : limit)
   if (error) throw new Error(error.message)
   if (!data?.length) return console.log('Sin informes que puntuar.')
