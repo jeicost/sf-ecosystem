@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     if (!pliego || !criteria?.criteria?.length) return NextResponse.json({ error: 'Faltan el pliego o los criterios' }, { status: 400 })
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
-    const memoria = await generateTenderMemoria({ clientId: access.clientId, pliegoText: pliego, criteria })
+    const memoria = await generateTenderMemoria({ clientId: access.clientId, pliegoText: pliego, criteria, tenderId: typeof body.tenderId === 'string' ? body.tenderId : null })
     return NextResponse.json(memoria)
   } catch (error) {
     console.error('tender/generate error:', error)

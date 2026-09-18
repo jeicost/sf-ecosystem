@@ -151,7 +151,7 @@ export default function LicitacionesPage() {
     if (!criteria || !clientId) return
     setStep('generating'); setError(null)
     try {
-      const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId }) })
+      const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId, tenderId: currentId }) })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not generate the proposal'); return }
       setMemoria(data)

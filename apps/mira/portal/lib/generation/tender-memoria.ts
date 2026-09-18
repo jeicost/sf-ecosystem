@@ -1,7 +1,9 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { extractJson } from '@/lib/generation/extract-json'
+import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getKnowledgeContext } from '@/lib/knowledge'
+import { getPlaybook } from '@/lib/generation/tender-oferta'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 
 // Herramienta de licitaciones (D4 Entrega — el vertical que gana dinero).
@@ -68,17 +70,48 @@ ${GROUNDING_CONTRACT}`
   return parsed as unknown as TenderCriteria
 }
 
+/**
+ * Few-shot de memorias: las que el cliente YA presentó (tenders con memoria y
+ * status presentada/ganada/perdida), compactadas a estructura + arranques de
+ * sección. Es el "aprender de las que hemos hecho": la siguiente memoria
+ * hereda el esqueleto y el criterio de las anteriores, no solo el corpus.
+ */
+async function loadMemoriaExamples(clientId: string, excludeTenderId?: string | null): Promise<string> {
+  const db = adminClient()
+  const { data } = await db
+    .from('tenders')
+    .select('id,title,organo,status,memoria')
+    .eq('client_id', clientId)
+    .in('status', ['presentada', 'ganada', 'perdida'])
+    .not('memoria', 'is', null)
+    .order('updated_at', { ascending: false })
+    .limit(5)
+  const rows = (data || []).filter((t) => t.id !== excludeTenderId)
+  if (rows.length === 0) return ''
+  rows.sort((a, b) => (a.status === 'ganada' ? -1 : 0) - (b.status === 'ganada' ? -1 : 0))
+  return rows.slice(0, 2).map((t) => {
+    const m = t.memoria as { titulo?: string; secciones?: Array<{ titulo?: string; contenido?: string }> }
+    const secs = (m?.secciones || [])
+      .map((s) => `  ## ${s.titulo}\n  ${(s.contenido || '').slice(0, 700)}…`)
+      .join('\n')
+    return `<memoria_presentada titulo="${(t.title || '').slice(0, 120)}" organo="${(t.organo || '').slice(0, 80)}" resultado="${t.status}">\n${secs}\n</memoria_presentada>`
+  }).join('\n')
+}
+
 /** Paso 2 — genera la memoria respondiendo criterio a criterio. */
 export async function generateTenderMemoria(opts: {
   clientId: string
   pliegoText: string
   criteria: TenderCriteria
+  tenderId?: string | null
 }): Promise<Record<string, unknown>> {
   const { clientId, pliegoText, criteria } = opts
-  const [brain, knowledge] = await Promise.all([
+  const [brain, knowledge, playbook, examples] = await Promise.all([
     fetchBrandBrain(clientId),
     // El corpus indexado: esqueleto documental, certificaciones, memorias previas.
     getKnowledgeContext(clientId, { query: 'memoria técnica pliego contingencia calidad RSC certificaciones equipo flota', charBudget: 6000, documentBudget: 14000 }),
+    getPlaybook(clientId),
+    loadMemoriaExamples(clientId, opts.tenderId),
   ])
   const brainBlock = brain ? `BRAND CONTEXT (Source of Truth — the client's own facts, voice and document_system):\n${formatBrandBrainForPrompt(brain)}` : ''
 
@@ -104,6 +137,8 @@ Return ONLY a JSON object:
 
 HARD RULES: every factual claim (KPIs, certificaciones, flota, plazos) must come from the client knowledge/brand context or be marked [ASSUMPTION]/[MISSING: real data]. Never invent a certification, a number, or a competitor's name. Reuse the client's document_system blocks. Keep the institutional register (no humour).
 
+${playbook ? `CLIENT TENDER PLAYBOOK (doctrina destilada de sus ofertas presentadas — prevalece sobre heurísticas genéricas):\n${playbook.slice(0, 6000)}\n` : ''}
+${examples ? `PAST SUBMITTED MEMORIAS (imita su esqueleto, registro y tipo de compromisos — cifras concretas, plazos por fases, valor añadido con casos reales):\n${examples}\n` : ''}
 ${brainBlock}
 
 ${knowledge ? `CLIENT KNOWLEDGE (real corpus — certifications, prior memorias, document skeleton):\n${knowledge}` : ''}
