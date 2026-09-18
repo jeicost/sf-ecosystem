@@ -148,8 +148,14 @@ ${GROUNDING_CONTRACT}`
   return validateOferta(parsed)
 }
 
+/** Entrada laxa: lo que venga del modelo o de una semilla; baja_pct y suma los pone TS. */
+export type TenderOfertaInput = Omit<Partial<TenderOferta>, 'lineas' | 'criterios_automaticos'> & {
+  lineas?: Array<Partial<OfertaLinea>>
+  criterios_automaticos?: Array<Partial<OfertaCriterioAuto>>
+}
+
 /** Validación determinista: TS calcula, el modelo no suma. */
-export function validateOferta(raw: Partial<TenderOferta>): TenderOferta {
+export function validateOferta(raw: TenderOfertaInput): TenderOferta {
   const avisos: string[] = []
   const lineas: OfertaLinea[] = (raw.lineas || []).map((l) => {
     const max = typeof l.max_sin_iva === 'number' ? l.max_sin_iva : null
