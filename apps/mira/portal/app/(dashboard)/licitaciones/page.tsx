@@ -13,10 +13,13 @@ interface Criterion { group: string; name: string; points: number | null; sub?: 
 interface Criteria { object?: string; expediente?: string; deadline?: string; total_points: number | null; criteria: Criterion[]; data_gaps?: string[] }
 interface Section { criterio: string; puntos_objetivo: number | null; titulo: string; contenido: string; datos_a_confirmar?: string[] }
 interface Memoria { titulo?: string; resumen_ejecutivo?: string; secciones?: Section[]; checklist_qa?: string[]; data_gaps?: string[] }
+interface OfertaLinea { seccion: string; servicio: string; tramo: string | null; max_sin_iva: number | null; factor: number | null; precio_ofertado: number | null; baja_pct: number | null; motivo: string; a_confirmar: boolean }
+interface OfertaCriterioAuto { nombre: string; opciones: string | null; respuesta: string; puntos: number | null; motivo: string }
+interface Oferta { lote: string | null; formula_precio: string | null; estrategia: string; lineas: OfertaLinea[]; criterios_automaticos: OfertaCriterioAuto[]; a_confirmar_global: string[]; avisos: string[]; suma_ponderada: number | null }
 interface RadarScore { fit: number; verdict: 'go' | 'revisar' | 'no-go'; reason: string }
 interface RadarItem { id: string; expediente: string; title: string; org: string; cpv: string[]; amount: number | null; deadline: string | null; link: string; score: RadarScore | null }
 interface RadarMeta { total_found: number; scored: number; capped: boolean; pagesRead: number; stopReason: string }
-interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; memoria: Memoria | null }
+interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; memoria: Memoria | null; oferta: Oferta | null }
 
 const STATUS_LABEL: Record<string, string> = { borrador: 'Draft', preparando: 'Preparing', presentada: 'Submitted', ganada: 'Won', perdida: 'Lost' }
 const STATUS_COLOR: Record<string, string> = { borrador: '#94A3B8', preparando: '#F59E0B', presentada: '#6366F1', ganada: '#10B981', perdida: '#EF4444' }
@@ -40,7 +43,8 @@ export default function LicitacionesPage() {
   const [pliego, setPliego] = useState('')
   const [criteria, setCriteria] = useState<Criteria | null>(null)
   const [memoria, setMemoria] = useState<Memoria | null>(null)
-  const [step, setStep] = useState<'idle' | 'extracting' | 'generating'>('idle')
+  const [oferta, setOferta] = useState<Oferta | null>(null)
+  const [step, setStep] = useState<'idle' | 'extracting' | 'generating' | 'generating-oferta'>('idle')
   const [error, setError] = useState<string | null>(null)
   const [copied, setCopied] = useState(false)
   const [radarLoading, setRadarLoading] = useState(false)
@@ -73,11 +77,12 @@ export default function LicitacionesPage() {
 
   useEffect(() => { loadList() }, [loadList])
 
-  const save = async (patch?: { status?: string; criteria?: Criteria | null; memoria?: Memoria | null }) => {
+  const save = async (patch?: { status?: string; criteria?: Criteria | null; memoria?: Memoria | null; oferta?: Oferta | null }) => {
     // Los overrides permiten guardar inmediatamente después de generar, cuando el
     // estado de React todavía no refleja el resultado recién recibido.
     const crit = patch && 'criteria' in patch ? patch.criteria : criteria
     const mem = patch && 'memoria' in patch ? patch.memoria : memoria
+    const ofe = patch && 'oferta' in patch ? patch.oferta : oferta
     if (!clientId || (!crit && !pliego.trim())) return
     setSaving(true)
     try {
@@ -88,7 +93,7 @@ export default function LicitacionesPage() {
           title: mem?.titulo || crit?.object || pliego.slice(0, 80),
           expediente: crit?.expediente || null,
           deadline: crit?.deadline || null,
-          pliego_text: pliego, criteria: crit, memoria: mem,
+          pliego_text: pliego, criteria: crit, memoria: mem, oferta: ofe,
           ...(patch?.status ? { status: patch.status } : {}),
         }),
       })
@@ -108,13 +113,13 @@ export default function LicitacionesPage() {
       if (!res.ok) { setError('Could not open'); return }
       const t = await res.json()
       setCurrentId(t.id); setPliego(t.pliego_text || '')
-      setCriteria(t.criteria || null); setMemoria(t.memoria || null); setSavedAt(null)
+      setCriteria(t.criteria || null); setMemoria(t.memoria || null); setOferta(t.oferta || null); setSavedAt(null)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch { setError('Network error') }
   }
 
   const startNew = () => {
-    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setSavedAt(null); setError(null)
+    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null)
   }
 
   const setStatus = async (status: string) => { await save({ status }) }
@@ -132,7 +137,7 @@ export default function LicitacionesPage() {
 
   const extract = async () => {
     if (pliego.trim().length < 200 || !clientId) return
-    setStep('extracting'); setError(null); setCriteria(null); setMemoria(null)
+    setStep('extracting'); setError(null); setCriteria(null); setMemoria(null); setOferta(null)
     try {
       const res = await fetch('/api/tender/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId }) })
       const data = await res.json()
@@ -152,6 +157,40 @@ export default function LicitacionesPage() {
       setMemoria(data)
       save({ memoria: data, status: 'preparando' })  // la memoria nunca se pierde al recargar
     } catch { setError('Network error') } finally { setStep('idle') }
+  }
+
+  const generateOferta = async () => {
+    if (!clientId || pliego.trim().length < 200) return
+    setStep('generating-oferta'); setError(null)
+    try {
+      const res = await fetch('/api/tender/oferta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId, tenderId: currentId }) })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'Could not generate the economic offer'); return }
+      setOferta(data)
+      save({ oferta: data, status: 'preparando' })
+    } catch { setError('Network error') } finally { setStep('idle') }
+  }
+
+  // Edición en la revisión: el precio es de la persona; la baja se recalcula aquí.
+  const editPrecio = (idx: number, value: string) => {
+    if (!oferta) return
+    const precio = value.trim() === '' ? null : Number(value.replace(',', '.'))
+    const lineas = oferta.lineas.map((l, i) => {
+      if (i !== idx) return l
+      const p = precio != null && Number.isFinite(precio) ? Math.round(precio * 100) / 100 : null
+      const baja = p != null && l.max_sin_iva != null && l.max_sin_iva > 0 ? Math.round(((l.max_sin_iva - p) / l.max_sin_iva) * 1000) / 10 : null
+      return { ...l, precio_ofertado: p, baja_pct: baja }
+    })
+    const pond = lineas.filter((l) => l.factor != null && l.precio_ofertado != null)
+    const suma = pond.length ? Math.round(pond.reduce((a, l) => a + (l.precio_ofertado as number) * (l.factor as number), 0) * 100) / 100 : null
+    setOferta({ ...oferta, lineas, suma_ponderada: suma })
+  }
+
+  const copyOferta = () => {
+    if (!oferta) return
+    const rows = oferta.lineas.map((l) => [l.seccion, l.servicio, l.tramo || '', l.max_sin_iva ?? '', l.factor ?? '', l.precio_ofertado ?? ''].join('\t'))
+    const txt = ['Sección\tServicio\tTramo\tMáx sin IVA\tFactor\tOfertado sin IVA', ...rows].join('\n')
+    navigator.clipboard.writeText(txt); setCopied(true); setTimeout(() => setCopied(false), 1500)
   }
 
   const copyMemoria = () => {
@@ -217,6 +256,7 @@ export default function LicitacionesPage() {
                       {t.expediente ? ` · Exp. ${t.expediente}` : ''}
                       {d != null ? ` · ${d > 0 ? `${d} days` : 'expired'}` : ''}
                       {t.memoria ? ' · has proposal' : ''}
+                      {t.oferta ? ' · has offer' : ''}
                     </span>
                   </span>
                 </button>
@@ -345,10 +385,18 @@ export default function LicitacionesPage() {
         <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><ListChecks size={15} style={{ color: brand }} /> 2 · Scoring criteria {criteria.total_points ? `· ${criteria.total_points} pts` : ''}</h2>
-            <button onClick={generate} disabled={step !== 'idle'}
-              className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-              {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> Generate proposal</>}
-            </button>
+            <div className="flex items-center gap-2">
+              {byGroup('juicio_valor').length > 0 && (
+                <button onClick={generate} disabled={step !== 'idle'}
+                  className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                  {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> Generate proposal</>}
+                </button>
+              )}
+              <button onClick={generateOferta} disabled={step !== 'idle'}
+                className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                {step === 'generating-oferta' ? <><Loader2 size={14} className="animate-spin" /> Pricing…</> : <><Sparkles size={14} /> Generate economic offer</>}
+              </button>
+            </div>
           </div>
           {criteria.object && <p className="mb-3 text-xs text-ink-tertiary">{criteria.expediente ? `Exp. ${criteria.expediente} · ` : ''}{criteria.object}{criteria.deadline ? ` · due ${criteria.deadline}` : ''}</p>}
           <div className="grid gap-3 sm:grid-cols-3">
@@ -365,6 +413,111 @@ export default function LicitacionesPage() {
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Paso 3b: oferta económica — propuesta por el agente, editada por la persona */}
+      {oferta && (
+        <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
+              <FileText size={15} style={{ color: brand }} /> Economic offer{oferta.lote ? ` · ${oferta.lote}` : ''}
+            </h2>
+            <div className="flex items-center gap-2">
+              {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
+              <button onClick={() => save()} disabled={saving}
+                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
+                {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save</>}
+              </button>
+              <button onClick={copyOferta} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
+                {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy table</>}
+              </button>
+            </div>
+          </div>
+
+          {/* Cerrar el ciclo (presentada → ganada/perdida) es lo que convierte esta
+              oferta en ejemplo del que aprende la siguiente. */}
+          <div className="mb-4 flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 text-[11px] text-ink-muted">Status:</span>
+            {Object.keys(STATUS_LABEL).map((st) => (
+              <button key={st} onClick={() => setStatus(st)} disabled={saving}
+                className="rounded-full border px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
+                style={{ borderColor: `${STATUS_COLOR[st]}55`, color: STATUS_COLOR[st] }}>
+                {STATUS_LABEL[st]}
+              </button>
+            ))}
+          </div>
+
+          {oferta.avisos.length > 0 && (
+            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3">
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-red-400">Fix before submitting</p>
+              <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{oferta.avisos.map((a, i) => <li key={i}>{a}</li>)}</ul>
+            </div>
+          )}
+
+          {oferta.estrategia && <p className="mb-2 text-sm text-ink-secondary">{oferta.estrategia}</p>}
+          {oferta.formula_precio && <p className="mb-4 text-xs text-ink-tertiary">Cómo puntúa el precio: {oferta.formula_precio}{oferta.suma_ponderada != null ? ` · Suma ponderada actual: ${oferta.suma_ponderada.toFixed(2)} €` : ''}</p>}
+
+          {/* Tabla editable por sección: el precio es de la persona, la baja se recalcula sola */}
+          {Array.from(new Set(oferta.lineas.map((l) => l.seccion))).map((sec) => (
+            <div key={sec} className="mb-4">
+              <p className="mb-1.5 text-[10px] uppercase tracking-wider font-semibold text-ink-muted">{sec}</p>
+              <div className="overflow-x-auto rounded-xl border border-line-subtle">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-line-subtle bg-page text-left text-[10px] uppercase tracking-wider text-ink-muted">
+                      <th className="px-3 py-2 font-medium">Servicio</th>
+                      <th className="px-2 py-2 font-medium">Tramo</th>
+                      <th className="px-2 py-2 text-right font-medium">Máx sin IVA</th>
+                      <th className="px-2 py-2 text-right font-medium">Factor</th>
+                      <th className="px-2 py-2 text-right font-medium">Ofertado</th>
+                      <th className="px-2 py-2 text-right font-medium">Baja</th>
+                      <th className="px-3 py-2 font-medium">Motivo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {oferta.lineas.map((l, i) => l.seccion === sec && (
+                      <tr key={i} className={clsx('border-b border-line-subtle last:border-0', l.a_confirmar && 'bg-amber-500/5')}>
+                        <td className="px-3 py-1.5 text-ink">{l.servicio}{l.a_confirmar && <span className="ml-1.5 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold text-amber-500">confirmar</span>}</td>
+                        <td className="px-2 py-1.5 text-ink-tertiary whitespace-nowrap">{l.tramo || '—'}</td>
+                        <td className="px-2 py-1.5 text-right text-ink-tertiary whitespace-nowrap">{l.max_sin_iva != null ? `${l.max_sin_iva.toFixed(2)} €` : '—'}</td>
+                        <td className="px-2 py-1.5 text-right text-ink-muted">{l.factor ?? '—'}</td>
+                        <td className="px-2 py-1.5 text-right">
+                          <input value={l.precio_ofertado ?? ''} onChange={(e) => editPrecio(i, e.target.value)}
+                            className={clsx('w-20 rounded-md border bg-page px-2 py-1 text-right text-xs text-ink outline-none focus:ring-1 focus:ring-ink-muted',
+                              l.precio_ofertado != null && l.max_sin_iva != null && l.precio_ofertado > l.max_sin_iva ? 'border-red-500/60' : 'border-line')} />
+                        </td>
+                        <td className={clsx('px-2 py-1.5 text-right whitespace-nowrap', (l.baja_pct ?? 0) >= 30 ? 'text-emerald-400' : 'text-ink-secondary')}>{l.baja_pct != null ? `${l.baja_pct}%` : '—'}</td>
+                        <td className="px-3 py-1.5 text-ink-tertiary">{l.motivo}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          {oferta.criterios_automaticos.length > 0 && (
+            <div className="mb-4 rounded-xl border border-line-subtle bg-page p-3">
+              <p className="mb-2 text-[10px] uppercase tracking-wider font-semibold text-ink-muted">Criterios automáticos (fórmula)</p>
+              <ul className="space-y-1.5">
+                {oferta.criterios_automaticos.map((c, i) => (
+                  <li key={i} className="text-xs text-ink-secondary">
+                    <span className="text-ink">{c.nombre}</span> → <span className="font-medium text-ink">{c.respuesta}</span>
+                    {c.puntos != null && <span className="text-ink-tertiary"> · {c.puntos} pts</span>}
+                    {c.motivo && <span className="block text-[11px] text-ink-muted">{c.motivo}</span>}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {oferta.a_confirmar_global.length > 0 && (
+            <div className="rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-2.5">
+              <p className="mb-1 text-[10px] uppercase tracking-wider text-amber-500/80">Decisiones a validar antes de presentar</p>
+              <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{oferta.a_confirmar_global.map((d, i) => <li key={i}>{d}</li>)}</ul>
+            </div>
+          )}
         </div>
       )}
 

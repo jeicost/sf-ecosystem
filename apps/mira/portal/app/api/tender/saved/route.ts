@@ -6,7 +6,7 @@ import { adminClient } from '@/lib/supabase'
 // borrar. Todo con service_role tras resolveRequestClient, que es quien acota el
 // cliente — nunca se confía en el client_id que venga del navegador para leer.
 
-const COLS = 'id,client_id,title,expediente,organo,deadline,source_url,criteria,memoria,status,created_at,updated_at'
+const COLS = 'id,client_id,title,expediente,organo,deadline,source_url,criteria,memoria,oferta,status,created_at,updated_at'
 
 /** Listado del cliente activo. Con ?id= devuelve uno solo, con su pliego. */
 // Guarda de entitlement: hasta ahora estas rutas solo comprobaban que la persona
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       pliego_text: typeof body.pliego_text === 'string' ? body.pliego_text : null,
       criteria: body.criteria ?? null,
       memoria: body.memoria ?? null,
+      oferta: body.oferta ?? null,
       ...(body.status ? { status: body.status } : {}),
       updated_at: new Date().toISOString(),
     }
