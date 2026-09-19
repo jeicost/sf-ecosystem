@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X } from 'lucide-react'
+import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X, BookOpen } from 'lucide-react'
 import { useActiveClient, type ActiveClient } from '@/lib/client-context'
 import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
 import { useClientTools } from '@/lib/hooks/useClientTools'
@@ -265,6 +265,8 @@ export default function LicitacionesPage() {
           </div>
         </div>
       )}
+
+      {clientId && <PlaybookPanel clientId={clientId} brand={brand} />}
 
       {/* Tender radar (PLACSP, gratis) */}
       <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
@@ -583,6 +585,94 @@ export default function LicitacionesPage() {
               )}
             </div>
           )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * El playbook: la doctrina que el agente aplica al proponer precios y memorias
+ * (dónde baja, dónde no, cómo estructura la memoria). Se destila de las
+ * licitaciones presentadas, pero es TEXTO EDITABLE a propósito: si el criterio
+ * cambia (un coste sube, se decide no pelear un tipo de servicio), lo corrige
+ * el equipo sin tocar código ni esperar a la agencia.
+ *
+ * Carga perezosa: solo pide el playbook cuando alguien abre el panel.
+ */
+function PlaybookPanel({ clientId, brand }: { clientId: string; brand: string }) {
+  const [open, setOpen] = useState(false)
+  const [text, setText] = useState('')
+  const [loaded, setLoaded] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [savedAt, setSavedAt] = useState<string | null>(null)
+  const [err, setErr] = useState<string | null>(null)
+
+  // Al cambiar de marca, el playbook de la anterior no vale: se descarta.
+  useEffect(() => { setLoaded(false); setText(''); setSavedAt(null); setErr(null) }, [clientId])
+
+  useEffect(() => {
+    if (!open || loaded || loading) return
+    setLoading(true)
+    ;(async () => {
+      try {
+        const res = await fetch(`/api/tender/playbook?clientId=${clientId}`)
+        const data = await res.json()
+        if (!res.ok) { setErr(data.error || 'Could not load'); return }
+        setText(data.playbook || '')
+        setLoaded(true)
+      } catch { setErr('Network error') } finally { setLoading(false) }
+    })()
+  }, [open, loaded, loading, clientId])
+
+  const save = async () => {
+    setSaving(true); setErr(null)
+    try {
+      // clientId SIEMPRE en el cuerpo: la ruta resuelve el cliente con él (el
+      // workspace activo del navegador no viaja solo).
+      const res = await fetch('/api/tender/playbook', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, playbook: text }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setErr(data.error || 'Could not save'); return }
+      setSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
+    } catch { setErr('Network error') } finally { setSaving(false) }
+  }
+
+  return (
+    <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
+      <button onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between gap-3 text-left">
+        <span>
+          <span className="flex items-center gap-2 text-sm font-semibold text-ink"><BookOpen size={15} style={{ color: brand }} /> Your playbook</span>
+          <span className="mt-0.5 block text-xs text-ink-tertiary">What the assistant applies when pricing and writing: where you bid low, where cost rules, how your proposals are structured.</span>
+        </span>
+        <span className="shrink-0 text-ink-muted">{open ? '▲' : '▼'}</span>
+      </button>
+
+      {open && (
+        <div className="mt-4">
+          {loading ? (
+            <div className="flex h-24 items-center justify-center"><Loader2 size={18} className="animate-spin text-ink-muted" /></div>
+          ) : (
+            <>
+              <textarea value={text} onChange={(e) => setText(e.target.value)} rows={14}
+                placeholder="No playbook yet. It is distilled from your submitted tenders — or write it here: where you can go low, where cost sets the floor, how your proposals are structured."
+                className="w-full resize-y rounded-xl border border-line bg-page p-3 font-mono text-[12.5px] leading-relaxed text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-[11px] text-ink-muted">{text.length}/12000 characters · plain text, no format needed</p>
+                <div className="flex items-center gap-2">
+                  {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
+                  <button onClick={save} disabled={saving}
+                    className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                    {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save playbook</>}
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+          {err && <p className="mt-2 text-xs text-red-400">{err}</p>}
         </div>
       )}
     </div>
