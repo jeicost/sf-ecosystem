@@ -1,17 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="85.3 26.58 289.4 378.12">
-  <!-- Urna con papeleta entrando por la ranura y la palabra calada en el frente -->
-  <g fill="#F6F1E6">
-    <!-- papeleta doblada, entrando en diagonal -->
-    <g transform="rotate(-12 255 100)">
-      <path fill-rule="evenodd" d="M198 56 Q198 48 206 48 L304 48 Q312 48 312 56 L312 148 L198 148 Z
-        M198 92 L312 92 L312 102 L198 102 Z"/>
-    </g>
-    <!-- tapa con ranura -->
-    <path fill-rule="evenodd" d="M96 202 Q96 190 110 186 L212 152 Q230 146 248 152 L350 186 Q364 190 364 202 L364 214 L96 214 Z
-      M186 174 L322 174 L322 192 L186 192 Z"/>
-    <!-- frente con banda calada y palabra -->
-    <path fill-rule="evenodd" d="M96 226 L364 226 L364 380 Q364 394 350 394 L110 394 Q96 394 96 380 Z
-      M106 276 L354 276 L354 342 L106 342 Z"/>
-    <text x="230" y="325" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="44" letter-spacing="1">PUCHERAZO</text>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="9.2 23.2 257.8 75.5">
+  <g transform="translate(0 6) scale(0.86)"><g fill="none" stroke="#F6F1E6" stroke-width="7.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 40 h64 v46 a4 4 0 0 1 -4 4 h-56 a4 4 0 0 1 -4 -4 Z"/><path d="M36 40 v-8 h28 v8"/><path d="M38 54 h24"/></g></g><text x="98" y="62" fill="#F6F1E6" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="30" letter-spacing="0.5">PUCHERAZO</text>
 </svg>

@@ -1,11 +1,3 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="54.04 102.04 351.92 261.92">
-  <!-- Banda espesa que gotea: cuatro lágrimas de barro a distinta altura -->
-  <g fill="#F6F1E6">
-    <path d="M64 128 Q64 112 80 112 L380 112 Q396 112 396 128 L396 178
-      Q396 194 380 194 L364 194 L364 214 Q364 222 350 222 Q336 222 336 214 L336 194 L284 194 L284 232 Q284 240 270 240 Q256 240 256 232 L256 194 L204 194 L204 206 Q204 214 190 214 Q176 214 176 206 L176 194 L124 194 L124 224 Q124 232 110 232 Q96 232 96 224 L96 194 L80 194 Q64 194 64 178 Z"/>
-    <path d="M110 268 c11 18 20 30 20 44 a20 20 0 1 1 -40 0 c0 -14 9 -26 20 -44 Z"/>
-    <path d="M270 284 c12 20 22 33 22 48 a22 22 0 1 1 -44 0 c0 -15 10 -28 22 -48 Z"/>
-    <path d="M190 250 c10 16 18 27 18 39 a18 18 0 1 1 -36 0 c0 -12 8 -23 18 -39 Z"/>
-    <path d="M350 258 c11 18 20 30 20 44 a20 20 0 1 1 -40 0 c0 -14 9 -26 20 -44 Z"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-10.8 1.6 121.6 91.7">
+  <text x="50" y="42" text-anchor="middle" fill="#F6F1E6" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="34" letter-spacing="1">FANGO</text><path fill="#F6F1E6" d="M22 52 q5 9 5 15 a7.5 7.5 0 0 1 -15 0 q0 -6 5 -15 Z"/><path fill="#F6F1E6" d="M44 60 q5 9 5 15 a7.5 7.5 0 0 1 -15 0 q0 -6 5 -15 Z"/><path fill="#F6F1E6" d="M66 54 q5 9 5 15 a7.5 7.5 0 0 1 -15 0 q0 -6 5 -15 Z"/><path fill="#F6F1E6" d="M86 62 q5 9 5 15 a7.5 7.5 0 0 1 -15 0 q0 -6 5 -15 Z"/>
 </svg>

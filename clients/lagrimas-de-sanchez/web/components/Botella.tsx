@@ -1,12 +1,14 @@
-import { Glifo } from "@/components/Glifos";
+import { PIEZAS } from "@/lib/piezas";
+import { ICONO_DE } from "@/lib/iconos";
 
 /**
  * La botella, dibujada.
  *
  * Mientras no exista fotografía de producto —no la habrá hasta que el palé esté
- * en el garaje— la botella se dibuja. Y dibujada tiene una ventaja que la foto
- * no da: las piezas son texto real en el DOM, así que el buscador las indexa y
- * un lector de pantalla las lee.
+ * en el garaje— la botella se dibuja. Y ahora se dibuja con el ARTE REAL: cada
+ * pieza es su propio SVG, el mismo que irá a la pantalla de serigrafía. Antes
+ * se simulaba con texto y glifos, que era más indexable pero mentía sobre el
+ * resultado; hoy el estampado de la web es lo que se va a hornear.
  *
  * EL VIDRIO. Un degradado plano no parece cristal. Lo que lo hace parecer
  * cristal son cuatro capas superpuestas, y son las mismas que ves en la foto de
@@ -17,20 +19,26 @@ import { Glifo } from "@/components/Glifos";
  * EL ESPACIO DE COORDENADAS. Todo lo de dentro se mide en la caja original de
  * 252 × 830 y se escala entera con un transform. Por eso los cuerpos van en
  * píxeles fijos y NUNCA con variantes responsive (`sm:`): esas miran el ancho de
- * la ventana, no el de la botella, y descuadran el estampado. Para hacerla más
- * pequeña se baja `alto`.
+ * la ventana, no el de la botella, y descuadran el estampado.
  *
- * El estampado arranca en el hombro. El cuello va desnudo a propósito: en la
- * versión de vino lo tapa la cápsula y en la vacía el vidrio antico limpio con
- * el tapón encima queda mejor que cualquier pieza.
+ * LA COMPOSICIÓN (19-sep, tras medirse contra la referencia). El estampado del
+ * Xitxarel·lo, a un metro, se lee como UNA MANCHA DE TEXTURA. El nuestro se
+ * deshacía en piezas sueltas flotando. Tres cosas lo arreglan y son las que
+ * gobiernan este fichero:
+ *
+ *   1. El bloque se CONCENTRA. Arranca donde muere el hombro y acaba sobre el
+ *      talón. Cuello y hombro alto quedan limpios, como en la referencia.
+ *   2. Las piezas se APIÑAN: separaciones de 3-5 px sobre 252 de ancho, no de
+ *      quince. La ocupación objetivo es del 70-78 %.
+ *   3. El lockup se REDUCE y se sube a la zona limpia. Antes competía con el
+ *      estampado; ahora flota encima, que es lo que lo hace legible.
+ *
+ * El lagrimómetro dejó de ser una columna que partía la botella en dos: es una
+ * pieza más, alta y estrecha, metida en el tejido.
  */
 
 /** La tinta cerámica: una sola, blanca. El mismo hueso que los SVG del estampado. */
 const TINTA = "#F6F1E6";
-
-type Escala = "xs" | "sm" | "md" | "lg" | "xl";
-
-const CUERPO: Record<Escala, number> = { xs: 8, sm: 11, md: 15, lg: 18, xl: 26 };
 
 /**
  * LA BOTELLA REAL — Estal SM BG MG ESSENTIA, Sommelier Long, 150 cl (19-sep).
@@ -42,117 +50,151 @@ const CUERPO: Record<Escala, number> = { xs: 8, sm: 11, md: 15, lg: 18, xl: 26 }
 const SILUETA =
   "path('M 30,828 Q 12,828 12,810 L 12,523 C 12,452 91,330 91,244 L 91,2 L 161,2 L 161,244 C 161,330 240,452 240,523 L 240,810 Q 240,828 222,828 Z')";
 
-/** El hombro es cónico: solo cabe una pieza por banda o se la come la silueta. */
-const HOMBRO: [Escala, string][] = [
-  ["xs", "FACHA"],
-  ["sm", "TUCÁN"],
+const TEXTO_DE: Record<number, string> = Object.fromEntries(
+  PIEZAS.map((p) => [p.n, p.texto]),
+);
+
+/**
+ * Las bandas del estampado: [alto en px, piezas].
+ *
+ * Las piezas se nombran por su número de inventario y se dibujan con su SVG
+ * real, así que el ancho de cada una lo decide su propio arte — que es
+ * exactamente lo que pasa al maquetar una serigrafía. Los remates (`r-*`) no
+ * significan nada: rellenan los huecos de 3-4 px que, sin ellos, convierten el
+ * tejido en un colador.
+ *
+ * Arriba, sobre la curva del hombro, solo caben piezas sueltas y pequeñas: el
+ * cono se cierra y la silueta se las come.
+ */
+type Banda = [number, (number | string)[]];
+
+/**
+ * El ancho útil de cada banda, en píxeles de la caja de 252.
+ *
+ * El contenedor del estampado es un rectángulo, pero la botella es una curva:
+ * si todas las bandas usan el mismo ancho, las de arriba se salen por los
+ * costados y aparecen cortadas por el canto.
+ *
+ * Va DECLARADO y no calculado a partir de la Bézier: el reparto vertical real
+ * lo hace flexbox con el espacio sobrante, así que acumular alturas a mano para
+ * deducir a qué altura cae cada banda daba un número que no era el de la
+ * pantalla, y las primeras filas seguían saliéndose. Esta tabla sube del ancho
+ * del hombro al del cilindro en seis bandas y luego se queda plana, que es
+ * exactamente la forma de la botella.
+ */
+const ANCHOS_HOMBRO = [62, 84];
+
+
+const HOMBRO: Banda[] = [
+  [8, [26, "r-estrella", 30]],
+  [10, [20, 12, "r-flecha-e", 19]],
 ];
 
-/** Cuerpo cilíndrico: aquí vive la densidad, como en la referencia. */
-const CUERPO_IZQ: Banda[] = [
-  ["sm", [["CHEPAS", undefined, "02-chepas"], ["BULOS", "aviso"]]],
-  ["md", [["FANGO", "gota"]]],
-  ["xs", [["TELEPEDRO", "tele"], ["CEJAS", undefined, "10-cejas"]]],
-  ["sm", [["CHIRIMOYAS", undefined, "03-chirimoyas"]]],
-  ["xs", [["POR 7 VOTOS"], ["★"]]],
-  ["xs", [["MEMA"], ["ECOLOGETAS"]]],
-  ["sm", [["PUCHERAZO", "urna"]]],
-  ["xs", [["YO ESTOY BIEN"]]],
+/**
+ * El bloque denso. MENOS bandas y MÁS piezas por banda que en el primer
+ * intento: con dos piezas por fila y justificación de lado a lado, lo que
+ * queda entre ellas es un agujero, no un hueco. Con cinco, la fila se sostiene
+ * sola y aparece el tejido.
+ *
+ * Los remates se repiten a propósito — en la referencia la misma flechita sale
+ * cuatro veces. Son argamasa: nadie los cuenta, pero sin ellos no hay muro.
+ */
+const CUERPO: Banda[] = [
+  [19, [22, "r-asterisco", 2]],
+  [23, [34, "r-cruz", 35]],
+  [18, [3, "r-rombos", 51, "r-flecha-ne"]],
+  [24, [36, 19, 44]],
+  [18, [1, 10, 37, 28]],
+  [23, [42, 13, "r-doble", 45]],
+  [18, [11, "r-flecha-se", 14, "r-estrella"]],
+  [24, [5, 29, "r-puntos", 39]],
+  [18, ["r-manecilla", 23, 43, "r-rombos"]],
+  [23, [47, 9, "r-flecha-n", 38]],
+  [18, [33, "r-asterisco", 50, 18]],
+  [24, [40, 8, "r-doble", 46]],
+  [18, [21, "r-estrella", 55, 7, "r-cruz"]],
+  [23, [48, 32, "r-flecha-e", 41]],
+  [18, [4, "r-rombos", 49, 15]],
+  [24, [52, 6, "r-cruz", 53]],
+  [18, [17, "r-barras", 31, "r-flecha-ne"]],
+  [21, [56, 27, 25, "r-puntos"]],
+  [21, [57, "r-flecha-e", 24]],
 ];
 
-const CUERPO_DER: Banda[] = [
-  ["sm", [["EL UNO", "dedo"], ["SAUNAS", "vapor"]]],
-  ["md", [["EL PUTO AMO", "corona"]]],
-  ["xs", [["FISCAL SOPLÓN"], ["LA CAJERA", undefined, "11-la-cajera"]]],
-  ["sm", [["FALCON"], ["GALGO", undefined, "01-galgo-de-paiporta"]]],
-  ["xs", [["CHARO", undefined, "13-charo"], ["✱"]]],
-  ["xs", [["IZQUIERDA CAVIAR"]]],
-  ["sm", [["MARLASKONA"]]],
-  ["xs", [["EDICIÓN Nº"]]],
-];
-
-/** [texto, glifo?, img?] — con img, la pieza pinta su arte real. */
-type Banda = [Escala, [string, string?, string?][]];
+const ANCHOS = CUERPO.map((_, i) => Math.min(206, 88 + i * 22));
 
 const LAGRIMOMETRO = ["OJO SECO", "PUCHERO", "MOQUEO", "LLORERA", "MOCO TENDIDO", "DESEMBALSE"];
 
-
-function Pieza({ e, t, g, img }: { e: Escala; t: string; g?: string; img?: string }) {
-  if (img) {
-    /* El arte real, a la escala de su banda. La palabra ya vive dentro del
-       arte, así que no se repite debajo. */
-    return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={`/iconos/${img}.svg`}
-        alt={t}
-        style={{ height: CUERPO[e] * 2.9, width: "auto" }}
-      />
-    );
-  }
-  if (g) {
-    return (
-      <span className="flex flex-col items-center gap-[2.5px]">
-        <Glifo n={g} tam={CUERPO[e] * 1.15} />
-        <span
-          className="u-cond whitespace-nowrap text-center"
-          style={{ fontSize: CUERPO[e] * 0.86, lineHeight: 0.95, letterSpacing: "0.02em" }}
-        >
-          {t}
-        </span>
-      </span>
-    );
-  }
+/**
+ * Una pieza del estampado: su SVG real, escalado por el ALTO de su banda.
+ *
+ * El ancho lo decide el propio arte, porque cada SVG viene ceñido a su dibujo.
+ * Eso es justo lo que pasa al maquetar una serigrafía de verdad: las piezas no
+ * caben en casillas, se acomodan unas a otras.
+ */
+function Pieza({ id, alto }: { id: number | string; alto: number }) {
+  const slug = typeof id === "number" ? ICONO_DE[id] : id;
+  if (!slug) return null;
+  const rellena = typeof id === "string"; // los remates no dicen nada
   return (
-    <span
-      className="u-cond whitespace-nowrap text-center"
-      style={{ fontSize: CUERPO[e], lineHeight: 0.95, letterSpacing: "0.02em" }}
-    >
-      {t}
-    </span>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={`/iconos/${slug}.svg`}
+      alt={rellena ? "" : (TEXTO_DE[id as number] ?? "")}
+      aria-hidden={rellena || undefined}
+      style={{ height: rellena ? alto * 0.62 : alto, width: "auto" }}
+      className="shrink-0"
+    />
   );
 }
 
-function Columna({ bandas }: { bandas: Banda[] }) {
+/** Una banda justificada de lado a lado. El gap pequeño es la densidad. */
+function Banda({
+  alto,
+  piezas,
+  ancho,
+}: {
+  alto: number;
+  piezas: (number | string)[];
+  ancho: number;
+}) {
   return (
-    <div className="flex flex-1 flex-col items-center justify-between">
-      {bandas.map(([e, ps], i) => (
-        <div key={i} className="flex w-full items-end justify-around gap-1.5">
-          {ps.map(([t, g, img]) => (
-            <Pieza key={t} e={e} t={t} g={g} img={img} />
-          ))}
-        </div>
+    <div
+      className="mx-auto flex items-center justify-between gap-[3px]"
+      style={{ width: ancho }}
+    >
+      {piezas.map((id, i) => (
+        <Pieza key={`${id}-${i}`} id={id} alto={alto} />
       ))}
     </div>
   );
 }
 
 /**
- * El lagrimómetro. Es la pieza ancla del lateral y el equivalente exacto del
- * "trompímetre" de la referencia: escala vertical con sus marcas intermedias y
- * la barra de relleno clavada arriba — un instrumento que solo sabe dar una
- * lectura.
+ * El lagrimómetro. FUERA DEL BLOQUE por ahora, y a propósito: es la pieza 54 y
+ * los medidores siguen siendo decisión abierta del dueño
+ * (`producto/medidores-abierto.md`). Metido a la fuerza al final del tejido se
+ * salía por el talón, y una pieza que no está decidida no merece romper la
+ * composición. Se queda aquí, montado y listo, para el día que se cierre.
  */
-function Lagrimometro() {
+function Lagrimometro({ alto }: { alto: number }) {
   return (
-    <div className="relative flex w-[62px] flex-col" style={{ color: "inherit" }}>
-      <span
-        className="u-cond mb-1.5 text-center"
-        style={{ fontSize: 7, letterSpacing: "0.08em" }}
-      >
+    <div className="relative flex flex-col items-center" style={{ height: alto, width: 168 }}>
+      <span className="u-cond" style={{ fontSize: 5, letterSpacing: "0.22em" }}>
         LAGRIMÓMETRO
       </span>
-      <div className="relative flex flex-1 flex-col justify-between pl-[9px]">
-        <span className="absolute left-0 top-0 h-full w-[1.2px] bg-current" />
-        {/* Clavada arriba: el chiste es que el medidor está reventado. */}
-        <span className="absolute left-[-3px] top-0 h-[26%] w-[3px] bg-current" />
+      <div className="relative mt-[2px] flex w-full items-start justify-between">
+        <span className="absolute inset-x-0 top-0 h-[1.1px] bg-current" />
+        {/* Clavado a la derecha: el chiste es que el medidor está reventado. */}
+        <span className="absolute right-0 top-[-2px] h-[5px] w-[2.6px] bg-current" />
         {LAGRIMOMETRO.map((m) => (
-          <div key={m} className="flex items-center gap-[3px]">
-            <span className="h-[1.2px] w-[7px] bg-current" />
-            <span className="u-cond leading-none" style={{ fontSize: 5.6, letterSpacing: "0.04em" }}>
-              {m}
-            </span>
-          </div>
+          <span
+            key={m}
+            className="u-cond origin-top-left rotate-90 whitespace-nowrap leading-none"
+            style={{ fontSize: 3.9, letterSpacing: "0.02em", marginLeft: 3 }}
+          >
+            {m}
+          </span>
         ))}
       </div>
     </div>
@@ -294,42 +336,51 @@ export function Botella({
             Sobre antico no hay alternativa — es el único dato de producto que
             la página no puede decidir. */}
         <div
-          className="absolute inset-x-0 bottom-[40px] top-[252px] flex flex-col"
+          className="absolute inset-x-0 bottom-[22px] top-[286px] flex flex-col"
           style={{ color: TINTA }}
         >
-          <div className="flex h-[130px] flex-col items-center justify-start gap-[13px] pt-[6px]">
-            {HOMBRO.map(([e, t]) => (
-              <Pieza key={t} e={e} t={t} />
+          {/* El hombro: piezas sueltas y pequeñas. El cono se cierra al subir
+              y la silueta se come todo lo que sea más ancho. */}
+          <div className="flex flex-col items-center gap-[5px]">
+            {HOMBRO.map(([alto, piezas], i) => (
+              <Banda
+                key={i}
+                alto={alto}
+                piezas={piezas}
+                ancho={ANCHOS_HOMBRO[i]}
+              />
             ))}
           </div>
 
-          {/* El lockup y sus 15 mm de aire: el único momento de calma. */}
-          <div className="flex flex-col items-center gap-[2px] py-[9px]">
-            <span className="u-cond text-[7px] tracking-[0.55em]">✦✦✦</span>
-            <span className="font-[family-name:var(--font-display)] text-[29px] font-normal leading-none tracking-[0.005em]">
+          {/* El lockup, pequeño y con su aire. Es lo único que se lee a un
+              metro, y solo se lee porque no compite con nada. */}
+          <div className="flex flex-col items-center gap-[1px] pb-[8px] pt-[11px]">
+            <span className="u-cond text-[5px] tracking-[0.5em]">✦✦✦</span>
+            <span className="font-[family-name:var(--font-display)] text-[17px] font-normal leading-none tracking-[0.01em]">
               LÁGRIMAS
             </span>
-            <span className="font-[family-name:var(--font-display)] text-[17.5px] font-normal leading-none tracking-[0.09em]">
+            <span className="font-[family-name:var(--font-display)] text-[9.5px] font-normal leading-none tracking-[0.1em]">
               DE SÁNCHEZ
             </span>
-            <span className="my-[4px] h-px w-[96px] bg-current" />
-            <span className="u-cond text-[6.5px] font-semibold tracking-[0.32em]">
+            <span className="my-[2px] h-px w-[54px] bg-current" />
+            <span className="u-cond text-[4.6px] font-semibold tracking-[0.3em]">
               VINOS DE MADRID
             </span>
           </div>
 
-          {/* Una pieza más, no el ancla: el ancla de la botella es su nombre. */}
-          <div className="flex justify-center pb-[7px] pt-[2px]">
-            <Pieza e="md" t="ESPAÑA VA COMO UN COHETE" />
+          {/* El bloque denso. Aquí es donde se gana o se pierde la prueba del
+              metro: separaciones de 3 px, no de quince. */}
+          <div className="flex flex-1 flex-col justify-between gap-[2px] pb-[2px]">
+            {CUERPO.map(([alto, piezas], i) => (
+              <Banda
+                key={i}
+                alto={alto}
+                piezas={piezas}
+                ancho={ANCHOS[i]}
+              />
+            ))}
           </div>
 
-          {/* Tres columnas: texto, lagrimómetro, texto. Es la anatomía de la
-              referencia — la escala vertical parte el cuerpo en dos. */}
-          <div className="flex flex-1 gap-[6px] px-[12px] pt-[4px]">
-            <Columna bandas={CUERPO_IZQ} />
-            <Lagrimometro />
-            <Columna bandas={CUERPO_DER} />
-          </div>
         </div>
       </div>
 
