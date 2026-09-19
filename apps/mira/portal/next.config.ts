@@ -38,6 +38,20 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      // Una sola puerta (2026-09-19): el dominio técnico del proyecto manda al
+      // dominio real. Entrar por el .vercel.app parecía "otra versión" porque
+      // la cookie de sesión es por dominio: mismo deploy, pero deslogueado.
+      // Solo el host EXACTO de producción — los previews
+      // (mira-portal-<hash>-jeicosts-projects.vercel.app) siguen accesibles y
+      // son la vía de acceso alternativa si el dominio propio fallara.
+      // 307 (no permanent): un 308 se queda cacheado en los navegadores y
+      // revertirlo luego es un infierno.
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'mira-portal-nu.vercel.app' }],
+        destination: 'https://mira.startupsfactory.es/:path*',
+        permanent: false,
+      },
       // Business Reports (2026-07-28): vanity + herramientas absorbidas
       { source: '/business-reports', destination: '/toolkit', permanent: false },
       { source: '/business-reports/:path*', destination: '/toolkit/:path*', permanent: false },
