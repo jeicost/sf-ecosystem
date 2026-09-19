@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="15.64 83.64 436.72 301.72">
+  <!-- Máquina de caja con manivela lateral y canal de salida escupiendo materia -->
+  <g fill="#F6F1E6">
+    <!-- tolva -->
+    <path d="M138 148 L166 96 L264 96 L292 148 Z"/>
+    <!-- cuerpo con remaches en negativo -->
+    <path fill-rule="evenodd" d="M102 148 Q88 148 88 162 L88 300 Q88 314 102 314 L306 314 Q320 314 320 300 L320 162 Q320 148 306 148 Z
+      M118 170 a8 8 0 1 0 0.1 0 Z M290 170 a8 8 0 1 0 0.1 0 Z
+      M118 284 a8 8 0 1 0 0.1 0 Z M290 284 a8 8 0 1 0 0.1 0 Z"/>
+    <!-- patas -->
+    <rect x="112" y="314" width="28" height="36" rx="8"/>
+    <rect x="268" y="314" width="28" height="36" rx="8"/>
+    <!-- canal de salida -->
+    <path d="M88 232 L30 262 L30 300 L88 272 Z"/>
+    <!-- goteo saliendo del canal -->
+    <path d="M46 316 c 10 16 18 27 18 39 a18 18 0 1 1 -36 0 c 0 -12 8 -23 18 -39 Z"/>
+    <!-- eje de la manivela -->
+    <rect x="316" y="204" width="52" height="20" rx="10"/>
+  </g>
+  <!-- manivela -->
+  <g fill="none" stroke="#F6F1E6" stroke-linecap="round">
+    <circle cx="376" cy="214" r="36" stroke-width="18"/>
+    <line x1="376" y1="214" x2="420" y2="168" stroke-width="15"/>
+  </g>
+  <circle cx="426" cy="162" r="14" fill="#F6F1E6"/>
+</svg>

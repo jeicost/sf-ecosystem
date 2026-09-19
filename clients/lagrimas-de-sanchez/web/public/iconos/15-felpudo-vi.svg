@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="36.6 137.05 386.79 185.89">
+  <!-- Felpudo en ligera perspectiva: marco macizo y cerdas en filas -->
+  <path fill="#F6F1E6" fill-rule="evenodd" d="M78 160 Q80 148 94 148 L366 148 Q380 148 382 160 L412 296 Q415 312 398 312 L62 312 Q45 312 48 296 Z
+    M108 180 L352 180 L374 284 L86 284 Z"/>
+  <g stroke="#F6F1E6" stroke-width="14" stroke-linecap="round">
+    <line x1="122" y1="204" x2="342" y2="204" stroke-dasharray="20 16"/>
+    <line x1="116" y1="232" x2="350" y2="232" stroke-dasharray="20 16" stroke-dashoffset="18"/>
+    <line x1="109" y1="260" x2="358" y2="260" stroke-dasharray="20 16"/>
+  </g>
+</svg>

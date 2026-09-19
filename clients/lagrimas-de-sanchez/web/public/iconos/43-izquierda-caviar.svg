@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="39.25 76.87 381.6 313.93">
+  <!-- Lata de caviar abierta vista desde arriba, tapa medio retirada, huevas dentro -->
+  <g fill="#F6F1E6">
+    <!-- cuerpo de la lata: aro -->
+    <path fill-rule="evenodd" d="M230 148 a180 116 0 1 0 0.1 0 Z
+      M230 178 a148 88 0 1 1 -0.1 0 Z"/>
+    <!-- huevas -->
+    <circle cx="152" cy="252" r="21"/><circle cx="198" cy="240" r="21"/><circle cx="246" cy="248" r="21"/>
+    <circle cx="294" cy="240" r="21"/><circle cx="176" cy="290" r="21"/><circle cx="224" cy="296" r="21"/>
+    <circle cx="272" cy="288" r="21"/><circle cx="316" cy="276" r="21"/><circle cx="130" cy="288" r="17"/>
+    <!-- tapa medio retirada, con borde enrollado -->
+    <path d="M118 128 Q170 84 252 88 Q334 92 372 134 Q380 144 370 152 L340 172 Q300 136 244 132 Q188 128 148 156 Q136 148 126 140 Q112 136 118 128 Z"/>
+    <path d="M356 96 a26 26 0 1 1 -18 46 L360 128 Z"/>
+  </g>
+</svg>

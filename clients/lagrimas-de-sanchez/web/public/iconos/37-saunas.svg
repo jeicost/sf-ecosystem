@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="119.37 72.88 221.25 322.24">
+  <!-- Tres líneas de vapor, la del medio más alta -->
+  <g fill="none" stroke="#F6F1E6" stroke-width="28" stroke-linecap="round">
+    <path d="M136 372 c 26 -38 -26 -74 0 -112 c 26 -38 -26 -74 0 -112"/>
+    <path d="M230 386 c 28 -42 -28 -82 0 -124 c 28 -42 -28 -82 0 -124 c 14 -22 6 -42 -4 -56"/>
+    <path d="M324 372 c 26 -38 -26 -74 0 -112 c 26 -38 -26 -74 0 -112"/>
+  </g>
+</svg>

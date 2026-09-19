@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="61.02 33.02 387.96 289.96">
+  <!-- Caballo en galope volador: cuerpo macizo, patas estiradas, crin y cola al viento -->
+  <g fill="#F6F1E6">
+    <!-- cuerpo -->
+    <path d="M150 196 C118 208 114 240 144 258 Q170 272 230 274 Q290 276 316 258 Q346 240 342 210 Q338 182 300 178 Q230 170 190 182 Z"/>
+    <!-- cuello y cabeza -->
+    <path d="M186 196
+      Q150 160 122 112
+      L98 124 Q84 130 78 118 Q74 108 84 100 L110 82
+      Q124 72 140 80 L160 92 Q180 104 186 128 L196 190 Z"/>
+    <!-- orejas -->
+    <path d="M118 84 L106 52 Q104 44 112 44 L130 62 Z"/>
+    <!-- crin -->
+    <path d="M170 110 Q196 100 214 110 Q198 116 194 130 Q216 122 234 132 Q216 140 212 154 Q230 148 244 160 Q220 172 200 168 Q178 160 168 138 Z"/>
+    <!-- cola -->
+    <path d="M336 196 Q374 178 414 182 Q392 194 386 208 Q412 200 434 208 Q412 218 406 232 Q426 230 438 240 Q410 256 380 248 Q352 240 336 220 Z"/>
+  </g>
+  <!-- patas en extensión -->
+  <g fill="none" stroke="#F6F1E6" stroke-width="28" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M178 250 L132 276 L72 272"/>
+    <path d="M206 262 L170 298 L110 312"/>
+    <path d="M298 250 L350 262 L408 250"/>
+    <path d="M284 260 L328 290 L388 298"/>
+  </g>
+</svg>

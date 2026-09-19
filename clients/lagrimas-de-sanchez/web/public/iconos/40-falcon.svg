@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30.84 96.84 394.16 252.31">
+  <!-- Jet privado de perfil, una sola silueta: morro, cabina, cola alta y motor -->
+  <g fill="#F6F1E6">
+    <path d="M42 246
+      Q80 222 140 216
+      L166 190 Q172 184 182 184 L200 184 Q208 184 204 192 L192 214
+      L300 214
+      L336 118 Q340 108 350 108 L368 108 Q376 108 374 118 L356 214
+      Q394 218 410 232 Q420 242 404 250 L300 262
+      L200 268
+      Q100 272 42 246 Z"/>
+    <!-- estabilizador de cola -->
+    <path d="M330 176 L398 158 Q408 156 405 166 L396 190 L322 198 Z"/>
+    <!-- motor trasero montado alto -->
+    <rect x="286" y="182" width="72" height="26" rx="13"/>
+    <!-- ala en flecha, cayendo por delante del fuselaje -->
+    <path d="M206 262 L136 330 Q130 338 142 338 L216 338 L258 264 Z"/>
+  </g>
+</svg>

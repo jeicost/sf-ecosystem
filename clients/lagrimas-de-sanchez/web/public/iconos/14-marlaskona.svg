@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="27.52 41.68 404.95 383.12">
+  <!-- Mazo de juez cuya cabeza es una goma de borrar, sobre su tas. Palabra debajo. -->
+  <g fill="#F6F1E6">
+    <g transform="rotate(-28 180 130)">
+      <!-- cabeza-goma: rectángulo con biseles gastados y ranura de funda -->
+      <path fill-rule="evenodd" d="M96 96
+        L248 92 Q262 92 266 104 L272 152 Q274 166 260 168 L108 172 Q94 172 92 158 L88 112 Q86 98 96 96 Z
+        M116 103 L134 102 L139 163 L121 164 Z
+        M228 99 L246 98 L251 159 L233 160 Z"/>
+      <!-- mango -->
+      <rect x="168" y="172" width="26" height="148" rx="13"/>
+      <circle cx="181" cy="326" r="21"/>
+    </g>
+    <!-- tas: media cúpula sobre plataforma -->
+    <path d="M262 268 a66 40 0 0 1 132 0 Z"/>
+    <rect x="246" y="272" width="164" height="24" rx="9"/>
+    <text x="230" y="400" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="62" letter-spacing="1.5">MARLASKONA</text>
+  </g>
+</svg>

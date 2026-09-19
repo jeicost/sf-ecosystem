@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="34.9 178.9 392.2 188.2">
+  <!-- Berlina años 90 de perfil con cuatro cabezas anónimas en las ventanillas -->
+  <g fill="#F6F1E6">
+    <path fill-rule="evenodd" d="M46 296
+      Q46 262 84 254 L128 246 Q152 196 208 190 L268 190 Q322 194 344 244 L390 254 Q416 260 416 292 L416 310 Q416 322 404 322 L376 322 A46 46 0 0 0 284 322 L176 322 A46 46 0 0 0 84 322 L58 322 Q46 322 46 310 Z
+      M156 244 L212 244 L212 206 L206 206 Q168 210 156 244 Z
+      M226 244 L282 244 L282 206 L226 206 Z
+      M296 244 L338 244 Q322 212 296 207 Z"/>
+    <!-- cuatro cabezas anónimas -->
+    <circle cx="172" cy="228" r="10"/>
+    <circle cx="196" cy="228" r="10"/>
+    <circle cx="242" cy="228" r="10"/>
+    <circle cx="266" cy="228" r="10"/>
+    <!-- ruedas con buje -->
+    <path fill-rule="evenodd" d="M130 288 a34 34 0 1 0 0.1 0 Z M130 310 a12 12 0 1 1 -0.1 0 Z"/>
+    <path fill-rule="evenodd" d="M330 288 a34 34 0 1 0 0.1 0 Z M330 310 a12 12 0 1 1 -0.1 0 Z"/>
+  </g>
+</svg>

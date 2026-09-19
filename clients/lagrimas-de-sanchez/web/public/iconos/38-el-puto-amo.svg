@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="79.48 78.48 301.04 282.04">
+  <!-- Corona de tres puntas con bola en cada punta y banda recta -->
+  <g fill="#F6F1E6">
+    <path d="M96 302 L110 172 L180 246 L230 130 L280 246 L350 172 L364 302 Z"/>
+    <rect x="88" y="306" width="284" height="46" rx="10"/>
+    <circle cx="110" cy="150" r="19"/>
+    <circle cx="230" cy="106" r="19"/>
+    <circle cx="350" cy="150" r="19"/>
+  </g>
+</svg>

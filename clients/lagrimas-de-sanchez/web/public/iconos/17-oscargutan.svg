@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="38.38 19.15 383.25 357.69">
+  <!-- Cabeza de orangután sin rasgos, con la palabra calada en banda sobre la cara -->
+  <g fill="#F6F1E6">
+    <path fill-rule="evenodd" d="M230 56
+      Q150 56 108 108 Q66 106 52 146 Q42 178 68 204 Q60 232 68 262 Q80 316 138 344 Q182 366 230 366 Q278 366 322 344 Q380 316 392 262 Q400 232 392 204 Q418 178 408 146 Q394 106 352 108 Q310 56 230 56 Z
+      M84 252 L376 252 L376 188 L84 188 Z"/>
+    <!-- mechón -->
+    <path d="M204 54 Q214 34 230 30 Q226 42 230 52 Q240 34 256 32 Q246 46 248 56 Z"/>
+    <text x="230" y="236" text-anchor="middle" font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700" font-size="42" letter-spacing="0.5">OSCARGUTÁN</text>
+  </g>
+</svg>

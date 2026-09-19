@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="125.8 57.8 202.4 360.4">
+  <!-- Mano de perfil con el índice levantado, puño cerrado -->
+  <g fill="#F6F1E6">
+    <!-- índice -->
+    <path d="M206 92 Q206 68 230 68 Q254 68 254 92 L254 232 L206 232 Z"/>
+    <!-- puño -->
+    <path fill-rule="evenodd" d="M160 262 Q160 216 206 212 L268 212 Q310 212 316 252 L318 316 Q318 364 270 364 L208 364 Q160 364 160 318 Z
+      M282 236 Q296 236 298 252 L299 268 L282 268 Z"/>
+    <!-- nudillos del pulgar plegado -->
+    <path d="M160 286 Q136 288 136 312 Q136 336 160 338 Z"/>
+    <!-- puño de camisa -->
+    <rect x="176" y="372" width="126" height="36" rx="12"/>
+  </g>
+</svg>

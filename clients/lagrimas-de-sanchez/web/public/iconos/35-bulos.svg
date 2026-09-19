@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="47.68 59.68 364.64 312.64">
+  <!-- Triángulo de aviso con exclamación rotunda -->
+  <path d="M230 70 L402 362 L58 362 Z" fill="none" stroke="#F6F1E6" stroke-width="36" stroke-linejoin="round"/>
+  <rect x="212" y="170" width="36" height="104" rx="18" fill="#F6F1E6"/>
+  <circle cx="230" cy="316" r="21" fill="#F6F1E6"/>
+</svg>
