@@ -1,0 +1,28 @@
+De: Petición Pedidos <pedidos@logisticaduero-example.es>
+Para: local@glslocal.example.es
+Asunto: nuevo pedido listo para recoger
+
+hola buenos dias
+
+Adjunto excel con el pedido listo para recoger
+
+Saludos
+
+HORARIO DE VERANO OFICINA (HASTA 31/08): 8:00–16:00 h
+Polígono Sur, nave 12 | Madrid | Spain | 28053 (Madrid)
+T +34 910 000 003
+
+--- ADJUNTOS ---
+--- Adjunto: LISTO_para_recoger_497_26_2026_08_28.xlsx ---
+[Hoja: Plantilla pedidos]
+PEDIDOS DE BILLETES | 497/26
+MADRID, 28 AGOSTO DE 2026
+ID ENVIO | CODIGO ESTACION | CENTRO DE COSTE | DEPENDENCIA | DIRECCION DE ENTREGA | C.POSTAL | CIUDAD | PROVINCIA | DESTINATARIO / CONTACTO | TELEFONOS | Nº BILLETES
+2640 | 37500 | CCO2074101 | ESTACIÓN FF.CC MÉRIDA | Calle Cardero S/N | 06800 | Mérida | Badajoz | Julián Vega | 600000011 | 25000
+2641 | 60000 | CCO2073301 | ESTACIÓN FF.CC MADRID ATOCHA | Glorieta Carlos V s/n | 28045 | Madrid | Madrid | Encargado de taquillas | 600000012 | 100000
+2642 | 61307 | CCO2045114 | ESTACIÓN FF.CC CARTAGENA | Plaza de Méjico s/n | 30203 | Cartagena | Murcia | Centro de viajes | 600000013 | 20000
+DATOS A DEVOLVER CUMPLIMENTADOS UNA VEZ SEAN ENVIADOS A DESTINO.
+ID ENVIO | DESDE | HASTA | RECOGE | BULTOS | KILOS | OBSERVACIONES | DIMENSIONES PALETS
+2640 | 710800700001 | 710800725000 | courier | 1 palet | 85 kg | SIN OBSERVACIONES | 120 * 80 * 45 CM
+2641 | 710800600001 | 710800700000 | courier | 1 palet | 315 kg | ruego llamen antes de la entrega, se solicita mozo para despaletizar y que se lleven el palé | 120 * 80 * 75 CM
+2642 | 710800580001 | 710800600000 | courier | 1 palet | 70 kg | SIN OBSERVACIONES | 120 * 80 * 45 CM

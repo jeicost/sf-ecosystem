@@ -1,0 +1,20 @@
+{
+  "id": "gls-manifiesto-palets",
+  "description": "Manifiesto de 3 palets a 3 estaciones: bultos y kilos se suman del Excel, palets → furgón, entrega null por múltiple, y el aviso del mozo sobrevive en observaciones",
+  "fixture": "gls-manifiesto-palets.txt",
+  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "received_at": "2026-08-28T10:57:00Z",
+  "expected": {
+    "kind": "shipment_request",
+    "fields": {
+      "tipo_entrega": "nacional",
+      "bultos": 3,
+      "peso_kg": 470
+    },
+    "contains": {
+      "tipo_vehiculo": "furg",
+      "observaciones": "despaletizar"
+    },
+    "must_be_null": ["entrega_direccion", "destinatario"]
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "id": "gls-internacional-otro-courier",
+  "description": "Dos envíos internacionales, uno por OTRO courier (DHL): entrega null y el dato del courier ajeno llega al operador en observaciones, no se pierde",
+  "fixture": "gls-internacional-otro-courier.txt",
+  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "received_at": "2026-08-27T10:57:00Z",
+  "expected": {
+    "kind": "shipment_request",
+    "fields": {
+      "fecha": "2026-08-27",
+      "tipo_entrega": "internacional",
+      "recogida_hora_inicio": "08:00",
+      "recogida_hora_fin": "15:00"
+    },
+    "contains": {
+      "recogida_direccion": "Echegaray",
+      "observaciones": "DHL"
+    },
+    "must_be_null": ["entrega_direccion", "destinatario", "peso_kg"]
+  }
+}

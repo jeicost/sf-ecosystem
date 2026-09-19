@@ -1,0 +1,35 @@
+De: Sergio Aguirre <saguirre@museotienda-example.org>
+Para: local@glslocal.example.es
+Asunto: Recogida en almacén envío/s internacional/es 27-08-2026
+
+Hola.
+
+Hay que hacer una recogida en esta dirección:
+
+Museotienda Logística
+c/ José Echegaray 12. Nave 2-3
+PAE Casa Blanca
+28100 Alcobendas (Madrid)
+Horario: De 8:00 h a 15:00 h de lunes a viernes.
+
+Son el/los siguiente/s envío/s internacional/es
+
+Este es para enviar con Envío Internacional Económico:
+Nuestro pedido online #03455 de Louise Garnier
+Este envío de 1 bulto es para enviar a
+Louise Garnier
+7 rue de la Mascotte
+78290 Croissy-sur-Seine
+France
++33 6 00 00 00 01
+1 x reproducciones impresas / Prints
+Importe: €14.05
+
+Este es para enviar con DHL Express:
+Nuestro pedido online #03456 de Julien Moreau
+Este envío de 1 bulto es para enviar a
+Julien Moreau
+786 Avenue Edouard VII
+83700 Saint-Raphaël
+France
++33 6 00 00 00 02
