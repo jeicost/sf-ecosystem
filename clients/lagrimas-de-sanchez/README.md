@@ -1,6 +1,6 @@
 # Lágrimas de Sánchez
 
-**Estado: 24 de agosto de 2026 · concepto y producto cerrados, producción sin arrancar**
+**Estado: 19 de septiembre de 2026 · botella e iconos CERRADOS, producción sin arrancar**
 
 Marca de botella de cristal serigrafiada y vino de la DO Vinos de Madrid.
 Dominios en propiedad: `lagrimasdesanchez.com` y `.es`
@@ -9,18 +9,23 @@ Dominios en propiedad: `lagrimasdesanchez.com` y `.es`
 
 ## El producto en una frase
 
-Una botella borgoña de 750 ml en vidrio ámbar, serigrafiada por completo en el
-propio cristal con **57 piezas tipográficas** del vocabulario político español de
-la última década. Tinta cerámica blanca vitrificada a 600 °C: no es una etiqueta,
-es parte del vidrio. Sin etiqueta frontal. Ni una sola cara.
+Una **magnum de 150 cl en vidrio antico** —Estal SM BG MG Essentia, boca
+Sommelier Long— serigrafiada por completo en el propio cristal con **57 piezas
+tipográficas** del vocabulario político español de la última década. Tinta
+cerámica blanca vitrificada a 600 °C: no es una etiqueta, es parte del vidrio.
+Sin etiqueta frontal. Ni una sola cara.
 
 **Un solo SKU de vidrio, tres presentaciones:**
 
-| | PVP | Coste | Margen |
+| | PVP hoy | Coste (magnum) | Margen |
 |---|---|---|---|
-| La botella vacía, rellenable | 22 € | 4,60 € | **75 %** |
-| El estuche completo (1 vino + 1 vacía) | 39 € | — | — |
-| Pack de 3 vinos | 69 € | 24,86 € | 56 % |
+| La botella vacía, rellenable | 22 € | 6,65 – 8,85 € | **51-63 %** |
+| El estuche completo (1 vino + 1 vacía) | 39 € | 17 – 23 € | 32-47 % |
+| Pack de 3 vinos | 69 € | 39,90 – 53,55 € | ⚠️ **6-30 %** |
+
+⚠️ Los costes son de la magnum y **el pricing se ha quedado corto**: son
+estimaciones de mercado, no presupuestos, pero la dirección es firme. Ver
+«Decisiones abiertas».
 
 **La tesis:** esto no es un negocio de vino, es un negocio de regalo con vino
 dentro. **La botella vacía es el negocio; el vino es la prensa.**
@@ -31,7 +36,7 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 
 ### Documentos listos para enviar
 - `proveedores/correo-serigrafia.txt` — 4 decoradores de vidrio
-- `proveedores/correo-vidrio.txt` — 4 vidrieros, con las dos opciones de cierre
+- `proveedores/correo-vidrio.txt` — **a Estal**, que es de quien es la botella
 - `proveedores/correo-bodegas.txt` — 6 bodegas de la DO Vinos de Madrid
 - `proveedores/correo-cierres.txt` — corcho, cabeza de zamak y cápsulas
 - `proveedores/correo-ilustrador.txt` — el arte final de las 57 piezas
@@ -44,21 +49,68 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 2. **Pedir los presupuestos.** Los tres correos están escritos en
    `proveedores/`. Contactos verificados en `proveedores/contactos-proveedores.txt`
    - Serigrafía → Ibicrom, Serijerez, Todoglass, Serigrafía Portal
-   - Vidrio → Juvasa, Estal, Verallia, Vidrala
+   - Vidrio → **Estal** (la botella es suya; los demás ya no son alternativa)
    - Bodegas → Vinícola de Arganda, Jeromín, Pablo Morate
-3. **Contratar ilustrador** para las 57 piezas en SVG de una tinta. 1.500-3.000 €.
-   Sin arte final no hay serigrafía
+3. **Contratar ilustrador.** Ya no es «dibujar 57 piezas»: las 56 existen, se
+   compra unificación y arte final. Bajó a **1.000-2.200 €**. Sin arte final no
+   hay serigrafía
 
 ### Decisiones abiertas
-- **Acabado de boca**: corcho + T-cork de zamak, o cierre mecánico tipo La Casera
-  para los dos productos. El mecánico es más barato, más icónico y una sola pieza,
-  pero exige otro formato de botella. Se decide con los presupuestos delante
-- **Consejo Regulador de Vinos de Madrid**: ¿admite cierre mecánico? Aplazado
-- **Color**: ámbar es la elección. Verde antiguo es el plan B si no hay stock
+- **EL PRECIO — lo más urgente.** La magnum rompe el pricing: la botella vacía
+  a 22 € baja del 75 % al 51-63 % de margen, y el **pack de 3 magnums a 69 € se
+  queda entre el 6 % y el 30 %**, que no se sostiene. Las tres salidas, con
+  números, en `producto/costes.md`. Es tuyo: nadie sube un precio por su cuenta
+- **Estuche de magnum**: ninguna caja de 75 cl vale. Hay que pedirlo
 - **Los medidores**: Carlos le está dando una vuelta al lagrimómetro y a la idea
   de un segundo medidor (EL GIRÓMETRO). Todas las versiones y las mejoras
   propuestas están en `producto/medidores-abierto.md`. La lámina y el Excel
   llevan la versión 2, que es la vigente hasta que él decida
+
+### La botella — CERRADA 19-sep
+**Estal SM BG MG ESSENTIA, Sommelier Long, 150 cl, color ANTICO.** Se acabó el
+«formato por decidir»: es una referencia de catálogo con plano del fabricante.
+900 g · 380,9 mm de alto · ø105 (perímetro 330) · boca interior 18,5 · cuello
+de 32 y 115 mm · punt de 30. Ficha completa en `producto/ficha-tecnica.md`.
+
+Esto cierra dos decisiones que llevaban abiertas desde agosto: el **acabado de
+boca** (es de corcho, luego **el cierre mecánico de estribo queda descartado** —
+exigiría otra botella) y con él la consulta al Consejo Regulador, que ya no
+procede. Y abre una: **el precio** (ver arriba).
+
+La botella dibujada de la web ya va a escala del plano (830 px = 380,9 mm), en
+antico y con la tinta blanca fija, no heredada del tema. Renders de producto en
+`diseno/renders/`, regenerables con `python3 generar.py` — capturan la web de
+verdad (ruta interna `/render`, en noindex), así que no pueden quedarse viejos
+cuando cambie una pieza.
+
+El **desarrollo plano** (`diseno/desarrollo-plano.svg`, se regenera con
+`node generar-desarrollo.mjs`) ya está montado sobre esta geometría: 9 bandas
+en el cilindro de 330 × 140 y el lockup subido al hombro, porque un halo de
+84 mm se comía el 60 % de una banda de 140. Las 56 piezas colocadas, ninguna
+sin arte.
+
+**Dos cosas que salieron de rehacerlo y conviene no perder:**
+- Dos iconos tenían `letter-spacing` duplicado y **dejaban la lámina entera en
+  blanco** — un SVG mal formado no falla, se descarta en silencio. El generador
+  ahora valida antes de dar la lámina por buena.
+- Los iconos venían con el dibujo pequeño dentro de una caja cuadrada: entre un
+  40 % y un 75 % de aire muerto, que en la retícula ocupa sitio con nada. Se
+  ciñeron todos con `diseno/iconos/ajustar-viewbox.py` (mide el dibujo real en
+  el navegador, con las fuentes cargadas). **La regla que queda: el icono viene
+  ceñido y el aire lo pone quien maqueta.**
+
+### Iconos — CERRADOS 19-sep
+Las 56 de las 57 piezas tienen ya su arte en la web (`web/public/iconos/` +
+mapa en `web/lib/iconos.ts`): 13 generadas con IA (Mystic→potrace), 24 de solo
+texto compuestas en vector, y **20 dibujadas a mano en SVG el 19-sep** — la
+cola de IA seguía sin créditos (402 en api.magnific.com y api.freepik.com) y
+se cerró con SVG autoral en el mismo lenguaje: silueta maciza `#F6F1E6`,
+detalle en negativo, margen generoso. Incluye 4 piezas que nunca entraron en
+la cola (Oscargután, Javierito, Rufián «s. m.», Edición nº). Los prompts de
+`diseno/iconos/cola.json` se conservan por si se quiere regenerar con IA.
+La única sin icono es la 54 (Lagrimómetro): los medidores siguen siendo
+decisión abierta tuya (`producto/medidores-abierto.md`). Recuerda: esto vale
+para web y retícula; el arte final de serigrafía lo cierra el ilustrador.
 
 ### La web — revisada a fondo 26/27-ago
 EN PRODUCCIÓN: https://lagrimas-de-sanchez.vercel.app

@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 /**
- * Genera el desarrollo plano: la banda de 275 × 195 mm con las piezas de arte
- * montadas, que es la lámina de referencia para ilustrador y serigrafista.
+ * Genera el desarrollo plano de la botella DEFINITIVA (Estal SM BG MG Essentia,
+ * magnum 150 cl): la banda de 330 × 140 mm del cuerpo cilíndrico con las piezas
+ * de arte montadas, más la franja del hombro. Es la lámina de referencia para
+ * ilustrador y serigrafista.
  *
  *   node generar-desarrollo.mjs
  *
@@ -9,6 +11,16 @@
  * por máquina nunca iguala a una compuesta a mano: sirve para ver densidad,
  * reservas y peso óptico, y para que el ilustrador parta de algo. La
  * composición definitiva es trabajo suyo.
+ *
+ * LA GEOMETRÍA (19-sep). El cuerpo cilíndrico es ø105 → perímetro 329,9 mm, y
+ * mide 140 mm de alto: esa es la única zona recta y la única con registro fácil.
+ * Por encima hay 126 mm de hombro CÓNICO, cuyo desarrollo real no es un
+ * rectángulo sino un sector de corona — aquí se dibuja como franja indicativa
+ * y lo resuelve el serigrafista con la botella delante.
+ *
+ * El LOCKUP se fue al hombro: un halo de 84 mm en una banda de 140 se comía el
+ * 60 % del cilindro, y en la botella real la marca cae justo donde el cono ya
+ * abre y la superficie es casi plana.
  *
  * Dos reglas que costaron dos intentos:
  * - Las piezas se dimensionan por ALTO DE BANDA con un tope de ancho generoso.
@@ -32,28 +44,40 @@ const mapa = JSON.parse(readFileSync(join(WEB, "lib/iconos.ts"), "utf8")
   .reduce((a, l) => { const m = l.match(/(\d+):\s*"([^"]+)"/); return a + `"${m[1]}":"${m[2]}",`; }, "{")
   .replace(/,$/, "") + "}");
 
-const MM = 4, W = 275 * MM, H = 195 * MM;
-const HALO   = { x: 118*MM, y: 30*MM, w: 130*MM, h: 84*MM };
-const CONTRA = { x: 8*MM,   y: 66*MM, w: 80*MM,  h: 54*MM };
-const RESERVAS = [HALO, CONTRA];
+const MM = 4;
+/** El cuerpo cilíndrico: perímetro 329,9 mm × 140 mm de alto. */
+const W = 330 * MM, H_CUERPO = 140 * MM;
+/** La franja del hombro que se dibuja encima, indicativa. */
+const H_HOMBRO = 62 * MM;
+const H = H_HOMBRO + H_CUERPO;
 
-/** [alto de banda mm, piezas]. Las bandas suman 195 mm con sus separaciones. */
-// Suma exacta: 12 bandas (158 mm) + 11 separaciones de 2 mm + 5 de margen
-// superior + 10 de margen inferior = 195 mm. Si se toca una altura hay que
-// compensar en otra, o la última fila se sale del lienzo.
+/** El lockup vive en el hombro, así que no reserva sitio en el cilindro. */
+const HALO   = { x: 100*MM, y: 8*MM, w: 130*MM, h: 46*MM };
+/** La contraetiqueta sí: va en la trasera, que en esta lámina son los bordes. */
+const CONTRA = { x: 10*MM, y: H_HOMBRO + 70*MM, w: 80*MM, h: 58*MM };
+const RESERVAS = [CONTRA];
+
+/**
+ * [alto de banda mm, piezas]. NUEVE bandas, no doce: el cilindro perdió 55 mm
+ * de alto y ganó 55 de ancho. Suma exacta: 114 mm de bandas + 8 separaciones de
+ * 2 mm + 4 de margen superior + 6 de inferior = 140 mm. Si se toca una altura
+ * hay que compensar en otra, o la última fila se sale del lienzo.
+ *
+ * Las tres bandas altas (17, 16 y 13) son las anclas: el contraste de escala es
+ * lo que separa esta retícula de una nube de palabras. Van repartidas, nunca
+ * seguidas. Están las 56 piezas que tienen arte — falta solo la 54, el
+ * lagrimómetro, que espera a que el dueño cierre los medidores.
+ */
 const BANDAS = [
-  [12, [26, 30, 41, 17, 20]],
-  [13, [35, 40, 24, 37, 29]],
-  [18, [22, 34]],
-  [13, [3, 51]],
-  [14, [23, 12]],
-  [11, [10, 36, 47]],
-  [13, [2, 13]],
-  [11, [50, 28, 46]],
-  [15, [24, 1]],
-  [11, [11, 45, 49]],
-  [13, [16, 27]],
-  [14, [21, 25, 31, 48, 53]],
+  [11, [26, 30, 20, 17, 35, 19, 44, 49]],
+  [17, [34, 22, 12, 1]],
+  [12, [3, 51, 37, 10, 4, 55]],
+  [13, [23, 40, 2, 18, 33]],
+  [11, [36, 47, 29, 45, 6, 25, 53]],
+  [16, [42, 13, 5, 38, 56]],
+  [11, [50, 28, 46, 11, 21, 7, 31]],
+  [12, [14, 43, 9, 39, 32, 24]],
+  [11, [16, 27, 52, 15, 57, 8, 48, 41]],
 ];
 
 const arteDe = (n) => {
@@ -62,8 +86,12 @@ const arteDe = (n) => {
   const f = join(WEB, "public/iconos", slug + ".svg");
   if (!existsSync(f)) return null;
   const s = readFileSync(f, "utf8");
-  const vb = s.match(/viewBox="0 0 ([\d.]+) ([\d.]+)"/);
-  return { w: +vb[1], h: +vb[2], cuerpo: s.replace(/<\/?svg[^>]*>/g, "") };
+  // Los iconos vienen CEÑIDOS a su dibujo (diseno/iconos/ajustar-viewbox.py),
+  // así que su viewBox ya no empieza en 0 0: hay que leer el origen y
+  // descontarlo al colocarlos, o la pieza se va fuera de su hueco.
+  const vb = s.match(/viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"/);
+  if (!vb) return null;
+  return { x: +vb[1], y: +vb[2], w: +vb[3], h: +vb[4], cuerpo: s.replace(/<\/?svg[^>]*>/g, "") };
 };
 
 function segmentos(y, alto) {
@@ -79,13 +107,23 @@ function segmentos(y, alto) {
   return libres;
 }
 
-let y = 5 * MM, colocadas = 0;
+let y = H_HOMBRO + 4 * MM, colocadas = 0;
 const saltadas = new Set();
 let out = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">`
-  + `<defs><linearGradient id="v" x1="0" x2="1"><stop offset="0" stop-color="#3F2308"/>`
-  + `<stop offset=".17" stop-color="#7A4A18"/><stop offset=".47" stop-color="#A0702E"/>`
-  + `<stop offset=".79" stop-color="#7A4A18"/><stop offset="1" stop-color="#3F2308"/></linearGradient></defs>`
-  + `<rect width="${W}" height="${H}" fill="url(#v)"/>`;
+  // El vidrio ANTICO desarrollado: oscuro en los cantos (donde el cilindro
+  // gira y se va de vista) y abierto en el centro, que es la cara que mira.
+  + `<defs><linearGradient id="v" x1="0" x2="1"><stop offset="0" stop-color="#0A0C03"/>`
+  + `<stop offset=".17" stop-color="#1E2208"/><stop offset=".47" stop-color="#414A16"/>`
+  + `<stop offset=".79" stop-color="#1E2208"/><stop offset="1" stop-color="#0A0C03"/></linearGradient></defs>`
+  + `<rect width="${W}" height="${H}" fill="url(#v)"/>`
+  // La franja del hombro, más apagada: no es superficie recta y aquí solo se
+  // indica. El serigrafista la desarrolla como sector con la botella delante.
+  + `<rect width="${W}" height="${H_HOMBRO}" fill="#060802" opacity="0.42"/>`
+  + `<line x1="0" y1="${H_HOMBRO}" x2="${W}" y2="${H_HOMBRO}" stroke="#E0685C" stroke-width="1.4" stroke-dasharray="9 6"/>`
+  + `<text x="8" y="${H_HOMBRO - 7}" fill="#E0685C" font-family="monospace" font-size="9" letter-spacing="1">`
+  + `HOMBRO CÓNICO · 126 mm · piezas sueltas, el perímetro se cierra al subir · desarrollo real = sector, no rectángulo</text>`
+  + `<text x="8" y="${H_HOMBRO + 14}" fill="#9FB07A" font-family="monospace" font-size="9" letter-spacing="1">`
+  + `CUERPO CILÍNDRICO · 330 × 140 mm · 360° · la única zona recta</text>`;
 
 for (const [altoMM, ns] of BANDAS) {
   const alto = altoMM * MM;
@@ -112,14 +150,14 @@ for (const [altoMM, ns] of BANDAS) {
     let x = xa + hueco;
     for (const it of items) {
       out += `<g transform="translate(${x.toFixed(1)} ${(y + (alto - it.h) / 2).toFixed(1)}) `
-           + `scale(${it.k.toFixed(4)})" fill="#F6F1E6">${it.a.cuerpo}</g>`;
+           + `scale(${it.k.toFixed(4)}) translate(${-it.a.x} ${-it.a.y})" fill="#F6F1E6">${it.a.cuerpo}</g>`;
       x += it.w + hueco; colocadas++;
     }
   });
   y += alto + 2 * MM;
 }
 
-out += `<g transform="translate(${HALO.x + HALO.w / 2} ${HALO.y + 30 * MM})" fill="#F6F1E6" text-anchor="middle">`
+out += `<g transform="translate(${HALO.x + HALO.w / 2} ${HALO.y + 26 * MM})" fill="#F6F1E6" text-anchor="middle">`
   + `<text y="0" font-size="42" font-family="Bodoni Moda, Georgia, serif">LÁGRIMAS</text>`
   + `<text y="27" font-size="24" letter-spacing="2.5" font-family="Bodoni Moda, Georgia, serif">DE SÁNCHEZ</text>`
   + `<rect x="-60" y="38" width="120" height="1.3"/>`
@@ -127,8 +165,35 @@ out += `<g transform="translate(${HALO.x + HALO.w / 2} ${HALO.y + 30 * MM})" fil
   + `<rect x="${CONTRA.x}" y="${CONTRA.y}" width="${CONTRA.w}" height="${CONTRA.h}" fill="none" stroke="#E0685C" stroke-width="1.3" stroke-dasharray="6 5"/>`
   + `<text x="${CONTRA.x + CONTRA.w / 2}" y="${CONTRA.y + CONTRA.h / 2}" text-anchor="middle" fill="#FFD9D4" font-family="monospace" font-size="8.5" letter-spacing="1">CONTRAETIQUETA</text>`
   + `<text x="${CONTRA.x + CONTRA.w / 2}" y="${CONTRA.y + CONTRA.h / 2 + 13}" text-anchor="middle" fill="#FFD9D4" font-family="monospace" font-size="7">80 × 58 mm · solo vino</text>`
+  + `<text x="${W - 8}" y="${H - 8}" text-anchor="end" fill="#7E8C5E" font-family="monospace" font-size="8.5">`
+  + `Estal SM BG MG ESSENTIA · 150 cl · ANTICO · 1 tinta blanca · montaje de referencia, no arte final</text>`
   + `<rect x="${HALO.x}" y="${HALO.y}" width="${HALO.w}" height="${HALO.h}" fill="none" stroke="#E0685C" stroke-width="1.1" stroke-dasharray="3 5"/>`
   + `<rect width="${W}" height="${H}" fill="none" stroke="#14100B" stroke-width="2"/></svg>`;
 
 writeFileSync(join(AQUI, "desarrollo-plano.svg"), out);
-console.log(`${colocadas} piezas colocadas · sin arte aún: ${[...saltadas].join(", ")}`);
+
+/**
+ * La lámina se valida antes de darla por buena. Un SVG mal formado NO falla al
+ * escribirlo ni al abrirlo: el navegador lo descarta y la lámina sale EN
+ * BLANCO, que es la peor forma de romperse porque parece que no has generado
+ * nada. Ya pasó: dos iconos de solo texto tenían `letter-spacing` duplicado y
+ * se llevaron por delante el desarrollo entero.
+ */
+const { DOMParser } = await import("@xmldom/xmldom").catch(() => ({}));
+const errores = [];
+if (DOMParser) {
+  new DOMParser({ onError: (_, m) => errores.push(m) }).parseFromString(out, "image/svg+xml");
+} else {
+  // Sin dependencia: al menos la comprobación que ya nos mordió.
+  for (const m of out.matchAll(/<[^>]+>/g)) {
+    const attrs = [...m[0].matchAll(/([\w-]+)=/g)].map((a) => a[1]);
+    if (new Set(attrs).size !== attrs.length) errores.push(`atributo duplicado en ${m[0].slice(0, 90)}`);
+  }
+}
+if (errores.length) {
+  console.error(`\n⛔ La lámina está MAL FORMADA y saldría en blanco:`);
+  for (const e of errores.slice(0, 5)) console.error("   " + e);
+  process.exit(1);
+}
+
+console.log(`${colocadas} piezas colocadas · sin arte aún: ${[...saltadas].join(", ") || "ninguna"}`);
