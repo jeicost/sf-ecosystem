@@ -7,17 +7,24 @@ ilustrador para el arte final del estampado. Te cuento el encargo y, si
 encaja, te paso el briefing completo con la especificación técnica.
 
 EL PROYECTO
-Una botella de 750 ml en vidrio ámbar serigrafiada por completo en el propio
-cristal, sin etiqueta: 57 piezas entre apodos, frases y pictogramas, en una
-sola tinta blanca horneada a 600 °C. La referencia estructural es el vino
-"El Xitxarel·lo" del Penedès - esa densidad y ese registro.
+Una MAGNUM de 150 cl en vidrio antico (Estal SM BG MG Essentia) serigrafiada
+por completo en el propio cristal, sin etiqueta: 57 piezas entre apodos,
+frases y pictogramas, en una sola tinta blanca horneada a 600 grados. La
+referencia estructural es el vino "El Xitxarel.lo" del Penedes - esa densidad
+y ese registro. Te adjunto un render de cómo va quedando.
 
-EL ENCARGO, EN TRES PARTES
-1. Vectorizar y limpiar 13 piezas que ya tenemos esbozadas.
-2. Dibujar las 44 restantes.
+EL ENCARGO
+56 de las 57 piezas YA EXISTEN en SVG. No hay que inventarlas: hay que
+hacerlas hermanas y dejarlas listas para pantalla de serigrafía.
+
+1. Redibujar limpias 13 que están trazadas automáticamente y tienen los
+   bordes sucios y demasiados nodos.
+2. Depurar 43 que están dibujadas con primitivas geométricas: dicen
+   exactamente qué tiene que haber en cada pieza, pero les falta mano.
 3. Unificar el set entero: un solo grosor de trazo, un solo tamaño óptico y
    una sola tipografía para las palabras integradas en los dibujos. Esta
-   tercera parte es la más importante del encargo.
+   tercera parte es la más importante del encargo y es justo la que no puede
+   hacer una máquina.
 
 ESPECIFICACIÓN
 - SVG vectorial, una tinta, sin degradados ni tramas

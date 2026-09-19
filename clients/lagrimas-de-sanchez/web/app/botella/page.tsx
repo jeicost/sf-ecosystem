@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/botella" },
   title: "La botella",
   description:
-    "Botella de 750 ml en vidrio ámbar con 57 piezas horneadas en el cristal a 600 grados. Vacía, rellenable y apta para lavavajillas.",
+    "Magnum sommelier de 150 cl en vidrio antico con 57 piezas horneadas en el cristal a 600 grados. Vacía, rellenable y apta para lavavajillas.",
 };
 
 export default function PaginaBotella() {
@@ -52,8 +52,9 @@ export default function PaginaBotella() {
           </>
         }
         ficha={[
-          ["Capacidad", "750 ml"],
-          ["Vidrio", "Ámbar, 500 g"],
+          ["Capacidad", "150 cl · magnum"],
+          ["Vidrio", "Antico, 900 g"],
+          ["Altura", "381 mm · ø 105"],
           ["Cierre", "Corcho con cabeza metálica"],
           ["Decoración", "Serigrafía cerámica, 600 °C"],
           ["Piezas", "57"],

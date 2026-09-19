@@ -21,16 +21,26 @@ import { Glifo } from "@/components/Glifos";
  * pequeña se baja `alto`.
  *
  * El estampado arranca en el hombro. El cuello va desnudo a propósito: en la
- * versión de vino lo tapa la cápsula y en la vacía el ámbar limpio con el tapón
- * encima queda mejor que cualquier pieza.
+ * versión de vino lo tapa la cápsula y en la vacía el vidrio antico limpio con
+ * el tapón encima queda mejor que cualquier pieza.
  */
+
+/** La tinta cerámica: una sola, blanca. El mismo hueso que los SVG del estampado. */
+const TINTA = "#F6F1E6";
 
 type Escala = "xs" | "sm" | "md" | "lg" | "xl";
 
 const CUERPO: Record<Escala, number> = { xs: 8, sm: 11, md: 15, lg: 18, xl: 26 };
 
+/**
+ * LA BOTELLA REAL — Estal SM BG MG ESSENTIA, Sommelier Long, 150 cl (19-sep).
+ * La caja de 252 × 830 se mantiene; dentro, la silueta va a escala de la ficha
+ * técnica (830 px = 380,9 mm → 2,18 px/mm): cuerpo ø105 = 228 px, cuello ø32
+ * = 70 px y 115 mm = 250 px de largo, cilindro inferior 140 mm = 305 px, y el
+ * hombro sommelier es la curva larga entre ambos.
+ */
 const SILUETA =
-  "path('M 4,828 L 4,352 C 4,276 82,312 82,208 L 82,34 C 82,22 76,18 76,8 L 76,2 L 176,2 L 176,8 C 176,18 170,22 170,34 L 170,208 C 170,312 248,276 248,352 L 248,828 Z')";
+  "path('M 30,828 Q 12,828 12,810 L 12,523 C 12,452 91,330 91,244 L 91,2 L 161,2 L 161,244 C 161,330 240,452 240,523 L 240,810 Q 240,828 222,828 Z')";
 
 /** El hombro es cónico: solo cabe una pieza por banda o se la come la silueta. */
 const HOMBRO: [Escala, string][] = [
@@ -166,7 +176,7 @@ export function Botella({
       className={`relative shrink-0 ${className}`}
       style={{ width: ancho, height: alto }}
       role="img"
-      aria-label="Botella Lágrimas de Sánchez: vidrio ámbar serigrafiado en blanco con cincuenta y siete piezas"
+      aria-label="Botella Lágrimas de Sánchez: magnum sommelier de 150 cl en vidrio antico serigrafiado en blanco con cincuenta y siete piezas"
     >
       <div
         className="absolute left-0 top-0 overflow-hidden"
@@ -176,10 +186,12 @@ export function Botella({
           transform: `scale(${alto / 830})`,
           transformOrigin: "top left",
           clipPath: SILUETA,
-          // Capa 1 — el cuerpo del vidrio. Cantos casi negros: es el grosor del
-          // cristal visto de canto, y sin eso parece plástico.
+          // Capa 1 — el cuerpo del vidrio ANTICO de Estal: oliva oscurísimo,
+          // casi negro, que solo se abre a verde donde pasa la luz. Cantos
+          // negros: es el grosor del cristal visto de canto, y sin eso parece
+          // plástico. NO es ámbar: el ámbar dora, el antico verdea.
           background:
-            "linear-gradient(97deg, #24140399 0%, #2E1904 4%, #6B3F12 14%, #9A6B2C 30%, #B98A3E 42%, #8E6127 58%, #6A3E11 74%, #331B05 92%, #1D1002 100%)",
+            "linear-gradient(97deg, #05060299 0%, #090B03 4%, #1A1E08 14%, #2E350E 30%, #414A16 42%, #2B310C 58%, #191D06 74%, #0A0C03 92%, #050601 100%)",
         }}
       >
         {/* Capa 2 — brillo especular. Estrecho y descentrado, como en la foto. */}
@@ -187,7 +199,7 @@ export function Botella({
           className="pointer-events-none absolute inset-y-0 left-[26%] w-[13%]"
           style={{
             background:
-              "linear-gradient(90deg, transparent, rgba(255,232,190,0.42) 45%, rgba(255,240,210,0.16) 70%, transparent)",
+              "linear-gradient(90deg, transparent, rgba(214,226,168,0.34) 45%, rgba(228,236,196,0.12) 70%, transparent)",
             filter: "blur(2px)",
           }}
         />
@@ -196,7 +208,7 @@ export function Botella({
           className="pointer-events-none absolute inset-x-0 top-0 h-[300px]"
           style={{
             background:
-              "radial-gradient(70% 100% at 42% 100%, rgba(255,226,175,0.20), transparent 72%)",
+              "radial-gradient(70% 100% at 42% 100%, rgba(206,218,158,0.16), transparent 72%)",
           }}
         />
         {/* Capa 4 — el culo de la botella y la sombra de la base. */}
@@ -204,36 +216,88 @@ export function Botella({
           className="pointer-events-none absolute inset-x-0 bottom-0 h-[190px]"
           style={{
             background:
-              "linear-gradient(to top, rgba(18,9,1,0.72), rgba(18,9,1,0.28) 42%, transparent)",
+              "linear-gradient(to top, rgba(4,6,1,0.62), rgba(4,6,1,0.22) 42%, transparent)",
           }}
+        />
+        {/* Capa 5 — luz de relleno por el canto derecho. Una sola luz deja el
+            lado oscuro plano; esto le devuelve el volumen cilíndrico. */}
+        <span
+          className="pointer-events-none absolute inset-y-0 right-[7%] w-[6%]"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, rgba(198,214,150,0.16) 60%, transparent)",
+            filter: "blur(2px)",
+          }}
+        />
+        {/* Capa 6 — el punt: los 30 mm de culo hundido de la Essentia se leen
+            como una elipse clara justo encima del talón. */}
+        <span
+          className="pointer-events-none absolute bottom-[10px] left-1/2 h-[46px] w-[150px] -translate-x-1/2"
+          style={{
+            background:
+              "radial-gradient(closest-side, rgba(188,206,146,0.13), transparent 78%)",
+          }}
+        />
+        {/* Capa 7 — la junta del molde. Dos hilos verticales casi invisibles:
+            están en toda botella soplada y es lo que delata que es vidrio.
+            Solo en el cuerpo: en el cuello la junta no se ve, y trazada de
+            arriba abajo parecía el borde de un panel pegado encima. */}
+        <span
+          className="pointer-events-none absolute bottom-0 left-[13%] top-[55%] w-px"
+          style={{ background: "rgba(226,238,190,0.06)" }}
+        />
+        <span
+          className="pointer-events-none absolute bottom-0 right-[13%] top-[55%] w-px"
+          style={{ background: "rgba(226,238,190,0.04)" }}
         />
 
         {capsula ? (
           <>
-            {/* La cápsula del vino. */}
+            {/* La cápsula del vino. En magnum es larga: baja 80 mm por el
+                cuello, que en esta caja son 175 px. */}
             <div
-              className="absolute left-[74px] top-0 h-[112px] w-[104px]"
+              className="absolute left-[84px] top-0 h-[175px] w-[84px]"
               style={{
                 background:
                   "linear-gradient(97deg, #060504 0%, #191612 22%, #423A31 46%, #1C1813 70%, #050403 100%)",
               }}
             />
-            <div className="absolute left-[74px] top-[108px] h-[4px] w-[104px] bg-[#070605]" />
+            <div className="absolute left-[84px] top-[171px] h-[4px] w-[84px] bg-[#070605]" />
+            {/* El resalte del gollete bajo el estaño: la cápsula no es un tubo
+                liso, marca el anillo que tiene debajo. */}
+            <div className="absolute left-[84px] top-[38px] h-[7px] w-[84px] bg-[#0B0A08]/70" />
           </>
         ) : (
           <>
             {/* El corcho asomando en la boca de la botella vacía. */}
             <div
-              className="absolute left-[78px] top-[2px] h-[26px] w-[96px]"
+              className="absolute left-[96px] top-[2px] h-[24px] w-[60px]"
               style={{ background: "linear-gradient(97deg,#7C5327 0%,#C89A5F 45%,#8A6134 100%)" }}
             />
-            <div className="absolute left-[78px] top-[26px] h-[3px] w-[96px] bg-[#3F2308]/70" />
+            <div className="absolute left-[96px] top-[24px] h-[3px] w-[60px] bg-[#3F2308]/70" />
+            {/* El anillo del gollete: el vidrio engorda en el labio, y ese
+                escalón es lo que distingue una boca de corcho de un tubo. */}
+            <div
+              className="absolute left-[91px] top-[30px] h-[15px] w-[70px]"
+              style={{ background: "linear-gradient(97deg,rgba(226,238,190,0.16),rgba(226,238,190,0.03) 60%,transparent)" }}
+            />
+            <div className="absolute left-[91px] top-[45px] h-px w-[70px] bg-[#040601]/60" />
           </>
         )}
 
-        {/* ── El estampado ─────────────────────────────────────────────── */}
-        <div className="absolute inset-x-0 bottom-[24px] top-[206px] flex flex-col text-ink">
-          <div className="flex h-[150px] flex-col items-center justify-start gap-[11px] pt-[4px]">
+        {/* ── El estampado ─────────────────────────────────────────────
+            En la Sommelier Long el cuello desnudo llega hasta 244 y el hombro
+            es una curva larga: arriba solo caben piezas sueltas, el lockup se
+            asienta donde el cono ya abre (~160 px de ancho útil) y la densidad
+            vive en el cilindro inferior (523 → base), como en la real. */}
+        {/* La tinta es UNA y es BLANCA: color fijo, nunca heredado del tema.
+            Sobre antico no hay alternativa — es el único dato de producto que
+            la página no puede decidir. */}
+        <div
+          className="absolute inset-x-0 bottom-[40px] top-[252px] flex flex-col"
+          style={{ color: TINTA }}
+        >
+          <div className="flex h-[130px] flex-col items-center justify-start gap-[13px] pt-[6px]">
             {HOMBRO.map(([e, t]) => (
               <Pieza key={t} e={e} t={t} />
             ))}
@@ -242,13 +306,13 @@ export function Botella({
           {/* El lockup y sus 15 mm de aire: el único momento de calma. */}
           <div className="flex flex-col items-center gap-[2px] py-[9px]">
             <span className="u-cond text-[7px] tracking-[0.55em]">✦✦✦</span>
-            <span className="font-[family-name:var(--font-display)] text-[35px] font-normal leading-none tracking-[0.005em]">
+            <span className="font-[family-name:var(--font-display)] text-[29px] font-normal leading-none tracking-[0.005em]">
               LÁGRIMAS
             </span>
-            <span className="font-[family-name:var(--font-display)] text-[21px] font-normal leading-none tracking-[0.09em]">
+            <span className="font-[family-name:var(--font-display)] text-[17.5px] font-normal leading-none tracking-[0.09em]">
               DE SÁNCHEZ
             </span>
-            <span className="my-[4px] h-px w-[104px] bg-current" />
+            <span className="my-[4px] h-px w-[96px] bg-current" />
             <span className="u-cond text-[6.5px] font-semibold tracking-[0.32em]">
               VINOS DE MADRID
             </span>
@@ -278,12 +342,12 @@ export function Botella({
           <span
             className="absolute"
             style={{
-              left: 62, top: -22, width: 128, height: 34, borderRadius: 10,
+              left: 76, top: -22, width: 100, height: 32, borderRadius: 10,
               background: "linear-gradient(97deg,#26231F 0%,#6E675D 42%,#8C8478 50%,#3A3630 100%)",
               boxShadow: "0 2px 3px rgba(0,0,0,0.4)",
             }}
           />
-          <span className="absolute" style={{ left: 72, top: 10, width: 108, height: 5, background: "#0B0906", opacity: 0.3 }} />
+          <span className="absolute" style={{ left: 84, top: 9, width: 84, height: 5, background: "#0B0906", opacity: 0.3 }} />
         </div>
       )}
 

@@ -24,6 +24,18 @@ export type Tarifa = {
   diasMax: number;
 };
 
+/**
+ * ⚠️ ESTAS TARIFAS SON DE CUANDO LA BOTELLA ERA DE 750 ML (19-sep-2026).
+ *
+ * La botella definitiva es una magnum: 1,4 kg la vacía con embalaje, 4,1 kg el
+ * estuche y 8,2 kg el pack de tres. Un paquete de 8,2 kg no se envía por 4,90 €
+ * en ninguna mensajería española, así que el pack de tres pierde dinero en
+ * cada envío antes de contar el producto.
+ *
+ * Son tarifas planas por zona a propósito (Stripe Checkout no filtra por país),
+ * pero el importe es una decisión comercial: no se toca sin que lo decida el
+ * dueño. Va junto al replanteamiento de precios de `producto/costes.md`.
+ */
 export const TARIFAS: Tarifa[] = [
   { id: "es", nombre: "España peninsular y Baleares", importe: 490, diasMin: 3, diasMax: 5 },
   { id: "eu", nombre: "Unión Europea", importe: 1490, diasMin: 5, diasMax: 8 },

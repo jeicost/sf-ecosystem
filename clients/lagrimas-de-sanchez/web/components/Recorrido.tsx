@@ -34,7 +34,7 @@ const CAPITULOS: Capitulo[] = [
     foco: 0.2, ancho: 0.2, clave: "El hombro",
     titulo: "Arriba, poco.",
     cuerpo:
-      "El hombro es cónico y la serigrafía resbala: solo aguantan las piezas pequeñas. El cuello va desnudo a propósito — en el vino lo tapa la cápsula, y en la botella vacía el ámbar limpio con el tapón encima queda mejor que cualquier tinta.",
+      "El hombro es cónico y la serigrafía resbala: solo aguantan las piezas pequeñas. El cuello va desnudo a propósito — en el vino lo tapa la cápsula, y en la botella vacía el vidrio antico limpio con el tapón encima queda mejor que cualquier tinta.",
   },
   {
     foco: 0.37, ancho: 0.18, clave: "El nombre",

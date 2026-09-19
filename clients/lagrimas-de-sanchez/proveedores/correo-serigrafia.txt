@@ -4,43 +4,60 @@ Destinatarios (uno a uno, mismo texto):
   info@todoglass.es                         (Todoglass, Jerez)
   serigrafia.portal@serigrafiaportal.com    (S. Portal, Barcelona)
 
-Asunto: Presupuesto serigrafía 360° botella borgoña 750 ml - 1 tinta
+  ADJUNTAR: diseno/renders/botella-vino.png y botella-vacia.png
+            (y el plano de Estal de la Essentia, si lo tienes a mano)
+
+Asunto: Presupuesto serigrafía 360º magnum 150 cl Estal Essentia - 1 tinta
 
 Buenos días,
 
 Somos una marca de vino y de botella de cristal decorada en lanzamiento
 (Madrid) y queremos serigrafiar nuestra botella con cobertura integral.
 Les paso la especificación y unas preguntas concretas para poder comparar
-presupuestos.
+presupuestos. Adjunto un render del resultado que buscamos.
 
-ESPECIFICACIÓN
-- Envase: botella borgoña 750 ml, vidrio ámbar, aprox. 500 g, con acabado
-  de boca de corcho estándar (sin rosca)
-- Decoración: serigrafía cerámica vitrificada, UNA tinta blanca
-- Cobertura: 360°, banda de aprox. 275 x 195 mm, desde la base hasta el
-  arranque del hombro. El cuello NO se decora
-- Diseño: alta densidad tipográfica (unas 57 piezas: palabras y
-  pictogramas), trazo mínimo previsto de 0,8 mm
-- Sin etiquetas: todo el grafismo va serigrafiado, incluido el bloque
-  de marca. La botella no lleva etiqueta frontal
+EL ENVASE - ya está elegido
+- Estal SM BG MG ESSENTIA, acabado de boca Sommelier Long
+- Magnum de 150 cl, color ANTICO
+- 900 g · altura total 380,9 mm · diámetro de cuerpo 105 mm (perímetro
+  329,9 mm) · boca interior 18,5 mm · cuello de 32 mm y 115 mm de largo
+- Culo hundido (punt) de 30 mm
+
+LA DECORACIÓN
+- Serigrafía cerámica vitrificada, UNA tinta BLANCA
+- Banda principal: 360º sobre el cuerpo cilíndrico, aprox. 330 x 140 mm
+- Además queremos subir por el HOMBRO con piezas sueltas. El hombro de esta
+  botella mide unos 126 mm y es cónico: entendemos que ahí no cabe una banda
+  corrida y que las piezas tienen que ir sueltas y pequeñas. Nos interesa
+  mucho su criterio en este punto concreto
+- El cuello NO se decora
+- Diseño: alta densidad tipográfica (57 piezas entre palabras y pictogramas),
+  trazo mínimo previsto de 0,8 mm
+- Sin etiquetas: todo el grafismo va serigrafiado, incluido el bloque de
+  marca. La botella no lleva etiqueta frontal
 - Única zona libre de tinta: 80 x 58 mm en la trasera, para una
   contraetiqueta adhesiva pequeña con los datos que cambian por lote
-- Uso final: la botella se vende también vacía como botella rellenable,
-  así que la decoración debe aguantar lavavajillas
+- Uso final: la botella se vende también VACÍA como botella rellenable, así
+  que la decoración debe aguantar lavavajillas
 
 PREGUNTAS
 1. Precio por unidad a 600, 1.000 y 3.000 unidades.
 2. Coste de pantallas, fotolitos y puesta a punto, desglosado del precio
    por unidad.
-3. ¿Pueden suministrar ustedes también la botella? Nos interesa evitar el
-   doble porte de ida y vuelta desde Madrid.
-4. ¿Cómo desarrollan la zona cónica del hombro y hasta qué altura pueden
-   decorar?
-5. ¿Qué zona muerta exigen bajo el borde de la boca y sobre la base?
-6. Trazo mínimo real que garantizan con su malla.
-7. ¿Pueden hacernos una o dos botellas de muestra antes de la tirada?
-8. Plazo de entrega desde arte final aprobado.
-9. Formato de arte que necesitan (vectorial, sobredimensión, separación).
+3. ¿Trabajan el formato MAGNUM en línea, o les obliga a cambiar utillaje?
+   Preguntamos porque casi todo el mercado está montado para 75 cl y no
+   queremos llevarnos la sorpresa al final.
+4. ¿Pueden suministrar ustedes también la botella? Es de Estal (Girona).
+   Nos interesa evitar el doble porte de ida y vuelta desde Madrid.
+5. ¿Hasta qué altura del hombro pueden decorar con garantías de registro,
+   y con qué deformación? Si nos dan la altura máxima real, adaptamos el
+   diseño a ella en vez de forzarlo.
+6. ¿Qué zona muerta exigen bajo el arranque del hombro y sobre la base?
+7. Trazo mínimo real que garantizan con su malla.
+8. ¿Han decorado antes esta referencia de Estal o similares de 150 cl?
+9. ¿Pueden hacernos una o dos botellas de muestra antes de la tirada?
+10. Plazo de entrega desde arte final aprobado.
+11. Formato de arte que necesitan (vectorial, sobredimensión, separación).
 
 DOCUMENTACIÓN
 Necesitamos con el pedido:

@@ -15,8 +15,8 @@ import { CATALOGO, precioES, type Sku } from "@/lib/catalogo";
  */
 
 const FICHA: [string, string][] = [
-  ["Capacidad", "750 ml"],
-  ["Vidrio", "Ámbar, 500 g"],
+  ["Capacidad", "150 cl · magnum"],
+  ["Vidrio", "Antico, 900 g"],
   ["Decoración", "Serigrafía cerámica a 600 °C"],
   ["Tinta", "Una, blanca"],
   ["Piezas", "57"],
@@ -110,7 +110,7 @@ export default function Home() {
                 página de producto de un cartel bonito. */}
             <dl className="flex flex-wrap gap-x-10 gap-y-3 border-t-2 border-ink pt-5">
               {[
-                ["750 ml", "vidrio ámbar"],
+                ["150 cl", "vidrio antico"],
                 ["57", "piezas horneadas"],
                 ["1.000", "primera tirada"],
               ].map(([v, k]) => (

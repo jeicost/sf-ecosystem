@@ -2,7 +2,7 @@ Diseña la web de LÁGRIMAS DE SÁNCHEZ. Mobile first, alto impacto.
 Dominios: lagrimasdesanchez.com y .es
 
 === QUÉ ES ===
-Una botella de cristal ámbar de 750 ml serigrafiada por completo en el
+Una magnum de cristal antico de 150 cl serigrafiada por completo en el
 propio vidrio, con 57 piezas tipográficas del vocabulario político español
 de la última década. Tinta cerámica blanca vitrificada a 600 °C: no es una
 etiqueta, es parte del cristal y no se va nunca. La misma botella se vende
@@ -111,8 +111,8 @@ a mano en el hueco que la serigrafía deja para eso.
 
 (Tratada como una tabla de especificación real, monoespaciada, sin adornos.)
 
-CAPACIDAD          750 ml
-VIDRIO             Ámbar, 500 g
+CAPACIDAD          150 cl (magnum)
+VIDRIO             Antico, 900 g
 DECORACIÓN         Serigrafía cerámica vitrificada a 600 °C
 TINTA              Una, blanca
 PIEZAS             57

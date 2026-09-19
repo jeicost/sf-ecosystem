@@ -51,9 +51,9 @@ export const CATALOGO: Record<Sku, Producto> = {
     nombre: "La botella",
     reclamo: "Vacía, rellenable y numerada a mano.",
     descripcion:
-      "Botella de 750 ml en vidrio ámbar con 57 piezas horneadas en el cristal a 600 grados. Viene vacía a propósito. Apta para lavavajillas.",
+      "Magnum sommelier de 150 cl en vidrio antico con 57 piezas horneadas en el cristal a 600 grados. Viene vacía a propósito. Apta para lavavajillas.",
     precio: 2200,
-    peso: 900,
+    peso: 1400,
     alcohol: false,
     stock: 400,
   },
@@ -64,7 +64,7 @@ export const CATALOGO: Record<Sku, Producto> = {
     descripcion:
       "Dos botellas idénticas: una llena de tinto de la DO Vinos de Madrid y otra vacía para que la rellenes. En su estuche.",
     precio: 3900,
-    peso: 2600,
+    peso: 4100,
     alcohol: true,
     stock: 150,
   },
@@ -75,7 +75,7 @@ export const CATALOGO: Record<Sku, Producto> = {
     descripcion:
       "Tres botellas de tinto de la DO Vinos de Madrid, subzona de Arganda, en su estuche. Numeradas a mano.",
     precio: 6900,
-    peso: 4200,
+    peso: 8200,
     alcohol: true,
     stock: 100,
   },

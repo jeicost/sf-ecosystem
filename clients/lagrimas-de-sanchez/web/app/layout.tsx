@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     template: "%s · Lágrimas de Sánchez",
   },
   description:
-    "Una botella de cristal ámbar con 57 piezas horneadas en el vidrio a 600 grados. No es una etiqueta. No se despega.",
+    "Una magnum de cristal antico con 57 piezas horneadas en el vidrio a 600 grados. No es una etiqueta. No se despega.",
   openGraph: {
     type: "website",
     locale: "es_ES",

@@ -1,33 +1,47 @@
 # Briefing de ilustrador — Lágrimas de Sánchez
 
-**Encargo:** arte final de las 57 piezas del estampado de una botella serigrafiada,
-más la unificación del set. Hay 13 borradores generados con IA que sirven de
-punto de partida y de referencia de composición.
+**Encargo:** arte final y UNIFICACIÓN de las 57 piezas del estampado de una
+botella serigrafiada. **56 de las 57 ya existen en SVG** (19-sep): no hay que
+inventarlas, hay que hacerlas hermanas y dejarlas listas para pantalla.
 
 ---
 
 ## Qué es esto
 
-Una botella borgoña de 750 ml en vidrio ámbar, serigrafiada por completo en el
-propio cristal con 57 piezas: apodos, frases y aforismos del vocabulario
-político español de la última década. **Sin etiqueta frontal** — todo va
-horneado a 600 °C, es permanente y apto para lavavajillas.
+Una **magnum de 150 cl en vidrio ANTICO** — Estal SM BG MG Essentia, boca
+Sommelier Long — serigrafiada por completo en el propio cristal con 57 piezas:
+apodos, frases y aforismos del vocabulario político español de la última
+década. **Sin etiqueta frontal** — todo va horneado a 600 °C, es permanente y
+apto para lavavajillas.
+
+El antico es un oliva oscurísimo, casi negro. **La tinta es una y es blanca**;
+sobre ese vidrio no hay otra opción que funcione.
 
 Referencia estructural exacta: el vino **El Xitxarel·lo** del Penedès. Esa es la
 densidad, ese es el registro: palabras e iconos en una sola tinta blanca sobre
-ámbar, muy juntos, con un bloque de marca sereno en el centro.
+vidrio oscuro, muy juntos, con un bloque de marca sereno en el centro.
+
+Renders del objetivo en `diseno/renders/` (se regeneran con `generar.py`).
 
 ---
 
 ## El trabajo, en tres partes
 
-### 1 · Vectorizar y limpiar las 13 existentes
-Los borradores están en `diseno/iconos/NN-nombre/` (PNG generado + SVG trazado
-automáticamente). El trazado automático tiene demasiados nodos y bordes sucios:
-hay que redibujar limpio, no retocar.
+### 1 · Redibujar limpias las 13 trazadas automáticamente
+Están en `diseno/iconos/NN-nombre/` (PNG generado con IA + SVG de trazado
+automático). El trazado tiene demasiados nodos y bordes sucios: hay que
+**redibujar limpio, no retocar**.
 
-### 2 · Dibujar las 44 restantes
-Inventario completo con nombre, objeto y tratamiento en `producto/inventario.md`.
+### 2 · Depurar las 43 dibujadas a mano
+Están en `web/public/iconos/` y son SVG de construcción geométrica, hechos
+para que la web y la retícula funcionaran. Sirven de indicación exacta de QUÉ
+tiene que decir cada pieza y con qué silueta, pero están dibujadas con
+primitivas y se nota: hay que darles mano de dibujante. La que falta es la 54
+(el lagrimómetro), pendiente de que el cliente cierre los medidores.
+
+El inventario completo con nombre, objeto y tratamiento está en
+`producto/inventario.md`, y el mapa de qué fichero es cada pieza en
+`web/lib/iconos.ts`.
 
 ### 3 · Unificar el set — LO MÁS IMPORTANTE
 Es lo que ninguna IA hace y por lo que se contrata a una persona:
@@ -89,13 +103,22 @@ sobre una silueta, en banda cruzando una forma, calado dentro de un objeto.
 
 ## La composición de la botella
 
-- Banda desarrollada: **275 × 195 mm**, de la base al arranque del hombro.
-- **El cuello NO se decora.**
-- 12 bandas horizontales justificadas de lado a lado. Ocupación ~75 %.
-  Huecos de 1 a 3 mm. Se lee como un periódico maquetado, no como una nube.
+**Ojo, esto cambió el 19-sep con la botella definitiva.** La banda ya no es la
+de una borgoña de 75 cl:
+
+- Banda principal: **330 × 140 mm** (el cuerpo cilíndrico, 360°). Es **20 % más
+  ancha y 28 % más baja** que la que figuraba antes en este briefing.
+- **El hombro mide 126 mm y es cónico**: ahí no cabe banda corrida. Suben
+  piezas sueltas y pequeñas, y el perímetro se cierra según suben.
+- **El cuello NO se decora** (115 mm).
+- 8-9 bandas horizontales justificadas en el cilindro + 3-4 piezas sueltas en
+  el hombro. Ocupación ~75 %. Huecos de 1 a 3 mm. Se lee como un periódico
+  maquetado, no como una nube.
+- El **lockup va en la parte baja del hombro**, donde el cono ya abre y la
+  superficie es casi plana.
 - Halo del lockup: **130 × 88 mm libres** de tinta en el frente.
 - Reserva trasera: **80 × 58 mm** para la contraetiqueta (solo versión vino).
-- Zona muerta: 20 mm bajo el labio, 7 mm sobre la base.
+- Zona muerta: 20 mm bajo el arranque del hombro, 15 mm sobre la base.
 - Contraste de escala brutal: 3 o 4 piezas enormes por cara visible, el resto
   pequeño. Nada de gradación suave.
 
@@ -116,9 +139,12 @@ lockup en PNG, el galgo y la gota sueltos en SVG.
 ## Entregables
 
 1. 57 SVG individuales, una tinta, trazo mínimo garantizado.
-2. El desarrollo plano montado, listo para el serigrafista.
+2. El desarrollo plano montado **sobre la geometría de la Essentia**, listo
+   para el serigrafista.
 3. El logotipo refinado con sus variantes.
 4. Prueba impresa a tamaño real.
 
 ## Presupuesto orientativo
-1.500–3.000 € por el set completo. Pedir a tres.
+**1.000–2.200 €.** Bajó respecto a la horquilla anterior (1.500–3.000 €) porque
+el encargo ya no incluye inventar 44 piezas desde cero: las 56 existen y lo que
+se compra es oficio, unificación y arte final. Pedir a tres.
