@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import type { Sku } from "@/lib/catalogo";
 
 /**
@@ -23,6 +24,8 @@ export function BotonComprar({
   const [estado, setEstado] = useState<
     "listo" | "yendo" | "error" | "agotado" | "cerrado" | "apuntando" | "apuntado"
   >("listo");
+  const campo = useRef<HTMLInputElement>(null);
+
   const [email, setEmail] = useState("");
 
   async function comprar() {
@@ -88,10 +91,17 @@ export function BotonComprar({
     );
   }
 
+  // Al cambiar el botón por el formulario el foco se quedaba en <body>: en
+  // móvil el teclado no se abre y el usuario tiene que volver a tocar el
+  // campo, que es justo donde se pierden los correos.
+  useEffect(() => {
+    if (estado === "cerrado") campo.current?.focus();
+  }, [estado]);
+
   if (estado === "cerrado" || estado === "apuntando") {
     return (
       <form onSubmit={apuntar} className="flex flex-col gap-2">
-        <p className="u-eyebrow text-[0.6rem]!">Todavía no cobramos. Deja el correo y te avisamos cuando sí.</p>
+        <p className="text-[0.82rem] leading-snug text-ink">Todavía no cobramos. Deja el correo y te avisamos cuando abramos.</p>
         <input
           type="text"
           name="_honey"
@@ -111,7 +121,10 @@ export function BotonComprar({
             aria-label="Tu correo para avisarte cuando abra la tienda"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="u-mono w-full min-w-0 border-2 border-r-0 border-ink bg-base px-4 py-3.5 text-[0.85rem] text-ink placeholder:text-muted"
+            ref={campo}
+            // 16 px es el umbral por debajo del cual iOS Safari AMPLÍA la
+            // página al enfocar el campo, y al ampliar se descoloca todo.
+            className="u-mono w-full min-w-0 border-2 border-r-0 border-ink bg-base px-4 py-3.5 text-[1rem] text-ink placeholder:text-muted"
           />
           <button
             disabled={estado === "apuntando"}
@@ -120,6 +133,13 @@ export function BotonComprar({
             {estado === "apuntando" ? "…" : "Avisadme"}
           </button>
         </div>
+        <p className="u-mono text-[0.6rem] leading-snug text-muted">
+          Solo para avisarte del lanzamiento.{" "}
+          <Link href="/legal" className="underline underline-offset-2">
+            Cómo tratamos tus datos
+          </Link>
+          .
+        </p>
       </form>
     );
   }

@@ -17,13 +17,16 @@ import { Botella } from "@/components/Botella";
  * era el principal "esto está vacío" de toda la web.
  */
 export function FotoProducto({
-  descripcion,
+  descripcion: _descripcion,
   ratio = "3/4",
   capsula = true,
   className = "",
 }: {
-  /** Qué tiene que enseñar la foto cuando exista. Documentación del encargo:
-      no se muestra al visitante, que no necesita saber el encuadre previsto. */
+  /** Qué tiene que enseñar la foto cuando exista. Documentación del encargo
+      para quien lea el código: NO se pinta. Estuvo en un `title=`, que dibuja
+      un tooltip nativo — o sea que el briefing interno se le enseñaba al
+      visitante al pasar el ratón, justo lo contrario de lo que decía este
+      comentario. */
   descripcion: string;
   ratio?: "3/4" | "1/1" | "4/5";
   /** false = la botella vacía, con su tapón de corcho y cabeza de zamak. */
@@ -31,7 +34,10 @@ export function FotoProducto({
   className?: string;
 }) {
   const ref = useRef<HTMLElement>(null);
-  const [alto, setAlto] = useState(0);
+  // Un alto inicial estimado en vez de 0: con 0 la botella no existía en el
+  // HTML del servidor y solo aparecía al hidratar, metiendo de golpe 160
+  // nodos en el hilo principal. El ResizeObserver lo corrige al instante.
+  const [alto, setAlto] = useState(520);
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -41,11 +47,9 @@ export function FotoProducto({
     return () => ro.disconnect();
   }, []);
 
-  void descripcion;
   return (
     <figure
       ref={ref}
-      title={descripcion}
       className={`group relative flex items-end justify-center overflow-hidden border-2 border-ink bg-[#111110] ${className}`}
       style={{ aspectRatio: ratio.replace("/", " / ") }}
     >
@@ -56,7 +60,7 @@ export function FotoProducto({
             "radial-gradient(62% 48% at 50% 78%, rgba(192,139,62,0.30), transparent 72%)",
         }}
       />
-      {alto > 0 && <Botella alto={alto} capsula={capsula} />}
+      <Botella alto={alto} capsula={capsula} />
 
       <figcaption className="absolute left-4 top-4 flex items-center gap-2">
         <span className="h-1.5 w-1.5 bg-yellow" />

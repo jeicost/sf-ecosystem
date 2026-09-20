@@ -21,7 +21,7 @@
 | 12 | **Tucán** | Tucán con cazadora | Mucho pico. |
 | 13 | **Charo** | Gafas y pelo corto | Icono pop. No pidió serlo. |
 | 14 | **Marlaskona** | Mazo con goma de borrar | Golpea flojo y borra después. |
-| 15 | **Felpudo VI** | Un felpudo |  |
+| 15 | **Felpudo** | Un felpudo |  |
 | 16 | **Hermanísimo** | — | Grado superlativo. Se hereda. |
 | 17 | **Oscargután** | La palabra en la cara de un orangután | Responde a todo. Sobre todo si no le preguntan. |
 | 18 | **Javierito** | Cuernos de reno | Llegó por Navidad. |
@@ -82,6 +82,7 @@
 
 ## Estado del arte
 
-- **13 piezas** con borrador generado, en `diseno/iconos/`
-- **44 pendientes** — cola en `diseno/iconos/cola.json`, parada por créditos de Magnific
+- **56 de las 57 piezas tienen arte** (20-sep), en `web/public/iconos/` y mapeadas en
+  `web/lib/iconos.ts`. Texto VECTORIZADO: no dependen de ninguna fuente.
+- **Falta la 54** (Lagrimómetro): los medidores siguen siendo decisión del dueño.
 - Regla validada: palabras cortas las letra la IA (deletreadas en el prompt); frases largas y eñes van con pictograma generado + texto compuesto en vector

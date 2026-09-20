@@ -27,7 +27,7 @@ export const ICONO_DE: Record<number, string> = {
   // maciza #F6F1E6, detalle en negativo, margen generoso. Sirven para web
   // y retícula; el arte final de serigrafía lo cierra el ilustrador.
   14: "14-marlaskona",
-  15: "15-felpudo-vi",
+  15: "15-felpudo",
   17: "17-oscargutan",
   18: "18-javierito",
   32: "32-sincronizada",

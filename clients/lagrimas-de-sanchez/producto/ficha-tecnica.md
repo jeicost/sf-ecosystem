@@ -49,7 +49,7 @@ espera a que Estal lo saque, o es otra botella y otra pantalla de serigrafía.
 
 **Lo que cambió al cerrar la botella:** la banda recta pasó de 275 × 195 mm a
 330 × 140 mm. Es **20 % más ancha y 28 % más baja**. El perímetro extra da aire
-horizontal, pero las 12 bandas de la retícula original no caben en 140 mm sin
+horizontal, pero las 12 bandas de la retícula de 75 cl no caben en 140 mm sin
 quedar apelmazadas. El reparto que se está usando y que hay que **validar con
 el serigrafista con una botella delante**: 8-9 bandas en el cilindro y 3-4
 piezas sueltas subiendo por el hombro, con el lockup en la parte baja de la

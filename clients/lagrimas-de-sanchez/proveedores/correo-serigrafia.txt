@@ -58,6 +58,19 @@ PREGUNTAS
 9. ¿Pueden hacernos una o dos botellas de muestra antes de la tirada?
 10. Plazo de entrega desde arte final aprobado.
 11. Formato de arte que necesitan (vectorial, sobredimensión, separación).
+    El nuestro va con TODO EL TEXTO VECTORIZADO, sin fuentes vivas.
+
+LAS TRES QUE MÁS NOS PREOCUPAN
+12. ¿El 360 grados es real y sin junta, o queda un solape? Todo el diseño
+    son bandas justificadas que dan la vuelta a la botella. Si hay que dejar
+    unos milímetros muertos, preferimos saberlo ahora y rehacer la retícula,
+    no después.
+13. ¿Cuántas PASADAS de blanco hacen falta? El vidrio es ANTICO, un oliva
+    casi negro, y entendemos que una sola pasada puede no opacar. Si son
+    dos, queremos el precio de las dos.
+14. La merma: si se rompen o salen mal botellas en su taller, ¿quién las
+    paga? El vidrio lo compramos nosotros y se lo mandamos, así que no es
+    un detalle menor.
 
 DOCUMENTACIÓN
 Necesitamos con el pedido:

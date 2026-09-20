@@ -69,7 +69,7 @@ export default function Home() {
         <div className="relative mx-auto max-w-[86rem] px-5 sm:px-8">
           <div className="flex flex-col justify-center gap-9 py-16 sm:py-24 lg:min-h-[44rem] lg:w-[47%] lg:py-32">
             <div className="u-sube flex flex-col gap-8">
-              <span className="u-eyebrow">Aranjuez, Madrid · Edición numerada</span>
+              <span className="u-eyebrow">El regalo con más razón del año · Aranjuez, Madrid</span>
 
               {/* "Cincuenta y siete" va en nowrap y el cuerpo dimensionado para
                   que las tres líneas quepan en la columna: con los tamaños
@@ -83,9 +83,12 @@ export default function Home() {
                 <span className="u-marca">llorar.</span>
               </h1>
 
-              <p className="u-lead max-w-[34ch]">
-                <span className="text-ink">Horneados en el vidrio a 600 grados.</span> No es una
-                etiqueta. No se despega. No se va nunca.
+              <p className="u-lead max-w-[36ch]">
+                <span className="text-ink">
+                  La botella que le regalas al cuñado, al grupo de la cena o a ti mismo.
+                </span>{" "}
+                Horneada en el vidrio a 600 grados: no es una etiqueta, no se despega, no se
+                va nunca.
               </p>
 
               <div className="flex flex-wrap items-center gap-5">
@@ -175,7 +178,7 @@ export default function Home() {
           </h2>
           <div className="flex flex-col gap-7 lg:pt-4">
             <p className="u-lead max-w-[44ch]">
-              Apodos, frases y pictogramas de la última década, compuestos en doce bandas
+              Apodos, frases y pictogramas de la última década, compuestos en nueve bandas
               alrededor de la botella. Todo lo dice el texto. El dibujo lo pones tú, que también has visto la década.
             </p>
             <p className="max-w-[44ch] text-[1rem] leading-relaxed text-muted">
@@ -187,17 +190,18 @@ export default function Home() {
         {/* Seis piezas REALES sobre ámbar: el producto enseñándose a sí mismo.
             A sangre, sin contenedor: la franja es parte del cartel. */}
         <ul className="grid grid-cols-2 border-t-2 border-ink sm:grid-cols-3 lg:grid-cols-6">
-          {[
-            "01-galgo-de-paiporta",
-            "12-tucan",
-            "04-chiqui",
-            "03-chirimoyas",
-            "13-charo",
-            "09-el-portero",
-          ].map((slug, i) => (
+          {([
+            ["01-galgo-de-paiporta", "Galgo de Paiporta"],
+            ["12-tucan", "Tucán"],
+            ["04-chiqui", "Chiqui"],
+            ["03-chirimoyas", "Chirimoyas"],
+            ["13-charo", "Charo"],
+            ["09-el-portero", "El portero"],
+          ] as const).map(([slug, nombre], i) => (
             <li key={slug} className={`border-ink ${i < 5 ? "border-r-2" : ""} border-b-0 max-lg:[&:nth-child(2n)]:border-r-0 max-lg:border-b-2 sm:max-lg:[&:nth-child(2n)]:border-r-2 sm:max-lg:[&:nth-child(3n)]:border-r-0`}>
               <Link
                 href="/estampado"
+                aria-label={`${nombre} — ver las 57 piezas del estampado`}
                 className="relative block aspect-square overflow-hidden transition-opacity hover:opacity-85"
                 style={{
                   background:
@@ -205,7 +209,7 @@ export default function Home() {
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/iconos/${slug}.svg`} alt="" className="absolute inset-0 h-full w-full object-contain p-[13%]" />
+                <img src={`/iconos/${slug}.svg`} alt={nombre} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-contain p-[13%]" />
               </Link>
             </li>
           ))}
@@ -277,7 +281,7 @@ export default function Home() {
               </span>
               <h2 className="u-display text-[2.3rem] sm:text-[3rem]">Tres maneras de llorar</h2>
             </div>
-            <span className="u-eyebrow">Envío en 3-5 días</span>
+            <span className="u-eyebrow">Envío a España en 3-5 días</span>
           </div>
 
           <div className="grid border-l-2 border-t-2 border-ink md:grid-cols-3">
@@ -324,7 +328,7 @@ export default function Home() {
                     /* El sello del impreso: puro atrezzo, y por eso aria-hidden. */
                     <span
                       aria-hidden="true"
-                      className="u-mono pointer-events-none absolute -top-5 right-4 flex h-24 w-24 rotate-[12deg] items-center justify-center rounded-full border-[3px] border-ink/60 text-center text-[0.52rem] uppercase leading-[1.4] tracking-[0.12em] text-ink/60"
+                      className="u-mono pointer-events-none absolute top-3 right-3 md:-top-5 md:right-4 flex h-24 w-24 rotate-[12deg] items-center justify-center rounded-full border-[3px] border-ink/60 text-center text-[0.52rem] uppercase leading-[1.4] tracking-[0.12em] text-ink/60"
                     >
                       Edición
                       <br />

@@ -52,13 +52,13 @@ const CAPITULOS: Capitulo[] = [
     foco: 0.66, ancho: 0.3, clave: "El lagrimómetro",
     titulo: "El instrumento está roto.",
     cuerpo:
-      "La columna que parte el cuerpo en dos: seis marcas, de OJO SECO a DESEMBALSE. La aguja va clavada arriba del todo — un medidor que solo sabe dar una lectura. Es la pieza que la gente fotografía.",
+      "Seis marcas, de OJO SECO a DESEMBALSE, con la aguja clavada arriba del todo: un medidor que solo sabe dar una lectura. Es la única pieza que sigue sin cerrar — los medidores son decisión del dueño, no del diseño.",
   },
   {
     foco: 0.78, ancho: 0.26, clave: "Las piezas",
     titulo: "Texto dentro del dibujo.",
     cuerpo:
-      "Doce bandas justificadas de lado a lado, con la palabra integrada en cada pictograma: arqueada sobre la chepa, en banda cruzando la chirimoya, bajo la boca. Ni una sola cara: todo lo dice el texto, que es más difícil y más gracioso.",
+      "Nueve bandas justificadas de lado a lado, con la palabra integrada en cada pictograma: arqueada sobre la chepa, en banda cruzando la chirimoya, bajo la boca. Ni una sola cara: todo lo dice el texto, que es más difícil y más gracioso.",
   },
   {
     foco: 0.94, ancho: 0.14, clave: "El número",
@@ -111,12 +111,12 @@ export function Recorrido() {
               className="pointer-events-none absolute inset-0 hidden transition-all duration-700 ease-out motion-reduce:hidden! lg:block"
               style={{
                 background: `linear-gradient(to bottom,
-                  rgba(12,10,7,0.82) 0%,
-                  rgba(12,10,7,0.82) ${ventanaTop}%,
+                  rgba(17,17,16,0.74) 0%,
+                  rgba(17,17,16,0.74) ${ventanaTop}%,
                   transparent ${ventanaTop + 4}%,
                   transparent ${ventanaFin - 4}%,
-                  rgba(12,10,7,0.82) ${ventanaFin}%,
-                  rgba(12,10,7,0.82) 100%)`,
+                  rgba(17,17,16,0.74) ${ventanaFin}%,
+                  rgba(17,17,16,0.74) 100%)`,
               }}
             />
           </div>
@@ -137,8 +137,8 @@ export function Recorrido() {
               ref={(el) => {
                 refs.current[i] = el;
               }}
-              className={`flex flex-col gap-4 border-t border-line py-14 transition-opacity duration-500 lg:min-h-[52vh] lg:justify-center ${
-                i === activo ? "opacity-100" : "lg:opacity-35"
+              className={`flex flex-col gap-4 border-t border-line py-14 transition-opacity duration-500 lg:min-h-[36vh] lg:justify-center ${
+                i === activo ? "opacity-100" : "lg:opacity-60"
               }`}
             >
               <span className="u-mono text-[0.66rem] uppercase tracking-[0.2em] text-yellow">

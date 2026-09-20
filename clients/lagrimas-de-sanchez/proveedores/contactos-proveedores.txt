@@ -44,10 +44,14 @@ Juvasa Packaging       Dos Hermanas, Sevilla
   tel    955 675 006
   nota   Distribuidor, mínimos bajos, venden por palé. PRIMERA LLAMADA
 
-Estal                  Barcelona
+Estal                  Girona   *** EL PROVEEDOR DE LA BOTELLA ***
+  tel    +34 972 821 676
   web    estal.com
-  nota   Especialistas en botella de vidrio para vino y destilados.
-         Formulario de contacto en su web
+  nota   La botella elegida es SUYA: SM BG MG ESSENTIA, boca Sommelier Long,
+         magnum 150 cl en ANTICO. Es modelo registrado, no lo tiene nadie
+         más, y la gama solo existe en 150 cl. A este se le escribe PRIMERO
+         y de él depende el proyecto entero: si el ANTICO resulta ser hornada
+         bajo pedido con mínimo alto, cambia todo. Ver correo-vidrio.txt
 
 Verallia España        Azuqueca de Henares, Guadalajara (40 km de Madrid)
   web    es.verallia.com
@@ -100,4 +104,4 @@ Cierre mecánico:                    preguntar primero al vidriero, suelen
 
 == ILUSTRADOR ==   (correo listo: correo-ilustrador.txt)
 57 piezas en SVG vectorial de una tinta. Presupuesto orientativo
-1.500-3.000 €. Pedir a tres.
+1.000-2.200 €. Pedir a tres.

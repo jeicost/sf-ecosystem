@@ -56,7 +56,7 @@ export function FichaProducto({ sku, capsula = true, eyebrow, titular, entradill
             <p className="u-mono text-[0.66rem] leading-relaxed text-muted">
               {p.alcohol
                 ? "Contiene alcohol · solo mayores de 18 años · envío a España peninsular"
-                : "Sin alcohol · envío a 25 países · llega en 3-5 días laborables"}
+                : "Sin alcohol · envío a 25 países · España en 3-5 días"}
             </p>
             {/* La objeción del vidrio se responde donde se decide la compra. */}
             <Link

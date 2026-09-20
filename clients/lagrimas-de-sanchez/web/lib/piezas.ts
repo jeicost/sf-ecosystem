@@ -57,7 +57,7 @@ export const PIEZAS: Pieza[] = [
   { n: 12, bloque: "A", texto: "Tucán", objeto: "Tucán con cazadora", historia: "Mucho pico." },
   { n: 13, bloque: "A", texto: "Charo", objeto: "Gafas y pelo corto", historia: "Icono pop. No pidió serlo." },
   { n: 14, bloque: "A", texto: "Marlaskona", objeto: "Mazo con goma de borrar", historia: "Golpea flojo y borra después." },
-  { n: 15, bloque: "A", texto: "Felpudo VI", objeto: "Un felpudo" },
+  { n: 15, bloque: "A", texto: "Felpudo", objeto: "Un felpudo" },
   { n: 16, bloque: "A", texto: "Hermanísimo", historia: "Grado superlativo. Se hereda." },
   { n: 17, bloque: "A", texto: "Oscargután", objeto: "La palabra en la cara de un orangután", historia: "Responde a todo. Sobre todo si no le preguntan." },
   { n: 18, bloque: "A", texto: "Javierito", objeto: "Cuernos de reno", historia: "Llegó por Navidad." },

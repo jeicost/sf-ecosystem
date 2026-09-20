@@ -9,6 +9,11 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
+    // Detectan el código muerto, que es para lo que se quería ESLint. El
+    // `eslint-config-next` del monorepo usa un patch incompatible con ESLint 9
+    // y `npm run lint` no arranca; esto sí, y cubre el caso que importaba.
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",

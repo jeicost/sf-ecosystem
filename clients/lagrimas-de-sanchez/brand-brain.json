@@ -9,7 +9,7 @@
   "contact": "hola@lagrimasdesanchez.com",
   "mission": "Convertir la hemeroteca política española en un objeto que la gente quiere tener en la estantería, no en un chiste que se tira.",
   "positioning": "No es un negocio de vino: es un negocio de regalo con vino dentro. La competencia no son las bodegas, son los productos de regalo con gracia. El diferencial no es el humor político, que lo tiene cualquier camiseta: es que la botella es objeto de colección y se queda después de bebida.",
-  "business_model": "Un solo SKU de vidrio serigrafiado, tres presentaciones. La botella vacía es el margen y el volumen (77% bruto, cero fricción regulatoria, envío mundial, publicidad pagada abierta). El vino es la prensa y la credibilidad (56% bruto, alta carga regulatoria). Tirada de vidrio por lotes, etiqueta y estuche bajo demanda.",
+  "business_model": "Un solo SKU de vidrio serigrafiado, tres presentaciones. La botella vacía es el margen y el volumen (51-63% bruto, cero fricción regulatoria, envío mundial, publicidad pagada abierta). El vino es la prensa y la credibilidad (56% bruto, alta carga regulatoria). Tirada de vidrio por lotes, etiqueta y estuche bajo demanda.",
   "awards": [],
   "case_studies": [],
   "partners": [],
@@ -47,9 +47,9 @@
   ],
   "differentiator": "Serigrafía cerámica vitrificada a 600 °C cubriendo la botella entera, sin etiqueta frontal. No se despega, aguanta lavavajillas y convierte el envase en el producto. Y ni una sola cara: toda la sátira la cargan 57 piezas tipográficas, lo que la hace registrable, exportable y vendible en retail.",
   "products": [
-    { "name": "La botella", "price": "22 €", "desc": "Vacía y rellenable, con cierre y caja. Numerada a mano. Coste 4,60 €, margen bruto 75%" },
+    { "name": "La botella", "price": "22 €", "desc": "Vacía y rellenable, con cierre y caja. Numerada a mano. Coste 6,65-8,85 €, margen bruto 51-63%" },
     { "name": "El estuche completo", "price": "39 €", "desc": "Una vacía y una con vino. La que mejor explica el concepto" },
-    { "name": "Pack de tres vinos", "price": "69 €", "desc": "Tinto DO Vinos de Madrid. Coste 24,86 €, margen bruto 56%" }
+    { "name": "Pack de tres vinos", "price": "69 €", "desc": "Tinto DO Vinos de Madrid. Coste 39,90-53,55 €, margen bruto 6-30% — el pricing está pendiente de revisar" }
   ],
   "competitors": [
     "El Xitxarel·lo (Penedès) — referencia estructural: palabrario serigrafiado",
@@ -74,7 +74,7 @@
   "campaigns_active": [],
   "month1_weeks": [
     "Semana 1: presupuestos de serigrafía y vidrio, llamadas a bodegas, registro de marca en OEPM",
-    "Semana 2: elección de vino y de acabado de boca con precios reales en la mano",
+    "Semana 2: elección de vino con precios reales en la mano",
     "Semana 3: ilustrador contratado con cesión de derechos, revisión legal del pack de 57 antes de arte final",
     "Semana 4-6: producción del vidrio y montaje de la web"
   ],
@@ -98,13 +98,13 @@
   "action_items": [
     "Registrar la marca en la OEPM (~125 €) — único punto donde un tercero puede adelantarse",
     "Cerrar presupuestos: 4 serigrafistas, 4 vidrieros, 3 bodegas",
-    "Decidir acabado de boca: corcho vs cierre mecánico, con precios en la mano",
-    "Confirmar con el Consejo Regulador de Vinos de Madrid si admite cierre mecánico",
-    "Contratar ilustrador para las 57 piezas en SVG (1.500-3.000 €)",
+    "CERRADO 19-sep: boca Sommelier Long de corcho. El cierre mecánico queda descartado, con precios en la mano",
+    "Consulta al Consejo Regulador sobre cierre mecánico: ya no procede, la boca es de corcho",
+    "Contratar ilustrador: ya no es dibujar 57 piezas, las 56 existen. Se compra unificación y arte final (1.000-2.200 €)",
     "Revisión legal del pack completo antes de arte final (600-1.500 €)"
   ],
   "colors": {
-    "primary": "#7A4A18",
+    "primary": "#FFD400",
     "secondary": "#4E2C0B",
     "accent": "#B4342A",
     "bg": "#14100B",

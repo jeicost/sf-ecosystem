@@ -77,6 +77,83 @@ SIGNOS = {
                  f'<rect x="53" y="26" width="3" height="48"/><rect x="60" y="26" width="6" height="48"/>'
                  f'<rect x="71" y="26" width="3" height="48"/></g>',
 
+    # LOS TRECE QUE VENÍAN DE LA IA ────────────────────────────────────────
+    # Eran ilustraciones con tramas, plumas y tipografías propias: las únicas
+    # piezas que se salían del sistema, y por tanto las que rompían la unidad
+    # del estampado entero. Aquí se rehacen con las mismas tres reglas que el
+    # resto. La regla legal manda por encima de todo: NI UNA CARA — ningún
+    # rasgo facial, solo siluetas, objetos y, como mucho, unas gafas.
+    # Galgo: lo que lo hace galgo y no perro es el PERFIL — pecho hondo,
+    # cintura recogidísima, lomo arqueado y cola larga. Cuerpo de masa, patas
+    # de línea: a 12 mm cuatro patas macizas se empastan en un borrón.
+    "galgo":     f'<path {M} d="M6 42 q-4 -4 1 -6 l12 -3 q4 -8 14 -8 l30 1 q16 0 22 9 '
+                 f'q5 8 -2 13 l-10 5 q-14 6 -32 5 L20 57 Q8 55 8 47 Z"/>'
+                 f'<g fill="none" stroke="{TINTA}" stroke-width="6" stroke-linecap="round">'
+                 f'<path d="M24 56 L8 76 M34 58 L30 80 M64 57 L78 76 M72 53 L92 66"/>'
+                 f'<path d="M84 46 q12 -4 14 -16"/></g>',
+    "chepas":    f'<circle cx="18" cy="56" r="11" {M}/>'
+                 f'<path {M} d="M26 48 q6 -22 28 -22 22 0 26 20 q3 14 -8 20 l-40 6 q-10 -10 -6 -24 Z"/>'
+                 f'<g fill="none" stroke="{TINTA}" stroke-width="8" stroke-linecap="round">'
+                 f'<path d="M40 72 L36 94 M60 74 L62 94"/>'
+                 f'<path d="M32 66 L22 84"/></g>',
+    "chirimoya": f'<path {M} d="M46 12 h8 v12 h-8 Z"/>'
+                 f'<path {M} fill-rule="evenodd" d="M50 22 q30 0 34 26 q3 22 -14 36 '
+                 f'-12 10 -20 10 -8 0 -20 -10 Q13 70 16 48 Q20 22 50 22 Z '
+                 f'M38 36 l8 8 -8 8 -8 -8 Z M62 36 l8 8 -8 8 -8 -8 Z '
+                 f'M50 52 l8 8 -8 8 -8 -8 Z M30 56 l7 7 -7 7 -7 -7 Z '
+                 f'M70 56 l7 7 -7 7 -7 -7 Z M50 74 l6 6 -6 6 -6 -6 Z"/>',
+    "chiqui":    f'<path {M} fill-rule="evenodd" d="M6 44 Q50 12 94 44 Q50 74 6 44 Z '
+                 f'M20 44 q30 10 60 0 -30 -10 -60 0 Z"/>'
+                 f'<path {M} d="M40 56 q10 4 20 0 l-1 14 q-1 14 -9 14 -8 0 -9 -14 Z"/>',
+    "copa":      f'<g {L}><path d="M18 18 h36 q0 24 -18 28 -18 -4 -18 -28 Z"/>'
+                 f'<path d="M36 46 v28"/><path d="M22 76 h28"/>'
+                 f'<path d="M54 22 q16 4 18 18"/><circle cx="74" cy="48" r="9"/></g>'
+                 f'<g {M}><path d="M70 56 h8 v20 l-4 5 -4 -5 Z"/></g>',
+    "curva":     f'<g {L}><path d="M50 14 L88 80 L12 80 Z"/>'
+                 f'<path d="M42 70 q-4 -12 6 -18 q10 -6 6 -18"/></g>'
+                 f'<path {M} d="M54 28 l10 4 -8 8 Z"/>',
+    "sello":     f'<g {M}><rect x="28" y="10" width="44" height="14" rx="6"/>'
+                 f'<rect x="43" y="24" width="14" height="12"/>'
+                 f'<path d="M22 36 h56 q5 0 5 6 v12 q0 6 -6 6 H23 q-6 0 -6 -6 V42 q0 -6 5 -6 Z"/></g>'
+                 f'<g {L}><path d="M12 78 h76"/></g>',
+    # Mandil: trapecio con peto y tirantes al cuello. El bolsillo y la
+    # campanilla van CALADOS para que se lean sobre la masa.
+    "mandil":    f'<g {L}><path d="M34 16 q16 8 32 0"/>'
+                 f'<path d="M36 20 v16 q-14 6 -16 22 l-4 26 q-1 8 7 8 h54 q8 0 7 -8 l-4 -26 '
+                 f'q-2 -16 -16 -22 V20"/>'
+                 f'<rect x="40" y="52" width="20" height="14" rx="2"/></g>'
+                 f'<circle cx="68" cy="60" r="5" {M}/>',
+    "portero":   f'<circle cx="50" cy="20" r="14" {M}/>'
+                 f'<path {M} fill-rule="evenodd" d="M22 92 V62 q0 -18 16 -22 h24 q16 4 16 22 v30 Z '
+                 f'M30 56 q20 12 40 0 v9 q-20 12 -40 0 Z"/>'
+                 f'<path {M} d="M64 26 q7 1 7 7 l-3 6 -5 -3 Z"/>',
+    "cejarombos":f'<g {M}><path d="M8 56 L18 44 L28 56 L18 68 Z"/>'
+                 f'<path d="M30 48 L40 36 L50 48 L40 60 Z"/>'
+                 f'<path d="M52 44 L62 32 L72 44 L62 56 Z"/>'
+                 f'<path d="M74 50 L84 38 L94 50 L84 62 Z"/></g>',
+    # Tucán: el pico ES el tucán y tiene que ser enorme — más largo que el
+    # cuerpo. Todo lo demás sobra.
+    # El ojo va CALADO con evenodd, no pintado del color del vidrio: en
+    # serigrafía de una tinta el fondo no se puede pintar — lo que no lleva
+    # tinta, sencillamente no se dibuja.
+    "tucan":     f'<path {M} fill-rule="evenodd" d="M64 26 a22 26 0 1 0 0.1 0 Z '
+                 f'M70 40 m-5 0 a5 5 0 1 0 10 0 a5 5 0 1 0 -10 0 Z"/>'
+                 f'<path {M} d="M48 36 Q18 34 4 54 Q22 60 44 58 Q46 46 48 36 Z"/>'
+                 f'<g {L}><path d="M56 78 v10 M72 78 v10"/></g>',
+    # CHARO. Antes era una cabeza con dos círculos calados a la altura de los
+    # ojos y una barra entre ellos: por mucho que la intención fuese «gafas»,
+    # se leía como OJOS Y NARIZ. «Ni una cara» no es una preferencia estética,
+    # es lo que mantiene la marca registrable y vendible (art. 7.6 LO 1/1982).
+    # Así que la pieza pasa a ser LAS GAFAS SOLAS, con su puente y sus
+    # patillas: un objeto, no un rostro.
+    "charo":     f'<g {L}><circle cx="30" cy="54" r="18"/><circle cx="70" cy="54" r="18"/>'
+                 f'<path d="M48 54 h4"/><path d="M12 46 L2 38 M88 46 L98 38"/></g>',
+
+    "orangutan": f'<path {M} d="M50 12 q20 0 28 16 q18 2 20 20 q2 20 -18 24 '
+                 f'q-8 16 -30 16 -22 0 -30 -16 Q0 68 2 48 Q4 30 22 28 Q30 12 50 12 Z"/>'
+                 f'<path {M} d="M40 6 q5 -7 10 0 q5 -7 10 0 l-2 8 H42 Z"/>'
+                 f'<g {L}><path d="M14 74 q-10 12 -6 22 M86 74 q10 12 6 22"/></g>',
+
     # MASA ─────────────────────────────────────────────────────────────────
     "corona":    f'<g {M}><path d="M16 74 L22 34 L38 50 L50 22 L62 50 L78 34 L84 74 Z"/>'
                  f'<rect x="14" y="78" width="72" height="11" rx="3"/></g>',
@@ -98,6 +175,23 @@ SIGNOS = {
 }
 
 
+# ── LO QUE ESTE SISTEMA NO RESUELVE ───────────────────────────────────────
+# El galgo (01) y Chepas (02) NO están aquí, y no es un olvido.
+#
+# Se intentaron cinco veces con geometría y salieron, por orden: un cerdo, un
+# elefante, una medusa, una foca y un escarabajo. Un galgo en carrera y una
+# espalda encorvada son formas ORGÁNICAS: lo que las identifica es la
+# proporción y la tensión de la línea, no una suma de primitivas. Eso es
+# oficio de ilustrador y es exactamente lo que se le va a pagar.
+#
+# Hasta entonces, esas dos conservan su versión generada con IA — que se lee
+# peor con el sistema pero AL MENOS se lee como lo que es. Son las primeras de
+# la lista del briefing.
+#
+# La lección, que vale para cualquier set de iconos: un sistema geométrico
+# resuelve objetos (urnas, televisores, coronas, aviones) y fracasa con seres
+# vivos en movimiento. Saber dónde está esa frontera es parte del trabajo.
+
 # ── Las piezas: signo + palabra, con su tratamiento ───────────────────────
 # `modo` es lo que rompe el patrón de «icono con pie de foto»:
 #   solo     — el signo se basta
@@ -105,14 +199,31 @@ SIGNOS = {
 #   dentro   — palabra CALADA dentro del signo
 #   bajo     — debajo, pero apretado y pequeño (la excepción, no la regla)
 PIEZAS = [
+    (3,  "03-chirimoyas",             "chirimoya", "CHIRIMOYAS",  "bajo"),
+    (4,  "04-chiqui",                 "chiqui",    "CHIQUI",      "lado"),
+    (5,  "05-pili-juerga",            "copa",      "PILI JUERGA", "bajo"),
+    (6,  "06-la-nina-de-la-curva",    "curva",     "LA NIÑA DE LA CURVA", "bajo"),
+    (7,  "07-catedratica",            "sello",     "CATEDRÁTICA", "bajo"),
+    (8,  "08-gracita-bolanos",        "mandil",    "GRACITA BOLAÑOS", "bajo"),
+    (9,  "09-el-portero",             "portero",   "EL PORTERO",  "lado"),
+    (10, "10-cejas",                  "cejarombos","CEJAS",       "bajo"),
+    (11, "11-la-cajera",              "barras",    "LA CAJERA",   "bajo"),
+    (12, "12-tucan",                  "tucan",     "TUCÁN",       "lado"),
+    (13, "13-charo",                  "charo",     "CHARO",       "lado"),
     (14, "14-marlaskona",             "mazo",      "MARLASKONA",  "lado"),
-    (15, "15-felpudo-vi",             "felpudo",   "FELPUDO VI",  "bajo"),
+    # Sin el «VI»: el art. 490.3 CP castiga las injurias a la Corona, y es el
+    # único punto del proyecto que tocaría derecho PENAL. La decisión estaba
+    # tomada en legal/checklist-legal.md desde el principio; lo que faltaba era
+    # aplicarla, y el «VI» seguía vivo en cinco sitios — incluida la lámina que
+    # se le manda al serigrafista.
+    (15, "15-felpudo",                "felpudo",   "FELPUDO",     "bajo"),
+    (17, "17-oscargutan",             "orangutan", "OSCARGUTÁN",  "lado"),
     (18, "18-javierito",              "cuernos",   "JAVIERITO",   "lado"),
     (32, "32-sincronizada",           "metronomo", "SINCRONIZADA","bajo"),
     (33, "33-la-banda-del-peugeot",   "coche",     "LA BANDA",    "bajo"),
     (34, "34-fango",                  None,        "FANGO",       "goteo"),
     (35, "35-bulos",                  "aviso",     "BULOS",       "lado"),
-    (36, "36-telepedro",              "tele",      "TELEPEDRO",   "dentro"),
+    (36, "36-telepedro",              "tele",      "TELEPEDRO",   "lado"),
     (37, "37-saunas",                 "vapor",     "SAUNAS",      "lado"),
     (38, "38-el-puto-amo",            "corona",    "EL PUTO AMO", "bajo"),
     (39, "39-el-uno",                 "dedo",      "EL UNO",      "lado"),
@@ -163,15 +274,18 @@ def pieza(signo, palabra, modo, slug, bajo=None):
         return (
             dib
             + f'<text x="50" y="{y}" text-anchor="middle" fill="{TINTA}" {FAM} '
-            f'font-size="13" letter-spacing="0.4">{palabra}</text>'
+            f'font-size="19" letter-spacing="0.4">{palabra}</text>'
         )
 
     # bajo — apretado contra el signo, no flotando a un cuerpo de distancia.
-    y = (bajo if bajo is not None else 100) + 19
+    # El cuerpo sube de 19 a 29: con 19, el asta de la letra quedaba en
+    # 0,31 mm sobre el vidrio —menos de la mitad del mínimo de serigrafía— y
+    # la mitad de los pictogramas se imprimía como una mancha gris.
+    y = (bajo if bajo is not None else 100) + 29
     return (
         dib
         + f'<text x="50" y="{y:.1f}" text-anchor="middle" fill="{TINTA}" {FAM} '
-        f'font-size="19" letter-spacing="0.6">{palabra}</text>'
+        f'font-size="29" letter-spacing="0.6">{palabra}</text>'
     )
 
 
@@ -193,8 +307,6 @@ REMATES = {
     "r-puntos":     f'<g {M}><circle cx="24" cy="50" r="7"/><circle cx="50" cy="50" r="7"/>'
                     f'<circle cx="76" cy="50" r="7"/></g>',
     "r-barras":     f'<g {L}><path d="M34 22 V78 M54 22 V78 M74 22 V78"/></g>',
-    "r-manecilla":  f'<g {L}><path d="M16 50 h52"/><path d="M52 34 L70 50 L52 66"/><path d="M80 30 v40"/></g>',
-    "r-doble":      f'<g {L}><path d="M22 38 h56 M22 62 h56"/></g>',
 }
 
 

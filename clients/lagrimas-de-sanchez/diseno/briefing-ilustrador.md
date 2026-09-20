@@ -48,9 +48,15 @@ Es lo que ninguna IA hace y por lo que se contrata a una persona:
 - **Un solo grosor de trazo** en las 57 piezas.
 - **Un solo tamaño óptico**: que una chirimoya y un galgo pesen lo mismo en la
   retícula aunque midan distinto.
-- **Una sola tipografía** para todas las palabras integradas. Los borradores
-  llevan letras distintas porque las generó un modelo; eso hay que rehacerlo
-  entero con una condensada de palo, peso 700, mayúsculas.
+- **Un solo SISTEMA tipográfico, que no es lo mismo que una sola tipografía.**
+  Ojo aquí, porque este punto decía lo contrario y se corrigió el 20-sep: el
+  estampado usa **siete registros** (condensada bold, condensada ligera, una
+  didone, su cursiva, una grotesca redonda, una monoespaciada y el contorno
+  hueco), y esa variedad **es el trabajo**, no un defecto de los borradores.
+  Es lo que convierte una pizarra en textura, y sale de medir la referencia:
+  en un palmo de su vidrio conviven nueve tratamientos distintos con una sola
+  tinta. Lo que sí hay que unificar es el peso óptico, el grosor de trazo y la
+  familia DENTRO de cada registro. Ver `PROPUESTA-NIVEL-XITXARELLO.md`.
 
 ---
 
@@ -84,15 +90,16 @@ Es lo que ninguna IA hace y por lo que se contrata a una persona:
 
 ---
 
-## Los siete tratamientos, con su reparto
+## Los ocho tratamientos, con su reparto
 
 El texto va **integrado en el diseño**, no debajo como un pie de foto: arqueado
 sobre una silueta, en banda cruzando una forma, calado dentro de un objeto.
 
 | Tratamiento | Cuántas | Nota |
 |---|---|---|
-| Palabra desnuda | ~26 | Solo tipografía. Es lo que da respiración |
-| Silueta + palabra integrada | ~18 | Un solo objeto por pieza |
+| Palabra desnuda | ~16 | Solo tipografía. Es lo que da respiración |
+| Palabra hueca (contorno) | ~6 | Aire dentro del bloque sin dejar hueco |
+| Signo + palabra AL LADO | ~12 | Nunca debajo: eso es un pie de foto |
 | Texto dentro del objeto | 4 | Televisor, urna, pantalla |
 | Caja invertida | máx. 5 | Blanco macizo con texto calado. Repartidas, nunca dos juntas |
 | Sello circular | máx. 4 | Solo nombres cortos |

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Aviso legal",
+  alternates: { canonical: "/legal" },
   robots: { index: false, follow: true },
 };
 

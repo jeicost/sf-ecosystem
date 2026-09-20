@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata: Metadata = { title: "Gracias", robots: { index: false, follow: false } };
+export const metadata: Metadata = { title: "Gracias", alternates: { canonical: "/gracias" },
+  robots: { index: false, follow: false } };
 
 /**
  * Esta página NO confirma nada.

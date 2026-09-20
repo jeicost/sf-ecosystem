@@ -78,19 +78,19 @@ def main() -> int:
                     el.setAttribute('width', '1000');
                     el.setAttribute('height', '1000');
                     const vb = el.viewBox.baseVal;
-                    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
-                    for (const hijo of el.querySelectorAll('path,rect,circle,ellipse,line,polygon,polyline,text,g')) {
-                        // Un <g> agrupa: su bbox ya cubre a los hijos, pero
-                        // medimos todo y nos quedamos con la unión, que es
-                        // inmune a cómo esté anidado el fichero.
-                        let b;
-                        try { b = hijo.getBBox(); } catch { continue; }
-                        if (!b || (!b.width && !b.height)) continue;
-                        x0 = Math.min(x0, b.x); y0 = Math.min(y0, b.y);
-                        x1 = Math.max(x1, b.x + b.width); y1 = Math.max(y1, b.y + b.height);
-                    }
-                    if (!isFinite(x0)) return null;
-                    return { x0, y0, x1, y1, vb: { x: vb.x, y: vb.y, w: vb.width, h: vb.height } };
+                    // El bbox se pide al <svg> RAÍZ, no elemento a elemento.
+                    // `getBBox()` de un hijo devuelve sus coordenadas ANTES de
+                    // su propio transform: las piezas con <g transform="..."> se
+                    // medían en el sitio equivocado y el viewBox salía
+                    // descentrado — la cifra de «POR 7 VOTOS» quedaba en una
+                    // esquina de un lienzo enorme y vacío.
+                    let b;
+                    try { b = el.getBBox(); } catch { return null; }
+                    if (!b || (!b.width && !b.height)) return null;
+                    return {
+                        x0: b.x, y0: b.y, x1: b.x + b.width, y1: b.y + b.height,
+                        vb: { x: vb.x, y: vb.y, w: vb.width, h: vb.height },
+                    };
                 }""",
                 svg,
             )

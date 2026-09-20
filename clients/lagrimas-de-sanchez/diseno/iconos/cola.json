@@ -130,9 +130,9 @@
     {
       "n": 15,
       "bloque": "A",
-      "pieza": "FELPUDO VI",
-      "slug": "felpudo-vi",
-      "objeto": "Felpudo VI",
+      "pieza": "FELPUDO",
+      "slug": "felpudo",
+      "objeto": "Felpudo",
       "prompt": "a rectangular doormat seen in slight perspective, with a bristled textured surface and a plain border, empty, no writing on it, flat vector pictogram, pure white silhouette on solid black background, single flat color only, no gradients, no shading, no texture, uniform thick stroke weight, bold geometric simplification, centered composition with generous margin, designed to stay legible at 12 millimetres, screen-print ready, extreme high contrast, minimal detail",
       "estado": "dibujado-a-mano"
     },

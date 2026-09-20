@@ -43,7 +43,7 @@ export const metadata: Metadata = {
     template: "%s · Lágrimas de Sánchez",
   },
   description:
-    "Una magnum de cristal antico con 57 piezas horneadas en el vidrio a 600 grados. No es una etiqueta. No se despega.",
+    "El regalo para quien ya lo tiene todo menos paciencia: una magnum de cristal antico con 57 piezas horneadas en el vidrio a 600 grados. No es una etiqueta. No se despega.",
   openGraph: {
     type: "website",
     locale: "es_ES",
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     siteName: "Lágrimas de Sánchez",
     title: "Lágrimas de Sánchez",
     description:
-      "57 piezas horneadas en el vidrio a 600 grados. No es una etiqueta. No se despega.",
+      "El regalo para quien ya lo tiene todo menos paciencia. 57 piezas horneadas en el vidrio a 600 grados: no es una etiqueta, no se despega.",
   },
   robots: { index: true, follow: true },
   alternates: { canonical: "/" },

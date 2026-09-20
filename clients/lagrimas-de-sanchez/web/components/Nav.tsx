@@ -12,7 +12,7 @@ export function Nav() {
         <div className="ml-auto flex items-center gap-4 sm:gap-7">
           <Link
             href="/estampado"
-            className="u-cond hidden text-[0.85rem] transition-colors hover:text-muted min-[440px]:block"
+            className="u-cond -my-3 py-3 hidden text-[0.85rem] transition-colors hover:text-muted "
           >
             El estampado
           </Link>

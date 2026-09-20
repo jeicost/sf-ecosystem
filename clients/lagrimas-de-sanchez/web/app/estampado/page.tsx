@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Glifo, GLIFO_POR_PIEZA } from "@/components/Glifos";
 import { PIEZAS, BLOQUES, CON_PICTOGRAMA, type Bloque } from "@/lib/piezas";
 import { Recorrido } from "@/components/Recorrido";
 import { rutaIcono } from "@/lib/iconos";
@@ -38,7 +37,7 @@ export default function Estampado() {
             <span className="u-marca">Ni una sola cara.</span>
           </h1>
           <p className="u-lead max-w-[54ch]">
-            Doce bandas alrededor de la botella, justificadas de lado a lado, con un solo hueco
+            Nueve bandas alrededor de la botella, justificadas de lado a lado, con un solo hueco
             de calma en el centro para el nombre. Todo lo dice el texto. El dibujo lo
             pones tú, que también has visto la década.
           </p>
@@ -47,7 +46,7 @@ export default function Estampado() {
             {[
               [String(PIEZAS.length), "piezas"],
               [String(CON_PICTOGRAMA), "con pictograma"],
-              ["12", "bandas"],
+              ["9", "bandas"],
               ["1", "tinta"],
               ["600 °C", "de horno"],
             ].map(([n, l]) => (
@@ -80,7 +79,6 @@ export default function Estampado() {
 
               <ul className="grid grid-cols-2 border-l-2 border-t-2 border-ink sm:grid-cols-3 lg:grid-cols-4">
                 {piezas.map((p) => {
-                  const g = GLIFO_POR_PIEZA[p.n];
                   const ancla = ANCLAS.has(p.n);
                   const arte = rutaIcono(p.n);
 
@@ -100,7 +98,12 @@ export default function Estampado() {
                               "linear-gradient(115deg,#3F2308 0%,#7A4A18 22%,#A0702E 52%,#7A4A18 80%,#3F2308 100%)",
                           }}
                         >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          {/* El nombre en texto, aunque el arte ya lo lleve
+                              dibujado dentro. Al vectorizar, las 57 frases
+                              dejaron de existir como texto y esta página —que
+                              es justo la que debe posicionar por ellas— se
+                              quedó sin ninguna en el DOM. Cuesta 1 KB. */}
+                          <span className="sr-only">{p.texto}</span>
                           <PiezaArte
                             n={p.n}
                             texto={p.texto}
@@ -134,7 +137,6 @@ export default function Estampado() {
                         <span className={`u-mono text-[0.6rem] ${amarillo ? "text-ink/70" : "text-muted"}`}>
                           {String(p.n).padStart(2, "0")}
                         </span>
-                        {g && <Glifo n={g} tam={24} grosor={2} />}
                       </div>
                       <span
                         className={`u-cond ${
@@ -151,7 +153,7 @@ export default function Estampado() {
                         <span className="font-[family-name:var(--font-display)] text-[0.88rem] italic leading-snug text-muted">
                           {p.historia}
                         </span>
-                      ) : p.objeto && !g ? (
+                      ) : p.objeto ? (
                         <span className="u-eyebrow text-[0.56rem]!">{p.objeto}</span>
                       ) : (
                         <span aria-hidden="true" className="min-h-[0.9rem]" />

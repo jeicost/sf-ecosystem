@@ -82,13 +82,15 @@ type Banda = [number, (number | string)[]];
  * del hombro al del cilindro en seis bandas y luego se queda plana, que es
  * exactamente la forma de la botella.
  */
-const ANCHOS_HOMBRO = [62, 84];
 
-
-const HOMBRO: Banda[] = [
-  [8, [26, "r-estrella", 30]],
-  [10, [20, 12, "r-flecha-e", 19]],
-];
+/**
+ * El hombro va LIMPIO.
+ *
+ * Tuvo dos bandas y se quitaron: a esa altura el cono se cierra y las piezas
+ * caían a 3,6-4,6 mm impresos, con astas de 0,15 mm. Ningún taller imprime
+ * eso, y encima contradecía la decisión de composición ya tomada —hombro y
+ * cuello desnudos, como en la referencia. Las cinco piezas bajaron al bloque.
+ */
 
 /**
  * El bloque denso. MENOS bandas y MÁS piezas por banda que en el primer
@@ -100,18 +102,18 @@ const HOMBRO: Banda[] = [
  * cuatro veces. Son argamasa: nadie los cuenta, pero sin ellos no hay muro.
  */
 const CUERPO: Banda[] = [
-  [19, [22, "r-asterisco", 2]],
-  [23, [34, "r-cruz", 35]],
-  [18, [3, "r-rombos", 51, "r-flecha-ne"]],
-  [24, [36, 19, 44]],
+  [19, [26, 22, "r-asterisco"]],
+  [23, [34, 30, "r-cruz", 35]],
+  [18, [3, 20, 51, "r-flecha-ne"]],
+  [24, [36, 12, 44]],
   [18, [1, 10, 37, 28]],
-  [23, [42, 13, "r-doble", 45]],
+  [23, [42, 13, 45]],
   [18, [11, "r-flecha-se", 14, "r-estrella"]],
   [24, [5, 29, "r-puntos", 39]],
-  [18, ["r-manecilla", 23, 43, "r-rombos"]],
+  [18, [23, 43, "r-rombos"]],
   [23, [47, 9, "r-flecha-n", 38]],
   [18, [33, "r-asterisco", 50, 18]],
-  [24, [40, 8, "r-doble", 46]],
+  [24, [40, 8, 46]],
   [18, [21, "r-estrella", 55, 7, "r-cruz"]],
   [23, [48, 32, "r-flecha-e", 41]],
   [18, [4, "r-rombos", 49, 15]],
@@ -121,9 +123,10 @@ const CUERPO: Banda[] = [
   [21, [57, "r-flecha-e", 24]],
 ];
 
-const ANCHOS = CUERPO.map((_, i) => Math.min(206, 88 + i * 22));
-
-const LAGRIMOMETRO = ["OJO SECO", "PUCHERO", "MOQUEO", "LLORERA", "MOCO TENDIDO", "DESEMBALSE"];
+// Los anchos bajaron un 10 % cuando las piezas se ciñeron a su dibujo: sin
+// margen propio, la misma altura de banda da piezas más anchas y las de los
+// extremos volvían a salirse por el canto.
+const ANCHOS = CUERPO.map((_, i) => Math.min(186, 78 + i * 20));
 
 /**
  * Una pieza del estampado: su SVG real, escalado por el ALTO de su banda.
@@ -132,7 +135,16 @@ const LAGRIMOMETRO = ["OJO SECO", "PUCHERO", "MOQUEO", "LLORERA", "MOCO TENDIDO"
  * Eso es justo lo que pasa al maquetar una serigrafía de verdad: las piezas no
  * caben en casillas, se acomodan unas a otras.
  */
-function Pieza({ id, alto }: { id: number | string; alto: number }) {
+function Pieza({
+  id,
+  alto,
+  tope,
+}: {
+  id: number | string;
+  alto: number;
+  /** Ancho máximo. Sin él, una frase de tres líneas se sale por el canto. */
+  tope: number;
+}) {
   const slug = typeof id === "number" ? ICONO_DE[id] : id;
   if (!slug) return null;
   const rellena = typeof id === "string"; // los remates no dicen nada
@@ -142,8 +154,25 @@ function Pieza({ id, alto }: { id: number | string; alto: number }) {
       src={`/iconos/${slug}.svg`}
       alt={rellena ? "" : (TEXTO_DE[id as number] ?? "")}
       aria-hidden={rellena || undefined}
-      style={{ height: rellena ? alto * 0.62 : alto, width: "auto" }}
-      className="shrink-0"
+      style={{
+        height: rellena ? alto * 0.62 : alto,
+        width: "auto",
+        // `object-contain` + tope: la pieza ancha se reduce manteniendo su
+        // proporción en vez de desbordarse. Antes llevaba `shrink-0` y las
+        // frases largas se salían del vidrio y aparecían cortadas por el
+        // clip de la silueta — que es la peor forma de fallar, porque parece
+        // un error de render y no un problema de composición.
+        maxWidth: tope,
+        // `minWidth: 0` es lo que permite a flexbox encoger una imagen: sin
+        // él, el tamaño intrínseco actúa de suelo y la banda se desborda.
+        minWidth: 0,
+      }}
+      className="min-w-0 shrink object-contain"
+      // Sin esto, Next emite un <link rel="preload" as="image"> por cada una:
+      // 67 descargas en prioridad alta peleando con el CSS y las fuentes desde
+      // el primer byte. El estampado no es lo primero que hay que pintar.
+      loading="lazy"
+      decoding="async"
     />
   );
 }
@@ -164,42 +193,32 @@ function Banda({
       style={{ width: ancho }}
     >
       {piezas.map((id, i) => (
-        <Pieza key={`${id}-${i}`} id={id} alto={alto} />
+        <Pieza
+          key={`${id}-${i}`}
+          id={id}
+          alto={alto}
+          // Tope generoso: una pieza puede ocupar hasta el 62 % de su banda.
+          // Lo que impide que se salgan no es este número, es que las
+          // imágenes ENCOGEN (flex-shrink) cuando la suma no cabe — repartir
+          // el ancho a partes iguales dejaba las palabras cortas nadando y
+          // hundía la densidad cuatro puntos.
+          tope={ancho * 0.62}
+        />
       ))}
     </div>
   );
 }
 
-/**
- * El lagrimómetro. FUERA DEL BLOQUE por ahora, y a propósito: es la pieza 54 y
- * los medidores siguen siendo decisión abierta del dueño
- * (`producto/medidores-abierto.md`). Metido a la fuerza al final del tejido se
- * salía por el talón, y una pieza que no está decidida no merece romper la
- * composición. Se queda aquí, montado y listo, para el día que se cierre.
+/*
+ * EL LAGRIMÓMETRO (pieza 54) NO ESTÁ AQUÍ, y es a propósito.
+ *
+ * Es la única pieza del inventario sin arte porque los medidores siguen siendo
+ * decisión abierta del dueño (`producto/medidores-abierto.md`). El componente
+ * que lo dibujaba vivía en este fichero sin renderizarse en ningún sitio:
+ * código muerto que nadie iba a recordar. Cuando se cierre la decisión, se
+ * dibuja como una pieza más del set en `diseno/iconos/componer-signos.py`,
+ * igual que las otras 56 — no como un caso especial de la botella.
  */
-function Lagrimometro({ alto }: { alto: number }) {
-  return (
-    <div className="relative flex flex-col items-center" style={{ height: alto, width: 168 }}>
-      <span className="u-cond" style={{ fontSize: 5, letterSpacing: "0.22em" }}>
-        LAGRIMÓMETRO
-      </span>
-      <div className="relative mt-[2px] flex w-full items-start justify-between">
-        <span className="absolute inset-x-0 top-0 h-[1.1px] bg-current" />
-        {/* Clavado a la derecha: el chiste es que el medidor está reventado. */}
-        <span className="absolute right-0 top-[-2px] h-[5px] w-[2.6px] bg-current" />
-        {LAGRIMOMETRO.map((m) => (
-          <span
-            key={m}
-            className="u-cond origin-top-left rotate-90 whitespace-nowrap leading-none"
-            style={{ fontSize: 3.9, letterSpacing: "0.02em", marginLeft: 3 }}
-          >
-            {m}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
 
 export function Botella({
   alto = 640,
@@ -339,19 +358,6 @@ export function Botella({
           className="absolute inset-x-0 bottom-[22px] top-[286px] flex flex-col"
           style={{ color: TINTA }}
         >
-          {/* El hombro: piezas sueltas y pequeñas. El cono se cierra al subir
-              y la silueta se come todo lo que sea más ancho. */}
-          <div className="flex flex-col items-center gap-[5px]">
-            {HOMBRO.map(([alto, piezas], i) => (
-              <Banda
-                key={i}
-                alto={alto}
-                piezas={piezas}
-                ancho={ANCHOS_HOMBRO[i]}
-              />
-            ))}
-          </div>
-
           {/* El lockup, pequeño y con su aire. Es lo único que se lee a un
               metro, y solo se lee porque no compite con nada. */}
           <div className="flex flex-col items-center gap-[1px] pb-[8px] pt-[11px]">

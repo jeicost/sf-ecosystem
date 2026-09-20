@@ -163,7 +163,12 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
     if trato == "hueca":
         # Contorno sin relleno: ocupa su sitio en la retícula pero deja pasar
         # el vidrio. Es el respiro que no deja hueco.
-        return texto(lineas, fill="none", extra=f'stroke="{TINTA}" stroke-width="3.2"')
+        return texto(
+            lineas,
+            fill="none",
+            extra=f'stroke="{TINTA}" stroke-width="3.4" '
+                  f'stroke-linejoin="round" stroke-linecap="round"',
+        )
 
     if trato == "caja":
         # Masa blanca con el texto CALADO: el acento oscuro del conjunto. En

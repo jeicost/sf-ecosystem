@@ -1,6 +1,6 @@
 # Lágrimas de Sánchez
 
-**Estado: 19 de septiembre de 2026 · botella e iconos CERRADOS, producción sin arrancar**
+**Estado: 20 de septiembre de 2026 · botella, arte y web CERRADOS · producción sin arrancar**
 
 Marca de botella de cristal serigrafiada y vino de la DO Vinos de Madrid.
 Dominios en propiedad: `lagrimasdesanchez.com` y `.es`
@@ -20,12 +20,14 @@ Sin etiqueta frontal. Ni una sola cara.
 | | PVP hoy | Coste (magnum) | Margen |
 |---|---|---|---|
 | La botella vacía, rellenable | 22 € | 6,65 – 8,85 € | **51-63 %** |
-| El estuche completo (1 vino + 1 vacía) | 39 € | 17 – 23 € | 32-47 % |
+| El estuche completo (1 vino + 1 vacía) | 39 € | **25,95 – 34,70 €** | ⚠️ **de 19 % a NEGATIVO** |
 | Pack de 3 vinos | 69 € | 39,90 – 53,55 € | ⚠️ **6-30 %** |
 
-⚠️ Los costes son de la magnum y **el pricing se ha quedado corto**: son
-estimaciones de mercado, no presupuestos, pero la dirección es firme. Ver
-«Decisiones abiertas».
+⚠️ **Dos de los tres SKU pueden estar vendiéndose por debajo de coste.** El
+estuche decía 32-47 % y era un error de suma: los «17-23 €» que figuraban
+eran las dos botellas sin estuche ni embalaje. Sumado bien, el producto que
+mejor explica la marca es el que peor está. Son estimaciones de mercado, no
+presupuestos, pero la dirección es firme. Ver «Decisiones abiertas».
 
 **La tesis:** esto no es un negocio de vino, es un negocio de regalo con vino
 dentro. **La botella vacía es el negocio; el vino es la prensa.**
@@ -39,6 +41,8 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 - `proveedores/correo-vidrio.txt` — **a Estal**, que es de quien es la botella
 - `proveedores/correo-bodegas.txt` — 6 bodegas de la DO Vinos de Madrid
 - `proveedores/correo-cierres.txt` — corcho, cabeza de zamak y cápsulas
+- `proveedores/correo-estuche.txt` — **NUEVO**: la segunda partida de coste
+  (3.000-4.000 €) no tenía ni proveedor ni correo
 - `proveedores/correo-ilustrador.txt` — el arte final de las 57 piezas
 - `diseno/briefing-ilustrador.md` — briefing completo que acompaña a ese correo
 - `producto/inventario.md` — las 57 piezas, generado desde `web/lib/piezas.ts`
@@ -98,6 +102,39 @@ sin arte.
   ciñeron todos con `diseno/iconos/ajustar-viewbox.py` (mide el dibujo real en
   el navegador, con las fuentes cargadas). **La regla que queda: el icono viene
   ceñido y el aire lo pone quien maqueta.**
+
+### El arte — CERRADO y VERIFICADO 20-sep
+
+Las 56 piezas con arte están **vectorizadas** (`diseno/iconos/vectorizar.mjs`):
+ni una depende ya de que haya una fuente instalada, que es requisito del
+taller y además arregló un fallo que llevaba días —los SVG cargados con `<img>`
+no pueden descargar fuentes, así que el navegador los pintaba con Arial Narrow
+y las frases largas salían cortadas.
+
+El flujo completo, en orden, y **hay que ejecutarlo entero**:
+
+```
+cd diseno/iconos
+python3 componer-texto.py      # las 24 de solo texto, 10 tratamientos
+python3 componer-signos.py     # los pictogramas como signos + 10 remates
+node    vectorizar.mjs         # el texto pasa a trazados
+python3 ajustar-viewbox.py     # cada pieza ceñida a su dibujo
+python3 normalizar-trazo.py    # el grosor, igual en MILÍMETROS IMPRESOS
+python3 verificar-arte.py      # la puerta: falla si algo no imprime
+```
+
+`verificar-arte.py` es la red de seguridad y conviene pasarla siempre: comprueba
+trazo mínimo de 0,8 mm, que no quede texto sin vectorizar y que ningún trazado
+lleve `NaN`. Las tres cosas habían pasado desapercibidas porque **ninguna se ve
+en pantalla**: un SVG con `NaN` se dibuja a medias en silencio, y un trazo de
+0,1 mm se ve perfecto en un monitor y no existe sobre el vidrio.
+
+Lo que encontró una auditoría de dirección de arte y está corregido: el
+«grosor único» iba de 0,10 a 1,87 mm (19 piezas por debajo del mínimo), la
+mitad de los pictogramas llevaba la palabra a la mitad de tamaño que la otra
+mitad, los remates pesaban más que el contenido, y el hombro tenía piezas a
+3,6 mm. Hoy: trazo de 1,0 mm en todo el set, 0,8 en los remates, un solo
+cuerpo de palabra y el hombro limpio.
 
 ### Iconos — CERRADOS 19-sep
 Las 56 de las 57 piezas tienen ya su arte en la web (`web/public/iconos/` +
@@ -196,7 +233,7 @@ checkout propio que calcule el porte tras conocer el país.
 ### Hecho
 - Concepto, tono y arquitectura de producto
 - Las 57 piezas con nombre, tratamiento e icono → `producto/inventario.md`
-- Estructura de la retícula: 12 bandas justificadas, 75 % de ocupación
+- Estructura de la retícula: 9 bandas justificadas, 75 % de ocupación
 - Modelo de costes de los dos productos → `producto/costes.md`
 - Checklist legal completo → `legal/checklist-legal.md`
 - Copy completo de la web → `web/copy-y-brief-web.txt`

@@ -58,30 +58,60 @@ Tres salidas, y no son excluyentes:
 3. **Dejar el pack de 3 solo para recogida o para hostelería**, donde el porte
    no lo pagas tú.
 
-El estuche completo (1 vino + 1 vacía) aguanta mejor que el pack de 3 y sigue
-siendo el que mejor explica el concepto. Con los costes nuevos pide subir de
-39 € a **49 – 55 €**.
+El estuche completo (1 vino + 1 vacía) sigue siendo el que mejor explica el
+concepto, pero **con los costes bien sumados es el PEOR de los tres** (ver
+abajo): a 39 € puede estar vendiéndose por debajo de coste. Pide subir a
+**55 €**.
 
 ## Producto C · El estuche completo — PVP 39 €
-1 vino + 1 botella vacía. Coste estimado **17 – 23 €** con estuche y embalaje.
-A 39 € deja **32-47 %**. Es el que mejor explica el concepto y el que debería
-ganar en ticket medio, así que es el último al que se le debe subir el precio.
+
+⚠️ **Esta sección decía 17-23 € «con estuche y embalaje» y era falso**: esa
+cifra es exactamente la suma de las dos botellas y nada más. Sumando de verdad:
+
+| Concepto | € |
+|---|---|
+| 1 botella con vino (de la tabla B) | 10,30 – 13,85 |
+| 1 botella vacía (de la tabla A) | 6,65 – 8,85 |
+| Estuche de magnum (para dos) | 6,00 – 9,00 |
+| Embalaje de envío | 3,00 |
+| **Coste real** | **25,95 – 34,70** |
+
+PVP 39 € → 32,23 € sin IVA → **margen bruto 6,28 € en el mejor caso y
+NEGATIVO en el peor.**
+
+Y esto invierte la conclusión que había escrita aquí: el estuche no era «el
+producto sano al que no hay que subir el precio». Es, con los números bien
+sumados, **el que peor está de los tres**. Es además al que la home manda
+desde «El chiste completo». Para volver al 40 % tendría que estar en **55 €**.
 
 ## Inversión inicial
 | Partida | Antes | Ahora |
 |---|---|---|
-| Vino y embotellado | 3.000 | **6.000 – 7.800** |
+| Vino y embotellado | 3.000 | **2.700 – 3.510** |
 | Vidrio y serigrafía | ~2.250 | **3.700 – 5.300** |
 | Cierres y cápsulas | ~700 | ~900 |
 | Estuches y embalaje | 2.200 | **3.000 – 4.000** |
-| Ilustración de las 57 piezas | 1.500 – 3.000 | 1.500 – 3.000 |
+| Ilustración de las 57 piezas | 1.500 – 3.000 | **1.000 – 2.200** |
 | Registro de marca OEPM | 125 | 125 |
 | Revisión legal del pack | 600 – 1.500 | 600 – 1.500 |
-| **Total** | **11.000 – 15.000** | **15.800 – 22.600** |
+| **Total** | **11.000 – 15.000** | **12.500 – 18.300** |
+
+**Corregido el 20-sep:** la partida de vino estaba calculada sobre 1.000
+botellas, pero **solo 450 se llenan** — el reparto de la tirada (400 vacías,
+150 estuches, 100 packs de tres) deja 550 botellas que se venden vacías. Estaba
+inflada en unos 3.300 €.
+
+Faltan además partidas que no son opcionales y hoy figuran a cero: **pantallas,
+fotolitos y puesta a punto** (coste fijo que el propio correo al serigrafista
+pide desglosado), **portes entre fábricas** —Girona a decorador, decorador a
+Arganda, Arganda a Aranjuez, con 900 kg de vidrio en tres saltos—, **merma y
+rotura** del vidrio ya decorado, la **numeración a mano** de mil botellas, la
+comisión de pasarela y la **fotografía de producto**.
 
 El primer lote sigue sin dar beneficio: **es la inversión en el arte y en
-validar**. Pero la entrada ha subido unos 5.000 – 7.000 €, y eso sí es una
-decisión de caja que hay que tomar antes de pedir el vidrio.
+validar**. La entrada real está entre 12.500 y 18.300 € más lo que sumen esas
+partidas, y eso es una decisión de caja que hay que tomar antes de pedir el
+vidrio.
 
 ## El porte, que ahora pesa
 

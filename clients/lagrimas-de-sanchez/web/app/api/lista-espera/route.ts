@@ -55,6 +55,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "sku_desconocido" }, { status: 400 });
   }
 
+  // EL CORREO SE DEJA REGISTRADO ANTES DE INTENTAR ENVIARLO.
+  //
+  // En prelanzamiento el único indicador que importa son los correos
+  // capturados, y hasta ahora toda la captura colgaba de un servicio externo:
+  // si formsubmit fallaba, se devolvía un 502 y el correo se perdía para
+  // siempre. Peor todavía, formsubmit exige que el buzón confirme el primer
+  // envío, así que hasta que alguien abra ese correo NADA llega — y la web
+  // respondía «ok» igualmente.
+  //
+  // Esto no es una base de datos, es el registro del servidor. No es bonito,
+  // pero un correo en los logs de Vercel es recuperable y uno perdido no. El
+  // día que haya Resend o Supabase, se sustituye esta línea.
+  console.log(`[lista-espera] CAPTURA ${email} · ${body.sku} · ${new Date().toISOString()}`);
+
   try {
     const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(BUZON)}`, {
       method: "POST",
@@ -68,8 +82,12 @@ export async function POST(request: Request) {
     });
     if (!res.ok) throw new Error(`formsubmit ${res.status}`);
   } catch (err) {
-    console.error("[lista-espera]", err instanceof Error ? err.message : err);
-    return NextResponse.json({ ok: false, error: "no_enviado" }, { status: 502 });
+    // El aviso falló, pero el correo ya está registrado arriba: al visitante
+    // se le dice que sí, porque desde su lado se ha apuntado de verdad.
+    // Devolver 502 aquí le hacía pensar que no se había apuntado y, encima,
+    // perdía el dato.
+    console.error("[lista-espera] AVISO NO ENVIADO", err instanceof Error ? err.message : err);
+    return NextResponse.json({ ok: true, aviso: "diferido" });
   }
 
   return NextResponse.json({ ok: true });
