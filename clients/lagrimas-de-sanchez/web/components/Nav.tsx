@@ -9,16 +9,16 @@ export function Nav() {
           <span className="sm:hidden"><Marca tam={15} origen={false} linea={false} /></span>
           <span className="hidden sm:block"><Marca tam={17} /></span>
         </Link>
-        <div className="ml-auto flex items-center gap-4 sm:gap-7">
+        <div className="ml-auto flex items-center gap-3 sm:gap-7">
           <Link
             href="/estampado"
-            className="u-cond -my-3 py-3 hidden text-[0.85rem] transition-colors hover:text-muted "
+            className="u-cond -my-3 py-3 text-[0.85rem] transition-colors hover:text-muted"
           >
             El estampado
           </Link>
           <Link
             href="/vino"
-            className="u-cond text-[0.85rem] transition-colors hover:text-muted"
+            className="u-cond -my-3 py-3 text-[0.85rem] transition-colors hover:text-muted"
           >
             El vino
           </Link>

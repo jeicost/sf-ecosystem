@@ -284,18 +284,18 @@ export default function Home() {
             <span className="u-eyebrow">Envío a España en 3-5 días</span>
           </div>
 
-          <div className="grid border-l-2 border-t-2 border-ink md:grid-cols-3">
+          <div className="grid border-l-2 border-t-2 border-ink md:grid-cols-3 md:grid-rows-[auto_auto_auto_auto]">
             {ORDEN.map((sku) => {
               const p = CATALOGO[sku];
               const destacada = sku === "estuche";
               return (
                 <article
                   key={sku}
-                  className={`relative flex flex-col gap-7 border-b-2 border-r-2 border-ink p-7 sm:p-8 ${
+                  className={`relative flex flex-col gap-7 border-b-2 border-r-2 border-ink p-7 sm:p-8 md:row-span-4 md:grid md:grid-rows-subgrid ${
                     destacada ? "bg-yellow" : ""
                   }`}
                 >
-                  <div className="flex flex-col gap-3 md:min-h-[9.5rem]">
+                  <div className="flex flex-col gap-3">
                     {destacada && (
                       <span className="u-mono w-fit bg-ink px-2 py-1 text-[0.56rem] uppercase tracking-[0.14em] text-base">
                         El chiste completo
@@ -328,7 +328,7 @@ export default function Home() {
                     /* El sello del impreso: puro atrezzo, y por eso aria-hidden. */
                     <span
                       aria-hidden="true"
-                      className="u-mono pointer-events-none absolute top-3 right-3 md:-top-5 md:right-4 flex h-24 w-24 rotate-[12deg] items-center justify-center rounded-full border-[3px] border-ink/60 text-center text-[0.52rem] uppercase leading-[1.4] tracking-[0.12em] text-ink/60"
+                      className="u-mono pointer-events-none absolute top-3 right-3 md:top-4 md:right-4 flex h-24 w-24 rotate-[12deg] items-center justify-center rounded-full border-[3px] border-ink/60 text-center text-[0.52rem] uppercase leading-[1.4] tracking-[0.12em] text-ink/60"
                     >
                       Edición
                       <br />

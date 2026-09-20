@@ -127,7 +127,9 @@ export function Marca({
           <span className="bg-current" style={{ width: tam * 1.25, height: 1 }} />
         </span>
       )}
-      {origen && (
+      {/* Por debajo de 26 px de lockup, esta línea sale a menos de 5 px: no
+          se lee, solo ensucia. En la cabecera se pintaba a 3,1 px. */}
+      {origen && tam >= 26 && (
         <span
           className="u-cond font-semibold"
           style={{ fontSize: tam * 0.185, letterSpacing: tam * 0.055 }}
