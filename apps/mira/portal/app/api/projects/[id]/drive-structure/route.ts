@@ -30,11 +30,18 @@ export async function POST(
     if (!project) {
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
-    if (!(await userCanAccessClient(user, project.client_id))) {
+    // `projects.client_id` es nullable en el esquema: un proyecto huérfano no
+    // tiene carpeta de cliente donde colgar nada, y seguir con null hacía que
+    // las llamadas a Drive recibieran un id vacío.
+    const clientId = project.client_id
+    if (!clientId) {
+      return NextResponse.json({ error: 'Project has no client assigned' }, { status: 400 })
+    }
+    if (!(await userCanAccessClient(user, clientId))) {
       return NextResponse.json({ error: 'No access to this project' }, { status: 403 })
     }
 
-    const tokenResult = await getClientDriveAccessToken(project.client_id, admin)
+    const tokenResult = await getClientDriveAccessToken(clientId, admin)
     if (!('token' in tokenResult)) {
       return NextResponse.json(
         {
@@ -54,7 +61,7 @@ export async function POST(
     const { data: existing } = await admin
       .from('drive_folders')
       .select('id, purpose, folder_id, folder_name')
-      .eq('client_id', project.client_id)
+      .eq('client_id', clientId)
       .eq('project_id', project.id)
     const hasKnowledge = existing?.some((f) => f.purpose === 'references')
     const hasDeliverables = existing?.some((f) => f.purpose === 'deliverables')
@@ -81,7 +88,7 @@ export async function POST(
       const subId = await createDriveFolder(token, spec.name, rootId)
       if (!subId) continue
       const { error } = await admin.from('drive_folders').insert({
-        client_id: project.client_id,
+        client_id: clientId,
         project_id: project.id,
         folder_id: subId,
         folder_name: `MIRA — ${projectName}/${spec.name}`,

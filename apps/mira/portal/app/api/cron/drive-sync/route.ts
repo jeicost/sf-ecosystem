@@ -60,7 +60,7 @@ export async function GET(req: NextRequest) {
       const ok = !('error' in result)
       if (ok && 'proposalCreated' in result && result.proposalCreated) newProposalsThisRun++
       results.push({
-        folder: folder.folder_name,
+        folder: folder.folder_name ?? folder.folder_id,
         ok,
         detail: 'error' in result ? result.error.slice(0, 120) : `${result.filesSynced} files`,
       })
@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
       // Un fallo (token caducado, carpeta borrada) no debe parar el resto
       const msg = err instanceof Error ? err.message : 'sync failed'
       console.error(`drive-sync cron: folder ${folder.id} failed:`, msg)
-      results.push({ folder: folder.folder_name, ok: false, detail: msg.slice(0, 120) })
+      results.push({ folder: folder.folder_name ?? folder.folder_id, ok: false, detail: msg.slice(0, 120) })
     }
   }
 

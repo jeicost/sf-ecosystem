@@ -10,6 +10,7 @@ import { fenceUntrusted } from '@/lib/grounding/untrusted'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { jsonObject, toJson } from '@/lib/db-json'
 
 export const maxDuration = 300
 
@@ -99,7 +100,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'No access to this document' }, { status: 403 })
     }
 
-    const { brandColor, _history, ...currentDoc } = row.result_data || {}
+    const { brandColor, _history, ...currentDoc } = jsonObject(row.result_data)
 
     // ── Adjuntos del turno (2026-08-17) ──
     // El editor no tenía forma de recibir material: el CEO pidió al refinado
@@ -264,7 +265,7 @@ ${EDITORIAL_CONTRACT}`
     const { error: updateError } = await admin
       .from('generation_queue')
       .update({
-        result_data: { ...nextDoc, brandColor, _history: history },
+        result_data: toJson({ ...nextDoc, brandColor, _history: history }),
         completed_at: new Date().toISOString(),
       })
       .eq('id', queue_id)

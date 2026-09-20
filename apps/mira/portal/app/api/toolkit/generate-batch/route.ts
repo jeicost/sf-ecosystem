@@ -7,6 +7,8 @@ import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { getSessionUser } from '@/lib/resolve-client'
 import { critiqueAndRevise } from '@/lib/generation/report-pipeline'
 import { canUseFeature } from '@/lib/plans'
+import { toJson, jsonObject } from '@/lib/db-json'
+import type { Json } from '@/types/database.generated'
 
 // Long-running generation: allow up to 800s on Vercel (fluid compute)
 export const maxDuration = 800
@@ -96,7 +98,7 @@ async function generateToolReport(
       client_id: clientId,
       user_id: userId,
       tool_slug: toolSlug,
-      input_data: inputData,
+      input_data: toJson(inputData),
       status: 'processing',
     })
     .select('id')
@@ -188,9 +190,8 @@ async function generateToolReport(
         .eq('client_id', clientId)
         .single()
 
-      if (brandProfile?.brand_data?.visual_identity?.colors?.primary) {
-        brandColor = brandProfile.brand_data.visual_identity.colors.primary
-      }
+      const primary = jsonObject(jsonObject(jsonObject(brandProfile?.brand_data).visual_identity as Json).colors as Json).primary
+      if (typeof primary === 'string' && primary) brandColor = primary
     } catch {
       console.warn(`[${toolSlug}] Could not fetch brand color`)
     }

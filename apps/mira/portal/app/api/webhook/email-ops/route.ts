@@ -5,6 +5,7 @@ import { verifySvixSignature, parseInboundEvent, extractAddress, extractDisplayN
 import { resolveInboxByRecipients } from '@/lib/email-ops/inboxes'
 import { processMessage } from '@/lib/email-ops/pipeline'
 import type { StoredAttachment } from '@/lib/email-ops/types'
+import { toJson } from '@/lib/db-json'
 
 // Webhook de Resend Inbound (`email.received`). Exento de sesión en proxy.ts
 // (/api/webhook/*): la autenticación es la firma Svix con RESEND_WEBHOOK_SECRET.
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
         to_addresses: event.to.map(extractAddress),
         cc_addresses: event.cc.map(extractAddress),
         subject: event.subject,
-        attachments,
+        attachments: toJson(attachments),
         status: 'received',
         received_at: event.createdAt || new Date().toISOString(),
       })

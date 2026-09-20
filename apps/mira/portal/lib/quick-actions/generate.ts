@@ -5,6 +5,7 @@ import { generateWithWebSearch } from '@/lib/grounding/web-research'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { getQuickAction } from '@/lib/quick-actions/registry'
 import { QUICK_ACTIONS } from '@/lib/quick-actions/registry'
+import { toJson } from '@/lib/db-json'
 
 // Una acción produce imagen si lo declara el registry (editar_imagen_visual)
 // o si el usuario activó el toggle with_image (crear_post / crear_carousel).
@@ -133,7 +134,7 @@ export async function generateQuickAction(
         user_id: userId,
         department,
         action_type: actionType,
-        input_data: inputData,
+        input_data: toJson(inputData),
         output_data: {},
         status: 'processing',
       })
@@ -270,7 +271,7 @@ export async function generateQuickAction(
       .from('quick_actions_results')
       .update({
         status: 'success',
-        output_data,
+        output_data: toJson(output_data),
         processing_time_ms: processingTime,
       })
       .eq('id', actionId)
@@ -298,7 +299,7 @@ export async function generateQuickAction(
       if (dup?.length) {
         await admin
           .from('project_memory')
-          .update({ summary: outputSummary, full_content: output_data })
+          .update({ summary: outputSummary, full_content: toJson(output_data) })
           .eq('id', dup[0].id)
       } else {
         await admin.from('project_memory').insert({
@@ -307,7 +308,7 @@ export async function generateQuickAction(
           title,
           category: 'action',
           summary: outputSummary,
-          full_content: output_data,
+          full_content: toJson(output_data),
           tags: [actionType, department],
           source_department: department,
         })

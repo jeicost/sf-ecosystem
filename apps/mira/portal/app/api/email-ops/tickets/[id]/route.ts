@@ -6,6 +6,7 @@ import { getSchemaForClient, requiredFieldsFor, coerceFieldValue, type FieldValu
 import { applyManualFields, type TicketState } from '@/lib/email-ops/merge'
 import { computePriority } from '@/lib/email-ops/priority'
 import type { MessageRow, TicketRow, TicketStatus } from '@/lib/email-ops/types'
+import { writable } from '@/lib/db-json'
 
 // Detalle y edición de un ticket. La edición manual es el bucle de aprendizaje:
 // cada campo cambiado se guarda como corrección y, al cerrar, el ticket
@@ -28,7 +29,7 @@ async function loadTicket(clientId: string, id: string) {
   const db = adminClient()
   const { data, error } = await db.from('email_tickets').select('*').eq('id', id).eq('client_id', clientId).maybeSingle()
   if (error) throw error
-  return (data as TicketRow) || null
+  return (data as unknown as TicketRow) || null
 }
 
 export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
@@ -48,7 +49,7 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
     if (error) throw error
     const withUrls = (messages || []).map((m) => ({
       ...m,
-      attachments: ((m as { attachments?: MessageRow['attachments'] }).attachments || []).map((a) => ({
+      attachments: ((m as unknown as { attachments?: MessageRow['attachments'] }).attachments || []).map((a) => ({
         ...a,
         url: a.path ? `/api/brand-assets?path=${encodeURIComponent(a.path)}` : null,
       })),
@@ -130,7 +131,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
       patch.priority = 0
     }
 
-    const { data: updated, error } = await db.from('email_tickets').update(patch).eq('id', id).eq('client_id', access.clientId).select('*').single()
+    const { data: updated, error } = await db.from('email_tickets').update(writable(patch)).eq('id', id).eq('client_id', access.clientId).select('*').single()
     if (error) throw error
 
     // Aprendizaje: correcciones + promoción a ejemplo al cerrar.
@@ -152,7 +153,7 @@ export async function PATCH(req: NextRequest, ctx: { params: Promise<{ id: strin
           .map((a) => a.extracted).filter((x): x is string => !!x && !x.startsWith('[')).join('\n\n') || null
         await promoteTicketToExample(db, {
           clientId: access.clientId, ticketId: id, emailText: firstText, attachmentsText,
-          kind: (updated as TicketRow).kind, fields: (updated as TicketRow).fields, userId: access.userId,
+          kind: (updated as unknown as TicketRow).kind, fields: (updated as unknown as TicketRow).fields, userId: access.userId,
         })
       }
     }

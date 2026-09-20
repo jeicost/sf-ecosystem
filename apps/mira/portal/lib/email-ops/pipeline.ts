@@ -18,6 +18,7 @@ import { analyzeEmail, EMAIL_OPS_ROUTE } from './extract'
 import { mergeExtractionIntoTicket, type TicketState } from './merge'
 import { computePriority } from './priority'
 import type { Extraction, MessageRow, StoredAttachment, TicketRow } from './types'
+import { toJson } from '@/lib/db-json'
 
 export const MAX_ATTEMPTS = 3
 const MAX_ATTACHMENTS = 5
@@ -342,7 +343,7 @@ export async function processMessage(messageId: string, opts: ProcessOptions = {
       subject: received.subject || msg.subject,
       text_body: text.slice(0, 200000),
       html_body: received.html ? received.html.slice(0, 400000) : null,
-      attachments: attachments.stored,
+      attachments: toJson(attachments.stored),
       updated_at: new Date().toISOString(),
     }).eq('id', messageId)
 
@@ -376,7 +377,7 @@ export async function processMessage(messageId: string, opts: ProcessOptions = {
     await db.from('email_messages').update({
       status: 'processed',
       ticket_id: ticketId,
-      extraction,
+      extraction: toJson(extraction),
       last_error: null,
       processed_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),

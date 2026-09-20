@@ -7,6 +7,7 @@
 
 import type { adminClient } from '@/lib/supabase'
 import { validatePiece, type QaFlag } from '@/lib/content-engine/qa-validator'
+import { writable } from '@/lib/db-json'
 
 type Admin = ReturnType<typeof adminClient>
 
@@ -180,7 +181,7 @@ export async function materializePosts(
   // timestamp — y dos piezas del mismo objetivo se insertan en el mismo ms.
   const { data: inserted, error: queueError } = await db
     .from('approval_queue')
-    .insert(queueRows)
+    .insert(writable(queueRows))
     .select('id')
   if (queueError) throw new Error(`approval_queue: ${queueError.message}`)
 

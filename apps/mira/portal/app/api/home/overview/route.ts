@@ -111,7 +111,7 @@ export async function GET(req: NextRequest) {
         // traídas (exacto mientras haya <120; el error queda en el desglose
         // fino y no en el total que ve el cliente).
         reports_total: (queueCountRes.count ?? queue.length) - documents.length,
-        reports_month: reports.filter((r) => r.created_at >= monthIso).length,
+        reports_month: reports.filter((r) => (r.created_at ?? '') >= monthIso).length,
         documents_total: documents.length,
         pending_approvals: approvalsRes.count ?? 0,
         usage_cost_usd: Math.round(usageCost * 100) / 100,

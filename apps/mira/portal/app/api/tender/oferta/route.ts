@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
 import { generateTenderOferta } from '@/lib/generation/tender-oferta'
+import { toJson } from '@/lib/db-json'
 
 // Paso 2b: del pliego a la OFERTA ECONÓMICA propuesta línea a línea, aprendida
 // de las ofertas que el cliente ya presentó. Sale para revisar y editar; la
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     // Persistencia inmediata: una oferta generada nunca se pierde al recargar.
     if (tenderId) {
       await adminClient().from('tenders')
-        .update({ oferta, updated_at: new Date().toISOString() })
+        .update({ oferta: toJson(oferta), updated_at: new Date().toISOString() })
         .eq('id', tenderId).eq('client_id', access.clientId)
     }
     return NextResponse.json(oferta)

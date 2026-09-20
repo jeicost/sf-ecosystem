@@ -21,14 +21,16 @@ export async function GET(req: NextRequest) {
     let query = db.from('email_tickets').select('*').eq('client_id', access.clientId)
     if (status === 'other') query = query.eq('kind', 'other')
     else if (status !== 'all') query = query.eq('status', status).eq('kind', 'shipment_request')
-    if (q.get('department')) query = query.eq('department', q.get('department'))
-    if (q.get('delivery_type')) query = query.eq('delivery_type', q.get('delivery_type'))
+    const dept = q.get('department')
+    if (dept) query = query.eq('department', dept)
+    const delivery = q.get('delivery_type')
+    if (delivery) query = query.eq('delivery_type', delivery)
     if (q.get('from')) query = query.gte('service_date', q.get('from'))
     if (q.get('to')) query = query.lte('service_date', q.get('to'))
     query = query.order('service_date', { ascending: true, nullsFirst: false }).order('priority', { ascending: false }).limit(2000)
     const { data, error } = await query
     if (error) throw error
-    const tickets = (data || []) as TicketRow[]
+    const tickets = (data || []) as unknown as TicketRow[]
 
     const settings = await getClientSettings(db, access.clientId)
     const schema = getSchemaForClient(settings)

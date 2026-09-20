@@ -5,6 +5,9 @@ import { requireEmailOps, errorMessage } from '@/lib/email-ops/auth'
 // Listado de tickets del cliente activo con filtros y contadores.
 // Nunca se confía en el client_id del navegador para leer: lo acota requireEmailOps.
 
+/** Literal Postgres del array vacío, tal como PostgREST espera comparar text[]. */
+const EMPTY_ARRAY_LITERAL = '{}' as unknown as string[]
+
 const TICKET_COLS =
   'id,client_id,inbox_id,department,thread_key,kind,status,priority,service_date,delivery_type,subject,from_address,original_sender,summary,fields,confidence,missing_fields,manual_overrides,urgency,message_count,first_message_at,last_message_at,closed_at,created_at,updated_at'
 
@@ -39,7 +42,11 @@ export async function GET(req: NextRequest) {
     if (kind) query = query.eq('kind', kind)
     if (department) query = query.eq('department', department)
     if (deliveryType) query = query.eq('delivery_type', deliveryType)
-    if (incomplete) query = query.neq('missing_fields', '{}')
+    // OJO: `missing_fields` es text[] y PostgREST lo compara por su LITERAL de
+    // texto — el del array vacío es "{}". Pasar [] serializaría a cadena vacía
+    // y el filtro de incompletos dejaría de filtrar sin dar error. El cast es
+    // deliberado: no "arreglar" esto sustituyéndolo por [].
+    if (incomplete) query = query.neq('missing_fields', EMPTY_ARRAY_LITERAL)
     if (from) query = query.gte('service_date', from)
     if (to) query = query.lte('service_date', to)
     if (search) {
@@ -59,7 +66,7 @@ export async function GET(req: NextRequest) {
       base().eq('status', 'open').eq('kind', 'shipment_request'),
       base().eq('status', 'closed').eq('kind', 'shipment_request'),
       base().eq('kind', 'other'),
-      base().eq('status', 'open').eq('kind', 'shipment_request').neq('missing_fields', '{}'),
+      base().eq('status', 'open').eq('kind', 'shipment_request').neq('missing_fields', EMPTY_ARRAY_LITERAL),
     ])
 
     return NextResponse.json({

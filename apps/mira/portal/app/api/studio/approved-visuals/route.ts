@@ -26,7 +26,9 @@ export async function GET(req: NextRequest) {
     type: 'post' as const,
     tool: 'custom' as const,
     status: 'approved' as const,
-    updatedAt: new Date(row.reviewed_at ?? row.submitted_at).toLocaleString('es-ES', {
+    // reviewed_at y submitted_at son nullables en el esquema: sin ninguna de
+    // las dos se usa ahora, en vez de construir una fecha inválida.
+    updatedAt: new Date(row.reviewed_at ?? row.submitted_at ?? Date.now()).toLocaleString('es-ES', {
       day: 'numeric',
       month: 'short',
       hour: '2-digit',

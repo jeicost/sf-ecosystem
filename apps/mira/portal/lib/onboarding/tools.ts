@@ -1,5 +1,7 @@
 import type Anthropic from '@anthropic-ai/sdk'
 import { adminClient } from '@/lib/supabase'
+import { writable, jsonObject } from '@/lib/db-json'
+import type { Json } from '@/types/database.generated'
 
 // Tool-use definitions for the client-onboarding chat (see docs/DEBT.md and
 // the plan this feature was built from). Each tool's input_schema is the
@@ -179,13 +181,13 @@ export async function executeOnboardingTool(
       if (tone_of_voice !== undefined) update.tone_of_voice = tone_of_voice
       if (mergedBrandData !== undefined) update.brand_data = mergedBrandData
 
-      const { error: updateError } = await db.from('brand_profiles').update(update).eq('client_id', clientId)
+      const { error: updateError } = await db.from('brand_profiles').update(writable(update)).eq('client_id', clientId)
       if (updateError) throw new Error(`Failed to save brand profile fields: ${updateError.message}`)
 
       // Mirror the logo URL onto clients.logo_url too -- clients.logo_url has
       // no upload flow of its own anywhere in the app; this is the same
       // manual pairing done for the Adrian Grooves onboarding this session.
-      const logoUrl = mergedBrandData?.visual_identity?.logo?.primary_url
+      const logoUrl = jsonObject(jsonObject(mergedBrandData as Json).visual_identity as Json).logo && (jsonObject(jsonObject(jsonObject(mergedBrandData as Json).visual_identity as Json).logo as Json).primary_url as string | undefined)
       if (typeof logoUrl === 'string' && logoUrl) {
         await db.from('clients').update({ logo_url: logoUrl }).eq('id', clientId)
       }

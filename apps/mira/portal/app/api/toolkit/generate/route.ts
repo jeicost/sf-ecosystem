@@ -17,6 +17,8 @@ import { extractJson, ExtractJsonError } from '@/lib/generation/extract-json'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 import { enrichPaletteCmyk } from '@/lib/export/color-utils'
 import { generateMonthlySystem } from '@/lib/generation/monthly-generate'
+import { toJson, jsonObject } from '@/lib/db-json'
+import type { Json } from '@/types/database.generated'
 
 // Single-tool generation with opus can take minutes; el monthly son 3 fases
 // secuenciales + crítica/revisión de la fase 2 (la crítica corre en paralelo
@@ -319,6 +321,9 @@ export async function POST(req: NextRequest) {
         for (const prior of priors || []) {
           const stale =
             prior.status === 'processing' &&
+            // Sin created_at NO se da por colgada: marcarla fallida por una
+            // fecha ausente sería peor que dejarla en curso.
+            !!prior.created_at &&
             Date.now() - new Date(prior.created_at).getTime() > 12 * 60 * 1000
           if (stale) {
             // Sin esto la fila queda «processing» para siempre en la UI.
@@ -341,7 +346,7 @@ export async function POST(req: NextRequest) {
           queueId,
           checkpoint,
           saveCheckpoint: async (qid, cp) => {
-            await admin.from('generation_queue').update({ result_data: { _checkpoint: cp } }).eq('id', qid)
+            await admin.from('generation_queue').update({ result_data: toJson({ _checkpoint: cp }) }).eq('id', qid)
           },
         })
       } catch (err) {
@@ -483,9 +488,8 @@ export async function POST(req: NextRequest) {
         .eq('client_id', clientId)
         .single()
 
-      if (brandProfile?.brand_data?.visual_identity?.colors?.primary) {
-        brandColor = brandProfile.brand_data.visual_identity.colors.primary
-      }
+      const primary = jsonObject(jsonObject(jsonObject(brandProfile?.brand_data).visual_identity as Json).colors as Json).primary
+      if (typeof primary === 'string' && primary) brandColor = primary
     } catch (e) {
       console.warn('Could not fetch brand color:', e)
     }
@@ -567,7 +571,7 @@ export async function POST(req: NextRequest) {
       if (dup?.length) {
         await admin
           .from('project_memory')
-          .update({ summary: resultSummary, full_content: result })
+          .update({ summary: resultSummary, full_content: toJson(result) })
           .eq('id', dup[0].id)
       } else {
         // category 'content' — el CHECK real de project_memory rechaza
@@ -579,7 +583,7 @@ export async function POST(req: NextRequest) {
           title,
           category: 'content',
           summary: resultSummary,
-          full_content: result,
+          full_content: toJson(result),
           tags: [tool_slug, 'toolkit', ...(tool_slug === 'brand-book' ? ['brand_book'] : [])],
           source_department: 'toolkit',
         })

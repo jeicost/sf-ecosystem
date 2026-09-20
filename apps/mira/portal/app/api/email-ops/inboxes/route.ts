@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { requireEmailOps, errorMessage } from '@/lib/email-ops/auth'
 import { LOCAL_PART_RE, buildInboxAddress, inboundDomain, suggestLocalPart } from '@/lib/email-ops/inboxes'
+import { writable } from '@/lib/db-json'
 
 // Buzones de ingesta del cliente. GET para cualquier miembro (alimenta el panel
 // "reenvía a esta dirección"); alta/baja solo agencia en fase 1.
@@ -68,7 +69,7 @@ export async function PATCH(req: NextRequest) {
     if (typeof body.department === 'string' && body.department.trim()) patch.department = body.department.trim().slice(0, 60)
     if (typeof body.displayName === 'string') patch.display_name = body.displayName.slice(0, 80) || null
     const db = adminClient()
-    const { data, error } = await db.from('email_inboxes').update(patch).eq('id', body.id).eq('client_id', access.clientId).select(COLS).single()
+    const { data, error } = await db.from('email_inboxes').update(writable(patch)).eq('id', body.id).eq('client_id', access.clientId).select(COLS).single()
     if (error) throw error
     return NextResponse.json({ inbox: data })
   } catch (error) {

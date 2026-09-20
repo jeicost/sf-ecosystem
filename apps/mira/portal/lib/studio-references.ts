@@ -10,9 +10,11 @@ const APPROVED_STATUSES = ['approved', 'approved_with_edits']
 export interface ApprovedVisualRow {
   id: string
   platform: string | null
-  status: string
+  // status y submitted_at se declaraban NO nulos y en la BD sí lo son: el
+  // compilador daba por seguros accesos que podían venir vacíos.
+  status: string | null
   asset_url: string | null
-  submitted_at: string
+  submitted_at: string | null
   reviewed_at: string | null
 }
 

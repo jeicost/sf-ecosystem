@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { promoteLeadToCrm } from '@/lib/comercial/promote-lead'
+import { jsonObject, jsonArray } from '@/lib/db-json'
+import type { Json } from '@/types/database.generated'
 
 interface SyncRequest {
   client_id: string
@@ -61,7 +63,7 @@ export async function POST(req: NextRequest) {
     const syncedLeads = []
 
     for (const enrichment of enrichments) {
-      const person: ApolloPerson = enrichment.apollo_data?.persons?.[0] ?? {}
+      const person: ApolloPerson = (jsonArray(jsonObject(enrichment.apollo_data).persons as Json)[0] as ApolloPerson) ?? {}
 
       // 1. Staging: upsert en `leads` (mismo conflict target que el discovery Tavily)
       const { data: stagedLead, error: stageError } = await db

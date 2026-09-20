@@ -68,7 +68,7 @@ async function loadExamples(clientId: string, excludeTenderId?: string | null): 
   // Ganadas primero: son la doctrina confirmada.
   rows.sort((a, b) => (a.status === 'ganada' ? -1 : 0) - (b.status === 'ganada' ? -1 : 0))
   const parts = rows.slice(0, 3).map((t) => {
-    const o = t.oferta as TenderOferta
+    const o = t.oferta as unknown as TenderOferta
     const lineas = (o?.lineas || [])
       .filter((l) => l.precio_ofertado != null)
       .map((l) => `  - ${l.seccion} | ${l.servicio}${l.tramo ? ` ${l.tramo}` : ''} | max ${l.max_sin_iva ?? '—'} | factor ${l.factor ?? '—'} | ofertado ${l.precio_ofertado}${l.baja_pct != null ? ` (baja ${l.baja_pct}%)` : ''}`)

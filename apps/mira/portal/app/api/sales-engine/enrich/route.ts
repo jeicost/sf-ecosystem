@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
+import { toJson } from '@/lib/db-json'
 
 interface EnrichmentRequest {
   client_id: string
@@ -79,7 +80,7 @@ export async function POST(req: NextRequest) {
     }
 
     const enrichedLeads = []
-    const sourceLeads: DiscoveredLead[] = Array.isArray(discovery.leads_data) ? discovery.leads_data : []
+    const sourceLeads: DiscoveredLead[] = Array.isArray(discovery.leads_data) ? (discovery.leads_data as unknown as DiscoveredLead[]) : []
 
     for (const lead of sourceLeads.slice(0, 5)) {
       const companyName = lead.company_name ?? lead.company ?? null
@@ -129,11 +130,11 @@ export async function POST(req: NextRequest) {
           client_id: clientId,
           created_by: resolved.userId,
           discovery_result_id,
-          company_name: companyName,
+          company_name: companyName ?? '',
           industry: lead.industry ?? null,
           website: domain,
           heat_score: lead.heat_score ?? null,
-          apollo_data: { persons, source: 'sales-engine' },
+          apollo_data: toJson({ persons, source: 'sales-engine' }),
           crm_ready: persons.length > 0,
           status: 'ready',
         })

@@ -8,6 +8,7 @@ import { getClientMemoryContext } from '@/lib/client-memory'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { toJson } from '@/lib/db-json'
 
 export const maxDuration = 120
 
@@ -130,7 +131,7 @@ Always reply in English, warm and brief.`,
             project_id: projectId,
             origin,
             summary,
-            changes,
+            changes: toJson(changes),
             proposed_by: user.id,
           })
           .select('id')

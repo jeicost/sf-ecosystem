@@ -3,6 +3,7 @@ import { adminClient } from '@/lib/supabase'
 import { requireEmailOps, errorMessage } from '@/lib/email-ops/auth'
 import { getSchema, DEFAULT_SCHEMA_KEY, SCHEMAS } from '@/lib/email-ops/schema'
 import { MAX_RULES_CHARS } from '@/lib/email-ops/learning'
+import { writable } from '@/lib/db-json'
 
 // Ajustes de Email Ops del cliente: reglas para la IA y campos requeridos.
 // También devuelve el esquema de campos, que la UI usa para pintar la tabla.
@@ -38,7 +39,7 @@ export async function PUT(req: NextRequest) {
       patch.required_fields = body.required_fields.filter((k: unknown): k is string => typeof k === 'string' && keys.has(k))
     } else if (body.required_fields === null) patch.required_fields = null
     if (typeof body.schema_key === 'string' && SCHEMAS[body.schema_key]) patch.schema_key = body.schema_key
-    const { data, error } = await db.from('email_ops_settings').upsert(patch, { onConflict: 'client_id' }).select('client_id,schema_key,rules,required_fields,updated_at').single()
+    const { data, error } = await db.from('email_ops_settings').upsert(writable(patch), { onConflict: 'client_id' }).select('client_id,schema_key,rules,required_fields,updated_at').single()
     if (error) throw error
     return NextResponse.json({ settings: data, schema: getSchema(data.schema_key as string) })
   } catch (error) {

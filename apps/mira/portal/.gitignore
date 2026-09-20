@@ -6,3 +6,4 @@ check_gen*.js
 
 # Scratch de evals — material de sesión, nunca al repo
 evals/_scratch/
+supabase/.temp

@@ -8,6 +8,7 @@ import {
   isAgencyPlan,
   type QuestionnaireStatus,
 } from '@/lib/questionnaires'
+import { writable } from '@/lib/db-json'
 
 // Transiciones válidas vía PATCH. 'ingested' NUNCA se alcanza por aquí (solo la
 // ruta /ingest, que además aplica las respuestas al brain).
@@ -101,7 +102,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const admin = adminClient()
     const { data, error } = await admin
       .from('client_questionnaires')
-      .update(update)
+      .update(writable(update))
       .eq('id', id)
       .select('*')
       .single()

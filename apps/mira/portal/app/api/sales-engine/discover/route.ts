@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
+import { toJson } from '@/lib/db-json'
 
 interface DiscoveryRequest {
   client_id: string
@@ -120,7 +121,7 @@ export async function POST(req: NextRequest) {
         discovery_geo: geo,
         discovery_source: 'sales-engine-apollo',
         total_leads_found: leads.length,
-        leads_data: leads,
+        leads_data: toJson(leads),
         discovery_query: `${sector} companies in ${geo}`,
         status: 'success',
         completed_at: new Date().toISOString(),

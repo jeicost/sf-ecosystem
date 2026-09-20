@@ -20,6 +20,8 @@ import { extractPdfText } from '@/lib/pdf-extract'
 // (lib/attachments.ts): un único lector por formato para todo el portal.
 import { extractDocxText, extractPptxText, DOCX_MIME, PPTX_MIME } from '@/lib/attachments'
 import { describeImage, isVisionReadableImage } from '@/lib/vision'
+import type { Database } from '@/types/database.generated'
+import { toJson } from '@/lib/db-json'
 
 /**
  * Apagado por defecto (mismo patrón que el kill-switch KNOWLEDGE_UNIFIED de
@@ -33,18 +35,14 @@ export function isDriveBrainSynthesisEnabled(): boolean {
 
 type AdminClient = ReturnType<typeof adminClient>
 
-export interface DriveFolderRow {
-  id: string
-  client_id: string
-  project_id: string | null
-  folder_id: string
-  folder_name: string | null
-  purpose: string
-  last_synced_at: string | null
-  sync_status: string
-  files_synced: number
-  created_at?: string
-}
+/**
+ * La fila tal y como está en la BD, no como nos gustaría que estuviera.
+ * Antes se declaraba a mano con purpose/sync_status/files_synced NO nulos
+ * cuando en el esquema sí lo son: el compilador daba por buenos accesos que
+ * en una fila recién creada podían venir vacíos. Ahora sale del esquema
+ * generado, así que cualquier cambio de columnas se ve al compilar.
+ */
+export type DriveFolderRow = Database['public']['Tables']['drive_folders']['Row']
 
 interface DriveFileEntry {
   id: string
@@ -1064,7 +1062,7 @@ export async function syncDriveFolder(
             project_id: folderRow.project_id ?? null,
             origin: 'drive_sync',
             summary: `Google Drive sync — folder "${folderName}" (${changedDocs.length} new/updated document${changedDocs.length > 1 ? 's' : ''})`,
-            changes: synthesis.changes,
+            changes: toJson(synthesis.changes),
             source_document_ids: changedDocs.map((d) => d.documentId),
           })
           if (proposalError) {

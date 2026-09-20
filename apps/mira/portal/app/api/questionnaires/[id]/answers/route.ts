@@ -7,6 +7,7 @@ import {
   isMissingTableError,
   QUESTIONNAIRES_UNAVAILABLE,
 } from '@/lib/questionnaires'
+import { writable } from '@/lib/db-json'
 
 // POST /api/questionnaires/[id]/answers — autosave del runner:
 // { answers: [{question_id, value, status?}] }
@@ -66,7 +67,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const admin = adminClient()
     const { error } = await admin
       .from('questionnaire_answers')
-      .upsert(rows, { onConflict: 'question_id' })
+      .upsert(writable(rows), { onConflict: 'question_id' })
 
     if (error) {
       if (isMissingTableError(error)) {

@@ -4,6 +4,7 @@ import { adminClient } from '@/lib/supabase'
 import { getStripe, mapSubscriptionStatus } from '@/lib/billing/stripe'
 import { billingPlan, type BillingPlanId } from '@/lib/billing/plans'
 import { syncSectionPlanForClient } from '@/lib/billing/plan-sync'
+import { writable } from '@/lib/db-json'
 
 // POST /api/billing/webhook — la única fuente de verdad sobre quién ha pagado.
 //
@@ -23,10 +24,10 @@ async function syncSubscription(sub: Stripe.Subscription) {
 
   // Sin el id en los metadatos queda el cliente de Stripe como último recurso:
   // pasa con suscripciones creadas a mano desde el panel de Stripe.
-  let target = clientId
+  let target: string | undefined = clientId ?? undefined
   if (!target && typeof sub.customer === 'string') {
     const { data } = await db.from('clients').select('id').eq('stripe_customer_id', sub.customer).maybeSingle()
-    target = data?.id
+    target = data?.id ?? undefined
   }
   if (!target) {
     console.error('billing/webhook: subscription with no client to apply it to', sub.id)
@@ -60,7 +61,7 @@ async function syncSubscription(sub: Stripe.Subscription) {
   // borrado) no es error en supabase-js — con .select() contamos filas y un
   // 0 también lanza. El throw sube al catch del handler, que devuelve 500 y
   // hace que Stripe reintente (auditoría 16-sep-2026).
-  const { data: updated, error } = await db.from('clients').update(update).eq('id', target).select('id')
+  const { data: updated, error } = await db.from('clients').update(writable(update)).eq('id', target).select('id')
   if (error) throw new Error(`could not update client ${target}: ${error.message}`)
   if (!updated?.length) throw new Error(`subscription points to a client that does not exist: ${target}`)
 

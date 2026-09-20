@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { generateQuickAction, QuickActionError } from '@/lib/quick-actions/generate'
+import { jsonObject } from '@/lib/db-json'
 
 export const maxDuration = 300
 
@@ -35,7 +36,9 @@ export async function POST(req: NextRequest) {
 
     // Solo se reintentan fallos (o zombis processing viejos que el reaper aún
     // no tocó) — nunca pisar una generación success ni una en curso reciente.
-    const ageMs = Date.now() - new Date(row.created_at).getTime()
+    // created_at es nullable: sin fecha no se considera zombi (más seguro que
+    // reintentar algo que quizá esté vivo).
+    const ageMs = row.created_at ? Date.now() - new Date(row.created_at).getTime() : 0
     const stuck = row.status === 'processing' && ageMs > 10 * 60 * 1000
     if (row.status !== 'failed' && !stuck) {
       return NextResponse.json(
@@ -49,7 +52,7 @@ export async function POST(req: NextRequest) {
       userId: row.user_id,
       department: row.department,
       actionType: row.action_type,
-      inputData: row.input_data ?? {},
+      inputData: jsonObject(row.input_data),
       existingActionId: row.id,
     })
 

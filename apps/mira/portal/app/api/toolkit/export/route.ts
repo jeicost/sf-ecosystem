@@ -12,6 +12,8 @@ import { buildVoiceGuidePptx } from '@/lib/export/voice-guide-pptx'
 import { buildMonthlyDeckPptx } from '@/lib/export/monthly-pptx'
 import { resolveMonthlyDeckImages, resolveLogoDataUri } from '@/lib/export/monthly-deck-assets'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
+import { jsonObject } from '@/lib/db-json'
+import type { Json } from '@/types/database.generated'
 
 const DOC_TITLES: Record<string, string> = {
   'doc-playbook': 'Playbook',
@@ -106,7 +108,7 @@ export async function GET(req: NextRequest) {
       // Última generación por tool, en el orden del catálogo
       const latestByTool = new Map<string, { id: string; result_data: Record<string, unknown> }>()
       for (const r of rows || []) {
-        if (!latestByTool.has(r.tool_slug)) latestByTool.set(r.tool_slug, r)
+        if (!latestByTool.has(r.tool_slug)) latestByTool.set(r.tool_slug, { id: r.id, result_data: jsonObject(r.result_data) })
       }
 
       const overviewSections: Section[] = []
@@ -203,10 +205,11 @@ export async function GET(req: NextRequest) {
       .single()
 
     const clientName = brandData?.name || clientRow?.name || 'Cliente'
-    const result = queueData.result_data || {}
-    const brandColor =
-      result.brandColor ||
-      brandData?.brand_data?.visual_identity?.colors?.primary ||
+    const result = jsonObject(queueData.result_data)
+    const brandVisual = jsonObject(jsonObject(brandData?.brand_data as Json).visual_identity as Json)
+    const brandColor: string =
+      (result.brandColor as string | undefined) ||
+      (jsonObject(brandVisual.colors as Json).primary as string | undefined) ||
       clientRow?.primary_color ||
       '#8B5CF6'
     const toolSlug: string = queueData.tool_slug
@@ -221,7 +224,7 @@ export async function GET(req: NextRequest) {
 
     // La tipografía del Cerebro viaja con la marca por el mismo camino que el
     // color: sin esto los cuatro motores exportaban siempre en Inter/Arial.
-    const typography = brandData?.brand_data?.visual_identity?.typography ?? undefined
+    const typography = (brandVisual.typography as Record<string, unknown> | undefined) ?? undefined
     const brand = { clientName, primaryColor: brandColor, logoUrl: clientRow?.logo_url || null, typography }
 
     // ── Voice Guide A4 (brand-book) — one-pager imprimible ──

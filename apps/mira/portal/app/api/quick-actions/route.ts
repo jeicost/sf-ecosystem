@@ -87,6 +87,9 @@ export async function GET(req: NextRequest) {
     // marcarla failed aquí evita que el cliente haga polling para siempre.
     if (
       data.status === 'processing' &&
+      // Sin created_at no se da por muerta: preferible seguir esperando a
+      // marcar como fallida una generación que quizá esté viva.
+      !!data.created_at &&
       Date.now() - new Date(data.created_at).getTime() > REAPER_THRESHOLD_MS
     ) {
       let { data: reaped, error: reapError } = await admin

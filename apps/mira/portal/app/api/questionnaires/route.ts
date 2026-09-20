@@ -11,6 +11,7 @@ import {
   type QuestionnaireRow,
 } from '@/lib/questionnaires'
 import { describeQuestionnaireTargets } from '@/lib/brain-gaps'
+import { writable } from '@/lib/db-json'
 
 // GET /api/questionnaires?clientId= — lista de cuestionarios del cliente.
 // La agencia ve todos; el cliente no ve borradores (workspace de la agencia).
@@ -123,7 +124,7 @@ export async function POST(req: NextRequest) {
 
     const { data: created, error: insertError } = await admin
       .from('client_questionnaires')
-      .insert({
+      .insert(writable({
         client_id: access.clientId,
         project_id: projectId,
         title,
@@ -132,7 +133,7 @@ export async function POST(req: NextRequest) {
         status: 'draft',
         source: 'manual',
         created_by: user.id,
-      })
+      }))
       .select('*')
       .single()
 
@@ -190,7 +191,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { error: qError } = await admin.from('questionnaire_questions').insert(rows)
+    const { error: qError } = await admin.from('questionnaire_questions').insert(writable(rows))
     if (qError) {
       await admin.from('client_questionnaires').delete().eq('id', questionnaire.id)
       return NextResponse.json({ error: qError.message }, { status: 500 })

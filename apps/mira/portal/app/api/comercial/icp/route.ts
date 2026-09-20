@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
+import { writable } from '@/lib/db-json'
 
 export async function PATCH(req: NextRequest) {
   const body = await req.json()
@@ -38,7 +39,7 @@ export async function PATCH(req: NextRequest) {
   if (existing) {
     const { data, error } = await supabase
       .from('icp_profiles')
-      .update(update)
+      .update(writable(update))
       .eq('id', existing.id)
       .select()
       .single()

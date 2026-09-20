@@ -35,6 +35,9 @@ export async function GET(
       return NextResponse.json({ error: 'Project not found' }, { status: 404 })
     }
 
+    if (!project.client_id) {
+      return NextResponse.json({ error: 'Project has no client assigned' }, { status: 400 })
+    }
     const allowed = await userCanAccessClient(user, project.client_id)
     if (!allowed) {
       return NextResponse.json({ error: 'No access to this client' }, { status: 403 })

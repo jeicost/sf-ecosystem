@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { lintClientBrain, hasLintFindings } from '@/lib/brain-lint'
+import { writable } from '@/lib/db-json'
 
 // Revisión semanal de salud del Brand Brain (Fase 3, 2026-07-30) -- mismo
 // molde que /api/cron/drive-sync: Bearer CRON_SECRET, fallo aislado por
@@ -69,9 +70,9 @@ export async function GET(req: NextRequest) {
           .limit(1)
 
         if (existing?.length) {
-          await admin.from('project_memory').update(memoryPayload).eq('id', existing[0].id)
+          await admin.from('project_memory').update(writable(memoryPayload)).eq('id', existing[0].id)
         } else {
-          await admin.from('project_memory').insert(memoryPayload)
+          await admin.from('project_memory').insert(writable(memoryPayload))
         }
       }
 

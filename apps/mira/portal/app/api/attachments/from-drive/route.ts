@@ -3,6 +3,7 @@ import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { getClientAccessToken } from '@/lib/drive-sync'
 import type { Attachment } from '@/lib/attachments'
+import { jsonObject } from '@/lib/db-json'
 
 export const runtime = 'nodejs'
 
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     const mime = String(doc.file_mime_type || '')
 
     if (mime.startsWith('image/')) {
-      const fileId = doc.source_metadata?.google_drive_file_id
+      const fileId = jsonObject(doc.source_metadata).google_drive_file_id as string | undefined
       if (!fileId) return NextResponse.json({ error: 'This image has no Drive file id — re-sync the folder' }, { status: 422 })
       const tokenResult = await getClientAccessToken(admin, access.clientId)
       if ('error' in tokenResult) return NextResponse.json({ error: tokenResult.error }, { status: 403 })

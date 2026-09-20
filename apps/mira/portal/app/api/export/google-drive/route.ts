@@ -86,7 +86,12 @@ export async function POST(req: NextRequest) {
       })
       fileName = `${action.action_type}-${dateStamp}.html`
       rowClientId = action.client_id
-      rowProjectId = action.project_id || null
+      // `quick_actions_results` NO tiene columna project_id (el esquema real lo
+      // confirma, 20-sep-2026): esto leía siempre undefined. Las exportaciones
+      // de quick actions van por tanto a la carpeta de entregables del cliente,
+      // no a la del proyecto. Para cambiarlo hay que añadir la columna y
+      // rellenarla al crear la acción, no leerla aquí.
+      rowProjectId = null
     } else {
       // Camino existente: generation_queue
       const { data: generation, error: fetchError } = await admin

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
+import { writable } from '@/lib/db-json'
 
 /**
  * PATCH/DELETE /api/projects/[id] — mutación server-side, mismo motivo que
@@ -26,6 +27,11 @@ async function resolveProjectAccess(id: string) {
     return { ok: false as const, status: 404 as const, error: 'Project not found' }
   }
 
+  // projects.client_id es nullable: sin cliente no hay marca contra la que
+  // comprobar permisos, así que el acceso se deniega en vez de pasar null.
+  if (!project.client_id) {
+    return { ok: false as const, status: 400 as const, error: 'Project has no client assigned' }
+  }
   const canAccess = await userCanAccessClient(user, project.client_id)
   if (!canAccess) {
     return { ok: false as const, status: 403 as const, error: 'No access to this project' }
@@ -60,7 +66,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     const { data: project, error } = await access.admin
       .from('mira_projects')
-      .update(updates)
+      .update(writable(updates))
       .eq('id', id)
       .select('*')
       .single()

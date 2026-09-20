@@ -37,7 +37,9 @@ export async function GET() {
       const rows = queue.filter((q) => q.client_id === c.id)
       const docs = rows.filter((q) => q.tool_slug.startsWith('doc-'))
       const lastDeliverable = rows.length
-        ? rows.reduce((a, b) => (a.created_at > b.created_at ? a : b)).created_at
+        // created_at es nullable en el esquema: una fila sin fecha nunca gana
+        // la comparación (antes `null > '2026-…'` era false y colaba silencio).
+        ? rows.reduce((a, b) => ((a.created_at ?? '') > (b.created_at ?? '') ? a : b)).created_at
         : null
       const driveRows = drive.filter((d) => d.client_id === c.id)
       const clientUsage = usage.filter((u) => u.client_id === c.id)

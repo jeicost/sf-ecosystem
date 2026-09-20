@@ -5,6 +5,7 @@
 // convertTo='application/vnd.google-apps.presentation').
 
 import type { adminClient } from '@/lib/supabase'
+import { writable } from '@/lib/db-json'
 
 type Admin = ReturnType<typeof adminClient>
 
@@ -35,11 +36,11 @@ export async function createDriveFolder(
 }
 
 async function registerFolder(admin: Admin, row: Record<string, unknown>) {
-  const { error } = await admin.from('drive_folders').insert({
+  const { error } = await admin.from('drive_folders').insert(writable({
     sync_status: 'completed',
     files_synced: 0,
     ...row,
-  })
+  }))
   if (error) console.warn('Could not register folder in drive_folders:', error)
 }
 

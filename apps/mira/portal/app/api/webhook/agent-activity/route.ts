@@ -37,7 +37,10 @@ export async function POST(req: NextRequest) {
       task_type,
       status,
       post_id: post_id ?? null,
-      details: details ?? null,
+      // `agent_activity` NO tiene columna `details` (esquema real, 20-sep-2026):
+      // este insert fallaba entero y el webhook devolvía 500. Lo que manda el
+      // cliente se guarda en output_summary, que sí existe.
+      output_summary: typeof details === 'string' ? details : details ? JSON.stringify(details) : null,
       started_at: new Date().toISOString(),
     })
     .select('id')

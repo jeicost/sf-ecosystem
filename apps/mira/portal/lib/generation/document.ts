@@ -25,6 +25,7 @@ import { getDocumentPrompt } from '@/lib/generation/document-prompts'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
+import { toJson } from '@/lib/db-json'
 
 /** Error de generación que conserva la fila de cola, para que quien llame pueda
  *  devolverla al cliente (la ruta la incluye en su respuesta de error). */
@@ -134,7 +135,7 @@ export async function generateDocument({
       user_id: userId,
       project_id: projectId,
       tool_slug: docType,
-      input_data: inputData,
+      input_data: toJson(inputData),
       status: 'processing',
     })
     .select('id')

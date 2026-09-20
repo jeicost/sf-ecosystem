@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { requireLeadAccess } from '@/lib/comercial/lead-access'
+import { writable } from '@/lib/db-json'
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -26,7 +27,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const supabase = adminClient()
   const { data, error } = await supabase
     .from('leads')
-    .update(update)
+    .update(writable(update))
     .eq('id', id)
     .select()
     .single()

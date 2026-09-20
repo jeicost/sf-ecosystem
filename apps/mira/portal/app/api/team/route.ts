@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     // Un usuario puede tener acceso a varias marcas del grupo: se muestra una
     // vez, que es como cuenta para los asientos.
     const byUser = new Map<string, { role: string; created_at: string }>()
-    for (const g of grants || []) if (!byUser.has(g.user_id)) byUser.set(g.user_id, { role: g.role, created_at: g.created_at })
+    for (const g of grants || []) if (!byUser.has(g.user_id)) byUser.set(g.user_id, { role: g.role, created_at: g.created_at ?? '' })
 
     const { data: authList } = await db.auth.admin.listUsers()
     const members = [...byUser.entries()].map(([userId, g]) => {

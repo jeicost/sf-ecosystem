@@ -5,6 +5,7 @@
 // El onboarding actual sigue llamando a executeOnboardingTool sin cambios.
 
 import { adminClient } from '@/lib/supabase'
+import { writable } from '@/lib/db-json'
 
 export type BrainChangeTarget = 'brand_profile' | 'project_memory' | 'content_pillar' | 'brand_reference'
 
@@ -68,7 +69,7 @@ export async function applyBrainChange(
       if (brand_data && typeof brand_data === 'object') {
         update.brand_data = deepMerge((current.brand_data as Record<string, any>) || {}, brand_data)
       }
-      const { error } = await db.from('brand_profiles').update(update).eq('id', current.id)
+      const { error } = await db.from('brand_profiles').update(writable(update)).eq('id', current.id)
       if (error) throw new Error(`Could not update the brain: ${error.message}`)
       const saved = Object.keys(update).filter((k) => k !== 'updated_at')
 

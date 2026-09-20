@@ -19,6 +19,7 @@
 
 import { adminClient } from '@/lib/supabase'
 import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from './drive-synthesis'
+import { toJson } from '@/lib/db-json'
 
 /** Tope de caracteres por documento que se manda al sintetizador. */
 const PER_DOC_CHARS = 12000
@@ -116,7 +117,7 @@ export async function relearnBrainFromKnowledge(clientId: string): Promise<Relea
         project_id: projectId,
         origin: 'drive_sync',
         summary: `Full re-read of ${documents.length} stored document${documents.length > 1 ? 's' : ''}`,
-        changes: synthesis.changes,
+        changes: toJson(synthesis.changes),
         source_document_ids: documents.map((d) => d.documentId),
       })
       .select('id')

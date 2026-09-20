@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { onQueueDecision } from '@/lib/goals/hooks'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
+import { writable } from '@/lib/db-json'
 
 // El raíl (fase 0 del plan del asesor): cerrar aprobar → publicar/usar →
 // registrar. La página /approvals actualizaba SOLO approval_queue desde el
@@ -64,7 +65,7 @@ export async function POST(request: NextRequest) {
     if (decision) {
       const queueUpdate: Record<string, unknown> = { status: decision, reviewed_at: now }
       if (decision === 'approved_with_edits' && editedCopy) queueUpdate.copy = editedCopy
-      const { error: qErr } = await admin.from('approval_queue').update(queueUpdate).eq('id', queueId)
+      const { error: qErr } = await admin.from('approval_queue').update(writable(queueUpdate)).eq('id', queueId)
       if (qErr) return NextResponse.json({ error: `approval_queue: ${qErr.message}` }, { status: 500 })
 
       // Propagar a post_history si la pieza está enlazada

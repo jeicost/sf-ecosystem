@@ -4,6 +4,7 @@ import { adminClient } from '@/lib/supabase'
 import { specToTasks } from '@/lib/goals/planner'
 import { runDueTasks } from '@/lib/goals/executor'
 import { goalsEnabled, type GoalPlan } from '@/lib/goals/types'
+import { toJson } from '@/lib/db-json'
 
 // POST /api/goals/confirm — {clientId?, brief, plan}
 // El humano vio el plan y dice «adelante». Aquí sí se escribe: el objetivo
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   const admin = adminClient()
   const { data: goal, error } = await admin.from('client_goals').insert({
     client_id: access.clientId, title: plan.title || `Goal ${plan.period_start}`, brief,
-    spec: plan.spec, period_start: plan.period_start, period_end: plan.period_end,
+    spec: toJson(plan.spec), period_start: plan.period_start, period_end: plan.period_end,
     status: 'active', created_by: user.id, confirmed_at: new Date().toISOString(),
   }).select('id').single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

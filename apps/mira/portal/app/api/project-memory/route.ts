@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, resolveRequestClient, userCanAccessClient } from '@/lib/resolve-client'
+import { writable } from '@/lib/db-json'
 
 // GET: Fetch project memory for client
 export async function GET(req: NextRequest) {
@@ -146,7 +147,7 @@ export async function PATCH(req: NextRequest) {
 
     const { data, error } = await admin
       .from('project_memory')
-      .update(updates)
+      .update(writable(updates))
       .eq('id', memoryId)
       .select('*')
       .single()

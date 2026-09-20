@@ -8,6 +8,7 @@ import { ONBOARDING_TOOLS, executeOnboardingTool } from '@/lib/onboarding/tools'
 import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { toJson } from '@/lib/db-json'
 
 export const maxDuration = 300
 
@@ -92,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (sessionFetchError || !session) return NextResponse.json({ error: 'Session not found' }, { status: 404 })
 
     const clientId = session.client_id as string
-    const history = (session.messages as Anthropic.MessageParam[]) || []
+    const history = (session.messages as unknown as Anthropic.MessageParam[]) || []
 
     const { contentBlocks, textContext } = await buildAttachmentBlocks(attachments)
     const userContent: Anthropic.MessageParam['content'] = [
@@ -178,7 +179,7 @@ export async function POST(request: NextRequest) {
 
     await db
       .from('onboarding_sessions')
-      .update({ messages: conversation, updated_at: new Date().toISOString() })
+      .update({ messages: toJson(conversation), updated_at: new Date().toISOString() })
       .eq('id', sessionId)
 
     return NextResponse.json({

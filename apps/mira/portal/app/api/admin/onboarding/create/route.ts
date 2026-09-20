@@ -221,9 +221,12 @@ export async function POST(req: NextRequest) {
 
     // 5. Registro de sesión (best-effort)
     try {
+      // `onboarding_sessions` NO tiene columna `name` (esquema real,
+      // 20-sep-2026): con ella el insert fallaba SIEMPRE y, al estar dentro de
+      // un try/catch "best-effort", nadie se enteraba — el registro de sesiones
+      // de alta quedaba vacío. El nombre de la empresa ya vive en `clients`.
       await admin.from('onboarding_sessions').insert({
         client_id: clientId,
-        name: companyName,
         status: 'completed',
       })
     } catch { /* no crítico */ }

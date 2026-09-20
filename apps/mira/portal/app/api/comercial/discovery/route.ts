@@ -3,6 +3,7 @@ import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { writable } from '@/lib/db-json'
 
 interface TavilyResult { title: string; url: string; content: string }
 
@@ -187,7 +188,7 @@ export async function POST(req: NextRequest) {
 
           await supabase
             .from('leads')
-            .upsert(rows, { onConflict: 'client_id,company_name', ignoreDuplicates: false })
+            .upsert(writable(rows), { onConflict: 'client_id,company_name', ignoreDuplicates: false })
         }
 
         send({ type: 'done', leads: scored, saved: hotLeads.length })

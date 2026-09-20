@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient } from '@/lib/resolve-client'
+import { writable } from '@/lib/db-json'
 
 // La resolución de cliente es la CANÓNICA (lib/resolve-client). Esta ruta tenía
 // una copia privada que se quedó atrás: sin ORDER BY en el fallback (la
@@ -157,7 +158,7 @@ export async function PUT(req: NextRequest) {
 
     const { data: updatedProfile, error: updateError } = await admin
       .from('brand_profiles')
-      .update(patch)
+      .update(writable(patch))
       .eq('id', id)
       .eq('client_id', clientId)
       .select()

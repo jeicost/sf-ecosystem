@@ -62,7 +62,7 @@ export async function POST(
       const sourceType = proposal.origin === 'drive_sync' || proposal.origin === 'lint' ? proposal.origin : 'chat'
       const applied = await applyBrainChanges(
         proposal.client_id,
-        (proposal.changes as BrainChange[]) ?? [],
+        (proposal.changes as unknown as BrainChange[]) ?? [],
         proposal.project_id,
         { sourceType, sourceRef: proposal.id }
       )
