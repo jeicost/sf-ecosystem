@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { Mail, Loader2, Download, Settings2, Search, Filter } from 'lucide-react'
+import { Mail, Loader2, Download, Settings2, Search, Filter, Inbox, BarChart3 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
@@ -11,6 +11,7 @@ import { useClientTools } from '@/lib/hooks/useClientTools'
 import type { TicketRow } from '@/lib/email-ops/types'
 import TicketTable from '@/components/email-ops/TicketTable'
 import InboxSetupPanel from '@/components/email-ops/InboxSetupPanel'
+import OpsDashboard from '@/components/email-ops/OpsDashboard'
 import { withBrandName } from '@/components/ui/BrandName'
 
 // Bandeja de Email Ops: tickets del cliente activo con pestañas, filtros y
@@ -28,6 +29,8 @@ export default function EmailOpsPage() {
   const clientId = activeClient?.id
   const brand = activeClient?.primaryColor || '#6366F1'
 
+  // Bandeja (trabajar ticket a ticket) o Panel (las cifras del departamento).
+  const [view, setView] = useState<'inbox' | 'dashboard'>('inbox')
   const [tab, setTab] = useState<Tab>('open')
   const [incomplete, setIncomplete] = useState(false)
   const [department, setDepartment] = useState('')
@@ -130,6 +133,20 @@ export default function EmailOpsPage() {
         </div>
       </div>
 
+      {/* Vista: Bandeja | Panel */}
+      <div className="mb-6 flex gap-1 rounded-lg bg-surface p-1 w-fit" role="tablist">
+        {([['inbox', Inbox], ['dashboard', BarChart3]] as const).map(([v, Icon]) => (
+          <button key={v} role="tab" aria-selected={view === v} onClick={() => setView(v)}
+            className={clsx('flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs transition-colors',
+              view === v ? 'bg-surface-hover font-medium text-ink' : 'text-ink-tertiary hover:text-ink')}>
+            <Icon size={13} /> {t(`emailops.view.${v}`, locale)}
+          </button>
+        ))}
+      </div>
+
+      {view === 'dashboard' && clientId ? (
+        <OpsDashboard clientId={clientId} locale={locale} />
+      ) : (<>
       {/* Stats */}
       <div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
         {[
@@ -204,6 +221,7 @@ export default function EmailOpsPage() {
           <p className="mt-2 text-right text-[11px] text-ink-muted">{tickets.length}/{total}</p>
         </>
       )}
+      </>)}
     </div>
   )
 }

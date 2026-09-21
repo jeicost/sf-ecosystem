@@ -20,6 +20,12 @@
   --text-sidebar:     rgba(255,255,255,0.50);
   --scrollbar:        #333;
   --glow-accent:      rgba(99,102,241,0.12);
+  /* Datos (paneles): tono validado con el validador de dataviz contra la
+     superficie real de tarjeta (#141419) — contraste ≥3:1, banda de luminosidad
+     y croma OK. Un solo tono para magnitudes; nunca el color de marca del
+     cliente (arbitrario: un amarillo de marca no se leería sobre blanco). */
+  --viz-series-1:     #3987e5;
+  --viz-grid:         rgba(255,255,255,0.08);
 }
 
 /* ── CSS tokens — Light ── */
@@ -39,6 +45,9 @@
   --text-sidebar:     rgba(15,15,24,0.55);
   --scrollbar:        #ccc;
   --glow-accent:      rgba(99,102,241,0.06);
+  /* Mismo tono, escalón para superficie clara (#ffffff), también validado. */
+  --viz-series-1:     #2a78d6;
+  --viz-grid:         rgba(0,0,0,0.07);
 }
 
 @layer base {
