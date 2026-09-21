@@ -1,43 +1,53 @@
 'use client'
 
 import { useState } from 'react'
-import { cmsVal, cmsArr } from '@/lib/cms-pages'
+import type { QA } from '@/lib/faq'
 
-type QA = { q: string; a: string }
-
-const DEFAULT_FAQS: QA[] = [
-  { q: '¿Me sirve si solo tengo el móvil?', a: 'Sí, y es precisamente el punto. Todo lo que enseño está pensado para aplicarse con lo que ya tienes, empezando por el móvil. La técnica es la misma; solo cambia la herramienta.' },
-  { q: '¿Necesito comprar equipo para hacer el curso?', a: 'No. De hecho, uno de los objetivos es que dejes de pensar que la solución es comprar. Te dejo una guía de equipo por presupuesto por si algún día quieres dar el paso, pero no necesitas nada para empezar.' },
-  { q: 'Soy principiante total, ¿voy a poder seguirlo?', a: 'Está diseñado para eso. Explico cada concepto de forma sencilla y aplicable desde el primer día, sin tecnicismos innecesarios. Empezamos desde cero.' },
-  { q: '¿Cuánto tiempo necesito?', a: 'El que tú quieras. El acceso es de por vida y los módulos son directos al grano. Puedes verlo a tu ritmo y volver a cualquier lección cuando la necesites.' },
-  { q: '¿Es un curso de edición o de cámara?', a: 'Es las dos cosas y ninguna. No es un curso de un programa concreto ni de un modelo de cámara: es un curso para que tus vídeos dejen de parecer amateur, uses lo que uses.' },
-  { q: '¿Y si no me convence?', a: 'Tienes 14 días de garantía. Si no es para ti, te devuelvo el dinero íntegro. Así de simple.' },
-]
-
-export function Faq({ data }: { data: Record<string, unknown> }) {
-  const eyebrow = cmsVal(data, 'eyebrow') ?? 'Preguntas frecuentes'
-  const faqs = cmsArr<QA>(data, 'items') ?? DEFAULT_FAQS
+/**
+ * Las preguntas llegan ya resueltas desde la página (`faqItems` en lib/faq.ts),
+ * que es la MISMA lista que alimenta el JSON-LD de FAQPage. Aquí no hay
+ * respaldo propio a propósito: una segunda copia fue lo que dejó a Google
+ * indexando un FAQ distinto del que veía el usuario.
+ *
+ * Recibe textos sueltos y no la sección entera del CMS: es un componente de
+ * cliente, y todo lo que se le pasa se serializa en el HTML — con `data` iban
+ * también las respuestas del OTRO estado (las de venta abierta, en presente).
+ */
+export function Faq({ eyebrow = 'Preguntas frecuentes', headline = 'Lo que te estarás preguntando', items }: { eyebrow?: string; headline?: string; items: QA[] }) {
   const [open, setOpen] = useState<number | null>(0)
 
   return (
     <section className="bg-bg">
       <div className="mx-auto max-w-3xl px-5 py-24 sm:px-8" data-reveal>
-        <span className="timecode">08 · {eyebrow}</span>
-        <h2 className="display mt-6 text-3xl sm:text-5xl">FAQ</h2>
+        <span className="timecode">10 · {eyebrow}</span>
+        <h2 className="display mt-6 text-3xl sm:text-5xl">{headline}</h2>
         <div className="mt-10 divide-y divide-line border-y border-line">
-          {faqs.map((faq, i) => {
+          {items.map((faq, i) => {
             const isOpen = open === i
+            const panelId = `faq-panel-${i}`
             return (
               <div key={i}>
-                <button
-                  onClick={() => setOpen(isOpen ? null : i)}
-                  aria-expanded={isOpen}
-                  className="flex w-full items-center justify-between gap-4 py-5 text-left"
-                >
-                  <span className="text-[1.02rem] font-medium text-text">{faq.q}</span>
-                  <span className={`font-mono text-accent transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>+</span>
-                </button>
+                <h3>
+                  <button
+                    onClick={() => setOpen(isOpen ? null : i)}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    className="flex w-full items-center justify-between gap-4 py-5 text-left"
+                  >
+                    <span className="text-[1.02rem] font-medium text-text">{faq.q}</span>
+                    <span aria-hidden className={`font-mono text-accent transition-transform duration-300 ${isOpen ? 'rotate-45' : ''}`}>+</span>
+                  </button>
+                </h3>
+                {/*
+                  Cerrada, la respuesta sale del árbol de accesibilidad (`hidden`
+                  vía `inert` + aria-hidden). Antes las nueve respuestas se leían
+                  enteras con el botón diciendo «contraído»: el acordeón mentía.
+                */}
                 <div
+                  id={panelId}
+                  role="region"
+                  aria-hidden={!isOpen}
+                  inert={!isOpen}
                   className="grid transition-all duration-300"
                   style={{ gridTemplateRows: isOpen ? '1fr' : '0fr' }}
                 >

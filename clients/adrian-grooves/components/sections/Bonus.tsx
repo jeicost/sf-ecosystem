@@ -15,7 +15,7 @@ export function Bonus({ data }: { data: Record<string, unknown> }) {
   const f = (k: string, fb: string) => cmsVal(data, k) ?? fb
   const items = cmsArr<string>(data, 'items') ?? DEFAULT_BONUS
   return (
-    <Shell tc={`05 · ${f('eyebrow', 'Además, te llevas')}`} surface>
+    <Shell tc={`06 · ${f('eyebrow', 'Además, te llevas')}`} surface>
       <h2 className="display text-3xl sm:text-5xl">{f('headline', 'Bonus que valen por sí solos')}</h2>
       <ul className="mt-10 grid gap-px overflow-hidden rounded-sm border border-line bg-line">
         {items.map((item, i) => (

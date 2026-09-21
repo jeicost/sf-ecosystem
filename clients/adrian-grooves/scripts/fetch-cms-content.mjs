@@ -1,5 +1,5 @@
 /**
- * Adrian Grooves — build-time CMS bake (SF-CMS).
+ * Adrian Groves — build-time CMS bake (SF-CMS).
  * Runs BEFORE `next build` (see package.json). Writes content/pages.json +
  * content/settings.json from the CMS so the site renders CMS overrides on top
  * of the hardcoded fallbacks. A CMS outage must NEVER fail the build:

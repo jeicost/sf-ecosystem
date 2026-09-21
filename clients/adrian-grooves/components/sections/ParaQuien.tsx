@@ -18,7 +18,7 @@ export function ParaQuien({ data }: { data: Record<string, unknown> }) {
   const si = cmsArr<string>(data, 'yes') ?? SI
   const no = cmsArr<string>(data, 'no') ?? NO
   return (
-    <Shell tc={`06 · ${f('eyebrow', 'Para quién')}`}>
+    <Shell tc={`07 · ${f('eyebrow', 'Para quién')}`}>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="af-frame rounded-sm border border-accent/40 bg-surface-2 p-7">
           <h3 className="font-mono text-sm uppercase tracking-[0.14em] text-accent">

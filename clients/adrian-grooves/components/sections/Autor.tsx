@@ -4,22 +4,35 @@ import { site } from '@/lib/site'
 
 export function Autor({ data }: { data: Record<string, unknown> }) {
   const f = (k: string, fb: string) => cmsVal(data, k) ?? fb
+  const foto = cmsVal(data, 'photo_url')
+  const fotograma = site.work[2]
   return (
     <Shell tc={`01 · ${f('eyebrow', 'Quién te va a enseñar')}`} surface>
       <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-center">
-        {/* photo placeholder — framed like a still */}
-        <div className="af-frame aspect-[4/5] overflow-hidden rounded-sm border border-line bg-bg-deep">
-          <div className="flex h-full w-full items-center justify-center bg-[radial-gradient(70%_50%_at_50%_35%,rgba(124,255,107,0.05),transparent)]">
-            <div className="text-center">
-              <p className="font-mono text-[0.62rem] uppercase tracking-[0.2em] text-dim">Foto en rodaje</p>
-              <p className="mt-1 font-mono text-[0.62rem] uppercase tracking-[0.2em] text-dim">placeholder</p>
-            </div>
-          </div>
-        </div>
+        {/*
+          Hasta el 21-sep este hueco pintaba «Foto en rodaje · placeholder» en la
+          página publicada. Mientras Adrian no mande una foto suya en rodaje, va
+          un fotograma de un videoclip suyo con un pie que dice exactamente lo
+          que es — su trabajo, no su cara. Cuando llegue la foto: `photo_url` y
+          `photo_caption` en la sección `autor` del CMS, sin tocar código.
+        */}
+        <figure className="af-frame relative aspect-[4/5] overflow-hidden rounded-sm border border-line bg-bg-deep">
+          {/* eslint-disable-next-line @next/next/no-img-element -- foto del CMS o miniatura externa de YouTube */}
+          <img
+            src={foto ?? `https://i.ytimg.com/vi/${fotograma.url.split('v=')[1]}/maxresdefault.jpg`}
+            alt={foto ? f('photo_alt', `${site.name} en un rodaje`) : ''}
+            loading="lazy"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(11,11,11,0.9))]" />
+          <figcaption className="absolute bottom-4 left-4 right-4 font-mono text-[0.66rem] uppercase tracking-[0.16em] text-muted">
+            {f('photo_caption', `Fotograma · ${fotograma.title}`)}
+          </figcaption>
+        </figure>
 
         <div>
           <h2 className="display text-4xl sm:text-6xl">
-            {f('name_pre', 'Soy')} <span className="text-accent">{f('name', 'Adrian Grooves')}</span>
+            {f('name_pre', 'Soy')} <span className="text-accent">{f('name', 'Adrian Groves')}</span>
           </h2>
           <p className="mt-7 text-lg leading-relaxed text-muted">
             {f(

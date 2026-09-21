@@ -97,3 +97,47 @@ export async function loadCmsSectionsLive(pageSlug = 'home'): Promise<CmsSection
     return null
   }
 }
+
+/**
+ * El texto que toca según el estado de la venta.
+ *
+ * POR QUÉ. La página tiene dos estados —pre-lanzamiento (captación) y venta
+ * abierta— y hasta el 21-sep-2026 abrir la venta obligaba a reescribir a mano
+ * una docena de textos del CMS además de `hero.cta_url`. La revisión encontró
+ * diez que quedaban FALSOS si alguien solo cambiaba la URL: botones que dicen
+ * «Avísame cuando abra» llevando a la página de pago, «abre el 15 de octubre»
+ * con la venta abierta. Fallo mudo de manual: nada se rompe, la página miente.
+ *
+ * AHORA. Cada texto que depende del estado tiene dos campos en el CMS: `x`
+ * (venta abierta) y `x_prelanzamiento`. El componente elige según
+ * `abierta`, que sale de `hero.cta_url`. Resultado: el día del lanzamiento se
+ * cambia UN campo y todos los textos cambian a la vez. Si falta la variante
+ * `_prelanzamiento`, se usa la normal — así un texto que no depende del estado no
+ * necesita duplicarse.
+ *
+ * El sufijo es largo a propósito: `_pre` ya existe en el CMS con OTRO sentido
+ * (`headline_pre` = la parte del titular antes del acento, en hero y CTA final),
+ * y `cmsState(data, 'headline')` habría devuelto el prefijo del titular.
+ */
+export function cmsState(data: SectionData, key: string, abierta: boolean): string | undefined {
+  return abierta ? cmsVal(data, key) : (cmsVal(data, `${key}_prelanzamiento`) ?? cmsVal(data, key))
+}
+
+/** Lo mismo para listas (p. ej. las respuestas del FAQ que cambian al abrir). */
+export function cmsArrState<T = unknown>(data: SectionData, key: string, abierta: boolean): T[] | undefined {
+  return abierta ? cmsArr<T>(data, key) : (cmsArr<T>(data, `${key}_prelanzamiento`) ?? cmsArr<T>(data, key))
+}
+
+/**
+ * El interruptor del lanzamiento, saneado. Es el único campo del que depende
+ * el estado de toda la página, y era el único que no pasaba por ninguna
+ * validación: un espacio al pegar la URL de Hotmart o un «pay.hotmart.com» sin
+ * protocolo dejaban todos los botones rotos sin que nada avisara. Solo valen un
+ * ancla (`#...`) o una URL http(s) completa; cualquier otra cosa cae a
+ * `#lista`, que es el estado seguro: capta correos en vez de romper la compra.
+ */
+export function ctaSeguro(raw: unknown, fallback: string): string {
+  const v = typeof raw === 'string' ? raw.trim() : ''
+  if (/^#[\w-]+$/.test(v) || /^https?:\/\/[^\s]+$/i.test(v)) return v
+  return fallback
+}

@@ -20,6 +20,10 @@ export function Footer() {
         </div>
         <div className="mt-10 flex flex-col gap-2 border-t border-line pt-6 font-mono text-[0.68rem] uppercase tracking-[0.14em] text-dim sm:flex-row sm:justify-between">
           <span>© {new Date().getFullYear()} {site.name}</span>
+          <nav aria-label="Legal" className="flex gap-5">
+            <a href="/aviso-legal" className="hover:text-text">Aviso legal</a>
+            <a href="/privacidad" className="hover:text-text">Privacidad</a>
+          </nav>
           <span>Habilidad &gt; Equipo</span>
         </div>
       </div>

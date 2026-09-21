@@ -4,7 +4,8 @@ import { site } from '@/lib/site'
 /**
  * Brand lockup: the FG monogram (Adrian's existing logo, inverted to white
  * for the dark UI) + wordmark. Swap logo-grooves.jpg for a transparent SVG
- * when available.
+ * when available. The wordmark says «Groves» (one o) since 22-sep-2026; the
+ * file keeps its old name on purpose — it is an asset path, not copy.
  */
 export function Logo({ compact = false }: { compact?: boolean }) {
   return (
@@ -22,7 +23,7 @@ export function Logo({ compact = false }: { compact?: boolean }) {
           className="text-[0.95rem] font-semibold uppercase tracking-[0.18em]"
           style={{ fontFamily: 'var(--font-display)' }}
         >
-          Adrian&nbsp;Grooves
+          Adrian&nbsp;Groves
         </span>
       )}
     </span>
