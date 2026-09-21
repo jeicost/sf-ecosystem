@@ -47,8 +47,12 @@ const mapa = JSON.parse(readFileSync(join(WEB, "lib/iconos.ts"), "utf8")
 const MM = 4;
 /** El cuerpo cilíndrico: perímetro 329,9 mm × 140 mm de alto. */
 const W = 330 * MM, H_CUERPO = 140 * MM;
-/** La franja del hombro que se dibuja encima, indicativa. */
-const H_HOMBRO = 62 * MM;
+/** La franja del hombro que se dibuja encima, indicativa. Creció de 62 a
+ * 100 mm para alojar, además del lockup, las SEIS FILAS del hombro que la
+ * botella de la web ya lleva: antes esas piezas se recolocaban dentro del
+ * cilindro y los dos soportes contaban composiciones distintas — el taller
+ * no tenía arte del cono. */
+const H_HOMBRO = 100 * MM;
 const H = H_HOMBRO + H_CUERPO;
 
 /** El lockup vive en el hombro, así que no reserva sitio en el cilindro. */
@@ -61,7 +65,7 @@ const CONTRA = { x: 10*MM, y: H_HOMBRO + 70*MM, w: 80*MM, h: 58*MM };
  * que reserva su carril y las bandas fluyen a los lados. En la botella real
  * cae en la cara trasera, a un cuarto de vuelta del lockup.
  */
-const COL54  = { x: 236*MM, y: H_HOMBRO + 6*MM, w: 42*MM, h: 128*MM };
+const COL54  = { x: 236*MM, y: H_HOMBRO + 26*MM, w: 42*MM, h: 84*MM };
 const RESERVAS = [CONTRA, COL54];
 
 /**
@@ -75,16 +79,30 @@ const RESERVAS = [CONTRA, COL54];
  * seguidas. Están las 56 piezas de banda; la 57.ª es el lagrimómetro, que no
  * va en banda: cruza el cilindro en vertical por su carril reservado (COL54).
  */
+// Las piezas con CIFRA DE PÍXEL (25, 28, 46) van en las bandas altas: sus
+// celdas miden ~u/7 y en una banda de 11 mm caen a 0,3 mm — ni la malla
+// fina las salva. En las de 16-17 mm respiran.
 const BANDAS = [
-  [11, [26, 30, 20, 17, 35, 19, 44, 49]],
-  [17, [34, 22, 12, 1]],
-  [12, [3, 51, 37, 10, 4, 55]],
+  [11, [20, 17, 19, 49, 37, 53]],
+  [17, [12, 1, 42, 25, 28]],
+  [12, [10, 4, 55, 29, 45]],
   [13, [23, 40, 2, 18, 33]],
-  [11, [36, 47, 29, 45, 6, 25, 53]],
-  [16, [42, 13, 5, 38, 56]],
-  [11, [50, 28, 46, 11, 21, 7, 31]],
+  [11, [36, 47, 6, 50]],
+  [16, [13, 5, 38, 56, 46]],
+  [11, [11, 21, 7, 31]],
   [12, [14, 43, 9, 39, 32, 24]],
   [11, [16, 27, 52, 15, 57, 8, 48, 41]],
+];
+
+/** Las filas del HOMBRO, espejo de SUPERIOR en components/Botella.tsx:
+ * [alto mm, ancho mm de fila, piezas]. Centradas, el ancho crece con el cono. */
+const HOMBRO_FILAS = [
+  [5.5, 48, [26]],
+  [7.0, 58, [34, 35]],
+  [6.0, 66, [22]],
+  [6.0, 74, [3, 30]],
+  [6.0, 82, [51]],
+  [6.0, 90, [44]],
 ];
 
 const arteDe = (n) => {
@@ -128,9 +146,33 @@ let out = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width
   + `<rect width="${W}" height="${H_HOMBRO}" fill="#060802" opacity="0.42"/>`
   + `<line x1="0" y1="${H_HOMBRO}" x2="${W}" y2="${H_HOMBRO}" stroke="#E0685C" stroke-width="1.4" stroke-dasharray="9 6"/>`
   + `<text x="8" y="${H_HOMBRO - 7}" fill="#E0685C" font-family="monospace" font-size="9" letter-spacing="1">`
-  + `HOMBRO CÓNICO · 126 mm · piezas sueltas, el perímetro se cierra al subir · desarrollo real = sector, no rectángulo</text>`
+  + `HOMBRO CÓNICO · desarrollo real = sector</text>`
   + `<text x="8" y="${H_HOMBRO + 14}" fill="#9FB07A" font-family="monospace" font-size="9" letter-spacing="1">`
   + `CUERPO CILÍNDRICO · 330 × 140 mm · 360° · la única zona recta</text>`;
+
+// ── Las filas del hombro, espejo de la botella ──────────────────────────
+// Sin baile de línea base: en el cono la referencia va limpia y centrada.
+let yH = 57 * MM;
+for (const [altoMM, anchoMM, ns] of HOMBRO_FILAS) {
+  const alto = altoMM * MM, anchoFila = anchoMM * MM;
+  const arte = ns.map(n => ({ n, a: arteDe(n) })).filter(x => x.a);
+  ns.forEach(n => { if (!arteDe(n)) saltadas.add(nombreDe[n] || n); });
+  const items = arte.map(g => {
+    const k = Math.min(alto / g.a.h, anchoFila * 0.62 / g.a.w);
+    return { ...g, k, w: g.a.w * k, h: g.a.h * k };
+  });
+  const usado = items.reduce((s, i) => s + i.w, 0);
+  let x = items.length === 1
+    ? W / 2 - usado / 2
+    : (W - anchoFila) / 2;
+  const hueco = items.length > 1 ? (anchoFila - usado) / (items.length - 1) : 0;
+  for (const it of items) {
+    out += `<g transform="translate(${x.toFixed(1)} ${(yH + (alto - it.h) / 2).toFixed(1)}) `
+         + `scale(${it.k.toFixed(4)}) translate(${-it.a.x} ${-it.a.y})" fill="#F6F1E6">${it.a.cuerpo}</g>`;
+    x += it.w + hueco; colocadas++;
+  }
+  yH += alto + 1.2 * MM;
+}
 
 for (const [altoMM, ns] of BANDAS) {
   const alto = altoMM * MM;

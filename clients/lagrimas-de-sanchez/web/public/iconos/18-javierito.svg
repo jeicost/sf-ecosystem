@@ -2,10 +2,10 @@
   <!-- La diadema de reno de la cena de empresa, con su bolita. Llegó por
        Navidad. -->
   <g fill="none" stroke="#F6F1E6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M112 170 q-16 -50 -4 -92 q6 -22 24 -34" stroke-width="13"/>
-    <path d="M104 118 q-24 -6 -36 -30 M110 82 q-20 -10 -24 -36 M124 56 q-8 -20 0 -38" stroke-width="11.18"/>
-    <path d="M188 170 q16 -50 4 -92 q-6 -22 -24 -34" stroke-width="13"/>
-    <path d="M196 118 q24 -6 36 -30 M190 82 q20 -10 24 -36 M176 56 q8 -20 0 -38" stroke-width="11.18"/>
+    <path d="M112 170 q-16 -50 -4 -92 q6 -22 24 -34" stroke-width="14.99"/>
+    <path d="M104 118 q-24 -6 -36 -30 M110 82 q-20 -10 -24 -36 M124 56 q-8 -20 0 -38" stroke-width="14.99"/>
+    <path d="M188 170 q16 -50 4 -92 q-6 -22 -24 -34" stroke-width="14.99"/>
+    <path d="M196 118 q24 -6 36 -30 M190 82 q20 -10 24 -36 M176 56 q8 -20 0 -38" stroke-width="14.99"/>
   </g>
   <!-- la bolita de navidad colgando de una punta -->
   <g fill="#F6F1E6">

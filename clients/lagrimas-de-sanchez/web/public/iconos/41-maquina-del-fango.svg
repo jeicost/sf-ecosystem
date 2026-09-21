@@ -16,8 +16,8 @@
   </g>
   <!-- manivela con puño de madera -->
   <g stroke="#F6F1E6" stroke-linecap="round" fill="none">
-    <circle cx="262" cy="150" r="22" stroke-width="13.10"/>
-    <path d="M262 150 l26 -30" stroke-width="13.10"/>
+    <circle cx="262" cy="150" r="22" stroke-width="20.77"/>
+    <path d="M262 150 l26 -30" stroke-width="20.77"/>
   </g>
   <g transform="rotate(-49 288 120)"><rect x="280" y="102" width="17" height="30" rx="8" fill="#F6F1E6"/></g>
 </svg>

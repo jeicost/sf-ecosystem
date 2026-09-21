@@ -117,12 +117,15 @@ type Banda = [number, (number | string)[]];
  * «Ecologetas» cortada sobre el canto).
  */
 const SUPERIOR: Banda[] = [
+  // Alternando tratamientos: la versión anterior apilaba las cuatro cajas
+  // invertidas seguidas bajo el lockup y la escalera blanca pesaba más que
+  // la marca. Caja / dibujo / caja / dibujo / caja / caja.
   [14, [26, "r-estrella"]],
-  [16, [22]],
-  [16, [44]],
-  [16, [51]],
   [18, [34, 35]],
+  [16, [22]],
   [16, [3, 30]],
+  [16, [51]],
+  [16, [44]],
 ]
 
 const COL_IZQ: Banda[] = [
@@ -159,7 +162,7 @@ const CIERRE: Banda[] = [
   [15, [50, 29, 18]],
   [17, [57, 33, 55]],
   [15, [16, 52, 46, 53]],
-  [16, [24, 14, "r-flecha-e"]],
+  [16, [24, 14, "r-barras"]],
 ]
 
 /**

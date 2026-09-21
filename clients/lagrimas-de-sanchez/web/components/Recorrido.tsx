@@ -52,13 +52,13 @@ const CAPITULOS: Capitulo[] = [
     foco: 0.66, ancho: 0.3, clave: "El lagrimómetro",
     titulo: "El instrumento está roto.",
     cuerpo:
-      "Seis marcas, de OJO SECO a DESEMBALSE, con la aguja clavada arriba del todo: un medidor que solo sabe dar una lectura. Es la única pieza que sigue sin cerrar — los medidores son decisión del dueño, no del diseño.",
+      "Seis marcas, de OJO SECO a DESEMBALSE, con la aguja clavada arriba del todo: un medidor que solo sabe dar una lectura. Cruza el estampado de arriba abajo como columna, igual que el instrumento de a bordo de un barco que ya no mide nada.",
   },
   {
     foco: 0.78, ancho: 0.26, clave: "Las piezas",
     titulo: "Texto dentro del dibujo.",
     cuerpo:
-      "Nueve bandas justificadas de lado a lado, con la palabra integrada en cada pictograma: arqueada sobre la chepa, en banda cruzando la chirimoya, bajo la boca. Ni una sola cara: todo lo dice el texto, que es más difícil y más gracioso.",
+      "Un tejido que se empaqueta alrededor del instrumento, con la palabra integrada en cada pictograma: arqueada sobre la chepa, en banda cruzando la chirimoya, bajo la boca. Ni una sola cara: todo lo dice el texto, que es más difícil y más gracioso.",
   },
   {
     foco: 0.94, ancho: 0.14, clave: "El número",

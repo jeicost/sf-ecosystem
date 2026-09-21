@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 430">
+  <!-- FUENTE EDITABLE de la pieza 54. El texto va VIVO aquí; vectorizar.mjs
+       lo convierte en trazados al pasar la tubería. La copia de trabajo vive
+       en web/public/iconos/ y NUNCA se edita a mano: se edita ESTA y se
+       vuelve a pasar la tubería. (La primera versión se dibujó en un
+       scratchpad temporal y el sistema la borró: nunca más.) -->
+  <!-- El dial. La aguja clavada arriba del todo: un medidor que solo sabe
+       dar una lectura. Recortada AL ARO INTERIOR: desbordar el bisel leía
+       como error de recorte, no como chiste. -->
+  <g fill="none" stroke="#F6F1E6">
+    <circle cx="75" cy="52" r="40" stroke-width="7"/>
+    <circle cx="75" cy="52" r="30" stroke-width="3"/>
+    <line x1="47" y1="38" x2="55" y2="42" stroke-width="4"/>
+    <line x1="60" y1="21" x2="64" y2="29" stroke-width="4"/>
+    <line x1="75" y1="16" x2="75" y2="25" stroke-width="4"/>
+    <line x1="90" y1="21" x2="86" y2="29" stroke-width="4"/>
+    <line x1="103" y1="38" x2="95" y2="42" stroke-width="4"/>
+    <line x1="75" y1="52" x2="96" y2="31" stroke-width="7" stroke-linecap="round"/>
+  </g>
+  <circle cx="75" cy="52" r="7" fill="#F6F1E6"/>
+  <!-- La regla -->
+  <rect x="54" y="100" width="6" height="324" fill="#F6F1E6"/>
+  <rect x="60" y="117" width="17" height="6" fill="#F6F1E6"/>
+  <rect x="60" y="132" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="147" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="162" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="175" width="17" height="6" fill="#F6F1E6"/>
+  <rect x="60" y="190" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="205" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="220" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="233" width="17" height="6" fill="#F6F1E6"/>
+  <rect x="60" y="248" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="263" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="278" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="291" width="17" height="6" fill="#F6F1E6"/>
+  <rect x="60" y="306" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="321" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="336" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="349" width="17" height="6" fill="#F6F1E6"/>
+  <rect x="60" y="364" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="379" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="394" width="10" height="4" fill="#F6F1E6"/>
+  <rect x="60" y="407" width="17" height="6" fill="#F6F1E6"/>
+  <text x="84" y="127" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">OJO SECO</text>
+  <text x="84" y="185" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">PUCHERO</text>
+  <text x="84" y="243" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">MOQUEO</text>
+  <text x="84" y="301" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">LLORERA</text>
+  <text x="84" y="351" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">MOCO</text>
+  <text x="84" y="370" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">TENDIDO</text>
+  <text x="84" y="409" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">DESEM-</text>
+  <text x="84" y="428" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">BALSE</text>
+  <!-- El nombre, en vertical como el instrumento de la referencia -->
+  <g transform="rotate(-90 30 262)">
+    <text x="30" y="262" text-anchor="middle" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="23" letter-spacing="7">LAGRIMÓMETRO</text>
+  </g>
+</svg>

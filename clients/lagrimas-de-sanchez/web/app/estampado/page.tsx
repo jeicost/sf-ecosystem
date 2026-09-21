@@ -37,16 +37,16 @@ export default function Estampado() {
             <span className="u-marca">Ni una sola cara.</span>
           </h1>
           <p className="u-lead max-w-[54ch]">
-            Nueve bandas alrededor de la botella, justificadas de lado a lado, con un solo hueco
-            de calma en el centro para el nombre. Todo lo dice el texto. El dibujo lo
-            pones tú, que también has visto la década.
+            Un tejido de piezas alrededor de la botella, empaquetado a los lados del
+            lagrimómetro, con un solo hueco de calma arriba para el nombre. Todo lo
+            dice el texto. El dibujo lo pones tú, que también has visto la década.
           </p>
 
           <dl className="mt-4 flex flex-wrap gap-x-12 gap-y-5 border-t-2 border-ink pt-8">
             {[
               [String(PIEZAS.length), "piezas"],
               [String(CON_PICTOGRAMA), "con pictograma"],
-              ["9", "bandas"],
+              ["360°", "de vidrio"],
               ["1", "tinta"],
               ["600 °C", "de horno"],
             ].map(([n, l]) => (

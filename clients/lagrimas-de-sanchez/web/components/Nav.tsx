@@ -12,13 +12,13 @@ export function Nav() {
         <div className="ml-auto flex items-center gap-3 sm:gap-7">
           <Link
             href="/estampado"
-            className="u-cond -my-3 py-3 text-[0.85rem] transition-colors hover:text-muted"
+            className="u-cond -my-3 whitespace-nowrap py-3 text-[0.85rem] transition-colors hover:text-muted"
           >
             El estampado
           </Link>
           <Link
             href="/vino"
-            className="u-cond -my-3 py-3 text-[0.85rem] transition-colors hover:text-muted"
+            className="u-cond -my-3 whitespace-nowrap py-3 text-[0.85rem] transition-colors hover:text-muted"
           >
             El vino
           </Link>

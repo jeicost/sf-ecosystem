@@ -78,7 +78,7 @@ def pixeles(texto: str, x: float, y: float, u: float) -> tuple[str, float]:
                 elif not encendido and inicio is not None:
                     partes.append(
                         f'<rect x="{cx + inicio*u:.1f}" y="{y + fila*u:.1f}" '
-                        f'width="{(col-inicio)*u:.1f}" height="{u:.1f}"/>'
+                        f'width="{(col-inicio)*u:.1f}" height="{u*1.08:.1f}"/>'
                     )
                     inicio = None
         cx += u * 5
@@ -101,7 +101,7 @@ PIEZAS = [
     (24, "t-espana-va-como-un-cohete", ["ESPAÑA VA", "COMO UN COHETE"],   "desnuda", "cond"),
     (25, "t-son-las-5-y-no-he-comido", ["SON LAS", "5", "Y NO HE COMIDO"], "cifra",  "cond"),
     (26, "t-facha",             ["FACHA"],                                "caja",    "cond"),
-    (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "hueca",   "cond"),
+    (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "desnuda", "cond"),
     (28, "t-por-7-votos",       ["POR", "7", "VOTOS"],                    "cifra",   "cond"),
     (29, "t-fiscal-soplon",     ["FISCAL", "SOPLÓN"],                     "sello",   "cond"),
     (30, "t-ecologetas",        ["Ecologetas"],                           "desnuda", "redonda"),
@@ -117,7 +117,10 @@ PIEZAS = [
     (48, "t-escucha-activa-decision-tomada",
          ["ESCUCHA ACTIVA,", "DECISIÓN TOMADA"],                          "acta",    "mono"),
     (49, "t-resiliente-o-sea-que-aguantas",
-         ["RESILIENTE,", "O SEA, QUE", "AGUANTAS"],                       "hueca",   "cond"),
+         # Era "hueca" y a tres líneas el contorno (inflado por el mínimo de
+         # trazo impreso) soldaba las líneas entre sí. La hueca solo vive en
+         # MEMA: una línea y pintada grande.
+         ["RESILIENTE,", "O SEA, QUE", "AGUANTAS"],                       "desnuda", "cond"),
     (50, "t-transparencia-total-previa-cita",
          ["TRANSPARENCIA", "TOTAL,", "PREVIA CITA"],                      "desnuda", "cond"),
     (51, "t-el-pueblo-primero-despues-de-mi",
@@ -132,6 +135,29 @@ CUERPO = 66          # tamaño base de letra
 INTERLINEA = 0.88    # las frases van APRETADAS: es lo que hace bloque
 MARGEN = 14
 
+# Interlínea CONSCIENTE DE COLISIONES. Con 0.88 fijo, la tilde de OPINIÓN
+# subía hasta la O de CAMBIO («CAMBIQ»), la cola de la Q de PORQUE caía
+# sobre la I de SOCIALISTA (los auditores la leyeron como İ turca) y la coma
+# de TOTAL, aterrizaba en la I de CITA. La caja alta de Barlow deja 0.88 em
+# de paso pero la tilde sube ~0.94 y la cola de Q/coma baja ~0.15: el choque
+# es aritmético, no tipográfico. El bloque sigue apretado donde no hay
+# riesgo; solo el par de líneas conflictivo respira.
+_DESCENDENTES = set("QJ,;")          # lo que cuelga bajo la línea base
+_DIACRITICOS = set("ÁÉÍÓÚÜÑáéíóúüñ")  # lo que asoma sobre la caja
+
+
+def saltos_de(lineas: list, t: float) -> list:
+    """Distancia de la línea i a la i+1, en unidades."""
+    pasos = []
+    for arriba, abajo in zip(lineas, lineas[1:]):
+        extra = 0.0
+        if set(arriba) & _DESCENDENTES:
+            extra += 0.10
+        if set(abajo) & _DIACRITICOS:
+            extra += 0.13
+        pasos.append(t * (INTERLINEA + extra))
+    return pasos
+
 
 def compon(lineas, trato, voz, medida=None, slug="x") -> str:
     """Interior del SVG. `medida` es el bbox REAL del texto ya renderizado:
@@ -139,10 +165,14 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
     segunda pasada, porque un contenedor de tamaño fijo baila según la
     longitud de la frase y eso se ve a la primera."""
     fam, ajuste = VOCES[voz]
+    refuerza = voz in ("serif", "serif-it", "mono", "cond-lig")
     t = CUERPO * ajuste
-    salto = t * INTERLINEA
+    pasos = saltos_de(lineas, t)
     cx, cy = 500, 300
-    y0 = cy - (len(lineas) - 1) * salto / 2
+    y0 = cy - sum(pasos) / 2
+    ofs = [0.0]
+    for paso in pasos:
+        ofs.append(ofs[-1] + paso)
 
     def texto(ls, extra="", fill=TINTA, x=None, base=None):
         # `fill` se resuelve AQUÍ y no se repite en `extra`: un atributo
@@ -151,8 +181,21 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         xx = cx if x is None else x
         yy = y0 if base is None else base
         pintura = "" if fill is None else f'fill="{fill}" '
+        # REFUERZO DE IMPRENTA: un trazo nominal del color del relleno. No es
+        # decorativo — es el gancho para que `normalizar-trazo.py` pueda subir
+        # el peso de la letra hasta el mínimo impreso de la pieza. Un asta de
+        # letra vectorizada es un RELLENO y sin este stroke no hay nada que
+        # engordar: la mitad del set quedaba por debajo de 0,8 mm y ningún
+        # chequeo lo veía. En el texto calado de las cajas (fill #000) ancha
+        # el hueco, que es exactamente lo que el calado necesita.
+        # Solo a las voces FINAS (serif, cursiva, mono, ligera): la condensada
+        # bold ya tiene el asta al límite natural y el stroke centrado le roba
+        # 0,25 mm de ojal por cada lado sin ganar nada — medido: cerraba el
+        # 100 % de las contraformas y no movía la tinta fina.
+        if refuerza and fill is not None and "stroke=" not in extra:
+            extra = f'stroke="{fill}" stroke-width="2.5" stroke-linejoin="round" ' + extra
         return "".join(
-            f'<text x="{xx}" y="{yy + i*salto:.1f}" text-anchor="middle" '
+            f'<text x="{xx}" y="{yy + ofs[i]:.1f}" text-anchor="middle" '
             f'{pintura}{fam} font-size="{t:.1f}" {extra}>{l}</text>'
             for i, l in enumerate(ls)
         )
@@ -213,9 +256,11 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         # ya lo dice todo.
         fam2, aj2 = VOCES["serif-it"]
         return (
-            f'<text x="{cx}" y="{cy - 10}" text-anchor="middle" fill="{TINTA}" {fam} '
+            f'<text x="{cx}" y="{cy - 10}" text-anchor="middle" fill="{TINTA}" '
+            f'stroke="{TINTA}" stroke-width="2.5" stroke-linejoin="round" {fam} '
             f'font-size="{CUERPO*1.35:.0f}">{lineas[0]}</text>'
-            f'<text x="{cx}" y="{cy + 58}" text-anchor="middle" fill="{TINTA}" {fam2} '
+            f'<text x="{cx}" y="{cy + 58}" text-anchor="middle" fill="{TINTA}" '
+            f'stroke="{TINTA}" stroke-width="2.5" stroke-linejoin="round" {fam2} '
             f'font-size="{CUERPO*0.62:.0f}">{lineas[1]}</text>'
             f'<rect x="{cx-90}" y="{cy+82}" width="180" height="5" rx="2.5" fill="{TINTA}"/>'
         )
@@ -224,14 +269,14 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         # Subrayado grueso: da peso sin ocupar otra línea.
         w = medida["w"] * 0.98
         return texto(lineas) + (
-            f'<rect x="{cx - w/2:.1f}" y="{y0 + (len(lineas)-1)*salto + 20:.1f}" '
+            f'<rect x="{cx - w/2:.1f}" y="{y0 + sum(pasos) + 20:.1f}" '
             f'width="{w:.1f}" height="9" rx="4.5" fill="{TINTA}"/>'
         )
 
     if trato == "acta":
         # Registro burocrático: mono, tracking ancho y corchetes de expediente.
         cuerpo = texto(lineas, extra='letter-spacing="1.5"')
-        y1, y2 = y0 - t * 0.95, y0 + (len(lineas) - 1) * salto + t * 0.35
+        y1, y2 = y0 - t * 0.95, y0 + sum(pasos) + t * 0.35
         xi, xd = cx - medida["w"] / 2 - 26, cx + medida["w"] / 2 + 26
         g = f'<g fill="none" stroke="{TINTA}" stroke-width="6">'
         g += f'<path d="M{xi+30:.0f} {y1:.0f} h-30 v{y2-y1:.0f} h30"/>'
@@ -242,7 +287,7 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         # Cursiva con filetes: la solemnidad es el chiste.
         cuerpo = texto(lineas)
         y1 = y0 - t * 1.25
-        y2 = y0 + (len(lineas) - 1) * salto + t * 0.6
+        y2 = y0 + sum(pasos) + t * 0.6
         w = medida["w"] * 1.02
         return (
             cuerpo
@@ -261,7 +306,7 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         chico = t * (0.62 if trato == "cifra" else 0.54)
         for l in lineas:
             if l.isdigit():
-                u = (t * (1.55 if trato == "cifra" else 1.05)) / 7
+                u = (t * (1.9 if trato == "cifra" else 1.45)) / 7
                 svg, ancho = pixeles(l, 0, 0, u)
                 alto = 7 * u
                 partes.append(

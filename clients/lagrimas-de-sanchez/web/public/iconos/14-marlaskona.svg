@@ -6,8 +6,6 @@
       <!-- la goma: biselada, con la funda calada y una esquina gastada -->
       <path fill-rule="evenodd" d="M52 56 q0 -10 10 -11 l130 -8 q12 -1 14 10 l4 32 q1 11 -10 12 l-134 9 q-11 1 -13 -10 Z
         M78 50 l12 -1 4 52 -12 1 Z M168 44 l12 -1 4 52 -12 1 Z"/>
-      <!-- esquina mordida de tanto borrar -->
-      <path d="M196 42 q10 6 12 18 l-10 1 q-2 -11 -8 -17 Z" fill="#2E3320" opacity="0"/>
       <!-- mango torneado -->
       <path d="M126 100 l16 -1 q4 22 2 44 q8 4 8 12 l0 26 q0 8 -8 8 l-18 0 q-8 0 -8 -8 l0 -26 q0 -8 8 -12 q2 -22 0 -43 Z"/>
     </g>

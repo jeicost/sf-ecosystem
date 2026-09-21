@@ -23,16 +23,22 @@ import re
 import sys
 from pathlib import Path
 
+from alturas_impresion import alto_impreso_mm
+
 AQUI = Path(__file__).resolve().parent
 ICONOS = AQUI.parent.parent / "web" / "public" / "iconos"
 
-PX_POR_MM = 830 / 380.9      # la caja de la botella contra la botella real
-ALTO_PIEZA = 38              # alto típico de pieza ilustrada en las columnas
-ALTO_REMATE = 14
-ALTO_COLUMNA = 430           # el lagrimómetro ocupa el bloque entero
-
-MINIMO_MM = 0.85             # nada por debajo: no imprime
-OBJETIVO_REMATE_MM = 0.8     # el relleno NO debe pesar más que el contenido
+MINIMO_MM = 0.85             # dibujos: nada por debajo, no imprime
+# El TEXTO tiene su propio mínimo, más fino. Empujarlo a 0,85 cerraba las
+# contraformas: a caja de 2,7 mm no caben astas y ojales de 0,8 a la vez
+# (5 × 0,8 > 2,7 — es aritmética, no opinión). 0,5 mm imprime con malla
+# fina y deja el ojal abierto; el escenario estricto vive en el informe
+# de imprimibilidad y en la pregunta 7 del correo al serigrafista.
+MINIMO_TEXTO_MM = 0.5
+# 1,0 y no 0,8: a 4,6 mm de alto, un trazo clavado en el mínimo cae por
+# debajo en cuanto la malla come medio punto — medido: las flechas perdían
+# el 25-47 % de su tinta. La argamasa puede ser rotunda.
+OBJETIVO_REMATE_MM = 1.0
 
 
 def alto_viewbox(svg):
@@ -51,11 +57,14 @@ def main() -> int:
             continue
 
         remate = f.name.startswith("r-")
-        alto_px = ALTO_COLUMNA if f.name.startswith("54-") else (ALTO_REMATE if remate else ALTO_PIEZA)
+        # La altura REAL de impresión (la del desarrollo plano), no una
+        # suposición en píxeles: con ALTO_PIEZA=38 (17,4 mm) el mínimo salía
+        # un 60 % más fino de lo prometido en las bandas de 11 mm.
+        mm_impresos = alto_impreso_mm(f.stem)
 
         if remate:
             # Los remates sí se igualan: son argamasa y deben pesar lo mismo.
-            ancho = OBJETIVO_REMATE_MM * PX_POR_MM * (alto / alto_px)
+            ancho = OBJETIVO_REMATE_MM * (alto / mm_impresos)
             nuevo, n = re.subn(r'stroke-width="[\d.]+"', f'stroke-width="{ancho:.2f}"', svg)
             if n and nuevo != svg:
                 f.write_text(nuevo, encoding="utf-8")
@@ -65,7 +74,8 @@ def main() -> int:
         # Las ilustraciones NO se igualan — su jerarquía de grosores es
         # deliberada, como en la referencia. Solo se SUBE al mínimo lo que no
         # imprimiría: un trazo por debajo de 0,85 mm sobre el vidrio.
-        minimo = MINIMO_MM * PX_POR_MM * (alto / alto_px)
+        objetivo = MINIMO_TEXTO_MM if f.name.startswith("t-") else MINIMO_MM
+        minimo = objetivo * (alto / mm_impresos)
         cambiado = False
         def sube(m):
             nonlocal cambiado
