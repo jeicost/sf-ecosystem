@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Botella } from "@/components/Botella";
+import { rutaArte } from "@/lib/iconos";
 import { BotonComprar } from "@/components/BotonComprar";
 import { Cinta } from "@/components/Cinta";
 import { FotoProducto } from "@/components/FotoProducto";
@@ -61,8 +62,11 @@ export default function Home() {
 
         {/* La botella vive DENTRO del panel, centrada en él y sangrando solo
             por abajo. Cruzarla sobre el texto pisaba el titular y el filete de
-            la ficha le pasaba por encima: eso no es tensión, es colisión. */}
-        <div className="pointer-events-none absolute bottom-[-3.5rem] hidden lg:block lg:left-[77%] lg:-translate-x-1/2">
+            la ficha le pasaba por encima: eso no es tensión, es colisión.
+            La sangría es de 1rem y no más: el estampado ahora llega hasta
+            22px de la base (el CIERRE), y con -3.5rem la última fila de
+            piezas quedaba enterrada bajo la marquesina. */}
+        <div className="pointer-events-none absolute bottom-[-1rem] hidden lg:block lg:left-[77%] lg:-translate-x-1/2">
           <Botella alto={820} />
         </div>
 
@@ -209,7 +213,7 @@ export default function Home() {
                 }}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/iconos/${slug}.svg`} alt={nombre} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-contain p-[13%]" />
+                <img src={rutaArte(slug)} alt={nombre} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-contain p-[13%]" />
               </Link>
             </li>
           ))}

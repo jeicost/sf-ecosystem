@@ -45,8 +45,10 @@ export const ICONO_DE: Record<number, string> = {
   55: "55-pucherazo",
   56: "56-contiene-lagrimas",
   57: "57-edicion-numerada",
-  // Falta solo el 54 (Lagrimómetro): los medidores siguen siendo decisión
-  // abierta de Carlos (producto/medidores-abierto.md).
+  // El 54 es la pieza-instrumento: columna vertical con el dial y las seis
+  // lecturas de la v2 —la vigente hasta que el dueño cierre los medidores—,
+  // construida a imagen del trompímetre de la referencia.
+  54: "54-lagrimometro",
 
   // ── Piezas de solo texto ──────────────────────────────────────────────
   // Compuestas en vector, no generadas: con la tipografía del sistema ya
@@ -78,5 +80,18 @@ export const ICONO_DE: Record<number, string> = {
   53: "t-vocacion-de-servicio-nomina-de-por-vida",
 };
 
+/**
+ * La versión del arte. Los /iconos se sirven con `Cache-Control: immutable`
+ * (next.config.ts) pero la tubería de diseño REGENERA los SVG con el mismo
+ * nombre — la promesa «si cambia la pieza cambia el fichero» no se cumple.
+ * La query rompe la caché sin renombrar 67 ficheros: se sube cuando se
+ * vuelve a pasar `diseno/iconos/` y cambia cualquier pieza.
+ */
+export const VERSION_ARTE = 3;
+
 export const rutaIcono = (n: number): string | null =>
-  ICONO_DE[n] ? `/iconos/${ICONO_DE[n]}.svg` : null;
+  ICONO_DE[n] ? rutaArte(ICONO_DE[n]) : null;
+
+/** La única forma legítima de construir una URL de /iconos. */
+export const rutaArte = (slug: string): string =>
+  `/iconos/${slug}.svg?v=${VERSION_ARTE}`;

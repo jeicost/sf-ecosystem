@@ -20,8 +20,9 @@ AQUI = Path(__file__).resolve().parent
 ICONOS = AQUI.parent.parent / "web" / "public" / "iconos"
 
 PX_POR_MM = 830 / 380.9
-ALTO_BANDA = 21
-ALTO_REMATE = ALTO_BANDA * 0.62
+ALTO_BANDA = 38
+ALTO_REMATE = 14
+ALTO_COLUMNA = 430
 MINIMO_MM = 0.8
 
 
@@ -42,7 +43,7 @@ def main() -> int:
             fallos.append(f"{nombre}: sin viewBox medible")
             continue
         alto_vb = float(m.group(1))
-        alto_px = ALTO_REMATE if nombre.startswith("r-") else ALTO_BANDA
+        alto_px = ALTO_COLUMNA if nombre.startswith("54-") else (ALTO_REMATE if nombre.startswith("r-") else ALTO_BANDA)
 
         for t in re.findall(r'stroke-width="([\d.]+)"', svg):
             mm = float(t) / (alto_vb / alto_px) / PX_POR_MM

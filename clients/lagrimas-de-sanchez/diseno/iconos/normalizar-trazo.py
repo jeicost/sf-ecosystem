@@ -27,10 +27,11 @@ AQUI = Path(__file__).resolve().parent
 ICONOS = AQUI.parent.parent / "web" / "public" / "iconos"
 
 PX_POR_MM = 830 / 380.9      # la caja de la botella contra la botella real
-ALTO_BANDA = 21              # alto típico de banda en Botella.tsx (18-24)
-ALTO_REMATE = ALTO_BANDA * 0.62
+ALTO_PIEZA = 38              # alto típico de pieza ilustrada en las columnas
+ALTO_REMATE = 14
+ALTO_COLUMNA = 430           # el lagrimómetro ocupa el bloque entero
 
-OBJETIVO_MM = 1.0            # con margen sobre el mínimo de 0,8
+MINIMO_MM = 0.85             # nada por debajo: no imprime
 OBJETIVO_REMATE_MM = 0.8     # el relleno NO debe pesar más que el contenido
 
 
@@ -50,17 +51,33 @@ def main() -> int:
             continue
 
         remate = f.name.startswith("r-")
-        destino_mm = OBJETIVO_REMATE_MM if remate else OBJETIVO_MM
-        alto_px = ALTO_REMATE if remate else ALTO_BANDA
+        alto_px = ALTO_COLUMNA if f.name.startswith("54-") else (ALTO_REMATE if remate else ALTO_PIEZA)
 
-        # Cuánto mide, en unidades del viewBox, un trazo que sobre el vidrio
-        # dé exactamente `destino_mm`.
-        ancho = destino_mm * PX_POR_MM * (alto / alto_px)
+        if remate:
+            # Los remates sí se igualan: son argamasa y deben pesar lo mismo.
+            ancho = OBJETIVO_REMATE_MM * PX_POR_MM * (alto / alto_px)
+            nuevo, n = re.subn(r'stroke-width="[\d.]+"', f'stroke-width="{ancho:.2f}"', svg)
+            if n and nuevo != svg:
+                f.write_text(nuevo, encoding="utf-8")
+                tocados.append((f.name, ancho, OBJETIVO_REMATE_MM))
+            continue
 
-        nuevo, n = re.subn(r'stroke-width="[\d.]+"', f'stroke-width="{ancho:.2f}"', svg)
-        if n and nuevo != svg:
+        # Las ilustraciones NO se igualan — su jerarquía de grosores es
+        # deliberada, como en la referencia. Solo se SUBE al mínimo lo que no
+        # imprimiría: un trazo por debajo de 0,85 mm sobre el vidrio.
+        minimo = MINIMO_MM * PX_POR_MM * (alto / alto_px)
+        cambiado = False
+        def sube(m):
+            nonlocal cambiado
+            v = float(m.group(1))
+            if v < minimo:
+                cambiado = True
+                return f'stroke-width="{minimo:.2f}"'
+            return m.group(0)
+        nuevo = re.sub(r'stroke-width="([\d.]+)"', sube, svg)
+        if cambiado:
             f.write_text(nuevo, encoding="utf-8")
-            tocados.append((f.name, ancho, destino_mm))
+            tocados.append((f.name, minimo, MINIMO_MM))
 
     for nombre, ancho, mm in tocados:
         print(f"  ✓ {nombre:44s} trazo {ancho:6.2f} u → {mm} mm impresos")

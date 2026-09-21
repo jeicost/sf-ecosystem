@@ -55,7 +55,14 @@ const H = H_HOMBRO + H_CUERPO;
 const HALO   = { x: 100*MM, y: 8*MM, w: 130*MM, h: 46*MM };
 /** La contraetiqueta sí: va en la trasera, que en esta lámina son los bordes. */
 const CONTRA = { x: 10*MM, y: H_HOMBRO + 70*MM, w: 80*MM, h: 58*MM };
-const RESERVAS = [CONTRA];
+/**
+ * El LAGRIMÓMETRO (54) es una COLUMNA-INSTRUMENTO vertical, como el
+ * trompímetre de la referencia: cruza todas las bandas de arriba abajo, así
+ * que reserva su carril y las bandas fluyen a los lados. En la botella real
+ * cae en la cara trasera, a un cuarto de vuelta del lockup.
+ */
+const COL54  = { x: 236*MM, y: H_HOMBRO + 6*MM, w: 42*MM, h: 128*MM };
+const RESERVAS = [CONTRA, COL54];
 
 /**
  * [alto de banda mm, piezas]. NUEVE bandas, no doce: el cilindro perdió 55 mm
@@ -65,8 +72,8 @@ const RESERVAS = [CONTRA];
  *
  * Las tres bandas altas (17, 16 y 13) son las anclas: el contraste de escala es
  * lo que separa esta retícula de una nube de palabras. Van repartidas, nunca
- * seguidas. Están las 56 piezas que tienen arte — falta solo la 54, el
- * lagrimómetro, que espera a que el dueño cierre los medidores.
+ * seguidas. Están las 56 piezas de banda; la 57.ª es el lagrimómetro, que no
+ * va en banda: cruza el cilindro en vertical por su carril reservado (COL54).
  */
 const BANDAS = [
   [11, [26, 30, 20, 17, 35, 19, 44, 49]],
@@ -149,12 +156,30 @@ for (const [altoMM, ns] of BANDAS) {
     const hueco = Math.max(3 * MM, ((xb - xa) - usado) / (items.length + 1));
     let x = xa + hueco;
     for (const it of items) {
-      out += `<g transform="translate(${x.toFixed(1)} ${(y + (alto - it.h) / 2).toFixed(1)}) `
+      // El mismo baile de línea base que la web (components/Botella.tsx):
+      // determinístico por número de pieza, ±3 px. Es lo que convierte una
+      // retícula en tejido — y al ser la misma fórmula, la lámina y la
+      // botella de la web cuentan la misma historia.
+      const dy = ((it.n * 37) % 7) - 3;
+      out += `<g transform="translate(${x.toFixed(1)} ${(y + (alto - it.h) / 2 + dy).toFixed(1)}) `
            + `scale(${it.k.toFixed(4)}) translate(${-it.a.x} ${-it.a.y})" fill="#F6F1E6">${it.a.cuerpo}</g>`;
       x += it.w + hueco; colocadas++;
     }
   });
   y += alto + 2 * MM;
+}
+
+// La columna-instrumento, centrada en su carril y a toda su altura.
+const a54 = arteDe(54);
+if (a54) {
+  const k54 = Math.min(COL54.h / a54.h, COL54.w / a54.w);
+  const x54 = COL54.x + (COL54.w - a54.w * k54) / 2;
+  const y54 = COL54.y + (COL54.h - a54.h * k54) / 2;
+  out += `<g transform="translate(${x54.toFixed(1)} ${y54.toFixed(1)}) `
+       + `scale(${k54.toFixed(4)}) translate(${-a54.x} ${-a54.y})" fill="#F6F1E6">${a54.cuerpo}</g>`;
+  colocadas++;
+} else {
+  saltadas.add(nombreDe[54] || 54);
 }
 
 out += `<g transform="translate(${HALO.x + HALO.w / 2} ${HALO.y + 26 * MM})" fill="#F6F1E6" text-anchor="middle">`

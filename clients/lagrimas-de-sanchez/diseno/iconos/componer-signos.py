@@ -176,7 +176,12 @@ SIGNOS = {
 
 
 # ── LO QUE ESTE SISTEMA NO RESUELVE ───────────────────────────────────────
-# El galgo (01) y Chepas (02) NO están aquí, y no es un olvido.
+# Las piezas 01-13 NO están aquí, y no es un olvido: son las ilustraciones
+# generadas con Mystic en agosto, y tienen exactamente el carácter de
+# serigrafía dibujada de la referencia. Este generador las sustituyó una vez
+# por primitivas geométricas y el resultado BAJÓ la calidad — se restauraron
+# el 21-sep. La lección: la geometría resuelve objetos simples; el carácter
+# de ilustración no se fabrica con rectángulos redondeados.
 #
 # Se intentaron cinco veces con geometría y salieron, por orden: un cerdo, un
 # elefante, una medusa, una foca y un escarabajo. Un galgo en carrera y una
@@ -199,41 +204,11 @@ SIGNOS = {
 #   dentro   — palabra CALADA dentro del signo
 #   bajo     — debajo, pero apretado y pequeño (la excepción, no la regla)
 PIEZAS = [
-    (3,  "03-chirimoyas",             "chirimoya", "CHIRIMOYAS",  "bajo"),
-    (4,  "04-chiqui",                 "chiqui",    "CHIQUI",      "lado"),
-    (5,  "05-pili-juerga",            "copa",      "PILI JUERGA", "bajo"),
-    (6,  "06-la-nina-de-la-curva",    "curva",     "LA NIÑA DE LA CURVA", "bajo"),
-    (7,  "07-catedratica",            "sello",     "CATEDRÁTICA", "bajo"),
-    (8,  "08-gracita-bolanos",        "mandil",    "GRACITA BOLAÑOS", "bajo"),
-    (9,  "09-el-portero",             "portero",   "EL PORTERO",  "lado"),
-    (10, "10-cejas",                  "cejarombos","CEJAS",       "bajo"),
-    (11, "11-la-cajera",              "barras",    "LA CAJERA",   "bajo"),
-    (12, "12-tucan",                  "tucan",     "TUCÁN",       "lado"),
-    (13, "13-charo",                  "charo",     "CHARO",       "lado"),
-    (14, "14-marlaskona",             "mazo",      "MARLASKONA",  "lado"),
-    # Sin el «VI»: el art. 490.3 CP castiga las injurias a la Corona, y es el
-    # único punto del proyecto que tocaría derecho PENAL. La decisión estaba
-    # tomada en legal/checklist-legal.md desde el principio; lo que faltaba era
-    # aplicarla, y el «VI» seguía vivo en cinco sitios — incluida la lámina que
-    # se le manda al serigrafista.
-    (15, "15-felpudo",                "felpudo",   "FELPUDO",     "bajo"),
-    (17, "17-oscargutan",             "orangutan", "OSCARGUTÁN",  "lado"),
-    (18, "18-javierito",              "cuernos",   "JAVIERITO",   "lado"),
-    (32, "32-sincronizada",           "metronomo", "SINCRONIZADA","bajo"),
-    (33, "33-la-banda-del-peugeot",   "coche",     "LA BANDA",    "bajo"),
-    (34, "34-fango",                  None,        "FANGO",       "goteo"),
-    (35, "35-bulos",                  "aviso",     "BULOS",       "lado"),
-    (36, "36-telepedro",              "tele",      "TELEPEDRO",   "lado"),
-    (37, "37-saunas",                 "vapor",     "SAUNAS",      "lado"),
-    (38, "38-el-puto-amo",            "corona",    "EL PUTO AMO", "bajo"),
-    (39, "39-el-uno",                 "dedo",      "EL UNO",      "lado"),
-    (40, "40-falcon",                 "jet",       "FALCON",      "lado"),
-    (41, "41-maquina-del-fango",      "maquina",   "MÁQUINA DEL FANGO", "bajo"),
-    (42, "42-cabalgar-contradicciones","caballo",  "CABALGAR",    "bajo"),
-    (43, "43-izquierda-caviar",       "lata",      "IZQUIERDA CAVIAR", "bajo"),
-    (55, "55-pucherazo",              "urna",      "PUCHERAZO",   "lado"),
-    (56, "56-contiene-lagrimas",      "gota",      None,          "solo"),
-    (57, "57-edicion-numerada",       "recuadro",  "EDICIÓN Nº",  "lado"),
+    # VACÍO A PROPÓSITO (21-sep). Todas las piezas que este generador
+    # producía tienen ya ilustración dibujada a mano con el registro de la
+    # referencia (ver diseno/PROPUESTA-NIVEL-XITXARELLO.md). El generador se
+    # queda solo para los REMATES; el diccionario SIGNOS de arriba se
+    # conserva como archivo de primitivas por si hiciera falta esbozar algo.
 ]
 
 FAM = 'font-family="Barlow Condensed, Arial Narrow, sans-serif" font-weight="700"'

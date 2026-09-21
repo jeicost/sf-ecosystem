@@ -43,7 +43,10 @@ const CARGA = {
   "bodoni-700": "BodoniModa.ttf",
   "bodoni-400": "BodoniModa.ttf",
   "bodoni-italic": "BodoniModa-Italic.ttf",
-  "franklin-800": "LibreFranklin-Variable.ttf",
+  // La ESTÁTICA, no la variable: opentype.js no instancia ejes fvar y con la
+  // variable vectoriza el máster por defecto (Regular). «Ecologetas» salió
+  // fina en la botella por esto — pedía un logotipo gordo y llegó UI text.
+  "franklin-800": "LibreFranklin-ExtraBold.ttf",
   "plex-600": "IBMPlexMono-SemiBold.ttf",
 };
 

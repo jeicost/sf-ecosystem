@@ -1,5 +1,5 @@
 import { PIEZAS } from "@/lib/piezas";
-import { ICONO_DE } from "@/lib/iconos";
+import { ICONO_DE, rutaArte } from "@/lib/iconos";
 
 /**
  * La botella, dibujada.
@@ -93,40 +93,74 @@ type Banda = [number, (number | string)[]];
  */
 
 /**
- * El bloque denso. MENOS bandas y MÁS piezas por banda que en el primer
- * intento: con dos piezas por fila y justificación de lado a lado, lo que
- * queda entre ellas es un agujero, no un hueco. Con cinco, la fila se sostiene
- * sola y aparece el tejido.
+ * EL BLOQUE, A LA MANERA DE LA REFERENCIA (21-sep, tras estudiar la trasera
+ * del Xitxarel·lo que enseñó el dueño).
  *
- * Los remates se repiten a propósito — en la referencia la misma flechita sale
- * cuatro veces. Son argamasa: nadie los cuenta, pero sin ellos no hay muro.
+ * La trasera de la referencia resuelve la composición así: el TROMPÍMETRE
+ * —su instrumento— parte el bloque como una COLUMNA VERTICAL de arriba abajo,
+ * y las piezas se empaquetan orgánicamente a los dos lados, con las líneas
+ * base desalineadas y los tamaños alternados. No hay filas perceptibles: hay
+ * tejido. Nuestra versión anterior (bandas horizontales justificadas) dejaba
+ * la rejilla a la vista.
+ *
+ * Aquí: dos columnas de mini-filas (una o dos piezas por fila), el
+ * LAGRIMÓMETRO (pieza 54) como columna central a toda la altura del bloque, y
+ * cada pieza con un desplazamiento vertical pequeño y DETERMINÍSTICO (por su
+ * índice, nunca aleatorio: el render debe ser idéntico en cada build) que
+ * rompe la línea base sin desordenar.
  */
-const CUERPO: Banda[] = [
-  [19, [26, 22, "r-asterisco"]],
-  [23, [34, 30, "r-cruz", 35]],
-  [18, [3, 20, 51, "r-flecha-ne"]],
-  [24, [36, 12, 44]],
-  [18, [1, 10, 37, 28]],
-  [23, [42, 13, 45]],
-  [18, [11, "r-flecha-se", 14, "r-estrella"]],
-  [24, [5, 29, "r-puntos", 39]],
-  [18, [23, 43, "r-rombos"]],
-  [23, [47, 9, "r-flecha-n", 38]],
-  [18, [33, "r-asterisco", 50, 18]],
-  [24, [40, 8, 46]],
-  [18, [21, "r-estrella", 55, 7, "r-cruz"]],
-  [23, [48, 32, "r-flecha-e", 41]],
-  [18, [4, "r-rombos", 49, 15]],
-  [24, [52, 6, "r-cruz", 53]],
-  [18, [17, "r-barras", 31, "r-flecha-ne"]],
-  [21, [56, 27, 25, "r-puntos"]],
-  [21, [57, "r-flecha-e", 24]],
-];
+/**
+ * SUPERIOR cubre TODO el cono del hombro (y≈355→460 de la caja de 830): seis
+ * filas centradas cuyo ancho crece con la curva. Las dos primeras filas de
+ * cada columna viven aquí emparejadas — si las columnas rectas empezaran a
+ * esta altura, sus piezas asomarían fuera del vidrio por los costados (pasó:
+ * «Ecologetas» cortada sobre el canto).
+ */
+const SUPERIOR: Banda[] = [
+  [14, [26, "r-estrella"]],
+  [16, [22]],
+  [16, [44]],
+  [16, [51]],
+  [18, [34, 35]],
+  [16, [3, 30]],
+]
 
-// Los anchos bajaron un 10 % cuando las piezas se ciñeron a su dibujo: sin
-// margen propio, la misma altura de banda da piezas más anchas y las de los
-// extremos volvían a salirse por el canto.
-const ANCHOS = CUERPO.map((_, i) => Math.min(186, 78 + i * 20));
+const COL_IZQ: Banda[] = [
+  [20, [36]],
+  [17, [1]],
+  [15, [20, 19]],
+  [21, [42]],
+  [20, [5]],
+  [16, [23, 47]],
+  [20, [40]],
+  [15, [27, "r-cruz"]],
+  [20, [31]],
+  [20, [2]],
+]
+
+const COL_DER: Banda[] = [
+  [15, [10, 45]],
+  [23, [12]],
+  [20, [13, 4]],
+  [22, [38]],
+  [16, [39, 21]],
+  [17, [9, 28, "r-rombos"]],
+  [22, [43]],
+  [20, [6]],
+  [20, [7]],
+]
+
+/** El cierre, a todo lo ancho bajo las columnas. */
+const CIERRE: Banda[] = [
+  [15, [48, 37, "r-asterisco"]],
+  [17, [41, 8, 15]],
+  [15, [49, 11, 17]],
+  [17, [56, 25, 32]],
+  [15, [50, 29, 18]],
+  [17, [57, 33, 55]],
+  [15, [16, 52, 46, 53]],
+  [16, [24, 14, "r-flecha-e"]],
+]
 
 /**
  * Una pieza del estampado: su SVG real, escalado por el ALTO de su banda.
@@ -151,12 +185,17 @@ function Pieza({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`/iconos/${slug}.svg`}
+      src={rutaArte(slug)}
       alt={rellena ? "" : (TEXTO_DE[id as number] ?? "")}
       aria-hidden={rellena || undefined}
       style={{
         height: rellena ? alto * 0.62 : alto,
         width: "auto",
+        // La referencia no alinea las piezas a una línea base perfecta: cada
+        // una baila un par de milímetros y eso es lo que convierte filas en
+        // tejido. Determinístico por el número de pieza — un build siempre
+        // pinta lo mismo.
+        transform: `translateY(${typeof id === "number" ? ((id * 37) % 7) - 3 : 0}px)`,
         // `object-contain` + tope: la pieza ancha se reduce manteniendo su
         // proporción en vez de desbordarse. Antes llevaba `shrink-0` y las
         // frases largas se salían del vidrio y aparecían cortadas por el
@@ -189,7 +228,7 @@ function Banda({
 }) {
   return (
     <div
-      className="mx-auto flex items-center justify-between gap-[3px]"
+      className={`mx-auto flex items-center gap-[3px] ${piezas.length > 1 ? "justify-between" : "justify-center"}`}
       style={{ width: ancho }}
     >
       {piezas.map((id, i) => (
@@ -208,17 +247,6 @@ function Banda({
     </div>
   );
 }
-
-/*
- * EL LAGRIMÓMETRO (pieza 54) NO ESTÁ AQUÍ, y es a propósito.
- *
- * Es la única pieza del inventario sin arte porque los medidores siguen siendo
- * decisión abierta del dueño (`producto/medidores-abierto.md`). El componente
- * que lo dibujaba vivía en este fichero sin renderizarse en ningún sitio:
- * código muerto que nadie iba a recordar. Cuando se cierre la decisión, se
- * dibuja como una pieza más del set en `diseno/iconos/componer-signos.py`,
- * igual que las otras 56 — no como un caso especial de la botella.
- */
 
 export function Botella({
   alto = 640,
@@ -374,19 +402,50 @@ export function Botella({
             </span>
           </div>
 
-          {/* El bloque denso. Aquí es donde se gana o se pierde la prueba del
-              metro: separaciones de 3 px, no de quince. */}
-          <div className="flex flex-1 flex-col justify-between gap-[2px] pb-[2px]">
-            {CUERPO.map(([alto, piezas], i) => (
-              <Banda
-                key={i}
-                alto={alto}
-                piezas={piezas}
-                ancho={ANCHOS[i]}
-              />
+          {/* Zona alta, sobre el hombro: filas cortas y centradas, porque el
+              cono aún no ha abierto del todo. */}
+          <div className="flex flex-col items-center gap-[3px]">
+            {SUPERIOR.map(([alto, piezas], i) => (
+              // Los anchos vienen de MEDIR la Bézier del hombro fila a fila
+              // (ancho del vidrio menos zona muerta de serigrafía), no de una
+              // progresión inventada: la aritmética 128+i·14 dejaba la primera
+              // fila 15 px más ancha que el cristal a esa altura.
+              <Banda key={i} alto={alto} piezas={piezas} ancho={[106, 124, 142, 158, 174, 190][i]} />
             ))}
           </div>
 
+          {/* El corazón del estampado, como la trasera de la referencia: el
+              LAGRIMÓMETRO parte el bloque como columna-instrumento y las
+              piezas se empaquetan a los lados. */}
+          <div className="mx-auto flex flex-1 items-stretch justify-center gap-[7px] pt-[3px]" style={{ width: 216 }}>
+            <div className="flex w-[78px] flex-col justify-between">
+              {COL_IZQ.map(([alto, piezas], i) => (
+                <Banda key={i} alto={alto} piezas={piezas} ancho={78} />
+              ))}
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={rutaArte(ICONO_DE[54])}
+              alt={TEXTO_DE[54] ?? "Lagrimómetro"}
+              loading="lazy"
+              decoding="async"
+              // Ancho FIJO de carril: con `w-auto`, la altura completa del
+              // bloque hacía crecer el instrumento hasta comerse las columnas.
+              className="h-full w-[46px] shrink-0 object-contain"
+            />
+            <div className="flex w-[78px] flex-col justify-between">
+              {COL_DER.map(([alto, piezas], i) => (
+                <Banda key={i} alto={alto} piezas={piezas} ancho={78} />
+              ))}
+            </div>
+          </div>
+
+          {/* El cierre, a todo lo ancho del cilindro. */}
+          <div className="flex flex-col items-center gap-[3px] pt-[4px]">
+            {CIERRE.map(([alto, piezas], i) => (
+              <Banda key={i} alto={alto} piezas={piezas} ancho={206} />
+            ))}
+          </div>
         </div>
       </div>
 
