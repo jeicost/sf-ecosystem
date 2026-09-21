@@ -161,18 +161,24 @@ export default function OpsDashboard({ clientId, locale }: { clientId: string; l
                   <thead>
                     <tr className="border-b border-line text-left text-[10px] uppercase tracking-wider text-ink-muted">
                       <th className="pb-2 pr-3 font-semibold">{t('emailops.dash.table.client', locale)}</th>
-                      <th className="pb-2 pr-3 text-right font-semibold">{t('emailops.dash.table.requests', locale)}</th>
-                      <th className="pb-2 pr-3 text-right font-semibold">{t('emailops.dash.table.packages', locale)}</th>
-                      <th className="pb-2 text-right font-semibold">{t('emailops.dash.table.last', locale)}</th>
+                      <th className="whitespace-nowrap pb-2 pr-3 text-right font-semibold">{t('emailops.dash.table.requests', locale)}</th>
+                      <th className="whitespace-nowrap pb-2 pr-3 text-right font-semibold">{t('emailops.dash.table.packages', locale)}</th>
+                      <th className="whitespace-nowrap pb-2 text-right font-semibold">{t('emailops.dash.table.last', locale)}</th>
                     </tr>
                   </thead>
                   <tbody className="tabular-nums">
                     {stats.clients.slice(0, stats.clients.length <= 15 ? 15 : 12).map((c) => (
                       <tr key={c.name} className="border-b border-line-subtle last:border-0">
-                        <td className="py-2 pr-3 text-ink" translate="no">{c.name}</td>
+                        <td className="py-2 pr-3 text-ink" translate="no">
+                          {c.name}
+                          {/* Varios departamentos de la misma organización (mismo dominio) */}
+                          {c.departments.length > 0 && (
+                            <span className="mt-0.5 block text-[11px] leading-snug text-ink-tertiary">{c.departments.join(' · ')}</span>
+                          )}
+                        </td>
                         <td className="py-2 pr-3 text-right text-ink-secondary">{c.requests}</td>
                         <td className="py-2 pr-3 text-right text-ink-secondary">{c.packages || '—'}</td>
-                        <td className="py-2 text-right text-ink-tertiary">{c.lastDate ? fmtDate(c.lastDate, locale) : '—'}</td>
+                        <td className="whitespace-nowrap py-2 text-right text-ink-tertiary">{c.lastDate ? fmtDate(c.lastDate, locale) : '—'}</td>
                       </tr>
                     ))}
                   </tbody>
