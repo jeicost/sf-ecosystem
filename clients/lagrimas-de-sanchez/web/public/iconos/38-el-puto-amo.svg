@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="25.64 -5.66 270.8 203.14">
   <!-- Corona con pedrería calada y las letras BAILANDO, como SAPASTRE! -->
   <g fill="#F6F1E6">
-    <path fill-rule="evenodd" d="M78 96 L92 34 L128 66 L150 18 L172 66 L208 34 L222 96 Z
+    <path class="engorde" stroke="#F6F1E6" stroke-width="18" stroke-linejoin="round" stroke-linecap="round" fill-rule="evenodd" d="M78 96 L92 34 L128 66 L150 18 L172 66 L208 34 L222 96 Z
       M118 78 l9 -11 9 11 -9 11 Z M164 78 l9 -11 9 11 -9 11 Z M146 66 l4 -5 4 5 -4 5 Z"/>
     <rect x="74" y="102" width="152" height="18" rx="4"/>
     <circle cx="92" cy="27" r="8"/><circle cx="150" cy="10" r="8"/><circle cx="208" cy="27" r="8"/>

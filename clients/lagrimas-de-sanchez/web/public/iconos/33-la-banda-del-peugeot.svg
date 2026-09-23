@@ -5,8 +5,8 @@
     <path fill-rule="evenodd" d="M28 128 q2 -26 34 -32 l30 -6 q14 -32 56 -34 l64 0 q40 0 46 34 l24 5 q22 5 22 30 l0 18 q0 10 -10 10 l-14 0 a38 38 0 0 0 -72 -2 l-80 0 a38 38 0 0 0 -72 -2 l-18 0 q-10 0 -10 -10 Z
       M102 96 l52 0 0 -28 -10 0 q-28 2 -42 28 Z M168 96 l52 0 q-12 -26 -40 -28 l-12 0 Z"/>
     <!-- cuatro cabezas caladas en las ventanillas: dos por ventana -->
-    <circle cx="118" cy="88" r="9"/><circle cx="140" cy="88" r="9"/>
-    <circle cx="184" cy="88" r="9"/><circle cx="206" cy="88" r="9"/>
+    <circle cx="118" cy="88" r="7.5"/><circle cx="140" cy="88" r="7.5"/>
+    <circle cx="184" cy="88" r="7.5"/><circle cx="206" cy="88" r="7.5"/>
   </g>
   <!-- ruedas con llanta calada -->
   <g fill="#F6F1E6">

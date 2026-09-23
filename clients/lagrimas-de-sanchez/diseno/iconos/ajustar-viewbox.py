@@ -112,8 +112,18 @@ def main() -> int:
 
             # Cuánto aire sobraba: si es poco, no se toca. Reescribir por un
             # 2 % solo añade ruido al diff.
+            #
+            # PERO si el contenido SE SALE del viewBox hay que reescribir
+            # SIEMPRE: con contenido más grande que la caja la ganancia sale
+            # negativa, pasaba el umbral «< 0.05» y la pieza quedaba CORTADA
+            # («E LA CURVA» sin la D, «L PORTERO» sin la E) — un rótulo
+            # agrandado se comía el canto en silencio.
+            eps = max(vb["w"], vb["h"]) * 0.002
+            desborda = (medida["x0"] < vb["x"] - eps or medida["y0"] < vb["y"] - eps
+                        or medida["x1"] > vb["x"] + vb["w"] + eps
+                        or medida["y1"] > vb["y"] + vb["h"] + eps)
             ganancia = 1 - (nw * nh) / (vb["w"] * vb["h"])
-            if ganancia < 0.05:
+            if ganancia < 0.05 and not desborda:
                 intactos.append(f.name)
                 continue
 

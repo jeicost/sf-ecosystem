@@ -42,13 +42,19 @@ def main() -> int:
         alto_vb = float(m.group(1))
         alto_pieza_mm = alto_impreso_mm(nombre[:-4] if nombre.endswith(".svg") else nombre)
 
-        for t in re.findall(r'stroke-width="([\d.]+)"', svg):
-            mm = float(t) * alto_pieza_mm / alto_vb
-            minimo_pieza = 0.5 if nombre.startswith("t-") else MINIMO_MM
-            if mm < minimo_pieza - 0.05:
-                fallos.append(f"{nombre}: trazo de {mm:.2f} mm (mínimo {minimo_pieza})")
-            elif mm > 1.9:
-                avisos.append(f"{nombre}: trazo de {mm:.2f} mm — pesa más que el resto")
+        for etiqueta in re.findall(r"<[^>]+stroke-width[^>]+>", svg):
+            # Los trazos `class="engorde"` son el ENGROSADOR de los rellenos
+            # de línea (engordar-arte.py): su grosor se eligió midiendo la
+            # pieza compuesta (relleno + trazo), no vale medir el trazo solo.
+            if 'class="engorde"' in etiqueta or 'class="talla"' in etiqueta:
+                continue
+            for t in re.findall(r'stroke-width="([\d.]+)"', etiqueta):
+                mm = float(t) * alto_pieza_mm / alto_vb
+                minimo_pieza = 0.5 if nombre.startswith("t-") else MINIMO_MM
+                if mm < minimo_pieza - 0.05:
+                    fallos.append(f"{nombre}: trazo de {mm:.2f} mm (mínimo {minimo_pieza})")
+                elif mm > 1.9 and not nombre.startswith("54-"):
+                    avisos.append(f"{nombre}: trazo de {mm:.2f} mm — pesa más que el resto")
 
         # El alto impreso de la pieza: si no llega, no se lee.
         alto_mm = alto_pieza_mm

@@ -84,7 +84,22 @@ def main() -> int:
                 cambiado = True
                 return f'stroke-width="{minimo:.2f}"'
             return m.group(0)
-        nuevo = re.sub(r'stroke-width="([\d.]+)"', sube, svg)
+        # Los trazos `class="engorde"` NO se tocan: su grosor lo eligió el
+        # optimizador MIDIENDO la pieza entera (engordar-arte.py); subirlos a
+        # ciegas al mínimo deshace esa medición.
+        TALLA_MM = 0.28  # cuánto ensancha el calado la talla, por lado ~0,14
+
+        def sube_tag(m):
+            tag = m.group(0)
+            if 'class="engorde"' in tag:
+                return tag
+            if 'class="talla"' in tag:
+                # exacta, no mínima: 0,5 mm soldaba FACHA entera
+                exacto = TALLA_MM * (alto / mm_impresos)
+                return re.sub(r'stroke-width="[\d.]+"',
+                              f'stroke-width="{exacto:.2f}"', tag)
+            return re.sub(r'stroke-width="([\d.]+)"', sube, tag)
+        nuevo = re.sub(r"<[^>]+>", sube_tag, svg)
         if cambiado:
             f.write_text(nuevo, encoding="utf-8")
             tocados.append((f.name, minimo, MINIMO_MM))

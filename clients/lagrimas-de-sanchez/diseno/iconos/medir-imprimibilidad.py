@@ -131,7 +131,10 @@ def main() -> int:
     def veredicto(pe, ce, xe, ie, pf, cf, xf, jf):
         # Lo que falla incluso con malla fina está ROTO de verdad; lo que
         # solo falla en el escenario estricto es una decisión del taller.
-        if pf > 30 or xf > 8 or jf > 4:
+        # Islas solas no condenan: perder puntadas y ojales de calado es
+        # textura que se va, no pieza rota — la referencia está llena de eso.
+        # Rota = pierde TINTA de verdad o se le cierra el calado del chiste.
+        if pf > 14 or xf > 8 or (jf > 4 and pf > 10):
             return "⛔ ROTA (falla incluso con malla fina)"
         if pe > 45 or xe > 12 or ie > 6:
             return "⚠️ SOLO MALLA FINA"

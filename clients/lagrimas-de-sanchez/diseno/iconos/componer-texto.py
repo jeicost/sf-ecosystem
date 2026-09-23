@@ -33,6 +33,15 @@ ICONOS = AQUI.parent.parent / "web" / "public" / "iconos"
 
 TINTA = "#F6F1E6"
 
+# El trazo que ENSANCHA el texto calado de las cajas: a 5,5-6 mm en el
+# hombro las contraformas se cerraban (medido); con esto la palabra tallada
+# respira aunque sus ojales internos se llenen — el mismo trato que la
+# referencia da a su micro-texto calado.
+# El ancho REAL lo pone normalizar-trazo.py (0,28 mm exactos a la altura de
+# impresión de cada pieza): aquí solo se marca. El mínimo ciego de texto
+# (0,5 mm) soldaba FACHA y las cajas del hombro en bloque ilegible.
+TALLA_ANCHA = 'class="talla" stroke="#000" stroke-width="2" stroke-linejoin="round" letter-spacing="2.5"' 
+
 # Los registros tipográficos. Siete voces con las cuatro familias que la web
 # YA carga: cero bytes nuevos. El octavo (píxel) no es una fuente, se dibuja.
 VOCES = {
@@ -91,7 +100,9 @@ def pixeles(texto: str, x: float, y: float, u: float) -> tuple[str, float]:
 # juntas en la retícula y para que el tratamiento DIGA algo de la frase: lo
 # solemne en serif, lo burocrático en mono, el mantra en caja maciza.
 PIEZAS = [
-    (16, "t-hermanisimo",       ["HERMANÍSIMO"],                          "sello",   "cond"),
+    # Era "sello" y la palabra quedaba a 1,2 mm dentro del aro: ilegible en
+    # cualquier malla (medido). En hueca va a toda caja, como MEMA.
+    (16, "t-hermanisimo",       ["HERMANÍSIMO"],                          "hueca",   "cond"),
     (19, "t-rufian",            ["rufián", "s. m."],                      "diccio",  "serif"),
     (20, "t-mema",              ["MEMA"],                                 "hueca",   "cond"),
     (21, "t-patxi-verguenza-ajena", ["PATXI", "VERGÜENZA", "AJENA"],      "desnuda", "cond"),
@@ -236,7 +247,11 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
             f'<mask id="c-{slug}" maskUnits="userSpaceOnUse" '
             f'x="{x-20:.1f}" y="{y-20:.1f}" width="{ancho+40:.1f}" height="{alto+40:.1f}">'
             f'<rect x="{x:.1f}" y="{y:.1f}" width="{ancho:.1f}" height="{alto:.1f}" fill="#fff"/>'
-            f'{texto(lineas, fill="#000")}</mask>'
+            # El trazo negro ENSANCHA el calado: a 5,5-6 mm en el hombro las
+            # contraformas de la caja se cerraban (medido); así la palabra
+            # tallada respira aunque sus ojales internos se llenen — el mismo
+            # trato que la referencia da a su micro-texto calado.
+            f'{texto(lineas, fill="#000", extra=TALLA_ANCHA)}</mask>'
             f'<rect x="{x:.1f}" y="{y:.1f}" width="{ancho:.1f}" height="{alto:.1f}" '
             f'rx="6" fill="{TINTA}" mask="url(#c-{slug})"/>'
         )
@@ -247,7 +262,7 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         r = max(medida["w"], medida["h"]) / 2 + 34
         return (
             f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{TINTA}" stroke-width="9"/>'
-            f'<circle cx="{cx}" cy="{cy}" r="{r-19}" fill="none" stroke="{TINTA}" stroke-width="3"/>'
+            f'<circle cx="{cx}" cy="{cy}" r="{r-26}" fill="none" stroke="{TINTA}" stroke-width="3"/>'
             + texto(lineas)
         )
 
@@ -303,7 +318,10 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         partes, y = [], y0
         # La cifra MANDA y el texto la acompaña: al revés no se lee como otro
         # registro, parece una errata.
-        chico = t * (0.62 if trato == "cifra" else 0.54)
+        # 0.72/0.78 y no 0.62/0.54: a 16 mm las palabras de acompañamiento
+        # quedaban con astas de 0,25 mm y morían ENTERAS mientras los dígitos
+        # de píxel aguantaban de sobra (volcado horizonte-muerto.png).
+        chico = t * (0.72 if trato == "cifra" else 0.78)
         for l in lineas:
             if l.isdigit():
                 u = (t * (1.9 if trato == "cifra" else 1.45)) / 7

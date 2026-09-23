@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="32.5 20.5 255 265">
+  <!-- Un caballo BALANCÍN: cabalga sin avanzar. Deporte nacional. -->
+  <g fill="#F6F1E6">
+    <!-- cabeza y cuello, de una pieza, con crin de tres mechones -->
+    <path d="M100 168 q-10 -44 16 -76 q4 -26 24 -34 q7 -3 9 4 l3 12 q26 -2 34 18 q4 12 -4 18 l-26 10 q-12 30 -6 48 Z"/>
+    <path d="M120 92 q-18 -4 -22 -22 q16 0 26 12 Z M128 70 q-14 -12 -10 -30 q14 8 16 24 Z M146 56 q-6 -16 6 -28 q8 12 2 26 Z"/>
+    <!-- ojo calado NO: es animal, pero mejor sin ojo — hocico con ollar calado -->
+    <!-- cuerpo -->
+    <path fill-rule="evenodd" d="M84 158 q66 -18 152 0 q20 4 18 24 l-3 22 q-56 14 -182 0 l-3 -22 q-2 -20 18 -24 Z
+      M120 170 l64 0 q6 0 6 8 l0 6 q0 8 -8 8 l-60 0 q-8 0 -8 -8 l0 -6 q0 -8 6 -8 Z"/>
+    <!-- patas al balancín -->
+    <path d="M96 200 l-8 44 14 2 10 -44 Z M212 200 l10 44 14 -2 -8 -44 Z"/>
+    <!-- cola -->
+    <path d="M242 162 q26 -8 34 -30 q6 16 -6 32 q-10 14 -28 12 Z"/>
+  </g>
+  <!-- los dos arcos del balancín -->
+  <g stroke="#F6F1E6" fill="none" stroke-linecap="round">
+    <path d="M40 252 q120 52 240 0" stroke-width="13.25"/>
+    <path d="M62 240 q98 40 196 0" stroke-width="13.25"/>
+  </g>
+</svg>

@@ -164,7 +164,12 @@ for (const nombre of readdirSync(ICONOS).filter((f) => f.endsWith(".svg"))) {
       // Se conservan TODOS los atributos de pintura, no solo el relleno: las
       // piezas «huecas» son fill="none" + stroke, y si se pierde el trazo el
       // path queda invisible — otra forma de salir en blanco sin fallar.
-      const pintura = ["fill", "stroke", "stroke-width", "stroke-linejoin", "opacity"]
+      // `class` viaja también: es el marcador de gobierno del grosor
+      // (`talla`, `engorde`) que normalizar-trazo.py lee para saber si un
+      // trazo se fija, se respeta o se sube al mínimo. Al perderse, la talla
+      // de las cajas caladas se inflaba al mínimo de texto y FACHA salía
+      // soldada en un bloque ilegible.
+      const pintura = ["class", "fill", "stroke", "stroke-width", "stroke-linejoin", "opacity"]
         .filter((k) => a[k] !== undefined)
         .map((k) => ` ${k}="${a[k]}"`)
         .join("");
