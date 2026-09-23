@@ -61,7 +61,7 @@ export default async function Home() {
   // actual: lo que se les pasa acaba serializado en el HTML.
   const lista = section(cms, 'lista')
   const listaTextos = Object.fromEntries(
-    (['eyebrow', 'headline', 'intro', 'cta', 'success', 'label', 'placeholder', 'error_invalido', 'error_fallo', 'consent', 'bonus_note'] as const)
+    (['eyebrow', 'headline', 'intro', 'cta', 'success', 'label', 'placeholder', 'error_invalido', 'error_fallo', 'consent', 'bonus_note', 'recurso_url', 'recurso_label'] as const)
       .map((k) => [k, cmsState(lista, k, abierta)])
       .filter(([, v]) => v !== undefined),
   )

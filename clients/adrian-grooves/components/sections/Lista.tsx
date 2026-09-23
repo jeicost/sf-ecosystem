@@ -13,7 +13,7 @@ const UTM = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_ter
 export type ListaTextos = Partial<
   Record<
     | 'eyebrow' | 'headline' | 'intro' | 'cta' | 'success' | 'label' | 'placeholder'
-    | 'error_invalido' | 'error_fallo' | 'consent' | 'bonus_note',
+    | 'error_invalido' | 'error_fallo' | 'consent' | 'bonus_note' | 'recurso_url' | 'recurso_label',
     string
   >
 >
@@ -39,6 +39,9 @@ export function Lista({ textos, abierta }: { textos: ListaTextos; abierta: boole
   // sección entera del CMS, el HTML llevaba también los del otro estado.
   const t = (k: keyof ListaTextos, fb: string) => textos[k] ?? fb
   const bonus = textos.bonus_note
+  // Entrega inmediata del gancho: el enlace se enseña al guardar el correo, sin
+  // depender de un envío por correo que hoy nadie puede hacer.
+  const recurso = textos.recurso_url ?? '/recursos/checklist'
   const [estado, setEstado] = useState<Estado>('idle')
   const inputRef = useRef<HTMLInputElement>(null)
   const id = useId()
@@ -142,7 +145,12 @@ export function Lista({ textos, abierta }: { textos: ListaTextos; abierta: boole
           <div className="mt-4 min-h-[3rem] text-center">
             {estado === 'ok' && (
               <p role="status" className="text-[0.95rem] text-accent">
-                {t('success', 'Apuntado. Te escribo el día que abra.')}
+                {t('success', 'Apuntado. Te escribo el día que abra.')}{' '}
+                {recurso && (
+                  <a href={recurso} className="underline underline-offset-4">
+                    {t('recurso_label', 'Y aquí tienes la checklist de rodaje →')}
+                  </a>
+                )}
               </p>
             )}
             {invalido && (
