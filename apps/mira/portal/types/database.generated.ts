@@ -9,7 +9,7 @@
 //   SUPABASE_ACCESS_TOKEN=<token> npx supabase gen types typescript \
 //     --project-id nnevhtfxuawexliwlbmh --schema public > types/database.generated.ts
 //
-// 84 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
+// 93 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
 export type Json =
   | string
   | number
@@ -3672,6 +3672,177 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_results: {
+        Row: {
+          alternatives: Json | null
+          client_id: string
+          created_at: string
+          created_by: string | null
+          currency: string | null
+          data_version: string | null
+          error_code: string | null
+          errors: Json | null
+          http_status: number | null
+          id: string
+          quote_id: string | null
+          raw_response: Json | null
+          recommended: Json | null
+          request_snapshot: Json
+          schema_version: string | null
+          shipment_id: string
+          status: string
+          trace_id: string | null
+          warnings: Json | null
+        }
+        Insert: {
+          alternatives?: Json | null
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          data_version?: string | null
+          error_code?: string | null
+          errors?: Json | null
+          http_status?: number | null
+          id?: string
+          quote_id?: string | null
+          raw_response?: Json | null
+          recommended?: Json | null
+          request_snapshot: Json
+          schema_version?: string | null
+          shipment_id: string
+          status: string
+          trace_id?: string | null
+          warnings?: Json | null
+        }
+        Update: {
+          alternatives?: Json | null
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          currency?: string | null
+          data_version?: string | null
+          error_code?: string | null
+          errors?: Json | null
+          http_status?: number | null
+          id?: string
+          quote_id?: string | null
+          raw_response?: Json | null
+          recommended?: Json | null
+          request_snapshot?: Json
+          schema_version?: string | null
+          shipment_id?: string
+          status?: string
+          trace_id?: string | null
+          warnings?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_results_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_results_shipment_id_fkey"
+            columns: ["shipment_id"]
+            isOneToOne: false
+            referencedRelation: "quote_shipments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quote_shipments: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          declared_value_eur: number | null
+          destination_country: string | null
+          destination_postal_code: string | null
+          destination_rating_area: string | null
+          extras: Json | null
+          id: string
+          missing: Json
+          notes: string | null
+          origin_country: string | null
+          origin_postal_code: string | null
+          origin_rating_area: string | null
+          packages: Json
+          palletized: boolean | null
+          service: string
+          shipment_ref: string
+          status: string
+          ticket_id: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          declared_value_eur?: number | null
+          destination_country?: string | null
+          destination_postal_code?: string | null
+          destination_rating_area?: string | null
+          extras?: Json | null
+          id?: string
+          missing?: Json
+          notes?: string | null
+          origin_country?: string | null
+          origin_postal_code?: string | null
+          origin_rating_area?: string | null
+          packages?: Json
+          palletized?: boolean | null
+          service?: string
+          shipment_ref: string
+          status?: string
+          ticket_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          declared_value_eur?: number | null
+          destination_country?: string | null
+          destination_postal_code?: string | null
+          destination_rating_area?: string | null
+          extras?: Json | null
+          id?: string
+          missing?: Json
+          notes?: string | null
+          origin_country?: string | null
+          origin_postal_code?: string | null
+          origin_rating_area?: string | null
+          packages?: Json
+          palletized?: boolean | null
+          service?: string
+          shipment_ref?: string
+          status?: string
+          ticket_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quote_shipments_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "quote_shipments_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "email_tickets"
             referencedColumns: ["id"]
           },
         ]

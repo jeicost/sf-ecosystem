@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
+import QuoteFromTicketButton from '@/components/cotizador/QuoteFromTicketButton'
 import type { FieldDef, FieldValue } from '@/lib/email-ops/schema'
 import { fieldLabel } from '@/lib/email-ops/schema'
 import type { TicketRow, MessageRow } from '@/lib/email-ops/types'
@@ -145,6 +146,9 @@ export default function TicketDetail({ ticketId, clientId, locale, brand }: { ti
             className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink-tertiary hover:text-ink disabled:opacity-50">
             {busy === 'reprocess' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} {t('emailops.action.reprocess', locale)}
           </button>
+          {/* Del encargo al precio. Solo para partes de envío: un correo que no
+              es un encargo no tiene nada que cotizar. */}
+          {!isOther && <QuoteFromTicketButton clientId={clientId} ticketId={ticketId} locale={locale} />}
         </div>
       </div>
 

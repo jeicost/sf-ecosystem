@@ -1,5 +1,5 @@
 import {
-  Layers, FileText, Image, Briefcase, Mail, type LucideIcon,
+  Layers, FileText, Image, Briefcase, Mail, Calculator, type LucideIcon,
 } from 'lucide-react'
 import { BILLING_ADDONS } from '@/lib/billing/plans'
 
@@ -93,6 +93,17 @@ export const MIRA_TOOLS: MiraTool[] = [
     href: '/email-ops',
     availability: 'per_client',
   },
+  {
+    // MIRA estructura el envío y guarda la respuesta; el precio lo calcula el
+    // Cotizador (motor externo, contrato v1). Aquí no hay tarifas.
+    id: 'quotes',
+    name: 'Shipping Quotes',
+    icon: Calculator,
+    category: 'operations',
+    descriptionKey: 'tools.catalog.quotes.desc',
+    href: '/quotes',
+    availability: 'per_client',
+  },
 ]
 
 /** id que usa una petición de módulo a medida (no está en el catálogo). */
@@ -123,4 +134,5 @@ export const PER_CLIENT_TOOLS = MIRA_TOOLS.filter((t) => t.availability === 'per
 export const ENTITLEMENT_TO_TOOL_ID: Record<string, string> = {
   tender: 'tenders',
   'email-ops': 'email-ops',
+  quotes: 'quotes',
 }

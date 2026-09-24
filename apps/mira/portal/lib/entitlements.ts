@@ -71,14 +71,26 @@ export function hasEmailOpsTool(clientId?: string | null, isAgency = false): boo
   return isAgency || (!!clientId && EMAIL_OPS_CLIENTS.has(clientId))
 }
 
+/**
+ * Cotizador de envíos: se abre marca a marca desde /admin/tools, sin semilla en
+ * código. Nace después de la 0073, así que su verdad está solo en client_tools
+ * — aquí no hay Set que mantener.
+ */
+export function hasQuotesTool(clientId?: string | null, isAgency = false): boolean {
+  return isAgency && !!clientId
+}
+
 /** Herramientas verticales gateadas por cliente (clave usada en NavItem.requires). */
-export type Entitlement = 'tender' | 'email-ops'
+export type Entitlement = 'tender' | 'email-ops' | 'quotes'
 
 /** Comprobación genérica, para que la navegación no tenga un if por herramienta. */
 export function hasEntitlement(kind: Entitlement, clientId?: string | null, isAgency = false): boolean {
   switch (kind) {
     case 'tender': return hasTenderTool(clientId, isAgency)
     case 'email-ops': return hasEmailOpsTool(clientId, isAgency)
+    // Sin semilla en código: la navegación la resuelve client_tools vía
+    // getEnabledTools; este fallback solo cubre a la agencia.
+    case 'quotes': return hasQuotesTool(clientId, isAgency)
   }
 }
 

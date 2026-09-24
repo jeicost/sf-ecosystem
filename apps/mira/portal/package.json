@@ -10,7 +10,9 @@
     "typecheck": "tsc --noEmit",
     "type-check": "tsc --noEmit",
     "eval:reports": "npx -y tsx --env-file=.env.local evals/reports/rubric.ts --all",
-    "eval:report": "npx -y tsx --env-file=.env.local evals/reports/rubric.ts"
+    "eval:report": "npx -y tsx --env-file=.env.local evals/reports/rubric.ts",
+    "check:cotizador": "npx -y tsx evals/cotizador/check.ts && npx -y tsx evals/cotizador/smoke.ts",
+    "smoke:cotizador": "npx -y tsx --env-file=.env.local evals/cotizador/smoke.ts --real"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "latest",
