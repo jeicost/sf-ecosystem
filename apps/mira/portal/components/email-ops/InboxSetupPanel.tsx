@@ -1,14 +1,15 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import { Copy, Check, Plus, Mail, Loader2, Power } from 'lucide-react'
+import { Copy, Check, Plus, Mail, Loader2, Power, Plug, RefreshCw, AlertTriangle } from 'lucide-react'
 import { clsx } from 'clsx'
 import { t, type Locale } from '@/lib/i18n'
+import { timeAgo } from '@/lib/email-ops/format'
 import type { EmailInbox } from '@/lib/email-ops/inboxes'
 
 // Panel "reenvía a esta dirección": lista de buzones por departamento con botón
 // copiar e instrucciones de regla. La agencia (super_admin) puede dar de alta.
 
-export default function InboxSetupPanel({ clientId, locale, brand, compact }: { clientId: string; locale: Locale; brand: string; compact?: boolean }) {
+export default function InboxSetupPanel({ clientId, locale, brand, compact, refreshKey }: { clientId: string; locale: Locale; brand: string; compact?: boolean; refreshKey?: number }) {
   const [inboxes, setInboxes] = useState<EmailInbox[]>([])
   const [domain, setDomain] = useState<string | null>(null)
   const [canManage, setCanManage] = useState(false)
@@ -18,6 +19,8 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact }: { 
   const [local, setLocal] = useState('')
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [polling, setPolling] = useState<string | null>(null)
+  const [pollResult, setPollResult] = useState<Record<string, string>>({})
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -26,7 +29,8 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact }: { 
     if (res.ok) { setInboxes(data.inboxes || []); setDomain(data.domain); setCanManage(!!data.canManage) }
     setLoading(false)
   }, [clientId])
-  useEffect(() => { load() }, [load])
+  // refreshKey cambia cuando se conecta un buzón nuevo en el panel de al lado.
+  useEffect(() => { load() }, [load, refreshKey])
 
   const copy = async (addr: string) => {
     try { await navigator.clipboard.writeText(addr); setCopied(addr); setTimeout(() => setCopied(null), 1500) } catch { /* sin portapapeles */ }
@@ -53,6 +57,31 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact }: { 
     await load()
   }
 
+  // Lectura bajo demanda: el cron va cada 10 minutos, pero al conectar (o al
+  // arreglar una contraseña) se quiere ver ya si entra correo.
+  const readNow = async (inbox: EmailInbox) => {
+    setPolling(inbox.id)
+    setPollResult((prev) => ({ ...prev, [inbox.id]: '' }))
+    try {
+      const res = await fetch('/api/email-ops/inboxes/imap/poll', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, id: inbox.id }),
+      })
+      const data = await res.json()
+      const text = !res.ok || data.error
+        ? (data.error || 'Error')
+        : data.fetched > 0
+          ? t('emailops.setup.read-result', locale).replace('{fetched}', String(data.fetched)).replace('{processed}', String(data.processed))
+          : t('emailops.setup.read-none', locale)
+      setPollResult((prev) => ({ ...prev, [inbox.id]: text }))
+      await load()
+    } catch {
+      setPollResult((prev) => ({ ...prev, [inbox.id]: 'Network error' }))
+    } finally {
+      setPolling(null)
+    }
+  }
+
   return (
     <div className="rounded-2xl border border-line bg-card p-5">
       <div className="mb-3 flex items-center justify-between gap-3">
@@ -66,19 +95,55 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact }: { 
         <p className="text-xs text-ink-muted">{t('emailops.empty.no-inbox', locale)}</p>
       ) : (
         <div className="space-y-1.5">
-          {inboxes.map((ib) => (
-            <div key={ib.id} className={clsx('flex flex-wrap items-center gap-2 rounded-xl border border-line-subtle px-3 py-2', !ib.active && 'opacity-50')}>
-              <span className="w-32 shrink-0 truncate text-xs font-medium text-ink">{ib.department}</span>
-              <code className="flex-1 truncate rounded bg-surface px-2 py-1 text-[12px] text-ink-secondary">{ib.address}</code>
-              <button onClick={() => copy(ib.address)} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-ink-secondary transition-colors hover:bg-surface hover:text-ink">
-                {copied === ib.address ? <Check size={12} /> : <Copy size={12} />} {copied === ib.address ? t('emailops.setup.copied', locale) : t('emailops.setup.copy', locale)}
-              </button>
-              {canManage && (
-                <button onClick={() => toggle(ib)} title={ib.active ? t('emailops.setup.active', locale) : t('emailops.setup.inactive', locale)}
-                  className="rounded-lg p-1 text-ink-muted transition-colors hover:bg-surface hover:text-ink"><Power size={12} /></button>
+          {inboxes.map((ib) => {
+            const isImap = ib.source === 'imap'
+            return (
+            <div key={ib.id} className={clsx('rounded-xl border border-line-subtle px-3 py-2', !ib.active && 'opacity-50')}>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="w-32 shrink-0 truncate text-xs font-medium text-ink">{ib.department}</span>
+                <code className="flex-1 truncate rounded bg-surface px-2 py-1 text-[12px] text-ink-secondary">{ib.address}</code>
+                <span className={clsx('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px]',
+                  isImap ? 'bg-emerald-500/10 text-emerald-400' : 'bg-surface text-ink-tertiary')}>
+                  {isImap ? <Plug size={10} /> : <Mail size={10} />}
+                  {t(isImap ? 'emailops.setup.src-imap' : 'emailops.setup.src-forward', locale)}
+                </span>
+                {isImap ? (
+                  canManage && (
+                    <button onClick={() => readNow(ib)} disabled={polling !== null}
+                      className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-ink-secondary transition-colors hover:bg-surface hover:text-ink disabled:opacity-50">
+                      {polling === ib.id ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />}
+                      {polling === ib.id ? t('emailops.setup.reading', locale) : t('emailops.setup.read-now', locale)}
+                    </button>
+                  )
+                ) : (
+                  <button onClick={() => copy(ib.address)} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] text-ink-secondary transition-colors hover:bg-surface hover:text-ink">
+                    {copied === ib.address ? <Check size={12} /> : <Copy size={12} />} {copied === ib.address ? t('emailops.setup.copied', locale) : t('emailops.setup.copy', locale)}
+                  </button>
+                )}
+                {canManage && (
+                  <button onClick={() => toggle(ib)} title={ib.active ? t('emailops.setup.active', locale) : t('emailops.setup.inactive', locale)}
+                    className="rounded-lg p-1 text-ink-muted transition-colors hover:bg-surface hover:text-ink"><Power size={12} /></button>
+                )}
+              </div>
+              {isImap && (
+                <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 pl-0 text-[11px] sm:pl-[8.5rem]">
+                  <span className="text-ink-muted">
+                    {ib.imap_last_checked_at
+                      ? t('emailops.setup.last-read', locale).replace('{when}', timeAgo(ib.imap_last_checked_at, locale))
+                      : t('emailops.setup.never-read', locale)}
+                  </span>
+                  {pollResult[ib.id] && <span className="text-ink-secondary">{pollResult[ib.id]}</span>}
+                </div>
+              )}
+              {isImap && ib.imap_last_error && (
+                <p className="mt-1.5 flex items-start gap-1.5 rounded-lg bg-red-500/10 px-2.5 py-1.5 text-[11px] text-red-400">
+                  <AlertTriangle size={12} className="mt-0.5 shrink-0" />
+                  <span>{t('emailops.setup.imap-error', locale).replace('{error}', ib.imap_last_error)}</span>
+                </p>
               )}
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
 

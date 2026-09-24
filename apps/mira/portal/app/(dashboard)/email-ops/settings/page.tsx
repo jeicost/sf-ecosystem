@@ -1,4 +1,5 @@
 'use client'
+import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, Settings2 } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
@@ -11,6 +12,8 @@ import RulesPanel from '@/components/email-ops/RulesPanel'
 export default function EmailOpsSettingsPage() {
   const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
+  // Conectar un buzón arriba tiene que verse abajo en la lista, sin recargar.
+  const [refreshKey, setRefreshKey] = useState(0)
   if (!activeClient) return null
   const brand = activeClient.primaryColor || '#6366F1'
   return (
@@ -21,8 +24,8 @@ export default function EmailOpsSettingsPage() {
         <h1 className="text-2xl font-semibold text-ink">{t('emailops.action.settings', locale)}</h1>
       </div>
       <div className="space-y-6">
-        <InboxSetupPanel clientId={activeClient.id} locale={locale} brand={brand} />
-        <ImapConnectPanel clientId={activeClient.id} locale={locale} brand={brand} />
+        <InboxSetupPanel clientId={activeClient.id} locale={locale} brand={brand} refreshKey={refreshKey} />
+        <ImapConnectPanel clientId={activeClient.id} locale={locale} brand={brand} onSaved={() => setRefreshKey((n) => n + 1)} />
         <RulesPanel clientId={activeClient.id} locale={locale} brand={brand} />
       </div>
     </div>
