@@ -150,12 +150,23 @@ function bordeIzquierdo(y: number): number {
 type Colocada = { slug: string; id: number | string; x: number; y: number; w: number; h: number };
 
 /**
- * El carril del LAGRIMÓMETRO. Como el trompímetre de la referencia: una
- * columna vertical que parte el bloque, con las filas fluyendo a los lados.
+ * El carril del LAGRIMÓMETRO, de arriba abajo.
+ *
+ * En la referencia el TROMPÍMETRE recorre el estampado ENTERO y las piezas
+ * se ordenan en dos columnas a sus lados: esa es la estructura, no un
+ * adorno en medio. Aquí igual — arranca donde el cono ya ha abierto (por
+ * encima, los flancos quedarían en 30 px y no cabría nada) y baja hasta el
+ * talón.
+ *
+ * Ancho y alto guardan la proporción REAL del arte (0,12, la misma que el
+ * instrumento de la referencia): con otra forma, `object-contain` lo encoge
+ * y deja aire a los lados. La v2 medía 0,378 y por eso no podía cruzar el
+ * vidrio sin comerse las dos columnas.
  */
-// Ancho y alto guardan la proporción REAL del instrumento (0,378): con un
-// carril de otra forma, `object-contain` lo encoge y deja aire a los lados.
-const CARRIL = { x0: 102, x1: 150, y0: 512, y1: 638 };
+// 55 px de ancho por 364 de alto = 0,151, la proporción exacta del arte (y
+// la misma que el trompímetre de la referencia: 0,153). Deja 78 px por
+// columna a cada lado, que es donde vive el resto del estampado.
+const CARRIL = { x0: 98, x1: 153, y0: 436, y1: 800 };
 
 /** El aire interior. 2,6 px sobre 252 ≈ 1,2 mm impresos: en la referencia las
  *  piezas casi se tocan, y esa falta de aire es la mitad de la densidad. */
@@ -323,6 +334,9 @@ const COLA: (number | string)[] = [
   33, 52, 16,
   24, "r-flecha-ne", 14, "r-estrella",
   36, 4, 55, "r-puntos", 2, 41,
+  // Con el carril quitando ancho a TODO lo alto, las columnas son estrechas
+  // y caben más filas: sin estas, el tercio bajo quedaba solo con la escala.
+  22, 51, 23, "r-barras", 40, 6, 7, 17, 56, 32,
 ];
 
 /**

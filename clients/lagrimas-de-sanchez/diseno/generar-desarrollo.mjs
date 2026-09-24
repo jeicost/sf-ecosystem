@@ -65,7 +65,11 @@ const CONTRA = { x: 10*MM, y: H_HOMBRO + 70*MM, w: 80*MM, h: 58*MM };
  * que reserva su carril y las bandas fluyen a los lados. En la botella real
  * cae en la cara trasera, a un cuarto de vuelta del lockup.
  */
-const COL54  = { x: 236*MM, y: H_HOMBRO + 26*MM, w: 42*MM, h: 84*MM };
+// A TODA la altura del cilindro y con la proporción real del arte (0,15),
+// como en la botella: si el carril tuviera otra forma, `object-contain`
+// dejaría medio carril vacío y el instrumento no ordenaría nada.
+const ALTO_54 = H_CUERPO - 12*MM;
+const COL54  = { x: 247*MM - (ALTO_54*0.15)/2, y: H_HOMBRO + 6*MM, w: ALTO_54*0.15, h: ALTO_54 };
 const RESERVAS = [CONTRA, COL54];
 
 /**
@@ -219,6 +223,7 @@ function empaquetar(cola, yIni, yFin, altoIdeal) {
 
 // ── El HOMBRO: la cabecera de la cola, en filas centradas que se ensanchan
 // con el cono. Sin justificar a los cantos: ahí el perímetro se cierra.
+const hombro = [];
 {
   let y = 56 * MM, i = 0, fila = 0;
   const anchos = [52, 62, 72, 82, 92, 102].map((m) => m * MM);
@@ -246,6 +251,7 @@ function empaquetar(cola, yIni, yFin, altoIdeal) {
       const kk = hh / m.a.h;
       out += `<g transform="translate(${x.toFixed(1)} ${(y + (h - hh) / 2).toFixed(1)}) `
            + `scale(${kk.toFixed(4)}) translate(${-m.a.x} ${-m.a.y})" fill="#F6F1E6">${m.a.cuerpo}</g>`;
+      hombro.push({ id: m.id, h: hh });
       colocadas++;
       x += ws[k] + hueco;
     });
@@ -300,6 +306,23 @@ out += `<g transform="translate(${HALO.x + HALO.w / 2} ${HALO.y + 26 * MM})" fil
   + `<rect width="${W}" height="${H}" fill="none" stroke="#14100B" stroke-width="2"/></svg>`;
 
 writeFileSync(join(AQUI, "desarrollo-plano.svg"), out);
+
+/**
+ * Las alturas REALES a las que se imprime cada pieza, en milímetros.
+ *
+ * Antes vivían en una tabla de bandas que había que mantener a mano y que
+ * mentía en cuanto el empaquetador cambiaba algo. Ahora las escribe quien
+ * las decide —este generador— y las leen `normalizar-trazo.py`,
+ * `verificar-arte.py` y `medir-imprimibilidad.py`: una sola verdad, medida.
+ */
+const alturas = {};
+for (const p of [...puestas, ...hombro]) {
+  const slug = typeof p.id === "string" ? p.id : mapa[p.id];
+  if (!slug) continue;
+  alturas[slug] = Math.round((p.h / MM) * 100) / 100;
+}
+alturas[mapa[54]] = Math.round((COL54.h / MM) * 100) / 100;
+writeFileSync(join(AQUI, "alturas-impresion.json"), JSON.stringify(alturas, null, 2) + "\n");
 
 /**
  * La lámina se valida antes de darla por buena. Un SVG mal formado NO falla al

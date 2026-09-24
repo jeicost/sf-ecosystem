@@ -1,56 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 430">
-  <!-- FUENTE EDITABLE de la pieza 54. El texto va VIVO aquí; vectorizar.mjs
-       lo convierte en trazados al pasar la tubería. La copia de trabajo vive
-       en web/public/iconos/ y NUNCA se edita a mano: se edita ESTA y se
-       vuelve a pasar la tubería. (La primera versión se dibujó en un
-       scratchpad temporal y el sistema la borró: nunca más.) -->
-  <!-- El dial. La aguja clavada arriba del todo: un medidor que solo sabe
-       dar una lectura. Recortada AL ARO INTERIOR: desbordar el bisel leía
-       como error de recorte, no como chiste. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 1000">
+  <!-- FUENTE EDITABLE de la pieza 54 (v5, 24-sep). El texto va VIVO aquí.
+
+       La COLUMNA-INSTRUMENTO que cruza la botella entera, como el
+       TROMPÍMETRE: allí no es un adorno en medio, es la estructura que
+       ordena las dos columnas de piezas.
+
+       El nombre va HORIZONTAL SOBRE EL DIAL, como en la referencia. En
+       vertical al costado (v4) ensanchaba la pieza un 40 % y el carril se
+       comía las columnas: el ancho de esta pieza es espacio que le quitas
+       al resto del estampado. -->
+  <text x="75" y="30" text-anchor="middle" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="22" letter-spacing="0">LAGRIMÓMETRO</text>
   <g fill="none" stroke="#F6F1E6">
-    <circle cx="75" cy="52" r="40" stroke-width="7"/>
-    <circle cx="75" cy="52" r="30" stroke-width="3"/>
-    <line x1="47" y1="38" x2="55" y2="42" stroke-width="4"/>
-    <line x1="60" y1="21" x2="64" y2="29" stroke-width="4"/>
-    <line x1="75" y1="16" x2="75" y2="25" stroke-width="4"/>
-    <line x1="90" y1="21" x2="86" y2="29" stroke-width="4"/>
-    <line x1="103" y1="38" x2="95" y2="42" stroke-width="4"/>
-    <line x1="75" y1="52" x2="96" y2="31" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="75" cy="106" r="44" stroke-width="9"/>
+    <circle cx="75" cy="106" r="32" stroke-width="3.5"/>
+    <line x1="46" y1="91" x2="55" y2="96" stroke-width="5"/>
+    <line x1="60" y1="74" x2="65" y2="83" stroke-width="5"/>
+    <line x1="75" y1="68" x2="75" y2="78" stroke-width="5"/>
+    <line x1="90" y1="74" x2="85" y2="83" stroke-width="5"/>
+    <line x1="104" y1="91" x2="95" y2="96" stroke-width="5"/>
+    <line x1="75" y1="106" x2="97" y2="84" stroke-width="9" stroke-linecap="round"/>
   </g>
-  <circle cx="75" cy="52" r="7" fill="#F6F1E6"/>
-  <!-- La regla -->
-  <rect x="54" y="100" width="6" height="324" fill="#F6F1E6"/>
-  <rect x="60" y="117" width="17" height="6" fill="#F6F1E6"/>
-  <rect x="60" y="132" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="147" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="162" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="175" width="17" height="6" fill="#F6F1E6"/>
-  <rect x="60" y="190" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="205" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="220" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="233" width="17" height="6" fill="#F6F1E6"/>
-  <rect x="60" y="248" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="263" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="278" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="291" width="17" height="6" fill="#F6F1E6"/>
-  <rect x="60" y="306" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="321" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="336" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="349" width="17" height="6" fill="#F6F1E6"/>
-  <rect x="60" y="364" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="379" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="394" width="10" height="4" fill="#F6F1E6"/>
-  <rect x="60" y="407" width="17" height="6" fill="#F6F1E6"/>
-  <text x="84" y="127" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">OJO SECO</text>
-  <text x="84" y="185" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">PUCHERO</text>
-  <text x="84" y="243" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">MOQUEO</text>
-  <text x="84" y="301" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">LLORERA</text>
-  <text x="84" y="351" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">MOCO</text>
-  <text x="84" y="370" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">TENDIDO</text>
-  <text x="84" y="409" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">DESEM-</text>
-  <text x="84" y="428" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="20">BALSE</text>
-  <!-- El nombre, en vertical como el instrumento de la referencia -->
-  <g transform="rotate(-90 30 262)">
-    <text x="30" y="262" text-anchor="middle" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="23" letter-spacing="7">LAGRIMÓMETRO</text>
-  </g>
+  <circle cx="75" cy="106" r="8" fill="#F6F1E6"/>
+  <rect x="18" y="176" width="7" height="802" fill="#F6F1E6"/>
+  <rect x="25" y="205" width="22" height="6.8" fill="#F6F1E6"/>
+  <rect x="25" y="242" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="279" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="316" width="12" height="4.4" fill="#F6F1E6"/>
+  <text x="53" y="216" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">OJO SECO</text>
+  <rect x="25" y="351" width="22" height="6.8" fill="#F6F1E6"/>
+  <rect x="25" y="389" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="425" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="462" width="12" height="4.4" fill="#F6F1E6"/>
+  <text x="53" y="362" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">PUCHERO</text>
+  <rect x="25" y="497" width="22" height="6.8" fill="#F6F1E6"/>
+  <rect x="25" y="535" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="572" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="608" width="12" height="4.4" fill="#F6F1E6"/>
+  <text x="53" y="509" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">MOQUEO</text>
+  <rect x="25" y="644" width="22" height="6.8" fill="#F6F1E6"/>
+  <rect x="25" y="682" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="718" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="755" width="12" height="4.4" fill="#F6F1E6"/>
+  <text x="53" y="655" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">LLORERA</text>
+  <rect x="25" y="790" width="22" height="6.8" fill="#F6F1E6"/>
+  <rect x="25" y="828" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="865" width="12" height="4.4" fill="#F6F1E6"/>
+  <rect x="25" y="901" width="12" height="4.4" fill="#F6F1E6"/>
+  <text x="53" y="794" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">MOCO</text>
+  <text x="53" y="817" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">TENDIDO</text>
+  <rect x="25" y="937" width="22" height="6.8" fill="#F6F1E6"/>
+  <text x="53" y="940" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">DESEM-</text>
+  <text x="53" y="963" fill="#F6F1E6" font-family="Barlow Condensed" font-weight="700" font-size="24">BALSE</text>
 </svg>
