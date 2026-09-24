@@ -1,0 +1,5 @@
+Paquete para fabricantes de estuche — correo listo en
+../correo-estuche.txt. Medidas de la botella DENTRO del estuche:
+380,9 mm alto · ø105 mm · 900 g vacía (2,4 kg llena). Ninguna caja
+estándar de 75 cl vale. El render estuche-las-dos.png enseña el
+concepto (botella de vino + botella vacía de regalo).

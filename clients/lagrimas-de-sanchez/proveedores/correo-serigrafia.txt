@@ -4,8 +4,9 @@ Destinatarios (uno a uno, mismo texto):
   info@todoglass.es                         (Todoglass, Jerez)
   serigrafia.portal@serigrafiaportal.com    (S. Portal, Barcelona)
 
-  ADJUNTAR: diseno/renders/botella-vino.png y botella-vacia.png
-            (y el plano de Estal de la Essentia, si lo tienes a mano)
+  ADJUNTAR: la carpeta proveedores/paquetes/serigrafia/ ENTERA
+            (renders + desarrollo 360º en PNG + FICHA-ARTE.txt con todo
+            el dato técnico; y el plano de Estal si lo tienes a mano)
 
 Asunto: Presupuesto serigrafía 360º magnum 150 cl Estal Essentia - 1 tinta
 

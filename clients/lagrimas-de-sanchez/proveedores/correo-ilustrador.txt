@@ -1,3 +1,11 @@
+ADJUNTAR: diseno/hoja-contactos.pdf        (las 67 piezas, real + ampliada)
+          diseno/LISTA-ILUSTRADOR.md         (el encargo: 8 piezas + reglas)
+          diseno/INFORME-IMPRIMIBILIDAD.md   (la medición, 2 escenarios)
+          diseno/desarrollo-plano.png        (el 360º desplegado)
+
+NOTA 24-sep: el encargo ya NO es «arreglar 22 piezas rotas» — el sistema
+las dejó en 8 pátinas de textura. Lo que queda es pulido fino y criterio.
+
 Asunto: Encargo de ilustración - 57 pictogramas para serigrafía en vidrio
 
 Buenos días,

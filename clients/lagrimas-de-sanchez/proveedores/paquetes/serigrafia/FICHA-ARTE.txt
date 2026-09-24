@@ -1,0 +1,35 @@
+FICHA DE ARTE — Lágrimas de Sánchez · serigrafía 360º
+=====================================================
+
+ENVASE (ya elegido, no sustituible)
+  Estal SM BG MG ESSENTIA · magnum 150 cl · color ANTICO
+  900 g · altura 380,9 mm · cuerpo ø105 (perímetro 329,9 mm)
+  boca interior 18,5 mm · cuello ø32 × 115 mm · punt 30 mm
+
+DECORACIÓN
+  Serigrafía cerámica vitrificada, UNA tinta BLANCA (referencia visual
+  #F6F1E6; la equivalencia cerámica la propone el taller)
+  Banda principal: 360º sobre el cilindro, 330 × 140 mm
+  Hombro cónico (~126 mm): 6 filas de piezas sueltas centradas, según
+  desarrollo adjunto — pedimos su criterio de altura máxima decorable
+  Cuello sin decorar
+  Reserva sin tinta: 80 × 58 mm en trasera (contraetiqueta adhesiva)
+  La botella se vende también VACÍA: la decoración debe aguantar
+  lavavajillas
+
+EL DATO QUE DECIDE EL ARTE
+  El diseño tiene dos versiones de finura y elegimos según SU malla:
+  - Con trazo mínimo garantizado de 0,8 mm: usamos el arte conservador
+  - Con trazo mínimo garantizado ≤0,5 mm (malla fina, 120-140 hilos):
+    el arte actual entra entero tal cual
+  Necesitamos ese número POR ESCRITO antes del fotolito.
+
+ARTE FINAL
+  67 piezas vectoriales, TODO el texto vectorizado (cero fuentes vivas),
+  un solo color, sin tramas ni degradados. Entregamos SVG/PDF/AI a su
+  preferencia, con sobredimensión si nos indican la ganancia de su línea.
+
+ADJUNTOS DE ESTE PAQUETE
+  desarrollo-plano.png  — el 360º desplegado con hombro y reservas
+  botella-vino.png      — render del resultado buscado (con vino)
+  botella-vacia.png     — render de la versión vacía/rellenable

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 210">
+  <!-- PROPUESTA B para la pieza 04 (decisión del dueño, no sustituye). -->
+  <g fill="#F6F1E6">
+    <!-- labio superior en M carnosa -->
+    <path d="M64 96 Q86 58 116 74 Q136 84 150 84 Q164 84 184 74 Q214 58 236 96
+             Q216 88 150 92 Q84 88 64 96 Z"/>
+    <!-- labio inferior morritos, empujado al frente -->
+    <path d="M78 104 Q150 92 222 104 Q234 108 228 122 Q206 158 150 158
+             Q94 158 72 122 Q66 108 78 104 Z"/>
+    <!-- la boca fruncida: calado central -->
+  </g>
+  <path d="M104 108 Q150 100 196 108 Q150 124 104 108 Z" fill="#22260F"/>
+  <g fill="#F6F1E6">
+    <!-- chispas del beso -->
+    <path d="M252 70 l7 14 15 3 -11 11 3 15 -14 -8 -13 8 3 -15 -11 -11 15 -3 Z"/>
+    <circle cx="270" cy="118" r="7"/>
+    <path d="M244 138 q10 -2 12 -12 q2 10 12 12 q-10 2 -12 12 q-2 -10 -12 -12 Z"/>
+    <!-- corazoncito -->
+    <path d="M36 58 q-8 -12 -20 -4 q-10 8 0 20 l20 16 20 -16 q10 -12 0 -20 q-12 -8 -20 4 Z"/>
+  </g>
+</svg>

@@ -12,6 +12,8 @@ CONTACTOS - DO Vinos de Madrid, subzona Arganda
   minutos que un correo a una dirección que no existe.
 
 
+ADJUNTAR: proveedores/paquetes/bodega/botella-vino.png
+
 Asunto: Vino a medida + embotellado con vidrio propio - proyecto en Madrid
 
 Buenos días,

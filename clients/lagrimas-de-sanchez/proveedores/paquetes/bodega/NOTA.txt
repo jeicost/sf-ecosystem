@@ -1,0 +1,4 @@
+Paquete para bodegas DO Vinos de Madrid (subzona Arganda) — correo listo
+en ../correo-bodegas.txt. LA PREGUNTA QUE DECIDE: ¿línea de embotellado
+de 150 cl? El render enseña la botella real (vidrio aportado por
+nosotros, YA serigrafiado: la merma en línea cuesta 5 €/ud, no 2).
