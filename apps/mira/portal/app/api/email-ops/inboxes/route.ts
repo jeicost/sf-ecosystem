@@ -7,7 +7,8 @@ import { writable } from '@/lib/db-json'
 // Buzones de ingesta del cliente. GET para cualquier miembro (alimenta el panel
 // "reenvía a esta dirección"); alta/baja solo agencia en fase 1.
 
-const COLS = 'id,client_id,department,address,display_name,active,created_at'
+// OJO: imap_password NO entra aquí jamás.
+const COLS = 'id,client_id,department,address,display_name,active,created_at,source,imap_host,imap_user,imap_last_checked_at,imap_last_error'
 
 export async function GET(req: NextRequest) {
   try {

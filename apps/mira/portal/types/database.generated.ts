@@ -1994,6 +1994,14 @@ export type Database = {
           department: string
           display_name: string | null
           id: string
+          imap_host: string | null
+          imap_last_checked_at: string | null
+          imap_last_error: string | null
+          imap_last_uid: number | null
+          imap_password: string | null
+          imap_port: number
+          imap_user: string | null
+          source: string
         }
         Insert: {
           active?: boolean
@@ -2004,6 +2012,14 @@ export type Database = {
           department: string
           display_name?: string | null
           id?: string
+          imap_host?: string | null
+          imap_last_checked_at?: string | null
+          imap_last_error?: string | null
+          imap_last_uid?: number | null
+          imap_password?: string | null
+          imap_port?: number
+          imap_user?: string | null
+          source?: string
         }
         Update: {
           active?: boolean
@@ -2014,6 +2030,14 @@ export type Database = {
           department?: string
           display_name?: string | null
           id?: string
+          imap_host?: string | null
+          imap_last_checked_at?: string | null
+          imap_last_error?: string | null
+          imap_last_uid?: number | null
+          imap_password?: string | null
+          imap_port?: number
+          imap_user?: string | null
+          source?: string
         }
         Relationships: [
           {

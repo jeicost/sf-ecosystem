@@ -19,6 +19,7 @@ import { mergeExtractionIntoTicket, type TicketState } from './merge'
 import { computePriority } from './priority'
 import type { Extraction, MessageRow, StoredAttachment, TicketRow } from './types'
 import { toJson } from '@/lib/db-json'
+import { parseImapMessageId, fetchOneByUid, type ImapFetched, type ImapInboxRow } from './imap'
 
 export const MAX_ATTEMPTS = 3
 const MAX_ATTACHMENTS = 5
@@ -124,7 +125,10 @@ async function extractXlsxText(buffer: Buffer): Promise<string> {
 async function ingestAttachments(
   db: SupabaseClient,
   msg: MessageRow,
-  metas: { id: string; filename: string; content_type: string; size?: number }[]
+  metas: { id: string; filename: string; content_type: string; size?: number }[],
+  // Inyectable porque el contenido puede venir de Resend (por API) o de un
+  // buzón IMAP (ya descargado en memoria). El resto del tratamiento es igual.
+  fetchOne: AttachmentFetcher = fetchAttachment
 ): Promise<AttachmentBundle> {
   const stored: StoredAttachment[] = []
   const textParts: string[] = []
@@ -143,7 +147,7 @@ async function ingestAttachments(
         stored.push(entry)
         continue
       }
-      const { buffer, filename, contentType } = await fetchAttachment(msg.resend_email_id, meta.id)
+      const { buffer, filename, contentType } = await fetchOne(msg.resend_email_id, meta.id)
       entry.size = buffer.length
       entry.filename = filename || meta.filename
       entry.content_type = contentType || meta.content_type
@@ -288,9 +292,48 @@ async function markFailed(db: SupabaseClient, messageId: string, err: unknown): 
   await db.from('email_messages').update({ status: 'failed', last_error: message.slice(0, 500), updated_at: new Date().toISOString() }).eq('id', messageId)
 }
 
+export type AttachmentFetcher = (
+  resendEmailId: string,
+  attachmentId: string
+) => Promise<{ buffer: Buffer; filename?: string; contentType?: string }>
+
 export interface ProcessOptions {
-  /** Inyección para tests/semillas: sustituye la llamada a Resend por un correo ya leído. */
+  /** Inyección para tests/semillas/IMAP: sustituye la llamada a Resend por un correo ya leído. */
   fetchReceived?: (resendEmailId: string) => Promise<ReceivedEmail>
+  /** Ídem para los adjuntos. */
+  fetchAttachment?: AttachmentFetcher
+}
+
+/** Un correo IMAP ya descargado, con la forma que espera el pipeline. */
+export function imapProcessOptions(f: ImapFetched): ProcessOptions {
+  return {
+    fetchReceived: async () => f.received,
+    fetchAttachment: async (_id, attId) => {
+      const i = Number(attId)
+      const buffer = f.attachments[i]
+      if (!buffer) throw new Error('Adjunto no encontrado en el mensaje IMAP')
+      const meta = f.received.attachments[i]
+      return { buffer, filename: meta?.filename, contentType: meta?.content_type }
+    },
+  }
+}
+
+/**
+ * Reintento de un mensaje IMAP: se RELEE del buzón por UID. La fuente de verdad
+ * es el servidor de correo; no guardamos una copia del MIME. Si el correo ya no
+ * está (borrado o movido), el mensaje se marca fallido con ese motivo.
+ */
+async function imapOptionsFor(db: SupabaseClient, inboxId: string, uid: number): Promise<ProcessOptions> {
+  const { data, error } = await db
+    .from('email_inboxes')
+    .select('id,client_id,address,department,imap_host,imap_port,imap_user,imap_password,imap_last_uid')
+    .eq('id', inboxId)
+    .maybeSingle()
+  if (error) throw error
+  if (!data) throw new Error('El buzón IMAP de este mensaje ya no existe')
+  const fetched = await fetchOneByUid(data as unknown as ImapInboxRow, uid)
+  if (!fetched) throw new Error('El mensaje ya no está en el buzón (borrado o movido)')
+  return imapProcessOptions(fetched)
 }
 
 export async function processMessage(messageId: string, opts: ProcessOptions = {}): Promise<ProcessResult> {
@@ -305,8 +348,12 @@ export async function processMessage(messageId: string, opts: ProcessOptions = {
       return { ok: false, messageId, skipped: 'daily-cap' }
     }
 
-    // 1. Cuerpo y cabeceras
-    const received = await (opts.fetchReceived ?? fetchReceivedEmail)(msg.resend_email_id)
+    // 1. Cuerpo y cabeceras. Si el mensaje vino por IMAP y nadie inyectó el
+    // contenido (reintento del cron), se relee del buzón.
+    const imapRef = parseImapMessageId(msg.resend_email_id)
+    const options: ProcessOptions =
+      imapRef && !opts.fetchReceived ? await imapOptionsFor(db, imapRef.inboxId, imapRef.uid) : opts
+    const received = await (options.fetchReceived ?? fetchReceivedEmail)(msg.resend_email_id)
     const text = received.text?.trim() ? received.text : htmlToText(received.html || '')
     const inReplyTo = received.headers['in-reply-to'] || null
     const references = parseReferences(received.headers['references'])
@@ -317,7 +364,7 @@ export async function processMessage(messageId: string, opts: ProcessOptions = {
     const metas = received.attachments.length
       ? received.attachments
       : (msg.attachments || []).map((a) => ({ id: a.resend_id, filename: a.filename, content_type: a.content_type, size: a.size ?? undefined }))
-    const attachments = await ingestAttachments(db, msg, metas)
+    const attachments = await ingestAttachments(db, msg, metas, options.fetchAttachment)
 
     // 3. Hilo
     const threadKey = await resolveThreadKey(db, {

@@ -20,7 +20,10 @@ const nextConfig: NextConfig = {
   // pdf-parse v2 no sobrevive al bundling de webpack (TypeError:
   // Object.defineProperty called on non-object al importarlo) — debe
   // cargarse como dependencia externa en runtime.
-  serverExternalPackages: ['pdf-parse', 'pdfjs-dist'],
+  // imapflow y mailparser usan sockets y require dinámicos: empaquetarlos con
+  // webpack/turbopack los rompe en la función serverless (mismo caso que
+  // pdf-parse). Deben cargarse como dependencias externas en runtime.
+  serverExternalPackages: ['pdf-parse', 'pdfjs-dist', 'imapflow', 'mailparser'],
   transpilePackages: ['@sf/supabase'],
   // pdfjs-dist resuelve la ruta de su "fake worker" (pdf.worker.mjs) de forma
   // dinámica (no un import estático) -- el tracer de ficheros de Vercel no lo

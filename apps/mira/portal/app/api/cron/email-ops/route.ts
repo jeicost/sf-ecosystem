@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { processPending } from '@/lib/email-ops/pipeline'
+import { pollAllImapInboxes } from '@/lib/email-ops/imap-poll'
 import { recomputeOpenPriorities } from '@/lib/email-ops/priority'
 
 // Red de seguridad de Email Ops: reintenta mensajes pendientes/fallidos (el
@@ -18,6 +19,15 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
+  // 1) Traer lo nuevo de los buzones IMAP (el webhook de Resend no interviene
+  // en esos). 2) Reintentar lo que quedó pendiente, venga de donde venga.
+  let imap: Awaited<ReturnType<typeof pollAllImapInboxes>> = []
+  try {
+    imap = await pollAllImapInboxes()
+  } catch (err) {
+    console.error('[cron/email-ops] imap poll failed', err)
+  }
+
   const results = await processPending({ limit: MAX_MESSAGES_PER_RUN })
   let repriced = 0
   try {
@@ -26,6 +36,7 @@ export async function GET(req: NextRequest) {
     console.error('[cron/email-ops] reprice failed', err)
   }
   return NextResponse.json({
+    imap: imap.map((r) => ({ address: r.address, fetched: r.fetched, processed: r.processed, error: r.error })),
     processed: results.filter((r) => r.ok).length,
     failed: results.filter((r) => !r.ok && !r.skipped).length,
     skipped: results.filter((r) => r.skipped).length,
