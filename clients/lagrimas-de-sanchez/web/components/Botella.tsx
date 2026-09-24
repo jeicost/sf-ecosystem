@@ -155,12 +155,19 @@ type Colocada = { slug: string; id: number | string; x: number; y: number; w: nu
  */
 // Ancho y alto guardan la proporción REAL del instrumento (0,378): con un
 // carril de otra forma, `object-contain` lo encoge y deja aire a los lados.
-const CARRIL = { x0: 98, x1: 154, y0: 520, y1: 668 };
+const CARRIL = { x0: 102, x1: 150, y0: 512, y1: 638 };
 
-/** El aire interior. 3,5 px sobre 252 ≈ 1,6 mm impresos: apretado, como la referencia. */
-const HUECO = 3.5;
-/** Cuánto puede sobresalir una fila del canto: la silueta la recorta y la pieza «da la vuelta». */
-const SANGRADO = 5;
+/** El aire interior. 2,6 px sobre 252 ≈ 1,2 mm impresos: en la referencia las
+ *  piezas casi se tocan, y esa falta de aire es la mitad de la densidad. */
+const HUECO = 2.6;
+/** El aire VERTICAL entre filas, menor todavía: lo que cose el tejido de arriba abajo. */
+const HUECO_V = 2;
+/**
+ * Cuánto sobresale una fila del canto: la silueta la recorta y la pieza «da
+ * la vuelta». 6 y no 9: con 9 el borde decapitaba palabras enteras (MEMA sin
+ * la M, TUCÁN sin la T) y un chiste a medias es una errata, no un cilindro.
+ */
+const SANGRADO = 6;
 
 /**
  * Coloca la cola de piezas en filas justificadas entre y0 e y1.
@@ -273,33 +280,49 @@ function empaquetar(
         cx += anchos[k] + hueco;
       });
     }
-    y += altoFila + HUECO;
+    y += altoFila + HUECO_V;
   }
   return fuera;
 }
 
 /**
- * EL ORDEN DE LA COLA, que es la composición.
+ * LA CARA QUE SE VE (24-sep, comparando al mismo tamaño con la referencia).
  *
- * No es el inventario: está barajado A MANO para que dos piezas del mismo
- * registro no caigan juntas (dos frases largas seguidas hacen un párrafo;
- * dos pictogramas seguidos, un muestrario) y para que las anchas y las
+ * El error de fondo era meter las 67 piezas en la cara frontal. Un cilindro
+ * de ø105 solo enseña ~40 % de su perímetro: en la foto de la referencia se
+ * cuentan unas treinta piezas, no sesenta y siete, y por eso allí cada una
+ * es GRANDE — CAFRE ocupa un cuarto del ancho del vidrio. Apretando el
+ * inventario entero en la cara visible, todo salía a la mitad de tamaño y la
+ * botella se leía como un folleto.
+ *
+ * Así que esta cola es la CARA FRONTAL: las piezas que se verían de frente,
+ * con las de los costados cortadas por el canto. Las demás existen igual —
+ * están en el inventario, en `/estampado` y en el desarrollo plano del
+ * taller, que es donde se ven las 57 — pero aquí no caben sin encogerlo
+ * todo, igual que no caben en el vidrio real.
+ *
+ * El orden está barajado A MANO para que dos piezas del mismo registro no
+ * caigan juntas (dos frases largas seguidas hacen un párrafo; dos
+ * pictogramas seguidos, un muestrario) y para que las anchas y las
  * estrechas se turnen — de ahí sale la variedad de tamaño de fila, que es
- * lo que la referencia tiene y una retícula regular no puede fingir.
- *
- * Los remates (`r-*`) van donde el ojo necesita una pausa corta.
+ * lo que la referencia tiene y una retícula regular no puede fingir. Los
+ * remates (`r-*`) van donde el ojo necesita una pausa corta.
  */
 const COLA: (number | string)[] = [
-  26, 35, 3, "r-estrella", 22, 30,
-  34, "r-puntos", 51, 10, 44, 12, 45,
-  1, 20, "r-flecha-e", 4, 19, 36, 13,
-  5, 42, 38, "r-cruz", 23, 39,
-  47, 21, "r-rombos", 9, 40, 28, 43,
-  27, 31, "r-flecha-ne", 6, 7, 48,
-  37, "r-barras", 41, 49, 8, 15, 11,
-  25, "r-asterisco", 17, 32, 50, 29, 18,
-  46, "r-flecha-n", 57, 33, 55, 52, 16,
-  56, "r-flecha-se", 2, 53, 24, "r-rombos", 14, "r-estrella",
+  // Hombro: lo que asoma por encima, poco y suelto.
+  26, 35, "r-estrella", 30,
+  // Cuerpo alto: una ancla grande por fila y piezas medianas al lado.
+  34, 10, 45,
+  20, 1, "r-flecha-e", 13,
+  47, 12, 21,
+  42, 5, "r-cruz", 39,
+  31, 9, 43,
+  48, "r-rombos", 37, 11,
+  49, 25, 18,
+  50, "r-asterisco", 29, 57,
+  33, 52, 16,
+  24, "r-flecha-ne", 14, "r-estrella",
+  36, 4, 55, "r-puntos", 2, 41,
 ];
 
 /**

@@ -80,10 +80,14 @@ const RESERVAS = [CONTRA, COL54];
  * va en banda: cruza el cilindro en vertical por su carril reservado (COL54).
  */
 /**
- * LA COLA, en el mismo orden que la web (components/Botella.tsx). Los dos
- * soportes empaquetan igual: filas justificadas de canto a canto con un
- * ritmo fijo de alturas. Si aquí el orden fuera otro, la lámina del taller y
- * la botella que ve el comprador contarían composiciones distintas.
+ * LA COLA COMPLETA: las 57 piezas más los remates.
+ *
+ * Aquí van TODAS, y en la web solo la cara frontal (~40 % del perímetro, que
+ * es lo que un cilindro deja ver de una vez). Es la misma diferencia que hay
+ * entre una foto de la botella y su desarrollo: el taller necesita la vuelta
+ * entera, el comprador ve un tercio. Los dos empaquetan igual — filas
+ * justificadas de canto a canto con el mismo ritmo de alturas — para que la
+ * mancha sea reconocible de un soporte a otro.
  */
 const COLA = [
   26, 35, 3, "r-estrella", 22, 30,
