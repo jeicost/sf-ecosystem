@@ -1,6 +1,7 @@
 # Lágrimas de Sánchez
 
-**Estado: 20 de septiembre de 2026 · botella, arte y web CERRADOS · producción sin arrancar**
+**Estado: 24 de septiembre de 2026 · botella, arte (medido e imprimible), web y
+paquetes de proveedor CERRADOS · todo lo pendiente necesita la firma de Carlos**
 
 Marca de botella de cristal serigrafiada y vino de la DO Vinos de Madrid.
 Dominios en propiedad: `lagrimasdesanchez.com` y `.es`
@@ -36,6 +37,25 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 
 ## RETOMAR AQUÍ
 
+### Cierre de fase 24-sep — qué pasó en el sprint final
+- **El arte quedó MEDIDO e imprimible**: `diseno/INFORME-IMPRIMIBILIDAD.md`
+  (morfología a 2 escenarios de malla) dejó 22 piezas rotas en **8 pátinas de
+  textura**, todas aprobadas a ojo. Tubería nueva en `diseno/iconos/`:
+  `medir-imprimibilidad.py`, `engordar-arte.py` (elige grosor por métrica),
+  `alturas_impresion.py` (única verdad de alturas). Las fuentes editables de
+  piezas dibujadas viven en `diseno/iconos/piezas-fuente/`; los originales
+  pre-engorde en `diseno/iconos/engordadas/`.
+- **Paquetes de adjuntos por proveedor** en `proveedores/paquetes/` — cada
+  correo dice qué carpeta arrastrar. La ficha de serigrafía pide EL dato que
+  decide: trazo mínimo POR ESCRITO (con ≤0,5 mm el arte entra entero).
+- **`diseno/hoja-contactos.pdf`** — las 67 piezas, real + ampliada, 6 páginas.
+- **`legal/oepm-preparacion.md`** — expediente listo (denominativa, clases
+  21+33; decidir TITULAR antes de pagar).
+- **`diseno/propuestas/chiqui-decision.png`** — CHIQUI A (actual, evoca el
+  logo de los Stones) contra B (beso con chispas). Decisión de una palabra.
+- **Formsubmit disparado** con un registro de prueba: buscar el correo de
+  confirmación en jacostech@gmail.com y hacer clic.
+
 ### Documentos listos para enviar
 - `proveedores/correo-serigrafia.txt` — 4 decoradores de vidrio
 - `proveedores/correo-vidrio.txt` — **a Estal**, que es de quien es la botella
@@ -55,9 +75,10 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
    - Serigrafía → Ibicrom, Serijerez, Todoglass, Serigrafía Portal
    - Vidrio → **Estal** (la botella es suya; los demás ya no son alternativa)
    - Bodegas → Vinícola de Arganda, Jeromín, Pablo Morate
-3. **Contratar ilustrador.** Ya no es «dibujar 57 piezas»: las 56 existen, se
-   compra unificación y arte final. Bajó a **1.000-2.200 €**. Sin arte final no
-   hay serigrafía
+3. **Ilustrador — ahora OPCIONAL.** El sprint del 22-24 sep dejó el arte
+   imprimible por sistema (8 pátinas documentadas en
+   `diseno/LISTA-ILUSTRADOR.md`). Si la muestra física del taller sale bien,
+   puede saltarse; si se contrata, es pulido fino, no rescate
 
 ### Decisiones abiertas
 - **EL PRECIO — lo más urgente.** La magnum rompe el pricing: la botella vacía
@@ -65,10 +86,10 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
   queda entre el 6 % y el 30 %**, que no se sostiene. Las tres salidas, con
   números, en `producto/costes.md`. Es tuyo: nadie sube un precio por su cuenta
 - **Estuche de magnum**: ninguna caja de 75 cl vale. Hay que pedirlo
-- **Los medidores**: Carlos le está dando una vuelta al lagrimómetro y a la idea
-  de un segundo medidor (EL GIRÓMETRO). Todas las versiones y las mejoras
-  propuestas están en `producto/medidores-abierto.md`. La lámina y el Excel
-  llevan la versión 2, que es la vigente hasta que él decida
+- **Los medidores**: el lagrimómetro v2 está DIBUJADO y en la botella como
+  columna-instrumento (pieza 54, fuente en `diseno/iconos/piezas-fuente/`).
+  El GIRÓMETRO sigue siendo idea abierta en `producto/medidores-abierto.md`
+- **CHIQUI A o B**: ver `diseno/propuestas/chiqui-decision.png`
 
 ### La botella — CERRADA 19-sep
 **Estal SM BG MG ESSENTIA, Sommelier Long, 150 cl, color ANTICO.** Se acabó el
